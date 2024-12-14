@@ -1,3 +1,5 @@
+"use client";
+
 import ButtonAccount from "@/components/ButtonAccount";
 
 export const dynamic = "force-dynamic";
@@ -10,7 +12,18 @@ export default async function Dashboard() {
     <main className="min-h-screen p-8 pb-24">
       <section className="max-w-xl mx-auto space-y-8">
         <ButtonAccount />
-        <h1 className="text-3xl md:text-4xl font-extrabold">Private Page</h1>
+        <h1 className="text-3xl md:text-4xl font-extrabold">Dashboard</h1>
+        {/* TODO: start building the main content */}
+        {/* Nav Bar */}
+        {/* Search Bar */}
+        <input
+          type="text"
+          onChange={(e) => console.log(e.target.value)}
+          placeholder="Type here"
+          className="input input-bordered w-full max-w-xs"
+        />
+
+        {/* Card for results */}
       </section>
     </main>
   );
