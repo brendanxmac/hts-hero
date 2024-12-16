@@ -1,6 +1,11 @@
 "use client";
 
 import ButtonAccount from "@/components/ButtonAccount";
+import SearchBar from "../../components/SearchBar";
+import Link from "next/link";
+import config from "@/config";
+import logo from "@/app/logo.png";
+import Image from "next/image";
 
 export const dynamic = "force-dynamic";
 
@@ -9,22 +14,30 @@ export const dynamic = "force-dynamic";
 // See https://shipfa.st/docs/tutorials/private-page
 export default async function Dashboard() {
   return (
-    <main className="min-h-screen p-8 pb-24">
-      <section className="max-w-xl mx-auto space-y-8">
+    <div className="flex flex-col h-screen">
+      <header className="sticky top-0 h-16 z-10 bg-[#202020] flex justify-between p-4">
+        <Link
+          className="flex items-center gap-2 shrink-0 "
+          href="/"
+          title={`${config.appName} homepage`}
+        >
+          <Image
+            src={logo}
+            alt={`${config.appName} logo`}
+            className="w-8"
+            priority={true}
+            width={32}
+            height={32}
+          />
+          <span className="font-extrabold text-lg">{config.appName}</span>
+        </Link>
         <ButtonAccount />
-        <h1 className="text-3xl md:text-4xl font-extrabold">Dashboard</h1>
-        {/* TODO: start building the main content */}
-        {/* Nav Bar */}
-        {/* Search Bar */}
-        <input
-          type="text"
-          onChange={(e) => console.log(e.target.value)}
-          placeholder="Type here"
-          className="input input-bordered w-full max-w-xs"
-        />
-
-        {/* Card for results */}
-      </section>
-    </main>
+      </header>
+      <main className="flex-1 overflow-auto">
+        <section className="h-[calc(100vh-8rem)]">
+          <SearchBar />
+        </section>
+      </main>
+    </div>
   );
 }
