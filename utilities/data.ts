@@ -1,4 +1,3 @@
-import { createInterface } from "readline";
 import { HtsWithParentReference } from "../interfaces/hts";
 
 export const elementsAtIndentLevel = (
@@ -6,20 +5,6 @@ export const elementsAtIndentLevel = (
   indentLevel: number
 ) => {
   return elements.filter((e) => Number(e.indent) === indentLevel);
-};
-
-export const promptUser = (question: string): Promise<string> => {
-  const rl = createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-
-  return new Promise((resolve) => {
-    rl.question(question, (answer: string) => {
-      rl.close();
-      resolve(answer);
-    });
-  });
 };
 
 export const setIndexInArray = <T extends Object>(

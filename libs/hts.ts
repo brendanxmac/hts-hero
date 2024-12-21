@@ -1,11 +1,14 @@
-import { promises } from "fs";
+import { ChatCompletion } from "openai/resources";
 import {
   HtsWithParentReference,
   HtsLayerSelection,
   MatchResponse,
+  HsHeading,
+  HtsRaw,
 } from "../interfaces/hts";
 import { elementsAtIndentLevel, setIndexInArray } from "../utilities/data";
-import { bestStringMatch, OpenAIModel } from "./openai";
+import { OpenAIModel } from "./openai";
+import apiClient from "@/libs/api";
 
 export const stringContainsHTSCode = (str: string) => {
   // Regular expression to match HTS codes
@@ -21,16 +24,6 @@ export function isFullHTSCode(code: string) {
   return htsCodeRegex.test(code);
 }
 
-export const getHTSChapterData = async <T>(
-  chapterNumber: string
-): Promise<T[]> => {
-  const data = await promises.readFile(
-    `hts-chapters/${chapterNumber}.json`,
-    "utf8"
-  );
-  return JSON.parse(data);
-};
-
 export const getHtsElementDescriptions = (
   elementsAtIndexLevel: HtsWithParentReference[]
 ) => {
@@ -40,17 +33,14 @@ export const getHtsElementDescriptions = (
 
 // Recursive function that implements the sliding window approach to find
 // the single best HTS Codes for a product description
-export const findBestHtsCode = async (
+export const getBestIndentLevelMatch = async (
   productDescription: string,
   htsDescription: string, // used to compare against product description at each level, with each NEW descriptor
   elements: HtsWithParentReference[],
   indentLevel: number,
   selectionProgression: HtsLayerSelection[] = []
 ): Promise<HtsLayerSelection[]> => {
-  console.log("========================");
-  console.log(`INDENT LEVEL: ${indentLevel}`);
-  console.log(`ELEMENTS: ${elements.length}`);
-  console.log("========================");
+  console.log(`===== INDENT LEVEL: ${indentLevel} =====`);
   // Get all Elements at the indent level -- This relies on the "indent" in the hts data always being a number when converted to string
   let elementsAtIndent = elementsAtIndentLevel(elements, indentLevel);
 
@@ -60,14 +50,17 @@ export const findBestHtsCode = async (
   //   console.log(descriptions);
 
   // Find BEST Description amongst the bunch:
-  const bestMatchResponse = await bestStringMatch(
-    htsDescription,
-    descriptions,
-    productDescription,
-    OpenAIModel.FOUR
+  const bestMatchResponse: Array<ChatCompletion.Choice> = await apiClient.post(
+    "/openai/get-best-description-match",
+    {
+      htsDescription,
+      descriptions,
+      productDescription,
+      model: OpenAIModel.FOUR,
+    }
   );
 
-  const bestMatch = bestMatchResponse.choices[0].message.content;
+  const bestMatch = bestMatchResponse[0].message.content;
   if (bestMatch === null) {
     throw new Error(`Best match is null for descriptions`);
   }
@@ -100,38 +93,113 @@ export const findBestHtsCode = async (
     selectionProgression.push(htsLayerSelection);
     //  2. See if it's a full HTS code, if so return
     const gotFullHtsCode = isFullHTSCode(bestMatchElement.htsno);
-    console.log(`GOT FULL HTS CODE: ${bestMatchElement.htsno}`);
 
-    if (gotFullHtsCode) return selectionProgression;
+    if (gotFullHtsCode) {
+      console.log(`HTS CODE: ${bestMatchElement.htsno}`);
+      return selectionProgression;
+    }
 
     // Get END of new slice index which will be either:
     const startIndex = bestMatchElement.indexInParentArray + 1;
-    console.log(`Start Index: ${startIndex}`);
     let endIndex = startIndex;
 
     for (let i = startIndex + 1; i < elements.length; i++) {
       if (elements[i].indent === String(indentLevel)) {
         endIndex = i - 1;
-        console.log(`End Index (1): ${endIndex}`);
         break;
       }
     }
 
     if (endIndex === startIndex) {
       endIndex = elements.length;
-      console.log(`END Index (2): ${endIndex}`);
     }
 
     let nextChunk = elements.slice(startIndex, endIndex + 1);
     nextChunk = setIndexInArray(nextChunk);
 
     // Recurse with updated data
-    return findBestHtsCode(
+    return getBestIndentLevelMatch(
       productDescription,
       htsDescription,
       nextChunk,
       indentLevel + 1,
       selectionProgression
     );
+  }
+};
+
+export const getHtsCode = async (productDescription: string) => {
+  console.log("Finding best HTS Code...");
+  const hsHeadingsResponse: Array<ChatCompletion.Choice> = await apiClient.post(
+    "/openai/get-hs-headings",
+    {
+      productDescription,
+      model: OpenAIModel.FOUR,
+    }
+  );
+  console.log("GPT Headings:");
+  console.log(hsHeadingsResponse[0].message.content);
+
+  const hsHeadings = hsHeadingsResponse[0].message.content;
+
+  if (hsHeadings) {
+    // TODO: Consider doing this for all headings...
+    const parsed: HsHeading[] = JSON.parse(hsHeadings);
+    const heading = parsed[0].heading;
+    const chapter = heading.substring(0, 2);
+    console.log(`First Heading: ${heading}`);
+    // TODO: Consider jumping right to heading level and not doing chapter...
+
+    const htsChapterJson: HtsRaw[] = await apiClient.get(
+      "/hts/get-chapter-data",
+      {
+        params: { chapter },
+      }
+    );
+
+    const htsChapterJsonWithIndex: HtsWithParentReference[] =
+      setIndexInArray(htsChapterJson);
+
+    const htsSelectionProgression = await getBestIndentLevelMatch(
+      productDescription,
+      "",
+      htsChapterJsonWithIndex,
+      0
+    );
+
+    console.log(
+      htsSelectionProgression.map((s) => ({
+        code: s.element.htsno,
+        tariff: s.element.general,
+        footnotes: s.element.footnotes,
+        logic: s.logic,
+      }))
+    );
+
+    for (let i = htsSelectionProgression.length - 1; i > 0; i--) {
+      if (htsSelectionProgression[i].element.general) {
+        // todo: see if this accounts for all cases / edge cases
+        console.log(
+          `Got Tarrif at ${htsSelectionProgression[i].element.htsno}`
+        );
+        console.log(htsSelectionProgression[i].element.general);
+        if (htsSelectionProgression[i].element.footnotes.length) {
+          console.log(`Element has footnotes:`);
+          console.log(htsSelectionProgression[i].element.footnotes);
+        }
+      }
+    }
+
+    // TODO: get the total tariff for this item
+    //   const hsCode = htsSelectionProgression[
+    //     htsSelectionProgression.length - 1
+    //   ].element.htsno.substring(0, 7);
+    //   const htsUsItcResponse = await searchKeyword(hsCode);
+    //   console.log(
+    //     `Searching https://hts.usitc.gov/reststop/search?keyword=${hsCode}...`
+    //   );
+    //   const htsCodes = htsUsItcResponse.data;
+    // get total tariff -- assume import from china
+    // does final code have rate?
   }
 };
