@@ -58,12 +58,12 @@ const ButtonAccount = () => {
     <Popover className="relative z-10">
       {({ open }) => (
         <>
-          <Popover.Button className="btn">
+          <Popover.Button className="btn rounded-lg bg-neutral-900">
             {user?.user_metadata?.avatar_url ? (
               <img
                 src={user?.user_metadata?.avatar_url}
                 alt={"Profile picture"}
-                className="w-6 h-6 rounded-full shrink-0"
+                className="w-8 h-8 rounded-full shrink-0"
                 referrerPolicy="no-referrer"
                 width={24}
                 height={24}
@@ -74,9 +74,10 @@ const ButtonAccount = () => {
               </span>
             )}
 
-            {user?.user_metadata?.name ||
+            {/* TODO: consider adding this back in */}
+            {/* {user?.user_metadata?.name ||
               user?.email?.split("@")[0] ||
-              "Account"}
+              "Account"} */}
 
             {isLoading ? (
               <span className="loading loading-spinner loading-xs"></span>
