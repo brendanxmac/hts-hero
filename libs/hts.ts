@@ -86,7 +86,7 @@ export const getBestIndentLevelMatch = async (
     // Add Selection Layer to overall selection progression
     const htsLayerSelection: HtsLayerSelection = {
       element: bestMatchElement,
-      logic: bestMatchJson.logic,
+      reasoning: bestMatchJson.logic,
     };
     // console.log(`Selection for indent ${indentLevel}`);
     // console.log(htsLayerSelection);
@@ -172,7 +172,7 @@ export const getHtsCode = async (productDescription: string) => {
         code: s.element.htsno,
         tariff: s.element.general,
         footnotes: s.element.footnotes,
-        logic: s.logic,
+        logic: s.reasoning,
       }))
     );
 

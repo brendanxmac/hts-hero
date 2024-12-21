@@ -50,5 +50,5 @@ export interface MatchResponse {
 
 export interface HtsLayerSelection {
   element: HtsRaw;
-  logic: string;
+  reasoning: string;
 }
