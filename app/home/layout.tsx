@@ -27,7 +27,7 @@ export default async function LayoutPrivate({
   }
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col min-h-screen max-h-screen">
       <AuthenticatedHeader />
       {children}
       {/* <GreenGlow anchor={VerticalAnchor.BOTTOM} /> */}

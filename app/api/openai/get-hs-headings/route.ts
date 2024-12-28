@@ -47,8 +47,8 @@ export async function POST(req: NextRequest) {
         {
           role: "user",
           content: `Use the General Rules for the Interpretation of the Harmonized System to determine which headings (at least 2) most accurately describe: ${productDescription}.
-        Your response should:
-        1. Be ONLY a raw array of objects where each object matches the following structure: { heading: "xxxx",  desciption: 'lorem ipsum...', logic: 'the reason why this heading makes sense...'}.
+        Your response should be:
+        1. ONLY a stringified array of objects where each object matches the following structure: { heading: string,  desciption: string, logic: string}.
         2. Without the code block formatting indicating it is json`,
         },
       ],
@@ -60,3 +60,5 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: e?.message }, { status: 500 });
   }
 }
+
+// 1. ONLY a stringified array of objects where each object matches the following structure: { heading: "xxxx",  desciption: 'lorem ipsum...', logic: 'the reason why this heading makes sense...'}.
