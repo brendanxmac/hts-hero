@@ -48,7 +48,7 @@ export interface MatchResponse {
   logic: string;
 }
 
-export interface HtsLayerSelection {
+export interface HtsLevelSelection {
   element: HtsRaw;
-  logic: string;
+  reasoning: string;
 }

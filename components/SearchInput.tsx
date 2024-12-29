@@ -1,14 +1,17 @@
 "use client";
 
-import { useState, useRef, ChangeEvent } from "react";
+import { useRef, ChangeEvent, useState } from "react";
 import { classNames } from "../utilities/style";
 import { ArrowUpIcon } from "@heroicons/react/20/solid";
-import { getHtsCode } from "../libs/hts";
 import axios from "axios";
+import { useHtsContext } from "../context/hts-context";
 
+// TODO: consider passing "placeholder" prop to allow the placeholder text
+// to change depending on the callers context
 export default function SearchInput() {
   const characterLimit = 250;
-  const [productDescription, setProductDescription] = useState<string>("");
+  const { setFindingHts, setProductDescription } = useHtsContext();
+  const [localProductDescription, setLocalProductDescription] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const adjustHeight = (): void => {
@@ -21,20 +24,20 @@ export default function SearchInput() {
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>): void => {
-    setProductDescription(e.target.value);
+    setLocalProductDescription(e.target.value);
     adjustHeight();
   };
 
   const findBestHtsCode = (): void => {
-    if (productDescription.trim()) {
-      console.log("Message sent:", productDescription);
-      setProductDescription("");
+    if (localProductDescription.trim()) {
+      setProductDescription(localProductDescription.trim());
+      setLocalProductDescription("");
       if (textareaRef.current) {
         textareaRef.current.style.height = "auto";
       }
     }
     try {
-      getHtsCode(productDescription);
+      setFindingHts(true);
     } catch (error) {
       // Handle errors
       if (axios.isAxiosError(error)) {
@@ -45,20 +48,29 @@ export default function SearchInput() {
     }
   };
 
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Enter") {
+      event.preventDefault(); // Prevent the default behavior of Enter
+      findBestHtsCode();
+    }
+  };
+
   return (
     <div className="w-full flex flex-col gap-2 bg-black p-2">
       <div
         className={
-          "w-full flex flex-col gap-3 bg-neutral-900 items-start rounded-2xl p-4 max-w-2xl mx-auto"
+          "w-full flex flex-col gap-3 bg-neutral-900 items-start rounded-2xl p-4 max-w-3xl mx-auto"
         }
       >
         <div className="w-full flex">
           <textarea
             ref={textareaRef}
-            placeholder="e.g. Stainless steel water bottle for dogs to drink from while travelling..."
+            placeholder="Enter product description"
             rows={1}
-            value={productDescription}
+            value={localProductDescription}
             onChange={handleInputChange}
+            // @ts-ignore
+            onKeyDown={handleKeyDown}
             className="flex-grow resize-none bg-inherit text-neutral-300 placeholder-neutral-600 focus:ring-0 focus:outline-none"
           ></textarea>
         </div>
@@ -66,35 +78,36 @@ export default function SearchInput() {
           <p
             className={classNames(
               "text-neutral-500 text-xs",
-              productDescription.length > characterLimit
+              localProductDescription.length > characterLimit
                 ? "font-bold"
                 : undefined
             )}
           >
             <span
               className={
-                productDescription.length > characterLimit
+                localProductDescription.length > characterLimit
                   ? "text-red-600"
                   : undefined
               }
             >
-              {productDescription.length}
+              {localProductDescription.length}
             </span>
             {` / ${characterLimit}`}
           </p>
           <button
             onClick={findBestHtsCode}
             type="button"
-            disabled={productDescription.length > characterLimit}
+            disabled={localProductDescription.length > characterLimit}
             className={classNames(
-              productDescription ? "bg-white" : "bg-neutral-700",
-              productDescription.length > characterLimit && "bg-neutral-700",
+              localProductDescription ? "bg-white" : "bg-neutral-700",
+              localProductDescription.length > characterLimit &&
+                "bg-neutral-700",
               "h-7 w-7 rounded-lg  flex items-center justify-center text-sm font-bold"
             )}
           >
             <ArrowUpIcon
               className={classNames(
-                productDescription
+                localProductDescription
                   ? "text-[#202020]"
                   : "text-gray-characterLimit",
                 "h-5 w-5"

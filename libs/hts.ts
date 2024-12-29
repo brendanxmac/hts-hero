@@ -1,12 +1,15 @@
 import { ChatCompletion } from "openai/resources";
 import {
   HtsWithParentReference,
-  HtsLayerSelection,
+  HtsLevelSelection,
   MatchResponse,
   HsHeading,
   HtsRaw,
 } from "../interfaces/hts";
-import { elementsAtIndentLevel, setIndexInArray } from "../utilities/data";
+import {
+  elementsAtClassificationLevel,
+  setIndexInArray,
+} from "../utilities/data";
 import { OpenAIModel } from "./openai";
 import apiClient from "@/libs/api";
 
@@ -31,6 +34,43 @@ export const getHtsElementDescriptions = (
   return elementsAtIndexLevel.map((e) => e.description);
 };
 
+export const getBestMatchAtClassificationLevel = async (
+  elementAtLevel: HtsWithParentReference[],
+  indentLevel: number,
+  productDescription: string,
+  htsDescription: string
+): Promise<MatchResponse> => {
+  console.log(`=== CLASSIFICATION LEVEL: ${indentLevel} ===`);
+  const descriptions = getHtsElementDescriptions(elementAtLevel);
+  const bestMatchResponse: Array<ChatCompletion.Choice> = await apiClient.post(
+    "/openai/get-best-description-match",
+    {
+      htsDescription,
+      descriptions,
+      productDescription,
+      model: OpenAIModel.FOUR,
+    }
+  );
+
+  const bestMatch = bestMatchResponse[0].message.content;
+
+  if (bestMatch === null) {
+    throw new Error(`Failed to get best match at level ${indentLevel}`);
+  }
+
+  return JSON.parse(bestMatch);
+};
+
+export const updateHtsDescription = (
+  description: string,
+  bestMatch: MatchResponse
+) => {
+  // Tack best matches description onto the htsDescription
+  return description
+    ? description + " > " + bestMatch.description
+    : bestMatch.description;
+};
+
 // Recursive function that implements the sliding window approach to find
 // the single best HTS Codes for a product description
 export const getBestIndentLevelMatch = async (
@@ -38,16 +78,14 @@ export const getBestIndentLevelMatch = async (
   htsDescription: string, // used to compare against product description at each level, with each NEW descriptor
   elements: HtsWithParentReference[],
   indentLevel: number,
-  selectionProgression: HtsLayerSelection[] = []
-): Promise<HtsLayerSelection[]> => {
+  selectionProgression: HtsLevelSelection[] = []
+): Promise<HtsLevelSelection[]> => {
   console.log(`===== INDENT LEVEL: ${indentLevel} =====`);
   // Get all Elements at the indent level -- This relies on the "indent" in the hts data always being a number when converted to string
-  let elementsAtIndent = elementsAtIndentLevel(elements, indentLevel);
+  let elementsAtIndent = elementsAtClassificationLevel(elements, indentLevel);
 
   // Get the full descriptions for all elements at this indent level
   const descriptions = getHtsElementDescriptions(elementsAtIndent);
-  //   console.log("descriptions:");
-  //   console.log(descriptions);
 
   // Find BEST Description amongst the bunch:
   const bestMatchResponse: Array<ChatCompletion.Choice> = await apiClient.post(
@@ -75,7 +113,7 @@ export const getBestIndentLevelMatch = async (
   // Determine if this is the end...
   //  1. Grab the element that was just determined to be the best match
   const bestMatchElement = elementsAtIndent.find(
-    (i) => i.description === bestMatchJson.description // TODO: this might be broken, possible for descriptions to be the same, but NOT at the same level...
+    (i) => i.description === bestMatchJson.description
   );
 
   if (!bestMatchElement) {
@@ -84,14 +122,13 @@ export const getBestIndentLevelMatch = async (
     );
   } else {
     // Add Selection Layer to overall selection progression
-    const htsLayerSelection: HtsLayerSelection = {
+    const htsLayerSelection: HtsLevelSelection = {
       element: bestMatchElement,
-      logic: bestMatchJson.logic,
+      reasoning: bestMatchJson.logic,
     };
-    // console.log(`Selection for indent ${indentLevel}`);
-    // console.log(htsLayerSelection);
+
     selectionProgression.push(htsLayerSelection);
-    //  2. See if it's a full HTS code, if so return
+
     const gotFullHtsCode = isFullHTSCode(bestMatchElement.htsno);
 
     if (gotFullHtsCode) {
@@ -128,8 +165,7 @@ export const getBestIndentLevelMatch = async (
   }
 };
 
-export const getHtsCode = async (productDescription: string) => {
-  console.log("Finding best HTS Code...");
+export const getHSChapter = async (productDescription: string) => {
   const hsHeadingsResponse: Array<ChatCompletion.Choice> = await apiClient.post(
     "/openai/get-hs-headings",
     {
@@ -137,69 +173,96 @@ export const getHtsCode = async (productDescription: string) => {
       model: OpenAIModel.FOUR,
     }
   );
-  console.log("GPT Headings:");
-  console.log(hsHeadingsResponse[0].message.content);
 
   const hsHeadings = hsHeadingsResponse[0].message.content;
 
-  if (hsHeadings) {
-    // TODO: Consider doing this for all headings...
-    const parsed: HsHeading[] = JSON.parse(hsHeadings);
-    const heading = parsed[0].heading;
-    const chapter = heading.substring(0, 2);
-    console.log(`First Heading: ${heading}`);
-    // TODO: Consider jumping right to heading level and not doing chapter...
+  if (!hsHeadings)
+    throw new Error(`failed to get HS Headings for product description`);
 
-    const htsChapterJson: HtsRaw[] = await apiClient.get(
-      "/hts/get-chapter-data",
-      {
-        params: { chapter },
-      }
-    );
+  // TODO: Consider doing this for all headings
+  // TODO: Consider jumping right to heading and not back to chapter...
 
-    const htsChapterJsonWithIndex: HtsWithParentReference[] =
-      setIndexInArray(htsChapterJson);
+  const parsed: HsHeading[] = JSON.parse(hsHeadings);
+  const chapter = parsed[0].heading.substring(0, 2);
+  console.log(`Chapter ${chapter}`);
 
-    const htsSelectionProgression = await getBestIndentLevelMatch(
-      productDescription,
-      "",
-      htsChapterJsonWithIndex,
-      0
-    );
+  return chapter;
+};
 
-    console.log(
-      htsSelectionProgression.map((s) => ({
-        code: s.element.htsno,
-        tariff: s.element.general,
-        footnotes: s.element.footnotes,
-        logic: s.logic,
-      }))
-    );
+export const getHtsChapterData = (chapter: string): Promise<HtsRaw[]> => {
+  return apiClient.get("/hts/get-chapter-data", {
+    params: { chapter },
+  });
+};
 
-    for (let i = htsSelectionProgression.length - 1; i > 0; i--) {
-      if (htsSelectionProgression[i].element.general) {
-        // todo: see if this accounts for all cases / edge cases
-        console.log(
-          `Got Tarrif at ${htsSelectionProgression[i].element.htsno}`
-        );
-        console.log(htsSelectionProgression[i].element.general);
-        if (htsSelectionProgression[i].element.footnotes.length) {
-          console.log(`Element has footnotes:`);
-          console.log(htsSelectionProgression[i].element.footnotes);
-        }
+export const getFullClassificationDescription = (
+  results: HtsLevelSelection[]
+) => {
+  const numElements = results.length - 1;
+  let fullDescription = "";
+
+  results.map((result, i) => {
+    if (result.element.htsno) {
+      if (i < numElements) {
+        fullDescription =
+          fullDescription +
+          `${result.element.htsno ? `${result.element.htsno}: ` : ""}` +
+          result.element.description +
+          "\n\n";
+      } else {
+        fullDescription =
+          fullDescription +
+          `${result.element.htsno ? `${result.element.htsno}: ` : ""}` +
+          result.element.description;
       }
     }
+  });
 
-    // TODO: get the total tariff for this item
-    //   const hsCode = htsSelectionProgression[
-    //     htsSelectionProgression.length - 1
-    //   ].element.htsno.substring(0, 7);
-    //   const htsUsItcResponse = await searchKeyword(hsCode);
-    //   console.log(
-    //     `Searching https://hts.usitc.gov/reststop/search?keyword=${hsCode}...`
-    //   );
-    //   const htsCodes = htsUsItcResponse.data;
-    // get total tariff -- assume import from china
-    // does final code have rate?
-  }
+  return `${fullDescription}`;
 };
+
+export const getNextChunk = (
+  currentChunk: HtsWithParentReference[],
+  startIndex: number,
+  classificationLevel: number
+) => {
+  const endIndex = getNextChunkEndIndex(
+    currentChunk,
+    startIndex,
+    classificationLevel
+  );
+
+  return currentChunk.slice(startIndex, endIndex + 1);
+};
+
+export const getNextChunkEndIndex = (
+  htsElementsChunk: HtsWithParentReference[],
+  startIndex: number,
+  classificationLevel: number
+) => {
+  let endIndex = startIndex;
+
+  for (let i = startIndex + 1; i < htsElementsChunk.length; i++) {
+    if (htsElementsChunk[i].indent === String(classificationLevel)) {
+      return i - 1;
+    }
+  }
+
+  if (endIndex === startIndex) {
+    return htsElementsChunk.length;
+  }
+
+  throw new Error("Failed to get next chunk end index");
+};
+
+// TODO: get the total tariff for this item
+//   const hsCode = htsSelectionProgression[
+//     htsSelectionProgression.length - 1
+//   ].element.htsno.substring(0, 7);
+//   const htsUsItcResponse = await searchKeyword(hsCode);
+//   console.log(
+//     `Searching https://hts.usitc.gov/reststop/search?keyword=${hsCode}...`
+//   );
+//   const htsCodes = htsUsItcResponse.data;
+// get total tariff -- assume import from china
+// does final code have rate?

@@ -43,6 +43,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const labelledDescriptions = descriptions.map(
+      (description, index) => `${index + 1}. ${description}`
+    );
+
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const gptResponse = await openai.chat.completions.create({
       temperature: 0.7,
@@ -57,11 +61,11 @@ export async function POST(req: NextRequest) {
         {
           role: "user",
           content: `For the given description:${htsDescription}
-        If one of the following descriptions were added onto it, which one, when combined, would most accurately classify / describe a ${productDescription}:
-        ${descriptions.join("\n")}
+        If one of the following descriptions were added onto it, which one, when combined, would most accurately classify / describe a ${productDescription}\n:
+        ${labelledDescriptions.join("\n")}\n
         Your response should:
         1. Be ONLY a raw JSON response with two properties: 
-        a. description: the pure, entirely unchanged original string from the list that is the best match (especially do NOT remove any punctuation marks)
+        a. description: the pure, original string from the list WITHOUT the prefixed number dot and space (e.g. "3. ") that is the best match (especially do NOT remove any punctuation marks)
         b. logic: your reasoning for WHY you chose this string
         2. Not contain the code block formatting indicating it is json`,
         },

@@ -12,7 +12,9 @@ export const SecondaryInformation = ({ label, heading, textAlign }: Props) => {
   return (
     <div className={`flex flex-col gap-1 ${getTextAlignmentStyle(textAlign)}`}>
       <InformationLabel value={label} />
-      <h2 className="text-gray-200 md:text-xl font-bold">{heading}</h2>
+      <h2 className="text-gray-200 md:text-lg font-bold whitespace-pre-line">
+        {heading}
+      </h2>
     </div>
   );
 };

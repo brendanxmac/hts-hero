@@ -6,7 +6,7 @@ import ButtonAccount from "./ButtonAccount";
 
 export const AuthenticatedHeader = () => {
   return (
-    <header className="sticky top-0 h-16 z-10 bg-black flex items-center justify-between p-4">
+    <header className="shrink sticky top-0 h-16 z-10 bg-black flex items-center justify-between p-4">
       <Link
         className="flex items-center gap-2 shrink-0 "
         href="/"
