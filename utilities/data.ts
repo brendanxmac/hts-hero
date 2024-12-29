@@ -1,10 +1,10 @@
 import { HtsWithParentReference } from "../interfaces/hts";
 
-export const elementsAtIndentLevel = (
+export const elementsAtClassificationLevel = (
   elements: HtsWithParentReference[],
-  indentLevel: number
+  level: number
 ) => {
-  return elements.filter((e) => Number(e.indent) === indentLevel);
+  return elements.filter((e) => Number(e.indent) === level);
 };
 
 export const setIndexInArray = <T extends Object>(
