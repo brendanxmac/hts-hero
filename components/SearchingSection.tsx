@@ -1,11 +1,9 @@
 "use client";
 
-import { Suspense } from "react";
 import { useHtsContext } from "../context/hts-context";
 import { ProductDescriptionHeader } from "./ProductDescriptionHeader";
 import SearchInput from "./SearchInput";
-import { SearchResultSummary } from "./SearchResultSummary";
-import Loading from "../app/home/loading";
+import { SearchResults } from "./SearchResultSummary";
 
 export const SearchingSection = () => {
   const { currentClassification, productDescription } = useHtsContext();
@@ -15,11 +13,10 @@ export const SearchingSection = () => {
         <div className="w-full px-4 justify-items-center">
           <ProductDescriptionHeader description={productDescription} />
         </div>
-        {/* <Suspense fallback={<Loading />}> */}
+
         <div className="w-full justify-items-center px-4">
-          <SearchResultSummary />
+          <SearchResults />
         </div>
-        {/* </Suspense> */}
       </div>
       <div className="z-10 sticky bottom-0 w-full">
         <SearchInput />

@@ -6,6 +6,8 @@ import { ArrowUpIcon } from "@heroicons/react/20/solid";
 import axios from "axios";
 import { useHtsContext } from "../context/hts-context";
 
+// TODO: consider passing "placeholder" prop to allow the placeholder text
+// to change depending on the callers context
 export default function SearchInput() {
   const characterLimit = 250;
   const { setFindingHts, setProductDescription } = useHtsContext();
@@ -28,7 +30,6 @@ export default function SearchInput() {
 
   const findBestHtsCode = (): void => {
     if (localProductDescription.trim()) {
-      console.log("Message sent:", localProductDescription);
       setProductDescription(localProductDescription.trim());
       setLocalProductDescription("");
       if (textareaRef.current) {
@@ -37,7 +38,6 @@ export default function SearchInput() {
     }
     try {
       setFindingHts(true);
-      console.log("finding HTS");
     } catch (error) {
       // Handle errors
       if (axios.isAxiosError(error)) {
@@ -65,7 +65,7 @@ export default function SearchInput() {
         <div className="w-full flex">
           <textarea
             ref={textareaRef}
-            placeholder="e.g. Stainless steel water bottle for dogs to drink from while travelling..."
+            placeholder="Enter product description"
             rows={1}
             value={localProductDescription}
             onChange={handleInputChange}

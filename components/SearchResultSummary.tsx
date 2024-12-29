@@ -1,98 +1,153 @@
 import { useEffect, useState } from "react";
 import { useHtsContext } from "../context/hts-context";
 import { HorizontalAlignment } from "../enums/style";
-import { getHtsCode } from "../libs/hts";
+import {
+  getBestMatchAtClassificationLevel,
+  getFullClassificationDescription,
+  getHSChapter,
+  getHtsChapterData,
+  getNextChunk,
+  isFullHTSCode,
+  updateHtsDescription,
+} from "../libs/hts";
 import { PrimaryInformation } from "./PrimaryInformation";
 import { SecondaryInformation } from "./SecondaryInformation";
-import { HtsLayerSelection } from "../interfaces/hts";
+import { HtsLevelSelection, HtsWithParentReference } from "../interfaces/hts";
 import { LabelledLoader } from "./LabelledLoader";
+import {
+  elementsAtClassificationLevel,
+  setIndexInArray,
+} from "../utilities/data";
 
-export const SearchResultSummary = () => {
-  const { productDescription } = useHtsContext();
+export const SearchResults = () => {
+  const { productDescription } = useHtsContext(); // TODO: do you need to use context...
   const [loading, setLoading] = useState(false);
   const [htsCode, setHtsCode] = useState("");
   const [tariff, setTarrif] = useState("");
   const [description, setDescription] = useState("");
-
-  const getFullClassificationDescription = (results: HtsLayerSelection[]) => {
-    const numElements = results.length - 1;
-    let fullDescription = "";
-
-    results.map((result, i) => {
-      if (result.element.htsno) {
-        if (i < numElements) {
-          fullDescription =
-            fullDescription +
-            `${result.element.htsno ? `${result.element.htsno}: ` : ""}` +
-            result.element.description +
-            "\n\n";
-        } else {
-          fullDescription =
-            fullDescription +
-            `${result.element.htsno ? `${result.element.htsno}: ` : ""}` +
-            result.element.description;
-        }
-      }
-    });
-
-    return `${fullDescription}`;
-  };
+  const [htsDescription, setHtsDescription] = useState("");
+  const [htsElementsChunk, setHtsElementsChunk] = useState<
+    HtsWithParentReference[]
+  >([]);
+  const [classificationLevel, setClassificationLevel] = useState(0);
+  const [selectionProgression, setSelectionProgression] = useState<
+    HtsLevelSelection[]
+  >([]);
 
   useEffect(() => {
-    console.log("Product Description changed");
-    console.log(productDescription);
-    async function fetchStuff() {
-      setLoading(true);
-      // setTimeout(() => {
-      //   console.log("Done");
-      //   setLoading(false);
-      // }, 4000);
-      const results = await getHtsCode(productDescription);
+    async function findBestProductionDescriptionMatchAtLevel() {
+      const elementsAtLevel = elementsAtClassificationLevel(
+        htsElementsChunk,
+        classificationLevel
+      );
 
-      setDescription(getFullClassificationDescription(results));
+      const bestMatchResponse = await getBestMatchAtClassificationLevel(
+        elementsAtLevel,
+        classificationLevel,
+        productDescription,
+        htsDescription
+      );
+      setHtsDescription(
+        updateHtsDescription(htsDescription, bestMatchResponse)
+      );
+      const bestMatchElement = elementsAtLevel.find(
+        (i) => i.description === bestMatchResponse.description
+      );
 
-      for (let i = results.length - 1; i > 0; i--) {
-        if (results[i].element.general) {
-          const { htsno, general, footnotes } = results[i].element;
-          console.log(`Tarrif for ${htsno}: ${general}`);
+      // Get & Set next selection progression
+      const nextSelectionProgression: HtsLevelSelection = {
+        element: bestMatchElement,
+        reasoning: bestMatchResponse.logic,
+      };
+      setSelectionProgression([
+        ...selectionProgression,
+        nextSelectionProgression,
+      ]);
+      setHtsCode(bestMatchElement.htsno);
+      setClassificationLevel(classificationLevel + 1);
+
+      // Get Next HTS Elements Chunk
+      const nextChunkStartIndex = bestMatchElement.indexInParentArray + 1;
+      const nextChunk = getNextChunk(
+        htsElementsChunk,
+        nextChunkStartIndex,
+        classificationLevel
+      );
+
+      // Set next HTS Elements Chunk
+      setHtsElementsChunk(setIndexInArray(nextChunk));
+    }
+
+    if (!htsElementsChunk.length) {
+      // Ensure that we actually have elements to work with
+      // This accounts for the base case where htsElements chunk it initially set
+      return;
+    }
+
+    if (!isFullHTSCode(htsCode)) {
+      // findBestProductionDescriptionMatchAtLevel();
+    } else {
+      console.log(`*** Successfully Fetched Full HTS Code ***`);
+      // TODO: Get the full China -> US tariff
+      for (let i = selectionProgression.length - 1; i > 0; i--) {
+        if (selectionProgression[i].element.general) {
+          const { htsno, general, footnotes } = selectionProgression[i].element;
           setHtsCode(htsno);
 
           if (footnotes.length) {
             setTarrif(`${general} + ${footnotes[0].value}`);
-            console.log(`Footnotes:`);
-            console.log(footnotes);
           } else {
             setTarrif(general);
           }
         }
       }
+
+      setDescription(getFullClassificationDescription(selectionProgression));
       setLoading(false);
     }
-    // fetchStuff();
+  }, [htsElementsChunk]);
+
+  useEffect(() => {
+    async function getFullHtsCode() {
+      setLoading(true);
+      const hsChapter = await getHSChapter(productDescription);
+      const chapterData = await getHtsChapterData(hsChapter);
+      setHtsElementsChunk(setIndexInArray(chapterData));
+      setLoading(false);
+    }
+    // getFullHtsCode();
   }, [productDescription]);
 
-  if (loading) {
+  // useEffect(() => {
+  //   console.log("Classification Progression Updated:");
+  //   console.log(classificationProgression);
+  // }, [classificationProgression]);
+
+  if (loading && !htsCode) {
     return <LabelledLoader text="" />;
   } else {
     return (
-      <div className="w-full max-w-4xl flex flex-col gap-5 p-4">
-        <div className="flex gap-4 flex-col items-start sm:flex-row sm:justify-between">
-          <div className="bg-neutral-900 rounded-md p-4">
-            <PrimaryInformation label="HTS Code" heading={htsCode || ""} />
-          </div>
-
-          <div className="bg-neutral-900 rounded-md p-4">
-            <PrimaryInformation
-              label="Tariff"
-              heading={tariff || ""}
-              textAlign={HorizontalAlignment.LEFT}
-            />
-          </div>
+      <div className="w-full max-w-4xl grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <div className="mt-8 col-span-2 gap-2 flex">
+          <h1 className="text-6xl text-">{htsCode}</h1>
+          {loading && <LabelledLoader text="" />}
         </div>
-        {/* <SecondaryInformation
+        <div className="grow bg-neutral-900 rounded-md p-4">
+          <PrimaryInformation label="HTS Code" heading={htsCode || ""} />
+        </div>
+
+        <div className="grow bg-neutral-900 rounded-md p-4">
+          <PrimaryInformation
+            label="Tariff"
+            heading={tariff || ""}
+            textAlign={HorizontalAlignment.LEFT}
+          />
+        </div>
+
+        <SecondaryInformation
           label="Selection Logic"
           heading={description || ""}
-        /> */}
+        />
       </div>
     );
   }
