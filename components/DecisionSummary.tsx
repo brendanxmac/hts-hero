@@ -20,7 +20,16 @@ export const DecisionSummary = ({
   return (
     <Cell>
       <div className="flex flex-col gap-2">
-        <CellLabel value={level} />
+        <div className="flex justify-between">
+          <CellLabel value={level} />
+          <button
+            onClick={() => showDetails(true)}
+            type="button"
+            className="shrink-0 p-2 bg-neutral-700 h-6 rounded-md flex items-center justify-center text-sm text-neutral-400 hover:text-black hover:bg-neutral-200"
+          >
+            See Details
+          </button>
+        </div>
         <div className="flex justify-between gap-3 items-center">
           <div className="flex flex-col gap-1">
             <h2 className="text-white font-bold text-xl md:text-2xl">
@@ -28,15 +37,6 @@ export const DecisionSummary = ({
             </h2>
             <h3 className="text-white text-sm md:text-base">{description}</h3>
           </div>
-          <button
-            onClick={() => showDetails(true)}
-            type="button"
-            className="shrink-0 bg-neutral-700 h-8 w-8 rounded-full flex items-center justify-center text-sm font-bold hover:text-black hover:bg-white"
-          >
-            <ArrowsPointingOutIcon
-              className={"text-neutral-400 text-inherit h-5 w-5"}
-            />
-          </button>
         </div>
       </div>
     </Cell>
