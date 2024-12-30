@@ -10,7 +10,7 @@ interface Props {
   showDetails: Dispatch<SetStateAction<boolean>>;
 }
 
-export const DecisionDetail = ({ decision, showDetails }: Props) => {
+export const DecisionDetails = ({ decision, showDetails }: Props) => {
   const { candidates, level, reasoning, selection } = decision;
   return (
     <Cell>
@@ -22,8 +22,9 @@ export const DecisionDetail = ({ decision, showDetails }: Props) => {
             <div className="flex flex-col gap-2">
               <h3 className="text-sm font-light">Options</h3>
               <div className="flex flex-col gap-2">
-                {candidates.map(({ htsno, description }) => (
+                {candidates.map(({ htsno, description }, i) => (
                   <SelectionCandidate
+                    key={i}
                     code={htsno}
                     description={description}
                     selected={description === selection.description}

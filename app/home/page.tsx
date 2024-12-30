@@ -12,7 +12,7 @@ export default function Home() {
   const { findingHts } = useHtsContext();
 
   return (
-    <main className="grow overflow-auto flex flex-col">
+    <main className="grow overflow-auto flex flex-col px-5">
       {findingHts ? <Results /> : <Search />}
     </main>
   );

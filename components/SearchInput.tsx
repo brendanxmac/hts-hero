@@ -56,10 +56,10 @@ export default function SearchInput() {
   };
 
   return (
-    <div className="w-full flex flex-col gap-2 bg-black py-3">
+    <div className="w-full max-w-2xl flex flex-col gap-2 bg-black py-3">
       <div
         className={
-          "w-full flex flex-col gap-3 bg-neutral-900 items-start rounded-2xl p-4 max-w-3xl mx-auto"
+          "w-full flex flex-col gap-3 bg-neutral-900 items-start rounded-2xl p-4 mx-auto"
         }
       >
         <div className="w-full flex">
@@ -117,7 +117,7 @@ export default function SearchInput() {
         </div>
       </div>
 
-      <h6 className="text-xs text-center font-medium text-[#999999]">
+      <h6 className="text-xs text-center font-medium text-neutral-500">
         HTS Hero may make mistakes. Use with discretion.
       </h6>
     </div>

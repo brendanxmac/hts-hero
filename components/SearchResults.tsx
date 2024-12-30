@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useHtsContext } from "../context/hts-context";
 import {
   getBestMatchAtClassificationLevel,
-  getFullClassificationDescription,
   getHSChapter,
   getHtsChapterData,
   getHtsLevel,
@@ -20,14 +19,12 @@ import {
 import { Cell } from "./Cell";
 import { Decision } from "./Decision";
 import { SectionLabel } from "./SectionLabel";
-import { SelectionCandidate } from "./SelectionCandidate";
 
 export const SearchResults = () => {
   const { productDescription } = useHtsContext(); // TODO: do you need to use context...
   const [loading, setLoading] = useState(false);
   const [htsCode, setHtsCode] = useState("");
   const [tariff, setTarrif] = useState("");
-  const [description, setDescription] = useState("");
   const [htsDescription, setHtsDescription] = useState("");
   const [htsElementsChunk, setHtsElementsChunk] = useState<
     HtsWithParentReference[]
@@ -40,7 +37,6 @@ export const SearchResults = () => {
   const resetResults = () => {
     setHtsCode("");
     setTarrif("");
-    setDescription("");
     setHtsDescription("");
     setHtsElementsChunk([]);
     setClassificationLevel(0);
@@ -67,6 +63,9 @@ export const SearchResults = () => {
         (i) => i.description === bestMatchResponse.description
       );
 
+      console.log(`Best Match Desc: ${bestMatchElement.description}`);
+      console.log(`Best Match: ${bestMatchElement.htsno}`);
+
       // Get & Set next selection progression
       const nextSelectionProgression: HtsLevelDecision = {
         level: getHtsLevel(bestMatchElement.htsno),
@@ -78,17 +77,22 @@ export const SearchResults = () => {
         ...decisionProgression,
         nextSelectionProgression,
       ]);
-      setHtsCode(bestMatchElement.htsno);
-      setClassificationLevel(classificationLevel + 1);
+      setHtsCode(bestMatchElement.htsno); // TODO: consider when htsno is ""
 
       // Get Next HTS Elements Chunk
       const nextChunkStartIndex = bestMatchElement.indexInParentArray + 1;
+      // TODO: see if there's a possible off by 1 error here.... ^^ \/
       const nextChunk = getNextChunk(
         htsElementsChunk,
         nextChunkStartIndex,
         classificationLevel
       );
 
+      setClassificationLevel(classificationLevel + 1);
+
+      if (nextChunk.length < 3) {
+        console.log(nextChunk);
+      }
       console.log(`Next Chunk Size: ${nextChunk.length}`);
 
       // Set next HTS Elements Chunk
@@ -108,14 +112,13 @@ export const SearchResults = () => {
         );
 
         setTarrif(getTarrif(decisionProgression)); // TODO: Need full China -> US tariff
-        setDescription(getFullClassificationDescription(decisionProgression));
+
         setLoading(false);
       }
     }
 
     if (anotherClassificationLevelExists) {
       findBestClassifierAtLevel();
-      setDescription(getFullClassificationDescription(decisionProgression));
     }
   }, [htsElementsChunk]);
 
@@ -135,16 +138,22 @@ export const SearchResults = () => {
     return <LabelledLoader text="" />;
   } else {
     return (
-      <div className="w-full max-w-4xl grid grid-cols-2 gap-2">
-        <Cell>
-          <PrimaryInformation label="HTS Code" value={htsCode || ""} />
-        </Cell>
-        <Cell>
-          <PrimaryInformation label="Tariff" value={tariff || ""} />
-        </Cell>
+      <div className="w-full max-w-3xl grid grid-cols-2 gap-5">
+        <div className="col-span-full grid grid-cols-2 gap-3">
+          <div className="col-span-full">
+            <SectionLabel value="Classification" />
+          </div>
+
+          <Cell>
+            <PrimaryInformation label="HTS Code" value={htsCode || ""} />
+          </Cell>
+          <Cell>
+            <PrimaryInformation label="Tariff" value={tariff || ""} />
+          </Cell>
+        </div>
 
         {decisionProgression ? (
-          <div className="w-full max-w-4xl col-span-full">
+          <div className="w-full max-w-3xl col-span-full">
             <SectionLabel value="Decisions" />
             <div className="my-3 col-span-full grid gap-3">
               {decisionProgression.map((decision, i) => {
