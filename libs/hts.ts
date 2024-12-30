@@ -78,7 +78,8 @@ export const getHtsLevel = (htsCode: string) => {
   if (chunks === 3) return HtsLevel.US_SUBHEADING;
   if (chunks === 4) return HtsLevel.STAT_SUFFIX;
 
-  throw new Error(`Unaccounted for HTS Code: ${htsCode}`);
+  console.error(`Unaccounted for HTS Code: ${htsCode}`);
+  return HtsLevel.US_SUBHEADING;
 };
 
 export const getBestMatchAtClassificationLevel = async (
@@ -289,7 +290,7 @@ export const getNextChunkEndIndex = (
 ) => {
   let endIndex = startIndex;
 
-  for (let i = startIndex + 1; i < htsElementsChunk.length; i++) {
+  for (let i = startIndex; i < htsElementsChunk.length; i++) {
     if (htsElementsChunk[i].indent === String(classificationLevel)) {
       return i - 1;
     }

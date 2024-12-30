@@ -1,5 +1,3 @@
-import { VerticalAnchor } from "../enums/style";
-import { GreenGlow } from "./GreenGlow";
 import SearchInput from "./SearchInput";
 
 export const Search = () => {
@@ -11,7 +9,6 @@ export const Search = () => {
         </h2>
         <SearchInput />
       </div>
-      <GreenGlow anchor={VerticalAnchor.BOTTOM} />
     </section>
   );
 };

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { HtsLevelDecision } from "../interfaces/hts";
 import { DecisionSummary } from "./DecisionSummary";
-import { DecisionDetail } from "./DecisionDetails";
+import { DecisionDetails } from "./DecisionDetails";
 
 export const Decision = (decision: HtsLevelDecision) => {
   const { level, selection } = decision;
@@ -10,7 +10,7 @@ export const Decision = (decision: HtsLevelDecision) => {
   return (
     <>
       {showDetails ? (
-        <DecisionDetail decision={decision} showDetails={setShowDetails} />
+        <DecisionDetails decision={decision} showDetails={setShowDetails} />
       ) : (
         <DecisionSummary
           level={level}
