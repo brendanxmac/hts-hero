@@ -1,6 +1,6 @@
 import { HorizontalAlignment } from "../enums/style";
 import { getTextAlignmentStyle } from "../utilities/style";
-import { InformationLabel } from "./InformationLabel";
+import { SectionLabel } from "./SectionLabel";
 
 interface Props {
   label: string;
@@ -11,7 +11,7 @@ interface Props {
 export const SecondaryInformation = ({ label, heading, textAlign }: Props) => {
   return (
     <div className={`flex flex-col gap-1 ${getTextAlignmentStyle(textAlign)}`}>
-      <InformationLabel value={label} />
+      <SectionLabel value={label} />
       <h2 className="text-gray-200 md:text-lg font-bold whitespace-pre-line">
         {heading}
       </h2>

@@ -1,4 +1,4 @@
-import { InformationLabel } from "./InformationLabel";
+import { SectionLabel } from "./SectionLabel";
 
 interface Props {
   description: string;
@@ -6,9 +6,9 @@ interface Props {
 
 export const ProductDescriptionHeader = ({ description }: Props) => {
   return (
-    <div className="w-full max-w-4xl px-2 flex flex-col gap-2 rounded-md">
-      <InformationLabel value="Product Description" />
-      <h3 className="font-bold text-white text-lg md:text-xl lg:text-2xl ">
+    <div className="w-full max-w-4xl flex flex-col gap-2 rounded-md">
+      <SectionLabel value="Product Description" />
+      <h3 className="font-bold text-white text-2xl lg:text-3xl ">
         {description}
       </h3>
     </div>
