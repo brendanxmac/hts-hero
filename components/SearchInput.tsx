@@ -56,7 +56,7 @@ export default function SearchInput() {
   };
 
   return (
-    <div className="w-full flex flex-col gap-2 bg-black p-2">
+    <div className="w-full flex flex-col gap-2 bg-black py-3">
       <div
         className={
           "w-full flex flex-col gap-3 bg-neutral-900 items-start rounded-2xl p-4 max-w-3xl mx-auto"

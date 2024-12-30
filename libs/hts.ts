@@ -1,10 +1,10 @@
 import { ChatCompletion } from "openai/resources";
 import {
   HtsWithParentReference,
-  HtsLevelSelection,
+  HtsLevelDecision,
   MatchResponse,
   HsHeading,
-  HtsRaw,
+  HtsElement,
 } from "../interfaces/hts";
 import {
   elementsAtClassificationLevel,
@@ -12,6 +12,7 @@ import {
 } from "../utilities/data";
 import { OpenAIModel } from "./openai";
 import apiClient from "@/libs/api";
+import { HtsLevel } from "../enums/hts";
 
 export const stringContainsHTSCode = (str: string) => {
   // Regular expression to match HTS codes
@@ -34,13 +35,59 @@ export const getHtsElementDescriptions = (
   return elementsAtIndexLevel.map((e) => e.description);
 };
 
+export const getTarrif = (selectionProgression: HtsLevelDecision[]) => {
+  for (let i = selectionProgression.length - 1; i > 0; i--) {
+    if (selectionProgression[i].selection.general) {
+      const { general, footnotes } = selectionProgression[i].selection;
+
+      if (footnotes.length) {
+        return `${general} + ${footnotes[0].value}`;
+      } else {
+        return general;
+      }
+    }
+  }
+};
+
+function countChunks(htsCode: string): number {
+  // Split the input string into an array of chunks separated by periods
+  const chunks = htsCode.split(".");
+
+  // Remove empty chunks caused by trailing periods
+  const filteredChunks = chunks.filter(
+    (chunk, index) => chunk !== "" || index !== chunks.length - 1
+  );
+
+  // Count valid chunks based on the rules
+  const count = filteredChunks.reduce((acc, chunk, index) => {
+    // Skip counting the chunk if it's "00" and not the last chunk
+    if (chunk === "00" && index !== filteredChunks.length - 1) {
+      return acc;
+    }
+    return acc + 1;
+  }, 0);
+
+  return count;
+}
+
+export const getHtsLevel = (htsCode: string) => {
+  const chunks = countChunks(htsCode);
+
+  if (chunks === 1) return HtsLevel.HEADING;
+  if (chunks === 2) return HtsLevel.SUBHEADING;
+  if (chunks === 3) return HtsLevel.US_SUBHEADING;
+  if (chunks === 4) return HtsLevel.STAT_SUFFIX;
+
+  throw new Error(`Unaccounted for HTS Code: ${htsCode}`);
+};
+
 export const getBestMatchAtClassificationLevel = async (
   elementAtLevel: HtsWithParentReference[],
   indentLevel: number,
   productDescription: string,
   htsDescription: string
 ): Promise<MatchResponse> => {
-  console.log(`=== CLASSIFICATION LEVEL: ${indentLevel} ===`);
+  console.log(`*** LEVEL: ${indentLevel} ***`);
   const descriptions = getHtsElementDescriptions(elementAtLevel);
   const bestMatchResponse: Array<ChatCompletion.Choice> = await apiClient.post(
     "/openai/get-best-description-match",
@@ -78,8 +125,8 @@ export const getBestIndentLevelMatch = async (
   htsDescription: string, // used to compare against product description at each level, with each NEW descriptor
   elements: HtsWithParentReference[],
   indentLevel: number,
-  selectionProgression: HtsLevelSelection[] = []
-): Promise<HtsLevelSelection[]> => {
+  selectionProgression: HtsLevelDecision[] = []
+): Promise<HtsLevelDecision[]> => {
   console.log(`===== INDENT LEVEL: ${indentLevel} =====`);
   // Get all Elements at the indent level -- This relies on the "indent" in the hts data always being a number when converted to string
   let elementsAtIndent = elementsAtClassificationLevel(elements, indentLevel);
@@ -122,8 +169,8 @@ export const getBestIndentLevelMatch = async (
     );
   } else {
     // Add Selection Layer to overall selection progression
-    const htsLayerSelection: HtsLevelSelection = {
-      element: bestMatchElement,
+    const htsLayerSelection: HtsLevelDecision = {
+      selection: bestMatchElement,
       reasoning: bestMatchJson.logic,
     };
 
@@ -189,31 +236,31 @@ export const getHSChapter = async (productDescription: string) => {
   return chapter;
 };
 
-export const getHtsChapterData = (chapter: string): Promise<HtsRaw[]> => {
+export const getHtsChapterData = (chapter: string): Promise<HtsElement[]> => {
   return apiClient.get("/hts/get-chapter-data", {
     params: { chapter },
   });
 };
 
 export const getFullClassificationDescription = (
-  results: HtsLevelSelection[]
+  results: HtsLevelDecision[]
 ) => {
   const numElements = results.length - 1;
   let fullDescription = "";
 
   results.map((result, i) => {
-    if (result.element.htsno) {
+    if (result.selection.htsno) {
       if (i < numElements) {
         fullDescription =
           fullDescription +
-          `${result.element.htsno ? `${result.element.htsno}: ` : ""}` +
-          result.element.description +
+          `${result.selection.htsno ? `${result.selection.htsno}: ` : ""}` +
+          result.selection.description +
           "\n\n";
       } else {
         fullDescription =
           fullDescription +
-          `${result.element.htsno ? `${result.element.htsno}: ` : ""}` +
-          result.element.description;
+          `${result.selection.htsno ? `${result.selection.htsno}: ` : ""}` +
+          result.selection.description;
       }
     }
   });

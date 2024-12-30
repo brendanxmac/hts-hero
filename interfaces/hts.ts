@@ -1,8 +1,10 @@
-export interface HtsWithParentReference extends HtsRaw {
+import { HtsLevel } from "../enums/hts";
+
+export interface HtsWithParentReference extends HtsElement {
   indexInParentArray: number; // used to grab window ranges in the parent array
 }
 
-export interface HtsRaw {
+export interface HtsElement {
   htsno: string;
   indent: string;
   description: string;
@@ -48,7 +50,9 @@ export interface MatchResponse {
   logic: string;
 }
 
-export interface HtsLevelSelection {
-  element: HtsRaw;
+export interface HtsLevelDecision {
+  level: HtsLevel;
+  candidates: HtsElement[];
+  selection: HtsElement;
   reasoning: string;
 }

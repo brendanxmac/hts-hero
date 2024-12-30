@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, ReactNode } from "react";
-import { HtsLevelSelection, HtsParsed } from "../interfaces/hts";
+import { HtsLevelDecision, HtsParsed } from "../interfaces/hts";
 
 interface HtsContext {
   currentClassification: HtsParsed | undefined;
@@ -10,8 +10,8 @@ interface HtsContext {
   setFindingHts: (value: boolean) => void;
   productDescription: string;
   setProductDescription: (value: string) => void;
-  classificationProgression: HtsLevelSelection[];
-  setClassificationProgression: (value: HtsLevelSelection[]) => void;
+  classificationProgression: HtsLevelDecision[];
+  setClassificationProgression: (value: HtsLevelDecision[]) => void;
 }
 
 // Create the context
@@ -23,7 +23,7 @@ export const HtsProvider = ({ children }: { children: ReactNode }) => {
   const [findingHts, setFindingHts] = useState<boolean>(false);
   const [productDescription, setProductDescription] = useState<string>("");
   const [classificationProgression, setClassificationProgression] = useState<
-    HtsLevelSelection[]
+    HtsLevelDecision[]
   >([]);
 
   return (

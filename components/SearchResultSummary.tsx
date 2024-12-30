@@ -1,23 +1,26 @@
 import { useEffect, useState } from "react";
 import { useHtsContext } from "../context/hts-context";
-import { HorizontalAlignment } from "../enums/style";
 import {
   getBestMatchAtClassificationLevel,
   getFullClassificationDescription,
   getHSChapter,
   getHtsChapterData,
+  getHtsLevel,
   getNextChunk,
-  isFullHTSCode,
+  getTarrif,
   updateHtsDescription,
 } from "../libs/hts";
 import { PrimaryInformation } from "./PrimaryInformation";
-import { SecondaryInformation } from "./SecondaryInformation";
-import { HtsLevelSelection, HtsWithParentReference } from "../interfaces/hts";
+import { HtsLevelDecision, HtsWithParentReference } from "../interfaces/hts";
 import { LabelledLoader } from "./LabelledLoader";
 import {
   elementsAtClassificationLevel,
   setIndexInArray,
 } from "../utilities/data";
+import { Cell } from "./Cell";
+import { Decision } from "./Decision";
+import { SectionLabel } from "./SectionLabel";
+import { SelectionCandidate } from "./SelectionCandidate";
 
 export const SearchResults = () => {
   const { productDescription } = useHtsContext(); // TODO: do you need to use context...
@@ -30,12 +33,22 @@ export const SearchResults = () => {
     HtsWithParentReference[]
   >([]);
   const [classificationLevel, setClassificationLevel] = useState(0);
-  const [selectionProgression, setSelectionProgression] = useState<
-    HtsLevelSelection[]
+  const [decisionProgression, setDecisionProgression] = useState<
+    HtsLevelDecision[]
   >([]);
 
+  const resetResults = () => {
+    setHtsCode("");
+    setTarrif("");
+    setDescription("");
+    setHtsDescription("");
+    setHtsElementsChunk([]);
+    setClassificationLevel(0);
+    setDecisionProgression([]);
+  };
+
   useEffect(() => {
-    async function findBestProductionDescriptionMatchAtLevel() {
+    async function findBestClassifierAtLevel() {
       const elementsAtLevel = elementsAtClassificationLevel(
         htsElementsChunk,
         classificationLevel
@@ -55,12 +68,14 @@ export const SearchResults = () => {
       );
 
       // Get & Set next selection progression
-      const nextSelectionProgression: HtsLevelSelection = {
-        element: bestMatchElement,
+      const nextSelectionProgression: HtsLevelDecision = {
+        level: getHtsLevel(bestMatchElement.htsno),
+        candidates: elementsAtLevel,
+        selection: bestMatchElement,
         reasoning: bestMatchResponse.logic,
       };
-      setSelectionProgression([
-        ...selectionProgression,
+      setDecisionProgression([
+        ...decisionProgression,
         nextSelectionProgression,
       ]);
       setHtsCode(bestMatchElement.htsno);
@@ -74,80 +89,70 @@ export const SearchResults = () => {
         classificationLevel
       );
 
+      console.log(`Next Chunk Size: ${nextChunk.length}`);
+
       // Set next HTS Elements Chunk
       setHtsElementsChunk(setIndexInArray(nextChunk));
     }
 
-    if (!htsElementsChunk.length) {
-      // Ensure that we actually have elements to work with
-      // This accounts for the base case where htsElements chunk it initially set
-      return;
+    const anotherClassificationLevelExists = htsElementsChunk.length > 0;
+    const isFirstClassificationLevel = classificationLevel === 0;
+
+    if (!anotherClassificationLevelExists) {
+      if (isFirstClassificationLevel) {
+        return; // Handle base case where no chunk exists
+      } else {
+        // Classification has completed
+        console.log(
+          `*** Level: ${classificationLevel - 1} -- Code: ${htsCode} ***`
+        );
+
+        setTarrif(getTarrif(decisionProgression)); // TODO: Need full China -> US tariff
+        setDescription(getFullClassificationDescription(decisionProgression));
+        setLoading(false);
+      }
     }
 
-    if (!isFullHTSCode(htsCode)) {
-      // findBestProductionDescriptionMatchAtLevel();
-    } else {
-      console.log(`*** Successfully Fetched Full HTS Code ***`);
-      // TODO: Get the full China -> US tariff
-      for (let i = selectionProgression.length - 1; i > 0; i--) {
-        if (selectionProgression[i].element.general) {
-          const { htsno, general, footnotes } = selectionProgression[i].element;
-          setHtsCode(htsno);
-
-          if (footnotes.length) {
-            setTarrif(`${general} + ${footnotes[0].value}`);
-          } else {
-            setTarrif(general);
-          }
-        }
-      }
-
-      setDescription(getFullClassificationDescription(selectionProgression));
-      setLoading(false);
+    if (anotherClassificationLevelExists) {
+      findBestClassifierAtLevel();
+      setDescription(getFullClassificationDescription(decisionProgression));
     }
   }, [htsElementsChunk]);
 
   useEffect(() => {
+    resetResults();
+    getFullHtsCode();
+
     async function getFullHtsCode() {
       setLoading(true);
       const hsChapter = await getHSChapter(productDescription);
       const chapterData = await getHtsChapterData(hsChapter);
       setHtsElementsChunk(setIndexInArray(chapterData));
-      setLoading(false);
     }
-    // getFullHtsCode();
   }, [productDescription]);
-
-  // useEffect(() => {
-  //   console.log("Classification Progression Updated:");
-  //   console.log(classificationProgression);
-  // }, [classificationProgression]);
 
   if (loading && !htsCode) {
     return <LabelledLoader text="" />;
   } else {
     return (
-      <div className="w-full max-w-4xl grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <div className="mt-8 col-span-2 gap-2 flex">
-          <h1 className="text-6xl text-">{htsCode}</h1>
-          {loading && <LabelledLoader text="" />}
-        </div>
-        <div className="grow bg-neutral-900 rounded-md p-4">
-          <PrimaryInformation label="HTS Code" heading={htsCode || ""} />
-        </div>
+      <div className="w-full max-w-4xl grid grid-cols-2 gap-2">
+        <Cell>
+          <PrimaryInformation label="HTS Code" value={htsCode || ""} />
+        </Cell>
+        <Cell>
+          <PrimaryInformation label="Tariff" value={tariff || ""} />
+        </Cell>
 
-        <div className="grow bg-neutral-900 rounded-md p-4">
-          <PrimaryInformation
-            label="Tariff"
-            heading={tariff || ""}
-            textAlign={HorizontalAlignment.LEFT}
-          />
-        </div>
-
-        <SecondaryInformation
-          label="Selection Logic"
-          heading={description || ""}
-        />
+        {decisionProgression ? (
+          <div className="w-full max-w-4xl col-span-full">
+            <SectionLabel value="Decisions" />
+            <div className="my-3 col-span-full grid gap-3">
+              {decisionProgression.map((decision, i) => {
+                return <Decision key={i} {...decision} />;
+              })}
+            </div>
+          </div>
+        ) : undefined}
       </div>
     );
   }
