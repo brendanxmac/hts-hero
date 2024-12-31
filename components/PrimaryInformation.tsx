@@ -33,7 +33,7 @@ export const PrimaryInformation = ({
               recentlyCopied
                 ? "bg-[#40C969] shadow-sm"
                 : "bg-neutral-700 hover:text-black hover:bg-white"
-            } h-7 w-7 rounded-full flex items-center justify-center text-sm font-bold text-neutral-400`}
+            } shrink-0 h-7 w-7 rounded-full flex items-center justify-center text-sm font-bold text-neutral-400`}
           >
             {recentlyCopied ? (
               <CheckIcon className={"text-white h-5 w-5"} />
