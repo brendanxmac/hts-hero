@@ -1,4 +1,3 @@
-import { ArrowsPointingOutIcon } from "@heroicons/react/20/solid";
 import { HtsLevel } from "../enums/hts";
 import { Cell } from "./Cell";
 import { CellLabel } from "./CellLabel";
@@ -20,7 +19,7 @@ export const DecisionSummary = ({
   return (
     <Cell>
       <div className="flex flex-col gap-2">
-        <div className="flex justify-between">
+        <div className="flex justify-between items-center">
           <CellLabel value={level} />
           <button
             onClick={() => showDetails(true)}
@@ -30,13 +29,10 @@ export const DecisionSummary = ({
             See Details
           </button>
         </div>
-        <div className="flex justify-between gap-3 items-center">
-          <div className="flex flex-col gap-1">
-            <h2 className="text-white font-bold text-xl md:text-2xl">
-              {code || "Secondary Qualifier..."}
-            </h2>
-            <h3 className="text-white text-sm md:text-base">{description}</h3>
-          </div>
+
+        <div className="flex flex-col gap-1">
+          <h2 className="text-white font-bold text-xl md:text-2xl">{code}</h2>
+          <h3 className="text-white text-sm md:text-base">{description}</h3>
         </div>
       </div>
     </Cell>
