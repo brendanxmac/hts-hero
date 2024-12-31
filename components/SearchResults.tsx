@@ -26,7 +26,7 @@ interface Props {
 
 export const SearchResults = ({ setScrollableUpdates }: Props) => {
   const { productDescription } = useHtsContext(); // TODO: do you need to use context...
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [htsCode, setHtsCode] = useState("");
   const [tariff, setTarrif] = useState("");
   const [htsDescription, setHtsDescription] = useState("");
@@ -161,7 +161,9 @@ export const SearchResults = ({ setScrollableUpdates }: Props) => {
         ) : undefined}
 
         {loading && htsElementsChunk.length > 0 ? (
-          <LabelledLoader text="" />
+          <div className="min-w-full max-w-3xl col-span-full justify-items-center">
+            <LabelledLoader text="" />
+          </div>
         ) : undefined}
 
         {!loading && (
