@@ -87,7 +87,10 @@ export const SearchResults = ({ setScrollableUpdates }: Props) => {
         ...decisionProgression,
         nextSelectionProgression,
       ]);
-      setHtsCode(bestMatchElement.htsno); // TODO: consider when htsno is ""
+
+      if (bestMatchElement.htsno) {
+        setHtsCode(bestMatchElement.htsno);
+      }
 
       // Get Next HTS Elements Chunk
       const nextChunkStartIndex = bestMatchElement.indexInParentArray + 1;
