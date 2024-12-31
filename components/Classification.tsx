@@ -1,13 +1,19 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useHtsContext } from "../context/hts-context";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { ProductDescriptionHeader } from "./ProductDescriptionHeader";
 import SearchInput from "./SearchInput";
-import { SearchResults } from "./SearchResults";
+import { ClassificationResults } from "./ClassificationResults";
 
-export const Results = () => {
-  const { productDescription } = useHtsContext();
+interface Props {
+  productDescription: string;
+  setProductDescription: Dispatch<SetStateAction<string>>;
+}
+
+export const Classification = ({
+  productDescription,
+  setProductDescription,
+}: Props) => {
   const scrollableRef = useRef<HTMLDivElement>(null);
   const [scrollableUpdates, setScrollableUpdates] = useState(0);
 
@@ -31,11 +37,17 @@ export const Results = () => {
         </div>
 
         <div className="flex flex-col min-w-full max-w-3xl gap-2 items-center">
-          <SearchResults setScrollableUpdates={setScrollableUpdates} />
+          <ClassificationResults
+            productDescription={productDescription}
+            setScrollableUpdates={setScrollableUpdates}
+          />
         </div>
       </div>
 
-      <SearchInput />
+      <SearchInput
+        placeholder="Enter another product description"
+        setProductDescription={setProductDescription}
+      />
     </section>
   );
 };

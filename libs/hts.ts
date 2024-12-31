@@ -35,18 +35,66 @@ export const getHtsElementDescriptions = (
   return elementsAtIndexLevel.map((e) => e.description);
 };
 
-export const getTarrif = (selectionProgression: HtsLevelDecision[]) => {
+export const getTarrifForProgression = (
+  selectionProgression: HtsLevelDecision[]
+) => {
   for (let i = selectionProgression.length - 1; i > 0; i--) {
-    if (selectionProgression[i].selection.general) {
-      const { general, footnotes } = selectionProgression[i].selection;
-
-      if (footnotes.length) {
-        return `${general} + ${footnotes[0].value}`;
-      } else {
-        return general;
-      }
+    const selectedElement = selectionProgression[i].selection;
+    if (selectedElement.general) {
+      return selectedElement.general;
     }
   }
+
+  return "Unknown";
+};
+
+export const getTariffForCode = async (htsCode: string) => {
+  const chapter = htsCode.substring(0, 2);
+  console.log(`chapter: ${chapter}`);
+
+  const chapterData = await getHtsChapterData(chapter);
+  if (!chapterData) throw new Error("Failed to get chapter json");
+
+  const htsElement = chapterData.find((c) => c.htsno === htsCode);
+  if (!htsElement) throw new Error("No Element");
+
+  console.log("Got Element");
+  console.log(htsElement);
+
+  return htsElement.general;
+};
+
+export const extractCode = (input: string): string => {
+  // Use a regular expression to match the numeric code pattern
+  const match = input.match(/(\d{4}\.\d{2}\.\d{2})/);
+
+  // If a match is found, return the first capture group; otherwise, return an empty string
+  return match ? match[1] : "";
+};
+
+export const getFootnotes = async (
+  selectionProgression: HtsLevelDecision[]
+) => {
+  for (let i = selectionProgression.length - 1; i > 0; i--) {
+    const selectedElement = selectionProgression[i].selection;
+    if (selectedElement.footnotes) {
+      console.log(selectedElement.footnotes);
+      const tariffFootnotes = selectedElement.footnotes.filter((f) =>
+        f.columns.includes("general")
+      );
+      const codes = tariffFootnotes.map((f) => extractCode(f.value));
+      console.log(`codes:`);
+      console.log(codes);
+      const promises = codes.map((c) => getTariffForCode(c));
+      const tariffs = await Promise.all(promises);
+      console.log(`tariffs:`);
+      console.log(tariffs);
+
+      return tariffs.join("\n");
+    }
+  }
+
+  return "No footnotes";
 };
 
 function countChunks(htsCode: string): number {
@@ -88,7 +136,6 @@ export const getBestMatchAtClassificationLevel = async (
   productDescription: string,
   htsDescription: string
 ): Promise<MatchResponse> => {
-  console.log(`*** LEVEL: ${indentLevel} ***`);
   const descriptions = getHtsElementDescriptions(elementAtLevel);
   const bestMatchResponse: Array<ChatCompletion.Choice> = await apiClient.post(
     "/openai/get-best-description-match",
