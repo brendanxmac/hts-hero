@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useHtsContext } from "../context/hts-context";
 import {
   getBestMatchAtClassificationLevel,
@@ -20,7 +20,11 @@ import { Cell } from "./Cell";
 import { Decision } from "./Decision";
 import { SectionLabel } from "./SectionLabel";
 
-export const SearchResults = () => {
+interface Props {
+  setScrollableUpdates: Dispatch<SetStateAction<number>>;
+}
+
+export const SearchResults = ({ setScrollableUpdates }: Props) => {
   const { productDescription } = useHtsContext(); // TODO: do you need to use context...
   const [loading, setLoading] = useState(false);
   const [htsCode, setHtsCode] = useState("");
@@ -34,6 +38,11 @@ export const SearchResults = () => {
     HtsLevelDecision[]
   >([]);
 
+  useEffect(() => {
+    const update = classificationLevel + 1;
+    setScrollableUpdates(update);
+  }, [loading, htsCode, tariff]);
+
   const resetResults = () => {
     setHtsCode("");
     setTarrif("");
@@ -41,6 +50,7 @@ export const SearchResults = () => {
     setHtsElementsChunk([]);
     setClassificationLevel(0);
     setDecisionProgression([]);
+    setScrollableUpdates(0);
   };
 
   useEffect(() => {
@@ -134,34 +144,40 @@ export const SearchResults = () => {
     }
   }, [productDescription]);
 
-  if (loading && !htsCode) {
+  if (loading && !htsCode && classificationLevel === 0) {
     return <LabelledLoader text="" />;
   } else {
     return (
-      <div className="w-full max-w-3xl grid grid-cols-2 gap-5">
-        <div className="col-span-full grid grid-cols-2 gap-3">
-          <div className="col-span-full">
-            <SectionLabel value="Classification" />
-          </div>
-
-          <Cell>
-            <PrimaryInformation label="HTS Code" value={htsCode || ""} />
-          </Cell>
-          <Cell>
-            <PrimaryInformation label="Tariff" value={tariff || ""} />
-          </Cell>
-        </div>
-
+      <div className="w-full max-w-3xl grid grid-cols-2 gap-5 mt-3">
         {decisionProgression ? (
           <div className="w-full max-w-3xl col-span-full">
             <SectionLabel value="Decisions" />
-            <div className="my-3 col-span-full grid gap-3">
+            <div className="my-3 col-span-full grid gap-2">
               {decisionProgression.map((decision, i) => {
                 return <Decision key={i} {...decision} />;
               })}
             </div>
           </div>
         ) : undefined}
+
+        {loading && htsElementsChunk.length > 0 ? (
+          <LabelledLoader text="" />
+        ) : undefined}
+
+        {!loading && (
+          <div className="col-span-full grid grid-cols-2 gap-3 mb-10">
+            <div className="col-span-full">
+              <SectionLabel value="Classification" />
+            </div>
+
+            <Cell>
+              <PrimaryInformation label="HTS Code" value={htsCode || ""} />
+            </Cell>
+            <Cell>
+              <PrimaryInformation label="Tariff" value={tariff || ""} />
+            </Cell>
+          </div>
+        )}
       </div>
     );
   }

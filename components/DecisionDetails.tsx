@@ -1,4 +1,3 @@
-import { ArrowsPointingInIcon } from "@heroicons/react/20/solid";
 import { Cell } from "./Cell";
 import { CellLabel } from "./CellLabel";
 import { HtsLevelDecision } from "../interfaces/hts";
@@ -15,7 +14,7 @@ export const DecisionDetails = ({ decision, showDetails }: Props) => {
   return (
     <Cell>
       <div className="flex flex-col gap-2">
-        <div className="flex justify-between">
+        <div className="flex justify-between items-center">
           <CellLabel value={level} />
           <button
             onClick={() => showDetails(false)}
@@ -26,10 +25,19 @@ export const DecisionDetails = ({ decision, showDetails }: Props) => {
           </button>
         </div>
 
-        <div className="flex justify-between gap-3 items-center">
+        <div className="flex flex-col gap-1">
+          <h2 className="text-white font-bold text-xl md:text-2xl">
+            {selection.htsno}
+          </h2>
+          <h3 className="text-white text-sm md:text-base">
+            {selection.description}
+          </h3>
+        </div>
+
+        <div className="flex justify-between gap-3 items-center mt-2">
           <div className="flex flex-col gap-3">
             <div className="flex flex-col gap-2">
-              <h3 className="text-sm text-neutral-500 font-bold">Options</h3>
+              <h3 className="text-sm text-neutral-400 font-bold">Options</h3>
               <div className="flex flex-col gap-2">
                 {candidates.map(({ htsno, description }, i) => (
                   <SelectionCandidate
@@ -42,7 +50,7 @@ export const DecisionDetails = ({ decision, showDetails }: Props) => {
               </div>
             </div>
             <div className="flex flex-col gap-2">
-              <h3 className="text-sm text-neutral-500 font-bold">Reasoning</h3>
+              <h3 className="text-sm text-neutral-400 font-bold">Reasoning</h3>
               <h4 className="text-sm">{reasoning}</h4>
             </div>
           </div>

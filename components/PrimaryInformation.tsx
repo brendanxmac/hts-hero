@@ -1,5 +1,4 @@
 import { ClipboardDocumentIcon, CheckIcon } from "@heroicons/react/24/outline";
-import { SectionLabel } from "./SectionLabel";
 import { copyToClipboard } from "../utilities/data";
 import { useState } from "react";
 import { CellLabel } from "./CellLabel";
@@ -27,19 +26,19 @@ export const PrimaryInformation = ({
             onClick={() => {
               copyToClipboard(value);
               setRecentlyCopied(true);
-              setTimeout(() => setRecentlyCopied(false), 1500);
+              setTimeout(() => setRecentlyCopied(false), 1000);
             }}
             type="button"
             className={`${
-              recentlyCopied ? "bg-[#40C969] shadow-sm" : "bg-neutral-700"
-            } h-7 w-7 rounded-full flex items-center justify-center text-sm font-bold hover:text-black hover:bg-white`}
+              recentlyCopied
+                ? "bg-[#40C969] shadow-sm"
+                : "bg-neutral-700 hover:text-black hover:bg-white"
+            } h-7 w-7 rounded-full flex items-center justify-center text-sm font-bold text-neutral-400`}
           >
             {recentlyCopied ? (
               <CheckIcon className={"text-white h-5 w-5"} />
             ) : (
-              <ClipboardDocumentIcon
-                className={"text-inherit text-neutral-400 h-5 w-5"}
-              />
+              <ClipboardDocumentIcon className={"h-5 w-5"} />
             )}
           </button>
         ) : undefined}
