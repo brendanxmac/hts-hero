@@ -72,9 +72,9 @@ export const extractCode = (input: string): string => {
   return match ? match[1] : "";
 };
 
-export const getFootnotes = async (
+export const getTariffReferences = async (
   selectionProgression: HtsLevelDecision[]
-) => {
+):  => {
   for (let i = selectionProgression.length - 1; i > 0; i--) {
     const selectedElement = selectionProgression[i].selection;
     if (selectedElement.footnotes) {

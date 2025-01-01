@@ -3,20 +3,28 @@ import { HtsLevelDecision } from "../interfaces/hts";
 import { Cell } from "./Cell";
 import { PrimaryInformation } from "./PrimaryInformation";
 import { SectionLabel } from "./SectionLabel";
-import { getFootnotes, getTarrifForProgression } from "../libs/hts";
+import { getTariffReferences, getTarrifForProgression } from "../libs/hts";
 import { LabelledLoader } from "./LabelledLoader";
 
 interface Props {
   decisionProgression: HtsLevelDecision[];
 }
 
+interface Tariff {
+  htsCode: string;
+  value: string;
+  isTemporary: boolean;
+}
+
 export const TariffSection = ({ decisionProgression }: Props) => {
+  const {} = 
   const [loading, setLoading] = useState(false);
+  const [tariffs, setTariffs] = useState<Tariff[]>([]);
   const [footnotes, setFootnotes] = useState("");
   const getTariffData = async () => {
     console.log(`*** Getting Tariff Data ***`);
-    const footnotes = await getFootnotes(decisionProgression);
-    setFootnotes(footnotes);
+    const footnotes = await getTariffReferences(decisionProgression);
+    setTariffs({ ...tariffs });
     setLoading(false);
   };
 
@@ -35,6 +43,13 @@ export const TariffSection = ({ decisionProgression }: Props) => {
         <PrimaryInformation
           label="General"
           value={getTarrifForProgression(decisionProgression)}
+        />
+      </Cell>
+
+      <Cell>
+        <PrimaryInformation
+          label="Tariff Footnotes"
+          value={"Testing value testing value testing value"}
         />
       </Cell>
 
