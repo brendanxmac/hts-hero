@@ -17,7 +17,6 @@ interface Tariff {
 }
 
 export const TariffSection = ({ decisionProgression }: Props) => {
-  const {} = 
   const [loading, setLoading] = useState(false);
   const [tariffs, setTariffs] = useState<Tariff[]>([]);
   const [footnotes, setFootnotes] = useState("");
