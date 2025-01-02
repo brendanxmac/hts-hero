@@ -30,7 +30,7 @@ export const DecisionDetails = ({ decision, showDetails }: Props) => {
             {selection.htsno}
           </h2>
           <h3 className="text-white text-sm md:text-base">
-            {selection.description}
+            {`"${selection.description}"`}
           </h3>
         </div>
 
