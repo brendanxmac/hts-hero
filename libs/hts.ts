@@ -97,37 +97,37 @@ export const getTariffReferences = async (
   return "No footnotes";
 };
 
-function countChunks(htsCode: string): number {
-  // Split the input string into an array of chunks separated by periods
-  const chunks = htsCode.split(".");
+/**
+ * Determines the HTS classification level of a given string.
+ *
+ * @param input - The HTS code as a string (e.g., "1234", "1234.56", etc.).
+ * @returns A string representing the classification level ("Heading", "Subheading", "US Subheading", or "Stat Suffix"), or "Invalid" if it doesn't match any level.
+ */
+export const getHtsLevel = (input: string): string => {
+  // Remove trailing periods from the input
+  const sanitizedInput = input.trim().replace(/\.*$/g, "");
 
-  // Remove empty chunks caused by trailing periods
-  const filteredChunks = chunks.filter(
-    (chunk, index) => chunk !== "" || index !== chunks.length - 1
-  );
+  // Define regular expressions for each HTS level
+  const headingRegex = /^\d{4}$/; // Matches "xxxx"
+  const subheadingRegex = /^\d{4}\.\d{2}$/; // Matches "xxxx.xx"
+  const usSubheadingRegex = /^\d{4}\.\d{2}\.\d{2}$/; // Matches "xxxx.xx.xx"
+  const statSuffixRegex = /^\d{4}\.\d{2}\.\d{2}\.\d{2}$/; // Matches "xxxx.xx.xx.xx"
 
-  // Count valid chunks based on the rules
-  const count = filteredChunks.reduce((acc, chunk, index) => {
-    // Skip counting the chunk if it's "00" and not the last chunk
-    if (chunk === "00" && index !== filteredChunks.length - 1) {
-      return acc;
-    }
-    return acc + 1;
-  }, 0);
-
-  return count;
-}
-
-export const getHtsLevel = (htsCode: string) => {
-  const chunks = countChunks(htsCode);
-
-  if (chunks === 1) return HtsLevel.HEADING;
-  if (chunks === 2) return HtsLevel.SUBHEADING;
-  if (chunks === 3) return HtsLevel.US_SUBHEADING;
-  if (chunks === 4) return HtsLevel.STAT_SUFFIX;
-
-  console.error(`Unaccounted for HTS Code: ${htsCode}`);
-  return HtsLevel.US_SUBHEADING;
+  // Determine the HTS classification level
+  if (sanitizedInput === "") {
+    return HtsLevel.PREQUALIFIER;
+  } else if (headingRegex.test(sanitizedInput)) {
+    return HtsLevel.HEADING;
+  } else if (subheadingRegex.test(sanitizedInput)) {
+    return HtsLevel.SUBHEADING;
+  } else if (usSubheadingRegex.test(sanitizedInput)) {
+    return HtsLevel.US_SUBHEADING;
+  } else if (statSuffixRegex.test(sanitizedInput)) {
+    return HtsLevel.STAT_SUFFIX;
+  } else {
+    console.error(`Unaccounted for HTS Code: ${input}`);
+    return HtsLevel.MISCELLANEOUS;
+  }
 };
 
 export const getBestMatchAtClassificationLevel = async (

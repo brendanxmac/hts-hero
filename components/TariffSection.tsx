@@ -5,6 +5,7 @@ import { PrimaryInformation } from "./PrimaryInformation";
 import { SectionLabel } from "./SectionLabel";
 import { getTariffReferences, getTarrifForProgression } from "../libs/hts";
 import { LabelledLoader } from "./LabelledLoader";
+import { PrimaryHeading } from "./CellLabel";
 
 interface Props {
   decisionProgression: HtsLevelDecision[];
@@ -19,7 +20,6 @@ interface Tariff {
 export const TariffSection = ({ decisionProgression }: Props) => {
   const [loading, setLoading] = useState(false);
   const [tariffs, setTariffs] = useState<Tariff[]>([]);
-  const [footnotes, setFootnotes] = useState("");
   const getTariffData = async () => {
     console.log(`*** Getting Tariff Data ***`);
     const footnotes = await getTariffReferences(decisionProgression);
@@ -39,24 +39,13 @@ export const TariffSection = ({ decisionProgression }: Props) => {
       </div>
 
       <Cell>
-        <PrimaryInformation
-          label="General"
-          value={getTarrifForProgression(decisionProgression)}
-        />
+        <div className="flex flex-col">
+          <PrimaryHeading value="General" />
+          <PrimaryInformation
+            value={getTarrifForProgression(decisionProgression)}
+          />
+        </div>
       </Cell>
-
-      <Cell>
-        <PrimaryInformation
-          label="Tariff Footnotes"
-          value={"Testing value testing value testing value"}
-        />
-      </Cell>
-
-      {footnotes && (
-        <Cell>
-          <PrimaryInformation label="Tariff Footnotes" value={footnotes} />
-        </Cell>
-      )}
 
       {loading && (
         <div className="mt-3 min-w-full max-w-3xl col-span-full justify-items-center">

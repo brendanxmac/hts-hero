@@ -1,5 +1,5 @@
 import { Cell } from "./Cell";
-import { CellLabel } from "./CellLabel";
+import { PrimaryHeading } from "./CellLabel";
 import { HtsLevelDecision } from "../interfaces/hts";
 import { SelectionCandidate } from "./SelectionCandidate";
 import { Dispatch, SetStateAction } from "react";
@@ -15,7 +15,7 @@ export const DecisionDetails = ({ decision, showDetails }: Props) => {
     <Cell>
       <div className="flex flex-col gap-2">
         <div className="flex justify-between items-center">
-          <CellLabel value={level} />
+          <PrimaryHeading value={level} />
           <button
             onClick={() => showDetails(false)}
             type="button"
