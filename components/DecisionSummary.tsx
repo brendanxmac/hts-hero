@@ -2,7 +2,7 @@ import { ClipboardDocumentIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { HtsLevel } from "../enums/hts";
 import { copyToClipboard } from "../utilities/data";
 import { Cell } from "./Cell";
-import { CellLabel } from "./CellLabel";
+import { PrimaryHeading } from "./CellLabel";
 import { Dispatch, SetStateAction, useState } from "react";
 
 interface Props {
@@ -23,7 +23,7 @@ export const DecisionSummary = ({
     <Cell>
       <div className="flex flex-col gap-2">
         <div className="flex justify-between items-center">
-          <CellLabel value={level} />
+          <PrimaryHeading value={level} />
           <button
             onClick={() => showDetails(true)}
             type="button"

@@ -13,7 +13,6 @@ import {
   elementsAtClassificationLevel,
   setIndexInArray,
 } from "../utilities/data";
-import { ClassificationSection } from "./ClassificationSection";
 import { TariffSection } from "./TariffSection";
 import { DecisionProgression } from "./DecisionProgression";
 
@@ -137,21 +136,20 @@ export const ClassificationResults = ({
           <DecisionProgression decisionProgression={decisionProgression} />
         )}
 
-        {/* FIXME: see about fixing the  */}
         {loading && htsElementsChunk.length > 0 ? (
           <div className="min-w-full max-w-3xl col-span-full justify-items-center">
             <LabelledLoader text="" />
           </div>
         ) : undefined}
 
-        {!loading && (
+        {/* {!loading && (
           <ClassificationSection
             htsCode={
               decisionProgression[decisionProgression.length - 1].selection
                 .htsno
             }
           />
-        )}
+        )} */}
 
         {!loading && (
           <TariffSection decisionProgression={decisionProgression} />
