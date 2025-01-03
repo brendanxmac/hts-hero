@@ -7,13 +7,16 @@ import {
   getNextChunk,
   updateHtsDescription,
 } from "../libs/hts";
-import { HtsLevelDecision, HtsWithParentReference } from "../interfaces/hts";
+import {
+  HtsLevelClassification,
+  HtsWithParentReference,
+} from "../interfaces/hts";
 import { LabelledLoader } from "./LabelledLoader";
 import {
   elementsAtClassificationLevel,
   setIndexInArray,
 } from "../utilities/data";
-import { TariffSection } from "./TariffSection";
+import { TariffSection } from "./Tariff";
 import { DecisionProgression } from "./DecisionProgression";
 
 interface Props {
@@ -33,7 +36,7 @@ export const ClassificationResults = ({
   >([]);
   const [classificationLevel, setClassificationLevel] = useState(0);
   const [decisionProgression, setDecisionProgression] = useState<
-    HtsLevelDecision[]
+    HtsLevelClassification[]
   >([]);
 
   const resetResults = () => {
@@ -63,7 +66,7 @@ export const ClassificationResults = ({
     );
 
     // Get & Set next selection progression
-    const nextSelectionProgression: HtsLevelDecision = {
+    const nextSelectionProgression: HtsLevelClassification = {
       level: getHtsLevel(bestMatchElement.htsno),
       candidates: elementsAtLevel,
       selection: bestMatchElement,
@@ -142,17 +145,8 @@ export const ClassificationResults = ({
           </div>
         ) : undefined}
 
-        {/* {!loading && (
-          <ClassificationSection
-            htsCode={
-              decisionProgression[decisionProgression.length - 1].selection
-                .htsno
-            }
-          />
-        )} */}
-
         {!loading && (
-          <TariffSection decisionProgression={decisionProgression} />
+          <TariffSection classificationProgression={decisionProgression} />
         )}
       </div>
     );
