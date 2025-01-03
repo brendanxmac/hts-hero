@@ -2,7 +2,7 @@ import { ClipboardDocumentIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { HtsLevel } from "../enums/hts";
 import { copyToClipboard } from "../utilities/data";
 import { Cell } from "./Cell";
-import { PrimaryHeading } from "./CellLabel";
+import { PrimaryHeading } from "./PrimaryLabel";
 import { Dispatch, SetStateAction, useState } from "react";
 
 interface Props {
