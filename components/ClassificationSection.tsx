@@ -1,5 +1,5 @@
 import { Cell } from "./Cell";
-import { PrimaryHeading } from "./CellLabel";
+import { PrimaryHeading } from "./PrimaryLabel";
 import { PrimaryInformation } from "./PrimaryInformation";
 import { SectionLabel } from "./SectionLabel";
 

@@ -50,9 +50,24 @@ export interface MatchResponse {
   logic: string;
 }
 
-export interface HtsLevelDecision {
+export interface HtsLevelClassification {
   level: HtsLevel;
   candidates: HtsElement[];
   selection: HtsElement;
   reasoning: string;
+}
+
+export interface TariffsForHtsCode {
+  standard: Tariff;
+  temporary: TemporaryTariff[];
+}
+
+export interface Tariff {
+  htsCode: string;
+  rate: string;
+}
+
+export interface TemporaryTariff {
+  description: string;
+  element?: HtsElement;
 }
