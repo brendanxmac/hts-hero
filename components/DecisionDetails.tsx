@@ -1,11 +1,11 @@
 import { Cell } from "./Cell";
-import { PrimaryHeading } from "./CellLabel";
-import { HtsLevelDecision } from "../interfaces/hts";
+import { PrimaryHeading } from "./PrimaryLabel";
+import { HtsLevelClassification } from "../interfaces/hts";
 import { SelectionCandidate } from "./SelectionCandidate";
 import { Dispatch, SetStateAction } from "react";
 
 interface Props {
-  decision: HtsLevelDecision;
+  decision: HtsLevelClassification;
   showDetails: Dispatch<SetStateAction<boolean>>;
 }
 

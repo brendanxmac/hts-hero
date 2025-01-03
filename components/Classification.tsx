@@ -32,7 +32,7 @@ export const Classification = ({
         ref={scrollableRef}
         className="grow w-full mt-2 items-center flex flex-col gap-4 max-w-3xl overflow-y-scroll"
       >
-        <div className="sticky top-0 w-full bg-black pb-4 border-b border-neutral-800 shadow-neutral-600">
+        <div className="sticky top-0 w-full bg-black bg-opacity-95 pb-4 border-b border-neutral-800 shadow-neutral-600">
           <ProductDescriptionHeader description={productDescription} />
         </div>
 
