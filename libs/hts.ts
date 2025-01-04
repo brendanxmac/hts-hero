@@ -5,7 +5,7 @@ import {
   MatchResponse,
   HsHeading,
   HtsElement,
-  Tariff,
+  TariffI,
   TemporaryTariff,
   Footnote,
 } from "../interfaces/hts";
@@ -38,6 +38,10 @@ export const getHtsElementDescriptions = (
   return elementsAtIndexLevel.map((e) => e.description);
 };
 
+export const getTotalTariff = (
+  classificationProgression: HtsLevelClassification[]
+) => {};
+
 export const getTarrifForProgression = (
   selectionProgression: HtsLevelClassification[]
 ) => {
@@ -69,7 +73,7 @@ export const findFirstElementInProgressionWithTariff = (
 
 export const getBaseTariff = (
   classificationProgression: HtsLevelClassification[]
-): Tariff => {
+): TariffI => {
   const elementWithTariffInProgression =
     findFirstElementInProgressionWithTariff(classificationProgression);
 
@@ -77,6 +81,45 @@ export const getBaseTariff = (
     htsCode: elementWithTariffInProgression.htsno,
     rate: elementWithTariffInProgression.general,
   };
+};
+
+export const isSimpleTariff = (tariff: TemporaryTariff): boolean => {
+  return Boolean(tariff.element);
+};
+
+export const extractPercentage = (input: string): string | null => {
+  const match = input.match(/\d+(\.\d+)?%/);
+  return match ? match[0] : null;
+};
+
+export const getTemporaryTariffRate = (tariffString: string): string | null => {
+  const isRateBasedTemporaryTariff = tariffString
+    .toLowerCase()
+    .includes("the duty provided in the applicable subheading + ");
+
+  if (!isRateBasedTemporaryTariff) {
+    return null;
+  }
+
+  return tariffString
+    .toLowerCase()
+    .split("the duty provided in the applicable subheading + ")[1];
+};
+
+export const sumPercentages = (input: string): string | null => {
+  const matches = input.match(/(\d+(\.\d+)?)%/g);
+
+  if (!matches || matches.length !== 2) {
+    return null; // Ensure there are exactly two percentages in the string
+  }
+
+  // Parse the percentage values as numbers
+  const percentages = matches.map((percent) =>
+    parseFloat(percent.replace("%", ""))
+  );
+  const sum = percentages.reduce((total, current) => total + current, 0);
+
+  return `${sum}%`;
 };
 
 export const getTemporaryTariffs = async (
