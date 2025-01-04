@@ -28,10 +28,13 @@ export const TariffDetails = ({ htsElement, temporaryTariffs }: Props) => {
             <div key={i} className="flex flex-col gap-1">
               <SecondaryInformation value={tariff.description} />
               {tariff.element && (
-                <>
+                <div className="pl-3 border-l-2 border-neutral-600">
+                  <p className="text-[#40C969] font-bold text-sm md:text-base">
+                    {tariff.element.general}
+                  </p>
                   <TertiaryInformation value={tariff.element.description} />
-                  <TertiaryInformation value={tariff.element.general} />
-                </>
+                  {/* <TertiaryInformation value={tariff.element.general} /> */}
+                </div>
               )}
             </div>
           ))}
