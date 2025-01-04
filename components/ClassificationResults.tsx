@@ -127,16 +127,20 @@ export const ClassificationResults = ({
   }, [productDescription]);
 
   if (loading && !htsCode && classificationLevel === 0) {
-    return <LabelledLoader text="" />;
+    return (
+      <div className="mt-5">
+        <LabelledLoader text="" />
+      </div>
+    );
   } else {
     return (
-      <div className="w-full max-w-3xl grid grid-cols-2 gap-5 mt-3">
+      <div className="w-full max-w-4xl grid grid-cols-2 gap-5 mt-3">
         {decisionProgression.length && (
           <DecisionProgression decisionProgression={decisionProgression} />
         )}
 
         {loading && htsElementsChunk.length > 0 ? (
-          <div className="min-w-full max-w-3xl col-span-full justify-items-center">
+          <div className="min-w-full max-w-4xl col-span-full justify-items-center">
             <LabelledLoader text="" />
           </div>
         ) : undefined}
