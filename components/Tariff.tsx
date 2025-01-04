@@ -31,7 +31,7 @@ export const TariffSection = ({ classificationProgression }: Props) => {
   }, []);
 
   return (
-    <div className="col-span-full flex flex-col gap-5 mb-10">
+    <div className="col-span-full flex flex-col gap-5">
       <SectionLabel value="Tariff (China to USA)" />
 
       <Cell>
