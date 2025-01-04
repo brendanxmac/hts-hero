@@ -58,11 +58,11 @@ export interface HtsLevelClassification {
 }
 
 export interface TariffsForHtsCode {
-  standard: Tariff;
+  standard: TariffI;
   temporary: TemporaryTariff[];
 }
 
-export interface Tariff {
+export interface TariffI {
   htsCode: string;
   rate: string;
 }
