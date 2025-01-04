@@ -1,7 +1,7 @@
 import { HtsElement, TemporaryTariff } from "../interfaces/hts";
+import { stripTrailingPeriods } from "../utilities/data";
 import { SecondaryInformation } from "./SecondaryInformation";
 import { SecondaryLabel } from "./SecondaryLabel";
-import { TertiaryInformation } from "./TertiaryInformation";
 
 interface Props {
   htsElement: HtsElement;
@@ -15,25 +15,30 @@ export const TariffDetails = ({ htsElement, temporaryTariffs }: Props) => {
     : "Temporary Rate";
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-3">
       <div className="flex flex-col gap-2">
         <SecondaryLabel value="Standard Rate" />
         <SecondaryInformation value={htsElement.general} />
-        {/* TODO: See if need to parse this.. */}
       </div>
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2">
         <SecondaryLabel value={temporaryGroupLabel} />
         <div className="flex flex-col gap-4">
           {temporaryTariffs.map((tariff, i) => (
             <div key={i} className="flex flex-col gap-1">
-              <SecondaryInformation value={tariff.description} />
+              <SecondaryInformation
+                value={stripTrailingPeriods(tariff.description)}
+              />
               {tariff.element && (
                 <div className="pl-3 border-l-2 border-neutral-600">
+                  {/* TODO: make component for this? */}
+                  <p className="text-neutral-600 text-sm md:text-base">
+                    {tariff.element.htsno}
+                  </p>
                   <p className="text-[#40C969] font-bold text-sm md:text-base">
                     {tariff.element.general}
                   </p>
-                  <TertiaryInformation value={tariff.element.description} />
-                  {/* <TertiaryInformation value={tariff.element.general} /> */}
+                  {/* TODO: consider adding this back in for detail purposes */}
+                  {/* <TertiaryInformation value={tariff.element.description} /> */}
                 </div>
               )}
             </div>
