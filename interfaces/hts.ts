@@ -25,23 +25,9 @@ export interface Footnote {
   type: string;
 }
 
-export interface HtsEmbedding extends HtsParsed {
-  embedding: number[];
-}
-
-export interface HtsParsed {
-  code: string;
-  description: string;
-}
-
 export interface HsHeading {
   heading: string;
   description: string;
-  logic: string;
-}
-
-export interface UsHtsItem {
-  code: string;
   logic: string;
 }
 
@@ -55,16 +41,6 @@ export interface HtsLevelClassification {
   candidates: HtsElement[];
   selection: HtsElement;
   reasoning: string;
-}
-
-export interface TariffsForHtsCode {
-  standard: TariffI;
-  temporary: TemporaryTariff[];
-}
-
-export interface TariffI {
-  htsCode: string;
-  rate: string;
 }
 
 export interface TemporaryTariff {

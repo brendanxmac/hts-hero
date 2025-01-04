@@ -30,13 +30,13 @@ export const Classification = ({
     <section className="grow h-full overflow-auto flex flex-col items-center">
       <div
         ref={scrollableRef}
-        className="grow w-full mt-2 items-center flex flex-col gap-4 max-w-3xl overflow-y-scroll"
+        className="grow w-full mt-2 items-center flex flex-col max-w-4xl overflow-y-scroll mb-4"
       >
         <div className="sticky top-0 w-full bg-black bg-opacity-95 pb-4 border-b border-neutral-800 shadow-neutral-600">
           <ProductDescriptionHeader description={productDescription} />
         </div>
 
-        <div className="flex flex-col min-w-full max-w-3xl gap-2 items-center">
+        <div className="flex flex-col min-w-full max-w-4xl gap-2 items-center overflow-y-auto">
           <ClassificationResults
             productDescription={productDescription}
             setScrollableUpdates={setScrollableUpdates}

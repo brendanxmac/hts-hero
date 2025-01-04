@@ -22,3 +22,7 @@ export const copyToClipboard = async (text: string): Promise<void> => {
     console.error("Failed to copy text:", err);
   }
 };
+
+export const stripTrailingPeriods = (input: string): string => {
+  return input.trim().replace(/\.+$/, "");
+};
