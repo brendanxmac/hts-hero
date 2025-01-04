@@ -53,7 +53,6 @@ export const ClassificationResults = ({
       htsElementsChunk,
       classificationLevel
     );
-
     const bestMatchResponse = await getBestMatchAtClassificationLevel(
       elementsAtLevel,
       classificationLevel,
@@ -66,13 +65,15 @@ export const ClassificationResults = ({
     );
 
     // Get & Set next selection progression
-    const nextSelectionProgression: HtsLevelClassification = {
-      level: getHtsLevel(bestMatchElement.htsno),
-      candidates: elementsAtLevel,
-      selection: bestMatchElement,
-      reasoning: bestMatchResponse.logic,
-    };
-    setDecisionProgression([...decisionProgression, nextSelectionProgression]);
+    setDecisionProgression([
+      ...decisionProgression,
+      {
+        level: getHtsLevel(bestMatchElement.htsno),
+        candidates: elementsAtLevel,
+        selection: bestMatchElement,
+        reasoning: bestMatchResponse.logic,
+      },
+    ]);
 
     if (bestMatchElement.htsno) {
       setHtsCode(bestMatchElement.htsno);
@@ -80,7 +81,6 @@ export const ClassificationResults = ({
 
     // Get Next HTS Elements Chunk
     const nextChunkStartIndex = bestMatchElement.indexInParentArray + 1;
-    // TODO: see if there's a possible off by 1 error here.... ^^ \/
     const nextChunk = getNextChunk(
       htsElementsChunk,
       nextChunkStartIndex,
@@ -88,10 +88,6 @@ export const ClassificationResults = ({
     );
 
     setClassificationLevel(classificationLevel + 1);
-
-    console.log(`Next Chunk: ${nextChunk.length}`);
-
-    // Set next HTS Elements Chunk
     setHtsElementsChunk(setIndexInArray(nextChunk));
   };
 

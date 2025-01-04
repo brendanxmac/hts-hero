@@ -4,8 +4,12 @@ import {
   isSimpleTariff,
   sumPercentages,
   getTemporaryTariffRate,
-} from "../libs/hts";
-import { HtsElement, HtsLevelClassification, TemporaryTariff } from "./hts";
+} from "../../libs/hts";
+import {
+  HtsElement,
+  HtsLevelClassification,
+  TemporaryTariff,
+} from "../../interfaces/hts";
 
 export class Tariff {
   htsCode: string;
@@ -92,8 +96,6 @@ export class Tariff {
 
         if (!baseTariffIsCompound) {
           console.log("Base Tariff is NOT compound");
-          console.log(this.baseRate);
-          console.log(this.original);
           const baseAsPercentage =
             this.baseRate.toLowerCase() === "free" ? "0%" : this.baseRate;
           return sumPercentages(

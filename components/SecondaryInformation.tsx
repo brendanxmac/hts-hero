@@ -1,5 +1,3 @@
-import { TextCopyButton } from "./Copy";
-
 interface Props {
   value: string;
 }
