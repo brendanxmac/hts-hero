@@ -5,9 +5,9 @@ import { PrimaryInformation } from "./PrimaryInformation";
 import { SectionLabel } from "./SectionLabel";
 import { findFirstElementInProgressionWithTariff } from "../libs/hts";
 import { LabelledLoader } from "./LabelledLoader";
-import { PrimaryHeading } from "./PrimaryLabel";
 import { TariffDetails } from "./TariffDetails";
 import { Tariff } from "../app/classes/tariff";
+import { TariffSummary } from "./TariffSummary";
 
 interface Props {
   classificationProgression: HtsLevelClassification[];
@@ -36,18 +36,11 @@ export const TariffSection = ({ classificationProgression }: Props) => {
 
       <Cell>
         <div className="flex flex-col gap-3">
-          <div className="flex justify-between items-center">
-            <PrimaryHeading value="Total Tariff" />
-            {tariff && tariff.temporaryAdjustments.length ? (
-              <button
-                onClick={() => setShowDetails(!showDetails)}
-                type="button"
-                className="shrink-0 p-2 bg-neutral-700 h-6 rounded-md flex items-center justify-center text-sm text-neutral-400 hover:text-black hover:bg-neutral-200"
-              >
-                {showDetails ? "Hide Details" : "Show Details"}
-              </button>
-            ) : undefined}
-          </div>
+          <TariffSummary
+            tariff={tariff}
+            showDetails={showDetails}
+            setShowDetails={setShowDetails}
+          />
 
           {tariff && !loading && (
             <>
