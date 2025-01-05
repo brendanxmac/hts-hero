@@ -23,7 +23,6 @@ export const TariffSection = ({
   const [tariff, setTariff] = useState<Tariff | undefined>(undefined);
 
   const getTariff = async () => {
-    console.log(`*** Getting Tariff Data ***`);
     const tariff = await Tariff.create(classificationProgression);
     setTariff(tariff);
     setLoading(false);
@@ -36,7 +35,7 @@ export const TariffSection = ({
 
   useEffect(() => {
     setUpdateScrollHeight(Math.random());
-  }, [tariff]);
+  }, [tariff, showDetails]);
 
   return (
     <div className="col-span-full flex flex-col gap-5">
