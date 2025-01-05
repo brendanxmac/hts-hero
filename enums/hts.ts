@@ -4,6 +4,6 @@ export enum HtsLevel {
   SUBHEADING = "Subheading",
   US_SUBHEADING = "US Subheading",
   STAT_SUFFIX = "Full HTS Code",
-  PREQUALIFIER = "Prequalification",
+  PREQUALIFIER = "Prequalifier",
   MISCELLANEOUS = "Miscellaneous",
 }

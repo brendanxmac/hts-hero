@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { HtsLevelClassification } from "../interfaces/hts";
 import { Cell } from "./Cell";
 import { PrimaryInformation } from "./PrimaryInformation";
@@ -11,15 +11,18 @@ import { TariffSummary } from "./TariffSummary";
 
 interface Props {
   classificationProgression: HtsLevelClassification[];
+  setUpdateScrollHeight: Dispatch<SetStateAction<number>>;
 }
 
-export const TariffSection = ({ classificationProgression }: Props) => {
+export const TariffSection = ({
+  classificationProgression,
+  setUpdateScrollHeight,
+}: Props) => {
   const [loading, setLoading] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [tariff, setTariff] = useState<Tariff | undefined>(undefined);
 
   const getTariff = async () => {
-    console.log(`*** Getting Tariff Data ***`);
     const tariff = await Tariff.create(classificationProgression);
     setTariff(tariff);
     setLoading(false);
@@ -29,6 +32,10 @@ export const TariffSection = ({ classificationProgression }: Props) => {
     setLoading(true);
     getTariff();
   }, []);
+
+  useEffect(() => {
+    setUpdateScrollHeight(Math.random());
+  }, [tariff, showDetails]);
 
   return (
     <div className="col-span-full flex flex-col gap-5">
