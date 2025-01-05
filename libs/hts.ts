@@ -222,14 +222,9 @@ export const getBestMatchAtClassificationLevel = async (
   return JSON.parse(bestMatch);
 };
 
-export const updateHtsDescription = (
-  description: string,
-  bestMatch: MatchResponse
-) => {
+export const updateHtsDescription = (current: string, additional: string) => {
   // Tack best matches description onto the htsDescription
-  return description
-    ? description + " > " + bestMatch.description
-    : bestMatch.description;
+  return current ? current + " > " + additional : additional;
 };
 
 // Recursive function that implements the sliding window approach to find

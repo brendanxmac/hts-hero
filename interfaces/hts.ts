@@ -32,7 +32,7 @@ export interface HsHeading {
 }
 
 export interface MatchResponse {
-  description: string;
+  index: string;
   logic: string;
 }
 
