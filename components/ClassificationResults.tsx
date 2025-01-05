@@ -21,12 +21,12 @@ import { DecisionProgression } from "./DecisionProgression";
 
 interface Props {
   productDescription: string;
-  setScrollableUpdates: Dispatch<SetStateAction<number>>;
+  setUpdateScrollHeight: Dispatch<SetStateAction<number>>;
 }
 
 export const ClassificationResults = ({
   productDescription,
-  setScrollableUpdates,
+  setUpdateScrollHeight,
 }: Props) => {
   const [loading, setLoading] = useState(true);
   const [htsCode, setHtsCode] = useState("");
@@ -35,7 +35,7 @@ export const ClassificationResults = ({
     HtsWithParentReference[]
   >([]);
   const [classificationLevel, setClassificationLevel] = useState(0);
-  const [decisionProgression, setDecisionProgression] = useState<
+  const [classificationProgression, setClassificationProgression] = useState<
     HtsLevelClassification[]
   >([]);
 
@@ -44,8 +44,8 @@ export const ClassificationResults = ({
     setHtsDescription("");
     setHtsElementsChunk([]);
     setClassificationLevel(0);
-    setDecisionProgression([]);
-    setScrollableUpdates(0);
+    setClassificationProgression([]);
+    setUpdateScrollHeight(0);
   };
 
   const findBestClassifierAtLevel = async () => {
@@ -59,14 +59,18 @@ export const ClassificationResults = ({
       productDescription,
       htsDescription
     );
-    setHtsDescription(updateHtsDescription(htsDescription, bestMatchResponse));
-    const bestMatchElement = elementsAtLevel.find(
-      (i) => i.description === bestMatchResponse.description
+
+    // TODO: how to handle any error cases (e.g. index isNaN)
+    console.log(`Best Match Index: ${bestMatchResponse.index}`);
+    const bestMatchElement = elementsAtLevel[Number(bestMatchResponse.index)];
+
+    setHtsDescription(
+      updateHtsDescription(htsDescription, bestMatchElement.description)
     );
 
     // Get & Set next selection progression
-    setDecisionProgression([
-      ...decisionProgression,
+    setClassificationProgression([
+      ...classificationProgression,
       {
         level: getHtsLevel(bestMatchElement.htsno),
         candidates: elementsAtLevel,
@@ -99,9 +103,8 @@ export const ClassificationResults = ({
   };
 
   useEffect(() => {
-    const update = classificationLevel + 1;
-    setScrollableUpdates(update);
-  }, [loading, htsCode]);
+    setUpdateScrollHeight(Math.random());
+  }, [loading, classificationProgression]);
 
   useEffect(() => {
     const anotherClassificationLevelExists = htsElementsChunk.length > 0;
@@ -135,8 +138,10 @@ export const ClassificationResults = ({
   } else {
     return (
       <div className="w-full max-w-4xl grid grid-cols-2 gap-5 mt-3">
-        {decisionProgression.length && (
-          <DecisionProgression decisionProgression={decisionProgression} />
+        {classificationProgression.length && (
+          <DecisionProgression
+            decisionProgression={classificationProgression}
+          />
         )}
 
         {loading && htsElementsChunk.length > 0 ? (
@@ -146,7 +151,10 @@ export const ClassificationResults = ({
         ) : undefined}
 
         {!loading && (
-          <TariffSection classificationProgression={decisionProgression} />
+          <TariffSection
+            classificationProgression={classificationProgression}
+            setUpdateScrollHeight={setUpdateScrollHeight}
+          />
         )}
       </div>
     );
