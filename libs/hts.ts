@@ -107,7 +107,6 @@ export const getTemporaryTariffs = async (
       const isSimpleTariff = isDirectHtsElementReference(t.description);
 
       if (isSimpleTariff) {
-        console.log(`Enriching: ${t.description}`);
         const htsCode = extractFirst8DigitHtsCode(t.description);
         if (!htsCode) {
           throw new Error(
@@ -336,6 +335,7 @@ export const getHSChapter = async (productDescription: string) => {
   // TODO: Consider jumping right to heading and not back to chapter...
 
   const parsed: HsHeading[] = JSON.parse(hsHeadings);
+  console.log(parsed);
   const chapter = parsed[0].heading.substring(0, 2);
   console.log(`Chapter ${chapter}`);
 

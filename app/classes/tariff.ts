@@ -91,11 +91,11 @@ export class Tariff {
       const additionalPercentage = this.getBaseRate(additionalTariff);
 
       if (additionalPercentage) {
-        console.log("Additional is Percentage");
+        // console.log("Additional is Percentage");
         const baseTariffIsCompound = this.isCompound();
 
         if (!baseTariffIsCompound) {
-          console.log("Base Tariff is NOT compound");
+          // console.log("Base Tariff is NOT compound");
           const baseAsPercentage =
             this.baseRate.toLowerCase() === "free" ? "0%" : this.baseRate;
           return sumPercentages(
@@ -103,10 +103,10 @@ export class Tariff {
           );
         }
 
-        console.log("Base Tariff is compound");
+        // console.log("Base Tariff is compound");
         const temporaryTariffRate = getTemporaryTariffRate(additionalTariff);
         if (temporaryTariffRate) {
-          console.log("Additional Tariff is simple rate based add-on");
+          // console.log("Additional Tariff is simple rate based add-on");
 
           const totalPercentage = sumPercentages(
             `${this.baseRate} + ${temporaryTariffRate}`
@@ -115,13 +115,13 @@ export class Tariff {
           return `${this.weightRate} + ${totalPercentage}`;
         }
 
-        console.log(`Additional Tariff is complex`);
+        // console.log(`Additional Tariff is complex`);
         return `${this.baseRate} + ${additionalTariff}`;
       }
     }
 
     // Multiple Additional Temporary Tariffs
-    console.log("Multiple Additional Temporary Tariffs");
+    // console.log("Multiple Additional Temporary Tariffs");
     return "Needs Review";
   }
 }

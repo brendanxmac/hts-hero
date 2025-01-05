@@ -58,7 +58,7 @@ export const DecisionSummary = ({
             </button>
           </div>
         )}
-        <h3 className="text-white text-sm md:text-base">{`"${description}"`}</h3>
+        <h3 className="text-white text-sm md:text-base">{description}</h3>
       </div>
     </div>
   );
