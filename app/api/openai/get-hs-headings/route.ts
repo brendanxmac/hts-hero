@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
           role: "user",
           content: `Use the General Rules for the Interpretation of the Harmonized System to determine which headings (at least 2) most accurately describe: ${productDescription}.
         Your response should be:
-        1. ONLY a stringified array of objects where each object matches the following structure: { heading: string,  desciption: string, logic: string}.
+        1. ONLY a stringified array of objects sorted by best match to worst match where each object matches the following structure: { heading: string,  desciption: string, logic: string}.
         2. Without the code block formatting indicating it is json`,
         },
       ],
