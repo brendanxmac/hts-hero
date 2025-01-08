@@ -39,54 +39,31 @@ const Step = ({ emoji, text }: { emoji: string; text: string }) => {
 // - Hero: "ShipFast helps developers launch startups fast"
 // - Problem Agitation: "Developers spend too much time adding features, get overwhelmed, and quit." (not about ShipFast at all)
 // - Features: "ShipFast has user auth, Stripe, emails all set up for you"
-const Problem = () => {
+const ProblemExpanded = () => {
   return (
-    <section className="bg-neutral-900 text-neutral-content">
+    <section className="bg-neutral-800 text-neutral-content">
       <div className="max-w-7xl mx-auto px-8 py-16 md:py-32 text-center">
         <h2 className="max-w-3xl mx-auto font-extrabold text-4xl md:text-5xl tracking-tight mb-6 md:mb-8">
-          HTS Codes are... Difficult
+          Spending too much time or $ trying to find the right HTS Code?
         </h2>
-        <p className="max-w-2xl mx-auto text-lg opacity-90 leading-relaxed mb-10">
-          And you shouldn't have to hire someone or become an expert to find one
+        <p className="max-w-xl mx-auto text-lg opacity-90 leading-relaxed mb-12 md:mb-20">
+          Not realizing they might be exposing themselves to...
         </p>
-        {/* <p className="max-w-2xl mx-auto text-lg opacity-90 leading-relaxed mb-10">
-          Constant updates, Temporary amendments, conflicting footnotes,
-          interpretation rules, and confusing references like Chapter Note
-          32(xii)(b)(ii) 😵‍💫
-        </p> */}
-        {/* And so you end up spending time and money to become or hire an expert
-          to order to avoid: */}
-        {/* <p className="max-w-3xl mx-auto text-3xl font-bold opacity-90 leading-relaxed mb-6 md:mb-12">
-          So you <span className="underline">repeatedly</span> spend time and
-          money to avoid:
-        </p> */}
 
-        <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-8 sm:gap-3">
-          <Step emoji="😅" text="Constant Updates" />
+        <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-6">
+          <Step emoji="⏳" text="Hours of Research" />
 
           <Arrow extraStyle="max-md:-scale-x-100 md:-rotate-90" />
 
-          <Step emoji="⏳" text="Temporary Changes" />
-
-          <Arrow extraStyle="md:-scale-x-100 md:-rotate-90" />
-
-          <Step emoji="😵‍💫" text="Confusing References" />
-        </div>
-
-        {/* <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-6 sm:gap-3">
-          <Step emoji="💸" text="Fees" />
-
-          <Arrow extraStyle="max-md:-scale-x-100 md:-rotate-90" />
-
-          <Step emoji="👨‍⚖️" text="Penalties" />
+          <Step emoji="💰" text="Hiring Specialists" />
 
           <Arrow extraStyle="md:-scale-x-100 md:-rotate-90" />
 
           <Step emoji="🥴" text="Unexpected Costs" />
-        </div> */}
+        </div>
       </div>
     </section>
   );
 };
 
-export default Problem;
+export default ProblemExpanded;
