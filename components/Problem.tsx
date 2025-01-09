@@ -43,12 +43,9 @@ const Problem = () => {
   return (
     <section className="bg-neutral-900 text-neutral-content">
       <div className="max-w-7xl mx-auto px-8 py-16 md:py-32 text-center">
-        <h2 className="max-w-3xl mx-auto font-extrabold text-4xl md:text-5xl tracking-tight mb-6 md:mb-8">
+        <h2 className="max-w-3xl mx-auto font-extrabold text-4xl md:text-5xl tracking-tight mb-10">
           HTS Codes are... Difficult
         </h2>
-        <p className="max-w-2xl mx-auto text-lg opacity-90 leading-relaxed mb-10">
-          And you shouldn't have to hire someone or become an expert to find one
-        </p>
         {/* <p className="max-w-2xl mx-auto text-lg opacity-90 leading-relaxed mb-10">
           Constant updates, Temporary amendments, conflicting footnotes,
           interpretation rules, and confusing references like Chapter Note
@@ -61,29 +58,36 @@ const Problem = () => {
           money to avoid:
         </p> */}
 
-        <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-8 sm:gap-3">
-          <Step emoji="😅" text="Constant Updates" />
+        <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-8 sm:gap-3 mb-10">
+          <div className="flex flex-col justify-center items-center">
+            <Step emoji="😅" text="Constant Updates" />
+            <p className="text-neutral-600 text-xs italic">ChatGPT fails</p>
+          </div>
 
           <Arrow extraStyle="max-md:-scale-x-100 md:-rotate-90" />
 
-          <Step emoji="⏳" text="Temporary Changes" />
+          <div className="flex flex-col justify-center items-center">
+            <Step emoji="⏳" text="Temporary Changes" />
+            <p className="text-neutral-600 text-xs italic">
+              e.g. Trump Tariffs
+            </p>
+          </div>
 
           <Arrow extraStyle="md:-scale-x-100 md:-rotate-90" />
 
-          <Step emoji="😵‍💫" text="Confusing References" />
+          <div className="flex flex-col justify-center items-center">
+            <Step emoji="😵‍💫" text="Confusing References" />
+            <p className="text-neutral-600 text-xs italic">
+              "See Note 32(xii)(b)(ii)"
+            </p>
+          </div>
         </div>
 
-        {/* <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-6 sm:gap-3">
-          <Step emoji="💸" text="Fees" />
-
-          <Arrow extraStyle="max-md:-scale-x-100 md:-rotate-90" />
-
-          <Step emoji="👨‍⚖️" text="Penalties" />
-
-          <Arrow extraStyle="md:-scale-x-100 md:-rotate-90" />
-
-          <Step emoji="🥴" text="Unexpected Costs" />
-        </div> */}
+        <p className="max-w-3xl mx-auto text-lg opacity-90 leading-relaxed">
+          {/* And usually you need to hire or become an expert to find the right one */}
+          Finding the right code typically means hiring an expert 💰, or trying
+          to become one 📚
+        </p>
       </div>
     </section>
   );

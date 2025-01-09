@@ -6,7 +6,7 @@ const config = {
   appName: "HTS Hero",
   // REQUIRED: a short description of your app for SEO tags (can be overwritten)
   appDescription:
-    "The NextJS boilerplate with all you need to build your SaaS, AI tool, or any other web app.", // TODO: update this
+    "The HTS code finder that helps you import with confidence & no surprises to your bottom line.",
   // REQUIRED (no https://, not trialing slash at the end, just the naked domain)
   domainName: "htshero.com",
   crisp: {
