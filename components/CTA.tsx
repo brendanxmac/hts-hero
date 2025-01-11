@@ -10,8 +10,9 @@ const CTA = () => {
             Nearly Instant, Almost Free
           </h2>
           <p className="md:text-lg opacity-80 mb-12 md:mb-16">
-            Free yourself from reading through PDF's and hoping you didn't miss
-            something or hiring someone for more who takes 10x longer
+            Free yourself from reading through PDF&apos;s and hoping you
+            didn&apos;t miss something or hiring someone for more who takes 10x
+            longer
           </p>
 
           <button className="btn btn-primary btn-wide">
