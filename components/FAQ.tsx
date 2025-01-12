@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 import { useRef, useState } from "react";
 import type { JSX } from "react";
 
@@ -13,22 +14,31 @@ interface FAQItemProps {
 
 const faqList: FAQItemProps[] = [
   {
-    question: "What do I get exactly?",
-    answer: <div className="space-y-2 leading-relaxed">Loreum Ipseum</div>,
-  },
-  {
-    question: "Can I get a refund?",
+    question: "What's the price?",
     answer: (
-      <p>
-        Yes! You can request a refund within 7 days of your purchase. Reach out
-        by email.
-      </p>
+      <div className="flex flex-col gap-2">
+        <p className="text-2xl font-bold">Free!</p>
+        <p>
+          While we&apos;re in beta all usage of HTS Hero is free, but if you
+          feel like helping us out you can share it with anyone who might get
+          some value from it.
+        </p>
+      </div>
     ),
   },
   {
-    question: "I have another question",
+    question: "What do I get exactly?",
     answer: (
-      <div className="space-y-2 leading-relaxed">Cool, contact us by email</div>
+      <div className="space-y-2 leading-relaxed">
+        After loging in, as long as you have enough credits<sup>*</sup>{" "}
+        you&apos;ll immdeiately have access to the HTS lookup tool & the
+        features mentioned above.
+        <span className="block mt-3 text-xs">
+          <sup>*</sup>Everyone has unlimited credits while we&apos;re in beta,
+          however there are limits on overall daily usage so I can afford to eat
+          tomorrow 😆.
+        </span>
+      </div>
     ),
   },
 ];
@@ -47,35 +57,26 @@ const FaqItem = ({ item }: { item: FAQItemProps }) => {
         }}
         aria-expanded={isOpen}
       >
-        <span
-          className={`flex-1 text-base-content ${isOpen ? "text-primary" : ""}`}
-        >
+        <span className={`flex-1 ${isOpen && "text-[#40C969]"}`}>
           {item?.question}
         </span>
-        <svg
-          className={`flex-shrink-0 w-4 h-4 ml-auto fill-current`}
-          viewBox="0 0 16 16"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <rect
-            y="7"
-            width="16"
-            height="2"
-            rx="1"
-            className={`transform origin-center transition duration-200 ease-out ${
-              isOpen && "rotate-180"
-            }`}
+        {isOpen ? (
+          <ChevronDownIcon
+            className={"text-white h-6 w-6"}
+            onClick={(e) => {
+              e.preventDefault();
+              setIsOpen(false);
+            }}
           />
-          <rect
-            y="7"
-            width="16"
-            height="2"
-            rx="1"
-            className={`transform origin-center rotate-90 transition duration-200 ease-out ${
-              isOpen && "rotate-180 hidden"
-            }`}
+        ) : (
+          <ChevronRightIcon
+            className={"text-white h-6 w-6"}
+            onClick={(e) => {
+              e.preventDefault();
+              setIsOpen(true);
+            }}
           />
-        </svg>
+        )}
       </button>
 
       <div
@@ -102,9 +103,27 @@ const FAQ = () => {
           <p className="sm:text-4xl text-3xl font-extrabold text-base-content">
             Frequently Asked Questions
           </p>
+          <div className="pt-3 text-neutral-400">
+            Have another question? Contact me on{" "}
+            <a
+              className="link text-base-content"
+              target="_blank"
+              href="https://twitter.com/brendanxmac"
+            >
+              Twitter
+            </a>{" "}
+            or by{" "}
+            <a
+              href="mailto:support@htshero.com"
+              target="_blank"
+              className="link text-base-content"
+            >
+              email
+            </a>
+          </div>
         </div>
 
-        <ul className="basis-1/2">
+        <ul className="basis-1/2 flex flex-col gap-3">
           {faqList.map((item, i) => (
             <FaqItem key={i} item={item} />
           ))}

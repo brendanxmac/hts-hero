@@ -6,7 +6,7 @@ const config = {
   appName: "HTS Hero",
   // REQUIRED: a short description of your app for SEO tags (can be overwritten)
   appDescription:
-    "The HTS code finder that helps you import with confidence & no surprises to your bottom line.",
+    "The HTS code finder that helps you import with less worry & surprises to your bottom line.",
   // REQUIRED (no https://, not trialing slash at the end, just the naked domain)
   domainName: "htshero.com",
   crisp: {
@@ -73,11 +73,11 @@ const config = {
   },
   resend: {
     // REQUIRED — Email 'From' field to be used when sending magic login links
-    fromNoReply: `HTS Hero <noreply@resend.shipfa.st>`, // TODO: fix this using your email
+    fromNoReply: `HTS Hero <noreply@resend.htshero.com>`, // TODO: fix this using your email
     // REQUIRED — Email 'From' field to be used when sending other emails, like abandoned carts, updates etc..
-    fromAdmin: `Brendan at HTS Hero <marc@resend.shipfa.st>`, // TODO: fix this using your email
+    fromAdmin: `Brendan at HTS Hero <brendn@resend.htshero.com>`, // TODO: fix this using your email
     // Email shown to customer if need support. Leave empty if not needed => if empty, set up Crisp above, otherwise you won't be able to offer customer support."
-    supportEmail: "brendanmclaughlin20@gmail.com",
+    supportEmail: "support@htshero.com",
   },
   colors: {
     // REQUIRED — The DaisyUI theme to use (added to the main layout.js). Leave blank for default (light & dark mode). If you any other theme than light/dark, you need to add it in config.tailwind.js in daisyui.themes.
@@ -90,7 +90,7 @@ const config = {
     // REQUIRED — the path to log in users. It's use to protect private routes (like /dashboard). It's used in apiClient (/libs/api.js) upon 401 errors from our API
     loginUrl: "/signin",
     // REQUIRED — the path you want to redirect users after successfull login (i.e. /dashboard, /private). This is normally a private page for users to manage their accounts. It's used in apiClient (/libs/api.js) upon 401 errors from our API & in ButtonSignin.js
-    callbackUrl: "/dashboard",
+    callbackUrl: "/home",
   },
 } as ConfigProps;
 

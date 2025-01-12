@@ -11,7 +11,7 @@ import {
   HtsLevelClassification,
   HtsWithParentReference,
 } from "../interfaces/hts";
-import { LabelledLoader } from "./LabelledLoader";
+import { LoadingDots } from "./LabelledLoader";
 import {
   elementsAtClassificationLevel,
   setIndexInArray,
@@ -132,7 +132,7 @@ export const ClassificationResults = ({
   if (loading && !htsCode && classificationLevel === 0) {
     return (
       <div className="mt-5">
-        <LabelledLoader text="" />
+        <LoadingDots />
       </div>
     );
   } else {
@@ -146,7 +146,7 @@ export const ClassificationResults = ({
 
         {loading && htsElementsChunk.length > 0 ? (
           <div className="min-w-full max-w-4xl col-span-full justify-items-center">
-            <LabelledLoader text="" />
+            <LoadingDots />
           </div>
         ) : undefined}
 

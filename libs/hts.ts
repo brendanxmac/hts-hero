@@ -254,21 +254,18 @@ export const getBestIndentLevelMatch = async (
   }
 
   const bestMatchJson: MatchResponse = JSON.parse(bestMatch); // TODO: handle errors
+  const bestMatchElement = elementsAtIndent[Number(bestMatchJson.index)];
+
+  // FIXME: MAKE SURE WE'RE CONSTRUCTING THE RIGHT HTS STRING (PIVOTAL)
 
   // Tack best matches description onto the current htsDescription
   htsDescription = htsDescription
-    ? htsDescription + " > " + bestMatchJson.description
-    : bestMatchJson.description;
-
-  // Determine if this is the end...
-  //  1. Grab the element that was just determined to be the best match
-  const bestMatchElement = elementsAtIndent.find(
-    (i) => i.description === bestMatchJson.description
-  );
+    ? htsDescription + " > " + bestMatchElement.description
+    : bestMatchElement.description;
 
   if (!bestMatchElement) {
     throw new Error(
-      `Error getting best match element with description: ${bestMatchJson.description}`
+      `Error getting best match element with description: ${bestMatchElement.description}`
     );
   } else {
     // Add Selection Layer to overall selection progression
