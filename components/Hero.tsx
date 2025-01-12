@@ -9,8 +9,8 @@ const Hero = () => {
           <span className="text-[#40C969]">in Seconds</span>
         </h1>
         <p className="text-lg text-neutral-400 leading-relaxed">
-          Save hours of work, avoid fines, & determine your import costs for the
-          price of a gumball
+          Save hours of work, avoid potential fines, and determine your import
+          costs for the price of a gumball
         </p>
         <button className="btn btn-primary btn-wide bg-neutral-100 text-black rounded-md hover:text-neutral-100">
           Get {config.appName}
