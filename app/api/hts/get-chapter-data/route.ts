@@ -38,9 +38,6 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Invalid Chapter" }, { status: 400 });
     }
 
-    console.log("CURRENT:");
-    console.log(process.cwd());
-
     const chapterData = await readFile(
       `${process.cwd()}/public/hts-chapters/${Number(chapter)}.json`,
       "utf8"

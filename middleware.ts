@@ -1,7 +1,18 @@
-import { type NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/libs/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
+  console.log(`Here in middleware`);
+  const host = request.headers.get("host");
+
+  if (host === "app.htshero.com") {
+    console.log(`host is app.htshero.com`);
+    // Redirect to the app-specific route
+    return NextResponse.rewrite(new URL("/app", request.url));
+  }
+
+  console.log(`host is not app.htshero.com`);
+
   return await updateSession(request);
 }
 
