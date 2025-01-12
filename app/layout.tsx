@@ -19,10 +19,6 @@ export const viewport: Viewport = {
 // You can override them in each page passing params to getSOTags() function.
 export const metadata = getSEOTags();
 
-{
-  /* <script type="text/javascript">window.$crisp=[];window.CRISP_WEBSITE_ID="0c3dd164-9731-427e-ade8-1ca2d536f296";(function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();</script> */
-}
-
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" data-theme={config.colors.theme} className={font.className}>
