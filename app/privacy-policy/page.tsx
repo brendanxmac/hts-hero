@@ -12,16 +12,16 @@ import config from "@/config";
 // You are an excellent lawyer.
 
 // I need your help to write a simple privacy policy for my website. Here is some context:
-// - Website: https://shipfa.st
-// - Name: ShipFast
-// - Description: A JavaScript code boilerplate to help entrepreneurs launch their startups faster
+// - Website: https://htshero.com
+// - Name: HTS Hero
+// - Description: An HTS code lookup tool to help people find the right HTS code any product
 // - User data collected: name, email and payment information
 // - Non-personal data collection: web cookies
 // - Purpose of Data Collection: Order processing
 // - Data sharing: we do not share the data with any other parties
 // - Children's Privacy: we do not collect any data from children
 // - Updates to the Privacy Policy: users will be updated by email
-// - Contact information: marc@shipfa.st
+// - Contact information: brendan@htshero.com
 
 // Please write a simple privacy policy for my site. Add the current date.  Do not add or explain your reasoning. Answer:
 
@@ -32,7 +32,7 @@ export const metadata = getSEOTags({
 
 const PrivacyPolicy = () => {
   return (
-    <main className="max-w-xl mx-auto">
+    <main className="max-w-2xl mx-auto">
       <div className="p-5">
         <Link href="/" className="btn btn-ghost">
           <svg
@@ -57,51 +57,39 @@ const PrivacyPolicy = () => {
           className="leading-relaxed whitespace-pre-wrap"
           style={{ fontFamily: "sans-serif" }}
         >
-          {`Last Updated: 2023-08-25
+          {`Effective Date: January 12, 2025
 
-Thank you for visiting ShipFast ("we," "us," or "our"). This Privacy Policy outlines how we collect, use, and protect your personal and non-personal information when you use our website located at https://shipfa.st (the "Website").
-
-By accessing or using the Website, you agree to the terms of this Privacy Policy. If you do not agree with the practices described in this policy, please do not use the Website.
+At HTS Hero ("we," "us," or "our"), we value your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, and safeguard your data when you visit our website (https://htshero.com).
 
 1. Information We Collect
 
-1.1 Personal Data
+Personal Information:
+We may collect the following personal information when you interact with our site:
+- Name
+- Email address
+- Payment information
 
-We collect the following personal information from you:
+Non-Personal Information:
+We also collect non-personal information through the use of cookies to improve your experience and analyze website performance.
 
-Name: We collect your name to personalize your experience and communicate with you effectively.
-Email: We collect your email address to send you important information regarding your orders, updates, and communication.
-Payment Information: We collect payment details to process your orders securely. However, we do not store your payment information on our servers. Payments are processed by trusted third-party payment processors.
-
-1.2 Non-Personal Data
-
-We may use web cookies and similar technologies to collect non-personal information such as your IP address, browser type, device information, and browsing patterns. This information helps us to enhance your browsing experience, analyze trends, and improve our services.
-
-2. Purpose of Data Collection
-
-We collect and use your personal data for the sole purpose of order processing. This includes processing your orders, sending order confirmations, providing customer support, and keeping you updated about the status of your orders.
+2. How We Use Your Information
+We use the information collected for the following purposes:
+- To process orders and payments
+- To communicate with you regarding your account or transactions
 
 3. Data Sharing
-
-We do not share your personal data with any third parties except as required for order processing (e.g., sharing your information with payment processors). We do not sell, trade, or rent your personal information to others.
+We do not share your personal or non-personal information with any third parties.
 
 4. Children's Privacy
+Our website is not intended for children under the age of 13, and we do not knowingly collect personal information from children.
 
-ShipFast is not intended for children under the age of 13. We do not knowingly collect personal information from children. If you are a parent or guardian and believe that your child has provided us with personal information, please contact us at the email address provided below.
+5. Updates to This Privacy Policy
+We may update this Privacy Policy from time to time. If we make changes, we will notify you via the email address provided.
 
-5. Updates to the Privacy Policy
+6. Contact Us
+If you have any questions about this Privacy Policy, please contact us at: support@htshero.com
 
-We may update this Privacy Policy from time to time to reflect changes in our practices or for other operational, legal, or regulatory reasons. Any updates will be posted on this page, and we may notify you via email about significant changes.
-
-6. Contact Information
-
-If you have any questions, concerns, or requests related to this Privacy Policy, you can contact us at:
-
-Email: marc@shipfa.st
-
-For all other inquiries, please visit our Contact Us page on the Website.
-
-By using ShipFast, you consent to the terms of this Privacy Policy.`}
+By using HTS Hero, you consent to the terms of this Privacy Policy.`}
         </pre>
       </div>
     </main>
