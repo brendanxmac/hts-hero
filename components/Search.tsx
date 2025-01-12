@@ -13,7 +13,7 @@ export const Search = ({ setProductDescription }: Props) => {
           Enter Product Description
         </h2>
         <SearchInput
-          placeholder="e.g. Stainless steel water bottle for dogs to drink from on the go"
+          placeholder="e.g. 10 Inch Frying Pan with Bamboo Handle"
           setProductDescription={setProductDescription}
         />
       </div>
