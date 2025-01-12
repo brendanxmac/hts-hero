@@ -11,9 +11,9 @@ const config = {
   domainName: "htshero.com",
   crisp: {
     // Crisp website ID. IF YOU DON'T USE CRISP: just remove this => Then add a support email in this config file (resend.supportEmail) otherwise customer support won't work.
-    id: "",
+    id: "0c3dd164-9731-427e-ade8-1ca2d536f296",
     // Hide Crisp by default, except on route "/". Crisp is toggled with <ButtonSupport/>. If you want to show Crisp on every routes, just remove this below
-    onlyShowOnRoutes: ["/"],
+    // onlyShowOnRoutes: ["/"],
   },
   stripe: {
     // Create multiple plans in your Stripe dashboard, then add them here. You can add as many plans as you want, just make sure to add the priceId
