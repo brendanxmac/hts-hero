@@ -1,13 +1,11 @@
 import { HtsLevelClassification } from "../interfaces/hts";
 import { SelectionCandidate } from "./SelectionCandidate";
-import { Dispatch, SetStateAction } from "react";
 
 interface Props {
   decision: HtsLevelClassification;
-  showDetails: Dispatch<SetStateAction<boolean>>;
 }
 
-export const DecisionDetails = ({ decision, showDetails }: Props) => {
+export const DecisionDetails = ({ decision }: Props) => {
   const { candidates, reasoning, selection } = decision;
   return (
     <div className="flex flex-col gap-3 mt-3">

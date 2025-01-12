@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import ButtonSignin from "./ButtonSignin";
-import logo from "@/app/logo.png";
+import logo from "@/app/logo.svg";
 import config from "@/config";
 
 const links: {
@@ -18,8 +18,8 @@ const links: {
     label: "Pricing",
   },
   {
-    href: "/#testimonials",
-    label: "Reviews",
+    href: "/#features",
+    label: "Features",
   },
   {
     href: "/#faq",
@@ -56,7 +56,7 @@ const Header = () => {
             <Image
               src={logo}
               alt={`${config.appName} logo`}
-              className="w-8"
+              className="w-6"
               priority={true}
               width={32}
               height={32}

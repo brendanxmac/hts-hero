@@ -7,29 +7,22 @@ import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
 
 interface Feature {
-  title: string;
-  description: string;
-  type?: "video" | "image";
-  path?: string;
-  format?: string;
-  alt?: string;
+  title: string; // The title of the feature
+  description: string; // The description of the feature (when clicked)
+  type?: "video" | "image"; // The type of media (video or image)
+  path?: string; // The path to the media (for better SEO, try to use a local path)
+  format?: string; // The format of the media (if type is 'video')
+  alt?: string; // The alt text of the image (if type is 'image')
   svg?: JSX.Element;
 }
 
-// The features array is a list of features that will be displayed in the accordion.
-// - title: The title of the feature
-// - description: The description of the feature (when clicked)
-// - type: The type of media (video or image)
-// - path: The path to the media (for better SEO, try to use a local path)
-// - format: The format of the media (if type is 'video')
-// - alt: The alt text of the image (if type is 'image')
 const features = [
   {
     title: "Results in Seconds",
     description:
-      "Type in your product description & watch your code & tariff popup just moments later",
+      "Type in your product description and in seconds you'll have your HTS code plus tariff",
     type: "video",
-    path: "/demo-wide-long.mp4",
+    path: "/results-in-seconds.mp4",
     format: "video/mp4",
     svg: (
       <svg
@@ -49,13 +42,12 @@ const features = [
     ),
   },
   {
-    title: "Alternatives Explorer",
+    title: "Step by Step",
     description:
-      "Quickly & easily see which option was selected and what the other candidates were at each step (interactive explorer coming soon)",
+      "For each level of the HTS classificaiton, we show you all of the current available options to choose from. This allows you to easily explore the alternatives & verify the selected option.",
     type: "video",
+    path: "/step-by-step-2.mp4",
     format: "video/mp4",
-    path: "/alternative-options-2.mp4",
-    alt: "A computer",
     svg: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -68,7 +60,7 @@ const features = [
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
-          d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z"
+          d="M8.242 5.992h12m-12 6.003H20.24m-12 5.999h12M4.117 7.495v-3.75H2.99m1.125 3.75H2.99m1.125 0H5.24m-1.92 2.577a1.125 1.125 0 1 1 1.591 1.59l-1.83 1.83h2.16M2.99 15.745h1.125a1.125 1.125 0 0 1 0 2.25H3.74m0-.002h.375a1.125 1.125 0 0 1 0 2.25H2.99"
         />
       </svg>
     ),
@@ -76,8 +68,9 @@ const features = [
   {
     title: "Selection Logic",
     description:
-      "See the logic used at each step for the classification selected - a great reference if customs gives you any issues",
+      "We explain why we chose the selected option over all the others at every step. This makes selection verification ever easier for you, and is a great resource to have if customs asks how the code was determined later on.",
     type: "image",
+    alt: "Selection Logic Image",
     path: "/selection-logic.png",
     svg: (
       <svg
@@ -99,7 +92,7 @@ const features = [
   {
     title: "Quick Copy",
     description:
-      "Copy your code or tariff in a single click for quick use in other applications",
+      "Copy your code or tariff in a single click for quick use in other applications.",
     type: "video",
     path: "/quick-copy.mp4",
     format: "video/mp4",
@@ -120,13 +113,28 @@ const features = [
       </svg>
     ),
   },
+  {
+    title: "Explore Alternatives (Coming Soon)",
+    description:
+      "At any step, if an option that wasn't selected seems like the better choice, simply click on it and a full classfication using that option will begin.",
+    svg: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth="1.5"
+        stroke="currentColor"
+        className="size-6"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z"
+        />
+      </svg>
+    ),
+  },
 ] as Feature[];
-
-// we go step by step
-// we show you all options that were available
-// we select the best and give you the reason why
-// See all options at every step and understand why we selected the one we did
-// Coming soon (Interactive Explorer!)
 
 // An SEO-friendly accordion component including the title and a description (when clicked.)
 const Item = ({
@@ -173,7 +181,7 @@ const Item = ({
 
         {isOpen ? (
           <ChevronDownIcon
-            className={"text-white h-4 w-4"}
+            className={"text-white h-6 w-6"}
             onClick={(e) => {
               e.preventDefault();
               setFeatureSelected();
@@ -181,7 +189,7 @@ const Item = ({
           />
         ) : (
           <ChevronRightIcon
-            className={"text-white h-4 w-4"}
+            className={"text-white h-6 w-6"}
             onClick={(e) => {
               e.preventDefault();
               setFeatureSelected();
@@ -209,7 +217,6 @@ const Item = ({
 // Video are set to autoplay for best UX.
 const Media = ({ feature }: { feature: Feature }) => {
   const { type, path, format, alt } = feature;
-  // lg:bg-gradient-to-br lg:from-black lg:via-[#40C969] lg:via-40% lg:via-black lg:via-50%
   const style = "w-full sm:max-w-2xl rounded-3xl";
   const size = {
     width: 500,
@@ -259,9 +266,6 @@ const FeaturesAccordion = () => {
       <div className="px-8">
         <h2 className="font-extrabold text-4xl lg:text-6xl tracking-tight mb-12 md:mb-24">
           Type Description, Get Code
-          {/* <span className="inline-block bg-neutral text-neutral-content px-2 md:px-4 ml-1 md:ml-1.5 mt-4">
-            Get HTS code
-          </span> */}
         </h2>
         <div className=" flex flex-col md:flex-row gap-12 md:gap-24">
           <div className="grid grid-cols-1 items-stretch gap-8 sm:gap-12 lg:grid-cols-2 lg:gap-20">
@@ -277,7 +281,7 @@ const FeaturesAccordion = () => {
               ))}
             </ul>
 
-            <div className="w-full flex justify-center">
+            <div className="w-full h-fit flex justify-center self-center">
               <Media
                 feature={features[featureSelected]}
                 key={featureSelected}

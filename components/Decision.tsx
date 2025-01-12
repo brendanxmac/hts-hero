@@ -17,9 +17,7 @@ export const Decision = (decision: HtsLevelClassification) => {
         showDetails={showDetails}
         setShowDetails={setShowDetails}
       />
-      {showDetails && (
-        <DecisionDetails decision={decision} showDetails={setShowDetails} />
-      )}
+      {showDetails && <DecisionDetails decision={decision} />}
     </Cell>
   );
 };

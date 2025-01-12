@@ -4,7 +4,7 @@ import { Cell } from "./Cell";
 import { PrimaryInformation } from "./PrimaryInformation";
 import { SectionLabel } from "./SectionLabel";
 import { findFirstElementInProgressionWithTariff } from "../libs/hts";
-import { LabelledLoader } from "./LabelledLoader";
+import { LoadingDots } from "./LabelledLoader";
 import { TariffDetails } from "./TariffDetails";
 import { Tariff } from "../app/classes/tariff";
 import { TariffSummary } from "./TariffSummary";
@@ -65,7 +65,7 @@ export const TariffSection = ({
 
           {loading && (
             <div className="my-3 min-w-full max-w-3xl col-span-full">
-              <LabelledLoader text="" />
+              <LoadingDots />
             </div>
           )}
         </div>
