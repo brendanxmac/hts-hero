@@ -40,14 +40,14 @@ const Problem = () => {
         <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-8 sm:gap-3 mb-16">
           <div className="flex flex-col justify-center items-center">
             <Step emoji="😅" text="Constant Updates" />
-            <p className="text-neutral-600 text-xs italic">ChatGPT fails</p>
+            <p className="text-neutral-500 text-xs italic">ChatGPT fails</p>
           </div>
 
           <Arrow extraStyle="max-md:-scale-x-100 md:-rotate-90" />
 
           <div className="flex flex-col justify-center items-center">
             <Step emoji="⏳" text="Temporary Changes" />
-            <p className="text-neutral-600 text-xs italic">
+            <p className="text-neutral-500 text-xs italic">
               e.g. Trump Tariffs
             </p>
           </div>
@@ -56,7 +56,7 @@ const Problem = () => {
 
           <div className="flex flex-col justify-center items-center">
             <Step emoji="😵‍💫" text="Confusing References" />
-            <p className="text-neutral-600 text-xs italic">
+            <p className="text-neutral-500 text-xs italic">
               &quot;See Note 32(xii)(b)(ii)&quot;
             </p>
           </div>
