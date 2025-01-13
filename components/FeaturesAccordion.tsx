@@ -116,7 +116,7 @@ const features = [
   {
     title: "Explore Alternatives (Coming Soon)",
     description:
-      "At any step, if an option that wasn't selected seems like the better choice, simply click on it and a full classfication using that option will begin.",
+      "Think there's a different code that's a better match at any step? Soon you'll be able to select another code from the list and HTS Hero will automatically compute the full classification and tariff for you.",
     svg: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
