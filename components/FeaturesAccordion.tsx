@@ -231,7 +231,6 @@ const Media = ({ feature }: { feature: Feature }) => {
         muted
         loop
         playsInline
-        controls
         width={size.width}
         height={size.height}
       >

@@ -18,7 +18,6 @@ export default async function LayoutPrivate({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    console.log("NO USER");
     redirect(config.auth.loginUrl);
   }
 
