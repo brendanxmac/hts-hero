@@ -113,7 +113,7 @@ export default function Login() {
               />
             </svg>
           )}
-          Sign-up with Google
+          Continue with Google
         </button>
 
         <div className="divider text-xs text-base-content/50 font-medium">

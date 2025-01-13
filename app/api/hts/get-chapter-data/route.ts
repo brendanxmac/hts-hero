@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "../../../../libs/supabase/server";
 import { readFile } from "fs/promises";
+import path from "path";
 
 export const dynamic = "force-dynamic";
 
@@ -38,10 +39,15 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Invalid Chapter" }, { status: 400 });
     }
 
-    const chapterData = await readFile(
-      `${process.cwd()}/public/hts-chapters/${Number(chapter)}.json`,
-      "utf8"
+    const chapterFilePath = path.join(
+      process.cwd(),
+      "hts-chapters",
+      `${Number(chapter)}.json`
     );
+
+    console.log(`File Path: ${chapterFilePath}`);
+
+    const chapterData = await readFile(chapterFilePath, "utf8");
 
     return NextResponse.json(JSON.parse(chapterData));
   } catch (e) {
