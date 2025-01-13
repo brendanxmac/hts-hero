@@ -12,7 +12,7 @@ const CTA = () => {
             Make HTS Codes Easy!
           </h2>
           <p className="md:text-lg opacity-80 mb-12 md:mb-16">
-            From yourself from reading through endless PDF&apos;s and hoping you
+            Save yourself from reading through endless PDF&apos;s and hoping you
             didn&apos;t miss something, or hiring someone for more who takes 10x
             longer
           </p>
