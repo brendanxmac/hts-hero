@@ -21,7 +21,7 @@ const faqList: FAQItemProps[] = [
       <div className="flex flex-col gap-2">
         <p className="text-2xl font-bold">Free!</p>
         <p>
-          While we&apos;re in beta all usage of HTS Hero is free, but if you
+          While we&apos;re in Beta all usage of HTS Hero is free, but if you
           feel like helping us out you can share it with anyone who might get
           some value from it.
         </p>
@@ -36,7 +36,7 @@ const faqList: FAQItemProps[] = [
         you&apos;ll immdeiately have access to the HTS lookup tool & the
         features mentioned above.
         <span className="block mt-3 text-xs">
-          <sup>*</sup>Everyone has unlimited credits while we&apos;re in beta,
+          <sup>*</sup>Everyone has unlimited credits while we&apos;re in Beta,
           however there are limits on overall daily usage so I can afford to eat
           tomorrow 😆.
         </span>
