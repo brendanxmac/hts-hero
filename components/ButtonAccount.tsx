@@ -55,10 +55,10 @@ const ButtonAccount = () => {
   };
 
   return (
-    <Popover className="relative z-10">
+    <Popover>
       {({ open }) => (
-        <>
-          <Popover.Button className="btn rounded-lg bg-neutral-900">
+        <div>
+          <Popover.Button className="btn rounded-lg bg-neutral-900 overflow-clip">
             {user?.user_metadata?.avatar_url ? (
               <img
                 src={user?.user_metadata?.avatar_url}
@@ -106,9 +106,9 @@ const ButtonAccount = () => {
             leaveFrom="transform scale-100 opacity-100"
             leaveTo="transform scale-95 opacity-0"
           >
-            <Popover.Panel className="absolute left-0 z-10 mt-3 w-screen max-w-[16rem] transform">
-              <div className="overflow-hidden rounded-xl shadow-xl ring-1 ring-base-content ring-opacity-5 bg-base-100 p-1">
-                <div className="space-y-0.5 text-sm">
+            <Popover.Panel className="rounded-md border-2 border-neutral-800 absolute z-10 right-0 mt-3 w-screen max-w-[8rem]">
+              <div className="w-full rounded-xl shadow-xl ring-1 ring-base-content ring-opacity-5 bg-base-100 p-1">
+                <div className="space-y-0.5 text-sm flex flex-col w-full">
                   <button
                     className="flex items-center gap-2 hover:bg-base-300 duration-200 py-1.5 px-4 w-full rounded-lg font-medium"
                     onClick={handleBilling}
@@ -154,7 +154,7 @@ const ButtonAccount = () => {
               </div>
             </Popover.Panel>
           </Transition>
-        </>
+        </div>
       )}
     </Popover>
   );

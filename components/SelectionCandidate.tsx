@@ -17,7 +17,7 @@ export const SelectionCandidate = ({ code, description, selected }: Props) => {
       )}
     >
       {selected ? (
-        <CheckIcon className="shink-0 h-6 w-6 text-[#319c51] font-bold" />
+        <CheckIcon className="shrink-0 h-6 w-6 text-[#319c51] font-bold" />
       ) : (
         <XMarkIcon className="shrink-0 h-5 6-6 text-neutral-600" />
       )}
