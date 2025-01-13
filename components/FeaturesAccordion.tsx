@@ -20,7 +20,7 @@ const features = [
   {
     title: "Results in Seconds",
     description:
-      "Type in your product description and in seconds you'll have your HTS code plus tariff",
+      "Type in your product description and in seconds, you'll have your HTS code plus tariff",
     type: "video",
     path: "/results-in-seconds.mp4",
     format: "video/mp4",
@@ -44,9 +44,9 @@ const features = [
   {
     title: "Step by Step",
     description:
-      "For each level of the HTS classificaiton, we show you all of the current available options to choose from. This allows you to easily explore the alternatives & verify the selected option.",
+      "We move step by step through the entire classification and show you all availavle options at every level. This allows you to easily explore alternatives & verify the selected option.",
     type: "video",
-    path: "/step-by-step-2.mp4",
+    path: "/step-by-step.mp4",
     format: "video/mp4",
     svg: (
       <svg
@@ -68,7 +68,7 @@ const features = [
   {
     title: "Selection Logic",
     description:
-      "We explain why we chose the selected option over all the others at every step. This makes selection verification ever easier for you, and is a great resource to have if customs asks how the code was determined later on.",
+      "For each step we provide the reason why we chose the option we did. This helps you further verify the selection and is a useful resource to have if customs asks how the code was determined",
     type: "image",
     alt: "Selection Logic Image",
     path: "/selection-logic.png",
