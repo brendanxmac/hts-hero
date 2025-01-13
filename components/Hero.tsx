@@ -1,4 +1,5 @@
 import config from "@/config";
+import Link from "next/link";
 
 const Hero = () => {
   return (
@@ -12,9 +13,11 @@ const Hero = () => {
           Save hours of work, avoid potential fines, and determine your import
           costs for the price of a gumball
         </p>
-        <button className="btn btn-primary btn-wide bg-neutral-100 text-black rounded-md hover:text-neutral-100">
-          Get {config.appName}
+
+        <button className="btn btn-primary btn-wide rounded-md">
+          <Link href={config.auth.loginUrl}>Try it free!</Link>
         </button>
+
         {/* <TestimonialsAvatars priority={true} /> */}
       </div>
       <div className="lg:w-full flex justify-center">
