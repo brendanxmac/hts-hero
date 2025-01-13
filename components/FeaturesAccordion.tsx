@@ -68,7 +68,7 @@ const features = [
   {
     title: "Selection Logic",
     description:
-      "For each step we provide the reason why we chose the option we did. This helps you further verify the selection and is a useful resource to have if customs asks how the code was determined",
+      "For each step we provide the reason why we chose the option we did. This helps you further verify the selection and is a useful resource if customs asks how the code was determined",
     type: "image",
     alt: "Selection Logic Image",
     path: "/selection-logic.png",
