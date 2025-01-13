@@ -24,7 +24,6 @@ const Hero = () => {
           muted
           loop
           playsInline
-          controls
           src="/hero-demo.mp4"
         ></video>
       </div>
