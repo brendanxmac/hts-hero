@@ -3,6 +3,8 @@
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 import { useRef, useState } from "react";
 import type { JSX } from "react";
+import config from "@/config";
+import Link from "next/link";
 
 // <FAQ> component is a lsit of <Item> component
 // Just import the FAQ & add your FAQ content to the const faqList arrayy below.
@@ -38,6 +40,17 @@ const faqList: FAQItemProps[] = [
           however there are limits on overall daily usage so I can afford to eat
           tomorrow 😆.
         </span>
+      </div>
+    ),
+  },
+  {
+    question: "How can I get access?",
+    answer: (
+      <div className="leading-relaxed flex flex-col gap-2">
+        <p>All you need is an account! </p>
+        <button className="btn btn-wide bg-white rounded-md text-black hover:bg-neutral-800 hover:text-white">
+          <Link href={config.auth.loginUrl}>Sign Up Now</Link>
+        </button>
       </div>
     ),
   },
