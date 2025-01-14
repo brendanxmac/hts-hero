@@ -92,7 +92,6 @@ export const getTemporaryTariffs = async (
 
   // If none, great, found simple tariff
   if (tariffFootnotes.length === 0) {
-    console.log("No Tariff Footnotes");
     return [];
   }
 
@@ -235,7 +234,6 @@ export const getBestIndentLevelMatch = async (
   indentLevel: number,
   selectionProgression: HtsLevelClassification[] = []
 ): Promise<HtsLevelClassification[]> => {
-  console.log(`Indent ${indentLevel}`);
   let elementsAtIndent = elementsAtClassificationLevel(elements, indentLevel);
   const descriptionsForElements = getHtsElementDescriptions(elementsAtIndent);
   const bestMatchResponse: Array<ChatCompletion.Choice> = await apiClient.post(
@@ -330,11 +328,10 @@ export const getHSChapter = async (productDescription: string) => {
 
   // TODO: Consider doing this for all headings
   // TODO: Consider jumping right to heading and not back to chapter...
+  //  especially since this take the most time -- however don't sacrifice accuracy
 
   const parsed: HsHeading[] = JSON.parse(hsHeadings);
-  console.log(parsed);
   const chapter = parsed[0].heading.substring(0, 2);
-  console.log(`Chapter ${chapter}`);
 
   return chapter;
 };
@@ -369,8 +366,6 @@ export const getNextChunkEndIndex = (
       return i - 1;
     }
   }
-
-  console.log(`selected element for ${classificationLevel} was end of list`);
 
   return htsElementsChunk.length;
 };
