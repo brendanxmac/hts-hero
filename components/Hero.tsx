@@ -14,9 +14,12 @@ const Hero = () => {
           costs for the price of a gumball
         </p>
 
-        <button className="btn btn-primary btn-wide rounded-md">
-          <Link href={config.auth.loginUrl}>Try it free!</Link>
-        </button>
+        <Link
+          className="btn btn-primary bg-white text-black hover:text-white btn-wide rounded-md"
+          href={config.auth.callbackUrl}
+        >
+          Try it free!
+        </Link>
 
         {/* <TestimonialsAvatars priority={true} /> */}
       </div>
