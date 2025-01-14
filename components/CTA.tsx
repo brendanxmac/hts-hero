@@ -1,5 +1,4 @@
 import config from "@/config";
-import { redirect, RedirectType } from "next/navigation";
 import Link from "next/link";
 
 const CTA = () => {
@@ -17,9 +16,12 @@ const CTA = () => {
             longer
           </p>
 
-          <button className="btn btn-primary btn-wide rounded-md">
-            <Link href={config.auth.loginUrl}>Get {config.appName}</Link>
-          </button>
+          <Link
+            className="btn btn-primary bg-white text-black hover:text-white btn-wide rounded-md"
+            href={config.auth.loginUrl}
+          >
+            Get {config.appName}
+          </Link>
         </div>
       </div>
     </section>
