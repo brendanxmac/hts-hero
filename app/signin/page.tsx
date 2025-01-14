@@ -45,7 +45,9 @@ export default function Login() {
           },
         });
 
-        toast.success("Check your emails!");
+        toast.success(
+          "Check for an email from Supabase Auth! (including spam)"
+        );
 
         setIsDisabled(true);
       }
