@@ -21,7 +21,10 @@ export async function updateSession(
             request,
           });
           cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
+            response.cookies.set(name, value, {
+              ...options,
+              domain: ".htshero.com",
+            })
           );
         },
       },
