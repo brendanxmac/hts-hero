@@ -1,27 +1,8 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { type NextRequest } from "next/server";
 import { updateSession } from "@/libs/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
-  const url = request.nextUrl.clone();
-  const host = request.headers.get("host");
-
-  // FIXME: I think this should add the cookies no matter what we do...
-
-  // Check if the host is `app.htshero.com`
-  if (host === "app.htshero.com") {
-    // Rewrite to the `/app` route
-    url.pathname = `/app${url.pathname}`;
-    const response = await updateSession(request, NextResponse.rewrite(url));
-
-    return response;
-  }
-
-  return await updateSession(
-    request,
-    NextResponse.next({
-      request,
-    })
-  );
+  return await updateSession(request);
 }
 
 export const config = {
