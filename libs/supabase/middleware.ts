@@ -43,7 +43,7 @@ export async function updateSession(
   await supabase.auth.getUser();
 
   console.log(`Response Cookies: `);
-  console.log(response.cookies);
+  console.log(response.cookies.getAll());
 
   return response;
 }
