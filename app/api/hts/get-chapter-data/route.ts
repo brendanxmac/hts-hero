@@ -45,8 +45,6 @@ export async function GET(req: NextRequest) {
       `${Number(chapter)}.json`
     );
 
-    console.log(`File Path: ${chapterFilePath}`);
-
     const chapterData = await readFile(chapterFilePath, "utf8");
 
     return NextResponse.json(JSON.parse(chapterData));
