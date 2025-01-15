@@ -11,14 +11,6 @@ const nextConfig = {
       "logos-world.net",
     ],
   },
-  rewrites: () => {
-    return [
-      {
-        source: "/app/:path*",
-        destination: "/app/:path*", // Keep the mapping consistent
-      },
-    ];
-  },
 };
 
 module.exports = nextConfig;
