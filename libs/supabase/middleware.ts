@@ -20,12 +20,11 @@ export async function updateSession(
           response = NextResponse.next({
             request,
           });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, {
-              ...options,
-              domain: ".htshero.com",
-            })
-          );
+          cookiesToSet.forEach(({ name, value, options }) => {
+            console.log(name);
+            console.log(value);
+            response.cookies.set(name, value, options);
+          });
         },
       },
     }
