@@ -11,19 +11,28 @@ export async function updateSession(
     {
       cookies: {
         getAll() {
+          console.log("GET ALL");
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
+          console.log("SET ALL");
+          cookiesToSet.forEach(({ name, value }) => {
+            console.log("yipee");
+            console.log(name);
+            request.cookies.set(name, value);
+          });
           response = NextResponse.next({
             request,
           });
           cookiesToSet.forEach(({ name, value, options }) => {
+            console.log("lol");
             console.log(name);
-            console.log(value);
-            response.cookies.set(name, value, options);
+            response.cookies.set(name, value, {
+              ...options,
+              sameSite: "lax",
+              secure: process.env.NODE_ENV === "production",
+              domain: ".htshero.com",
+            });
           });
         },
       },
@@ -32,6 +41,9 @@ export async function updateSession(
 
   // refreshing the auth token
   await supabase.auth.getUser();
+
+  console.log(`Response Cookies: `);
+  console.log(response.cookies);
 
   return response;
 }
