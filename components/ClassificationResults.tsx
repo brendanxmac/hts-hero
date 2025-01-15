@@ -60,8 +60,6 @@ export const ClassificationResults = ({
       htsDescription
     );
 
-    // TODO: how to handle any error cases (e.g. index isNaN)
-    console.log(`Best Match Index: ${bestMatchResponse.index}`);
     const bestMatchElement = elementsAtLevel[Number(bestMatchResponse.index)];
 
     setHtsDescription(
