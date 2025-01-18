@@ -3,8 +3,8 @@ import Link from "next/link";
 
 const CTA = () => {
   return (
-    <section className="bg-black hero overflow-hidden min-h-screen">
-      <div className="relative hero-overlay bg-black"></div>
+    <section className="bg-neutral-900 hero overflow-hidden min-h-[75vh]">
+      <div className="relative hero-overlay bg-neutral-900"></div>
       <div className="relative hero-content text-center text-neutral-content p-8">
         <div className="flex flex-col items-center max-w-3xl p-8 md:p-0">
           <h2 className="font-bold text-4xl md:text-6xl tracking-tight mb-8 md:mb-12">
