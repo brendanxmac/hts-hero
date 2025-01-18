@@ -50,26 +50,24 @@ export default function SearchInput({
   };
 
   return (
-    <div className="w-full max-w-2xl flex flex-col gap-2 bg-black py-4">
+    <div className="w-full flex flex-col gap-2 bg-black py-4 items-center">
       <div
         className={
-          "w-full flex flex-col gap-2 bg-neutral-900 items-start rounded-2xl px-4 py-3 mx-auto"
+          "w-full sm:max-w-2xl flex flex-col gap-2 bg-neutral-900 rounded-2xl px-4 py-3"
         }
       >
-        <div className="w-full flex">
-          <textarea
-            ref={textareaRef}
-            placeholder={placeholder}
-            rows={1}
-            value={localProductDescription}
-            onChange={handleInputChange}
-            // @ts-ignore
-            onKeyDown={handleKeyDown}
-            className="flex-grow resize-none bg-inherit text-neutral-300 placeholder-neutral-600 focus:ring-0 focus:outline-none text-sm"
-          ></textarea>
-        </div>
+        <textarea
+          ref={textareaRef}
+          placeholder={placeholder}
+          rows={1}
+          value={localProductDescription}
+          onChange={handleInputChange}
+          // @ts-ignore
+          onKeyDown={handleKeyDown}
+          className="resize-none bg-inherit text-neutral-300 placeholder-neutral-600 focus:ring-0 focus:outline-none"
+        ></textarea>
 
-        <div className="w-full flex justify-between items-center">
+        <div className="flex justify-between items-center">
           <p
             className={classNames(
               "text-neutral-500 text-xs",
