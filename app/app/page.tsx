@@ -8,7 +8,7 @@ export default function Home() {
   const [productDescription, setProductDescription] = useState("");
 
   return (
-    <main className="h-dvh grow overflow-auto flex flex-col px-3">
+    <main className="h-svh grow overflow-auto flex flex-col px-3">
       {productDescription ? (
         <Classification
           productDescription={productDescription}
