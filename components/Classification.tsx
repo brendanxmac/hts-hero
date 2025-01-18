@@ -44,7 +44,7 @@ export const Classification = ({
         </div>
       </div>
 
-      <div className="bg-black sticky bottom-0 w-full justify-items-center px-4">
+      <div className="bg-black sticky bottom-0 w-full px-4 justify-items-center">
         <SearchInput
           placeholder="Enter product description"
           setProductDescription={setProductDescription}
