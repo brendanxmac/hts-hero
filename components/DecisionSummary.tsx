@@ -36,7 +36,7 @@ export const DecisionSummary = ({
       <div className="flex flex-col gap-1">
         {code && (
           <div className="flex gap-2 items-center">
-            <h2 className="text-white font-bold text-xl md:text-2xl">{code}</h2>
+            <h2 className="text-white font-bold md:text-xl">{code}</h2>
             <button
               onClick={() => {
                 copyToClipboard(code);

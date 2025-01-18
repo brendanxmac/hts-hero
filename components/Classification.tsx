@@ -29,7 +29,7 @@ export const Classification = ({
   return (
     <section
       ref={scrollableRef}
-      className="grow h-full overflow-auto flex flex-col items-center overflow-y-auto"
+      className="grow h-full overflow-auto flex flex-col items-center"
     >
       <div className="grow w-full mt-2 items-center flex flex-col max-w-3xl">
         <div className="w-full bg-black bg-opacity-95 pb-4 border-b border-neutral-800 shadow-neutral-600">
