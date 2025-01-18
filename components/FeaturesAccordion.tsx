@@ -44,7 +44,7 @@ const features = [
   {
     title: "Step by Step",
     description:
-      "We move step by step through the entire classification and show you all availavle options at every level. This allows you to easily explore alternatives & verify the selected option.",
+      "We move step by step through the product classification and show you all available options at every level. This allows you to easily explore alternatives & verify the selected option.",
     type: "video",
     path: "/step-by-step.mp4",
     format: "video/mp4",
@@ -68,7 +68,7 @@ const features = [
   {
     title: "Selection Logic",
     description:
-      "For each step we provide the reason why we chose the option we did. This helps you further verify the selection and is a useful resource if customs asks how the code was determined",
+      "For each step we include the reason why we chose the selected option. This helps you verify the selection and is a useful resource if customs asks how the code was determined",
     type: "image",
     alt: "Selection Logic Image",
     path: "/selection-logic.png",
