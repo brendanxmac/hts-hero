@@ -27,16 +27,16 @@ export const Classification = ({
   }, [updateScrollHeight]);
 
   return (
-    <section className="grow h-full overflow-auto flex flex-col items-center">
-      <div className="grow w-full mt-2 items-center flex flex-col max-w-4xl overflow-y-scroll mb-4">
-        <div className="sticky top-0 w-full bg-black bg-opacity-95 pb-4 border-b border-neutral-800 shadow-neutral-600">
+    <section
+      ref={scrollableRef}
+      className="grow h-full overflow-auto flex flex-col items-center overflow-y-auto"
+    >
+      <div className="grow w-full mt-2 items-center flex flex-col max-w-3xl">
+        <div className="w-full bg-black bg-opacity-95 pb-4 border-b border-neutral-800 shadow-neutral-600">
           <ProductDescriptionHeader description={productDescription} />
         </div>
 
-        <div
-          ref={scrollableRef}
-          className="flex flex-col min-w-full max-w-4xl gap-2 items-center overflow-y-auto"
-        >
+        <div className="flex flex-col min-w-full max-w-3xl gap-2 items-center">
           <ClassificationResults
             productDescription={productDescription}
             setUpdateScrollHeight={setUpdateScrollHeight}
@@ -44,10 +44,12 @@ export const Classification = ({
         </div>
       </div>
 
-      <SearchInput
-        placeholder="Enter another product description"
-        setProductDescription={setProductDescription}
-      />
+      <div className="bg-black sticky bottom-0 w-full justify-items-center px-4">
+        <SearchInput
+          placeholder="Enter product description"
+          setProductDescription={setProductDescription}
+        />
+      </div>
     </section>
   );
 };
