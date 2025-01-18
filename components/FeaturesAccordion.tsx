@@ -140,6 +140,7 @@ const features = [
 const Item = ({
   feature,
   isOpen,
+  index,
   setFeatureSelected,
 }: {
   index: number;
@@ -151,7 +152,7 @@ const Item = ({
   const { title, description, svg } = feature;
 
   return (
-    <li className="my-2">
+    <li className="flex flex-col">
       <div className="flex justify-between items-center">
         <button
           className="relative flex gap-2 items-center w-full py-5 text-base font-bold text-left md:text-lg"
@@ -200,14 +201,17 @@ const Item = ({
 
       <div
         ref={accordion}
-        className={`transition-all duration-300 ease-in-out text-base-content-secondary overflow-hidden`}
+        className={`transition-all duration-300 ease-in-out text-base-content-secondary overflow-hidden flex flex-col gap-4`}
         style={
           isOpen
             ? { maxHeight: accordion?.current?.scrollHeight, opacity: 1 }
             : { maxHeight: 0, opacity: 0 }
         }
       >
-        <div className="pb-5 leading-relaxed">{description}</div>
+        <div className="">{description}</div>
+        <div className="w-full h-full flex justify-center self-center xl:hidden">
+          <Media feature={features[index]} key={index} />
+        </div>
       </div>
     </li>
   );
@@ -217,7 +221,7 @@ const Item = ({
 // Video are set to autoplay for best UX.
 const Media = ({ feature }: { feature: Feature }) => {
   const { type, path, format, alt } = feature;
-  const style = "w-full sm:max-w-2xl rounded-3xl";
+  const style = "w-full rounded-2xl sm:max-w-2xl sm:rounded-3xl";
   const size = {
     width: 500,
     height: 500,
@@ -262,13 +266,13 @@ const FeaturesAccordion = () => {
       className="py-24 md:py-32 space-y-24 md:space-y-32 max-w-7xl mx-auto bg-base-100 "
       id="features"
     >
-      <div className="px-8">
+      <div className="px-3">
         <h2 className="font-extrabold text-4xl lg:text-6xl tracking-tight mb-12 md:mb-24">
           Type Description, Get Code
         </h2>
         <div className=" flex flex-col md:flex-row gap-12 md:gap-24">
-          <div className="grid grid-cols-1 items-stretch gap-8 sm:gap-12 lg:grid-cols-2 lg:gap-20">
-            <ul className="w-full">
+          <div className="grid grid-cols-1 items-stretch gap-8 sm:gap-12 xl:grid-cols-2 lg:gap-20">
+            <ul className="w-full xl:flex xl:flex-col xl:gap-5">
               {features.map((feature, i) => (
                 <Item
                   key={feature.title}
@@ -280,7 +284,7 @@ const FeaturesAccordion = () => {
               ))}
             </ul>
 
-            <div className="w-full h-fit flex justify-center self-center">
+            <div className="w-full h-fit justify-center self-center hidden xl:flex">
               <Media
                 feature={features[featureSelected]}
                 key={featureSelected}

@@ -20,8 +20,8 @@ export default function Home() {
         <Problem />
         <FeaturesAccordion />
         {/* <Pricing /> */}
-        <FAQ />
         <CTA />
+        <FAQ />
       </main>
       <Footer />
     </>
