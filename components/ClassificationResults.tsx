@@ -3,8 +3,11 @@ import {
   getBestMatchAtClassificationLevel,
   getHSChapter,
   getHtsChapterData,
+  getHtsChapters,
   getHtsLevel,
+  getHtsSections,
   getNextChunk,
+  Section,
   updateHtsDescription,
 } from "../libs/hts";
 import {
@@ -98,9 +101,53 @@ export const ClassificationResults = ({
 
   const getFullHtsCode = async () => {
     setLoading(true);
-    const hsChapter = await getHSChapter(productDescription);
-    const chapterData = await getHtsChapterData(hsChapter);
-    // setHtsElementsChunk(setIndexInArray(chapterData));
+    // Get Sections (top 3) -- just pick best
+    const sectionsResponse = await getHtsSections();
+    console.log(`Sections:`);
+    console.log(sectionsResponse.sections);
+
+    // Hit Chat GPT to get the best for the description
+    const bestMatchSection = await getBestMatchAtClassificationLevel(
+      [],
+      0,
+      productDescription,
+      "",
+      sectionsResponse.sections
+    );
+
+    console.log("Best Section:");
+    console.log(bestMatchSection);
+    console.log(sectionsResponse.sections[bestMatchSection.index]);
+
+    // Get Chapters (top 3 from each ^^) -- just pick best from the bunch
+    const chaptersResponse: { sections: Section[] } = await getHtsChapters();
+    console.log("chapters:");
+    console.log(chaptersResponse);
+    console.log(chaptersResponse.sections[bestMatchSection.index]);
+
+    // Hit Chat GPT to get the best for the description
+    const bestMatchChapter = await getBestMatchAtClassificationLevel(
+      [],
+      0,
+      productDescription,
+      sectionsResponse.sections[bestMatchSection.index],
+      chaptersResponse.sections[bestMatchSection.index].map(
+        (c) => c.description
+      )
+    );
+
+    console.log("Best Chapter:");
+    console.log(bestMatchChapter);
+
+    // Then get chapter data (via function below)
+    // const hsChapter = await getHSChapter(productDescription);
+    const chapterData = await getHtsChapterData(
+      chaptersResponse.sections[bestMatchSection.index][bestMatchChapter.index]
+        .chapter
+    );
+    console.log("chapterData");
+    console.log(chapterData);
+    setHtsElementsChunk(setIndexInArray(chapterData));
   };
 
   useEffect(() => {

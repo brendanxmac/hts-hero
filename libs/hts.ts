@@ -198,9 +198,10 @@ export const getBestMatchAtClassificationLevel = async (
   elementAtLevel: HtsWithParentReference[],
   indentLevel: number,
   productDescription: string,
-  htsDescription: string
+  htsDescription: string,
+  descs?: string[]
 ): Promise<MatchResponse> => {
-  const descriptions = getHtsElementDescriptions(elementAtLevel);
+  const descriptions = descs || getHtsElementDescriptions(elementAtLevel);
   const bestMatchResponse: Array<ChatCompletion.Choice> = await apiClient.post(
     "/openai/get-best-description-match",
     {
@@ -339,6 +340,21 @@ export const getHSChapter = async (productDescription: string) => {
   const chapter = parsed.candidates[0].section.substring(0, 2);
 
   return chapter;
+};
+
+export const getHtsSections = (): Promise<{ sections: string[] }> => {
+  return apiClient.get("/hts/get-sections", {});
+};
+
+interface Chapter {
+  chapter: string;
+  description: string;
+}
+
+export type Section = Chapter[];
+
+export const getHtsChapters = (): Promise<{ sections: Section[] }> => {
+  return apiClient.get("/hts/get-chapters", {});
 };
 
 export const getHtsChapterData = (chapter: string): Promise<HtsElement[]> => {
