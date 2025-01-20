@@ -323,6 +323,8 @@ export const getHSChapter = async (productDescription: string) => {
 
   const hsHeadings = hsHeadingsResponse[0].message.content;
 
+  console.log(hsHeadings);
+
   if (!hsHeadings)
     throw new Error(`failed to get HS Headings for product description`);
 
@@ -330,8 +332,11 @@ export const getHSChapter = async (productDescription: string) => {
   // TODO: Consider jumping right to heading and not back to chapter...
   //  especially since this take the most time -- however don't sacrifice accuracy
 
-  const parsed: HsHeading[] = JSON.parse(hsHeadings);
-  const chapter = parsed[0].heading.substring(0, 2);
+  // const parsed: HsHeading[] = JSON.parse(hsHeadings);
+  const parsed: { candidates: HsHeading[] } = JSON.parse(hsHeadings);
+  console.log(`Headings:`);
+  console.log(parsed.candidates);
+  const chapter = parsed.candidates[0].section.substring(0, 2);
 
   return chapter;
 };

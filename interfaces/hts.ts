@@ -26,13 +26,13 @@ export interface Footnote {
 }
 
 export interface HsHeading {
-  heading: string;
+  section: string;
   description: string;
   logic: string;
 }
 
 export interface MatchResponse {
-  index: string;
+  index: number;
   logic: string;
 }
 

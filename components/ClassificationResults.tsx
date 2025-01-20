@@ -60,7 +60,10 @@ export const ClassificationResults = ({
       htsDescription
     );
 
-    const bestMatchElement = elementsAtLevel[Number(bestMatchResponse.index)];
+    console.log("bestMatchResponse:");
+    console.log(bestMatchResponse);
+
+    const bestMatchElement = elementsAtLevel[bestMatchResponse.index];
 
     setHtsDescription(
       updateHtsDescription(htsDescription, bestMatchElement.description)
@@ -97,7 +100,7 @@ export const ClassificationResults = ({
     setLoading(true);
     const hsChapter = await getHSChapter(productDescription);
     const chapterData = await getHtsChapterData(hsChapter);
-    setHtsElementsChunk(setIndexInArray(chapterData));
+    // setHtsElementsChunk(setIndexInArray(chapterData));
   };
 
   useEffect(() => {
