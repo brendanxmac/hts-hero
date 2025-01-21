@@ -1,5 +1,10 @@
 import { HtsLevel } from "../enums/hts";
 
+export interface HtsSectionOrChapter {
+  number: number;
+  description: string;
+}
+
 export interface HtsWithParentReference extends HtsElement {
   indexInParentArray: number; // used to grab window ranges in the parent array
 }
@@ -38,8 +43,8 @@ export interface MatchResponse {
 
 export interface HtsLevelClassification {
   level: HtsLevel;
-  candidates: HtsElement[];
-  selection: HtsElement;
+  candidates: HtsElement[] | HtsSectionOrChapter[];
+  selection: HtsElement | HtsSectionOrChapter;
   reasoning: string;
 }
 

@@ -3,6 +3,7 @@ import { HtsLevelClassification } from "../interfaces/hts";
 import { DecisionSummary } from "./DecisionSummary";
 import { DecisionDetails } from "./DecisionDetails";
 import { Cell } from "./Cell";
+import { getCodeFromHtsPrimitive } from "../libs/hts";
 
 export const Decision = (decision: HtsLevelClassification) => {
   const { level, selection } = decision;
@@ -12,7 +13,7 @@ export const Decision = (decision: HtsLevelClassification) => {
     <Cell>
       <DecisionSummary
         level={level}
-        code={selection.htsno}
+        code={getCodeFromHtsPrimitive(selection)}
         description={selection.description}
         showDetails={showDetails}
         setShowDetails={setShowDetails}

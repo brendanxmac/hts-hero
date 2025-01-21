@@ -6,6 +6,7 @@ import {
   HsHeading,
   HtsElement,
   TemporaryTariff,
+  HtsSectionOrChapter,
 } from "../interfaces/hts";
 import {
   elementsAtClassificationLevel,
@@ -172,6 +173,7 @@ export const getHtsLevel = (htsCode: string): HtsLevel => {
   const sanitizedInput = htsCode.trim().replace(/\.*$/g, "");
 
   // Define regular expressions for each HTS level
+  const chapterRegex = /^\d{2}$/; // Matches "xx"
   const headingRegex = /^\d{4}$/; // Matches "xxxx"
   const subheadingRegex = /^\d{4}\.\d{2}$/; // Matches "xxxx.xx"
   const usSubheadingRegex = /^\d{4}\.\d{2}\.\d{2}$/; // Matches "xxxx.xx.xx"
@@ -180,6 +182,8 @@ export const getHtsLevel = (htsCode: string): HtsLevel => {
   // Determine the HTS classification level
   if (sanitizedInput === "") {
     return HtsLevel.PREQUALIFIER;
+  } else if (chapterRegex.test(sanitizedInput)) {
+    return HtsLevel.CHAPTER;
   } else if (headingRegex.test(sanitizedInput)) {
     return HtsLevel.HEADING;
   } else if (subheadingRegex.test(sanitizedInput)) {
@@ -342,18 +346,28 @@ export const getHSChapter = async (productDescription: string) => {
   return chapter;
 };
 
-export const getHtsSections = (): Promise<{ sections: string[] }> => {
+export const getCodeFromHtsPrimitive = (
+  htsPrimitive: HtsElement | HtsSectionOrChapter
+): string => {
+  if ("htsno" in htsPrimitive) {
+    return htsPrimitive.htsno;
+  } else if ("number" in htsPrimitive) {
+    return String(htsPrimitive.number);
+  } else {
+    console.error("Failed to extract code from selection", htsPrimitive);
+    throw new Error("Failed to extract code from selection");
+  }
+};
+
+export const getHtsSections = (): Promise<{
+  sections: HtsSectionOrChapter[];
+}> => {
   return apiClient.get("/hts/get-sections", {});
 };
 
-interface Chapter {
-  chapter: string;
-  description: string;
-}
-
-export type Section = Chapter[];
-
-export const getHtsChapters = (): Promise<{ sections: Section[] }> => {
+export const getHtsChapters = (): Promise<{
+  sections: HtsSectionOrChapter[][];
+}> => {
   return apiClient.get("/hts/get-chapters", {});
 };
 

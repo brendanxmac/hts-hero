@@ -12,6 +12,7 @@ import {
 } from "../libs/hts";
 import {
   HtsLevelClassification,
+  HtsSectionOrChapter,
   HtsWithParentReference,
 } from "../interfaces/hts";
 import { LoadingDots } from "./LabelledLoader";
@@ -21,6 +22,7 @@ import {
 } from "../utilities/data";
 import { TariffSection } from "./Tariff";
 import { DecisionProgression } from "./DecisionProgression";
+import { HtsLevel } from "../enums/hts";
 
 interface Props {
   productDescription: string;
@@ -103,8 +105,9 @@ export const ClassificationResults = ({
     setLoading(true);
     // Get Sections (top 3) -- just pick best
     const sectionsResponse = await getHtsSections();
+    const sections = sectionsResponse.sections;
     console.log(`Sections:`);
-    console.log(sectionsResponse.sections);
+    console.log(sections);
 
     // Hit Chat GPT to get the best for the description
     const bestMatchSection = await getBestMatchAtClassificationLevel(
@@ -112,38 +115,59 @@ export const ClassificationResults = ({
       0,
       productDescription,
       "",
-      sectionsResponse.sections
+      sections.map((s) => s.description)
     );
 
     console.log("Best Section:");
     console.log(bestMatchSection);
-    console.log(sectionsResponse.sections[bestMatchSection.index]);
+    console.log(sections[bestMatchSection.index]);
 
     // Get Chapters (top 3 from each ^^) -- just pick best from the bunch
-    const chaptersResponse: { sections: Section[] } = await getHtsChapters();
+    const chaptersResponse: { sections: HtsSectionOrChapter[][] } =
+      await getHtsChapters();
+    const sectionsWithChapters = chaptersResponse.sections;
+    const chaptersFromBestMatchSection =
+      sectionsWithChapters[bestMatchSection.index];
     console.log("chapters:");
-    console.log(chaptersResponse);
-    console.log(chaptersResponse.sections[bestMatchSection.index]);
+    console.log(sectionsWithChapters);
+    console.log(chaptersFromBestMatchSection);
 
     // Hit Chat GPT to get the best for the description
     const bestMatchChapter = await getBestMatchAtClassificationLevel(
       [],
       0,
       productDescription,
-      sectionsResponse.sections[bestMatchSection.index],
-      chaptersResponse.sections[bestMatchSection.index].map(
-        (c) => c.description
-      )
+      sections[bestMatchSection.index].description,
+      chaptersFromBestMatchSection.map((c) => c.description)
     );
 
     console.log("Best Chapter:");
     console.log(bestMatchChapter);
 
+    setClassificationProgression([
+      ...classificationProgression,
+      {
+        level: HtsLevel.SECTION,
+        candidates: sections,
+        selection: sections[bestMatchSection.index],
+        reasoning: bestMatchSection.logic,
+      },
+      {
+        level: HtsLevel.CHAPTER,
+        candidates: chaptersFromBestMatchSection,
+        selection: chaptersFromBestMatchSection[bestMatchChapter.index],
+        reasoning: bestMatchChapter.logic,
+      },
+    ]);
+
     // Then get chapter data (via function below)
     // const hsChapter = await getHSChapter(productDescription);
     const chapterData = await getHtsChapterData(
-      chaptersResponse.sections[bestMatchSection.index][bestMatchChapter.index]
-        .chapter
+      String(
+        chaptersResponse.sections[bestMatchSection.index][
+          bestMatchChapter.index
+        ].number
+      )
     );
     console.log("chapterData");
     console.log(chapterData);
