@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
         "best_description_match",
         {
           description:
-            "Used to the best new description match can be extracted from an array with selection logic included",
+            "Used to get the best new description match from an array with selection logic included",
         }
       ),
       messages: [
@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
           role: "system",
           content: `You are a United States Harmonized Tariff System Expert who follows the General Rules for the Interpretation (GRI) of the Harmonized System perfectly.
             Your job is to take a product description, a work-in-progress HTS classification, and a list of the next classification level descriptions, and figure out which description from the list would best match the product descriptions using the GRI if it was added onto the work-in-progress classification.
-            The logic you used to pick the selected option over the other candidates with reference to the GRI rule used to make the decision should be included in the "logic" property of the response 
+            The logic you used to pick the selected option over the other candidates must be included in your response.
             `,
         },
         {

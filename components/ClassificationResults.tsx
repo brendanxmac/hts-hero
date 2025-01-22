@@ -1,19 +1,20 @@
+"use client";
+
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
   getBestMatchAtClassificationLevel,
-  getHSChapter,
   getHtsChapterData,
   getHtsChapters,
   getHtsLevel,
   getHtsSections,
   getNextChunk,
-  Section,
   updateHtsDescription,
 } from "../libs/hts";
 import {
   HtsLevelClassification,
   HtsSectionOrChapter,
   HtsWithParentReference,
+  MatchResponse,
 } from "../interfaces/hts";
 import { LoadingDots } from "./LabelledLoader";
 import {
@@ -33,8 +34,14 @@ export const ClassificationResults = ({
   productDescription,
   setUpdateScrollHeight,
 }: Props) => {
+  const [resetSearch, setResetSearch] = useState(false);
+  const [bestSectionMatch, setBestSectionMatch] = useState<
+    MatchResponse | undefined
+  >(undefined);
+  const [selectedChapter, setSelectedChapter] = useState<string | undefined>(
+    undefined
+  );
   const [loading, setLoading] = useState(true);
-  const [htsCode, setHtsCode] = useState("");
   const [htsDescription, setHtsDescription] = useState("");
   const [htsElementsChunk, setHtsElementsChunk] = useState<
     HtsWithParentReference[]
@@ -44,13 +51,15 @@ export const ClassificationResults = ({
     HtsLevelClassification[]
   >([]);
 
-  const resetResults = () => {
-    setHtsCode("");
+  const startNewSearch = () => {
+    setBestSectionMatch(undefined);
+    setSelectedChapter(undefined);
+    setClassificationProgression([]);
     setHtsDescription("");
     setHtsElementsChunk([]);
     setClassificationLevel(0);
-    setClassificationProgression([]);
     setUpdateScrollHeight(0);
+    setResetSearch(true);
   };
 
   const findBestClassifierAtLevel = async () => {
@@ -64,9 +73,6 @@ export const ClassificationResults = ({
       productDescription,
       htsDescription
     );
-
-    console.log("bestMatchResponse:");
-    console.log(bestMatchResponse);
 
     const bestMatchElement = elementsAtLevel[bestMatchResponse.index];
 
@@ -86,7 +92,7 @@ export const ClassificationResults = ({
     ]);
 
     if (bestMatchElement.htsno) {
-      setHtsCode(bestMatchElement.htsno);
+      // setHtsCode(bestMatchElement.htsno);
     }
 
     // Get Next HTS Elements Chunk
@@ -101,13 +107,11 @@ export const ClassificationResults = ({
     setHtsElementsChunk(setIndexInArray(nextChunk));
   };
 
-  const getFullHtsCode = async () => {
+  const getSections = async () => {
     setLoading(true);
-    // Get Sections (top 3) -- just pick best
+    // Get Sections (top 3) -- just pick best to start
     const sectionsResponse = await getHtsSections();
     const sections = sectionsResponse.sections;
-    console.log(`Sections:`);
-    console.log(sections);
 
     // Hit Chat GPT to get the best for the description
     const bestMatchSection = await getBestMatchAtClassificationLevel(
@@ -118,31 +122,14 @@ export const ClassificationResults = ({
       sections.map((s) => s.description)
     );
 
-    console.log("Best Section:");
-    console.log(bestMatchSection);
-    console.log(sections[bestMatchSection.index]);
+    setBestSectionMatch(bestMatchSection);
 
-    // Get Chapters (top 3 from each ^^) -- just pick best from the bunch
-    const chaptersResponse: { sections: HtsSectionOrChapter[][] } =
-      await getHtsChapters();
-    const sectionsWithChapters = chaptersResponse.sections;
-    const chaptersFromBestMatchSection =
-      sectionsWithChapters[bestMatchSection.index];
-    console.log("chapters:");
-    console.log(sectionsWithChapters);
-    console.log(chaptersFromBestMatchSection);
-
-    // Hit Chat GPT to get the best for the description
-    const bestMatchChapter = await getBestMatchAtClassificationLevel(
-      [],
-      0,
-      productDescription,
-      sections[bestMatchSection.index].description,
-      chaptersFromBestMatchSection.map((c) => c.description)
+    setHtsDescription(
+      updateHtsDescription(
+        htsDescription,
+        sections[bestMatchSection.index].description
+      )
     );
-
-    console.log("Best Chapter:");
-    console.log(bestMatchChapter);
 
     setClassificationProgression([
       ...classificationProgression,
@@ -152,6 +139,36 @@ export const ClassificationResults = ({
         selection: sections[bestMatchSection.index],
         reasoning: bestMatchSection.logic,
       },
+    ]);
+  };
+
+  const getChapters = async () => {
+    // Get Chapters (top 3 from each ^^) -- just pick best from the bunch to start...
+    const chaptersResponse: { sections: HtsSectionOrChapter[][] } =
+      await getHtsChapters();
+    const sectionsWithChapters = chaptersResponse.sections;
+    const chaptersFromBestMatchSection =
+      sectionsWithChapters[bestSectionMatch.index];
+
+    // Hit Chat GPT to get the best for the description
+    const bestMatchChapter = await getBestMatchAtClassificationLevel(
+      [],
+      0,
+      productDescription,
+      htsDescription,
+      chaptersFromBestMatchSection.map((c) => c.description)
+    );
+
+    setSelectedChapter(
+      String(
+        chaptersResponse.sections[bestSectionMatch.index][
+          bestMatchChapter.index
+        ].number
+      )
+    );
+
+    setClassificationProgression([
+      ...classificationProgression,
       {
         level: HtsLevel.CHAPTER,
         candidates: chaptersFromBestMatchSection,
@@ -159,20 +176,20 @@ export const ClassificationResults = ({
         reasoning: bestMatchChapter.logic,
       },
     ]);
-
-    // Then get chapter data (via function below)
-    // const hsChapter = await getHSChapter(productDescription);
-    const chapterData = await getHtsChapterData(
-      String(
-        chaptersResponse.sections[bestMatchSection.index][
-          bestMatchChapter.index
-        ].number
-      )
-    );
-    console.log("chapterData");
-    console.log(chapterData);
+  };
+  const getChapterData = async () => {
+    const chapterData = await getHtsChapterData(selectedChapter);
     setHtsElementsChunk(setIndexInArray(chapterData));
   };
+
+  useEffect(() => {
+    if (classificationProgression.length === 1) {
+      getChapters();
+    }
+    if (classificationProgression.length === 2) {
+      getChapterData();
+    }
+  }, [classificationProgression]);
 
   useEffect(() => {
     setUpdateScrollHeight(Math.random());
@@ -197,11 +214,17 @@ export const ClassificationResults = ({
   }, [htsElementsChunk]);
 
   useEffect(() => {
-    resetResults();
-    getFullHtsCode();
+    startNewSearch();
   }, [productDescription]);
 
-  if (loading && !htsCode && classificationLevel === 0) {
+  useEffect(() => {
+    if (resetSearch) {
+      getSections();
+      setResetSearch(false);
+    }
+  }, [resetSearch]);
+
+  if (loading && !classificationProgression.length) {
     return (
       <div className="mt-5">
         <LoadingDots />
