@@ -122,6 +122,9 @@ export const ClassificationResults = ({
       sections.map((s) => s.description)
     );
 
+    console.log("bestMatchSection:");
+    console.log(bestMatchSection);
+
     setBestSectionMatch(bestMatchSection);
 
     setHtsDescription(

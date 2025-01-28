@@ -51,10 +51,15 @@ export async function POST(req: NextRequest) {
 
     console.log(labelledDescriptions);
 
-    const bestDescriptionMatch = z.object({
+    const bestDescriptionMatches = z.object({
       index: z.number(),
       logic: z.string(),
     });
+
+    // const bestDescriptionMatches = z.object({
+    //   bestCandidates: z.array(z.string()),
+    //   logic: z.string(),
+    // });
 
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     // const gptResponse = await openai.chat.completions.create({
@@ -83,18 +88,18 @@ export async function POST(req: NextRequest) {
       temperature: 0.3,
       model: "gpt-4o-2024-11-20",
       response_format: zodResponseFormat(
-        bestDescriptionMatch,
-        "best_description_match",
+        bestDescriptionMatches,
+        "best_description_matches",
         {
           description:
-            "Used to get the best new description match from an array with selection logic included",
+            "Used to get the best new description matches from an array with selection logic included",
         }
       ),
       messages: [
         {
           role: "system",
           content: `You are a United States Harmonized Tariff System Expert who follows the General Rules for the Interpretation (GRI) of the Harmonized System perfectly.
-            Your job is to take a product description, a work-in-progress HTS classification, and a list of the next classification level descriptions, and figure out which description from the list would best match the product descriptions using the GRI if it was added onto the work-in-progress classification.
+            Your job is to take a product description, a work-in-progress HTS classification, and a list of the next classification level descriptions, and figure out which descriptions from the list (between 1 and 3) best match the product description using the GRI if it was added onto the work-in-progress classification.
             The logic you used to pick the selected option over the other candidates must be included in your response.
             `,
         },

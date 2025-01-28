@@ -36,6 +36,11 @@ export interface HsHeading {
   logic: string;
 }
 
+export interface BetterMatchResponse {
+  bestCandidates: string[];
+  logic: string;
+}
+
 export interface MatchResponse {
   index: number;
   logic: string;
