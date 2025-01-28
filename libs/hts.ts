@@ -7,6 +7,7 @@ import {
   HtsElement,
   TemporaryTariff,
   HtsSectionOrChapter,
+  BetterMatchResponse,
 } from "../interfaces/hts";
 import {
   elementsAtClassificationLevel,
