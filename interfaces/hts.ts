@@ -1,6 +1,10 @@
 import { HtsLevel } from "../enums/hts";
 
-export interface HtsSectionOrChapter {
+export interface HtsSection extends HtsSectionAndChapterBase {
+  chapters: HtsSectionAndChapterBase[];
+}
+
+export interface HtsSectionAndChapterBase {
   number: number;
   description: string;
 }
@@ -48,8 +52,8 @@ export interface MatchResponse {
 
 export interface HtsLevelClassification {
   level: HtsLevel;
-  candidates: HtsElement[] | HtsSectionOrChapter[];
-  selection: HtsElement | HtsSectionOrChapter;
+  candidates: HtsElement[] | HtsSectionAndChapterBase[];
+  selection: HtsElement | HtsSectionAndChapterBase;
   reasoning: string;
 }
 

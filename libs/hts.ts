@@ -6,8 +6,8 @@ import {
   HsHeading,
   HtsElement,
   TemporaryTariff,
-  HtsSectionOrChapter,
-  BetterMatchResponse,
+  HtsSection,
+  HtsSectionAndChapterBase,
 } from "../interfaces/hts";
 import {
   elementsAtClassificationLevel,
@@ -348,7 +348,7 @@ export const getHSChapter = async (productDescription: string) => {
 };
 
 export const getCodeFromHtsPrimitive = (
-  htsPrimitive: HtsElement | HtsSectionOrChapter
+  htsPrimitive: HtsElement | HtsSectionAndChapterBase
 ): string => {
   if ("htsno" in htsPrimitive) {
     return htsPrimitive.htsno;
@@ -360,16 +360,10 @@ export const getCodeFromHtsPrimitive = (
   }
 };
 
-export const getHtsSections = (): Promise<{
-  sections: HtsSectionOrChapter[];
+export const getHtsSectionsAndChapters = (): Promise<{
+  sections: HtsSection[];
 }> => {
-  return apiClient.get("/hts/get-sections", {});
-};
-
-export const getHtsChapters = (): Promise<{
-  sections: HtsSectionOrChapter[][];
-}> => {
-  return apiClient.get("/hts/get-chapters", {});
+  return apiClient.get("/hts/get-sections-and-chapters", {});
 };
 
 export const getHtsChapterData = (chapter: string): Promise<HtsElement[]> => {
