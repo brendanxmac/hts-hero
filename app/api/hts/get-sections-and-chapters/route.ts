@@ -11,7 +11,7 @@ export async function GET() {
     const supabaseUserResponse = await supabase.auth.getUser();
     const user = supabaseUserResponse.data.user;
 
-    // User who are not logged in can't make a gpt requests
+    // Users who are not logged in can't make a gpt requests
     if (!user) {
       return NextResponse.json(
         { error: "You must be logged in to complete this action" },
@@ -19,8 +19,8 @@ export async function GET() {
       );
     }
 
-    const sectionsFilePath = path.join(process.cwd(), "hts-sections.json");
-    const sectionData = await readFile(sectionsFilePath, "utf8");
+    const filePath = path.join(process.cwd(), "sections-and-chapters.json");
+    const sectionData = await readFile(filePath, "utf8");
 
     return NextResponse.json(JSON.parse(sectionData));
   } catch (e) {
