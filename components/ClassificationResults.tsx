@@ -2,7 +2,7 @@
 
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
-  getBestMatchAtClassificationLevel,
+  getBestCandidatesAtClassificationLevel,
   getHtsChapterData,
   getHtsLevel,
   getHtsSectionsAndChapters,
@@ -68,7 +68,7 @@ export const ClassificationResults = ({
       htsElementsChunk,
       classificationLevel
     );
-    const bestMatchResponse = await getBestMatchAtClassificationLevel(
+    const bestMatchResponse = await getBestCandidatesAtClassificationLevel(
       elementsAtLevel,
       classificationLevel,
       productDescription,
@@ -116,7 +116,7 @@ export const ClassificationResults = ({
     const sections = sectionsResponse.sections;
 
     // Hit Chat GPT to get the best for the description
-    const bestSectionMatch = await getBestMatchAtClassificationLevel(
+    const bestSectionCandidates = await getBestCandidatesAtClassificationLevel(
       [],
       0,
       productDescription,
@@ -124,27 +124,27 @@ export const ClassificationResults = ({
       sections.map((s) => s.description)
     );
 
-    console.log("bestMatchSection:");
-    console.log(bestSectionMatch);
+    console.log("Best Section Candidates:");
+    console.log(bestSectionCandidates);
 
-    setBestSectionMatch(bestSectionMatch);
+    // setBestSectionMatch(bestSectionMatch);
 
-    setHtsDescription(
-      updateHtsDescription(
-        htsDescription,
-        sections[bestSectionMatch.index].description
-      )
-    );
+    // setHtsDescription(
+    //   updateHtsDescription(
+    //     htsDescription,
+    //     sections[bestSectionMatch.index].description
+    //   )
+    // );
 
-    setClassificationProgression([
-      ...classificationProgression,
-      {
-        level: HtsLevel.SECTION,
-        candidates: sections,
-        selection: sections[bestSectionMatch.index],
-        reasoning: bestSectionMatch.logic,
-      },
-    ]);
+    // setClassificationProgression([
+    //   ...classificationProgression,
+    //   {
+    //     level: HtsLevel.SECTION,
+    //     candidates: sections,
+    //     selection: sections[bestSectionMatch.index],
+    //     reasoning: bestSectionMatch.logic,
+    //   },
+    // ]);
   };
 
   const getChapters = async () => {
@@ -152,7 +152,7 @@ export const ClassificationResults = ({
     const chapters = htsSections[bestSectionMatch.index].chapters;
 
     // Hit Chat GPT to get the best for the description
-    const bestChapterMatch = await getBestMatchAtClassificationLevel(
+    const bestChapterMatch = await getBestCandidatesAtClassificationLevel(
       [],
       0,
       productDescription,

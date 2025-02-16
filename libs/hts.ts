@@ -199,7 +199,7 @@ export const getHtsLevel = (htsCode: string): HtsLevel => {
   }
 };
 
-export const getBestMatchAtClassificationLevel = async (
+export const getBestCandidatesAtClassificationLevel = async (
   elementAtLevel: HtsWithParentReference[],
   indentLevel: number,
   productDescription: string,
@@ -207,23 +207,23 @@ export const getBestMatchAtClassificationLevel = async (
   descs?: string[]
 ): Promise<MatchResponse> => {
   const descriptions = descs || getHtsElementDescriptions(elementAtLevel);
-  const bestMatchResponse: Array<ChatCompletion.Choice> = await apiClient.post(
-    "/openai/get-best-description-match",
-    {
+  const bestCandidatesResponse: Array<ChatCompletion.Choice> =
+    await apiClient.post("/openai/get-best-description-match", {
       htsDescription,
       descriptions,
       productDescription,
       model: OpenAIModel.FOUR,
-    }
-  );
+    });
 
-  const bestMatch = bestMatchResponse[0].message.content;
+  const bestCandidates = bestCandidatesResponse[0].message.content;
+  console.log("Best Candidates:");
+  console.log(bestCandidates);
 
-  if (bestMatch === null) {
+  if (bestCandidates === null) {
     throw new Error(`Failed to get best match at level ${indentLevel}`);
   }
 
-  return JSON.parse(bestMatch);
+  return JSON.parse(bestCandidates);
 };
 
 export const updateHtsDescription = (current: string, additional: string) => {
