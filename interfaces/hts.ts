@@ -40,13 +40,19 @@ export interface HsHeading {
   logic: string;
 }
 
-export interface BetterMatchResponse {
-  bestCandidates: string[];
+export interface BestCandidatesResponse {
+  bestCandidates: CandidateSelection[];
+}
+
+export interface HeadingSelection {
+  index: string;
+  description: string;
   logic: string;
 }
 
-export interface MatchResponse {
+export interface CandidateSelection {
   index: number;
+  description: string;
   logic: string;
 }
 

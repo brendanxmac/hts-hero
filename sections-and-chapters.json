@@ -1,419 +1,419 @@
 {
   "sections": [
     {
-      "number": "1",
+      "number": 1,
       "description": "Live Animals; Animal Products",
       "chapters": [
-        { "number": "1", "description": "Live animals" },
-        { "number": "2", "description": "Meat and edible meat offal" },
+        { "number": 1, "description": "Live animals" },
+        { "number": 2, "description": "Meat and edible meat offal" },
         {
-          "number": "3",
+          "number": 3,
           "description": "Fish and crustaceans, molluscs and other aquatic invertebrates"
         },
         {
-          "number": "4",
+          "number": 4,
           "description": "Dairy produce; birds eggs; natural honey; edible products of animal origin, not elsewhere specified or included"
         },
         {
-          "number": "5",
+          "number": 5,
           "description": "Products of animal origin, not elsewhere specified or included"
         }
       ]
     },
     {
-      "number": "2",
+      "number": 2,
       "description": "Vegetable Products",
       "chapters": [
         {
-          "number": "6",
+          "number": 6,
           "description": "Live trees and other plants; bulbs, roots and the like; cut flowers and ornamental foliage"
         },
         {
-          "number": "7",
+          "number": 7,
           "description": "Edible vegetables and certain roots and tubers"
         },
         {
-          "number": "8",
+          "number": 8,
           "description": "Edible fruit and nuts; peel of citrus fruit or melons"
         },
-        { "number": "9", "description": "Coffee, tea, maté and spices" },
-        { "number": "10", "description": "Cereals" },
+        { "number": 9, "description": "Coffee, tea, maté and spices" },
+        { "number": 10, "description": "Cereals" },
         {
-          "number": "11",
+          "number": 11,
           "description": "Products of the milling industry; malt; starches; inulin; wheat gluten"
         },
         {
-          "number": "12",
+          "number": 12,
           "description": "Oil seeds and oleaginous fruits; miscellaneous grains, seeds and fruits; industrial or medicinal plants; straw and fodder"
         },
         {
-          "number": "13",
+          "number": 13,
           "description": "Lac; gums, resins and other vegetable saps and extracts"
         },
         {
-          "number": "14",
+          "number": 14,
           "description": "Vegetable plaiting materials; vegetable products not elsewhere specified or included"
         }
       ]
     },
     {
-      "number": "3",
+      "number": 3,
       "description": "Animal or Vegetable Fats and Oils and Their Cleavage Products; Prepared Edible Fats; Animal or Vegetable Waxes",
       "chapters": [
         {
-          "number": "15",
+          "number": 15,
           "description": "Animal or vegetable fats and oils and their cleavage products prepared edible fats; animal or vegetable waxes"
         }
       ]
     },
     {
-      "number": "4",
+      "number": 4,
       "description": "Prepared Foodstuffs; Beverages, Spirits, and Vinegar; Tobacco and Manufactured Tobacco Substitutes",
       "chapters": [
         {
-          "number": "16",
+          "number": 16,
           "description": "Preparations of meat, of fish or of crustaceans, molluscs or other aquatic invertebrates"
         },
-        { "number": "17", "description": "Sugars and sugar confectionery" },
-        { "number": "18", "description": "Cocoa and cocoa preparations" },
+        { "number": 17, "description": "Sugars and sugar confectionery" },
+        { "number": 18, "description": "Cocoa and cocoa preparations" },
         {
-          "number": "19",
+          "number": 19,
           "description": "Preparations of cereals, flour, starch or milk; bakers' wares"
         },
         {
-          "number": "20",
+          "number": 20,
           "description": "Preparations of vegetables, fruit, nuts or other parts of plants"
         },
-        { "number": "21", "description": "Miscellaneous edible preparations" },
-        { "number": "22", "description": "Beverages, spirits and vinegar" },
+        { "number": 21, "description": "Miscellaneous edible preparations" },
+        { "number": 22, "description": "Beverages, spirits and vinegar" },
         {
-          "number": "23",
+          "number": 23,
           "description": "Residues and waste from the food industries; prepared animal feed"
         },
         {
-          "number": "24",
+          "number": 24,
           "description": "Tobacco and manufactured tobacco substitutes"
         }
       ]
     },
     {
-      "number": "5",
+      "number": 5,
       "description": "Mineral Products",
       "chapters": [
         {
-          "number": "25",
+          "number": 25,
           "description": "Salt; sulfur; earths and stone; plastering materials, lime and cement"
         },
-        { "number": "26", "description": "Ores, slag and ash" },
+        { "number": 26, "description": "Ores, slag and ash" },
         {
-          "number": "27",
+          "number": 27,
           "description": "Mineral fuels, mineral oils and products of their distillation; bituminous substances; mineral waxes"
         }
       ]
     },
     {
-      "number": "6",
+      "number": 6,
       "description": "Products of the Chemical or Allied Industries",
       "chapters": [
         {
-          "number": "28",
+          "number": 28,
           "description": "Inorganic chemicals; organic or inorganic compounds of precious metals, of rare-earth metals, of radioactive elements or of isotopes"
         },
-        { "number": "29", "description": "Organic chemicals" },
-        { "number": "30", "description": "Pharmaceutical products" },
-        { "number": "31", "description": "Fertilizers" },
+        { "number": 29, "description": "Organic chemicals" },
+        { "number": 30, "description": "Pharmaceutical products" },
+        { "number": 31, "description": "Fertilizers" },
         {
-          "number": "32",
+          "number": 32,
           "description": "Tanning or dyeing extracts; dyes, pigments, paints, varnishes, putty and mastics"
         },
         {
-          "number": "33",
+          "number": 33,
           "description": "Essential oils and resinoids; perfumery, cosmetic or toilet preparations"
         },
         {
-          "number": "34",
+          "number": 34,
           "description": "Soap, organic surface-active agents, washing preparations, lubricating preparations, artificial waxes, prepared waxes, polishing or scouring preparations, candles and similar articles, modeling pastes, 'dental waxes' and dental preparations with a basis of plaster"
         },
         {
-          "number": "35",
+          "number": 35,
           "description": "Albuminoidal substances; modified starches; glues; enzymes"
         },
         {
-          "number": "36",
+          "number": 36,
           "description": "Explosives; pyrotechnic products; matches; pyrophoric alloys; certain combustible preparations"
         },
         {
-          "number": "37",
+          "number": 37,
           "description": "Photographic or cinematographic goods"
         },
-        { "number": "38", "description": "Miscellaneous chemical products" }
+        { "number": 38, "description": "Miscellaneous chemical products" }
       ]
     },
     {
-      "number": "7",
+      "number": 7,
       "description": "Plastics and Articles Thereof Rubber and Articles Thereof",
       "chapters": [
-        { "number": "39", "description": "Plastics and articles thereof" },
-        { "number": "40", "description": "Rubber and articles thereof" }
+        { "number": 39, "description": "Plastics and articles thereof" },
+        { "number": 40, "description": "Rubber and articles thereof" }
       ]
     },
     {
-      "number": "8",
+      "number": 8,
       "description": "Raw Hides and Skins, Leather, Furskins and Articles Thereof; Saddlery and Harness; Travel Goods, Handbags and Similar Containers; Articles of Animal Gut (Other Than Silkworm Gut)",
       "chapters": [
         {
-          "number": "41",
+          "number": 41,
           "description": "Raw hides and skins (other than furskins) and leather"
         },
         {
-          "number": "42",
+          "number": 42,
           "description": "Articles of leather; saddlery and harness; travel goods, handbags and similar containers; articles of animal gut (other than silkworm gut)"
         },
         {
-          "number": "43",
+          "number": 43,
           "description": "Furskins and artificial fur; manufactures thereof"
         }
       ]
     },
     {
-      "number": "9",
+      "number": 9,
       "description": "Wood and Articles of Wood; Wood Charcoal; Cork and Articles of Cork; Manufacturers of Straw,of Esparto or of Other Plaiting Materials; Basketware and Wickerwork",
       "chapters": [
         {
-          "number": "44",
+          "number": 44,
           "description": "Wood and articles of wood; wood charcoal"
         },
-        { "number": "45", "description": "Cork and articles of cork" },
+        { "number": 45, "description": "Cork and articles of cork" },
         {
-          "number": "46",
+          "number": 46,
           "description": "Manufactures of straw, of esparto or of other plaiting materials; basketware and wickerwork"
         }
       ]
     },
     {
-      "number": "10",
+      "number": 10,
       "description": "Pulp of Wood or of Other Fibrous Cellulosic Material; Waste and Scrap of Paper or Paperboard; Paper and Paperboard and Articles Thereof",
       "chapters": [
         {
-          "number": "47",
+          "number": 47,
           "description": "Pulp of wood or of other fibrous cellulosic material; waste and scrap of paper or paperboard"
         },
         {
-          "number": "48",
+          "number": 48,
           "description": "Paper and paperboard; articles of paper pulp, of paper or of paperboard"
         },
         {
-          "number": "49",
+          "number": 49,
           "description": "Printed books, newspapers, pictures and other products of the printing industry; manuscripts, typescripts and plans"
         }
       ]
     },
     {
-      "number": "11",
+      "number": 11,
       "description": "Textile and Textile Articles",
       "chapters": [
-        { "number": "50", "description": "Silk" },
+        { "number": 50, "description": "Silk" },
         {
-          "number": "51",
+          "number": 51,
           "description": "Wool, fine or coarse animal hair; horsehair yarn and woven fabric"
         },
-        { "number": "52", "description": "Cotton" },
+        { "number": 52, "description": "Cotton" },
         {
-          "number": "53",
+          "number": 53,
           "description": "Other vegetable textile fibers; paper yarn and woven fabric of paper yarn"
         },
-        { "number": "54", "description": "Man-made filaments" },
-        { "number": "55", "description": "Man-made staple fibers" },
+        { "number": 54, "description": "Man-made filaments" },
+        { "number": 55, "description": "Man-made staple fibers" },
         {
-          "number": "56",
+          "number": 56,
           "description": "Wadding, felt and nonwovens; special yarns, twine, cordage, ropes and cables and articles thereof"
         },
         {
-          "number": "57",
+          "number": 57,
           "description": "Carpets and other textile floor coverings"
         },
         {
-          "number": "58",
+          "number": 58,
           "description": "Special woven fabrics; tufted textile fabrics; lace, tapestries; trimmings; embroidery"
         },
         {
-          "number": "59",
+          "number": 59,
           "description": "Impregnated, coated, covered or laminated textile fabrics; textile articles of a kind suitable for industrial use"
         },
-        { "number": "60", "description": "Knitted or crocheted fabrics" },
+        { "number": 60, "description": "Knitted or crocheted fabrics" },
         {
-          "number": "61",
+          "number": 61,
           "description": "Articles of apparel and clothing accessories, knitted or crocheted"
         },
         {
-          "number": "62",
+          "number": 62,
           "description": "Articles of apparel and clothing accessories, not knitted or crocheted"
         },
         {
-          "number": "63",
+          "number": 63,
           "description": "Other made up textile articles; sets; worn clothing and worn textile articles; rags"
         }
       ]
     },
     {
-      "number": "12",
+      "number": 12,
       "description": "Footwear, Headgear, Umbrellas, Sun Umbrellas, Walking Sticks, Seatsticks, Whips, Riding-Crops and Parts Thereof; Prepared Feathers and Articles Made Therewith; Artificial Flowers; Articles of Human Hair",
       "chapters": [
         {
-          "number": "64",
+          "number": 64,
           "description": "Footwear, gaiters and the like; parts of such articles"
         },
-        { "number": "65", "description": "Headgear and parts thereof" },
+        { "number": 65, "description": "Headgear and parts thereof" },
         {
-          "number": "66",
+          "number": 66,
           "description": "Umbrellas, sun umbrellas, walking sticks, seatsticks, whips, riding-crops and parts thereof"
         },
         {
-          "number": "67",
+          "number": 67,
           "description": "Prepared feathers and down and articles made of feathers or of down; artificial flowers; articles of human hair"
         }
       ]
     },
     {
-      "number": "13",
+      "number": 13,
       "description": "Articles of Stone, Plaster, Cement, Asbestos, Mica or Similar Materials; Ceramic Products; Glass and Glassware",
       "chapters": [
         {
-          "number": "68",
+          "number": 68,
           "description": "Articles of stone, plaster, cement, asbestos, mica or similar materials"
         },
-        { "number": "69", "description": "Ceramic products" },
-        { "number": "70", "description": "Glass and glassware" }
+        { "number": 69, "description": "Ceramic products" },
+        { "number": 70, "description": "Glass and glassware" }
       ]
     },
     {
-      "number": "14",
+      "number": 14,
       "description": "Natural or Cultured Pearls, Precious or Semiprecious Stones, Precious Metals, Metals Clad With Precious Metal, and Articles Thereof; Imitation Jewelry; Coin",
       "chapters": [
         {
-          "number": "71",
+          "number": 71,
           "description": "Natural or cultured pearls, precious or semi-precious stones,precious metals, metals clad with precious metal and articles thereof; imitation jewelry; coin"
         }
       ]
     },
     {
-      "number": "15",
+      "number": 15,
       "description": "Base Metals and Articles of Base Metal",
       "chapters": [
-        { "number": "72", "description": "Iron and steel" },
-        { "number": "73", "description": "Articles of iron or steel" },
-        { "number": "74", "description": "Copper and articles thereof" },
-        { "number": "75", "description": "Nickel and articles thereof" },
-        { "number": "76", "description": "Aluminum and articles thereof" },
+        { "number": 72, "description": "Iron and steel" },
+        { "number": 73, "description": "Articles of iron or steel" },
+        { "number": 74, "description": "Copper and articles thereof" },
+        { "number": 75, "description": "Nickel and articles thereof" },
+        { "number": 76, "description": "Aluminum and articles thereof" },
         {
-          "number": "77",
+          "number": 77,
           "description": "(Reserved for possible future use)"
         },
-        { "number": "78", "description": "Lead and articles thereof" },
-        { "number": "79", "description": "Zinc and articles thereof" },
-        { "number": "80", "description": "Tin and articles thereof" },
+        { "number": 78, "description": "Lead and articles thereof" },
+        { "number": 79, "description": "Zinc and articles thereof" },
+        { "number": 80, "description": "Tin and articles thereof" },
         {
-          "number": "81",
+          "number": 81,
           "description": "Other base metals; cermets; articles thereof"
         },
         {
-          "number": "82",
+          "number": 82,
           "description": "Tools, implements, cutlery, spoons and forks, of base metal; parts thereof of base metal"
         },
         {
-          "number": "83",
+          "number": 83,
           "description": "Miscellaneous articles of base metal"
         }
       ]
     },
     {
-      "number": "16",
+      "number": 16,
       "description": "Machinery and Mechanical Appliances; Electrical Equipment; Parts Thereof; Sound Recorders and Reproducers, Television Image and Sound Recorders and Reproducers, and Parts and Accessories of Such Articles",
       "chapters": [
         {
-          "number": "84",
+          "number": 84,
           "description": "Nuclear reactors, boilers, machinery and mechanical appliances; parts thereof"
         },
         {
-          "number": "85",
+          "number": 85,
           "description": "Electrical machinery and equipment and parts thereof; sound recorders and reproducers, television image and sound recorders and reproducers, and parts and accessories of such articles"
         }
       ]
     },
     {
-      "number": "17",
+      "number": 17,
       "description": "Vehicles, Aircraft, Vessels and Associated Transport Equipment",
       "chapters": [
         {
-          "number": "86",
+          "number": 86,
           "description": "Railway or tramway locomotives, rolling-stock and parts thereof; railway or tramway track fixtures and fittings and parts thereof; mechanical (including electro-mechanical) traffic signalling equipment of all kinds"
         },
         {
-          "number": "87",
+          "number": 87,
           "description": "Vehicles other than railway or tramway rolling stock, and parts and accessories thereof"
         },
         {
-          "number": "88",
+          "number": 88,
           "description": "Aircraft, spacecraft, and parts thereof"
         },
         {
-          "number": "89",
+          "number": 89,
           "description": "Ships, boats and floating structures"
         }
       ]
     },
     {
-      "number": "18",
+      "number": 18,
       "description": "Optical, Photographic, Cinematographic, Measuring, Checking, Precision, Medical or Surgical Instruments and Apparatus; Clocks and Watches; Musical Instruments; Parts and Accessories Thereof",
       "chapters": [
         {
-          "number": "90",
+          "number": 90,
           "description": "Optical, photographic, cinematographic, measuring, checking, precision, medical or surgical instruments and apparatus; parts and accessories thereof"
         },
         {
-          "number": "91",
+          "number": 91,
           "description": "Clocks and watches and parts thereof"
         },
         {
-          "number": "92",
+          "number": 92,
           "description": "Musical instruments; parts and accessories of such articles"
         }
       ]
     },
     {
-      "number": "19",
+      "number": 19,
       "description": "Arms and Ammunition; Parts and Accessories Thereof",
       "chapters": [
         {
-          "number": "93",
+          "number": 93,
           "description": "Arms and ammunition; parts and accessories thereof"
         }
       ]
     },
     {
-      "number": "20",
+      "number": 20,
       "description": "Miscellaneous Manufactured Articles",
       "chapters": [
         {
-          "number": "94",
+          "number": 94,
           "description": "Furniture; bedding, mattresses, mattress supports, cushions and similar stuffed furnishings; lamps and lighting fittings, not elsewhere specified or included; illuminated sign illuminated nameplates and the like; prefabricated buildings"
         },
         {
-          "number": "95",
+          "number": 95,
           "description": "Toys, games and sports requisites; parts and accessories thereof"
         },
         {
-          "number": "96",
+          "number": 96,
           "description": "Miscellaneous manufactured articles"
         }
       ]
     },
     {
-      "number": "21",
+      "number": 21,
       "description": "Works of Art, Collectors' Pieces and Antiques",
       "chapters": [
         {
-          "number": "97",
+          "number": 97,
           "description": "Works of art, collectors' pieces and antiques"
         }
       ]
