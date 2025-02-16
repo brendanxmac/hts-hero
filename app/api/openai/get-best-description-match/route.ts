@@ -51,15 +51,15 @@ export async function POST(req: NextRequest) {
 
     console.log(labelledDescriptions);
 
-    const bestDescriptionMatches = z.object({
+    const DescriptionMatch = z.object({
       index: z.number(),
+      description: z.string(),
       logic: z.string(),
     });
 
-    // const bestDescriptionMatches = z.object({
-    //   bestCandidates: z.array(z.string()),
-    //   logic: z.string(),
-    // });
+    const bestDescriptionMatches = z.object({
+      bestCandidates: z.array(DescriptionMatch),
+    });
 
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     // const gptResponse = await openai.chat.completions.create({
@@ -98,9 +98,9 @@ export async function POST(req: NextRequest) {
       messages: [
         {
           role: "system",
-          content: `You are a United States Harmonized Tariff System Expert who follows the General Rules for the Interpretation (GRI) of the Harmonized System perfectly.
-            Your job is to take a product description, a work-in-progress HTS classification, and a list of the next classification level descriptions, and figure out which descriptions from the list (between 1 and 3) best match the product description using the GRI if it was added onto the work-in-progress classification.
-            The logic you used to pick the selected option over the other candidates must be included in your response.
+          content: `You are a United States Harmonized Tariff System Expert who follows the General Rules for the Interpretation (GRI) of the Harmonized System perfectly.\n
+            Your job is to take a product description, a work-in-progress HTS classification, and a list of the next classification level descriptions, and figure out which descriptions from the list (at least 3) best match the product description if it was added onto the work-in-progress classification, using the GRI.\n
+            The logic you used to pick each option as a good candidate must be included in your response, and so should the original description completely unchanged.
             `,
         },
         {
