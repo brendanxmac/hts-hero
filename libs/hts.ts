@@ -2,12 +2,13 @@ import { ChatCompletion } from "openai/resources";
 import {
   HtsWithParentReference,
   HtsLevelClassification,
-  MatchResponse,
+  CandidateSelection,
   HsHeading,
   HtsElement,
   TemporaryTariff,
   HtsSection,
   HtsSectionAndChapterBase,
+  BestCandidatesResponse,
 } from "../interfaces/hts";
 import {
   elementsAtClassificationLevel,
@@ -200,16 +201,14 @@ export const getHtsLevel = (htsCode: string): HtsLevel => {
 };
 
 export const getBestCandidatesAtClassificationLevel = async (
-  elementAtLevel: HtsWithParentReference[],
+  elementsAtLevel: HtsWithParentReference[],
   indentLevel: number,
   productDescription: string,
-  htsDescription: string,
   descs?: string[]
-): Promise<MatchResponse> => {
-  const descriptions = descs || getHtsElementDescriptions(elementAtLevel);
+): Promise<BestCandidatesResponse> => {
+  const descriptions = descs || getHtsElementDescriptions(elementsAtLevel);
   const bestCandidatesResponse: Array<ChatCompletion.Choice> =
     await apiClient.post("/openai/get-best-description-match", {
-      htsDescription,
       descriptions,
       productDescription,
       model: OpenAIModel.FOUR,
@@ -257,7 +256,7 @@ export const getBestIndentLevelMatch = async (
     throw new Error(`Best match is null for descriptions`);
   }
 
-  const bestMatchJson: MatchResponse = JSON.parse(bestMatch); // TODO: handle errors
+  const bestMatchJson: CandidateSelection = JSON.parse(bestMatch); // TODO: handle errors
   const bestMatchElement = elementsAtIndent[Number(bestMatchJson.index)];
 
   // FIXME: MAKE SURE WE'RE CONSTRUCTING THE RIGHT HTS STRING (PIVOTAL)

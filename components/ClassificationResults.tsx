@@ -13,7 +13,8 @@ import {
   HtsLevelClassification,
   HtsSection,
   HtsWithParentReference,
-  MatchResponse,
+  CandidateSelection,
+  HeadingSelection,
 } from "../interfaces/hts";
 import { LoadingDots } from "./LabelledLoader";
 import {
@@ -22,8 +23,6 @@ import {
 } from "../utilities/data";
 import { TariffSection } from "./Tariff";
 import { DecisionProgression } from "./DecisionProgression";
-import { HtsLevel } from "../enums/hts";
-import { set } from "zod";
 
 interface Props {
   productDescription: string;
@@ -36,8 +35,18 @@ export const ClassificationResults = ({
 }: Props) => {
   const [resetSearch, setResetSearch] = useState(false);
   const [bestSectionMatch, setBestSectionMatch] = useState<
-    MatchResponse | undefined
+    CandidateSelection | undefined
   >(undefined);
+
+  const [sectionCandidates, setSectionCandidates] =
+    useState<CandidateSelection[]>();
+  const [chapterCandidates, setChapterCandidates] = useState<
+    CandidateSelection[]
+  >([]);
+  const [headingCandidates, setHeadingCandidates] = useState<
+    HeadingSelection[]
+  >([]);
+
   const [selectedChapter, setSelectedChapter] = useState<string | undefined>(
     undefined
   );
@@ -53,6 +62,9 @@ export const ClassificationResults = ({
   const [htsSections, setHtsSections] = useState<HtsSection[]>([]);
 
   const startNewSearch = () => {
+    setSectionCandidates([]);
+    setChapterCandidates([]);
+    setHeadingCandidates([]);
     setBestSectionMatch(undefined);
     setSelectedChapter(undefined);
     setClassificationProgression([]);
@@ -68,49 +80,49 @@ export const ClassificationResults = ({
       htsElementsChunk,
       classificationLevel
     );
-    const bestMatchResponse = await getBestCandidatesAtClassificationLevel(
-      elementsAtLevel,
-      classificationLevel,
-      productDescription,
-      htsDescription
-    );
+    // const bestMatchResponse = await getBestCandidatesAtClassificationLevel(
+    //   elementsAtLevel,
+    //   classificationLevel,
+    //   productDescription,
+    //   htsDescription
+    // );
 
-    const bestMatchElement = elementsAtLevel[bestMatchResponse.index];
+    // const bestMatchElement = elementsAtLevel[bestMatchResponse.index];
 
-    setHtsDescription(
-      updateHtsDescription(htsDescription, bestMatchElement.description)
-    );
+    // setHtsDescription(
+    //   updateHtsDescription(htsDescription, bestMatchElement.description)
+    // );
 
     // Get & Set next selection progression
-    setClassificationProgression([
-      ...classificationProgression,
-      {
-        level: getHtsLevel(bestMatchElement.htsno),
-        candidates: elementsAtLevel,
-        selection: bestMatchElement,
-        reasoning: bestMatchResponse.logic,
-      },
-    ]);
+    // setClassificationProgression([
+    //   ...classificationProgression,
+    //   {
+    //     level: getHtsLevel(bestMatchElement.htsno),
+    //     candidates: elementsAtLevel,
+    //     selection: bestMatchElement,
+    //     reasoning: bestMatchResponse.logic,
+    //   },
+    // ]);
 
-    if (bestMatchElement.htsno) {
-      // setHtsCode(bestMatchElement.htsno);
-    }
+    // if (bestMatchElement.htsno) {
+    //   // setHtsCode(bestMatchElement.htsno);
+    // }
 
     // Get Next HTS Elements Chunk
-    const nextChunkStartIndex = bestMatchElement.indexInParentArray + 1;
-    const nextChunk = getNextChunk(
-      htsElementsChunk,
-      nextChunkStartIndex,
-      classificationLevel
-    );
+    // const nextChunkStartIndex = bestMatchElement.indexInParentArray + 1;
+    // const nextChunk = getNextChunk(
+    //   htsElementsChunk,
+    //   nextChunkStartIndex,
+    //   classificationLevel
+    // );
 
-    setClassificationLevel(classificationLevel + 1);
-    setHtsElementsChunk(setIndexInArray(nextChunk));
+    // setClassificationLevel(classificationLevel + 1);
+    // setHtsElementsChunk(setIndexInArray(nextChunk));
   };
 
   const getSections = async () => {
     setLoading(true);
-    // Get Sections (top 3) -- just pick best to start
+    // Get Sections (top 3)
     const sectionsResponse = await getHtsSectionsAndChapters();
     setHtsSections(sectionsResponse.sections);
     const sections = sectionsResponse.sections;
@@ -120,12 +132,20 @@ export const ClassificationResults = ({
       [],
       0,
       productDescription,
-      "",
       sections.map((s) => s.description)
     );
 
     console.log("Best Section Candidates:");
     console.log(bestSectionCandidates);
+
+    const candidates: CandidateSelection[] =
+      bestSectionCandidates.bestCandidates.map((sectionCandidate) => ({
+        index: sections[sectionCandidate.index].number,
+        description: sections[sectionCandidate.index].description,
+        logic: sectionCandidate.logic,
+      }));
+
+    setSectionCandidates(candidates);
 
     // setBestSectionMatch(bestSectionMatch);
 
@@ -148,36 +168,168 @@ export const ClassificationResults = ({
   };
 
   const getChapters = async () => {
-    // Get Chapters (top 3 from each ^^) -- just pick best from the bunch to start...
-    const chapters = htsSections[bestSectionMatch.index].chapters;
+    console.log("Getting Chapters");
+    // Get Chapters (top 3 from each section)
+    // const chapters = htsSections[bestSectionMatch.index].chapters;
+    console.log(htsSections.length);
+    const candidateSections = htsSections.filter((section) => {
+      return sectionCandidates.some((candidate) => {
+        return candidate.index === section.number;
+      });
+    });
 
-    // Hit Chat GPT to get the best for the description
-    const bestChapterMatch = await getBestCandidatesAtClassificationLevel(
+    console.log("Sections with Chapters:");
+    console.log(candidateSections);
+    // const chapters = sectionCandidates.bestCandidates.map((section) => {
+    //   return htsSections[section.index].chapters;
+    // });
+    let candidatesForChapter: CandidateSelection[] = [];
+
+    await Promise.all(
+      candidateSections.map(async (section) => {
+        // Hit Chat GPT to get the best for the description
+        console.log(
+          `Getting Best Chapter Candidates for Section ${section.number}`
+        );
+        const bestChapterCandidates =
+          await getBestCandidatesAtClassificationLevel(
+            [],
+            0,
+            productDescription,
+            section.chapters.map((c) => c.description)
+          );
+
+        console.log(`Best Chapter Candidates for Section ${section.number}:`);
+        console.log(bestChapterCandidates);
+
+        const candidates: CandidateSelection[] =
+          bestChapterCandidates.bestCandidates.map((chapterCandidate) => ({
+            index: section.chapters[chapterCandidate.index].number,
+            description: section.chapters[chapterCandidate.index].description,
+            logic: chapterCandidate.logic,
+          }));
+
+        candidatesForChapter.push(...candidates);
+      })
+    );
+
+    console.log("========== Setting Chapter Candidates ==========");
+    console.log(candidatesForChapter.length);
+    if (candidatesForChapter.length) {
+      console.log(candidatesForChapter[0]);
+    }
+    setChapterCandidates(candidatesForChapter);
+
+    // const selectedChapter = chapters[bestChapterMatch.index].number;
+
+    // setSelectedChapter(String(selectedChapter));
+
+    // setClassificationProgression([
+    //   ...classificationProgression,
+    //   {
+    //     level: HtsLevel.CHAPTER,
+    //     candidates: chapters,
+    //     selection: chapters[bestChapterMatch.index],
+    //     reasoning: bestChapterMatch.logic,
+    //   },
+    // ]);
+  };
+
+  const getHeadings = async () => {
+    console.log("Getting Headings");
+
+    // Get Headings (top 3 from each chapter)
+    const candidatesForHeading: HeadingSelection[] = [];
+    // 1. Fetch Chapter Data
+    await Promise.all(
+      chapterCandidates.map(async (chapter) => {
+        console.log(
+          `Getting Best Heading Candidates for Chapter ${chapter.index}`
+        );
+        const chapterData = await getHtsChapterData(String(chapter.index));
+        const chapterDataWithParentIndex = setIndexInArray(chapterData);
+        // 2. Get Elements at Heading Level (indent: 0)
+        const elementsAtLevel = elementsAtClassificationLevel(
+          chapterDataWithParentIndex,
+          0
+        );
+        // 3. Find Best Candidates
+        const bestCandidateHeadings =
+          await getBestCandidatesAtClassificationLevel(
+            elementsAtLevel,
+            classificationLevel,
+            productDescription
+          );
+
+        console.log(`Best Heading Candidates for Chapter ${chapter.index}:`);
+        console.log(bestCandidateHeadings);
+
+        const candidates = bestCandidateHeadings.bestCandidates.map(
+          (candidate) => ({
+            index: elementsAtLevel[candidate.index].htsno,
+            description: elementsAtLevel[candidate.index].description,
+            logic: candidate.logic,
+          })
+        );
+
+        candidatesForHeading.push(...candidates);
+      })
+    );
+
+    console.log(`Setting Candidates for Heading`);
+    setHeadingCandidates(candidatesForHeading);
+  };
+
+  const getBestHeading = async () => {
+    console.log("Getting Best OVERALL Headings");
+    console.log(headingCandidates);
+
+    const bestCandidateHeadings = await getBestCandidatesAtClassificationLevel(
       [],
       0,
       productDescription,
-      htsDescription,
-      chapters.map((c) => c.description)
+      headingCandidates.map((h) => h.description)
     );
 
-    const selectedChapter = chapters[bestChapterMatch.index].number;
+    console.log(`Best Heading Candidates OVERALL:`);
+    console.log(bestCandidateHeadings);
 
-    setSelectedChapter(String(selectedChapter));
-
-    setClassificationProgression([
-      ...classificationProgression,
-      {
-        level: HtsLevel.CHAPTER,
-        candidates: chapters,
-        selection: chapters[bestChapterMatch.index],
-        reasoning: bestChapterMatch.logic,
-      },
-    ]);
+    // const candidates = bestCandidateHeadings.bestCandidates.map(
+    //   (candidate) => ({
+    //     index: headingCandidates[candidate.index].index,
+    //     description: headingCandidates[candidate.index].description,
+    //     logic: candidate.logic,
+    //   })
+    // );
   };
+
   const getChapterData = async () => {
     const chapterData = await getHtsChapterData(selectedChapter);
     setHtsElementsChunk(setIndexInArray(chapterData));
   };
+
+  useEffect(() => {
+    if (sectionCandidates && sectionCandidates.length > 0) {
+      // Go find best chapters via Promise.all with ChatGPT
+      getChapters();
+    }
+  }, [sectionCandidates]);
+
+  useEffect(() => {
+    if (chapterCandidates && chapterCandidates.length > 0) {
+      // Go find best chapters via Promise.all with ChatGPT
+      console.log("GOING TO GET HEADINGS");
+      getHeadings();
+    }
+  }, [chapterCandidates]);
+
+  useEffect(() => {
+    if (headingCandidates && headingCandidates.length > 0) {
+      // Go find best chapters via Promise.all with ChatGPT
+      console.log("GOING TO GET BEST HEADING");
+      getBestHeading();
+    }
+  }, [headingCandidates]);
 
   useEffect(() => {
     if (classificationProgression.length === 1) {

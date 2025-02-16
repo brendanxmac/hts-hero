@@ -29,17 +29,16 @@ export async function POST(req: NextRequest) {
     }
 
     const {
-      htsDescription,
       descriptions,
       productDescription,
       model,
     }: GetBestDescriptionMatchDto = await req.json();
 
-    if (htsDescription === undefined || !descriptions || !productDescription) {
+    if (!descriptions || !productDescription) {
       return NextResponse.json(
         {
           error:
-            "Missing current hts description, descriptions to compare against, or product description",
+            "Missing descriptions to compare against or the product description",
         },
         { status: 400 }
       );
@@ -92,24 +91,25 @@ export async function POST(req: NextRequest) {
         "best_description_matches",
         {
           description:
-            "Used to get the best new description matches from an array with selection logic included",
+            "Used to get the best description matches from an array with selection logic included",
         }
       ),
       messages: [
+        // TODO: Consider how the GRI sentance might need to be changed to
+        // fit the differenct contexts in which the prompt is called
+        // For example... do we need to use the GRI for section and chapter...?
         {
           role: "system",
-          content: `You are a United States Harmonized Tariff System Expert who follows the General Rules for the Interpretation (GRI) of the Harmonized System perfectly.\n
-            Your job is to take a product description, a work-in-progress HTS classification, and a list of the next classification level descriptions, and figure out which descriptions from the list (at least 3) best match the product description if it was added onto the work-in-progress classification, using the GRI.\n
-            The logic you used to pick each option as a good candidate must be included in your response, and so should the original description completely unchanged.
+          content: `You are a United States Harmonized Tariff System Expert who follows the General Rules of Interpretation (GRI) for the Harmonized System perfectly.\n
+            Your job is to take a product description and a list of classification descriptions, and figure out which descriptions from the list (at least 2, up to 3) best match the product description.\n
+            You must use the GRI rules sequentially (as needed) and consider all options in the list as to shape your decision making logic.\n
+            The logic you used to pick an option as a good candidate must be included in your response, and so should the original description which should be completely unchanged.
             `,
         },
         {
           role: "user",
           content: `Product Description: ${productDescription}\n
-          Work In Progress HTS Classification: ${htsDescription}\n
-        Next Classification Level Descriptions: ${labelledDescriptions.join(
-          "\n"
-        )}`,
+         Classification Descriptions: ${labelledDescriptions.join("\n")}`,
         },
       ],
     });
