@@ -2,51 +2,26 @@ import { NextResponse, NextRequest } from "next/server";
 import OpenAI from "openai";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { OpenAIModel } from "../../../../libs/openai";
 import { createClient } from "../../../../libs/supabase/server";
 
 export const dynamic = "force-dynamic";
 
-interface GetBestDescriptionMatchDto {
+interface RankDescriptionsDto {
   descriptions: string[];
   productDescription: string;
   isSectionOrChapter?: boolean;
-  minMatches?: number;
-  maxMatches?: number;
 }
 
-const DescriptionMatch = z.object({
+const DescriptionRanking = z.object({
   index: z.number(),
+  rank: z.number(),
   description: z.string(),
   logic: z.string(),
 });
 
-const BestDescriptionMatches = z.object({
-  bestCandidates: z.array(DescriptionMatch),
+const DescriptionRankings = z.object({
+  rankedDescriptions: z.array(DescriptionRanking),
 });
-
-const getMinMaxRangeText = (minMatches?: number, maxMatches?: number) => {
-  if (minMatches && maxMatches) {
-    if (minMatches > maxMatches || minMatches === maxMatches) {
-      throw new Error("Min matches must be less than max matches");
-    }
-
-    return `at least ${minMatches}, up to ${maxMatches}`;
-  }
-
-  if (minMatches) {
-    return `at least ${minMatches}`;
-  }
-
-  if (maxMatches) {
-    if (maxMatches === 1) {
-      return "only 1";
-    }
-    return `up to ${maxMatches}`;
-  }
-
-  return "at least 1, up to 3";
-};
 
 export async function POST(req: NextRequest) {
   try {
@@ -62,13 +37,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const {
-      descriptions,
-      productDescription,
-      isSectionOrChapter = false,
-      minMatches,
-      maxMatches,
-    }: GetBestDescriptionMatchDto = await req.json();
+    const { descriptions, productDescription }: RankDescriptionsDto =
+      await req.json();
 
     if (!descriptions || !productDescription) {
       return NextResponse.json(
@@ -80,18 +50,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (minMatches && maxMatches) {
-      if (minMatches > maxMatches || minMatches === maxMatches) {
-        return NextResponse.json(
-          { error: "Min matches must be less than max matches" },
-          { status: 400 }
-        );
-      }
-    }
-
-    const minMaxRangeText = getMinMaxRangeText(minMatches, maxMatches);
-    console.log("MIN MAX RANGE TEXT:", minMaxRangeText);
-
     const labelledDescriptions = descriptions.map(
       (description, index) => `${index}. ${description}`
     );
@@ -101,11 +59,11 @@ export async function POST(req: NextRequest) {
       temperature: 0.3,
       model: "gpt-4o-2024-11-20",
       response_format: zodResponseFormat(
-        BestDescriptionMatches,
-        "best_description_matches",
+        DescriptionRankings,
+        "description_rankings",
         {
           description:
-            "Used to get the best description matches from an array with selection logic included",
+            "Used to rank the best HTS heading description matches against a product description with ranking logic that references the GRI considering all other descriptions included",
         }
       ),
       messages: [
@@ -115,19 +73,16 @@ export async function POST(req: NextRequest) {
         {
           role: "system",
           content: `You are a United States Harmonized Tariff System Expert who follows the General Rules of Interpretation (GRI) for the Harmonized System perfectly.\n
-            Your job is to take a product description and a list of classification descriptions, and figure out which description(s) from the list best match the product description (${minMaxRangeText}).\n
-            ${
-              isSectionOrChapter
-                ? ""
-                : "You must use the GRI rules sequentially (as needed) and consider all options in the list to shape your decision making logic.\n"
-            }
-            The logic you used to pick an option as a good candidate must be included in your response, and so should the original unchanged description.
+            Your job is to take a product description and a list of HTS Heading descriptions, and rank the descriptions using the GRI based on how well each matches the product description against all other descriptions included.\n
+            "You must use the GRI rules (in sequential order as needed) and consider all options in the list to shape your decision making logic.\n"
+            The index of the description, it's rank, the logic used to rank it, and the original unchanged description should be included in your response.\n
+            The response list should be ordered by the rank, with the best ranking description first, and the worst last.
             `,
         },
         {
           role: "user",
           content: `Product Description: ${productDescription}\n
-         Classification Descriptions: ${labelledDescriptions.join("\n")}`,
+         HTS Heading Descriptions: ${labelledDescriptions.join("\n")}`,
         },
       ],
     });

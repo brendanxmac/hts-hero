@@ -2,11 +2,12 @@
 
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
-  getBestCandidatesAtClassificationLevel,
+  getBestDescriptionCandidates,
   getHtsChapterData,
   getHtsLevel,
   getHtsSectionsAndChapters,
   getNextChunk,
+  rankBestHtsHeadings,
   updateHtsDescription,
 } from "../libs/hts";
 import {
@@ -34,10 +35,6 @@ export const ClassificationResults = ({
   setUpdateScrollHeight,
 }: Props) => {
   const [resetSearch, setResetSearch] = useState(false);
-  const [bestSectionMatch, setBestSectionMatch] = useState<
-    CandidateSelection | undefined
-  >(undefined);
-
   const [sectionCandidates, setSectionCandidates] =
     useState<CandidateSelection[]>();
   const [chapterCandidates, setChapterCandidates] = useState<
@@ -65,7 +62,6 @@ export const ClassificationResults = ({
     setSectionCandidates([]);
     setChapterCandidates([]);
     setHeadingCandidates([]);
-    setBestSectionMatch(undefined);
     setSelectedChapter(undefined);
     setClassificationProgression([]);
     setHtsDescription("");
@@ -76,23 +72,20 @@ export const ClassificationResults = ({
   };
 
   const findBestClassifierAtLevel = async () => {
-    const elementsAtLevel = elementsAtClassificationLevel(
-      htsElementsChunk,
-      classificationLevel
-    );
+    // const elementsAtLevel = elementsAtClassificationLevel(
+    //   htsElementsChunk,
+    //   classificationLevel
+    // );
     // const bestMatchResponse = await getBestCandidatesAtClassificationLevel(
     //   elementsAtLevel,
     //   classificationLevel,
     //   productDescription,
     //   htsDescription
     // );
-
     // const bestMatchElement = elementsAtLevel[bestMatchResponse.index];
-
     // setHtsDescription(
     //   updateHtsDescription(htsDescription, bestMatchElement.description)
     // );
-
     // Get & Set next selection progression
     // setClassificationProgression([
     //   ...classificationProgression,
@@ -103,11 +96,9 @@ export const ClassificationResults = ({
     //     reasoning: bestMatchResponse.logic,
     //   },
     // ]);
-
     // if (bestMatchElement.htsno) {
     //   // setHtsCode(bestMatchElement.htsno);
     // }
-
     // Get Next HTS Elements Chunk
     // const nextChunkStartIndex = bestMatchElement.indexInParentArray + 1;
     // const nextChunk = getNextChunk(
@@ -115,23 +106,25 @@ export const ClassificationResults = ({
     //   nextChunkStartIndex,
     //   classificationLevel
     // );
-
     // setClassificationLevel(classificationLevel + 1);
     // setHtsElementsChunk(setIndexInArray(nextChunk));
   };
 
+  // Examples:
+  // 2 Liter Ceramic Pot that is conduction capable
+
+  // Get 2-3 Best Sections
   const getSections = async () => {
-    setLoading(true);
-    // Get Sections (top 3)
+    console.log("Getting Best Sections");
     const sectionsResponse = await getHtsSectionsAndChapters();
     setHtsSections(sectionsResponse.sections);
     const sections = sectionsResponse.sections;
-
-    // Hit Chat GPT to get the best for the description
-    const bestSectionCandidates = await getBestCandidatesAtClassificationLevel(
+    const bestSectionCandidates = await getBestDescriptionCandidates(
       [],
-      0,
       productDescription,
+      true,
+      2,
+      3,
       sections.map((s) => s.description)
     );
 
@@ -147,15 +140,8 @@ export const ClassificationResults = ({
 
     setSectionCandidates(candidates);
 
-    // setBestSectionMatch(bestSectionMatch);
-
-    // setHtsDescription(
-    //   updateHtsDescription(
-    //     htsDescription,
-    //     sections[bestSectionMatch.index].description
-    //   )
-    // );
-
+    // TODO: Maybe should set progression here and add a condition below to ONLY kick
+    // off the subheading and beyond classification if the level is === heading
     // setClassificationProgression([
     //   ...classificationProgression,
     //   {
@@ -167,40 +153,27 @@ export const ClassificationResults = ({
     // ]);
   };
 
+  // Get 2-3 Best Chapters
   const getChapters = async () => {
-    console.log("Getting Chapters");
-    // Get Chapters (top 3 from each section)
-    // const chapters = htsSections[bestSectionMatch.index].chapters;
-    console.log(htsSections.length);
+    console.log("Getting Best Chapters");
     const candidateSections = htsSections.filter((section) => {
       return sectionCandidates.some((candidate) => {
         return candidate.index === section.number;
       });
     });
 
-    console.log("Sections with Chapters:");
-    console.log(candidateSections);
-    // const chapters = sectionCandidates.bestCandidates.map((section) => {
-    //   return htsSections[section.index].chapters;
-    // });
     let candidatesForChapter: CandidateSelection[] = [];
 
     await Promise.all(
       candidateSections.map(async (section) => {
-        // Hit Chat GPT to get the best for the description
-        console.log(
-          `Getting Best Chapter Candidates for Section ${section.number}`
+        const bestChapterCandidates = await getBestDescriptionCandidates(
+          [],
+          productDescription,
+          false,
+          2,
+          3,
+          section.chapters.map((c) => c.description)
         );
-        const bestChapterCandidates =
-          await getBestCandidatesAtClassificationLevel(
-            [],
-            0,
-            productDescription,
-            section.chapters.map((c) => c.description)
-          );
-
-        console.log(`Best Chapter Candidates for Section ${section.number}:`);
-        console.log(bestChapterCandidates);
 
         const candidates: CandidateSelection[] =
           bestChapterCandidates.bestCandidates.map((chapterCandidate) => ({
@@ -213,17 +186,10 @@ export const ClassificationResults = ({
       })
     );
 
-    console.log("========== Setting Chapter Candidates ==========");
-    console.log(candidatesForChapter.length);
-    if (candidatesForChapter.length) {
-      console.log(candidatesForChapter[0]);
-    }
     setChapterCandidates(candidatesForChapter);
 
-    // const selectedChapter = chapters[bestChapterMatch.index].number;
-
-    // setSelectedChapter(String(selectedChapter));
-
+    // TODO: Maybe should set progression here and add a condition below to ONLY kick
+    // off the subheading and beyond classification if the level is === heading
     // setClassificationProgression([
     //   ...classificationProgression,
     //   {
@@ -235,31 +201,26 @@ export const ClassificationResults = ({
     // ]);
   };
 
+  // Get 2-3 Best Headings Per Chapter
   const getHeadings = async () => {
-    console.log("Getting Headings");
-
-    // Get Headings (top 3 from each chapter)
+    console.log("Getting Best Headings");
     const candidatesForHeading: HeadingSelection[] = [];
-    // 1. Fetch Chapter Data
     await Promise.all(
       chapterCandidates.map(async (chapter) => {
-        console.log(
-          `Getting Best Heading Candidates for Chapter ${chapter.index}`
-        );
         const chapterData = await getHtsChapterData(String(chapter.index));
         const chapterDataWithParentIndex = setIndexInArray(chapterData);
-        // 2. Get Elements at Heading Level (indent: 0)
         const elementsAtLevel = elementsAtClassificationLevel(
           chapterDataWithParentIndex,
           0
         );
-        // 3. Find Best Candidates
-        const bestCandidateHeadings =
-          await getBestCandidatesAtClassificationLevel(
-            elementsAtLevel,
-            classificationLevel,
-            productDescription
-          );
+        const bestCandidateHeadings = await getBestDescriptionCandidates(
+          elementsAtLevel,
+          productDescription,
+          false,
+          2,
+          3,
+          elementsAtLevel.map((e) => e.description)
+        );
 
         console.log(`Best Heading Candidates for Chapter ${chapter.index}:`);
         console.log(bestCandidateHeadings);
@@ -276,7 +237,6 @@ export const ClassificationResults = ({
       })
     );
 
-    console.log(`Setting Candidates for Heading`);
     setHeadingCandidates(candidatesForHeading);
   };
 
@@ -284,15 +244,30 @@ export const ClassificationResults = ({
     console.log("Getting Best OVERALL Headings");
     console.log(headingCandidates);
 
-    const bestCandidateHeadings = await getBestCandidatesAtClassificationLevel(
-      [],
-      0,
-      productDescription,
-      headingCandidates.map((h) => h.description)
+    const rankedHeadings = await rankBestHtsHeadings(
+      headingCandidates.map((h) => h.description),
+      productDescription
     );
 
-    console.log(`Best Heading Candidates OVERALL:`);
-    console.log(bestCandidateHeadings);
+    console.log("Ranked Headings:");
+    console.log(rankedHeadings);
+
+    // const bestCandidateHeadings = await getBestDescriptionCandidates(
+    //   [],
+    //   productDescription,
+    //   false,
+    //   null,
+    //   1,
+    //   headingCandidates.map((h) => h.description)
+    // );
+
+    // console.log(`BEST HEADING:`);
+    // console.log(bestCandidateHeadings);
+
+    // TODO: Need to set the htsDescription here
+    // TODO: Need to set the classificationProgression here
+    // TODO: Need to set the classificationLevel here
+    // TODO: Need to set the htsElementsChunk here?
 
     // const candidates = bestCandidateHeadings.bestCandidates.map(
     //   (candidate) => ({
@@ -310,23 +285,18 @@ export const ClassificationResults = ({
 
   useEffect(() => {
     if (sectionCandidates && sectionCandidates.length > 0) {
-      // Go find best chapters via Promise.all with ChatGPT
       getChapters();
     }
   }, [sectionCandidates]);
 
   useEffect(() => {
     if (chapterCandidates && chapterCandidates.length > 0) {
-      // Go find best chapters via Promise.all with ChatGPT
-      console.log("GOING TO GET HEADINGS");
       getHeadings();
     }
   }, [chapterCandidates]);
 
   useEffect(() => {
     if (headingCandidates && headingCandidates.length > 0) {
-      // Go find best chapters via Promise.all with ChatGPT
-      console.log("GOING TO GET BEST HEADING");
       getBestHeading();
     }
   }, [headingCandidates]);
@@ -368,6 +338,7 @@ export const ClassificationResults = ({
 
   useEffect(() => {
     if (resetSearch) {
+      setLoading(true);
       getSections();
       setResetSearch(false);
     }

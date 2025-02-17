@@ -40,6 +40,14 @@ export interface HsHeading {
   logic: string;
 }
 
+export interface RankedDescriptionsResponse {
+  rankedDescriptions: RankedCandidateSelection[];
+}
+
+export interface RankedCandidateSelection extends CandidateSelection {
+  rank: number;
+}
+
 export interface BestCandidatesResponse {
   bestCandidates: CandidateSelection[];
 }
