@@ -9,6 +9,7 @@ import {
   HtsSection,
   HtsSectionAndChapterBase,
   BestCandidatesResponse,
+  RankedDescriptionsResponse,
 } from "../interfaces/hts";
 import {
   elementsAtClassificationLevel,
@@ -200,10 +201,25 @@ export const getHtsLevel = (htsCode: string): HtsLevel => {
   }
 };
 
-export const getBestCandidatesAtClassificationLevel = async (
+export const rankBestHtsHeadings = async (
+  descriptions: string[],
+  productDescription: string
+): Promise<RankedDescriptionsResponse> => {
+  const rankedDescriptionsResponse: Array<ChatCompletion.Choice> =
+    await apiClient.post("/openai/rank-headings", {
+      descriptions,
+      productDescription,
+    });
+
+  return JSON.parse(rankedDescriptionsResponse[0].message.content);
+};
+
+export const getBestDescriptionCandidates = async (
   elementsAtLevel: HtsWithParentReference[],
-  indentLevel: number,
   productDescription: string,
+  isSectionOrChapter: boolean,
+  minMatches?: number,
+  maxMatches?: number,
   descs?: string[]
 ): Promise<BestCandidatesResponse> => {
   const descriptions = descs || getHtsElementDescriptions(elementsAtLevel);
@@ -211,15 +227,15 @@ export const getBestCandidatesAtClassificationLevel = async (
     await apiClient.post("/openai/get-best-description-match", {
       descriptions,
       productDescription,
-      model: OpenAIModel.FOUR,
+      isSectionOrChapter,
+      minMatches,
+      maxMatches,
     });
 
   const bestCandidates = bestCandidatesResponse[0].message.content;
-  console.log("Best Candidates:");
-  console.log(bestCandidates);
 
   if (bestCandidates === null) {
-    throw new Error(`Failed to get best match at level ${indentLevel}`);
+    throw new Error(`Failed to get best description matches`);
   }
 
   return JSON.parse(bestCandidates);
