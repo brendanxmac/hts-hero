@@ -3,24 +3,18 @@ import OpenAI from "openai";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { createClient } from "../../../../libs/supabase/server";
+import { SimplifiedHtsElement } from "../../../../interfaces/hts";
 
 export const dynamic = "force-dynamic";
 
-interface RankDescriptionsDto {
-  descriptions: string[];
+interface EvaluateHeadingsDto {
+  headings: SimplifiedHtsElement[];
   productDescription: string;
-  isSectionOrChapter?: boolean;
 }
 
-const DescriptionRanking = z.object({
-  index: z.number(),
-  rank: z.number(),
-  description: z.string(),
-  logic: z.string(),
-});
-
-const DescriptionRankings = z.object({
-  rankedDescriptions: z.array(DescriptionRanking),
+const BestHeading = z.object({
+  code: z.string(),
+  evaluation: z.string(),
 });
 
 export async function POST(req: NextRequest) {
@@ -29,7 +23,7 @@ export async function POST(req: NextRequest) {
     const { data } = await supabase.auth.getUser();
     const user = data.user;
 
-    // User who are not logged in can't make a gpt requests
+    // User who are not logged in can't access this request
     if (!user) {
       return NextResponse.json(
         { error: "You must be logged in to complete this action." },
@@ -37,52 +31,53 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { descriptions, productDescription }: RankDescriptionsDto =
+    const { headings, productDescription }: EvaluateHeadingsDto =
       await req.json();
 
-    if (!descriptions || !productDescription) {
+    if (!headings || !productDescription) {
       return NextResponse.json(
         {
           error:
-            "Missing descriptions to compare against or the product description",
+            "Missing headings to compare against or the product description",
         },
         { status: 400 }
       );
     }
 
-    const labelledDescriptions = descriptions.map(
-      (description, index) => `${index}. ${description}`
+    const headingCandidates = headings.map(
+      ({ code, description }) => `${code}: ${description}`
     );
+
+    console.log("Heading Candidates:", headingCandidates);
 
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const gptResponse = await openai.chat.completions.create({
-      temperature: 0.3,
+      temperature: 0.2,
       model: "gpt-4o-2024-11-20",
-      response_format: zodResponseFormat(
-        DescriptionRankings,
-        "description_rankings",
-        {
-          description:
-            "Used to rank the best HTS heading description matches against a product description with ranking logic that references the GRI considering all other descriptions included",
-        }
-      ),
+      response_format: zodResponseFormat(BestHeading, "description_rankings", {
+        description:
+          "Used to analyze HTS headings against a product description and output a clear evaluation about which is the best and why, using the General Rules of Interpretation (GRI)",
+      }),
       messages: [
-        // TODO: Consider how the GRI sentance might need to be changed to
-        // fit the differenct contexts in which the prompt is called
-        // For example... do we need to use the GRI for section and chapter...?
         {
           role: "system",
           content: `You are a United States Harmonized Tariff System Expert who follows the General Rules of Interpretation (GRI) for the Harmonized System perfectly.\n
-            Your job is to take a product description and a list of HTS Heading descriptions, and rank the descriptions using the GRI based on how well each matches the product description against all other descriptions included.\n
-            "You must use the GRI rules (in sequential order as needed) and consider all options in the list to shape your decision making logic.\n"
-            The index of the description, it's rank, the logic used to rank it, and the original unchanged description should be included in your response.\n
-            The response list should be ordered by the rank, with the best ranking description first, and the worst last.
-            `,
+            Your job is to take a product description and a list of HTS Headings and output:
+            1. A clear evaluation about which heading best classifies the product:\n
+                a. You must use and sequentially reference the General Rules of Interpretation (GRI).\n
+                b. You must consider all options in the list to shape your decision making logic.\n
+                c. Your evaluation should follow the format:\n
+                Best Heading: [Code]:[Description]\n
+                Justification: Explain why this heading best fits the product description under GRI 1.\n
+                Comparison with Alternatives: Briefly explain why each rejected heading is less appropriate.\n
+                Higher GRI Application (if needed): If multiple headings could apply, explain why the chosen heading prevails using GRI 3(a), 3(b), or 3(c). If the product is unfinished or mixed, apply GRI 2(a) or 2(b) as needed.\n
+                Final Conclusion: A concise summary of why the selected heading is the best classification.
+            2. The code of the best match\n`,
         },
         {
           role: "user",
           content: `Product Description: ${productDescription}\n
-         HTS Heading Descriptions: ${labelledDescriptions.join("\n")}`,
+         HTS Headings: ${headingCandidates.join("\n")}`,
         },
       ],
     });

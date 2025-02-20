@@ -1,5 +1,19 @@
 import { HtsLevel } from "../enums/hts";
 
+export interface Eval {
+  index: number;
+  content: string;
+  reasoning: string;
+}
+
+export interface Note {
+  path: string;
+  content: string;
+  type: string;
+  section: string;
+  listPosition: string;
+}
+
 export interface HtsSection extends HtsSectionAndChapterBase {
   chapters: HtsSectionAndChapterBase[];
 }
@@ -11,6 +25,11 @@ export interface HtsSectionAndChapterBase {
 
 export interface HtsWithParentReference extends HtsElement {
   indexInParentArray: number; // used to grab window ranges in the parent array
+}
+
+export interface SimplifiedHtsElement {
+  code: string;
+  description: string;
 }
 
 export interface HtsElement {
@@ -40,6 +59,17 @@ export interface HsHeading {
   logic: string;
 }
 
+export interface BestProgressionResponse {
+  code: string;
+  description: string;
+  logic: string;
+}
+
+export interface BestHeadingEvaluationResponse {
+  code: string;
+  evaluation: string;
+}
+
 export interface RankedDescriptionsResponse {
   rankedDescriptions: RankedCandidateSelection[];
 }
@@ -53,7 +83,7 @@ export interface BestCandidatesResponse {
 }
 
 export interface HeadingSelection {
-  index: string;
+  heading: string;
   description: string;
   logic: string;
 }
