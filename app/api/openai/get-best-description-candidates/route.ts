@@ -2,7 +2,6 @@ import { NextResponse, NextRequest } from "next/server";
 import OpenAI from "openai";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { OpenAIModel } from "../../../../libs/openai";
 import { createClient } from "../../../../libs/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -73,8 +72,7 @@ export async function POST(req: NextRequest) {
     if (!descriptions || !productDescription) {
       return NextResponse.json(
         {
-          error:
-            "Missing descriptions to compare against or the product description",
+          error: "Missing classification descriptions or product description",
         },
         { status: 400 }
       );
@@ -98,7 +96,7 @@ export async function POST(req: NextRequest) {
 
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const gptResponse = await openai.chat.completions.create({
-      temperature: 0.3,
+      temperature: 0.2,
       model: "gpt-4o-2024-11-20",
       response_format: zodResponseFormat(
         BestDescriptionMatches,
@@ -109,19 +107,17 @@ export async function POST(req: NextRequest) {
         }
       ),
       messages: [
-        // TODO: Consider how the GRI sentance might need to be changed to
-        // fit the differenct contexts in which the prompt is called
-        // For example... do we need to use the GRI for section and chapter...?
         {
           role: "system",
           content: `You are a United States Harmonized Tariff System Expert who follows the General Rules of Interpretation (GRI) for the Harmonized System perfectly.\n
-            Your job is to take a product description and a list of classification descriptions, and figure out which description(s) from the list best match the product description (${minMaxRangeText}).\n
+            Your job is to take a product description and a list of classification descriptions, and figure out which description(s) from the list most closely fit the product description (${minMaxRangeText}).\n
             ${
               isSectionOrChapter
                 ? ""
                 : "You must use the GRI rules sequentially (as needed) and consider all options in the list to shape your decision making logic.\n"
             }
-            The logic you used to pick an option as a good candidate must be included in your response, and so should the original unchanged description.
+            The logic you used to pick an option as a good candidate must be included in your response, and so should the original unchanged description.\n
+            The best fitting candidate must be first in the list
             `,
         },
         {

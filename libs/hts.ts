@@ -10,6 +10,11 @@ import {
   HtsSectionAndChapterBase,
   BestCandidatesResponse,
   RankedDescriptionsResponse,
+  BestHeadingEvaluationResponse,
+  SimplifiedHtsElement,
+  Eval,
+  Note,
+  BestProgressionResponse,
 } from "../interfaces/hts";
 import {
   elementsAtClassificationLevel,
@@ -201,17 +206,65 @@ export const getHtsLevel = (htsCode: string): HtsLevel => {
   }
 };
 
-export const rankBestHtsHeadings = async (
-  descriptions: string[],
+export const fetchTopLevelSectionNotes = async (
+  section: number
+): Promise<Note[]> => {
+  return await apiClient.post("/supabase/get-section-notes", {
+    section,
+  });
+};
+
+export const determineExclusionarySectionNotes = async (
+  notes: Note[],
   productDescription: string
-): Promise<RankedDescriptionsResponse> => {
-  const rankedDescriptionsResponse: Array<ChatCompletion.Choice> =
+): Promise<Eval[]> => {
+  // Query ChatGPT to filter to relevant notes
+  const exclustionaryNotesResponse: Array<ChatCompletion.Choice> =
+    await apiClient.post("/openai/get-exclusionary-notes", {
+      productDescription,
+      notes,
+    });
+  console.log("Exlcusionary notes:");
+  console.log(exclustionaryNotesResponse[0].message.content);
+  const relevantNotesParsed = JSON.parse(
+    exclustionaryNotesResponse[0].message.content!
+  ) as Eval[];
+
+  return relevantNotesParsed;
+};
+
+export const evaluateBestHeadings = async (
+  headings: SimplifiedHtsElement[],
+  productDescription: string
+): Promise<BestHeadingEvaluationResponse> => {
+  const bestHeadingResponse: Array<ChatCompletion.Choice> =
     await apiClient.post("/openai/rank-headings", {
-      descriptions,
+      headings,
       productDescription,
     });
 
-  return JSON.parse(rankedDescriptionsResponse[0].message.content);
+  return JSON.parse(bestHeadingResponse[0].message.content);
+};
+
+export const getBestClassificationProgression = async (
+  elements: SimplifiedHtsElement[],
+  htsDescription: string,
+  productDescription: string
+): Promise<BestProgressionResponse> => {
+  const bestCandidatesResponse: Array<ChatCompletion.Choice> =
+    await apiClient.post("/openai/get-best-classification-progression", {
+      elements,
+      productDescription,
+      htsDescription,
+    });
+
+  const bestCandidates = bestCandidatesResponse[0].message.content;
+
+  if (bestCandidates === null) {
+    throw new Error(`Failed to get best description matches`);
+  }
+
+  return JSON.parse(bestCandidates);
 };
 
 export const getBestDescriptionCandidates = async (
@@ -224,7 +277,7 @@ export const getBestDescriptionCandidates = async (
 ): Promise<BestCandidatesResponse> => {
   const descriptions = descs || getHtsElementDescriptions(elementsAtLevel);
   const bestCandidatesResponse: Array<ChatCompletion.Choice> =
-    await apiClient.post("/openai/get-best-description-match", {
+    await apiClient.post("/openai/get-best-description-candidates", {
       descriptions,
       productDescription,
       isSectionOrChapter,
@@ -242,8 +295,11 @@ export const getBestDescriptionCandidates = async (
 };
 
 export const updateHtsDescription = (current: string, additional: string) => {
-  // Tack best matches description onto the htsDescription
-  return current ? current + " > " + additional : additional;
+  // Remove any trailing ":" from the part that will get added on
+  const cleanedAdditional = additional.replace(/\s*:\s*$/, "");
+
+  // Tack additional onto current and join with " > " if current already exists
+  return current ? current + " > " + cleanedAdditional : cleanedAdditional;
 };
 
 // Recursive function that implements the sliding window approach to find
