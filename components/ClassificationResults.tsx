@@ -240,6 +240,16 @@ export const ClassificationResults = ({
         console.log(`Best Heading Candidates for Chapter ${chapter.index}:`);
         console.log(bestCandidateHeadings);
 
+        // Handle Empty Case
+        if (bestCandidateHeadings.bestCandidates.length === 0) {
+          return;
+        }
+
+        // Handle Negative Index Case (sometimes chatGPT will do this)
+        if (bestCandidateHeadings.bestCandidates[0].index < 0) {
+          return;
+        }
+
         const candidates = bestCandidateHeadings.bestCandidates.map(
           (candidate) => ({
             heading: elementsAtLevel[candidate.index].htsno,
