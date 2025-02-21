@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
             1. A clear evaluation about which heading best classifies the product:\n
                 a. You must use and sequentially reference the General Rules of Interpretation (GRI).\n
                 b. You must consider all options in the list to shape your decision making logic.\n
-                c. Your evaluation should follow the format:\n
+                c. Your evaluation should follow the format (include single line breaks between the sections and their content, double line breaks between sections):\n
                 Best Heading: [Code]:[Description]\n
                 Justification: Explain why this heading best fits the product description under GRI 1.\n
                 Comparison with Alternatives: Briefly explain why each rejected heading is less appropriate.\n

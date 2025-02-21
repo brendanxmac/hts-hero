@@ -117,7 +117,7 @@ export async function POST(req: NextRequest) {
                 : "You must use the GRI rules sequentially (as needed) and consider all options in the list to shape your decision making logic.\n"
             }
             The logic you used to pick an option as a good candidate must be included in your response, and so should the original unchanged description.\n
-            The best fitting candidate must be first in the list
+            The best fitting candidate must be first in the list, and if none are good candidates, return an empty array.
             `,
         },
         {
