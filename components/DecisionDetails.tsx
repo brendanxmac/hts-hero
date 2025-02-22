@@ -24,7 +24,7 @@ export const DecisionDetails = ({ decision }: Props) => {
       </div>
       <div className="flex flex-col gap-2">
         <h3 className="text-sm text-neutral-400 font-bold">Reasoning</h3>
-        <h4 className="text-sm">{reasoning}</h4>
+        <h4 className="text-sm whitespace-pre-line">{reasoning}</h4>
       </div>
     </div>
   );

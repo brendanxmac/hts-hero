@@ -2,10 +2,19 @@ import { ChatCompletion } from "openai/resources";
 import {
   HtsWithParentReference,
   HtsLevelClassification,
-  MatchResponse,
+  CandidateSelection,
   HsHeading,
   HtsElement,
   TemporaryTariff,
+  HtsSection,
+  HtsSectionAndChapterBase,
+  BestCandidatesResponse,
+  RankedDescriptionsResponse,
+  BestHeadingEvaluationResponse,
+  SimplifiedHtsElement,
+  Eval,
+  Note,
+  BestProgressionResponse,
 } from "../interfaces/hts";
 import {
   elementsAtClassificationLevel,
@@ -172,6 +181,7 @@ export const getHtsLevel = (htsCode: string): HtsLevel => {
   const sanitizedInput = htsCode.trim().replace(/\.*$/g, "");
 
   // Define regular expressions for each HTS level
+  const chapterRegex = /^\d{2}$/; // Matches "xx"
   const headingRegex = /^\d{4}$/; // Matches "xxxx"
   const subheadingRegex = /^\d{4}\.\d{2}$/; // Matches "xxxx.xx"
   const usSubheadingRegex = /^\d{4}\.\d{2}\.\d{2}$/; // Matches "xxxx.xx.xx"
@@ -180,6 +190,8 @@ export const getHtsLevel = (htsCode: string): HtsLevel => {
   // Determine the HTS classification level
   if (sanitizedInput === "") {
     return HtsLevel.PREQUALIFIER;
+  } else if (chapterRegex.test(sanitizedInput)) {
+    return HtsLevel.CHAPTER;
   } else if (headingRegex.test(sanitizedInput)) {
     return HtsLevel.HEADING;
   } else if (subheadingRegex.test(sanitizedInput)) {
@@ -194,35 +206,112 @@ export const getHtsLevel = (htsCode: string): HtsLevel => {
   }
 };
 
-export const getBestMatchAtClassificationLevel = async (
-  elementAtLevel: HtsWithParentReference[],
-  indentLevel: number,
-  productDescription: string,
-  htsDescription: string
-): Promise<MatchResponse> => {
-  const descriptions = getHtsElementDescriptions(elementAtLevel);
-  const bestMatchResponse: Array<ChatCompletion.Choice> = await apiClient.post(
-    "/openai/get-best-description-match",
-    {
-      htsDescription,
-      descriptions,
+export const fetchTopLevelSectionNotes = async (
+  section: number
+): Promise<Note[]> => {
+  return await apiClient.post("/supabase/get-section-notes", {
+    section,
+  });
+};
+
+export const determineExclusionarySectionNotes = async (
+  notes: Note[],
+  productDescription: string
+): Promise<Eval[]> => {
+  // Query ChatGPT to filter to relevant notes
+  const exclustionaryNotesResponse: Array<ChatCompletion.Choice> =
+    await apiClient.post("/openai/get-exclusionary-notes", {
       productDescription,
-      model: OpenAIModel.FOUR,
-    }
-  );
+      notes,
+    });
+  console.log("Exlcusionary notes:");
+  console.log(exclustionaryNotesResponse[0].message.content);
+  const relevantNotesParsed = JSON.parse(
+    exclustionaryNotesResponse[0].message.content!
+  ) as Eval[];
 
-  const bestMatch = bestMatchResponse[0].message.content;
+  return relevantNotesParsed;
+};
 
-  if (bestMatch === null) {
-    throw new Error(`Failed to get best match at level ${indentLevel}`);
+export const logSearch = async (productDescription: string) => {
+  const logSearchResponse: { success?: boolean; error?: string } =
+    await apiClient.post("/search/log", {
+      productDescription,
+    });
+
+  console.log("Search Log Response:");
+  console.log(logSearchResponse);
+
+  return logSearchResponse;
+};
+
+export const evaluateBestHeadings = async (
+  headings: SimplifiedHtsElement[],
+  productDescription: string
+): Promise<BestHeadingEvaluationResponse> => {
+  const bestHeadingResponse: Array<ChatCompletion.Choice> =
+    await apiClient.post("/openai/rank-headings", {
+      headings,
+      productDescription,
+    });
+
+  return JSON.parse(bestHeadingResponse[0].message.content);
+};
+
+export const getBestClassificationProgression = async (
+  elements: SimplifiedHtsElement[],
+  htsDescription: string,
+  productDescription: string
+): Promise<BestProgressionResponse> => {
+  const bestCandidatesResponse: Array<ChatCompletion.Choice> =
+    await apiClient.post("/openai/get-best-classification-progression", {
+      elements,
+      productDescription,
+      htsDescription,
+    });
+
+  const bestCandidates = bestCandidatesResponse[0].message.content;
+
+  if (bestCandidates === null) {
+    throw new Error(`Failed to get best description matches`);
   }
 
-  return JSON.parse(bestMatch);
+  return JSON.parse(bestCandidates);
+};
+
+export const getBestDescriptionCandidates = async (
+  elementsAtLevel: HtsWithParentReference[],
+  productDescription: string,
+  isSectionOrChapter: boolean,
+  minMatches?: number,
+  maxMatches?: number,
+  descs?: string[]
+): Promise<BestCandidatesResponse> => {
+  const descriptions = descs || getHtsElementDescriptions(elementsAtLevel);
+  const bestCandidatesResponse: Array<ChatCompletion.Choice> =
+    await apiClient.post("/openai/get-best-description-candidates", {
+      descriptions,
+      productDescription,
+      isSectionOrChapter,
+      minMatches,
+      maxMatches,
+    });
+
+  const bestCandidates = bestCandidatesResponse[0].message.content;
+
+  if (bestCandidates === null) {
+    throw new Error(`Failed to get best description matches`);
+  }
+
+  return JSON.parse(bestCandidates);
 };
 
 export const updateHtsDescription = (current: string, additional: string) => {
-  // Tack best matches description onto the htsDescription
-  return current ? current + " > " + additional : additional;
+  // Remove any trailing ":" from the part that will get added on
+  const cleanedAdditional = additional.replace(/\s*:\s*$/, "");
+
+  // Tack additional onto current and join with " > " if current already exists
+  return current ? current + " > " + cleanedAdditional : cleanedAdditional;
 };
 
 // Recursive function that implements the sliding window approach to find
@@ -251,7 +340,7 @@ export const getBestIndentLevelMatch = async (
     throw new Error(`Best match is null for descriptions`);
   }
 
-  const bestMatchJson: MatchResponse = JSON.parse(bestMatch); // TODO: handle errors
+  const bestMatchJson: CandidateSelection = JSON.parse(bestMatch); // TODO: handle errors
   const bestMatchElement = elementsAtIndent[Number(bestMatchJson.index)];
 
   // FIXME: MAKE SURE WE'RE CONSTRUCTING THE RIGHT HTS STRING (PIVOTAL)
@@ -323,6 +412,8 @@ export const getHSChapter = async (productDescription: string) => {
 
   const hsHeadings = hsHeadingsResponse[0].message.content;
 
+  console.log(hsHeadings);
+
   if (!hsHeadings)
     throw new Error(`failed to get HS Headings for product description`);
 
@@ -330,10 +421,32 @@ export const getHSChapter = async (productDescription: string) => {
   // TODO: Consider jumping right to heading and not back to chapter...
   //  especially since this take the most time -- however don't sacrifice accuracy
 
-  const parsed: HsHeading[] = JSON.parse(hsHeadings);
-  const chapter = parsed[0].heading.substring(0, 2);
+  // const parsed: HsHeading[] = JSON.parse(hsHeadings);
+  const parsed: { candidates: HsHeading[] } = JSON.parse(hsHeadings);
+  console.log(`Headings:`);
+  console.log(parsed.candidates);
+  const chapter = parsed.candidates[0].section.substring(0, 2);
 
   return chapter;
+};
+
+export const getCodeFromHtsPrimitive = (
+  htsPrimitive: HtsElement | HtsSectionAndChapterBase
+): string => {
+  if ("htsno" in htsPrimitive) {
+    return htsPrimitive.htsno;
+  } else if ("number" in htsPrimitive) {
+    return String(htsPrimitive.number);
+  } else {
+    console.error("Failed to extract code from selection", htsPrimitive);
+    throw new Error("Failed to extract code from selection");
+  }
+};
+
+export const getHtsSectionsAndChapters = (): Promise<{
+  sections: HtsSection[];
+}> => {
+  return apiClient.get("/hts/get-sections-and-chapters", {});
 };
 
 export const getHtsChapterData = (chapter: string): Promise<HtsElement[]> => {

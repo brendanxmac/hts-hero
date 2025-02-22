@@ -3,6 +3,7 @@ import OpenAI from "openai";
 export enum OpenAIModel {
   FOUR = "gpt-4o",
   FOUR_MINI = "gpt-4o-mini",
+  FOUR_LATEST = "gpt-4o-2024-11-20",
 }
 
 export const getHSHeadings = (
