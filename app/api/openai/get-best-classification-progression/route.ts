@@ -14,7 +14,7 @@ interface GetBestClassificationProgressionDto {
 }
 
 const BestProgression = z.object({
-  code: z.string(),
+  index: z.number(),
   description: z.string(),
   logic: z.string(),
 });

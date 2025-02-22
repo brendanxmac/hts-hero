@@ -88,7 +88,6 @@ export async function POST(req: NextRequest) {
     }
 
     const minMaxRangeText = getMinMaxRangeText(minMatches, maxMatches);
-    console.log("MIN MAX RANGE TEXT:", minMaxRangeText);
 
     const labelledDescriptions = descriptions.map(
       (description, index) => `${index}. ${description}`

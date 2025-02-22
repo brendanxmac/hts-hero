@@ -239,9 +239,6 @@ export const logSearch = async (productDescription: string) => {
       productDescription,
     });
 
-  console.log("Search Log Response:");
-  console.log(logSearchResponse);
-
   return logSearchResponse;
 };
 
