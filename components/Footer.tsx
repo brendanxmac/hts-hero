@@ -28,6 +28,9 @@ const Footer = () => {
               <strong className="font-extrabold tracking-tight text-base md:text-lg">
                 {config.appName}
               </strong>
+              <span className="bg-stone-800 px-2 py-1 rounded-md text-stone-300 font-semibold text-xs">
+                Beta
+              </span>
             </Link>
 
             <p className="mt-3 text-sm text-base-content/80">
