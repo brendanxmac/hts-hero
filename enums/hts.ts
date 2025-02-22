@@ -1,4 +1,5 @@
 export enum HtsLevel {
+  SECTION = "Section",
   CHAPTER = "Chapter",
   HEADING = "Heading",
   SUBHEADING = "Subheading",

@@ -83,7 +83,7 @@ By using our website, you agree to:
 4. Data Collection
 
 We collect and process personal and non-personal data as outlined in our [Privacy Policy](https://htshero.com/privacy-policy). This includes:
-- Personal Information: name, email, and payment information.
+- Personal Information: name, email, payment information, and product descriptions.
 - Non-Personal Information: collected via web cookies.
 
 

@@ -57,7 +57,7 @@ const Problem = () => {
           <div className="flex flex-col justify-center items-center">
             <Step emoji="😵‍💫" text="Confusing References" />
             <p className="text-neutral-400 text-xs italic">
-              &quot;See Note 32(xii)(b)(ii)&quot;
+              &quot;See Note 14(c)(iii)(3)&quot;
             </p>
           </div>
         </div>
