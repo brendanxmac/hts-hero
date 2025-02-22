@@ -12,6 +12,7 @@ import {
   fetchTopLevelSectionNotes,
   determineExclusionarySectionNotes,
   getBestDescriptionCandidates,
+  logSearch,
 } from "../libs/hts";
 import {
   HtsLevelClassification,
@@ -72,14 +73,11 @@ export const ClassificationResults = ({
   };
 
   const findBestClassifierAtLevel = async () => {
-    console.log("htsElementsChunk:", htsElementsChunk[0]);
-    console.log("classificationIndentLevel:", classificationIndentLevel);
     const elementsAtLevel = elementsAtClassificationLevel(
       htsElementsChunk,
       classificationIndentLevel
     );
-    console.log("elementsAtLevel:", elementsAtLevel[0]);
-    console.log("elementsAtLevel length:", elementsAtLevel.length);
+
     setLoading({
       isLoading: true,
       text: `Finding Best ${getHtsLevel(elementsAtLevel[0].htsno)}`,
@@ -88,20 +86,18 @@ export const ClassificationResults = ({
       code: e.htsno,
       description: e.description,
     }));
-    console.log("simplifiedElementsAtLevel:", simplifiedElementsAtLevel[0]);
-    console.log(
-      "simplifiedElementsAtLevel length:",
-      simplifiedElementsAtLevel.length
-    );
+
     const bestProgressionResponse = await getBestClassificationProgression(
       simplifiedElementsAtLevel,
       productDescription,
       htsDescription
     );
+
     // FIXME: DIRECT string matching could cause some issues if the LLM returns a bad code....
     const bestMatchElement = elementsAtLevel.find(
       (e) => e.htsno === bestProgressionResponse.code
     );
+
     setHtsDescription(
       updateHtsDescription(htsDescription, bestMatchElement.description)
     );
@@ -115,9 +111,7 @@ export const ClassificationResults = ({
         reasoning: bestProgressionResponse.logic,
       },
     ]);
-    if (bestMatchElement.htsno) {
-      // setHtsCode(bestMatchElement.htsno);
-    }
+
     // Get Next HTS Elements Chunk
     const nextChunkStartIndex = bestMatchElement.indexInParentArray + 1;
     const nextChunk = getNextChunk(
@@ -132,7 +126,6 @@ export const ClassificationResults = ({
   // Get 2-3 Best Sections
   const getSections = async () => {
     setLoading({ isLoading: true, text: "Finding Best Sections" });
-    console.log("Getting Best Sections");
     const sectionsResponse = await getHtsSectionsAndChapters();
     setHtsSections(sectionsResponse.sections);
     const sections = sectionsResponse.sections;
@@ -140,14 +133,14 @@ export const ClassificationResults = ({
       [],
       productDescription,
       true,
-      null, // todo: consider updating before shipping
+      0,
       2,
       sections.map((s) => s.description)
     );
 
-    console.log("Best Section Candidates:");
     console.log(
-      bestSectionCandidates.bestCandidates.map((c) => sections[c.index])
+      "Section Candidates:",
+      bestSectionCandidates.bestCandidates.length
     );
 
     const candidates: CandidateSelection[] =
@@ -180,7 +173,6 @@ export const ClassificationResults = ({
 
   // Get 2-3 Best Chapters
   const getChapters = async () => {
-    console.log("Getting Best Chapters");
     setLoading({ isLoading: true, text: "Finding Best Chapters" });
     const candidateSections = htsSections.filter((section) => {
       return sectionCandidates.some((candidate) => {
@@ -212,12 +204,13 @@ export const ClassificationResults = ({
       })
     );
 
+    console.log("Chapter Candidates:", candidatesForChapter.length);
+
     setChapterCandidates(candidatesForChapter);
   };
 
   // Get up to 2 Best Headings Per Chapter
   const getHeadings = async () => {
-    console.log("Getting Best Headings");
     setLoading({ isLoading: true, text: "Finding Best Headings" });
     const candidatesForHeading: HeadingSelection[] = [];
     await Promise.all(
@@ -236,9 +229,6 @@ export const ClassificationResults = ({
           2,
           elementsAtLevel.map((e) => e.description)
         );
-
-        console.log(`Best Heading Candidates for Chapter ${chapter.index}:`);
-        console.log(bestCandidateHeadings);
 
         // Handle Empty Case
         if (bestCandidateHeadings.bestCandidates.length === 0) {
@@ -262,15 +252,15 @@ export const ClassificationResults = ({
       })
     );
 
+    console.log("Heading Candidates:", candidatesForHeading.length);
+
     setHeadingCandidates(candidatesForHeading);
+    // DO not move this down, it will break the classification as the timing is critical
     setClassificationIndentLevel(classificationIndentLevel + 1);
   };
 
   const getBestHeading = async () => {
-    console.log("Getting Best OVERALL Headings");
     setLoading({ isLoading: true, text: "Picking Best Heading" });
-    console.log(headingCandidates);
-
     const headingsEvaluation = await evaluateBestHeadings(
       headingCandidates.map((h) => ({
         code: h.heading,
@@ -279,18 +269,11 @@ export const ClassificationResults = ({
       productDescription
     );
 
-    console.log("Headings Evaluation:");
-    console.log(headingsEvaluation);
-
-    // ================================
-    // TODO: Need to kick off the rest of the classification here
-    // ================================
     // Get the chapter and chapter data of the chapter the selected heading belongs to
     if (!headingsEvaluation.code) {
       throw new Error("No code found in headings evaluation");
     }
 
-    console.log("Code:", headingsEvaluation.code);
     const headingDescription = headingCandidates.find(
       (c) => c.heading === headingsEvaluation.code
     )?.description;
@@ -316,8 +299,16 @@ export const ClassificationResults = ({
       throw new Error("No selected heading found");
     }
 
+    // Get Next HTS Elements Chunk
+    const nextChunkStartIndex = selectedHeading.indexInParentArray + 1;
+    const nextChunk = getNextChunk(
+      chapterDataWithParentIndex,
+      nextChunkStartIndex,
+      0 // find the next 0th indented level element to determine endIndex for next chunk
+    );
+
     setHtsDescription(updateHtsDescription(htsDescription, headingDescription));
-    setHtsElementsChunk(setIndexInArray(chapterData));
+    setHtsElementsChunk(setIndexInArray(nextChunk));
     setClassificationProgression([
       ...classificationProgression,
       {
@@ -327,14 +318,6 @@ export const ClassificationResults = ({
         reasoning: headingsEvaluation.evaluation,
       },
     ]);
-  };
-
-  const getChapterData = async (chapter: string) => {
-    if (Number(chapter) > 99 || Number(chapter) < 1) {
-      throw new Error(`Chapter ${chapter} is greater than 99 or less than 1`);
-    }
-    const chapterData = await getHtsChapterData(chapter);
-    setHtsElementsChunk(setIndexInArray(chapterData));
   };
 
   useEffect(() => {
@@ -354,15 +337,6 @@ export const ClassificationResults = ({
       getBestHeading();
     }
   }, [headingCandidates]);
-
-  // useEffect(() => {
-  // if (classificationProgression.length === 1) {
-  //   getChapters();
-  // }
-  // if (classificationProgression.length === 2) {
-  //   getChapterData();
-  // }
-  // }, [classificationProgression]);
 
   useEffect(() => {
     setUpdateScrollHeight(Math.random());
@@ -387,6 +361,10 @@ export const ClassificationResults = ({
   }, [htsElementsChunk]);
 
   useEffect(() => {
+    // Don't let logs block the search, execute and forget
+    logSearch(productDescription).catch((error) => {
+      console.error("Error logging search:", error);
+    });
     startNewSearch();
   }, [productDescription]);
 
@@ -419,12 +397,12 @@ export const ClassificationResults = ({
           </div>
         ) : undefined}
 
-        {!loading && (
+        {/* {!loading && (
           <TariffSection
             classificationProgression={classificationProgression}
             setUpdateScrollHeight={setUpdateScrollHeight}
           />
-        )}
+        )} */}
       </div>
     );
   }

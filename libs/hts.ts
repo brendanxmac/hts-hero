@@ -233,6 +233,18 @@ export const determineExclusionarySectionNotes = async (
   return relevantNotesParsed;
 };
 
+export const logSearch = async (productDescription: string) => {
+  const logSearchResponse: { success?: boolean; error?: string } =
+    await apiClient.post("/search/log", {
+      productDescription,
+    });
+
+  console.log("Search Log Response:");
+  console.log(logSearchResponse);
+
+  return logSearchResponse;
+};
+
 export const evaluateBestHeadings = async (
   headings: SimplifiedHtsElement[],
   productDescription: string
