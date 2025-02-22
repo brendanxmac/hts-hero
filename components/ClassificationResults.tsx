@@ -93,10 +93,7 @@ export const ClassificationResults = ({
       htsDescription
     );
 
-    // FIXME: DIRECT string matching could cause some issues if the LLM returns a bad code....
-    const bestMatchElement = elementsAtLevel.find(
-      (e) => e.htsno === bestProgressionResponse.code
-    );
+    const bestMatchElement = elementsAtLevel[bestProgressionResponse.index];
 
     setHtsDescription(
       updateHtsDescription(htsDescription, bestMatchElement.description)
