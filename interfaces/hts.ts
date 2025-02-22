@@ -60,7 +60,7 @@ export interface HsHeading {
 }
 
 export interface BestProgressionResponse {
-  code: string;
+  index: number;
   description: string;
   logic: string;
 }
@@ -96,8 +96,8 @@ export interface CandidateSelection {
 
 export interface HtsLevelClassification {
   level: HtsLevel;
-  candidates: HtsElement[] | HtsSectionAndChapterBase[];
-  selection: HtsElement | HtsSectionAndChapterBase;
+  candidates: HtsElement[]; //| HtsSectionAndChapterBase[];
+  selection: HtsElement; // | HtsSectionAndChapterBase;
   reasoning: string;
 }
 
