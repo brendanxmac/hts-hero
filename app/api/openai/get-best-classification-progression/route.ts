@@ -54,12 +54,12 @@ export async function POST(req: NextRequest) {
     }
 
     const labelledDescriptions = elements.map(
-      ({ code, description }) => `${code}. ${description}`
+      ({ description }, i) => `${i}: ${description}`
     );
 
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const gptResponse = await openai.chat.completions.create({
-      temperature: 0.2,
+      temperature: 0,
       model: "gpt-4o-2024-11-20",
       response_format: zodResponseFormat(
         BestProgression,
@@ -74,20 +74,23 @@ export async function POST(req: NextRequest) {
         {
           role: "system",
           content: `You are a United States Harmonized Tariff System Expert who follows the General Rules of Interpretation (GRI) for the Harmonized System perfectly.\n
-            Your job is to take a product description, the current classification description (in the format of "[Heading Description] > [Subheading Description] > etc...)", 
-            and a list of the descriptions at the next level of classification, and figure out which description from the list best fits the product description if it were added onto the current classification description.\n
-            You must use the GRI rules sequentially (as needed) and consider all descriptions in the list to make your decision.\n
-            The logic you used to pick the best option based on the GRI must be included in your response, and so should the code and description of the best option.\n
+            Your job is to take a product description, a work in progress classification description, and a list of descriptions, 
+            and determine which description from the list best fits the product description if it were added onto the end of the current classification description.\n
+            You must pick one. If you are unsure and "Other:" is available as an option, you should pick it.\n
+            The logic you used to pick the best option based on the GRI must be included in your response, and so should the index (0 based) and description of the best option.\n
+            The description you return should not have the code prepended to it, just the description text (e.g. for "7013.49: Other:" you should just return "Other:")
             `,
         },
         {
           role: "user",
           content: `Product Description: ${productDescription}\n
-          Current Classification Description: ${htsDescription}\n
+          Work in Progress Classification Description: ${htsDescription}\n
           Descriptions:\n ${labelledDescriptions.join("\n")}`,
         },
       ],
     });
+
+    console.log("GPT Response:", gptResponse.choices);
 
     return NextResponse.json(gptResponse.choices);
   } catch (e) {

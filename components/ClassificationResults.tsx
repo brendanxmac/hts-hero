@@ -20,6 +20,7 @@ import {
   HtsWithParentReference,
   CandidateSelection,
   HeadingSelection,
+  HtsElement,
 } from "../interfaces/hts";
 import { LoadingIndicator } from "./LabelledLoader";
 import {
@@ -45,9 +46,7 @@ export const ClassificationResults = ({
   const [chapterCandidates, setChapterCandidates] = useState<
     CandidateSelection[]
   >([]);
-  const [headingCandidates, setHeadingCandidates] = useState<
-    HeadingSelection[]
-  >([]);
+  const [headingCandidates, setHeadingCandidates] = useState<HtsElement[]>([]);
 
   const [loading, setLoading] = useState<Loader>({ isLoading: true, text: "" });
   const [htsDescription, setHtsDescription] = useState("");
@@ -89,11 +88,16 @@ export const ClassificationResults = ({
 
     const bestProgressionResponse = await getBestClassificationProgression(
       simplifiedElementsAtLevel,
-      productDescription,
-      htsDescription
+      htsDescription,
+      productDescription
     );
 
+    console.log("Best Progression Response:", bestProgressionResponse);
+    console.log("Elements At Level:", elementsAtLevel);
+
     const bestMatchElement = elementsAtLevel[bestProgressionResponse.index];
+
+    console.log("Best Match Element:", bestMatchElement);
 
     setHtsDescription(
       updateHtsDescription(htsDescription, bestMatchElement.description)
@@ -135,10 +139,7 @@ export const ClassificationResults = ({
       sections.map((s) => s.description)
     );
 
-    console.log(
-      "Section Candidates:",
-      bestSectionCandidates.bestCandidates.length
-    );
+    console.log("Section Candidates:", bestSectionCandidates.bestCandidates);
 
     const candidates: CandidateSelection[] =
       bestSectionCandidates.bestCandidates.map((sectionCandidate) => ({
@@ -201,7 +202,7 @@ export const ClassificationResults = ({
       })
     );
 
-    console.log("Chapter Candidates:", candidatesForChapter.length);
+    console.log("Chapter Candidates:", candidatesForChapter);
 
     setChapterCandidates(candidatesForChapter);
   };
@@ -209,7 +210,7 @@ export const ClassificationResults = ({
   // Get up to 2 Best Headings Per Chapter
   const getHeadings = async () => {
     setLoading({ isLoading: true, text: "Finding Best Headings" });
-    const candidatesForHeading: HeadingSelection[] = [];
+    const candidatesForHeading: HtsElement[] = [];
     await Promise.all(
       chapterCandidates.map(async (chapter) => {
         const chapterData = await getHtsChapterData(String(chapter.index));
@@ -238,18 +239,24 @@ export const ClassificationResults = ({
         }
 
         const candidates = bestCandidateHeadings.bestCandidates.map(
-          (candidate) => ({
-            heading: elementsAtLevel[candidate.index].htsno,
-            description: elementsAtLevel[candidate.index].description,
-            logic: candidate.logic,
-          })
+          (candidate) => {
+            return elementsAtLevel[candidate.index];
+          }
         );
+
+        // const candidates = bestCandidateHeadings.bestCandidates.map(
+        //   (candidate) => ({
+        //     heading: elementsAtLevel[candidate.index].htsno,
+        //     description: elementsAtLevel[candidate.index].description,
+        //     logic: candidate.logic,
+        //   })
+        // );
 
         candidatesForHeading.push(...candidates);
       })
     );
 
-    console.log("Heading Candidates:", candidatesForHeading.length);
+    console.log("Heading Candidates:", candidatesForHeading);
 
     setHeadingCandidates(candidatesForHeading);
     // DO not move this down, it will break the classification as the timing is critical
@@ -260,7 +267,7 @@ export const ClassificationResults = ({
     setLoading({ isLoading: true, text: "Picking Best Heading" });
     const headingsEvaluation = await evaluateBestHeadings(
       headingCandidates.map((h) => ({
-        code: h.heading,
+        code: h.htsno,
         description: h.description,
       })),
       productDescription
@@ -272,12 +279,19 @@ export const ClassificationResults = ({
     }
 
     const headingDescription = headingCandidates.find(
-      (c) => c.heading === headingsEvaluation.code
+      (c) => c.htsno === headingsEvaluation.code
     )?.description;
 
     if (!headingDescription) {
       throw new Error("No heading description found");
     }
+
+    // FIXME: bug here where we set the headings to choose from as the ones in the chapter that won
+    // rather than the overall candidate elements. The bug exists because after we get the best
+    // heading, instead of setting the first progression with those candidates, we go and get the
+    // headings from the chapter that won amoungest the candidates.
+    // Instead we need to set the classification progression with the initial candidates that were
+    // used to pick the best one.
 
     const chapterData = await getHtsChapterData(
       headingsEvaluation.code.substring(0, 2)
@@ -310,7 +324,7 @@ export const ClassificationResults = ({
       ...classificationProgression,
       {
         level: getHtsLevel(selectedHeading.htsno),
-        candidates: elementsAtLevel,
+        candidates: headingCandidates,
         selection: selectedHeading,
         reasoning: headingsEvaluation.evaluation,
       },
