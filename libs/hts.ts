@@ -267,13 +267,15 @@ export const getBestClassificationProgression = async (
       htsDescription,
     });
 
-  const bestCandidates = bestCandidatesResponse[0].message.content;
+  const bestCandidate = bestCandidatesResponse[0].message.content;
 
-  if (bestCandidates === null) {
+  console.log("Best Candidate:", bestCandidate);
+
+  if (bestCandidate === null) {
     throw new Error(`Failed to get best description matches`);
   }
 
-  return JSON.parse(bestCandidates);
+  return JSON.parse(bestCandidate);
 };
 
 export const getBestDescriptionCandidates = async (

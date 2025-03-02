@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
 
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const gptResponse = await openai.chat.completions.create({
-      temperature: 0.2,
+      temperature: 0,
       model: "gpt-4o-2024-11-20",
       response_format: zodResponseFormat(BestHeading, "description_rankings", {
         description:

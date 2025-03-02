@@ -13,7 +13,7 @@ export default function SearchInput({
   placeholder,
   setProductDescription,
 }: Props) {
-  const characterLimit = 400;
+  const characterLimit = 500;
   const [localProductDescription, setLocalProductDescription] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
