@@ -17,7 +17,6 @@ import {
   HtsSection,
   HtsElementWithParentReference,
   CandidateSelection,
-  HeadingSelection,
   HtsElement,
 } from "../interfaces/hts";
 import { LoadingIndicator } from "./LabelledLoader";
@@ -25,7 +24,6 @@ import {
   elementsAtClassificationLevel,
   setIndexInArray,
 } from "../utilities/data";
-import { TariffSection } from "./Tariff";
 import { DecisionProgression } from "./DecisionProgression";
 import { Loader } from "../interfaces/ui";
 

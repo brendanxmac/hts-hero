@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import OpenAI from "openai";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { createClient, requesterIsAuthenticated } from "../../supabase/server";
+import { requesterIsAuthenticated } from "../../supabase/server";
 import { SimplifiedHtsElement } from "../../../../interfaces/hts";
 
 export const dynamic = "force-dynamic";
