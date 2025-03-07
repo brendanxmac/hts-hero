@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
-import { createClient } from "../../../../libs/supabase/server";
+import { createClient, requesterIsAuthenticated } from "../server";
 import { toRoman } from "@javascript-packages/roman-numerals";
 
 export const dynamic = "force-dynamic";
@@ -10,14 +10,12 @@ interface GetTopLevelSectionNotesDto {
 
 export async function POST(req: NextRequest) {
   try {
-    const supabase = createClient();
-    const { data } = await supabase.auth.getUser();
-    const user = data.user;
+    const requesterIsAllowed = await requesterIsAuthenticated(req);
 
-    // User who are not logged in can't make a gpt requests
-    if (!user) {
+    // Users who are not logged in can't make a gpt requests
+    if (!requesterIsAllowed) {
       return NextResponse.json(
-        { error: "You must be logged in to complete this action." },
+        { error: "You must be logged in to complete this action" },
         { status: 401 }
       );
     }

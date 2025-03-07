@@ -3,10 +3,9 @@ import { toast } from "react-hot-toast";
 import { redirect } from "next/navigation";
 import config from "@/config";
 
-// use this to interact with our own API (/app/api folder) from the front-end side
-// See https://shipfa.st/docs/tutorials/api-call
+const isTestEnv = process.env.APP_ENV === "test";
 const apiClient = axios.create({
-  baseURL: "/api",
+  baseURL: isTestEnv ? "http://localhost:3000/api" : "/api",
 });
 
 apiClient.interceptors.response.use(

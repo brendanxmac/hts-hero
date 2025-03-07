@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import OpenAI from "openai";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { createClient } from "../../../../libs/supabase/server";
+import { requesterIsAuthenticated } from "../../supabase/server";
 
 export const dynamic = "force-dynamic";
 
@@ -49,14 +49,14 @@ const getMinMaxRangeText = (minMatches?: number, maxMatches?: number) => {
 
 export async function POST(req: NextRequest) {
   try {
-    const supabase = createClient();
-    const { data } = await supabase.auth.getUser();
-    const user = data.user;
+    const requesterIsAllowed = await requesterIsAuthenticated(req);
 
-    // User who are not logged in can't make a gpt requests
-    if (!user) {
+    console.log(1);
+
+    // Users who are not logged in can't make a gpt requests
+    if (!requesterIsAllowed) {
       return NextResponse.json(
-        { error: "You must be logged in to complete this action." },
+        { error: "You must be logged in to complete this action" },
         { status: 401 }
       );
     }
@@ -77,6 +77,7 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+    console.log(2);
 
     if (minMatches && maxMatches) {
       if (minMatches > maxMatches || minMatches === maxMatches) {
@@ -92,6 +93,11 @@ export async function POST(req: NextRequest) {
     const labelledDescriptions = descriptions.map(
       (description, index) => `${index}. ${description}`
     );
+
+    console.log(3);
+
+    console.log("labelledDescriptions", labelledDescriptions);
+    console.log("productDescription", productDescription);
 
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const gptResponse = await openai.chat.completions.create({
@@ -126,6 +132,9 @@ export async function POST(req: NextRequest) {
         },
       ],
     });
+
+    console.log(4);
+    console.log(gptResponse.choices);
 
     return NextResponse.json(gptResponse.choices);
   } catch (e) {

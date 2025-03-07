@@ -1,7 +1,7 @@
-import { HtsWithParentReference } from "../interfaces/hts";
+import { HtsElementWithParentReference } from "../interfaces/hts";
 
 export const elementsAtClassificationLevel = (
-  elements: HtsWithParentReference[],
+  elements: HtsElementWithParentReference[],
   level: number
 ) => {
   return elements.filter((e) => Number(e.indent) === level);
