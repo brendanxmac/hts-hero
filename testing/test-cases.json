@@ -1,0 +1,317 @@
+[
+  {
+    "ruling": "N344099",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n344099.doc",
+    "classification": "6001.92.00.10",
+    "description": "Bonded pile fabric consisting of a warp knit face fabric laminated to a weft knit backing fabric and is composed wholly of polyester. Additionally, the face fabric is a brushed pile and has been coated with a type of rubber or plastic material",
+    "matchesModel": false,
+    "modelClassification": "5903.20.20.00",
+    "attemptNotes": "Due to not referencing chapter notes, the model chose heading 5903. This would have been correct however Ch60 note 1(c) states that knitted or crocheted `pile` fabrics should be classified in Ch60. Without knowing that the `face fabric` being brushed pile gives the product its essential character, there would have been no way to get the correct classification."
+  },
+  {
+    "ruling": "N340688",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n340688.doc",
+    "classification": "6006.33.00.60",
+    "description": "weft double knit fabric composed wholly of man-made staple yarns (meta-aramid, modacrylic, para-aramid, spandex, and antistatic), of different colors, 60 inches wide, weighing 316.8 g/m2, used to produce flame resistant apparel",
+    "matchesModel": false,
+    "modelClassification": "6004.10.00.25",
+    "attemptNotes": "Close, got 6004, which actually does seem reasonable, but the model did not get the width correct and also made a leap of faith when it came to saying that 5% or more of composition was of elastomeric yarn or rubber thread"
+  },
+  {
+    "ruling": "H340269",
+    "url": "https://rulings.cbp.gov/docs/hq/2025/h340269.doc",
+    "classification": "1704.90.35.50",
+    "description": "A pre-packaged carbohydrate bar made primarily from fructose-glucose syrup (confectionary)",
+    "matchesModel": false,
+    "attemptNotes": "close"
+  },
+  {
+    "ruling": "H335472",
+    "url": "https://rulings.cbp.gov/docs/hq/2025/h335472.doc",
+    "classification": "5609.00.30.00",
+    "description": "A macramé made from twisted polyester yarns and wooden beads that is 5.9 feet long and used for decoration.",
+    "matchesModel": false,
+    "attemptNotes": "close"
+  },
+  {
+    "ruling": "H296834",
+    "url": "https://rulings.cbp.gov/docs/hq/2024/h296834.doc",
+    "secondaryRuling": "N302895",
+    "classification": "8505.19.30.00",
+    "description": "Sweeper designed to magnetically attract ferrous metal debris from floors, walkways, driveways, etc... The item consists of ceramic magnets (predominantly ferric oxide material) and a steel bar enclosed in a heavy-gauge steel and aluminum housing. Attached is a quick release handle, mounting brackets, removable tow handle, and semi-pneumatic wheels on both sides. When the quick release handle is pulled, it creates a gap wide enough to dislodge the collected debris, where it can then be cleaned up.",
+    "matchesModel": false,
+    "attemptNotes": ""
+  },
+  {
+    "ruling": "H342569",
+    "url": "https://rulings.cbp.gov/docs/hq/2024/h342569.doc",
+    "classification": "8609.00.00.00",
+    "description": "120 or 300 Liter Stainless Steel tanks primarily used to repeatedly transport & store liquid drug materials and medicines which are equipped with inner coils through which chilled silicone is pumped to freeze the contents of the tanks (the tanks do not pump the fluid themselves)",
+    "matchesModel": false,
+    "attemptNotes": ""
+  },
+  {
+    "ruling": "N340688",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n340688.doc",
+    "classification": "6006.32.00.60",
+    "description": "weft double knit fabric composed wholly of man-made staple yarns (meta-aramid, modacrylic, para-aramid, and antistatic), dyed a single color, 60 inches wide, weighing 193.9 g/m2, used to produce flame resistant apparel",
+    "matchesModel": false,
+    "modelClassification": "6006.32.00.40",
+    "attemptNotes": "Close, got 6006, however model wasn't able to identify that the fibers were synthetic with the description, when changing `man-made` to `synthetic` we got 6006.32, but then the last level when choosing between Of Nylon, Of Polyester, and Other, we go Polyester `.40`, instead of other `.60`. It appears that one of the current weaknesses is the models inability to interpret certain terms and extrapolate to the best option. For example, it did not know man-made is synthetic, or that the fibers provided are not of Polyester (which im not even sure about)."
+  },
+  {
+    "ruling": "N340688",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n340688.doc",
+    "classification": "6006.33.00.60",
+    "description": "weft double knit fabric composed wholly of man-made staple yarns (meta-aramid, modacrylic, para-aramid, spandex, and antistatic), of different colors, 60 inches wide, weighing 316.8 g/m2, used to produce flame resistant apparel",
+    "matchesModel": false,
+    "modelClassification": "6004.10.00.25",
+    "attemptNotes": "Close, got 6004, which actually does seem reasonable, but the model did not get the width correct and also made a leap of faith when it came to saying that 5% or more of composition was of elastomeric yarn or rubber thread"
+  },
+  {
+    "ruling": "N343766",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n343766.doc",
+    "classification": "2920.90.51.00",
+    "description": "An ester of other inorganic acids of nonmetals, called fluoroethylene carbonate, used as an electrolyte adititve in lithium-ion batteries",
+    "matchesModel": false,
+    "modelClassification": "2920.29.00.00",
+    "attemptNotes": "This one is quite tricky, even with some adjustments to the description from the CROSS ruling itself, the modle chose `Phosphite esters and their salts; their halogenated, sulfonated, nitrated or nitrosated derivatives:` insteead of `other`, and I have no idea if this is correct myself, however the classification provided was provided after a laboratory analysis, so I'm inclined to believe it. Importantly, it's clear that DEEP knowledge in this area would be required to get the right classification."
+  },
+  {
+    "ruling": "N343766",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n343766.doc",
+    "classification": "2920.90.51.00",
+    "description": "An ester of other inorganic acids of nonmetals, called vinylene carbonate, used as an electrolyte adititve in lithium-ion batteries",
+    "matchesModel": true,
+    "modelClassification": "2920.90.51.00",
+    "attemptNotes": "Funny enough, this one was actually correct, as the model chose to go with `other` at the subheading level. Then on second attempt did the same thing as the above test description."
+  },
+  {
+    "ruling": "N344839",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n344839.doc",
+    "classification": "9403.60.80.81",
+    "description": "Combination dresser & hanging rack made of mostly wood and some metal (ie, product has no essential characater by value, but the wood is the dominant material)",
+    "matchesModel": true,
+    "modelClassification": "9403.60.80.81",
+    "attemptNotes": "This one was correct, and I've learned that the model is actually quite good once you provide details about the essential nature. e.g. a good enough description certainly appears to yield good resulst in this case. I believe that really is the true limitation here, and generating a good description is all about getting rid of the leaps of faith that the model would have to make otherwise."
+  },
+  {
+    "ruling": "N344839",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n344839.doc",
+    "classification": "9403.20.00.50",
+    "description": "Combination dresser & clothes rack made mostly of steel and some wood (ie, product has the essential characater of steel/metal) for household use",
+    "matchesModel": false,
+    "modelClassification": "9403.20.00.86",
+    "attemptNotes": "First try fail, model didn't understand that this was a household product and chose `Other` instead. Second try model failed again even with `for household use` in the description."
+  },
+  {
+    "ruling": "N344850",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n344850.doc",
+    "classification": "2309.90.44.90",
+    "description": "Dairy based dog treat composed of yogurt (pasteurized cow’s milk, lactase, and lactic ferments), corn starch, dried citrus pulp, fructooligosaccharide, artificial flavor, and lactic acid",
+    "matchesModel": "????",
+    "modelClassification": "2309.90.28.90",
+    "attemptNotes": "This one actually appears to be correct, but there's a bug or unintentional duplication in the data for chapter 23 where 2309.90 has .28 and .44 subheadings that both have the exact same information."
+  },
+  {
+    "ruling": "N344880",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n344880.doc",
+    "classification": "8431.49.10.10",
+    "description": "An extensible lifting beam made of steel designed to be incorporated as a part of a specialized crane. Contains an electrical distribution and control system consisting of lights, wiring, junction boxes, and other electrical components. The beam is configured to be permanently incorporated into a specialized overhead crane that has been modified for the beam, making the crane unsuitable for general lifting purposes and unable to accommodate other equipment.",
+    "matchesModel": true,
+    "modelClassification": "8431.49.10.10",
+    "attemptNotes": "My goodness.. somehow the model got this one correct despite all of the references to other headings which the model needed to make a leap of fait on... pretty crazy, but also appears to be lucky as the model has no definitions of what the titles are of those headings"
+  },
+  {
+    "ruling": "N344934",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n344934.doc",
+    "classification": "3824.99.29.00",
+    "description": "A blend of natural essential oils which can be applied to the skin for aromatherapy purposes to ease discomfort. It is a colorless oil at room temperature consisting of: Natural Menthol Crystals, Natural Camphor Powder, Eucalyptus Leaf Oil, Turpentine Bark Oil, Wintergreen Leaf Oil, Clove Stem Oil, Black Cumin Seed Oil, Peppermint Leaf Oil",
+    "matchesModel": false,
+    "modelClassification": "3004.60.00.00",
+    "attemptNotes": "Got the right section, but the model doesn't appear to be able to make sense of all the nuance of the chemicals especially between ch33, ch38, ch30"
+  },
+  {
+    "ruling": "N344939",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n344939.doc",
+    "classification": "6402.99.79.60",
+    "description": "A protective woman’s slip-on clog with an attached liner or insert worth $5.81 per pair. The upper and outer sole consists of molded rubber or plastics (EVA) but is fully covered by a removable plush textile collar. A polyester textile liner insert made of a sewn-on textile sole that is connected to the plush collar. The insert is not meant to be worn without the clogs.",
+    "matchesModel": true,
+    "modelClassification": "6402.99.79.60",
+    "attemptNotes": "Nailed it after some bug fixes and adjustments to the description"
+  },
+  {
+    "ruling": "N344949",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n344949.doc",
+    "classification": "3824.99.93.97",
+    "description": "Brucite (a natural mineral form of magnesium hydroxide) combined with stearic acid. Not a binder and intended for use in manufacturing as a flame retardant filler in polymer cable compounds",
+    "matchesModel": false,
+    "modelClassification": "3824.99.93.86",
+    "attemptNotes": "Close! got confused right at the end choosing an option that mentioned magnesium but didn't make sense."
+  },
+  {
+    "ruling": "N344955",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n344955.doc",
+    "classification": "9505.90.60.00",
+    "description": "a pair of child size textile based costumes depicting different characters",
+    "matchesModel": true,
+    "modelClassification": "9505.90.60.00",
+    "attemptNotes": "Nailed it, and kept the description simple"
+  },
+  {
+    "ruling": "N344986",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n344986.doc",
+    "classification": "2841.90.20.00",
+    "description": "Ammonium Perrhenate",
+    "matchesModel": true,
+    "modelClassification": "2841.90.20.00",
+    "attemptNotes": "Nailed it"
+  },
+  {
+    "ruling": "N344986",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n344986.doc",
+    "classification": "7110.11.00.20",
+    "description": "Platinum Sponge",
+    "matchesModel": true,
+    "modelClassification": "7110.11.00.20",
+    "attemptNotes": "Nailed it, but did not work when I used the description `Platinum Powder` even though it's the same thing."
+  },
+  {
+    "ruling": "N345003",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n345003.doc",
+    "classification": "3924.90.56.50",
+    "description": "Plastic beauty carousel and brush set including: A 100% polyethylene terephthalate (PET) cylindrical plastic holder with six compartments that hold and store the follwing, five cosmetic brushes of assorted sizes, all with nylon bristles and a bamboo handle; two triangle white polyester poufs; three white polyurethane (PU) plastic beauty sponges; fifty cotton swabs; ten cotton squares, and ten cotton balls. The set is packaged together for retail sale",
+    "matchesModel": false,
+    "modelClassification": "9605.00.00.00",
+    "attemptNotes": "Included the plastics chapter but was not able to apply the GRI rules around essential nature and 'sets' so it ended up going for the miscelaneous chapter rather than the plastics chapter."
+  },
+  {
+    "ruling": "N345025",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n345025.doc",
+    "classification": "8505.11.0070",
+    "description": "A large rigid fishbowl cleaner made up of two halves. The top half is placed on the outside surface of a fish tank and consists of four neodymium iron boron magnets embedded in an ABS housing. The bottom half is placed inside the fish tank and consists of four neodymium iron boron magnets embedded in an ABS housing with a scrubber, which is described as felt material attached by Velcro. Magnetic attraction is used to control the bottom half and clean the surface of the fish tank",
+    "secondDescription": "Neodymium iron boron magnets with felt attached that are put on opposite sides of fish tank glass to clean it, by moving the outter magnet around the tank",
+    "matchesModel": false,
+    "modelClassification": "9603.90.80.50",
+    "attemptNotes": "Model cannot get the essential nature of the product right in that it is a magnet, and so it thinks brooms make more sense for the cleaning aspect"
+  },
+  {
+    "ruling": "N345026",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n345026.doc",
+    "classification": "3004.90.92.21",
+    "description": "A medication made of Olmesartan Medoxomil (angiotensin II receptor blocker) and hydrochlorothiazide (diuretic) intended to lower blood pressure",
+    "matchesModel": true,
+    "modelClassification": "3004.90.92.21",
+    "attemptNotes": "Nailed it"
+  },
+  {
+    "ruling": "N345030",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n345030.doc",
+    "classification": "6912.00.48.90",
+    "viableClassifications": ["6912.00.48.90", "6914.90.80.00"],
+    "description": "A round white ceramic stoneware plate. The plate is unsafe for food contact and will be used in 'rage rooms' whereby people safely break plates to relieve stress",
+    "matchesModel": false,
+    "modelClassification": "6914.90.80.00",
+    "attemptNotes": "Very close and further, I believe the classficiation that was done here made perfect sense and fit this idea of 'use' better than the classification provided by CROSS. I would need to be able to back this up with any legal notes",
+    "insights": "Heading 6912, Harmonized Tariff Schedule of the United States, HTSUS, is considered a “use” provision.  Additional U.S. Rule of Interpretation 1(a), HTSUS, (“the rule”) provides:... super interesting one here as they jump right to USE in the additional US rules instead of going for GRI rules AT THE HEADING LEVEL, which i thought you needed to stick with GRI rules UNTIL you got to the 8 digit subheadings. Either way extremely cool to know and see an examlpe of this, will need to incorporate this into the tool"
+  },
+  {
+    "ruling": "N345033",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n345033.doc",
+    "classification": "9404.90.20.90",
+    "description": "A memory foam cushion covered in 100% polyester knit velour fabric contoured to serve as both a seat and lumbar cushion for use in a variety of seated settings.",
+    "matchesModel": true,
+    "modelClassification": "9404.90.20.90",
+    "attemptNotes": "Nailed it"
+  },
+  {
+    "ruling": "N345069",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n345069.doc",
+    "classification": "8419.90.95.20",
+    "description": "A stainless-steel top cover and part of the Nespresso Aguila Professional 220, a barista-quality commercial coffee maker. The cover serves as the top panel of the machine’s outer cabinet structure. Can only be purchased through channels of trade that are exclusive to authorized repair personnel",
+    "matchesModel": false,
+    "modelClassification": "8487.90.00.80",
+    "attemptNotes": "Missed it... the 8419 heading is a bit subtle and very long, which might lead the LLM to think it is not viable"
+  },
+  {
+    "ruling": "N345069",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n345069.doc",
+    "classification": "8419.90.95.20",
+    "description": "A stainless-steel aesthetical panel that acts as a drip tray for and it a part of the Nespresso Aguila Professional 220, a barista-quality commercial coffee maker. It is uniquely shaped to the coffee maker and used to catch coffee or milk drippings. Can only be purchased through channels of trade that are exclusive to authorized repair personnel",
+    "matchesModel": false,
+    "modelClassification": "8438.90.90.90",
+    "attemptNotes": "Close but still a bit off, although this code does seem reasonable..."
+  },
+  {
+    "ruling": "N345082",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n345082.doc",
+    "classification": "6116.10.55.20",
+    "description": "A nitrile rubber-dipped, string-knit work glove stated to be constructed of 100% polyester. The glove features a nitrile rubber coating on the outer surface, which covers the entire palm as well as a portion of the palm side cuff and overlaps the backside fingertips and sides of the wearer’s hands and fingers, and an overlock stitch finish at the cuff bottom. 50% or more of the glove weight is from textile fibers.",
+    "matchesModel": true,
+    "modelClassification": "6116.10.55.20",
+    "attemptNotes": "Nailed it, did not need to specify that the essential nature was the textile or glove."
+  },
+  {
+    "ruling": "N345090",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n345090.doc",
+    "classification": "2106.90.99.98",
+    "description": "A powder preparation for human consumption made purely of carrot root fibers (pomace). The powder is derived from upcycled carrot pomace, a side stream of carrot juice production and is an enzymatic extract of carrot pomace enriched for carrot rhamnogalacturonan-I domains.",
+    "matchesModel": false,
+    "modelClassification": "0712.90.10.00",
+    "attemptNotes": "Honestly... this seems pretty good but is aparently not spot on due to not finding Miscellaneous Edible Preparations from chapter 21"
+  },
+  {
+    "ruling": "N345101",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n345101.doc",
+    "classification": "3901.90.10.00",
+    "description": "An elastomeric copolymer of ethylene and ethyl acrylate. The ethylene monomer comprises greater than 50 percent, but less than 95 percent by weight of the copolymer. It is available in pellet form for use in conventional extrusion and coextrusion equipment designed to process polyethylene resins.",
+    "matchesModel": true,
+    "modelClassification": "3901.90.10.00",
+    "attemptNotes": "Nailed it"
+  },
+  {
+    "ruling": "N345157",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n345157.doc",
+    "classification": "8479.89.95.99",
+    "description": "A water mineralizer unit (not a filter or purifyer) for home kitchen use that employs valves and tubing to dose or add a calculated amount of minerals back into drinking water. It operates through valve-controlled water pressure in the household kitchen pipe system with no electronic components. It is inclusive of the mostly plastic docking system including the valves and tubes, and the mineral cartridge itself which administers the minerals via pressure.",
+    "matchesModel": false,
+    "modelClassification": "8481.80.50.90",
+    "attemptNotes": "Right chatper, but a miss"
+  },
+  {
+    "ruling": "N345174",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n345174.doc",
+    "classification": "8509.80.50.95",
+    "description": "An ultrasonic aroma diffuser (not a humidifier) consisting of a base, water tank, an atomizer and cover, inner and top covers, PCBAs (Printed Circuit Board Assemblies), a button and fan (containing an electric motor)",
+    "matchesModel": true,
+    "modelClassification": "8509.80.50.95",
+    "attemptNotes": "Got it, but needed to specify that it was NOT a humidifier (this would have been easy to get if model could ask the user that question"
+  },
+  {
+    "ruling": "N345176",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n345176.doc",
+    "classification": "3924.90.56.50",
+    "description": "A Piggy-Bank made of a 100% knitted polyester fabric that looks like a pig which is wrapped around a polypropylene plastic coin holding reservoir. The outter fabric has a small slit in it that allows for coins to be added to the reservoir",
+    "matchesModel": false,
+    "modelClassification": "3926.40.00.90",
+    "attemptNotes": "Right chapter but missed the heading entirely"
+  },
+  {
+    "ruling": "N345177",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n345177.doc",
+    "classification": "4911.91.40.40",
+    "description": "a framed, printed image on glass, measuring 6.75” by 6.75” by 0.625” deep. The frame is constructed of medium density fiberboard (MDF). The backing is face-covered with paper that has a random, all-over print of what appears to be stylized bubbles or flowers. The frame holds a piece of glass covering the front raised slightly above the backing. Silk printed on the glass is an illustration of a perfume bottle with its cap. The front label of the bottle reads, “Parfum.” A sawtooth hanger on the back allows for hanging.",
+    "matchesModel": false,
+    "modelClassification": "7013.99.90.90",
+    "attemptNotes": "Missed it by just focusing on the glass, did not get chapter 49 at all, or it's parent section"
+  },
+  {
+    "ruling": "N345182",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n345182.doc",
+    "classification": "2106.90.99.98",
+    "description": "A food preparation for human consumption consisting of creatine monohydrate in powder form, which will be packaged and made available for retail sale 'as-is'",
+    "matchesModel": false,
+    "modelClassification": "2106.90.99.98",
+    "attemptNotes": "Nailed it"
+  }
+]

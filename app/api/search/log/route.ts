@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
-import { createClient } from "../../../../libs/supabase/server";
+import { createClient } from "../../supabase/server";
 
 export const dynamic = "force-dynamic";
 
@@ -35,9 +35,6 @@ export async function POST(req: NextRequest) {
     const { error, data: insertResponse } = await supabase
       .from("search")
       .insert([{ user_id: user.id, product_description: productDescription }]);
-
-    console.log("Log Search Response:");
-    console.log(insertResponse);
 
     if (error) {
       console.error("Error logging search:", error);

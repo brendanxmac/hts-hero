@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import OpenAI from "openai";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { createClient } from "../../../../libs/supabase/server";
+import { createClient, requesterIsAuthenticated } from "../../supabase/server";
 import { SimplifiedHtsElement } from "../../../../interfaces/hts";
 
 export const dynamic = "force-dynamic";
@@ -19,12 +19,10 @@ const BestHeading = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    const supabase = createClient();
-    const { data } = await supabase.auth.getUser();
-    const user = data.user;
+    const requesterIsAllowed = await requesterIsAuthenticated(req);
 
     // User who are not logged in can't access this request
-    if (!user) {
+    if (!requesterIsAllowed) {
       return NextResponse.json(
         { error: "You must be logged in to complete this action." },
         { status: 401 }
@@ -48,11 +46,9 @@ export async function POST(req: NextRequest) {
       ({ code, description }) => `${code}: ${description}`
     );
 
-    console.log("Heading Candidates:", headingCandidates);
-
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const gptResponse = await openai.chat.completions.create({
-      temperature: 0.2,
+      temperature: 0,
       model: "gpt-4o-2024-11-20",
       response_format: zodResponseFormat(BestHeading, "description_rankings", {
         description:
