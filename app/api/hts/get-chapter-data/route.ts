@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
-import { createClient, requesterIsAuthenticated } from "../../supabase/server";
+import { requesterIsAuthenticated } from "../../supabase/server";
 import { readFile } from "fs/promises";
 import path from "path";
 

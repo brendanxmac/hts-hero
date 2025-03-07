@@ -42,8 +42,7 @@ export async function requesterIsAuthenticated(req: NextRequest) {
 
   if (requestHasValidServiceKey) return true;
 
-  // TODO: REMOVE THIS
-  console.log(`Request does not have valid service key`);
+  console.log(`Checking user token`);
 
   // If no service role key, check that the request came from a valid user via cookies
 

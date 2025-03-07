@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { productDescription, model }: GetHtsHeadingsDto = await req.json();
+    const { productDescription }: GetHtsHeadingsDto = await req.json();
 
     if (!productDescription) {
       return NextResponse.json(
@@ -46,25 +46,6 @@ export async function POST(req: NextRequest) {
     });
 
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-    // const gptResponse = await openai.chat.completions.create({
-    //   temperature: 0.7,
-    //   top_p: 1.0,
-    //   model: model || OpenAIModel.FOUR_MINI,
-    //   messages: [
-    //     {
-    //       role: "system",
-    //       content:
-    //         "You are ChatGPT, a large language model trained by OpenAI. Answer as helpfully and accurately as possible.",
-    //     },
-    //     {
-    //       role: "user",
-    //       content: `Use the General Rules for the Interpretation of the Harmonized System to determine which headings (at least 2) most accurately describe: ${productDescription}.
-    //     Your response should be:
-    //     1. ONLY a stringified array of objects sorted by best match to worst match where each object matches the following structure: { heading: string,  desciption: string, logic: string}.
-    //     2. Without the code block formatting indicating it is json`,
-    //     },
-    //   ],
-    // });
     const gptResponse = await openai.chat.completions.create({
       temperature: 0.3,
       model: "gpt-4o-2024-11-20",
