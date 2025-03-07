@@ -1,5 +1,14 @@
 [
   {
+    "ruling": "N344099",
+    "url": "https://rulings.cbp.gov/docs/ny/2025/n344099.doc",
+    "classification": "6001.92.00.10",
+    "description": "Bonded pile fabric consisting of a warp knit face fabric laminated to a weft knit backing fabric and is composed wholly of polyester. Additionally, the face fabric is a brushed pile and has been coated with a type of rubber or plastic material",
+    "matchesModel": false,
+    "modelClassification": "5903.20.20.00",
+    "attemptNotes": "Due to not referencing chapter notes, the model chose heading 5903. This would have been correct however Ch60 note 1(c) states that knitted or crocheted `pile` fabrics should be classified in Ch60. Without knowing that the `face fabric` being brushed pile gives the product its essential character, there would have been no way to get the correct classification."
+  },
+  {
     "ruling": "N340688",
     "url": "https://rulings.cbp.gov/docs/ny/2025/n340688.doc",
     "classification": "6006.33.00.60",
@@ -76,24 +85,6 @@
     "matchesModel": true,
     "modelClassification": "2920.90.51.00",
     "attemptNotes": "Funny enough, this one was actually correct, as the model chose to go with `other` at the subheading level. Then on second attempt did the same thing as the above test description."
-  },
-  {
-    "ruling": "N344099",
-    "url": "https://rulings.cbp.gov/docs/ny/2025/n344099.doc",
-    "classification": "6001.92.00.10",
-    "description": "Bonded fabric consisting of a warp knit face fabric laminated to a weft knit backing fabric and is composed wholly of polyester. Additionally, the face fabric is a brushed pile and has been coated with a type of rubber or plastic material",
-    "matchesModel": false,
-    "modelClassification": "5903.20.20.00",
-    "attemptNotes": "Due to not referencing chapter notes, the model chose heading 5903. This would have been correct however Ch60 note 1(c) states that knitted or crocheted `pile` fabrics should be classified in Ch60. Without knowing that the `face fabric` being brushed pile gives the product its essential character, there would have been no way to get the correct classification."
-  },
-  {
-    "ruling": "N344099",
-    "url": "https://rulings.cbp.gov/docs/ny/2025/n344099.doc",
-    "classification": "6001.92.00.10",
-    "description": "Bonded fabric consisting of a warp knit face fabric laminated to a weft knit backing fabric and is composed wholly of polyester. Additionally, the face fabric is a brushed pile and has been coated with a type of rubber or plastic material",
-    "matchesModel": false,
-    "modelClassification": "5903.20.20.00",
-    "attemptNotes": "Due to not referencing chapter notes, the model chose heading 5903. This would have been correct however Ch60 note 1(c) states that knitted or crocheted `pile` fabrics should be classified in Ch60. Without knowing that the `face fabric` being brushed pile gives the product its essential character, there would have been no way to get the correct classification."
   },
   {
     "ruling": "N344839",
