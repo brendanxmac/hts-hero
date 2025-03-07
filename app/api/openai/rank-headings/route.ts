@@ -46,8 +46,6 @@ export async function POST(req: NextRequest) {
       ({ code, description }) => `${code}: ${description}`
     );
 
-    console.log("Heading Candidates:", headingCandidates);
-
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const gptResponse = await openai.chat.completions.create({
       temperature: 0,
