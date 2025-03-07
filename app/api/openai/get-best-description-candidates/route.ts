@@ -51,8 +51,6 @@ export async function POST(req: NextRequest) {
   try {
     const requesterIsAllowed = await requesterIsAuthenticated(req);
 
-    console.log(1);
-
     // Users who are not logged in can't make a gpt requests
     if (!requesterIsAllowed) {
       return NextResponse.json(
@@ -77,7 +75,6 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    console.log(2);
 
     if (minMatches && maxMatches) {
       if (minMatches > maxMatches || minMatches === maxMatches) {
@@ -93,11 +90,6 @@ export async function POST(req: NextRequest) {
     const labelledDescriptions = descriptions.map(
       (description, index) => `${index}. ${description}`
     );
-
-    console.log(3);
-
-    console.log("labelledDescriptions", labelledDescriptions);
-    console.log("productDescription", productDescription);
 
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const gptResponse = await openai.chat.completions.create({
@@ -132,9 +124,6 @@ export async function POST(req: NextRequest) {
         },
       ],
     });
-
-    console.log(4);
-    console.log(gptResponse.choices);
 
     return NextResponse.json(gptResponse.choices);
   } catch (e) {

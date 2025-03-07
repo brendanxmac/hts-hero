@@ -114,12 +114,14 @@ const getHeadingCandidates = async (
 
       // Handle Empty Case
       if (bestCandidateHeadings.bestCandidates.length === 0) {
-        return;
+        console.log("No Candidates");
+        return [];
       }
 
       // Handle Negative Index Case (sometimes chatGPT will do this)
       if (bestCandidateHeadings.bestCandidates[0].index < 0) {
-        return;
+        console.log("Negative Index");
+        return [];
       }
 
       return bestCandidateHeadings.bestCandidates.map((candidate) => {
@@ -248,20 +250,17 @@ async function classifyProduct(
       productDescription,
       headingCandidates
     );
-
     const chapterData = await getHtsChapterData(
       bestElement.htsno.substring(0, 2)
     );
 
     selectedChapterElements = setIndexInArray(chapterData);
-
     htsElementsChunk = getNextElementsChunk(
       bestElement,
       selectedChapterElements,
       classificationLevel
     );
     classificationLevel++;
-
     htsDescription = updateHtsDescription(
       htsDescription,
       bestElement.description
@@ -311,19 +310,16 @@ async function classifyProduct(
     }
 
     const numLevels = classificationProgression.length;
-    // FIXME: this could be undefined... and has caused issues, needs to be fixed
-    // FIXME: Need to fix the bug where the model selects NOTHING for best classifier
+    console.log(
+      "classificationProgression:",
+      classificationProgression[numLevels - 1].selection
+    );
     const htsno = classificationProgression[numLevels - 1].selection.htsno;
 
-    // TODO: Return the results that you want to that will make up your test report
     return { htsno, classificationProgression };
   } catch (error) {
-    console.error(
-      "Error processing:",
-      productDescription,
-      error.response?.data || error.message
-    );
-    return null;
+    console.error("Error classifying:", error.response?.data || error.message);
+    return { htsno: null, classificationProgression: [] };
   }
 }
 
@@ -346,7 +342,7 @@ async function classifyProduct(
     results.push({
       description: testCase.description,
       cbpClassification: testCase.classification,
-      modelClassification: htsno,
+      modelClassification: htsno || "Failed",
       classificationProgression,
       match: htsno === testCase.classification,
     });
