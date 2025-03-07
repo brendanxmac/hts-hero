@@ -1,18 +1,16 @@
-import { NextResponse } from "next/server";
-import { createClient } from "../../../../libs/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
+import { requesterIsAuthenticated } from "../../supabase/server";
 import { readFile } from "fs/promises";
 import path from "path";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const supabase = createClient();
-    const supabaseUserResponse = await supabase.auth.getUser();
-    const user = supabaseUserResponse.data.user;
+    const requesterIsAllowed = await requesterIsAuthenticated(req);
 
     // Users who are not logged in can't make a gpt requests
-    if (!user) {
+    if (!requesterIsAllowed) {
       return NextResponse.json(
         { error: "You must be logged in to complete this action" },
         { status: 401 }

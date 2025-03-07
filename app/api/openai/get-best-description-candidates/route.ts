@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import OpenAI from "openai";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { createClient } from "../../../../libs/supabase/server";
+import { requesterIsAuthenticated } from "../../supabase/server";
 
 export const dynamic = "force-dynamic";
 
@@ -49,14 +49,12 @@ const getMinMaxRangeText = (minMatches?: number, maxMatches?: number) => {
 
 export async function POST(req: NextRequest) {
   try {
-    const supabase = createClient();
-    const { data } = await supabase.auth.getUser();
-    const user = data.user;
+    const requesterIsAllowed = await requesterIsAuthenticated(req);
 
-    // User who are not logged in can't make a gpt requests
-    if (!user) {
+    // Users who are not logged in can't make a gpt requests
+    if (!requesterIsAllowed) {
       return NextResponse.json(
-        { error: "You must be logged in to complete this action." },
+        { error: "You must be logged in to complete this action" },
         { status: 401 }
       );
     }
@@ -95,7 +93,7 @@ export async function POST(req: NextRequest) {
 
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const gptResponse = await openai.chat.completions.create({
-      temperature: 0.2,
+      temperature: 0,
       model: "gpt-4o-2024-11-20",
       response_format: zodResponseFormat(
         BestDescriptionMatches,

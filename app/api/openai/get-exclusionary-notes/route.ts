@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import OpenAI from "openai";
 import { OpenAIModel } from "../../../../libs/openai";
-import { createClient } from "../../../../libs/supabase/server";
+import { createClient } from "../../supabase/server";
 import { Note } from "../../../../interfaces/hts";
 
 export const dynamic = "force-dynamic";

@@ -1,6 +1,6 @@
 import { ChatCompletion } from "openai/resources";
 import {
-  HtsWithParentReference,
+  HtsElementWithParentReference,
   HtsLevelClassification,
   CandidateSelection,
   HsHeading,
@@ -31,7 +31,7 @@ export function isFullHTSCode(code: string) {
 }
 
 export const getHtsElementDescriptions = (
-  elements: HtsWithParentReference[]
+  elements: HtsElementWithParentReference[]
 ) => {
   return elements.map((e) => e.description);
 };
@@ -267,17 +267,17 @@ export const getBestClassificationProgression = async (
       htsDescription,
     });
 
-  const bestCandidates = bestCandidatesResponse[0].message.content;
+  const bestCandidate = bestCandidatesResponse[0].message.content;
 
-  if (bestCandidates === null) {
+  if (bestCandidate === null) {
     throw new Error(`Failed to get best description matches`);
   }
 
-  return JSON.parse(bestCandidates);
+  return JSON.parse(bestCandidate);
 };
 
 export const getBestDescriptionCandidates = async (
-  elementsAtLevel: HtsWithParentReference[],
+  elementsAtLevel: HtsElementWithParentReference[],
   productDescription: string,
   isSectionOrChapter: boolean,
   minMatches?: number,
@@ -316,7 +316,7 @@ export const updateHtsDescription = (current: string, additional: string) => {
 export const getBestIndentLevelMatch = async (
   productDescription: string,
   htsDescription: string, // used to compare against product description at each level, with each NEW descriptor
-  elements: HtsWithParentReference[],
+  elements: HtsElementWithParentReference[],
   indentLevel: number,
   selectionProgression: HtsLevelClassification[] = []
 ): Promise<HtsLevelClassification[]> => {
@@ -453,7 +453,7 @@ export const getHtsChapterData = (chapter: string): Promise<HtsElement[]> => {
 };
 
 export const getNextChunk = (
-  currentChunk: HtsWithParentReference[],
+  currentChunk: HtsElementWithParentReference[],
   startIndex: number,
   classificationLevel: number
 ) => {
@@ -467,10 +467,12 @@ export const getNextChunk = (
 };
 
 export const getNextChunkEndIndex = (
-  htsElementsChunk: HtsWithParentReference[],
+  htsElementsChunk: HtsElementWithParentReference[],
   startIndex: number,
   classificationLevel: number
 ) => {
+  // could be the case that the chapter data I grabbed was wrong or
+  // does not match the index grabbed for the selected element..?
   for (let i = startIndex; i < htsElementsChunk.length; i++) {
     if (htsElementsChunk[i].indent === String(classificationLevel)) {
       return i - 1;
