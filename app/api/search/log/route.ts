@@ -36,9 +36,6 @@ export async function POST(req: NextRequest) {
       .from("search")
       .insert([{ user_id: user.id, product_description: productDescription }]);
 
-    console.log("Log Search Response:");
-    console.log(insertResponse);
-
     if (error) {
       console.error("Error logging search:", error);
       return NextResponse.json({ error: error.message }, { status: 500 });

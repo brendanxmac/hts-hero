@@ -37,10 +37,6 @@ export async function POST(req: NextRequest) {
       htsDescription,
     }: GetBestClassificationProgressionDto = await req.json();
 
-    console.log("Elements:", elements);
-    console.log("Product Description:", productDescription);
-    console.log("HTS Description:", htsDescription);
-
     if (!elements || !productDescription || !htsDescription) {
       return NextResponse.json(
         {
@@ -87,8 +83,6 @@ export async function POST(req: NextRequest) {
         },
       ],
     });
-
-    console.log("GPT Response:", gptResponse.choices);
 
     return NextResponse.json(gptResponse.choices);
   } catch (e) {
