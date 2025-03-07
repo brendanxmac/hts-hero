@@ -23,7 +23,7 @@ export interface HtsSectionAndChapterBase {
   description: string;
 }
 
-export interface HtsWithParentReference extends HtsElement {
+export interface HtsElementWithParentReference extends HtsElement {
   indexInParentArray: number; // used to grab window ranges in the parent array
 }
 

@@ -3,7 +3,7 @@ import OpenAI from "openai";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { OpenAIModel } from "../../../../libs/openai";
-import { createClient } from "../../../../libs/supabase/server";
+import { createClient } from "../../supabase/server";
 
 export const dynamic = "force-dynamic";
 

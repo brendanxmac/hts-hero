@@ -9,15 +9,13 @@ import {
   getNextChunk,
   evaluateBestHeadings,
   updateHtsDescription,
-  fetchTopLevelSectionNotes,
-  determineExclusionarySectionNotes,
   getBestDescriptionCandidates,
   logSearch,
 } from "../libs/hts";
 import {
   HtsLevelClassification,
   HtsSection,
-  HtsWithParentReference,
+  HtsElementWithParentReference,
   CandidateSelection,
   HeadingSelection,
   HtsElement,
@@ -51,7 +49,7 @@ export const ClassificationResults = ({
   const [loading, setLoading] = useState<Loader>({ isLoading: true, text: "" });
   const [htsDescription, setHtsDescription] = useState("");
   const [htsElementsChunk, setHtsElementsChunk] = useState<
-    HtsWithParentReference[]
+    HtsElementWithParentReference[]
   >([]);
   const [classificationIndentLevel, setClassificationIndentLevel] = useState(0);
   const [classificationProgression, setClassificationProgression] = useState<
@@ -185,7 +183,7 @@ export const ClassificationResults = ({
         const bestChapterCandidates = await getBestDescriptionCandidates(
           [],
           productDescription,
-          false,
+          true,
           0,
           2,
           section.chapters.map((c) => c.description)
@@ -285,13 +283,6 @@ export const ClassificationResults = ({
     if (!headingDescription) {
       throw new Error("No heading description found");
     }
-
-    // FIXME: bug here where we set the headings to choose from as the ones in the chapter that won
-    // rather than the overall candidate elements. The bug exists because after we get the best
-    // heading, instead of setting the first progression with those candidates, we go and get the
-    // headings from the chapter that won amoungest the candidates.
-    // Instead we need to set the classification progression with the initial candidates that were
-    // used to pick the best one.
 
     const chapterData = await getHtsChapterData(
       headingsEvaluation.code.substring(0, 2)

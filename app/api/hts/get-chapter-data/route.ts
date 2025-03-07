@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
-import { createClient } from "../../../../libs/supabase/server";
+import { createClient, requesterIsAuthenticated } from "../../supabase/server";
 import { readFile } from "fs/promises";
 import path from "path";
 
@@ -16,12 +16,10 @@ const chapterIsValid = (chapter: string) => {
 
 export async function GET(req: NextRequest) {
   try {
-    const supabase = createClient();
-    const supabaseUserResponse = await supabase.auth.getUser();
-    const user = supabaseUserResponse.data.user;
+    const requesterIsAllowed = await requesterIsAuthenticated(req);
 
-    // User who are not logged in can't make a gpt requests
-    if (!user) {
+    // Users who are not logged in can't make a gpt requests
+    if (!requesterIsAllowed) {
       return NextResponse.json(
         { error: "You must be logged in to complete this action" },
         { status: 401 }

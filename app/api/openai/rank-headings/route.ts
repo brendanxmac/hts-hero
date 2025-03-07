@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import OpenAI from "openai";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { createClient } from "../../../../libs/supabase/server";
+import { createClient, requesterIsAuthenticated } from "../../supabase/server";
 import { SimplifiedHtsElement } from "../../../../interfaces/hts";
 
 export const dynamic = "force-dynamic";
@@ -19,12 +19,10 @@ const BestHeading = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    const supabase = createClient();
-    const { data } = await supabase.auth.getUser();
-    const user = data.user;
+    const requesterIsAllowed = await requesterIsAuthenticated(req);
 
     // User who are not logged in can't access this request
-    if (!user) {
+    if (!requesterIsAllowed) {
       return NextResponse.json(
         { error: "You must be logged in to complete this action." },
         { status: 401 }
