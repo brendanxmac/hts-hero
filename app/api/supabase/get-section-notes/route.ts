@@ -35,6 +35,10 @@ export async function POST(req: NextRequest) {
     const romanSection = toRoman(section);
     console.log("Roman Section:", romanSection);
 
+    // TODO: Think of a way to extract the alraedy created client in the middleware
+    // that is called above to validate the request itself
+    const supabase = createClient();
+
     const { data: sectionNotes, error } = await supabase
       .from("section_notes")
       .select("*")

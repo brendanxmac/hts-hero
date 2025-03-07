@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { error, data: insertResponse } = await supabase
+    const { error } = await supabase
       .from("search")
       .insert([{ user_id: user.id, product_description: productDescription }]);
 
