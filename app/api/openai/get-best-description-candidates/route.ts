@@ -14,6 +14,14 @@ interface GetBestDescriptionMatchDto {
   maxMatches?: number;
 }
 
+const TestDescriptionMatch = z.object({
+  index: z.number(),
+});
+
+const TestBestDescriptionMatches = z.object({
+  bestCandidates: z.array(TestDescriptionMatch),
+});
+
 const DescriptionMatch = z.object({
   index: z.number(),
   description: z.string(),
@@ -91,18 +99,28 @@ export async function POST(req: NextRequest) {
       (description, index) => `${index}. ${description}`
     );
 
+    const isTestEnv = process.env.APP_ENV === "test";
+    const responseFormatOptions = {
+      description:
+        "Used to get the best description matches from an array with selection logic included",
+    };
+    const responseFormat = isTestEnv
+      ? zodResponseFormat(
+          TestBestDescriptionMatches,
+          "test_description_matches",
+          responseFormatOptions
+        )
+      : zodResponseFormat(
+          BestDescriptionMatches,
+          "best_description_matches",
+          responseFormatOptions
+        );
+
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const gptResponse = await openai.chat.completions.create({
       temperature: 0,
       model: "gpt-4o-2024-11-20",
-      response_format: zodResponseFormat(
-        BestDescriptionMatches,
-        "best_description_matches",
-        {
-          description:
-            "Used to get the best description matches from an array with selection logic included",
-        }
-      ),
+      response_format: responseFormat,
       messages: [
         {
           role: "system",
@@ -113,7 +131,11 @@ export async function POST(req: NextRequest) {
                 ? ""
                 : "You must use the GRI rules sequentially (as needed) and consider all options in the list to shape your decision making logic.\n"
             }
-            The logic you used to pick an option as a good candidate must be included in your response, and so should the original unchanged description.\n
+            ${
+              isTestEnv
+                ? ""
+                : "The logic you used to pick an option as a good candidate must be included in your response, and so should the original unchanged description.\n"
+            }
             The best fitting candidate must be first in the list, and if none are good candidates, return an empty array.
             `,
         },

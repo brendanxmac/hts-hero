@@ -7,7 +7,6 @@ export async function updateSession(request: NextRequest) {
   });
 
   const IS_TEST_ENV = process.env.APP_ENV === "test";
-  console.log(`Is Test ENV`, IS_TEST_ENV);
 
   // If running in test env, we do not need to have a ensure
   // there is a valid user session in the cookies, so skip

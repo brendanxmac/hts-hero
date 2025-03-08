@@ -42,8 +42,6 @@ export async function requesterIsAuthenticated(req: NextRequest) {
 
   if (requestHasValidServiceKey) return true;
 
-  console.log(`Checking user token`);
-
   // If no service role key, check that the request came from a valid user via cookies
 
   const supabase = createClient();
