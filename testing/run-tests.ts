@@ -83,7 +83,9 @@ const getChapterCandidates = async (
       return bestChapterCandidates.bestCandidates.map((chapterCandidate) => ({
         index: section.chapters[chapterCandidate.index].number,
         description: section.chapters[chapterCandidate.index].description,
-        logic: chapterCandidate.logic,
+        // TODO: toggle this to get the logic from the best progression response
+        // will also need to update the GPT response format to include the logic
+        logic: "", // chapterCandidate.logic
       }));
     })
   );
@@ -178,7 +180,9 @@ const getBestHeading = async (
 
   return {
     bestElement: bestHeading,
-    reasoning: headingsEvaluation.evaluation,
+    // TODO: toggle this to get the reasoning from the best progression response
+    // will also need to update the GPT response format to include the logic
+    reasoning: "", //headingsEvaluation.evaluation
     elementsAtLevel,
   };
 };
@@ -221,7 +225,9 @@ const getBestElementAtLevel = async (
 
   return {
     bestElement,
-    reasoning: bestProgressionResponse.logic,
+    // TODO: toggle this to get the reasoning from the best progression response
+    // will also need to update the GPT response format to include the logic
+    reasoning: "", // bestProgressionResponse.logic
     elementsAtLevel,
   };
 };
@@ -347,7 +353,7 @@ async function classifyProduct(
       match: htsno === testCase.classification,
     });
 
-    if (results.length > 9) break;
+    if (results.length > 5) break;
   }
 
   // TODO: consider generating a test results summary...
