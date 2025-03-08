@@ -15,6 +15,7 @@ import {
   Eval,
   Note,
   BestProgressionResponse,
+  BestChaptersResponse,
 } from "../interfaces/hts";
 import {
   elementsAtClassificationLevel,
@@ -274,6 +275,17 @@ export const getBestClassificationProgression = async (
   }
 
   return JSON.parse(bestCandidate);
+};
+
+export const getBestChaptersForProductDescription = async (
+  productDescription: string
+): Promise<BestChaptersResponse> => {
+  const bestChaptersResponse: Array<ChatCompletion.Choice> =
+    await apiClient.post("/openai/get-best-chapters-for-product-description", {
+      productDescription,
+    });
+
+  return JSON.parse(bestChaptersResponse[0].message.content);
 };
 
 export const getBestDescriptionCandidates = async (

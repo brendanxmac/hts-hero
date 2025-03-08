@@ -82,6 +82,10 @@ export interface BestCandidatesResponse {
   bestCandidates: CandidateSelection[];
 }
 
+export interface BestChaptersResponse {
+  chapters: number[];
+}
+
 export interface HeadingSelection {
   heading: string;
   description: string;
