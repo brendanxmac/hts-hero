@@ -4,7 +4,7 @@ interface Props {
 
 export const PrimaryHeading = ({ value }: Props) => {
   return (
-    <h4 className="text-[#40C969] uppercase font-bold text-xs sm:text-sm">
+    <h4 className="text-[#40C969] uppercase font-bold text-sm sm:text-base">
       {value}
     </h4>
   );

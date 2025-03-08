@@ -3,6 +3,7 @@ import OpenAI from "openai";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { requesterIsAuthenticated } from "../../supabase/server";
+import { getMinMaxRangeText } from "../../../../utilities/data";
 
 export const dynamic = "force-dynamic";
 
@@ -31,29 +32,6 @@ const DescriptionMatch = z.object({
 const BestDescriptionMatches = z.object({
   bestCandidates: z.array(DescriptionMatch),
 });
-
-const getMinMaxRangeText = (minMatches?: number, maxMatches?: number) => {
-  if (minMatches && maxMatches) {
-    if (minMatches > maxMatches || minMatches === maxMatches) {
-      throw new Error("Min matches must be less than max matches");
-    }
-
-    return `at least ${minMatches}, up to ${maxMatches}`;
-  }
-
-  if (minMatches) {
-    return `at least ${minMatches}`;
-  }
-
-  if (maxMatches) {
-    if (maxMatches === 1) {
-      return "only 1";
-    }
-    return `up to ${maxMatches}`;
-  }
-
-  return "at least 1, up to 3";
-};
 
 export async function POST(req: NextRequest) {
   try {
