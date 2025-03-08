@@ -12,6 +12,10 @@ interface EvaluateHeadingsDto {
   productDescription: string;
 }
 
+const TestBestHeading = z.object({
+  code: z.string(),
+});
+
 const BestHeading = z.object({
   code: z.string(),
   evaluation: z.string(),
@@ -46,20 +50,33 @@ export async function POST(req: NextRequest) {
       ({ code, description }) => `${code}: ${description}`
     );
 
+    const isTestEnv = process.env.APP_ENV === "test";
+    const responseFormatOptions = {
+      description:
+        "Used to analyze HTS headings against a product description and output a clear evaluation about which is the best and why, using the General Rules of Interpretation (GRI)",
+    };
+    const responseFormat = isTestEnv
+      ? zodResponseFormat(
+          TestBestHeading,
+          "test_best_heading",
+          responseFormatOptions
+        )
+      : zodResponseFormat(BestHeading, "best_heading", responseFormatOptions);
+
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const gptResponse = await openai.chat.completions.create({
       temperature: 0,
       model: "gpt-4o-2024-11-20",
-      response_format: zodResponseFormat(BestHeading, "description_rankings", {
-        description:
-          "Used to analyze HTS headings against a product description and output a clear evaluation about which is the best and why, using the General Rules of Interpretation (GRI)",
-      }),
+      response_format: responseFormat,
       messages: [
         {
           role: "system",
           content: `You are a United States Harmonized Tariff System Expert who follows the General Rules of Interpretation (GRI) for the Harmonized System perfectly.\n
             Your job is to take a product description and a list of HTS Headings and output:
-            1. A clear evaluation about which heading best classifies the product:\n
+            ${
+              isTestEnv
+                ? "The code of the best match"
+                : `1. A clear evaluation about which heading best classifies the product:\n
                 a. You must use and sequentially reference the General Rules of Interpretation (GRI).\n
                 b. You must consider all options in the list to shape your decision making logic.\n
                 c. Your evaluation should follow the format (include single line breaks between the sections and their content, double line breaks between sections):\n
@@ -67,8 +84,9 @@ export async function POST(req: NextRequest) {
                 Justification: Explain why this heading best fits the product description under GRI 1.\n
                 Comparison with Alternatives: Briefly explain why each rejected heading is less appropriate.\n
                 Higher GRI Application (if needed): If multiple headings could apply, explain why the chosen heading prevails using GRI 3(a), 3(b), or 3(c). If the product is unfinished or mixed, apply GRI 2(a) or 2(b) as needed.\n
-                Final Conclusion: A concise summary of why the selected heading is the best classification.
-            2. The code of the best match\n`,
+                Final Conclusion: A concise summary of why the selected heading is the best classification.\n
+            2. The code of the best match\n`
+            }`,
         },
         {
           role: "user",
