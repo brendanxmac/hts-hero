@@ -1,5 +1,5 @@
 import { Cell } from "./Cell";
-import { PrimaryHeading } from "./PrimaryLabel";
+import { PrimaryLabel } from "./PrimaryLabel";
 import { PrimaryInformation } from "./PrimaryInformation";
 import { SectionLabel } from "./SectionLabel";
 
@@ -17,7 +17,7 @@ export const ClassificationSection = ({ htsCode }: Props) => {
       <Cell>
         <div className="grid col-span-full gap-3">
           <div className="flex flex-col">
-            <PrimaryHeading value="HTS Code" />
+            <PrimaryLabel value="HTS Code" />
             <PrimaryInformation value={htsCode || ""} />
           </div>
         </div>

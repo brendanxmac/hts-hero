@@ -45,6 +45,7 @@ export interface HtsElement {
   quotaQuantity: string | null;
   additionalDuties: string | null;
   addiitionalDuties: string | null;
+  children?: HtsElement[];
 }
 
 export interface Footnote {
