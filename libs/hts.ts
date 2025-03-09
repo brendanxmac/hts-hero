@@ -464,29 +464,68 @@ export const getHtsChapterData = (chapter: string): Promise<HtsElement[]> => {
   });
 };
 
-export const getNextChunk = (
-  currentChunk: HtsElementWithParentReference[],
-  startIndex: number,
-  classificationLevel: number
+// NOTE: this will get all elements in an array of Hts Elements that are at a given indent level.
+// You will not just get the elements up until the next indent level match, at a level.
+export const getElementsAtIndentLevel = (
+  currentChunk: HtsElement[],
+  indentLevel: number
 ) => {
-  const endIndex = getNextChunkEndIndex(
+  return currentChunk.filter((e) => e.indent === String(indentLevel));
+};
+
+export const getDirectChildrenElements = (
+  parentElement: HtsElement,
+  elements: HtsElement[]
+) => {
+  console.log("parentElement", parentElement.htsno, parentElement.indent);
+  console.log("elements", elements.length);
+  // Find element in array
+  const parentsIndex = elements.findIndex(
+    (e) => e.htsno === parentElement.htsno
+  );
+  console.log("parentsIndex", parentsIndex);
+  // If element is not found, throw an error
+  if (parentsIndex === -1) {
+    throw new Error(`Element not found in array: ${parentElement.htsno}`);
+  }
+
+  // Get index of next element at same indent level at parent
+  const firstSiblingsIndex = getIndexOfLastElementBeforeIndentLevel(
+    elements,
+    parentsIndex + 1,
+    Number(parentElement.indent)
+  );
+  console.log("firstSiblingsIndex", firstSiblingsIndex);
+  // Get all elements between the parent and the first sibling at the same indent level
+  const childrenElements = elements.filter(
+    (element, index) =>
+      element.indent > parentElement.indent && index <= firstSiblingsIndex
+  );
+
+  return childrenElements;
+};
+
+export const getElementsWithinIndentLevelFromStartPoint = (
+  currentChunk: HtsElement[],
+  startIndex: number,
+  indentLevel: number
+) => {
+  const endIndex = getIndexOfLastElementBeforeIndentLevel(
     currentChunk,
     startIndex,
-    classificationLevel
+    indentLevel
   );
 
   return currentChunk.slice(startIndex, endIndex + 1);
 };
 
-export const getNextChunkEndIndex = (
-  htsElementsChunk: HtsElementWithParentReference[],
+export const getIndexOfLastElementBeforeIndentLevel = (
+  htsElementsChunk: HtsElement[],
   startIndex: number,
-  classificationLevel: number
+  indentLevel: number
 ) => {
-  // could be the case that the chapter data I grabbed was wrong or
-  // does not match the index grabbed for the selected element..?
   for (let i = startIndex; i < htsElementsChunk.length; i++) {
-    if (htsElementsChunk[i].indent === String(classificationLevel)) {
+    if (htsElementsChunk[i].indent === String(indentLevel)) {
       return i - 1;
     }
   }

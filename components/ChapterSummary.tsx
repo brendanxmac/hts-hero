@@ -1,33 +1,37 @@
-import { HtsElement } from "../interfaces/hts";
+import { ChapterI } from "./Chapter";
 import { PrimaryInformation } from "./PrimaryInformation";
 
 interface Props {
-  number?: string;
-  description: string;
-  children?: HtsElement[];
+  chapter: ChapterI;
   showDetails: boolean;
   setShowDetails: (show: boolean) => void;
 }
 
-export const ElementSummary = ({
-  number,
-  description,
-  children,
+export const ChapterSummary = ({
+  chapter,
   showDetails,
   setShowDetails,
 }: Props) => {
+  const { number, description, headings } = chapter;
   return (
     <div className="flex flex-col gap-2">
       <div className="flex justify-between items-center">
         {number && (
-          <PrimaryInformation value={number} loud={true} copyable={false} />
+          <PrimaryInformation
+            value={number.toString()}
+            loud={true}
+            copyable={false}
+          />
         )}
         <button
-          onClick={() => setShowDetails(!showDetails)}
+          onClick={() => {
+            console.log("headings", headings);
+            setShowDetails(!showDetails);
+          }}
           type="button"
           className="shrink-0 p-2 bg-neutral-700 h-6 rounded-md flex items-center justify-center text-sm text-neutral-400 hover:text-black hover:bg-neutral-200"
         >
-          {children && children.length > 0 ? "Hide Children" : "Show Children"}
+          {showDetails ? "Hide Details" : "Show Details"}
         </button>
       </div>
 

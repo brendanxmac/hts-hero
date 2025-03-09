@@ -6,7 +6,7 @@ import {
   getHtsChapterData,
   getHtsLevel,
   getHtsSectionsAndChapters,
-  getNextChunk,
+  getElementsWithinIndentLevelFromStartPoint,
   evaluateBestHeadings,
   updateHtsDescription,
   getBestDescriptionCandidates,
@@ -111,7 +111,7 @@ export const ClassificationResults = ({
 
     // Get Next HTS Elements Chunk
     const nextChunkStartIndex = bestMatchElement.indexInParentArray + 1;
-    const nextChunk = getNextChunk(
+    const nextChunk = getElementsWithinIndentLevelFromStartPoint(
       htsElementsChunk,
       nextChunkStartIndex,
       classificationIndentLevel
@@ -301,7 +301,7 @@ export const ClassificationResults = ({
 
     // Get Next HTS Elements Chunk
     const nextChunkStartIndex = selectedHeading.indexInParentArray + 1;
-    const nextChunk = getNextChunk(
+    const nextChunk = getElementsWithinIndentLevelFromStartPoint(
       chapterDataWithParentIndex,
       nextChunkStartIndex,
       0 // find the next 0th indented level element to determine endIndex for next chunk

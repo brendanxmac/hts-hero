@@ -7,7 +7,7 @@ import {
   getHtsChapterData,
   getHtsLevel,
   getHtsSectionsAndChapters,
-  getNextChunk,
+  getElementsWithinIndentLevelFromStartPoint,
   updateHtsDescription,
 } from "../libs/hts";
 import {
@@ -195,7 +195,11 @@ const getNextElementsChunk = (
   const nextChunkStartIndex = bestMatchElement.indexInParentArray + 1;
 
   return setIndexInArray(
-    getNextChunk(currentChunk, nextChunkStartIndex, currentIndentLevel)
+    getElementsWithinIndentLevelFromStartPoint(
+      currentChunk,
+      nextChunkStartIndex,
+      currentIndentLevel
+    )
   );
 };
 

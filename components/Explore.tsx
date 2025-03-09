@@ -5,20 +5,16 @@ import {
   getBestChaptersForProductDescription,
   getHtsChapterData,
   getHtsSectionsAndChapters,
+  getElementsAtIndentLevel,
 } from "../libs/hts";
-import { HtsElement, HtsSectionAndChapterBase } from "../interfaces/hts";
 import { Cell } from "./Cell";
 import { LoadingIndicator } from "./LabelledLoader";
-import { ElementSummary } from "./ElementSummary";
 import { ArrowLeftIcon } from "@heroicons/react/16/solid";
+import { Chapter, ChapterI } from "./Chapter";
 
 interface Props {
   productDescription: string;
   setProductDescription: Dispatch<SetStateAction<string>>;
-}
-
-interface Chapter extends HtsSectionAndChapterBase {
-  data: HtsElement[];
 }
 
 export const Explore = ({
@@ -27,7 +23,7 @@ export const Explore = ({
 }: Props) => {
   const [loading, setLoading] = useState(true);
   const [bestChapters, setBestChapters] = useState<number[]>([]);
-  const [chapters, setChapters] = useState<Chapter[]>([]);
+  const [chapters, setChapters] = useState<ChapterI[]>([]);
   const getBestChapters = async () => {
     const bestChaptersResponse = await getBestChaptersForProductDescription(
       productDescription
@@ -51,49 +47,37 @@ export const Explore = ({
         const chapterData = await getHtsChapterData(String(chapter.number));
         return {
           ...chapter,
-          data: chapterData,
+          elements: chapterData,
         };
       })
     );
 
-    setChapters(chapters);
+    const chaptersWithHeadings = chapters.map((chapter) => {
+      return {
+        ...chapter,
+        // 0 = Headings Level
+        headings: getElementsAtIndentLevel(chapter.elements, 0),
+      };
+    });
+
+    setChapters(chaptersWithHeadings);
     setLoading(false);
   };
 
   useEffect(() => {
-    // setLoading(true);
-    // getBestChapters();
+    setLoading(true);
+    getBestChapters();
   }, [productDescription]);
 
   useEffect(() => {
     if (bestChapters.length > 0) {
-      //   setLoading(true);
-      //   getChapterData();
+      setLoading(true);
+      getChapterData();
     }
   }, [bestChapters]);
 
-  //   useEffect(() => {
-  //     console.log("chapters:");
-  //     console.log(chapters);
-  //   }, [chapters]);
-
-  //   const scrollableRef = useRef<HTMLDivElement>(null);
-  //   const [updateScrollHeight, setUpdateScrollHeight] = useState(0);
-
-  //   useEffect(() => {
-  //     if (scrollableRef.current) {
-  //       scrollableRef.current.scrollTo({
-  //         top: scrollableRef.current.scrollHeight,
-  //         behavior: "smooth",
-  //       });
-  //     }
-  //   }, [updateScrollHeight]);
-
   return (
-    <section
-      //   ref={scrollableRef}
-      className="grow h-full w-full overflow-auto flex flex-col items-center"
-    >
+    <section className="grow h-full w-full overflow-auto flex flex-col items-center">
       <div className="grow w-full mt-2 items-center flex flex-col max-w-3xl gap-5">
         {/* <div className="w-full bg-black bg-opacity-95 pb-4 border-b border-neutral-800 shadow-neutral-600">
           <ProductDescriptionHeader description={productDescription} />
@@ -111,7 +95,7 @@ export const Explore = ({
           </div>
           <p className="text-neutral-400 text-sm">
             Below is the list of HTS Chapters that your product is likely to be
-            classified into, sorted in order of most likely to least likely.
+            classified into, sorted by most to least likely.
           </p>
           {loading && (
             <div className="mt-5">
@@ -120,13 +104,10 @@ export const Explore = ({
           )}
           {!loading &&
             chapters.length > 0 &&
-            chapters.map((c) => {
+            chapters.map((chapter) => {
               return (
-                <Cell key={c.number}>
-                  <ElementSummary
-                    number={c.number.toString()}
-                    description={c.description}
-                  />
+                <Cell key={chapter.number}>
+                  <Chapter chapter={chapter} />
                 </Cell>
               );
             })}
