@@ -41,7 +41,7 @@ const ButtonCheckout = ({
 
   return (
     <button
-      className="btn btn-primary btn-block group"
+      className="btn btn-primary bg-[#40C969]/80 text-white rounded-md  btn-block group"
       onClick={() => handlePayment()}
     >
       {isLoading ? (
