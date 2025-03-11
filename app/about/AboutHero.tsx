@@ -10,18 +10,42 @@ const AboutHero = () => {
           {/* Helpful Tools that Make Classifying a Breeze{<br />} */}
           {/* The HTS Helper that Makes Classifying a Breeze{<br />} */}
           {/* The HTS Helper that Makes Classifying a Joy{<br />} */}
+          {/* The AI Classification Assistant */}
+          {/* The App That Makes Classifying a Joy */}
+          {/* Tools that Simplify HTS Classification */}
+          {/* Tools that Streamline Classification */}
+          {/* The HTS Assistant You Always Wanted */}
+          {/* The Classification Assistant You Always Wanted */}
+          {/* The Classification Assistant  */}
+          {/* Expert Skills Deserve <br /> Expert Tools */}
+          {/* Classify Any Product in Minutes for Pennies */}
+          {/* The Tool that helps you Classify in{" "}
+          <span className="text-[#40C969]">Minutes</span> */}
+          {/* <span className="text-[#40C969]">Automate</span> the Annoying Parts of
+          Classification */}
+          {/* <span className="text-[#40C969]">Supercharge</span> your */}
+          {/* Classifications */}
+          Classify Products in{" "}
+          <span className="text-[#40C969]">Half the Time</span>
+          {/* Golfers have the 9 iron, Classifiers have HTS Hero */}
+          {/* Peanut butter and jelly, Rum and Coke, Classifiers & HTS Hero */}
+          {/* The AI Helper That Lets you Classify in{" "} */}
+          {/* <span className="text-[#40C969]">Minutes</span> */}
+          {/* Your HTS Classification Assistant */}
+          {/* HTS Classifications Made Simple */}
+          {/* Your Classification Assistant */}
           {/* === */}
-          Easily Classify Products in <s className="text-neutral-800">
+          {/* Easily Classify Products in <s className="text-neutral-800">
             Hours
           </s>{" "}
-          <span className="text-[#40C969]">Minutes</span>
+          <span className="text-[#40C969]">Minutes</span> */}
           {/* === */}
           {/* The <span className="text-[#40C969]">Intelligent</span> HTS Assistant */}
         </h1>
         <p className="text-lg text-neutral-400 leading-relaxed">
           Transform classifications from time-consuming and tedious to
-          effortless and enjoyable.
-          <br /> You'll wonder how you ever did classifications without it.
+          effortless and enjoyable... You'll wonder how you ever did them
+          without it.
         </p>
 
         {/* <p className="text-lg text-neutral-400 leading-relaxed">
