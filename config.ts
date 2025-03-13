@@ -25,20 +25,20 @@ const config = {
             ? "price_1Niyy5AxyNprDp7iZIqEyD2h"
             : "price_456",
         //  REQUIRED - Name of the plan, displayed on the pricing page
-        name: "Starter",
+        name: "Standard",
         // A friendly description of the plan, displayed on the pricing page. Tip: explain why this plan and not others
-        description: "Perfect for small projects",
+        description: "No more looking up notes, rulings, or references.",
         // The price you want to display, the one user will be charged on Stripe.
-        price: 99,
+        price: 40,
         // If you have an anchor price (i.e. $29) that you want to display crossed out, put it here. Otherwise, leave it empty
-        priceAnchor: 149,
+        priceAnchor: 70,
         features: [
           {
-            name: "NextJS boilerplate",
+            name: "Fetches Related CROSS Rulings",
           },
-          { name: "User oauth" },
-          { name: "Database" },
-          { name: "Emails" },
+          { name: "Fetches Relveant Notes" },
+          { name: "Fetches References (e.g. 'See Heading 9902.22.84')" },
+          { name: "Improved HTS Exploration" },
         ],
       },
       {
@@ -48,19 +48,20 @@ const config = {
             : "price_456",
         // This plan will look different on the pricing page, it will be highlighted. You can only have one plan with isFeatured: true
         isFeatured: true,
-        name: "Advanced",
-        description: "You need more power",
-        price: 149,
-        priceAnchor: 299,
+        name: "Pro",
+        // Your Personal Classification Assistant
+        description: "Autocomplete for Classifiers",
+        price: 60,
+        priceAnchor: 100,
         features: [
           {
-            name: "NextJS boilerplate",
+            name: "Everything in Standard",
           },
-          { name: "User oauth" },
-          { name: "Database" },
-          { name: "Emails" },
-          { name: "1 year of updates" },
-          { name: "24/7 support" },
+          { name: "Product Analysis" },
+          { name: "Automatic Full Classifications" },
+          { name: "GRI Reasoning for Every Level" },
+          { name: "Best Match Suggestions" },
+          { name: "Report Generation" },
         ],
       },
     ],
