@@ -88,7 +88,7 @@ const features: {
     svg: <LightBulbSVG color="#40C969" size={8} viewBox="0 0 24 24" />,
   },
   {
-    name: "Generating Reports",
+    name: "Report Generation",
     points: [
       {
         point: "Automatically generate classification reports for your clients",
@@ -196,22 +196,34 @@ const FeaturesListicle = () => {
             {/* Streamline classifications with Intelligent Automation */}
             {/* Classify with Autocomplete*/}
             {/* We Automate the Boring Stuff */}
-            Automate the Annoying Bits
+            {/* HTS Hero Does the Boring Parts */}
+            HTS Hero Automates the Boring Parts
+            {/* Our Assitant does the Boring Parts */}
+            {/* Automate the Annoying Bits */}
           </h2>
-          <div className="text-base-content/80 leading-relaxed mb-8 lg:text-lg">
+          <div className="text-base-content/80 leading-relaxed mb-3 lg:text-lg">
             {/* 💡 COPY TIP: Explain how your product delivers what you promise in the headline. */}
-            Easily explore the entire HTS, See related CROSS rulings, notes, and
-            references immediately, in the same tab, and get intelligent auto
-            suggestions for a products essential nature, use, and more. Think
-            autocomplete for classification, designed specially for HTS Experts.
-            Spend your time on the parts that require expert jugement, let HTS
-            Hero handle the rest.
+            Fetches relevant CROSS rulings, notes, and references, Provides
+            intelligent product analysis & classification suggestions, and more.{" "}
+            <br />
+            It quickly finds you what you're looking for exactly when you need
+            it, drastically reducing classification time.
+            {/* It's like having a lightning fast class, designed specially for HTS Experts. */}
+            {/* Spend your time on the parts that require expert jugement, let HTS Hero handle the rest.*/}
           </div>
+          {/* <div className="flex flex-col"> */}
+          {/* <p className="text-white font-bold">
+              Ultrafast, in the same tab, right when you need it.
+            </p> */}
+          {/* <p className="text-[#40C969] mb-8">
+              Potential Savings: <b>1 hr / classification</b>
+            </p> */}
+          {/* </div> */}
         </div>
       </div>
 
       <div>
-        <div className="grid grid-cols-3 lg:flex justify-between  gap-4 max-w-3xl mx-auto mb-8">
+        <div className="grid grid-cols-3 lg:flex justify-between px-2 gap-4 max-w-3xl mx-auto mb-8">
           {features.map((feature) => (
             <div
               key={feature.name}
@@ -245,7 +257,7 @@ const FeaturesListicle = () => {
         <div className="bg-black">
           <div className="max-w-3xl mx-auto flex flex-col md:flex-row justify-center md:justify-start md:items-center gap-12">
             <div
-              className="text-base-content/80 leading-relaxed space-y-4 px-12 md:px-0 max-w-3xl animate-opacity"
+              className="text-base-content/80 leading-relaxed space-y-4 px-8 md:px-0 max-w-3xl animate-opacity"
               key={featureSelected}
             >
               <h3 className="font-semibold text-base-content text-lg">

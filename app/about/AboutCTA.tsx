@@ -11,9 +11,8 @@ const AboutCTA = () => {
             Make Classification Easy!
           </h2>
           <p className="md:text-lg opacity-80 mb-12 md:mb-16">
-            Save yourself from reading through endless PDF&apos;s and hoping you
-            didn&apos;t miss something, or hiring someone for more who takes 10x
-            longer
+            Save yourself from searching for endless notes, refernces, rulings
+            and get the autocomplete experience exper classifiers deserve.
           </p>
 
           <Link
