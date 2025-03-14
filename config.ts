@@ -36,8 +36,12 @@ const config = {
           {
             name: "Fetches Related CROSS Rulings",
           },
-          { name: "Fetches Relveant Notes" },
-          { name: "Fetches References (e.g. 'See Heading 9902.22.84')" },
+          { name: "Fetches Relevant Notes" },
+          {
+            name: "Fetches HTS Element References",
+            details:
+              "See details of 'See Heading 9902.22.84' without searching for it",
+          },
           { name: "Improved HTS Exploration" },
         ],
       },
