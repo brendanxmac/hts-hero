@@ -85,6 +85,7 @@ export interface ConfigProps {
       priceAnchor?: number;
       features: {
         name: string;
+        details?: string;
       }[];
     }[];
   };

@@ -27,7 +27,7 @@ const Pricing = () => {
           <p className="font-medium text-[#40C969] mt-5">
             {/* All yours for less than the price of a single classification  */}
             {/* Supercharge your workflow for less than a single classification */}
-            For less than your daily coffee
+            Save hours on classification, for less than your daily coffee
           </p>
         </div>
 
@@ -82,21 +82,21 @@ const Pricing = () => {
                     ${plan.price}
                   </p>
                   <div className="flex flex-col justify-center pt-1 mb-[4px]">
-                    <p className="text-xs text-base-content/30">USD</p>
+                    <p className="text-xs text-base-content/40">USD</p>
                     <p className="text-sm text-base-content font-bold">
                       per month
                     </p>
                   </div>
                 </div>
                 {plan.features && (
-                  <ul className="space-y-2.5 leading-relaxed text-base flex-1">
+                  <ul className="space-y-4 leading-relaxed text-base flex-1">
                     {plan.features.map((feature, i) => (
-                      <li key={i} className="flex items-center gap-2">
+                      <li key={i} className="flex items-start gap-2">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 20 20"
                           fill="currentColor"
-                          className="w-[18px] h-[18px] opacity-80 shrink-0"
+                          className="w-[18px] h-[18px] opacity-80 shrink-0 items-end"
                         >
                           <path
                             fillRule="evenodd"
@@ -105,7 +105,12 @@ const Pricing = () => {
                           />
                         </svg>
 
-                        <span>{feature.name} </span>
+                        <div className="flex flex-col -mt-1">
+                          <span>{feature.name} </span>
+                          <span className="text-xs text-gray-400">
+                            {feature.details}
+                          </span>
+                        </div>
                       </li>
                     ))}
                   </ul>
