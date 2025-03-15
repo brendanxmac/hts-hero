@@ -20,6 +20,31 @@ const config = {
     plans: [
       {
         // REQUIRED — we use this to find the plan in the webhook (for instance if you want to update the user's credits based on the plan)
+        priceId: process.env.NODE_ENV === "development" ? "lol" : "haha",
+        //  REQUIRED - Name of the plan, displayed on the pricing page
+        name: "Starter",
+        // A friendly description of the plan, displayed on the pricing page. Tip: explain why this plan and not others
+        description: "Explore the HTS with ease, tailor made for experts.",
+        // The price you want to display, the one user will be charged on Stripe.
+        price: 0,
+        // If you have an anchor price (i.e. $29) that you want to display crossed out, put it here. Otherwise, leave it empty
+        priceAnchor: 50,
+        features: [
+          {
+            name: "Solves the shortcomings of the USITC website",
+          },
+          {
+            name: "Just click, no PDF downloads required",
+          },
+          { name: "Drill in step by step from section to 10 digits" },
+          {
+            name: "Jump to referenced elements with a single click",
+          },
+          { name: "Free forever for early adopters" },
+        ],
+      },
+      {
+        // REQUIRED — we use this to find the plan in the webhook (for instance if you want to update the user's credits based on the plan)
         priceId:
           process.env.NODE_ENV === "development"
             ? "price_1Niyy5AxyNprDp7iZIqEyD2h"
@@ -34,6 +59,9 @@ const config = {
         priceAnchor: 70,
         features: [
           {
+            name: "Everything in Starter",
+          },
+          {
             name: "Fetches Related CROSS Rulings",
           },
           { name: "Fetches Relevant Notes" },
@@ -42,7 +70,7 @@ const config = {
             details:
               "See details of 'See Heading 9902.22.84' without searching for it",
           },
-          { name: "Improved HTS Exploration" },
+          { name: "HTS Exploration Tailor Made for Experts" },
         ],
       },
       {
@@ -54,7 +82,8 @@ const config = {
         isFeatured: true,
         name: "Pro",
         // Your Personal Classification Assistant
-        description: "Autocomplete for Classifiers",
+        // Autocomplete for Classifiers
+        description: "Your Personal Classification Assistant",
         price: 60,
         priceAnchor: 100,
         features: [

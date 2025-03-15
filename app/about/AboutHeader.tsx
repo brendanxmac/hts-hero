@@ -14,11 +14,15 @@ const links: {
   label: string;
 }[] = [
   {
-    href: "/#features",
+    href: "about/#features",
     label: "Features",
   },
   {
-    href: "/#faq",
+    href: "about/#pricing",
+    label: "Pricing",
+  },
+  {
+    href: "about/#faq",
     label: "FAQ",
   },
 ];
@@ -46,7 +50,7 @@ const AboutHeader = () => {
         <div className="flex lg:flex-1">
           <Link
             className="flex items-center gap-2 shrink-0 "
-            href="/"
+            href="/about"
             title={`${config.appName} homepage`}
           >
             <Image
@@ -59,7 +63,7 @@ const AboutHeader = () => {
             />
             <span className="font-extrabold text-lg">{config.appName}</span>
             <span className="bg-stone-800 px-2 py-1 rounded-md text-stone-300 font-semibold text-xs">
-              Beta
+              Coming Soon
             </span>
           </Link>
         </div>
@@ -94,7 +98,7 @@ const AboutHeader = () => {
             <Link
               href={link.href}
               key={link.href}
-              className="link link-hover"
+              className="link link-hover font-bold"
               title={link.label}
             >
               {link.label}
@@ -103,7 +107,7 @@ const AboutHeader = () => {
         </div>
 
         {/* CTA on large screens */}
-        <div className="hidden lg:flex lg:justify-end lg:flex-1">{cta}</div>
+        {/* <div className="hidden lg:flex lg:justify-end lg:flex-1">{cta}</div> */}
       </nav>
 
       {/* Mobile menu, show/hide based on menu state. */}
@@ -116,7 +120,7 @@ const AboutHeader = () => {
             <Link
               className="flex items-center gap-2 shrink-0 "
               title={`${config.appName} homepage`}
-              href="/"
+              href="/about"
             >
               <Image
                 src={logo}
@@ -159,7 +163,7 @@ const AboutHeader = () => {
                   <Link
                     href={link.href}
                     key={link.href}
-                    className="link link-hover"
+                    className="link link-hover font-bold"
                     title={link.label}
                   >
                     {link.label}
@@ -169,7 +173,7 @@ const AboutHeader = () => {
             </div>
             <div className="divider"></div>
             {/* Your CTA on small screens */}
-            <div className="flex flex-col">{cta}</div>
+            {/* <div className="flex flex-col">{cta}</div> */}
           </div>
         </div>
       </div>

@@ -35,38 +35,39 @@ const AboutProblem = () => {
     <section className="bg-neutral-900 text-neutral-content">
       <div className="max-w-7xl mx-auto px-8 py-16 md:py-32 text-center">
         <h2 className="max-w-3xl mx-auto font-extrabold text-4xl md:text-5xl tracking-tight mb-16">
-          HTS Classifications are Tedious
+          Classifications are Tedious
         </h2>
         <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-8 sm:gap-3 mb-16">
           <div className="flex flex-col justify-center items-center">
-            <Step emoji="🧐" text="Determining Essential Nature & Use" />
-            <p className="text-neutral-400 text-xs italic">
+            <Step emoji="🧐" text="Looking for Headings" />
+            {/* <p className="text-neutral-400 text-xs italic">
               ~10min / classification
-            </p>
+            </p> */}
           </div>
 
           <Arrow extraStyle="max-md:-scale-x-100 md:-rotate-90" />
 
           <div className="flex flex-col justify-center items-center">
-            <Step emoji="😅" text="Finding Notes, References, & Rulings" />
-            <p className="text-neutral-400 text-xs italic">
+            <Step emoji="🔎" text="Finding Notes, References, & Rulings" />
+            {/* <p className="text-neutral-400 text-xs italic">
               ~30min / classification
-            </p>
+            </p> */}
           </div>
 
           <Arrow extraStyle="md:-scale-x-100 md:-rotate-90" />
 
           <div className="flex flex-col justify-center items-center">
-            <Step emoji="⏳" text="Writing Report(s)" />
-            <p className="text-neutral-400 text-xs italic">
+            <Step emoji="⏳" text="Writing Reports" />
+            {/* <p className="text-neutral-400 text-xs italic">
               ~20min / classification
-            </p>
+            </p> */}
           </div>
         </div>
 
-        <p className="max-w-3xl mx-auto text-lg opacity-90 leading-relaxed">
-          A <span className="font-bold underline">single classification</span>{" "}
-          can include an hour of busy-work with existing solutions.
+        <p className="max-w-3xl mx-auto text-lg opacity-80 leading-relaxed">
+          A single product can include{" "}
+          <span className="font-bold text-[#40C969]">an hour</span> of manual
+          work.
         </p>
       </div>
     </section>

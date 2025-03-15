@@ -9,6 +9,7 @@ import DocumentSearchSVG from "./svg/DocumentSearchSVG";
 import LightBulbSVG from "./svg/LightBulbSVG";
 import DocumentCheckSVG from "./svg/DocumentCheckSVG";
 import MoreSVG from "./svg/MoreSVG";
+import { classNames } from "../utilities/style";
 
 const features: {
   name: string;
@@ -16,92 +17,103 @@ const features: {
   svg: JSX.Element;
 }[] = [
   {
-    name: "Product Analysis",
+    name: "Notes & References",
     points: [
       {
-        point:
-          "Product Composition Analysis: The % of each element of the product",
-      },
-      {
-        point: " Essential Character Analysis: GRI 3(b)",
-      },
-      {
-        point: "Primary Use Analysis: Additional US Rules",
-      },
-      { point: "Time saved: ~10 minutes", isKey: true },
-    ],
-    svg: <PuzzlePieceSVG color="#40C969" size={8} viewBox="0 0 24 24" />,
-  },
-  {
-    name: "Finding CROSS Rulings",
-    points: [
-      {
-        point:
-          "Automatically get CROSS Rulings relevant to your classification",
+        point: "Finds any notes that might impact your classification",
+        detail: "General, Section, Chapter, Subheading, etc...",
       },
       {
         point:
-          "No more searching through pages of rulings on an outdated website",
+          "Fetches details of references that are missing links in the HTS",
+        detail: `e.g. "See heading 9902.22.84" or "Articles of heading 4601"`,
       },
       {
-        point:
-          "Presented on the same website as your other classification information",
-      },
-      { point: "Time saved: ~30 minutes", isKey: true },
-    ],
-    svg: <CheckBadgeSVG color="#40C969" size={8} viewBox="0 0 24 24" />,
-  },
-  {
-    name: "Finding Notes & References",
-    points: [
-      {
-        point:
-          "We find any legally binding notes that can impact a classification for you",
+        point: "Can sumarize complex passages for easy comprehension",
       },
       {
-        point: "Includes: General, Section, Chapter, Subheading, and more",
+        point: "~10 minutes saved",
+        detail: "per classification",
+        isKey: true,
       },
-      {
-        point:
-          "See the details of references like 'See heading 9902.22.84' without lifting a finger",
-      },
-      {
-        point: "Minimize switching tabs and searching around",
-      },
-      { point: "Time saved: ~10 minutes", isKey: true },
     ],
     svg: <DocumentSearchSVG color="#40C969" size={8} viewBox="0 0 24 24" />,
   },
   {
-    name: "Best Match Suggestions",
+    name: "CROSS Rulings",
     points: [
-      { point: "Most likely matches at each classification level" },
       {
-        point: "Full classifications ready for review",
+        point: "Fetches relevant CROSS Rulings for reference",
+      },
+      {
+        point: "Prepares them as attachments for your classification report",
+      },
+      { point: "~20 min saved", detail: "per classification", isKey: true },
+    ],
+    svg: <CheckBadgeSVG color="#40C969" size={8} viewBox="0 0 24 24" />,
+  },
+  {
+    name: "Match Suggestions",
+    points: [
+      {
+        point: "Finds the most probable matches at each classification level",
+      },
+      {
+        point: "Completes full classifications ready for your review",
       },
       {
         point:
-          "Includes reasoning for each choice utilizing the GRI & Additional US Rules",
+          "Provides reasoning for each choice based on the GRI & Additional US Rules",
       },
-      { point: "Time saved: ~10 minutes", isKey: true },
+      {
+        point: "Up to 30 minutes saved",
+        detail: "per classification",
+        isKey: true,
+      },
     ],
     svg: <LightBulbSVG color="#40C969" size={8} viewBox="0 0 24 24" />,
+  },
+  {
+    name: "Product Analysis",
+    points: [
+      {
+        point: "Composition Analysis",
+        // detail: "Finds the ratios of each element of the product",
+      },
+      {
+        point: "Essential Character Analysis",
+        // detail: "GRI 3(b)",
+      },
+      {
+        point: "Primary Use Analysis",
+        // detail: "Additional US Rules",
+      },
+      {
+        point: "~10 minutes saved",
+        detail: "per classification",
+        isKey: true,
+      },
+    ],
+    svg: <PuzzlePieceSVG color="#40C969" size={8} viewBox="0 0 24 24" />,
   },
   {
     name: "Report Generation",
     points: [
       {
-        point: "Automatically generate classification reports for your clients",
+        point: "Generates classification reports for your clients",
       },
       {
         point:
-          "Just like CROSS rulings, all reasoning and a detailed break down is included",
+          "Includes reasoning and a detailed breakdown just like CROSS rulings",
       },
       {
-        point:
-          "Pick and choose which auto-generated reasoning to include, and quickly edit as needed",
+        point: "Lets you easily choose which reasoning should be included",
       },
-      { point: "Time saved: ~30 minutes", isKey: true },
+      {
+        point: "~20 minutes saved",
+        detail: "per classification",
+        isKey: true,
+      },
     ],
     svg: <DocumentCheckSVG color="#40C969" size={8} viewBox="0 0 24 24" />,
   },
@@ -110,11 +122,10 @@ const features: {
     points: [
       {
         point:
-          "Kick off classifications ahead of time and come back to review when ready",
+          "Trigger automated classifications ahead of time, then review when ready",
       },
       {
-        point:
-          "Step by Step Mode: Classify step by step with helpful automations",
+        point: "Use a brand new HTS explorer tailor made for experts",
       },
       {
         point:
@@ -128,7 +139,7 @@ const features: {
           "Save & favorite CROSS rulings and notes for quick reference when needed",
       },
       {
-        point: "Try it for free to see the benefits for yourself!",
+        point: "Try it free to see for yourself!",
         isKey: true,
       },
     ],
@@ -136,10 +147,6 @@ const features: {
   },
 ];
 
-// A list of features with a listicle style.
-// - Click on a feature to display its description.
-// - Good to use when multiples features are available.
-// - Autoscroll the list of features (optional).
 const FeaturesListicle = () => {
   const featuresEndRef = useRef<null>(null);
   const [featureSelected, setFeatureSelected] = useState<string>(
@@ -147,82 +154,25 @@ const FeaturesListicle = () => {
   );
   const [hasClicked, setHasClicked] = useState<boolean>(false);
 
-  // (Optional) Autoscroll the list of features so user know it's interactive.
-  // Stop scrolling when user scroll after the featuresEndRef element (end of section)
-  // emove useEffect is not needed.
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (!hasClicked) {
-        const index = features.findIndex(
-          (feature) => feature.name === featureSelected
-        );
-        const nextIndex = (index + 1) % features.length;
-        setFeatureSelected(features[nextIndex].name);
-      }
-    }, 5000);
-
-    try {
-      // stop the interval when the user scroll after the featuresRef element
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            console.log("STOP AUTO CHANGE");
-            clearInterval(interval);
-          }
-        },
-        {
-          root: null,
-          rootMargin: "0px",
-          threshold: 0.5,
-        }
-      );
-      if (featuresEndRef.current) {
-        observer.observe(featuresEndRef.current);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-
-    return () => clearInterval(interval);
-  }, [featureSelected, hasClicked]);
-
   return (
     <section className="py-24" id="features">
       <div className="max-w-3xl mx-auto">
-        <div className="bg-base-100 max-md:px-8 max-w-3xl">
-          <h2 className="font-extrabold text-4xl md:text-5xl tracking-tight mb-8">
+        <div className="bg-base-100 max-md:px-8 max-w-3xl mb-8">
+          <h2 className="font-extrabold text-4xl md:text-5xl tracking-tight mb-5">
             {/* 💡 COPY TIP: Remind visitors about the value of your product. Why do they need it? */}
-            {/* It's Like Autocomplete for HTS Classifications */}
-            {/* Streamline classifications with Intelligent Automation */}
-            {/* Classify with Autocomplete*/}
-            {/* We Automate the Boring Stuff */}
-            {/* HTS Hero Does the Boring Parts */}
-            HTS Hero Automates the Boring Parts
-            {/* Our Assitant does the Boring Parts */}
-            {/* Automate the Annoying Bits */}
+            Supercharge your Classifications
           </h2>
           <div className="text-base-content/80 leading-relaxed mb-3 lg:text-lg">
             {/* 💡 COPY TIP: Explain how your product delivers what you promise in the headline. */}
-            Fetches relevant CROSS rulings, notes, and references, Provides
-            intelligent product analysis & classification suggestions, and more.{" "}
-            <br />
-            It quickly finds you what you're looking for exactly when you need
-            it, drastically reducing classification time.
-            {/* It's like having a lightning fast class, designed specially for HTS Experts. */}
-            {/* Spend your time on the parts that require expert jugement, let HTS Hero handle the rest.*/}
+            HTS Hero automatically fetches the information you need at each
+            level of classification and suggests the best matches. It greatly
+            reduces classification time by allowing you to focus on making good
+            decisions.
           </div>
-          {/* <div className="flex flex-col"> */}
-          {/* <p className="text-white font-bold">
-              Ultrafast, in the same tab, right when you need it.
-            </p> */}
-          {/* <p className="text-[#40C969] mb-8">
-              Potential Savings: <b>1 hr / classification</b>
-            </p> */}
-          {/* </div> */}
         </div>
       </div>
 
-      <div>
+      <div className="mx-6">
         <div className="grid grid-cols-3 lg:flex justify-between px-2 gap-4 max-w-3xl mx-auto mb-8">
           {features.map((feature) => (
             <div
@@ -231,13 +181,18 @@ const FeaturesListicle = () => {
                 if (!hasClicked) setHasClicked(true);
                 setFeatureSelected(feature.name);
               }}
-              className={`flex flex-col items-center justify-center gap-3 select-none cursor-pointer p-2 duration-200 group`}
+              className={classNames(
+                "flex flex-col items-center justify-center gap-3 p-2 duration-100 group rounded-lg",
+                featureSelected === feature.name
+                  ? "bg-[#40C969]/20 scale-[1.03]"
+                  : "bg-neutral-100/10 shadow-md shadow-[#40C969]/30 hover:shadow-[#40C969]/50 hover:scale-[1.03]"
+              )}
             >
               <span
                 className={`duration-100 shrink-0 ${
                   featureSelected === feature.name
                     ? "text-[#40C969]"
-                    : "text-base-content/30 group-hover:text-gray-300"
+                    : "text-base-content/60 group-hover:text-white"
                 }`}
               >
                 {feature.svg}
@@ -246,7 +201,7 @@ const FeaturesListicle = () => {
                 className={`font-semibold text-sm text-center ${
                   featureSelected === feature.name
                     ? "text-[#40C969]"
-                    : "text-base-content/50 group-hover:text-gray-300"
+                    : "text-base-content/60 group-hover:text-white"
                 }`}
               >
                 {feature.name}
