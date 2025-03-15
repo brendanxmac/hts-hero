@@ -1,6 +1,7 @@
 import config from "@/config";
 import ButtonCheckout from "./ButtonCheckout";
 import { classNames } from "../utilities/style";
+import CheckSVG from "./svg/CheckSVG";
 
 // <Pricing/> displays the pricing plans for your app
 // It's your Stripe config in config.js.stripe.plans[] that will be used to display the plans
@@ -9,26 +10,12 @@ import { classNames } from "../utilities/style";
 const Pricing = () => {
   return (
     <section className="bg-neutral-900 overflow-hidden" id="pricing">
-      <div className="py-24 px-8 max-w-5xl mx-auto">
+      <div className="py-24 px-8 max-w-7xl mx-auto">
         <div className="flex flex-col text-center w-full mb-20">
           <p className="font-medium text-primary mb-8">Pricing</p>
-          <h2 className="font-bold text-3xl sm:text-4xl md:text-5xl tracking-relaxed">
-            The Intelligent Classification Assistant
-            {/* 2x your Classifications Today! */}
-            {/* 2x your Classifications Today */}
-            {/* Autocomplete for Classifications */}
-            {/* Experts Deserve Great Tools */}
-            {/* <br /> Classify Quicker with Autocomplete */}
-            {/*  */}
-            {/* Classify without the headaches */}
-            {/* Accurate codes fast, without the headaches */}
-            {/* Get your codes faster & cheaper, without the headaches! */}
+          <h2 className="font-bold text-3xl sm:text-4xl md:text-5xl max-w-3xl mx-auto tracking-relaxed">
+            Save hours on classifications, for less than your daily coffee
           </h2>
-          <p className="font-medium text-[#40C969] mt-5">
-            {/* All yours for less than the price of a single classification  */}
-            {/* Supercharge your workflow for less than a single classification */}
-            Save hours on classification, for less than your daily coffee
-          </p>
         </div>
 
         <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8">
@@ -78,15 +65,23 @@ const Pricing = () => {
                       </p>
                     </div>
                   )}
-                  <p className={`text-5xl tracking-tight font-extrabold`}>
-                    ${plan.price}
-                  </p>
-                  <div className="flex flex-col justify-center pt-1 mb-[4px]">
-                    <p className="text-xs text-base-content/40">USD</p>
-                    <p className="text-sm text-base-content font-bold">
-                      per month
+                  {plan.price === 0 ? (
+                    <p className={`text-4xl tracking-tight font-extrabold`}>
+                      Free
                     </p>
-                  </div>
+                  ) : (
+                    <>
+                      <p className={`text-5xl tracking-tight font-extrabold`}>
+                        ${plan.price}
+                      </p>
+                      <div className="flex flex-col justify-center pt-1 mb-[4px]">
+                        <p className="text-xs text-base-content/40">USD</p>
+                        <p className="text-sm text-base-content font-bold">
+                          per month
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </div>
                 {plan.features && (
                   <ul className="space-y-4 leading-relaxed text-base flex-1">
@@ -96,7 +91,7 @@ const Pricing = () => {
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 20 20"
                           fill="currentColor"
-                          className="w-[18px] h-[18px] opacity-80 shrink-0 items-end"
+                          className="w-[18px] h-[18px] opacity-80 shrink-0"
                         >
                           <path
                             fillRule="evenodd"
@@ -117,10 +112,6 @@ const Pricing = () => {
                 )}
                 <div className="space-y-2">
                   <ButtonCheckout priceId={plan.priceId} />
-
-                  {/* <p className="flex items-center justify-center gap-2 text-xs text-center text-base-content/80 relative">
-                    Prices in USD
-                  </p> */}
                 </div>
               </div>
             </div>

@@ -1,33 +1,33 @@
 "use client";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import AboutHeader from "./AboutHeader";
 import AboutHero from "./AboutHero";
 import AboutProblem from "./AboutProblem";
-import AboutFeaturesAccordion from "./AboutFeaturesAccordion";
 import AboutFAQ from "./AboutFAQ";
 import AboutCTA from "./AboutCTA";
 import AboutFooter from "./AboutFooter";
-import WithWithout from "../../components/WithWithout";
-import Tabs from "../../components/Tabs";
 import FeaturesListicle from "../../components/FeaturesListicle";
-import FeaturesGrid from "../../components/FeaturesGrid";
-import { Features } from "../../components/Features";
 import Pricing from "../../components/Pricing";
-
+import Register from "../../components/Register";
 export default function Home() {
+  const [isRegisterOpen, setIsRegisterOpen] = useState(true);
   return (
     <>
       <Suspense>
         <AboutHeader />
       </Suspense>
       <main>
-        <AboutHero />
+        <Register
+          isOpen={isRegisterOpen}
+          onClose={() => setIsRegisterOpen(false)}
+        />
+        <AboutHero setIsRegisterOpen={setIsRegisterOpen} />
         <AboutProblem />
         {/* <WithWithout /> */}
         <FeaturesListicle />
         <Pricing />
-        <AboutCTA />
         <AboutFAQ />
+        <AboutCTA />
       </main>
       <AboutFooter />
     </>
