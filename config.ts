@@ -1,5 +1,5 @@
 import themes from "daisyui/src/theming/themes";
-import { ConfigProps, DaisyTheme } from "./types/config";
+import { ConfigProps, DaisyTheme, PricingPlan } from "./types/config";
 
 const config = {
   // REQUIRED
@@ -22,7 +22,7 @@ const config = {
         // REQUIRED — we use this to find the plan in the webhook (for instance if you want to update the user's credits based on the plan)
         priceId: process.env.NODE_ENV === "development" ? "lol" : "haha",
         //  REQUIRED - Name of the plan, displayed on the pricing page
-        name: "Starter",
+        name: PricingPlan.Starter,
         // A friendly description of the plan, displayed on the pricing page. Tip: explain why this plan and not others
         description:
           "Get access to the enhanced HTS navigation tool designed for experts", // & based on the USITC
@@ -51,7 +51,7 @@ const config = {
             ? "price_1Niyy5AxyNprDp7iZIqEyD2h"
             : "price_456",
         //  REQUIRED - Name of the plan, displayed on the pricing page
-        name: "Standard",
+        name: PricingPlan.Standard,
         // A friendly description of the plan, displayed on the pricing page. Tip: explain why this plan and not others
         description: "No more looking up notes, rulings, or references.",
         // The price you want to display, the one user will be charged on Stripe.
@@ -80,7 +80,7 @@ const config = {
             : "price_456",
         // This plan will look different on the pricing page, it will be highlighted. You can only have one plan with isFeatured: true
         isFeatured: true,
-        name: "Pro",
+        name: PricingPlan.Pro,
         // Your Personal Classification Assistant
         // Autocomplete for Classifiers
         description: "Your Personal Classification Assistant",

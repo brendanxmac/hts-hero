@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import AboutHeader from "./AboutHeader";
 import AboutHero from "./AboutHero";
 import AboutProblem from "./AboutProblem";
@@ -9,8 +9,23 @@ import AboutFooter from "./AboutFooter";
 import FeaturesListicle from "../../components/FeaturesListicle";
 import Pricing from "../../components/Pricing";
 import Register from "../../components/Register";
+import { RegistrationTrigger } from "../../libs/early-registration";
 export default function Home() {
-  const [isRegisterOpen, setIsRegisterOpen] = useState(true);
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [registrationTrigger, setRegistrationTrigger] =
+    useState<RegistrationTrigger>();
+
+  useEffect(() => {
+    console.log("registrationTrigger", registrationTrigger);
+  }, [registrationTrigger]);
+
+  useEffect(() => {
+    console.log("window.name", window.name);
+    if (!window.name) {
+      window.name = crypto.randomUUID(); // Generate a unique ID
+    }
+  }, []);
+
   return (
     <>
       <Suspense>
@@ -18,16 +33,29 @@ export default function Home() {
       </Suspense>
       <main>
         <Register
+          triggerButton={registrationTrigger}
           isOpen={isRegisterOpen}
           onClose={() => setIsRegisterOpen(false)}
         />
-        <AboutHero setIsRegisterOpen={setIsRegisterOpen} />
+        <AboutHero
+          setIsRegisterOpen={setIsRegisterOpen}
+          setRegistrationTrigger={setRegistrationTrigger}
+        />
         <AboutProblem />
         {/* <WithWithout /> */}
-        <FeaturesListicle />
-        <Pricing />
+        <FeaturesListicle
+          setIsRegisterOpen={setIsRegisterOpen}
+          setRegistrationTrigger={setRegistrationTrigger}
+        />
+        <Pricing
+          setIsRegisterOpen={setIsRegisterOpen}
+          setRegistrationTrigger={setRegistrationTrigger}
+        />
         <AboutFAQ />
-        <AboutCTA />
+        <AboutCTA
+          setIsRegisterOpen={setIsRegisterOpen}
+          setRegistrationTrigger={setRegistrationTrigger}
+        />
       </main>
       <AboutFooter />
     </>

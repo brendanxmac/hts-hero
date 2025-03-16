@@ -1,7 +1,16 @@
 import config from "@/config";
 import Link from "next/link";
+import { RegistrationTrigger } from "@/libs/early-registration";
 
-const AboutCTA = () => {
+interface AboutCTAProps {
+  setIsRegisterOpen: (isOpen: boolean) => void;
+  setRegistrationTrigger: (trigger: RegistrationTrigger) => void;
+}
+
+const AboutCTA = ({
+  setIsRegisterOpen,
+  setRegistrationTrigger,
+}: AboutCTAProps) => {
   return (
     <section className="hero overflow-hidden min-h-[75vh]">
       <div className="relative hero-overlay bg-neutral-900"></div>
@@ -16,12 +25,15 @@ const AboutCTA = () => {
             <br /> Get the intelligent assistant for classifiers.
           </p>
 
-          <Link
+          <button
             className="btn btn-primary bg-white text-black hover:text-white btn-wide rounded-md"
-            href={config.auth.loginUrl}
+            onClick={() => {
+              setIsRegisterOpen(true);
+              setRegistrationTrigger(RegistrationTrigger.cta);
+            }}
           >
             Get {config.appName}
-          </Link>
+          </button>
         </div>
       </div>
     </section>

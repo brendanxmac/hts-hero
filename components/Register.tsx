@@ -2,27 +2,77 @@
 
 import { Dialog } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { useState } from "react";
-import CheckSVG from "./svg/CheckSVG";
-import ToolsSVG from "./svg/ToolsSVG";
+import { useEffect, useState } from "react";
+import {
+  addToEarlyRegistration,
+  RegistrationTrigger,
+} from "../libs/early-registration";
+import { addEarlyRegistrationAttempt } from "../libs/early-registration";
 
 interface RegisterProps {
+  triggerButton: RegistrationTrigger;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export default function Register({ isOpen, onClose }: RegisterProps) {
+export default function Register({
+  triggerButton,
+  isOpen,
+  onClose,
+}: RegisterProps) {
+  const [isRegistered, setIsRegistered] = useState(false);
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (isOpen) {
+      console.log("isOpen", isOpen);
+      addEarlyRegistrationAttempt(window.name, triggerButton);
+    }
+  }, [isOpen]);
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+
+    if (!validateEmail(email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
     setIsSubmitting(true);
 
-    // TODO: Implement your registration logic here
+    // TODO: add source (where the lead came from, if possible)
+    const registrationResponse = await addToEarlyRegistration(
+      window.name,
+      email,
+      triggerButton
+    );
+    console.log("registrationResponse", registrationResponse);
+
+    if (registrationResponse.error) {
+      console.error(
+        "Error registering for early access:",
+        registrationResponse
+      );
+      setError("Error registering for early access");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (registrationResponse.success) {
+      setIsRegistered(true);
+      setIsSubmitting(false);
+    }
 
     setIsSubmitting(false);
-    onClose();
+    // onClose();
   };
 
   return (
@@ -93,17 +143,17 @@ export default function Register({ isOpen, onClose }: RegisterProps) {
                   <li>
                     <div className="flex items-center gap-2 font-semibold">
                       <div className="flex gap-2">
-                        <p className="text-xl">💬</p>
+                        <p className="text-xl">🔑</p>
                         <div className="flex flex-col gap-1">
                           <div className="flex items-center gap-1">
                             <p>
-                              Invite to{" "}
                               <a
-                                className="underline cursor-pointer font-bold"
+                                className="link"
                                 href="https://www.facebook.com/groups/661021869759082"
                               >
                                 HTS Hero Insider
                               </a>{" "}
+                              Access
                             </p>
                             <p className="text-[#40C969]/80 text-xs font-bold">
                               (14 Spots Left)
@@ -119,42 +169,69 @@ export default function Register({ isOpen, onClose }: RegisterProps) {
                     </div>
                   </li>
                 </ul>
-                {/* <p className="text-gray-200">
-                  You'll also recieve early access, product updates, and a
-                </p> */}
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <input
-                    type="email"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full input input-bordered bg-gray-800 text-white placeholder:text-gray-400 border-gray-700 focus:border-[#40C969] transition-colors"
-                    required
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="btn btn-primary bg-[#40C969] hover:bg-[#40C969]/90 text-white w-full border-none rounded-md shadow-lg hover:shadow-sm transition-all"
-                >
-                  {isSubmitting ? (
-                    <span className="loading loading-spinner loading-sm"></span>
-                  ) : (
-                    "Register"
+              {isRegistered ? (
+                <div className="space-y-4 my-10">
+                  <hr className="border-gray-700" />
+                  <p className="text-2xl  font-bold">
+                    🎉 You&apos;re Registered!
+                  </p>
+                  {email && (
+                    <p>
+                      We&apos;ve already sent your welcome email{" "}
+                      {email && `to ${email}`} and will be sure to keep you up
+                      to date with HTS Hero&apos;s progress!
+                    </p>
                   )}
-                </button>
-              </form>
 
-              <p className="text-gray-600 text-xs my-3">
-                We will never spam you or sell your data.
-              </p>
-              {/* <p className="text-gray-200 text-xs my-3">
-                We will rememebr your email and apply the discount if you
-                purchase during launch week
-              </p> */}
+                  <p>
+                    Excited about HTS Hero? Feel free to share us with your
+                    friends or colleagues!
+                  </p>
+
+                  <p>
+                    If you have any questions, please reach out to us at{" "}
+                    <a className="link" href="mailto:support@htshero.com">
+                      support@htshero.com
+                    </a>
+                  </p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <input
+                      type="email"
+                      placeholder="Enter your email"
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        setError("");
+                      }}
+                      className={`w-full input input-bordered bg-gray-800 text-white placeholder:text-gray-400 border-gray-700 focus:border-[#40C969] transition-colors ${
+                        error ? "border-red-500" : ""
+                      }`}
+                    />
+                    {error && (
+                      <p className="text-red-500 text-sm mt-1">{error}</p>
+                    )}
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="btn btn-primary bg-[#40C969] hover:bg-[#40C969]/90 text-white w-full border-none rounded-md shadow-lg hover:shadow-sm transition-all"
+                  >
+                    {isSubmitting ? (
+                      <span className="loading loading-spinner loading-sm"></span>
+                    ) : (
+                      "Register"
+                    )}
+                  </button>
+                  <p className="text-gray-600 text-xs my-3">
+                    We will never spam you or sell your data.
+                  </p>
+                </form>
+              )}
             </div>
           </Dialog.Panel>
         </div>

@@ -9,7 +9,6 @@ import {
   HtsSection,
   HtsSectionAndChapterBase,
   BestCandidatesResponse,
-  RankedDescriptionsResponse,
   BestHeadingEvaluationResponse,
   SimplifiedHtsElement,
   Eval,
