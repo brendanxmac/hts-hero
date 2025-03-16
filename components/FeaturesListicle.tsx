@@ -10,7 +10,8 @@ import LightBulbSVG from "./svg/LightBulbSVG";
 import DocumentCheckSVG from "./svg/DocumentCheckSVG";
 import MoreSVG from "./svg/MoreSVG";
 import { classNames } from "../utilities/style";
-
+import { RegistrationTrigger } from "../libs/early-registration";
+import config from "@/config";
 const features: {
   name: string;
   points: FeaturePoint[];
@@ -147,7 +148,13 @@ const features: {
   },
 ];
 
-const FeaturesListicle = () => {
+const FeaturesListicle = ({
+  setIsRegisterOpen,
+  setRegistrationTrigger,
+}: {
+  setIsRegisterOpen: (isOpen: boolean) => void;
+  setRegistrationTrigger: (trigger: RegistrationTrigger) => void;
+}) => {
   const featuresEndRef = useRef<null>(null);
   const [featureSelected, setFeatureSelected] = useState<string>(
     features[0].name
@@ -209,10 +216,10 @@ const FeaturesListicle = () => {
             </div>
           ))}
         </div>
-        <div className="bg-black">
-          <div className="max-w-3xl mx-auto flex flex-col md:flex-row justify-center md:justify-start md:items-center gap-12">
+        <div className="bg-black max-w-3xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-center md:justify-start md:items-center gap-12">
             <div
-              className="text-base-content/80 leading-relaxed space-y-4 px-8 md:px-0 max-w-3xl animate-opacity"
+              className="text-base-content/80 leading-relaxed space-y-4 max-w-3xl animate-opacity"
               key={featureSelected}
             >
               <h3 className="font-semibold text-base-content text-lg">
@@ -226,6 +233,28 @@ const FeaturesListicle = () => {
               />
             </div>
           </div>
+          <button
+            className="mt-8 btn btn-primary bg-gray-200 text-black hover:text-white btn-wide rounded-md"
+            onClick={() => {
+              const trigger =
+                featureSelected === "Notes & References"
+                  ? RegistrationTrigger.feature_notes
+                  : featureSelected === "CROSS Rulings"
+                  ? RegistrationTrigger.feature_cross_rulings
+                  : featureSelected === "Match Suggestions"
+                  ? RegistrationTrigger.feature_match_suggestions
+                  : featureSelected === "Product Analysis"
+                  ? RegistrationTrigger.feature_product_analysis
+                  : featureSelected === "Report Generation"
+                  ? RegistrationTrigger.feature_report_generation
+                  : RegistrationTrigger.feature_more_features;
+              setIsRegisterOpen(true);
+              setRegistrationTrigger(trigger);
+            }}
+          >
+            Try it free!
+            {/* Get {config.appName} */}
+          </button>
         </div>
       </div>
       {/* Just used to know it's the end of the autoscroll feature (optional, see useEffect) */}

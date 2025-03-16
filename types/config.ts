@@ -67,6 +67,12 @@ export type Theme = "black";
 // | "sunset"
 // | "";
 
+export enum PricingPlan {
+  Starter = "Starter",
+  Standard = "Standard",
+  Pro = "Pro",
+}
+
 export interface ConfigProps {
   appName: string;
   appDescription: string;
@@ -79,7 +85,7 @@ export interface ConfigProps {
     plans: {
       isFeatured?: boolean;
       priceId: string;
-      name: string;
+      name: PricingPlan;
       description?: string;
       price: number;
       priceAnchor?: number;
