@@ -37,7 +37,7 @@ const features: {
         isKey: true,
       },
     ],
-    svg: <DocumentSearchSVG color="#40C969" size={8} viewBox="0 0 24 24" />,
+    svg: <DocumentSearchSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
   {
     name: "CROSS Rulings",
@@ -50,7 +50,7 @@ const features: {
       },
       { point: "~20 min saved", detail: "per classification", isKey: true },
     ],
-    svg: <CheckBadgeSVG color="#40C969" size={8} viewBox="0 0 24 24" />,
+    svg: <CheckBadgeSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
   {
     name: "Match Suggestions",
@@ -71,7 +71,7 @@ const features: {
         isKey: true,
       },
     ],
-    svg: <LightBulbSVG color="#40C969" size={8} viewBox="0 0 24 24" />,
+    svg: <LightBulbSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
   {
     name: "Product Analysis",
@@ -94,7 +94,7 @@ const features: {
         isKey: true,
       },
     ],
-    svg: <PuzzlePieceSVG color="#40C969" size={8} viewBox="0 0 24 24" />,
+    svg: <PuzzlePieceSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
   {
     name: "Report Generation",
@@ -115,7 +115,7 @@ const features: {
         isKey: true,
       },
     ],
-    svg: <DocumentCheckSVG color="#40C969" size={8} viewBox="0 0 24 24" />,
+    svg: <DocumentCheckSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
   {
     name: "And Much More",
@@ -143,7 +143,7 @@ const features: {
         isKey: true,
       },
     ],
-    svg: <MoreSVG color="#40C969" size={8} viewBox="0 0 24 24" />,
+    svg: <MoreSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
 ];
 

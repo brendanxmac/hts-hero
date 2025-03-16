@@ -23,9 +23,9 @@ export default function SVG({
       fill={fill ? "currentColor" : "none"}
       strokeWidth="1.5"
       stroke="currentColor"
-      className={`size-${size || 5} inline shrink-0 opacity-80 text-${
-        color || "white"
-      }`}
+      className={`h-${size || 5} w-${
+        size || 5
+      } inline shrink-0 opacity-80 text-${color || "white"}`}
     >
       {path}
     </svg>

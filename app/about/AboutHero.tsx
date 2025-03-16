@@ -1,6 +1,3 @@
-import config from "@/config";
-import Link from "next/link";
-
 interface AboutHeroProps {
   setIsRegisterOpen: (isOpen: boolean) => void;
 }

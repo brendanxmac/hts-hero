@@ -24,21 +24,22 @@ const config = {
         //  REQUIRED - Name of the plan, displayed on the pricing page
         name: "Starter",
         // A friendly description of the plan, displayed on the pricing page. Tip: explain why this plan and not others
-        description: "Explore the HTS with ease, tailor made for experts.",
+        description:
+          "Get access to the enhanced HTS navigation tool designed for experts", // & based on the USITC
         // The price you want to display, the one user will be charged on Stripe.
         price: 0,
         // If you have an anchor price (i.e. $29) that you want to display crossed out, put it here. Otherwise, leave it empty
         priceAnchor: 50,
         features: [
+          { name: "Easily go from section to 10 digits" },
           {
-            name: "Solves the shortcomings of the USITC website",
+            name: "Click to explore, No PDF's required",
           },
-          {
-            name: "Just click, no PDF downloads required",
-          },
-          { name: "Drill in step by step from section to 10 digits" },
           {
             name: "Jump to referenced elements with a single click",
+          },
+          {
+            name: "Solves the USITC website issues",
           },
           { name: "Free forever for early adopters" },
         ],
@@ -70,7 +71,6 @@ const config = {
             details:
               "See details of 'See Heading 9902.22.84' without searching for it",
           },
-          { name: "HTS Exploration Tailor Made for Experts" },
         ],
       },
       {
@@ -91,8 +91,8 @@ const config = {
             name: "Everything in Standard",
           },
           { name: "Product Analysis" },
-          { name: "Automatic Full Classifications" },
-          { name: "GRI Reasoning for Every Level" },
+          { name: "Automatic Classifications" },
+          { name: "GRI Reasoning for Each Choice" },
           { name: "Best Match Suggestions" },
           { name: "Report Generation" },
         ],
