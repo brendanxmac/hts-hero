@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
       ]);
 
     if (error) {
-      console.error("Error logging search:", error);
+      console.error("Error inserting early registration attempt:", error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 

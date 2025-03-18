@@ -16,8 +16,8 @@ const AboutHero = ({
           Classify Products <span className="text-[#40C969]">In Minutes</span>
         </h1>
         <p className="text-lg text-neutral-400 leading-relaxed">
-          Transform classifications from time-consuming and tedious to
-          effortless and enjoyable... You'll wonder how you did them without it.
+          Transform classifications from time consuming and tedious to
+          effortless and enjoyable with our all-in-one platform.
         </p>
 
         <button

@@ -15,31 +15,25 @@ interface FAQItemProps {
 }
 
 const faqList: FAQItemProps[] = [
-  {
-    question: "What's the price?",
-    answer: (
-      <div className="flex flex-col gap-2">
-        <p className="text-2xl font-bold">Free!</p>
-        <p>
-          While we&apos;re in Beta all usage of HTS Hero is free, but if you
-          feel like helping us out you can share it with anyone who might get
-          some value from it.
-        </p>
-      </div>
-    ),
-  },
+  // {
+  //   question: "What's the price?",
+  //   answer: (
+  //     <div className="flex flex-col gap-2">
+  //       <p className="text-2xl font-bold">Free!</p>
+  //       <p>
+  //         While we&apos;re in Beta all usage of HTS Hero is free, but if you
+  //         feel like helping us out you can share it with anyone who might get
+  //         some value from it.
+  //       </p>
+  //     </div>
+  //   ),
+  // },
   {
     question: "What do I get exactly?",
     answer: (
       <div className="space-y-2 leading-relaxed">
-        After loging in, as long as you have enough credits<sup>*</sup>{" "}
-        you&apos;ll immdeiately have access to the HTS lookup tool & the
-        features mentioned above.
-        <span className="block mt-3 text-xs">
-          <sup>*</sup>Everyone has unlimited credits while we&apos;re in Beta,
-          however there are limits on overall daily usage so I can afford to eat
-          tomorrow 😆.
-        </span>
+        Depending on the plan you choose you&apos;ll immdeiately get access to
+        the all the features & benefits mentioned above in the pricing section.
       </div>
     ),
   },
@@ -47,10 +41,13 @@ const faqList: FAQItemProps[] = [
     question: "How can I get access?",
     answer: (
       <div className="leading-relaxed flex flex-col gap-2">
-        <p>All you need is an account! </p>
-        <button className="btn btn-wide bg-white rounded-md text-black hover:bg-neutral-800 hover:text-white">
+        <p>
+          Register with Google in a few clicks, or recieve a link to your email
+          that will give you instant access.
+        </p>
+        {/* <button className="mt-3 btn btn-wide bg-white rounded-md text-black hover:bg-neutral-800 hover:text-white">
           <Link href={config.auth.loginUrl}>Sign Up Now</Link>
-        </button>
+        </button> */}
       </div>
     ),
   },

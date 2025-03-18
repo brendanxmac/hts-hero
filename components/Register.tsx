@@ -83,7 +83,7 @@ export default function Register({
       {/* Full-screen container for centering */}
       <div className="fixed inset-0 overflow-y-auto">
         <div className="flex min-h-full items-center justify-center p-4">
-          <Dialog.Panel className="w-full max-w-lg transform overflow-hidden rounded-xl bg-gray-900 shadow-gray-400/30 p-4 px-6 text-left align-middle shadow-xl transition-all">
+          <Dialog.Panel className="w-full max-w-lg transform overflow-hidden rounded-xl bg-gray-900 shadow-gray-400/30 p-4 px-6 text-left align-middle shadow-md transition-all border border-gray-700">
             {/* Content */}
             <div className="mt-2">
               <div className="flex items-center justify-between mb-4">
@@ -227,9 +227,9 @@ export default function Register({
                       "Register"
                     )}
                   </button>
-                  <p className="text-gray-600 text-xs my-3">
-                    We will never spam you or sell your data.
-                  </p>
+                  {/* <p className="text-gray-600 text-xs my-3">
+                    100% spam free guarantee
+                  </p> */}
                 </form>
               )}
             </div>
