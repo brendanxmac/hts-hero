@@ -19,7 +19,7 @@ const Pricing = ({
 }: PricingProps) => {
   return (
     <section className="bg-neutral-900 overflow-hidden" id="pricing">
-      <div className="py-24 px-8 max-w-7xl mx-auto">
+      <div className="py-16 px-8 max-w-7xl mx-auto">
         <div className="flex flex-col text-center w-full mb-20">
           <p className="font-medium text-primary mb-8">Pricing</p>
           <h2 className="font-bold text-3xl sm:text-4xl md:text-5xl max-w-3xl mx-auto tracking-relaxed">
@@ -41,7 +41,7 @@ const Pricing = ({
                   <span
                     className={`badge text-xs text-black font-semibold border-0 bg-[#40C969]`}
                   >
-                    POPULAR
+                    SAVE 25%
                   </span>
                 </div>
               )}
@@ -63,12 +63,12 @@ const Pricing = ({
                     )}
                   </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 items-center">
                   {plan.priceAnchor && (
                     <div className="flex flex-col justify-end mb-[4px] text-lg ">
                       <p className="relative">
-                        <span className="absolute bg-base-content h-[1.5px] inset-x-0 top-[53%]"></span>
-                        <span className="text-base-content/80">
+                        <span className="absolute bg-neutral-500 h-[2px] inset-x-0 top-[45%]"></span>
+                        <span className="text-base-content/50 text-xl font-bold">
                           ${plan.priceAnchor}
                         </span>
                       </p>
@@ -80,7 +80,9 @@ const Pricing = ({
                     </p>
                   ) : (
                     <>
-                      <p className={`text-5xl tracking-tight font-extrabold`}>
+                      <p
+                        className={`text-5xl text-base-content tracking-tight font-extrabold`}
+                      >
                         ${plan.price}
                       </p>
                       <div className="flex flex-col justify-center pt-1 mb-[4px]">
@@ -123,6 +125,13 @@ const Pricing = ({
                   {/* TODO: Enable this in the future before go live*/}
                   {/* <ButtonCheckout priceId={plan.priceId} mode="subscription" /> */}
                   <FakeButtonCheckout
+                    text={
+                      plan.name === PricingPlan.Starter
+                        ? "Try Now"
+                        : plan.name === PricingPlan.Standard
+                        ? "Get Standard"
+                        : "Go Pro"
+                    }
                     onClick={() => {
                       const trigger =
                         plan.name === PricingPlan.Starter

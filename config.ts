@@ -25,23 +25,25 @@ const config = {
         name: PricingPlan.Starter,
         // A friendly description of the plan, displayed on the pricing page. Tip: explain why this plan and not others
         description:
-          "Get access to the enhanced HTS navigation tool designed for experts", // & based on the USITC
+          "Access the premium HTS explorer tool designed for classifiers", // & based on the USITC
         // The price you want to display, the one user will be charged on Stripe.
         price: 0,
         // If you have an anchor price (i.e. $29) that you want to display crossed out, put it here. Otherwise, leave it empty
-        priceAnchor: 50,
+        priceAnchor: null,
         features: [
-          { name: "Easily go from section to 10 digits" },
           {
-            name: "Click to explore, No PDF's required",
+            name: "Navigate & Search the HTS with ease",
+          },
+          {
+            name: "Everything in one place, no more finding & downloading PDF's",
           },
           {
             name: "Jump to referenced elements with a single click",
           },
-          {
-            name: "Solves the USITC website issues",
-          },
-          { name: "Free forever for early adopters" },
+          // {
+          //   name: "Ongoing update that improve upon the USITC website issues",
+          // },
+          // { name: "Free forever for early adopters" },
         ],
       },
       {
@@ -57,19 +59,19 @@ const config = {
         // The price you want to display, the one user will be charged on Stripe.
         price: 40,
         // If you have an anchor price (i.e. $29) that you want to display crossed out, put it here. Otherwise, leave it empty
-        priceAnchor: 70,
+        priceAnchor: null,
         features: [
           {
             name: "Everything in Starter",
           },
           {
-            name: "Fetches Related CROSS Rulings",
+            name: "Finds Related CROSS Rulings",
           },
-          { name: "Fetches Relevant Notes" },
+          { name: "Finds Relevant Notes" },
           {
-            name: "Fetches HTS Element References",
+            name: "Finds HTS Element References",
             details:
-              "See details of 'See Heading 9902.22.84' without searching for it",
+              "Get the details of references like 'See Heading 9902.22.84' without searching for it",
           },
         ],
       },
@@ -85,7 +87,7 @@ const config = {
         // Autocomplete for Classifiers
         description: "Your Personal Classification Assistant",
         price: 60,
-        priceAnchor: 100,
+        priceAnchor: 80,
         features: [
           {
             name: "Everything in Standard",
@@ -93,7 +95,10 @@ const config = {
           { name: "Product Analysis" },
           { name: "Automatic Classifications" },
           { name: "GRI Reasoning for Each Choice" },
-          { name: "Best Match Suggestions" },
+          {
+            name: "Best Match Suggestions",
+            details: "Autocomplete for Classifiers",
+          },
           { name: "Report Generation" },
         ],
       },

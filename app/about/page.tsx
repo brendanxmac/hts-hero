@@ -16,11 +16,6 @@ export default function Home() {
     useState<RegistrationTrigger>();
 
   useEffect(() => {
-    console.log("registrationTrigger", registrationTrigger);
-  }, [registrationTrigger]);
-
-  useEffect(() => {
-    console.log("window.name", window.name);
     if (!window.name) {
       window.name = crypto.randomUUID(); // Generate a unique ID
     }

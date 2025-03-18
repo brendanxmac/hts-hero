@@ -26,11 +26,12 @@ const features: {
       },
       {
         point:
-          "Fetches details of references that are missing links in the HTS",
+          "Fetches the details of references with missing links in the HTS",
         detail: `e.g. "See heading 9902.22.84" or "Articles of heading 4601"`,
       },
       {
-        point: "Can sumarize complex passages for easy comprehension",
+        point:
+          "Can summarize complex or lengthy passages for easy understanding",
       },
       {
         point: "~10 minutes saved",
@@ -44,10 +45,11 @@ const features: {
     name: "CROSS Rulings",
     points: [
       {
-        point: "Fetches relevant CROSS Rulings for reference",
+        point: "Fetches CROSS rulings related to the item you're classifying",
       },
       {
-        point: "Prepares them as attachments for your classification report",
+        point:
+          "Includes them as attachments for your classification report, if desired",
       },
       { point: "~20 min saved", detail: "per classification", isKey: true },
     ],
@@ -57,10 +59,12 @@ const features: {
     name: "Match Suggestions",
     points: [
       {
-        point: "Finds the most probable matches at each classification level",
+        point:
+          "Quickly finds the most likely matches at each classification level",
       },
       {
-        point: "Completes full classifications ready for your review",
+        point:
+          "Completes classifications for you and prepares them for your review",
       },
       {
         point:
@@ -122,27 +126,24 @@ const features: {
     name: "And Much More",
     points: [
       {
-        point:
-          "Trigger automated classifications ahead of time, then review when ready",
-      },
-      {
-        point: "Use a brand new HTS explorer tailor made for experts",
+        point: "A brand new HTS explorer tailor-made for experts",
       },
       {
         point:
-          "Get comprehensive product descriptions from clients without all the back and forth",
+          "Comprehensive product descriptions from clients without all the back and forth",
       },
       {
-        point: "Automatically keep records of all your classifications",
+        point: "Automatic record keeping of all your classifications",
       },
       {
         point:
-          "Save & favorite CROSS rulings and notes for quick reference when needed",
+          "Ability to save & favorite CROSS rulings and notes for quick reference when needed",
       },
-      {
-        point: "Try it free to see for yourself!",
-        isKey: true,
-      },
+      // {
+      //   point:
+      //     "Our mission is to save you hours of time and frustration on classification",
+      //   isKey: true,
+      // },
     ],
     svg: <MoreSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
@@ -171,10 +172,13 @@ const FeaturesListicle = ({
           </h2>
           <div className="text-base-content/80 leading-relaxed mb-3 lg:text-lg">
             {/* 💡 COPY TIP: Explain how your product delivers what you promise in the headline. */}
-            HTS Hero automatically fetches the information you need at each
-            level of classification and suggests the best matches. It greatly
-            reduces classification time by allowing you to focus on making good
-            decisions.
+            Forget fetching notes, references, and CROSS rulings or manually
+            generating reports for your clients. HTS Hero provides you with the
+            information you need to classify quickly with confidence.
+            {/* at each step of classification */}
+            {/* and suggests the best matches based on the GRI. This greatly reduces
+            classification time and labor, freeing you to focus on other parts
+            of your business. */}
           </div>
         </div>
       </div>
@@ -191,14 +195,14 @@ const FeaturesListicle = ({
               className={classNames(
                 "flex flex-col items-center justify-center gap-3 p-2 duration-100 group rounded-lg",
                 featureSelected === feature.name
-                  ? "bg-[#40C969]/20 scale-[1.03]"
-                  : "bg-neutral-100/10 shadow-md shadow-[#40C969]/30 hover:shadow-[#40C969]/50 hover:scale-[1.03]"
+                  ? "bg-[#40C969]/20 scale-[1.03] shadow-lg shadow-[#40C969]/70"
+                  : "bg-neutral-100/10 hover:shadow-[#40C969]/50 hover:shadow-lg hover:scale-[1.03]"
               )}
             >
               <span
                 className={`duration-100 shrink-0 ${
                   featureSelected === feature.name
-                    ? "text-[#40C969]"
+                    ? "text-[#40C969] animate-pulse"
                     : "text-base-content/60 group-hover:text-white"
                 }`}
               >
@@ -207,7 +211,7 @@ const FeaturesListicle = ({
               <p
                 className={`font-semibold text-sm text-center ${
                   featureSelected === feature.name
-                    ? "text-[#40C969]"
+                    ? "text-[#40C969] animate-pulse"
                     : "text-base-content/60 group-hover:text-white"
                 }`}
               >
