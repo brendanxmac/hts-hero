@@ -1,5 +1,5 @@
 import themes from "daisyui/src/theming/themes";
-import { ConfigProps, DaisyTheme } from "./types/config";
+import { ConfigProps, DaisyTheme, PricingPlan } from "./types/config";
 
 const config = {
   // REQUIRED
@@ -20,25 +20,59 @@ const config = {
     plans: [
       {
         // REQUIRED — we use this to find the plan in the webhook (for instance if you want to update the user's credits based on the plan)
+        priceId: process.env.NODE_ENV === "development" ? "lol" : "haha",
+        //  REQUIRED - Name of the plan, displayed on the pricing page
+        name: PricingPlan.Starter,
+        // A friendly description of the plan, displayed on the pricing page. Tip: explain why this plan and not others
+        description:
+          "Access the premium HTS explorer tool designed for classifiers", // & based on the USITC
+        // The price you want to display, the one user will be charged on Stripe.
+        price: 0,
+        // If you have an anchor price (i.e. $29) that you want to display crossed out, put it here. Otherwise, leave it empty
+        priceAnchor: null,
+        features: [
+          {
+            name: "Navigate & Search the HTS with ease",
+          },
+          {
+            name: "Everything in one place, no more finding & downloading PDF's",
+          },
+          {
+            name: "Jump to referenced elements with a single click",
+          },
+          // {
+          //   name: "Ongoing update that improve upon the USITC website issues",
+          // },
+          // { name: "Free forever for early adopters" },
+        ],
+      },
+      {
+        // REQUIRED — we use this to find the plan in the webhook (for instance if you want to update the user's credits based on the plan)
         priceId:
           process.env.NODE_ENV === "development"
             ? "price_1Niyy5AxyNprDp7iZIqEyD2h"
             : "price_456",
         //  REQUIRED - Name of the plan, displayed on the pricing page
-        name: "Starter",
+        name: PricingPlan.Standard,
         // A friendly description of the plan, displayed on the pricing page. Tip: explain why this plan and not others
-        description: "Perfect for small projects",
+        description: "No more looking up notes, rulings, or references.",
         // The price you want to display, the one user will be charged on Stripe.
-        price: 99,
+        price: 40,
         // If you have an anchor price (i.e. $29) that you want to display crossed out, put it here. Otherwise, leave it empty
-        priceAnchor: 149,
+        priceAnchor: null,
         features: [
           {
-            name: "NextJS boilerplate",
+            name: "Everything in Starter",
           },
-          { name: "User oauth" },
-          { name: "Database" },
-          { name: "Emails" },
+          {
+            name: "Finds Related CROSS Rulings",
+          },
+          { name: "Finds Relevant Notes" },
+          {
+            name: "Finds HTS Element References",
+            details:
+              "Get the details of references like 'See Heading 9902.22.84' without searching for it",
+          },
         ],
       },
       {
@@ -48,19 +82,30 @@ const config = {
             : "price_456",
         // This plan will look different on the pricing page, it will be highlighted. You can only have one plan with isFeatured: true
         isFeatured: true,
-        name: "Advanced",
-        description: "You need more power",
-        price: 149,
-        priceAnchor: 299,
+        name: PricingPlan.Pro,
+        // Your Personal Classification Assistant
+        // Autocomplete for Classifiers
+        description: "Your Personal Classification Assistant",
+        price: 60,
+        priceAnchor: 80,
         features: [
           {
-            name: "NextJS boilerplate",
+            name: "Everything in Standard",
           },
-          { name: "User oauth" },
-          { name: "Database" },
-          { name: "Emails" },
-          { name: "1 year of updates" },
-          { name: "24/7 support" },
+          { name: "Product Analysis" },
+          { name: "Automatic Classifications" },
+          { name: "GRI Reasoning for Each Choice" },
+          {
+            name: "Best Match Suggestions",
+            details: "Autocomplete for Classifiers",
+          },
+          { name: "Report Generation" },
+          {
+            name: "Tariff Finder",
+            details:
+              "Get the tariff for your classification based on the country of origin",
+            comingSoon: true,
+          },
         ],
       },
     ],

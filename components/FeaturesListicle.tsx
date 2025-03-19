@@ -2,506 +2,263 @@
 
 import { useState, useEffect, useRef } from "react";
 import type { JSX } from "react";
-
-// List of features to display:
-// - name: name of the feature
-// - description: description of the feature (can be any JSX)
-// - svg: icon of the feature
+import PuzzlePieceSVG from "./svg/PuzzlePieceSVG";
+import { FeaturePoint, FeaturePoints } from "./FeaturePoints";
+import CheckBadgeSVG from "./svg/CheckBadgeSVG";
+import DocumentSearchSVG from "./svg/DocumentSearchSVG";
+import LightBulbSVG from "./svg/LightBulbSVG";
+import DocumentCheckSVG from "./svg/DocumentCheckSVG";
+import MoreSVG from "./svg/MoreSVG";
+import { classNames } from "../utilities/style";
+import { RegistrationTrigger } from "../libs/early-registration";
+import config from "@/config";
 const features: {
   name: string;
-  description: JSX.Element;
+  points: FeaturePoint[];
   svg: JSX.Element;
 }[] = [
   {
-    name: "Emails",
-    description: (
-      <>
-        <ul className="space-y-1">
-          {[
-            "Send transactional emails",
-            "DNS setup to avoid spam folder (DKIM, DMARC, SPF in subdomain)",
-            "Webhook to receive & forward emails",
-          ].map((item) => (
-            <li key={item} className="flex items-center gap-3">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="w-[18px] h-[18px] inline shrink-0 opacity-80"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                  clipRule="evenodd"
-                />
-              </svg>
-
-              {item}
-            </li>
-          ))}
-          <li className="flex items-center gap-3 text-accent font-medium">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="w-[18px] h-[18px] inline shrink-0"
-            >
-              <path
-                fillRule="evenodd"
-                d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Time saved: 2 hours
-          </li>
-        </ul>
-      </>
-    ),
-    svg: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={1.5}
-        stroke="currentColor"
-        className="w-8 h-8"
-      >
-        <path
-          strokeLinecap="round"
-          d="M16.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zm0 0c0 1.657 1.007 3 2.25 3S21 13.657 21 12a9 9 0 10-2.636 6.364M16.5 12V8.25"
-        />
-      </svg>
-    ),
+    name: "Notes & References",
+    points: [
+      {
+        point: "Finds any notes that might impact your classification",
+        detail: "General, Section, Chapter, Subheading, etc...",
+      },
+      {
+        point:
+          "Fetches the details of references with missing links in the HTS",
+        detail: `e.g. "See heading 9902.22.84" or "Articles of heading 4601"`,
+      },
+      {
+        point:
+          "Can summarize complex or lengthy passages for easy understanding",
+      },
+      {
+        point: "~10 minutes saved",
+        detail: "per classification",
+        isKey: true,
+      },
+    ],
+    svg: <DocumentSearchSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
   {
-    name: "Payments",
-    description: (
-      <>
-        <ul className="space-y-2">
-          {[
-            "Create checkout sessions",
-            "Handle webhooks to update user's account",
-            "Tips to setup your account & reduce chargebacks",
-          ].map((item) => (
-            <li key={item} className="flex items-center gap-3">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="w-[18px] h-[18px] inline shrink-0 opacity-80"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                  clipRule="evenodd"
-                />
-              </svg>
-
-              {item}
-            </li>
-          ))}
-          <li className="flex items-center gap-3 text-accent font-medium">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="w-[18px] h-[18px] inline shrink-0"
-            >
-              <path
-                fillRule="evenodd"
-                d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Time saved: 2 hours
-          </li>
-        </ul>
-      </>
-    ),
-    svg: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={1.5}
-        stroke="currentColor"
-        className="w-8 h-8"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"
-        />
-      </svg>
-    ),
+    name: "CROSS Rulings",
+    points: [
+      {
+        point: "Fetches CROSS rulings related to the item you're classifying",
+      },
+      {
+        point:
+          "Includes them as attachments for your classification report, if desired",
+      },
+      { point: "~20 min saved", detail: "per classification", isKey: true },
+    ],
+    svg: <CheckBadgeSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
   {
-    name: "Login",
-    description: (
-      <>
-        <ul className="space-y-2">
-          {[
-            "Magic links setup",
-            "Login with Google walkthrough",
-            "Save user data in MongoDB",
-            "Private/protected pages & API calls",
-          ].map((item) => (
-            <li key={item} className="flex items-center gap-3">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="w-[18px] h-[18px] inline shrink-0 opacity-80"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                  clipRule="evenodd"
-                />
-              </svg>
-
-              {item}
-            </li>
-          ))}
-          <li className="flex items-center gap-3 text-accent font-medium">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="w-[18px] h-[18px] inline shrink-0"
-            >
-              <path
-                fillRule="evenodd"
-                d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Time saved: 3 hours
-          </li>
-        </ul>
-      </>
-    ),
-    svg: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={1.5}
-        stroke="currentColor"
-        className="w-8 h-8"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z"
-        />
-      </svg>
-    ),
+    name: "Match Suggestions",
+    points: [
+      {
+        point:
+          "Quickly finds the most likely matches at each classification level",
+      },
+      {
+        point:
+          "Completes classifications for you and prepares them for your review",
+      },
+      {
+        point:
+          "Provides reasoning for each choice based on the GRI & Additional US Rules",
+      },
+      {
+        point: "Up to 30 minutes saved",
+        detail: "per classification",
+        isKey: true,
+      },
+    ],
+    svg: <LightBulbSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
   {
-    name: "Database",
-    description: (
-      <>
-        <ul className="space-y-2">
-          {["Mongoose schema", "Mongoose plugins to make your life easier"].map(
-            (item) => (
-              <li key={item} className="flex items-center gap-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  className="w-[18px] h-[18px] inline shrink-0 opacity-80"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-
-                {item}
-              </li>
-            )
-          )}
-          <li className="flex items-center gap-3 text-accent font-medium">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="w-[18px] h-[18px] inline shrink-0"
-            >
-              <path
-                fillRule="evenodd"
-                d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Time saved: 2 hours
-          </li>
-        </ul>
-      </>
-    ),
-    svg: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={1.5}
-        stroke="currentColor"
-        className="w-8 h-8"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"
-        />
-      </svg>
-    ),
+    name: "Product Analysis",
+    points: [
+      {
+        point: "Composition Analysis",
+        // detail: "Finds the ratios of each element of the product",
+      },
+      {
+        point: "Essential Character Analysis",
+        // detail: "GRI 3(b)",
+      },
+      {
+        point: "Primary Use Analysis",
+        // detail: "Additional US Rules",
+      },
+      {
+        point: "~10 minutes saved",
+        detail: "per classification",
+        isKey: true,
+      },
+    ],
+    svg: <PuzzlePieceSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
   {
-    name: "SEO",
-    description: (
-      <>
-        <ul className="space-y-2">
-          {[
-            "All meta tags to rank on Google",
-            "OpenGraph tags to share on social media",
-            "Automated sitemap generation to fasten Google indexing",
-            "Structured data markup for Rich Snippets",
-            "SEO-optimized UI components",
-          ].map((item) => (
-            <li key={item} className="flex items-center gap-3">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="w-[18px] h-[18px] inline shrink-0 opacity-80"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                  clipRule="evenodd"
-                />
-              </svg>
-
-              {item}
-            </li>
-          ))}
-          <li className="flex items-center gap-3 text-accent font-medium">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="w-[18px] h-[18px] inline shrink-0"
-            >
-              <path
-                fillRule="evenodd"
-                d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Time saved: 6 hours
-          </li>
-        </ul>
-      </>
-    ),
-    svg: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={1.5}
-        stroke="currentColor"
-        className="w-8 h-8"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9zm3.75 11.625a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"
-        />
-      </svg>
-    ),
+    name: "Report Generation",
+    points: [
+      {
+        point: "Generates classification reports for your clients",
+      },
+      {
+        point:
+          "Includes reasoning and a detailed breakdown just like CROSS rulings",
+      },
+      {
+        point: "Lets you easily choose which reasoning should be included",
+      },
+      {
+        point: "~20 minutes saved",
+        detail: "per classification",
+        isKey: true,
+      },
+    ],
+    svg: <DocumentCheckSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
   {
-    name: "Style",
-    description: (
-      <>
-        <ul className="space-y-2">
-          {[
-            "Components, animations & sections (like the pricing page below)",
-            "20+ themes with daisyUI",
-            "Automatic dark mode",
-          ].map((item) => (
-            <li key={item} className="flex items-center gap-3">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="w-[18px] h-[18px] inline shrink-0 opacity-80"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                  clipRule="evenodd"
-                />
-              </svg>
-
-              {item}
-            </li>
-          ))}
-          <li className="flex items-center gap-3 text-accent font-medium">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="w-[18px] h-[18px] inline shrink-0"
-            >
-              <path
-                fillRule="evenodd"
-                d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Time saved: 5 hours
-          </li>
-        </ul>
-      </>
-    ),
-    svg: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={1.5}
-        stroke="currentColor"
-        className="w-8 h-8"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"
-        />
-      </svg>
-    ),
+    name: "And Much More",
+    points: [
+      {
+        point: "A brand new HTS explorer tailor-made for experts",
+      },
+      {
+        point:
+          "Comprehensive product descriptions from clients without all the back and forth",
+      },
+      {
+        point: "Automatic record keeping of all your classifications",
+      },
+      {
+        point:
+          "Ability to save & favorite CROSS rulings and notes for quick reference when needed",
+      },
+      // {
+      //   point:
+      //     "Our mission is to save you hours of time and frustration on classification",
+      //   isKey: true,
+      // },
+    ],
+    svg: <MoreSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
 ];
 
-// A list of features with a listicle style.
-// - Click on a feature to display its description.
-// - Good to use when multiples features are available.
-// - Autoscroll the list of features (optional).
-const FeaturesListicle = () => {
+const FeaturesListicle = ({
+  setIsRegisterOpen,
+  setRegistrationTrigger,
+}: {
+  setIsRegisterOpen: (isOpen: boolean) => void;
+  setRegistrationTrigger: (trigger: RegistrationTrigger) => void;
+}) => {
   const featuresEndRef = useRef<null>(null);
   const [featureSelected, setFeatureSelected] = useState<string>(
     features[0].name
   );
   const [hasClicked, setHasClicked] = useState<boolean>(false);
 
-  // (Optional) Autoscroll the list of features so user know it's interactive.
-  // Stop scrolling when user scroll after the featuresEndRef element (end of section)
-  // emove useEffect is not needed.
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (!hasClicked) {
-        const index = features.findIndex(
-          (feature) => feature.name === featureSelected
-        );
-        const nextIndex = (index + 1) % features.length;
-        setFeatureSelected(features[nextIndex].name);
-      }
-    }, 5000);
-
-    try {
-      // stop the interval when the user scroll after the featuresRef element
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            console.log("STOP AUTO CHANGE");
-            clearInterval(interval);
-          }
-        },
-        {
-          root: null,
-          rootMargin: "0px",
-          threshold: 0.5,
-        }
-      );
-      if (featuresEndRef.current) {
-        observer.observe(featuresEndRef.current);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-
-    return () => clearInterval(interval);
-  }, [featureSelected, hasClicked]);
-
   return (
     <section className="py-24" id="features">
       <div className="max-w-3xl mx-auto">
-        <div className="bg-base-100 max-md:px-8 max-w-3xl">
-          <p className="text-accent font-medium text-sm font-mono mb-3">
-            {/* Pure decoration, you can remove it */}
-            const launch_time = &quot;Today&quot;;
-          </p>
-          <h2 className="font-extrabold text-3xl lg:text-5xl tracking-tight mb-8">
+        <div className="bg-base-100 max-md:px-8 max-w-3xl mb-8">
+          <h2 className="font-extrabold text-4xl md:text-5xl tracking-tight mb-5">
             {/* 💡 COPY TIP: Remind visitors about the value of your product. Why do they need it? */}
-            Supercharge your app instantly, launch faster, make $
+            Supercharge your Classifications
           </h2>
-          <div className="text-base-content/80 leading-relaxed mb-8 lg:text-lg">
+          <div className="text-base-content/80 leading-relaxed mb-3 lg:text-lg">
             {/* 💡 COPY TIP: Explain how your product delivers what you promise in the headline. */}
-            Login users, process payments and send emails at lightspeed. Spend
-            your time building your startup, not integrating APIs. ShipFast
-            provides you with the boilerplate code you need to launch, FAST.
+            Forget fetching notes, references, and CROSS rulings or manually
+            generating reports for your clients. HTS Hero provides you with the
+            information you need to classify quickly with confidence.
+            {/* at each step of classification */}
+            {/* and suggests the best matches based on the GRI. This greatly reduces
+            classification time and labor, freeing you to focus on other parts
+            of your business. */}
           </div>
         </div>
       </div>
 
-      <div>
-        <div className="grid grid-cols-4 md:flex justify-start gap-4 md:gap-12 max-md:px-8 max-w-3xl mx-auto mb-8">
+      <div className="mx-6">
+        <div className="grid grid-cols-3 lg:flex justify-between px-2 gap-4 max-w-3xl mx-auto mb-8">
           {features.map((feature) => (
-            <span
+            <div
               key={feature.name}
               onClick={() => {
                 if (!hasClicked) setHasClicked(true);
                 setFeatureSelected(feature.name);
               }}
-              className={`flex flex-col items-center justify-center gap-3 select-none cursor-pointer p-2 duration-200 group`}
+              className={classNames(
+                "flex flex-col items-center justify-center gap-3 p-2 duration-100 group rounded-lg",
+                featureSelected === feature.name
+                  ? "bg-[#40C969]/20 scale-[1.03] shadow-lg shadow-[#40C969]/70"
+                  : "bg-neutral-100/10 hover:shadow-[#40C969]/50 hover:shadow-lg hover:scale-[1.03]"
+              )}
             >
               <span
-                className={`duration-100 ${
+                className={`duration-100 shrink-0 ${
                   featureSelected === feature.name
-                    ? "text-primary"
-                    : "text-base-content/30 group-hover:text-base-content/50"
+                    ? "text-[#40C969] animate-pulse"
+                    : "text-base-content/60 group-hover:text-white"
                 }`}
               >
                 {feature.svg}
               </span>
-              <span
-                className={`font-semibold text-sm ${
+              <p
+                className={`font-semibold text-sm text-center ${
                   featureSelected === feature.name
-                    ? "text-primary"
-                    : "text-base-content/50"
+                    ? "text-[#40C969] animate-pulse"
+                    : "text-base-content/60 group-hover:text-white"
                 }`}
               >
                 {feature.name}
-              </span>
-            </span>
+              </p>
+            </div>
           ))}
         </div>
-        <div className="bg-base-200">
-          <div className="max-w-3xl mx-auto flex flex-col md:flex-row justify-center md:justify-start md:items-center gap-12">
+        <div className="bg-black max-w-3xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-center md:justify-start md:items-center gap-12">
             <div
-              className="text-base-content/80 leading-relaxed space-y-4 px-12 md:px-0 py-12 max-w-xl animate-opacity"
+              className="text-base-content/80 leading-relaxed space-y-4 max-w-3xl animate-opacity"
               key={featureSelected}
             >
               <h3 className="font-semibold text-base-content text-lg">
                 {features.find((f) => f.name === featureSelected)["name"]}
               </h3>
 
-              {features.find((f) => f.name === featureSelected)["description"]}
+              <FeaturePoints
+                points={
+                  features.find((f) => f.name === featureSelected)["points"]
+                }
+              />
             </div>
           </div>
+          <button
+            className="mt-8 btn btn-primary bg-gray-200 text-black hover:text-white btn-wide rounded-md"
+            onClick={() => {
+              const trigger =
+                featureSelected === "Notes & References"
+                  ? RegistrationTrigger.feature_notes
+                  : featureSelected === "CROSS Rulings"
+                  ? RegistrationTrigger.feature_cross_rulings
+                  : featureSelected === "Match Suggestions"
+                  ? RegistrationTrigger.feature_match_suggestions
+                  : featureSelected === "Product Analysis"
+                  ? RegistrationTrigger.feature_product_analysis
+                  : featureSelected === "Report Generation"
+                  ? RegistrationTrigger.feature_report_generation
+                  : RegistrationTrigger.feature_more_features;
+              setIsRegisterOpen(true);
+              setRegistrationTrigger(trigger);
+            }}
+          >
+            Try it free!
+            {/* Get {config.appName} */}
+          </button>
         </div>
       </div>
       {/* Just used to know it's the end of the autoscroll feature (optional, see useEffect) */}

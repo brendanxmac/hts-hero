@@ -25,3 +25,29 @@ export const copyToClipboard = async (text: string): Promise<void> => {
 export const stripTrailingPeriods = (input: string): string => {
   return input.trim().replace(/\.+$/, "");
 };
+
+export const getMinMaxRangeText = (
+  minMatches?: number,
+  maxMatches?: number
+) => {
+  if (minMatches && maxMatches) {
+    if (minMatches > maxMatches || minMatches === maxMatches) {
+      throw new Error("Min matches must be less than max matches");
+    }
+
+    return `at least ${minMatches}, up to ${maxMatches}`;
+  }
+
+  if (minMatches) {
+    return `at least ${minMatches}`;
+  }
+
+  if (maxMatches) {
+    if (maxMatches === 1) {
+      return "only 1";
+    }
+    return `up to ${maxMatches}`;
+  }
+
+  return "at least 1, up to 3";
+};
