@@ -114,15 +114,7 @@ const AboutFAQ = () => {
             Frequently Asked Questions
           </p>
           <div className="pt-3 text-neutral-400">
-            Have another question? Contact me on{" "}
-            <a
-              className="link text-base-content"
-              target="_blank"
-              href="https://twitter.com/brendanxmac"
-            >
-              Twitter
-            </a>{" "}
-            or by{" "}
+            Have another question? Feel free to drop us an{" "}
             <a
               href="mailto:support@htshero.com"
               target="_blank"
@@ -130,6 +122,7 @@ const AboutFAQ = () => {
             >
               email
             </a>
+            .
           </div>
         </div>
 
