@@ -1,13 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import type { JSX } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "@/app/logo.svg";
 import config from "@/config";
-import ButtonSignin from "../../components/ButtonSignin";
 
 const links: {
   href: string;
@@ -26,8 +24,6 @@ const links: {
     label: "FAQ",
   },
 ];
-
-const cta: JSX.Element = <ButtonSignin extraStyle="btn-primary rounded-md" />;
 
 // A header with a logo on the left, links in the center (like Pricing, etc...), and a CTA (like Get Started or Login) on the right.
 // The header is responsive, and on mobile, the links are hidden behind a burger button.

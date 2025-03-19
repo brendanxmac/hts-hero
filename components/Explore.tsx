@@ -17,10 +17,7 @@ interface Props {
   setProductDescription: Dispatch<SetStateAction<string>>;
 }
 
-export const Explore = ({
-  productDescription,
-  setProductDescription,
-}: Props) => {
+export const Explore = ({ productDescription }: Props) => {
   const [loading, setLoading] = useState(true);
   const [bestChapters, setBestChapters] = useState<number[]>([]);
   const [chapters, setChapters] = useState<ChapterI[]>([]);

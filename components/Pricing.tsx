@@ -2,7 +2,6 @@ import config from "@/config";
 import { classNames } from "../utilities/style";
 import { RegistrationTrigger } from "../libs/early-registration";
 import FakeButtonCheckout from "./FakeButtonCheckout";
-import ButtonCheckout from "./ButtonCheckout";
 import { PricingPlan } from "../types";
 // <Pricing/> displays the pricing plans for your app
 // It's your Stripe config in config.js.stripe.plans[] that will be used to display the plans

@@ -4,7 +4,7 @@ import { PrimaryInformation } from "./PrimaryInformation";
 interface Props {
   number?: string;
   description: string;
-  children?: HtsElement[];
+  childrenElements?: HtsElement[];
   showDetails: boolean;
   setShowDetails: (show: boolean) => void;
 }
@@ -12,7 +12,7 @@ interface Props {
 export const ElementSummary = ({
   number,
   description,
-  children,
+  childrenElements: children,
   showDetails,
   setShowDetails,
 }: Props) => {

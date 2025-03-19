@@ -3,9 +3,6 @@
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 import { useRef, useState } from "react";
 import type { JSX } from "react";
-import config from "@/config";
-import Link from "next/link";
-
 // <FAQ> component is a lsit of <Item> component
 // Just import the FAQ & add your FAQ content to the const faqList arrayy below.
 
