@@ -98,24 +98,53 @@ const Pricing = ({
                   <ul className="space-y-4 leading-relaxed text-base flex-1">
                     {plan.features.map((feature, i) => (
                       <li key={i} className="flex items-start gap-2">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                          className="w-[18px] h-[18px] opacity-80 shrink-0"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
+                        {feature.comingSoon ? (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={1.5}
+                            stroke="currentColor"
+                            className="w-[21px] h-[21px] opacity-80"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                            />
+                          </svg>
+                        ) : (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            className="w-[18px] h-[18px] opacity-80 shrink-0"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        )}
 
                         <div className="flex flex-col -mt-1">
-                          <span>{feature.name} </span>
-                          <span className="text-xs text-gray-400">
+                          <div
+                            className={classNames(
+                              "flex items-center gap-2",
+                              feature.comingSoon && "mb-1"
+                            )}
+                          >
+                            <p>{feature.name} </p>
+                            {feature.comingSoon && (
+                              <span className="bg-neutral-800 px-2 py-1 rounded-md text-stone-300 font-semibold text-xs">
+                                Coming Soon
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs text-gray-400">
                             {feature.details}
-                          </span>
+                          </p>
                         </div>
                       </li>
                     ))}

@@ -92,6 +92,7 @@ export interface ConfigProps {
       features: {
         name: string;
         details?: string;
+        comingSoon?: boolean;
       }[];
     }[];
   };

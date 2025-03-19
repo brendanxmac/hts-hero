@@ -100,6 +100,12 @@ const config = {
             details: "Autocomplete for Classifiers",
           },
           { name: "Report Generation" },
+          {
+            name: "Tariff Finder",
+            details:
+              "Get the tariff for your classification based on the country of origin",
+            comingSoon: true,
+          },
         ],
       },
     ],
