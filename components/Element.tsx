@@ -18,7 +18,7 @@ export const Element = ({ element, chapterElements }: Props) => {
       <ElementSummary
         number={htsno}
         description={description}
-        children={children}
+        childrenElements={children}
         showDetails={showDetails}
         setShowDetails={setShowDetails}
       />

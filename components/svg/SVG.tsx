@@ -1,3 +1,5 @@
+import type { JSX } from "react";
+
 export interface SVGBaseProps extends SVGProps {
   path: JSX.Element;
 }

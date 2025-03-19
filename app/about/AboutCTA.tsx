@@ -1,5 +1,4 @@
 import config from "@/config";
-import Link from "next/link";
 import { RegistrationTrigger } from "@/libs/early-registration";
 
 interface AboutCTAProps {

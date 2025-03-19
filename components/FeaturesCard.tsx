@@ -1,3 +1,5 @@
+import type { JSX } from "react";
+
 export interface FeatureI {
   title: string;
   svg: JSX.Element;
