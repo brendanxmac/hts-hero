@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import { PrimaryHeading } from "./PrimaryLabel";
+import { PrimaryLabel } from "./PrimaryLabel";
 import { Tariff } from "../app/classes/tariff";
 
 interface Props {
@@ -15,7 +15,7 @@ export const TariffSummary = ({
 }: Props) => {
   return (
     <div className="flex justify-between items-center">
-      <PrimaryHeading value="Total Tariff" />
+      <PrimaryLabel value="Total Tariff" />
       {tariff && tariff.temporaryAdjustments.length ? (
         <button
           onClick={() => setShowDetails(!showDetails)}

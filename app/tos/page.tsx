@@ -63,13 +63,13 @@ Welcome to HTS Hero ("we," "us," or "our"). By accessing and using our website (
 
 1. Use of Service
 
-HTS Hero provides an HTS code lookup tool to help users find the appropriate HTS code for their products. Users are free to use the search results at their discretion. However, HTS Hero does not guarantee the accuracy or completeness of the results provided.
+HTS Hero provides tools that help users find the appropriate HTS code for their product(s). Users are welcome to use the platform and the suggestions it provides at their discretion. However, HTS Hero does not guarantee the accuracy or completeness of the results provided.
 
 
-2. Tokens and Payments
+2. Payments
 
-- Tokens are the currency/credit balance required to conduct searches on our platform.
-- All token purchases are final, and tokens cannot be reimbursed or refunded under any circumstances.
+- All purchases are final and cannot be reimbursed or refunded.
+- If you believe you have encountered an error, please contact us at support@htshero.com.
 - Please ensure you review your purchase before completing the transaction.
 
 
@@ -84,15 +84,15 @@ By using our website, you agree to:
 
 We collect and process personal and non-personal data as outlined in our [Privacy Policy](https://htshero.com/privacy-policy). This includes:
 - Personal Information: name, email, payment information, and product descriptions.
-- Non-Personal Information: collected via web cookies.
-
+- Non-Personal Information via browser cookies.
+Non of this data is shared with third parties.
 
 5. Ownership of Content
 
-HTS Hero retains ownership over all content and materials it creates and provides on the platform. This includes the search tool, its outputs, and any proprietary algorithms, systems, or databases used to generate results. All content provided by HTS Hero, including search results, remains the intellectual property of HTS Hero.
+HTS Hero retains ownership over all content and materials it creates and provides on the platform. This includes all tools, their outputs, and any proprietary algorithms, systems, or databases used to generate results. All content provided by HTS Hero, including classification suggestions, remains the intellectual property of HTS Hero.
 
 Your Use Rights:
-Users may use the search results at their discretion for their personal or business purposes, such as applying an HTS code to classify a product. However, this does not grant users ownership of the platform, its systems, or its methodologies.
+Users may use the suggestions at their discretion for their personal or business purposes, such as applying an HTS code to a product. However, this does not grant users ownership of the platform, its systems, or its methodologies.
 
 Limits of Use:
 
