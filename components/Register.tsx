@@ -178,24 +178,31 @@ export default function Register({
                   <p className="text-2xl  font-bold">
                     🎉 You&apos;re Registered!
                   </p>
-                  {email && (
+                  {/* {email && (
                     <p>
-                      We&apos;ve already sent your welcome email{" "}
+                      We&apos;ve sent your welcome email{" "}
                       {email && `to ${email}`} and will be sure to keep you up
                       to date with HTS Hero&apos;s progress!
                     </p>
-                  )}
+                  )} */}
 
                   <p>
-                    Excited about HTS Hero? Feel free to share us with your
-                    friends or colleagues!
+                    Thank you for your interest in HTS Hero! We&apos;re excited
+                    to help you speed up your classifications, and will keep you
+                    up to date on our launch.
                   </p>
 
                   <p>
-                    If you have any questions, please reach out to us at{" "}
+                    In the meantime, feel free to share us with anyone who might
+                    be interested.
+                  </p>
+
+                  <p>
+                    If you have any questions don&apos;t hesitate to contact{" "}
                     <a className="link" href="mailto:support@htshero.com">
-                      support@htshero.com
+                      support
                     </a>
+                    .
                   </p>
                 </div>
               ) : (
