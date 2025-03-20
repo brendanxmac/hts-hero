@@ -9,6 +9,7 @@ import {
   RegistrationTrigger,
 } from "../libs/early-registration";
 import { addEarlyRegistrationAttempt } from "../libs/early-registration";
+import { classNames } from "../utilities/style";
 
 interface RegisterProps {
   triggerButton: RegistrationTrigger;
@@ -23,12 +24,13 @@ export default function Register({
 }: RegisterProps) {
   const [isRegistered, setIsRegistered] = useState(false);
   const [email, setEmail] = useState("");
+  const [jobTitle, setJobTitle] = useState("");
+  const [otherJobTitle, setOtherJobTitle] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (isOpen) {
-      console.log("isOpen", isOpen);
       addEarlyRegistrationAttempt(window.name, triggerButton);
     }
   }, [isOpen]);
@@ -36,6 +38,14 @@ export default function Register({
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
+  };
+
+  const getJobTitle = () => {
+    if (jobTitle === "other") {
+      return otherJobTitle !== "" ? otherJobTitle : "other";
+    }
+
+    return jobTitle;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -53,9 +63,9 @@ export default function Register({
     const registrationResponse = await addToEarlyRegistration(
       window.name,
       email,
-      triggerButton
+      triggerButton,
+      getJobTitle()
     );
-    console.log("registrationResponse", registrationResponse);
 
     if (registrationResponse.error) {
       console.error(
@@ -73,7 +83,6 @@ export default function Register({
     }
 
     setIsSubmitting(false);
-    // onClose();
   };
 
   return (
@@ -104,11 +113,11 @@ export default function Register({
               <div className="mb-6 flex flex-col gap-2">
                 <p className="text-gray-100">
                   We&apos;re finalizing HTS Hero for launch in{" "}
-                  <span className="underline font-bold">May 2025</span>
+                  <span className="underline font-bold">May 2025</span>.
                 </p>
                 <p className="text-gray-100">
-                  To thank you for your patience and early interest, we&apos;d
-                  like to give you something special:
+                  To thank you for your patience and early interest, here&apos;s
+                  a special deal:
                 </p>
               </div>
 
@@ -132,7 +141,7 @@ export default function Register({
                   <li>
                     <div className="flex items-center gap-2 font-semibold">
                       <p className="text-xl">🚀</p>
-                      <span>Free Early Access</span>
+                      <span>Access the Product Before Launch</span>
                     </div>
                   </li>
                   <li>
@@ -188,21 +197,13 @@ export default function Register({
 
                   <p>
                     Thank you for your interest in HTS Hero! We&apos;re excited
-                    to help you speed up your classifications, and will keep you
-                    up to date on our launch.
+                    to help you speed up your classifications.
                   </p>
 
                   <p>
-                    In the meantime, feel free to share us with anyone who might
-                    be interested.
-                  </p>
-
-                  <p>
-                    If you have any questions don&apos;t hesitate to contact{" "}
-                    <a className="link" href="mailto:support@htshero.com">
-                      support
-                    </a>
-                    .
+                    Feel free to share us with anyone who might be interested,
+                    and if you have any feedback just reach out to{" "}
+                    <span className="link">support@htshero.com</span>
                   </p>
                 </div>
               ) : (
@@ -224,6 +225,46 @@ export default function Register({
                       <p className="text-red-500 text-sm mt-1">{error}</p>
                     )}
                   </div>
+                  <div>
+                    <select
+                      value={jobTitle}
+                      onChange={(e) => setJobTitle(e.target.value)}
+                      className={classNames(
+                        jobTitle === "" ? "text-gray-400" : "text-white",
+                        "w-full select select-bordered bg-gray-800 text-sm border-gray-700 focus:border-[#40C969] transition-colors"
+                      )}
+                    >
+                      <option value="" disabled>
+                        Select your job title
+                      </option>
+                      <option value="customs_broker">Customs Broker</option>
+                      <option value="customs_compliance_specialist">
+                        Customs Compliance Specialist
+                      </option>
+                      <option value="import_export_specialist">
+                        Import/Export Specialist
+                      </option>
+                      <option value="trade_compliance_manager">
+                        Trade Compliance Manager
+                      </option>
+                      <option value="trade_analyst">Trade Analyst</option>
+                      <option value="tariff_classification_analyst">
+                        Tariff Classification Analyst
+                      </option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  {jobTitle === "other" && (
+                    <div>
+                      <input
+                        type="text"
+                        placeholder="Enter your job title"
+                        value={otherJobTitle}
+                        onChange={(e) => setOtherJobTitle(e.target.value)}
+                        className="w-full input input-bordered bg-gray-800 text-white placeholder:text-gray-400 border-gray-700 focus:border-[#40C969] transition-colors"
+                      />
+                    </div>
+                  )}
                   <button
                     type="submit"
                     disabled={isSubmitting}
@@ -235,9 +276,6 @@ export default function Register({
                       "Register"
                     )}
                   </button>
-                  {/* <p className="text-gray-600 text-xs my-3">
-                    100% spam free guarantee
-                  </p> */}
                 </form>
               )}
             </div>
