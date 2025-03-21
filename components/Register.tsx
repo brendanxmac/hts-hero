@@ -63,8 +63,8 @@ export default function Register({
     const registrationResponse = await addToEarlyRegistration(
       window.name,
       email,
-      triggerButton,
-      getJobTitle()
+      triggerButton
+      // getJobTitle()
     );
 
     if (registrationResponse.error) {
@@ -113,22 +113,18 @@ export default function Register({
               <div className="mb-6 flex flex-col gap-2">
                 <p className="text-gray-100">
                   We&apos;re finalizing HTS Hero for launch in{" "}
-                  <span className="underline font-bold">May 2025</span>, but
-                  here&apos;s a special deal:
+                  <span className="font-bold">May 2025</span>.
                 </p>
-                {/* <p className="text-gray-100">
-                  To thank you for your patience and early interest, here&apos;s
-                  a special deal:
-                </p> */}
+                <p className="text-gray-100">
+                  Register below to secure our limited-time deal:
+                </p>
               </div>
 
               <div className="flex flex-col gap-4 mb-6">
-                <div>
-                  <h3 className="text-2xl text-white font-bold">
-                    Early Registration Deal{" "}
-                    <span className="text-xs text-gray-400"></span>
-                  </h3>
-                </div>
+                <h3 className="text-2xl text-white font-bold">
+                  Early Registration Deal
+                </h3>
+
                 <ul className="list-none list-inside text-gray-200 space-y-2">
                   <li className="text-[#40C969] font-bold">
                     <div className="flex items-center gap-2">
@@ -157,21 +153,14 @@ export default function Register({
                         <p className="text-xl">🔑</p>
                         <div className="flex flex-col gap-1">
                           <div className="flex items-center gap-2">
-                            <p>
-                              <a
-                                className="link"
-                                href="https://www.facebook.com/groups/661021869759082"
-                              >
-                                HTS Hero Insider
-                              </a>
-                            </p>
-                            <p className="text-[#40C969]/80 text-xs font-bold">
-                              (14 Spots Left)
-                            </p>
+                            <p>HTS Hero Insider Access</p>
                           </div>
                           <p className="text-gray-400 text-xs">
-                            Get the inside scoop on what&apos;s coming next, ask
-                            questions, give feedback, & more!
+                            See what&apos;s coming next, ask questions, give
+                            feedback, & more!{" "}
+                            <span className="text-[#40C969]/80 text-xs font-bold">
+                              (14 Spots Left)
+                            </span>
                           </p>
                         </div>
                       </div>
@@ -210,7 +199,7 @@ export default function Register({
                   <div>
                     <input
                       type="email"
-                      placeholder="Enter your email"
+                      placeholder="Email"
                       value={email}
                       onChange={(e) => {
                         setEmail(e.target.value);
@@ -224,17 +213,17 @@ export default function Register({
                       <p className="text-red-500 text-sm mt-1">{error}</p>
                     )}
                   </div>
-                  <div>
+                  {/* <div>
                     <select
                       value={jobTitle}
                       onChange={(e) => setJobTitle(e.target.value)}
                       className={classNames(
                         jobTitle === "" ? "text-gray-400" : "text-white",
-                        "w-full select select-bordered bg-gray-800 border-gray-700 focus:border-[#40C969] transition-colors"
+                        "w-full select select-bordered bg-gray-800 border-gray-700 focus:border-[#40C969] transition-colors text-base"
                       )}
                     >
                       <option value="" disabled>
-                        Select your job title
+                        Job title (optional)
                       </option>
                       <option value="customs_broker">Customs Broker</option>
                       <option value="customs_compliance_specialist">
@@ -263,7 +252,7 @@ export default function Register({
                         className="w-full input input-bordered bg-gray-800 text-white placeholder:text-gray-400 border-gray-700 focus:border-[#40C969] transition-colors"
                       />
                     </div>
-                  )}
+                  )} */}
                   <button
                     type="submit"
                     disabled={isSubmitting}
