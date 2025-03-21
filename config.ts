@@ -101,7 +101,7 @@ const config = {
           },
           { name: "Report Generation" },
           {
-            name: "Tariff Finder",
+            name: "Tariff Calculator",
             details:
               "Get the tariff for your classification based on the country of origin",
             comingSoon: true,
