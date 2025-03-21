@@ -11,7 +11,7 @@ import DocumentCheckSVG from "./svg/DocumentCheckSVG";
 import MoreSVG from "./svg/MoreSVG";
 import { classNames } from "../utilities/style";
 import { RegistrationTrigger } from "../libs/early-registration";
-import config from "@/config";
+
 const features: {
   name: string;
   points: FeaturePoint[];
@@ -21,18 +21,16 @@ const features: {
     name: "Notes & References",
     points: [
       {
-        point: "Finds any notes that might impact your classification",
+        point: "See the notes that might impact your classification",
         detail: "General, Section, Chapter, Subheading, etc...",
       },
       {
-        point:
-          "Fetches the details of references with missing links in the HTS",
+        point: "See the details of references with missing links in the HTS",
         detail: `e.g. "See heading 9902.22.84" or "Articles of heading 4601"`,
       },
-      {
-        point:
-          "Can summarize complex or lengthy passages for easy understanding",
-      },
+      // {
+      //   point: "Summarize complex or lengthy note for easy understanding",
+      // },
       {
         point: "~10 minutes saved",
         detail: "per classification",
@@ -45,11 +43,11 @@ const features: {
     name: "CROSS Rulings",
     points: [
       {
-        point: "Fetches CROSS rulings related to the item you're classifying",
+        point: "See CROSS rulings related to the item you're classifying",
       },
       {
         point:
-          "Includes them as attachments for your classification report, if desired",
+          "Include rulings as attachments for your classification report, if desired",
       },
       { point: "~20 min saved", detail: "per classification", isKey: true },
     ],
@@ -59,16 +57,14 @@ const features: {
     name: "Match Suggestions",
     points: [
       {
-        point:
-          "Quickly finds the most likely matches at each classification level",
+        point: "See the most likely matches at each classification level",
+      },
+      {
+        point: "Kick off automatic classification, then review when ready",
       },
       {
         point:
-          "Completes classifications for you and prepares them for your review",
-      },
-      {
-        point:
-          "Provides reasoning for each choice based on the GRI & Additional US Rules",
+          "Get reasoning for each choice based on the GRI & Additional US Rules",
       },
       {
         point: "Up to 30 minutes saved",
@@ -164,17 +160,18 @@ const FeaturesListicle = ({
 
   return (
     <section className="py-24" id="features">
-      <div className="max-w-3xl mx-auto">
-        <div className="bg-base-100 max-md:px-8 max-w-3xl mb-8">
-          <h2 className="font-extrabold text-4xl md:text-5xl tracking-tight mb-5">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-base-100 max-md:px-8 max-w-4xl mb-8 md:px-12">
+          <h2 className="font-extrabold text-4xl lg:text-5xl tracking-tight mb-5">
             {/* 💡 COPY TIP: Remind visitors about the value of your product. Why do they need it? */}
             Supercharge your Classifications
           </h2>
           <div className="text-base-content/80 leading-relaxed mb-3 lg:text-lg">
             {/* 💡 COPY TIP: Explain how your product delivers what you promise in the headline. */}
-            Forget fetching notes, references, and CROSS rulings or manually
-            generating reports for your clients. HTS Hero provides you with the
-            information you need to classify quickly with confidence.
+            {/* Forget fetching notes, references, and CROSS rulings or manually
+            generating reports for your clients.  */}
+            HTS Hero provides you with the information you need to classify
+            quickly with confidence.
             {/* at each step of classification */}
             {/* and suggests the best matches based on the GRI. This greatly reduces
             classification time and labor, freeing you to focus on other parts
@@ -183,8 +180,8 @@ const FeaturesListicle = ({
         </div>
       </div>
 
-      <div className="mx-6">
-        <div className="grid grid-cols-3 lg:flex justify-between px-2 gap-4 max-w-3xl mx-auto mb-8">
+      <div className="mx-6 md:mx-12">
+        <div className="grid grid-cols-3 md:flex justify-between px-2 gap-4 max-w-3xl mx-auto mb-8">
           {features.map((feature) => (
             <div
               key={feature.name}
@@ -193,16 +190,16 @@ const FeaturesListicle = ({
                 setFeatureSelected(feature.name);
               }}
               className={classNames(
-                "flex flex-col items-center justify-center gap-3 p-2 duration-100 group rounded-lg",
+                "flex flex-col items-center justify-center gap-3 p-2 duration-100 group rounded-lg border-2 border-transparent",
                 featureSelected === feature.name
-                  ? "bg-[#40C969]/20 scale-[1.03] shadow-lg shadow-[#40C969]/70"
-                  : "bg-neutral-100/10 hover:shadow-[#40C969]/50 hover:shadow-lg hover:scale-[1.03]"
+                  ? "border-2 border-[#40C969]/50"
+                  : "hover:scale-[1.03]"
               )}
             >
               <span
                 className={`duration-100 shrink-0 ${
                   featureSelected === feature.name
-                    ? "text-[#40C969] animate-pulse"
+                    ? "text-[#40C969]"
                     : "text-base-content/60 group-hover:text-white"
                 }`}
               >
@@ -211,7 +208,7 @@ const FeaturesListicle = ({
               <p
                 className={`font-semibold text-sm text-center ${
                   featureSelected === feature.name
-                    ? "text-[#40C969] animate-pulse"
+                    ? "text-[#40C969]"
                     : "text-base-content/60 group-hover:text-white"
                 }`}
               >

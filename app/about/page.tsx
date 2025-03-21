@@ -10,6 +10,8 @@ import FeaturesListicle from "../../components/FeaturesListicle";
 import Pricing from "../../components/Pricing";
 import Register from "../../components/Register";
 import { RegistrationTrigger } from "../../libs/early-registration";
+import WithWithout from "../../components/WithWithout";
+
 export default function Home() {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [registrationTrigger, setRegistrationTrigger] =
@@ -36,8 +38,8 @@ export default function Home() {
           setIsRegisterOpen={setIsRegisterOpen}
           setRegistrationTrigger={setRegistrationTrigger}
         />
-        <AboutProblem />
-        {/* <WithWithout /> */}
+        {/* <AboutProblem /> */}
+        <WithWithout />
         <FeaturesListicle
           setIsRegisterOpen={setIsRegisterOpen}
           setRegistrationTrigger={setRegistrationTrigger}
@@ -46,7 +48,7 @@ export default function Home() {
           setIsRegisterOpen={setIsRegisterOpen}
           setRegistrationTrigger={setRegistrationTrigger}
         />
-        <AboutFAQ />
+        {/* <AboutFAQ /> */}
         <AboutCTA
           setIsRegisterOpen={setIsRegisterOpen}
           setRegistrationTrigger={setRegistrationTrigger}
