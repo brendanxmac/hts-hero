@@ -113,12 +113,13 @@ export default function Register({
               <div className="mb-6 flex flex-col gap-2">
                 <p className="text-gray-100">
                   We&apos;re finalizing HTS Hero for launch in{" "}
-                  <span className="underline font-bold">May 2025</span>.
+                  <span className="underline font-bold">May 2025</span>, but
+                  here&apos;s a special deal:
                 </p>
-                <p className="text-gray-100">
+                {/* <p className="text-gray-100">
                   To thank you for your patience and early interest, here&apos;s
                   a special deal:
-                </p>
+                </p> */}
               </div>
 
               <div className="flex flex-col gap-4 mb-6">
@@ -141,7 +142,7 @@ export default function Register({
                   <li>
                     <div className="flex items-center gap-2 font-semibold">
                       <p className="text-xl">🚀</p>
-                      <span>Access the Product Before Launch</span>
+                      <span>Free Early Access</span>
                     </div>
                   </li>
                   <li>
@@ -155,24 +156,22 @@ export default function Register({
                       <div className="flex gap-2">
                         <p className="text-xl">🔑</p>
                         <div className="flex flex-col gap-1">
-                          <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-2">
                             <p>
                               <a
                                 className="link"
                                 href="https://www.facebook.com/groups/661021869759082"
                               >
                                 HTS Hero Insider
-                              </a>{" "}
-                              Access
+                              </a>
                             </p>
                             <p className="text-[#40C969]/80 text-xs font-bold">
                               (14 Spots Left)
                             </p>
                           </div>
                           <p className="text-gray-400 text-xs">
-                            Talk with the team, get the inside scoop on
-                            what&apos;s coming next, connect with other
-                            classifiers, ask questions, give feedback, & more!
+                            Get the inside scoop on what&apos;s coming next, ask
+                            questions, give feedback, & more!
                           </p>
                         </div>
                       </div>
@@ -231,7 +230,7 @@ export default function Register({
                       onChange={(e) => setJobTitle(e.target.value)}
                       className={classNames(
                         jobTitle === "" ? "text-gray-400" : "text-white",
-                        "w-full select select-bordered bg-gray-800 text-sm border-gray-700 focus:border-[#40C969] transition-colors"
+                        "w-full select select-bordered bg-gray-800 border-gray-700 focus:border-[#40C969] transition-colors"
                       )}
                     >
                       <option value="" disabled>

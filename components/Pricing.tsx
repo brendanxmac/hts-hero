@@ -20,9 +20,10 @@ const Pricing = ({
     <section className="bg-neutral-900 overflow-hidden" id="pricing">
       <div className="py-16 px-8 max-w-7xl mx-auto">
         <div className="flex flex-col text-center w-full mb-20">
-          <p className="font-medium text-primary mb-8">Pricing</p>
+          <p className="font-medium text-[#40C969] mb-8">Pricing</p>
           <h2 className="font-bold text-3xl sm:text-4xl md:text-5xl max-w-3xl mx-auto tracking-relaxed">
-            Save hours on classifications, for less than your daily coffee
+            Save hours on classification,
+            <br /> for less than your daily coffee
           </h2>
         </div>
 
