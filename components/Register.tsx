@@ -15,12 +15,14 @@ interface RegisterProps {
   triggerButton: RegistrationTrigger;
   isOpen: boolean;
   onClose: () => void;
+  source?: string;
 }
 
 export default function Register({
   triggerButton,
   isOpen,
   onClose,
+  source,
 }: RegisterProps) {
   const [isRegistered, setIsRegistered] = useState(false);
   const [email, setEmail] = useState("");
@@ -31,7 +33,7 @@ export default function Register({
 
   useEffect(() => {
     if (isOpen) {
-      addEarlyRegistrationAttempt(window.name, triggerButton);
+      addEarlyRegistrationAttempt(window.name, triggerButton, source);
     }
   }, [isOpen]);
 
@@ -59,12 +61,12 @@ export default function Register({
 
     setIsSubmitting(true);
 
-    // TODO: add source (where the lead came from, if possible)
     const registrationResponse = await addToEarlyRegistration(
       window.name,
       email,
-      triggerButton
-      // getJobTitle()
+      triggerButton,
+      null, // getJobTitle()
+      source
     );
 
     if (registrationResponse.error) {
@@ -112,18 +114,16 @@ export default function Register({
               </div>
               <div className="mb-6 flex flex-col gap-2">
                 <p className="text-gray-100">
-                  We&apos;re finalizing HTS Hero for launch in{" "}
-                  <span className="font-bold">May 2025</span>.
-                </p>
-                <p className="text-gray-100">
-                  Register below to secure our limited-time deal:
+                  HTS Hero is launching in{" "}
+                  <span className="font-bold">May</span>, but you can register
+                  now to secure the pre-launch deal, which includes:
                 </p>
               </div>
 
               <div className="flex flex-col gap-4 mb-6">
-                <h3 className="text-2xl text-white font-bold">
+                {/* <h3 className="text-2xl text-white font-bold">
                   Early Registration Deal
-                </h3>
+                </h3> */}
 
                 <ul className="list-none list-inside text-gray-200 space-y-2">
                   <li className="text-[#40C969] font-bold">
@@ -170,7 +170,7 @@ export default function Register({
               </div>
 
               {isRegistered ? (
-                <div className="space-y-4 my-10">
+                <div className="space-y-4 my-5">
                   <hr className="border-gray-700" />
                   <p className="text-2xl  font-bold">
                     🎉 You&apos;re Registered!
@@ -184,15 +184,15 @@ export default function Register({
                   )} */}
 
                   <p>
-                    Thank you for your interest in HTS Hero! We&apos;re excited
-                    to help you speed up your classifications.
+                    Thank you for your interest in HTS Hero! We&apos;ll keep you
+                    updated as we progress towards launch.
                   </p>
 
-                  <p>
+                  {/* <p>
                     Feel free to share us with anyone who might be interested,
                     and if you have any feedback just reach out to{" "}
                     <span className="link">support@htshero.com</span>
-                  </p>
+                  </p> */}
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">

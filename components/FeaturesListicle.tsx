@@ -190,10 +190,10 @@ const FeaturesListicle = ({
                 setFeatureSelected(feature.name);
               }}
               className={classNames(
-                "flex flex-col items-center justify-center gap-3 p-2 duration-100 group rounded-lg border-2 border-transparent",
                 featureSelected === feature.name
-                  ? "border-2 border-[#40C969]/50"
-                  : "hover:scale-[1.03]"
+                  ? "border-2 border-green-500"
+                  : "hover:scale-[1.03]",
+                "flex flex-col items-center justify-center gap-3 p-2 duration-100 group rounded-lg border-2 border-transparent"
               )}
             >
               <span
