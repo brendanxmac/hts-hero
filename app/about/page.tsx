@@ -2,8 +2,6 @@
 import { Suspense, useEffect, useState } from "react";
 import AboutHeader from "./AboutHeader";
 import AboutHero from "./AboutHero";
-import AboutProblem from "./AboutProblem";
-import AboutFAQ from "./AboutFAQ";
 import AboutCTA from "./AboutCTA";
 import AboutFooter from "./AboutFooter";
 import FeaturesListicle from "../../components/FeaturesListicle";
@@ -11,11 +9,16 @@ import Pricing from "../../components/Pricing";
 import Register from "../../components/Register";
 import { RegistrationTrigger } from "../../libs/early-registration";
 import WithWithout from "../../components/WithWithout";
+import { useSearchParams } from "next/navigation";
 
 export default function Home() {
-  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const searchParams = useSearchParams();
+  const ref = searchParams.get("ref");
+  const [isRegisterOpen, setIsRegisterOpen] = useState(ref !== null);
   const [registrationTrigger, setRegistrationTrigger] =
-    useState<RegistrationTrigger>();
+    useState<RegistrationTrigger>(
+      ref !== null ? RegistrationTrigger.referral : undefined
+    );
 
   useEffect(() => {
     if (!window.name) {
@@ -33,6 +36,7 @@ export default function Home() {
           triggerButton={registrationTrigger}
           isOpen={isRegisterOpen}
           onClose={() => setIsRegisterOpen(false)}
+          source={ref}
         />
         <AboutHero
           setIsRegisterOpen={setIsRegisterOpen}
