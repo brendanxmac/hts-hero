@@ -1,6 +1,7 @@
 import apiClient from "@/libs/api";
 
 export enum RegistrationTrigger {
+  referral = "referral",
   hero = "hero",
   starter = "pricing_starter",
   standard = "pricing_standard",
