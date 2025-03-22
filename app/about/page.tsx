@@ -1,4 +1,5 @@
 "use client";
+
 import { Suspense, useEffect, useState } from "react";
 import AboutHeader from "./AboutHeader";
 import AboutHero from "./AboutHero";
@@ -9,22 +10,33 @@ import Pricing from "../../components/Pricing";
 import Register from "../../components/Register";
 import { RegistrationTrigger } from "../../libs/early-registration";
 import WithWithout from "../../components/WithWithout";
-import { useSearchParams } from "next/navigation";
 
 export default function Home() {
-  const searchParams = useSearchParams();
-  const ref = searchParams.get("ref");
-  const [isRegisterOpen, setIsRegisterOpen] = useState(ref !== null);
-  const [registrationTrigger, setRegistrationTrigger] =
-    useState<RegistrationTrigger>(
-      ref !== null ? RegistrationTrigger.referral : undefined
-    );
+  const [ref, setRef] = useState<string | null>();
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [registrationTrigger, setRegistrationTrigger] = useState<
+    RegistrationTrigger | undefined
+  >(undefined);
 
   useEffect(() => {
     if (!window.name) {
       window.name = crypto.randomUUID(); // Generate a unique ID
     }
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const ref = params.get("ref");
+      if (ref) {
+        setRef(ref);
+      }
+    }
   }, []);
+
+  useEffect(() => {
+    if (ref) {
+      setIsRegisterOpen(true);
+      setRegistrationTrigger(RegistrationTrigger.referral);
+    }
+  }, [ref]);
 
   return (
     <>
