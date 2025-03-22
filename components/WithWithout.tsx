@@ -11,7 +11,7 @@ interface PainPoint {
 
 const painPoints: PainPoint[] = [
   {
-    title: "searching for headings",
+    title: "finding headings",
     time: "10 min",
   },
   {
@@ -82,7 +82,7 @@ const WithWithout = () => {
                 <li key={index} className="flex gap-2 items-center font-bold">
                   <p>
                     <span className="text-red-600">
-                      {index === 0 ? "\u00A0\u00A0\u00A0\u00A0" : "+\u00A0"}
+                      {index === 0 ? "\u00A0\u00A0\u00A0" : "+"}
                       {pain.time}
                       {"\u00A0\u00A0"}
                     </span>
