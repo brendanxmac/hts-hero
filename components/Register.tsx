@@ -182,7 +182,7 @@ export default function Register({
                     <p>
                       We&apos;ve sent a confirmation email{" "}
                       {email && `to: ${email}`} and will keep you up to date
-                      with HTS Hero&apos;s progress!
+                      with our progress.
                     </p>
                   )}
 
