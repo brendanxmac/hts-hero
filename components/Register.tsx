@@ -9,8 +9,11 @@ import {
   RegistrationTrigger,
 } from "../libs/early-registration";
 import { addEarlyRegistrationAttempt } from "../libs/early-registration";
-import { classNames } from "../utilities/style";
-
+import { sendEmail } from "../libs/resend";
+import {
+  getPreLaunchEmailHtml,
+  getPreLaunchEmailText,
+} from "../emails/registration/pre-launch";
 interface RegisterProps {
   triggerButton: RegistrationTrigger;
   isOpen: boolean;
@@ -175,18 +178,15 @@ export default function Register({
                   <p className="text-2xl  font-bold">
                     🎉 You&apos;re Registered!
                   </p>
-                  {/* {email && (
+                  {email && (
                     <p>
-                      We&apos;ve sent your welcome email{" "}
-                      {email && `to ${email}`} and will be sure to keep you up
-                      to date with HTS Hero&apos;s progress!
+                      We&apos;ve sent a welcome email {email && `to: ${email}`}{" "}
+                      and will keep you up to date with HTS Hero&apos;s
+                      progress!
                     </p>
-                  )} */}
+                  )}
 
-                  <p>
-                    Thank you for your interest in HTS Hero! We&apos;ll keep you
-                    updated as we progress towards launch.
-                  </p>
+                  <p>Thank you for your interest in HTS Hero!</p>
 
                   {/* <p>
                     Feel free to share us with anyone who might be interested,
