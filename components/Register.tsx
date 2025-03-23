@@ -180,9 +180,9 @@ export default function Register({
                   </p>
                   {email && (
                     <p>
-                      We&apos;ve sent a welcome email {email && `to: ${email}`}{" "}
-                      and will keep you up to date with HTS Hero&apos;s
-                      progress!
+                      We&apos;ve sent a confirmation email{" "}
+                      {email && `to: ${email}`} and will keep you up to date
+                      with our progress.
                     </p>
                   )}
 
