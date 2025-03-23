@@ -1,6 +1,9 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "../supabase/server";
 import { RegistrationTrigger } from "../../../libs/early-registration";
+import { getPreLaunchEmailHtml } from "../../../emails/registration/pre-launch";
+import { getPreLaunchEmailText } from "../../../emails/registration/pre-launch";
+import { sendEmail } from "../../../libs/resend";
 
 export const dynamic = "force-dynamic";
 
@@ -50,6 +53,17 @@ export async function POST(req: NextRequest) {
       }
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
+
+    console.log("Sending pre-launch email");
+    sendEmail({
+      to: email,
+      subject: "Pre-Launch Registration Confirmed!",
+      html: getPreLaunchEmailHtml(),
+      text: getPreLaunchEmailText(),
+      replyTo: "brendan@htshero.com",
+    }).catch((error: any) => {
+      console.error("Error sending pre-launch email:", error);
+    });
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (e) {
