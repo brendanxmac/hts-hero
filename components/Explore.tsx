@@ -11,100 +11,59 @@ import { Cell } from "./Cell";
 import { LoadingIndicator } from "./LabelledLoader";
 import { ArrowLeftIcon } from "@heroicons/react/16/solid";
 import { Chapter, ChapterI } from "./Chapter";
+import { HtsSection } from "../interfaces/hts";
+import { Section } from "./Section";
+import { classNames } from "../utilities/style";
 
 interface Props {
   productDescription: string;
   setProductDescription: Dispatch<SetStateAction<string>>;
 }
 
+const tabs = [
+  {
+    label: "Notes",
+    value: "notes",
+  },
+  {
+    label: "Elements",
+    value: "elements",
+  },
+];
+
 export const Explore = ({ productDescription }: Props) => {
-  const [loading, setLoading] = useState(true);
-  const [bestChapters, setBestChapters] = useState<number[]>([]);
+  // const [loading, setLoading] = useState(true);
+  const [sections, setSections] = useState<HtsSection[]>([]);
   const [chapters, setChapters] = useState<ChapterI[]>([]);
-  const getBestChapters = async () => {
-    const bestChaptersResponse = await getBestChaptersForProductDescription(
-      productDescription
-    );
-    setBestChapters(bestChaptersResponse.chapters);
-  };
-
-  const getChapterBases = async () => {
-    const sectionsAndChapters = await getHtsSectionsAndChapters();
-    const chapters = sectionsAndChapters.sections
-      .map((section) => section.chapters)
-      .flat();
-
-    return bestChapters.map((c) => chapters[c - 1]);
-  };
-
-  const getChapterData = async () => {
-    const chapterBases = await getChapterBases();
-    const chapters = await Promise.all(
-      chapterBases.map(async (chapter) => {
-        const chapterData = await getHtsChapterData(String(chapter.number));
-        return {
-          ...chapter,
-          elements: chapterData,
-        };
-      })
-    );
-
-    const chaptersWithHeadings = chapters.map((chapter) => {
-      return {
-        ...chapter,
-        // 0 = Headings Level
-        headings: getElementsAtIndentLevel(chapter.elements, 0),
-      };
-    });
-
-    setChapters(chaptersWithHeadings);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    setLoading(true);
-    getBestChapters();
-  }, [productDescription]);
-
-  useEffect(() => {
-    if (bestChapters.length > 0) {
-      setLoading(true);
-      getChapterData();
-    }
-  }, [bestChapters]);
-
+  const [activeTab, setActiveTab] = useState(tabs[0].value);
   return (
     <section className="grow h-full w-full overflow-auto flex flex-col items-center">
       <div className="grow w-full mt-2 items-center flex flex-col max-w-3xl gap-5">
-        {/* <div className="w-full bg-black bg-opacity-95 pb-4 border-b border-neutral-800 shadow-neutral-600">
-          <ProductDescriptionHeader description={productDescription} />
-        </div> */}
         <div className="flex flex-col min-w-full gap-2">
           <div className="flex gap-2 items-center">
-            <button
-              onClick={() => console.log("Back Clicked")}
-              type="button"
-              className="bg-neutral-700 hover:text-black hover:bg-white shrink-0 h-6 w-6 p-1 rounded-full flex items-center justify-center text-sm font-bold text-white"
-            >
-              <ArrowLeftIcon className={"h-6 w-6"} />
-            </button>
-            <h2 className="text-2xl font-bold">Chapters</h2>
-          </div>
-          <p className="text-neutral-400 text-sm">
-            Below is the list of HTS Chapters that your product is likely to be
-            classified into, sorted by most to least likely.
-          </p>
-          {loading && (
-            <div className="mt-5">
-              <LoadingIndicator text="Fetching Best Chapters" />
+            <h2 className="text-2xl font-bold">HTS Explorer</h2>
+            <div role="tablist" className="tabs tabs-boxed">
+              {tabs.map((tab) => (
+                <a
+                  key={tab.value}
+                  role="tab"
+                  onClick={() => setActiveTab(tab.value)}
+                  className={classNames(
+                    "tab",
+                    tab.value === activeTab && "tab-active"
+                  )}
+                >
+                  {tab.label}
+                </a>
+              ))}
             </div>
-          )}
-          {!loading &&
-            chapters.length > 0 &&
-            chapters.map((chapter) => {
+          </div>
+
+          {sections.length > 0 &&
+            sections.map((section) => {
               return (
-                <Cell key={chapter.number}>
-                  <Chapter chapter={chapter} />
+                <Cell key={section.number}>
+                  <Section section={section} />
                 </Cell>
               );
             })}
