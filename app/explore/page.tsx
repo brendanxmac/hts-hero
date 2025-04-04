@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Search } from "../../components/Search";
 import { Explore } from "../../components/Explore";
 
 export default function Home() {
@@ -9,14 +8,10 @@ export default function Home() {
 
   return (
     <main className="h-svh grow overflow-auto flex flex-col px-3">
-      {productDescription ? (
-        <Explore
-          productDescription={productDescription}
-          setProductDescription={setProductDescription}
-        />
-      ) : (
-        <Search setProductDescription={setProductDescription} />
-      )}
+      <Explore
+        productDescription={productDescription}
+        setProductDescription={setProductDescription}
+      />
     </main>
   );
 }
