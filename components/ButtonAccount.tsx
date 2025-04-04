@@ -58,7 +58,7 @@ const ButtonAccount = () => {
     <Popover>
       {({ open }) => (
         <div>
-          <Popover.Button className="btn rounded-lg bg-neutral-900 overflow-clip">
+          <Popover.Button className="btn rounded-lg bg-base-200 hover:bg-base-100 overflow-clip">
             {user?.user_metadata?.avatar_url ? (
               <img
                 src={user?.user_metadata?.avatar_url}

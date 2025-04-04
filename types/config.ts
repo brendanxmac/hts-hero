@@ -1,6 +1,6 @@
 export enum DaisyTheme {
-  // LIGHT = "light",
-  // DARK = "dark",
+  LIGHT = "light",
+  DARK = "dark",
   // CUPCAKE = "cupcake",
   // BUMBLEBEE = "bumblebee",
   // EMERALD = "emerald",
@@ -33,9 +33,7 @@ export enum DaisyTheme {
   // SUNSET = "sunset",
 }
 
-export type Theme = "black";
-// "light"
-// | "dark"
+export type Theme = "black" | "light" | "dark" | "";
 // | "cupcake"
 // | "bumblebee"
 // | "emerald"
