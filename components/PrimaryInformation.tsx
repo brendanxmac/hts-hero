@@ -16,8 +16,8 @@ export const PrimaryInformation = ({
     <div className="flex gap-2 items-center">
       <h2
         className={classNames(
-          loud ? "text-[#40C969]" : "text-white",
-          "font-bold text-xl md:text-2xl"
+          "text-base-content",
+          "font-bold text-sm md:text-base"
         )}
       >
         {value}
