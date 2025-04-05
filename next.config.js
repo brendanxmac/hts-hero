@@ -11,6 +11,16 @@ const nextConfig = {
       "logos-world.net",
     ],
   },
+  webpack: (config, { isServer }) => {
+    config.module.rules.push({
+      test: /\.node/,
+      use: "raw-loader",
+    });
+    if (!isServer) {
+      config.cache = false;
+    }
+    return config;
+  },
 };
 
 module.exports = nextConfig;
