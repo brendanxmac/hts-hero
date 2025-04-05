@@ -1,4 +1,4 @@
-import { ChapterI } from "./Chapter";
+import { ChapterI } from "./ChapterOriginal";
 import { Element } from "./Element";
 
 interface Props {
