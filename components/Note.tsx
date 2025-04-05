@@ -46,14 +46,7 @@ export const Note = ({ note }: Props) => {
         </div>
 
         {show && (
-          <div className="h-0">
-            <PDF
-              title={title}
-              file={pdfURL}
-              isOpen={show}
-              setIsOpen={setShow}
-            />
-          </div>
+          <PDF title={title} file={pdfURL} isOpen={show} setIsOpen={setShow} />
         )}
       </div>
     </Cell>
