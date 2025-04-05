@@ -7,15 +7,27 @@ import { HtsSection } from "../interfaces/hts";
 import { classNames } from "../utilities/style";
 import { Section } from "./Section";
 import { LoadingIndicator } from "./LabelledLoader";
+import { Note } from "./Note";
+import { notes } from "../public/notes/notes";
 
-const tabs = [
+enum Tabs {
+  NOTES = "notes",
+  ELEMENTS = "elements",
+}
+
+interface Tab {
+  label: string;
+  value: string;
+}
+
+const tabs: Tab[] = [
   {
     label: "Notes",
-    value: "notes",
+    value: Tabs.NOTES,
   },
   {
     label: "Elements",
-    value: "elements",
+    value: Tabs.ELEMENTS,
   },
 ];
 
@@ -67,15 +79,35 @@ export const Explore = () => {
             </div>
           )}
 
-          {sections.length > 0 && (
+          {activeTab === Tabs.ELEMENTS && (
             <div className="flex flex-col gap-2">
-              {sections.map((section) => {
-                return (
-                  <Cell key={section.number}>
-                    <Section section={section} />
-                  </Cell>
-                );
-              })}
+              {sections.length > 0 && (
+                <div className="flex flex-col gap-2">
+                  {sections.map((section) => {
+                    return (
+                      <Cell key={section.number}>
+                        <Section section={section} />
+                      </Cell>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === Tabs.NOTES && (
+            <div className="flex flex-col gap-2">
+              {notes.length > 0 && (
+                <div className="flex flex-col gap-2">
+                  {notes.map((note) => {
+                    return (
+                      <Cell key={note.title}>
+                        <Note note={note} />
+                      </Cell>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           )}
         </div>
