@@ -32,7 +32,7 @@ const tabs: Tab[] = [
 ];
 
 export const Explore = () => {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [sections, setSections] = useState<HtsSection[]>([]);
   const [activeTab, setActiveTab] = useState(tabs[0].value);
 
@@ -44,8 +44,10 @@ export const Explore = () => {
       setLoading(false);
     };
 
-    fetchSectionsAndChapters();
-  }, []);
+    if (activeTab === Tabs.ELEMENTS && !sections.length) {
+      fetchSectionsAndChapters();
+    }
+  }, [activeTab, sections]);
 
   return (
     <section className="grow h-full w-full overflow-auto flex flex-col items-center p-3">

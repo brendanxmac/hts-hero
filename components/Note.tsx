@@ -3,7 +3,8 @@ import { Cell } from "./Cell";
 import { useState } from "react";
 import { PrimaryInformation } from "./PrimaryInformation";
 import { Note as NoteType } from "../public/notes/notes";
-import ModalPDF from "./ModalPDF";
+import PDF from "./PDF";
+
 interface Props {
   note: NoteType;
 }
@@ -14,7 +15,7 @@ export const Note = ({ note }: Props) => {
 
   return (
     <Cell>
-      <div className="w-full flex flex-col gap-4">
+      <div className="w-full flex flex-col">
         <div
           className="flex items-start justify-between gap-3"
           onClick={() => {
@@ -33,11 +34,6 @@ export const Note = ({ note }: Props) => {
                 {description}
               </h4>
             </div>
-            {/* <PrimaryInformation
-              value={description}
-              loud={true}
-              copyable={false}
-            /> */}
           </div>
 
           <button onClick={() => setShow(!show)}>
@@ -50,11 +46,11 @@ export const Note = ({ note }: Props) => {
         </div>
 
         {show && (
-          <div className="flex flex-col gap-2">
-            <ModalPDF
+          <div className="h-0">
+            <PDF
               title={title}
+              file={pdfURL}
               isOpen={show}
-              pdfURL={pdfURL}
               setIsOpen={setShow}
             />
           </div>
