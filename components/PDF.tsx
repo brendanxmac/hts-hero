@@ -26,22 +26,46 @@ export default function PDF({ file, isOpen, setIsOpen, title }: Props) {
   const [numPages, setNumPages] = useState(0);
   const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
   const [containerWidth, setContainerWidth] = useState<number>();
+  const [scale, setScale] = useState(1);
+  const [pdfWidth, setPdfWidth] = useState<number>(0);
 
-  //   const onResize = useCallback<ResizeObserverCallback>((entries) => {
-  //     console.log("onResize", entries);
-  //     const [entry] = entries;
+  const onResize = useCallback<ResizeObserverCallback>(
+    (entries) => {
+      const [entry] = entries;
+      if (entry) {
+        const newWidth = entry.contentRect.width;
+        setContainerWidth(newWidth);
+        // Calculate new scale when container width changes
+        if (pdfWidth > 0) {
+          const paddingFactor = 0.7; // Add 30% padding
+          const newScale = (newWidth * paddingFactor) / pdfWidth;
+          setScale(Math.min(Math.max(newScale, 1), 2)); // Keep between 100% and 200%
+        }
+      }
+    },
+    [pdfWidth]
+  );
 
-  //     if (entry) {
-  //       setContainerWidth(entry.contentRect.width);
-  //     }
-  //   }, []);
+  useResizeObserver(containerRef, resizeObserverOptions, onResize);
 
-  //   useResizeObserver(containerRef, resizeObserverOptions, onResize);
-
-  function onDocumentLoadSuccess({
+  async function onDocumentLoadSuccess({
     numPages: nextNumPages,
-  }: PDFDocumentProxy): void {
+  }: PDFDocumentProxy): Promise<void> {
     setNumPages(nextNumPages);
+
+    // Get the first page to determine PDF dimensions
+    const firstPage = await pdfjs
+      .getDocument(file)
+      .promise.then((doc) => doc.getPage(1));
+    const viewport = firstPage.getViewport({ scale: 1 });
+    setPdfWidth(viewport.width);
+
+    // Calculate initial scale to fit width
+    if (containerWidth) {
+      const paddingFactor = 0.7; // Add 30% padding
+      const initialScale = (containerWidth * paddingFactor) / viewport.width;
+      setScale(Math.min(Math.max(initialScale, 1), 2)); // Keep between 100% and 200%
+    }
   }
   return (
     <Transition appear show={isOpen}>
@@ -65,14 +89,15 @@ export default function PDF({ file, isOpen, setIsOpen, title }: Props) {
           leaveFrom="opacity-100 translate-y-0"
           leaveTo="opacity-0 translate-y-4"
         >
-          <Dialog.Panel className="bg-base-100 rounded shadow-md shadow-gray-500 overflow-auto max-w-6xl w-5/6 h-5/6">
-            <div className="z-10 sticky top-0 px-5 py-4 bg-base-100 border-b border-base-300">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-4">
+          <Dialog.Panel className="bg-base-100 rounded shadow-md shadow-gray-500 overflow-auto max-w-7xl w-5/6 h-5/6">
+            <div className="z-10 sticky top-0 left-0 right-0 px-5 py-4 bg-base-100 border-b border-base-300 w-full">
+              <div className="flex justify-between items-center max-w-full">
+                <div className="flex items-center gap-4 flex-wrap">
                   <Dialog.Title className="font-semibold text-base-content">
                     {title}
                   </Dialog.Title>
-                  <div className="mx-auto text-center">
+
+                  <div className="text-center">
                     <a
                       download
                       href={file}
@@ -84,29 +109,78 @@ export default function PDF({ file, isOpen, setIsOpen, title }: Props) {
                     </a>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  className="text-base-content hover:text-base-content/80"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsOpen(false);
-                  }}
-                >
-                  <div className="sr-only">Close</div>
-                  <svg className="w-4 h-4 fill-current">
-                    <path d="M7.95 6.536l4.242-4.243a1 1 0 111.415 1.414L9.364 7.95l4.243 4.242a1 1 0 11-1.415 1.415L7.95 9.364l-4.243 4.243a1 1 0 01-1.414-1.415L6.536 7.95 2.293 3.707a1 1 0 011.414-1.414L7.95 6.536z" />
-                  </svg>
-                </button>
+                <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() =>
+                        setScale((prev) => Math.max(0.5, prev - 0.1))
+                      }
+                      className="btn btn-xs btn-ghost"
+                      title="Zoom out"
+                    >
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M20 12H4"
+                        />
+                      </svg>
+                    </button>
+                    <span className="text-sm font-bold">
+                      {Math.round(scale * 100)}%
+                    </span>
+                    <button
+                      onClick={() =>
+                        setScale((prev) => Math.min(2, prev + 0.1))
+                      }
+                      className="btn btn-xs btn-ghost"
+                      title="Zoom in"
+                    >
+                      <svg
+                        className="w-4 h-4 font-bold"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 4v16m8-8H4"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    className="text-base-content hover:text-base-content/80 shrink-0"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsOpen(false);
+                    }}
+                  >
+                    <div className="sr-only">Close</div>
+                    <svg className="w-4 h-4 fill-current">
+                      <path d="M7.95 6.536l4.242-4.243a1 1 0 111.415 1.414L9.364 7.95l4.243 4.242a1 1 0 11-1.415 1.415L7.95 9.364l-4.243 4.243a1 1 0 01-1.414-1.415L6.536 7.95 2.293 3.707a1 1 0 011.414-1.414L7.95 6.536z" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
-            <div ref={setContainerRef} className="w-full h-full">
+            <div ref={setContainerRef} className="w-full h-full overflow-auto">
               {/* @ts-ignore */}
               <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
                 {Array.from({ length: numPages }, (_, index) => (
                   <Page
                     key={`page_${index + 1}`}
                     pageNumber={index + 1}
-                    // scale={1.3}
+                    scale={scale}
                     width={
                       containerWidth
                         ? Math.min(containerWidth, maxWidth)
