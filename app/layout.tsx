@@ -21,8 +21,6 @@ export const viewport: Viewport = {
 export const metadata = getSEOTags();
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-  console.log("Theme:");
-  console.log(config.colors.theme);
   return (
     <html lang="en" data-theme={config.colors.theme} className={font.className}>
       <body>

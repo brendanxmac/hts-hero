@@ -10,7 +10,7 @@ import {
 import { Cell } from "./Cell";
 import { LoadingIndicator } from "./LabelledLoader";
 import { ArrowLeftIcon } from "@heroicons/react/16/solid";
-import { Chapter, ChapterI } from "./Chapter";
+import { Chapter, ChapterI } from "./ChapterOriginal";
 
 interface Props {
   productDescription: string;
