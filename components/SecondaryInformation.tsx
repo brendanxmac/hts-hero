@@ -12,8 +12,8 @@ export const SecondaryInformation = ({ value, loud, copyable }: Props) => {
     <div className="flex gap-2 items-center">
       <h3
         className={classNames(
-          "font-bold text-xs md:text-sm",
-          loud ? "text-primary" : "text-base-content"
+          "text-xs md:text-sm text-base-content",
+          loud && "font-bold"
         )}
       >
         {value}
