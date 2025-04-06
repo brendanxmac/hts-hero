@@ -36,7 +36,7 @@ export const Section = ({ section }: Props) => {
         )}
       >
         <div
-          className="flex items-start justify-between gap-3"
+          className="flex items-start justify-between gap-5"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -68,18 +68,20 @@ export const Section = ({ section }: Props) => {
           )}
 
           <div className="flex gap-5 self-center">
-            <div className="btn btn-sm btn-primary shrink-0 flex items-center gap-2">
-              <button
-                className="text-sm"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setShowNotes(!showNotes);
-                }}
-              >
-                <DocumentMagnifyingGlassIcon className="h-6 w-6" />
-              </button>
-            </div>
+            {notesPath && (
+              <div className="btn btn-sm btn-square btn-primary shrink-0 flex items-center gap-2">
+                <button
+                  className="text-sm"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowNotes(!showNotes);
+                  }}
+                >
+                  <DocumentMagnifyingGlassIcon className="h-5 w-5" />
+                </button>
+              </div>
+            )}
 
             <div className="self-center">
               {showDetails ? (

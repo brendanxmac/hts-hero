@@ -1,4 +1,4 @@
-import { ChevronRightIcon } from "@heroicons/react/16/solid";
+import { DocumentMagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Cell } from "./Cell";
 import { useState } from "react";
 import { PrimaryInformation } from "./PrimaryInformation";
@@ -35,7 +35,18 @@ export const Note = ({ note }: Props) => {
             </div>
           </div>
 
-          <ChevronRightIcon className="shrink-0 w-7 h-7 self-center" />
+          <div className="btn btn-primary shrink-0 flex items-center gap-2 self-center">
+            <button
+              className="text-sm"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setShow(!show);
+              }}
+            >
+              <DocumentMagnifyingGlassIcon className="h-6 w-6" />
+            </button>
+          </div>
         </div>
 
         {show && (
