@@ -1,15 +1,9 @@
-import {
-  ChevronRightIcon,
-  EyeIcon,
-  EyeSlashIcon,
-} from "@heroicons/react/16/solid";
+import { ChevronRightIcon } from "@heroicons/react/16/solid";
 import { Cell } from "./Cell";
 import { useState } from "react";
 import { PrimaryInformation } from "./PrimaryInformation";
 import { Note as NoteType } from "../public/notes/notes";
 import PDF from "./PDF";
-import { NestedCell } from "./NestedCell";
-import { SecondaryInformation } from "./SecondaryInformation";
 
 interface Props {
   note: NoteType;
@@ -35,8 +29,9 @@ export const Note = ({ note }: Props) => {
                 value={""}
                 copyable={false}
               />
-              <PrimaryInformation value={description} copyable={false} />
-              {/* <SecondaryInformation value={description} copyable={false} /> */}
+              {title !== description && (
+                <PrimaryInformation value={description} copyable={false} />
+              )}
             </div>
           </div>
 
