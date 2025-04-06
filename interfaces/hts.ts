@@ -21,6 +21,7 @@ export interface HtsSection extends HtsSectionAndChapterBase {
 export interface HtsSectionAndChapterBase {
   number: number;
   description: string;
+  notesPath?: string;
 }
 
 export interface HtsElementWithParentReference extends HtsElement {
