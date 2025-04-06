@@ -11,7 +11,6 @@ const nextConfig = {
       // "logos-world.net",
     ],
   },
-  swcMinify: false,
   webpack: (config) => {
     config.resolve.alias.canvas = false;
     return config;

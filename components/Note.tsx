@@ -23,7 +23,7 @@ export const Note = ({ note }: Props) => {
           }}
         >
           <div className="flex gap-3 items-start">
-            <div className="shrink-0 flex flex-col">
+            <div className="flex flex-col">
               <PrimaryInformation
                 value={`${title}:`}
                 loud={false}
