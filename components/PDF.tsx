@@ -70,7 +70,7 @@ export default function PDF({ file, isOpen, setIsOpen, title }: Props) {
     <Transition appear show={isOpen}>
       <Dialog as="div" onClose={() => setIsOpen(false)}>
         <Transition.Child
-          className="fixed inset-0 bg-slate-900 bg-opacity-30 z-50 transition-opacity"
+          className="fixed inset-0 bg-slate-900 bg-opacity-70 z-50 transition-opacity"
           enter="transition ease-out duration-200"
           enterFrom="opacity-0"
           enterTo="opacity-100"
@@ -88,11 +88,11 @@ export default function PDF({ file, isOpen, setIsOpen, title }: Props) {
           leaveFrom="opacity-100 translate-y-0"
           leaveTo="opacity-0 translate-y-4"
         >
-          <Dialog.Panel className="bg-base-100 rounded shadow-md shadow-gray-500 overflow-auto max-w-7xl w-full h-full md:w-5/6 md:h-5/6">
+          <Dialog.Panel className="bg-base-100 rounded shadow-2xl shadow-gray-500 overflow-auto max-w-7xl w-full h-full">
             <div className="bg-transparent z-10 sticky top-0 p-2 sm:px-5 sm:py-4 sm:bg-base-100 border-b border-base-300 w-full">
               <div className="flex justify-between items-center max-w-full ">
                 <div className="shrink-0 hidden sm:flex items-center gap-4">
-                  <Dialog.Title className="font-semibold text-base-content">
+                  <Dialog.Title className="font-semibold text-base-content dark:text-gray-100">
                     {title}
                   </Dialog.Title>
 
@@ -100,7 +100,7 @@ export default function PDF({ file, isOpen, setIsOpen, title }: Props) {
                     <a
                       download
                       href={file}
-                      className="btn btn-xs cursor-pointer text-white bg-primary hover:bg-primary/80 shrink-0"
+                      className="btn btn-xs cursor-pointer focus:outline-none text-white bg-primary hover:bg-primary/80 shrink-0"
                       target="_blank"
                       rel="noreferrer"
                     >

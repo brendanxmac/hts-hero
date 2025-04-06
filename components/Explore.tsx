@@ -50,14 +50,14 @@ export const Explore = () => {
   }, [activeTab, sections]);
 
   return (
-    <section className="grow h-full w-full overflow-auto flex flex-col items-center p-3">
-      <div className="grow w-full mt-2 items-center flex flex-col gap-5">
-        <div className="flex flex-col min-w-full gap-4">
-          <div className="flex gap-2 items-center">
-            <h2 className="text-xl font-bold">Explorer</h2>
+    <section className="grow h-full w-full overflow-auto flex flex-col items-center">
+      <div className="grow w-full items-center flex flex-col gap-5">
+        <div className="flex flex-col min-w-full">
+          <div className="sticky top-0 bg-base-100 flex gap-6 items-center pb-3">
+            <h2 className="text-xl md:text-2xl font-bold">Explorer</h2>
             <div
               role="tablist"
-              className="tabs tabs-boxed tabs-xs bg-primary-content p-1.5 rounded-xl"
+              className="tabs tabs-boxed tabs-sm bg-primary-content p-1.5 rounded-xl"
             >
               {tabs.map((tab) => (
                 <a
@@ -65,7 +65,7 @@ export const Explore = () => {
                   role="tab"
                   onClick={() => setActiveTab(tab.value)}
                   className={classNames(
-                    "tab font-bold",
+                    "tab",
                     tab.value === activeTab && "tab-active"
                   )}
                 >
@@ -82,14 +82,15 @@ export const Explore = () => {
           )}
 
           {activeTab === Tabs.ELEMENTS && (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col">
               {sections.length > 0 && (
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col">
                   {sections.map((section) => {
                     return (
-                      <Cell key={section.number}>
-                        <Section section={section} />
-                      </Cell>
+                      <Section
+                        key={`section-${section.number}`}
+                        section={section}
+                      />
                     );
                   })}
                 </div>
@@ -98,15 +99,11 @@ export const Explore = () => {
           )}
 
           {activeTab === Tabs.NOTES && (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 mt-4">
               {notes.length > 0 && (
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-3">
                   {notes.map((note) => {
-                    return (
-                      <Cell key={note.title}>
-                        <Note note={note} />
-                      </Cell>
-                    );
+                    return <Note key={`note-${note.title}`} note={note} />;
                   })}
                 </div>
               )}
