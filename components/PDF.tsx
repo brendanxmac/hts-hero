@@ -16,11 +16,10 @@ interface Props {
   title: string;
 }
 
-const resizeObserverOptions = {};
-
-const maxWidth = 800;
-
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+
+const resizeObserverOptions = {};
+const maxWidth = 1000;
 
 export default function PDF({ file, isOpen, setIsOpen, title }: Props) {
   const [numPages, setNumPages] = useState(0);
@@ -37,7 +36,7 @@ export default function PDF({ file, isOpen, setIsOpen, title }: Props) {
         setContainerWidth(newWidth);
         // Calculate new scale when container width changes
         if (pdfWidth > 0) {
-          const paddingFactor = 0.7; // Add 30% padding
+          const paddingFactor = 0.6;
           const newScale = (newWidth * paddingFactor) / pdfWidth;
           setScale(Math.min(Math.max(newScale, 1), 2)); // Keep between 100% and 200%
         }
@@ -62,7 +61,7 @@ export default function PDF({ file, isOpen, setIsOpen, title }: Props) {
 
     // Calculate initial scale to fit width
     if (containerWidth) {
-      const paddingFactor = 0.7; // Add 30% padding
+      const paddingFactor = 0.6;
       const initialScale = (containerWidth * paddingFactor) / viewport.width;
       setScale(Math.min(Math.max(initialScale, 1), 2)); // Keep between 100% and 200%
     }
@@ -89,10 +88,10 @@ export default function PDF({ file, isOpen, setIsOpen, title }: Props) {
           leaveFrom="opacity-100 translate-y-0"
           leaveTo="opacity-0 translate-y-4"
         >
-          <Dialog.Panel className="bg-base-100 rounded shadow-md shadow-gray-500 overflow-auto max-w-7xl w-5/6 h-5/6">
-            <div className="z-10 sticky top-0 left-0 right-0 px-5 py-4 bg-base-100 border-b border-base-300 w-full">
-              <div className="flex justify-between items-center max-w-full">
-                <div className="flex items-center gap-4 flex-wrap">
+          <Dialog.Panel className="bg-base-100 rounded shadow-md shadow-gray-500 overflow-auto max-w-7xl w-full h-full md:w-5/6 md:h-5/6">
+            <div className="bg-transparent z-10 sticky top-0 p-2 sm:px-5 sm:py-4 sm:bg-base-100 border-b border-base-300 w-full">
+              <div className="flex justify-between items-center max-w-full ">
+                <div className="shrink-0 hidden sm:flex items-center gap-4">
                   <Dialog.Title className="font-semibold text-base-content">
                     {title}
                   </Dialog.Title>
@@ -109,7 +108,7 @@ export default function PDF({ file, isOpen, setIsOpen, title }: Props) {
                     </a>
                   </div>
                 </div>
-                <div className="flex items-center gap-6">
+                <div className="flex items-center justify-between sm:justify-end w-full gap-6">
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() =>
