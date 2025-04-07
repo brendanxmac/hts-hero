@@ -8,6 +8,7 @@ import { getHtsChapterData } from "../libs/hts";
 import { getDirectChildrenElements } from "../libs/hts";
 import { ElementSum } from "./ElementSum";
 import { SecondaryInformation } from "./SecondaryInformation";
+import { TertiaryInformation } from "./TertiaryInformation";
 import { SecondaryLabel } from "./SecondaryLabel";
 
 interface Props {
@@ -31,19 +32,31 @@ export const Element = ({ element, breadcrumbs, setBreadcrumbs }: Props) => {
         chapterElements
       );
 
-      console.log("directChildrenElements", directChildrenElements);
-
       setChildren(directChildrenElements);
       setLoading(false);
     };
     fetchElementData();
   }, [element]);
 
+  // Regex that gets the prefix of the special text
+  const getPrefixFromSpecial = (special: string) => {
+    const regex = /^[^(]+/;
+    const match = special.match(regex);
+    return match ? match[0].trim() : special;
+  };
+
+  // Regex that gets whatever is inside the parentheses of special text, if exists
+  const getDetailsFromSpecial = (special: string) => {
+    const regex = /\(([^)]+)\)/;
+    const match = special.match(regex);
+    return match ? match[1].replace(/,/g, ", ") : null;
+  };
+
   return (
     <Cell>
       <div className="flex flex-col w-full rounded-md transition duration-100 ease-in-out cursor-pointer">
-        <div className="card bg-base-200 w-full flex flex-col items-start justify-between gap-7 p-4">
-          <div className="flex gap-3">
+        <div className="card bg-base-200 w-full flex flex-col items-start justify-between gap-7 p-4 sm:p-6">
+          <div className="flex flex-col gap-3">
             <div className="shrink-0">
               <PrimaryInformation
                 label={htsno ? `${htsno}: ` : ``}
@@ -56,31 +69,41 @@ export const Element = ({ element, breadcrumbs, setBreadcrumbs }: Props) => {
           {(general || special || other) && (
             <div className="w-full flex flex-col gap-2">
               <SecondaryLabel value={"Tariff Rates"} />
-              <div className="flex gap-2">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
                 {units &&
-                  units.map((unit) => (
-                    <div className="flex flex-col gap-1 p-2 bg-base-300 rounded-md min-w-24">
-                      <SecondaryInformation value={`Unit`} />
-                      <SecondaryInformation label={unit} value={""} />
+                  units.map((unit, i) => (
+                    <div
+                      key={`${i}-${unit}`}
+                      className="flex flex-col gap-1 p-2 bg-primary/10 rounded-md min-w-24"
+                    >
+                      <TertiaryInformation value={`Unit`} />
+                      <SecondaryInformation label={unit || "--"} value={""} />
                     </div>
                   ))}
-                <div className="flex flex-col gap-1 p-2 bg-base-300 rounded-md min-w-24">
-                  <SecondaryInformation value={"General"} />
-                  <SecondaryInformation label={general || "N/A"} value={""} />
+                <div className="flex flex-col gap-1 p-2 bg-primary/10 rounded-md min-w-24">
+                  <TertiaryInformation value={"General"} />
+                  <SecondaryInformation label={general || "--"} value={""} />
                 </div>
-                <div className="flex flex-col gap-1 p-2 bg-base-300 rounded-md min-w-24">
-                  <SecondaryInformation value={"Special"} />
-                  <SecondaryInformation label={special || "N/A"} value={""} />
+                {/* TODO: parse this to extract the countries and have links to the country tariff page */}
+                <div className="flex flex-col gap-1 p-2 bg-primary/10 rounded-md min-w-24">
+                  <TertiaryInformation value={"Special"} />
+                  <SecondaryInformation
+                    label={getPrefixFromSpecial(special) || "--"}
+                    value={""}
+                  />
+                  <p className="text-xs text-gray-500">
+                    {getDetailsFromSpecial(special) || "--"}
+                  </p>
                 </div>
-                <div className="flex flex-col gap-1 p-2 bg-base-300 rounded-md min-w-24">
-                  <SecondaryInformation value={"Other"} />
-                  <SecondaryInformation label={other || "N/A"} value={""} />
+                <div className="flex flex-col gap-1 p-2 bg-primary/10 rounded-md min-w-24">
+                  <TertiaryInformation value={"Other"} />
+                  <SecondaryInformation label={other || "--"} value={""} />
                 </div>
               </div>
             </div>
           )}
           {loading && <LoadingIndicator text="Fetching Element Data" />}
-          {children.length > 0 && (
+          {!loading && children.length > 0 && (
             <div className="w-full flex flex-col gap-2">
               <SecondaryLabel value={"Children"} />
               <div>

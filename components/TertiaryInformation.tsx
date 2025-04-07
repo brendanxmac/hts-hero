@@ -12,7 +12,7 @@ export const TertiaryInformation = ({ value, loud, copyable }: Props) => {
     <div className="flex gap-2 items-center">
       <h3
         className={classNames(
-          "text-xs",
+          "text-xs sm:text-sm",
           loud ? "text-accent" : "text-base-content"
         )}
       >
