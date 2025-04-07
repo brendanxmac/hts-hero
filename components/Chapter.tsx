@@ -52,7 +52,7 @@ export const Chapter = ({ chapter, breadcrumbs, setBreadcrumbs }: Props) => {
     <Cell>
       <div className="flex flex-col gap-2 w-full rounded-md transition duration-100 ease-in-out cursor-pointer">
         <div className="flex items-start gap-3 p-4">
-          <div className="flex gap-4">
+          <div className="flex">
             <div className="shrink-0">
               <PrimaryInformation
                 label={`Chapter ${number.toString()}`}

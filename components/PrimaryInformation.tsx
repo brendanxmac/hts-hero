@@ -12,7 +12,7 @@ export const PrimaryInformation = ({
   copyable = true,
 }: Props) => {
   return (
-    <div className="flex gap-4 items-center">
+    <div className="flex items-center gap-2">
       {label && (
         <h2
           className={

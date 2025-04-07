@@ -39,10 +39,10 @@ export const ElementSum = ({
       >
         <div className="flex items-start justify-between gap-3 p-4">
           <div className="flex gap-4">
-            <div>
+            <div className="min-w-32">
               <SecondaryInformation
-                value={htsno ? `${htsno}:` : description}
-                loud={true}
+                label={htsno ? `${htsno}` : description}
+                value={""}
                 copyable={false}
               />
             </div>
