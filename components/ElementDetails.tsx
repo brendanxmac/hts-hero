@@ -4,11 +4,10 @@ import { Element } from "./Element";
 
 interface Props {
   element: HtsElement;
-  chapterElements: HtsElement[];
 }
 
-export const ElementDetails = ({ element, chapterElements }: Props) => {
-  const childrenElements = getDirectChildrenElements(element, chapterElements);
+export const ElementDetails = ({ element }: Props) => {
+  const childrenElements = getDirectChildrenElements(element, element.siblings);
 
   console.log(`Child Elements for ${element.htsno}`, childrenElements);
 

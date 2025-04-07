@@ -3,12 +3,16 @@ import { DocumentMagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { HtsSection } from "../interfaces/hts";
 import { Cell } from "./Cell";
 import { useState } from "react";
-import { Chapter } from "./Chapter";
+import { ChapterSummary } from "./ChapterSummary";
 import { PrimaryInformation } from "./PrimaryInformation";
 import { classNames } from "../utilities/style";
 import PDF from "./PDF";
+import { NavigatableElement } from "./Elements";
+
 interface Props {
   section: HtsSection;
+  breadcrumbs: NavigatableElement[];
+  setBreadcrumbs: (breadcrumbs: NavigatableElement[]) => void;
 }
 
 export const getChapterRange = (section: HtsSection) => {
@@ -22,7 +26,7 @@ export const getChapterRange = (section: HtsSection) => {
   return `Chapters ${firstChapter.number}-${lastChapter.number}`;
 };
 
-export const Section = ({ section }: Props) => {
+export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
   const { number, description, notesPath } = section;
   const [showDetails, setShowDetails] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
@@ -96,7 +100,14 @@ export const Section = ({ section }: Props) => {
         {showDetails && (
           <div className="flex flex-col pl-6">
             {section.chapters.map((chapter) => {
-              return <Chapter key={chapter.number} chapter={chapter} />;
+              return (
+                <ChapterSummary
+                  key={chapter.number}
+                  chapter={chapter}
+                  breadcrumbs={breadcrumbs}
+                  setBreadcrumbs={setBreadcrumbs}
+                />
+              );
             })}
           </div>
         )}
