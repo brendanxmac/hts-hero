@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Search } from "../../components/Search";
-import { Explore } from "../../components/ExploreAuto";
+import { ExploreAuto } from "../../components/ExploreAuto";
 
 export default function Home() {
   const [productDescription, setProductDescription] = useState("");
@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <main className="h-svh grow overflow-auto flex flex-col px-3">
       {productDescription ? (
-        <Explore
+        <ExploreAuto
           productDescription={productDescription}
           setProductDescription={setProductDescription}
         />

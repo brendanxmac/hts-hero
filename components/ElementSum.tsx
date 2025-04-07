@@ -1,21 +1,23 @@
 import { ChevronRightIcon } from "@heroicons/react/16/solid";
-import { HtsElementType, HtsSectionAndChapterBase } from "../interfaces/hts";
+import { HtsElement } from "../interfaces/hts";
 import { SecondaryInformation } from "./SecondaryInformation";
 import { Cell } from "./Cell";
 import { NavigatableElement } from "./Elements";
 
 interface Props {
-  chapter: HtsSectionAndChapterBase;
+  element: HtsElement;
+  chapter: number;
   breadcrumbs: NavigatableElement[];
   setBreadcrumbs: (breadcrumbs: NavigatableElement[]) => void;
 }
 
-export const ChapterSummary = ({
+export const ElementSum = ({
+  element,
   chapter,
   breadcrumbs,
   setBreadcrumbs,
 }: Props) => {
-  const { number, description } = chapter;
+  const { htsno, description } = element;
 
   return (
     <Cell>
@@ -25,10 +27,10 @@ export const ChapterSummary = ({
           setBreadcrumbs([
             ...breadcrumbs,
             {
-              title: `Chapter ${number.toString()}`,
+              title: `${htsno || description.split(" ").slice(0, 2).join(" ") + "..."}`,
               element: {
-                type: HtsElementType.CHAPTER,
-                ...chapter,
+                ...element,
+                chapter,
               },
             },
           ]);
@@ -37,14 +39,16 @@ export const ChapterSummary = ({
       >
         <div className="flex items-start justify-between gap-3 p-4">
           <div className="flex gap-4">
-            <div className="shrink-0">
+            <div>
               <SecondaryInformation
-                value={`Chapter ${number.toString()}:`}
+                value={htsno ? `${htsno}:` : description}
                 loud={true}
                 copyable={false}
               />
             </div>
-            <SecondaryInformation value={description} copyable={false} />
+            {htsno && (
+              <SecondaryInformation value={description} copyable={false} />
+            )}
           </div>
 
           <ChevronRightIcon className="shrink-0 w-5 h-5" />

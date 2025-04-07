@@ -4,7 +4,7 @@ import { Cell } from "./Cell";
 import { PrimaryInformation } from "./PrimaryInformation";
 import { SectionLabel } from "./SectionLabel";
 import { findFirstElementInProgressionWithTariff } from "../libs/hts";
-import { LoadingIndicator } from "./LabelledLoader";
+import { LoadingIndicator } from "./LoadingIndicator";
 import { TariffDetails } from "./TariffDetails";
 import { Tariff } from "../app/classes/tariff";
 import { TariffSummary } from "./TariffSummary";

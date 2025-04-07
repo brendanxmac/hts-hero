@@ -1,39 +1,83 @@
-import { ChevronRightIcon } from "@heroicons/react/16/solid";
-import { HtsSectionAndChapterBase } from "../interfaces/hts";
-import { SecondaryInformation } from "./SecondaryInformation";
-import { useState } from "react";
+import { HtsElement, HtsSectionAndChapterBase } from "../interfaces/hts";
 import { Cell } from "./Cell";
+import { NavigatableElement } from "./Elements";
+import { useEffect, useState } from "react";
+import {
+  getDirectChildrenElements,
+  getElementsAtIndentLevel,
+  getHtsChapterData,
+} from "../libs/hts";
+import { PrimaryInformation } from "./PrimaryInformation";
+import { LoadingIndicator } from "./LoadingIndicator";
+import { ElementSum } from "./ElementSum";
 
 interface Props {
   chapter: HtsSectionAndChapterBase;
+  breadcrumbs: NavigatableElement[];
+  setBreadcrumbs: (breadcrumbs: NavigatableElement[]) => void;
 }
 
-export const Chapter = ({ chapter }: Props) => {
+export const Chapter = ({ chapter, breadcrumbs, setBreadcrumbs }: Props) => {
+  // Find a way to keep the data around so if we segue back we don't have to fetch it again
   const { number, description } = chapter;
-  const [showDetails, setShowDetails] = useState(false);
+  const [elements, setElements] = useState<HtsElement[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchChapterData = async () => {
+      const chapterElements = await getHtsChapterData(String(chapter.number));
+      const elementsAtIndentLevel = getElementsAtIndentLevel(
+        chapterElements,
+        0
+      );
+      const elementsWithChildren = elementsAtIndentLevel.map((element) => {
+        const directChildrenElements = getDirectChildrenElements(
+          element,
+          chapterElements
+        );
+
+        return {
+          ...element,
+          children: directChildrenElements,
+        };
+      });
+
+      setElements(elementsWithChildren);
+      setLoading(false);
+    };
+    fetchChapterData();
+  }, [number]);
 
   return (
     <Cell>
-      <div
-        onClick={(e) => {
-          e.stopPropagation();
-          setShowDetails(!showDetails);
-        }}
-        className="flex flex-col gap-2 w-full rounded-md hover:bg-base-300 transition duration-100 ease-in-out cursor-pointer"
-      >
-        <div className="flex items-start justify-between gap-3 p-4">
+      <div className="flex flex-col gap-2 w-full rounded-md transition duration-100 ease-in-out cursor-pointer">
+        <div className="flex items-start gap-3 p-4">
           <div className="flex gap-4">
             <div className="shrink-0">
-              <SecondaryInformation
-                value={`Chapter ${number.toString()}:`}
-                loud={true}
+              <PrimaryInformation
+                label={`Chapter ${number.toString()}`}
+                value={``}
                 copyable={false}
               />
             </div>
-            <SecondaryInformation value={description} copyable={false} />
+            <PrimaryInformation value={description} copyable={false} />
           </div>
+        </div>
 
-          <ChevronRightIcon className="w-5 h-5" />
+        {loading && <LoadingIndicator text="Fetching Chapter Data" />}
+
+        <div className="flex flex-col pl-6">
+          {elements.map((element, i) => {
+            return (
+              <ElementSum
+                key={`${i}-${element.htsno}`}
+                element={element}
+                chapter={chapter.number}
+                breadcrumbs={breadcrumbs}
+                setBreadcrumbs={setBreadcrumbs}
+              />
+            );
+          })}
         </div>
       </div>
     </Cell>
