@@ -478,8 +478,10 @@ export const getDirectChildrenElements = (
 ) => {
   // Find element in array
   const parentsIndex = chapterElements.findIndex(
-    (e) => e.htsno === element.htsno
+    (e) => e.htsno === element.htsno && e.description === element.description
   );
+
+  console.log("parentsIndex", parentsIndex);
 
   // If element is not found, throw an error
   if (parentsIndex === -1) {
@@ -492,6 +494,9 @@ export const getDirectChildrenElements = (
     parentsIndex + 1,
     Number(element.indent)
   );
+
+  console.log("firstSiblingsIndex", firstSiblingsIndex);
+  console.log("Total", firstSiblingsIndex - parentsIndex);
 
   // Get all elements between the parent and the first sibling at the same indent level
   const childrenElements = chapterElements.filter(
