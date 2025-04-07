@@ -39,8 +39,8 @@ export const ChapterSummary = ({
           <div className="flex gap-4">
             <div className="shrink-0">
               <SecondaryInformation
-                value={`Chapter ${number.toString()}:`}
-                loud={true}
+                label={`Chapter ${number.toString()}:`}
+                value={""}
                 copyable={false}
               />
             </div>

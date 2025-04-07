@@ -15,15 +15,19 @@ export const SecondaryInformation = ({
   loud,
 }: Props) => {
   return (
-    <div className="flex gap-2 items-center justify-between">
+    <div className="flex gap-2 items-center">
       {label && (
-        <h3 className={"text-xs md:text-sm text-base-content font-bold"}>
+        <h3
+          className={
+            "text-xs sm:text-sm md:text-base lg:text-lg text-base-content font-bold"
+          }
+        >
           {`${label}`}
         </h3>
       )}
       <h3
         className={classNames(
-          "text-xs md:text-sm text-base-content",
+          "text-xs sm:text-sm md:text-base lg:text-lg text-base-content",
           loud && "text-secondary"
         )}
       >

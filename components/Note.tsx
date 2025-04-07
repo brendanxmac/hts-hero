@@ -35,7 +35,7 @@ export const Note = ({ note }: Props) => {
             </div>
           </div>
 
-          <div className="btn btn-primary shrink-0 flex items-center gap-2 self-center">
+          <div className="btn btn-sm btn-square btn-accent shrink-0 flex items-center gap-2 self-center">
             <button
               className="text-sm"
               onClick={(e) => {

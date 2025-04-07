@@ -16,13 +16,17 @@ export const PrimaryInformation = ({
       {label && (
         <h2
           className={
-            "text-base-content dark:text-gray-300 font-semibold md:text-lg"
+            "text-base-content dark:text-gray-300 font-bold sm:text-lg md:text-xl lg:text-2xl"
           }
         >
-          {`${label}:`}
+          {`${label}`}
         </h2>
       )}
-      <h2 className={"text-base-content dark:text-gray-300 md:text-lg"}>
+      <h2
+        className={
+          "text-base-content dark:text-gray-300 sm:text-lg md:text-xl lg:text-2xl"
+        }
+      >
         {value}
       </h2>
       {copyable && <TextCopyButton value={value} />}

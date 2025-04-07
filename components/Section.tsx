@@ -50,7 +50,7 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
           <div className="flex gap-3 items-start">
             <div className="shrink-0 flex flex-col">
               <PrimaryInformation
-                label={`Section ${number.toString()}`}
+                label={`Section ${number.toString()}:`}
                 value={``}
                 copyable={false}
               />
@@ -71,9 +71,9 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
             />
           )}
 
-          <div className="flex gap-5 self-center">
+          <div className="flex gap-5 self-start">
             {notesPath && (
-              <div className="btn btn-sm btn-square btn-primary shrink-0 flex items-center gap-2">
+              <div className="btn btn-sm btn-square btn-accent shrink-0 flex items-center gap-2">
                 <button
                   className="text-sm"
                   onClick={(e) => {
@@ -82,7 +82,7 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
                     setShowNotes(!showNotes);
                   }}
                 >
-                  <DocumentMagnifyingGlassIcon className="h-5 w-5" />
+                  <DocumentMagnifyingGlassIcon className="h-6 w-6" />
                 </button>
               </div>
             )}
