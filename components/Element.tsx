@@ -8,6 +8,7 @@ import { getHtsChapterData } from "../libs/hts";
 import { getDirectChildrenElements } from "../libs/hts";
 import { ElementSum } from "./ElementSum";
 import { SecondaryInformation } from "./SecondaryInformation";
+import { SecondaryLabel } from "./SecondaryLabel";
 
 interface Props {
   element: HtsElement;
@@ -41,67 +42,62 @@ export const Element = ({ element, breadcrumbs, setBreadcrumbs }: Props) => {
   return (
     <Cell>
       <div className="flex flex-col w-full rounded-md transition duration-100 ease-in-out cursor-pointer">
-        <div className="flex items-start justify-between gap-3 p-4">
-          <div className="flex flex-col gap-3">
+        <div className="card bg-base-200 w-full flex flex-col items-start justify-between gap-7 p-4">
+          <div className="flex gap-3">
             <div className="shrink-0">
-              <PrimaryInformation label={htsno} value={``} copyable={false} />
+              <PrimaryInformation
+                label={htsno ? `${htsno}: ` : ``}
+                value={``}
+                copyable={false}
+              />
             </div>
             <PrimaryInformation value={description} copyable={false} />
           </div>
           {(general || special || other) && (
-            <div className="shrink-0 flex flex-col gap-1 bg-base-200 rounded-md p-4">
-              <PrimaryInformation
-                label={"Tariff Rates"}
-                value=""
-                copyable={false}
-              />
-              <div className="flex flex-col">
+            <div className="w-full flex flex-col gap-2">
+              <SecondaryLabel value={"Tariff Rates"} />
+              <div className="flex gap-2">
                 {units &&
                   units.map((unit) => (
-                    <SecondaryInformation
-                      label={`Unit`}
-                      value={unit}
-                      copyable={false}
-                      loud={true}
-                    />
+                    <div className="flex flex-col gap-1 p-2 bg-base-300 rounded-md min-w-24">
+                      <SecondaryInformation value={`Unit`} />
+                      <SecondaryInformation label={unit} value={""} />
+                    </div>
                   ))}
-                <SecondaryInformation
-                  label={"General"}
-                  value={general || "N/A"}
-                  copyable={false}
-                  loud={true}
-                />
-                <SecondaryInformation
-                  label={"Special"}
-                  value={special || "N/A"}
-                  copyable={false}
-                  loud={true}
-                />
-                <SecondaryInformation
-                  label={"Other"}
-                  value={other}
-                  copyable={false}
-                  loud={true}
-                />
+                <div className="flex flex-col gap-1 p-2 bg-base-300 rounded-md min-w-24">
+                  <SecondaryInformation value={"General"} />
+                  <SecondaryInformation label={general || "N/A"} value={""} />
+                </div>
+                <div className="flex flex-col gap-1 p-2 bg-base-300 rounded-md min-w-24">
+                  <SecondaryInformation value={"Special"} />
+                  <SecondaryInformation label={special || "N/A"} value={""} />
+                </div>
+                <div className="flex flex-col gap-1 p-2 bg-base-300 rounded-md min-w-24">
+                  <SecondaryInformation value={"Other"} />
+                  <SecondaryInformation label={other || "N/A"} value={""} />
+                </div>
               </div>
             </div>
           )}
-        </div>
-
-        {loading && <LoadingIndicator text="Fetching Element Data" />}
-
-        <div className="flex flex-col pl-6">
-          {children.map((child, i) => {
-            return (
-              <ElementSum
-                key={`${i}-${child.htsno}`}
-                element={child}
-                chapter={chapter}
-                breadcrumbs={breadcrumbs}
-                setBreadcrumbs={setBreadcrumbs}
-              />
-            );
-          })}
+          {loading && <LoadingIndicator text="Fetching Element Data" />}
+          {children.length > 0 && (
+            <div className="w-full flex flex-col gap-2">
+              <SecondaryLabel value={"Children"} />
+              <div>
+                {children.map((child, i) => {
+                  return (
+                    <ElementSum
+                      key={`${i}-${child.htsno}`}
+                      element={child}
+                      chapter={chapter}
+                      breadcrumbs={breadcrumbs}
+                      setBreadcrumbs={setBreadcrumbs}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </Cell>

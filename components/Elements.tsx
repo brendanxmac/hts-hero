@@ -39,7 +39,7 @@ export const Elements = ({
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-4">
       {breadcrumbs.length > 1 && (
         <Breadcrumbs
           breadcrumbs={breadcrumbs}
