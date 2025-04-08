@@ -10,6 +10,9 @@ import { ElementSum } from "./ElementSum";
 import { SecondaryInformation } from "./SecondaryInformation";
 import { TertiaryInformation } from "./TertiaryInformation";
 import { SecondaryLabel } from "./SecondaryLabel";
+import SquareIconButton from "./SqaureIconButton";
+import { DocumentMagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import PDF from "./PDF";
 
 interface Props {
   element: HtsElement;
@@ -22,6 +25,7 @@ export const Element = ({ element, breadcrumbs, setBreadcrumbs }: Props) => {
     element;
   const [children, setChildren] = useState<HtsElement[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showNotes, setShowNotes] = useState(false);
 
   useEffect(() => {
     const fetchElementData = async () => {
@@ -56,15 +60,21 @@ export const Element = ({ element, breadcrumbs, setBreadcrumbs }: Props) => {
     <Cell>
       <div className="flex flex-col w-full rounded-md transition duration-100 ease-in-out cursor-pointer">
         <div className="card bg-base-200 w-full flex flex-col items-start justify-between gap-7 p-4 sm:p-6">
-          <div className="flex flex-col gap-3">
-            <div className="shrink-0">
-              <PrimaryInformation
-                label={htsno ? `${htsno}: ` : ``}
-                value={``}
-                copyable={false}
-              />
+          <div className="flex items-center justify-between gap-3 w-full">
+            <div className="flex flex-col gap-3">
+              <div className="shrink-0">
+                <PrimaryInformation
+                  label={htsno ? `${htsno}: ` : ``}
+                  value={``}
+                  copyable={false}
+                />
+              </div>
+              <PrimaryInformation value={description} copyable={false} />
             </div>
-            <PrimaryInformation value={description} copyable={false} />
+            <SquareIconButton
+              icon={<DocumentMagnifyingGlassIcon className="h-6 w-6" />}
+              onClick={() => setShowNotes(!showNotes)}
+            />
           </div>
           {(general || special || other) && (
             <div className="w-full flex flex-col gap-2">
@@ -123,6 +133,14 @@ export const Element = ({ element, breadcrumbs, setBreadcrumbs }: Props) => {
           )}
         </div>
       </div>
+      {showNotes && (
+        <PDF
+          title={`Chapter ${chapter} Notes`}
+          file={`/notes/chapter/Chapter ${chapter}.pdf`}
+          isOpen={showNotes}
+          setIsOpen={setShowNotes}
+        />
+      )}
     </Cell>
   );
 };
