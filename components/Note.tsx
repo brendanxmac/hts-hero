@@ -5,13 +5,15 @@ import { PrimaryInformation } from "./PrimaryInformation";
 import { Note as NoteType } from "../public/notes/notes";
 import PDF from "./PDF";
 import SquareIconButton from "./SqaureIconButton";
+import { SecondaryInformation } from "./SecondaryInformation";
+import { TertiaryInformation } from "./TertiaryInformation";
 
 interface Props {
   note: NoteType;
 }
 
 export const Note = ({ note }: Props) => {
-  const { description, title, pdfURL } = note;
+  const { description, title, pdfURL, specialTariffTreatmentCodes } = note;
   const [show, setShow] = useState(false);
 
   return (
@@ -23,16 +25,26 @@ export const Note = ({ note }: Props) => {
             setShow(!show);
           }}
         >
-          <div className="flex gap-3 items-start">
-            <div className="flex flex-col sm:ml-4">
-              <PrimaryInformation
-                label={`${title}`}
-                value={""}
-                copyable={false}
-              />
+          <div className="flex flex-col sm:ml-4 gap-3">
+            <PrimaryInformation
+              label={`${title}`}
+              value={""}
+              copyable={false}
+            />
+            <div>
               {title !== description && (
                 <PrimaryInformation value={description} copyable={false} />
               )}
+              {specialTariffTreatmentCodes &&
+                specialTariffTreatmentCodes.length > 0 && (
+                  <div className="flex gap-1 rounded-md min-w-24">
+                    <TertiaryInformation value={"Special Tariff Symbols:"} />
+                    <SecondaryInformation
+                      label={specialTariffTreatmentCodes.join(", ") || "--"}
+                      value=""
+                    />
+                  </div>
+                )}
             </div>
           </div>
 
