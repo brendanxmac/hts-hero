@@ -32,7 +32,7 @@ export const Breadcrumbs = ({
             return (
               <li key={`breadcrumb-${i}`}>
                 <button
-                  className="btn btn-xs btn-link btn-accent flex items-center gap-2"
+                  className="btn btn-xs btn-link flex items-center gap-2 hover:text-secondary hover:scale-110"
                   onClick={() => {
                     setBreadcrumbs(breadcrumbs.slice(0, i + 1));
                   }}

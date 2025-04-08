@@ -61,7 +61,7 @@ export const Explore = () => {
     <section className="grow h-full w-full overflow-auto flex flex-col items-center">
       <div className="grow w-full items-center flex flex-col gap-5">
         <div className="flex flex-col min-w-full">
-          <div className="sticky top-0 bg-base-100 flex gap-6 items-center pb-3">
+          <div className="sticky top-0 z-10 bg-base-100 flex gap-6 items-center pb-3">
             <h2 className="text-xl md:text-2xl font-bold">Explorer</h2>
             <div
               role="tablist"

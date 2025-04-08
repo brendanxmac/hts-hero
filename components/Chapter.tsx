@@ -54,8 +54,8 @@ export const Chapter = ({ chapter, breadcrumbs, setBreadcrumbs }: Props) => {
 
   return (
     <Cell>
-      <div className="flex flex-col gap-2 w-full rounded-md transition duration-100 ease-in-out cursor-pointer">
-        <div className="flex items-start justify-between gap-3 p-4">
+      <div className="card bg-base-200 flex flex-col sm:gap-2 w-full rounded-md transition duration-100 ease-in-out cursor-pointer">
+        <div className="flex items-start justify-between gap-3 p-4 sm:p-6">
           <div className="flex gap-2">
             <div className="shrink-0">
               <PrimaryInformation
@@ -83,7 +83,7 @@ export const Chapter = ({ chapter, breadcrumbs, setBreadcrumbs }: Props) => {
 
         {loading && <LoadingIndicator text="Fetching Chapter Data" />}
 
-        <div className="flex flex-col pl-6">
+        <div className="flex flex-col px-3 sm:px-6">
           {elements.map((element, i) => {
             return (
               <ElementSum
