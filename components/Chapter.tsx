@@ -10,6 +10,9 @@ import {
 import { PrimaryInformation } from "./PrimaryInformation";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { ElementSum } from "./ElementSum";
+import SquareIconButton from "./SqaureIconButton";
+import { DocumentMagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import PDF from "./PDF";
 
 interface Props {
   chapter: HtsSectionAndChapterBase;
@@ -19,9 +22,10 @@ interface Props {
 
 export const Chapter = ({ chapter, breadcrumbs, setBreadcrumbs }: Props) => {
   // Find a way to keep the data around so if we segue back we don't have to fetch it again
-  const { number, description } = chapter;
+  const { number, description, notesPath } = chapter;
   const [elements, setElements] = useState<HtsElement[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showNotes, setShowNotes] = useState(false);
 
   useEffect(() => {
     const fetchChapterData = async () => {
@@ -51,7 +55,7 @@ export const Chapter = ({ chapter, breadcrumbs, setBreadcrumbs }: Props) => {
   return (
     <Cell>
       <div className="flex flex-col gap-2 w-full rounded-md transition duration-100 ease-in-out cursor-pointer">
-        <div className="flex items-start gap-3 p-4">
+        <div className="flex items-start justify-between gap-3 p-4">
           <div className="flex gap-2">
             <div className="shrink-0">
               <PrimaryInformation
@@ -62,7 +66,20 @@ export const Chapter = ({ chapter, breadcrumbs, setBreadcrumbs }: Props) => {
             </div>
             <PrimaryInformation value={description} copyable={false} />
           </div>
+          <SquareIconButton
+            icon={<DocumentMagnifyingGlassIcon className="h-6 w-6" />}
+            onClick={() => setShowNotes(!showNotes)}
+          />
         </div>
+
+        {showNotes && (
+          <PDF
+            title={`Chapter ${number.toString()} Notes`}
+            file={notesPath}
+            isOpen={showNotes}
+            setIsOpen={setShowNotes}
+          />
+        )}
 
         {loading && <LoadingIndicator text="Fetching Chapter Data" />}
 
