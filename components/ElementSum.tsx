@@ -35,7 +35,7 @@ export const ElementSum = ({
             },
           ]);
         }}
-        className="flex flex-col gap-2 w-full rounded-md hover:bg-base-300 transition duration-100 ease-in-out cursor-pointer"
+        className="flex flex-col gap-2 w-full rounded-md hover:bg-primary/30 transition duration-100 ease-in-out cursor-pointer"
       >
         <div className="flex items-center justify-between gap-3 p-4">
           <div className="flex gap-4">

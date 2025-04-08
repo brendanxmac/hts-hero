@@ -4,6 +4,7 @@ import { useState } from "react";
 import { PrimaryInformation } from "./PrimaryInformation";
 import { Note as NoteType } from "../public/notes/notes";
 import PDF from "./PDF";
+import SquareIconButton from "./SqaureIconButton";
 
 interface Props {
   note: NoteType;
@@ -17,7 +18,7 @@ export const Note = ({ note }: Props) => {
     <Cell>
       <div className="w-full flex flex-col rounded-md hover:shadow-sm hover:bg-base-content/10 active:bg-base-content/30 transition duration-200 ease-in-out cursor-pointer">
         <div
-          className="flex items-start justify-between gap-3 p-4"
+          className="flex items-center justify-between gap-3 p-4"
           onClick={() => {
             setShow(!show);
           }}
@@ -35,18 +36,10 @@ export const Note = ({ note }: Props) => {
             </div>
           </div>
 
-          <div className="btn btn-sm btn-square btn-accent shrink-0 flex items-center gap-2 self-center">
-            <button
-              className="text-sm"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setShow(!show);
-              }}
-            >
-              <DocumentMagnifyingGlassIcon className="h-6 w-6" />
-            </button>
-          </div>
+          <SquareIconButton
+            icon={<DocumentMagnifyingGlassIcon className="h-6 w-6" />}
+            onClick={() => setShow(!show)}
+          />
         </div>
 
         {show && (

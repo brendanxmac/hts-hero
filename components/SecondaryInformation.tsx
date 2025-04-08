@@ -19,7 +19,7 @@ export const SecondaryInformation = ({
       {label && (
         <h3
           className={
-            "text-xs sm:text-sm md:text-base lg:text-lg text-base-content font-bold"
+            "text-xs sm:text-sm md:text-base text-base-content font-bold"
           }
         >
           {`${label}`}
@@ -27,7 +27,7 @@ export const SecondaryInformation = ({
       )}
       <h3
         className={classNames(
-          "text-xs sm:text-sm md:text-base lg:text-lg text-base-content",
+          "text-xs sm:text-sm md:text-base text-base-content",
           loud && "text-secondary"
         )}
       >
