@@ -1,9 +1,12 @@
 import { ChevronRightIcon } from "@heroicons/react/16/solid";
+import { DocumentMagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { HtsElementType, HtsSectionAndChapterBase } from "../interfaces/hts";
 import { SecondaryInformation } from "./SecondaryInformation";
 import { Cell } from "./Cell";
 import { NavigatableElement } from "./Elements";
-
+import { useState } from "react";
+import PDF from "./PDF";
+import SquareIconButton from "./SqaureIconButton";
 interface Props {
   chapter: HtsSectionAndChapterBase;
   breadcrumbs: NavigatableElement[];
@@ -15,7 +18,8 @@ export const ChapterSummary = ({
   breadcrumbs,
   setBreadcrumbs,
 }: Props) => {
-  const { number, description } = chapter;
+  const { number, description, notesPath } = chapter;
+  const [showNotes, setShowNotes] = useState(false);
 
   return (
     <Cell>
@@ -47,7 +51,24 @@ export const ChapterSummary = ({
             <SecondaryInformation value={description} copyable={false} />
           </div>
 
-          <ChevronRightIcon className="shrink-0 w-5 h-5" />
+          {notesPath && showNotes && (
+            <PDF
+              title={`Chapter ${number.toString()} Notes`}
+              file={notesPath}
+              isOpen={showNotes}
+              setIsOpen={setShowNotes}
+            />
+          )}
+
+          <div className="flex items-center gap-2">
+            {notesPath && (
+              <SquareIconButton
+                icon={<DocumentMagnifyingGlassIcon className="h-6 w-6" />}
+                onClick={() => setShowNotes(!showNotes)}
+              />
+            )}
+            <ChevronRightIcon className="shrink-0 w-5 h-5" />
+          </div>
         </div>
       </div>
     </Cell>

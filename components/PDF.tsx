@@ -89,7 +89,7 @@ export default function PDF({ file, isOpen, setIsOpen, title }: Props) {
           leaveTo="opacity-0 translate-y-4"
         >
           <Dialog.Panel className="rounded border-2 border-base-100 overflow-auto max-w-7xl w-full h-full">
-            <div className="bg-transparent z-10 sticky top-0 p-2 sm:px-5 sm:py-4 sm:bg-base-300 border-b border-base-300 w-full">
+            <div className="bg-base-100 z-10 sticky top-0 p-2 sm:px-5 sm:py-4 sm:bg-base-300 border-b border-base-300 w-full">
               <div className="flex justify-between items-center max-w-full ">
                 <div className="shrink-0 hidden sm:flex items-center gap-4">
                   <Dialog.Title className="font-semibold text-base-content dark:text-gray-100">
@@ -172,7 +172,10 @@ export default function PDF({ file, isOpen, setIsOpen, title }: Props) {
                 </div>
               </div>
             </div>
-            <div ref={setContainerRef} className="w-full h-full overflow-auto">
+            <div
+              ref={setContainerRef}
+              className="bg-base-100 w-full h-full overflow-auto"
+            >
               {/* @ts-ignore */}
               <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
                 {Array.from({ length: numPages }, (_, index) => (

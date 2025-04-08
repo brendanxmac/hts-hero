@@ -16,16 +16,14 @@ export const PrimaryInformation = ({
       {label && (
         <h2
           className={
-            "text-base-content dark:text-gray-300 font-bold sm:text-lg md:text-xl lg:text-2xl"
+            "text-base-content dark:text-gray-300 font-bold sm:text-lg md:text-xl"
           }
         >
           {`${label}`}
         </h2>
       )}
       <h2
-        className={
-          "text-base-content dark:text-gray-300 sm:text-lg md:text-xl lg:text-2xl"
-        }
+        className={"text-base-content dark:text-gray-300 sm:text-lg md:text-xl"}
       >
         {value}
       </h2>

@@ -8,6 +8,7 @@ import { PrimaryInformation } from "./PrimaryInformation";
 import { classNames } from "../utilities/style";
 import PDF from "./PDF";
 import { NavigatableElement } from "./Elements";
+import SquareIconButton from "./SqaureIconButton";
 
 interface Props {
   section: HtsSection;
@@ -35,18 +36,16 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
     <Cell>
       <div
         className={classNames(
-          !showDetails && "hover:bg-base-content/10",
+          !showDetails && "hover:bg-base-300",
           "w-full flex flex-col gap-4 py-6 px-4 rounded-md transition duration-100 ease-in-out hover:cursor-pointer"
         )}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setShowDetails(!showDetails);
+        }}
       >
-        <div
-          className="flex items-start justify-between gap-5"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setShowDetails(!showDetails);
-          }}
-        >
+        <div className="flex items-start justify-between gap-5">
           <div className="flex gap-3 items-start">
             <div className="shrink-0 flex flex-col">
               <PrimaryInformation
@@ -71,20 +70,12 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
             />
           )}
 
-          <div className="flex gap-5 self-start">
+          <div className="flex gap-5 self-center">
             {notesPath && (
-              <div className="btn btn-sm btn-square btn-accent shrink-0 flex items-center gap-2">
-                <button
-                  className="text-sm"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setShowNotes(!showNotes);
-                  }}
-                >
-                  <DocumentMagnifyingGlassIcon className="h-6 w-6" />
-                </button>
-              </div>
+              <SquareIconButton
+                icon={<DocumentMagnifyingGlassIcon className="h-6 w-6" />}
+                onClick={() => setShowNotes(!showNotes)}
+              />
             )}
 
             <div className="self-center">
