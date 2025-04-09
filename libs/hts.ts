@@ -457,10 +457,17 @@ export const getHtsSectionsAndChapters = (): Promise<{
   return apiClient.get("/hts/get-sections-and-chapters", {});
 };
 
-export const getHtsChapterData = (chapter: string): Promise<HtsElement[]> => {
-  return apiClient.get("/hts/get-chapter-data", {
-    params: { chapter },
-  });
+export const getHtsChapterData = async (
+  chapter: string
+): Promise<HtsElement[]> => {
+  const chapterData: HtsElement[] = await apiClient.get(
+    "/hts/get-chapter-data",
+    {
+      params: { chapter },
+    }
+  );
+
+  return chapterData.map((e) => ({ ...e, uuid: crypto.randomUUID() }));
 };
 
 // NOTE: this will get all elements in an array of Hts Elements that are at a given indent level.
@@ -476,9 +483,9 @@ export const getDirectChildrenElements = (
   element: HtsElement,
   chapterElements: HtsElement[]
 ) => {
-  // Find element in array
+  console.log("chapterElements", chapterElements);
   const parentsIndex = chapterElements.findIndex(
-    (e) => e.htsno === element.htsno && e.description === element.description
+    (e) => e.uuid === element.uuid
   );
 
   // console.log("parentsIndex", parentsIndex);

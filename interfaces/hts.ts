@@ -41,6 +41,7 @@ export interface SimplifiedHtsElement {
 }
 
 export interface HtsElement {
+  uuid: string;
   type: HtsElementType;
   chapter?: number;
   htsno: string;
