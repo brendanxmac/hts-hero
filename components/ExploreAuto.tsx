@@ -8,7 +8,7 @@ import {
   getElementsAtIndentLevel,
 } from "../libs/hts";
 import { Cell } from "./Cell";
-import { LoadingIndicator } from "./LabelledLoader";
+import { LoadingIndicator } from "./LoadingIndicator";
 import { ArrowLeftIcon } from "@heroicons/react/16/solid";
 import { Chapter, ChapterI } from "./ChapterOriginal";
 
@@ -17,14 +17,13 @@ interface Props {
   setProductDescription: Dispatch<SetStateAction<string>>;
 }
 
-export const Explore = ({ productDescription }: Props) => {
+export const ExploreAuto = ({ productDescription }: Props) => {
   const [loading, setLoading] = useState(true);
   const [bestChapters, setBestChapters] = useState<number[]>([]);
   const [chapters, setChapters] = useState<ChapterI[]>([]);
   const getBestChapters = async () => {
-    const bestChaptersResponse = await getBestChaptersForProductDescription(
-      productDescription
-    );
+    const bestChaptersResponse =
+      await getBestChaptersForProductDescription(productDescription);
     setBestChapters(bestChaptersResponse.chapters);
   };
 

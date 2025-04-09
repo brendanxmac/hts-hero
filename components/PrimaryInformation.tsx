@@ -12,17 +12,19 @@ export const PrimaryInformation = ({
   copyable = true,
 }: Props) => {
   return (
-    <div className="flex gap-4 items-center">
+    <div className="flex items-center gap-2">
       {label && (
         <h2
           className={
-            "text-base-content dark:text-gray-300 font-semibold md:text-lg"
+            "text-base-content dark:text-gray-300 font-bold sm:text-lg md:text-xl"
           }
         >
-          {`${label}:`}
+          {`${label}`}
         </h2>
       )}
-      <h2 className={"text-base-content dark:text-gray-300 md:text-lg"}>
+      <h2
+        className={"text-base-content dark:text-gray-300 sm:text-lg md:text-xl"}
+      >
         {value}
       </h2>
       {copyable && <TextCopyButton value={value} />}

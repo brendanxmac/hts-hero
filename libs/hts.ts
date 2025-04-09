@@ -457,10 +457,17 @@ export const getHtsSectionsAndChapters = (): Promise<{
   return apiClient.get("/hts/get-sections-and-chapters", {});
 };
 
-export const getHtsChapterData = (chapter: string): Promise<HtsElement[]> => {
-  return apiClient.get("/hts/get-chapter-data", {
-    params: { chapter },
-  });
+export const getHtsChapterData = async (
+  chapter: string
+): Promise<HtsElement[]> => {
+  const chapterData: HtsElement[] = await apiClient.get(
+    "/hts/get-chapter-data",
+    {
+      params: { chapter },
+    }
+  );
+
+  return chapterData.map((e) => ({ ...e, uuid: crypto.randomUUID() }));
 };
 
 // NOTE: this will get all elements in an array of Hts Elements that are at a given indent level.
@@ -473,32 +480,36 @@ export const getElementsAtIndentLevel = (
 };
 
 export const getDirectChildrenElements = (
-  parentElement: HtsElement,
-  elements: HtsElement[]
+  element: HtsElement,
+  chapterElements: HtsElement[]
 ) => {
-  console.log("parentElement", parentElement.htsno, parentElement.indent);
-  console.log("elements", elements.length);
-  // Find element in array
-  const parentsIndex = elements.findIndex(
-    (e) => e.htsno === parentElement.htsno
+  const parentsIndex = chapterElements.findIndex(
+    (e) => e.uuid === element.uuid
   );
-  console.log("parentsIndex", parentsIndex);
+
+  // console.log("parentsIndex", parentsIndex);
+
   // If element is not found, throw an error
   if (parentsIndex === -1) {
-    throw new Error(`Element not found in array: ${parentElement.htsno}`);
+    throw new Error(`Element not found in array: ${element.htsno}`);
   }
 
   // Get index of next element at same indent level at parent
   const firstSiblingsIndex = getIndexOfLastElementBeforeIndentLevel(
-    elements,
+    chapterElements,
     parentsIndex + 1,
-    Number(parentElement.indent)
+    Number(element.indent)
   );
-  console.log("firstSiblingsIndex", firstSiblingsIndex);
+
+  // console.log("firstSiblingsIndex", firstSiblingsIndex);
+  // console.log("Total", firstSiblingsIndex - parentsIndex);
+
   // Get all elements between the parent and the first sibling at the same indent level
-  const childrenElements = elements.filter(
-    (element, index) =>
-      element.indent > parentElement.indent && index <= firstSiblingsIndex
+  const childrenElements = chapterElements.filter(
+    (childElement, index) =>
+      Number(childElement.indent) == Number(element.indent) + 1 &&
+      index <= firstSiblingsIndex &&
+      index > parentsIndex
   );
 
   return childrenElements;

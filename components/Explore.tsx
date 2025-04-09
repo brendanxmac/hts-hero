@@ -2,13 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { getHtsSectionsAndChapters } from "../libs/hts";
-import { Cell } from "./Cell";
-import { HtsSection } from "../interfaces/hts";
+import { HtsElementType, HtsSection } from "../interfaces/hts";
 import { classNames } from "../utilities/style";
-import { Section } from "./Section";
-import { LoadingIndicator } from "./LabelledLoader";
-import { Note } from "./Note";
-import { notes } from "../public/notes/notes";
+import { LoadingIndicator } from "./LoadingIndicator";
+import { Elements, NavigatableElement } from "./Elements";
+import { Notes } from "./Notes";
 
 enum Tabs {
   NOTES = "notes",
@@ -22,12 +20,12 @@ interface Tab {
 
 const tabs: Tab[] = [
   {
-    label: "Notes",
-    value: Tabs.NOTES,
-  },
-  {
     label: "Elements",
     value: Tabs.ELEMENTS,
+  },
+  {
+    label: "Notes",
+    value: Tabs.NOTES,
   },
 ];
 
@@ -35,12 +33,22 @@ export const Explore = () => {
   const [loading, setLoading] = useState(false);
   const [sections, setSections] = useState<HtsSection[]>([]);
   const [activeTab, setActiveTab] = useState(tabs[0].value);
+  const [breadcrumbs, setBreadcrumbs] = useState<NavigatableElement[]>([]);
 
   useEffect(() => {
     const fetchSectionsAndChapters = async () => {
       setLoading(true);
       const { sections } = await getHtsSectionsAndChapters();
       setSections(sections);
+      setBreadcrumbs([
+        {
+          title: "Sections",
+          element: {
+            type: HtsElementType.SECTION,
+            sections,
+          },
+        },
+      ]);
       setLoading(false);
     };
 
@@ -53,7 +61,7 @@ export const Explore = () => {
     <section className="grow h-full w-full overflow-auto flex flex-col items-center">
       <div className="grow w-full items-center flex flex-col gap-5">
         <div className="flex flex-col min-w-full">
-          <div className="sticky top-0 bg-base-100 flex gap-6 items-center pb-3">
+          <div className="sticky top-0 z-10 bg-base-100 flex gap-6 items-center pb-3">
             <h2 className="text-xl md:text-2xl font-bold">Explorer</h2>
             <div
               role="tablist"
@@ -82,33 +90,14 @@ export const Explore = () => {
           )}
 
           {activeTab === Tabs.ELEMENTS && (
-            <div className="flex flex-col">
-              {sections.length > 0 && (
-                <div className="flex flex-col">
-                  {sections.map((section) => {
-                    return (
-                      <Section
-                        key={`section-${section.number}`}
-                        section={section}
-                      />
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+            <Elements
+              sections={sections}
+              breadcrumbs={breadcrumbs}
+              setBreadcrumbs={setBreadcrumbs}
+            />
           )}
 
-          {activeTab === Tabs.NOTES && (
-            <div className="flex flex-col gap-2 mt-4">
-              {notes.length > 0 && (
-                <div className="flex flex-col gap-3">
-                  {notes.map((note) => {
-                    return <Note key={`note-${note.title}`} note={note} />;
-                  })}
-                </div>
-              )}
-            </div>
-          )}
+          {activeTab === Tabs.NOTES && <Notes />}
         </div>
       </div>
     </section>
