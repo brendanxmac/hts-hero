@@ -14,6 +14,7 @@ import SquareIconButton from "./SqaureIconButton";
 import { DocumentMagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import PDF from "./PDF";
 import { notes } from "../public/notes/notes";
+import { useChapters } from "../contexts/ChaptersContext";
 
 interface Props {
   element: HtsElement;
@@ -32,21 +33,34 @@ export const Element = ({ element, breadcrumbs, setBreadcrumbs }: Props) => {
   const [children, setChildren] = useState<HtsElement[]>([]);
   const [loading, setLoading] = useState(true);
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
+  const { fetchChapter, getChapterElements } = useChapters();
 
   useEffect(() => {
-    const fetchElementData = async () => {
-      setLoading(true);
-      const chapterElements = await getHtsChapterData(String(chapter));
-      const directChildrenElements = getDirectChildrenElements(
-        element,
-        chapterElements
-      );
+    const loadChapterData = async () => {
+      const chapterElements = getChapterElements(chapter);
 
-      setChildren(directChildrenElements);
+      if (!chapterElements) {
+        setLoading(true);
+        await fetchChapter(chapter);
+        const updatedChapterElements = getChapterElements(chapter);
+        if (updatedChapterElements) {
+          const directChildrenElements = getDirectChildrenElements(
+            element,
+            updatedChapterElements
+          );
+          setChildren(directChildrenElements);
+        }
+      } else {
+        const directChildrenElements = getDirectChildrenElements(
+          element,
+          chapterElements
+        );
+        setChildren(directChildrenElements);
+      }
       setLoading(false);
     };
-    fetchElementData();
-  }, [element]);
+    loadChapterData();
+  }, [chapter, fetchChapter, getChapterElements, element]);
 
   // Regex that gets the prefix of the special text
   const getPrefixFromSpecial = (special: string) => {
@@ -186,7 +200,11 @@ export const Element = ({ element, breadcrumbs, setBreadcrumbs }: Props) => {
           title={showPDF.title}
           file={showPDF.file}
           isOpen={showPDF !== null}
-          setIsOpen={setShowPDF}
+          setIsOpen={(isOpen) => {
+            if (!isOpen) {
+              setShowPDF(null);
+            }
+          }}
         />
       )}
     </Cell>

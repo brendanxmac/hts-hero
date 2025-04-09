@@ -15,13 +15,13 @@ export const Breadcrumbs = ({
 
   return (
     <div className="flex gap-3 items-start justify-start">
-      <div className="btn btn-xs btn-square btn-primary shrink-0 flex items-center gap-2">
-        <button
-          className="text-sm"
-          onClick={() => {
-            setBreadcrumbs(breadcrumbs.slice(0, -1));
-          }}
-        >
+      <div
+        className="btn btn-xs btn-square btn-primary shrink-0 flex items-center gap-2"
+        onClick={() => {
+          setBreadcrumbs(breadcrumbs.slice(0, -1));
+        }}
+      >
+        <button className="text-sm">
           <ArrowLeftIcon className="h-4 w-4" />
         </button>
       </div>
