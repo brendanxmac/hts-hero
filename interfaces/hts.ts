@@ -14,6 +14,12 @@ export interface Note {
   listPosition: string;
 }
 
+export enum HtsElementType {
+  SECTION = "section",
+  CHAPTER = "chapter",
+  ELEMENT = "element",
+}
+
 export interface HtsSection extends HtsSectionAndChapterBase {
   chapters: HtsSectionAndChapterBase[];
 }
@@ -22,6 +28,7 @@ export interface HtsSectionAndChapterBase {
   number: number;
   description: string;
   notesPath?: string;
+  type: HtsElementType;
 }
 
 export interface HtsElementWithParentReference extends HtsElement {
@@ -34,6 +41,9 @@ export interface SimplifiedHtsElement {
 }
 
 export interface HtsElement {
+  uuid: string;
+  type: HtsElementType;
+  chapter?: number;
   htsno: string;
   indent: string;
   description: string;

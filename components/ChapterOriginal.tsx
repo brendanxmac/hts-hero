@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { HtsElement, HtsSectionAndChapterBase } from "../interfaces/hts";
 import { Cell } from "./Cell";
-import { ChapterSummary } from "./ChapterSummary";
+import { ChapterSummary } from "./ChapterOriginalSummary";
 import { ChapterDetails } from "./ChapterDetails";
 
 export interface ChapterI extends HtsSectionAndChapterBase {

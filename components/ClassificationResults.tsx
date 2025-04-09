@@ -19,7 +19,7 @@ import {
   CandidateSelection,
   HtsElement,
 } from "../interfaces/hts";
-import { LoadingIndicator } from "./LabelledLoader";
+import { LoadingIndicator } from "./LoadingIndicator";
 import {
   elementsAtClassificationLevel,
   setIndexInArray,

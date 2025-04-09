@@ -3,12 +3,17 @@ import { DocumentMagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { HtsSection } from "../interfaces/hts";
 import { Cell } from "./Cell";
 import { useState } from "react";
-import { Chapter } from "./Chapter";
+import { ChapterSummary } from "./ChapterSummary";
 import { PrimaryInformation } from "./PrimaryInformation";
 import { classNames } from "../utilities/style";
 import PDF from "./PDF";
+import { NavigatableElement } from "./Elements";
+import SquareIconButton from "./SqaureIconButton";
+
 interface Props {
   section: HtsSection;
+  breadcrumbs: NavigatableElement[];
+  setBreadcrumbs: (breadcrumbs: NavigatableElement[]) => void;
 }
 
 export const getChapterRange = (section: HtsSection) => {
@@ -22,7 +27,7 @@ export const getChapterRange = (section: HtsSection) => {
   return `Chapters ${firstChapter.number}-${lastChapter.number}`;
 };
 
-export const Section = ({ section }: Props) => {
+export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
   const { number, description, notesPath } = section;
   const [showDetails, setShowDetails] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
@@ -31,22 +36,20 @@ export const Section = ({ section }: Props) => {
     <Cell>
       <div
         className={classNames(
-          !showDetails && "hover:bg-base-content/10",
+          !showDetails && "hover:bg-base-300",
           "w-full flex flex-col gap-4 py-6 px-4 rounded-md transition duration-100 ease-in-out hover:cursor-pointer"
         )}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setShowDetails(!showDetails);
+        }}
       >
-        <div
-          className="flex items-start justify-between gap-3"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setShowDetails(!showDetails);
-          }}
-        >
+        <div className="flex items-start justify-between gap-5">
           <div className="flex gap-3 items-start">
             <div className="shrink-0 flex flex-col">
               <PrimaryInformation
-                label={`Section ${number.toString()}`}
+                label={`Section ${number.toString()}:`}
                 value={``}
                 copyable={false}
               />
@@ -68,18 +71,12 @@ export const Section = ({ section }: Props) => {
           )}
 
           <div className="flex gap-5 self-center">
-            <div className="btn btn-sm btn-primary shrink-0 flex items-center gap-2">
-              <button
-                className="text-sm"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setShowNotes(!showNotes);
-                }}
-              >
-                <DocumentMagnifyingGlassIcon className="h-6 w-6" />
-              </button>
-            </div>
+            {notesPath && (
+              <SquareIconButton
+                icon={<DocumentMagnifyingGlassIcon className="h-6 w-6" />}
+                onClick={() => setShowNotes(!showNotes)}
+              />
+            )}
 
             <div className="self-center">
               {showDetails ? (
@@ -94,7 +91,14 @@ export const Section = ({ section }: Props) => {
         {showDetails && (
           <div className="flex flex-col pl-6">
             {section.chapters.map((chapter) => {
-              return <Chapter key={chapter.number} chapter={chapter} />;
+              return (
+                <ChapterSummary
+                  key={chapter.number}
+                  chapter={chapter}
+                  breadcrumbs={breadcrumbs}
+                  setBreadcrumbs={setBreadcrumbs}
+                />
+              );
             })}
           </div>
         )}
