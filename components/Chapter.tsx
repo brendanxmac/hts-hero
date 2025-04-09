@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import {
   getDirectChildrenElements,
   getElementsAtIndentLevel,
-  getHtsChapterData,
 } from "../libs/hts";
 import { PrimaryInformation } from "./PrimaryInformation";
 import { LoadingIndicator } from "./LoadingIndicator";
@@ -13,6 +12,7 @@ import { ElementSum } from "./ElementSum";
 import SquareIconButton from "./SqaureIconButton";
 import { DocumentMagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import PDF from "./PDF";
+import { useChapters } from "../contexts/ChaptersContext";
 
 interface Props {
   chapter: HtsSectionAndChapterBase;
@@ -21,36 +21,29 @@ interface Props {
 }
 
 export const Chapter = ({ chapter, breadcrumbs, setBreadcrumbs }: Props) => {
-  // Find a way to keep the data around so if we segue back we don't have to fetch it again
   const { number, description, notesPath } = chapter;
-  const [elements, setElements] = useState<HtsElement[]>([]);
-  const [loading, setLoading] = useState(true);
   const [showNotes, setShowNotes] = useState(false);
+  const { fetchChapter, getChapterElements, loadingChapters } = useChapters();
 
   useEffect(() => {
-    const fetchChapterData = async () => {
-      const chapterElements = await getHtsChapterData(String(chapter.number));
-      const elementsAtIndentLevel = getElementsAtIndentLevel(
-        chapterElements,
-        0
-      );
-      const elementsWithChildren = elementsAtIndentLevel.map((element) => {
-        const directChildrenElements = getDirectChildrenElements(
-          element,
-          chapterElements
-        );
+    fetchChapter(number);
+  }, [number, fetchChapter]);
 
-        return {
-          ...element,
-          children: directChildrenElements,
-        };
-      });
+  const chapterElements = getChapterElements(number);
+  const elementsAtIndentLevel = chapterElements
+    ? getElementsAtIndentLevel(chapterElements, 0)
+    : [];
+  const elementsWithChildren = elementsAtIndentLevel.map((element) => {
+    const directChildrenElements = getDirectChildrenElements(
+      element,
+      chapterElements || []
+    );
 
-      setElements(elementsWithChildren);
-      setLoading(false);
+    return {
+      ...element,
+      children: directChildrenElements,
     };
-    fetchChapterData();
-  }, [number]);
+  });
 
   return (
     <Cell>
@@ -81,10 +74,12 @@ export const Chapter = ({ chapter, breadcrumbs, setBreadcrumbs }: Props) => {
           />
         )}
 
-        {loading && <LoadingIndicator text="Fetching Chapter Data" />}
+        {loadingChapters.includes(number) && (
+          <LoadingIndicator text="Fetching Chapter Data" />
+        )}
 
         <div className="flex flex-col px-3 sm:px-6">
-          {elements.map((element, i) => {
+          {elementsWithChildren.map((element, i) => {
             return (
               <ElementSum
                 key={`${i}-${element.htsno}`}

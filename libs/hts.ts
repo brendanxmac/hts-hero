@@ -483,7 +483,6 @@ export const getDirectChildrenElements = (
   element: HtsElement,
   chapterElements: HtsElement[]
 ) => {
-  console.log("chapterElements", chapterElements);
   const parentsIndex = chapterElements.findIndex(
     (e) => e.uuid === element.uuid
   );
