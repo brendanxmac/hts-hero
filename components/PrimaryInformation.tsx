@@ -29,7 +29,7 @@ export const PrimaryInformation = ({
       <h2
         className={classNames(
           loud ? "text-secondary" : "text-base-content dark:text-gray-300",
-          "font-bold sm:text-lg lg:text-xl"
+          "sm:text-lg lg:text-xl"
         )}
       >
         {value}
