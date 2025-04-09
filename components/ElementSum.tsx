@@ -1,7 +1,6 @@
 import { ChevronRightIcon } from "@heroicons/react/16/solid";
 import { HtsElement } from "../interfaces/hts";
 import { SecondaryInformation } from "./SecondaryInformation";
-import { Cell } from "./Cell";
 import { NavigatableElement } from "./Elements";
 
 interface Props {
@@ -20,40 +19,38 @@ export const ElementSum = ({
   const { htsno, description } = element;
 
   return (
-    <Cell>
-      <div
-        onClick={(e) => {
-          e.stopPropagation();
-          setBreadcrumbs([
-            ...breadcrumbs,
-            {
-              title: `${htsno || description.split(" ").slice(0, 2).join(" ") + "..."}`,
-              element: {
-                ...element,
-                chapter,
-              },
+    <div
+      onClick={(e) => {
+        e.stopPropagation();
+        setBreadcrumbs([
+          ...breadcrumbs,
+          {
+            title: `${htsno || description.split(" ").slice(0, 2).join(" ") + "..."}`,
+            element: {
+              ...element,
+              chapter,
             },
-          ]);
-        }}
-        className="flex flex-col gap-2 w-full rounded-md hover:bg-primary/30 transition duration-100 ease-in-out cursor-pointer"
-      >
-        <div className="flex items-start justify-between gap-3 p-4">
-          <div className="flex gap-4">
-            <div className="min-w-20 md:min-w-32">
-              <SecondaryInformation
-                label={htsno ? `${htsno}` : description}
-                value={""}
-                copyable={false}
-              />
-            </div>
-            {htsno && (
-              <SecondaryInformation value={description} copyable={false} />
-            )}
+          },
+        ]);
+      }}
+      className="flex flex-col gap-2 w-full rounded-md bg-primary/5 dark:bg-primary/10 hover:bg-primary/20 transition duration-100 ease-in-out cursor-pointer"
+    >
+      <div className="flex items-start justify-between gap-3 p-4">
+        <div className="flex flex-col gap-2">
+          <div className="min-w-20 md:min-w-32">
+            <SecondaryInformation
+              label={htsno ? `${htsno}` : description}
+              value={""}
+              copyable={false}
+            />
           </div>
-
-          <ChevronRightIcon className="shrink-0 w-5 h-5" />
+          {htsno && (
+            <SecondaryInformation value={description} copyable={false} />
+          )}
         </div>
+
+        <ChevronRightIcon className="self-center shrink-0 w-5 h-5 text-primary" />
       </div>
-    </Cell>
+    </div>
   );
 };

@@ -36,8 +36,8 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
     <Cell>
       <div
         className={classNames(
-          !showDetails && "hover:bg-base-300",
-          "w-full flex flex-col gap-4 py-6 px-4 rounded-md transition duration-100 ease-in-out hover:cursor-pointer"
+          !showDetails && "hover:bg-primary/10 dark:hover:bg-primary/20",
+          "w-full flex flex-col gap-8 py-6 px-4 rounded-md transition duration-100 ease-in-out hover:cursor-pointer"
         )}
         onClick={(e) => {
           e.preventDefault();
@@ -79,17 +79,18 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
             )}
 
             <div className="self-center">
-              {showDetails ? (
-                <ChevronDownIcon className="w-5 h-5 transition duration-500 ease-in-out" />
-              ) : (
-                <ChevronUpIcon className="w-5 h-5 transition duration-500 ease-in-out" />
-              )}
+              <ChevronDownIcon
+                className={classNames(
+                  "w-5 h-5 transition -rotate-180 duration-200 ease-in-out",
+                  showDetails && "-rotate-0 text-primary"
+                )}
+              />
             </div>
           </div>
         </div>
 
         {showDetails && (
-          <div className="flex flex-col pl-6">
+          <div className="flex flex-col rounded-md ml-4 gap-2">
             {section.chapters.map((chapter) => {
               return (
                 <ChapterSummary

@@ -18,7 +18,7 @@ export const Note = ({ note }: Props) => {
 
   return (
     <Cell>
-      <div className="w-full flex flex-col rounded-md hover:shadow-sm hover:bg-base-content/10 active:bg-base-content/30 transition duration-200 ease-in-out cursor-pointer">
+      <div className="w-full flex flex-col rounded-md hover:shadow-sm hover:bg-base-300 active:bg-base-content/30 transition duration-200 ease-in-out cursor-pointer">
         <div
           className="flex items-center justify-between gap-3 p-4"
           onClick={() => {
