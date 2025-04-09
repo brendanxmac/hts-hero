@@ -59,46 +59,44 @@ export const Explore = () => {
 
   return (
     <section className="grow h-full w-full overflow-auto flex flex-col items-center">
-      <div className="grow w-full items-center flex flex-col gap-5">
-        <div className="flex flex-col min-w-full">
-          <div className="sticky top-0 z-10 bg-base-100 flex gap-6 items-center pb-3">
-            <h2 className="text-xl md:text-2xl font-bold">Explorer</h2>
-            <div
-              role="tablist"
-              className="tabs tabs-boxed tabs-sm bg-primary-content p-1.5 rounded-xl"
-            >
-              {tabs.map((tab) => (
-                <a
-                  key={tab.value}
-                  role="tab"
-                  onClick={() => setActiveTab(tab.value)}
-                  className={classNames(
-                    "tab",
-                    tab.value === activeTab && "tab-active"
-                  )}
-                >
-                  {tab.label}
-                </a>
-              ))}
-            </div>
+      <div className="flex flex-col min-w-full">
+        <div className="sticky top-0 flex gap-6 items-center p-4 bg-base-100">
+          <h2 className="text-xl md:text-2xl font-bold">Explorer</h2>
+          <div
+            role="tablist"
+            className="tabs tabs-boxed tabs-sm bg-primary-content p-1.5 rounded-xl"
+          >
+            {tabs.map((tab) => (
+              <a
+                key={tab.value}
+                role="tab"
+                onClick={() => setActiveTab(tab.value)}
+                className={classNames(
+                  "tab",
+                  tab.value === activeTab && "tab-active"
+                )}
+              >
+                {tab.label}
+              </a>
+            ))}
           </div>
-
-          {loading && (
-            <div className="flex justify-center items-center">
-              <LoadingIndicator />
-            </div>
-          )}
-
-          {activeTab === Tabs.ELEMENTS && (
-            <Elements
-              sections={sections}
-              breadcrumbs={breadcrumbs}
-              setBreadcrumbs={setBreadcrumbs}
-            />
-          )}
-
-          {activeTab === Tabs.NOTES && <Notes />}
         </div>
+
+        {loading && (
+          <div className="flex justify-center items-center">
+            <LoadingIndicator />
+          </div>
+        )}
+
+        {activeTab === Tabs.ELEMENTS && (
+          <Elements
+            sections={sections}
+            breadcrumbs={breadcrumbs}
+            setBreadcrumbs={setBreadcrumbs}
+          />
+        )}
+
+        {activeTab === Tabs.NOTES && <Notes />}
       </div>
     </section>
   );

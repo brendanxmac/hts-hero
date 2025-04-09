@@ -31,14 +31,20 @@ export const Breadcrumbs = ({
           {breadcrumbs.map((breadcrumb, i) => {
             return (
               <li key={`breadcrumb-${i}`}>
-                <button
-                  className="btn btn-xs btn-link flex items-center gap-2 hover:text-secondary hover:scale-110"
-                  onClick={() => {
-                    setBreadcrumbs(breadcrumbs.slice(0, i + 1));
-                  }}
-                >
-                  {breadcrumb.title}
-                </button>
+                {i === breadcrumbs.length - 1 ? (
+                  <span className="btn btn-xs btn-link text-secondary">
+                    {breadcrumb.title}
+                  </span>
+                ) : (
+                  <button
+                    className="btn btn-xs btn-link flex items-center gap-2 hover:text-secondary hover:scale-110"
+                    onClick={() => {
+                      setBreadcrumbs(breadcrumbs.slice(0, i + 1));
+                    }}
+                  >
+                    {breadcrumb.title}
+                  </button>
+                )}
               </li>
             );
           })}

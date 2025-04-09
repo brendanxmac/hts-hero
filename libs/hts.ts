@@ -15,6 +15,7 @@ import {
   Note,
   BestProgressionResponse,
   BestChaptersResponse,
+  HtsElementType,
 } from "../interfaces/hts";
 import {
   elementsAtClassificationLevel,
@@ -467,7 +468,11 @@ export const getHtsChapterData = async (
     }
   );
 
-  return chapterData.map((e) => ({ ...e, uuid: crypto.randomUUID() }));
+  return chapterData.map((e) => ({
+    ...e,
+    uuid: crypto.randomUUID(),
+    type: HtsElementType.ELEMENT,
+  }));
 };
 
 // NOTE: this will get all elements in an array of Hts Elements that are at a given indent level.

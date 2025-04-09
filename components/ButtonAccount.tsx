@@ -58,15 +58,13 @@ const ButtonAccount = () => {
     <Popover>
       {({ open }) => (
         <div>
-          <Popover.Button className="btn rounded-lg bg-base-200 hover:bg-base-100 overflow-clip">
+          <Popover.Button className="overflow-clip focus:outline-none">
             {user?.user_metadata?.avatar_url ? (
               <img
                 src={user?.user_metadata?.avatar_url}
                 alt={"Profile picture"}
-                className="w-8 h-8 rounded-full shrink-0"
+                className="w-10 h-10 rounded-full object-cover"
                 referrerPolicy="no-referrer"
-                width={24}
-                height={24}
               />
             ) : (
               <span className="w-8 h-8 bg-base-100 flex justify-center items-center rounded-full shrink-0 capitalize">
@@ -79,23 +77,8 @@ const ButtonAccount = () => {
               user?.email?.split("@")[0] ||
               "Account"} */}
 
-            {isLoading ? (
+            {isLoading && (
               <span className="loading loading-spinner loading-xs"></span>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className={`w-5 h-5 duration-200 opacity-50 ${
-                  open ? "transform rotate-180 " : ""
-                }`}
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                  clipRule="evenodd"
-                />
-              </svg>
             )}
           </Popover.Button>
           <Transition
@@ -106,7 +89,7 @@ const ButtonAccount = () => {
             leaveFrom="transform scale-100 opacity-100"
             leaveTo="transform scale-95 opacity-0"
           >
-            <Popover.Panel className="rounded-md border-2 border-neutral-800 absolute z-10 right-0 mt-3 w-screen max-w-[8rem]">
+            <Popover.Panel className="rounded-xl border border-base-300 absolute z-30 right-0 w-screen max-w-[8rem]">
               <div className="w-full rounded-xl shadow-xl ring-1 ring-base-content ring-opacity-5 bg-base-100 p-1">
                 <div className="space-y-0.5 text-sm flex flex-col w-full">
                   <button
