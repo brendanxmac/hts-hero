@@ -1,20 +1,23 @@
 export default function SquareIconButton({
   icon,
+  disabled,
   onClick,
 }: {
   icon: React.ReactNode;
   onClick: () => void;
+  disabled?: boolean;
 }) {
   return (
-    <div
-      className="btn btn-sm btn-square bg-base-200 hover:btn-primary shrink-0 text-primary hover:text-white hover:dark:text-base-100 flex items-center gap-2 shadow-sm shadow-primary/20 dark:shadow-primary/60"
+    <button
+      disabled={disabled}
+      className="btn btn-sm btn-square bg-primary hover:btn-secondary shrink-0 text-white hover:text-white hover:shadow-md hover:scale-105 transition-all duration-200 border-none"
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
         onClick();
       }}
     >
-      <button className="text-sm">{icon}</button>
-    </div>
+      {icon}
+    </button>
   );
 }

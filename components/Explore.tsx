@@ -7,15 +7,11 @@ import { classNames } from "../utilities/style";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { Elements, NavigatableElement } from "./Elements";
 import { Notes } from "./Notes";
+import { Tab } from "../interfaces/tab";
 
 enum Tabs {
   NOTES = "notes",
   ELEMENTS = "elements",
-}
-
-interface Tab {
-  label: string;
-  value: string;
 }
 
 const tabs: Tab[] = [
@@ -60,7 +56,7 @@ export const Explore = () => {
   return (
     <section className="grow h-full w-full overflow-auto flex flex-col items-center">
       <div className="flex flex-col min-w-full">
-        <div className="sticky top-0 flex gap-6 items-center p-4 bg-base-100">
+        <div className="sticky top-0 flex gap-6 items-center bg-base-100">
           <h2 className="text-xl md:text-2xl font-bold">Explorer</h2>
           <div
             role="tablist"

@@ -1,17 +1,14 @@
 import { HtsElement, HtsElementType } from "../interfaces/hts";
-import { Cell } from "./Cell";
 import { NavigatableElement } from "./Elements";
 import { useEffect, useState } from "react";
 import { PrimaryInformation } from "./PrimaryInformation";
 import { LoadingIndicator } from "./LoadingIndicator";
-import { getHtsChapterData } from "../libs/hts";
 import { getDirectChildrenElements } from "../libs/hts";
 import { ElementSum } from "./ElementSum";
 import { SecondaryInformation } from "./SecondaryInformation";
 import { TertiaryInformation } from "./TertiaryInformation";
-import { SecondaryLabel } from "./SecondaryLabel";
 import SquareIconButton from "./SqaureIconButton";
-import { DocumentMagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { DocumentTextIcon } from "@heroicons/react/24/outline";
 import PDF from "./PDF";
 import { notes } from "../public/notes/notes";
 import { useChapters } from "../contexts/ChaptersContext";
@@ -141,7 +138,7 @@ export const Element = ({ element, breadcrumbs, setBreadcrumbs }: Props) => {
           </div>
         </div>
         <SquareIconButton
-          icon={<DocumentMagnifyingGlassIcon className="h-6 w-6" />}
+          icon={<DocumentTextIcon className="h-5 w-5" />}
           onClick={() =>
             setShowPDF({
               title: `Chapter ${chapter} Notes`,
