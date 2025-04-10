@@ -14,6 +14,7 @@ import { notes } from "../public/notes/notes";
 import { useChapters } from "../contexts/ChaptersContext";
 
 interface Props {
+  summaryOnly?: boolean;
   element: HtsElement;
   breadcrumbs: NavigatableElement[];
   setBreadcrumbs: (breadcrumbs: NavigatableElement[]) => void;
@@ -24,7 +25,15 @@ interface PDFProps {
   file: string;
 }
 
-export const Element = ({ element, breadcrumbs, setBreadcrumbs }: Props) => {
+// TODO:
+// - Becuase there is no chapter from Classify.tsx, this component tries over and over but fails
+// - Need to set sections & chapters & breadcrumbs....
+export const Element = ({
+  element,
+  breadcrumbs,
+  setBreadcrumbs,
+  summaryOnly = false,
+}: Props) => {
   const { htsno, description, chapter, units, general, special, other } =
     element;
   const [children, setChildren] = useState<HtsElement[]>([]);
@@ -125,7 +134,6 @@ export const Element = ({ element, breadcrumbs, setBreadcrumbs }: Props) => {
               <div className="flex flex-col gap-1">
                 <TertiaryInformation
                   key={description}
-                  // label={getParentDescriptions(element)}
                   value={getParentDescriptions(element)}
                 />
               </div>
@@ -147,87 +155,93 @@ export const Element = ({ element, breadcrumbs, setBreadcrumbs }: Props) => {
           }
         />
       </div>
-      {(general || special || other) && (
-        <div className="w-full flex flex-col gap-2">
-          <TertiaryInformation value="" label="Tariff Rates:" />
 
-          <div className="grid grid-cols-2 gap-2">
-            {units &&
-              units.map((unit, i) => (
-                <div
-                  key={`${i}-${unit}`}
-                  className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24"
-                >
-                  <TertiaryInformation value={`Unit`} />
-                  <SecondaryInformation label={unit || "-"} value={""} />
+      {!summaryOnly && (
+        <>
+          {(general || special || other) && (
+            <div className="w-full flex flex-col gap-2">
+              <TertiaryInformation value="" label="Tariff Rates:" />
+
+              <div className="grid grid-cols-2 gap-2">
+                {units &&
+                  units.map((unit, i) => (
+                    <div
+                      key={`${i}-${unit}`}
+                      className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24"
+                    >
+                      <TertiaryInformation value={`Unit`} />
+                      <SecondaryInformation label={unit || "-"} value={""} />
+                    </div>
+                  ))}
+
+                <div className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24">
+                  <TertiaryInformation value={"General"} />
+                  <SecondaryInformation label={general || "-"} value={""} />
                 </div>
-              ))}
 
-            <div className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24">
-              <TertiaryInformation value={"General"} />
-              <SecondaryInformation label={general || "-"} value={""} />
-            </div>
+                <div className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24">
+                  <TertiaryInformation value={"Special"} />
+                  <SecondaryInformation
+                    label={getPrefixFromSpecial(special) || "-"}
+                    value={""}
+                  />
 
-            <div className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24">
-              <TertiaryInformation value={"Special"} />
-              <SecondaryInformation
-                label={getPrefixFromSpecial(special) || "-"}
-                value={""}
-              />
-
-              {getDetailsFromSpecial(special) && (
-                <div className="flex gap-x-1">
-                  {getDetailsFromSpecial(special)
-                    .split(",")
-                    .map((specialTariffSymbol, index) => (
-                      <div key={`${specialTariffSymbol}-${index}`}>
-                        <button
-                          className="btn btn-link btn-xs text-xs p-0 hover:text-secondary hover:scale-110"
-                          onClick={() => {
-                            const note = getGeneralNoteFromSpecialTariffSymbol(
-                              specialTariffSymbol.trim()
-                            );
-                            setShowPDF({
-                              title: note?.title || "",
-                              file: note?.pdfURL || "",
-                            });
-                          }}
-                        >
-                          {specialTariffSymbol}
-                        </button>
-                      </div>
-                    ))}
+                  {getDetailsFromSpecial(special) && (
+                    <div className="flex gap-x-1">
+                      {getDetailsFromSpecial(special)
+                        .split(",")
+                        .map((specialTariffSymbol, index) => (
+                          <div key={`${specialTariffSymbol}-${index}`}>
+                            <button
+                              className="btn btn-link btn-xs text-xs p-0 hover:text-secondary hover:scale-110"
+                              onClick={() => {
+                                const note =
+                                  getGeneralNoteFromSpecialTariffSymbol(
+                                    specialTariffSymbol.trim()
+                                  );
+                                setShowPDF({
+                                  title: note?.title || "",
+                                  file: note?.pdfURL || "",
+                                });
+                              }}
+                            >
+                              {specialTariffSymbol}
+                            </button>
+                          </div>
+                        ))}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
 
-            {/* Show PDF based on special tariff symbol */}
+                {/* Show PDF based on special tariff symbol */}
 
-            <div className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24">
-              <TertiaryInformation value={"Other"} />
-              <SecondaryInformation label={other || "-"} value={""} />
+                <div className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24">
+                  <TertiaryInformation value={"Other"} />
+                  <SecondaryInformation label={other || "-"} value={""} />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
-      {loading && <LoadingIndicator text="Fetching Element Data" />}
-      {!loading && children.length > 0 && (
-        <div className="w-full flex flex-col">
-          <TertiaryInformation value="" label="Elements:" />
-          <div className="flex flex-col rounded-md p-4 gap-2">
-            {children.map((child, i) => {
-              return (
-                <ElementSum
-                  key={`${i}-${child.htsno}`}
-                  element={child}
-                  chapter={chapter}
-                  breadcrumbs={breadcrumbs}
-                  setBreadcrumbs={setBreadcrumbs}
-                />
-              );
-            })}
-          </div>
-        </div>
+          )}
+          {loading && <LoadingIndicator text="Fetching Element Data" />}
+          {!loading && children.length > 0 && (
+            <div className="w-full flex flex-col">
+              <TertiaryInformation value="" label="Elements:" />
+              <div className="flex flex-col rounded-md p-4 gap-2">
+                {children.map((child, i) => {
+                  return (
+                    <ElementSum
+                      key={`${i}-${child.htsno}`}
+                      element={child}
+                      chapter={chapter}
+                      breadcrumbs={breadcrumbs}
+                      setBreadcrumbs={setBreadcrumbs}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </>
       )}
       {showPDF && (
         <PDF

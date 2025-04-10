@@ -53,7 +53,7 @@ export default function TextInput({
   //   };
 
   return (
-    <div className="w-full flex flex-col gap-2 py-4">
+    <div className="w-full flex flex-col gap-2">
       <TertiaryInformation label={label} value="" />
       <div
         className={
