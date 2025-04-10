@@ -1,4 +1,4 @@
-import { HtsElement, HtsSectionAndChapterBase } from "../interfaces/hts";
+import { HtsSectionAndChapterBase } from "../interfaces/hts";
 import { Cell } from "./Cell";
 import { NavigatableElement } from "./Elements";
 import { useEffect, useState } from "react";
@@ -10,7 +10,7 @@ import { PrimaryInformation } from "./PrimaryInformation";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { ElementSum } from "./ElementSum";
 import SquareIconButton from "./SqaureIconButton";
-import { DocumentMagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { DocumentTextIcon } from "@heroicons/react/24/solid";
 import PDF from "./PDF";
 import { useChapters } from "../contexts/ChaptersContext";
 import { TertiaryInformation } from "./TertiaryInformation";
@@ -60,7 +60,7 @@ export const Chapter = ({ chapter, breadcrumbs, setBreadcrumbs }: Props) => {
             <PrimaryInformation value={description} loud={true} />
           </div>
           <SquareIconButton
-            icon={<DocumentMagnifyingGlassIcon className="h-6 w-6" />}
+            icon={<DocumentTextIcon className="h-5 w-5" />}
             onClick={() => setShowNotes(!showNotes)}
           />
         </div>

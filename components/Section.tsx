@@ -1,5 +1,5 @@
-import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/16/solid";
-import { DocumentMagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { ChevronDownIcon } from "@heroicons/react/16/solid";
+import { DocumentTextIcon } from "@heroicons/react/24/solid";
 import { HtsSection } from "../interfaces/hts";
 import { Cell } from "./Cell";
 import { useState } from "react";
@@ -73,7 +73,7 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
           <div className="flex gap-5 self-center">
             {notesPath && (
               <SquareIconButton
-                icon={<DocumentMagnifyingGlassIcon className="h-6 w-6" />}
+                icon={<DocumentTextIcon className="h-5 w-5" />}
                 onClick={() => setShowNotes(!showNotes)}
               />
             )}
@@ -81,7 +81,7 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
             <div className="self-center">
               <ChevronDownIcon
                 className={classNames(
-                  "w-5 h-5 transition -rotate-180 duration-200 ease-in-out",
+                  "w-5 h-5 text-primary transition -rotate-180 duration-200 ease-in-out",
                   showDetails && "-rotate-0 text-primary"
                 )}
               />
