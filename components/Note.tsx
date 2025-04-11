@@ -1,4 +1,4 @@
-import { DocumentTextIcon } from "@heroicons/react/24/outline";
+import { DocumentTextIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 import { PrimaryInformation } from "./PrimaryInformation";
 import { Note as NoteType } from "../public/notes/notes";
@@ -44,7 +44,7 @@ export const Note = ({ note }: Props) => {
 
         <div className="self-start shrink-0">
           <SquareIconButton
-            icon={<DocumentTextIcon className="h-5 w-5" />}
+            icon={<DocumentTextIcon className="h-4 w-4" />}
             onClick={() => setShow(!show)}
           />
         </div>

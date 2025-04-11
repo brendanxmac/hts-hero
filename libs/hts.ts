@@ -471,6 +471,7 @@ export const getHtsChapterData = async (
   return chapterData.map((e) => ({
     ...e,
     uuid: crypto.randomUUID(),
+    chapter: Number(chapter),
     type: HtsElementType.ELEMENT,
   }));
 };

@@ -43,7 +43,7 @@ export interface SimplifiedHtsElement {
 export interface HtsElement {
   uuid: string;
   type: HtsElementType;
-  chapter?: number;
+  chapter: number;
   htsno: string;
   indent: string;
   description: string;
@@ -57,6 +57,7 @@ export interface HtsElement {
   additionalDuties: string | null;
   addiitionalDuties: string | null;
   children?: HtsElement[];
+  suggested?: boolean;
 }
 
 export interface Footnote {
