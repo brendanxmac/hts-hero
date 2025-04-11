@@ -8,7 +8,7 @@ import { ElementSum } from "./ElementSum";
 import { SecondaryInformation } from "./SecondaryInformation";
 import { TertiaryInformation } from "./TertiaryInformation";
 import SquareIconButton from "./SqaureIconButton";
-import { DocumentTextIcon } from "@heroicons/react/24/outline";
+import { DocumentTextIcon } from "@heroicons/react/24/solid";
 import PDF from "./PDF";
 import { notes } from "../public/notes/notes";
 import { useChapters } from "../contexts/ChaptersContext";
@@ -20,7 +20,7 @@ interface Props {
   setBreadcrumbs: (breadcrumbs: NavigatableElement[]) => void;
 }
 
-interface PDFProps {
+export interface PDFProps {
   title: string;
   file: string;
 }
@@ -28,6 +28,7 @@ interface PDFProps {
 // TODO:
 // - Becuase there is no chapter from Classify.tsx, this component tries over and over but fails
 // - Need to set sections & chapters & breadcrumbs....
+
 export const Element = ({
   element,
   breadcrumbs,
@@ -91,7 +92,7 @@ export const Element = ({
     return note;
   };
 
-  const getParentDescriptions = (element: HtsElement) => {
+  const getParentDescriptionsFromBreadcrumbs = (element: HtsElement) => {
     let descriptions = "";
     breadcrumbs.map((breadcrumb) => {
       if (breadcrumb.element.type === HtsElementType.CHAPTER) {
@@ -130,11 +131,11 @@ export const Element = ({
             )}
           </div>
           <div>
-            {getParentDescriptions(element).length > 0 && (
+            {getParentDescriptionsFromBreadcrumbs(element).length > 0 && (
               <div className="flex flex-col gap-1">
                 <TertiaryInformation
                   key={description}
-                  value={getParentDescriptions(element)}
+                  value={getParentDescriptionsFromBreadcrumbs(element)}
                 />
               </div>
             )}
@@ -146,7 +147,7 @@ export const Element = ({
           </div>
         </div>
         <SquareIconButton
-          icon={<DocumentTextIcon className="h-5 w-5" />}
+          icon={<DocumentTextIcon className="h-4 w-4" />}
           onClick={() =>
             setShowPDF({
               title: `Chapter ${chapter} Notes`,

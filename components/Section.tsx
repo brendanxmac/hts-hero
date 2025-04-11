@@ -1,4 +1,4 @@
-import { ChevronDownIcon } from "@heroicons/react/16/solid";
+import { ChevronUpIcon } from "@heroicons/react/16/solid";
 import { DocumentTextIcon } from "@heroicons/react/24/solid";
 import { HtsSection } from "../interfaces/hts";
 import { Cell } from "./Cell";
@@ -73,16 +73,16 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
           <div className="flex gap-5 self-center">
             {notesPath && (
               <SquareIconButton
-                icon={<DocumentTextIcon className="h-5 w-5" />}
+                icon={<DocumentTextIcon className="h-4 w-4" />}
                 onClick={() => setShowNotes(!showNotes)}
               />
             )}
 
             <div className="self-center">
-              <ChevronDownIcon
+              <ChevronUpIcon
                 className={classNames(
-                  "w-5 h-5 text-primary transition -rotate-180 duration-200 ease-in-out",
-                  showDetails && "-rotate-0 text-primary"
+                  "w-5 h-5 text-primary transition-transform duration-200 ease-in-out",
+                  showDetails && "rotate-180"
                 )}
               />
             </div>
