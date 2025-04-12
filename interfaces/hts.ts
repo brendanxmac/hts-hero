@@ -42,7 +42,7 @@ export interface SimplifiedHtsElement {
 
 export interface HtsElement {
   uuid: string;
-  type: HtsElementType;
+  type: HtsElementType.ELEMENT;
   chapter: number;
   htsno: string;
   indent: string;
@@ -55,9 +55,7 @@ export interface HtsElement {
   footnotes: Footnote[];
   quotaQuantity: string | null;
   additionalDuties: string | null;
-  addiitionalDuties: string | null;
   children?: HtsElement[];
-  suggested?: boolean;
 }
 
 export interface Footnote {
@@ -114,8 +112,9 @@ export interface CandidateSelection {
 export interface HtsLevelClassification {
   level: HtsLevel;
   candidates: HtsElement[]; //| HtsSectionAndChapterBase[];
-  selection: HtsElement; // | HtsSectionAndChapterBase;
-  reasoning: string;
+  suggestions?: HtsElement[]; //| HtsSectionAndChapterBase[];
+  selection?: HtsElement; // | HtsSectionAndChapterBase;
+  reasoning?: string;
 }
 
 export interface TemporaryTariff {
