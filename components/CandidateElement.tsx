@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { useChapters } from "../contexts/ChaptersContext";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
-import { HtsElement, HtsLevelClassification } from "../interfaces/hts";
+import {
+  HtsElement,
+  HtsElementType,
+  HtsLevelClassification,
+} from "../interfaces/hts";
 import SquareIconButton from "./SqaureIconButton";
 import { PrimaryInformation } from "./PrimaryInformation";
 import {
@@ -13,7 +17,8 @@ import { PDFProps } from "./Element";
 import PDF from "./PDF";
 import { CheckIcon } from "@heroicons/react/24/solid";
 import { classNames } from "../utilities/style";
-import { getHtsLevel } from "../libs/hts";
+import { getDirectChildrenElements, getHtsLevel } from "../libs/hts";
+import { TertiaryInformation } from "./TertiaryInformation";
 
 interface Props {
   element: HtsElement;
@@ -37,39 +42,41 @@ export const CandidateElement = ({
   indentLevel,
   setClassificationProgression,
 }: Props) => {
+  const { htsno, chapter, description, suggested, suggestedReasoning } =
+    element;
   const { fetchChapter, getChapterElements } = useChapters();
-  const { addBreadcrumb, clearBreadcrumbs } = useBreadcrumbs();
+  const { breadcrumbs, addBreadcrumb, clearBreadcrumbs } = useBreadcrumbs();
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const loadChapterData = async () => {
       setLoading(true);
-      await fetchChapter(element.chapter);
+      await fetchChapter(chapter);
       setLoading(false);
     };
     loadChapterData();
-  }, [element.chapter, fetchChapter]);
+  }, [chapter, fetchChapter]);
 
   return (
     <div
       className={classNames(
-        "flex flex-col gap-2 w-full rounded-md bg-primary/5 dark:bg-primary/10 hover:bg-primary/20 transition duration-100 ease-in-out cursor-pointer",
-        isSelectedElement && "bg-primary/30 dark:bg-primary/30"
+        "flex flex-col w-full rounded-md bg-primary/5 dark:bg-primary/10 p-4 gap-6",
+        isSelectedElement
+          ? "bg-primary/50 dark:bg-primary/50"
+          : "hover:bg-primary/20 transition duration-100 ease-in-out cursor-pointer"
       )}
     >
-      <div className="flex items-start justify-between gap-3 p-4">
+      <div className="flex items-start justify-between gap-3">
         <div className="flex flex-col gap-2">
           <div className="min-w-20 md:min-w-32">
             <PrimaryInformation
-              label={element.htsno ? `${element.htsno}` : element.description}
+              label={htsno ? `${htsno}` : description}
               value={""}
               copyable={false}
             />
           </div>
-          {element.htsno && (
-            <PrimaryInformation value={element.description} copyable={false} />
-          )}
+          {htsno && <PrimaryInformation value={description} copyable={false} />}
         </div>
 
         <div className="flex gap-2">
@@ -77,8 +84,8 @@ export const CandidateElement = ({
             icon={<DocumentTextIcon className="h-4 w-4" />}
             onClick={() =>
               setShowPDF({
-                title: `Chapter ${element.chapter} Notes`,
-                file: `/notes/chapter/Chapter ${element.chapter}.pdf`,
+                title: `Chapter ${chapter} Notes`,
+                file: `/notes/chapter/Chapter ${chapter}.pdf`,
               })
             }
           />
@@ -94,10 +101,12 @@ export const CandidateElement = ({
               icon={<XMarkIcon className="h-4 w-4" />}
               onClick={() => {
                 setSelectedElement(null);
-                setClassificationProgression(
-                  classificationProgression.slice(0, indentLevel + 1)
-                );
+                const newClassificationProgression =
+                  classificationProgression.slice(0, indentLevel + 1);
+                newClassificationProgression[indentLevel].selection = null;
+                setClassificationProgression(newClassificationProgression);
               }}
+              color="error"
             />
           ) : (
             <SquareIconButton
@@ -106,18 +115,39 @@ export const CandidateElement = ({
                 setSelectedElement(element);
                 clearBreadcrumbs();
                 addBreadcrumb(element);
-                setClassificationProgression([
-                  ...classificationProgression,
-                  {
-                    level: getHtsLevel(""), // FIXME: set the actual level if possible
-                    candidates: [],
-                  },
-                ]);
+                const children = getDirectChildrenElements(
+                  element,
+                  getChapterElements(chapter)
+                );
+
+                if (children.length > 0) {
+                  const newClassificationProgression =
+                    classificationProgression.slice(0, indentLevel + 1);
+                  newClassificationProgression[indentLevel].selection = element;
+                  setClassificationProgression([
+                    ...newClassificationProgression,
+                    {
+                      level: getHtsLevel(htsno || ""),
+                      candidates: children,
+                      selection: null,
+                      reasoning: "",
+                    },
+                  ]);
+                } else {
+                  // TADA! classification complete, do something special
+                }
               }}
             />
           )}
         </div>
       </div>
+
+      {suggested && (
+        <div className="flex flex-col gap-2">
+          <TertiaryInformation label="Suggested Candidate" value="" loud />
+          <TertiaryInformation value={suggestedReasoning} />
+        </div>
+      )}
 
       {showPDF && (
         <PDF

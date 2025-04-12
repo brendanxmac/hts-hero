@@ -57,7 +57,9 @@ export const Chapter = ({ chapter, breadcrumbs, setBreadcrumbs }: Props) => {
                 value={``}
               />
             </div>
-            <PrimaryInformation value={description} loud={true} />
+            <div className="pb-4">
+              <PrimaryInformation value={description} />
+            </div>
           </div>
           <SquareIconButton
             icon={<DocumentTextIcon className="h-4 w-4" />}

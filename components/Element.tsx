@@ -25,10 +25,6 @@ export interface PDFProps {
   file: string;
 }
 
-// TODO:
-// - Becuase there is no chapter from Classify.tsx, this component tries over and over but fails
-// - Need to set sections & chapters & breadcrumbs....
-
 export const Element = ({
   element,
   breadcrumbs,

@@ -319,10 +319,10 @@ export const Classify = () => {
               {classificationProgression.map((level, index) => (
                 <CandidateElements
                   key={`classification-level-${index}`}
-                  loading={loading}
                   indentLevel={index}
                   classificationProgression={classificationProgression}
                   setClassificationProgression={setClassificationProgression}
+                  productDescription={productDescription}
                 />
               ))}
             </div>

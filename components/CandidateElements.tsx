@@ -1,4 +1,8 @@
-import { HtsElement, HtsLevelClassification } from "../interfaces/hts";
+import {
+  HtsElement,
+  HtsElementType,
+  HtsLevelClassification,
+} from "../interfaces/hts";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { TertiaryInformation } from "./TertiaryInformation";
 import { Loader } from "../interfaces/ui";
@@ -10,11 +14,12 @@ import {
   SparklesIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/16/solid";
-import { getHtsLevel } from "../libs/hts";
+import { getBestClassificationProgression, getHtsLevel } from "../libs/hts";
 import SquareIconButton from "./SqaureIconButton";
-import { SecondaryInformation } from "./SecondaryInformation";
+import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
+
 interface Props {
-  loading: Loader;
+  productDescription: string;
   indentLevel: number;
   classificationProgression: HtsLevelClassification[];
   setClassificationProgression: (
@@ -23,27 +28,99 @@ interface Props {
 }
 
 export const CandidateElements = ({
-  loading,
+  productDescription,
   indentLevel,
   classificationProgression,
   setClassificationProgression,
 }: Props) => {
-  const { candidates, selection, suggestions, level, reasoning } =
+  const { candidates, selection, level, reasoning } =
     classificationProgression[indentLevel];
-  const { isLoading, text } = loading;
+  const [loading, setLoading] = useState<Loader>({
+    isLoading: false,
+    text: "",
+  });
   const [showDetails, setShowDetails] = useState(true);
   const [selectedElement, setSelectedElement] = useState<HtsElement | null>(
     null
   );
+  const { addBreadcrumb, clearBreadcrumbs, breadcrumbs } = useBreadcrumbs();
+
+  const getBestCandidate = async () => {
+    setLoading({
+      isLoading: true,
+      text: "Getting Best Candidate",
+    });
+
+    const simplifiedCandidates = candidates.map((e) => ({
+      code: e.htsno,
+      description: e.description,
+    }));
+
+    const bestProgressionResponse = await getBestClassificationProgression(
+      simplifiedCandidates,
+      "",
+      productDescription
+    );
+
+    console.log("bestProgressionResponse", bestProgressionResponse);
+
+    const bestCandidate = candidates[bestProgressionResponse.index];
+
+    console.log("bestCandidate", bestCandidate);
+
+    // Update this classification progressions candidates to mark the bestCandidate element as suggested
+    const updatedCandidates = candidates.map((e) => {
+      if (e.uuid === bestCandidate.uuid) {
+        return {
+          ...e,
+          suggested: true,
+          suggestedReasoning: bestProgressionResponse.logic,
+        };
+      }
+      return e;
+    });
+
+    // Make a local copy of the classification progression
+    const updatedClassificationProgression = [...classificationProgression];
+    updatedClassificationProgression[indentLevel] = {
+      ...updatedClassificationProgression[indentLevel],
+      candidates: updatedCandidates,
+    };
+
+    setClassificationProgression(updatedClassificationProgression);
+
+    setLoading({
+      isLoading: false,
+      text: "",
+    });
+  };
+
+  useEffect(() => {
+    console.log("candidates updated", candidates);
+    const suggestionsProvided = candidates.some((e) => e.suggested);
+
+    if (candidates.length > 0 && !suggestionsProvided) {
+      console.log("Getting Best Candidate");
+      getBestCandidate();
+    }
+  }, [candidates]);
 
   useEffect(() => {
     setShowDetails(!Boolean(selectedElement));
   }, [selectedElement]);
 
   return (
-    <div className="w-full flex flex-col gap-2">
+    <div
+      className={classNames(
+        "w-full flex flex-col gap-2 border-b border-base-content/20 pb-2",
+        (selectedElement || (candidates.length === 0 && showDetails)) &&
+          "border-none"
+      )}
+    >
       <div
-        className="flex justify-between items-center"
+        className={classNames(
+          "flex justify-between items-center p-2 rounded-md hover:bg-primary/20"
+        )}
         onClick={() => setShowDetails(!showDetails)}
       >
         <TertiaryInformation label={`Level ${indentLevel + 1}`} value="" />
@@ -56,29 +133,78 @@ export const CandidateElements = ({
       </div>
 
       {candidates.length === 0 ? (
-        <div className="flex flex-col gap-2 bg-base-300 rounded-md p-4 items-center justify-center">
-          <div className="w-full flex items-center justify-evenly py-6">
-            <div className="min-w-28 flex flex-col items-center justify-center gap-2">
-              <SquareIconButton
-                icon={<MagnifyingGlassIcon className="h-4 w-4" />}
-                onClick={() => {}}
-              />
-              <p className="text-xs text-base-content/50">Select</p>
-            </div>
+        !showDetails ? null : (
+          <div className="flex flex-col gap-2 bg-base-300 rounded-md p-4 items-center justify-center">
+            <div className="w-full flex items-center justify-evenly py-6">
+              <div className="min-w-28 flex flex-col items-center justify-center gap-2">
+                <SquareIconButton
+                  icon={<MagnifyingGlassIcon className="h-4 w-4" />}
+                  onClick={() => {
+                    // TODO: get the selected element at the level above this one, and set the breadcrumb to that element
+                    const previousLevel =
+                      classificationProgression[indentLevel - 1];
+                    console.log(`previousLevel`, previousLevel);
+                    if (previousLevel && previousLevel.selection) {
+                      clearBreadcrumbs();
+                      addBreadcrumb(previousLevel.selection);
+                    }
+                  }}
+                  disabled={
+                    breadcrumbs[breadcrumbs.length - 1].element.type ===
+                      HtsElementType.ELEMENT &&
+                    // @ts-ignore
+                    breadcrumbs[breadcrumbs.length - 1].element.uuid ===
+                      classificationProgression[indentLevel - 1].selection?.uuid
+                  }
+                />
+                <p className="text-xs text-base-content/50">Select Elements</p>
+              </div>
 
-            <div className="h-full w-px bg-base-content/20"></div>
-            <div className="min-w-28 flex flex-col items-center gap-2">
-              <SquareIconButton
-                icon={<SparklesIcon className="h-4 w-4" />}
-                onClick={() => {}}
-              />
-              <p className="text-xs text-base-content/50">Generate</p>
+              <div className="h-full w-px bg-base-content/20"></div>
+              <div className="min-w-28 flex flex-col items-center gap-2">
+                <SquareIconButton
+                  icon={<SparklesIcon className="h-4 w-4" />}
+                  onClick={() => getBestCandidate()}
+                />
+                <p className="text-xs text-base-content/50">Get Suggestions</p>
+              </div>
             </div>
           </div>
-        </div>
-      ) : (
+        )
+      ) : !showDetails && selectedElement ? (
         <div className="flex flex-col gap-2 bg-base-300 rounded-md p-4">
-          {isLoading && <LoadingIndicator text={text} />}
+          <CandidateElement
+            key={selectedElement.uuid}
+            element={selectedElement}
+            indentLevel={indentLevel}
+            isSelectedElement={selectedElement?.uuid === selectedElement.uuid}
+            classificationProgression={classificationProgression}
+            setClassificationProgression={setClassificationProgression}
+            setSelectedElement={(element) => {
+              setSelectedElement(element);
+              const newClassificationProgression =
+                classificationProgression.slice(0, indentLevel);
+              setClassificationProgression([
+                ...newClassificationProgression,
+                {
+                  level: getHtsLevel(
+                    element && element.htsno ? element.htsno : ""
+                  ),
+                  candidates: candidates,
+                  selection: element,
+                  reasoning: "",
+                },
+              ]);
+            }}
+          />
+        </div>
+      ) : !showDetails && !selectedElement ? null : (
+        <div className="flex flex-col gap-2 bg-base-300 rounded-md p-4">
+          {loading.isLoading && (
+            <div className="py-3">
+              <LoadingIndicator text={loading.text} />
+            </div>
+          )}
 
           {candidates.map((element) => (
             <CandidateElement
