@@ -8,6 +8,8 @@ import { Elements, NavigatableElement } from "./Elements";
 import { Notes } from "./Notes";
 import { Tab } from "../interfaces/tab";
 import { SectionHeader } from "./SectionHeader";
+import { classNames } from "../utilities/style";
+import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 
 enum Tabs {
   NOTES = "notes",
@@ -29,7 +31,7 @@ export const Explore = () => {
   const [loading, setLoading] = useState(false);
   const [sections, setSections] = useState<HtsSection[]>([]);
   const [activeTab, setActiveTab] = useState(tabs[0].value);
-  const [breadcrumbs, setBreadcrumbs] = useState<NavigatableElement[]>([]);
+  const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
 
   useEffect(() => {
     const fetchSectionsAndChapters = async () => {
@@ -39,10 +41,7 @@ export const Explore = () => {
       setBreadcrumbs([
         {
           title: "Sections",
-          element: {
-            type: HtsElementType.SECTION,
-            sections,
-          },
+          element: { type: HtsElementType.SECTION, sections },
         },
       ]);
       setLoading(false);
@@ -54,33 +53,20 @@ export const Explore = () => {
   }, [activeTab, sections]);
 
   return (
-    <section className="grow h-full min-w-full flex flex-col items-start">
-      <div className="min-w-full flex flex-col overflow-auto">
-        <SectionHeader
-          title="Explorer"
-          tabs={tabs}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
-
-        <div className="w-full overflow-y-scroll">
-          {loading && (
-            <div className="flex justify-center items-center">
-              <LoadingIndicator />
-            </div>
-          )}
-
-          {activeTab === Tabs.ELEMENTS && (
-            <Elements
-              sections={sections}
-              breadcrumbs={breadcrumbs}
-              setBreadcrumbs={setBreadcrumbs}
-            />
-          )}
-
-          {activeTab === Tabs.NOTES && <Notes />}
-        </div>
+    <div className="flex flex-col gap-4">
+      <SectionHeader
+        title="Explore"
+        tabs={tabs}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
+      <div className="flex flex-col gap-4">
+        {loading && <LoadingIndicator text="Loading Sections" />}
+        {!loading && activeTab === Tabs.ELEMENTS && (
+          <Elements sections={sections} />
+        )}
+        {!loading && activeTab === Tabs.NOTES && <Notes />}
       </div>
-    </section>
+    </div>
   );
 };

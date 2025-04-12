@@ -38,10 +38,6 @@ export default function TextInput({
   const classifyProduct = (): void => {
     if (localProductDescription.trim()) {
       setProductDescription(localProductDescription.trim());
-
-      if (textareaRef.current) {
-        textareaRef.current.style.height = "auto";
-      }
     }
   };
 
