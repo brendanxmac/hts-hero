@@ -11,18 +11,18 @@ import { classNames } from "../utilities/style";
 
 interface Props {
   element: HtsElement;
-  isRecommendedElement: boolean;
+  //   isRecommendedElement: boolean;
   isSelectedElement: boolean;
   setSelectedElement: (element: HtsElement) => void;
 }
 
 export const CandidateElement = ({
   element,
-  isRecommendedElement,
+
   isSelectedElement,
   setSelectedElement,
 }: Props) => {
-  const { htsno, description, chapter, suggested } = element;
+  const { htsno, description, chapter } = element;
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
   const { fetchChapter, getChapterElements } = useChapters();
 
@@ -60,7 +60,7 @@ export const CandidateElement = ({
                   })
                 }
               />
-              {suggested && (
+              {/* {suggested && (
                 <SquareIconButton
                   icon={
                     isSelectedElement ? (
@@ -78,7 +78,7 @@ export const CandidateElement = ({
                   }}
                   color={isSelectedElement ? "error" : "accent"}
                 />
-              )}
+              )} */}
             </div>
           </div>
           <div>
@@ -96,7 +96,7 @@ export const CandidateElement = ({
               <PrimaryInformation label={description} value="" />
             )}
           </div>
-          {element.suggested && (
+          {/* {element.suggested && (
             <p
               className={classNames(
                 "text-xs font-bold mt-2",
@@ -105,7 +105,7 @@ export const CandidateElement = ({
             >
               {isRecommendedElement ? "Best Suggestion" : "Suggested"}
             </p>
-          )}
+          )} */}
         </div>
       </div>
       {showPDF && (

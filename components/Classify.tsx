@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Tab } from "../interfaces/tab";
 import { SectionHeader } from "./SectionHeader";
 import TextInput from "./TextInput";
-import { ElementSelection } from "./ElementSelection";
+import { CandidateElements } from "./CandidateElements";
 import {
   CandidateSelection,
   HtsElement,
@@ -22,6 +22,7 @@ import { elementsAtClassificationLevel } from "../utilities/data";
 import { setIndexInArray } from "../utilities/data";
 import { useChapters } from "../contexts/ChaptersContext";
 import { HtsLevel } from "../enums/hts";
+import { PrimaryInformation } from "./PrimaryInformation";
 
 enum Tabs {
   COMPLETED = "completed",
@@ -43,8 +44,6 @@ export const Classify = () => {
   const { fetchChapter, getChapterElements } = useChapters();
   const [activeTab, setActiveTab] = useState(tabs[0].value);
   const [productDescription, setProductDescription] = useState("");
-  const [recommendedElement, setRecommendedElement] =
-    useState<HtsElement | null>(null);
   const [htsSections, setHtsSections] = useState<HtsSection[]>([]);
   const [sectionCandidates, setSectionCandidates] = useState<
     CandidateSelection[]
@@ -66,11 +65,9 @@ export const Classify = () => {
       footnotes: [],
       quotaQuantity: "",
       additionalDuties: "",
-      addiitionalDuties: null,
       uuid: "bffcfb98-2112-4688-a59b-aacc2ab5a571",
       chapter: 44,
       type: HtsElementType.ELEMENT,
-      suggested: true,
     },
     {
       htsno: "9403",
@@ -84,11 +81,9 @@ export const Classify = () => {
       footnotes: [],
       quotaQuantity: "",
       additionalDuties: "",
-      addiitionalDuties: null,
       uuid: "a0b89f8d-4089-4805-b5aa-7764113b5daa",
       chapter: 94,
       type: HtsElementType.ELEMENT,
-      suggested: true,
     },
   ]);
   const [classificationProgression, setClassificationProgression] = useState<
@@ -110,11 +105,9 @@ export const Classify = () => {
           footnotes: [],
           quotaQuantity: "",
           additionalDuties: "",
-          addiitionalDuties: null,
           uuid: "bffcfb98-2112-4688-a59b-aacc2ab5a571",
           chapter: 44,
           type: HtsElementType.ELEMENT,
-          suggested: true,
         },
         {
           htsno: "9403",
@@ -128,11 +121,9 @@ export const Classify = () => {
           footnotes: [],
           quotaQuantity: "",
           additionalDuties: "",
-          addiitionalDuties: null,
           uuid: "a0b89f8d-4089-4805-b5aa-7764113b5daa",
           chapter: 94,
           type: HtsElementType.ELEMENT,
-          suggested: true,
         },
       ],
       selection: {
@@ -148,12 +139,17 @@ export const Classify = () => {
         footnotes: [],
         quotaQuantity: "",
         additionalDuties: "",
-        addiitionalDuties: null,
+
         uuid: "bffcfb98-2112-4688-a59b-aacc2ab5a571",
         chapter: 44,
         type: HtsElementType.ELEMENT,
-        suggested: true,
       },
+      reasoning: "",
+    },
+    {
+      level: HtsLevel.SUBHEADING,
+      candidates: [],
+      selection: null,
       reasoning: "",
     },
   ]);
@@ -279,7 +275,6 @@ export const Classify = () => {
           })
           .map((candidate) => ({
             ...candidate,
-            suggested: true,
           }));
 
         candidatesForHeading.push(...candidates);
@@ -340,7 +335,7 @@ export const Classify = () => {
 
     console.log("Recommended Heading:", selectedHeading);
 
-    setRecommendedElement(selectedHeading);
+    // setRecommendedElement(selectedHeading);
     setLoading({ isLoading: false, text: "" });
   };
 
@@ -378,39 +373,47 @@ export const Classify = () => {
 
   return (
     <section className="grow h-full w-full overflow-auto flex flex-col items-start gap-4">
-      <div className="min-w-full flex flex-col gap-4">
+      <div className="min-w-full flex flex-col gap-8">
         <SectionHeader
           title="Classify"
           tabs={tabs}
           activeTab={activeTab}
           onTabChange={setActiveTab}
         />
-        <TextInput
-          label="Product Description"
-          placeholder="Enter product description"
-          setProductDescription={setProductDescription}
-        />
-        {/* <TextInput
-        label="Product Analysis"
-        placeholder="Enter product analysis"
-        setProductDescription={() => {}}
-      /> */}
+        <div className="flex flex-col gap-4">
+          <PrimaryInformation
+            label="Product Details"
+            value={productDescription}
+          />
+          <TextInput
+            label="Description"
+            placeholder="Enter product description"
+            setProductDescription={setProductDescription}
+          />
+          {/* <TextInput
+            label="Analysis"
+            placeholder="Enter product analysis"
+            setProductDescription={() => {}}
+          /> */}
+        </div>
 
-        {/* {productDescription && ( */}
-        {/* TODO: Figure out a way to show another section as we progres... */}
-        {/* TODO: Figure out a way to show another section as we progres... */}
-        {/* TODO: Figure out a way to show another section as we progres... */}
-        {/* TODO: Figure out a way to show another section as we progres... */}
-        {/* TODO: Figure out a way to show another section as we progres... */}
-        <ElementSelection
-          loading={loading}
-          elements={headingCandidates}
-          recommendedElement={recommendedElement}
-          indentLevel={classificationIndentLevel}
-          classificationProgression={classificationProgression}
-          setClassificationProgression={setClassificationProgression}
-        />
-        {/* )} */}
+        {/* TODO: should put recommended element inside of classifcationProgression */}
+
+        <div className="flex flex-col gap-4">
+          <PrimaryInformation
+            label="Classification"
+            value={productDescription}
+          />
+          {classificationProgression.map((level, index) => (
+            <CandidateElements
+              key={`classification-level-${index}`}
+              loading={loading}
+              indentLevel={index}
+              classificationProgression={classificationProgression}
+              setClassificationProgression={setClassificationProgression}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );

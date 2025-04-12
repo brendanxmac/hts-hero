@@ -54,8 +54,8 @@ export const Explore = () => {
   }, [activeTab, sections]);
 
   return (
-    <section className="grow h-full min-w-full overflow-auto flex flex-col items-start">
-      <div className="min-w-full flex flex-col gap-4">
+    <section className="grow h-full min-w-full flex flex-col items-start">
+      <div className="min-w-full flex flex-col overflow-auto">
         <SectionHeader
           title="Explorer"
           tabs={tabs}
@@ -63,21 +63,23 @@ export const Explore = () => {
           onTabChange={setActiveTab}
         />
 
-        {loading && (
-          <div className="flex justify-center items-center">
-            <LoadingIndicator />
-          </div>
-        )}
+        <div className="w-full overflow-y-scroll">
+          {loading && (
+            <div className="flex justify-center items-center">
+              <LoadingIndicator />
+            </div>
+          )}
 
-        {activeTab === Tabs.ELEMENTS && (
-          <Elements
-            sections={sections}
-            breadcrumbs={breadcrumbs}
-            setBreadcrumbs={setBreadcrumbs}
-          />
-        )}
+          {activeTab === Tabs.ELEMENTS && (
+            <Elements
+              sections={sections}
+              breadcrumbs={breadcrumbs}
+              setBreadcrumbs={setBreadcrumbs}
+            />
+          )}
 
-        {activeTab === Tabs.NOTES && <Notes />}
+          {activeTab === Tabs.NOTES && <Notes />}
+        </div>
       </div>
     </section>
   );
