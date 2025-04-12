@@ -41,11 +41,10 @@ export async function POST(req: NextRequest) {
       htsDescription,
     }: GetBestClassificationProgressionDto = await req.json();
 
-    if (!elements || !productDescription || !htsDescription) {
+    if (!elements || !productDescription) {
       return NextResponse.json(
         {
-          error:
-            "Missing descriptions, product description, or hts description",
+          error: "Missing descriptions or product description",
         },
         { status: 400 }
       );
@@ -82,7 +81,7 @@ export async function POST(req: NextRequest) {
         {
           role: "system",
           content: `You are a United States Harmonized Tariff System Expert who follows the General Rules of Interpretation (GRI) for the Harmonized System perfectly.\n
-            Your job is to take a product description, a work in progress classification description, and a list of descriptions, 
+            Your job is to take a product description, a work in progress classification description (if any), and a list of descriptions, 
             and determine which description from the list best fits the product description if it were added onto the end of the current classification description.\n
             You must pick one. If you are unsure and "Other:" is available as an option, you should pick it.\n
             ${
@@ -95,7 +94,11 @@ export async function POST(req: NextRequest) {
         {
           role: "user",
           content: `Product Description: ${productDescription}\n
-          Work in Progress Classification Description: ${htsDescription}\n
+          ${
+            htsDescription
+              ? `Work in Progress Classification Description: ${htsDescription}\n`
+              : ""
+          }
           Descriptions:\n ${labelledDescriptions.join("\n")}`,
         },
       ],

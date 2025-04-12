@@ -56,6 +56,8 @@ export interface HtsElement {
   quotaQuantity: string | null;
   additionalDuties: string | null;
   children?: HtsElement[];
+  suggested?: boolean;
+  suggestedReasoning?: string;
 }
 
 export interface Footnote {
@@ -112,7 +114,7 @@ export interface CandidateSelection {
 export interface HtsLevelClassification {
   level: HtsLevel;
   candidates: HtsElement[]; //| HtsSectionAndChapterBase[];
-  suggestions?: HtsElement[]; //| HtsSectionAndChapterBase[];
+  // suggestions?: HtsElement[]; //| HtsSectionAndChapterBase[];
   selection?: HtsElement; // | HtsSectionAndChapterBase;
   reasoning?: string;
 }
