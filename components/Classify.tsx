@@ -23,6 +23,7 @@ import { setIndexInArray } from "../utilities/data";
 import { useChapters } from "../contexts/ChaptersContext";
 import { HtsLevel } from "../enums/hts";
 import { PrimaryInformation } from "./PrimaryInformation";
+import { LoadingIndicator } from "./LoadingIndicator";
 
 enum Tabs {
   COMPLETED = "completed",
@@ -51,108 +52,10 @@ export const Classify = () => {
   const [chapterCandidates, setChapterCandidates] = useState<
     CandidateSelection[]
   >([]);
-  const [headingCandidates, setHeadingCandidates] = useState<HtsElement[]>([
-    {
-      htsno: "4420",
-      indent: "0",
-      description:
-        "Wood marquetry and inlaid wood; caskets and cases for jewelry or cutlery and similar articles, of wood; statuettes and other ornaments, of wood; wooden articles of furniture not falling within chapter 94:",
-      superior: null,
-      units: [],
-      general: "",
-      special: "",
-      other: "",
-      footnotes: [],
-      quotaQuantity: "",
-      additionalDuties: "",
-      uuid: "bffcfb98-2112-4688-a59b-aacc2ab5a571",
-      chapter: 44,
-      type: HtsElementType.ELEMENT,
-    },
-    {
-      htsno: "9403",
-      indent: "0",
-      description: "Other furniture and parts thereof:",
-      superior: null,
-      units: [],
-      general: "",
-      special: "",
-      other: "",
-      footnotes: [],
-      quotaQuantity: "",
-      additionalDuties: "",
-      uuid: "a0b89f8d-4089-4805-b5aa-7764113b5daa",
-      chapter: 94,
-      type: HtsElementType.ELEMENT,
-    },
-  ]);
+  const [headingCandidates, setHeadingCandidates] = useState<HtsElement[]>([]);
   const [classificationProgression, setClassificationProgression] = useState<
     HtsLevelClassification[]
-  >([
-    {
-      level: HtsLevel.HEADING,
-      candidates: [
-        {
-          htsno: "4420",
-          indent: "0",
-          description:
-            "Wood marquetry and inlaid wood; caskets and cases for jewelry or cutlery and similar articles, of wood; statuettes and other ornaments, of wood; wooden articles of furniture not falling within chapter 94:",
-          superior: null,
-          units: [],
-          general: "",
-          special: "",
-          other: "",
-          footnotes: [],
-          quotaQuantity: "",
-          additionalDuties: "",
-          uuid: "bffcfb98-2112-4688-a59b-aacc2ab5a571",
-          chapter: 44,
-          type: HtsElementType.ELEMENT,
-        },
-        {
-          htsno: "9403",
-          indent: "0",
-          description: "Other furniture and parts thereof:",
-          superior: null,
-          units: [],
-          general: "",
-          special: "",
-          other: "",
-          footnotes: [],
-          quotaQuantity: "",
-          additionalDuties: "",
-          uuid: "a0b89f8d-4089-4805-b5aa-7764113b5daa",
-          chapter: 94,
-          type: HtsElementType.ELEMENT,
-        },
-      ],
-      selection: {
-        htsno: "4420",
-        indent: "0",
-        description:
-          "Wood marquetry and inlaid wood; caskets and cases for jewelry or cutlery and similar articles, of wood; statuettes and other ornaments, of wood; wooden articles of furniture not falling within chapter 94:",
-        superior: null,
-        units: [],
-        general: "",
-        special: "",
-        other: "",
-        footnotes: [],
-        quotaQuantity: "",
-        additionalDuties: "",
-
-        uuid: "bffcfb98-2112-4688-a59b-aacc2ab5a571",
-        chapter: 44,
-        type: HtsElementType.ELEMENT,
-      },
-      reasoning: "",
-    },
-    {
-      level: HtsLevel.SUBHEADING,
-      candidates: [],
-      selection: null,
-      reasoning: "",
-    },
-  ]);
+  >([]);
   const [classificationIndentLevel, setClassificationIndentLevel] = useState(1);
   const [loading, setLoading] = useState({ isLoading: false, text: "" });
 
@@ -284,6 +187,12 @@ export const Classify = () => {
     console.log("Heading Candidates:", candidatesForHeading);
 
     setHeadingCandidates(candidatesForHeading);
+    setClassificationProgression([
+      {
+        level: HtsLevel.HEADING,
+        candidates: candidatesForHeading,
+      },
+    ]);
     // DO not move this down, it will break the classification as the timing is critical
     setClassificationIndentLevel(classificationIndentLevel + 1);
     setLoading({ isLoading: false, text: "" });
@@ -360,59 +269,64 @@ export const Classify = () => {
     }
   }, [chapterCandidates]);
 
-  useEffect(() => {
-    if (headingCandidates && headingCandidates.length > 0) {
-      // console.log("Getting Best Heading");
-      // getBestHeading();
-    }
-  }, [headingCandidates]);
+  // useEffect(() => {
+  //   if (headingCandidates && headingCandidates.length > 0) {
+  //     // getBestHeading();
+  //     setClassificationProgression([
+  //       {
+  //         level: HtsLevel.HEADING,
+  //         candidates: headingCandidates,
+  //       },
+  //     ]);
+  //   }
+  // }, [headingCandidates]);
 
   useEffect(() => {
     console.log("Classification Progression:", classificationProgression);
   }, [classificationProgression]);
 
   return (
-    <section className="grow h-full w-full overflow-auto flex flex-col items-start gap-4">
-      <div className="min-w-full flex flex-col gap-8">
+    <section className="grow h-full w-full flex flex-col items-start gap-4">
+      <div className="w-full flex flex-col overflow-auto">
         <SectionHeader
           title="Classify"
           tabs={tabs}
           activeTab={activeTab}
           onTabChange={setActiveTab}
         />
-        <div className="flex flex-col gap-4">
-          <PrimaryInformation
-            label="Product Details"
-            value={productDescription}
-          />
-          <TextInput
-            label="Description"
-            placeholder="Enter product description"
-            setProductDescription={setProductDescription}
-          />
-          {/* <TextInput
+        <div className="w-full overflow-y-scroll py-4 flex flex-col gap-8">
+          <div className="flex flex-col gap-4">
+            <PrimaryInformation label="Product Details" value="" />
+            <TextInput
+              label="Description"
+              placeholder="Enter product description"
+              setProductDescription={setProductDescription}
+            />
+            {/* <TextInput
             label="Analysis"
             placeholder="Enter product analysis"
             setProductDescription={() => {}}
           /> */}
-        </div>
+          </div>
 
-        {/* TODO: should put recommended element inside of classifcationProgression */}
+          {/* TODO: should put recommended element inside of classifcationProgression */}
 
-        <div className="flex flex-col gap-4">
-          <PrimaryInformation
-            label="Classification"
-            value={productDescription}
-          />
-          {classificationProgression.map((level, index) => (
-            <CandidateElements
-              key={`classification-level-${index}`}
-              loading={loading}
-              indentLevel={index}
-              classificationProgression={classificationProgression}
-              setClassificationProgression={setClassificationProgression}
-            />
-          ))}
+          {loading.isLoading && <LoadingIndicator text={loading.text} />}
+
+          {classificationProgression.length > 0 && (
+            <div className="flex flex-col gap-4">
+              <PrimaryInformation label="Classification" value="" />
+              {classificationProgression.map((level, index) => (
+                <CandidateElements
+                  key={`classification-level-${index}`}
+                  loading={loading}
+                  indentLevel={index}
+                  classificationProgression={classificationProgression}
+                  setClassificationProgression={setClassificationProgression}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>

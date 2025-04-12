@@ -140,9 +140,9 @@ export const Element = ({
               </div>
             )}
             {htsno ? (
-              <PrimaryInformation value={description} loud={true} />
+              <PrimaryInformation value={description} />
             ) : (
-              <PrimaryInformation label={description} value="" loud={true} />
+              <PrimaryInformation label={description} value="" />
             )}
           </div>
         </div>
@@ -188,7 +188,7 @@ export const Element = ({
                   />
 
                   {getDetailsFromSpecial(special) && (
-                    <div className="flex gap-x-1">
+                    <div className="flex gap-x-1 flex-wrap">
                       {getDetailsFromSpecial(special)
                         .split(",")
                         .map((specialTariffSymbol, index) => (
@@ -213,8 +213,6 @@ export const Element = ({
                     </div>
                   )}
                 </div>
-
-                {/* Show PDF based on special tariff symbol */}
 
                 <div className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24">
                   <TertiaryInformation value={"Other"} />
