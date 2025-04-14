@@ -35,7 +35,6 @@ export const HtsSectionsProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     try {
       const { sections: newSections } = await getHtsSectionsAndChapters();
-      console.log(`GOT SECTIONS!`, newSections);
       setSections(newSections);
       return newSections;
     } finally {

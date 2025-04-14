@@ -16,7 +16,7 @@ export const Note = ({ note }: Props) => {
   const [show, setShow] = useState(false);
 
   return (
-    <div className="w-full flex flex-col rounded-md bg-primary/10 hover:shadow-sm hover:bg-primary/20 active:bg-base-content/30 transition duration-200 ease-in-out cursor-pointer">
+    <div className="w-full flex flex-col rounded-md bg-primary/30 dark:bg-primary/30 hover:shadow-sm hover:bg-primary/50 transition duration-200 ease-in-out cursor-pointer">
       <div
         className="flex items-center justify-between gap-3 p-4"
         onClick={() => {

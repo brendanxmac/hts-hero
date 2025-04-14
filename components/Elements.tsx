@@ -29,7 +29,6 @@ export interface NavigatableElement {
 export const Elements = ({ sections }: ElementsProps) => {
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const currentElement = breadcrumbs[breadcrumbs.length - 1];
-  console.log(`currentElement`, currentElement);
 
   if (!currentElement) {
     return;

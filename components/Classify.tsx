@@ -300,14 +300,18 @@ export const Classify = () => {
           /> */}
           </div>
 
-          {/* TODO: should put recommended element inside of classifcationProgression */}
-
           {loading.isLoading && <LoadingIndicator text={loading.text} />}
 
           {classificationProgression.length > 0 && (
             <div className="flex flex-col gap-4">
               <PrimaryInformation label="Heading Candidates" value="" />
-              {classificationProgression.map((_, index) => (
+              <CandidateElements
+                indentLevel={0}
+                classificationProgression={classificationProgression}
+                setClassificationProgression={setClassificationProgression}
+                productDescription={productDescription}
+              />
+              {/* {classificationProgression.map((_, index) => (
                 <CandidateElements
                   key={`classification-level-${index}`}
                   indentLevel={index}
@@ -315,7 +319,7 @@ export const Classify = () => {
                   setClassificationProgression={setClassificationProgression}
                   productDescription={productDescription}
                 />
-              ))}
+              ))} */}
             </div>
           )}
         </div>

@@ -30,7 +30,7 @@ export const ChapterSummary = ({
           },
         ]);
       }}
-      className="flex flex-col gap-2 w-full rounded-md bg-primary/5 dark:bg-primary/10 hover:bg-primary/20 transition duration-100 ease-in-out cursor-pointer"
+      className="flex flex-col gap-2 w-full rounded-md bg-primary/30 dark:bg-primary/30 hover:bg-primary/50 transition duration-100 ease-in-out cursor-pointer"
     >
       <div className="flex items-start justify-between gap-3 p-4">
         <div className="flex gap-4">
