@@ -1,6 +1,6 @@
 import {
   HtsElement,
-  HtsElementType,
+  Navigatable,
   HtsLevelClassification,
 } from "../interfaces/hts";
 import { LoadingIndicator } from "./LoadingIndicator";
@@ -26,6 +26,26 @@ interface Props {
     classificationProgression: HtsLevelClassification[]
   ) => void;
 }
+
+const getFullHtsDescription = (
+  classificationProgression: HtsLevelClassification[]
+) => {
+  let fullDescription = "";
+  classificationProgression.forEach((progression, index) => {
+    if (progression.selection) {
+      // if the string has a : at the end, strip it off
+      const desc = progression.selection.description.endsWith(":")
+        ? progression.selection.description.slice(0, -1)
+        : progression.selection.description;
+
+      fullDescription += index === 0 ? `${desc}` : ` > ${desc}`;
+    }
+  });
+
+  console.log("fullDescription", fullDescription);
+
+  return fullDescription;
+};
 
 export const CandidateElements = ({
   productDescription,
@@ -58,7 +78,7 @@ export const CandidateElements = ({
 
     const bestProgressionResponse = await getBestClassificationProgression(
       simplifiedCandidates,
-      "",
+      getFullHtsDescription(classificationProgression),
       productDescription
     );
 
@@ -95,15 +115,19 @@ export const CandidateElements = ({
     });
   };
 
-  useEffect(() => {
-    console.log("candidates updated", candidates);
-    const suggestionsProvided = candidates.some((e) => e.suggested);
+  // useEffect(() => {
+  //   console.log("candidates updated", candidates);
+  //   const suggestionsProvided = candidates.some((e) => e.suggested);
+  //   const numCandidates = candidates.length;
 
-    if (candidates.length > 0 && !suggestionsProvided) {
-      console.log("Getting Best Candidate");
-      getBestCandidate();
-    }
-  }, [candidates]);
+  //   // TODO: If just a single element might want to select it and provide a general reasoning
+  //   if (numCandidates <= 1) return;
+
+  //   if (numCandidates > 1 && !suggestionsProvided) {
+  //     console.log("Getting Best Candidate");
+  //     getBestCandidate();
+  //   }
+  // }, [candidates]);
 
   useEffect(() => {
     setShowDetails(!Boolean(selectedElement));
@@ -112,12 +136,12 @@ export const CandidateElements = ({
   return (
     <div
       className={classNames(
-        "w-full flex flex-col gap-2 border-b border-base-content/20 pb-2",
-        (selectedElement || (candidates.length === 0 && showDetails)) &&
-          "border-none"
+        "w-full flex flex-col gap-2 pb-2"
+        // (selectedElement || (candidates.length === 0 && showDetails)) &&
+        //   "border-none"
       )}
     >
-      <div
+      {/* <div
         className={classNames(
           "flex justify-between items-center p-2 rounded-md hover:bg-primary/20"
         )}
@@ -130,11 +154,11 @@ export const CandidateElements = ({
             showDetails && "rotate-180"
           )}
         />
-      </div>
+      </div> */}
 
       {candidates.length === 0 ? (
         !showDetails ? null : (
-          <div className="flex flex-col gap-2 bg-base-300 rounded-md p-4 items-center justify-center">
+          <div className="flex flex-col gap-2 rounded-md p-4 items-center justify-center">
             <div className="w-full flex items-center justify-evenly py-6">
               <div className="min-w-28 flex flex-col items-center justify-center gap-2">
                 <SquareIconButton
@@ -151,7 +175,7 @@ export const CandidateElements = ({
                   }}
                   disabled={
                     breadcrumbs[breadcrumbs.length - 1].element.type ===
-                      HtsElementType.ELEMENT &&
+                      Navigatable.ELEMENT &&
                     // @ts-ignore
                     breadcrumbs[breadcrumbs.length - 1].element.uuid ===
                       classificationProgression[indentLevel - 1].selection?.uuid
@@ -172,7 +196,7 @@ export const CandidateElements = ({
           </div>
         )
       ) : !showDetails && selectedElement ? (
-        <div className="flex flex-col gap-2 bg-base-300 rounded-md p-4">
+        <div className="flex flex-col gap-2">
           <CandidateElement
             key={selectedElement.uuid}
             element={selectedElement}
@@ -199,7 +223,7 @@ export const CandidateElements = ({
           />
         </div>
       ) : !showDetails && !selectedElement ? null : (
-        <div className="flex flex-col gap-2 bg-base-300 rounded-md p-4">
+        <div className="flex flex-col gap-2">
           {loading.isLoading && (
             <div className="py-3">
               <LoadingIndicator text={loading.text} />

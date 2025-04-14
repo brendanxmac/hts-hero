@@ -1,12 +1,19 @@
 "use client";
 import { createContext, useContext, useState, ReactNode } from "react";
-import { NavigatableElement } from "../components/Elements";
-import { HtsElement } from "../interfaces/hts";
+import {
+  NavigatableElement,
+  NavigatableElementType,
+} from "../components/Elements";
+import {
+  HtsElement,
+  HtsSectionAndChapterBase,
+  Navigatable,
+} from "../interfaces/hts";
 
 interface BreadcrumbsContextType {
   breadcrumbs: NavigatableElement[];
   setBreadcrumbs: (breadcrumbs: NavigatableElement[]) => void;
-  addBreadcrumb: (element: HtsElement) => void;
+  addBreadcrumb: (navigatableElement: NavigatableElementType) => void;
   removeBreadcrumb: (index: number) => void;
   clearBreadcrumbs: () => void;
 }
@@ -30,13 +37,19 @@ interface BreadcrumbsProviderProps {
 export function BreadcrumbsProvider({ children }: BreadcrumbsProviderProps) {
   const [breadcrumbs, setBreadcrumbs] = useState<NavigatableElement[]>([]);
 
-  const addBreadcrumb = (element: HtsElement) => {
+  // TODO: this actually could not have the elements TYPE in it, but we need to figure out how to get it back
+  const addBreadcrumb = (element: NavigatableElementType) => {
+    const title =
+      element.type === Navigatable.ELEMENT
+        ? (element as HtsElement).htsno ||
+          (element as HtsElement).description.split(" ").slice(0, 2).join(" ") +
+            "..."
+        : `Chapter ${(element as HtsSectionAndChapterBase).number}`;
+
     setBreadcrumbs((prev) => [
       ...prev,
       {
-        title:
-          element.htsno ||
-          element.description.split(" ").slice(0, 2).join(" ") + "...",
+        title,
         element,
       },
     ]);

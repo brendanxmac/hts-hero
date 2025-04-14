@@ -6,6 +6,7 @@ import ClientLayout from "@/components/LayoutClient";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import config from "@/config";
 import "./globals.css";
+import { HtsSectionsProvider } from "../contexts/HtsSectionsContext";
 
 const font = Inter({ subsets: ["latin"] });
 
@@ -24,8 +25,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" data-theme={config.colors.theme} className={font.className}>
       <body>
-        {/* ClientLayout contains all the client wrappers (Crisp chat support, toast messages, tooltips, etc.) */}
-        <ClientLayout>{children}</ClientLayout>
+        <HtsSectionsProvider>
+          {/* ClientLayout contains all the client wrappers (Crisp chat support, toast messages, tooltips, etc.) */}
+          <ClientLayout>{children}</ClientLayout>
+        </HtsSectionsProvider>
         <GoogleAnalytics gaId="G-V2DRE5Y0NV" />
       </body>
     </html>

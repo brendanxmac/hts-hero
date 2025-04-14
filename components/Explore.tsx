@@ -1,15 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getHtsSectionsAndChapters } from "../libs/hts";
-import { HtsElementType, HtsSection } from "../interfaces/hts";
 import { LoadingIndicator } from "./LoadingIndicator";
-import { Elements, NavigatableElement } from "./Elements";
+import { Elements } from "./Elements";
 import { Notes } from "./Notes";
 import { Tab } from "../interfaces/tab";
 import { SectionHeader } from "./SectionHeader";
-import { classNames } from "../utilities/style";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
+import { useHtsSections } from "../contexts/HtsSectionsContext";
+import { Navigatable } from "../interfaces/hts";
 
 enum Tabs {
   NOTES = "notes",
@@ -28,29 +27,27 @@ const tabs: Tab[] = [
 ];
 
 export const Explore = () => {
-  const [loading, setLoading] = useState(false);
-  const [sections, setSections] = useState<HtsSection[]>([]);
   const [activeTab, setActiveTab] = useState(tabs[0].value);
-  const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
+  const { setBreadcrumbs } = useBreadcrumbs();
+  const { sections, loading, getSections } = useHtsSections();
 
   useEffect(() => {
-    const fetchSectionsAndChapters = async () => {
-      setLoading(true);
-      const { sections } = await getHtsSectionsAndChapters();
-      setSections(sections);
-      setBreadcrumbs([
-        {
-          title: "Sections",
-          element: { type: HtsElementType.SECTION, sections },
-        },
-      ]);
-      setLoading(false);
+    const initializeSections = async () => {
+      const sections = await getSections();
+      if (sections.length > 0) {
+        setBreadcrumbs([
+          {
+            title: "Sections",
+            element: {
+              type: Navigatable.SECTIONS,
+              sections,
+            },
+          },
+        ]);
+      }
     };
-
-    if (activeTab === Tabs.ELEMENTS && !sections.length) {
-      fetchSectionsAndChapters();
-    }
-  }, [activeTab, sections]);
+    initializeSections();
+  }, [activeTab]);
 
   return (
     <div className="flex flex-col gap-4">

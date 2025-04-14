@@ -1,3 +1,4 @@
+import { NavigatableElementType } from "../components/Elements";
 import { HtsLevel } from "../enums/hts";
 
 export interface Eval {
@@ -14,8 +15,8 @@ export interface Note {
   listPosition: string;
 }
 
-export enum HtsElementType {
-  SECTION = "section",
+export enum Navigatable {
+  SECTIONS = "sections",
   CHAPTER = "chapter",
   ELEMENT = "element",
 }
@@ -28,7 +29,7 @@ export interface HtsSectionAndChapterBase {
   number: number;
   description: string;
   notesPath?: string;
-  type: HtsElementType;
+  type: NavigatableElementType;
 }
 
 export interface HtsElementWithParentReference extends HtsElement {
@@ -42,7 +43,7 @@ export interface SimplifiedHtsElement {
 
 export interface HtsElement {
   uuid: string;
-  type: HtsElementType.ELEMENT;
+  type: Navigatable.ELEMENT;
   chapter: number;
   htsno: string;
   indent: string;
