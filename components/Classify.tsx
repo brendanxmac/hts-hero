@@ -8,7 +8,7 @@ import { CandidateElements } from "./CandidateElements";
 import {
   CandidateSelection,
   HtsElement,
-  HtsElementType,
+  Navigatable,
   HtsLevelClassification,
   HtsSection,
 } from "../interfaces/hts";
@@ -74,8 +74,6 @@ export const Classify = () => {
       sections.map((s) => s.description)
     );
 
-    console.log("Section Candidates:", bestSectionCandidates.bestCandidates);
-
     const candidates: CandidateSelection[] =
       bestSectionCandidates.bestCandidates.map((sectionCandidate) => ({
         index: sections[sectionCandidate.index].number,
@@ -119,8 +117,6 @@ export const Classify = () => {
         candidatesForChapter.push(...candidates);
       })
     );
-
-    console.log("Chapter Candidates:", candidatesForChapter);
 
     // Fetch Chapter Data for the best candidates
     await Promise.all(
@@ -183,8 +179,6 @@ export const Classify = () => {
         candidatesForHeading.push(...candidates);
       })
     );
-
-    console.log("Heading Candidates:", candidatesForHeading);
 
     setHeadingCandidates(candidatesForHeading);
     setClassificationProgression([
@@ -250,21 +244,18 @@ export const Classify = () => {
 
   useEffect(() => {
     if (productDescription) {
-      console.log("Getting Sections");
       getSections();
     }
   }, [productDescription]);
 
   useEffect(() => {
     if (sectionCandidates && sectionCandidates.length > 0) {
-      console.log("Getting Chapters");
       getChapters();
     }
   }, [sectionCandidates]);
 
   useEffect(() => {
     if (chapterCandidates && chapterCandidates.length > 0) {
-      console.log("Getting Headings");
       getHeadings();
     }
   }, [chapterCandidates]);
@@ -281,9 +272,9 @@ export const Classify = () => {
   //   }
   // }, [headingCandidates]);
 
-  useEffect(() => {
-    console.log("Classification Progression:", classificationProgression);
-  }, [classificationProgression]);
+  // useEffect(() => {
+  // console.log("Classification Progression:", classificationProgression);
+  // }, [classificationProgression]);
 
   return (
     <section className="grow h-full w-full flex flex-col items-start gap-4">
@@ -315,8 +306,8 @@ export const Classify = () => {
 
           {classificationProgression.length > 0 && (
             <div className="flex flex-col gap-4">
-              <PrimaryInformation label="Classification" value="" />
-              {classificationProgression.map((level, index) => (
+              <PrimaryInformation label="Heading Candidates" value="" />
+              {classificationProgression.map((_, index) => (
                 <CandidateElements
                   key={`classification-level-${index}`}
                   indentLevel={index}

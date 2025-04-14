@@ -2,7 +2,7 @@
 
 import {
   HtsElement,
-  HtsElementType,
+  Navigatable,
   HtsSection,
   HtsSectionAndChapterBase,
 } from "../interfaces/hts";
@@ -16,8 +16,8 @@ interface ElementsProps {
   sections: HtsSection[];
 }
 
-type NavigatableElementType =
-  | { type: HtsElementType.SECTION; sections: HtsSection[] }
+export type NavigatableElementType =
+  | { type: Navigatable.SECTIONS; sections: HtsSection[] }
   | HtsSectionAndChapterBase
   | HtsElement;
 
@@ -29,6 +29,7 @@ export interface NavigatableElement {
 export const Elements = ({ sections }: ElementsProps) => {
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const currentElement = breadcrumbs[breadcrumbs.length - 1];
+  console.log(`currentElement`, currentElement);
 
   if (!currentElement) {
     return;
@@ -43,13 +44,13 @@ export const Elements = ({ sections }: ElementsProps) => {
         />
       )}
 
-      {currentElement.element.type === HtsElementType.SECTION ? (
+      {currentElement.element.type === Navigatable.SECTIONS ? (
         <Sections
           sections={sections}
           breadcrumbs={breadcrumbs}
           setBreadcrumbs={setBreadcrumbs}
         />
-      ) : currentElement.element.type === HtsElementType.CHAPTER ? (
+      ) : currentElement.element.type === Navigatable.CHAPTER ? (
         <Chapter
           chapter={currentElement.element as HtsSectionAndChapterBase}
           breadcrumbs={breadcrumbs}

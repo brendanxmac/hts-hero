@@ -3,7 +3,7 @@ import { useChapters } from "../contexts/ChaptersContext";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import {
   HtsElement,
-  HtsElementType,
+  Navigatable,
   HtsLevelClassification,
 } from "../interfaces/hts";
 import SquareIconButton from "./SqaureIconButton";
@@ -19,6 +19,7 @@ import { CheckIcon } from "@heroicons/react/24/solid";
 import { classNames } from "../utilities/style";
 import { getDirectChildrenElements, getHtsLevel } from "../libs/hts";
 import { TertiaryInformation } from "./TertiaryInformation";
+import { useHtsSections } from "../contexts/HtsSectionsContext";
 
 interface Props {
   element: HtsElement;
@@ -45,7 +46,8 @@ export const CandidateElement = ({
   const { htsno, chapter, description, suggested, suggestedReasoning } =
     element;
   const { fetchChapter, getChapterElements } = useChapters();
-  const { breadcrumbs, addBreadcrumb, clearBreadcrumbs } = useBreadcrumbs();
+  const { addBreadcrumb, clearBreadcrumbs } = useBreadcrumbs();
+  const { findChapterByNumber } = useHtsSections();
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -61,10 +63,10 @@ export const CandidateElement = ({
   return (
     <div
       className={classNames(
-        "flex flex-col w-full rounded-md bg-primary/5 dark:bg-primary/10 p-4 gap-6",
+        "flex flex-col w-full rounded-md bg-primary/30 dark:bg-primary/30 p-4 gap-6",
         isSelectedElement
           ? "bg-primary/50 dark:bg-primary/50"
-          : "hover:bg-primary/20 transition duration-100 ease-in-out cursor-pointer"
+          : "hover:bg-primary/50 transition duration-100 ease-in-out cursor-pointer"
       )}
     >
       <div className="flex items-start justify-between gap-3">
@@ -93,7 +95,16 @@ export const CandidateElement = ({
             icon={<MagnifyingGlassIcon className="h-4 w-4" />}
             onClick={() => {
               clearBreadcrumbs();
-              addBreadcrumb(element);
+              const chapter = findChapterByNumber(element.chapter);
+              if (chapter) {
+                addBreadcrumb({
+                  type: Navigatable.CHAPTER,
+                  ...chapter,
+                });
+              }
+              addBreadcrumb({
+                ...element,
+              });
             }}
           />
           {isSelectedElement ? (
@@ -114,6 +125,13 @@ export const CandidateElement = ({
               onClick={() => {
                 setSelectedElement(element);
                 clearBreadcrumbs();
+                const ch = findChapterByNumber(element.chapter);
+                if (ch) {
+                  addBreadcrumb({
+                    type: Navigatable.CHAPTER,
+                    ...ch,
+                  });
+                }
                 addBreadcrumb(element);
                 const children = getDirectChildrenElements(
                   element,
@@ -139,6 +157,23 @@ export const CandidateElement = ({
               }}
             />
           )}
+          <SquareIconButton
+            icon={<XMarkIcon className="h-4 w-4" />}
+            onClick={() => {
+              // TODO: remove this element from this level of the classification progression (should only be possible for heading selection initially)
+              const newClassificationProgression =
+                classificationProgression.slice(0, indentLevel + 1);
+
+              newClassificationProgression[indentLevel].candidates =
+                newClassificationProgression[indentLevel].candidates.filter(
+                  (candidate) => candidate.uuid !== element.uuid
+                );
+              setClassificationProgression(newClassificationProgression);
+
+              // TODO: if it's selected, also make sure that gets cleaned up
+            }}
+            color="error"
+          />
         </div>
       </div>
 

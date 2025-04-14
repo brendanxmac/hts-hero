@@ -15,7 +15,7 @@ import {
   Note,
   BestProgressionResponse,
   BestChaptersResponse,
-  HtsElementType,
+  Navigatable,
 } from "../interfaces/hts";
 import {
   elementsAtClassificationLevel,
@@ -472,7 +472,7 @@ export const getHtsChapterData = async (
     ...e,
     uuid: crypto.randomUUID(),
     chapter: Number(chapter),
-    type: HtsElementType.ELEMENT,
+    type: Navigatable.ELEMENT,
   }));
 };
 

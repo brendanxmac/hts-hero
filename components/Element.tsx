@@ -1,4 +1,4 @@
-import { HtsElement, HtsElementType } from "../interfaces/hts";
+import { HtsElement, Navigatable } from "../interfaces/hts";
 import { NavigatableElement } from "./Elements";
 import { useEffect, useState } from "react";
 import { PrimaryInformation } from "./PrimaryInformation";
@@ -91,7 +91,7 @@ export const Element = ({
   const getParentDescriptionsFromBreadcrumbs = (element: HtsElement) => {
     let descriptions = "";
     breadcrumbs.map((breadcrumb) => {
-      if (breadcrumb.element.type === HtsElementType.CHAPTER) {
+      if (breadcrumb.element.type === Navigatable.CHAPTER) {
         if (breadcrumb.element.description.endsWith(":")) {
           descriptions += `${breadcrumb.element.description.replace(/:$/, " >")} `;
         } else {
@@ -99,7 +99,7 @@ export const Element = ({
         }
       }
       if (
-        breadcrumb.element.type === HtsElementType.ELEMENT &&
+        breadcrumb.element.type === Navigatable.ELEMENT &&
         // @ts-ignore
         breadcrumb.element.uuid !== element.uuid
       ) {

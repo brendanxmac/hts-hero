@@ -1,7 +1,6 @@
 import { ChevronRightIcon } from "@heroicons/react/16/solid";
-import { HtsElementType, HtsSectionAndChapterBase } from "../interfaces/hts";
+import { Navigatable, HtsSectionAndChapterBase } from "../interfaces/hts";
 import { SecondaryInformation } from "./SecondaryInformation";
-import { Cell } from "./Cell";
 import { NavigatableElement } from "./Elements";
 interface Props {
   chapter: HtsSectionAndChapterBase;
@@ -25,7 +24,7 @@ export const ChapterSummary = ({
           {
             title: `Chapter ${number.toString()}`,
             element: {
-              type: HtsElementType.CHAPTER,
+              type: Navigatable.CHAPTER,
               ...chapter,
             },
           },
