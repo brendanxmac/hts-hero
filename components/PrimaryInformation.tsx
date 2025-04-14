@@ -19,7 +19,7 @@ export const PrimaryInformation = ({
       {label && (
         <h2
           className={classNames(
-            loud ? "text-secondary" : "text-base-content dark:text-gray-300",
+            loud ? "text-secondary" : "text-base-content dark:text-white",
             "font-bold sm:text-lg lg:text-xl"
           )}
         >
@@ -28,7 +28,7 @@ export const PrimaryInformation = ({
       )}
       <h2
         className={classNames(
-          loud ? "text-secondary" : "text-base-content dark:text-gray-300",
+          loud ? "text-secondary" : "text-base-content dark:text-white",
           "sm:text-lg lg:text-xl"
         )}
       >

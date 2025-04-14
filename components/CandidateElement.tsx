@@ -65,9 +65,52 @@ export const CandidateElement = ({
       className={classNames(
         "flex flex-col w-full rounded-md bg-primary/30 dark:bg-primary/30 p-4 gap-6",
         isSelectedElement
-          ? "bg-primary/50 dark:bg-primary/50"
-          : "hover:bg-primary/50 transition duration-100 ease-in-out cursor-pointer"
+          ? "bg-secondary/50 dark:bg-secondary/50"
+          : "hover:bg-primary/50 transition duration-100 ease-in-out hover:cursor-pointer"
       )}
+      onClick={() => {
+        if (isSelectedElement) {
+          setSelectedElement(null);
+          const newClassificationProgression = classificationProgression.slice(
+            0,
+            indentLevel + 1
+          );
+          newClassificationProgression[indentLevel].selection = null;
+          setClassificationProgression(newClassificationProgression);
+        } else {
+          setSelectedElement(element);
+          clearBreadcrumbs();
+          const ch = findChapterByNumber(element.chapter);
+          if (ch) {
+            addBreadcrumb({
+              type: Navigatable.CHAPTER,
+              ...ch,
+            });
+          }
+          addBreadcrumb(element);
+          const children = getDirectChildrenElements(
+            element,
+            getChapterElements(chapter)
+          );
+
+          if (children.length > 0) {
+            const newClassificationProgression =
+              classificationProgression.slice(0, indentLevel + 1);
+            newClassificationProgression[indentLevel].selection = element;
+            setClassificationProgression([
+              ...newClassificationProgression,
+              {
+                level: getHtsLevel(htsno || ""),
+                candidates: children,
+                selection: null,
+                reasoning: "",
+              },
+            ]);
+          } else {
+            // TADA! classification complete, do something special
+          }
+        }
+      }}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-col gap-2">
@@ -75,10 +118,9 @@ export const CandidateElement = ({
             <PrimaryInformation
               label={htsno ? `${htsno}` : description}
               value={""}
-              copyable={false}
             />
           </div>
-          {htsno && <PrimaryInformation value={description} copyable={false} />}
+          {htsno && <PrimaryInformation value={description} />}
         </div>
 
         <div className="flex gap-2">
@@ -107,7 +149,7 @@ export const CandidateElement = ({
               });
             }}
           />
-          {isSelectedElement ? (
+          {/* {isSelectedElement ? (
             <SquareIconButton
               icon={<XMarkIcon className="h-4 w-4" />}
               onClick={() => {
@@ -156,7 +198,7 @@ export const CandidateElement = ({
                 }
               }}
             />
-          )}
+          )} */}
           <SquareIconButton
             icon={<XMarkIcon className="h-4 w-4" />}
             onClick={() => {

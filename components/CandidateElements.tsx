@@ -156,7 +156,7 @@ export const CandidateElements = ({
         />
       </div> */}
 
-      {candidates.length === 0 ? (
+      {/* {candidates.length === 0 ? (
         !showDetails ? null : (
           <div className="flex flex-col gap-2 rounded-md p-4 items-center justify-center">
             <div className="w-full flex items-center justify-evenly py-6">
@@ -164,7 +164,6 @@ export const CandidateElements = ({
                 <SquareIconButton
                   icon={<MagnifyingGlassIcon className="h-4 w-4" />}
                   onClick={() => {
-                    // TODO: get the selected element at the level above this one, and set the breadcrumb to that element
                     const previousLevel =
                       classificationProgression[indentLevel - 1];
                     console.log(`previousLevel`, previousLevel);
@@ -195,7 +194,9 @@ export const CandidateElements = ({
             </div>
           </div>
         )
-      ) : !showDetails && selectedElement ? (
+      ) :  */}
+      {/* 
+      {!showDetails && selectedElement ? (
         <div className="flex flex-col gap-2">
           <CandidateElement
             key={selectedElement.uuid}
@@ -222,42 +223,42 @@ export const CandidateElements = ({
             }}
           />
         </div>
-      ) : !showDetails && !selectedElement ? null : (
-        <div className="flex flex-col gap-2">
-          {loading.isLoading && (
-            <div className="py-3">
-              <LoadingIndicator text={loading.text} />
-            </div>
-          )}
+      ) : !showDetails && !selectedElement ? null : ( */}
+      <div className="flex flex-col gap-2">
+        {loading.isLoading && (
+          <div className="py-3">
+            <LoadingIndicator text={loading.text} />
+          </div>
+        )}
 
-          {candidates.map((element) => (
-            <CandidateElement
-              key={element.uuid}
-              element={element}
-              indentLevel={indentLevel}
-              isSelectedElement={selectedElement?.uuid === element.uuid}
-              classificationProgression={classificationProgression}
-              setClassificationProgression={setClassificationProgression}
-              setSelectedElement={(element) => {
-                setSelectedElement(element);
-                const newClassificationProgression =
-                  classificationProgression.slice(0, indentLevel);
-                setClassificationProgression([
-                  ...newClassificationProgression,
-                  {
-                    level: getHtsLevel(
-                      element && element.htsno ? element.htsno : ""
-                    ),
-                    candidates: candidates,
-                    selection: element,
-                    reasoning: "",
-                  },
-                ]);
-              }}
-            />
-          ))}
-        </div>
-      )}
+        {candidates.map((element) => (
+          <CandidateElement
+            key={element.uuid}
+            element={element}
+            indentLevel={indentLevel}
+            isSelectedElement={selectedElement?.uuid === element.uuid}
+            classificationProgression={classificationProgression}
+            setClassificationProgression={setClassificationProgression}
+            setSelectedElement={(element) => {
+              setSelectedElement(element);
+              const newClassificationProgression =
+                classificationProgression.slice(0, indentLevel);
+              setClassificationProgression([
+                ...newClassificationProgression,
+                {
+                  level: getHtsLevel(
+                    element && element.htsno ? element.htsno : ""
+                  ),
+                  candidates: candidates,
+                  selection: element,
+                  reasoning: "",
+                },
+              ]);
+            }}
+          />
+        ))}
+      </div>
+      {/* )} */}
     </div>
   );
 };

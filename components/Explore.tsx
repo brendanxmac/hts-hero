@@ -28,22 +28,30 @@ const tabs: Tab[] = [
 
 export const Explore = () => {
   const [activeTab, setActiveTab] = useState(tabs[0].value);
-  const { setBreadcrumbs } = useBreadcrumbs();
+  const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { sections, loading, getSections } = useHtsSections();
 
   useEffect(() => {
+    if (activeTab !== Tabs.ELEMENTS) {
+      setActiveTab(Tabs.ELEMENTS);
+    }
+  }, [breadcrumbs]);
+
+  useEffect(() => {
     const initializeSections = async () => {
-      const sections = await getSections();
-      if (sections.length > 0) {
-        setBreadcrumbs([
-          {
-            title: "Sections",
-            element: {
-              type: Navigatable.SECTIONS,
-              sections,
+      if (sections.length === 0) {
+        const fetchedSections = await getSections();
+        if (fetchedSections.length > 0) {
+          setBreadcrumbs([
+            {
+              title: "Sections",
+              element: {
+                type: Navigatable.SECTIONS,
+                sections: fetchedSections,
+              },
             },
-          },
-        ]);
+          ]);
+        }
       }
     };
     initializeSections();
