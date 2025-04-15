@@ -12,7 +12,7 @@ export default function Home() {
             <div className="overflow-auto col-span-2 md:col-span-6 p-4 bg-base-100 md:border-r md:border-base-300">
               <Classify />
             </div>
-            <div className="overflow-auto hidden md:block md:col-span-6 p-4 bg-base-100">
+            <div className="overflow-auto hidden md:block md:col-span-6 px-4 bg-base-100">
               <Explore />
             </div>
           </div>

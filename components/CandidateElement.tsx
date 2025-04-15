@@ -20,6 +20,7 @@ import { classNames } from "../utilities/style";
 import { getDirectChildrenElements, getHtsLevel } from "../libs/hts";
 import { TertiaryInformation } from "./TertiaryInformation";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
+import { SecondaryInformation } from "./SecondaryInformation";
 
 interface Props {
   element: HtsElement;
@@ -63,7 +64,7 @@ export const CandidateElement = ({
   return (
     <div
       className={classNames(
-        "flex flex-col w-full rounded-md bg-primary/30 dark:bg-primary/30 p-4 gap-6",
+        "flex flex-col w-full rounded-md bg-primary/30 dark:bg-primary/30 p-4 gap-4",
         isSelectedElement
           ? "bg-secondary/50 dark:bg-secondary/50"
           : "hover:bg-primary/50 transition duration-100 ease-in-out hover:cursor-pointer"
@@ -113,111 +114,61 @@ export const CandidateElement = ({
       }}
     >
       <div className="flex items-start justify-between gap-3">
-        <div className="flex flex-col gap-2">
+        <div className="w-full flex items-center justify-between gap-2">
           <div className="min-w-20 md:min-w-32">
-            <PrimaryInformation
+            <TertiaryInformation
               label={htsno ? `${htsno}` : description}
               value={""}
             />
           </div>
-          {htsno && <PrimaryInformation value={description} />}
-        </div>
-
-        <div className="flex gap-2">
-          <SquareIconButton
-            icon={<DocumentTextIcon className="h-4 w-4" />}
-            onClick={() =>
-              setShowPDF({
-                title: `Chapter ${chapter} Notes`,
-                file: `/notes/chapter/Chapter ${chapter}.pdf`,
-              })
-            }
-          />
-          <SquareIconButton
-            icon={<MagnifyingGlassIcon className="h-4 w-4" />}
-            onClick={() => {
-              clearBreadcrumbs();
-              const chapter = findChapterByNumber(element.chapter);
-              if (chapter) {
-                addBreadcrumb({
-                  type: Navigatable.CHAPTER,
-                  ...chapter,
-                });
+          <div className="flex gap-2">
+            <SquareIconButton
+              icon={<DocumentTextIcon className="h-4 w-4" />}
+              onClick={() =>
+                setShowPDF({
+                  title: `Chapter ${chapter} Notes`,
+                  file: `/notes/chapter/Chapter ${chapter}.pdf`,
+                })
               }
-              addBreadcrumb({
-                ...element,
-              });
-            }}
-          />
-          {/* {isSelectedElement ? (
+            />
+            <SquareIconButton
+              icon={<MagnifyingGlassIcon className="h-4 w-4" />}
+              onClick={() => {
+                clearBreadcrumbs();
+                const chapter = findChapterByNumber(element.chapter);
+                if (chapter) {
+                  addBreadcrumb({
+                    type: Navigatable.CHAPTER,
+                    ...chapter,
+                  });
+                }
+                addBreadcrumb({
+                  ...element,
+                });
+              }}
+            />
             <SquareIconButton
               icon={<XMarkIcon className="h-4 w-4" />}
               onClick={() => {
-                setSelectedElement(null);
+                // TODO: remove this element from this level of the classification progression (should only be possible for heading selection initially)
                 const newClassificationProgression =
                   classificationProgression.slice(0, indentLevel + 1);
-                newClassificationProgression[indentLevel].selection = null;
+
+                newClassificationProgression[indentLevel].candidates =
+                  newClassificationProgression[indentLevel].candidates.filter(
+                    (candidate) => candidate.uuid !== element.uuid
+                  );
                 setClassificationProgression(newClassificationProgression);
+
+                // TODO: if it's selected, also make sure that gets cleaned up
               }}
               color="error"
             />
-          ) : (
-            <SquareIconButton
-              icon={<CheckIcon className="h-4 w-4" />}
-              onClick={() => {
-                setSelectedElement(element);
-                clearBreadcrumbs();
-                const ch = findChapterByNumber(element.chapter);
-                if (ch) {
-                  addBreadcrumb({
-                    type: Navigatable.CHAPTER,
-                    ...ch,
-                  });
-                }
-                addBreadcrumb(element);
-                const children = getDirectChildrenElements(
-                  element,
-                  getChapterElements(chapter)
-                );
-
-                if (children.length > 0) {
-                  const newClassificationProgression =
-                    classificationProgression.slice(0, indentLevel + 1);
-                  newClassificationProgression[indentLevel].selection = element;
-                  setClassificationProgression([
-                    ...newClassificationProgression,
-                    {
-                      level: getHtsLevel(htsno || ""),
-                      candidates: children,
-                      selection: null,
-                      reasoning: "",
-                    },
-                  ]);
-                } else {
-                  // TADA! classification complete, do something special
-                }
-              }}
-            />
-          )} */}
-          <SquareIconButton
-            icon={<XMarkIcon className="h-4 w-4" />}
-            onClick={() => {
-              // TODO: remove this element from this level of the classification progression (should only be possible for heading selection initially)
-              const newClassificationProgression =
-                classificationProgression.slice(0, indentLevel + 1);
-
-              newClassificationProgression[indentLevel].candidates =
-                newClassificationProgression[indentLevel].candidates.filter(
-                  (candidate) => candidate.uuid !== element.uuid
-                );
-              setClassificationProgression(newClassificationProgression);
-
-              // TODO: if it's selected, also make sure that gets cleaned up
-            }}
-            color="error"
-          />
+          </div>
         </div>
       </div>
+
+      {htsno && <SecondaryInformation value={description} />}
 
       {suggested && (
         <div className="flex flex-col gap-2">

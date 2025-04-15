@@ -24,7 +24,7 @@ import { useChapters } from "../contexts/ChaptersContext";
 import { HtsLevel } from "../enums/hts";
 import { PrimaryInformation } from "./PrimaryInformation";
 import { LoadingIndicator } from "./LoadingIndicator";
-
+import { TertiaryInformation } from "./TertiaryInformation";
 enum Tabs {
   COMPLETED = "completed",
   IN_PROGRESS = "in-progress",
@@ -278,19 +278,19 @@ export const Classify = () => {
 
   return (
     <section className="grow h-full w-full flex flex-col items-start gap-4">
-      <div className="w-full flex flex-col overflow-auto">
-        <SectionHeader
+      <div className="w-full flex flex-col overflow-auto gap-4">
+        {/* <SectionHeader
           title="Classify"
           tabs={tabs}
           activeTab={activeTab}
           onTabChange={setActiveTab}
-        />
-        <div className="w-full overflow-y-scroll py-4 flex flex-col gap-8">
+        /> */}
+        <PrimaryInformation label="New Classification" value="" />
+        <div className="w-full overflow-y-scroll flex flex-col gap-8">
           <div className="flex flex-col gap-4">
-            <PrimaryInformation label="Product Details" value="" />
             <TextInput
-              label="Description"
-              placeholder="Enter product description"
+              label="Item Description"
+              placeholder="Enter item description"
               setProductDescription={setProductDescription}
             />
             {/* <TextInput
@@ -304,7 +304,7 @@ export const Classify = () => {
 
           {classificationProgression.length > 0 && (
             <div className="flex flex-col gap-4">
-              <PrimaryInformation label="Heading Candidates" value="" />
+              <TertiaryInformation label="Heading Candidates" value="" />
               <CandidateElements
                 indentLevel={0}
                 classificationProgression={classificationProgression}
