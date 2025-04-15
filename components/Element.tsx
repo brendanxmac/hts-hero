@@ -90,24 +90,26 @@ export const Element = ({
 
   const getParentDescriptionsFromBreadcrumbs = (element: HtsElement) => {
     let descriptions = "";
-    breadcrumbs.map((breadcrumb) => {
-      if (breadcrumb.element.type === Navigatable.CHAPTER) {
-        if (breadcrumb.element.description.endsWith(":")) {
-          descriptions += `${breadcrumb.element.description.replace(/:$/, " >")} `;
-        } else {
-          descriptions += `${breadcrumb.element.description} > `;
-        }
+    breadcrumbs.forEach((breadcrumb, index) => {
+      // Skip if this is the current element
+      const isLastBreadCrumb = breadcrumbs.length - 1 === index;
+      if (isLastBreadCrumb) {
+        return;
       }
+
+      // Only process chapters and other elements
       if (
-        breadcrumb.element.type === Navigatable.ELEMENT &&
-        // @ts-ignore
-        breadcrumb.element.uuid !== element.uuid
+        breadcrumb.element.type === Navigatable.CHAPTER ||
+        breadcrumb.element.type === Navigatable.ELEMENT
       ) {
-        if (breadcrumb.element.description.endsWith(":")) {
-          descriptions += `${breadcrumb.element.description.replace(/:$/, " >")} `;
-        } else {
-          descriptions += `${breadcrumb.element.description} > `;
+        let description = breadcrumb.element.description;
+        if (description.endsWith(":")) {
+          description = description.replace(/:$/, "");
         }
+
+        const isLastVisibleBreadCrumb = breadcrumbs.length - 2 === index;
+
+        descriptions += description + (isLastVisibleBreadCrumb ? "" : " > ");
       }
     });
     return descriptions;
@@ -116,24 +118,22 @@ export const Element = ({
   return (
     <div className="card border border-base-300 dark:border-base-content/20 w-full flex flex-col items-start justify-between gap-6 p-4 sm:p-6">
       <div className="flex items-start justify-between gap-3 w-full">
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-5">
           <div className="shrink-0">
             {htsno && (
               <PrimaryInformation
-                label={htsno ? `${htsno}: ` : ``}
+                label={htsno ? `${htsno} ` : ``}
                 value={``}
                 copyable={false}
               />
             )}
           </div>
-          <div>
+          <div className="flex flex-col gap-1 mb-4">
             {getParentDescriptionsFromBreadcrumbs(element).length > 0 && (
-              <div className="flex flex-col gap-1">
-                <TertiaryInformation
-                  key={description}
-                  value={getParentDescriptionsFromBreadcrumbs(element)}
-                />
-              </div>
+              <TertiaryInformation
+                key={description}
+                value={getParentDescriptionsFromBreadcrumbs(element)}
+              />
             )}
             {htsno ? (
               <PrimaryInformation value={description} />
@@ -217,9 +217,8 @@ export const Element = ({
               </div>
             </div>
           )}
-          {loading && <LoadingIndicator text="Fetching Element Data" />}
-          {!loading && children.length > 0 && (
-            <div className="w-full flex flex-col">
+          {children.length > 0 && (
+            <div className="w-full flex flex-col gap-2">
               <TertiaryInformation value="" label="Elements:" />
               <div className="flex flex-col rounded-md p-4 gap-2">
                 {children.map((child, i) => {

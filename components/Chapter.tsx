@@ -76,12 +76,11 @@ export const Chapter = ({ chapter, breadcrumbs, setBreadcrumbs }: Props) => {
           />
         )}
 
-        {loadingChapters.includes(number) && (
-          <LoadingIndicator text="Fetching Chapter Data" />
-        )}
-
         <div className="flex flex-col rounded-md pb-2 gap-4 p-4 sm:px-6">
           <TertiaryInformation value="" label="Elements:" />
+          {loadingChapters.includes(number) && (
+            <LoadingIndicator text="Fetching Chapter Data" />
+          )}
           <div className="flex flex-col gap-2">
             {elementsWithChildren.map((element, i) => {
               return (
