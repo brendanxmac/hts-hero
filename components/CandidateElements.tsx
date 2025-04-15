@@ -1,21 +1,10 @@
-import {
-  HtsElement,
-  Navigatable,
-  HtsLevelClassification,
-} from "../interfaces/hts";
+import { HtsElement, HtsLevelClassification } from "../interfaces/hts";
 import { LoadingIndicator } from "./LoadingIndicator";
-import { TertiaryInformation } from "./TertiaryInformation";
 import { Loader } from "../interfaces/ui";
 import { CandidateElement } from "./CandidateElement";
 import { classNames } from "../utilities/style";
 import { useEffect, useState } from "react";
-import {
-  ChevronUpIcon,
-  SparklesIcon,
-  MagnifyingGlassIcon,
-} from "@heroicons/react/16/solid";
 import { getBestClassificationProgression, getHtsLevel } from "../libs/hts";
-import SquareIconButton from "./SqaureIconButton";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 
 interface Props {

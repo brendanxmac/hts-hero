@@ -29,7 +29,7 @@ export interface HtsSectionAndChapterBase {
   number: number;
   description: string;
   notesPath?: string;
-  type: NavigatableElementType;
+  type: Navigatable.CHAPTER;
 }
 
 export interface HtsElementWithParentReference extends HtsElement {

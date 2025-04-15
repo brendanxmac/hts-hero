@@ -64,7 +64,7 @@ export default function TextInput({
           onChange={handleInputChange}
           // @ts-ignore
           //   onKeyDown={handleKeyDown}
-          className="textarea text-base rounded-none resize-none bg-inherit text-base-content placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-0"
+          className="textarea text-base rounded-none resize-none bg-inherit text-black dark:text-white placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-0"
         ></textarea>
 
         <div className="flex justify-between items-center">
