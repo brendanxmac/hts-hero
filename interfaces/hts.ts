@@ -112,11 +112,16 @@ export interface CandidateSelection {
   logic: string;
 }
 
+export interface Classification {
+  productDescription: string;
+  htsDescription: string;
+  progressionLevels: HtsLevelClassification[];
+}
+
 export interface HtsLevelClassification {
   level: HtsLevel;
-  candidates: HtsElement[]; //| HtsSectionAndChapterBase[];
-  // suggestions?: HtsElement[]; //| HtsSectionAndChapterBase[];
-  selection?: HtsElement; // | HtsSectionAndChapterBase;
+  candidates: HtsElement[];
+  selection?: HtsElement;
   reasoning?: string;
 }
 

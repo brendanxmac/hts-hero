@@ -4,8 +4,23 @@ import { Loader } from "../interfaces/ui";
 import { CandidateElement } from "./CandidateElement";
 import { classNames } from "../utilities/style";
 import { useEffect, useState } from "react";
-import { getBestClassificationProgression, getHtsLevel } from "../libs/hts";
+import {
+  getBestClassificationProgression,
+  getBestDescriptionCandidates,
+  getHtsLevel,
+} from "../libs/hts";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
+import SquareIconButton from "./SqaureIconButton";
+import { SparklesIcon } from "@heroicons/react/24/outline";
+import { ArrowRightIcon } from "@heroicons/react/24/solid";
+import { HtsLevel } from "../enums/hts";
+import {
+  elementsAtClassificationLevel,
+  setIndexInArray,
+} from "../utilities/data";
+import { useChapters } from "../contexts/ChaptersContext";
+import { useClassification } from "../contexts/ClassificationContext";
+import { TertiaryInformation } from "./TertiaryInformation";
 
 interface Props {
   productDescription: string;
@@ -31,8 +46,6 @@ const getFullHtsDescription = (
     }
   });
 
-  console.log("fullDescription", fullDescription);
-
   return fullDescription;
 };
 
@@ -53,6 +66,61 @@ export const CandidateElements = ({
     null
   );
   const { addBreadcrumb, clearBreadcrumbs, breadcrumbs } = useBreadcrumbs();
+  const { getChapterElements, fetchChapter, chapters } = useChapters();
+  const { addToClassificationProgression } = useClassification();
+
+  // Get up to 2 Best Headings Per Chapter
+  const getHeadings = async () => {
+    setLoading({ isLoading: true, text: "Finding Best Headings" });
+    const candidatesForHeading: HtsElement[] = [];
+    await Promise.all(
+      chapters.map(async (chapter) => {
+        let chapterData = getChapterElements(chapter.number);
+        if (!chapterData) {
+          await fetchChapter(chapter.number);
+          chapterData = getChapterElements(chapter.number);
+        }
+
+        const chapterDataWithParentIndex = setIndexInArray(chapterData);
+        const elementsAtLevel = elementsAtClassificationLevel(
+          chapterDataWithParentIndex,
+          0
+        );
+        const bestCandidateHeadings = await getBestDescriptionCandidates(
+          elementsAtLevel,
+          productDescription,
+          false,
+          0,
+          2,
+          elementsAtLevel.map((e) => e.description)
+        );
+
+        // Handle Empty Case
+        if (bestCandidateHeadings.bestCandidates.length === 0) {
+          return;
+        }
+
+        // Handle Negative Index Case (sometimes chatGPT will do this)
+        if (bestCandidateHeadings.bestCandidates[0].index < 0) {
+          return;
+        }
+
+        const candidates = bestCandidateHeadings.bestCandidates
+          .map((candidate) => {
+            return elementsAtLevel[candidate.index];
+          })
+          .map((candidate) => ({
+            ...candidate,
+          }));
+
+        candidatesForHeading.push(...candidates);
+      })
+    );
+
+    addToClassificationProgression(HtsLevel.HEADING, candidatesForHeading);
+    // DO not move this down, it will break the classification as the timing is critical
+    setLoading({ isLoading: false, text: "" });
+  };
 
   const getBestCandidate = async () => {
     setLoading({
@@ -104,152 +172,82 @@ export const CandidateElements = ({
     });
   };
 
-  // useEffect(() => {
-  //   console.log("candidates updated", candidates);
-  //   const suggestionsProvided = candidates.some((e) => e.suggested);
-  //   const numCandidates = candidates.length;
-
-  //   // TODO: If just a single element might want to select it and provide a general reasoning
-  //   if (numCandidates <= 1) return;
-
-  //   if (numCandidates > 1 && !suggestionsProvided) {
-  //     console.log("Getting Best Candidate");
-  //     getBestCandidate();
-  //   }
-  // }, [candidates]);
-
   useEffect(() => {
     setShowDetails(!Boolean(selectedElement));
   }, [selectedElement]);
 
   return (
-    <div
-      className={classNames(
-        "w-full flex flex-col gap-2 pb-2"
-        // (selectedElement || (candidates.length === 0 && showDetails)) &&
-        //   "border-none"
-      )}
-    >
-      {/* <div
-        className={classNames(
-          "flex justify-between items-center p-2 rounded-md hover:bg-primary/20"
-        )}
-        onClick={() => setShowDetails(!showDetails)}
-      >
-        <TertiaryInformation label={`Level ${indentLevel + 1}`} value="" />
-        <ChevronUpIcon
-          className={classNames(
-            "w-5 h-5 text-primary transition-transform duration-200 ease-in-out",
-            showDetails && "rotate-180"
-          )}
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <TertiaryInformation label="Heading Candidates" value="" />
+        <SquareIconButton
+          icon={<SparklesIcon className="h-4 w-4" />}
+          onClick={() => getBestCandidate()}
         />
-      </div> */}
-
-      {/* {candidates.length === 0 ? (
-        !showDetails ? null : (
-          <div className="flex flex-col gap-2 rounded-md p-4 items-center justify-center">
-            <div className="w-full flex items-center justify-evenly py-6">
-              <div className="min-w-28 flex flex-col items-center justify-center gap-2">
-                <SquareIconButton
-                  icon={<MagnifyingGlassIcon className="h-4 w-4" />}
-                  onClick={() => {
-                    const previousLevel =
-                      classificationProgression[indentLevel - 1];
-                    console.log(`previousLevel`, previousLevel);
-                    if (previousLevel && previousLevel.selection) {
-                      clearBreadcrumbs();
-                      addBreadcrumb(previousLevel.selection);
-                    }
-                  }}
-                  disabled={
-                    breadcrumbs[breadcrumbs.length - 1].element.type ===
-                      Navigatable.ELEMENT &&
-                    // @ts-ignore
-                    breadcrumbs[breadcrumbs.length - 1].element.uuid ===
-                      classificationProgression[indentLevel - 1].selection?.uuid
-                  }
-                />
-                <p className="text-xs text-base-content/50">Select Elements</p>
-              </div>
-
-              <div className="h-full w-px bg-base-content/20"></div>
-              <div className="min-w-28 flex flex-col items-center gap-2">
-                <SquareIconButton
-                  icon={<SparklesIcon className="h-4 w-4" />}
-                  onClick={() => getBestCandidate()}
-                />
-                <p className="text-xs text-base-content/50">Get Suggestions</p>
+      </div>
+      <div className={classNames("w-full flex flex-col gap-2 pb-2")}>
+        {candidates.length === 0 ? (
+          !showDetails ? null : (
+            <div className="bg-base-300 flex flex-col gap-2 rounded-md p-4 items-center justify-center">
+              <div className="w-full flex items-center justify-evenly py-6">
+                <div className="min-w-28 flex flex-col items-center gap-2">
+                  <SquareIconButton
+                    icon={<SparklesIcon className="h-4 w-4" />}
+                    onClick={() => getHeadings()}
+                  />
+                  <p className="text-xs text-base-content/50">
+                    Get Suggestions
+                  </p>
+                </div>
+                <div className="h-full w-px bg-base-content/20"></div>
+                <div className="min-w-28 flex flex-col items-center justify-center gap-2">
+                  <ArrowRightIcon className="h-4 w-4" />
+                  <p className="text-xs text-base-content/50 flex items-center gap-2">
+                    Select your own
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        )
-      ) :  */}
-      {/* 
-      {!showDetails && selectedElement ? (
-        <div className="flex flex-col gap-2">
-          <CandidateElement
-            key={selectedElement.uuid}
-            element={selectedElement}
-            indentLevel={indentLevel}
-            isSelectedElement={selectedElement?.uuid === selectedElement.uuid}
-            classificationProgression={classificationProgression}
-            setClassificationProgression={setClassificationProgression}
-            setSelectedElement={(element) => {
-              setSelectedElement(element);
-              const newClassificationProgression =
-                classificationProgression.slice(0, indentLevel);
-              setClassificationProgression([
-                ...newClassificationProgression,
-                {
-                  level: getHtsLevel(
-                    element && element.htsno ? element.htsno : ""
-                  ),
-                  candidates: candidates,
-                  selection: element,
-                  reasoning: "",
-                },
-              ]);
-            }}
-          />
-        </div>
-      ) : !showDetails && !selectedElement ? null : ( */}
-      <div className="flex flex-col gap-2 bg-base-300 rounded-md p-4">
-        {loading.isLoading && (
-          <div className="py-3">
-            <LoadingIndicator text={loading.text} />
+          )
+        ) : (
+          <div className="flex flex-col gap-2 rounded-md">
+            {loading.isLoading && (
+              <div className="py-3">
+                <LoadingIndicator text={loading.text} />
+              </div>
+            )}
+
+            <div className="flex flex-col gap-4">
+              {candidates.map((element) => (
+                <CandidateElement
+                  key={element.uuid}
+                  element={element}
+                  indentLevel={indentLevel}
+                  isSelectedElement={selectedElement?.uuid === element.uuid}
+                  classificationProgression={classificationProgression}
+                  setClassificationProgression={setClassificationProgression}
+                  setSelectedElement={(element) => {
+                    setSelectedElement(element);
+                    const newClassificationProgression =
+                      classificationProgression.slice(0, indentLevel);
+                    setClassificationProgression([
+                      ...newClassificationProgression,
+                      {
+                        level: getHtsLevel(
+                          element && element.htsno ? element.htsno : ""
+                        ),
+                        candidates: candidates,
+                        selection: element,
+                        reasoning: "",
+                      },
+                    ]);
+                  }}
+                />
+              ))}
+            </div>
           </div>
         )}
-
-        <div className="flex flex-col gap-4">
-          {candidates.map((element) => (
-            <CandidateElement
-              key={element.uuid}
-              element={element}
-              indentLevel={indentLevel}
-              isSelectedElement={selectedElement?.uuid === element.uuid}
-              classificationProgression={classificationProgression}
-              setClassificationProgression={setClassificationProgression}
-              setSelectedElement={(element) => {
-                setSelectedElement(element);
-                const newClassificationProgression =
-                  classificationProgression.slice(0, indentLevel);
-                setClassificationProgression([
-                  ...newClassificationProgression,
-                  {
-                    level: getHtsLevel(
-                      element && element.htsno ? element.htsno : ""
-                    ),
-                    candidates: candidates,
-                    selection: element,
-                    reasoning: "",
-                  },
-                ]);
-              }}
-            />
-          ))}
-        </div>
       </div>
-      {/* )} */}
     </div>
   );
 };

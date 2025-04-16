@@ -91,7 +91,7 @@ export const ElementSum = ({
             ]);
           }}
         >
-          <div className="w-full flex flex-col items-start justify-between gap-1 p-4">
+          <div className="w-full flex flex-col items-start justify-between gap-1 px-4 py-2">
             {htsno && (
               <div className="min-w-20 md:min-w-32">
                 <TertiaryInformation value={htsno} />
@@ -103,7 +103,6 @@ export const ElementSum = ({
             </div>
           </div>
           <div className="flex items-center justify-center pr-3">
-            {/* <div className="h-full w-[1px] bg-base-300 dark:bg-base-content/10 mx-2" /> */}
             <ChevronRightIcon className="shrink-0 w-5 h-5 text-primary" />
           </div>
         </div>

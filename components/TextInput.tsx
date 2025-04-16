@@ -2,7 +2,7 @@
 
 import { useRef, ChangeEvent, useState, Dispatch, SetStateAction } from "react";
 import { classNames } from "../utilities/style";
-import { SparklesIcon } from "@heroicons/react/24/solid";
+import { CheckIcon, SparklesIcon } from "@heroicons/react/24/solid";
 import { TertiaryInformation } from "./TertiaryInformation";
 import SquareIconButton from "./SqaureIconButton";
 
@@ -89,7 +89,7 @@ export default function TextInput({
           </p>
 
           <SquareIconButton
-            icon={<SparklesIcon className="h-4 w-4" />}
+            icon={<CheckIcon className="h-4 w-4" />}
             onClick={classifyProduct}
             disabled={
               !localProductDescription ||

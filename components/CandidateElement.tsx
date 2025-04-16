@@ -11,6 +11,7 @@ import {
   DocumentTextIcon,
   XMarkIcon,
   MagnifyingGlassIcon,
+  SparklesIcon,
 } from "@heroicons/react/24/solid";
 import { PDFProps } from "./Element";
 import PDF from "./PDF";
@@ -163,9 +164,12 @@ export const CandidateElement = ({
       {htsno && <SecondaryInformation value={description} />}
 
       {suggested && (
-        <div className="flex flex-col gap-2">
-          <TertiaryInformation label="Suggested Candidate" value="" loud />
-          <TertiaryInformation value={suggestedReasoning} />
+        <div className="flex flex-col gap-2 bg-base-300 rounded-md p-2">
+          <div className="flex gap-2 text-accent">
+            <SparklesIcon className="h-4 w-4" />
+            <TertiaryInformation label="Suggested" value="" />
+          </div>
+          <p className="text-sm dark:text-white/90">{suggestedReasoning}</p>
         </div>
       )}
 
