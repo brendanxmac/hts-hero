@@ -37,7 +37,7 @@ export const Breadcrumbs = ({
                   </span>
                 ) : (
                   <button
-                    className="btn btn-xs btn-link flex items-center gap-2 hover:text-secondary hover:scale-110"
+                    className="btn btn-xs btn-link flex items-center hover:text-secondary hover:scale-110 px-1"
                     onClick={() => {
                       setBreadcrumbs(breadcrumbs.slice(0, i + 1));
                     }}

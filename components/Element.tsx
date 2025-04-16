@@ -118,7 +118,7 @@ export const Element = ({
     <div className="card bg-base-300 w-full flex flex-col items-start justify-between gap-6 p-4 sm:p-6">
       <div className="flex items-start justify-between gap-3 w-full">
         <div className="flex flex-col gap-5">
-          <div className="shrink-0">
+          {/* <div className="shrink-0">
             {htsno && (
               <PrimaryInformation
                 label={htsno ? `${htsno} ` : ``}
@@ -126,7 +126,7 @@ export const Element = ({
                 copyable={false}
               />
             )}
-          </div>
+          </div> */}
           <div className="flex flex-col gap-1 mb-4">
             {getParentDescriptionsFromBreadcrumbs(element).length > 0 && (
               <TertiaryInformation
