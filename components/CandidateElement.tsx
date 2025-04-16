@@ -7,7 +7,6 @@ import {
   HtsLevelClassification,
 } from "../interfaces/hts";
 import SquareIconButton from "./SqaureIconButton";
-import { PrimaryInformation } from "./PrimaryInformation";
 import {
   DocumentTextIcon,
   XMarkIcon,
@@ -15,7 +14,6 @@ import {
 } from "@heroicons/react/24/solid";
 import { PDFProps } from "./Element";
 import PDF from "./PDF";
-import { CheckIcon } from "@heroicons/react/24/solid";
 import { classNames } from "../utilities/style";
 import { getDirectChildrenElements, getHtsLevel } from "../libs/hts";
 import { TertiaryInformation } from "./TertiaryInformation";
@@ -32,9 +30,6 @@ interface Props {
     classificationProgression: HtsLevelClassification[]
   ) => void;
 }
-
-//  TODO: figre out a way to remove this candidate from the classification
-//  progression level we're currently on that that element belongs to
 
 export const CandidateElement = ({
   element,
@@ -150,7 +145,6 @@ export const CandidateElement = ({
             <SquareIconButton
               icon={<XMarkIcon className="h-4 w-4" />}
               onClick={() => {
-                // TODO: remove this element from this level of the classification progression (should only be possible for heading selection initially)
                 const newClassificationProgression =
                   classificationProgression.slice(0, indentLevel + 1);
 
@@ -159,8 +153,6 @@ export const CandidateElement = ({
                     (candidate) => candidate.uuid !== element.uuid
                   );
                 setClassificationProgression(newClassificationProgression);
-
-                // TODO: if it's selected, also make sure that gets cleaned up
               }}
               color="error"
             />

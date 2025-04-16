@@ -17,7 +17,7 @@ export const Sections = ({
   if (sections.length === 0) return null;
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-4">
       {sections.map((section) => {
         return (
           <Section

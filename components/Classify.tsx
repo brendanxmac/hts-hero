@@ -2,20 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { Tab } from "../interfaces/tab";
-import { SectionHeader } from "./SectionHeader";
 import TextInput from "./TextInput";
 import { CandidateElements } from "./CandidateElements";
 import {
   CandidateSelection,
   HtsElement,
   Navigatable,
-  HtsLevelClassification,
   HtsSection,
 } from "../interfaces/hts";
 import {
   evaluateBestHeadings,
   getBestDescriptionCandidates,
-  getHtsChapterData,
 } from "../libs/hts";
 import { getHtsSectionsAndChapters } from "../libs/hts";
 import { elementsAtClassificationLevel } from "../utilities/data";
@@ -25,6 +22,8 @@ import { HtsLevel } from "../enums/hts";
 import { PrimaryInformation } from "./PrimaryInformation";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { TertiaryInformation } from "./TertiaryInformation";
+import { useClassification } from "../contexts/ClassificationContext";
+
 enum Tabs {
   COMPLETED = "completed",
   IN_PROGRESS = "in-progress",
@@ -43,7 +42,11 @@ const tabs: Tab[] = [
 
 export const Classify = () => {
   const { fetchChapter, getChapterElements } = useChapters();
-  const [activeTab, setActiveTab] = useState(tabs[0].value);
+  const {
+    classificationProgression,
+    setClassificationProgression,
+    addToClassificationProgression,
+  } = useClassification();
   const [productDescription, setProductDescription] = useState("");
   const [htsSections, setHtsSections] = useState<HtsSection[]>([]);
   const [sectionCandidates, setSectionCandidates] = useState<
@@ -120,83 +123,6 @@ export const Classify = () => {
       uuid: "5f7e817d-b3af-45c7-8dad-ec5d0c853e0b",
       chapter: 84,
       type: Navigatable.ELEMENT,
-    },
-  ]);
-  const [classificationProgression, setClassificationProgression] = useState<
-    HtsLevelClassification[]
-  >([
-    {
-      level: HtsLevel.HEADING,
-      candidates: [
-        {
-          htsno: "3924",
-          indent: "0",
-          description:
-            "Tableware, kitchenware, other household articles and hygienic or toilet articles, of plastics:",
-          superior: null,
-          units: [],
-          general: "",
-          special: "",
-          other: "",
-          footnotes: [],
-          quotaQuantity: "",
-          additionalDuties: "",
-          uuid: "6aa606a0-f237-4164-99c8-83da0c917781",
-          chapter: 39,
-          type: Navigatable.ELEMENT,
-        },
-        {
-          htsno: "3926",
-          indent: "0",
-          description:
-            "Other articles of plastics and articles of other materials of headings 3901 to 3914:",
-          superior: null,
-          units: [],
-          general: "",
-          special: "",
-          other: "",
-          footnotes: [],
-          quotaQuantity: "",
-          additionalDuties: "",
-          uuid: "9d73c351-f483-40de-abc5-134626ea5e3d",
-          chapter: 39,
-          type: Navigatable.ELEMENT,
-        },
-        {
-          htsno: "8481",
-          indent: "0",
-          description:
-            "Taps, cocks, valves and similar appliances, for pipes, boiler shells, tanks, vats or the like, including pressure-reducing valves and thermostatically controlled valves; parts thereof:",
-          superior: null,
-          units: [],
-          general: "",
-          special: "",
-          other: "",
-          footnotes: [],
-          quotaQuantity: "",
-          additionalDuties: "",
-          uuid: "38c82ecf-f91e-4f75-a844-16f2568d11ff",
-          chapter: 84,
-          type: Navigatable.ELEMENT,
-        },
-        {
-          htsno: "8479",
-          indent: "0",
-          description:
-            "Machines and mechanical appliances having individual functions, not specified or included elsewhere in this chapter; parts thereof:",
-          superior: null,
-          units: [],
-          general: "",
-          special: "",
-          other: "",
-          footnotes: [],
-          quotaQuantity: "",
-          additionalDuties: "",
-          uuid: "5f7e817d-b3af-45c7-8dad-ec5d0c853e0b",
-          chapter: 84,
-          type: Navigatable.ELEMENT,
-        },
-      ],
     },
   ]);
   const [classificationIndentLevel, setClassificationIndentLevel] = useState(1);
@@ -324,12 +250,7 @@ export const Classify = () => {
     );
 
     setHeadingCandidates(candidatesForHeading);
-    setClassificationProgression([
-      {
-        level: HtsLevel.HEADING,
-        candidates: candidatesForHeading,
-      },
-    ]);
+    addToClassificationProgression(HtsLevel.HEADING, candidatesForHeading);
     // DO not move this down, it will break the classification as the timing is critical
     setClassificationIndentLevel(classificationIndentLevel + 1);
     setLoading({ isLoading: false, text: "" });
@@ -406,6 +327,12 @@ export const Classify = () => {
   useEffect(() => {
     if (headingCandidates && headingCandidates.length > 0) {
       console.log("Heading Candidates:", headingCandidates);
+      setClassificationProgression([
+        {
+          level: HtsLevel.HEADING,
+          candidates: headingCandidates,
+        },
+      ]);
     }
   }, [headingCandidates]);
 

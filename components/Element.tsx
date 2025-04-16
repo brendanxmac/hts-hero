@@ -2,7 +2,6 @@ import { HtsElement, Navigatable } from "../interfaces/hts";
 import { NavigatableElement } from "./Elements";
 import { useEffect, useState } from "react";
 import { PrimaryInformation } from "./PrimaryInformation";
-import { LoadingIndicator } from "./LoadingIndicator";
 import { getDirectChildrenElements } from "../libs/hts";
 import { ElementSum } from "./ElementSum";
 import { SecondaryInformation } from "./SecondaryInformation";
@@ -116,7 +115,7 @@ export const Element = ({
   };
 
   return (
-    <div className="card border border-base-300 dark:border-base-content/20 w-full flex flex-col items-start justify-between gap-6 p-4 sm:p-6">
+    <div className="card bg-base-300 w-full flex flex-col items-start justify-between gap-6 p-4 sm:p-6">
       <div className="flex items-start justify-between gap-3 w-full">
         <div className="flex flex-col gap-5">
           <div className="shrink-0">
