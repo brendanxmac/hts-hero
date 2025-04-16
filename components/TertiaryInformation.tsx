@@ -20,7 +20,7 @@ export const TertiaryInformation = ({
         <h3
           className={classNames(
             "text-xs sm:text-sm font-bold",
-            loud ? "text-secondary" : "text-base-content"
+            loud ? "text-secondary" : "text-white"
           )}
         >
           {label}
@@ -29,7 +29,7 @@ export const TertiaryInformation = ({
       <h3
         className={classNames(
           "text-xs sm:text-sm",
-          loud ? "text-secondary" : "text-base-content"
+          loud ? "text-secondary" : "text-content-base"
         )}
       >
         {value}

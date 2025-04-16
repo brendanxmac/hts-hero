@@ -2,7 +2,7 @@
 
 import {
   HtsElement,
-  HtsElementType,
+  Navigatable,
   HtsSection,
   HtsSectionAndChapterBase,
 } from "../interfaces/hts";
@@ -10,15 +10,14 @@ import { Breadcrumbs } from "./Breadcrumbs";
 import { Sections } from "./Sections";
 import { Chapter } from "./Chapter";
 import { Element } from "./Element";
+import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 
 interface ElementsProps {
   sections: HtsSection[];
-  breadcrumbs: NavigatableElement[];
-  setBreadcrumbs: (breadcrumbs: NavigatableElement[]) => void;
 }
 
-type NavigatableElementType =
-  | { type: HtsElementType.SECTION; sections: HtsSection[] }
+export type NavigatableElementType =
+  | { type: Navigatable.SECTIONS; sections: HtsSection[] }
   | HtsSectionAndChapterBase
   | HtsElement;
 
@@ -27,11 +26,8 @@ export interface NavigatableElement {
   element: NavigatableElementType;
 }
 
-export const Elements = ({
-  sections,
-  breadcrumbs,
-  setBreadcrumbs,
-}: ElementsProps) => {
+export const Elements = ({ sections }: ElementsProps) => {
+  const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const currentElement = breadcrumbs[breadcrumbs.length - 1];
 
   if (!currentElement) {
@@ -47,13 +43,13 @@ export const Elements = ({
         />
       )}
 
-      {currentElement.element.type === HtsElementType.SECTION ? (
+      {currentElement.element.type === Navigatable.SECTIONS ? (
         <Sections
           sections={sections}
           breadcrumbs={breadcrumbs}
           setBreadcrumbs={setBreadcrumbs}
         />
-      ) : currentElement.element.type === HtsElementType.CHAPTER ? (
+      ) : currentElement.element.type === Navigatable.CHAPTER ? (
         <Chapter
           chapter={currentElement.element as HtsSectionAndChapterBase}
           breadcrumbs={breadcrumbs}

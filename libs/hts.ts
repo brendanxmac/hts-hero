@@ -15,7 +15,7 @@ import {
   Note,
   BestProgressionResponse,
   BestChaptersResponse,
-  HtsElementType,
+  Navigatable,
 } from "../interfaces/hts";
 import {
   elementsAtClassificationLevel,
@@ -32,7 +32,7 @@ export function isFullHTSCode(code: string) {
 }
 
 export const getHtsElementDescriptions = (
-  elements: HtsElementWithParentReference[]
+  elements: HtsElement[] | HtsElementWithParentReference[]
 ) => {
   return elements.map((e) => e.description);
 };
@@ -289,7 +289,7 @@ export const getBestChaptersForProductDescription = async (
 };
 
 export const getBestDescriptionCandidates = async (
-  elementsAtLevel: HtsElementWithParentReference[],
+  elementsAtLevel: HtsElement[] | HtsElementWithParentReference[],
   productDescription: string,
   isSectionOrChapter: boolean,
   minMatches?: number,
@@ -471,7 +471,8 @@ export const getHtsChapterData = async (
   return chapterData.map((e) => ({
     ...e,
     uuid: crypto.randomUUID(),
-    type: HtsElementType.ELEMENT,
+    chapter: Number(chapter),
+    type: Navigatable.ELEMENT,
   }));
 };
 
@@ -485,8 +486,8 @@ export const getElementsAtIndentLevel = (
 };
 
 export const getDirectChildrenElements = (
-  element: HtsElement,
-  chapterElements: HtsElement[]
+  element: HtsElement | HtsElementWithParentReference,
+  chapterElements: HtsElement[] | HtsElementWithParentReference[]
 ) => {
   const parentsIndex = chapterElements.findIndex(
     (e) => e.uuid === element.uuid

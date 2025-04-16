@@ -41,11 +41,10 @@ export async function POST(req: NextRequest) {
       htsDescription,
     }: GetBestClassificationProgressionDto = await req.json();
 
-    if (!elements || !productDescription || !htsDescription) {
+    if (!elements || !productDescription) {
       return NextResponse.json(
         {
-          error:
-            "Missing descriptions, product description, or hts description",
+          error: "Missing descriptions or product description",
         },
         { status: 400 }
       );
@@ -82,20 +81,26 @@ export async function POST(req: NextRequest) {
         {
           role: "system",
           content: `You are a United States Harmonized Tariff System Expert who follows the General Rules of Interpretation (GRI) for the Harmonized System perfectly.\n
-            Your job is to take a product description, a work in progress classification description, and a list of descriptions, 
-            and determine which description from the list best fits the product description if it were added onto the end of the current classification description.\n
-            You must pick one. If you are unsure and "Other:" is available as an option, you should pick it.\n
+          Your job is to determine which description from a list would most accurately match a product description if it were added onto the end of the current classification description.\n
+          The current classification description might not be provided, in which case just compare directly against the product description.\n
+          If the product description is provided it will be formatted is Parent > child > grandchild > etc.\n
+          If only the top parent is in description, there will be no > symbols which indicate the hierarchy.\n
+          Finally, you must pick one description. If you are unsure and "Other:" is available as an option, you should pick it.\n
             ${
               isTestEnv
                 ? "The 0-based index of the best option must be included in your response\n"
                 : "The logic you used to pick the best option based on the GRI must be included in your response, and so should the index (0 based) and description of the best option.\n"
             }
-            `, // The description you return should not have the code prepended to it, just the description text (e.g. for "7013.49: Other:" you should just return "Other:")
+            `,
         },
         {
           role: "user",
           content: `Product Description: ${productDescription}\n
-          Work in Progress Classification Description: ${htsDescription}\n
+          ${
+            htsDescription
+              ? `Current Classification Description: ${htsDescription}\n`
+              : ""
+          }
           Descriptions:\n ${labelledDescriptions.join("\n")}`,
         },
       ],
