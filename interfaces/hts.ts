@@ -1,3 +1,4 @@
+import { NavigatableElementType } from "../components/Elements";
 import { HtsLevel } from "../enums/hts";
 
 export interface Eval {
@@ -14,8 +15,8 @@ export interface Note {
   listPosition: string;
 }
 
-export enum HtsElementType {
-  SECTION = "section",
+export enum Navigatable {
+  SECTIONS = "sections",
   CHAPTER = "chapter",
   ELEMENT = "element",
 }
@@ -28,7 +29,7 @@ export interface HtsSectionAndChapterBase {
   number: number;
   description: string;
   notesPath?: string;
-  type: HtsElementType;
+  type: Navigatable.CHAPTER;
 }
 
 export interface HtsElementWithParentReference extends HtsElement {
@@ -42,8 +43,8 @@ export interface SimplifiedHtsElement {
 
 export interface HtsElement {
   uuid: string;
-  type: HtsElementType;
-  chapter?: number;
+  type: Navigatable.ELEMENT;
+  chapter: number;
   htsno: string;
   indent: string;
   description: string;
@@ -55,8 +56,9 @@ export interface HtsElement {
   footnotes: Footnote[];
   quotaQuantity: string | null;
   additionalDuties: string | null;
-  addiitionalDuties: string | null;
   children?: HtsElement[];
+  suggested?: boolean;
+  suggestedReasoning?: string;
 }
 
 export interface Footnote {
@@ -113,8 +115,9 @@ export interface CandidateSelection {
 export interface HtsLevelClassification {
   level: HtsLevel;
   candidates: HtsElement[]; //| HtsSectionAndChapterBase[];
-  selection: HtsElement; // | HtsSectionAndChapterBase;
-  reasoning: string;
+  // suggestions?: HtsElement[]; //| HtsSectionAndChapterBase[];
+  selection?: HtsElement; // | HtsSectionAndChapterBase;
+  reasoning?: string;
 }
 
 export interface TemporaryTariff {

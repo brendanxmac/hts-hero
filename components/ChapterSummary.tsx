@@ -1,7 +1,6 @@
 import { ChevronRightIcon } from "@heroicons/react/16/solid";
-import { HtsElementType, HtsSectionAndChapterBase } from "../interfaces/hts";
+import { Navigatable, HtsSectionAndChapterBase } from "../interfaces/hts";
 import { SecondaryInformation } from "./SecondaryInformation";
-import { Cell } from "./Cell";
 import { NavigatableElement } from "./Elements";
 interface Props {
   chapter: HtsSectionAndChapterBase;
@@ -25,13 +24,13 @@ export const ChapterSummary = ({
           {
             title: `Chapter ${number.toString()}`,
             element: {
-              type: HtsElementType.CHAPTER,
+              type: Navigatable.CHAPTER,
               ...chapter,
             },
           },
         ]);
       }}
-      className="flex flex-col gap-2 w-full rounded-md bg-primary/5 dark:bg-primary/10 hover:bg-primary/20 transition duration-100 ease-in-out cursor-pointer"
+      className="flex flex-col gap-2 w-full rounded-md bg-primary/30 dark:bg-primary/30 hover:bg-primary/50 transition duration-100 ease-in-out cursor-pointer"
     >
       <div className="flex items-start justify-between gap-3 p-4">
         <div className="flex gap-4">

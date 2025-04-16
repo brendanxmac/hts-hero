@@ -1,4 +1,4 @@
-import { HtsElement, HtsSectionAndChapterBase } from "../interfaces/hts";
+import { HtsSectionAndChapterBase } from "../interfaces/hts";
 import { Cell } from "./Cell";
 import { NavigatableElement } from "./Elements";
 import { useEffect, useState } from "react";
@@ -10,7 +10,7 @@ import { PrimaryInformation } from "./PrimaryInformation";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { ElementSum } from "./ElementSum";
 import SquareIconButton from "./SqaureIconButton";
-import { DocumentMagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { DocumentTextIcon } from "@heroicons/react/24/solid";
 import PDF from "./PDF";
 import { useChapters } from "../contexts/ChaptersContext";
 import { TertiaryInformation } from "./TertiaryInformation";
@@ -48,7 +48,7 @@ export const Chapter = ({ chapter, breadcrumbs, setBreadcrumbs }: Props) => {
 
   return (
     <Cell>
-      <div className="card flex flex-col w-full rounded-md border border-base-300 dark:border-base-content/20 transition duration-100 ease-in-out cursor-pointer">
+      <div className="card flex flex-col w-full rounded-md bg-base-300 transition duration-100 ease-in-out cursor-pointer">
         <div className="flex items-start justify-between gap-3 pt-4 px-4 sm:pt-6 sm:px-6 pb-2">
           <div className="flex flex-col gap-2">
             <div className="shrink-0">
@@ -57,10 +57,12 @@ export const Chapter = ({ chapter, breadcrumbs, setBreadcrumbs }: Props) => {
                 value={``}
               />
             </div>
-            <PrimaryInformation value={description} loud={true} />
+            <div className="pb-4">
+              <PrimaryInformation value={description} />
+            </div>
           </div>
           <SquareIconButton
-            icon={<DocumentMagnifyingGlassIcon className="h-6 w-6" />}
+            icon={<DocumentTextIcon className="h-4 w-4" />}
             onClick={() => setShowNotes(!showNotes)}
           />
         </div>
@@ -74,12 +76,11 @@ export const Chapter = ({ chapter, breadcrumbs, setBreadcrumbs }: Props) => {
           />
         )}
 
-        {loadingChapters.includes(number) && (
-          <LoadingIndicator text="Fetching Chapter Data" />
-        )}
-
-        <div className="flex flex-col rounded-md pb-2 gap-4 p-4 sm:px-6">
+        <div className="flex flex-col rounded-md gap-4 p-4 sm:px-6">
           <TertiaryInformation value="" label="Elements:" />
+          {loadingChapters.includes(number) && (
+            <LoadingIndicator text="Fetching Chapter Data" />
+          )}
           <div className="flex flex-col gap-2">
             {elementsWithChildren.map((element, i) => {
               return (

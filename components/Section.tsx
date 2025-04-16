@@ -1,7 +1,6 @@
-import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/16/solid";
-import { DocumentMagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { ChevronUpIcon } from "@heroicons/react/16/solid";
+import { DocumentTextIcon } from "@heroicons/react/24/solid";
 import { HtsSection } from "../interfaces/hts";
-import { Cell } from "./Cell";
 import { useState } from "react";
 import { ChapterSummary } from "./ChapterSummary";
 import { PrimaryInformation } from "./PrimaryInformation";
@@ -9,6 +8,7 @@ import { classNames } from "../utilities/style";
 import PDF from "./PDF";
 import { NavigatableElement } from "./Elements";
 import SquareIconButton from "./SqaureIconButton";
+import { SecondaryInformation } from "./SecondaryInformation";
 
 interface Props {
   section: HtsSection;
@@ -33,77 +33,75 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
   const [showNotes, setShowNotes] = useState(false);
 
   return (
-    <Cell>
-      <div
-        className={classNames(
-          !showDetails && "hover:bg-primary/10 dark:hover:bg-primary/20",
-          "w-full flex flex-col gap-8 py-6 px-4 rounded-md transition duration-100 ease-in-out hover:cursor-pointer"
-        )}
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setShowDetails(!showDetails);
-        }}
-      >
-        <div className="flex items-start justify-between gap-5">
-          <div className="flex gap-3 items-start">
-            <div className="shrink-0 flex flex-col">
-              <PrimaryInformation
-                label={`Section ${number.toString()}:`}
-                value={``}
-                copyable={false}
-              />
-
-              <h4 className="text-xs font-semibold text-gray-500">
-                {getChapterRange(section)}
-              </h4>
-            </div>
-            <PrimaryInformation value={description} copyable={false} />
+    <div
+      className={classNames(
+        !showDetails && "hover:bg-primary/50 dark:hover:bg-primary/50",
+        "bg-base-300 w-full flex flex-col gap-6 py-6 px-4 rounded-md transition duration-100 ease-in-out hover:cursor-pointer"
+      )}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setShowDetails(!showDetails);
+      }}
+    >
+      <div className="flex gap-4">
+        <div className="grow flex flex-col gap-3">
+          <div className="flex flex-col">
+            <SecondaryInformation
+              label={`Section ${number.toString()}`}
+              value={``}
+              copyable={false}
+            />
+            <h4 className="text-xs font-semibold text-base-content">
+              {getChapterRange(section)}
+            </h4>
           </div>
 
-          {notesPath && showNotes && (
-            <PDF
-              title={`Section ${number.toString()} Notes`}
-              file={notesPath}
-              isOpen={showNotes}
-              setIsOpen={setShowNotes}
-            />
-          )}
-
-          <div className="flex gap-5 self-center">
-            {notesPath && (
-              <SquareIconButton
-                icon={<DocumentMagnifyingGlassIcon className="h-6 w-6" />}
-                onClick={() => setShowNotes(!showNotes)}
-              />
-            )}
-
-            <div className="self-center">
-              <ChevronDownIcon
-                className={classNames(
-                  "w-5 h-5 transition -rotate-180 duration-200 ease-in-out",
-                  showDetails && "-rotate-0 text-primary"
-                )}
-              />
-            </div>
+          <div className="flex flex-col items-start">
+            <PrimaryInformation value={description} copyable={false} />
           </div>
         </div>
 
-        {showDetails && (
-          <div className="flex flex-col rounded-md ml-4 gap-2">
-            {section.chapters.map((chapter) => {
-              return (
-                <ChapterSummary
-                  key={chapter.number}
-                  chapter={chapter}
-                  breadcrumbs={breadcrumbs}
-                  setBreadcrumbs={setBreadcrumbs}
-                />
-              );
-            })}
+        <div className="flex flex-col">
+          {notesPath && (
+            <SquareIconButton
+              icon={<DocumentTextIcon className="h-4 w-4" />}
+              onClick={() => setShowNotes(!showNotes)}
+            />
+          )}
+          <div className="grow flex gap-5 self-center items-center">
+            <ChevronUpIcon
+              className={classNames(
+                "w-5 h-5 text-primary transition-transform duration-200 ease-in-out",
+                showDetails && "rotate-180"
+              )}
+            />
           </div>
-        )}
+        </div>
       </div>
-    </Cell>
+
+      {showDetails && (
+        <div className="flex flex-col rounded-md gap-2">
+          {section.chapters.map((chapter) => {
+            return (
+              <ChapterSummary
+                key={chapter.number}
+                chapter={chapter}
+                breadcrumbs={breadcrumbs}
+                setBreadcrumbs={setBreadcrumbs}
+              />
+            );
+          })}
+        </div>
+      )}
+      {notesPath && showNotes && (
+        <PDF
+          title={`Section ${number.toString()} Notes`}
+          file={notesPath}
+          isOpen={showNotes}
+          setIsOpen={setShowNotes}
+        />
+      )}
+    </div>
   );
 };

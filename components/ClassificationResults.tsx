@@ -135,8 +135,6 @@ export const ClassificationResults = ({
       sections.map((s) => s.description)
     );
 
-    console.log("Section Candidates:", bestSectionCandidates.bestCandidates);
-
     const candidates: CandidateSelection[] =
       bestSectionCandidates.bestCandidates.map((sectionCandidate) => ({
         index: sections[sectionCandidate.index].number,
@@ -198,8 +196,6 @@ export const ClassificationResults = ({
       })
     );
 
-    console.log("Chapter Candidates:", candidatesForChapter);
-
     setChapterCandidates(candidatesForChapter);
   };
 
@@ -251,8 +247,6 @@ export const ClassificationResults = ({
         candidatesForHeading.push(...candidates);
       })
     );
-
-    console.log("Heading Candidates:", candidatesForHeading);
 
     setHeadingCandidates(candidatesForHeading);
     // DO not move this down, it will break the classification as the timing is critical
