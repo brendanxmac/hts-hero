@@ -213,39 +213,41 @@ export const CandidateElements = ({
           />
         </div>
       ) : !showDetails && !selectedElement ? null : ( */}
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 bg-base-300 rounded-md p-4">
         {loading.isLoading && (
           <div className="py-3">
             <LoadingIndicator text={loading.text} />
           </div>
         )}
 
-        {candidates.map((element) => (
-          <CandidateElement
-            key={element.uuid}
-            element={element}
-            indentLevel={indentLevel}
-            isSelectedElement={selectedElement?.uuid === element.uuid}
-            classificationProgression={classificationProgression}
-            setClassificationProgression={setClassificationProgression}
-            setSelectedElement={(element) => {
-              setSelectedElement(element);
-              const newClassificationProgression =
-                classificationProgression.slice(0, indentLevel);
-              setClassificationProgression([
-                ...newClassificationProgression,
-                {
-                  level: getHtsLevel(
-                    element && element.htsno ? element.htsno : ""
-                  ),
-                  candidates: candidates,
-                  selection: element,
-                  reasoning: "",
-                },
-              ]);
-            }}
-          />
-        ))}
+        <div className="flex flex-col gap-4">
+          {candidates.map((element) => (
+            <CandidateElement
+              key={element.uuid}
+              element={element}
+              indentLevel={indentLevel}
+              isSelectedElement={selectedElement?.uuid === element.uuid}
+              classificationProgression={classificationProgression}
+              setClassificationProgression={setClassificationProgression}
+              setSelectedElement={(element) => {
+                setSelectedElement(element);
+                const newClassificationProgression =
+                  classificationProgression.slice(0, indentLevel);
+                setClassificationProgression([
+                  ...newClassificationProgression,
+                  {
+                    level: getHtsLevel(
+                      element && element.htsno ? element.htsno : ""
+                    ),
+                    candidates: candidates,
+                    selection: element,
+                    reasoning: "",
+                  },
+                ]);
+              }}
+            />
+          ))}
+        </div>
       </div>
       {/* )} */}
     </div>

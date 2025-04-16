@@ -219,7 +219,7 @@ export const Element = ({
           {children.length > 0 && (
             <div className="w-full flex flex-col gap-2">
               <TertiaryInformation value="" label="Elements:" />
-              <div className="flex flex-col rounded-md p-4 gap-2">
+              <div className="flex flex-col rounded-md gap-2">
                 {children.map((child, i) => {
                   return (
                     <ElementSum

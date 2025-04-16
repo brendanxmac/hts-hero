@@ -361,7 +361,7 @@ export const Classify = () => {
           activeTab={activeTab}
           onTabChange={setActiveTab}
         /> */}
-        <PrimaryInformation label="New Classification" value="" />
+        {/* <PrimaryInformation label="New Classification" value="" /> */}
         <div className="w-full overflow-y-scroll flex flex-col gap-8">
           <div className="flex flex-col gap-4">
             <TextInput
