@@ -98,7 +98,7 @@ export async function POST(req: NextRequest) {
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const gptResponse = await openai.chat.completions.create({
       temperature: 0,
-      model: OpenAIModel.FOUR_MINI,
+      model: OpenAIModel.FOUR_LATEST,
       response_format: responseFormat,
       messages: [
         {

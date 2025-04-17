@@ -13,6 +13,7 @@ import { useChapters } from "../contexts/ChaptersContext";
 import { HtsLevel } from "../enums/hts";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { useClassification } from "../contexts/ClassificationContext";
+import { Classification } from "../interfaces/hts";
 
 enum Tabs {
   COMPLETED = "completed",
@@ -33,11 +34,12 @@ const tabs: Tab[] = [
 export const Classify = () => {
   const { fetchChapter, getChapterElements } = useChapters();
   const {
-    classificationProgression,
-    setClassificationProgression,
-    addToClassificationProgression,
+    classification,
+    setClassification,
+    setProductDescription,
+    addToProgressionLevels,
   } = useClassification();
-  const [productDescription, setProductDescription] = useState("");
+  const [localProductDescription, setLocalProductDescription] = useState("");
   const [htsSections, setHtsSections] = useState<HtsSection[]>([]);
   const [sectionCandidates, setSectionCandidates] = useState<
     CandidateSelection[]
@@ -57,7 +59,7 @@ export const Classify = () => {
     const sections = sectionsResponse.sections;
     const bestSectionCandidates = await getBestDescriptionCandidates(
       [],
-      productDescription,
+      localProductDescription,
       true,
       0,
       2,
@@ -90,7 +92,7 @@ export const Classify = () => {
       candidateSections.map(async (section) => {
         const bestChapterCandidates = await getBestDescriptionCandidates(
           [],
-          productDescription,
+          localProductDescription,
           true,
           0,
           2,
@@ -141,7 +143,7 @@ export const Classify = () => {
         );
         const bestCandidateHeadings = await getBestDescriptionCandidates(
           elementsAtLevel,
-          productDescription,
+          localProductDescription,
           false,
           0,
           2,
@@ -171,17 +173,18 @@ export const Classify = () => {
     );
 
     setHeadingCandidates(candidatesForHeading);
-    addToClassificationProgression(HtsLevel.HEADING, candidatesForHeading);
+    addToProgressionLevels(HtsLevel.HEADING, candidatesForHeading);
     // DO not move this down, it will break the classification as the timing is critical
     setClassificationIndentLevel(classificationIndentLevel + 1);
     setLoading({ isLoading: false, text: "" });
   };
 
   useEffect(() => {
-    if (productDescription) {
+    if (localProductDescription) {
+      setProductDescription(localProductDescription);
       getSections();
     }
-  }, [productDescription]);
+  }, [localProductDescription]);
 
   useEffect(() => {
     if (sectionCandidates && sectionCandidates.length > 0) {
@@ -198,12 +201,7 @@ export const Classify = () => {
   useEffect(() => {
     if (headingCandidates && headingCandidates.length > 0) {
       console.log("Heading Candidates:", headingCandidates);
-      setClassificationProgression([
-        {
-          level: HtsLevel.HEADING,
-          candidates: headingCandidates,
-        },
-      ]);
+      addToProgressionLevels(HtsLevel.HEADING, headingCandidates);
     }
   }, [headingCandidates]);
 
@@ -215,7 +213,7 @@ export const Classify = () => {
             <TextInput
               label="Item Description"
               placeholder="Enter item description"
-              setProductDescription={setProductDescription}
+              setProductDescription={setLocalProductDescription}
             />
             {/* <TextInput
             label="Analysis"
@@ -226,12 +224,17 @@ export const Classify = () => {
 
           {loading.isLoading && <LoadingIndicator text={loading.text} />}
 
-          {classificationProgression.length > 0 && (
+          {classification.progressionLevels.length > 0 && (
             <CandidateElements
               indentLevel={0}
-              classificationProgression={classificationProgression}
-              setClassificationProgression={setClassificationProgression}
-              productDescription={productDescription}
+              classificationProgression={classification.progressionLevels}
+              setClassificationProgression={(progression) =>
+                setClassification((prev: Classification) => ({
+                  ...prev,
+                  progressionLevels: progression,
+                }))
+              }
+              productDescription={localProductDescription}
             />
           )}
         </div>
