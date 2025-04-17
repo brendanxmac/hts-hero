@@ -5,6 +5,7 @@ import {
   HtsElement,
   Navigatable,
   HtsLevelClassification,
+  Classification,
 } from "../interfaces/hts";
 import SquareIconButton from "./SqaureIconButton";
 import {
@@ -20,6 +21,7 @@ import { getDirectChildrenElements, getHtsLevel } from "../libs/hts";
 import { TertiaryInformation } from "./TertiaryInformation";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { SecondaryInformation } from "./SecondaryInformation";
+import { useClassification } from "../contexts/ClassificationContext";
 
 interface Props {
   element: HtsElement;
@@ -47,6 +49,8 @@ export const CandidateElement = ({
   const { findChapterByNumber } = useHtsSections();
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
   const [loading, setLoading] = useState(false);
+  const { classification, updateProgressionLevel, addToProgressionLevels } =
+    useClassification();
 
   useEffect(() => {
     const loadChapterData = async () => {
@@ -68,12 +72,7 @@ export const CandidateElement = ({
       onClick={() => {
         if (isSelectedElement) {
           setSelectedElement(null);
-          const newClassificationProgression = classificationProgression.slice(
-            0,
-            indentLevel + 1
-          );
-          newClassificationProgression[indentLevel].selection = null;
-          setClassificationProgression(newClassificationProgression);
+          updateProgressionLevel(indentLevel, { selection: null });
         } else {
           setSelectedElement(element);
           clearBreadcrumbs();
@@ -91,18 +90,13 @@ export const CandidateElement = ({
           );
 
           if (children.length > 0) {
-            const newClassificationProgression =
-              classificationProgression.slice(0, indentLevel + 1);
-            newClassificationProgression[indentLevel].selection = element;
-            setClassificationProgression([
-              ...newClassificationProgression,
-              {
-                level: getHtsLevel(htsno || ""),
-                candidates: children,
-                selection: null,
-                reasoning: "",
-              },
-            ]);
+            updateProgressionLevel(indentLevel, { selection: element });
+            addToProgressionLevels(
+              getHtsLevel(htsno || ""),
+              children,
+              null,
+              ""
+            );
           } else {
             // TADA! classification complete, do something special
           }

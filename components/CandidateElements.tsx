@@ -1,4 +1,8 @@
-import { HtsElement, HtsLevelClassification } from "../interfaces/hts";
+import {
+  HtsElement,
+  HtsLevelClassification,
+  Classification,
+} from "../interfaces/hts";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { Loader } from "../interfaces/ui";
 import { CandidateElement } from "./CandidateElement";
@@ -55,8 +59,7 @@ export const CandidateElements = ({
   classificationProgression,
   setClassificationProgression,
 }: Props) => {
-  const { candidates, selection, level, reasoning } =
-    classificationProgression[indentLevel];
+  const { candidates } = classificationProgression[indentLevel];
   const [loading, setLoading] = useState<Loader>({
     isLoading: false,
     text: "",
@@ -65,9 +68,10 @@ export const CandidateElements = ({
   const [selectedElement, setSelectedElement] = useState<HtsElement | null>(
     null
   );
-  const { addBreadcrumb, clearBreadcrumbs, breadcrumbs } = useBreadcrumbs();
   const { getChapterElements, fetchChapter, chapters } = useChapters();
-  const { addToClassificationProgression } = useClassification();
+  const { setClassification } = useClassification();
+
+  console.log("candidates", candidates);
 
   // Get up to 2 Best Headings Per Chapter
   const getHeadings = async () => {
@@ -117,7 +121,17 @@ export const CandidateElements = ({
       })
     );
 
-    addToClassificationProgression(HtsLevel.HEADING, candidatesForHeading);
+    setClassification((prev: Classification) => {
+      const newProgressionLevels = [...prev.progressionLevels];
+      newProgressionLevels[indentLevel] = {
+        ...newProgressionLevels[indentLevel],
+        candidates: candidatesForHeading,
+      };
+      return {
+        ...prev,
+        progressionLevels: newProgressionLevels,
+      };
+    });
     // DO not move this down, it will break the classification as the timing is critical
     setLoading({ isLoading: false, text: "" });
   };
@@ -157,14 +171,17 @@ export const CandidateElements = ({
       return e;
     });
 
-    // Make a local copy of the classification progression
-    const updatedClassificationProgression = [...classificationProgression];
-    updatedClassificationProgression[indentLevel] = {
-      ...updatedClassificationProgression[indentLevel],
-      candidates: updatedCandidates,
-    };
-
-    setClassificationProgression(updatedClassificationProgression);
+    setClassification((prev: Classification) => {
+      const newProgressionLevels = [...prev.progressionLevels];
+      newProgressionLevels[indentLevel] = {
+        ...newProgressionLevels[indentLevel],
+        candidates: updatedCandidates,
+      };
+      return {
+        ...prev,
+        progressionLevels: newProgressionLevels,
+      };
+    });
 
     setLoading({
       isLoading: false,
@@ -176,6 +193,20 @@ export const CandidateElements = ({
     setShowDetails(!Boolean(selectedElement));
   }, [selectedElement]);
 
+  const handleCandidateSelection = (candidate: HtsElement) => {
+    setClassification((prev: Classification) => {
+      const newProgressionLevels = [...prev.progressionLevels];
+      newProgressionLevels[indentLevel] = {
+        ...newProgressionLevels[indentLevel],
+        selection: candidate,
+      };
+      return {
+        ...prev,
+        progressionLevels: newProgressionLevels,
+      };
+    });
+  };
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
@@ -185,20 +216,24 @@ export const CandidateElements = ({
           onClick={() => getBestCandidate()}
         />
       </div>
-      <div className={classNames("w-full flex flex-col gap-2 pb-2")}>
+      <div className="w-full flex flex-col gap-2 pb-2">
         {candidates.length === 0 ? (
           !showDetails ? null : (
             <div className="bg-base-300 flex flex-col gap-2 rounded-md p-4 items-center justify-center">
               <div className="w-full flex items-center justify-evenly py-6">
-                <div className="min-w-28 flex flex-col items-center gap-2">
-                  <SquareIconButton
-                    icon={<SparklesIcon className="h-4 w-4" />}
-                    onClick={() => getHeadings()}
-                  />
-                  <p className="text-xs text-base-content/50">
-                    Get Suggestions
-                  </p>
-                </div>
+                {loading.isLoading ? (
+                  <LoadingIndicator text={loading.text} />
+                ) : (
+                  <div className="min-w-28 flex flex-col items-center gap-2">
+                    <SquareIconButton
+                      icon={<SparklesIcon className="h-4 w-4" />}
+                      onClick={() => getHeadings()}
+                    />
+                    <p className="text-xs text-base-content/50">
+                      Get Suggestions
+                    </p>
+                  </div>
+                )}
                 <div className="h-full w-px bg-base-content/20"></div>
                 <div className="min-w-28 flex flex-col items-center justify-center gap-2">
                   <ArrowRightIcon className="h-4 w-4" />
@@ -216,7 +251,6 @@ export const CandidateElements = ({
                 <LoadingIndicator text={loading.text} />
               </div>
             )}
-
             <div className="flex flex-col gap-4">
               {candidates.map((element) => (
                 <CandidateElement

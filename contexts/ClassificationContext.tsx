@@ -1,18 +1,29 @@
 "use client";
 
 import { createContext, useContext, useState, ReactNode } from "react";
-import { HtsLevelClassification } from "../interfaces/hts";
+import { Classification, HtsLevelClassification } from "../interfaces/hts";
 import { HtsElement } from "../interfaces/hts";
 import { HtsLevel } from "../enums/hts";
 
 interface ClassificationContextType {
-  classificationProgression: HtsLevelClassification[];
-  setClassificationProgression: (progression: HtsLevelClassification[]) => void;
-  addToClassificationProgression: (
-    level: HtsLevel,
-    candidates: HtsElement[]
+  classification: Classification;
+  setClassification: (
+    classification: Classification | ((prev: Classification) => Classification)
   ) => void;
-  clearClassificationProgression: () => void;
+  // Helper functions
+  setProductDescription: (description: string) => void;
+  setHtsDescription: (description: string) => void;
+  addToProgressionLevels: (
+    level: HtsLevel,
+    candidates: HtsElement[],
+    selection?: HtsElement,
+    reasoning?: string
+  ) => void;
+  updateProgressionLevel: (
+    index: number,
+    updates: Partial<HtsLevelClassification>
+  ) => void;
+  clearClassification: () => void;
 }
 
 const ClassificationContext = createContext<
@@ -24,28 +35,90 @@ export const ClassificationProvider = ({
 }: {
   children: ReactNode;
 }) => {
-  const [classificationProgression, setClassificationProgression] = useState<
-    HtsLevelClassification[]
-  >([]);
+  const [classification, setClassification] = useState<Classification>({
+    productDescription: "",
+    htsDescription: "",
+    progressionLevels: [],
+  });
 
-  const addToClassificationProgression = (
-    level: HtsLevel,
-    candidates: HtsElement[]
-  ) => {
-    setClassificationProgression((prev) => [...prev, { level, candidates }]);
+  const setProductDescription = (description: string) => {
+    setClassification((prev) => ({
+      ...prev,
+      productDescription: description,
+    }));
   };
 
-  const clearClassificationProgression = () => {
-    setClassificationProgression([]);
+  const setHtsDescription = (description: string) => {
+    setClassification((prev) => ({
+      ...prev,
+      htsDescription: description,
+    }));
+  };
+
+  const addToProgressionLevels = (
+    level: HtsLevel,
+    candidates: HtsElement[],
+    selection?: HtsElement,
+    reasoning?: string
+  ) => {
+    setClassification((prev) => ({
+      ...prev,
+      progressionLevels: [
+        ...prev.progressionLevels,
+        {
+          level,
+          candidates,
+          selection,
+          reasoning,
+        },
+      ],
+    }));
+  };
+
+  const updateProgressionLevel = (
+    index: number,
+    updates: Partial<HtsLevelClassification>
+  ) => {
+    setClassification((prev) => {
+      // This code safely updates a specific progression level in the classification state
+      // 1. First spread creates a new array copy to avoid mutating the original state
+      const newProgressionLevels = [...prev.progressionLevels];
+
+      // 2. For the progression level we want to update:
+      // - First spread copies all existing properties from the original level
+      // - Second spread overlays any new/updated properties on top
+      // This ensures we keep all original properties while updating only what changed
+      newProgressionLevels[index] = {
+        ...newProgressionLevels[index], // Keep existing properties
+        ...updates, // Override with any new values
+      };
+
+      // 3. Create new state object with updated progression levels
+      return {
+        ...prev,
+        progressionLevels: newProgressionLevels,
+      };
+    });
+  };
+
+  const clearClassification = () => {
+    setClassification({
+      productDescription: "",
+      htsDescription: "",
+      progressionLevels: [],
+    });
   };
 
   return (
     <ClassificationContext.Provider
       value={{
-        classificationProgression,
-        setClassificationProgression,
-        addToClassificationProgression,
-        clearClassificationProgression,
+        classification,
+        setClassification,
+        setProductDescription,
+        setHtsDescription,
+        addToProgressionLevels,
+        updateProgressionLevel,
+        clearClassification,
       }}
     >
       {children}

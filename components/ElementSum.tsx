@@ -20,11 +20,10 @@ export const ElementSum = ({
   setBreadcrumbs,
 }: Props) => {
   const { htsno, description, indent } = element;
-  const { classificationProgression, setClassificationProgression } =
-    useClassification();
+  const { classification, updateProgressionLevel } = useClassification();
 
   const isSelected = Boolean(
-    classificationProgression[0].candidates.find(
+    classification.progressionLevels[0].candidates.find(
       (candidate) => candidate.uuid === element.uuid
     )
   );
@@ -41,12 +40,14 @@ export const ElementSum = ({
                   onClick={() => {
                     // TODO: make a function for removing an element from a single classificatino progression
                     const newClassificationProgression =
-                      classificationProgression.slice(0, 1);
+                      classification.progressionLevels.slice(0, 1);
                     newClassificationProgression[0].candidates =
                       newClassificationProgression[0].candidates.filter(
                         (candidate) => candidate.uuid !== element.uuid
                       );
-                    setClassificationProgression(newClassificationProgression);
+                    updateProgressionLevel(0, {
+                      candidates: newClassificationProgression[0].candidates,
+                    });
                   }}
                   color="error"
                 />
@@ -56,16 +57,18 @@ export const ElementSum = ({
                   onClick={() => {
                     // TODO: make a function for adding an element to a single classificatino progression
                     const newClassificationProgression =
-                      classificationProgression.slice(
+                      classification.progressionLevels.slice(
                         0,
-                        classificationProgression.length
+                        classification.progressionLevels.length
                       );
                     newClassificationProgression[0].candidates = [
                       ...newClassificationProgression[0].candidates,
                       element,
                     ];
 
-                    setClassificationProgression(newClassificationProgression);
+                    updateProgressionLevel(0, {
+                      candidates: newClassificationProgression[0].candidates,
+                    });
                   }}
                 />
               )}

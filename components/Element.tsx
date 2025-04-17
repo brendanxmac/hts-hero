@@ -1,8 +1,15 @@
-import { HtsElement, Navigatable } from "../interfaces/hts";
+import {
+  HtsElement,
+  HtsLevelClassification,
+  Navigatable,
+} from "../interfaces/hts";
 import { NavigatableElement } from "./Elements";
 import { useEffect, useState } from "react";
 import { PrimaryInformation } from "./PrimaryInformation";
-import { getDirectChildrenElements } from "../libs/hts";
+import {
+  getBestClassificationProgression,
+  getDirectChildrenElements,
+} from "../libs/hts";
 import { ElementSum } from "./ElementSum";
 import { SecondaryInformation } from "./SecondaryInformation";
 import { TertiaryInformation } from "./TertiaryInformation";
@@ -11,6 +18,8 @@ import { DocumentTextIcon } from "@heroicons/react/24/solid";
 import PDF from "./PDF";
 import { notes } from "../public/notes/notes";
 import { useChapters } from "../contexts/ChaptersContext";
+import { Loader } from "../interfaces/ui";
+import { useClassification } from "../contexts/ClassificationContext";
 
 interface Props {
   summaryOnly?: boolean;
@@ -33,16 +42,20 @@ export const Element = ({
   const { htsno, description, chapter, units, general, special, other } =
     element;
   const [children, setChildren] = useState<HtsElement[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<Loader>({
+    isLoading: true,
+    text: "Loading...",
+  });
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
   const { fetchChapter, getChapterElements } = useChapters();
+  const { classification, updateProgressionLevel } = useClassification();
 
   useEffect(() => {
     const loadChapterData = async () => {
       const chapterElements = getChapterElements(chapter);
 
       if (!chapterElements) {
-        setLoading(true);
+        setLoading({ isLoading: true, text: "Loading..." });
         await fetchChapter(chapter);
         const updatedChapterElements = getChapterElements(chapter);
         if (updatedChapterElements) {
@@ -59,7 +72,7 @@ export const Element = ({
         );
         setChildren(directChildrenElements);
       }
-      setLoading(false);
+      setLoading({ isLoading: false, text: "" });
     };
     loadChapterData();
   }, [chapter, fetchChapter, getChapterElements, element]);
@@ -112,6 +125,66 @@ export const Element = ({
       }
     });
     return descriptions;
+  };
+
+  const getFullHtsDescription = (
+    classificationProgression: HtsLevelClassification[]
+  ) => {
+    let fullDescription = "";
+    classificationProgression.forEach((progression, index) => {
+      if (progression.selection) {
+        // if the string has a : at the end, strip it off
+        const desc = progression.selection.description.endsWith(":")
+          ? progression.selection.description.slice(0, -1)
+          : progression.selection.description;
+
+        fullDescription += index === 0 ? `${desc}` : ` > ${desc}`;
+      }
+    });
+
+    return fullDescription;
+  };
+
+  const getBestCandidate = async () => {
+    setLoading({
+      isLoading: true,
+      text: "Getting Best Candidate",
+    });
+
+    const simplifiedCandidates = children.map((e) => ({
+      code: e.htsno,
+      description: e.description,
+    }));
+
+    const bestProgressionResponse = await getBestClassificationProgression(
+      simplifiedCandidates,
+      classification.htsDescription,
+      classification.productDescription
+    );
+
+    console.log("bestProgressionResponse", bestProgressionResponse);
+
+    const bestCandidate = children[bestProgressionResponse.index];
+
+    console.log("bestCandidate", bestCandidate);
+
+    // Update this classification progressions candidates to mark the bestCandidate element as suggested
+    const updatedCandidates = children.map((e) => {
+      if (e.uuid === bestCandidate.uuid) {
+        return {
+          ...e,
+          suggested: true,
+          suggestedReasoning: bestProgressionResponse.logic,
+        };
+      }
+      return e;
+    });
+
+    updateProgressionLevel(classification.progressionLevels.length - 1, {
+      candidates: updatedCandidates,
+    });
+
+    setLoading({ isLoading: false, text: "" });
   };
 
   return (
