@@ -1,33 +1,16 @@
-import {
-  HtsElement,
-  HtsLevelClassification,
-  Classification,
-} from "../interfaces/hts";
+import { HtsLevelClassification, Classification } from "../interfaces/hts";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { Loader } from "../interfaces/ui";
 import { CandidateElement } from "./CandidateElement";
 import { useState } from "react";
-import {
-  getBestClassificationProgression,
-  getBestDescriptionCandidates,
-} from "../libs/hts";
+import { getBestClassificationProgression } from "../libs/hts";
 import SquareIconButton from "./SqaureIconButton";
 import { SparklesIcon } from "@heroicons/react/24/solid";
-import {
-  elementsAtClassificationLevel,
-  setIndexInArray,
-} from "../utilities/data";
-import { useChapters } from "../contexts/ChaptersContext";
 import { useClassification } from "../contexts/ClassificationContext";
 import { TertiaryInformation } from "./TertiaryInformation";
 
 interface Props {
-  productDescription: string;
   indentLevel: number;
-  classificationProgression: HtsLevelClassification[];
-  setClassificationProgression: (
-    classificationProgression: HtsLevelClassification[]
-  ) => void;
 }
 
 const getFullHtsDescription = (
@@ -48,84 +31,16 @@ const getFullHtsDescription = (
   return fullDescription;
 };
 
-export const CandidateElements = ({
-  productDescription,
-  indentLevel,
-  classificationProgression,
-  setClassificationProgression,
-}: Props) => {
-  const { candidates } = classificationProgression[indentLevel];
+export const CandidateElements = ({ indentLevel }: Props) => {
   const [loading, setLoading] = useState<Loader>({
     isLoading: false,
     text: "",
   });
-  const { getChapterElements, fetchChapter, chapters } = useChapters();
-  const { setClassification } = useClassification();
+  const { setClassification, classification } = useClassification();
+  const { productDescription, progressionLevels } = classification;
+  const { candidates } = progressionLevels[indentLevel];
 
   console.log("candidates", candidates);
-
-  // Get up to 2 Best Headings Per Chapter
-  const getHeadings = async () => {
-    setLoading({ isLoading: true, text: "Finding Best Headings" });
-    const candidatesForHeading: HtsElement[] = [];
-    await Promise.all(
-      chapters.map(async (chapter) => {
-        let chapterData = getChapterElements(chapter.number);
-        if (!chapterData) {
-          await fetchChapter(chapter.number);
-          chapterData = getChapterElements(chapter.number);
-        }
-
-        const chapterDataWithParentIndex = setIndexInArray(chapterData);
-        const elementsAtLevel = elementsAtClassificationLevel(
-          chapterDataWithParentIndex,
-          0
-        );
-        const bestCandidateHeadings = await getBestDescriptionCandidates(
-          elementsAtLevel,
-          productDescription,
-          false,
-          0,
-          2,
-          elementsAtLevel.map((e) => e.description)
-        );
-
-        // Handle Empty Case
-        if (bestCandidateHeadings.bestCandidates.length === 0) {
-          return;
-        }
-
-        // Handle Negative Index Case (sometimes chatGPT will do this)
-        if (bestCandidateHeadings.bestCandidates[0].index < 0) {
-          return;
-        }
-
-        const candidates = bestCandidateHeadings.bestCandidates
-          .map((candidate) => {
-            return elementsAtLevel[candidate.index];
-          })
-          .map((candidate) => ({
-            ...candidate,
-          }));
-
-        candidatesForHeading.push(...candidates);
-      })
-    );
-
-    setClassification((prev: Classification) => {
-      const newProgressionLevels = [...prev.progressionLevels];
-      newProgressionLevels[indentLevel] = {
-        ...newProgressionLevels[indentLevel],
-        candidates: candidatesForHeading,
-      };
-      return {
-        ...prev,
-        progressionLevels: newProgressionLevels,
-      };
-    });
-    // DO not move this down, it will break the classification as the timing is critical
-    setLoading({ isLoading: false, text: "" });
-  };
 
   const getBestCandidate = async () => {
     setLoading({
@@ -140,7 +55,7 @@ export const CandidateElements = ({
 
     const bestProgressionResponse = await getBestClassificationProgression(
       simplifiedCandidates,
-      getFullHtsDescription(classificationProgression),
+      getFullHtsDescription(progressionLevels),
       productDescription
     );
 
@@ -183,7 +98,7 @@ export const CandidateElements = ({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        {/* For the label below, if this is the first level, show "Heading Candidates", otherwise show the selected parents  */}
+        {/* FIXME: For the label below, if this is the first level, show "Heading Candidates", otherwise show the selected parents  */}
         <TertiaryInformation label="Heading Candidates" value="" />
         <SquareIconButton
           icon={<SparklesIcon className="h-4 w-4" />}
@@ -214,3 +129,66 @@ export const CandidateElements = ({
     </div>
   );
 };
+
+// // Get up to 2 Best Headings Per Chapter
+// const getHeadings = async () => {
+//   setLoading({ isLoading: true, text: "Finding Best Headings" });
+//   const candidatesForHeading: HtsElement[] = [];
+//   await Promise.all(
+//     chapters.map(async (chapter) => {
+//       let chapterData = getChapterElements(chapter.number);
+//       if (!chapterData) {
+//         await fetchChapter(chapter.number);
+//         chapterData = getChapterElements(chapter.number);
+//       }
+
+//       const chapterDataWithParentIndex = setIndexInArray(chapterData);
+//       const elementsAtLevel = elementsAtClassificationLevel(
+//         chapterDataWithParentIndex,
+//         0
+//       );
+//       const bestCandidateHeadings = await getBestDescriptionCandidates(
+//         elementsAtLevel,
+//         productDescription,
+//         false,
+//         0,
+//         2,
+//         elementsAtLevel.map((e) => e.description)
+//       );
+
+//       // Handle Empty Case
+//       if (bestCandidateHeadings.bestCandidates.length === 0) {
+//         return;
+//       }
+
+//       // Handle Negative Index Case (sometimes chatGPT will do this)
+//       if (bestCandidateHeadings.bestCandidates[0].index < 0) {
+//         return;
+//       }
+
+//       const candidates = bestCandidateHeadings.bestCandidates
+//         .map((candidate) => {
+//           return elementsAtLevel[candidate.index];
+//         })
+//         .map((candidate) => ({
+//           ...candidate,
+//         }));
+
+//       candidatesForHeading.push(...candidates);
+//     })
+//   );
+
+//   setClassification((prev: Classification) => {
+//     const newProgressionLevels = [...prev.progressionLevels];
+//     newProgressionLevels[indentLevel] = {
+//       ...newProgressionLevels[indentLevel],
+//       candidates: candidatesForHeading,
+//     };
+//     return {
+//       ...prev,
+//       progressionLevels: newProgressionLevels,
+//     };
+//   });
+//   // DO not move this down, it will break the classification as the timing is critical
+//   setLoading({ isLoading: false, text: "" });
+// };

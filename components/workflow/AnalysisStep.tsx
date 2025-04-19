@@ -1,5 +1,5 @@
-import { SparklesIcon } from "@heroicons/react/24/solid";
-import { ChevronDoubleRightIcon, PencilIcon } from "@heroicons/react/16/solid";
+import { SparklesIcon, PencilIcon } from "@heroicons/react/24/solid";
+import { ChevronDoubleRightIcon } from "@heroicons/react/16/solid";
 import { WorkflowStep } from "../../enums/hts";
 import { useClassification } from "../../contexts/ClassificationContext";
 import { SecondaryLabel } from "../SecondaryLabel";
@@ -9,10 +9,16 @@ import TextInput from "../TextInput";
 import { WorkflowHeader } from "./WorkflowHeader";
 
 interface AnalysisStepProps {
+  showExplore: boolean;
+  setShowExplore: (show: boolean) => void;
   setWorkflowStep: (step: WorkflowStep) => void;
 }
 
-export const AnalysisStep = ({ setWorkflowStep }: AnalysisStepProps) => {
+export const AnalysisStep = ({
+  showExplore,
+  setShowExplore,
+  setWorkflowStep,
+}: AnalysisStepProps) => {
   const { classification, setAnalysis } = useClassification();
   const { productDescription, analysis } = classification;
 
@@ -23,6 +29,8 @@ export const AnalysisStep = ({ setWorkflowStep }: AnalysisStepProps) => {
         previousStep={WorkflowStep.DESCRIPTION}
         nextStep={WorkflowStep.CLASSIFICATION}
         setWorkflowStep={setWorkflowStep}
+        showExplore={showExplore}
+        setShowExplore={setShowExplore}
       />
 
       <div className="border-b border-base-content/10 pb-4 flex justify-between">
