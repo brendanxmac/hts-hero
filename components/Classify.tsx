@@ -198,13 +198,6 @@ export const Classify = () => {
     }
   }, [chapterCandidates]);
 
-  useEffect(() => {
-    if (headingCandidates && headingCandidates.length > 0) {
-      console.log("Heading Candidates:", headingCandidates);
-      addToProgressionLevels(HtsLevel.HEADING, headingCandidates);
-    }
-  }, [headingCandidates]);
-
   return (
     <section className="grow h-full w-full flex flex-col items-start gap-4">
       <div className="w-full flex flex-col overflow-auto gap-4">
@@ -224,19 +217,21 @@ export const Classify = () => {
 
           {loading.isLoading && <LoadingIndicator text={loading.text} />}
 
-          {classification.progressionLevels.length > 0 && (
-            <CandidateElements
-              indentLevel={0}
-              classificationProgression={classification.progressionLevels}
-              setClassificationProgression={(progression) =>
-                setClassification((prev: Classification) => ({
-                  ...prev,
-                  progressionLevels: progression,
-                }))
-              }
-              productDescription={localProductDescription}
-            />
-          )}
+          {classification.progressionLevels.length > 0 &&
+            classification.progressionLevels.map((level, index) => (
+              <CandidateElements
+                key={`classification-level-${index}`}
+                indentLevel={index}
+                classificationProgression={classification.progressionLevels}
+                setClassificationProgression={(progression) =>
+                  setClassification((prev: Classification) => ({
+                    ...prev,
+                    progressionLevels: progression,
+                  }))
+                }
+                productDescription={localProductDescription}
+              />
+            ))}
         </div>
       </div>
     </section>

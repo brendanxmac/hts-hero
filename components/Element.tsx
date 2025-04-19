@@ -14,13 +14,13 @@ import { ElementSum } from "./ElementSum";
 import { SecondaryInformation } from "./SecondaryInformation";
 import { TertiaryInformation } from "./TertiaryInformation";
 import SquareIconButton from "./SqaureIconButton";
-import { DocumentTextIcon } from "@heroicons/react/24/solid";
+import { DocumentTextIcon, SparklesIcon } from "@heroicons/react/24/solid";
 import PDF from "./PDF";
 import { notes } from "../public/notes/notes";
 import { useChapters } from "../contexts/ChaptersContext";
 import { Loader } from "../interfaces/ui";
 import { useClassification } from "../contexts/ClassificationContext";
-
+import { LoadingIndicator } from "./LoadingIndicator";
 interface Props {
   summaryOnly?: boolean;
   element: HtsElement;
@@ -36,19 +36,24 @@ export interface PDFProps {
 export const Element = ({
   element,
   breadcrumbs,
-  setBreadcrumbs,
   summaryOnly = false,
 }: Props) => {
   const { htsno, description, chapter, units, general, special, other } =
     element;
   const [children, setChildren] = useState<HtsElement[]>([]);
   const [loading, setLoading] = useState<Loader>({
-    isLoading: true,
-    text: "Loading...",
+    isLoading: false,
+    text: "",
   });
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
   const { fetchChapter, getChapterElements } = useChapters();
   const { classification, updateProgressionLevel } = useClassification();
+
+  // Check if the element is a candidate in any of the classification progression levels
+  const isClassificationCandidate = classification.progressionLevels.some(
+    (level) =>
+      level.candidates.find((candidate) => candidate.uuid === element.uuid)
+  );
 
   useEffect(() => {
     const loadChapterData = async () => {
@@ -177,7 +182,7 @@ export const Element = ({
           suggestedReasoning: bestProgressionResponse.logic,
         };
       }
-      return e;
+      return { ...e, suggested: false, suggestedReasoning: "" };
     });
 
     updateProgressionLevel(classification.progressionLevels.length - 1, {
@@ -191,7 +196,7 @@ export const Element = ({
     <div className="card bg-base-300 w-full flex flex-col items-start justify-between gap-6 p-4 sm:p-6">
       <div className="flex items-start justify-between gap-3 w-full">
         <div className="flex flex-col gap-5">
-          {/* <div className="shrink-0">
+          <div className="shrink-0">
             {htsno && (
               <PrimaryInformation
                 label={htsno ? `${htsno} ` : ``}
@@ -199,7 +204,7 @@ export const Element = ({
                 copyable={false}
               />
             )}
-          </div> */}
+          </div>
           <div className="flex flex-col gap-1 mb-4">
             {getParentDescriptionsFromBreadcrumbs(element).length > 0 && (
               <TertiaryInformation
@@ -208,9 +213,9 @@ export const Element = ({
               />
             )}
             {htsno ? (
-              <PrimaryInformation value={description} />
+              <SecondaryInformation value={description} />
             ) : (
-              <PrimaryInformation label={description} value="" />
+              <SecondaryInformation label={description} value="" />
             )}
           </div>
         </div>
@@ -291,7 +296,21 @@ export const Element = ({
           )}
           {children.length > 0 && (
             <div className="w-full flex flex-col gap-2">
-              <TertiaryInformation value="" label="Elements:" />
+              <div className="flex items-center justify-between">
+                <TertiaryInformation label={"Child Elements:"} value={""} />
+                {/* <SquareIconButton
+                  icon={<SparklesIcon className="h-4 w-4" />}
+                  onClick={() => getBestCandidate()}
+                  disabled={loading.isLoading}
+                /> */}
+              </div>
+
+              {loading.isLoading && (
+                <div className="flex items-center justify-center">
+                  <LoadingIndicator text={loading.text} />
+                </div>
+              )}
+
               <div className="flex flex-col rounded-md gap-2">
                 {children.map((child, i) => {
                   return (
@@ -299,8 +318,6 @@ export const Element = ({
                       key={`${i}-${child.htsno}`}
                       element={child}
                       chapter={chapter}
-                      breadcrumbs={breadcrumbs}
-                      setBreadcrumbs={setBreadcrumbs}
                     />
                   );
                 })}
