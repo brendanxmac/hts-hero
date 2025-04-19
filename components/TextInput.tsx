@@ -1,24 +1,28 @@
 "use client";
 
-import { useRef, ChangeEvent, useState, Dispatch, SetStateAction } from "react";
+import { useRef, ChangeEvent, useState, useEffect } from "react";
 import { classNames } from "../utilities/style";
-import { CheckIcon, SparklesIcon } from "@heroicons/react/24/solid";
+import { CheckIcon } from "@heroicons/react/24/solid";
 import { TertiaryInformation } from "./TertiaryInformation";
 import SquareIconButton from "./SqaureIconButton";
 
 interface Props {
-  label: string;
+  label?: string;
   placeholder: string;
-  setProductDescription: Dispatch<SetStateAction<string>>;
+  defaultValue?: string;
+  setProductDescription: (value: string) => void;
 }
 
 export default function TextInput({
   label,
   placeholder,
+  defaultValue,
   setProductDescription,
 }: Props) {
   const characterLimit = 500;
-  const [localProductDescription, setLocalProductDescription] = useState("");
+  const [localProductDescription, setLocalProductDescription] = useState(
+    defaultValue || ""
+  );
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const adjustTextAreaHeight = (): void => {
@@ -41,6 +45,10 @@ export default function TextInput({
     }
   };
 
+  useEffect(() => {
+    adjustTextAreaHeight();
+  }, []);
+
   //   const handleKeyDown = (event: KeyboardEvent) => {
   //     if (event.key === "Enter") {
   //       event.preventDefault(); // Prevent the default behavior of Enter
@@ -50,7 +58,7 @@ export default function TextInput({
 
   return (
     <div className="w-full flex flex-col gap-2">
-      <TertiaryInformation label={label} value="" />
+      {label && <TertiaryInformation label={label} value="" />}
       <div
         className={
           "w-full flex flex-col gap-2 bg-base-300 rounded-md px-4 py-3"
@@ -64,7 +72,7 @@ export default function TextInput({
           onChange={handleInputChange}
           // @ts-ignore
           //   onKeyDown={handleKeyDown}
-          className="textarea text-base rounded-none resize-none bg-inherit text-black dark:text-white placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-0"
+          className="textarea text-base  max-h-80 rounded-none resize-none bg-inherit text-black dark:text-white placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-0"
         ></textarea>
 
         <div className="flex justify-between items-center">

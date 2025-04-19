@@ -27,7 +27,7 @@ export const SecondaryInformation = ({
       )}
       <h3
         className={classNames(
-          "text-xs sm:text-sm md:text-base dark:text-white text-black",
+          "text-xs sm:text-sm md:text-base dark:text-white text-black whitespace-pre-wrap",
           loud && "text-secondary"
         )}
       >
