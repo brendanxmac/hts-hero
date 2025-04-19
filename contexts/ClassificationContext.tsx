@@ -49,10 +49,6 @@ export const ClassificationProvider = ({
     progressionLevels: [],
   });
 
-  useEffect(() => {
-    console.log("classification", classification.progressionLevels);
-  }, [classification]);
-
   const setProductDescription = (description: string) => {
     setClassification((prev) => ({
       ...prev,

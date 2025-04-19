@@ -1,21 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Classify } from "../../components/Classify";
 import { Explore } from "../../components/Explore";
 import { BreadcrumbsProvider } from "../../contexts/BreadcrumbsContext";
 import { ChaptersProvider } from "../../contexts/ChaptersContext";
+import { WorkflowStep } from "../../enums/hts";
 import { classNames } from "../../utilities/style";
-
-export enum WorkflowStep {
-  DESCRIPTION = "description",
-  ANALYSIS = "analysis",
-  CLASSIFICATION = "classification",
-}
 
 export default function Home() {
   const [showExplore, setShowExplore] = useState(false);
   const [workflowStep, setWorkflowStep] = useState(WorkflowStep.DESCRIPTION);
+
+  useEffect(() => {
+    if (workflowStep === WorkflowStep.CLASSIFICATION) {
+      setShowExplore(true);
+    }
+  }, [workflowStep]);
+
   return (
     <main className="h-screen w-full overflow-auto flex flex-col bg-base-100">
       <ChaptersProvider>
@@ -28,8 +30,8 @@ export default function Home() {
           >
             <div
               className={classNames(
-                "h-full w-full overflow-auto p-4 bg-base-100 mx-auto",
-                showExplore ? "col-span-8" : "col-span-2 max-w-3xl"
+                "h-full w-full overflow-auto p-4 bg-base-100 mx-auto max-w-4xl",
+                showExplore ? "col-span-7" : "col-span-2 max-w-3xl"
               )}
             >
               <Classify
@@ -39,7 +41,11 @@ export default function Home() {
               />
             </div>
             {showExplore && (
-              <div className="overflow-auto hidden md:block md:col-span-6 px-4 bg-base-100">
+              <div
+                className={classNames(
+                  "overflow-auto col-span-5 px-4 bg-base-300 p-4 rounded-md m-4"
+                )}
+              >
                 <Explore />
               </div>
             )}

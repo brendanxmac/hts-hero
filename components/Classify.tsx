@@ -12,7 +12,7 @@ import { useClassification } from "../contexts/ClassificationContext";
 import { DescriptionStep } from "./workflow/DescriptionStep";
 import { AnalysisStep } from "./workflow/AnalysisStep";
 import { ClassificationStep } from "./workflow/ClassificationStep";
-import { WorkflowStep } from "../app/classify/page";
+import { WorkflowStep } from "../enums/hts";
 
 interface ClassifyProps {
   workflowStep: WorkflowStep;
