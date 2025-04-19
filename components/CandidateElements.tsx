@@ -6,18 +6,13 @@ import {
 import { LoadingIndicator } from "./LoadingIndicator";
 import { Loader } from "../interfaces/ui";
 import { CandidateElement } from "./CandidateElement";
-import { classNames } from "../utilities/style";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   getBestClassificationProgression,
   getBestDescriptionCandidates,
-  getHtsLevel,
 } from "../libs/hts";
-import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import SquareIconButton from "./SqaureIconButton";
-import { SparklesIcon } from "@heroicons/react/24/outline";
-import { ArrowRightIcon } from "@heroicons/react/24/solid";
-import { HtsLevel } from "../enums/hts";
+import { SparklesIcon } from "@heroicons/react/24/solid";
 import {
   elementsAtClassificationLevel,
   setIndexInArray,
@@ -64,10 +59,6 @@ export const CandidateElements = ({
     isLoading: false,
     text: "",
   });
-  const [showDetails, setShowDetails] = useState(true);
-  const [selectedElement, setSelectedElement] = useState<HtsElement | null>(
-    null
-  );
   const { getChapterElements, fetchChapter, chapters } = useChapters();
   const { setClassification } = useClassification();
 
@@ -168,7 +159,7 @@ export const CandidateElements = ({
           suggestedReasoning: bestProgressionResponse.logic,
         };
       }
-      return e;
+      return { ...e, suggested: false, suggestedReasoning: "" };
     });
 
     setClassification((prev: Classification) => {
@@ -189,62 +180,19 @@ export const CandidateElements = ({
     });
   };
 
-  useEffect(() => {
-    setShowDetails(!Boolean(selectedElement));
-  }, [selectedElement]);
-
-  const handleCandidateSelection = (candidate: HtsElement) => {
-    setClassification((prev: Classification) => {
-      const newProgressionLevels = [...prev.progressionLevels];
-      newProgressionLevels[indentLevel] = {
-        ...newProgressionLevels[indentLevel],
-        selection: candidate,
-      };
-      return {
-        ...prev,
-        progressionLevels: newProgressionLevels,
-      };
-    });
-  };
-
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
+        {/* For the label below, if this is the first level, show "Heading Candidates", otherwise show the selected parents  */}
         <TertiaryInformation label="Heading Candidates" value="" />
         <SquareIconButton
           icon={<SparklesIcon className="h-4 w-4" />}
           onClick={() => getBestCandidate()}
+          disabled={loading.isLoading}
         />
       </div>
       <div className="w-full flex flex-col gap-2 pb-2">
-        {candidates.length === 0 ? (
-          !showDetails ? null : (
-            <div className="bg-base-300 flex flex-col gap-2 rounded-md p-4 items-center justify-center">
-              <div className="w-full flex items-center justify-evenly py-6">
-                {loading.isLoading ? (
-                  <LoadingIndicator text={loading.text} />
-                ) : (
-                  <div className="min-w-28 flex flex-col items-center gap-2">
-                    <SquareIconButton
-                      icon={<SparklesIcon className="h-4 w-4" />}
-                      onClick={() => getHeadings()}
-                    />
-                    <p className="text-xs text-base-content/50">
-                      Get Suggestions
-                    </p>
-                  </div>
-                )}
-                <div className="h-full w-px bg-base-content/20"></div>
-                <div className="min-w-28 flex flex-col items-center justify-center gap-2">
-                  <ArrowRightIcon className="h-4 w-4" />
-                  <p className="text-xs text-base-content/50 flex items-center gap-2">
-                    Select your own
-                  </p>
-                </div>
-              </div>
-            </div>
-          )
-        ) : (
+        {candidates.length === 0 ? null : (
           <div className="flex flex-col gap-2 rounded-md">
             {loading.isLoading && (
               <div className="py-3">
@@ -257,25 +205,6 @@ export const CandidateElements = ({
                   key={element.uuid}
                   element={element}
                   indentLevel={indentLevel}
-                  isSelectedElement={selectedElement?.uuid === element.uuid}
-                  classificationProgression={classificationProgression}
-                  setClassificationProgression={setClassificationProgression}
-                  setSelectedElement={(element) => {
-                    setSelectedElement(element);
-                    const newClassificationProgression =
-                      classificationProgression.slice(0, indentLevel);
-                    setClassificationProgression([
-                      ...newClassificationProgression,
-                      {
-                        level: getHtsLevel(
-                          element && element.htsno ? element.htsno : ""
-                        ),
-                        candidates: candidates,
-                        selection: element,
-                        reasoning: "",
-                      },
-                    ]);
-                  }}
                 />
               ))}
             </div>

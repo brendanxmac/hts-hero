@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
 import { Classification, HtsLevelClassification } from "../interfaces/hts";
 import { HtsElement } from "../interfaces/hts";
 import { HtsLevel } from "../enums/hts";
@@ -40,6 +46,10 @@ export const ClassificationProvider = ({
     htsDescription: "",
     progressionLevels: [],
   });
+
+  useEffect(() => {
+    console.log("classification", classification.progressionLevels);
+  }, [classification]);
 
   const setProductDescription = (description: string) => {
     setClassification((prev) => ({

@@ -1,40 +1,66 @@
-import { ChevronRightIcon, XMarkIcon } from "@heroicons/react/16/solid";
+import {
+  ChevronRightIcon,
+  SparklesIcon,
+  XMarkIcon,
+} from "@heroicons/react/16/solid";
 import { HtsElement } from "../interfaces/hts";
 import { SecondaryInformation } from "./SecondaryInformation";
-import { NavigatableElement } from "./Elements";
 import SquareIconButton from "./SqaureIconButton";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import { TertiaryInformation } from "./TertiaryInformation";
 import { useClassification } from "../contexts/ClassificationContext";
+import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
+
 interface Props {
   element: HtsElement;
   chapter: number;
-  breadcrumbs: NavigatableElement[];
-  setBreadcrumbs: (breadcrumbs: NavigatableElement[]) => void;
 }
 
-export const ElementSum = ({
-  element,
-  chapter,
-  breadcrumbs,
-  setBreadcrumbs,
-}: Props) => {
-  const { htsno, description, indent } = element;
+export const ElementSum = ({ element, chapter }: Props) => {
+  const { htsno, description, indent, suggested, suggestedReasoning } = element;
   const { classification, updateProgressionLevel } = useClassification();
+  const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
 
-  const isSelected = Boolean(
-    classification.progressionLevels[0].candidates.find(
-      (candidate) => candidate.uuid === element.uuid
-    )
+  const isHeadingCandidate = Boolean(
+    classification.progressionLevels[0] &&
+      classification.progressionLevels[0].candidates.find(
+        (candidate) => candidate.uuid === element.uuid
+      )
   );
+
+  const isHeading = indent === "0" && classification.progressionLevels[0];
+  // const numProgressionLevels = classification.progressionLevels.length;
+  // const matchingCurrentProgressionElement = classification.progressionLevels[
+  //   numProgressionLevels - 1
+  // ].candidates.find((candidate) => candidate.uuid === element.uuid);
+  // const isCurrentProgressionCandidate =
+  //   !isHeadingCandidate &&
+  //   classification.progressionLevels[numProgressionLevels - 1] &&
+  //   classification.progressionLevels[numProgressionLevels - 1].candidates.find(
+  //     (candidate) => candidate.uuid === element.uuid
+  //   );
+
+  // if (isCurrentProgressionCandidate) {
+  //   // get the matching current progression element that matches this one
+  //   const matchingCurrentProgressionElement =
+  //     classification.progressionLevels[numProgressionLevels - 1].candidates.find(
+  //       (candidate) => candidate.uuid === element.uuid
+  //     );
+  //   console.log("Classification Candidate:");
+  //   console.log(matchingCurrentProgressionElement);
+  // }
+
+  // This data is always coming from breadcrums, whose state is not update when the classification context changes
+  // So we need to manually check if the current element is a candidate in the current progression level
+  // If it is, we need to update the breadcrumbs to reflect that
 
   return (
     <div className="flex flex-col gap-2 w-full rounded-md bg-primary/30 dark:bg-primary/30 transition duration-100 ease-in-out cursor-pointer">
       <div className="flex">
-        {indent === "0" && (
+        {isHeading && (
           <div className="flex items-center justify-center">
             <div className="px-3">
-              {isSelected ? (
+              {isHeadingCandidate ? (
                 <SquareIconButton
                   icon={<XMarkIcon className="h-4 w-4" />}
                   onClick={() => {
@@ -55,7 +81,7 @@ export const ElementSum = ({
                 <SquareIconButton
                   icon={<PlusIcon className="h-4 w-4" />}
                   onClick={() => {
-                    // TODO: make a function for adding an element to a single classificatino progression
+                    // TODO: make a function for adding an element to a single classification progression
                     const newClassificationProgression =
                       classification.progressionLevels.slice(
                         0,
@@ -79,7 +105,7 @@ export const ElementSum = ({
         )}
 
         <div
-          className="flex items-center justify-between w-full hover:bg-primary/50 rounded-r-md"
+          className={`flex items-center justify-between w-full hover:bg-primary/50 rounded-r-md ${!isHeading && "hover:rounded-md"}`}
           onClick={(e) => {
             e.stopPropagation();
             setBreadcrumbs([
@@ -104,6 +130,18 @@ export const ElementSum = ({
             <div className="w-full flex items-center justify-between gap-2">
               <SecondaryInformation label={description} value="" />
             </div>
+
+            {suggested && (
+              <div className="flex flex-col gap-2 bg-base-300 rounded-md p-2">
+                <div className="flex gap-2 text-accent">
+                  <SparklesIcon className="h-4 w-4" />
+                  <TertiaryInformation label="Suggested" value="" />
+                </div>
+                <p className="text-sm dark:text-white/90">
+                  {suggestedReasoning}
+                </p>
+              </div>
+            )}
           </div>
           <div className="flex items-center justify-center pr-3">
             <ChevronRightIcon className="shrink-0 w-5 h-5 text-primary" />
