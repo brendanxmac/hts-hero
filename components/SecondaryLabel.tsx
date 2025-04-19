@@ -1,17 +1,17 @@
-import { classNames } from "../utilities/style";
-
 interface Props {
   value: string;
-  loud?: boolean;
+  color?:
+    | "primary"
+    | "secondary"
+    | "tertiary"
+    | "base-content"
+    | "base-content/30";
 }
 
-export const SecondaryLabel = ({ value, loud }: Props) => {
+export const SecondaryLabel = ({ value, color = "base-content" }: Props) => {
   return (
     <h3
-      className={classNames(
-        "text-xs sm:text-sm md:text-base lg:text-lg text-base-content font-bold",
-        loud && "text-secondary"
-      )}
+      className={`text-xs sm:text-sm md:text-base lg:text-lg text-${color} font-bold`}
     >
       {value}
     </h3>

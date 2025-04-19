@@ -1,11 +1,15 @@
 interface Props {
   value: string;
+  color?:
+    | "primary"
+    | "secondary"
+    | "tertiary"
+    | "base-content"
+    | "base-content/30";
 }
 
-export const PrimaryLabel = ({ value }: Props) => {
+export const PrimaryLabel = ({ value, color = "base-content" }: Props) => {
   return (
-    <h4 className="text-[#40C969] uppercase font-bold text-sm sm:text-base">
-      {value}
-    </h4>
+    <h2 className={`font-bold text-xl md:text-3xl text-${color}`}>{value}</h2>
   );
 };

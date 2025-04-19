@@ -19,6 +19,7 @@ interface ClassificationContextType {
   // Helper functions
   setProductDescription: (description: string) => void;
   setHtsDescription: (description: string) => void;
+  setAnalysis: (analysis: string) => void;
   addToProgressionLevels: (
     level: HtsLevel,
     candidates: HtsElement[],
@@ -43,6 +44,7 @@ export const ClassificationProvider = ({
 }) => {
   const [classification, setClassification] = useState<Classification>({
     productDescription: "",
+    analysis: "",
     htsDescription: "",
     progressionLevels: [],
   });
@@ -62,6 +64,13 @@ export const ClassificationProvider = ({
     setClassification((prev) => ({
       ...prev,
       htsDescription: description,
+    }));
+  };
+
+  const setAnalysis = (analysis: string) => {
+    setClassification((prev) => ({
+      ...prev,
+      analysis: analysis,
     }));
   };
 
@@ -114,6 +123,7 @@ export const ClassificationProvider = ({
   const clearClassification = () => {
     setClassification({
       productDescription: "",
+      analysis: "",
       htsDescription: "",
       progressionLevels: [],
     });
@@ -126,6 +136,7 @@ export const ClassificationProvider = ({
         setClassification,
         setProductDescription,
         setHtsDescription,
+        setAnalysis,
         addToProgressionLevels,
         updateProgressionLevel,
         clearClassification,

@@ -1,9 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Tab } from "../interfaces/tab";
-import TextInput from "./TextInput";
-import { CandidateElements } from "./CandidateElements";
 import { CandidateSelection, HtsElement, HtsSection } from "../interfaces/hts";
 import { getBestDescriptionCandidates } from "../libs/hts";
 import { getHtsSectionsAndChapters } from "../libs/hts";
@@ -11,34 +8,21 @@ import { elementsAtClassificationLevel } from "../utilities/data";
 import { setIndexInArray } from "../utilities/data";
 import { useChapters } from "../contexts/ChaptersContext";
 import { HtsLevel } from "../enums/hts";
-import { LoadingIndicator } from "./LoadingIndicator";
 import { useClassification } from "../contexts/ClassificationContext";
-import { Classification } from "../interfaces/hts";
+import { DescriptionStep } from "./workflow/DescriptionStep";
+import { AnalysisStep } from "./workflow/AnalysisStep";
+import { ClassificationStep } from "./workflow/ClassificationStep";
+import { WorkflowStep } from "../app/classify/page";
 
-enum Tabs {
-  COMPLETED = "completed",
-  IN_PROGRESS = "in-progress",
+interface ClassifyProps {
+  workflowStep: WorkflowStep;
+  setWorkflowStep: (step: WorkflowStep) => void;
+  setShowExplore: (show: boolean) => void;
 }
 
-const tabs: Tab[] = [
-  {
-    label: "Completed",
-    value: Tabs.COMPLETED,
-  },
-  {
-    label: "In Progress",
-    value: Tabs.IN_PROGRESS,
-  },
-];
-
-export const Classify = () => {
+export const Classify = ({ workflowStep, setWorkflowStep }: ClassifyProps) => {
   const { fetchChapter, getChapterElements } = useChapters();
-  const {
-    classification,
-    setClassification,
-    setProductDescription,
-    addToProgressionLevels,
-  } = useClassification();
+  const { setProductDescription, addToProgressionLevels } = useClassification();
   const [localProductDescription, setLocalProductDescription] = useState("");
   const [htsSections, setHtsSections] = useState<HtsSection[]>([]);
   const [sectionCandidates, setSectionCandidates] = useState<
@@ -47,7 +31,6 @@ export const Classify = () => {
   const [chapterCandidates, setChapterCandidates] = useState<
     CandidateSelection[]
   >([]);
-  const [headingCandidates, setHeadingCandidates] = useState<HtsElement[]>([]);
   const [classificationIndentLevel, setClassificationIndentLevel] = useState(1);
   const [loading, setLoading] = useState({ isLoading: false, text: "" });
 
@@ -172,7 +155,6 @@ export const Classify = () => {
       })
     );
 
-    setHeadingCandidates(candidatesForHeading);
     addToProgressionLevels(HtsLevel.HEADING, candidatesForHeading);
     // DO not move this down, it will break the classification as the timing is critical
     setClassificationIndentLevel(classificationIndentLevel + 1);
@@ -198,111 +180,54 @@ export const Classify = () => {
     }
   }, [chapterCandidates]);
 
-  return (
-    <section className="grow h-full w-full flex flex-col items-start gap-4">
-      <div className="w-full flex flex-col overflow-auto gap-4">
-        <div className="w-full overflow-y-scroll flex flex-col gap-8">
-          <div className="flex flex-col gap-4">
-            <TextInput
-              label="Item Description"
-              placeholder="Enter item description"
-              setProductDescription={setLocalProductDescription}
-            />
-            {/* <TextInput
-            label="Analysis"
-            placeholder="Enter product analysis"
-            setProductDescription={() => {}}
-          /> */}
-          </div>
+  if (workflowStep === WorkflowStep.DESCRIPTION) {
+    return <DescriptionStep setWorkflowStep={setWorkflowStep} />;
+  }
 
-          {loading.isLoading && <LoadingIndicator text={loading.text} />}
+  if (workflowStep === WorkflowStep.ANALYSIS) {
+    return <AnalysisStep setWorkflowStep={setWorkflowStep} />;
+  }
 
-          {classification.progressionLevels.length > 0 &&
-            classification.progressionLevels.map((level, index) => (
-              <CandidateElements
-                key={`classification-level-${index}`}
-                indentLevel={index}
-                classificationProgression={classification.progressionLevels}
-                setClassificationProgression={(progression) =>
-                  setClassification((prev: Classification) => ({
-                    ...prev,
-                    progressionLevels: progression,
-                  }))
-                }
-                productDescription={localProductDescription}
-              />
-            ))}
-        </div>
-      </div>
-    </section>
-  );
+  if (workflowStep === WorkflowStep.CLASSIFICATION) {
+    return <ClassificationStep setWorkflowStep={setWorkflowStep} />;
+  }
+
+  //   return (
+  //     <section className="grow h-full w-full flex flex-col items-start gap-4">
+  //       <div className="w-full flex flex-col overflow-auto gap-4">
+  //         <div className="w-full overflow-y-scroll flex flex-col gap-8">
+  //           <div className="flex flex-col gap-4">
+  //             <TextInput
+  //               label="Item Description"
+  //               placeholder="Enter item description"
+  //               setProductDescription={setLocalProductDescription}
+  //             />
+  //             {/* <TextInput
+  //             label="Analysis"
+  //             placeholder="Enter product analysis"
+  //             setProductDescription={() => {}}
+  //           /> */}
+  //           </div>
+
+  //           {loading.isLoading && <LoadingIndicator text={loading.text} />}
+
+  //           {classification.progressionLevels.length > 0 &&
+  //             classification.progressionLevels.map((level, index) => (
+  //               <CandidateElements
+  //                 key={`classification-level-${index}`}
+  //                 indentLevel={index}
+  //                 classificationProgression={classification.progressionLevels}
+  //                 setClassificationProgression={(progression) =>
+  //                   setClassification((prev: Classification) => ({
+  //                     ...prev,
+  //                     progressionLevels: progression,
+  //                   }))
+  //                 }
+  //                 productDescription={localProductDescription}
+  //               />
+  //             ))}
+  //         </div>
+  //       </div>
+  //     </section>
+  //   );
 };
-
-// {
-//       htsno: "3924",
-//       indent: "0",
-//       description:
-//         "Tableware, kitchenware, other household articles and hygienic or toilet articles, of plastics:",
-//       superior: null,
-//       units: [],
-//       general: "",
-//       special: "",
-//       other: "",
-//       footnotes: [],
-//       quotaQuantity: "",
-//       additionalDuties: "",
-//       uuid: "6aa606a0-f237-4164-99c8-83da0c917781",
-//       chapter: 39,
-//       type: Navigatable.ELEMENT,
-//     },
-//     {
-//       htsno: "3926",
-//       indent: "0",
-//       description:
-//         "Other articles of plastics and articles of other materials of headings 3901 to 3914:",
-//       superior: null,
-//       units: [],
-//       general: "",
-//       special: "",
-//       other: "",
-//       footnotes: [],
-//       quotaQuantity: "",
-//       additionalDuties: "",
-//       uuid: "9d73c351-f483-40de-abc5-134626ea5e3d",
-//       chapter: 39,
-//       type: Navigatable.ELEMENT,
-//     },
-//     {
-//       htsno: "8481",
-//       indent: "0",
-//       description:
-//         "Taps, cocks, valves and similar appliances, for pipes, boiler shells, tanks, vats or the like, including pressure-reducing valves and thermostatically controlled valves; parts thereof:",
-//       superior: null,
-//       units: [],
-//       general: "",
-//       special: "",
-//       other: "",
-//       footnotes: [],
-//       quotaQuantity: "",
-//       additionalDuties: "",
-//       uuid: "38c82ecf-f91e-4f75-a844-16f2568d11ff",
-//       chapter: 84,
-//       type: Navigatable.ELEMENT,
-//     },
-//     {
-//       htsno: "8479",
-//       indent: "0",
-//       description:
-//         "Machines and mechanical appliances having individual functions, not specified or included elsewhere in this chapter; parts thereof:",
-//       superior: null,
-//       units: [],
-//       general: "",
-//       special: "",
-//       other: "",
-//       footnotes: [],
-//       quotaQuantity: "",
-//       additionalDuties: "",
-//       uuid: "5f7e817d-b3af-45c7-8dad-ec5d0c853e0b",
-//       chapter: 84,
-//       type: Navigatable.ELEMENT,
-//     },

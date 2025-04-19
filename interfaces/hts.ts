@@ -114,6 +114,7 @@ export interface CandidateSelection {
 
 export interface Classification {
   productDescription: string;
+  analysis: string;
   htsDescription: string;
   progressionLevels: HtsLevelClassification[];
 }
