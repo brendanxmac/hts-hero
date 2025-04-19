@@ -39,19 +39,20 @@ export const Explore = () => {
 
   useEffect(() => {
     const initializeSections = async () => {
+      console.log("sections", sections);
       if (sections.length === 0) {
-        const fetchedSections = await getSections();
-        if (fetchedSections.length > 0) {
-          setBreadcrumbs([
-            {
-              title: "Sections",
-              element: {
-                type: Navigatable.SECTIONS,
-                sections: fetchedSections,
-              },
+        await getSections();
+      }
+      if (breadcrumbs.length === 0) {
+        setBreadcrumbs([
+          {
+            title: "Sections",
+            element: {
+              type: Navigatable.SECTIONS,
+              sections,
             },
-          ]);
-        }
+          },
+        ]);
       }
     };
     initializeSections();

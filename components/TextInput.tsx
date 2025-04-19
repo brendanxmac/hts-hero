@@ -10,14 +10,16 @@ interface Props {
   label?: string;
   placeholder: string;
   defaultValue?: string;
-  setProductDescription: (value: string) => void;
+  onSubmit: (value: string) => void;
+  onChange?: (value: string) => void;
 }
 
 export default function TextInput({
   label,
   placeholder,
   defaultValue,
-  setProductDescription,
+  onSubmit,
+  onChange,
 }: Props) {
   const characterLimit = 500;
   const [localProductDescription, setLocalProductDescription] = useState(
@@ -36,12 +38,13 @@ export default function TextInput({
 
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>): void => {
     setLocalProductDescription(e.target.value);
+    onChange && onChange(e.target.value);
     adjustTextAreaHeight();
   };
 
   const classifyProduct = (): void => {
     if (localProductDescription.trim()) {
-      setProductDescription(localProductDescription.trim());
+      onSubmit(localProductDescription.trim());
     }
   };
 

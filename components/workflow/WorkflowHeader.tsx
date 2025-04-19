@@ -1,5 +1,5 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
-import { WorkflowStep } from "../../app/classify/page";
+import { WorkflowStep } from "../../enums/hts";
 import { PrimaryLabel } from "../PrimaryLabel";
 
 interface WorkflowHeaderProps {
@@ -31,7 +31,7 @@ export const WorkflowHeader = ({
       <div>
         {previousStep ? (
           <button
-            className="flex items-center gap-2 btn btn-xs btn-link hover:text-secondary hover:scale-105 px-1"
+            className="flex items-center gap-2 btn btn-xs btn-link hover:text-secondary hover:scale-105 px-0"
             onClick={() => {
               setWorkflowStep(previousStep);
             }}
@@ -47,7 +47,7 @@ export const WorkflowHeader = ({
       <div>
         {nextStep ? (
           <button
-            className="flex items-center gap-2 btn btn-xs btn-link hover:text-secondary hover:scale-105 px-1"
+            className="flex items-center gap-2 btn btn-xs btn-link hover:text-secondary hover:scale-105 px-0"
             onClick={() => {
               setWorkflowStep(nextStep);
             }}

@@ -1,5 +1,5 @@
-import { WorkflowStep } from "../../app/classify/page";
 import { useClassification } from "../../contexts/ClassificationContext";
+import { WorkflowStep } from "../../enums/hts";
 import TextInput from "../TextInput";
 
 interface DescriptionStepProps {
@@ -16,7 +16,7 @@ export const DescriptionStep = ({ setWorkflowStep }: DescriptionStepProps) => {
       <TextInput
         placeholder="Enter item description"
         defaultValue={productDescription}
-        setProductDescription={(value) => {
+        onSubmit={(value) => {
           setProductDescription(value);
           setWorkflowStep(WorkflowStep.ANALYSIS);
         }}

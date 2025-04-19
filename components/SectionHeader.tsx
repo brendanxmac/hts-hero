@@ -15,7 +15,7 @@ export const SectionHeader = ({
   onTabChange,
 }: SectionHeaderProps) => {
   return (
-    <div className="min-w-full flex gap-4 items-center justify-between bg-base-100 pt-4 pb-2 border-b border-base-300">
+    <div className="min-w-full flex gap-4 items-center justify-between pt-4 pb-2 border-b border-base-300">
       <h2 className="text-xl md:text-2xl font-bold">{title}</h2>
       <div
         role="tablist"
