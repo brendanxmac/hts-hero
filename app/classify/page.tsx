@@ -4,7 +4,7 @@ import { ChaptersProvider } from "../../contexts/ChaptersContext";
 
 export default function Home() {
   return (
-    <main className="h-screen w-full overflow-auto flex flex-col bg-base-100">
+    <main className="h-full w-full overflow-y-auto flex flex-col p-2">
       <ChaptersProvider>
         <BreadcrumbsProvider>
           <Classify />

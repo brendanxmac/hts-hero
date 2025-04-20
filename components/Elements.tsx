@@ -35,7 +35,7 @@ export const Elements = ({ sections }: ElementsProps) => {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="h-full flex flex-col gap-4">
       {breadcrumbs.length > 1 && (
         <Breadcrumbs
           breadcrumbs={breadcrumbs}

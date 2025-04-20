@@ -12,6 +12,8 @@ import {
   XMarkIcon,
   MagnifyingGlassIcon,
   SparklesIcon,
+  TrashIcon,
+  PencilSquareIcon,
 } from "@heroicons/react/24/solid";
 import { PDFProps } from "./Element";
 import PDF from "./PDF";
@@ -120,7 +122,7 @@ export const CandidateElement = ({ element, indentLevel }: Props) => {
         }
       }}
     >
-      <div className="flex items-center justify-center">
+      {/* <div className="flex items-center justify-center">
         <input
           readOnly
           type="radio"
@@ -128,7 +130,7 @@ export const CandidateElement = ({ element, indentLevel }: Props) => {
           className="radio radio-primary"
           checked={isSelected}
         />
-      </div>
+      </div> */}
 
       <div className="flex flex-col w-full gap-2">
         <div className="flex items-start justify-between">
@@ -163,12 +165,17 @@ export const CandidateElement = ({ element, indentLevel }: Props) => {
                   });
                 }}
               />
+              <SquareIconButton
+                icon={<PencilSquareIcon className="h-4 w-4" />}
+                onClick={() => {
+                  console.log("Add notes for element");
+                }}
+              />
               {indent === "0" && (
                 <SquareIconButton
-                  icon={<XMarkIcon className="h-4 w-4" />}
+                  icon={<TrashIcon className="h-4 w-4 text-error" />}
                   onClick={() => {
                     if (isSelected) {
-                      // TODO: remove all progressions levels beyond this one
                       const newClassificationProgression =
                         classification.progressionLevels.slice(
                           0,
