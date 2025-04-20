@@ -22,16 +22,13 @@ export const Classify = () => {
   }, [workflowStep]);
 
   return (
-    <div
-      className={classNames(
-        "grid h-full w-full items-start justify-center",
-        showExplore ? "grid-cols-12" : "grid-cols-2"
-      )}
-    >
+    <div className="flex h-screen w-full items-start justify-center overflow-hidden gap-2">
       <div
         className={classNames(
-          "h-full w-full overflow-auto p-4 bg-base-100 mx-auto max-w-4xl",
-          showExplore ? "col-span-7" : "col-span-2 max-w-3xl"
+          "h-full w-full overflow-auto p-4 mx-auto rounded-md",
+          workflowStep === WorkflowStep.DESCRIPTION
+            ? "bg-base-100 max-w-3xl"
+            : "bg-base-300 max-w-4xl"
         )}
       >
         {workflowStep === WorkflowStep.DESCRIPTION && (
@@ -55,8 +52,8 @@ export const Classify = () => {
 
       <div
         className={classNames(
-          "overflow-auto col-span-5 px-4 bg-base-300 p-4 rounded-md m-4",
-          showExplore ? "block" : "hidden"
+          "h-full px-4 bg-base-300 p-4 rounded-md overflow-auto",
+          showExplore ? "grow block" : "hidden"
         )}
       >
         <Explore />

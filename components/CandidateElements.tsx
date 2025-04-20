@@ -106,8 +106,9 @@ export const CandidateElements = ({ indentLevel }: Props) => {
           disabled={loading.isLoading}
         />
       </div>
-      <div className="w-full flex flex-col gap-2 pb-2">
-        {candidates.length === 0 ? null : (
+
+      {candidates.length > 0 && (
+        <div className="w-full flex flex-col gap-2 pb-2">
           <div className="flex flex-col gap-2 rounded-md">
             {loading.isLoading && (
               <div className="py-3">
@@ -124,8 +125,8 @@ export const CandidateElements = ({ indentLevel }: Props) => {
               ))}
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

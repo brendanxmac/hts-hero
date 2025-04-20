@@ -1,4 +1,8 @@
-import { PencilIcon } from "@heroicons/react/24/solid";
+import {
+  ArrowRightIcon,
+  PencilIcon,
+  SparklesIcon,
+} from "@heroicons/react/24/solid";
 import { useClassification } from "../../contexts/ClassificationContext";
 import { HtsLevel, WorkflowStep } from "../../enums/hts";
 import SquareIconButton from "../SqaureIconButton";
@@ -15,6 +19,7 @@ import { getHtsSectionsAndChapters } from "../../libs/hts";
 import { useChapters } from "../../contexts/ChaptersContext";
 import { setIndexInArray } from "../../utilities/data";
 import { elementsAtClassificationLevel } from "../../utilities/data";
+import { TertiaryInformation } from "../TertiaryInformation";
 
 interface ClassificationStepProps {
   setWorkflowStep: (step: WorkflowStep) => void;
@@ -112,6 +117,8 @@ export const ClassificationStep = ({
       })
     );
 
+    console.log("candidatesForChapter", candidatesForChapter);
+
     setChapterCandidates(candidatesForChapter);
     setLoading({ isLoading: false, text: "" });
   };
@@ -170,6 +177,15 @@ export const ClassificationStep = ({
   };
 
   useEffect(() => {
+    // if (progressionLevels.length === 0) {
+    //   addToProgressionLevels(HtsLevel.HEADING, []);
+    // }
+    if (progressionLevels.length === 0) {
+      getSections();
+    }
+  }, []);
+
+  useEffect(() => {
     if (sectionCandidates && sectionCandidates.length > 0) {
       getChapters();
     }
@@ -181,12 +197,6 @@ export const ClassificationStep = ({
     }
   }, [chapterCandidates]);
 
-  useEffect(() => {
-    if (progressionLevels.length === 0) {
-      addToProgressionLevels(HtsLevel.HEADING, []);
-    }
-  }, []);
-
   return (
     <div className="h-full flex flex-col gap-8">
       <WorkflowHeader
@@ -197,41 +207,66 @@ export const ClassificationStep = ({
         setShowExplore={setShowExplore}
       />
 
-      <div className="border-b border-base-content/10 pb-4 flex justify-between">
-        <TextDisplay title="Item Description" text={productDescription} />
-        <SquareIconButton
-          icon={<PencilIcon className="h-4 w-4" />}
-          onClick={() => {
-            setWorkflowStep(WorkflowStep.DESCRIPTION);
-          }}
-        />
-      </div>
+      <div className="flex flex-col gap-4 overflow-y-auto">
+        <div className="border-b border-base-content/10 pb-4 flex justify-between">
+          <TextDisplay title="Item Description" text={productDescription} />
+          <SquareIconButton
+            icon={<PencilIcon className="h-4 w-4" />}
+            onClick={() => {
+              setWorkflowStep(WorkflowStep.DESCRIPTION);
+            }}
+          />
+        </div>
 
-      <div className="border-b border-base-content/10 pb-4 flex flex-col">
-        <div className="flex justify-between">
-          <TextDisplay title="Item Analysis" text={analysis} />
+        <div className="border-b border-base-content/10 pb-4 flex flex-col">
+          <div className="flex justify-between">
+            <TextDisplay title="Item Analysis" text={analysis} />
+            {!analysis && (
+              <SquareIconButton
+                icon={<PencilIcon className="h-4 w-4" />}
+                onClick={() => {
+                  console.log("generate analysis clicked");
+                }}
+              />
+            )}
+          </div>
           {!analysis && (
-            <SquareIconButton
-              icon={<PencilIcon className="h-4 w-4" />}
-              onClick={() => {
-                console.log("generate analysis clicked");
-              }}
-            />
+            <span className="text-sm text-base-content/50">N/A</span>
           )}
         </div>
-        {!analysis && <span className="text-sm text-base-content/50">N/A</span>}
-      </div>
 
-      <div>
-        {loading.isLoading && <LoadingIndicator text={loading.text} />}
+        <div>
+          {loading.isLoading && <LoadingIndicator text={loading.text} />}
 
-        {progressionLevels.length > 0 &&
-          progressionLevels.map((level, index) => (
-            <CandidateElements
-              key={`classification-level-${index}`}
-              indentLevel={index}
-            />
-          ))}
+          {progressionLevels.length === 0 && (
+            <div className="flex flex-col gap-4">
+              <TertiaryInformation label="Heading Candidates" value="" />
+              <div className="w-full flex justify-evenly gap-2 bg-base-300 rounded-md p-2">
+                <div className="flex flex-col items-center justify-center gap-3">
+                  <SquareIconButton
+                    icon={<SparklesIcon className="h-4 w-4" />}
+                    onClick={() => console.log("get headings")}
+                    disabled={loading.isLoading}
+                  />
+                  <TertiaryInformation value="Get Suggestions" />
+                </div>
+                <div className="h-24 w-[1px] bg-base-content/10" />
+                <div className="flex flex-col items-center justify-center gap-3">
+                  <ArrowRightIcon className="h-5 w-5" />
+                  <TertiaryInformation value="Search for Headings" />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {progressionLevels.length > 0 &&
+            progressionLevels.map((_, index) => (
+              <CandidateElements
+                key={`classification-level-${index}`}
+                indentLevel={index}
+              />
+            ))}
+        </div>
       </div>
     </div>
   );
