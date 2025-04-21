@@ -11,17 +11,6 @@ interface WorkflowHeaderProps {
   setShowExplore: (show: boolean) => void;
 }
 
-const getStepName = (step: WorkflowStep) => {
-  switch (step) {
-    case WorkflowStep.DESCRIPTION:
-      return "Description";
-    case WorkflowStep.ANALYSIS:
-      return "Analysis";
-    case WorkflowStep.CLASSIFICATION:
-      return "Classification";
-  }
-};
-
 export const WorkflowHeader = ({
   previousStep,
   currentStep,
@@ -30,9 +19,18 @@ export const WorkflowHeader = ({
   showExplore,
   setShowExplore,
 }: WorkflowHeaderProps) => {
+  const getStepName = (step: WorkflowStep) => {
+    switch (step) {
+      case WorkflowStep.DETAILS:
+        return "Article Details";
+      case WorkflowStep.CLASSIFICATION:
+        return "Classification";
+    }
+  };
+
   return (
-    <div className="flex justify-between items-center w-full">
-      <div>
+    <div className="grid grid-cols-3 items-center w-full">
+      <div className="flex justify-start">
         {previousStep ? (
           <button
             className="flex items-center gap-2 btn btn-xs btn-link hover:text-secondary hover:scale-105 px-0"
@@ -47,33 +45,37 @@ export const WorkflowHeader = ({
           <div className="w-6" />
         )}
       </div>
-      <PrimaryLabel value={getStepName(currentStep)} />
-      {currentStep === WorkflowStep.CLASSIFICATION ? (
-        <button
-          className="btn btn-xs btn-primary"
-          onClick={() => {
-            setShowExplore(!showExplore);
-          }}
-        >
-          <span>{showExplore ? "Hide Explore" : "Show Explore"}</span>
-        </button>
-      ) : (
-        <div>
-          {nextStep ? (
-            <button
-              className="flex items-center gap-2 btn btn-xs btn-link hover:text-secondary hover:scale-105 px-0"
-              onClick={() => {
-                setWorkflowStep(nextStep);
-              }}
-            >
-              <span>{getStepName(nextStep)}</span>
-              <ChevronRightIcon className="w-5 h-5" />
-            </button>
-          ) : (
-            <div className="w-6" />
-          )}
-        </div>
-      )}
+      <div className="flex justify-center">
+        <PrimaryLabel value={getStepName(currentStep)} />
+      </div>
+      <div className="flex justify-end">
+        {currentStep === WorkflowStep.CLASSIFICATION ? (
+          <button
+            className="btn btn-xs btn-primary"
+            onClick={() => {
+              setShowExplore(!showExplore);
+            }}
+          >
+            <span>{showExplore ? "Hide Explorer" : "Show Explorer"}</span>
+          </button>
+        ) : (
+          <div>
+            {nextStep ? (
+              <button
+                className="flex items-center gap-2 btn btn-xs btn-link hover:text-secondary hover:scale-105 px-0"
+                onClick={() => {
+                  setWorkflowStep(nextStep);
+                }}
+              >
+                <span>{getStepName(nextStep)}</span>
+                <ChevronRightIcon className="w-5 h-5" />
+              </button>
+            ) : (
+              <div className="w-6" />
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

@@ -1,6 +1,8 @@
 import { useClassification } from "../../contexts/ClassificationContext";
 import { WorkflowStep } from "../../enums/hts";
+import { SecondaryLabel } from "../SecondaryLabel";
 import TextInput from "../TextInput";
+import { WorkflowHeader } from "./WorkflowHeader";
 
 interface DescriptionStepProps {
   setWorkflowStep: (step: WorkflowStep) => void;
@@ -11,16 +13,26 @@ export const DescriptionStep = ({ setWorkflowStep }: DescriptionStepProps) => {
   const { productDescription } = classification;
 
   return (
-    <div className="h-full flex flex-col gap-4 justify-center">
-      <h1 className="text-2xl text-center font-bold">Enter Item Description</h1>
-      <TextInput
-        placeholder="Enter item description"
-        defaultValue={productDescription}
-        onSubmit={(value) => {
-          setProductDescription(value);
-          setWorkflowStep(WorkflowStep.ANALYSIS);
-        }}
+    <div className="h-full flex flex-col gap-8">
+      <WorkflowHeader
+        currentStep={WorkflowStep.DESCRIPTION}
+        previousStep={undefined}
+        nextStep={WorkflowStep.ANALYSIS}
+        setWorkflowStep={setWorkflowStep}
+        showExplore={false}
+        setShowExplore={() => {}}
       />
+      <div className="h-full flex flex-col gap-4">
+        <SecondaryLabel value="Enter Item Description" />
+        <TextInput
+          placeholder="Enter item description"
+          defaultValue={productDescription}
+          onSubmit={(value) => {
+            setProductDescription(value);
+            setWorkflowStep(WorkflowStep.ANALYSIS);
+          }}
+        />
+      </div>
     </div>
   );
 };

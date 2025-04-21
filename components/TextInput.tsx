@@ -12,6 +12,7 @@ interface Props {
   defaultValue?: string;
   onSubmit: (value: string) => void;
   onChange?: (value: string) => void;
+  disabled?: boolean;
 }
 
 export default function TextInput({
@@ -20,6 +21,7 @@ export default function TextInput({
   defaultValue,
   onSubmit,
   onChange,
+  disabled,
 }: Props) {
   const characterLimit = 500;
   const [localProductDescription, setLocalProductDescription] = useState(
@@ -52,19 +54,12 @@ export default function TextInput({
     adjustTextAreaHeight();
   }, []);
 
-  //   const handleKeyDown = (event: KeyboardEvent) => {
-  //     if (event.key === "Enter") {
-  //       event.preventDefault(); // Prevent the default behavior of Enter
-  //       classifyProduct();
-  //     }
-  //   };
-
   return (
     <div className="w-full flex flex-col gap-2">
       {label && <TertiaryInformation label={label} value="" />}
       <div
         className={
-          "w-full flex flex-col gap-2 bg-base-300 rounded-md px-4 py-3"
+          "w-full flex flex-col gap-2 bg-base-100 rounded-md px-4 py-3"
         }
       >
         <textarea
@@ -73,9 +68,7 @@ export default function TextInput({
           rows={1}
           value={localProductDescription}
           onChange={handleInputChange}
-          // @ts-ignore
-          //   onKeyDown={handleKeyDown}
-          className="textarea text-base  max-h-80 rounded-none resize-none bg-inherit text-black dark:text-white placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-0"
+          className="textarea text-base max-h-80 rounded-none resize-none bg-inherit text-black dark:text-white placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-0"
         ></textarea>
 
         <div className="flex justify-between items-center">
@@ -103,6 +96,7 @@ export default function TextInput({
             icon={<CheckIcon className="h-4 w-4" />}
             onClick={classifyProduct}
             disabled={
+              disabled ||
               !localProductDescription ||
               localProductDescription.length > characterLimit
             }

@@ -201,7 +201,7 @@ export const ClassificationStep = ({
     <div className="h-full flex flex-col gap-8">
       <WorkflowHeader
         currentStep={WorkflowStep.CLASSIFICATION}
-        previousStep={WorkflowStep.ANALYSIS}
+        previousStep={WorkflowStep.DETAILS}
         setWorkflowStep={setWorkflowStep}
         showExplore={showExplore}
         setShowExplore={setShowExplore}
@@ -213,7 +213,7 @@ export const ClassificationStep = ({
           <SquareIconButton
             icon={<PencilIcon className="h-4 w-4" />}
             onClick={() => {
-              setWorkflowStep(WorkflowStep.DESCRIPTION);
+              setWorkflowStep(WorkflowStep.DETAILS);
             }}
           />
         </div>
@@ -225,7 +225,7 @@ export const ClassificationStep = ({
               <SquareIconButton
                 icon={<PencilIcon className="h-4 w-4" />}
                 onClick={() => {
-                  console.log("generate analysis clicked");
+                  setWorkflowStep(WorkflowStep.DETAILS);
                 }}
               />
             )}
