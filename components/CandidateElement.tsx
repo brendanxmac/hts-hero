@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
 import { useChapters } from "../contexts/ChaptersContext";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
-import {
-  HtsElement,
-  Navigatable,
-  HtsLevelClassification,
-} from "../interfaces/hts";
+import { HtsElement, Navigatable } from "../interfaces/hts";
 import SquareIconButton from "./SqaureIconButton";
 import {
   DocumentTextIcon,
@@ -63,24 +59,16 @@ export const CandidateElement = ({ element, indentLevel }: Props) => {
 
   console.log(`${element.htsno || element.description}: ${isSelected}`);
 
-  // const isSelected = Boolean(
-  //   classification.progressionLevels[indentLevel] &&
-  //     classification.progressionLevels[indentLevel].selection &&
-  //     classification.progressionLevels[indentLevel].selection.uuid ===
-  //       element.uuid
-  // );
-
   return (
     <div
       className={classNames(
-        "flex w-full rounded-md bg-primary/30 dark:bg-primary/30 p-4 gap-4",
+        "flex w-full rounded-md bg-base-100 p-4 gap-4",
         isSelected
-          ? "bg-primary/80 dark:bg-primary/80"
-          : "hover:bg-primary/50 transition duration-100 ease-in-out hover:cursor-pointer"
+          ? "border-4 border-primary"
+          : "border border-base-content/20 hover:border-primary transition duration-100 ease-in-out hover:cursor-pointer"
       )}
       onClick={() => {
         if (isSelected) {
-          // TODO: remove all progressions levels beyond this one
           const newClassificationProgression =
             classification.progressionLevels.slice(0, indentLevel + 1);
           newClassificationProgression[indentLevel].selection = null;
@@ -89,8 +77,6 @@ export const CandidateElement = ({ element, indentLevel }: Props) => {
             ...classification,
             progressionLevels: newClassificationProgression,
           });
-
-          // updateProgressionLevel(indentLevel, { selection: null });
         } else {
           updateProgressionLevel(indentLevel, { selection: element });
 

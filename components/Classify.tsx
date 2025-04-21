@@ -1,17 +1,16 @@
 "use client";
 
-import { DescriptionStep } from "./workflow/DescriptionStep";
-import { AnalysisStep } from "./workflow/AnalysisStep";
-import { ClassificationStep } from "./workflow/ClassificationStep";
 import { WorkflowStep } from "../enums/hts";
 import { useState } from "react";
 import { useEffect } from "react";
 import { classNames } from "../utilities/style";
 import { Explore } from "./Explore";
+import { ArticleDetailsStep } from "./workflow/ArticleDetailsStep";
+import { ClassificationStep } from "./workflow/ClassificationStep";
 
 export const Classify = () => {
   const [showExplore, setShowExplore] = useState(false);
-  const [workflowStep, setWorkflowStep] = useState(WorkflowStep.DESCRIPTION);
+  const [workflowStep, setWorkflowStep] = useState(WorkflowStep.DETAILS);
 
   useEffect(() => {
     if (workflowStep === WorkflowStep.CLASSIFICATION) {
@@ -23,29 +22,20 @@ export const Classify = () => {
 
   return (
     <div className="flex h-screen w-full items-start justify-center overflow-hidden gap-2">
-      <div
-        className={classNames(
-          "h-full w-full overflow-auto p-4 mx-auto rounded-md",
-          workflowStep === WorkflowStep.DESCRIPTION
-            ? "bg-base-100 max-w-3xl"
-            : "bg-base-300 max-w-4xl"
-        )}
-      >
-        {workflowStep === WorkflowStep.DESCRIPTION && (
-          <DescriptionStep setWorkflowStep={setWorkflowStep} />
-        )}
-        {workflowStep === WorkflowStep.ANALYSIS && (
-          <AnalysisStep
+      <div className="h-full w-full overflow-auto p-4 mx-auto rounded-md bg-base-300 min-w-[50%] max-w-4xl">
+        {workflowStep === WorkflowStep.DETAILS && (
+          <ArticleDetailsStep
+            workflowStep={workflowStep}
+            setWorkflowStep={setWorkflowStep}
             showExplore={showExplore}
             setShowExplore={setShowExplore}
-            setWorkflowStep={setWorkflowStep}
           />
         )}
         {workflowStep === WorkflowStep.CLASSIFICATION && (
           <ClassificationStep
+            setWorkflowStep={setWorkflowStep}
             showExplore={showExplore}
             setShowExplore={setShowExplore}
-            setWorkflowStep={setWorkflowStep}
           />
         )}
       </div>

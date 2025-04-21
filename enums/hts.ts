@@ -1,6 +1,5 @@
 export enum WorkflowStep {
-  DESCRIPTION = "description",
-  ANALYSIS = "analysis",
+  DETAILS = "details",
   CLASSIFICATION = "classification",
 }
 
