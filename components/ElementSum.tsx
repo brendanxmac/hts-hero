@@ -10,6 +10,8 @@ import { PlusIcon } from "@heroicons/react/24/solid";
 import { TertiaryText } from "./TertiaryText";
 import { useClassification } from "../contexts/ClassificationContext";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
+import { Color } from "../enums/style";
+import { SecondaryLabel } from "./SecondaryLabel";
 
 interface Props {
   element: HtsElement;
@@ -29,30 +31,6 @@ export const ElementSum = ({ element, chapter }: Props) => {
   );
 
   const isHeading = indent === "0" && classification.progressionLevels[0];
-  // const numProgressionLevels = classification.progressionLevels.length;
-  // const matchingCurrentProgressionElement = classification.progressionLevels[
-  //   numProgressionLevels - 1
-  // ].candidates.find((candidate) => candidate.uuid === element.uuid);
-  // const isCurrentProgressionCandidate =
-  //   !isHeadingCandidate &&
-  //   classification.progressionLevels[numProgressionLevels - 1] &&
-  //   classification.progressionLevels[numProgressionLevels - 1].candidates.find(
-  //     (candidate) => candidate.uuid === element.uuid
-  //   );
-
-  // if (isCurrentProgressionCandidate) {
-  //   // get the matching current progression element that matches this one
-  //   const matchingCurrentProgressionElement =
-  //     classification.progressionLevels[numProgressionLevels - 1].candidates.find(
-  //       (candidate) => candidate.uuid === element.uuid
-  //     );
-  //   console.log("Classification Candidate:");
-  //   console.log(matchingCurrentProgressionElement);
-  // }
-
-  // This data is always coming from breadcrums, whose state is not update when the classification context changes
-  // So we need to manually check if the current element is a candidate in the current progression level
-  // If it is, we need to update the breadcrumbs to reflect that
 
   return (
     <div className="flex flex-col gap-2 w-full rounded-md bg-primary/30 dark:bg-primary/30 transition duration-100 ease-in-out cursor-pointer">
@@ -128,14 +106,14 @@ export const ElementSum = ({ element, chapter }: Props) => {
             )}
 
             <div className="w-full flex items-center justify-between gap-2">
-              <SecondaryText label={description} value="" />
+              <SecondaryLabel value={description} color={Color.WHITE} />
             </div>
 
             {suggested && (
               <div className="flex flex-col gap-2 bg-base-300 rounded-md p-2">
                 <div className="flex gap-2 text-accent">
                   <SparklesIcon className="h-4 w-4" />
-                  <TertiaryText label="Suggested" value="" />
+                  <TertiaryText value="Suggested" />
                 </div>
                 <p className="text-sm dark:text-white/90">
                   {suggestedReasoning}

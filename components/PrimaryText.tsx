@@ -14,7 +14,7 @@ export const PrimaryText = ({
 }: Props) => {
   return (
     <div className="flex items-center gap-2">
-      <h2 className={`text-${color} md:text-xl lg:text-3xl`}>{value}</h2>
+      <h2 className={`text-${color} md:text-xl`}>{value}</h2>
       {copyable && <TextCopyButton value={value} />}
     </div>
   );

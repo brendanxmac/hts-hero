@@ -8,8 +8,12 @@ import { classNames } from "../utilities/style";
 import PDF from "./PDF";
 import { NavigatableElement } from "./Elements";
 import SquareIconButton from "./SqaureIconButton";
+import { SecondaryLabel } from "./SecondaryLabel";
+import { TertiaryText } from "./TertiaryText";
 import { SecondaryText } from "./SecondaryText";
-
+import { TertiaryLabel } from "./TertiaryLabel";
+import { PrimaryLabel } from "./PrimaryLabel";
+import { Color } from "../enums/style";
 interface Props {
   section: HtsSection;
   breadcrumbs: NavigatableElement[];
@@ -47,18 +51,12 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
       <div className="flex gap-4">
         <div className="grow flex flex-col gap-3">
           <div className="flex flex-col">
-            <SecondaryText
-              label={`Section ${number.toString()}`}
-              value={``}
-              copyable={false}
-            />
-            <h4 className="text-xs font-semibold text-base-content">
-              {getChapterRange(section)}
-            </h4>
+            <SecondaryLabel value={`Section ${number.toString()}`} />
+            <TertiaryText value={getChapterRange(section)} />
           </div>
 
           <div className="flex flex-col items-start">
-            <PrimaryText value={description} copyable={false} />
+            <PrimaryLabel value={description} color={Color.WHITE} />
           </div>
         </div>
 

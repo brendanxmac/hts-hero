@@ -10,8 +10,6 @@ export const TertiaryLabel = ({
   color = Color.NEUTRAL_CONTENT,
 }: Props) => {
   return (
-    <h3 className={`text-${color} text-xs md:text-sm lg:text-base font-bold`}>
-      {value}
-    </h3>
+    <h3 className={`text-${color} text-xs md:text-sm font-bold`}>{value}</h3>
   );
 };

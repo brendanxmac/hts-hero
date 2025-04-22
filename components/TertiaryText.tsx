@@ -14,9 +14,7 @@ export const TertiaryText = ({
 }: Props) => {
   return (
     <div className="flex gap-2 items-center">
-      <h3 className={`text-${color} text-xs md:text-sm lg:text-base`}>
-        {value}
-      </h3>
+      <h3 className={`text-${color} text-xs md:text-sm`}>{value}</h3>
       {copyable && <TextCopyButton value={value} />}
     </div>
   );
