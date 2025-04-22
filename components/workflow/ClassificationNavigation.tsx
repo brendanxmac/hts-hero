@@ -1,6 +1,10 @@
 "use client";
 
-import { Bars3BottomLeftIcon, HomeIcon } from "@heroicons/react/24/solid";
+import {
+  Bars3BottomLeftIcon,
+  CheckIcon,
+  MagnifyingGlassIcon,
+} from "@heroicons/react/24/solid";
 import { WorkflowStep } from "../../enums/hts";
 import { SecondaryLabel } from "../SecondaryLabel";
 import SquareIconButton from "../SqaureIconButton";
@@ -9,8 +13,7 @@ import { useClassification } from "../../contexts/ClassificationContext";
 import { TertiaryText } from "../TertiaryText";
 import { Color } from "../../enums/style";
 import { IconTab } from "../../interfaces/tab";
-import { CheckIcon, MagnifyingGlassIcon } from "@heroicons/react/24/solid";
-import { ChartPieIcon, CheckBadgeIcon } from "@heroicons/react/16/solid";
+import { ChartPieIcon, ChevronLeftIcon } from "@heroicons/react/16/solid";
 
 export enum ClassifyTab {
   CLASSIFY = "classify",
@@ -45,14 +48,17 @@ export const ClassificationNavigation = ({
   const { productDescription, analysis } = classification;
 
   return (
-    <div className="flex flex-col gap-6 p-4">
+    <div className="flex flex-col gap-2 p-4">
       <div className="flex justify-between items-center">
-        <SquareIconButton
-          icon={<HomeIcon className="w-5 h-5" />}
+        <button
+          className="btn btn-link btn-primary px-0 gap-0 hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
           onClick={() => {
             console.log("Back clicked, need to navigate back to home view...");
           }}
-        />
+        >
+          <ChevronLeftIcon className="w-5 h-5" />
+          Home
+        </button>
 
         <div className="grow text-center">
           <SecondaryLabel value="New Classification" />
