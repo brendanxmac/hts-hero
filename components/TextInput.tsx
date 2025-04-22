@@ -59,7 +59,7 @@ export default function TextInput({
           rows={1}
           value={localProductDescription}
           onChange={handleInputChange}
-          className="textarea text-base min-h-24 max-h-80 rounded-none resize-none bg-inherit text-black dark:text-white placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-0"
+          className="textarea text-base min-h-24 max-h-96 rounded-none resize-none bg-inherit text-black dark:text-white placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-0"
         ></textarea>
 
         <div className="flex justify-between items-center">

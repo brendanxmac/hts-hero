@@ -188,7 +188,7 @@ export const ClassificationStep = ({
     //   addToProgressionLevels(HtsLevel.HEADING, []);
     // }
     if (progressionLevels.length === 0) {
-      getSections();
+      // getSections();
     }
   }, []);
 

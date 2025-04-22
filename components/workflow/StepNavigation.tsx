@@ -13,7 +13,7 @@ interface StepNavigationProps {
 
 export const StepNavigation = ({ next, previous }: StepNavigationProps) => {
   return (
-    <div className="shrink px-8 py-4 flex items-center justify-between">
+    <div className="max-w-3xl mx-auto py-4 flex items-center justify-between">
       {previous ? (
         <button
           className="btn btn-link btn-sm btn-primary px-0 gap-0 no-underline text-white hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
