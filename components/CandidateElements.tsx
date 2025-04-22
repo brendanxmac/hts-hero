@@ -8,6 +8,9 @@ import SquareIconButton from "./SqaureIconButton";
 import { SparklesIcon } from "@heroicons/react/24/solid";
 import { useClassification } from "../contexts/ClassificationContext";
 import { TertiaryText } from "./TertiaryText";
+import { SecondaryLabel } from "./SecondaryLabel";
+import { Color } from "../enums/style";
+import { SecondaryText } from "./SecondaryText";
 
 interface Props {
   indentLevel: number;
@@ -96,12 +99,14 @@ export const CandidateElements = ({ indentLevel }: Props) => {
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="h-full flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <TertiaryText value="Heading Candidates" />
+        <SecondaryText value="Candidates" color={Color.WHITE} />
         <SquareIconButton
           icon={<SparklesIcon className="h-4 w-4" />}
-          onClick={() => getBestCandidate()}
+          onClick={() => {
+            /*getBestCandidate()*/
+          }}
           disabled={loading.isLoading}
         />
       </div>
@@ -114,7 +119,7 @@ export const CandidateElements = ({ indentLevel }: Props) => {
                 <LoadingIndicator text={loading.text} />
               </div>
             )}
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 overflow-y-auto">
               {candidates.map((element) => (
                 <CandidateElement
                   key={element.uuid}

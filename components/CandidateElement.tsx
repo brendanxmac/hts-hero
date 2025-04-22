@@ -20,6 +20,8 @@ import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { SecondaryText } from "./SecondaryText";
 import { useClassification } from "../contexts/ClassificationContext";
 import { PrimaryText } from "./PrimaryText";
+import { Color } from "../enums/style";
+import { SecondaryLabel } from "./SecondaryLabel";
 
 interface Props {
   element: HtsElement;
@@ -118,10 +120,10 @@ export const CandidateElement = ({ element, indentLevel }: Props) => {
         />
       </div> */}
 
-      <div className="flex flex-col w-full gap-2">
+      <div className="flex flex-col w-full gap-4">
         <div className="flex items-start justify-between">
           <div className="w-full flex items-center justify-between gap-2">
-            <PrimaryText label={htsno ? `${htsno}` : description} value={""} />
+            <SecondaryText value={htsno ? `${htsno}` : description} />
             <div className="flex gap-2">
               <SquareIconButton
                 icon={<DocumentTextIcon className="h-4 w-4" />}
@@ -205,13 +207,13 @@ export const CandidateElement = ({ element, indentLevel }: Props) => {
           </div>
         </div>
 
-        {htsno && <SecondaryText value={description} />}
+        {htsno && <SecondaryLabel value={description} color={Color.WHITE} />}
 
         {suggested && (
           <div className="flex flex-col gap-2 bg-base-300 rounded-md p-2">
             <div className="flex gap-2 text-accent">
               <SparklesIcon className="h-4 w-4" />
-              <TertiaryText label="Suggested" value="" />
+              <TertiaryText value="Suggested" />
             </div>
             <p className="text-sm dark:text-white/90">{suggestedReasoning}</p>
           </div>

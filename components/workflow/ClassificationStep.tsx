@@ -25,6 +25,7 @@ import { Color } from "../../enums/style";
 import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
 import { ClassifyTab } from "./ClassificationNavigation";
 import { StepNavigation } from "./StepNavigation";
+import { SecondaryLabel } from "../SecondaryLabel";
 
 interface ClassificationStepProps {
   setActiveTab: (tab: ClassifyTab) => void;
@@ -186,9 +187,9 @@ export const ClassificationStep = ({
     // if (progressionLevels.length === 0) {
     //   addToProgressionLevels(HtsLevel.HEADING, []);
     // }
-    // if (progressionLevels.length === 0) {
-    //   getSections();
-    // }
+    if (progressionLevels.length === 0) {
+      getSections();
+    }
   }, []);
 
   useEffect(() => {
@@ -205,8 +206,8 @@ export const ClassificationStep = ({
 
   return (
     <div className="h-full flex flex-col pt-8">
-      <div className="grow flex flex-col gap-10 px-8 border-b-2 border-base-100">
-        <div className="w-full max-w-3xl mx-auto">
+      <div className="grow px-8 border-b-2 border-base-100">
+        <div className="w-full max-w-3xl mx-auto flex flex-col gap-6">
           <div className="flex flex-col gap-14">
             <div className="h-full flex flex-col gap-2">
               <TertiaryText value="Step 3" color={Color.NEUTRAL_CONTENT} />
@@ -216,13 +217,16 @@ export const ClassificationStep = ({
               />
             </div>
           </div>
-          <div className="flex flex-col gap-4 overflow-y-auto">
+          <div className="flex flex-col gap-8 overflow-y-auto">
             <div>
               {loading.isLoading && <LoadingIndicator text={loading.text} />}
 
               {progressionLevels.length === 0 && (
                 <div className="flex flex-col gap-4">
-                  <TertiaryText value="Heading Candidates" />
+                  <SecondaryLabel
+                    value="Heading Candidates"
+                    color={Color.WHITE}
+                  />
                   <div className="w-full flex justify-evenly gap-2 bg-base-300 rounded-md p-2">
                     <div className="flex flex-col items-center justify-center gap-3">
                       <SquareIconButton
@@ -245,13 +249,16 @@ export const ClassificationStep = ({
                 </div>
               )}
 
-              {progressionLevels.length > 0 &&
-                progressionLevels.map((_, index) => (
-                  <CandidateElements
-                    key={`classification-level-${index}`}
-                    indentLevel={index}
-                  />
-                ))}
+              {progressionLevels.length > 0 && (
+                <div className="h-full flex flex-col gap-4 overflow-y-auto">
+                  {progressionLevels.map((_, index) => (
+                    <CandidateElements
+                      key={`classification-level-${index}`}
+                      indentLevel={index}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -264,7 +271,7 @@ export const ClassificationStep = ({
               // setAnalysis(localAnalysis);
               // setWorkflowStep(WorkflowStep.CLASSIFICATION);
             },
-            // disabled: localAnalysis.length === 0,
+            disabled: progressionLevels.length === 0,
           }}
           previous={{
             label: "Back",
