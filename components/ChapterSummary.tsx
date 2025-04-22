@@ -2,6 +2,8 @@ import { ChevronRightIcon } from "@heroicons/react/16/solid";
 import { Navigatable, HtsSectionAndChapterBase } from "../interfaces/hts";
 import { SecondaryText } from "./SecondaryText";
 import { NavigatableElement } from "./Elements";
+import { SecondaryLabel } from "./SecondaryLabel";
+import { Color } from "../enums/style";
 interface Props {
   chapter: HtsSectionAndChapterBase;
   breadcrumbs: NavigatableElement[];
@@ -36,12 +38,11 @@ export const ChapterSummary = ({
         <div className="flex gap-4">
           <div className="shrink-0">
             <SecondaryText
-              label={`Chapter ${number.toString()}:`}
-              value={""}
-              copyable={false}
+              value={`Chapter ${number.toString()}:`}
+              color={Color.WHITE}
             />
           </div>
-          <SecondaryText value={description} copyable={false} />
+          <SecondaryLabel value={description} color={Color.WHITE} />
         </div>
 
         <ChevronRightIcon className="self-center shrink-0 w-5 h-5 text-primary" />

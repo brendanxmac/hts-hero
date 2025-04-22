@@ -14,9 +14,7 @@ export const SecondaryText = ({
 }: Props) => {
   return (
     <div className="flex gap-2 items-center">
-      <h3
-        className={`text-${color} text-sm md:text-base lg:text-lg whitespace-pre-wrap`}
-      >
+      <h3 className={`text-${color} text-sm md:text-base whitespace-pre-wrap`}>
         {value}
       </h3>
       {copyable && <TextCopyButton value={value} />}

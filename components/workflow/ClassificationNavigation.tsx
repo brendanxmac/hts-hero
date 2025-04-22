@@ -84,11 +84,14 @@ export const ClassificationNavigation = ({
         </div>
       </div>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col">
         <div
           className={classNames(
-            "flex flex-col rounded-md p-2",
-            workflowStep === WorkflowStep.DESCRIPTION && "bg-primary"
+            "flex flex-col rounded-md px-2",
+            productDescription && "bg-none",
+            !productDescription &&
+              workflowStep === WorkflowStep.DESCRIPTION &&
+              "bg-primary/30"
           )}
         >
           <div className="flex justify-between items-center">
@@ -103,14 +106,16 @@ export const ClassificationNavigation = ({
                 }
               />
             </div>
-            <button
-              className="btn btn-link btn-primary px-0 gap-0 hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
-              onClick={() => {
-                setWorkflowStep(WorkflowStep.DESCRIPTION);
-              }}
-            >
-              Edit
-            </button>
+            {productDescription && (
+              <button
+                className="btn btn-link btn-primary px-0 gap-0 hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
+                onClick={() => {
+                  setWorkflowStep(WorkflowStep.DESCRIPTION);
+                }}
+              >
+                Edit
+              </button>
+            )}
           </div>
           {productDescription && workflowStep !== WorkflowStep.DESCRIPTION && (
             <TertiaryText value={productDescription} color={Color.WHITE} />
@@ -118,8 +123,12 @@ export const ClassificationNavigation = ({
         </div>
         <div
           className={classNames(
-            "flex flex-col rounded-md gap-2 p-2",
-            workflowStep === WorkflowStep.ANALYSIS && "bg-primary py-4"
+            "flex flex-col rounded-md px-2 py-4",
+            analysis
+              ? "bg-none"
+              : workflowStep === WorkflowStep.ANALYSIS
+                ? "bg-primary"
+                : "bg-primary/10"
           )}
         >
           <div className="flex justify-between items-center">
@@ -151,8 +160,12 @@ export const ClassificationNavigation = ({
         </div>
         <div
           className={classNames(
-            "flex items-center rounded-md p-2",
-            workflowStep === WorkflowStep.CLASSIFICATION && "bg-primary py-4"
+            "flex items-center rounded-md px-2 py-4 mt-4",
+            classification.progressionLevels.length > 0
+              ? "bg-none"
+              : workflowStep === WorkflowStep.CLASSIFICATION
+                ? "bg-primary"
+                : "bg-primary/10"
           )}
         >
           <div className="flex items-center gap-4">

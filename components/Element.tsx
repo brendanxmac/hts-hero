@@ -21,6 +21,10 @@ import { useChapters } from "../contexts/ChaptersContext";
 import { Loader } from "../interfaces/ui";
 import { useClassification } from "../contexts/ClassificationContext";
 import { LoadingIndicator } from "./LoadingIndicator";
+import { SecondaryLabel } from "./SecondaryLabel";
+import { PrimaryLabel } from "./PrimaryLabel";
+import { Color } from "../enums/style";
+import { TertiaryLabel } from "./TertiaryLabel";
 interface Props {
   summaryOnly?: boolean;
   element: HtsElement;
@@ -196,15 +200,6 @@ export const Element = ({
     <div className="card bg-base-300 w-full flex flex-col items-start justify-between gap-6 p-4 sm:p-6">
       <div className="flex items-start justify-between gap-3 w-full">
         <div className="flex flex-col gap-5">
-          <div className="shrink-0">
-            {htsno && (
-              <PrimaryText
-                label={htsno ? `${htsno} ` : ``}
-                value={``}
-                copyable={false}
-              />
-            )}
-          </div>
           <div className="flex flex-col gap-1 mb-4">
             {getParentDescriptionsFromBreadcrumbs(element).length > 0 && (
               <TertiaryText
@@ -212,11 +207,8 @@ export const Element = ({
                 value={getParentDescriptionsFromBreadcrumbs(element)}
               />
             )}
-            {htsno ? (
-              <SecondaryText value={description} />
-            ) : (
-              <SecondaryText label={description} value="" />
-            )}
+
+            <PrimaryLabel value={description} color={Color.WHITE} />
           </div>
         </div>
         <SquareIconButton
@@ -234,7 +226,7 @@ export const Element = ({
         <>
           {(general || special || other) && (
             <div className="w-full flex flex-col gap-2">
-              <TertiaryText value="" label="Tariff Rates:" />
+              <TertiaryLabel value="Tariff Rates:" />
 
               <div className="grid grid-cols-2 gap-2">
                 {units &&
@@ -244,20 +236,20 @@ export const Element = ({
                       className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24"
                     >
                       <TertiaryText value={`Unit`} />
-                      <SecondaryText label={unit || "-"} value={""} />
+                      <SecondaryLabel value={unit || "-"} color={Color.WHITE} />
                     </div>
                   ))}
 
                 <div className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24">
                   <TertiaryText value={"General"} />
-                  <SecondaryText label={general || "-"} value={""} />
+                  <SecondaryLabel value={general || "-"} color={Color.WHITE} />
                 </div>
 
                 <div className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24">
                   <TertiaryText value={"Special"} />
-                  <SecondaryText
-                    label={getPrefixFromSpecial(special) || "-"}
-                    value={""}
+                  <SecondaryLabel
+                    value={getPrefixFromSpecial(special) || "-"}
+                    color={Color.WHITE}
                   />
 
                   {getDetailsFromSpecial(special) && (
@@ -289,7 +281,7 @@ export const Element = ({
 
                 <div className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24">
                   <TertiaryText value={"Other"} />
-                  <SecondaryText label={other || "-"} value={""} />
+                  <SecondaryLabel value={other || "-"} color={Color.WHITE} />
                 </div>
               </div>
             </div>
@@ -297,7 +289,7 @@ export const Element = ({
           {children.length > 0 && (
             <div className="w-full flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                <TertiaryText label={"Child Elements:"} value={""} />
+                <TertiaryText value={"Child Elements:"} />
                 {/* <SquareIconButton
                   icon={<SparklesIcon className="h-4 w-4" />}
                   onClick={() => getBestCandidate()}
