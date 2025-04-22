@@ -9,10 +9,9 @@ import { WorkflowStep } from "../../enums/hts";
 import { SecondaryLabel } from "../SecondaryLabel";
 import { classNames } from "../../utilities/style";
 import { useClassification } from "../../contexts/ClassificationContext";
-import { TertiaryText } from "../TertiaryText";
-import { Color } from "../../enums/style";
 import { IconTab } from "../../interfaces/tab";
 import { ChartPieIcon, ChevronLeftIcon } from "@heroicons/react/16/solid";
+import { TextNavigationStep } from "./TextNavigationStep";
 
 export enum ClassifyTab {
   CLASSIFY = "classify",
@@ -83,93 +82,45 @@ export const ClassificationNavigation = ({
         </div>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <div
-          className={classNames(
-            "flex flex-col rounded-md px-2 py-4 gap-2",
-            productDescription && "bg-none",
-            workflowStep === WorkflowStep.DESCRIPTION && "bg-primary/30"
-          )}
-        >
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <Bars3BottomLeftIcon className="w-5 h-5 text-white" />
-              <SecondaryLabel
-                value="Description"
-                color={
+      <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-2">
+          <SecondaryLabel value="Article Details" />
+          <TextNavigationStep
+            title="Description"
+            text={productDescription}
+            active={workflowStep === WorkflowStep.DESCRIPTION}
+            icon={
+              <Bars3BottomLeftIcon
+                className={classNames(
+                  "w-5 h-5",
                   workflowStep === WorkflowStep.DESCRIPTION
-                    ? Color.WHITE
-                    : Color.NEUTRAL_CONTENT
-                }
+                    ? "text-white"
+                    : "text-content-neutral"
+                )}
               />
-            </div>
-            {productDescription &&
-              workflowStep !== WorkflowStep.DESCRIPTION && (
-                <button
-                  className="btn btn-link btn-primary btn-xs px-0 gap-0 hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
-                  onClick={() => {
-                    setWorkflowStep(WorkflowStep.DESCRIPTION);
-                  }}
-                >
-                  Edit
-                </button>
-              )}
-          </div>
-          {productDescription && (
-            <TertiaryText value={productDescription} color={Color.WHITE} />
-          )}
-        </div>
-        <div
-          className={classNames(
-            "flex flex-col rounded-md px-2 py-4 gap-2",
-            analysis && "bg-none",
-            workflowStep === WorkflowStep.ANALYSIS && "bg-primary/30"
-          )}
-        >
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <ChartPieIcon className="w-5 h-5 text-white" />
-              <SecondaryLabel
-                value="Analysis"
-                color={
+            }
+            onClick={() => setWorkflowStep(WorkflowStep.DESCRIPTION)}
+          />
+          <TextNavigationStep
+            title="Analysis"
+            text={analysis}
+            active={workflowStep === WorkflowStep.ANALYSIS}
+            icon={
+              <ChartPieIcon
+                className={classNames(
+                  "w-5 h-5",
                   workflowStep === WorkflowStep.ANALYSIS
-                    ? Color.WHITE
-                    : Color.NEUTRAL_CONTENT
-                }
+                    ? "text-white"
+                    : "text-content-neutral"
+                )}
               />
-            </div>
-            {analysis && workflowStep !== WorkflowStep.ANALYSIS && (
-              <button
-                className="btn btn-link btn-primary btn-xs px-0 gap-0 hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
-                onClick={() => {
-                  setWorkflowStep(WorkflowStep.ANALYSIS);
-                }}
-              >
-                Edit
-              </button>
-            )}
-          </div>
-          {analysis && <TertiaryText value={analysis} color={Color.WHITE} />}
+            }
+            onClick={() => setWorkflowStep(WorkflowStep.ANALYSIS)}
+          />
         </div>
-        <div
-          className={classNames(
-            "flex items-center rounded-md px-2 py-4",
-            classification.progressionLevels.length > 0 && "bg-none",
-            workflowStep === WorkflowStep.CLASSIFICATION && "bg-primary/30"
-          )}
-        >
-          <div className="flex items-center gap-4">
-            <CheckIcon className="w-5 h-5 text-white" />
-            <SecondaryLabel
-              value="Classification"
-              color={
-                workflowStep === WorkflowStep.CLASSIFICATION
-                  ? Color.WHITE
-                  : Color.NEUTRAL_CONTENT
-              }
-            />
-          </div>
-        </div>
+
+        <SecondaryLabel value="Classification" />
+        {/* TODO: Add classification steps here */}
       </div>
     </div>
   );

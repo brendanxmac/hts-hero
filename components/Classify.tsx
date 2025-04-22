@@ -3,19 +3,14 @@
 import { WorkflowStep } from "../enums/hts";
 import { useState } from "react";
 import { useEffect } from "react";
-import { classNames } from "../utilities/style";
 import { Explore } from "./Explore";
-import { ArticleDetailsStep } from "./workflow/ArticleDetailsStep";
 import { ClassificationStep } from "./workflow/ClassificationStep";
 import {
   ClassificationNavigation,
   ClassifyTab,
-  tabs,
 } from "./workflow/ClassificationNavigation";
 import { DescriptionStep } from "./workflow/DescriptionStep";
 import { AnalysisStep } from "./workflow/AnalysisStep";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/16/solid";
-import { StepNavigation } from "./workflow/StepNavigation";
 
 export const Classify = () => {
   const [showExplore, setShowExplore] = useState(false);
@@ -66,38 +61,6 @@ export const Classify = () => {
             )}
           </div>
         )}
-      </div>
-    </div>
-  );
-
-  return (
-    <div className="flex h-screen w-full items-start justify-center overflow-hidden gap-2">
-      <div className="h-full w-full overflow-auto p-4 mx-auto rounded-md bg-base-300 min-w-[50%] max-w-4xl">
-        {workflowStep === WorkflowStep.DESCRIPTION ||
-          (workflowStep === WorkflowStep.ANALYSIS && (
-            <ArticleDetailsStep
-              workflowStep={workflowStep}
-              setWorkflowStep={setWorkflowStep}
-              showExplore={showExplore}
-              setShowExplore={setShowExplore}
-            />
-          ))}
-        {workflowStep === WorkflowStep.CLASSIFICATION && (
-          <ClassificationStep
-            setWorkflowStep={setWorkflowStep}
-            showExplore={showExplore}
-            setShowExplore={setShowExplore}
-          />
-        )}
-      </div>
-
-      <div
-        className={classNames(
-          "h-full px-4 bg-base-300 p-4 rounded-md overflow-auto",
-          showExplore ? "grow block" : "hidden"
-        )}
-      >
-        <Explore />
       </div>
     </div>
   );
