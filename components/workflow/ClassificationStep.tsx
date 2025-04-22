@@ -24,6 +24,7 @@ import { PrimaryLabel } from "../PrimaryLabel";
 import { Color } from "../../enums/style";
 import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
 import { ClassifyTab } from "./ClassificationNavigation";
+import { StepNavigation } from "./StepNavigation";
 
 interface ClassificationStepProps {
   setActiveTab: (tab: ClassifyTab) => void;
@@ -203,53 +204,75 @@ export const ClassificationStep = ({
   }, [chapterCandidates]);
 
   return (
-    <div className="h-full flex flex-col gap-8">
-      <div className="flex flex-col gap-14">
-        <div className="h-full flex flex-col gap-2">
-          <TertiaryText value="Step 3" color={Color.NEUTRAL_CONTENT} />
-          <PrimaryLabel
-            value="Select the most accurate heading"
-            color={Color.WHITE}
-          />
+    <div className="h-full flex flex-col pt-8">
+      <div className="grow flex flex-col gap-10 px-8 border-b-2 border-base-100">
+        <div className="w-full max-w-3xl mx-auto">
+          <div className="flex flex-col gap-14">
+            <div className="h-full flex flex-col gap-2">
+              <TertiaryText value="Step 3" color={Color.NEUTRAL_CONTENT} />
+              <PrimaryLabel
+                value="Select the most accurate heading"
+                color={Color.WHITE}
+              />
+            </div>
+          </div>
+          <div className="flex flex-col gap-4 overflow-y-auto">
+            <div>
+              {loading.isLoading && <LoadingIndicator text={loading.text} />}
+
+              {progressionLevels.length === 0 && (
+                <div className="flex flex-col gap-4">
+                  <TertiaryText value="Heading Candidates" />
+                  <div className="w-full flex justify-evenly gap-2 bg-base-300 rounded-md p-2">
+                    <div className="flex flex-col items-center justify-center gap-3">
+                      <SquareIconButton
+                        icon={<SparklesIcon className="h-4 w-4" />}
+                        onClick={() => console.log("get headings")}
+                        disabled={loading.isLoading}
+                      />
+                      <TertiaryText value="Get Suggestions" />
+                    </div>
+                    <div className="h-24 w-[1px] bg-base-content/10" />
+                    <div className="flex flex-col items-center justify-center gap-3">
+                      <SquareIconButton
+                        icon={<MagnifyingGlassIcon className="h-4 w-4" />}
+                        onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
+                        disabled={loading.isLoading}
+                      />
+                      <TertiaryText value="Search for Headings" />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {progressionLevels.length > 0 &&
+                progressionLevels.map((_, index) => (
+                  <CandidateElements
+                    key={`classification-level-${index}`}
+                    indentLevel={index}
+                  />
+                ))}
+            </div>
+          </div>
         </div>
       </div>
-      <div className="flex flex-col gap-4 overflow-y-auto">
-        <div>
-          {loading.isLoading && <LoadingIndicator text={loading.text} />}
-
-          {progressionLevels.length === 0 && (
-            <div className="flex flex-col gap-4">
-              <TertiaryText value="Heading Candidates" />
-              <div className="w-full flex justify-evenly gap-2 bg-base-300 rounded-md p-2">
-                <div className="flex flex-col items-center justify-center gap-3">
-                  <SquareIconButton
-                    icon={<SparklesIcon className="h-4 w-4" />}
-                    onClick={() => console.log("get headings")}
-                    disabled={loading.isLoading}
-                  />
-                  <TertiaryText value="Get Suggestions" />
-                </div>
-                <div className="h-24 w-[1px] bg-base-content/10" />
-                <div className="flex flex-col items-center justify-center gap-3">
-                  <SquareIconButton
-                    icon={<MagnifyingGlassIcon className="h-4 w-4" />}
-                    onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
-                    disabled={loading.isLoading}
-                  />
-                  <TertiaryText value="Search for Headings" />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {progressionLevels.length > 0 &&
-            progressionLevels.map((_, index) => (
-              <CandidateElements
-                key={`classification-level-${index}`}
-                indentLevel={index}
-              />
-            ))}
-        </div>
+      <div className="w-full max-w-3xl mx-auto">
+        <StepNavigation
+          next={{
+            label: "Continue",
+            onClick: () => {
+              // setAnalysis(localAnalysis);
+              // setWorkflowStep(WorkflowStep.CLASSIFICATION);
+            },
+            // disabled: localAnalysis.length === 0,
+          }}
+          previous={{
+            label: "Back",
+            onClick: () => {
+              setWorkflowStep(WorkflowStep.ANALYSIS);
+            },
+          }}
+        />
       </div>
     </div>
   );
