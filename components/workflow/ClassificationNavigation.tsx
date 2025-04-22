@@ -7,7 +7,6 @@ import {
 } from "@heroicons/react/24/solid";
 import { WorkflowStep } from "../../enums/hts";
 import { SecondaryLabel } from "../SecondaryLabel";
-import SquareIconButton from "../SqaureIconButton";
 import { classNames } from "../../utilities/style";
 import { useClassification } from "../../contexts/ClassificationContext";
 import { TertiaryText } from "../TertiaryText";
@@ -48,7 +47,7 @@ export const ClassificationNavigation = ({
   const { productDescription, analysis } = classification;
 
   return (
-    <div className="flex flex-col gap-2 p-4">
+    <div className="flex flex-col p-4">
       <div className="flex justify-between items-center">
         <button
           className="btn btn-link btn-primary px-0 gap-0 hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
@@ -84,14 +83,12 @@ export const ClassificationNavigation = ({
         </div>
       </div>
 
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-4">
         <div
           className={classNames(
-            "flex flex-col rounded-md px-2",
+            "flex flex-col rounded-md p-2 gap-2",
             productDescription && "bg-none",
-            !productDescription &&
-              workflowStep === WorkflowStep.DESCRIPTION &&
-              "bg-primary/30"
+            workflowStep === WorkflowStep.DESCRIPTION && "bg-primary/30"
           )}
         >
           <div className="flex justify-between items-center">
@@ -106,29 +103,27 @@ export const ClassificationNavigation = ({
                 }
               />
             </div>
-            {productDescription && (
-              <button
-                className="btn btn-link btn-primary px-0 gap-0 hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
-                onClick={() => {
-                  setWorkflowStep(WorkflowStep.DESCRIPTION);
-                }}
-              >
-                Edit
-              </button>
-            )}
+            {productDescription &&
+              workflowStep !== WorkflowStep.DESCRIPTION && (
+                <button
+                  className="btn btn-link btn-primary btn-xs px-0 gap-0 hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
+                  onClick={() => {
+                    setWorkflowStep(WorkflowStep.DESCRIPTION);
+                  }}
+                >
+                  Edit
+                </button>
+              )}
           </div>
-          {productDescription && workflowStep !== WorkflowStep.DESCRIPTION && (
+          {productDescription && (
             <TertiaryText value={productDescription} color={Color.WHITE} />
           )}
         </div>
         <div
           className={classNames(
-            "flex flex-col rounded-md px-2 py-4",
-            analysis
-              ? "bg-none"
-              : workflowStep === WorkflowStep.ANALYSIS
-                ? "bg-primary"
-                : "bg-primary/10"
+            "flex flex-col rounded-md p-2 gap-2",
+            analysis && "bg-none",
+            workflowStep === WorkflowStep.ANALYSIS && "bg-primary/30"
           )}
         >
           <div className="flex justify-between items-center">
@@ -143,9 +138,9 @@ export const ClassificationNavigation = ({
                 }
               />
             </div>
-            {analysis && (
+            {analysis && workflowStep !== WorkflowStep.ANALYSIS && (
               <button
-                className="btn btn-link btn-primary px-0 gap-0 hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
+                className="btn btn-link btn-primary btn-xs px-0 gap-0 hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
                 onClick={() => {
                   setWorkflowStep(WorkflowStep.ANALYSIS);
                 }}
@@ -154,18 +149,13 @@ export const ClassificationNavigation = ({
               </button>
             )}
           </div>
-          {analysis && workflowStep !== WorkflowStep.ANALYSIS && (
-            <TertiaryText value={analysis} color={Color.WHITE} />
-          )}
+          {analysis && <TertiaryText value={analysis} color={Color.WHITE} />}
         </div>
         <div
           className={classNames(
-            "flex items-center rounded-md px-2 py-4 mt-4",
-            classification.progressionLevels.length > 0
-              ? "bg-none"
-              : workflowStep === WorkflowStep.CLASSIFICATION
-                ? "bg-primary"
-                : "bg-primary/10"
+            "flex items-center rounded-md px-2 py-4",
+            classification.progressionLevels.length > 0 && "bg-none",
+            workflowStep === WorkflowStep.CLASSIFICATION && "bg-primary/30"
           )}
         >
           <div className="flex items-center gap-4">

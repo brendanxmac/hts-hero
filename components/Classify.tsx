@@ -14,6 +14,8 @@ import {
 } from "./workflow/ClassificationNavigation";
 import { DescriptionStep } from "./workflow/DescriptionStep";
 import { AnalysisStep } from "./workflow/AnalysisStep";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/16/solid";
+import { StepNavigation } from "./workflow/StepNavigation";
 
 export const Classify = () => {
   const [showExplore, setShowExplore] = useState(false);
@@ -47,13 +49,7 @@ export const Classify = () => {
         )}
 
         {activeTab === ClassifyTab.CLASSIFY && (
-          <div
-            className={`p-4 col-span-2 w-full max-w-3xl mx-auto ${
-              workflowStep !== WorkflowStep.CLASSIFICATION
-                ? "items-center"
-                : "h-full pt-16"
-            }`}
-          >
+          <div className={`h-full col-span-2 w-full`}>
             {workflowStep === WorkflowStep.DESCRIPTION && (
               <DescriptionStep setWorkflowStep={setWorkflowStep} />
             )}
