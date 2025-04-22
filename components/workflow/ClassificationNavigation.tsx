@@ -47,7 +47,7 @@ export const ClassificationNavigation = ({
   const { productDescription, analysis } = classification;
 
   return (
-    <div className="flex flex-col p-4">
+    <div className="flex flex-col p-4 gap-2">
       <div className="flex justify-between items-center">
         <button
           className="btn btn-link btn-primary px-0 gap-0 hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
@@ -83,10 +83,10 @@ export const ClassificationNavigation = ({
         </div>
       </div>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2">
         <div
           className={classNames(
-            "flex flex-col rounded-md p-2 gap-2",
+            "flex flex-col rounded-md px-2 py-4 gap-2",
             productDescription && "bg-none",
             workflowStep === WorkflowStep.DESCRIPTION && "bg-primary/30"
           )}
@@ -121,7 +121,7 @@ export const ClassificationNavigation = ({
         </div>
         <div
           className={classNames(
-            "flex flex-col rounded-md p-2 gap-2",
+            "flex flex-col rounded-md px-2 py-4 gap-2",
             analysis && "bg-none",
             workflowStep === WorkflowStep.ANALYSIS && "bg-primary/30"
           )}
