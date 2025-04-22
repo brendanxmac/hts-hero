@@ -3,12 +3,12 @@ import { DocumentTextIcon } from "@heroicons/react/24/solid";
 import { HtsSection } from "../interfaces/hts";
 import { useState } from "react";
 import { ChapterSummary } from "./ChapterSummary";
-import { PrimaryInformation } from "./PrimaryInformation";
+import { PrimaryText } from "./PrimaryText";
 import { classNames } from "../utilities/style";
 import PDF from "./PDF";
 import { NavigatableElement } from "./Elements";
 import SquareIconButton from "./SqaureIconButton";
-import { SecondaryInformation } from "./SecondaryInformation";
+import { SecondaryText } from "./SecondaryText";
 
 interface Props {
   section: HtsSection;
@@ -47,7 +47,7 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
       <div className="flex gap-4">
         <div className="grow flex flex-col gap-3">
           <div className="flex flex-col">
-            <SecondaryInformation
+            <SecondaryText
               label={`Section ${number.toString()}`}
               value={``}
               copyable={false}
@@ -58,7 +58,7 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
           </div>
 
           <div className="flex flex-col items-start">
-            <PrimaryInformation value={description} copyable={false} />
+            <PrimaryText value={description} copyable={false} />
           </div>
         </div>
 

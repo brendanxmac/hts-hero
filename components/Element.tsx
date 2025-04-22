@@ -5,14 +5,14 @@ import {
 } from "../interfaces/hts";
 import { NavigatableElement } from "./Elements";
 import { useEffect, useState } from "react";
-import { PrimaryInformation } from "./PrimaryInformation";
+import { PrimaryText } from "./PrimaryText";
 import {
   getBestClassificationProgression,
   getDirectChildrenElements,
 } from "../libs/hts";
 import { ElementSum } from "./ElementSum";
-import { SecondaryInformation } from "./SecondaryInformation";
-import { TertiaryInformation } from "./TertiaryInformation";
+import { SecondaryText } from "./SecondaryText";
+import { TertiaryText } from "./TertiaryText";
 import SquareIconButton from "./SqaureIconButton";
 import { DocumentTextIcon, SparklesIcon } from "@heroicons/react/24/solid";
 import PDF from "./PDF";
@@ -198,7 +198,7 @@ export const Element = ({
         <div className="flex flex-col gap-5">
           <div className="shrink-0">
             {htsno && (
-              <PrimaryInformation
+              <PrimaryText
                 label={htsno ? `${htsno} ` : ``}
                 value={``}
                 copyable={false}
@@ -207,15 +207,15 @@ export const Element = ({
           </div>
           <div className="flex flex-col gap-1 mb-4">
             {getParentDescriptionsFromBreadcrumbs(element).length > 0 && (
-              <TertiaryInformation
+              <TertiaryText
                 key={description}
                 value={getParentDescriptionsFromBreadcrumbs(element)}
               />
             )}
             {htsno ? (
-              <SecondaryInformation value={description} />
+              <SecondaryText value={description} />
             ) : (
-              <SecondaryInformation label={description} value="" />
+              <SecondaryText label={description} value="" />
             )}
           </div>
         </div>
@@ -234,7 +234,7 @@ export const Element = ({
         <>
           {(general || special || other) && (
             <div className="w-full flex flex-col gap-2">
-              <TertiaryInformation value="" label="Tariff Rates:" />
+              <TertiaryText value="" label="Tariff Rates:" />
 
               <div className="grid grid-cols-2 gap-2">
                 {units &&
@@ -243,19 +243,19 @@ export const Element = ({
                       key={`${i}-${unit}`}
                       className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24"
                     >
-                      <TertiaryInformation value={`Unit`} />
-                      <SecondaryInformation label={unit || "-"} value={""} />
+                      <TertiaryText value={`Unit`} />
+                      <SecondaryText label={unit || "-"} value={""} />
                     </div>
                   ))}
 
                 <div className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24">
-                  <TertiaryInformation value={"General"} />
-                  <SecondaryInformation label={general || "-"} value={""} />
+                  <TertiaryText value={"General"} />
+                  <SecondaryText label={general || "-"} value={""} />
                 </div>
 
                 <div className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24">
-                  <TertiaryInformation value={"Special"} />
-                  <SecondaryInformation
+                  <TertiaryText value={"Special"} />
+                  <SecondaryText
                     label={getPrefixFromSpecial(special) || "-"}
                     value={""}
                   />
@@ -288,8 +288,8 @@ export const Element = ({
                 </div>
 
                 <div className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24">
-                  <TertiaryInformation value={"Other"} />
-                  <SecondaryInformation label={other || "-"} value={""} />
+                  <TertiaryText value={"Other"} />
+                  <SecondaryText label={other || "-"} value={""} />
                 </div>
               </div>
             </div>
@@ -297,7 +297,7 @@ export const Element = ({
           {children.length > 0 && (
             <div className="w-full flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                <TertiaryInformation label={"Child Elements:"} value={""} />
+                <TertiaryText label={"Child Elements:"} value={""} />
                 {/* <SquareIconButton
                   icon={<SparklesIcon className="h-4 w-4" />}
                   onClick={() => getBestCandidate()}

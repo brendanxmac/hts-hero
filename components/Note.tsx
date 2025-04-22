@@ -1,11 +1,11 @@
 import { DocumentTextIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
-import { PrimaryInformation } from "./PrimaryInformation";
+import { PrimaryText } from "./PrimaryText";
 import { Note as NoteType } from "../public/notes/notes";
 import PDF from "./PDF";
 import SquareIconButton from "./SqaureIconButton";
-import { SecondaryInformation } from "./SecondaryInformation";
-import { TertiaryInformation } from "./TertiaryInformation";
+import { SecondaryText } from "./SecondaryText";
+import { TertiaryText } from "./TertiaryText";
 
 interface Props {
   note: NoteType;
@@ -24,16 +24,16 @@ export const Note = ({ note }: Props) => {
         }}
       >
         <div className="flex flex-col sm:ml-4 gap-3">
-          <PrimaryInformation value={title} copyable={false} />
+          <PrimaryText value={title} copyable={false} />
           <div>
             {title !== description && (
-              <SecondaryInformation value={description} copyable={false} />
+              <SecondaryText value={description} copyable={false} />
             )}
             {specialTariffTreatmentCodes &&
               specialTariffTreatmentCodes.length > 0 && (
                 <div className="flex gap-1 rounded-md min-w-24">
-                  <TertiaryInformation value={"Special Tariff Symbols:"} />
-                  <TertiaryInformation
+                  <TertiaryText value={"Special Tariff Symbols:"} />
+                  <TertiaryText
                     label={specialTariffTreatmentCodes.join(", ") || "--"}
                     value=""
                   />

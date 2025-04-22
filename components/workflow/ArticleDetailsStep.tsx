@@ -16,9 +16,6 @@ interface ArticleDetailsStepProps {
 }
 
 export const ArticleDetailsStep = ({
-  showExplore,
-  setShowExplore,
-  workflowStep,
   setWorkflowStep,
 }: ArticleDetailsStepProps) => {
   const [localProductDescription, setLocalProductDescription] = useState("");

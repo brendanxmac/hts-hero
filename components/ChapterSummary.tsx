@@ -1,6 +1,6 @@
 import { ChevronRightIcon } from "@heroicons/react/16/solid";
 import { Navigatable, HtsSectionAndChapterBase } from "../interfaces/hts";
-import { SecondaryInformation } from "./SecondaryInformation";
+import { SecondaryText } from "./SecondaryText";
 import { NavigatableElement } from "./Elements";
 interface Props {
   chapter: HtsSectionAndChapterBase;
@@ -35,13 +35,13 @@ export const ChapterSummary = ({
       <div className="flex items-start justify-between gap-3 p-4">
         <div className="flex gap-4">
           <div className="shrink-0">
-            <SecondaryInformation
+            <SecondaryText
               label={`Chapter ${number.toString()}:`}
               value={""}
               copyable={false}
             />
           </div>
-          <SecondaryInformation value={description} copyable={false} />
+          <SecondaryText value={description} copyable={false} />
         </div>
 
         <ChevronRightIcon className="self-center shrink-0 w-5 h-5 text-primary" />

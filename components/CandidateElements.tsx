@@ -7,7 +7,7 @@ import { getBestClassificationProgression } from "../libs/hts";
 import SquareIconButton from "./SqaureIconButton";
 import { SparklesIcon } from "@heroicons/react/24/solid";
 import { useClassification } from "../contexts/ClassificationContext";
-import { TertiaryInformation } from "./TertiaryInformation";
+import { TertiaryText } from "./TertiaryText";
 
 interface Props {
   indentLevel: number;
@@ -98,8 +98,7 @@ export const CandidateElements = ({ indentLevel }: Props) => {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        {/* FIXME: For the label below, if this is the first level, show "Heading Candidates", otherwise show the selected parents  */}
-        <TertiaryInformation label="Heading Candidates" value="" />
+        <TertiaryText value="Heading Candidates" />
         <SquareIconButton
           icon={<SparklesIcon className="h-4 w-4" />}
           onClick={() => getBestCandidate()}

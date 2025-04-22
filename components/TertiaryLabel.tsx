@@ -5,12 +5,12 @@ interface Props {
   color?: Color;
 }
 
-export const SecondaryLabel = ({
+export const TertiaryLabel = ({
   value,
   color = Color.NEUTRAL_CONTENT,
 }: Props) => {
   return (
-    <h3 className={`text-${color} text-sm md:text-base lg:text-lg font-bold`}>
+    <h3 className={`text-${color} text-xs md:text-sm lg:text-base font-bold`}>
       {value}
     </h3>
   );

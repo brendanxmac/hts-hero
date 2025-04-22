@@ -6,15 +6,15 @@ import {
   getDirectChildrenElements,
   getElementsAtIndentLevel,
 } from "../libs/hts";
-import { PrimaryInformation } from "./PrimaryInformation";
+import { PrimaryText } from "./PrimaryText";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { ElementSum } from "./ElementSum";
 import SquareIconButton from "./SqaureIconButton";
 import { DocumentTextIcon } from "@heroicons/react/24/solid";
 import PDF from "./PDF";
 import { useChapters } from "../contexts/ChaptersContext";
-import { TertiaryInformation } from "./TertiaryInformation";
-import { SecondaryInformation } from "./SecondaryInformation";
+import { TertiaryText } from "./TertiaryText";
+import { SecondaryText } from "./SecondaryText";
 
 interface Props {
   chapter: HtsSectionAndChapterBase;
@@ -55,7 +55,7 @@ export const Chapter = ({ chapter, breadcrumbs, setBreadcrumbs }: Props) => {
             <SecondaryInformation value={`Chapter ${number.toString()}: `} />
           </div> */}
 
-          <PrimaryInformation label={description} value="" />
+          <PrimaryText label={description} value="" />
         </div>
         <SquareIconButton
           icon={<DocumentTextIcon className="h-4 w-4" />}
@@ -64,7 +64,7 @@ export const Chapter = ({ chapter, breadcrumbs, setBreadcrumbs }: Props) => {
       </div>
 
       <div className="flex flex-col rounded-md gap-4 p-4 sm:px-6">
-        <TertiaryInformation value="" label="Headings:" />
+        <TertiaryText value="" label="Headings:" />
         {loadingChapters.includes(number) && (
           <LoadingIndicator text="Fetching Headings" />
         )}

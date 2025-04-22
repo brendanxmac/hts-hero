@@ -1,6 +1,6 @@
 import { HtsElement, TemporaryTariff } from "../interfaces/hts";
 import { stripTrailingPeriods } from "../utilities/data";
-import { SecondaryInformation } from "./SecondaryInformation";
+import { SecondaryText } from "./SecondaryText";
 import { SecondaryLabel } from "./SecondaryLabel";
 
 interface Props {
@@ -18,16 +18,14 @@ export const TariffDetails = ({ htsElement, temporaryTariffs }: Props) => {
     <div className="flex flex-col gap-3">
       <div className="flex flex-col gap-2">
         <SecondaryLabel value="Standard Rate" />
-        <SecondaryInformation value={htsElement.general} />
+        <SecondaryText value={htsElement.general} />
       </div>
       <div className="flex flex-col gap-2">
         <SecondaryLabel value={temporaryGroupLabel} />
         <div className="flex flex-col gap-4">
           {temporaryTariffs.map((tariff, i) => (
             <div key={i} className="flex flex-col gap-1">
-              <SecondaryInformation
-                value={stripTrailingPeriods(tariff.description)}
-              />
+              <SecondaryText value={stripTrailingPeriods(tariff.description)} />
               {tariff.element && (
                 <div className="pl-3 border-l-2 border-neutral-600">
                   {/* TODO: make component for this? */}
