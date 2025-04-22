@@ -1,5 +1,5 @@
 import { ChapterI } from "./ChapterOriginal";
-import { PrimaryInformation } from "./PrimaryInformation";
+import { PrimaryText } from "./PrimaryText";
 
 interface Props {
   chapter: ChapterI;
@@ -16,9 +16,7 @@ export const ChapterSummary = ({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex justify-between items-center">
-        {number && (
-          <PrimaryInformation value={number.toString()} copyable={false} />
-        )}
+        {number && <PrimaryText value={number.toString()} copyable={false} />}
         <button
           onClick={() => {
             console.log("headings", headings);

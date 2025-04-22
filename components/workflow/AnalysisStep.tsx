@@ -1,81 +1,68 @@
-import { SparklesIcon, PencilIcon } from "@heroicons/react/24/solid";
-import { ChevronDoubleRightIcon } from "@heroicons/react/16/solid";
-import { WorkflowStep } from "../../enums/hts";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/16/solid";
 import { useClassification } from "../../contexts/ClassificationContext";
-import { SecondaryLabel } from "../SecondaryLabel";
-import SquareIconButton from "../SqaureIconButton";
-import { TextDisplay } from "../TextDisplay";
+import { WorkflowStep } from "../../enums/hts";
+import { Color } from "../../enums/style";
+import { PrimaryLabel } from "../PrimaryLabel";
+import { TertiaryText } from "../TertiaryText";
 import TextInput from "../TextInput";
-import { WorkflowHeader } from "./WorkflowHeader";
+import { useEffect, useState } from "react";
 
 interface AnalysisStepProps {
-  showExplore: boolean;
-  setShowExplore: (show: boolean) => void;
   setWorkflowStep: (step: WorkflowStep) => void;
 }
 
-export const AnalysisStep = ({
-  showExplore,
-  setShowExplore,
-  setWorkflowStep,
-}: AnalysisStepProps) => {
+export const AnalysisStep = ({ setWorkflowStep }: AnalysisStepProps) => {
+  const [localAnalysis, setLocalAnalysis] = useState("");
   const { classification, setAnalysis } = useClassification();
-  const { productDescription, analysis } = classification;
+  const { analysis } = classification;
+
+  useEffect(() => {
+    setLocalAnalysis(analysis);
+  }, [analysis]);
 
   return (
-    <div className="h-full flex flex-col gap-8">
-      <WorkflowHeader
-        currentStep={WorkflowStep.ANALYSIS}
-        previousStep={WorkflowStep.DESCRIPTION}
-        nextStep={WorkflowStep.CLASSIFICATION}
-        setWorkflowStep={setWorkflowStep}
-        showExplore={showExplore}
-        setShowExplore={setShowExplore}
-      />
-
-      <div className="border-b border-base-content/10 pb-4 flex justify-between">
-        <TextDisplay title="Item Description" text={productDescription} />
-        <SquareIconButton
-          icon={<PencilIcon className="h-4 w-4" />}
-          onClick={() => {
-            setWorkflowStep(WorkflowStep.DESCRIPTION);
+    <div className="flex flex-col gap-8">
+      <div className="h-full flex flex-col gap-14">
+        <div className="h-full flex flex-col gap-2">
+          <TertiaryText value="Step 2" color={Color.NEUTRAL_CONTENT} />
+          <PrimaryLabel
+            value="Provide an analysis of the article"
+            color={Color.WHITE}
+          />
+        </div>
+        <TextInput
+          placeholder="Enter item description"
+          defaultValue={analysis}
+          onSubmit={(value) => {
+            setAnalysis(value);
+            setWorkflowStep(WorkflowStep.ANALYSIS);
+          }}
+          onChange={(value) => {
+            setLocalAnalysis(value);
           }}
         />
       </div>
-
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <SecondaryLabel value="Item Analysis" />
-          <div className="flex gap-2 items-center">
-            <SquareIconButton
-              icon={<SparklesIcon className="h-4 w-4" />}
-              onClick={() => {
-                console.log("generate analysis clicked");
-              }}
-            />
-            {!analysis && (
-              <button
-                className="self-end btn btn-xs btn-primary gap-0"
-                onClick={() => {
-                  setWorkflowStep(WorkflowStep.CLASSIFICATION);
-                }}
-              >
-                <span>skip</span>
-                <ChevronDoubleRightIcon className="h-5 w-5" />
-              </button>
-            )}
-          </div>
-        </div>
-        <TextInput
-          placeholder="Enter item analysis"
-          onChange={(value) => {
-            setAnalysis(value);
+      <div className="flex justify-between">
+        <button
+          className="btn btn-link btn-primary px-0 gap-0 no-underline text-white hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
+          onClick={() => {
+            setWorkflowStep(WorkflowStep.DESCRIPTION);
           }}
-          onSubmit={(value) => {
-            setAnalysis(value);
+        >
+          <ChevronLeftIcon className="w-5 h-5" />
+          Back
+        </button>
+        <button
+          className="btn btn-primary text-white gap-0"
+          disabled={localAnalysis.length === 0}
+          onClick={() => {
+            setAnalysis(localAnalysis);
             setWorkflowStep(WorkflowStep.CLASSIFICATION);
           }}
-        />
+        >
+          Continue
+          <ChevronRightIcon className="w-5 h-5" />
+        </button>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { HtsElement } from "../interfaces/hts";
-import { PrimaryInformation } from "./PrimaryInformation";
+import { PrimaryText } from "./PrimaryText";
 
 interface Props {
   number?: string;
@@ -19,7 +19,7 @@ export const ElementSummary = ({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex justify-between items-center">
-        {number && <PrimaryInformation value={number} copyable={false} />}
+        {number && <PrimaryText value={number} copyable={false} />}
         <button
           onClick={() => setShowDetails(!showDetails)}
           type="button"

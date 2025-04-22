@@ -15,11 +15,11 @@ import { PDFProps } from "./Element";
 import PDF from "./PDF";
 import { classNames } from "../utilities/style";
 import { getDirectChildrenElements, getHtsLevel } from "../libs/hts";
-import { TertiaryInformation } from "./TertiaryInformation";
+import { TertiaryText } from "./TertiaryText";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
-import { SecondaryInformation } from "./SecondaryInformation";
+import { SecondaryText } from "./SecondaryText";
 import { useClassification } from "../contexts/ClassificationContext";
-import { PrimaryInformation } from "./PrimaryInformation";
+import { PrimaryText } from "./PrimaryText";
 
 interface Props {
   element: HtsElement;
@@ -121,10 +121,7 @@ export const CandidateElement = ({ element, indentLevel }: Props) => {
       <div className="flex flex-col w-full gap-2">
         <div className="flex items-start justify-between">
           <div className="w-full flex items-center justify-between gap-2">
-            <PrimaryInformation
-              label={htsno ? `${htsno}` : description}
-              value={""}
-            />
+            <PrimaryText label={htsno ? `${htsno}` : description} value={""} />
             <div className="flex gap-2">
               <SquareIconButton
                 icon={<DocumentTextIcon className="h-4 w-4" />}
@@ -208,13 +205,13 @@ export const CandidateElement = ({ element, indentLevel }: Props) => {
           </div>
         </div>
 
-        {htsno && <SecondaryInformation value={description} />}
+        {htsno && <SecondaryText value={description} />}
 
         {suggested && (
           <div className="flex flex-col gap-2 bg-base-300 rounded-md p-2">
             <div className="flex gap-2 text-accent">
               <SparklesIcon className="h-4 w-4" />
-              <TertiaryInformation label="Suggested" value="" />
+              <TertiaryText label="Suggested" value="" />
             </div>
             <p className="text-sm dark:text-white/90">{suggestedReasoning}</p>
           </div>

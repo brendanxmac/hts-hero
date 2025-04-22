@@ -2,9 +2,7 @@
 
 import { useRef, ChangeEvent, useState, useEffect } from "react";
 import { classNames } from "../utilities/style";
-import { CheckIcon } from "@heroicons/react/24/solid";
-import { TertiaryInformation } from "./TertiaryInformation";
-import SquareIconButton from "./SqaureIconButton";
+import { TertiaryText } from "./TertiaryText";
 
 interface Props {
   label?: string;
@@ -19,7 +17,6 @@ export default function TextInput({
   label,
   placeholder,
   defaultValue,
-  onSubmit,
   onChange,
   disabled,
 }: Props) {
@@ -44,19 +41,13 @@ export default function TextInput({
     adjustTextAreaHeight();
   };
 
-  const classifyProduct = (): void => {
-    if (localProductDescription.trim()) {
-      onSubmit(localProductDescription.trim());
-    }
-  };
-
   useEffect(() => {
     adjustTextAreaHeight();
   }, []);
 
   return (
-    <div className="w-full flex flex-col gap-2">
-      {label && <TertiaryInformation label={label} value="" />}
+    <div className="w-full flex flex-col gap-2 border-2 border-base-content/50 rounded-md">
+      {label && <TertiaryText value={label} />}
       <div
         className={
           "w-full flex flex-col gap-2 bg-base-100 rounded-md px-4 py-3"
@@ -68,7 +59,7 @@ export default function TextInput({
           rows={1}
           value={localProductDescription}
           onChange={handleInputChange}
-          className="textarea text-base max-h-80 rounded-none resize-none bg-inherit text-black dark:text-white placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-0"
+          className="textarea text-base min-h-24 max-h-80 rounded-none resize-none bg-inherit text-black dark:text-white placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-0"
         ></textarea>
 
         <div className="flex justify-between items-center">
@@ -91,16 +82,6 @@ export default function TextInput({
             </span>
             {` / ${characterLimit}`}
           </p>
-
-          <SquareIconButton
-            icon={<CheckIcon className="h-4 w-4" />}
-            onClick={classifyProduct}
-            disabled={
-              disabled ||
-              !localProductDescription ||
-              localProductDescription.length > characterLimit
-            }
-          />
         </div>
       </div>
     </div>

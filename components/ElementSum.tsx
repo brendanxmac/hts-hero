@@ -4,10 +4,10 @@ import {
   XMarkIcon,
 } from "@heroicons/react/16/solid";
 import { HtsElement } from "../interfaces/hts";
-import { SecondaryInformation } from "./SecondaryInformation";
+import { SecondaryText } from "./SecondaryText";
 import SquareIconButton from "./SqaureIconButton";
 import { PlusIcon } from "@heroicons/react/24/solid";
-import { TertiaryInformation } from "./TertiaryInformation";
+import { TertiaryText } from "./TertiaryText";
 import { useClassification } from "../contexts/ClassificationContext";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 
@@ -123,19 +123,19 @@ export const ElementSum = ({ element, chapter }: Props) => {
           <div className="w-full flex flex-col items-start justify-between gap-1 px-4 py-2">
             {htsno && (
               <div className="min-w-20 md:min-w-32">
-                <TertiaryInformation value={htsno} />
+                <TertiaryText value={htsno} />
               </div>
             )}
 
             <div className="w-full flex items-center justify-between gap-2">
-              <SecondaryInformation label={description} value="" />
+              <SecondaryText label={description} value="" />
             </div>
 
             {suggested && (
               <div className="flex flex-col gap-2 bg-base-300 rounded-md p-2">
                 <div className="flex gap-2 text-accent">
                   <SparklesIcon className="h-4 w-4" />
-                  <TertiaryInformation label="Suggested" value="" />
+                  <TertiaryText label="Suggested" value="" />
                 </div>
                 <p className="text-sm dark:text-white/90">
                   {suggestedReasoning}
