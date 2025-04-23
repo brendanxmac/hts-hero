@@ -104,7 +104,10 @@ export const ClassificationNavigation = ({
                 )}
               />
             }
-            onClick={() => setWorkflowStep(WorkflowStep.DESCRIPTION)}
+            button={{
+              label: "Edit",
+              onClick: () => setWorkflowStep(WorkflowStep.DESCRIPTION),
+            }}
           />
           <TextNavigationStep
             title="Analysis"
@@ -120,7 +123,10 @@ export const ClassificationNavigation = ({
                 )}
               />
             }
-            onClick={() => setWorkflowStep(WorkflowStep.ANALYSIS)}
+            button={{
+              label: "Edit",
+              onClick: () => setWorkflowStep(WorkflowStep.ANALYSIS),
+            }}
           />
         </div>
 
