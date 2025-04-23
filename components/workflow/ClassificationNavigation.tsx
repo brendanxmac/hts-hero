@@ -12,6 +12,7 @@ import { useClassification } from "../../contexts/ClassificationContext";
 import { IconTab } from "../../interfaces/tab";
 import { ChartPieIcon, ChevronLeftIcon } from "@heroicons/react/16/solid";
 import { TextNavigationStep } from "./TextNavigationStep";
+import { ClassificationLevelNavigationStep } from "./ElementsNavigationStep";
 
 export enum ClassifyTab {
   CLASSIFY = "classify",
@@ -34,6 +35,8 @@ interface ClassificationNavigationProps {
   setActiveTab: (tab: ClassifyTab) => void;
   workflowStep: WorkflowStep;
   setWorkflowStep: (step: WorkflowStep) => void;
+  activeClassificationLevel: number | undefined;
+  setActiveClassificationLevel: (level: number | undefined) => void;
 }
 
 export const ClassificationNavigation = ({
@@ -41,9 +44,11 @@ export const ClassificationNavigation = ({
   setActiveTab,
   workflowStep,
   setWorkflowStep,
+  activeClassificationLevel,
+  setActiveClassificationLevel,
 }: ClassificationNavigationProps) => {
   const { classification } = useClassification();
-  const { productDescription, analysis } = classification;
+  const { productDescription, analysis, progressionLevels } = classification;
 
   return (
     <div className="flex flex-col p-4 gap-2">
@@ -119,8 +124,23 @@ export const ClassificationNavigation = ({
           />
         </div>
 
-        <SecondaryLabel value="Classification" />
-        {/* TODO: Add classification steps here */}
+        <div className="flex flex-col gap-4">
+          <SecondaryLabel value="Classification Progress" />
+          {progressionLevels.map((level, index) => (
+            <ClassificationLevelNavigationStep
+              key={index}
+              classificationLevel={level}
+              active={
+                workflowStep === WorkflowStep.CLASSIFICATION &&
+                activeClassificationLevel === index
+              }
+              onClick={() => {
+                setWorkflowStep(WorkflowStep.CLASSIFICATION);
+                setActiveClassificationLevel(index);
+              }}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

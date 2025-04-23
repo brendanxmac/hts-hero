@@ -59,14 +59,14 @@ export const Explore = () => {
   }, [activeTab]);
 
   return (
-    <div className="h-full flex flex-col gap-4">
+    <div className="p-6 h-full flex flex-col gap-4">
       <SectionHeader
         title="Explore"
         tabs={tabs}
         activeTab={activeTab}
         onTabChange={setActiveTab}
       />
-      <div className="flex flex-col gap-4 h-full overflow-y-auto">
+      <div className="h-full grow flex flex-col gap-4 overflow-y-auto">
         {loading && <LoadingIndicator text="Loading Sections" />}
         {!loading && activeTab === Tabs.ELEMENTS && (
           <Elements sections={sections} />

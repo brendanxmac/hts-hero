@@ -278,7 +278,7 @@ async function classifyProduct(
     classificationProgression = [
       ...classificationProgression,
       {
-        level: getHtsLevel(bestElement.htsno),
+        levelName: getHtsLevel(bestElement.htsno),
         candidates: headingCandidates,
         selection: bestElement,
         reasoning,
@@ -311,7 +311,7 @@ async function classifyProduct(
       classificationProgression = [
         ...classificationProgression,
         {
-          level: getHtsLevel(bestElement.htsno),
+          levelName: getHtsLevel(bestElement.htsno),
           candidates: headingCandidates,
           selection: bestElement,
           reasoning,

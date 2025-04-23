@@ -6,7 +6,7 @@ import { Cell } from "./Cell";
 import { getCodeFromHtsPrimitive } from "../libs/hts";
 
 export const Decision = (decision: HtsLevelClassification) => {
-  const { level, selection } = decision;
+  const { levelName: level, selection } = decision;
   const [showDetails, setShowDetails] = useState(false);
 
   return (

@@ -1,13 +1,6 @@
-import {
-  ArrowRightIcon,
-  PencilIcon,
-  SparklesIcon,
-} from "@heroicons/react/24/solid";
+import { SparklesIcon } from "@heroicons/react/24/solid";
 import { useClassification } from "../../contexts/ClassificationContext";
 import { HtsLevel, WorkflowStep } from "../../enums/hts";
-import SquareIconButton from "../SqaureIconButton";
-import { TextDisplay } from "../TextDisplay";
-import { WorkflowHeader } from "./WorkflowHeader";
 import { LoadingIndicator } from "../LoadingIndicator";
 import { useEffect, useState } from "react";
 import { Loader } from "../../interfaces/ui";
@@ -25,13 +18,15 @@ import { Color } from "../../enums/style";
 import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
 import { ClassifyTab } from "./ClassificationNavigation";
 import { StepNavigation } from "./StepNavigation";
-import { SecondaryLabel } from "../SecondaryLabel";
+import SquareIconButton from "../SqaureIconButton";
 
 interface ClassificationStepProps {
   setActiveTab: (tab: ClassifyTab) => void;
   setWorkflowStep: (step: WorkflowStep) => void;
   showExplore: boolean;
   setShowExplore: (show: boolean) => void;
+  activeClassificationLevel: number | undefined;
+  setActiveClassificationLevel: (level: number | undefined) => void;
 }
 
 export const ClassificationStep = ({
@@ -39,13 +34,16 @@ export const ClassificationStep = ({
   setWorkflowStep,
   showExplore,
   setShowExplore,
+  activeClassificationLevel,
+  setActiveClassificationLevel,
 }: ClassificationStepProps) => {
   const [loading, setLoading] = useState<Loader>({
     isLoading: false,
     text: "",
   });
   const { fetchChapter, getChapterElements } = useChapters();
-  const { classification, addToProgressionLevels } = useClassification();
+  const { classification, addToProgressionLevels, updateProgressionLevel } =
+    useClassification();
   const { productDescription, analysis, progressionLevels } = classification;
   const [htsSections, setHtsSections] = useState<HtsSection[]>([]);
   const [sectionCandidates, setSectionCandidates] = useState<
@@ -54,6 +52,10 @@ export const ClassificationStep = ({
   const [chapterCandidates, setChapterCandidates] = useState<
     CandidateSelection[]
   >([]);
+
+  useEffect(() => {
+    console.log("progressionLevels", progressionLevels);
+  }, [progressionLevels]);
 
   // Get 2-3 Best Sections
   const getSections = async () => {
@@ -178,79 +180,78 @@ export const ClassificationStep = ({
       })
     );
 
-    addToProgressionLevels(HtsLevel.HEADING, candidatesForHeading);
+    updateProgressionLevel(0, {
+      candidates: candidatesForHeading,
+    });
+
     // DO not move this down, it will break the classification as the timing is critical
     setLoading({ isLoading: false, text: "" });
   };
 
   useEffect(() => {
-    // if (progressionLevels.length === 0) {
-    //   addToProgressionLevels(HtsLevel.HEADING, []);
-    // }
     if (progressionLevels.length === 0) {
-      // getSections();
+      setActiveClassificationLevel(0);
+      addToProgressionLevels(HtsLevel.HEADING, []);
+      getSections();
     }
   }, []);
 
   useEffect(() => {
-    if (sectionCandidates && sectionCandidates.length > 0) {
+    if (
+      sectionCandidates &&
+      sectionCandidates.length > 0 &&
+      chapterCandidates.length === 0
+    ) {
       getChapters();
     }
   }, [sectionCandidates]);
 
   useEffect(() => {
-    if (chapterCandidates && chapterCandidates.length > 0) {
+    if (
+      chapterCandidates &&
+      chapterCandidates.length > 0 &&
+      progressionLevels[0] &&
+      progressionLevels[0].candidates.length === 0
+    ) {
       getHeadings();
     }
   }, [chapterCandidates]);
 
   return (
-    <div className="h-full flex flex-col pt-8">
-      <div className="grow px-8 border-b-2 border-base-100">
-        <div className="w-full max-w-3xl mx-auto flex flex-col gap-6">
-          <div className="flex flex-col gap-14">
-            <div className="h-full flex flex-col gap-2">
+    <div className="h-full flex flex-col pt-8 overflow-hidden">
+      <div className="h-full grow px-8 border-b-2 border-base-100">
+        <div className="h-full w-full max-w-3xl mx-auto flex flex-col gap-4">
+          <div className="shrink flex flex-col gap-14">
+            <div className="flex flex-col gap-4">
               <TertiaryText value="Step 3" color={Color.NEUTRAL_CONTENT} />
-              <PrimaryLabel
-                value="Select the most accurate heading"
-                color={Color.WHITE}
-              />
-            </div>
-          </div>
-          <div className="flex flex-col gap-8 overflow-y-auto">
-            <div>
-              {loading.isLoading && <LoadingIndicator text={loading.text} />}
-
-              {progressionLevels.length === 0 && (
-                <div className="flex flex-col gap-4">
-                  <SecondaryLabel
-                    value="Heading Candidates"
+              <div className="w-full flex justify-between items-center">
+                <div>
+                  <PrimaryLabel
+                    value="Select the most accurate heading"
                     color={Color.WHITE}
                   />
-                  <div className="w-full flex justify-evenly gap-2 bg-base-300 rounded-md p-2">
-                    <div className="flex flex-col items-center justify-center gap-3">
-                      <SquareIconButton
-                        icon={<SparklesIcon className="h-4 w-4" />}
-                        onClick={() => console.log("get headings")}
-                        disabled={loading.isLoading}
-                      />
-                      <TertiaryText value="Get Suggestions" />
-                    </div>
-                    <div className="h-24 w-[1px] bg-base-content/10" />
-                    <div className="flex flex-col items-center justify-center gap-3">
-                      <SquareIconButton
-                        icon={<MagnifyingGlassIcon className="h-4 w-4" />}
-                        onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
-                        disabled={loading.isLoading}
-                      />
-                      <TertiaryText value="Search for Headings" />
-                    </div>
-                  </div>
+                  <TertiaryText
+                    value="You can seach for and add candidates to the list using our explorer 👉"
+                    color={Color.NEUTRAL_CONTENT}
+                  />
                 </div>
-              )}
+                <button
+                  className="btn btn-primary btn-sm flex items-center gap-1"
+                  onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
+                  disabled={loading.isLoading}
+                >
+                  <MagnifyingGlassIcon className="h-5 w-5" />
+                  Search
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="grow h-full flex flex-col gap-8 overflow-y-auto">
+            {loading.isLoading && <LoadingIndicator text={loading.text} />}
 
-              {progressionLevels.length > 0 && (
-                <div className="h-full flex flex-col gap-4 overflow-y-auto">
+            {progressionLevels[0] &&
+              progressionLevels[0].candidates.length > 0 && (
+                <div className="h-full flex flex-col gap-4">
                   {progressionLevels.map((_, index) => (
                     <CandidateElements
                       key={`classification-level-${index}`}
@@ -259,11 +260,10 @@ export const ClassificationStep = ({
                   ))}
                 </div>
               )}
-            </div>
           </div>
         </div>
       </div>
-      <div className="w-full max-w-3xl mx-auto">
+      <div className="shrink w-full max-w-3xl mx-auto">
         <StepNavigation
           next={{
             label: "Continue",

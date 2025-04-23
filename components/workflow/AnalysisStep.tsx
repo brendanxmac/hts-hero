@@ -1,4 +1,3 @@
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/16/solid";
 import { useClassification } from "../../contexts/ClassificationContext";
 import { WorkflowStep } from "../../enums/hts";
 import { Color } from "../../enums/style";
@@ -10,9 +9,13 @@ import { StepNavigation } from "./StepNavigation";
 
 interface AnalysisStepProps {
   setWorkflowStep: (step: WorkflowStep) => void;
+  setActiveClassificationLevel: (level: number | undefined) => void;
 }
 
-export const AnalysisStep = ({ setWorkflowStep }: AnalysisStepProps) => {
+export const AnalysisStep = ({
+  setWorkflowStep,
+  setActiveClassificationLevel,
+}: AnalysisStepProps) => {
   const [localAnalysis, setLocalAnalysis] = useState("");
   const { classification, setAnalysis } = useClassification();
   const { analysis } = classification;
