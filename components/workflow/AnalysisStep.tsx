@@ -26,6 +26,7 @@ export const AnalysisStep = ({
 
   return (
     <div className="h-full flex flex-col">
+      {/* Content */}
       <div className="grow w-full max-w-3xl mx-auto flex flex-col px-8 justify-center gap-8">
         <div className="flex flex-col gap-2">
           <TertiaryText value="Step 2" color={Color.NEUTRAL_CONTENT} />
@@ -46,7 +47,9 @@ export const AnalysisStep = ({
           }}
         />
       </div>
+      {/* Horizontal line */}
       <div className="w-full border-t-2 border-base-100" />
+      {/* Navigation */}
       <div className="w-full max-w-3xl mx-auto px-8">
         <StepNavigation
           next={{
