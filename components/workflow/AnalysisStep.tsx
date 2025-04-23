@@ -26,29 +26,28 @@ export const AnalysisStep = ({
 
   return (
     <div className="h-full flex flex-col">
-      <div className="grow flex flex-col gap-10 px-8 justify-center border-b-2 border-base-100">
-        <div className="w-full max-w-3xl mx-auto">
-          <div className="flex flex-col gap-2">
-            <TertiaryText value="Step 2" color={Color.NEUTRAL_CONTENT} />
-            <PrimaryLabel
-              value="Provide an analysis of the article"
-              color={Color.WHITE}
-            />
-          </div>
-          <TextInput
-            placeholder="Enter item description"
-            defaultValue={analysis}
-            onSubmit={(value) => {
-              setAnalysis(value);
-              setWorkflowStep(WorkflowStep.ANALYSIS);
-            }}
-            onChange={(value) => {
-              setLocalAnalysis(value);
-            }}
+      <div className="grow w-full max-w-3xl mx-auto flex flex-col px-8 justify-center gap-8">
+        <div className="flex flex-col gap-2">
+          <TertiaryText value="Step 2" color={Color.NEUTRAL_CONTENT} />
+          <PrimaryLabel
+            value="Provide an analysis of the article"
+            color={Color.WHITE}
           />
         </div>
+        <TextInput
+          placeholder="Enter item description"
+          defaultValue={analysis}
+          onSubmit={(value) => {
+            setAnalysis(value);
+            setWorkflowStep(WorkflowStep.ANALYSIS);
+          }}
+          onChange={(value) => {
+            setLocalAnalysis(value);
+          }}
+        />
       </div>
-      <div className="w-full px-8">
+      <div className="w-full border-t-2 border-base-100" />
+      <div className="w-full max-w-3xl mx-auto px-8">
         <StepNavigation
           next={{
             label: "Continue",

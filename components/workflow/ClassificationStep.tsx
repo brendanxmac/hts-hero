@@ -219,51 +219,53 @@ export const ClassificationStep = ({
 
   return (
     <div className="h-full flex flex-col pt-8 overflow-hidden">
-      <div className="h-full grow px-8 border-b-2 border-base-100">
-        <div className="h-full w-full max-w-3xl mx-auto flex flex-col gap-4">
-          <div className="shrink flex flex-col gap-14">
-            <div className="flex flex-col gap-4">
-              <TertiaryText value="Step 3" color={Color.NEUTRAL_CONTENT} />
-              <div className="w-full flex justify-between items-center">
-                <div>
-                  <PrimaryLabel
-                    value="Select the most accurate heading"
-                    color={Color.WHITE}
-                  />
-                  <TertiaryText
-                    value="You can seach for and add candidates to the list using our explorer 👉"
-                    color={Color.NEUTRAL_CONTENT}
-                  />
-                </div>
-                <button
-                  className="btn btn-primary btn-sm flex items-center gap-1"
-                  onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
-                  disabled={loading.isLoading}
-                >
-                  <MagnifyingGlassIcon className="h-5 w-5" />
-                  Search
-                </button>
+      {/* Content */}
+      <div className="grow px-8 h-full w-full max-w-3xl mx-auto flex flex-col gap-4">
+        <div className="shrink flex flex-col gap-14">
+          <div className="flex flex-col gap-4">
+            <TertiaryText value="Step 3" color={Color.NEUTRAL_CONTENT} />
+            <div className="w-full flex justify-between items-center">
+              <div>
+                <PrimaryLabel
+                  value="Select the most accurate heading"
+                  color={Color.WHITE}
+                />
+                <TertiaryText
+                  value="You can seach for and add candidates to the list using our explorer 👉"
+                  color={Color.NEUTRAL_CONTENT}
+                />
               </div>
+              <button
+                className="btn btn-primary btn-sm flex items-center gap-1"
+                onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
+                disabled={loading.isLoading}
+              >
+                <MagnifyingGlassIcon className="h-5 w-5" />
+                Search
+              </button>
             </div>
           </div>
-          <div className="grow h-full flex flex-col gap-8 overflow-y-auto">
-            {loading.isLoading && <LoadingIndicator text={loading.text} />}
+        </div>
+        <div className="grow h-full flex flex-col gap-8 overflow-y-auto">
+          {loading.isLoading && <LoadingIndicator text={loading.text} />}
 
-            {progressionLevels[0] &&
-              progressionLevels[0].candidates.length > 0 && (
-                <div className="h-full flex flex-col gap-4">
-                  {progressionLevels.map((_, index) => (
-                    <CandidateElements
-                      key={`classification-level-${index}`}
-                      indentLevel={index}
-                    />
-                  ))}
-                </div>
-              )}
-          </div>
+          {progressionLevels[0] &&
+            progressionLevels[0].candidates.length > 0 && (
+              <div className="h-full flex flex-col gap-4">
+                {progressionLevels.map((_, index) => (
+                  <CandidateElements
+                    key={`classification-level-${index}`}
+                    indentLevel={index}
+                  />
+                ))}
+              </div>
+            )}
         </div>
       </div>
-      <div className="shrink w-full max-w-3xl mx-auto">
+      {/* Horizontal line */}
+      <div className="w-full border-t-2 border-base-100" />
+      {/* Navigation */}
+      <div className="w-full max-w-3xl mx-auto px-8">
         <StepNavigation
           next={{
             label: "Continue",
