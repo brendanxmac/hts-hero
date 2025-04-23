@@ -368,7 +368,7 @@ export const getBestIndentLevelMatch = async (
     const htsLayerSelection: HtsLevelClassification = {
       selection: bestMatchElement,
       reasoning: bestMatchJson.logic,
-      level: getHtsLevel(bestMatchElement.htsno),
+      levelName: getHtsLevel(bestMatchElement.htsno),
       candidates: elementsAtIndent,
     };
 

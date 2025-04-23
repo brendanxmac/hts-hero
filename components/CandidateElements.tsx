@@ -1,16 +1,16 @@
-import { HtsLevelClassification, Classification } from "../interfaces/hts";
+import {
+  HtsLevelClassification,
+  Classification,
+  HtsElement,
+} from "../interfaces/hts";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { Loader } from "../interfaces/ui";
 import { CandidateElement } from "./CandidateElement";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getBestClassificationProgression } from "../libs/hts";
-import SquareIconButton from "./SqaureIconButton";
-import { SparklesIcon } from "@heroicons/react/24/solid";
 import { useClassification } from "../contexts/ClassificationContext";
-import { TertiaryText } from "./TertiaryText";
 import { SecondaryLabel } from "./SecondaryLabel";
 import { Color } from "../enums/style";
-import { SecondaryText } from "./SecondaryText";
 
 interface Props {
   indentLevel: number;
@@ -42,8 +42,17 @@ export const CandidateElements = ({ indentLevel }: Props) => {
   const { setClassification, classification } = useClassification();
   const { productDescription, progressionLevels } = classification;
   const { candidates } = progressionLevels[indentLevel];
+  const [recommended, setRecommended] = useState<HtsElement | undefined>(
+    undefined
+  );
 
-  console.log("candidates", candidates);
+  useEffect(() => {
+    console.log("lol");
+    if (candidates.length > 0 && !recommended) {
+      console.log("Getting best candidate automatically");
+      getBestCandidate();
+    }
+  }, []);
 
   const getBestCandidate = async () => {
     setLoading({
@@ -96,19 +105,21 @@ export const CandidateElements = ({ indentLevel }: Props) => {
       isLoading: false,
       text: "",
     });
+
+    setRecommended(bestCandidate);
   };
 
   return (
     <div className="h-full flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <SecondaryText value="Candidates" color={Color.WHITE} />
-        <SquareIconButton
+        <SecondaryLabel value="Candidates:" color={Color.WHITE} />
+        {/* <SquareIconButton
           icon={<SparklesIcon className="h-4 w-4" />}
           onClick={() => {
-            /*getBestCandidate()*/
+            getBestCandidate();
           }}
           disabled={loading.isLoading}
-        />
+        /> */}
       </div>
 
       {candidates.length > 0 && (
@@ -134,66 +145,3 @@ export const CandidateElements = ({ indentLevel }: Props) => {
     </div>
   );
 };
-
-// // Get up to 2 Best Headings Per Chapter
-// const getHeadings = async () => {
-//   setLoading({ isLoading: true, text: "Finding Best Headings" });
-//   const candidatesForHeading: HtsElement[] = [];
-//   await Promise.all(
-//     chapters.map(async (chapter) => {
-//       let chapterData = getChapterElements(chapter.number);
-//       if (!chapterData) {
-//         await fetchChapter(chapter.number);
-//         chapterData = getChapterElements(chapter.number);
-//       }
-
-//       const chapterDataWithParentIndex = setIndexInArray(chapterData);
-//       const elementsAtLevel = elementsAtClassificationLevel(
-//         chapterDataWithParentIndex,
-//         0
-//       );
-//       const bestCandidateHeadings = await getBestDescriptionCandidates(
-//         elementsAtLevel,
-//         productDescription,
-//         false,
-//         0,
-//         2,
-//         elementsAtLevel.map((e) => e.description)
-//       );
-
-//       // Handle Empty Case
-//       if (bestCandidateHeadings.bestCandidates.length === 0) {
-//         return;
-//       }
-
-//       // Handle Negative Index Case (sometimes chatGPT will do this)
-//       if (bestCandidateHeadings.bestCandidates[0].index < 0) {
-//         return;
-//       }
-
-//       const candidates = bestCandidateHeadings.bestCandidates
-//         .map((candidate) => {
-//           return elementsAtLevel[candidate.index];
-//         })
-//         .map((candidate) => ({
-//           ...candidate,
-//         }));
-
-//       candidatesForHeading.push(...candidates);
-//     })
-//   );
-
-//   setClassification((prev: Classification) => {
-//     const newProgressionLevels = [...prev.progressionLevels];
-//     newProgressionLevels[indentLevel] = {
-//       ...newProgressionLevels[indentLevel],
-//       candidates: candidatesForHeading,
-//     };
-//     return {
-//       ...prev,
-//       progressionLevels: newProgressionLevels,
-//     };
-//   });
-//   // DO not move this down, it will break the classification as the timing is critical
-//   setLoading({ isLoading: false, text: "" });
-// };

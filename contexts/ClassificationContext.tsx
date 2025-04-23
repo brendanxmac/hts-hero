@@ -81,7 +81,7 @@ export const ClassificationProvider = ({
       progressionLevels: [
         ...prev.progressionLevels,
         {
-          level,
+          levelName: level,
           candidates,
           selection,
           reasoning,

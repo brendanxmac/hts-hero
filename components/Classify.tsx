@@ -16,6 +16,9 @@ export const Classify = () => {
   const [showExplore, setShowExplore] = useState(false);
   const [workflowStep, setWorkflowStep] = useState(WorkflowStep.DESCRIPTION);
   const [activeTab, setActiveTab] = useState<ClassifyTab>(ClassifyTab.CLASSIFY);
+  const [activeClassificationLevel, setActiveClassificationLevel] = useState<
+    number | undefined
+  >(undefined);
 
   useEffect(() => {
     if (workflowStep === WorkflowStep.CLASSIFICATION) {
@@ -26,42 +29,53 @@ export const Classify = () => {
   }, [workflowStep]);
 
   return (
-    <div className="h-screen bg-base-300 gap-2">
-      <div className="h-full w-full grid grid-cols-3 items-center">
-        <div className="h-full bg-base-100 col-span-1">
-          <ClassificationNavigation
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            workflowStep={workflowStep}
-            setWorkflowStep={setWorkflowStep}
-          />
-        </div>
-
-        {activeTab === ClassifyTab.EXPLORE && (
-          <div className="p-6 h-full bg-base-300 col-span-2">
-            <Explore />
-          </div>
-        )}
-
-        {activeTab === ClassifyTab.CLASSIFY && (
-          <div className={`h-full col-span-2 w-full`}>
-            {workflowStep === WorkflowStep.DESCRIPTION && (
-              <DescriptionStep setWorkflowStep={setWorkflowStep} />
-            )}
-            {workflowStep === WorkflowStep.ANALYSIS && (
-              <AnalysisStep setWorkflowStep={setWorkflowStep} />
-            )}
-            {workflowStep === WorkflowStep.CLASSIFICATION && (
-              <ClassificationStep
-                setActiveTab={setActiveTab}
-                setWorkflowStep={setWorkflowStep}
-                showExplore={showExplore}
-                setShowExplore={setShowExplore}
-              />
-            )}
-          </div>
-        )}
+    <div className="h-full w-full bg-base-300 grid grid-cols-3 items-center">
+      {/* Sidebar Navigation */}
+      <div className="h-full bg-base-100 col-span-1">
+        <ClassificationNavigation
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          workflowStep={workflowStep}
+          setWorkflowStep={setWorkflowStep}
+          activeClassificationLevel={activeClassificationLevel}
+          setActiveClassificationLevel={setActiveClassificationLevel}
+        />
       </div>
+
+      {/* Classify Tab */}
+      {activeTab === ClassifyTab.CLASSIFY && (
+        <div className="grow h-full w-full col-span-2">
+          {workflowStep === WorkflowStep.DESCRIPTION && (
+            <DescriptionStep
+              setWorkflowStep={setWorkflowStep}
+              setActiveClassificationLevel={setActiveClassificationLevel}
+            />
+          )}
+          {workflowStep === WorkflowStep.ANALYSIS && (
+            <AnalysisStep
+              setWorkflowStep={setWorkflowStep}
+              setActiveClassificationLevel={setActiveClassificationLevel}
+            />
+          )}
+          {workflowStep === WorkflowStep.CLASSIFICATION && (
+            <ClassificationStep
+              setActiveTab={setActiveTab}
+              setWorkflowStep={setWorkflowStep}
+              showExplore={showExplore}
+              setShowExplore={setShowExplore}
+              activeClassificationLevel={activeClassificationLevel}
+              setActiveClassificationLevel={setActiveClassificationLevel}
+            />
+          )}
+        </div>
+      )}
+
+      {/* Explore Tab */}
+      {activeTab === ClassifyTab.EXPLORE && (
+        <div className="h-full bg-base-300 col-span-2 overflow-hidden">
+          <Explore />
+        </div>
+      )}
     </div>
   );
 };

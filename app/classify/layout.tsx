@@ -22,7 +22,7 @@ export default async function LayoutPrivate({
   }
 
   return (
-    <div className="flex flex-col max-h-svh">
+    <div className="h-screen flex flex-col">
       <AuthenticatedHeader />
       {children}
     </div>

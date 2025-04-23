@@ -120,7 +120,7 @@ export interface Classification {
 }
 
 export interface HtsLevelClassification {
-  level: HtsLevel;
+  levelName: HtsLevel;
   candidates: HtsElement[];
   selection?: HtsElement;
   reasoning?: string;
