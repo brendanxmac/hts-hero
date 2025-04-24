@@ -14,6 +14,7 @@ interface Props {
   active: boolean;
   icon: React.ReactNode;
   button?: Button;
+  showButton?: boolean;
 }
 
 export const TextNavigationStep = ({
@@ -22,6 +23,7 @@ export const TextNavigationStep = ({
   active,
   icon,
   button,
+  showButton = true,
 }: Props) => {
   return (
     <div
@@ -38,7 +40,7 @@ export const TextNavigationStep = ({
             color={active ? Color.WHITE : Color.NEUTRAL_CONTENT}
           />
         </div>
-        {!active && button && (
+        {!active && button && showButton && (
           <button
             className="btn btn-sm btn-link hover:text-secondary hover:scale-105 transition-all duration-200 ease-in-out"
             onClick={button.onClick}

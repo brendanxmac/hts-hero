@@ -10,9 +10,11 @@ import { SecondaryLabel } from "../SecondaryLabel";
 import { classNames } from "../../utilities/style";
 import { useClassification } from "../../contexts/ClassificationContext";
 import { IconTab } from "../../interfaces/tab";
-import { ChartPieIcon, ChevronLeftIcon } from "@heroicons/react/16/solid";
+import { ChartPieIcon } from "@heroicons/react/16/solid";
+import { HomeIcon } from "@heroicons/react/24/solid";
 import { TextNavigationStep } from "./TextNavigationStep";
 import { ClassificationLevelNavigationStep } from "./ElementsNavigationStep";
+import { Color } from "../../enums/style";
 
 export enum ClassifyTab {
   CLASSIFY = "classify",
@@ -53,18 +55,23 @@ export const ClassificationNavigation = ({
   return (
     <div className="flex flex-col p-4 gap-2">
       <div className="flex justify-between items-center">
-        <button
-          className="btn btn-link btn-primary px-0 gap-0 hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
-          onClick={() => {
-            console.log("Back clicked, need to navigate back to home view...");
-          }}
-        >
-          <ChevronLeftIcon className="w-5 h-5" />
-          Home
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            className="btn btn-link btn-primary px-0 gap-0 hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
+            onClick={() => {
+              console.log(
+                "Back clicked, need to navigate back to home view..."
+              );
+            }}
+          >
+            <HomeIcon className="w-5 h-5" />
+          </button>
 
-        <div className="grow text-center">
-          <SecondaryLabel value="New Classification" />
+          <div className="w-px h-6 bg-base-content/20" />
+
+          <div className="grow text-center">
+            <SecondaryLabel value="New Classification" color={Color.WHITE} />
+          </div>
         </div>
 
         <div
@@ -123,6 +130,7 @@ export const ClassificationNavigation = ({
                 )}
               />
             }
+            showButton={Boolean(productDescription)}
             button={{
               label: "Edit",
               onClick: () => setWorkflowStep(WorkflowStep.ANALYSIS),
