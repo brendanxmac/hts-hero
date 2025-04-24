@@ -35,8 +35,8 @@ interface ClassificationNavigationProps {
   setActiveTab: (tab: ClassifyTab) => void;
   workflowStep: WorkflowStep;
   setWorkflowStep: (step: WorkflowStep) => void;
-  activeClassificationLevel: number | undefined;
-  setActiveClassificationLevel: (level: number | undefined) => void;
+  classificationLevel: number | undefined;
+  setClassificationLevel: (level: number | undefined) => void;
 }
 
 export const ClassificationNavigation = ({
@@ -44,8 +44,8 @@ export const ClassificationNavigation = ({
   setActiveTab,
   workflowStep,
   setWorkflowStep,
-  activeClassificationLevel,
-  setActiveClassificationLevel,
+  classificationLevel,
+  setClassificationLevel,
 }: ClassificationNavigationProps) => {
   const { classification } = useClassification();
   const { productDescription, analysis, progressionLevels } = classification;
@@ -138,11 +138,13 @@ export const ClassificationNavigation = ({
               classificationLevel={level}
               active={
                 workflowStep === WorkflowStep.CLASSIFICATION &&
-                activeClassificationLevel === index
+                classificationLevel === index
               }
               onClick={() => {
-                setWorkflowStep(WorkflowStep.CLASSIFICATION);
-                setActiveClassificationLevel(index);
+                if (workflowStep !== WorkflowStep.CLASSIFICATION) {
+                  setWorkflowStep(WorkflowStep.CLASSIFICATION);
+                }
+                setClassificationLevel(index);
               }}
             />
           ))}

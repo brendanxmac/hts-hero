@@ -9,12 +9,12 @@ import { StepNavigation } from "./StepNavigation";
 
 interface AnalysisStepProps {
   setWorkflowStep: (step: WorkflowStep) => void;
-  setActiveClassificationLevel: (level: number | undefined) => void;
+  setClassificationLevel: (level: number | undefined) => void;
 }
 
 export const AnalysisStep = ({
   setWorkflowStep,
-  setActiveClassificationLevel,
+  setClassificationLevel,
 }: AnalysisStepProps) => {
   const [localAnalysis, setLocalAnalysis] = useState("");
   const { classification, setAnalysis } = useClassification();
@@ -57,6 +57,7 @@ export const AnalysisStep = ({
             onClick: () => {
               setAnalysis(localAnalysis);
               setWorkflowStep(WorkflowStep.CLASSIFICATION);
+              setClassificationLevel(0);
             },
             disabled: localAnalysis.length === 0,
           }}
