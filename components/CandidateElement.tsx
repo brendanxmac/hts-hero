@@ -62,10 +62,11 @@ export const CandidateElement = ({ element, indentLevel }: Props) => {
   return (
     <div
       className={classNames(
-        "flex w-full rounded-md bg-base-100 p-4 gap-4",
+        "flex w-full rounded-md bg-base-100 p-4 gap-4 transition duration-100 ease-in-out",
+        // FIXME: this won't work in daisyUI v5, https://chatgpt.com/c/680acac7-5db4-8000-a309-b4ba81c63e8c
         isSelected
-          ? "border-4 border-primary"
-          : "border border-base-content/20 hover:border-primary transition duration-100 ease-in-out hover:cursor-pointer"
+          ? "dark:shadow-[inset_0_0_0_4px_oklch(var(--p))] shadow-[inset_0_0_0_4px_oklch(var(--p))]"
+          : "hover:cursor-pointer hover:bg-base-200 dark:shadow-[inset_0_0_0_1px_oklch(var(--n))]"
       )}
       onClick={() => {
         if (isSelected) {
