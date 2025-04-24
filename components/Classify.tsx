@@ -16,7 +16,7 @@ export const Classify = () => {
   const [showExplore, setShowExplore] = useState(false);
   const [workflowStep, setWorkflowStep] = useState(WorkflowStep.DESCRIPTION);
   const [activeTab, setActiveTab] = useState<ClassifyTab>(ClassifyTab.CLASSIFY);
-  const [activeClassificationLevel, setActiveClassificationLevel] = useState<
+  const [classificationLevel, setClassificationLevel] = useState<
     number | undefined
   >(undefined);
 
@@ -37,8 +37,8 @@ export const Classify = () => {
           setActiveTab={setActiveTab}
           workflowStep={workflowStep}
           setWorkflowStep={setWorkflowStep}
-          activeClassificationLevel={activeClassificationLevel}
-          setActiveClassificationLevel={setActiveClassificationLevel}
+          classificationLevel={classificationLevel}
+          setClassificationLevel={setClassificationLevel}
         />
       </div>
 
@@ -46,25 +46,22 @@ export const Classify = () => {
       {activeTab === ClassifyTab.CLASSIFY && (
         <div className="grow h-full w-full col-span-2">
           {workflowStep === WorkflowStep.DESCRIPTION && (
-            <DescriptionStep
-              setWorkflowStep={setWorkflowStep}
-              setActiveClassificationLevel={setActiveClassificationLevel}
-            />
+            <DescriptionStep setWorkflowStep={setWorkflowStep} />
           )}
           {workflowStep === WorkflowStep.ANALYSIS && (
             <AnalysisStep
               setWorkflowStep={setWorkflowStep}
-              setActiveClassificationLevel={setActiveClassificationLevel}
+              setClassificationLevel={setClassificationLevel}
             />
           )}
           {workflowStep === WorkflowStep.CLASSIFICATION && (
             <ClassificationStep
-              setActiveTab={setActiveTab}
-              setWorkflowStep={setWorkflowStep}
               showExplore={showExplore}
+              setActiveTab={setActiveTab}
               setShowExplore={setShowExplore}
-              activeClassificationLevel={activeClassificationLevel}
-              setActiveClassificationLevel={setActiveClassificationLevel}
+              setWorkflowStep={setWorkflowStep}
+              classificationLevel={classificationLevel}
+              setClassificationLevel={setClassificationLevel}
             />
           )}
         </div>

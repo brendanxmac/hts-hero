@@ -1,4 +1,3 @@
-import { SparklesIcon } from "@heroicons/react/24/solid";
 import { useClassification } from "../../contexts/ClassificationContext";
 import { HtsLevel, WorkflowStep } from "../../enums/hts";
 import { LoadingIndicator } from "../LoadingIndicator";
@@ -18,15 +17,14 @@ import { Color } from "../../enums/style";
 import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
 import { ClassifyTab } from "./ClassificationNavigation";
 import { StepNavigation } from "./StepNavigation";
-import SquareIconButton from "../SqaureIconButton";
 
 interface ClassificationStepProps {
   setActiveTab: (tab: ClassifyTab) => void;
   setWorkflowStep: (step: WorkflowStep) => void;
   showExplore: boolean;
   setShowExplore: (show: boolean) => void;
-  activeClassificationLevel: number | undefined;
-  setActiveClassificationLevel: (level: number | undefined) => void;
+  classificationLevel: number | undefined;
+  setClassificationLevel: (level: number | undefined) => void;
 }
 
 export const ClassificationStep = ({
@@ -34,8 +32,8 @@ export const ClassificationStep = ({
   setWorkflowStep,
   showExplore,
   setShowExplore,
-  activeClassificationLevel,
-  setActiveClassificationLevel,
+  classificationLevel,
+  setClassificationLevel,
 }: ClassificationStepProps) => {
   const [loading, setLoading] = useState<Loader>({
     isLoading: false,
@@ -44,7 +42,7 @@ export const ClassificationStep = ({
   const { fetchChapter, getChapterElements } = useChapters();
   const { classification, addToProgressionLevels, updateProgressionLevel } =
     useClassification();
-  const { productDescription, analysis, progressionLevels } = classification;
+  const { productDescription, progressionLevels } = classification;
   const [htsSections, setHtsSections] = useState<HtsSection[]>([]);
   const [sectionCandidates, setSectionCandidates] = useState<
     CandidateSelection[]
@@ -53,9 +51,15 @@ export const ClassificationStep = ({
     CandidateSelection[]
   >([]);
 
-  useEffect(() => {
-    console.log("progressionLevels", progressionLevels);
-  }, [progressionLevels]);
+  const candidatesExistForLevel =
+    progressionLevels[classificationLevel] &&
+    progressionLevels[classificationLevel].candidates.length > 0;
+
+  const hasSelectionForLevel =
+    candidatesExistForLevel &&
+    progressionLevels[classificationLevel].selection !== null;
+
+  const canContinue = candidatesExistForLevel && hasSelectionForLevel;
 
   // Get 2-3 Best Sections
   const getSections = async () => {
@@ -189,8 +193,9 @@ export const ClassificationStep = ({
   };
 
   useEffect(() => {
-    if (progressionLevels.length === 0) {
-      setActiveClassificationLevel(0);
+    if (classificationLevel === 0 && progressionLevels.length === 0) {
+      setClassificationLevel(0);
+      // TODO: see if we already do this elsewhere and if it should happen here
       addToProgressionLevels(HtsLevel.HEADING, []);
       getSections();
     }
@@ -249,15 +254,13 @@ export const ClassificationStep = ({
         <div className="grow h-full flex flex-col gap-8 overflow-y-auto">
           {loading.isLoading && <LoadingIndicator text={loading.text} />}
 
-          {progressionLevels[0] &&
-            progressionLevels[0].candidates.length > 0 && (
+          {progressionLevels[classificationLevel] &&
+            progressionLevels[classificationLevel].candidates.length > 0 && (
               <div className="h-full flex flex-col gap-4">
-                {progressionLevels.map((_, index) => (
-                  <CandidateElements
-                    key={`classification-level-${index}`}
-                    indentLevel={index}
-                  />
-                ))}
+                <CandidateElements
+                  key={`classification-level-${classificationLevel}`}
+                  indentLevel={classificationLevel}
+                />
               </div>
             )}
         </div>
@@ -270,10 +273,9 @@ export const ClassificationStep = ({
           next={{
             label: "Continue",
             onClick: () => {
-              // setAnalysis(localAnalysis);
-              // setWorkflowStep(WorkflowStep.CLASSIFICATION);
+              setClassificationLevel(classificationLevel + 1);
             },
-            disabled: progressionLevels.length === 0,
+            disabled: !canContinue,
           }}
           previous={{
             label: "Back",

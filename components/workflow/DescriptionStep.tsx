@@ -10,13 +10,9 @@ import { StepNavigation } from "./StepNavigation";
 
 interface DescriptionStepProps {
   setWorkflowStep: (step: WorkflowStep) => void;
-  setActiveClassificationLevel: (level: number | undefined) => void;
 }
 
-export const DescriptionStep = ({
-  setWorkflowStep,
-  setActiveClassificationLevel,
-}: DescriptionStepProps) => {
+export const DescriptionStep = ({ setWorkflowStep }: DescriptionStepProps) => {
   const [localProductDescription, setLocalProductDescription] = useState("");
   const { classification, setProductDescription } = useClassification();
   const { productDescription } = classification;

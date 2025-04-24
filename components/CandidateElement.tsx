@@ -59,8 +59,6 @@ export const CandidateElement = ({ element, indentLevel }: Props) => {
     )
   );
 
-  console.log(`${element.htsno || element.description}: ${isSelected}`);
-
   return (
     <div
       className={classNames(
@@ -92,21 +90,25 @@ export const CandidateElement = ({ element, indentLevel }: Props) => {
           }
           addBreadcrumb(element);
 
-          const children = getDirectChildrenElements(
-            element,
-            getChapterElements(chapter)
-          );
+          // const children = getDirectChildrenElements(
+          //   element,
+          //   getChapterElements(chapter)
+          // );
 
-          if (children.length > 0) {
-            addToProgressionLevels(
-              getHtsLevel(htsno || ""),
-              children,
-              null,
-              ""
-            );
-          } else {
-            // TADA! classification complete, do something special
-          }
+          // // if this is the final level, we need to add the children to the progression levels
+          // if (
+          //   indentLevel === classification.progressionLevels.length - 1 &&
+          //   children.length > 0
+          // ) {
+          //   addToProgressionLevels(
+          //     getHtsLevel(htsno || ""),
+          //     children,
+          //     null,
+          //     ""
+          //   );
+          // } else {
+          //   // TADA! classification complete, do something special
+          // }
         }
       }}
     >

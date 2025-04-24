@@ -46,13 +46,16 @@ export const CandidateElements = ({ indentLevel }: Props) => {
     undefined
   );
 
-  useEffect(() => {
-    console.log("lol");
-    if (candidates.length > 0 && !recommended) {
-      console.log("Getting best candidate automatically");
-      getBestCandidate();
-    }
-  }, []);
+  // FIXME: recommended gets lost every time we navigate away from this component to another tab
+  // which means that this flow control will not only ever do the best candidate once, but every time we come to this component
+  // useEffect(() => {
+  //   console.log("INITIAL RENDER HERE");
+  //   console.log("recommended", recommended);
+  //   if (candidates.length > 0 && !recommended) {
+  //     console.log("Getting best candidate automatically");
+  //     getBestCandidate();
+  //   }
+  // }, []);
 
   const getBestCandidate = async () => {
     setLoading({
@@ -113,13 +116,6 @@ export const CandidateElements = ({ indentLevel }: Props) => {
     <div className="h-full flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <SecondaryLabel value="Candidates:" color={Color.WHITE} />
-        {/* <SquareIconButton
-          icon={<SparklesIcon className="h-4 w-4" />}
-          onClick={() => {
-            getBestCandidate();
-          }}
-          disabled={loading.isLoading}
-        /> */}
       </div>
 
       {candidates.length > 0 && (
