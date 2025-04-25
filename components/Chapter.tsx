@@ -58,6 +58,7 @@ export const Chapter = ({ chapter, breadcrumbs, setBreadcrumbs }: Props) => {
         <SquareIconButton
           icon={<DocumentTextIcon className="h-4 w-4" />}
           onClick={() => setShowNotes(!showNotes)}
+          transparent
         />
       </div>
 

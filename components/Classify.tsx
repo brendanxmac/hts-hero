@@ -20,7 +20,7 @@ export const Classify = () => {
   >(undefined);
 
   return (
-    <div className="h-full w-full bg-base-300 grid grid-cols-3 items-center">
+    <div className="h-full w-full bg-base-300 grid grid-cols-3">
       {/* Sidebar Navigation */}
       <div className="h-full bg-base-100 col-span-1">
         <ClassificationNavigation
@@ -32,33 +32,31 @@ export const Classify = () => {
       </div>
 
       {/* Classify Tab */}
-      {activeTab === ClassifyTab.CLASSIFY && (
-        <div className="grow h-full w-full col-span-2">
-          {workflowStep === WorkflowStep.DESCRIPTION && (
-            <DescriptionStep setWorkflowStep={setWorkflowStep} />
-          )}
-          {workflowStep === WorkflowStep.ANALYSIS && (
-            <AnalysisStep
-              setWorkflowStep={setWorkflowStep}
-              setClassificationLevel={setClassificationLevel}
-            />
-          )}
-          {workflowStep === WorkflowStep.CLASSIFICATION && (
-            <ClassificationStep
-              setWorkflowStep={setWorkflowStep}
-              classificationLevel={classificationLevel}
-              setClassificationLevel={setClassificationLevel}
-            />
-          )}
-        </div>
-      )}
 
-      {/* Explore Tab */}
-      {activeTab === ClassifyTab.EXPLORE && (
-        <div className="h-full bg-base-300 col-span-2 overflow-hidden">
-          <Explore />
-        </div>
-      )}
+      <div className="h-full col-span-2 overflow-hidden">
+        {activeTab === ClassifyTab.CLASSIFY && (
+          <>
+            {workflowStep === WorkflowStep.DESCRIPTION && (
+              <DescriptionStep setWorkflowStep={setWorkflowStep} />
+            )}
+            {workflowStep === WorkflowStep.ANALYSIS && (
+              <AnalysisStep
+                setWorkflowStep={setWorkflowStep}
+                setClassificationLevel={setClassificationLevel}
+              />
+            )}
+            {workflowStep === WorkflowStep.CLASSIFICATION && (
+              <ClassificationStep
+                setWorkflowStep={setWorkflowStep}
+                classificationLevel={classificationLevel}
+                setClassificationLevel={setClassificationLevel}
+              />
+            )}
+          </>
+        )}
+        {/* Explore Tab */}
+        {activeTab === ClassifyTab.EXPLORE && <Explore />}
+      </div>
     </div>
   );
 };

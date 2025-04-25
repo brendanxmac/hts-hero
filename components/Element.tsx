@@ -219,6 +219,7 @@ export const Element = ({
               file: `/notes/chapter/Chapter ${chapter}.pdf`,
             })
           }
+          transparent
         />
       </div>
 

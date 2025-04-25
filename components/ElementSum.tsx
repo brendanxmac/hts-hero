@@ -33,7 +33,7 @@ export const ElementSum = ({ element, chapter }: Props) => {
   const isHeading = indent === "0" && classification.progressionLevels[0];
 
   return (
-    <div className="flex flex-col gap-2 w-full rounded-md bg-primary/30 dark:bg-primary/30 transition duration-100 ease-in-out cursor-pointer">
+    <div className="flex flex-col gap-2 w-full rounded-md bg-base-100 border border-neutral">
       <div className="flex">
         {isHeading && (
           <div className="flex items-center justify-center">
@@ -83,7 +83,7 @@ export const ElementSum = ({ element, chapter }: Props) => {
         )}
 
         <div
-          className={`flex items-center justify-between w-full hover:bg-primary/50 rounded-r-md ${!isHeading && "hover:rounded-md"}`}
+          className={`flex items-center justify-between w-full hover:bg-neutral rounded-r-md ${!isHeading && "hover:rounded-md"}`}
           onClick={(e) => {
             e.stopPropagation();
             setBreadcrumbs([
