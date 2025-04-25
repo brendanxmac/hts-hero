@@ -21,6 +21,8 @@ import { SecondaryText } from "./SecondaryText";
 import { useClassification } from "../contexts/ClassificationContext";
 import { Color } from "../enums/style";
 import { SecondaryLabel } from "./SecondaryLabel";
+import { useClassifyTab } from "../contexts/ClassifyTabContext";
+import { ClassifyTab } from "./workflow/ClassificationNavigation";
 
 interface Props {
   element: HtsElement;
@@ -30,8 +32,9 @@ interface Props {
 export const CandidateElement = ({ element, indentLevel }: Props) => {
   const { htsno, chapter, description, suggested, suggestedReasoning, indent } =
     element;
-  const { fetchChapter, getChapterElements } = useChapters();
+  const { fetchChapter } = useChapters();
   const { addBreadcrumb, clearBreadcrumbs } = useBreadcrumbs();
+  const { setActiveTab } = useClassifyTab();
   const { findChapterByNumber } = useHtsSections();
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
   const [loading, setLoading] = useState(false);
@@ -151,6 +154,7 @@ export const CandidateElement = ({ element, indentLevel }: Props) => {
                   addBreadcrumb({
                     ...element,
                   });
+                  setActiveTab(ClassifyTab.EXPLORE);
                 }}
                 transparent
               />

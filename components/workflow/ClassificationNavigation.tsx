@@ -15,6 +15,7 @@ import { HomeIcon } from "@heroicons/react/24/solid";
 import { TextNavigationStep } from "./TextNavigationStep";
 import { ClassificationLevelNavigationStep } from "./ElementsNavigationStep";
 import { Color } from "../../enums/style";
+import { useClassifyTab } from "../../contexts/ClassifyTabContext";
 
 export enum ClassifyTab {
   CLASSIFY = "classify",
@@ -32,9 +33,7 @@ export const tabs: IconTab<ClassifyTab>[] = [
   },
 ];
 
-interface ClassificationNavigationProps {
-  activeTab: ClassifyTab;
-  setActiveTab: (tab: ClassifyTab) => void;
+export interface ClassificationNavigationProps {
   workflowStep: WorkflowStep;
   setWorkflowStep: (step: WorkflowStep) => void;
   classificationLevel: number | undefined;
@@ -42,13 +41,12 @@ interface ClassificationNavigationProps {
 }
 
 export const ClassificationNavigation = ({
-  activeTab,
-  setActiveTab,
   workflowStep,
   setWorkflowStep,
   classificationLevel,
   setClassificationLevel,
 }: ClassificationNavigationProps) => {
+  const { activeTab, setActiveTab } = useClassifyTab();
   const { classification } = useClassification();
   const { productDescription, analysis, progressionLevels } = classification;
 
