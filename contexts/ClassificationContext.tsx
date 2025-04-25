@@ -1,15 +1,8 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useState,
-  ReactNode,
-  useEffect,
-} from "react";
-import { Classification, HtsLevelClassification } from "../interfaces/hts";
+import { createContext, useContext, useState, ReactNode } from "react";
+import { Classification, ClassificationProgression } from "../interfaces/hts";
 import { HtsElement } from "../interfaces/hts";
-import { HtsLevel } from "../enums/hts";
 
 interface ClassificationContextType {
   classification: Classification;
@@ -17,18 +10,17 @@ interface ClassificationContextType {
     classification: Classification | ((prev: Classification) => Classification)
   ) => void;
   // Helper functions
-  setProductDescription: (description: string) => void;
-  setHtsDescription: (description: string) => void;
-  setAnalysis: (analysis: string) => void;
-  addToProgressionLevels: (
-    level: HtsLevel,
+  setArticleDescription: (description: string) => void;
+  setProgressionDescription: (description: string) => void;
+  setArticleAnalysis: (analysis: string) => void;
+  addLevel: (
     candidates: HtsElement[],
     selection?: HtsElement,
     reasoning?: string
   ) => void;
-  updateProgressionLevel: (
+  updateLevel: (
     index: number,
-    updates: Partial<HtsLevelClassification>
+    updates: Partial<ClassificationProgression>
   ) => void;
   clearClassification: () => void;
 }
@@ -43,45 +35,43 @@ export const ClassificationProvider = ({
   children: ReactNode;
 }) => {
   const [classification, setClassification] = useState<Classification>({
-    productDescription: "",
-    analysis: "",
-    htsDescription: "",
-    progressionLevels: [],
+    articleDescription: "",
+    articleAnalysis: "",
+    progressionDescription: "",
+    levels: [],
   });
 
-  const setProductDescription = (description: string) => {
+  const setArticleDescription = (description: string) => {
     setClassification((prev) => ({
       ...prev,
-      productDescription: description,
+      articleDescription: description,
     }));
   };
 
-  const setHtsDescription = (description: string) => {
+  const setProgressionDescription = (description: string) => {
     setClassification((prev) => ({
       ...prev,
-      htsDescription: description,
+      progressionDescription: description,
     }));
   };
 
-  const setAnalysis = (analysis: string) => {
+  const setArticleAnalysis = (analysis: string) => {
     setClassification((prev) => ({
       ...prev,
-      analysis: analysis,
+      articleAnalysis: analysis,
     }));
   };
 
-  const addToProgressionLevels = (
-    level: HtsLevel,
+  const addLevel = (
     candidates: HtsElement[],
     selection?: HtsElement,
     reasoning?: string
   ) => {
     setClassification((prev) => ({
       ...prev,
-      progressionLevels: [
-        ...prev.progressionLevels,
+      levels: [
+        ...prev.levels,
         {
-          levelName: level,
           candidates,
           selection,
           reasoning,
@@ -90,14 +80,14 @@ export const ClassificationProvider = ({
     }));
   };
 
-  const updateProgressionLevel = (
+  const updateLevel = (
     index: number,
-    updates: Partial<HtsLevelClassification>
+    updates: Partial<ClassificationProgression>
   ) => {
     setClassification((prev) => {
       // This code safely updates a specific progression level in the classification state
       // 1. First spread creates a new array copy to avoid mutating the original state
-      const newProgressionLevels = [...prev.progressionLevels];
+      const newProgressionLevels = [...prev.levels];
 
       // 2. For the progression level we want to update:
       // - First spread copies all existing properties from the original level
@@ -111,17 +101,17 @@ export const ClassificationProvider = ({
       // 3. Create new state object with updated progression levels
       return {
         ...prev,
-        progressionLevels: newProgressionLevels,
+        levels: newProgressionLevels,
       };
     });
   };
 
   const clearClassification = () => {
     setClassification({
-      productDescription: "",
-      analysis: "",
-      htsDescription: "",
-      progressionLevels: [],
+      articleDescription: "",
+      articleAnalysis: "",
+      progressionDescription: "",
+      levels: [],
     });
   };
 
@@ -130,11 +120,11 @@ export const ClassificationProvider = ({
       value={{
         classification,
         setClassification,
-        setProductDescription,
-        setHtsDescription,
-        setAnalysis,
-        addToProgressionLevels,
-        updateProgressionLevel,
+        setArticleDescription,
+        setProgressionDescription,
+        setArticleAnalysis,
+        addLevel,
+        updateLevel,
         clearClassification,
       }}
     >

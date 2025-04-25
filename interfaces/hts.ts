@@ -113,14 +113,13 @@ export interface CandidateSelection {
 }
 
 export interface Classification {
-  productDescription: string;
-  analysis: string;
-  htsDescription: string;
-  progressionLevels: HtsLevelClassification[];
+  articleDescription: string;
+  articleAnalysis: string;
+  progressionDescription: string;
+  levels: ClassificationProgression[];
 }
 
-export interface HtsLevelClassification {
-  levelName: HtsLevel;
+export interface ClassificationProgression {
   candidates: HtsElement[];
   selection?: HtsElement;
   reasoning?: string;
