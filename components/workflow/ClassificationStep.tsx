@@ -4,7 +4,11 @@ import { LoadingIndicator } from "../LoadingIndicator";
 import { useEffect, useState } from "react";
 import { Loader } from "../../interfaces/ui";
 import { CandidateElements } from "../CandidateElements";
-import { getBestDescriptionCandidates } from "../../libs/hts";
+import {
+  getBestDescriptionCandidates,
+  getDirectChildrenElements,
+  getHtsLevel,
+} from "../../libs/hts";
 import { CandidateSelection, HtsElement } from "../../interfaces/hts";
 import { HtsSection } from "../../interfaces/hts";
 import { getHtsSectionsAndChapters } from "../../libs/hts";
@@ -222,32 +226,54 @@ export const ClassificationStep = ({
     }
   }, [chapterCandidates]);
 
+  const getStepDescription = () => {
+    if (classificationLevel === 0) {
+      return "Select the most accurate heading";
+    } else if (classificationLevel > 0) {
+      return "Select the best matching element";
+    }
+  };
+
+  const getStepInstructions = () => {
+    if (classificationLevel === 0) {
+      return "You can seach for and add candidates to the list using our explorer 👉";
+    } else if (classificationLevel > 0) {
+      return "Which candidate most accurately matches the article description if it was added onto the in-progress classification?";
+    }
+  };
+
   return (
     <div className="h-full flex flex-col pt-8 overflow-hidden">
       {/* Content */}
-      <div className="grow px-8 h-full w-full max-w-3xl mx-auto flex flex-col gap-4">
+      <div className="grow px-8 h-full w-full max-w-3xl mx-auto flex flex-col gap-8">
         <div className="shrink flex flex-col gap-14">
           <div className="flex flex-col gap-4">
-            <TertiaryText value="Step 3" color={Color.NEUTRAL_CONTENT} />
+            <TertiaryText
+              value={`Step ${2 + classificationLevel + 1}`}
+              color={Color.NEUTRAL_CONTENT}
+            />
             <div className="w-full flex justify-between items-center">
-              <div>
+              <div className="flex flex-col gap-2">
                 <PrimaryLabel
-                  value="Select the most accurate heading"
+                  value={getStepDescription()}
                   color={Color.WHITE}
                 />
+
                 <TertiaryText
-                  value="You can seach for and add candidates to the list using our explorer 👉"
+                  value={getStepInstructions()}
                   color={Color.NEUTRAL_CONTENT}
                 />
               </div>
-              <button
-                className="btn btn-primary btn-sm flex items-center gap-1"
-                onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
-                disabled={loading.isLoading}
-              >
-                <MagnifyingGlassIcon className="h-5 w-5" />
-                Search
-              </button>
+              {classificationLevel === 0 && (
+                <button
+                  className="btn btn-primary btn-sm flex items-center gap-1"
+                  onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
+                  disabled={loading.isLoading}
+                >
+                  <MagnifyingGlassIcon className="h-5 w-5" />
+                  Search
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -273,6 +299,29 @@ export const ClassificationStep = ({
           next={{
             label: "Continue",
             onClick: () => {
+              // Add another classification level IF the current level is the last level in progressionLevels
+              if (classificationLevel === progressionLevels.length - 1) {
+                const children = getDirectChildrenElements(
+                  progressionLevels[classificationLevel].selection,
+                  getChapterElements(
+                    progressionLevels[classificationLevel].selection.chapter
+                  )
+                );
+
+                // if this is the final level, we need to add the children to the progression levels
+                if (children.length > 0) {
+                  addToProgressionLevels(
+                    getHtsLevel(
+                      progressionLevels[classificationLevel].selection.htsno
+                    ),
+                    children,
+                    null,
+                    ""
+                  );
+                } else {
+                  // TADA! classification complete, do something special
+                }
+              }
               setClassificationLevel(classificationLevel + 1);
             },
             disabled: !canContinue,
@@ -280,7 +329,11 @@ export const ClassificationStep = ({
           previous={{
             label: "Back",
             onClick: () => {
-              setWorkflowStep(WorkflowStep.ANALYSIS);
+              if (classificationLevel === 0) {
+                setWorkflowStep(WorkflowStep.ANALYSIS);
+              } else {
+                setClassificationLevel(classificationLevel - 1);
+              }
             },
           }}
         />
