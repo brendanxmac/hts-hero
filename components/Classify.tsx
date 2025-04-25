@@ -22,7 +22,7 @@ export const Classify = () => {
   return (
     <div className="h-full w-full bg-base-300 grid grid-cols-3">
       {/* Sidebar Navigation */}
-      <div className="h-full bg-base-100 col-span-1">
+      <div className="h-full bg-base-100 col-span-1 overflow-hidden">
         <ClassificationNavigation
           workflowStep={workflowStep}
           setWorkflowStep={setWorkflowStep}
