@@ -114,27 +114,21 @@ export const CandidateElements = ({ indentLevel }: Props) => {
 
   return (
     <div className="h-full flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <SecondaryLabel value="Candidates:" color={Color.WHITE} />
-      </div>
-
       {candidates.length > 0 && (
-        <div className="w-full flex flex-col gap-2 pb-2">
-          <div className="flex flex-col gap-2 rounded-md">
-            {loading.isLoading && (
-              <div className="py-3">
-                <LoadingIndicator text={loading.text} />
-              </div>
-            )}
-            <div className="flex flex-col gap-4 overflow-y-auto">
-              {candidates.map((element) => (
-                <CandidateElement
-                  key={element.uuid}
-                  element={element}
-                  indentLevel={indentLevel}
-                />
-              ))}
+        <div className="h-full flex flex-col gap-2">
+          {loading.isLoading && (
+            <div className="py-3">
+              <LoadingIndicator text={loading.text} />
             </div>
+          )}
+          <div className="h-full flex flex-col gap-4 overflow-y-scroll pb-4">
+            {candidates.map((element) => (
+              <CandidateElement
+                key={element.uuid}
+                element={element}
+                indentLevel={indentLevel}
+              />
+            ))}
           </div>
         </div>
       )}

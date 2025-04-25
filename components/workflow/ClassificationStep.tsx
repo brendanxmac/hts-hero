@@ -239,10 +239,10 @@ export const ClassificationStep = ({
   };
 
   return (
-    <div className="h-full flex flex-col pt-8 overflow-hidden">
+    <div className="h-full flex flex-col pt-8">
       {/* Content */}
-      <div className="grow px-8 h-full w-full max-w-3xl mx-auto flex flex-col gap-8">
-        <div className="shrink flex flex-col gap-14">
+      <div className="flex-1 overflow-hidden px-8 w-full max-w-3xl mx-auto flex flex-col gap-4">
+        <div className="flex flex-col gap-14">
           <div className="flex flex-col gap-4">
             <TertiaryText
               value={`Step ${2 + classificationLevel + 1}`}
@@ -273,12 +273,12 @@ export const ClassificationStep = ({
             </div>
           </div>
         </div>
-        <div className="grow h-full flex flex-col gap-8 overflow-y-auto">
+        <div className="h-full flex flex-col gap-8 overflow-hidden">
           {loading.isLoading && <LoadingIndicator text={loading.text} />}
 
           {progressionLevels[classificationLevel] &&
             progressionLevels[classificationLevel].candidates.length > 0 && (
-              <div className="h-full flex flex-col gap-4">
+              <div className="h-full gap-4">
                 <CandidateElements
                   key={`classification-level-${classificationLevel}`}
                   indentLevel={classificationLevel}

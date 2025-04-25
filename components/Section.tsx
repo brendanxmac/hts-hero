@@ -39,8 +39,8 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
   return (
     <div
       className={classNames(
-        !showDetails && "hover:bg-primary/50 dark:hover:bg-primary/50",
-        "bg-base-100 w-full flex flex-col gap-6 py-6 px-4 rounded-md transition duration-100 ease-in-out hover:cursor-pointer"
+        !showDetails && "hover:bg-neutral",
+        "bg-base-100 border border-neutral w-full flex flex-col gap-6 py-6 px-4 rounded-md transition duration-100 ease-in-out hover:cursor-pointer"
       )}
       onClick={(e) => {
         e.preventDefault();
@@ -65,6 +65,7 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
             <SquareIconButton
               icon={<DocumentTextIcon className="h-4 w-4" />}
               onClick={() => setShowNotes(!showNotes)}
+              transparent
             />
           )}
           <div className="grow flex gap-5 self-center items-center">
