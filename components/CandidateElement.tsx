@@ -5,7 +5,6 @@ import { HtsElement, Navigatable } from "../interfaces/hts";
 import SquareIconButton from "./SqaureIconButton";
 import {
   DocumentTextIcon,
-  XMarkIcon,
   MagnifyingGlassIcon,
   SparklesIcon,
   TrashIcon,
@@ -14,12 +13,10 @@ import {
 import { PDFProps } from "./Element";
 import PDF from "./PDF";
 import { classNames } from "../utilities/style";
-import { getDirectChildrenElements, getHtsLevel } from "../libs/hts";
 import { TertiaryText } from "./TertiaryText";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { SecondaryText } from "./SecondaryText";
 import { useClassification } from "../contexts/ClassificationContext";
-import { PrimaryText } from "./PrimaryText";
 import { Color } from "../enums/style";
 import { SecondaryLabel } from "./SecondaryLabel";
 
