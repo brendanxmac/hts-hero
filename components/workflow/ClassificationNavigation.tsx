@@ -51,8 +51,8 @@ export const ClassificationNavigation = ({
   const { productDescription, analysis, progressionLevels } = classification;
 
   return (
-    <div className="flex flex-col p-4 gap-2">
-      <div className="flex justify-between items-center">
+    <div className="h-full flex flex-col">
+      <div className="flex justify-between items-center border-b border-neutral px-4 pt-4">
         <div className="flex items-center gap-2">
           <button
             className="btn btn-link btn-primary px-0 gap-0 hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
@@ -92,7 +92,7 @@ export const ClassificationNavigation = ({
         </div>
       </div>
 
-      <div className="flex flex-col gap-8">
+      <div className="h-full flex flex-col gap-8 p-4 overflow-y-scroll">
         <div className="flex flex-col gap-2">
           <SecondaryLabel value="Article Details" />
           <TextNavigationStep
@@ -136,24 +136,26 @@ export const ClassificationNavigation = ({
           />
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex-1 flex flex-col">
           <SecondaryLabel value="Classification Progress" />
-          {progressionLevels.map((level, index) => (
-            <ClassificationLevelNavigationStep
-              key={index}
-              classificationLevel={level}
-              active={
-                workflowStep === WorkflowStep.CLASSIFICATION &&
-                classificationLevel === index
-              }
-              onClick={() => {
-                if (workflowStep !== WorkflowStep.CLASSIFICATION) {
-                  setWorkflowStep(WorkflowStep.CLASSIFICATION);
+          <div className="flex flex-col gap-4 py-3">
+            {progressionLevels.map((level, index) => (
+              <ClassificationLevelNavigationStep
+                key={index}
+                classificationLevel={level}
+                active={
+                  workflowStep === WorkflowStep.CLASSIFICATION &&
+                  classificationLevel === index
                 }
-                setClassificationLevel(index);
-              }}
-            />
-          ))}
+                onClick={() => {
+                  if (workflowStep !== WorkflowStep.CLASSIFICATION) {
+                    setWorkflowStep(WorkflowStep.CLASSIFICATION);
+                  }
+                  setClassificationLevel(index);
+                }}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>
