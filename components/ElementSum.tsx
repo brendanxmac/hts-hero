@@ -4,7 +4,6 @@ import {
   XMarkIcon,
 } from "@heroicons/react/16/solid";
 import { HtsElement } from "../interfaces/hts";
-import { SecondaryText } from "./SecondaryText";
 import SquareIconButton from "./SqaureIconButton";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import { TertiaryText } from "./TertiaryText";
@@ -16,9 +15,10 @@ import { SecondaryLabel } from "./SecondaryLabel";
 interface Props {
   element: HtsElement;
   chapter: number;
+  isSidebar?: boolean;
 }
 
-export const ElementSum = ({ element, chapter }: Props) => {
+export const ElementSum = ({ element, chapter, isSidebar = false }: Props) => {
   const { htsno, description, indent, suggested, suggestedReasoning } = element;
   const { classification, updateProgressionLevel } = useClassification();
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
@@ -35,7 +35,7 @@ export const ElementSum = ({ element, chapter }: Props) => {
   return (
     <div className="flex flex-col gap-2 w-full rounded-md bg-base-100 border border-neutral">
       <div className="flex">
-        {isHeading && (
+        {isHeading && !isSidebar && (
           <div className="flex items-center justify-center">
             <div className="px-3">
               {isHeadingCandidate ? (

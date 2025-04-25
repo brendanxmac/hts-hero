@@ -18,14 +18,18 @@ export const ClassificationLevelNavigationStep = ({
   const { levelName, candidates, reasoning, selection } = classificationLevel;
 
   if (!active && selection) {
-    // TODO: might need to wrap this in a clickable div that will change classification level
-    return <ElementSum element={selection} chapter={selection.chapter} />;
+    // FIXME: This onclick does not work cause the element sums onclick takes priority
+    return (
+      <div onClick={onClick}>
+        <ElementSum element={selection} chapter={selection.chapter} isSidebar />
+      </div>
+    );
   }
 
   return (
     <div
       className={classNames(
-        "bg-base-100 border border-neutral flex flex-col rounded-md px-2 py-4 gap-2 transition-all duration-200 ease-in-out ",
+        "bg-base-100 border border-neutral flex flex-col rounded-md p-4 gap-2 transition-all duration-200 ease-in-out ",
         active && "bg-primary/80",
         !active && "hover:bg-neutral"
       )}
