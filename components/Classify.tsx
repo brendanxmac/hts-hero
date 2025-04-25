@@ -13,20 +13,11 @@ import { DescriptionStep } from "./workflow/DescriptionStep";
 import { AnalysisStep } from "./workflow/AnalysisStep";
 
 export const Classify = () => {
-  const [showExplore, setShowExplore] = useState(false);
   const [workflowStep, setWorkflowStep] = useState(WorkflowStep.DESCRIPTION);
   const [activeTab, setActiveTab] = useState<ClassifyTab>(ClassifyTab.CLASSIFY);
   const [classificationLevel, setClassificationLevel] = useState<
     number | undefined
   >(undefined);
-
-  useEffect(() => {
-    if (workflowStep === WorkflowStep.CLASSIFICATION) {
-      setShowExplore(true);
-    } else {
-      setShowExplore(false);
-    }
-  }, [workflowStep]);
 
   return (
     <div className="h-full w-full bg-base-300 grid grid-cols-3 items-center">
@@ -56,9 +47,7 @@ export const Classify = () => {
           )}
           {workflowStep === WorkflowStep.CLASSIFICATION && (
             <ClassificationStep
-              showExplore={showExplore}
               setActiveTab={setActiveTab}
-              setShowExplore={setShowExplore}
               setWorkflowStep={setWorkflowStep}
               classificationLevel={classificationLevel}
               setClassificationLevel={setClassificationLevel}

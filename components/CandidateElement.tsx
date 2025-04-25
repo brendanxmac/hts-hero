@@ -5,10 +5,12 @@ import { HtsElement, Navigatable } from "../interfaces/hts";
 import SquareIconButton from "./SqaureIconButton";
 import {
   DocumentTextIcon,
+  PencilSquareIcon,
+} from "@heroicons/react/24/outline";
+import {
   MagnifyingGlassIcon,
   SparklesIcon,
   TrashIcon,
-  PencilSquareIcon,
 } from "@heroicons/react/24/solid";
 import { PDFProps } from "./Element";
 import PDF from "./PDF";
@@ -133,6 +135,7 @@ export const CandidateElement = ({ element, indentLevel }: Props) => {
                     file: `/notes/chapter/Chapter ${chapter}.pdf`,
                   })
                 }
+                transparent
               />
               <SquareIconButton
                 icon={<MagnifyingGlassIcon className="h-4 w-4" />}
@@ -149,12 +152,14 @@ export const CandidateElement = ({ element, indentLevel }: Props) => {
                     ...element,
                   });
                 }}
+                transparent
               />
               <SquareIconButton
                 icon={<PencilSquareIcon className="h-4 w-4" />}
                 onClick={() => {
                   console.log("Add notes for element");
                 }}
+                transparent
               />
               {indent === "0" && (
                 <SquareIconButton
