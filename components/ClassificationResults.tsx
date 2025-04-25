@@ -13,7 +13,7 @@ import {
   logSearch,
 } from "../libs/hts";
 import {
-  HtsLevelClassification,
+  ClassificationProgression,
   HtsSection,
   HtsElementWithParentReference,
   CandidateSelection,
@@ -55,8 +55,8 @@ export const ClassificationResults = ({
   const {
     classification,
     setClassification,
-    setHtsDescription,
-    addToProgressionLevels,
+    setProgressionDescription: setHtsDescription,
+    addLevel: addToProgressionLevels,
   } = useClassification();
   const [htsSections, setHtsSections] = useState<HtsSection[]>([]);
 
@@ -65,9 +65,9 @@ export const ClassificationResults = ({
     setChapterCandidates([]);
     setHeadingCandidates([]);
     setClassification({
-      productDescription,
-      htsDescription: "",
-      progressionLevels: [],
+      articleDescription: productDescription,
+      progressionDescription: "",
+      levels: [],
     });
     setCurrentHtsDescription("");
     setHtsElementsChunk([]);
@@ -345,7 +345,7 @@ export const ClassificationResults = ({
 
   useEffect(() => {
     setUpdateScrollHeight(Math.random());
-  }, [loading, classification.progressionLevels]);
+  }, [loading, classification.levels]);
 
   useEffect(() => {
     const anotherClassificationLevelExists = htsElementsChunk.length > 0;
@@ -381,7 +381,7 @@ export const ClassificationResults = ({
     }
   }, [resetSearch]);
 
-  if (loading && !classification.progressionLevels.length) {
+  if (loading && !classification.levels.length) {
     return (
       <div className="mt-5">
         <LoadingIndicator text={loading.text} />
@@ -390,10 +390,8 @@ export const ClassificationResults = ({
   } else {
     return (
       <div className="w-full max-w-4xl grid grid-cols-2 gap-5 mt-3">
-        {classification.progressionLevels.length && (
-          <DecisionProgression
-            decisionProgression={classification.progressionLevels}
-          />
+        {classification.levels.length && (
+          <DecisionProgression decisionProgression={classification.levels} />
         )}
 
         {loading && htsElementsChunk.length > 0 ? (

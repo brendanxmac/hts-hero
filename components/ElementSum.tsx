@@ -20,17 +20,18 @@ interface Props {
 
 export const ElementSum = ({ element, chapter, isSidebar = false }: Props) => {
   const { htsno, description, indent, suggested, suggestedReasoning } = element;
-  const { classification, updateProgressionLevel } = useClassification();
+  const { classification, updateLevel: updateProgressionLevel } =
+    useClassification();
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
 
   const isHeadingCandidate = Boolean(
-    classification.progressionLevels[0] &&
-      classification.progressionLevels[0].candidates.find(
+    classification.levels[0] &&
+      classification.levels[0].candidates.find(
         (candidate) => candidate.uuid === element.uuid
       )
   );
 
-  const isHeading = indent === "0" && classification.progressionLevels[0];
+  const isHeading = indent === "0" && classification.levels[0];
 
   return (
     <div className="flex flex-col gap-2 w-full rounded-md bg-base-100 border border-neutral">
@@ -44,7 +45,7 @@ export const ElementSum = ({ element, chapter, isSidebar = false }: Props) => {
                   onClick={() => {
                     // TODO: make a function for removing an element from a single classificatino progression
                     const newClassificationProgression =
-                      classification.progressionLevels.slice(0, 1);
+                      classification.levels.slice(0, 1);
                     newClassificationProgression[0].candidates =
                       newClassificationProgression[0].candidates.filter(
                         (candidate) => candidate.uuid !== element.uuid
@@ -61,9 +62,9 @@ export const ElementSum = ({ element, chapter, isSidebar = false }: Props) => {
                   onClick={() => {
                     // TODO: make a function for adding an element to a single classification progression
                     const newClassificationProgression =
-                      classification.progressionLevels.slice(
+                      classification.levels.slice(
                         0,
-                        classification.progressionLevels.length
+                        classification.levels.length
                       );
                     newClassificationProgression[0].candidates = [
                       ...newClassificationProgression[0].candidates,

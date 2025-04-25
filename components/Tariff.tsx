@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { HtsLevelClassification } from "../interfaces/hts";
+import { ClassificationProgression } from "../interfaces/hts";
 import { Cell } from "./Cell";
 import { PrimaryText } from "./PrimaryText";
 import { SectionLabel } from "./SectionLabel";
@@ -10,7 +10,7 @@ import { Tariff } from "../app/classes/tariff";
 import { TariffSummary } from "./TariffSummary";
 
 interface Props {
-  classificationProgression: HtsLevelClassification[];
+  classificationProgression: ClassificationProgression[];
   setUpdateScrollHeight: Dispatch<SetStateAction<number>>;
 }
 

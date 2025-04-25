@@ -1,6 +1,6 @@
 import {
   HtsElement,
-  HtsLevelClassification,
+  ClassificationProgression,
   Navigatable,
 } from "../interfaces/hts";
 import { NavigatableElement } from "./Elements";
@@ -51,12 +51,12 @@ export const Element = ({
   });
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
   const { fetchChapter, getChapterElements } = useChapters();
-  const { classification, updateProgressionLevel } = useClassification();
+  const { classification, updateLevel: updateProgressionLevel } =
+    useClassification();
 
   // Check if the element is a candidate in any of the classification progression levels
-  const isClassificationCandidate = classification.progressionLevels.some(
-    (level) =>
-      level.candidates.find((candidate) => candidate.uuid === element.uuid)
+  const isClassificationCandidate = classification.levels.some((level) =>
+    level.candidates.find((candidate) => candidate.uuid === element.uuid)
   );
 
   useEffect(() => {
@@ -137,7 +137,7 @@ export const Element = ({
   };
 
   const getFullHtsDescription = (
-    classificationProgression: HtsLevelClassification[]
+    classificationProgression: ClassificationProgression[]
   ) => {
     let fullDescription = "";
     classificationProgression.forEach((progression, index) => {
@@ -167,8 +167,8 @@ export const Element = ({
 
     const bestProgressionResponse = await getBestClassificationProgression(
       simplifiedCandidates,
-      classification.htsDescription,
-      classification.productDescription
+      classification.progressionDescription,
+      classification.articleDescription
     );
 
     console.log("bestProgressionResponse", bestProgressionResponse);
@@ -189,7 +189,7 @@ export const Element = ({
       return { ...e, suggested: false, suggestedReasoning: "" };
     });
 
-    updateProgressionLevel(classification.progressionLevels.length - 1, {
+    updateProgressionLevel(classification.levels.length - 1, {
       candidates: updatedCandidates,
     });
 

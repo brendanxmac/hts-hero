@@ -17,8 +17,9 @@ export const AnalysisStep = ({
   setClassificationLevel,
 }: AnalysisStepProps) => {
   const [localAnalysis, setLocalAnalysis] = useState("");
-  const { classification, setAnalysis } = useClassification();
-  const { analysis } = classification;
+  const { classification, setArticleAnalysis: setAnalysis } =
+    useClassification();
+  const { articleAnalysis: analysis } = classification;
 
   useEffect(() => {
     setLocalAnalysis(analysis);

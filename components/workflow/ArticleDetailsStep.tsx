@@ -19,9 +19,13 @@ export const ArticleDetailsStep = ({
   setWorkflowStep,
 }: ArticleDetailsStepProps) => {
   const [localProductDescription, setLocalProductDescription] = useState("");
-  const { classification, setAnalysis, setProductDescription } =
-    useClassification();
-  const { productDescription, analysis } = classification;
+  const {
+    classification,
+    setArticleAnalysis: setAnalysis,
+    setArticleDescription: setProductDescription,
+  } = useClassification();
+  const { articleDescription: productDescription, articleAnalysis: analysis } =
+    classification;
 
   return (
     <div className="h-full flex flex-col gap-8">

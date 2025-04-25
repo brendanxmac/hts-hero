@@ -13,7 +13,7 @@ import { IconTab } from "../../interfaces/tab";
 import { ChartPieIcon } from "@heroicons/react/16/solid";
 import { HomeIcon } from "@heroicons/react/24/solid";
 import { TextNavigationStep } from "./TextNavigationStep";
-import { ClassificationLevelNavigationStep } from "./ElementsNavigationStep";
+import { ElementsNavigationStep } from "./ElementsNavigationStep";
 import { Color } from "../../enums/style";
 import { useClassifyTab } from "../../contexts/ClassifyTabContext";
 
@@ -48,7 +48,7 @@ export const ClassificationNavigation = ({
 }: ClassificationNavigationProps) => {
   const { activeTab, setActiveTab } = useClassifyTab();
   const { classification } = useClassification();
-  const { productDescription, analysis, progressionLevels } = classification;
+  const { articleDescription, articleAnalysis, levels } = classification;
 
   return (
     <div className="h-full flex flex-col">
@@ -97,7 +97,7 @@ export const ClassificationNavigation = ({
           <SecondaryLabel value="Article Details" />
           <TextNavigationStep
             title="Description"
-            text={productDescription}
+            text={articleDescription}
             active={workflowStep === WorkflowStep.DESCRIPTION}
             icon={
               <Bars3BottomLeftIcon
@@ -116,7 +116,7 @@ export const ClassificationNavigation = ({
           />
           <TextNavigationStep
             title="Analysis"
-            text={analysis}
+            text={articleAnalysis}
             active={workflowStep === WorkflowStep.ANALYSIS}
             icon={
               <ChartPieIcon
@@ -128,7 +128,7 @@ export const ClassificationNavigation = ({
                 )}
               />
             }
-            showButton={Boolean(productDescription)}
+            showButton={Boolean(articleDescription)}
             button={{
               label: "Edit",
               onClick: () => setWorkflowStep(WorkflowStep.ANALYSIS),
@@ -139,10 +139,11 @@ export const ClassificationNavigation = ({
         <div className="flex-1 flex flex-col">
           <SecondaryLabel value="Classification Progress" />
           <div className="flex flex-col gap-4 py-3">
-            {progressionLevels.map((level, index) => (
-              <ClassificationLevelNavigationStep
+            {levels.map((level, index) => (
+              <ElementsNavigationStep
                 key={index}
-                classificationLevel={level}
+                index={index}
+                classificationProgression={level}
                 active={
                   workflowStep === WorkflowStep.CLASSIFICATION &&
                   classificationLevel === index

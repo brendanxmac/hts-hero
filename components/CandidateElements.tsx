@@ -1,23 +1,21 @@
 import {
-  HtsLevelClassification,
+  ClassificationProgression,
   Classification,
   HtsElement,
 } from "../interfaces/hts";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { Loader } from "../interfaces/ui";
 import { CandidateElement } from "./CandidateElement";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { getBestClassificationProgression } from "../libs/hts";
 import { useClassification } from "../contexts/ClassificationContext";
-import { SecondaryLabel } from "./SecondaryLabel";
-import { Color } from "../enums/style";
 
 interface Props {
   indentLevel: number;
 }
 
 const getFullHtsDescription = (
-  classificationProgression: HtsLevelClassification[]
+  classificationProgression: ClassificationProgression[]
 ) => {
   let fullDescription = "";
   classificationProgression.forEach((progression, index) => {
@@ -40,8 +38,8 @@ export const CandidateElements = ({ indentLevel }: Props) => {
     text: "",
   });
   const { setClassification, classification } = useClassification();
-  const { productDescription, progressionLevels } = classification;
-  const { candidates } = progressionLevels[indentLevel];
+  const { articleDescription, levels } = classification;
+  const { candidates } = levels[indentLevel];
   const [recommended, setRecommended] = useState<HtsElement | undefined>(
     undefined
   );
@@ -70,8 +68,8 @@ export const CandidateElements = ({ indentLevel }: Props) => {
 
     const bestProgressionResponse = await getBestClassificationProgression(
       simplifiedCandidates,
-      getFullHtsDescription(progressionLevels),
-      productDescription
+      getFullHtsDescription(levels),
+      articleDescription
     );
 
     console.log("bestProgressionResponse", bestProgressionResponse);
@@ -93,14 +91,14 @@ export const CandidateElements = ({ indentLevel }: Props) => {
     });
 
     setClassification((prev: Classification) => {
-      const newProgressionLevels = [...prev.progressionLevels];
+      const newProgressionLevels = [...prev.levels];
       newProgressionLevels[indentLevel] = {
         ...newProgressionLevels[indentLevel],
         candidates: updatedCandidates,
       };
       return {
         ...prev,
-        progressionLevels: newProgressionLevels,
+        levels: newProgressionLevels,
       };
     });
 

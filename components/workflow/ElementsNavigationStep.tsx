@@ -1,5 +1,5 @@
 import { Color } from "../../enums/style";
-import { HtsLevelClassification } from "../../interfaces/hts";
+import { ClassificationProgression } from "../../interfaces/hts";
 import { classNames } from "../../utilities/style";
 import { ElementSum } from "../ElementSum";
 import { TertiaryLabel } from "../TertiaryLabel";
@@ -7,15 +7,17 @@ import { TertiaryLabel } from "../TertiaryLabel";
 interface Props {
   onClick: () => void;
   active: boolean;
-  classificationLevel: HtsLevelClassification;
+  index: number;
+  classificationProgression: ClassificationProgression;
 }
 
-export const ClassificationLevelNavigationStep = ({
-  classificationLevel,
+export const ElementsNavigationStep = ({
+  classificationProgression,
   active,
+  index,
   onClick,
 }: Props) => {
-  const { levelName, candidates, reasoning, selection } = classificationLevel;
+  const { candidates, reasoning, selection } = classificationProgression;
 
   if (!active && selection) {
     // FIXME: This onclick does not work cause the element sums onclick takes priority
@@ -37,7 +39,7 @@ export const ClassificationLevelNavigationStep = ({
     >
       <div className="flex justify-between items-center">
         <TertiaryLabel
-          value={levelName}
+          value={`Level ${index + 1}`}
           color={active ? Color.WHITE : Color.NEUTRAL_CONTENT}
         />
         <TertiaryLabel

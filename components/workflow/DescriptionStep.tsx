@@ -14,8 +14,9 @@ interface DescriptionStepProps {
 
 export const DescriptionStep = ({ setWorkflowStep }: DescriptionStepProps) => {
   const [localProductDescription, setLocalProductDescription] = useState("");
-  const { classification, setProductDescription } = useClassification();
-  const { productDescription } = classification;
+  const { classification, setArticleDescription: setProductDescription } =
+    useClassification();
+  const { articleDescription: productDescription } = classification;
 
   useEffect(() => {
     setLocalProductDescription(productDescription);

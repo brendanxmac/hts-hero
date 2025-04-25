@@ -1,7 +1,7 @@
 import { ChatCompletion } from "openai/resources";
 import {
   HtsElementWithParentReference,
-  HtsLevelClassification,
+  ClassificationProgression,
   CandidateSelection,
   HsHeading,
   HtsElement,
@@ -38,7 +38,7 @@ export const getHtsElementDescriptions = (
 };
 
 export const findFirstElementInProgressionWithTariff = (
-  classificationProgression: HtsLevelClassification[]
+  classificationProgression: ClassificationProgression[]
 ) => {
   const numClassifications = classificationProgression.length;
 
@@ -330,8 +330,8 @@ export const getBestIndentLevelMatch = async (
   htsDescription: string, // used to compare against product description at each level, with each NEW descriptor
   elements: HtsElementWithParentReference[],
   indentLevel: number,
-  selectionProgression: HtsLevelClassification[] = []
-): Promise<HtsLevelClassification[]> => {
+  selectionProgression: ClassificationProgression[] = []
+): Promise<ClassificationProgression[]> => {
   let elementsAtIndent = elementsAtClassificationLevel(elements, indentLevel);
   const descriptionsForElements = getHtsElementDescriptions(elementsAtIndent);
   const bestMatchResponse: Array<ChatCompletion.Choice> = await apiClient.post(
@@ -365,10 +365,9 @@ export const getBestIndentLevelMatch = async (
     );
   } else {
     // Add Selection Layer to overall selection progression
-    const htsLayerSelection: HtsLevelClassification = {
+    const htsLayerSelection: ClassificationProgression = {
       selection: bestMatchElement,
       reasoning: bestMatchJson.logic,
-      levelName: getHtsLevel(bestMatchElement.htsno),
       candidates: elementsAtIndent,
     };
 

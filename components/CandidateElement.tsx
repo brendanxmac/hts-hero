@@ -40,8 +40,8 @@ export const CandidateElement = ({ element, indentLevel }: Props) => {
   const [loading, setLoading] = useState(false);
   const {
     classification,
-    updateProgressionLevel,
-    addToProgressionLevels,
+    updateLevel: updateProgressionLevel,
+    addLevel: addToProgressionLevels,
     setClassification,
   } = useClassification();
 
@@ -56,7 +56,7 @@ export const CandidateElement = ({ element, indentLevel }: Props) => {
 
   // Check all progression levels to see if this element is selected in any of them
   const isSelected = Boolean(
-    classification.progressionLevels.some(
+    classification.levels.some(
       (level) => level.selection && level.selection.uuid === element.uuid
     )
   );
@@ -72,13 +72,15 @@ export const CandidateElement = ({ element, indentLevel }: Props) => {
       )}
       onClick={() => {
         if (isSelected) {
-          const newClassificationProgression =
-            classification.progressionLevels.slice(0, indentLevel + 1);
+          const newClassificationProgression = classification.levels.slice(
+            0,
+            indentLevel + 1
+          );
           newClassificationProgression[indentLevel].selection = null;
 
           setClassification({
             ...classification,
-            progressionLevels: newClassificationProgression,
+            levels: newClassificationProgression,
           });
         } else {
           updateProgressionLevel(indentLevel, { selection: element });
@@ -92,39 +94,9 @@ export const CandidateElement = ({ element, indentLevel }: Props) => {
             });
           }
           addBreadcrumb(element);
-
-          // const children = getDirectChildrenElements(
-          //   element,
-          //   getChapterElements(chapter)
-          // );
-
-          // // if this is the final level, we need to add the children to the progression levels
-          // if (
-          //   indentLevel === classification.progressionLevels.length - 1 &&
-          //   children.length > 0
-          // ) {
-          //   addToProgressionLevels(
-          //     getHtsLevel(htsno || ""),
-          //     children,
-          //     null,
-          //     ""
-          //   );
-          // } else {
-          //   // TADA! classification complete, do something special
-          // }
         }
       }}
     >
-      {/* <div className="flex items-center justify-center">
-        <input
-          readOnly
-          type="radio"
-          name="radio"
-          className="radio radio-primary"
-          checked={isSelected}
-        />
-      </div> */}
-
       <div className="flex flex-col w-full gap-4">
         <div className="flex items-start justify-between">
           <div className="w-full flex items-center justify-between gap-2">
@@ -171,10 +143,7 @@ export const CandidateElement = ({ element, indentLevel }: Props) => {
                   onClick={() => {
                     if (isSelected) {
                       const newClassificationProgression =
-                        classification.progressionLevels.slice(
-                          0,
-                          indentLevel + 1
-                        );
+                        classification.levels.slice(0, indentLevel + 1);
                       newClassificationProgression[indentLevel].selection =
                         null;
 
@@ -188,14 +157,11 @@ export const CandidateElement = ({ element, indentLevel }: Props) => {
 
                       setClassification({
                         ...classification,
-                        progressionLevels: newClassificationProgression,
+                        levels: newClassificationProgression,
                       });
                     } else {
                       const newClassificationProgression =
-                        classification.progressionLevels.slice(
-                          0,
-                          indentLevel + 1
-                        );
+                        classification.levels.slice(0, indentLevel + 1);
 
                       newClassificationProgression[indentLevel].candidates =
                         newClassificationProgression[

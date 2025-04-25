@@ -1,5 +1,5 @@
 import { useClassification } from "../../contexts/ClassificationContext";
-import { HtsLevel, WorkflowStep } from "../../enums/hts";
+import { WorkflowStep } from "../../enums/hts";
 import { LoadingIndicator } from "../LoadingIndicator";
 import { useEffect, useState } from "react";
 import { Loader } from "../../interfaces/ui";
@@ -7,7 +7,6 @@ import { CandidateElements } from "../CandidateElements";
 import {
   getBestDescriptionCandidates,
   getDirectChildrenElements,
-  getHtsLevel,
 } from "../../libs/hts";
 import { CandidateSelection, HtsElement } from "../../interfaces/hts";
 import { HtsSection } from "../../interfaces/hts";
@@ -40,9 +39,8 @@ export const ClassificationStep = ({
     text: "",
   });
   const { fetchChapter, getChapterElements } = useChapters();
-  const { classification, addToProgressionLevels, updateProgressionLevel } =
-    useClassification();
-  const { productDescription, progressionLevels } = classification;
+  const { classification, addLevel, updateLevel } = useClassification();
+  const { articleDescription, levels } = classification;
   const [htsSections, setHtsSections] = useState<HtsSection[]>([]);
   const [sectionCandidates, setSectionCandidates] = useState<
     CandidateSelection[]
@@ -52,12 +50,11 @@ export const ClassificationStep = ({
   >([]);
 
   const candidatesExistForLevel =
-    progressionLevels[classificationLevel] &&
-    progressionLevels[classificationLevel].candidates.length > 0;
+    levels[classificationLevel] &&
+    levels[classificationLevel].candidates.length > 0;
 
   const hasSelectionForLevel =
-    candidatesExistForLevel &&
-    progressionLevels[classificationLevel].selection !== null;
+    candidatesExistForLevel && levels[classificationLevel].selection !== null;
 
   const canContinue = candidatesExistForLevel && hasSelectionForLevel;
 
@@ -69,7 +66,7 @@ export const ClassificationStep = ({
     const sections = sectionsResponse.sections;
     const bestSectionCandidates = await getBestDescriptionCandidates(
       [],
-      productDescription,
+      articleDescription,
       true,
       0,
       2,
@@ -102,7 +99,7 @@ export const ClassificationStep = ({
       candidateSections.map(async (section) => {
         const bestChapterCandidates = await getBestDescriptionCandidates(
           [],
-          productDescription,
+          articleDescription,
           true,
           0,
           2,
@@ -155,7 +152,7 @@ export const ClassificationStep = ({
         );
         const bestCandidateHeadings = await getBestDescriptionCandidates(
           elementsAtLevel,
-          productDescription,
+          articleDescription,
           false,
           0,
           2,
@@ -184,7 +181,7 @@ export const ClassificationStep = ({
       })
     );
 
-    updateProgressionLevel(0, {
+    updateLevel(0, {
       candidates: candidatesForHeading,
     });
 
@@ -193,10 +190,10 @@ export const ClassificationStep = ({
   };
 
   useEffect(() => {
-    if (classificationLevel === 0 && progressionLevels.length === 0) {
+    if (classificationLevel === 0 && levels.length === 0) {
       setClassificationLevel(0);
       // TODO: see if we already do this elsewhere and if it should happen here
-      addToProgressionLevels(HtsLevel.HEADING, []);
+      addLevel([]);
       getSections();
     }
   }, []);
@@ -215,8 +212,8 @@ export const ClassificationStep = ({
     if (
       chapterCandidates &&
       chapterCandidates.length > 0 &&
-      progressionLevels[0] &&
-      progressionLevels[0].candidates.length === 0
+      levels[0] &&
+      levels[0].candidates.length === 0
     ) {
       getHeadings();
     }
@@ -276,8 +273,8 @@ export const ClassificationStep = ({
         <div className="h-full flex flex-col gap-8 overflow-hidden">
           {loading.isLoading && <LoadingIndicator text={loading.text} />}
 
-          {progressionLevels[classificationLevel] &&
-            progressionLevels[classificationLevel].candidates.length > 0 && (
+          {levels[classificationLevel] &&
+            levels[classificationLevel].candidates.length > 0 && (
               <div className="h-full gap-4">
                 <CandidateElements
                   key={`classification-level-${classificationLevel}`}
@@ -295,25 +292,18 @@ export const ClassificationStep = ({
           next={{
             label: "Continue",
             onClick: () => {
-              // Add another classification level IF the current level is the last level in progressionLevels
-              if (classificationLevel === progressionLevels.length - 1) {
+              // Add another classification level IF the current level is the last level in levels
+              if (classificationLevel === levels.length - 1) {
                 const children = getDirectChildrenElements(
-                  progressionLevels[classificationLevel].selection,
+                  levels[classificationLevel].selection,
                   getChapterElements(
-                    progressionLevels[classificationLevel].selection.chapter
+                    levels[classificationLevel].selection.chapter
                   )
                 );
 
                 // if this is the final level, we need to add the children to the progression levels
                 if (children.length > 0) {
-                  addToProgressionLevels(
-                    getHtsLevel(
-                      progressionLevels[classificationLevel].selection.htsno
-                    ),
-                    children,
-                    null,
-                    ""
-                  );
+                  addLevel(children);
                 } else {
                   // TADA! classification complete, do something special
                 }
