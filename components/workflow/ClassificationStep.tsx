@@ -25,8 +25,6 @@ import { StepNavigation } from "./StepNavigation";
 interface ClassificationStepProps {
   setActiveTab: (tab: ClassifyTab) => void;
   setWorkflowStep: (step: WorkflowStep) => void;
-  showExplore: boolean;
-  setShowExplore: (show: boolean) => void;
   classificationLevel: number | undefined;
   setClassificationLevel: (level: number | undefined) => void;
 }
@@ -34,8 +32,6 @@ interface ClassificationStepProps {
 export const ClassificationStep = ({
   setActiveTab,
   setWorkflowStep,
-  showExplore,
-  setShowExplore,
   classificationLevel,
   setClassificationLevel,
 }: ClassificationStepProps) => {
@@ -266,7 +262,7 @@ export const ClassificationStep = ({
               </div>
               {classificationLevel === 0 && (
                 <button
-                  className="btn btn-primary btn-sm flex items-center gap-1"
+                  className="btn btn-primary btn-sm text-white flex items-center gap-1"
                   onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
                   disabled={loading.isLoading}
                 >
