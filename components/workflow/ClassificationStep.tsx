@@ -21,20 +21,20 @@ import { Color } from "../../enums/style";
 import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
 import { ClassifyTab } from "./ClassificationNavigation";
 import { StepNavigation } from "./StepNavigation";
+import { useClassifyTab } from "../../contexts/ClassifyTabContext";
 
-interface ClassificationStepProps {
-  setActiveTab: (tab: ClassifyTab) => void;
+export interface ClassificationStepProps {
   setWorkflowStep: (step: WorkflowStep) => void;
   classificationLevel: number | undefined;
   setClassificationLevel: (level: number | undefined) => void;
 }
 
 export const ClassificationStep = ({
-  setActiveTab,
   setWorkflowStep,
   classificationLevel,
   setClassificationLevel,
 }: ClassificationStepProps) => {
+  const { setActiveTab } = useClassifyTab();
   const [loading, setLoading] = useState<Loader>({
     isLoading: false,
     text: "",

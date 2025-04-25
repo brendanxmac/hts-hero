@@ -2,7 +2,6 @@
 
 import { WorkflowStep } from "../enums/hts";
 import { useState } from "react";
-import { useEffect } from "react";
 import { Explore } from "./Explore";
 import { ClassificationStep } from "./workflow/ClassificationStep";
 import {
@@ -11,10 +10,11 @@ import {
 } from "./workflow/ClassificationNavigation";
 import { DescriptionStep } from "./workflow/DescriptionStep";
 import { AnalysisStep } from "./workflow/AnalysisStep";
+import { useClassifyTab } from "../contexts/ClassifyTabContext";
 
 export const Classify = () => {
+  const { activeTab } = useClassifyTab();
   const [workflowStep, setWorkflowStep] = useState(WorkflowStep.DESCRIPTION);
-  const [activeTab, setActiveTab] = useState<ClassifyTab>(ClassifyTab.CLASSIFY);
   const [classificationLevel, setClassificationLevel] = useState<
     number | undefined
   >(undefined);
@@ -24,8 +24,6 @@ export const Classify = () => {
       {/* Sidebar Navigation */}
       <div className="h-full bg-base-100 col-span-1">
         <ClassificationNavigation
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
           workflowStep={workflowStep}
           setWorkflowStep={setWorkflowStep}
           classificationLevel={classificationLevel}
@@ -47,7 +45,6 @@ export const Classify = () => {
           )}
           {workflowStep === WorkflowStep.CLASSIFICATION && (
             <ClassificationStep
-              setActiveTab={setActiveTab}
               setWorkflowStep={setWorkflowStep}
               classificationLevel={classificationLevel}
               setClassificationLevel={setClassificationLevel}
