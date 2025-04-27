@@ -12,6 +12,7 @@ import PDF from "./PDF";
 import { useChapters } from "../contexts/ChaptersContext";
 import { TertiaryText } from "./TertiaryText";
 import { PrimaryLabel } from "./PrimaryLabel";
+import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 
 interface Props {
   chapter: HtsSectionAndChapterBase;
@@ -21,6 +22,7 @@ export const Chapter = ({ chapter }: Props) => {
   const { number, description, notesPath } = chapter;
   const [showNotes, setShowNotes] = useState(false);
   const { fetchChapter, getChapterElements, loadingChapters } = useChapters();
+  const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
 
   useEffect(() => {
     fetchChapter(number);
@@ -71,6 +73,18 @@ export const Chapter = ({ chapter }: Props) => {
                 key={`${i}-${element.htsno}`}
                 element={element}
                 chapter={chapter.number}
+                onClick={() => {
+                  setBreadcrumbs([
+                    ...breadcrumbs,
+                    {
+                      title: `${element.htsno || element.description.split(" ").slice(0, 2).join(" ") + "..."}`,
+                      element: {
+                        ...element,
+                        chapter: chapter.number,
+                      },
+                    },
+                  ]);
+                }}
               />
             );
           })}

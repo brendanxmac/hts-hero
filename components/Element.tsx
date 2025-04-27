@@ -3,18 +3,15 @@ import {
   ClassificationProgression,
   Navigatable,
 } from "../interfaces/hts";
-import { NavigatableElement } from "./Elements";
 import { useEffect, useState } from "react";
-import { PrimaryText } from "./PrimaryText";
 import {
   getBestClassificationProgression,
   getDirectChildrenElements,
 } from "../libs/hts";
 import { ElementSummary } from "./ElementSummary";
-import { SecondaryText } from "./SecondaryText";
 import { TertiaryText } from "./TertiaryText";
 import SquareIconButton from "./SqaureIconButton";
-import { DocumentTextIcon, SparklesIcon } from "@heroicons/react/24/solid";
+import { DocumentTextIcon } from "@heroicons/react/24/solid";
 import PDF from "./PDF";
 import { notes } from "../public/notes/notes";
 import { useChapters } from "../contexts/ChaptersContext";
@@ -25,11 +22,11 @@ import { SecondaryLabel } from "./SecondaryLabel";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { Color } from "../enums/style";
 import { TertiaryLabel } from "./TertiaryLabel";
+import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
+
 interface Props {
   summaryOnly?: boolean;
   element: HtsElement;
-  breadcrumbs: NavigatableElement[];
-  setBreadcrumbs: (breadcrumbs: NavigatableElement[]) => void;
 }
 
 export interface PDFProps {
@@ -37,13 +34,8 @@ export interface PDFProps {
   file: string;
 }
 
-export const Element = ({
-  element,
-  breadcrumbs,
-  summaryOnly = false,
-}: Props) => {
-  const { htsno, description, chapter, units, general, special, other } =
-    element;
+export const Element = ({ element, summaryOnly = false }: Props) => {
+  const { description, chapter, units, general, special, other } = element;
   const [children, setChildren] = useState<HtsElement[]>([]);
   const [loading, setLoading] = useState<Loader>({
     isLoading: false,
@@ -53,6 +45,7 @@ export const Element = ({
   const { fetchChapter, getChapterElements } = useChapters();
   const { classification, updateLevel: updateProgressionLevel } =
     useClassification();
+  const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
 
   // Check if the element is a candidate in any of the classification progression levels
   const isClassificationCandidate = classification.levels.some((level) =>
@@ -311,6 +304,18 @@ export const Element = ({
                       key={`${i}-${child.htsno}`}
                       element={child}
                       chapter={chapter}
+                      onClick={() => {
+                        setBreadcrumbs([
+                          ...breadcrumbs,
+                          {
+                            title: `${child.htsno || child.description.split(" ").slice(0, 2).join(" ") + "..."}`,
+                            element: {
+                              ...child,
+                              chapter,
+                            },
+                          },
+                        ]);
+                      }}
                     />
                   );
                 })}

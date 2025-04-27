@@ -3,6 +3,7 @@ import { ClassificationProgression } from "../../interfaces/hts";
 import { classNames } from "../../utilities/style";
 import { ElementSummary } from "../ElementSummary";
 import { TertiaryLabel } from "../TertiaryLabel";
+import { SidebarElementSummary } from "./SidebarElementSummary";
 
 interface Props {
   onClick: () => void;
@@ -19,16 +20,15 @@ export const ElementsNavigationStep = ({
 }: Props) => {
   const { candidates, reasoning, selection } = classificationProgression;
 
-  if (!active && selection) {
+  if (selection) {
     // FIXME: This onclick does not work cause the element sums onclick takes priority
     return (
-      <div onClick={onClick}>
-        <ElementSummary
-          element={selection}
-          chapter={selection.chapter}
-          isSidebar
-        />
-      </div>
+      <SidebarElementSummary
+        element={selection}
+        chapter={selection.chapter}
+        isActive={active}
+        onClick={onClick}
+      />
     );
   }
 
