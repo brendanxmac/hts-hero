@@ -8,31 +8,19 @@ import SquareIconButton from "./SqaureIconButton";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import { TertiaryText } from "./TertiaryText";
 import { useClassification } from "../contexts/ClassificationContext";
-import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { Color } from "../enums/style";
 import { SecondaryLabel } from "./SecondaryLabel";
 
 interface Props {
   element: HtsElement;
-  chapter: number;
-  isSidebar?: boolean;
+  onClick: () => void;
 }
 
-export const ElementSummary = ({
-  element,
-  chapter,
-  isSidebar = false,
-}: Props) => {
-  const {
-    htsno,
-    description,
-    indent,
-    recommended: suggested,
-    recommendedReason: suggestedReasoning,
-  } = element;
+export const ElementSummary = ({ element, onClick }: Props) => {
+  const { htsno, description, indent, recommended, recommendedReason } =
+    element;
   const { classification, updateLevel: updateProgressionLevel } =
     useClassification();
-  const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
 
   const isHeadingCandidate = Boolean(
     classification.levels[0] &&
@@ -46,7 +34,7 @@ export const ElementSummary = ({
   return (
     <div className="flex flex-col gap-2 w-full rounded-md bg-base-100 border border-neutral">
       <div className="flex">
-        {isHeading && !isSidebar && (
+        {isHeading && (
           <div className="flex items-center justify-center">
             <div className="px-3">
               {isHeadingCandidate ? (
@@ -95,19 +83,7 @@ export const ElementSummary = ({
 
         <div
           className={`flex items-center justify-between w-full hover:bg-neutral rounded-r-md ${!isHeading && "hover:rounded-md"}`}
-          onClick={(e) => {
-            e.stopPropagation();
-            setBreadcrumbs([
-              ...breadcrumbs,
-              {
-                title: `${htsno || description.split(" ").slice(0, 2).join(" ") + "..."}`,
-                element: {
-                  ...element,
-                  chapter,
-                },
-              },
-            ]);
-          }}
+          onClick={onClick}
         >
           <div className="w-full flex flex-col items-start justify-between gap-1 px-4 py-2">
             {htsno && (
@@ -120,14 +96,14 @@ export const ElementSummary = ({
               <SecondaryLabel value={description} color={Color.WHITE} />
             </div>
 
-            {suggested && (
+            {recommended && (
               <div className="flex flex-col gap-2 bg-base-300 rounded-md p-2">
                 <div className="flex gap-2 text-accent">
                   <SparklesIcon className="h-4 w-4" />
                   <TertiaryText value="Suggested" />
                 </div>
                 <p className="text-sm dark:text-white/90">
-                  {suggestedReasoning}
+                  {recommendedReason}
                 </p>
               </div>
             )}
