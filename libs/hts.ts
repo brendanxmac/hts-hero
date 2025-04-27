@@ -171,6 +171,24 @@ export const extractFirst8DigitHtsCode = (input: string): string => {
   return match ? match[1] : "";
 };
 
+export const getProgressionDescription = (
+  classificationProgression: ClassificationProgression[]
+) => {
+  let fullDescription = "";
+  classificationProgression.forEach((progression, index) => {
+    if (progression.selection) {
+      // if the string has a : at the end, strip it off
+      const desc = progression.selection.description.endsWith(":")
+        ? progression.selection.description.slice(0, -1)
+        : progression.selection.description;
+
+      fullDescription += index === 0 ? `${desc}` : ` > ${desc}`;
+    }
+  });
+
+  return fullDescription;
+};
+
 /**
  * Determines the HTS classification level of a given string.
  *

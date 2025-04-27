@@ -39,7 +39,8 @@ export const ClassificationStep = ({
     text: "",
   });
   const { fetchChapter, getChapterElements } = useChapters();
-  const { classification, addLevel, updateLevel } = useClassification();
+  const { classification, addLevel, updateLevel, setClassification } =
+    useClassification();
   const { articleDescription, levels } = classification;
   const [htsSections, setHtsSections] = useState<HtsSection[]>([]);
   const [sectionCandidates, setSectionCandidates] = useState<
@@ -48,15 +49,11 @@ export const ClassificationStep = ({
   const [chapterCandidates, setChapterCandidates] = useState<
     CandidateSelection[]
   >([]);
+  const [locallySelectedElement, setLocallySelectedElement] = useState<
+    HtsElement | undefined
+  >(undefined);
 
-  const candidatesExistForLevel =
-    levels[classificationLevel] &&
-    levels[classificationLevel].candidates.length > 0;
-
-  const hasSelectionForLevel =
-    candidatesExistForLevel && levels[classificationLevel].selection !== null;
-
-  const canContinue = candidatesExistForLevel && hasSelectionForLevel;
+  const selectionForLevel = levels[classificationLevel]?.selection;
 
   // Get 2-3 Best Sections
   const getSections = async () => {
@@ -223,7 +220,7 @@ export const ClassificationStep = ({
     if (classificationLevel === 0) {
       return "Select the most accurate heading";
     } else if (classificationLevel > 0) {
-      return "Select the best matching element";
+      return "Select the element that best matches the article description";
     }
   };
 
@@ -279,6 +276,8 @@ export const ClassificationStep = ({
                 <CandidateElements
                   key={`classification-level-${classificationLevel}`}
                   indentLevel={classificationLevel}
+                  locallySelectedElement={locallySelectedElement}
+                  setLocallySelectedElement={setLocallySelectedElement}
                 />
               </div>
             )}
@@ -292,25 +291,50 @@ export const ClassificationStep = ({
           next={{
             label: "Continue",
             onClick: () => {
-              // Add another classification level IF the current level is the last level in levels
-              if (classificationLevel === levels.length - 1) {
-                const children = getDirectChildrenElements(
+              // * If a local selection has been made, want to:
+              // 1. Take the current level and update the selection to be the locally selected element
+              // 2. If any children exist for the locally selected element create a new level with those children
+              // 3. Regardless of whether a local selection was made,
+              //    a. Set locally selected to undefined
+              //    b. Increment the classification level
+
+              if (locallySelectedElement) {
+                const newProgressionLevels = classification.levels.slice(
+                  0,
+                  classificationLevel + 1
+                );
+                newProgressionLevels[classificationLevel].selection =
+                  locallySelectedElement;
+
+                const childrenOfSelectedElement = getDirectChildrenElements(
                   levels[classificationLevel].selection,
                   getChapterElements(
                     levels[classificationLevel].selection.chapter
                   )
                 );
 
-                // if this is the final level, we need to add the children to the progression levels
-                if (children.length > 0) {
-                  addLevel(children);
+                if (childrenOfSelectedElement.length > 0) {
+                  setClassification({
+                    ...classification,
+                    levels: [
+                      ...newProgressionLevels,
+                      {
+                        candidates: childrenOfSelectedElement,
+                      },
+                    ],
+                  });
                 } else {
-                  // TADA! classification complete, do something special
+                  setClassification({
+                    ...classification,
+                    levels: newProgressionLevels,
+                  });
                 }
               }
+
+              setLocallySelectedElement(undefined);
               setClassificationLevel(classificationLevel + 1);
             },
-            disabled: !canContinue,
+            disabled: !locallySelectedElement && !selectionForLevel,
           }}
           previous={{
             label: "Back",

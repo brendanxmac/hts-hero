@@ -52,7 +52,7 @@ export const ClassificationNavigation = ({
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex justify-between items-center border-b border-neutral px-4 pt-4">
+      <div className="flex justify-between items-center border-b border-neutral px-4 py-2">
         <div className="flex items-center gap-2">
           <button
             className="btn btn-link btn-primary px-0 gap-0 hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
@@ -92,11 +92,11 @@ export const ClassificationNavigation = ({
         </div>
       </div>
 
-      <div className="h-full flex flex-col gap-8 p-4 overflow-y-scroll">
-        <div className="flex flex-col gap-2">
-          <SecondaryLabel value="Article Details" />
+      <div className="h-full flex flex-col gap-6 p-4 overflow-y-scroll">
+        <div className="flex flex-col gap-4">
+          {/* <SecondaryLabel value="Article Details" /> */}
           <TextNavigationStep
-            title="Description"
+            title="Article Description"
             text={articleDescription}
             active={workflowStep === WorkflowStep.DESCRIPTION}
             icon={
@@ -115,7 +115,7 @@ export const ClassificationNavigation = ({
             }}
           />
           <TextNavigationStep
-            title="Analysis"
+            title="Article Analysis"
             text={articleAnalysis}
             active={workflowStep === WorkflowStep.ANALYSIS}
             icon={

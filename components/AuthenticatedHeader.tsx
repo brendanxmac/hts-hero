@@ -3,6 +3,7 @@ import Image from "next/image";
 import config from "@/config";
 import logo from "@/app/logo.png";
 import ButtonAccount from "./ButtonAccount";
+import ButtonSupport from "./ButtonSupport";
 
 export const AuthenticatedHeader = () => {
   return (
@@ -23,7 +24,8 @@ export const AuthenticatedHeader = () => {
         <span className="font-extrabold text-lg">{config.appName}</span>
       </Link>
 
-      <div className="relative">
+      <div className="flex items-center gap-2">
+        <ButtonSupport />
         <ButtonAccount />
       </div>
     </header>

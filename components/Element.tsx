@@ -10,7 +10,7 @@ import {
   getBestClassificationProgression,
   getDirectChildrenElements,
 } from "../libs/hts";
-import { ElementSum } from "./ElementSum";
+import { ElementSummary } from "./ElementSummary";
 import { SecondaryText } from "./SecondaryText";
 import { TertiaryText } from "./TertiaryText";
 import SquareIconButton from "./SqaureIconButton";
@@ -197,7 +197,7 @@ export const Element = ({
   };
 
   return (
-    <div className="card bg-base-300 w-full flex flex-col items-start justify-between gap-6 p-4 sm:p-6">
+    <div className="card bg-base-300 w-full flex flex-col items-start justify-between gap-6 p-4 sm:p-6 overflow-y-auto">
       <div className="flex items-start justify-between gap-3 w-full">
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-1 mb-4">
@@ -307,7 +307,7 @@ export const Element = ({
               <div className="flex flex-col rounded-md gap-2">
                 {children.map((child, i) => {
                   return (
-                    <ElementSum
+                    <ElementSummary
                       key={`${i}-${child.htsno}`}
                       element={child}
                       chapter={chapter}
