@@ -1,7 +1,7 @@
 import { Color } from "../../enums/style";
 import { ClassificationProgression } from "../../interfaces/hts";
 import { classNames } from "../../utilities/style";
-import { ElementSum } from "../ElementSum";
+import { ElementSummary } from "../ElementSummary";
 import { TertiaryLabel } from "../TertiaryLabel";
 
 interface Props {
@@ -23,7 +23,11 @@ export const ElementsNavigationStep = ({
     // FIXME: This onclick does not work cause the element sums onclick takes priority
     return (
       <div onClick={onClick}>
-        <ElementSum element={selection} chapter={selection.chapter} isSidebar />
+        <ElementSummary
+          element={selection}
+          chapter={selection.chapter}
+          isSidebar
+        />
       </div>
     );
   }

@@ -1,5 +1,6 @@
 import { Color } from "../../enums/style";
 import { classNames } from "../../utilities/style";
+import { SecondaryText } from "../SecondaryText";
 import { TertiaryLabel } from "../TertiaryLabel";
 import { TertiaryText } from "../TertiaryText";
 
@@ -28,8 +29,9 @@ export const TextNavigationStep = ({
   return (
     <div
       className={classNames(
-        "flex flex-col rounded-md px-2 py-4 gap-2",
-        active && "bg-primary/80"
+        "flex flex-col rounded-md gap-2",
+        active && "bg-primary/80",
+        (!text || active) && "py-4 px-2"
       )}
     >
       <div className="flex justify-between items-center">
@@ -42,14 +44,14 @@ export const TextNavigationStep = ({
         </div>
         {!active && button && showButton && (
           <button
-            className="btn btn-sm btn-link hover:text-secondary hover:scale-105 transition-all duration-200 ease-in-out"
+            className="btn btn-xs btn-link hover:text-secondary hover:scale-105 transition-all duration-200 ease-in-out"
             onClick={button.onClick}
           >
             {button.label}
           </button>
         )}
       </div>
-      {text && <TertiaryText value={text} color={Color.WHITE} />}
+      {text && <SecondaryText value={text} color={Color.WHITE} />}
     </div>
   );
 };

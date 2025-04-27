@@ -1,38 +1,25 @@
-import {
-  ClassificationProgression,
-  Classification,
-  HtsElement,
-} from "../interfaces/hts";
+import { Classification, HtsElement } from "../interfaces/hts";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { Loader } from "../interfaces/ui";
 import { CandidateElement } from "./CandidateElement";
 import { useState } from "react";
-import { getBestClassificationProgression } from "../libs/hts";
+import {
+  getBestClassificationProgression,
+  getProgressionDescription,
+} from "../libs/hts";
 import { useClassification } from "../contexts/ClassificationContext";
 
 interface Props {
   indentLevel: number;
+  locallySelectedElement: HtsElement | undefined;
+  setLocallySelectedElement: (element: HtsElement) => void;
 }
 
-const getFullHtsDescription = (
-  classificationProgression: ClassificationProgression[]
-) => {
-  let fullDescription = "";
-  classificationProgression.forEach((progression, index) => {
-    if (progression.selection) {
-      // if the string has a : at the end, strip it off
-      const desc = progression.selection.description.endsWith(":")
-        ? progression.selection.description.slice(0, -1)
-        : progression.selection.description;
-
-      fullDescription += index === 0 ? `${desc}` : ` > ${desc}`;
-    }
-  });
-
-  return fullDescription;
-};
-
-export const CandidateElements = ({ indentLevel }: Props) => {
+export const CandidateElements = ({
+  indentLevel,
+  locallySelectedElement,
+  setLocallySelectedElement,
+}: Props) => {
   const [loading, setLoading] = useState<Loader>({
     isLoading: false,
     text: "",
@@ -68,7 +55,7 @@ export const CandidateElements = ({ indentLevel }: Props) => {
 
     const bestProgressionResponse = await getBestClassificationProgression(
       simplifiedCandidates,
-      getFullHtsDescription(levels),
+      getProgressionDescription(levels),
       articleDescription
     );
 
@@ -83,11 +70,11 @@ export const CandidateElements = ({ indentLevel }: Props) => {
       if (e.uuid === bestCandidate.uuid) {
         return {
           ...e,
-          suggested: true,
-          suggestedReasoning: bestProgressionResponse.logic,
+          recommended: true,
+          recommendedReason: bestProgressionResponse.logic,
         };
       }
-      return { ...e, suggested: false, suggestedReasoning: "" };
+      return { ...e, recommended: false, recommendedReason: "" };
     });
 
     setClassification((prev: Classification) => {
@@ -125,6 +112,8 @@ export const CandidateElements = ({ indentLevel }: Props) => {
                 key={element.uuid}
                 element={element}
                 indentLevel={indentLevel}
+                locallySelectedElement={locallySelectedElement}
+                setLocallySelectedElement={setLocallySelectedElement}
               />
             ))}
           </div>

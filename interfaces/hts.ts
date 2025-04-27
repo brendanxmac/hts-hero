@@ -57,8 +57,8 @@ export interface HtsElement {
   quotaQuantity: string | null;
   additionalDuties: string | null;
   children?: HtsElement[];
-  suggested?: boolean;
-  suggestedReasoning?: string;
+  recommended?: boolean;
+  recommendedReason?: string;
 }
 
 export interface Footnote {

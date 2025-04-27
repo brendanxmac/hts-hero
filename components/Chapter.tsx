@@ -1,12 +1,11 @@
 import { HtsSectionAndChapterBase } from "../interfaces/hts";
-import { NavigatableElement } from "./Elements";
 import { useEffect, useState } from "react";
 import {
   getDirectChildrenElements,
   getElementsAtIndentLevel,
 } from "../libs/hts";
 import { LoadingIndicator } from "./LoadingIndicator";
-import { ElementSum } from "./ElementSum";
+import { ElementSummary } from "./ElementSummary";
 import SquareIconButton from "./SqaureIconButton";
 import { DocumentTextIcon } from "@heroicons/react/24/solid";
 import PDF from "./PDF";
@@ -16,11 +15,9 @@ import { PrimaryLabel } from "./PrimaryLabel";
 
 interface Props {
   chapter: HtsSectionAndChapterBase;
-  breadcrumbs: NavigatableElement[];
-  setBreadcrumbs: (breadcrumbs: NavigatableElement[]) => void;
 }
 
-export const Chapter = ({ chapter, breadcrumbs, setBreadcrumbs }: Props) => {
+export const Chapter = ({ chapter }: Props) => {
   const { number, description, notesPath } = chapter;
   const [showNotes, setShowNotes] = useState(false);
   const { fetchChapter, getChapterElements, loadingChapters } = useChapters();
@@ -46,7 +43,7 @@ export const Chapter = ({ chapter, breadcrumbs, setBreadcrumbs }: Props) => {
   });
 
   return (
-    <div className="card flex flex-col w-full rounded-md bg-base-300 transition duration-100 ease-in-out cursor-pointer">
+    <div className="card flex flex-col w-full rounded-md bg-base-300 transition duration-100 ease-in-out cursor-pointer overflow-y-auto">
       <div className="flex items-start justify-between gap-3 pt-4 px-4 sm:pt-6 sm:px-6 pb-2">
         <div className="flex flex-col gap-2">
           <div className="shrink-0">
@@ -70,7 +67,7 @@ export const Chapter = ({ chapter, breadcrumbs, setBreadcrumbs }: Props) => {
         <div className="flex flex-col gap-2">
           {elementsWithChildren.map((element, i) => {
             return (
-              <ElementSum
+              <ElementSummary
                 key={`${i}-${element.htsno}`}
                 element={element}
                 chapter={chapter.number}

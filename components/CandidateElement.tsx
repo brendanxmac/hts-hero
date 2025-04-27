@@ -27,23 +27,32 @@ import { ClassifyTab } from "./workflow/ClassificationNavigation";
 interface Props {
   element: HtsElement;
   indentLevel: number;
+  locallySelectedElement: HtsElement | undefined;
+  setLocallySelectedElement: (element: HtsElement) => void;
 }
 
-export const CandidateElement = ({ element, indentLevel }: Props) => {
-  const { htsno, chapter, description, suggested, suggestedReasoning, indent } =
-    element;
+export const CandidateElement = ({
+  element,
+  indentLevel,
+  locallySelectedElement,
+  setLocallySelectedElement,
+}: Props) => {
+  const {
+    htsno,
+    chapter,
+    description,
+    recommended,
+    recommendedReason,
+    indent,
+  } = element;
   const { fetchChapter } = useChapters();
   const { addBreadcrumb, clearBreadcrumbs } = useBreadcrumbs();
   const { setActiveTab } = useClassifyTab();
   const { findChapterByNumber } = useHtsSections();
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
   const [loading, setLoading] = useState(false);
-  const {
-    classification,
-    updateLevel: updateProgressionLevel,
-    addLevel: addToProgressionLevels,
-    setClassification,
-  } = useClassification();
+  const { classification, updateLevel, addLevel, setClassification } =
+    useClassification();
 
   useEffect(() => {
     const loadChapterData = async () => {
@@ -55,52 +64,53 @@ export const CandidateElement = ({ element, indentLevel }: Props) => {
   }, [chapter, fetchChapter]);
 
   // Check all progression levels to see if this element is selected in any of them
-  const isSelected = Boolean(
+  const isLevelSelection = Boolean(
     classification.levels.some(
       (level) => level.selection && level.selection.uuid === element.uuid
     )
   );
 
+  const isLocallySelected = locallySelectedElement?.uuid === element.uuid;
+
   return (
     <div
       className={classNames(
         "flex w-full rounded-md bg-base-100 p-4 gap-4 transition duration-100 ease-in-out",
-        // FIXME: this won't work in daisyUI v5, https://chatgpt.com/c/680acac7-5db4-8000-a309-b4ba81c63e8c
-        isSelected
-          ? "dark:shadow-[inset_0_0_0_4px_oklch(var(--p))] shadow-[inset_0_0_0_4px_oklch(var(--p))]"
-          : "hover:cursor-pointer hover:bg-base-200 dark:shadow-[inset_0_0_0_1px_oklch(var(--n))]"
+        // FIXME: this inset syntax won't work in daisyUI v5, https://chatgpt.com/c/680acac7-5db4-8000-a309-b4ba81c63e8c
+        isLevelSelection &&
+          !locallySelectedElement &&
+          "shadow-[inset_0_0_0_4px_oklch(var(--p))]",
+        isLevelSelection &&
+          locallySelectedElement &&
+          !isLocallySelected &&
+          "shadow-[inset_0_0_0_2px_oklch(var(--nc))]",
+        isLocallySelected && "shadow-[inset_0_0_0_4px_oklch(var(--p))]",
+        !isLevelSelection &&
+          !isLocallySelected &&
+          "hover:cursor-pointer hover:bg-base-200 shadow-[inset_0_0_0_1px_oklch(var(--n))]"
       )}
       onClick={() => {
-        if (isSelected) {
-          const newClassificationProgression = classification.levels.slice(
-            0,
-            indentLevel + 1
-          );
-          newClassificationProgression[indentLevel].selection = null;
-
-          setClassification({
-            ...classification,
-            levels: newClassificationProgression,
-          });
+        if (isLocallySelected) {
+          setLocallySelectedElement(undefined);
         } else {
-          updateProgressionLevel(indentLevel, { selection: element });
+          setLocallySelectedElement(element);
 
-          clearBreadcrumbs();
-          const ch = findChapterByNumber(element.chapter);
-          if (ch) {
-            addBreadcrumb({
-              type: Navigatable.CHAPTER,
-              ...ch,
-            });
-          }
-          addBreadcrumb(element);
+          // clearBreadcrumbs();
+          // const ch = findChapterByNumber(element.chapter);
+          // if (ch) {
+          //   addBreadcrumb({
+          //     type: Navigatable.CHAPTER,
+          //     ...ch,
+          //   });
+          // }
+          // addBreadcrumb(element);
         }
       }}
     >
       <div className="flex flex-col w-full gap-4">
         <div className="flex items-start justify-between">
           <div className="w-full flex items-center justify-between gap-2">
-            <SecondaryText value={htsno ? `${htsno}` : description} />
+            <SecondaryText value={htsno ? `${htsno}` : "Prequalifier"} />
             <div className="flex gap-2">
               <SquareIconButton
                 icon={<DocumentTextIcon className="h-4 w-4" />}
@@ -141,7 +151,7 @@ export const CandidateElement = ({ element, indentLevel }: Props) => {
                 <SquareIconButton
                   icon={<TrashIcon className="h-4 w-4 text-error" />}
                   onClick={() => {
-                    if (isSelected) {
+                    if (isLevelSelection) {
                       const newClassificationProgression =
                         classification.levels.slice(0, indentLevel + 1);
                       newClassificationProgression[indentLevel].selection =
@@ -169,7 +179,7 @@ export const CandidateElement = ({ element, indentLevel }: Props) => {
                         ].candidates.filter(
                           (candidate) => candidate.uuid !== element.uuid
                         );
-                      updateProgressionLevel(indentLevel, {
+                      updateLevel(indentLevel, {
                         candidates:
                           newClassificationProgression[indentLevel].candidates,
                       });
@@ -182,15 +192,15 @@ export const CandidateElement = ({ element, indentLevel }: Props) => {
           </div>
         </div>
 
-        {htsno && <SecondaryLabel value={description} color={Color.WHITE} />}
+        <SecondaryLabel value={description} color={Color.WHITE} />
 
-        {suggested && (
+        {recommended && (
           <div className="flex flex-col gap-2 bg-base-300 rounded-md p-2">
             <div className="flex gap-2 text-accent">
               <SparklesIcon className="h-4 w-4" />
               <TertiaryText value="Suggested" />
             </div>
-            <p className="text-sm dark:text-white/90">{suggestedReasoning}</p>
+            <p className="text-sm dark:text-white/90">{recommendedReason}</p>
           </div>
         )}
       </div>
