@@ -1,37 +1,18 @@
 "use client";
 
-import {
-  Bars3BottomLeftIcon,
-  CheckIcon,
-  MagnifyingGlassIcon,
-} from "@heroicons/react/24/solid";
+import { Bars3BottomLeftIcon } from "@heroicons/react/24/solid";
 import { WorkflowStep } from "../../enums/hts";
 import { SecondaryLabel } from "../SecondaryLabel";
 import { classNames } from "../../utilities/style";
 import { useClassification } from "../../contexts/ClassificationContext";
-import { IconTab } from "../../interfaces/tab";
 import { ChartPieIcon } from "@heroicons/react/16/solid";
 import { HomeIcon } from "@heroicons/react/24/solid";
 import { TextNavigationStep } from "./TextNavigationStep";
 import { ElementsNavigationStep } from "./ElementsNavigationStep";
 import { Color } from "../../enums/style";
 import { useClassifyTab } from "../../contexts/ClassifyTabContext";
-
-export enum ClassifyTab {
-  CLASSIFY = "classify",
-  EXPLORE = "explore",
-}
-
-export const tabs: IconTab<ClassifyTab>[] = [
-  {
-    value: ClassifyTab.CLASSIFY,
-    icon: <CheckIcon className="w-5 h-5" />,
-  },
-  {
-    value: ClassifyTab.EXPLORE,
-    icon: <MagnifyingGlassIcon className="w-5 h-5" />,
-  },
-];
+import { ClassifyTab } from "../../enums/classify";
+import { ClassifyTabs } from "../../constants/classify";
 
 export interface ClassificationNavigationProps {
   workflowStep: WorkflowStep;
@@ -76,7 +57,7 @@ export const ClassificationNavigation = ({
           role="tablist"
           className="tabs tabs-boxed tabs-sm bg-primary-content p-1.5 gap-1 rounded-xl"
         >
-          {tabs.map((tab) => (
+          {ClassifyTabs.map((tab) => (
             <a
               key={tab.value}
               role="tab"
@@ -93,16 +74,16 @@ export const ClassificationNavigation = ({
       </div>
 
       <div className="h-full flex flex-col gap-6 p-4 overflow-y-scroll">
-        <div className="flex flex-col gap-4">
-          {/* <SecondaryLabel value="Article Details" /> */}
+        <div className="flex flex-col gap-8">
           <TextNavigationStep
+            large
             title="Article Description"
             text={articleDescription}
             active={workflowStep === WorkflowStep.DESCRIPTION}
             icon={
               <Bars3BottomLeftIcon
                 className={classNames(
-                  "w-5 h-5",
+                  "w-5 h-5 m-1",
                   workflowStep === WorkflowStep.DESCRIPTION
                     ? "text-white"
                     : "text-content-neutral"
@@ -115,13 +96,14 @@ export const ClassificationNavigation = ({
             }}
           />
           <TextNavigationStep
+            large
             title="Article Analysis"
             text={articleAnalysis}
             active={workflowStep === WorkflowStep.ANALYSIS}
             icon={
               <ChartPieIcon
                 className={classNames(
-                  "w-5 h-5",
+                  "w-5 h-5 m-1",
                   workflowStep === WorkflowStep.ANALYSIS
                     ? "text-white"
                     : "text-content-neutral"
@@ -130,7 +112,7 @@ export const ClassificationNavigation = ({
             }
             showButton={Boolean(articleDescription)}
             button={{
-              label: "Edit",
+              label: articleAnalysis.length === 0 ? "Add" : "Edit",
               onClick: () => setWorkflowStep(WorkflowStep.ANALYSIS),
             }}
           />

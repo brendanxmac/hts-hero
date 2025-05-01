@@ -19,9 +19,9 @@ export default function SquareIconButton({
     <button
       disabled={disabled}
       className={classNames(
-        `btn btn-xs btn-square shrink-0 text-white hover:text-white hover:shadow-md transition-all duration-200 border-none`,
+        `btn btn-xs btn-square shrink-0 text-white hover:text-white hover:shadow-md transition-all duration-100 border-none hover:cursor-pointer`,
         transparent
-          ? `bg-${color}/30 hover:bg-${color}/80`
+          ? `bg-transparent hover:bg-${color}/80`
           : `bg-${color} hover:btn-secondary`
       )}
       onClick={(e) => {

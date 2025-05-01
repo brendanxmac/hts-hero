@@ -54,13 +54,15 @@ export const AnalysisStep = ({
       <div className="w-full max-w-3xl mx-auto px-8">
         <StepNavigation
           next={{
-            label: "Continue",
+            label:
+              localAnalysis.length === 0 && analysis.length === 0
+                ? "Skip"
+                : "Continue",
             onClick: () => {
               setAnalysis(localAnalysis);
               setWorkflowStep(WorkflowStep.CLASSIFICATION);
               setClassificationLevel(0);
             },
-            disabled: localAnalysis.length === 0,
           }}
           previous={{
             label: "Back",
