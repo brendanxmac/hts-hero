@@ -18,10 +18,9 @@ import { TertiaryText } from "../TertiaryText";
 import { PrimaryLabel } from "../PrimaryLabel";
 import { Color } from "../../enums/style";
 import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
-import { ClassifyTab } from "./ClassificationNavigation";
 import { StepNavigation } from "./StepNavigation";
 import { useClassifyTab } from "../../contexts/ClassifyTabContext";
-
+import { ClassifyTab } from "../../enums/classify";
 export interface ClassificationStepProps {
   setWorkflowStep: (step: WorkflowStep) => void;
   classificationLevel: number | undefined;
@@ -124,8 +123,6 @@ export const ClassificationStep = ({
       })
     );
 
-    console.log("candidatesForChapter", candidatesForChapter);
-
     setChapterCandidates(candidatesForChapter);
     setLoading({ isLoading: false, text: "" });
   };
@@ -226,7 +223,7 @@ export const ClassificationStep = ({
 
   const getStepInstructions = () => {
     if (classificationLevel === 0) {
-      return "You can seach for and add candidates to the list using our explorer 👉";
+      return "You can seach for and add candidates to the list using the explorer ->";
     } else if (classificationLevel > 0) {
       return "Which candidate most accurately matches the article description if it was added onto the in-progress classification?";
     }
@@ -242,8 +239,8 @@ export const ClassificationStep = ({
               value={`Step ${2 + classificationLevel + 1}`}
               color={Color.NEUTRAL_CONTENT}
             />
-            <div className="w-full flex justify-between items-center">
-              <div className="flex flex-col gap-2">
+            <div className="w-full flex justify-between items-end">
+              <div className="flex flex-col">
                 <PrimaryLabel
                   value={getStepDescription()}
                   color={Color.WHITE}

@@ -4,14 +4,12 @@ import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { HtsElement, Navigatable } from "../interfaces/hts";
 import SquareIconButton from "./SqaureIconButton";
 import {
-  DocumentTextIcon,
-  PencilSquareIcon,
-} from "@heroicons/react/24/outline";
-import {
-  MagnifyingGlassIcon,
   SparklesIcon,
   TrashIcon,
+  DocumentTextIcon,
+  PencilSquareIcon,
 } from "@heroicons/react/24/solid";
+import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
 import { PDFProps } from "./Element";
 import PDF from "./PDF";
 import { classNames } from "../utilities/style";
@@ -22,8 +20,7 @@ import { useClassification } from "../contexts/ClassificationContext";
 import { Color } from "../enums/style";
 import { SecondaryLabel } from "./SecondaryLabel";
 import { useClassifyTab } from "../contexts/ClassifyTabContext";
-import { ClassifyTab } from "./workflow/ClassificationNavigation";
-
+import { ClassifyTab } from "../enums/classify";
 interface Props {
   element: HtsElement;
   indentLevel: number;
@@ -186,6 +183,7 @@ export const CandidateElement = ({
                     }
                   }}
                   color="error"
+                  transparent
                 />
               )}
             </div>

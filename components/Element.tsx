@@ -47,11 +47,6 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
     useClassification();
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
 
-  // Check if the element is a candidate in any of the classification progression levels
-  const isClassificationCandidate = classification.levels.some((level) =>
-    level.candidates.find((candidate) => candidate.uuid === element.uuid)
-  );
-
   useEffect(() => {
     const loadChapterData = async () => {
       const chapterElements = getChapterElements(chapter);

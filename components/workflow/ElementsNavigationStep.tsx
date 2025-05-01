@@ -1,7 +1,6 @@
 import { Color } from "../../enums/style";
 import { ClassificationProgression } from "../../interfaces/hts";
 import { classNames } from "../../utilities/style";
-import { ElementSummary } from "../ElementSummary";
 import { TertiaryLabel } from "../TertiaryLabel";
 import { SidebarElementSummary } from "./SidebarElementSummary";
 
@@ -21,7 +20,6 @@ export const ElementsNavigationStep = ({
   const { candidates, reasoning, selection } = classificationProgression;
 
   if (selection) {
-    // FIXME: This onclick does not work cause the element sums onclick takes priority
     return (
       <SidebarElementSummary
         element={selection}

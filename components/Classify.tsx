@@ -4,13 +4,11 @@ import { WorkflowStep } from "../enums/hts";
 import { useState } from "react";
 import { Explore } from "./Explore";
 import { ClassificationStep } from "./workflow/ClassificationStep";
-import {
-  ClassificationNavigation,
-  ClassifyTab,
-} from "./workflow/ClassificationNavigation";
+import { ClassificationNavigation } from "./workflow/ClassificationNavigation";
 import { DescriptionStep } from "./workflow/DescriptionStep";
 import { AnalysisStep } from "./workflow/AnalysisStep";
 import { useClassifyTab } from "../contexts/ClassifyTabContext";
+import { ClassifyTab } from "../enums/classify";
 
 export const Classify = () => {
   const { activeTab } = useClassifyTab();

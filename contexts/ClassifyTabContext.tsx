@@ -1,8 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, ReactNode } from "react";
-import { ClassifyTab } from "../components/workflow/ClassificationNavigation";
-
+import { ClassifyTab } from "../enums/classify";
 interface ClassifyTabContextType {
   activeTab: ClassifyTab;
   setActiveTab: (tab: ClassifyTab) => void;
