@@ -3,7 +3,6 @@ import { classNames } from "../../utilities/style";
 import { PrimaryText } from "../PrimaryText";
 import { SecondaryText } from "../SecondaryText";
 import { TertiaryLabel } from "../TertiaryLabel";
-import { TertiaryText } from "../TertiaryText";
 
 interface Button {
   label: string;

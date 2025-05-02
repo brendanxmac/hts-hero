@@ -54,6 +54,31 @@ export const ClassificationStep = ({
 
   const selectionForLevel = levels[classificationLevel]?.selection;
 
+  const selectedElementIsFinalElement = () => {
+    const selectedElement = locallySelectedElement || selectionForLevel;
+
+    if (!selectedElement) {
+      return false;
+    }
+
+    return (
+      getDirectChildrenElements(
+        selectedElement,
+        getChapterElements(selectedElement.chapter)
+      ).length === 0
+    );
+  };
+
+  const getNextNavigationLabel = () => {
+    const isFinalElement = selectedElementIsFinalElement();
+
+    if (isFinalElement) {
+      return "Finish";
+    } else {
+      return "Continue";
+    }
+  };
+
   // Get 2-3 Best Sections
   const getSections = async () => {
     setLoading({ isLoading: true, text: "Finding Best Sections" });
@@ -286,7 +311,7 @@ export const ClassificationStep = ({
       <div className="w-full max-w-3xl mx-auto px-8">
         <StepNavigation
           next={{
-            label: "Continue",
+            label: getNextNavigationLabel(),
             onClick: () => {
               // * If a local selection has been made, want to:
               // 1. Take the current level and update the selection to be the locally selected element
@@ -296,7 +321,7 @@ export const ClassificationStep = ({
               //    b. Increment the classification level
 
               if (locallySelectedElement) {
-                const newProgressionLevels = classification.levels.slice(
+                const newProgressionLevels = levels.slice(
                   0,
                   classificationLevel + 1
                 );
@@ -304,10 +329,8 @@ export const ClassificationStep = ({
                   locallySelectedElement;
 
                 const childrenOfSelectedElement = getDirectChildrenElements(
-                  levels[classificationLevel].selection,
-                  getChapterElements(
-                    levels[classificationLevel].selection.chapter
-                  )
+                  locallySelectedElement,
+                  getChapterElements(locallySelectedElement.chapter)
                 );
 
                 if (childrenOfSelectedElement.length > 0) {
@@ -320,16 +343,19 @@ export const ClassificationStep = ({
                       },
                     ],
                   });
+                  setClassificationLevel(classificationLevel + 1);
                 } else {
                   setClassification({
                     ...classification,
                     levels: newProgressionLevels,
                   });
+                  // TODO: Trigger the completion of the classification
+                  // TODO: Trigger the completion of the classification
+                  // TODO: Trigger the completion of the classification
                 }
               }
 
               setLocallySelectedElement(undefined);
-              setClassificationLevel(classificationLevel + 1);
             },
             disabled: !locallySelectedElement && !selectionForLevel,
           }}
