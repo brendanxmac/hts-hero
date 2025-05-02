@@ -56,9 +56,9 @@ export interface HtsElement {
   footnotes: Footnote[];
   quotaQuantity: string | null;
   additionalDuties: string | null;
-  children?: HtsElement[];
   recommended?: boolean;
   recommendedReason?: string;
+  notes?: string;
 }
 
 export interface Footnote {

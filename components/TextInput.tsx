@@ -3,14 +3,17 @@
 import { useRef, ChangeEvent, useState, useEffect } from "react";
 import { classNames } from "../utilities/style";
 import { TertiaryText } from "./TertiaryText";
+import SquareIconButton from "./SqaureIconButton";
+import { CheckIcon } from "@heroicons/react/24/solid";
 
 interface Props {
   label?: string;
   placeholder: string;
   defaultValue?: string;
-  onSubmit: (value: string) => void;
+  onSubmit?: (value: string) => void;
   onChange?: (value: string) => void;
   disabled?: boolean;
+  showCharacterCount?: boolean;
 }
 
 export default function TextInput({
@@ -18,7 +21,9 @@ export default function TextInput({
   placeholder,
   defaultValue,
   onChange,
+  onSubmit,
   disabled,
+  showCharacterCount = true,
 }: Props) {
   const characterLimit = 500;
   const [localProductDescription, setLocalProductDescription] = useState(
@@ -46,7 +51,14 @@ export default function TextInput({
   }, []);
 
   return (
-    <div className="w-full flex flex-col gap-2 border-2 border-base-content/50 rounded-md">
+    <div
+      className="w-full flex flex-col gap-2 border-2 border-base-content/50 rounded-md"
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        textareaRef.current?.focus();
+      }}
+    >
       {label && <TertiaryText value={label} />}
       <div
         className={
@@ -59,30 +71,43 @@ export default function TextInput({
           rows={1}
           value={localProductDescription}
           onChange={handleInputChange}
-          className="textarea text-base min-h-24 max-h-96 rounded-none resize-none bg-inherit text-black dark:text-white placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-0"
+          className="textarea text-base max-h-96 rounded-none resize-none bg-inherit text-black dark:text-white placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-0"
         ></textarea>
 
-        <div className="flex justify-between items-center">
-          <p
-            className={classNames(
-              "text-neutral-500 text-xs",
-              localProductDescription.length > characterLimit
-                ? "font-bold"
-                : undefined
-            )}
-          >
-            <span
-              className={
-                localProductDescription.length > characterLimit
-                  ? "text-red-600"
-                  : undefined
-              }
-            >
-              {localProductDescription.length}
-            </span>
-            {` / ${characterLimit}`}
-          </p>
-        </div>
+        {showCharacterCount ||
+          (onSubmit && (
+            <div className="flex justify-between items-center">
+              {showCharacterCount && (
+                <p
+                  className={classNames(
+                    "text-neutral-500 text-xs",
+                    localProductDescription.length > characterLimit
+                      ? "font-bold"
+                      : undefined
+                  )}
+                >
+                  <span
+                    className={
+                      localProductDescription.length > characterLimit
+                        ? "text-red-600"
+                        : undefined
+                    }
+                  >
+                    {localProductDescription.length}
+                  </span>
+                  {` / ${characterLimit}`}
+                </p>
+              )}
+              {onSubmit && (
+                <SquareIconButton
+                  icon={<CheckIcon className="h-4 w-4" />}
+                  onClick={() => {
+                    onSubmit(localProductDescription);
+                  }}
+                />
+              )}
+            </div>
+          ))}
       </div>
     </div>
   );

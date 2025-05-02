@@ -21,6 +21,8 @@ import { Color } from "../enums/style";
 import { SecondaryLabel } from "./SecondaryLabel";
 import { useClassifyTab } from "../contexts/ClassifyTabContext";
 import { ClassifyTab } from "../enums/classify";
+import TextInput from "./TextInput";
+import { TertiaryLabel } from "./TertiaryLabel";
 interface Props {
   element: HtsElement;
   indentLevel: number;
@@ -48,8 +50,10 @@ export const CandidateElement = ({
   const { findChapterByNumber } = useHtsSections();
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
   const [loading, setLoading] = useState(false);
-  const { classification, updateLevel, addLevel, setClassification } =
+  const { classification, updateLevel, setClassification } =
     useClassification();
+  const [showNotes, setShowNotes] = useState(false);
+  const [notes, setNotes] = useState<string>("");
 
   useEffect(() => {
     const loadChapterData = async () => {
@@ -140,9 +144,9 @@ export const CandidateElement = ({
               <SquareIconButton
                 icon={<PencilSquareIcon className="h-4 w-4" />}
                 onClick={() => {
-                  console.log("Add notes for element");
+                  setShowNotes(!showNotes);
                 }}
-                transparent
+                transparent={!Boolean(element.notes)}
               />
               {indent === "0" && (
                 <SquareIconButton
@@ -191,6 +195,30 @@ export const CandidateElement = ({
         </div>
 
         <SecondaryLabel value={description} color={Color.WHITE} />
+
+        {showNotes && (
+          <div className="flex flex-col gap-2 rounded-md">
+            <TertiaryLabel value="Notes" />
+            <TextInput
+              defaultValue={element.notes}
+              placeholder="Why is this candidate good or bad compared to others for the classification?"
+              showCharacterCount={false}
+              onChange={(str) => {
+                const updatedCandidates = classification.levels[
+                  indentLevel
+                ].candidates.map((candidate) => {
+                  if (candidate.uuid === element.uuid) {
+                    return { ...candidate, notes: str };
+                  }
+                  return candidate;
+                });
+                updateLevel(indentLevel, {
+                  candidates: updatedCandidates,
+                });
+              }}
+            />
+          </div>
+        )}
 
         {recommended && (
           <div className="flex flex-col gap-2 bg-base-300 rounded-md p-2">
