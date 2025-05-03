@@ -11,7 +11,7 @@ import { TextNavigationStep } from "./TextNavigationStep";
 import { ElementsNavigationStep } from "./ElementsNavigationStep";
 import { Color } from "../../enums/style";
 import { useClassifyTab } from "../../contexts/ClassifyTabContext";
-import { ClassifyTab } from "../../enums/classify";
+import { ClassifyPage, ClassifyTab } from "../../enums/classify";
 import { ClassifyTabs } from "../../constants/classify";
 
 export interface ClassificationNavigationProps {
@@ -19,6 +19,7 @@ export interface ClassificationNavigationProps {
   setWorkflowStep: (step: WorkflowStep) => void;
   classificationLevel: number | undefined;
   setClassificationLevel: (level: number | undefined) => void;
+  setPage: (page: ClassifyPage) => void;
 }
 
 export const ClassificationNavigation = ({
@@ -26,6 +27,7 @@ export const ClassificationNavigation = ({
   setWorkflowStep,
   classificationLevel,
   setClassificationLevel,
+  setPage,
 }: ClassificationNavigationProps) => {
   const { activeTab, setActiveTab } = useClassifyTab();
   const { classification } = useClassification();
@@ -38,9 +40,7 @@ export const ClassificationNavigation = ({
           <button
             className="btn btn-link btn-primary px-0 gap-0 hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
             onClick={() => {
-              console.log(
-                "Back clicked, need to navigate back to home view..."
-              );
+              setPage(ClassifyPage.CLASSIFICATIONS);
             }}
           >
             <HomeIcon className="w-5 h-5" />

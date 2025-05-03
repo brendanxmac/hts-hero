@@ -9,8 +9,13 @@ import { DescriptionStep } from "./workflow/DescriptionStep";
 import { AnalysisStep } from "./workflow/AnalysisStep";
 import { useClassifyTab } from "../contexts/ClassifyTabContext";
 import { ClassifyTab } from "../enums/classify";
+import { ClassifyPage } from "../enums/classify";
 
-export const Classify = () => {
+interface Props {
+  setPage: (page: ClassifyPage) => void;
+}
+
+export const Classify = ({ setPage }: Props) => {
   const { activeTab } = useClassifyTab();
   const [workflowStep, setWorkflowStep] = useState(WorkflowStep.DESCRIPTION);
   const [classificationLevel, setClassificationLevel] = useState<
@@ -26,6 +31,7 @@ export const Classify = () => {
           setWorkflowStep={setWorkflowStep}
           classificationLevel={classificationLevel}
           setClassificationLevel={setClassificationLevel}
+          setPage={setPage}
         />
       </div>
 
