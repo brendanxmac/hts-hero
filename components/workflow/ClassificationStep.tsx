@@ -21,6 +21,8 @@ import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
 import { StepNavigation } from "./StepNavigation";
 import { useClassifyTab } from "../../contexts/ClassifyTabContext";
 import { ClassifyTab } from "../../enums/classify";
+import { createClassification } from "../../libs/classification";
+import { ConfirmationCard } from "../ConfirmationCard";
 export interface ClassificationStepProps {
   setWorkflowStep: (step: WorkflowStep) => void;
   classificationLevel: number | undefined;
@@ -51,6 +53,7 @@ export const ClassificationStep = ({
   const [locallySelectedElement, setLocallySelectedElement] = useState<
     HtsElement | undefined
   >(undefined);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const selectionForLevel = levels[classificationLevel]?.selection;
 
@@ -254,6 +257,12 @@ export const ClassificationStep = ({
     }
   };
 
+  const completeClassification = async () => {
+    setLoading({ isLoading: true, text: "Completing Classification" });
+    await createClassification(classification);
+    setLoading({ isLoading: false, text: "" });
+  };
+
   return (
     <div className="h-full flex flex-col pt-8">
       {/* Content */}
@@ -349,9 +358,7 @@ export const ClassificationStep = ({
                     ...classification,
                     levels: newProgressionLevels,
                   });
-                  // TODO: Trigger the completion of the classification
-                  // TODO: Trigger the completion of the classification
-                  // TODO: Trigger the completion of the classification
+                  setShowConfirmation(true);
                 }
               }
 
@@ -371,6 +378,16 @@ export const ClassificationStep = ({
           }}
         />
       </div>
+      {showConfirmation && (
+        <ConfirmationCard
+          title="Complete Classification?"
+          description="Are you sure you want to complete the classification?"
+          confirmText="Complete"
+          cancelText="Cancel"
+          onConfirm={completeClassification}
+          onCancel={() => setShowConfirmation(false)}
+        />
+      )}
     </div>
   );
 };

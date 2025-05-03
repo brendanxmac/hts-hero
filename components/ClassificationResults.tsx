@@ -66,6 +66,7 @@ export const ClassificationResults = ({
     setHeadingCandidates([]);
     setClassification({
       articleDescription: productDescription,
+      articleAnalysis: "",
       progressionDescription: "",
       levels: [],
     });
