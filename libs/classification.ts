@@ -1,4 +1,4 @@
-import { Classification } from "../interfaces/hts";
+import { Classification, FetchedClassification } from "../interfaces/hts";
 import apiClient from "./api";
 
 export const createClassification = async (classification: Classification) => {
@@ -9,8 +9,12 @@ export const createClassification = async (classification: Classification) => {
   return response.data;
 };
 
-export const fetchClassifications = async (): Promise<Classification[]> => {
-  const response = await apiClient.get("/classification/fetch");
-  // @ts-ignore
-  return response.classifications;
+export const fetchClassifications = async (): Promise<
+  FetchedClassification[]
+> => {
+  const classifications: FetchedClassification[] = await apiClient.get(
+    "/classification/fetch"
+  );
+
+  return classifications;
 };

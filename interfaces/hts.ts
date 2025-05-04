@@ -112,6 +112,16 @@ export interface CandidateSelection {
   logic: string;
 }
 
+export interface FetchedClassification {
+  id: string;
+  user_id: string;
+  description: string;
+  analysis: string;
+  progression_description: string;
+  decisions: ClassificationProgression[];
+  created_at: string;
+}
+
 export interface Classification {
   articleDescription: string;
   articleAnalysis: string;
