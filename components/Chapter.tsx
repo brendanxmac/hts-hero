@@ -13,6 +13,9 @@ import { useChapters } from "../contexts/ChaptersContext";
 import { TertiaryText } from "./TertiaryText";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
+import { SecondaryText } from "./SecondaryText";
+import { TertiaryLabel } from "./TertiaryLabel";
+import { SecondaryLabel } from "./SecondaryLabel";
 
 interface Props {
   chapter: HtsSectionAndChapterBase;
@@ -49,10 +52,10 @@ export const Chapter = ({ chapter }: Props) => {
       <div className="flex items-start justify-between gap-3 pt-4 px-4 sm:pt-6 sm:px-6 pb-2">
         <div className="flex flex-col gap-2">
           <div className="shrink-0">
-            <TertiaryText value={`Chapter ${number.toString()}`} />
+            <PrimaryLabel value={`Chapter ${number.toString()}`} />
           </div>
 
-          <PrimaryLabel value={description} />
+          <SecondaryText value={description} />
         </div>
         <SquareIconButton
           icon={<DocumentTextIcon className="h-4 w-4" />}
@@ -61,8 +64,8 @@ export const Chapter = ({ chapter }: Props) => {
         />
       </div>
 
-      <div className="flex flex-col rounded-md gap-4 p-4 sm:px-6">
-        <TertiaryText value="Headings:" />
+      <div className="flex flex-col rounded-md gap-4 p-4 sm:px-6 mt-5">
+        <SecondaryLabel value="Headings:" />
         {loadingChapters.includes(number) && (
           <LoadingIndicator text="Fetching Headings" />
         )}
@@ -72,7 +75,6 @@ export const Chapter = ({ chapter }: Props) => {
               <ElementSummary
                 key={`${i}-${element.htsno}`}
                 element={element}
-                chapter={chapter.number}
                 onClick={() => {
                   setBreadcrumbs([
                     ...breadcrumbs,

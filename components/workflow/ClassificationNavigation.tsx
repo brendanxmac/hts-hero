@@ -30,7 +30,7 @@ export const ClassificationNavigation = ({
   setPage,
 }: ClassificationNavigationProps) => {
   const { activeTab, setActiveTab } = useClassifyTab();
-  const { classification } = useClassification();
+  const { classification, setClassification } = useClassification();
   const { articleDescription, articleAnalysis, levels } = classification;
 
   return (
@@ -41,6 +41,7 @@ export const ClassificationNavigation = ({
             className="btn btn-link btn-primary px-0 gap-0 hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
             onClick={() => {
               setPage(ClassifyPage.CLASSIFICATIONS);
+              setClassification(undefined);
             }}
           >
             <HomeIcon className="w-5 h-5" />

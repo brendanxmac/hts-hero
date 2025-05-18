@@ -1,13 +1,10 @@
 import { DocumentTextIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
-import { PrimaryText } from "./PrimaryText";
 import { Note as NoteType } from "../public/notes/notes";
 import PDF from "./PDF";
 import SquareIconButton from "./SqaureIconButton";
-import { SecondaryText } from "./SecondaryText";
 import { TertiaryText } from "./TertiaryText";
 import { Color } from "../enums/style";
-import { PrimaryLabel } from "./PrimaryLabel";
 import { SecondaryLabel } from "./SecondaryLabel";
 
 interface Props {
@@ -19,7 +16,7 @@ export const Note = ({ note }: Props) => {
   const [show, setShow] = useState(false);
 
   return (
-    <div className="w-full flex flex-col rounded-md bg-base-100 border border-neutral hover:bg-neutral transition duration-200 ease-in-out cursor-pointer">
+    <div className="w-full flex flex-col rounded-md bg-base-100 border-2 border-neutral hover:bg-neutral transition duration-200 ease-in-out cursor-pointer">
       <div
         className="flex items-center justify-between gap-3 p-4"
         onClick={() => {

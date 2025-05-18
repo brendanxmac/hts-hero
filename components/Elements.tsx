@@ -50,17 +50,9 @@ export const Elements = ({ sections }: ElementsProps) => {
           setBreadcrumbs={setBreadcrumbs}
         />
       ) : currentElement.element.type === Navigatable.CHAPTER ? (
-        <Chapter
-          chapter={currentElement.element as HtsSectionAndChapterBase}
-          breadcrumbs={breadcrumbs}
-          setBreadcrumbs={setBreadcrumbs}
-        />
+        <Chapter chapter={currentElement.element as HtsSectionAndChapterBase} />
       ) : (
-        <Element
-          element={currentElement.element as HtsElement}
-          breadcrumbs={breadcrumbs}
-          setBreadcrumbs={setBreadcrumbs}
-        />
+        <Element element={currentElement.element as HtsElement} />
       )}
     </div>
   );
