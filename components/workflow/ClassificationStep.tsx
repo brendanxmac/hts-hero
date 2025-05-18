@@ -64,6 +64,10 @@ export const ClassificationStep = ({
       return false;
     }
 
+    console.log("ASFHAKSDFHKASDFHAS");
+    console.log(selectedElement.chapter);
+    console.log(getChapterElements(selectedElement.chapter));
+
     return (
       getDirectChildrenElements(
         selectedElement,
@@ -262,6 +266,18 @@ export const ClassificationStep = ({
     await createClassification(classification);
     setLoading({ isLoading: false, text: "" });
   };
+
+  const getElementsChildren = () => {
+    // 1. If selected not changed, and we have a next level, grab the elements in the next level
+    // 2. If selected changed, compute the elements based on finding the children of the selected element
+  };
+
+  if (
+    getChapterElements(levels[classificationLevel].selection.chapter) ===
+    undefined
+  ) {
+    // Go fetch all chapters for each element in the first level
+  }
 
   return (
     <div className="h-full flex flex-col pt-8">

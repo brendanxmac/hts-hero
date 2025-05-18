@@ -56,7 +56,7 @@ export const Classifications = ({ setPage }: Props) => {
           {getUserNameMessage()}
         </h1>
         <SecondaryText
-          value="This is your classification dashboard, review your classifications or start a new one here."
+          value="Review your classifications or start a new one now."
           color={Color.WHITE}
         />
       </div>

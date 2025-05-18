@@ -16,6 +16,8 @@ import {
   BestProgressionResponse,
   BestChaptersResponse,
   Navigatable,
+  Classification,
+  FetchedClassification,
 } from "../interfaces/hts";
 import {
   elementsAtClassificationLevel,
@@ -24,6 +26,18 @@ import {
 import { OpenAIModel } from "./openai";
 import apiClient from "@/libs/api";
 import { HtsLevel } from "../enums/hts";
+
+export const mapFetchedClassificationToClassification = (
+  c: FetchedClassification
+): Classification => ({
+  articleDescription: c.description,
+  articleAnalysis: c.analysis,
+  progressionDescription: c.progression_description,
+  levels: c.decisions.map((decision) => ({
+    candidates: decision.candidates,
+    selection: decision.selection,
+  })),
+});
 
 export function isFullHTSCode(code: string) {
   // Regular expression to validate HTS code with the updated format
