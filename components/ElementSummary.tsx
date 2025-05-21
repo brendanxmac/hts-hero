@@ -23,13 +23,15 @@ export const ElementSummary = ({ element, onClick }: Props) => {
     useClassification();
 
   const isHeadingCandidate = Boolean(
-    classification.levels[0] &&
+    classification &&
+      classification.levels[0] &&
       classification.levels[0].candidates.find(
         (candidate) => candidate.uuid === element.uuid
       )
   );
 
-  const isHeading = indent === "0" && classification.levels[0];
+  const isHeading =
+    indent === "0" && classification && classification.levels[0];
 
   return (
     <div className="flex flex-col gap-2 w-full rounded-md bg-base-100 border border-neutral">
