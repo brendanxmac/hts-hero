@@ -10,7 +10,6 @@ import {
 } from "../libs/hts";
 import { ElementSummary } from "./ElementSummary";
 import { TertiaryText } from "./TertiaryText";
-import SquareIconButton from "./SqaureIconButton";
 import { DocumentTextIcon } from "@heroicons/react/24/solid";
 import PDF from "./PDF";
 import { notes } from "../public/notes/notes";
@@ -21,8 +20,8 @@ import { LoadingIndicator } from "./LoadingIndicator";
 import { SecondaryLabel } from "./SecondaryLabel";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { Color } from "../enums/style";
-import { TertiaryLabel } from "./TertiaryLabel";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
+import { ButtonWithIcon } from "./ButtonWithIcon";
 
 interface Props {
   summaryOnly?: boolean;
@@ -35,7 +34,7 @@ export interface PDFProps {
 }
 
 export const Element = ({ element, summaryOnly = false }: Props) => {
-  const { description, chapter, units, general, special, other } = element;
+  const { description, chapter, htsno } = element;
   const [children, setChildren] = useState<HtsElement[]>([]);
   const [loading, setLoading] = useState<Loader>({
     isLoading: false,
@@ -46,6 +45,36 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
   const { classification, updateLevel: updateProgressionLevel } =
     useClassification();
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
+
+  const getElementWithTariffDetails = () => {
+    if (element.general || element.special || element.other) {
+      console.log("GOT IT");
+      return element;
+    }
+
+    // Starting at the end of the breadcrumbs list, find the first element that has tariff details using a reverseing for loop
+    for (let i = breadcrumbs.length - 1; i >= 0; i--) {
+      const breadcrumb = breadcrumbs[i];
+      if (
+        breadcrumb.element.type === Navigatable.ELEMENT &&
+        (breadcrumb.element.general ||
+          breadcrumb.element.special ||
+          breadcrumb.element.other)
+      ) {
+        return breadcrumb.element;
+      }
+    }
+
+    return undefined;
+  };
+
+  const [tariffElement, setTariffElement] = useState<HtsElement | null>(
+    getElementWithTariffDetails()
+  );
+
+  useEffect(() => {
+    setTariffElement(getElementWithTariffDetails());
+  }, [breadcrumbs]);
 
   useEffect(() => {
     const loadChapterData = async () => {
@@ -184,42 +213,78 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
     setLoading({ isLoading: false, text: "" });
   };
 
-  return (
-    <div className="card bg-base-300 w-full flex flex-col items-start justify-between gap-6 p-4 sm:p-6 overflow-y-auto">
-      <div className="flex items-start justify-between gap-3 w-full">
-        <div className="flex flex-col gap-5">
-          <div className="flex flex-col gap-1 mb-4">
-            {getParentDescriptionsFromBreadcrumbs(element).length > 0 && (
-              <TertiaryText
-                key={description}
-                value={getParentDescriptionsFromBreadcrumbs(element)}
-              />
-            )}
+  const getHtsnoLabel = () => {
+    if (htsno) {
+      return htsno;
+    }
 
-            <PrimaryLabel value={description} color={Color.WHITE} />
-          </div>
-        </div>
-        <SquareIconButton
+    // Find parent breadcrumb, if it's of type ELEMENT, then return the htsno
+    const parentBreadcrumb = breadcrumbs[breadcrumbs.length - 2];
+
+    if (parentBreadcrumb.element.type === Navigatable.ELEMENT) {
+      return `${parentBreadcrumb.element.htsno} >`;
+    }
+
+    return "Missing HTS Number";
+  };
+
+  enum TariffType {
+    GENERAL = "general",
+    SPECIAL = "special",
+    OTHER = "other",
+  }
+
+  const getTemporaryTairffModifications = (
+    element: HtsElement,
+    tariffType: TariffType
+  ) => {
+    const footnote = element.footnotes?.find((footnote) =>
+      footnote.columns.includes(tariffType)
+    );
+
+    if (footnote) {
+      return footnote.value;
+    }
+
+    return null;
+  };
+
+  return (
+    <div className="card bg-base-300 w-full flex flex-col items-start justify-between gap-4 pt-2 sm:pt-6 overflow-y-auto">
+      <div className="flex justify-between w-full">
+        <h2 className="text-3xl font-bold text-white">{getHtsnoLabel()}</h2>
+        <ButtonWithIcon
           icon={<DocumentTextIcon className="h-4 w-4" />}
+          label="Notes"
           onClick={() =>
             setShowPDF({
               title: `Chapter ${chapter} Notes`,
               file: `/notes/chapter/Chapter ${chapter}.pdf`,
             })
           }
-          transparent
         />
+      </div>
+
+      <div className="flex flex-col gap-1 mb-4">
+        {getParentDescriptionsFromBreadcrumbs(element).length > 0 && (
+          <TertiaryText
+            key={description}
+            value={getParentDescriptionsFromBreadcrumbs(element)}
+          />
+        )}
+
+        <PrimaryLabel value={description} color={Color.WHITE} />
       </div>
 
       {!summaryOnly && (
         <>
-          {(general || special || other) && (
-            <div className="w-full flex flex-col gap-2">
-              <TertiaryLabel value="Tariff Rates:" />
+          {tariffElement && (
+            <div className="w-full flex flex-col gap-4 bg-base-100 p-4 rounded-lg">
+              <SecondaryLabel value="Tariff Details" color={Color.PRIMARY} />
 
               <div className="grid grid-cols-2 gap-2">
-                {units &&
-                  units.map((unit, i) => (
+                {tariffElement.units &&
+                  tariffElement.units.map((unit, i) => (
                     <div
                       key={`${i}-${unit}`}
                       className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24"
@@ -231,19 +296,37 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
 
                 <div className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24">
                   <TertiaryText value={"General"} />
-                  <SecondaryLabel value={general || "-"} color={Color.WHITE} />
+                  <SecondaryLabel
+                    value={tariffElement.general || "-"}
+                    color={Color.WHITE}
+                  />
+                  {getTemporaryTairffModifications(
+                    tariffElement,
+                    TariffType.GENERAL
+                  ) && (
+                    <>
+                      <TertiaryText value={"Temporary Modifications"} />
+                      <SecondaryLabel
+                        value={getTemporaryTairffModifications(
+                          tariffElement,
+                          TariffType.GENERAL
+                        )}
+                        color={Color.WHITE}
+                      />
+                    </>
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24">
                   <TertiaryText value={"Special"} />
                   <SecondaryLabel
-                    value={getPrefixFromSpecial(special) || "-"}
+                    value={getPrefixFromSpecial(tariffElement.special) || "-"}
                     color={Color.WHITE}
                   />
 
-                  {getDetailsFromSpecial(special) && (
+                  {getDetailsFromSpecial(tariffElement.special) && (
                     <div className="flex gap-x-1 flex-wrap">
-                      {getDetailsFromSpecial(special)
+                      {getDetailsFromSpecial(tariffElement.special)
                         .split(",")
                         .map((specialTariffSymbol, index) => (
                           <div key={`${specialTariffSymbol}-${index}`}>
@@ -266,54 +349,94 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                         ))}
                     </div>
                   )}
+
+                  {getTemporaryTairffModifications(
+                    tariffElement,
+                    TariffType.SPECIAL
+                  ) && (
+                    <>
+                      <TertiaryText value={"Temporary Modifications"} />
+                      <SecondaryLabel
+                        value={getTemporaryTairffModifications(
+                          tariffElement,
+                          TariffType.SPECIAL
+                        )}
+                        color={Color.WHITE}
+                      />
+                    </>
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24">
                   <TertiaryText value={"Other"} />
-                  <SecondaryLabel value={other || "-"} color={Color.WHITE} />
+                  <SecondaryLabel
+                    value={tariffElement.other || "-"}
+                    color={Color.WHITE}
+                  />
+                  {getTemporaryTairffModifications(
+                    tariffElement,
+                    TariffType.OTHER
+                  ) && (
+                    <>
+                      <TertiaryText value={"Temporary Modifications"} />
+                      <SecondaryLabel
+                        value={getTemporaryTairffModifications(
+                          tariffElement,
+                          TariffType.OTHER
+                        )}
+                        color={Color.WHITE}
+                      />
+                    </>
+                  )}
                 </div>
+
+                {/* {tariffElement.footnotes && (
+                  <div className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24">
+                    <TertiaryText value={"Temporary Modifications"} />
+                    {tariffElement.footnotes.map((footnote, index) => (
+                      <SecondaryLabel
+                        key={`${index}-${footnote}`}
+                        value={`For ${footnote.columns.map((column) => column.replace(/^[A-Z]/, (char) => char.toLowerCase())).join(", ")}: ${footnote.value || "-"}`}
+                        color={Color.WHITE}
+                      />
+                    ))}
+                  </div>
+                )} */}
               </div>
             </div>
           )}
           {children.length > 0 && (
             <div className="w-full flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <TertiaryText value={"Child Elements:"} />
-                {/* <SquareIconButton
-                  icon={<SparklesIcon className="h-4 w-4" />}
-                  onClick={() => getBestCandidate()}
-                  disabled={loading.isLoading}
-                /> */}
-              </div>
-
               {loading.isLoading && (
                 <div className="flex items-center justify-center">
                   <LoadingIndicator text={loading.text} />
                 </div>
               )}
 
-              <div className="flex flex-col rounded-md gap-2">
-                {children.map((child, i) => {
-                  return (
-                    <ElementSummary
-                      key={`${i}-${child.htsno}`}
-                      element={child}
-                      chapter={chapter}
-                      onClick={() => {
-                        setBreadcrumbs([
-                          ...breadcrumbs,
-                          {
-                            title: `${child.htsno || child.description.split(" ").slice(0, 2).join(" ") + "..."}`,
-                            element: {
-                              ...child,
-                              chapter,
+              <div className="flex flex-col gap-4 bg-base-100 p-4 rounded-lg">
+                <SecondaryLabel value="Children" color={Color.PRIMARY} />
+                <div className="flex flex-col gap-2">
+                  {children.map((child, i) => {
+                    return (
+                      <ElementSummary
+                        key={`${i}-${child.htsno}`}
+                        element={child}
+                        onClick={() => {
+                          setBreadcrumbs([
+                            ...breadcrumbs,
+                            {
+                              title: `${child.htsno || child.description.split(" ").slice(0, 2).join(" ") + "..."}`,
+                              element: {
+                                ...child,
+                                chapter,
+                              },
                             },
-                          },
-                        ]);
-                      }}
-                    />
-                  );
-                })}
+                          ]);
+                        }}
+                      />
+                    );
+                  })}
+                </div>
               </div>
             </div>
           )}

@@ -10,6 +10,8 @@ import { TertiaryText } from "./TertiaryText";
 import { useClassification } from "../contexts/ClassificationContext";
 import { Color } from "../enums/style";
 import { SecondaryLabel } from "./SecondaryLabel";
+import { SecondaryText } from "./SecondaryText";
+import { TertiaryLabel } from "./TertiaryLabel";
 
 interface Props {
   element: HtsElement;
@@ -34,7 +36,7 @@ export const ElementSummary = ({ element, onClick }: Props) => {
     indent === "0" && classification && classification.levels[0];
 
   return (
-    <div className="flex flex-col gap-2 w-full rounded-md bg-base-100 border border-neutral">
+    <div className="flex flex-col gap-2 w-full bg-base-300 rounded-md hover:cursor-pointer hover:bg-neutral">
       <div className="flex">
         {isHeading && (
           <div className="flex items-center justify-center">
@@ -84,18 +86,18 @@ export const ElementSummary = ({ element, onClick }: Props) => {
         )}
 
         <div
-          className={`flex items-center justify-between w-full hover:bg-neutral rounded-r-md ${!isHeading && "hover:rounded-md"}`}
+          className={`flex py-2 items-center justify-between w-full`}
           onClick={onClick}
         >
           <div className="w-full flex flex-col items-start justify-between gap-1 px-4 py-2">
             {htsno && (
               <div className="min-w-20 md:min-w-32">
-                <TertiaryText value={htsno} />
+                <TertiaryLabel value={htsno} />
               </div>
             )}
 
             <div className="w-full flex items-center justify-between gap-2">
-              <SecondaryLabel value={description} color={Color.WHITE} />
+              <SecondaryText value={description} color={Color.WHITE} />
             </div>
 
             {recommended && (
