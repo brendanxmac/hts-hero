@@ -48,51 +48,56 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
         setShowDetails(!showDetails);
       }}
     >
-      <div className="flex gap-4">
-        <div className="grow flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
+        <div className="flex gap-4">
           <div className="flex flex-col">
-            <SecondaryLabel value={`Section ${number.toString()}`} />
-            <TertiaryText value={getChapterRange(section)} />
+            <div className="grow flex gap-5 self-center items-center">
+              <ChevronUpIcon
+                className={classNames(
+                  "w-8 h-8 text-primary transition-transform duration-200 ease-in-out",
+                  showDetails && "rotate-180"
+                )}
+              />
+            </div>
           </div>
 
-          <div className="flex flex-col items-start">
-            <PrimaryLabel value={description} color={Color.WHITE} />
-          </div>
-        </div>
+          <div className="grow flex flex-col gap-3">
+            <div className="w-full flex gap-4 items-center justify-between">
+              <SecondaryLabel value={`Section ${number.toString()}`} />
 
-        <div className="flex flex-col">
-          {notesPath && (
-            <SquareIconButton
-              icon={<DocumentTextIcon className="h-4 w-4" />}
-              onClick={() => setShowNotes(!showNotes)}
-              transparent
-            />
-          )}
-          <div className="grow flex gap-5 self-center items-center">
-            <ChevronUpIcon
-              className={classNames(
-                "w-5 h-5 text-primary transition-transform duration-200 ease-in-out",
-                showDetails && "rotate-180"
+              {notesPath && (
+                <button
+                  className="flex btn btn-xs bg-primary/30 shrink-0 text-white hover:text-white hover:shadow-md transition-all duration-100 border-none hover:cursor-pointer"
+                  onClick={() => setShowNotes(!showNotes)}
+                >
+                  <DocumentTextIcon className="h-4 w-4" />
+                  <p>Notes</p>
+                </button>
               )}
-            />
+            </div>
+
+            <div className="flex flex-col items-start">
+              <PrimaryLabel value={description} color={Color.WHITE} />
+              <TertiaryText value={getChapterRange(section)} />
+            </div>
           </div>
         </div>
+        {showDetails && (
+          <div className="ml-11 flex flex-col rounded-md gap-2">
+            {section.chapters.map((chapter) => {
+              return (
+                <ChapterSummary
+                  key={chapter.number}
+                  chapter={chapter}
+                  breadcrumbs={breadcrumbs}
+                  setBreadcrumbs={setBreadcrumbs}
+                />
+              );
+            })}
+          </div>
+        )}
       </div>
 
-      {showDetails && (
-        <div className="flex flex-col rounded-md gap-2">
-          {section.chapters.map((chapter) => {
-            return (
-              <ChapterSummary
-                key={chapter.number}
-                chapter={chapter}
-                breadcrumbs={breadcrumbs}
-                setBreadcrumbs={setBreadcrumbs}
-              />
-            );
-          })}
-        </div>
-      )}
       {notesPath && showNotes && (
         <PDF
           title={`Section ${number.toString()} Notes`}

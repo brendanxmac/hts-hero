@@ -6,6 +6,7 @@ import SquareIconButton from "./SqaureIconButton";
 import { TertiaryText } from "./TertiaryText";
 import { Color } from "../enums/style";
 import { SecondaryLabel } from "./SecondaryLabel";
+import { PrimaryLabel } from "./PrimaryLabel";
 
 interface Props {
   note: NoteType;
@@ -25,13 +26,13 @@ export const Note = ({ note }: Props) => {
       >
         <div className="flex flex-col sm:ml-4 gap-3">
           {title === description ? (
-            <SecondaryLabel value={title} color={Color.WHITE} />
+            <PrimaryLabel value={title} color={Color.WHITE} />
           ) : (
             <TertiaryText value={title} color={Color.WHITE} />
           )}
           {title !== description && (
             <div>
-              <SecondaryLabel value={description} color={Color.WHITE} />
+              <PrimaryLabel value={description} color={Color.WHITE} />
 
               {specialTariffTreatmentCodes &&
                 specialTariffTreatmentCodes.length > 0 && (
