@@ -14,6 +14,7 @@ import { SecondaryText } from "./SecondaryText";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { Color } from "../enums/style";
+import { ButtonWithIcon } from "./ButtonWithIcon";
 interface Props {
   section: HtsSection;
   breadcrumbs: NavigatableElement[];
@@ -66,13 +67,11 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
               <SecondaryLabel value={`Section ${number.toString()}`} />
 
               {notesPath && (
-                <button
-                  className="flex btn btn-xs bg-primary/30 shrink-0 text-white hover:text-white hover:shadow-md transition-all duration-100 border-none hover:cursor-pointer"
+                <ButtonWithIcon
+                  icon={<DocumentTextIcon className="h-4 w-4" />}
+                  label="Notes"
                   onClick={() => setShowNotes(!showNotes)}
-                >
-                  <DocumentTextIcon className="h-4 w-4" />
-                  <p>Notes</p>
-                </button>
+                />
               )}
             </div>
 
@@ -83,7 +82,7 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
           </div>
         </div>
         {showDetails && (
-          <div className="ml-11 flex flex-col rounded-md gap-2">
+          <div className="ml-11 flex flex-col">
             {section.chapters.map((chapter) => {
               return (
                 <ChapterSummary
