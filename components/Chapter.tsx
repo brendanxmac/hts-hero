@@ -14,6 +14,8 @@ import { ButtonWithIcon } from "./ButtonWithIcon";
 import { Color } from "../enums/style";
 import { SecondaryLabel } from "./SecondaryLabel";
 import { TertiaryText } from "./TertiaryText";
+import { TertiaryLabel } from "./TertiaryLabel";
+import { PrimaryLabel } from "./PrimaryLabel";
 
 interface Props {
   chapter: HtsSectionAndChapterBase;
@@ -46,21 +48,21 @@ export const Chapter = ({ chapter }: Props) => {
   });
 
   return (
-    <div className="card flex flex-col w-full gap-6 rounded-md pt-2 sm:pt-6 transition duration-100 ease-in-out overflow-y-auto">
+    <div className="card flex flex-col w-full gap-6 rounded-xl bg-base-100 border border-base-content/10 p-4 pt-2 sm:pt-6 transition duration-100 ease-in-out overflow-y-auto">
       <div className="flex flex-col gap-1">
         <div className="flex items-start justify-between gap-3">
-          <h2 className="text-3xl font-bold text-white">{description}</h2>
+          <TertiaryLabel value={`Chapter ${number.toString()}`} />
           <ButtonWithIcon
             icon={<DocumentTextIcon className="h-4 w-4" />}
             label="Notes"
             onClick={() => setShowNotes(!showNotes)}
           />
         </div>
-        <TertiaryText value={`Chapter ${number.toString()}`} />
+        <h2 className="text-3xl font-bold text-white">{description}</h2>
       </div>
 
-      <div className="flex flex-col gap-6 bg-base-100 p-4 rounded-lg">
-        <SecondaryLabel value="Children" color={Color.PRIMARY} />
+      <div className="flex flex-col gap-2 bg-base-100">
+        <SecondaryLabel value="Headings" />
         {loadingChapters.includes(number) && (
           <LoadingIndicator text="Fetching Headings" />
         )}

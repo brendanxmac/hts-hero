@@ -36,7 +36,7 @@ export const ElementSummary = ({ element, onClick }: Props) => {
     indent === "0" && classification && classification.levels[0];
 
   return (
-    <div className="flex flex-col gap-2 w-full bg-base-300 rounded-md hover:cursor-pointer hover:bg-neutral">
+    <div className="flex flex-col gap-2 w-full bg-base-300 rounded-md border border-base-content/20 hover:cursor-pointer hover:bg-neutral">
       <div className="flex">
         {isHeading && (
           <div className="flex items-center justify-center">
