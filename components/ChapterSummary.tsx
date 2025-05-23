@@ -39,12 +39,9 @@ export const ChapterSummary = ({
       <div className="flex items-start justify-between gap-3 py-4 px-2">
         <div className="flex gap-4 items-center">
           <div className="shrink-0">
-            <TertiaryLabel
-              value={`Chapter ${number.toString()}:`}
-              color={Color.WHITE}
-            />
+            <TertiaryText value={`Chapter ${number.toString()}:`} />
           </div>
-          <SecondaryText value={description} color={Color.WHITE} />
+          <SecondaryLabel value={description} />
         </div>
 
         <ChevronRightIcon className="self-center shrink-0 w-5 h-5 text-primary" />
