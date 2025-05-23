@@ -55,7 +55,7 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
             <div className="grow flex gap-5 self-center items-center">
               <ChevronUpIcon
                 className={classNames(
-                  "w-8 h-8 text-primary transition-transform duration-200 ease-in-out",
+                  "w-6 h-6 text-primary transition-transform duration-200 ease-in-out",
                   showDetails && "rotate-180"
                 )}
               />

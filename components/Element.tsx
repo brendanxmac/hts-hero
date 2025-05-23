@@ -22,6 +22,7 @@ import { PrimaryLabel } from "./PrimaryLabel";
 import { Color } from "../enums/style";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { ButtonWithIcon } from "./ButtonWithIcon";
+import { TertiaryLabel } from "./TertiaryLabel";
 
 interface Props {
   summaryOnly?: boolean;
@@ -130,10 +131,10 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
     let descriptions = "";
     breadcrumbs.forEach((breadcrumb, index) => {
       // Skip if this is the current element
-      const isLastBreadCrumb = breadcrumbs.length - 1 === index;
-      if (isLastBreadCrumb) {
-        return;
-      }
+      // const isLastBreadCrumb = breadcrumbs.length - 1 === index;
+      // if (isLastBreadCrumb) {
+      //   return;
+      // }
 
       // Only process chapters and other elements
       if (
@@ -145,7 +146,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
           description = description.replace(/:$/, "");
         }
 
-        const isLastVisibleBreadCrumb = breadcrumbs.length - 2 === index;
+        const isLastVisibleBreadCrumb = breadcrumbs.length - 1 === index;
 
         descriptions += description + (isLastVisibleBreadCrumb ? "" : " > ");
       }
@@ -222,7 +223,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
     const parentBreadcrumb = breadcrumbs[breadcrumbs.length - 2];
 
     if (parentBreadcrumb.element.type === Navigatable.ELEMENT) {
-      return `${parentBreadcrumb.element.htsno} >`;
+      return `${parentBreadcrumb.element.htsno} /`;
     }
 
     return "Missing HTS Number";
@@ -234,15 +235,29 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
     OTHER = "other",
   }
 
+  const extractHTSCodes = (input: string): string[] => {
+    const regex = /\b\d{4}\.\d{2}\.\d{2}\b/g;
+    const matches = input.match(regex);
+    if (!matches) return [];
+
+    return matches.map((code) => code.replace(/\.$/, ""));
+  };
+
   const getTemporaryTairffModifications = (
     element: HtsElement,
     tariffType: TariffType
-  ) => {
+  ): string | string[] => {
     const footnote = element.footnotes?.find((footnote) =>
       footnote.columns.includes(tariffType)
     );
 
     if (footnote) {
+      const htsCodes = extractHTSCodes(footnote.value);
+
+      if (htsCodes.length > 0) {
+        return htsCodes;
+      }
+
       return footnote.value;
     }
 
@@ -250,37 +265,37 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
   };
 
   return (
-    <div className="card bg-base-300 w-full flex flex-col items-start justify-between gap-4 pt-2 sm:pt-6 overflow-y-auto">
-      <div className="flex justify-between w-full">
-        <h2 className="text-3xl font-bold text-white">{getHtsnoLabel()}</h2>
-        <ButtonWithIcon
-          icon={<DocumentTextIcon className="h-4 w-4" />}
-          label="Notes"
-          onClick={() =>
-            setShowPDF({
-              title: `Chapter ${chapter} Notes`,
-              file: `/notes/chapter/Chapter ${chapter}.pdf`,
-            })
-          }
-        />
-      </div>
-
-      <div className="flex flex-col gap-1 mb-4">
+    <div className="card bg-base-100 p-4 rounded-xl border border-base-content/10 w-full flex flex-col items-start justify-between gap-8 pt-2 sm:pt-4 overflow-y-auto">
+      <div className="w-full flex flex-col gap-1">
+        <div className="w-full flex justify-between items-center">
+          <TertiaryLabel value={getHtsnoLabel()} />
+          <ButtonWithIcon
+            icon={<DocumentTextIcon className="h-4 w-4" />}
+            label="Notes"
+            onClick={() =>
+              setShowPDF({
+                title: `Chapter ${chapter} Notes`,
+                file: `/notes/chapter/Chapter ${chapter}.pdf`,
+              })
+            }
+          />
+        </div>
+        <div className="flex flex-col gap-1">
+          <h2 className="text-2xl font-bold text-white">{description}</h2>
+        </div>
         {getParentDescriptionsFromBreadcrumbs(element).length > 0 && (
           <TertiaryText
             key={description}
             value={getParentDescriptionsFromBreadcrumbs(element)}
           />
         )}
-
-        <PrimaryLabel value={description} color={Color.WHITE} />
       </div>
 
       {!summaryOnly && (
         <>
           {tariffElement && (
-            <div className="w-full flex flex-col gap-4 bg-base-100 p-4 rounded-lg">
-              <SecondaryLabel value="Tariff Details" color={Color.PRIMARY} />
+            <div className="w-full flex flex-col gap-4">
+              <SecondaryLabel value="Tariff Details" />
 
               <div className="grid grid-cols-2 gap-2">
                 {tariffElement.units &&
@@ -303,7 +318,11 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                   {getTemporaryTairffModifications(
                     tariffElement,
                     TariffType.GENERAL
-                  ) && (
+                  ) &&
+                  typeof getTemporaryTairffModifications(
+                    tariffElement,
+                    TariffType.GENERAL
+                  ) === "string" ? (
                     <>
                       <TertiaryText value={"Temporary Modifications"} />
                       <SecondaryLabel
@@ -314,6 +333,29 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                         color={Color.WHITE}
                       />
                     </>
+                  ) : (
+                    (
+                      getTemporaryTairffModifications(
+                        tariffElement,
+                        TariffType.GENERAL
+                      ) as string[]
+                    ).map((htsCode) => (
+                      <button
+                        key={htsCode}
+                        className="btn btn-link btn-xs text-xs p-0 hover:text-secondary hover:scale-110"
+                        onClick={() => {
+                          setBreadcrumbs([
+                            ...breadcrumbs,
+                            {
+                              title: htsCode,
+                              element: { ...tariffElement, htsno: htsCode },
+                            },
+                          ]);
+                        }}
+                      >
+                        {htsCode}
+                      </button>
+                    ))
                   )}
                 </div>
 
@@ -413,8 +455,8 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                 </div>
               )}
 
-              <div className="flex flex-col gap-4 bg-base-100 p-4 rounded-lg">
-                <SecondaryLabel value="Children" color={Color.PRIMARY} />
+              <div className="flex flex-col gap-4">
+                <SecondaryLabel value="Next Level" />
                 <div className="flex flex-col gap-2">
                   {children.map((child, i) => {
                     return (
