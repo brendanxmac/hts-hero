@@ -1,11 +1,8 @@
-import { DocumentTextIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 import { Note as NoteType } from "../public/notes/notes";
 import PDF from "./PDF";
-import SquareIconButton from "./SqaureIconButton";
 import { TertiaryText } from "./TertiaryText";
 import { Color } from "../enums/style";
-import { SecondaryLabel } from "./SecondaryLabel";
 import { PrimaryLabel } from "./PrimaryLabel";
 
 interface Props {
@@ -17,7 +14,7 @@ export const Note = ({ note }: Props) => {
   const [show, setShow] = useState(false);
 
   return (
-    <div className="w-full flex flex-col rounded-md bg-base-100 border-2 border-neutral hover:bg-neutral transition duration-200 ease-in-out cursor-pointer">
+    <div className="w-full flex flex-col rounded-md bg-base-100 border border-base-content/10 hover:bg-neutral transition duration-100 ease-in-out cursor-pointer">
       <div
         className="flex items-center justify-between gap-3 p-4"
         onClick={() => {
@@ -45,14 +42,6 @@ export const Note = ({ note }: Props) => {
                 )}
             </div>
           )}
-        </div>
-
-        <div className="self-start shrink-0">
-          <SquareIconButton
-            icon={<DocumentTextIcon className="h-4 w-4" />}
-            onClick={() => setShow(!show)}
-            transparent
-          />
         </div>
       </div>
 
