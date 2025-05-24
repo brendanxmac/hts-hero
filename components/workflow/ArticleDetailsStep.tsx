@@ -5,7 +5,6 @@ import { useClassification } from "../../contexts/ClassificationContext";
 import { SecondaryLabel } from "../SecondaryLabel";
 import SquareIconButton from "../SqaureIconButton";
 import TextInput from "../TextInput";
-import { WorkflowHeader } from "./WorkflowHeader";
 import { useState } from "react";
 
 interface ArticleDetailsStepProps {

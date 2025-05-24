@@ -21,8 +21,8 @@ export const WorkflowHeader = ({
 }: WorkflowHeaderProps) => {
   const getStepName = (step: WorkflowStep) => {
     switch (step) {
-      case WorkflowStep.DETAILS:
-        return "Article Details";
+      case WorkflowStep.DESCRIPTION:
+        return "Description";
       case WorkflowStep.CLASSIFICATION:
         return "Classification";
     }

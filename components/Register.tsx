@@ -9,11 +9,7 @@ import {
   RegistrationTrigger,
 } from "../libs/early-registration";
 import { addEarlyRegistrationAttempt } from "../libs/early-registration";
-import { sendEmail } from "../libs/resend";
-import {
-  getPreLaunchEmailHtml,
-  getPreLaunchEmailText,
-} from "../emails/registration/pre-launch";
+
 interface RegisterProps {
   triggerButton: RegistrationTrigger;
   isOpen: boolean;

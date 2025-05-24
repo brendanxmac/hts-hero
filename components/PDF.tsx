@@ -28,6 +28,7 @@ export default function PDF({ file, isOpen, setIsOpen, title }: Props) {
   const [scale, setScale] = useState(1);
   const [pdfWidth, setPdfWidth] = useState<number>(0);
 
+  // @ts-ignore
   const onResize = useCallback<ResizeObserverCallback>(
     (entries) => {
       const [entry] = entries;

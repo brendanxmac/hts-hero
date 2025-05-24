@@ -14,7 +14,7 @@ interface Props {
   text?: string;
   large?: boolean;
   active: boolean;
-  icon: React.ReactNode;
+  icon: JSX.Element;
   button?: Button;
   showButton?: boolean;
 }
@@ -26,7 +26,6 @@ export const TextNavigationStep = ({
   active,
   icon,
   button,
-  showButton = true,
 }: Props) => {
   return (
     <div

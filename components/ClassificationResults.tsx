@@ -13,12 +13,10 @@ import {
   logSearch,
 } from "../libs/hts";
 import {
-  ClassificationProgression,
   HtsSection,
   HtsElementWithParentReference,
   CandidateSelection,
   HtsElement,
-  Classification,
 } from "../interfaces/hts";
 import { LoadingIndicator } from "./LoadingIndicator";
 import {
@@ -55,8 +53,8 @@ export const ClassificationResults = ({
   const {
     classification,
     setClassification,
-    setProgressionDescription: setHtsDescription,
-    addLevel: addToProgressionLevels,
+    setProgressionDescription,
+    addLevel,
   } = useClassification();
   const [htsSections, setHtsSections] = useState<HtsSection[]>([]);
 
@@ -108,16 +106,12 @@ export const ClassificationResults = ({
     setCurrentHtsDescription(
       updateHtsDescription(currentHtsDescription, bestMatchElement.description)
     );
-    setHtsDescription(
+    setProgressionDescription(
       updateHtsDescription(currentHtsDescription, bestMatchElement.description)
     );
+
     // Get & Set next selection progression
-    addToProgressionLevels(
-      getHtsLevel(bestMatchElement.htsno),
-      elementsAtLevel,
-      bestMatchElement,
-      bestProgressionResponse.logic
-    );
+    addLevel(elementsAtLevel, bestMatchElement, bestProgressionResponse.logic);
 
     // Get Next HTS Elements Chunk
     const nextChunkStartIndex = bestMatchElement.indexInParentArray + 1;
@@ -182,7 +176,7 @@ export const ClassificationResults = ({
       });
     });
 
-    let candidatesForChapter: CandidateSelection[] = [];
+    const candidatesForChapter: CandidateSelection[] = [];
 
     await Promise.all(
       candidateSections.map(async (section) => {
@@ -314,16 +308,11 @@ export const ClassificationResults = ({
     setCurrentHtsDescription(
       updateHtsDescription(currentHtsDescription, headingDescription)
     );
-    setHtsDescription(
+    setProgressionDescription(
       updateHtsDescription(currentHtsDescription, headingDescription)
     );
     setHtsElementsChunk(setIndexInArray(nextChunk));
-    addToProgressionLevels(
-      getHtsLevel(selectedHeading.htsno),
-      headingCandidates,
-      selectedHeading,
-      headingsEvaluation.evaluation
-    );
+    addLevel(headingCandidates, selectedHeading, headingsEvaluation.evaluation);
   };
 
   useEffect(() => {

@@ -2,10 +2,9 @@ import { ChevronRightIcon } from "@heroicons/react/16/solid";
 import { Navigatable, HtsSectionAndChapterBase } from "../interfaces/hts";
 import { SecondaryText } from "./SecondaryText";
 import { NavigatableElement } from "./Elements";
-import { SecondaryLabel } from "./SecondaryLabel";
 import { Color } from "../enums/style";
-import { TertiaryText } from "./TertiaryText";
 import { TertiaryLabel } from "./TertiaryLabel";
+
 interface Props {
   chapter: HtsSectionAndChapterBase;
   breadcrumbs: NavigatableElement[];

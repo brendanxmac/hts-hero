@@ -9,7 +9,6 @@ import { PlusIcon } from "@heroicons/react/24/solid";
 import { TertiaryText } from "./TertiaryText";
 import { useClassification } from "../contexts/ClassificationContext";
 import { Color } from "../enums/style";
-import { SecondaryLabel } from "./SecondaryLabel";
 import { SecondaryText } from "./SecondaryText";
 import { TertiaryLabel } from "./TertiaryLabel";
 

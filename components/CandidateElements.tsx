@@ -1,12 +1,8 @@
-import { Classification, HtsElement } from "../interfaces/hts";
+import { HtsElement } from "../interfaces/hts";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { Loader } from "../interfaces/ui";
 import { CandidateElement } from "./CandidateElement";
 import { useState } from "react";
-import {
-  getBestClassificationProgression,
-  getProgressionDescription,
-} from "../libs/hts";
 import { useClassification } from "../contexts/ClassificationContext";
 
 interface Props {
@@ -20,16 +16,14 @@ export const CandidateElements = ({
   locallySelectedElement,
   setLocallySelectedElement,
 }: Props) => {
-  const [loading, setLoading] = useState<Loader>({
+  const [loading, _] = useState<Loader>({
     isLoading: false,
     text: "",
   });
-  const { setClassification, classification } = useClassification();
-  const { articleDescription, levels } = classification;
+  const { classification } = useClassification();
+  const { levels } = classification;
   const { candidates } = levels[indentLevel];
-  const [recommended, setRecommended] = useState<HtsElement | undefined>(
-    undefined
-  );
+  // const [_, setRecommended] = useState<HtsElement | undefined>(undefined);
 
   // FIXME: recommended gets lost every time we navigate away from this component to another tab
   // which means that this flow control will not only ever do the best candidate once, but every time we come to this component
@@ -42,60 +36,60 @@ export const CandidateElements = ({
   //   }
   // }, []);
 
-  const getBestCandidate = async () => {
-    setLoading({
-      isLoading: true,
-      text: "Getting Best Candidate",
-    });
+  // const getBestCandidate = async () => {
+  //   setLoading({
+  //     isLoading: true,
+  //     text: "Getting Best Candidate",
+  //   });
 
-    const simplifiedCandidates = candidates.map((e) => ({
-      code: e.htsno,
-      description: e.description,
-    }));
+  //   const simplifiedCandidates = candidates.map((e) => ({
+  //     code: e.htsno,
+  //     description: e.description,
+  //   }));
 
-    const bestProgressionResponse = await getBestClassificationProgression(
-      simplifiedCandidates,
-      getProgressionDescription(levels),
-      articleDescription
-    );
+  //   const bestProgressionResponse = await getBestClassificationProgression(
+  //     simplifiedCandidates,
+  //     getProgressionDescription(levels),
+  //     articleDescription
+  //   );
 
-    console.log("bestProgressionResponse", bestProgressionResponse);
+  //   console.log("bestProgressionResponse", bestProgressionResponse);
 
-    const bestCandidate = candidates[bestProgressionResponse.index];
+  //   const bestCandidate = candidates[bestProgressionResponse.index];
 
-    console.log("bestCandidate", bestCandidate);
+  //   console.log("bestCandidate", bestCandidate);
 
-    // Update this classification progressions candidates to mark the bestCandidate element as suggested
-    const updatedCandidates = candidates.map((e) => {
-      if (e.uuid === bestCandidate.uuid) {
-        return {
-          ...e,
-          recommended: true,
-          recommendedReason: bestProgressionResponse.logic,
-        };
-      }
-      return { ...e, recommended: false, recommendedReason: "" };
-    });
+  //   // Update this classification progressions candidates to mark the bestCandidate element as suggested
+  //   const updatedCandidates = candidates.map((e) => {
+  //     if (e.uuid === bestCandidate.uuid) {
+  //       return {
+  //         ...e,
+  //         recommended: true,
+  //         recommendedReason: bestProgressionResponse.logic,
+  //       };
+  //     }
+  //     return { ...e, recommended: false, recommendedReason: "" };
+  //   });
 
-    setClassification((prev: Classification) => {
-      const newProgressionLevels = [...prev.levels];
-      newProgressionLevels[indentLevel] = {
-        ...newProgressionLevels[indentLevel],
-        candidates: updatedCandidates,
-      };
-      return {
-        ...prev,
-        levels: newProgressionLevels,
-      };
-    });
+  //   setClassification((prev: Classification) => {
+  //     const newProgressionLevels = [...prev.levels];
+  //     newProgressionLevels[indentLevel] = {
+  //       ...newProgressionLevels[indentLevel],
+  //       candidates: updatedCandidates,
+  //     };
+  //     return {
+  //       ...prev,
+  //       levels: newProgressionLevels,
+  //     };
+  //   });
 
-    setLoading({
-      isLoading: false,
-      text: "",
-    });
+  //   setLoading({
+  //     isLoading: false,
+  //     text: "",
+  //   });
 
-    setRecommended(bestCandidate);
-  };
+  //   setRecommended(bestCandidate);
+  // };
 
   return (
     <div className="h-full flex flex-col gap-4">

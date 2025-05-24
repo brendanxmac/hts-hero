@@ -1,13 +1,6 @@
-import {
-  HtsElement,
-  ClassificationProgression,
-  Navigatable,
-} from "../interfaces/hts";
+import { HtsElement, Navigatable } from "../interfaces/hts";
 import { useEffect, useState } from "react";
-import {
-  getBestClassificationProgression,
-  getDirectChildrenElements,
-} from "../libs/hts";
+import { getDirectChildrenElements } from "../libs/hts";
 import { ElementSummary } from "./ElementSummary";
 import { TertiaryText } from "./TertiaryText";
 import { DocumentTextIcon } from "@heroicons/react/24/solid";
@@ -15,10 +8,8 @@ import PDF from "./PDF";
 import { notes } from "../public/notes/notes";
 import { useChapters } from "../contexts/ChaptersContext";
 import { Loader } from "../interfaces/ui";
-import { useClassification } from "../contexts/ClassificationContext";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { SecondaryLabel } from "./SecondaryLabel";
-import { PrimaryLabel } from "./PrimaryLabel";
 import { Color } from "../enums/style";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { ButtonWithIcon } from "./ButtonWithIcon";
@@ -43,8 +34,6 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
   });
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
   const { fetchChapter, getChapterElements } = useChapters();
-  const { classification, updateLevel: updateProgressionLevel } =
-    useClassification();
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
 
   const getElementWithTariffDetails = () => {
@@ -127,7 +116,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
     return note;
   };
 
-  const getParentDescriptionsFromBreadcrumbs = (element: HtsElement) => {
+  const getParentDescriptionsFromBreadcrumbs = () => {
     let descriptions = "";
     breadcrumbs.forEach((breadcrumb, index) => {
       // Skip if this is the current element
@@ -151,68 +140,69 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
         descriptions += description + (isLastVisibleBreadCrumb ? "" : " > ");
       }
     });
+
     return descriptions;
   };
 
-  const getFullHtsDescription = (
-    classificationProgression: ClassificationProgression[]
-  ) => {
-    let fullDescription = "";
-    classificationProgression.forEach((progression, index) => {
-      if (progression.selection) {
-        // if the string has a : at the end, strip it off
-        const desc = progression.selection.description.endsWith(":")
-          ? progression.selection.description.slice(0, -1)
-          : progression.selection.description;
+  // const getFullHtsDescription = (
+  //   classificationProgression: ClassificationProgression[]
+  // ) => {
+  //   let fullDescription = "";
+  //   classificationProgression.forEach((progression, index) => {
+  //     if (progression.selection) {
+  //       // if the string has a : at the end, strip it off
+  //       const desc = progression.selection.description.endsWith(":")
+  //         ? progression.selection.description.slice(0, -1)
+  //         : progression.selection.description;
 
-        fullDescription += index === 0 ? `${desc}` : ` > ${desc}`;
-      }
-    });
+  //       fullDescription += index === 0 ? `${desc}` : ` > ${desc}`;
+  //     }
+  //   });
 
-    return fullDescription;
-  };
+  //   return fullDescription;
+  // };
 
-  const getBestCandidate = async () => {
-    setLoading({
-      isLoading: true,
-      text: "Getting Best Candidate",
-    });
+  // const getBestCandidate = async () => {
+  //   setLoading({
+  //     isLoading: true,
+  //     text: "Getting Best Candidate",
+  //   });
 
-    const simplifiedCandidates = children.map((e) => ({
-      code: e.htsno,
-      description: e.description,
-    }));
+  //   const simplifiedCandidates = children.map((e) => ({
+  //     code: e.htsno,
+  //     description: e.description,
+  //   }));
 
-    const bestProgressionResponse = await getBestClassificationProgression(
-      simplifiedCandidates,
-      classification.progressionDescription,
-      classification.articleDescription
-    );
+  //   const bestProgressionResponse = await getBestClassificationProgression(
+  //     simplifiedCandidates,
+  //     classification.progressionDescription,
+  //     classification.articleDescription
+  //   );
 
-    console.log("bestProgressionResponse", bestProgressionResponse);
+  //   console.log("bestProgressionResponse", bestProgressionResponse);
 
-    const bestCandidate = children[bestProgressionResponse.index];
+  //   const bestCandidate = children[bestProgressionResponse.index];
 
-    console.log("bestCandidate", bestCandidate);
+  //   console.log("bestCandidate", bestCandidate);
 
-    // Update this classification progressions candidates to mark the bestCandidate element as suggested
-    const updatedCandidates = children.map((e) => {
-      if (e.uuid === bestCandidate.uuid) {
-        return {
-          ...e,
-          suggested: true,
-          suggestedReasoning: bestProgressionResponse.logic,
-        };
-      }
-      return { ...e, suggested: false, suggestedReasoning: "" };
-    });
+  //   // Update this classification progressions candidates to mark the bestCandidate element as suggested
+  //   const updatedCandidates = children.map((e) => {
+  //     if (e.uuid === bestCandidate.uuid) {
+  //       return {
+  //         ...e,
+  //         suggested: true,
+  //         suggestedReasoning: bestProgressionResponse.logic,
+  //       };
+  //     }
+  //     return { ...e, suggested: false, suggestedReasoning: "" };
+  //   });
 
-    updateProgressionLevel(classification.levels.length - 1, {
-      candidates: updatedCandidates,
-    });
+  //   updateProgressionLevel(classification.levels.length - 1, {
+  //     candidates: updatedCandidates,
+  //   });
 
-    setLoading({ isLoading: false, text: "" });
-  };
+  //   setLoading({ isLoading: false, text: "" });
+  // };
 
   const getHtsnoLabel = () => {
     if (htsno) {
@@ -283,10 +273,10 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
         <div className="flex flex-col gap-1">
           <h2 className="text-2xl font-bold text-white">{description}</h2>
         </div>
-        {getParentDescriptionsFromBreadcrumbs(element).length > 0 && (
+        {getParentDescriptionsFromBreadcrumbs().length > 0 && (
           <TertiaryText
             key={description}
-            value={getParentDescriptionsFromBreadcrumbs(element)}
+            value={getParentDescriptionsFromBreadcrumbs()}
           />
         )}
       </div>
@@ -326,10 +316,12 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                     <>
                       <TertiaryText value={"Temporary Modifications"} />
                       <SecondaryLabel
-                        value={getTemporaryTairffModifications(
-                          tariffElement,
-                          TariffType.GENERAL
-                        )}
+                        value={
+                          getTemporaryTairffModifications(
+                            tariffElement,
+                            TariffType.GENERAL
+                          ) as string
+                        }
                         color={Color.WHITE}
                       />
                     </>
@@ -399,10 +391,12 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                     <>
                       <TertiaryText value={"Temporary Modifications"} />
                       <SecondaryLabel
-                        value={getTemporaryTairffModifications(
-                          tariffElement,
-                          TariffType.SPECIAL
-                        )}
+                        value={
+                          getTemporaryTairffModifications(
+                            tariffElement,
+                            TariffType.SPECIAL
+                          ) as string
+                        }
                         color={Color.WHITE}
                       />
                     </>
@@ -422,10 +416,12 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                     <>
                       <TertiaryText value={"Temporary Modifications"} />
                       <SecondaryLabel
-                        value={getTemporaryTairffModifications(
-                          tariffElement,
-                          TariffType.OTHER
-                        )}
+                        value={
+                          getTemporaryTairffModifications(
+                            tariffElement,
+                            TariffType.OTHER
+                          ) as string
+                        }
                         color={Color.WHITE}
                       />
                     </>

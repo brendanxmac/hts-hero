@@ -56,7 +56,7 @@ const ButtonAccount = () => {
 
   return (
     <Popover>
-      {({ open }) => (
+      {() => (
         <div>
           <Popover.Button className="overflow-clip focus:outline-none">
             {user?.user_metadata?.avatar_url ? (

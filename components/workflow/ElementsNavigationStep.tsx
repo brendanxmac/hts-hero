@@ -17,7 +17,7 @@ export const ElementsNavigationStep = ({
   index,
   onClick,
 }: Props) => {
-  const { candidates, reasoning, selection } = classificationProgression;
+  const { candidates, selection } = classificationProgression;
 
   if (selection) {
     return (
