@@ -34,14 +34,14 @@ export const ChapterSummary = ({
           },
         ]);
       }}
-      className="flex flex-col gap-2 w-full border-t last:border-b border-neutral hover:bg-neutral transition duration-100 ease-in-out cursor-pointer"
+      className="flex flex-col gap-2 w-full rounded-md bg-base-300 border border-base-content/10 hover:bg-neutral transition duration-100 ease-in-out cursor-pointer"
     >
-      <div className="flex items-start justify-between gap-3 py-4 px-2">
-        <div className="flex gap-4 items-center">
+      <div className="flex items-start justify-between gap-3 p-4">
+        <div className="flex flex-col gap-1">
           <div className="shrink-0">
-            <TertiaryText value={`Chapter ${number.toString()}:`} />
+            <TertiaryLabel value={`Chapter ${number.toString()}`} />
           </div>
-          <SecondaryLabel value={description} />
+          <SecondaryText value={description} color={Color.WHITE} />
         </div>
 
         <ChevronRightIcon className="self-center shrink-0 w-5 h-5 text-primary" />
