@@ -1,12 +1,14 @@
 import { Tab } from "../interfaces/tab";
 import { classNames } from "../utilities/style";
 import { PrimaryLabel } from "./PrimaryLabel";
+import { SearchBar } from "./SearchBar";
 
 interface SectionHeaderProps {
   title: string;
   tabs: Tab[];
   activeTab: string;
   onTabChange: (tab: string) => void;
+  onSearchInput: (value: string) => void;
 }
 
 export const SectionHeader = ({
@@ -14,27 +16,36 @@ export const SectionHeader = ({
   tabs,
   activeTab,
   onTabChange,
+  onSearchInput,
 }: SectionHeaderProps) => {
   return (
     <div className="flex gap-4 items-center justify-between">
-      <PrimaryLabel value={title} />
-      <div
-        role="tablist"
-        className="tabs tabs-boxed tabs-sm bg-primary-content p-1.5 rounded-xl"
-      >
-        {tabs.map((tab) => (
-          <a
-            key={tab.value}
-            role="tab"
-            onClick={() => onTabChange(tab.value)}
-            className={classNames(
-              "tab",
-              tab.value === activeTab && "tab-active"
-            )}
-          >
-            {tab.label}
-          </a>
-        ))}
+      <div className="flex gap-4 items-center">
+        <PrimaryLabel value={title} />
+        <div
+          role="tablist"
+          className="tabs tabs-boxed tabs-sm bg-primary-content p-1.5 rounded-xl"
+        >
+          {tabs.map((tab) => (
+            <a
+              key={tab.value}
+              role="tab"
+              onClick={() => onTabChange(tab.value)}
+              className={classNames(
+                "tab",
+                tab.value === activeTab && "tab-active"
+              )}
+            >
+              {tab.label}
+            </a>
+          ))}
+        </div>
+      </div>
+      <div className="w-full max-w-xs">
+        <SearchBar
+          placeholder="Search"
+          onChange={(value) => onSearchInput(value)}
+        />
       </div>
     </div>
   );
