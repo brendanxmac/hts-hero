@@ -26,7 +26,7 @@ export const Breadcrumbs = ({
         </button>
       </div>
 
-      <div className="flex flex-col gap-3 breadcrumbs text-sm py-0">
+      <div className="flex flex-col gap-3 breadcrumbs text-sm py-0 overflow-hidden">
         <ul className="flex flex-wrap gap-0">
           {breadcrumbs.map((breadcrumb, i) => {
             return (
@@ -37,7 +37,7 @@ export const Breadcrumbs = ({
                   </span>
                 ) : (
                   <button
-                    className="btn btn-xs btn-link flex items-center gap-2 hover:text-secondary hover:scale-110"
+                    className="btn btn-xs btn-link flex items-center hover:text-secondary hover:scale-105 px-1"
                     onClick={() => {
                       setBreadcrumbs(breadcrumbs.slice(0, i + 1));
                     }}

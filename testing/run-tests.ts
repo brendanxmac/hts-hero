@@ -15,7 +15,7 @@ import {
   HtsElement,
   HtsSection,
   HtsElementWithParentReference,
-  HtsLevelClassification,
+  ClassificationProgression,
 } from "../interfaces/hts";
 import {
   elementsAtClassificationLevel,
@@ -39,12 +39,12 @@ interface TestResult {
   modelClassification: string;
   // TODO: need to do degree of error (section, chapter, etc..)
   match: boolean;
-  classificationProgression: HtsLevelClassification[];
+  classificationProgression: ClassificationProgression[];
 }
 
 interface ClassificationResult {
   htsno: string;
-  classificationProgression: HtsLevelClassification[];
+  classificationProgression: ClassificationProgression[];
 }
 
 const getSectionCandidates = async (productDescription: string) => {
@@ -243,7 +243,7 @@ async function classifyProduct(
   try {
     let htsDescription: string = "";
     let htsElementsChunk: HtsElementWithParentReference[] = [];
-    let classificationProgression: HtsLevelClassification[] = [];
+    let classificationProgression: ClassificationProgression[] = [];
     let classificationLevel = 0;
     let selectedChapterElements: HtsElementWithParentReference[] = [];
 
@@ -278,7 +278,6 @@ async function classifyProduct(
     classificationProgression = [
       ...classificationProgression,
       {
-        level: getHtsLevel(bestElement.htsno),
         candidates: headingCandidates,
         selection: bestElement,
         reasoning,
@@ -311,7 +310,6 @@ async function classifyProduct(
       classificationProgression = [
         ...classificationProgression,
         {
-          level: getHtsLevel(bestElement.htsno),
           candidates: headingCandidates,
           selection: bestElement,
           reasoning,

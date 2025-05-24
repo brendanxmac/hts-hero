@@ -20,8 +20,7 @@ export async function POST(req: NextRequest) {
 
   const signature = headers().get("stripe-signature");
 
-  let eventType;
-  let event;
+  let stripeEvent: Stripe.Event;
 
   // Create a private supabase client using the secret service_role API key
   const supabase = new SupabaseClient(
@@ -31,20 +30,24 @@ export async function POST(req: NextRequest) {
 
   // verify Stripe event is legit
   try {
-    event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+    stripeEvent = stripe.webhooks.constructEvent(
+      body,
+      signature,
+      webhookSecret
+    );
   } catch (err) {
     console.error(`Webhook signature verification failed. ${err.message}`);
     return NextResponse.json({ error: err.message }, { status: 400 });
   }
 
-  eventType = event.type;
+  const eventType = stripeEvent.type;
 
   try {
     switch (eventType) {
       case "checkout.session.completed": {
         // First payment is successful and a subscription is created (if mode was set to "subscription" in ButtonCheckout)
         // ✅ Grant access to the product
-        const stripeObject: Stripe.Checkout.Session = event.data
+        const stripeObject: Stripe.Checkout.Session = stripeEvent.data
           .object as Stripe.Checkout.Session;
 
         const session = await findCheckoutSession(stripeObject.id);
@@ -124,7 +127,7 @@ export async function POST(req: NextRequest) {
       case "customer.subscription.deleted": {
         // The customer subscription stopped
         // ❌ Revoke access to the product
-        const stripeObject: Stripe.Subscription = event.data
+        const stripeObject: Stripe.Subscription = stripeEvent.data
           .object as Stripe.Subscription;
         const subscription = await stripe.subscriptions.retrieve(
           stripeObject.id
@@ -140,7 +143,7 @@ export async function POST(req: NextRequest) {
       case "invoice.paid": {
         // Customer just paid an invoice (for instance, a recurring payment for a subscription)
         // ✅ Grant access to the product
-        const stripeObject: Stripe.Invoice = event.data
+        const stripeObject: Stripe.Invoice = stripeEvent.data
           .object as Stripe.Invoice;
         const priceId = stripeObject.lines.data[0].price.id;
         const customerId = stripeObject.customer;

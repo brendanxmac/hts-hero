@@ -1,7 +1,7 @@
 import { ChatCompletion } from "openai/resources";
 import {
   HtsElementWithParentReference,
-  HtsLevelClassification,
+  ClassificationProgression,
   CandidateSelection,
   HsHeading,
   HtsElement,
@@ -16,6 +16,8 @@ import {
   BestProgressionResponse,
   BestChaptersResponse,
   Navigatable,
+  Classification,
+  FetchedClassification,
 } from "../interfaces/hts";
 import {
   elementsAtClassificationLevel,
@@ -24,6 +26,18 @@ import {
 import { OpenAIModel } from "./openai";
 import apiClient from "@/libs/api";
 import { HtsLevel } from "../enums/hts";
+
+export const mapFetchedClassificationToClassification = (
+  c: FetchedClassification
+): Classification => ({
+  articleDescription: c.description,
+  articleAnalysis: c.analysis,
+  progressionDescription: c.progression_description,
+  levels: c.decisions.map((decision) => ({
+    candidates: decision.candidates,
+    selection: decision.selection,
+  })),
+});
 
 export function isFullHTSCode(code: string) {
   // Regular expression to validate HTS code with the updated format
@@ -38,7 +52,7 @@ export const getHtsElementDescriptions = (
 };
 
 export const findFirstElementInProgressionWithTariff = (
-  classificationProgression: HtsLevelClassification[]
+  classificationProgression: ClassificationProgression[]
 ) => {
   const numClassifications = classificationProgression.length;
 
@@ -169,6 +183,24 @@ export const extractFirst8DigitHtsCode = (input: string): string => {
   // If a match is found, return the first capture group;
   // otherwise, return an empty string
   return match ? match[1] : "";
+};
+
+export const getProgressionDescription = (
+  classificationProgression: ClassificationProgression[]
+) => {
+  let fullDescription = "";
+  classificationProgression.forEach((progression, index) => {
+    if (progression.selection) {
+      // if the string has a : at the end, strip it off
+      const desc = progression.selection.description.endsWith(":")
+        ? progression.selection.description.slice(0, -1)
+        : progression.selection.description;
+
+      fullDescription += index === 0 ? `${desc}` : ` > ${desc}`;
+    }
+  });
+
+  return fullDescription;
 };
 
 /**
@@ -330,8 +362,8 @@ export const getBestIndentLevelMatch = async (
   htsDescription: string, // used to compare against product description at each level, with each NEW descriptor
   elements: HtsElementWithParentReference[],
   indentLevel: number,
-  selectionProgression: HtsLevelClassification[] = []
-): Promise<HtsLevelClassification[]> => {
+  selectionProgression: ClassificationProgression[] = []
+): Promise<ClassificationProgression[]> => {
   let elementsAtIndent = elementsAtClassificationLevel(elements, indentLevel);
   const descriptionsForElements = getHtsElementDescriptions(elementsAtIndent);
   const bestMatchResponse: Array<ChatCompletion.Choice> = await apiClient.post(
@@ -365,10 +397,9 @@ export const getBestIndentLevelMatch = async (
     );
   } else {
     // Add Selection Layer to overall selection progression
-    const htsLayerSelection: HtsLevelClassification = {
+    const htsLayerSelection: ClassificationProgression = {
       selection: bestMatchElement,
       reasoning: bestMatchJson.logic,
-      level: getHtsLevel(bestMatchElement.htsno),
       candidates: elementsAtIndent,
     };
 

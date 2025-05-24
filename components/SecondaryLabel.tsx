@@ -1,19 +1,15 @@
-import { classNames } from "../utilities/style";
+import { Color } from "../enums/style";
 
 interface Props {
   value: string;
-  loud?: boolean;
+  color?: Color;
 }
 
-export const SecondaryLabel = ({ value, loud }: Props) => {
+export const SecondaryLabel = ({
+  value,
+  color = Color.NEUTRAL_CONTENT,
+}: Props) => {
   return (
-    <h3
-      className={classNames(
-        "text-xs sm:text-sm md:text-base lg:text-lg text-base-content font-bold",
-        loud && "text-secondary"
-      )}
-    >
-      {value}
-    </h3>
+    <h3 className={`text-${color} text-sm md:text-base font-bold`}>{value}</h3>
   );
 };

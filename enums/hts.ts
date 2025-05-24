@@ -1,3 +1,9 @@
+export enum WorkflowStep {
+  DESCRIPTION = "description",
+  ANALYSIS = "analysis",
+  CLASSIFICATION = "classification",
+}
+
 export enum HtsLevel {
   SECTION = "Section",
   CHAPTER = "Chapter",

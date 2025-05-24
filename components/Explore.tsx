@@ -9,68 +9,64 @@ import { SectionHeader } from "./SectionHeader";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { Navigatable } from "../interfaces/hts";
+import { ExploreTab } from "../enums/explore";
 
-enum Tabs {
-  NOTES = "notes",
-  ELEMENTS = "elements",
-}
-
-const tabs: Tab[] = [
+const ExploreTabs: Tab[] = [
   {
     label: "Elements",
-    value: Tabs.ELEMENTS,
+    value: ExploreTab.ELEMENTS,
   },
   {
     label: "Notes",
-    value: Tabs.NOTES,
+    value: ExploreTab.NOTES,
   },
 ];
 
 export const Explore = () => {
-  const [activeTab, setActiveTab] = useState(tabs[0].value);
+  const [activeTab, setActiveTab] = useState(ExploreTabs[0].value);
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { sections, loading, getSections } = useHtsSections();
 
   useEffect(() => {
-    if (activeTab !== Tabs.ELEMENTS) {
-      setActiveTab(Tabs.ELEMENTS);
+    if (activeTab !== ExploreTab.ELEMENTS) {
+      setActiveTab(ExploreTab.ELEMENTS);
     }
   }, [breadcrumbs]);
 
   useEffect(() => {
     const initializeSections = async () => {
       if (sections.length === 0) {
-        const fetchedSections = await getSections();
-        if (fetchedSections.length > 0) {
-          setBreadcrumbs([
-            {
-              title: "Sections",
-              element: {
-                type: Navigatable.SECTIONS,
-                sections: fetchedSections,
-              },
+        await getSections();
+      }
+      if (breadcrumbs.length === 0) {
+        setBreadcrumbs([
+          {
+            title: "Sections",
+            element: {
+              type: Navigatable.SECTIONS,
+              sections,
             },
-          ]);
-        }
+          },
+        ]);
       }
     };
     initializeSections();
   }, [activeTab]);
 
   return (
-    <div className="flex flex-col gap-4 h-full">
+    <div className="p-6 h-full flex flex-col gap-4">
       <SectionHeader
         title="Explore"
-        tabs={tabs}
+        tabs={ExploreTabs}
         activeTab={activeTab}
         onTabChange={setActiveTab}
       />
-      <div className="flex flex-col gap-4 h-full overflow-y-auto pb-4">
+      <div className="h-full grow flex flex-col gap-4 overflow-y-auto">
         {loading && <LoadingIndicator text="Loading Sections" />}
-        {!loading && activeTab === Tabs.ELEMENTS && (
+        {!loading && activeTab === ExploreTab.ELEMENTS && (
           <Elements sections={sections} />
         )}
-        {!loading && activeTab === Tabs.NOTES && <Notes />}
+        {!loading && activeTab === ExploreTab.NOTES && <Notes />}
       </div>
     </div>
   );

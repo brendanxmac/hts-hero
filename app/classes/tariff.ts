@@ -7,7 +7,7 @@ import {
 } from "../../libs/hts";
 import {
   HtsElement,
-  HtsLevelClassification,
+  ClassificationProgression,
   TemporaryTariff,
 } from "../../interfaces/hts";
 
@@ -30,7 +30,7 @@ export class Tariff {
   }
 
   static async create(
-    classificationProgression: HtsLevelClassification[]
+    classificationProgression: ClassificationProgression[]
   ): Promise<Tariff> {
     const classificationElementWithTariff =
       findFirstElementInProgressionWithTariff(classificationProgression);

@@ -13,7 +13,6 @@ import {
   logSearch,
 } from "../libs/hts";
 import {
-  HtsLevelClassification,
   HtsSection,
   HtsElementWithParentReference,
   CandidateSelection,
@@ -26,6 +25,7 @@ import {
 } from "../utilities/data";
 import { DecisionProgression } from "./DecisionProgression";
 import { Loader } from "../interfaces/ui";
+import { useClassification } from "../contexts/ClassificationContext";
 
 interface Props {
   productDescription: string;
@@ -45,22 +45,30 @@ export const ClassificationResults = ({
   const [headingCandidates, setHeadingCandidates] = useState<HtsElement[]>([]);
 
   const [loading, setLoading] = useState<Loader>({ isLoading: true, text: "" });
-  const [htsDescription, setHtsDescription] = useState("");
+  const [currentHtsDescription, setCurrentHtsDescription] = useState("");
   const [htsElementsChunk, setHtsElementsChunk] = useState<
     HtsElementWithParentReference[]
   >([]);
   const [classificationIndentLevel, setClassificationIndentLevel] = useState(0);
-  const [classificationProgression, setClassificationProgression] = useState<
-    HtsLevelClassification[]
-  >([]);
+  const {
+    classification,
+    setClassification,
+    setProgressionDescription,
+    addLevel,
+  } = useClassification();
   const [htsSections, setHtsSections] = useState<HtsSection[]>([]);
 
   const startNewSearch = () => {
     setSectionCandidates([]);
     setChapterCandidates([]);
     setHeadingCandidates([]);
-    setClassificationProgression([]);
-    setHtsDescription("");
+    setClassification({
+      articleDescription: productDescription,
+      articleAnalysis: "",
+      progressionDescription: "",
+      levels: [],
+    });
+    setCurrentHtsDescription("");
     setHtsElementsChunk([]);
     setClassificationIndentLevel(0);
     setUpdateScrollHeight(0);
@@ -84,7 +92,7 @@ export const ClassificationResults = ({
 
     const bestProgressionResponse = await getBestClassificationProgression(
       simplifiedElementsAtLevel,
-      htsDescription,
+      currentHtsDescription,
       productDescription
     );
 
@@ -95,19 +103,15 @@ export const ClassificationResults = ({
 
     console.log("Best Match Element:", bestMatchElement);
 
-    setHtsDescription(
-      updateHtsDescription(htsDescription, bestMatchElement.description)
+    setCurrentHtsDescription(
+      updateHtsDescription(currentHtsDescription, bestMatchElement.description)
     );
+    setProgressionDescription(
+      updateHtsDescription(currentHtsDescription, bestMatchElement.description)
+    );
+
     // Get & Set next selection progression
-    setClassificationProgression([
-      ...classificationProgression,
-      {
-        level: getHtsLevel(bestMatchElement.htsno),
-        candidates: elementsAtLevel,
-        selection: bestMatchElement,
-        reasoning: bestProgressionResponse.logic,
-      },
-    ]);
+    addLevel(elementsAtLevel, bestMatchElement, bestProgressionResponse.logic);
 
     // Get Next HTS Elements Chunk
     const nextChunkStartIndex = bestMatchElement.indexInParentArray + 1;
@@ -172,7 +176,7 @@ export const ClassificationResults = ({
       });
     });
 
-    let candidatesForChapter: CandidateSelection[] = [];
+    const candidatesForChapter: CandidateSelection[] = [];
 
     await Promise.all(
       candidateSections.map(async (section) => {
@@ -301,17 +305,14 @@ export const ClassificationResults = ({
       0 // find the next 0th indented level element to determine endIndex for next chunk
     );
 
-    setHtsDescription(updateHtsDescription(htsDescription, headingDescription));
+    setCurrentHtsDescription(
+      updateHtsDescription(currentHtsDescription, headingDescription)
+    );
+    setProgressionDescription(
+      updateHtsDescription(currentHtsDescription, headingDescription)
+    );
     setHtsElementsChunk(setIndexInArray(nextChunk));
-    setClassificationProgression([
-      ...classificationProgression,
-      {
-        level: getHtsLevel(selectedHeading.htsno),
-        candidates: headingCandidates,
-        selection: selectedHeading,
-        reasoning: headingsEvaluation.evaluation,
-      },
-    ]);
+    addLevel(headingCandidates, selectedHeading, headingsEvaluation.evaluation);
   };
 
   useEffect(() => {
@@ -334,7 +335,7 @@ export const ClassificationResults = ({
 
   useEffect(() => {
     setUpdateScrollHeight(Math.random());
-  }, [loading, classificationProgression]);
+  }, [loading, classification.levels]);
 
   useEffect(() => {
     const anotherClassificationLevelExists = htsElementsChunk.length > 0;
@@ -370,7 +371,7 @@ export const ClassificationResults = ({
     }
   }, [resetSearch]);
 
-  if (loading && !classificationProgression.length) {
+  if (loading && !classification.levels.length) {
     return (
       <div className="mt-5">
         <LoadingIndicator text={loading.text} />
@@ -379,10 +380,8 @@ export const ClassificationResults = ({
   } else {
     return (
       <div className="w-full max-w-4xl grid grid-cols-2 gap-5 mt-3">
-        {classificationProgression.length && (
-          <DecisionProgression
-            decisionProgression={classificationProgression}
-          />
+        {classification.levels.length && (
+          <DecisionProgression decisionProgression={classification.levels} />
         )}
 
         {loading && htsElementsChunk.length > 0 ? (

@@ -1,30 +1,28 @@
 import { HtsSectionAndChapterBase } from "../interfaces/hts";
-import { Cell } from "./Cell";
-import { NavigatableElement } from "./Elements";
 import { useEffect, useState } from "react";
 import {
   getDirectChildrenElements,
   getElementsAtIndentLevel,
 } from "../libs/hts";
-import { PrimaryInformation } from "./PrimaryInformation";
 import { LoadingIndicator } from "./LoadingIndicator";
-import { ElementSum } from "./ElementSum";
-import SquareIconButton from "./SqaureIconButton";
+import { ElementSummary } from "./ElementSummary";
 import { DocumentTextIcon } from "@heroicons/react/24/solid";
 import PDF from "./PDF";
 import { useChapters } from "../contexts/ChaptersContext";
-import { TertiaryInformation } from "./TertiaryInformation";
+import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
+import { ButtonWithIcon } from "./ButtonWithIcon";
+import { SecondaryLabel } from "./SecondaryLabel";
+import { TertiaryLabel } from "./TertiaryLabel";
 
 interface Props {
   chapter: HtsSectionAndChapterBase;
-  breadcrumbs: NavigatableElement[];
-  setBreadcrumbs: (breadcrumbs: NavigatableElement[]) => void;
 }
 
-export const Chapter = ({ chapter, breadcrumbs, setBreadcrumbs }: Props) => {
+export const Chapter = ({ chapter }: Props) => {
   const { number, description, notesPath } = chapter;
   const [showNotes, setShowNotes] = useState(false);
   const { fetchChapter, getChapterElements, loadingChapters } = useChapters();
+  const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
 
   useEffect(() => {
     fetchChapter(number);
@@ -47,55 +45,55 @@ export const Chapter = ({ chapter, breadcrumbs, setBreadcrumbs }: Props) => {
   });
 
   return (
-    <Cell>
-      <div className="card flex flex-col w-full rounded-md bg-base-300 transition duration-100 ease-in-out cursor-pointer">
-        <div className="flex items-start justify-between gap-3 pt-4 px-4 sm:pt-6 sm:px-6 pb-2">
-          <div className="flex flex-col gap-2">
-            <div className="shrink-0">
-              <PrimaryInformation
-                label={`Chapter ${number.toString()}: `}
-                value={``}
-              />
-            </div>
-            <div className="pb-4">
-              <PrimaryInformation value={description} />
-            </div>
-          </div>
-          <SquareIconButton
+    <div className="card flex flex-col w-full gap-6 rounded-xl bg-base-100 border border-base-content/10 p-4 pt-2 sm:pt-6 transition duration-100 ease-in-out overflow-y-auto">
+      <div className="flex flex-col gap-1">
+        <div className="flex items-start justify-between gap-3">
+          <TertiaryLabel value={`Chapter ${number.toString()}`} />
+          <ButtonWithIcon
             icon={<DocumentTextIcon className="h-4 w-4" />}
+            label="Notes"
             onClick={() => setShowNotes(!showNotes)}
           />
         </div>
+        <h2 className="text-3xl font-bold text-white">{description}</h2>
+      </div>
 
-        {showNotes && (
-          <PDF
-            title={`Chapter ${number.toString()} Notes`}
-            file={notesPath}
-            isOpen={showNotes}
-            setIsOpen={setShowNotes}
-          />
+      <div className="flex flex-col gap-2 bg-base-100">
+        <SecondaryLabel value="Headings" />
+        {loadingChapters.includes(number) && (
+          <LoadingIndicator text="Fetching Headings" />
         )}
-
-        <div className="flex flex-col rounded-md gap-4 p-4 sm:px-6">
-          <TertiaryInformation value="" label="Elements:" />
-          {loadingChapters.includes(number) && (
-            <LoadingIndicator text="Fetching Chapter Data" />
-          )}
-          <div className="flex flex-col gap-2">
-            {elementsWithChildren.map((element, i) => {
-              return (
-                <ElementSum
-                  key={`${i}-${element.htsno}`}
-                  element={element}
-                  chapter={chapter.number}
-                  breadcrumbs={breadcrumbs}
-                  setBreadcrumbs={setBreadcrumbs}
-                />
-              );
-            })}
-          </div>
+        <div className="flex flex-col gap-2">
+          {elementsWithChildren.map((element, i) => {
+            return (
+              <ElementSummary
+                key={`${i}-${element.htsno}`}
+                element={element}
+                onClick={() => {
+                  setBreadcrumbs([
+                    ...breadcrumbs,
+                    {
+                      title: `${element.htsno || element.description.split(" ").slice(0, 2).join(" ") + "..."}`,
+                      element: {
+                        ...element,
+                        chapter: chapter.number,
+                      },
+                    },
+                  ]);
+                }}
+              />
+            );
+          })}
         </div>
       </div>
-    </Cell>
+      {showNotes && (
+        <PDF
+          title={`Chapter ${number.toString()} Notes`}
+          file={notesPath}
+          isOpen={showNotes}
+          setIsOpen={setShowNotes}
+        />
+      )}
+    </div>
   );
 };

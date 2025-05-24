@@ -10,11 +10,7 @@ export const ChapterDetails = ({ chapter }: Props) => {
   return (
     <div className="flex flex-col gap-3 mt-3">
       {headings.map((heading) => (
-        <Element
-          key={heading.htsno}
-          element={heading}
-          chapterElements={chapter.elements}
-        />
+        <Element key={heading.htsno} element={heading} />
       ))}
     </div>
   );

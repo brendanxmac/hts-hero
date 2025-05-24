@@ -1,22 +1,23 @@
 import { HtsElement, Navigatable } from "../interfaces/hts";
-import { NavigatableElement } from "./Elements";
 import { useEffect, useState } from "react";
-import { PrimaryInformation } from "./PrimaryInformation";
 import { getDirectChildrenElements } from "../libs/hts";
-import { ElementSum } from "./ElementSum";
-import { SecondaryInformation } from "./SecondaryInformation";
-import { TertiaryInformation } from "./TertiaryInformation";
-import SquareIconButton from "./SqaureIconButton";
+import { ElementSummary } from "./ElementSummary";
+import { TertiaryText } from "./TertiaryText";
 import { DocumentTextIcon } from "@heroicons/react/24/solid";
 import PDF from "./PDF";
 import { notes } from "../public/notes/notes";
 import { useChapters } from "../contexts/ChaptersContext";
+import { Loader } from "../interfaces/ui";
+import { LoadingIndicator } from "./LoadingIndicator";
+import { SecondaryLabel } from "./SecondaryLabel";
+import { Color } from "../enums/style";
+import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
+import { ButtonWithIcon } from "./ButtonWithIcon";
+import { TertiaryLabel } from "./TertiaryLabel";
 
 interface Props {
   summaryOnly?: boolean;
   element: HtsElement;
-  breadcrumbs: NavigatableElement[];
-  setBreadcrumbs: (breadcrumbs: NavigatableElement[]) => void;
 }
 
 export interface PDFProps {
@@ -24,25 +25,53 @@ export interface PDFProps {
   file: string;
 }
 
-export const Element = ({
-  element,
-  breadcrumbs,
-  setBreadcrumbs,
-  summaryOnly = false,
-}: Props) => {
-  const { htsno, description, chapter, units, general, special, other } =
-    element;
+export const Element = ({ element, summaryOnly = false }: Props) => {
+  const { description, chapter, htsno } = element;
   const [children, setChildren] = useState<HtsElement[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<Loader>({
+    isLoading: false,
+    text: "",
+  });
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
   const { fetchChapter, getChapterElements } = useChapters();
+  const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
+
+  const getElementWithTariffDetails = () => {
+    if (element.general || element.special || element.other) {
+      console.log("GOT IT");
+      return element;
+    }
+
+    // Starting at the end of the breadcrumbs list, find the first element that has tariff details using a reverseing for loop
+    for (let i = breadcrumbs.length - 1; i >= 0; i--) {
+      const breadcrumb = breadcrumbs[i];
+      if (
+        breadcrumb.element.type === Navigatable.ELEMENT &&
+        (breadcrumb.element.general ||
+          breadcrumb.element.special ||
+          breadcrumb.element.other)
+      ) {
+        return breadcrumb.element;
+      }
+    }
+
+    return undefined;
+  };
+
+  const [tariffElement, setTariffElement] = useState<HtsElement | null>(
+    getElementWithTariffDetails()
+  );
+
+  useEffect(() => {
+    setTariffElement(getElementWithTariffDetails());
+  }, [breadcrumbs]);
 
   useEffect(() => {
     const loadChapterData = async () => {
       const chapterElements = getChapterElements(chapter);
 
       if (!chapterElements) {
-        setLoading(true);
+        setLoading({ isLoading: true, text: "Loading..." });
         await fetchChapter(chapter);
         const updatedChapterElements = getChapterElements(chapter);
         if (updatedChapterElements) {
@@ -59,7 +88,7 @@ export const Element = ({
         );
         setChildren(directChildrenElements);
       }
-      setLoading(false);
+      setLoading({ isLoading: false, text: "" });
     };
     loadChapterData();
   }, [chapter, fetchChapter, getChapterElements, element]);
@@ -87,14 +116,14 @@ export const Element = ({
     return note;
   };
 
-  const getParentDescriptionsFromBreadcrumbs = (element: HtsElement) => {
+  const getParentDescriptionsFromBreadcrumbs = () => {
     let descriptions = "";
     breadcrumbs.forEach((breadcrumb, index) => {
       // Skip if this is the current element
-      const isLastBreadCrumb = breadcrumbs.length - 1 === index;
-      if (isLastBreadCrumb) {
-        return;
-      }
+      // const isLastBreadCrumb = breadcrumbs.length - 1 === index;
+      // if (isLastBreadCrumb) {
+      //   return;
+      // }
 
       // Only process chapters and other elements
       if (
@@ -106,85 +135,232 @@ export const Element = ({
           description = description.replace(/:$/, "");
         }
 
-        const isLastVisibleBreadCrumb = breadcrumbs.length - 2 === index;
+        const isLastVisibleBreadCrumb = breadcrumbs.length - 1 === index;
 
         descriptions += description + (isLastVisibleBreadCrumb ? "" : " > ");
       }
     });
+
     return descriptions;
   };
 
+  // const getFullHtsDescription = (
+  //   classificationProgression: ClassificationProgression[]
+  // ) => {
+  //   let fullDescription = "";
+  //   classificationProgression.forEach((progression, index) => {
+  //     if (progression.selection) {
+  //       // if the string has a : at the end, strip it off
+  //       const desc = progression.selection.description.endsWith(":")
+  //         ? progression.selection.description.slice(0, -1)
+  //         : progression.selection.description;
+
+  //       fullDescription += index === 0 ? `${desc}` : ` > ${desc}`;
+  //     }
+  //   });
+
+  //   return fullDescription;
+  // };
+
+  // const getBestCandidate = async () => {
+  //   setLoading({
+  //     isLoading: true,
+  //     text: "Getting Best Candidate",
+  //   });
+
+  //   const simplifiedCandidates = children.map((e) => ({
+  //     code: e.htsno,
+  //     description: e.description,
+  //   }));
+
+  //   const bestProgressionResponse = await getBestClassificationProgression(
+  //     simplifiedCandidates,
+  //     classification.progressionDescription,
+  //     classification.articleDescription
+  //   );
+
+  //   console.log("bestProgressionResponse", bestProgressionResponse);
+
+  //   const bestCandidate = children[bestProgressionResponse.index];
+
+  //   console.log("bestCandidate", bestCandidate);
+
+  //   // Update this classification progressions candidates to mark the bestCandidate element as suggested
+  //   const updatedCandidates = children.map((e) => {
+  //     if (e.uuid === bestCandidate.uuid) {
+  //       return {
+  //         ...e,
+  //         suggested: true,
+  //         suggestedReasoning: bestProgressionResponse.logic,
+  //       };
+  //     }
+  //     return { ...e, suggested: false, suggestedReasoning: "" };
+  //   });
+
+  //   updateProgressionLevel(classification.levels.length - 1, {
+  //     candidates: updatedCandidates,
+  //   });
+
+  //   setLoading({ isLoading: false, text: "" });
+  // };
+
+  const getHtsnoLabel = () => {
+    if (htsno) {
+      return htsno;
+    }
+
+    // Find parent breadcrumb, if it's of type ELEMENT, then return the htsno
+    const parentBreadcrumb = breadcrumbs[breadcrumbs.length - 2];
+
+    if (parentBreadcrumb.element.type === Navigatable.ELEMENT) {
+      return `${parentBreadcrumb.element.htsno} /`;
+    }
+
+    return "Missing HTS Number";
+  };
+
+  enum TariffType {
+    GENERAL = "general",
+    SPECIAL = "special",
+    OTHER = "other",
+  }
+
+  const extractHTSCodes = (input: string): string[] => {
+    const regex = /\b\d{4}\.\d{2}\.\d{2}\b/g;
+    const matches = input.match(regex);
+    if (!matches) return [];
+
+    return matches.map((code) => code.replace(/\.$/, ""));
+  };
+
+  const getTemporaryTairffModifications = (
+    element: HtsElement,
+    tariffType: TariffType
+  ): string | string[] => {
+    const footnote = element.footnotes?.find((footnote) =>
+      footnote.columns.includes(tariffType)
+    );
+
+    if (footnote) {
+      const htsCodes = extractHTSCodes(footnote.value);
+
+      if (htsCodes.length > 0) {
+        return htsCodes;
+      }
+
+      return footnote.value;
+    }
+
+    return null;
+  };
+
   return (
-    <div className="card bg-base-300 w-full flex flex-col items-start justify-between gap-6 p-4 sm:p-6">
-      <div className="flex items-start justify-between gap-3 w-full">
-        <div className="flex flex-col gap-5">
-          <div className="shrink-0">
-            {htsno && (
-              <PrimaryInformation
-                label={htsno ? `${htsno} ` : ``}
-                value={``}
-                copyable={false}
-              />
-            )}
-          </div>
-          <div className="flex flex-col gap-1 mb-4">
-            {getParentDescriptionsFromBreadcrumbs(element).length > 0 && (
-              <TertiaryInformation
-                key={description}
-                value={getParentDescriptionsFromBreadcrumbs(element)}
-              />
-            )}
-            {htsno ? (
-              <PrimaryInformation value={description} />
-            ) : (
-              <PrimaryInformation label={description} value="" />
-            )}
-          </div>
+    <div className="card bg-base-100 p-4 rounded-xl border border-base-content/10 w-full flex flex-col items-start justify-between gap-8 pt-2 sm:pt-4 overflow-y-auto">
+      <div className="w-full flex flex-col gap-1">
+        <div className="w-full flex justify-between items-center">
+          <TertiaryLabel value={getHtsnoLabel()} />
+          <ButtonWithIcon
+            icon={<DocumentTextIcon className="h-4 w-4" />}
+            label="Notes"
+            onClick={() =>
+              setShowPDF({
+                title: `Chapter ${chapter} Notes`,
+                file: `/notes/chapter/Chapter ${chapter}.pdf`,
+              })
+            }
+          />
         </div>
-        <SquareIconButton
-          icon={<DocumentTextIcon className="h-4 w-4" />}
-          onClick={() =>
-            setShowPDF({
-              title: `Chapter ${chapter} Notes`,
-              file: `/notes/chapter/Chapter ${chapter}.pdf`,
-            })
-          }
-        />
+        <div className="flex flex-col gap-1">
+          <h2 className="text-2xl font-bold text-white">{description}</h2>
+        </div>
+        {getParentDescriptionsFromBreadcrumbs().length > 0 && (
+          <TertiaryText
+            key={description}
+            value={getParentDescriptionsFromBreadcrumbs()}
+          />
+        )}
       </div>
 
       {!summaryOnly && (
         <>
-          {(general || special || other) && (
-            <div className="w-full flex flex-col gap-2">
-              <TertiaryInformation value="" label="Tariff Rates:" />
+          {tariffElement && (
+            <div className="w-full flex flex-col gap-4">
+              <SecondaryLabel value="Tariff Details" />
 
               <div className="grid grid-cols-2 gap-2">
-                {units &&
-                  units.map((unit, i) => (
+                {tariffElement.units &&
+                  tariffElement.units.map((unit, i) => (
                     <div
                       key={`${i}-${unit}`}
                       className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24"
                     >
-                      <TertiaryInformation value={`Unit`} />
-                      <SecondaryInformation label={unit || "-"} value={""} />
+                      <TertiaryText value={`Unit`} />
+                      <SecondaryLabel value={unit || "-"} color={Color.WHITE} />
                     </div>
                   ))}
 
                 <div className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24">
-                  <TertiaryInformation value={"General"} />
-                  <SecondaryInformation label={general || "-"} value={""} />
+                  <TertiaryText value={"General"} />
+                  <SecondaryLabel
+                    value={tariffElement.general || "-"}
+                    color={Color.WHITE}
+                  />
+                  {getTemporaryTairffModifications(
+                    tariffElement,
+                    TariffType.GENERAL
+                  ) &&
+                  typeof getTemporaryTairffModifications(
+                    tariffElement,
+                    TariffType.GENERAL
+                  ) === "string" ? (
+                    <>
+                      <TertiaryText value={"Temporary Modifications"} />
+                      <SecondaryLabel
+                        value={
+                          getTemporaryTairffModifications(
+                            tariffElement,
+                            TariffType.GENERAL
+                          ) as string
+                        }
+                        color={Color.WHITE}
+                      />
+                    </>
+                  ) : (
+                    (
+                      getTemporaryTairffModifications(
+                        tariffElement,
+                        TariffType.GENERAL
+                      ) as string[]
+                    ).map((htsCode) => (
+                      <button
+                        key={htsCode}
+                        className="btn btn-link btn-xs text-xs p-0 hover:text-secondary hover:scale-110"
+                        onClick={() => {
+                          setBreadcrumbs([
+                            ...breadcrumbs,
+                            {
+                              title: htsCode,
+                              element: { ...tariffElement, htsno: htsCode },
+                            },
+                          ]);
+                        }}
+                      >
+                        {htsCode}
+                      </button>
+                    ))
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24">
-                  <TertiaryInformation value={"Special"} />
-                  <SecondaryInformation
-                    label={getPrefixFromSpecial(special) || "-"}
-                    value={""}
+                  <TertiaryText value={"Special"} />
+                  <SecondaryLabel
+                    value={getPrefixFromSpecial(tariffElement.special) || "-"}
+                    color={Color.WHITE}
                   />
 
-                  {getDetailsFromSpecial(special) && (
+                  {getDetailsFromSpecial(tariffElement.special) && (
                     <div className="flex gap-x-1 flex-wrap">
-                      {getDetailsFromSpecial(special)
+                      {getDetailsFromSpecial(tariffElement.special)
                         .split(",")
                         .map((specialTariffSymbol, index) => (
                           <div key={`${specialTariffSymbol}-${index}`}>
@@ -207,30 +383,98 @@ export const Element = ({
                         ))}
                     </div>
                   )}
+
+                  {getTemporaryTairffModifications(
+                    tariffElement,
+                    TariffType.SPECIAL
+                  ) && (
+                    <>
+                      <TertiaryText value={"Temporary Modifications"} />
+                      <SecondaryLabel
+                        value={
+                          getTemporaryTairffModifications(
+                            tariffElement,
+                            TariffType.SPECIAL
+                          ) as string
+                        }
+                        color={Color.WHITE}
+                      />
+                    </>
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24">
-                  <TertiaryInformation value={"Other"} />
-                  <SecondaryInformation label={other || "-"} value={""} />
+                  <TertiaryText value={"Other"} />
+                  <SecondaryLabel
+                    value={tariffElement.other || "-"}
+                    color={Color.WHITE}
+                  />
+                  {getTemporaryTairffModifications(
+                    tariffElement,
+                    TariffType.OTHER
+                  ) && (
+                    <>
+                      <TertiaryText value={"Temporary Modifications"} />
+                      <SecondaryLabel
+                        value={
+                          getTemporaryTairffModifications(
+                            tariffElement,
+                            TariffType.OTHER
+                          ) as string
+                        }
+                        color={Color.WHITE}
+                      />
+                    </>
+                  )}
                 </div>
+
+                {/* {tariffElement.footnotes && (
+                  <div className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24">
+                    <TertiaryText value={"Temporary Modifications"} />
+                    {tariffElement.footnotes.map((footnote, index) => (
+                      <SecondaryLabel
+                        key={`${index}-${footnote}`}
+                        value={`For ${footnote.columns.map((column) => column.replace(/^[A-Z]/, (char) => char.toLowerCase())).join(", ")}: ${footnote.value || "-"}`}
+                        color={Color.WHITE}
+                      />
+                    ))}
+                  </div>
+                )} */}
               </div>
             </div>
           )}
           {children.length > 0 && (
             <div className="w-full flex flex-col gap-2">
-              <TertiaryInformation value="" label="Elements:" />
-              <div className="flex flex-col rounded-md gap-2">
-                {children.map((child, i) => {
-                  return (
-                    <ElementSum
-                      key={`${i}-${child.htsno}`}
-                      element={child}
-                      chapter={chapter}
-                      breadcrumbs={breadcrumbs}
-                      setBreadcrumbs={setBreadcrumbs}
-                    />
-                  );
-                })}
+              {loading.isLoading && (
+                <div className="flex items-center justify-center">
+                  <LoadingIndicator text={loading.text} />
+                </div>
+              )}
+
+              <div className="flex flex-col gap-4">
+                <SecondaryLabel value="Next Level" />
+                <div className="flex flex-col gap-2">
+                  {children.map((child, i) => {
+                    return (
+                      <ElementSummary
+                        key={`${i}-${child.htsno}`}
+                        element={child}
+                        onClick={() => {
+                          setBreadcrumbs([
+                            ...breadcrumbs,
+                            {
+                              title: `${child.htsno || child.description.split(" ").slice(0, 2).join(" ") + "..."}`,
+                              element: {
+                                ...child,
+                                chapter,
+                              },
+                            },
+                          ]);
+                        }}
+                      />
+                    );
+                  })}
+                </div>
               </div>
             </div>
           )}

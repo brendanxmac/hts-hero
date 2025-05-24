@@ -56,9 +56,9 @@ export interface HtsElement {
   footnotes: Footnote[];
   quotaQuantity: string | null;
   additionalDuties: string | null;
-  children?: HtsElement[];
-  suggested?: boolean;
-  suggestedReasoning?: string;
+  recommended?: boolean;
+  recommendedReason?: string;
+  notes?: string;
 }
 
 export interface Footnote {
@@ -112,11 +112,26 @@ export interface CandidateSelection {
   logic: string;
 }
 
-export interface HtsLevelClassification {
-  level: HtsLevel;
-  candidates: HtsElement[]; //| HtsSectionAndChapterBase[];
-  // suggestions?: HtsElement[]; //| HtsSectionAndChapterBase[];
-  selection?: HtsElement; // | HtsSectionAndChapterBase;
+export interface FetchedClassification {
+  id: string;
+  user_id: string;
+  description: string;
+  analysis: string;
+  progression_description: string;
+  decisions: ClassificationProgression[];
+  created_at: string;
+}
+
+export interface Classification {
+  articleDescription: string;
+  articleAnalysis: string;
+  progressionDescription: string;
+  levels: ClassificationProgression[];
+}
+
+export interface ClassificationProgression {
+  candidates: HtsElement[];
+  selection?: HtsElement;
   reasoning?: string;
 }
 
