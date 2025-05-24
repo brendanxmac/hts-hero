@@ -82,7 +82,7 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
           </div>
         </div>
         {showDetails && (
-          <div className="ml-11 flex flex-col">
+          <div className="ml-11 flex flex-col gap-2">
             {section.chapters.map((chapter) => {
               return (
                 <ChapterSummary
