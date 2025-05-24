@@ -9,7 +9,7 @@ const chapterIsValid = (chapter: string) => {
   const chapterAsNumber = Number(chapter);
 
   if (Number.isNaN(chapterAsNumber)) return false;
-  if (chapterAsNumber < 1 || chapterAsNumber > 99) return false;
+  if (chapterAsNumber < 0 || chapterAsNumber > 99) return false;
 
   return true;
 };
