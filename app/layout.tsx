@@ -8,7 +8,6 @@ import config from "@/config";
 import "./globals.css";
 import { HtsSectionsProvider } from "../contexts/HtsSectionsContext";
 import { ClassificationProvider } from "../contexts/ClassificationContext";
-import { ClassifyTabProvider } from "../contexts/ClassifyTabContext";
 
 const font = Inter({ subsets: ["latin"] });
 

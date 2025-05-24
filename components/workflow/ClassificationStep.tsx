@@ -23,6 +23,7 @@ import { useClassifyTab } from "../../contexts/ClassifyTabContext";
 import { ClassifyTab } from "../../enums/classify";
 import { createClassification } from "../../libs/classification";
 import { ConfirmationCard } from "../ConfirmationCard";
+
 export interface ClassificationStepProps {
   setWorkflowStep: (step: WorkflowStep) => void;
   classificationLevel: number | undefined;
@@ -121,7 +122,7 @@ export const ClassificationStep = ({
       });
     });
 
-    let candidatesForChapter: CandidateSelection[] = [];
+    const candidatesForChapter: CandidateSelection[] = [];
 
     await Promise.all(
       candidateSections.map(async (section) => {
@@ -266,18 +267,6 @@ export const ClassificationStep = ({
     await createClassification(classification);
     setLoading({ isLoading: false, text: "" });
   };
-
-  const getElementsChildren = () => {
-    // 1. If selected not changed, and we have a next level, grab the elements in the next level
-    // 2. If selected changed, compute the elements based on finding the children of the selected element
-  };
-
-  if (
-    getChapterElements(levels[classificationLevel].selection.chapter) ===
-    undefined
-  ) {
-    // Go fetch all chapters for each element in the first level
-  }
 
   return (
     <div className="h-full flex flex-col pt-8">

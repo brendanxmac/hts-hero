@@ -1,5 +1,5 @@
 interface Props {
-  icon: React.ReactNode;
+  icon: JSX.Element;
   label: string;
   onClick: () => void;
 }

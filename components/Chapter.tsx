@@ -11,11 +11,8 @@ import PDF from "./PDF";
 import { useChapters } from "../contexts/ChaptersContext";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { ButtonWithIcon } from "./ButtonWithIcon";
-import { Color } from "../enums/style";
 import { SecondaryLabel } from "./SecondaryLabel";
-import { TertiaryText } from "./TertiaryText";
 import { TertiaryLabel } from "./TertiaryLabel";
-import { PrimaryLabel } from "./PrimaryLabel";
 
 interface Props {
   chapter: HtsSectionAndChapterBase;

@@ -4,6 +4,7 @@ import { TertiaryText } from "../TertiaryText";
 import { Color } from "../../enums/style";
 import { SecondaryLabel } from "../SecondaryLabel";
 import { classNames } from "../../utilities/style";
+
 interface Props {
   isActive: boolean;
   element: HtsElement;
@@ -14,7 +15,6 @@ interface Props {
 export const SidebarElementSummary = ({
   isActive,
   element,
-  chapter,
   onClick,
 }: Props) => {
   const { htsno, description } = element;

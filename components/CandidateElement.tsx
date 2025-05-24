@@ -49,11 +49,10 @@ export const CandidateElement = ({
   const { setActiveTab } = useClassifyTab();
   const { findChapterByNumber } = useHtsSections();
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [_, setLoading] = useState(false);
   const { classification, updateLevel, setClassification } =
     useClassification();
   const [showNotes, setShowNotes] = useState(false);
-  const [notes, setNotes] = useState<string>("");
 
   useEffect(() => {
     const loadChapterData = async () => {
@@ -146,7 +145,7 @@ export const CandidateElement = ({
                 onClick={() => {
                   setShowNotes(!showNotes);
                 }}
-                transparent={!Boolean(element.notes)}
+                transparent={!element.notes}
               />
               {indent === "0" && (
                 <SquareIconButton

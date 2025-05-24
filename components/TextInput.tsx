@@ -22,7 +22,6 @@ export default function TextInput({
   defaultValue,
   onChange,
   onSubmit,
-  disabled,
   showCharacterCount = true,
 }: Props) {
   const characterLimit = 500;
