@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { HtsLevelClassification } from "../interfaces/hts";
+import { ClassificationProgression } from "../interfaces/hts";
 import { Cell } from "./Cell";
-import { PrimaryInformation } from "./PrimaryInformation";
+import { PrimaryText } from "./PrimaryText";
 import { SectionLabel } from "./SectionLabel";
 import { findFirstElementInProgressionWithTariff } from "../libs/hts";
 import { LoadingIndicator } from "./LoadingIndicator";
@@ -10,7 +10,7 @@ import { Tariff } from "../app/classes/tariff";
 import { TariffSummary } from "./TariffSummary";
 
 interface Props {
-  classificationProgression: HtsLevelClassification[];
+  classificationProgression: ClassificationProgression[];
   setUpdateScrollHeight: Dispatch<SetStateAction<number>>;
 }
 
@@ -51,7 +51,7 @@ export const TariffSection = ({
 
           {tariff && !loading && (
             <>
-              <PrimaryInformation value={tariff.getTotal()} />
+              <PrimaryText value={tariff.getTotal()} />
               {tariff.temporaryAdjustments.length && showDetails ? (
                 <TariffDetails
                   htsElement={findFirstElementInProgressionWithTariff(

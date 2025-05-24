@@ -1,8 +1,8 @@
-import { HtsLevelClassification } from "../interfaces/hts";
+import { ClassificationProgression } from "../interfaces/hts";
 import { SelectionCandidate } from "./SelectionCandidate";
 
 interface Props {
-  decision: HtsLevelClassification;
+  decision: ClassificationProgression;
 }
 
 export const DecisionDetails = ({ decision }: Props) => {

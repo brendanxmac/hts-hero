@@ -1,18 +1,28 @@
 "use client";
 
 import { createContext, useContext, useState, ReactNode } from "react";
-import { HtsLevelClassification } from "../interfaces/hts";
+import { Classification, ClassificationProgression } from "../interfaces/hts";
 import { HtsElement } from "../interfaces/hts";
-import { HtsLevel } from "../enums/hts";
 
 interface ClassificationContextType {
-  classificationProgression: HtsLevelClassification[];
-  setClassificationProgression: (progression: HtsLevelClassification[]) => void;
-  addToClassificationProgression: (
-    level: HtsLevel,
-    candidates: HtsElement[]
+  classification: Classification;
+  setClassification: (
+    classification: Classification | ((prev: Classification) => Classification)
   ) => void;
-  clearClassificationProgression: () => void;
+  // Helper functions
+  setArticleDescription: (description: string) => void;
+  setProgressionDescription: (description: string) => void;
+  setArticleAnalysis: (analysis: string) => void;
+  addLevel: (
+    candidates: HtsElement[],
+    selection?: HtsElement,
+    reasoning?: string
+  ) => void;
+  updateLevel: (
+    index: number,
+    updates: Partial<ClassificationProgression>
+  ) => void;
+  clearClassification: () => void;
 }
 
 const ClassificationContext = createContext<
@@ -24,28 +34,98 @@ export const ClassificationProvider = ({
 }: {
   children: ReactNode;
 }) => {
-  const [classificationProgression, setClassificationProgression] = useState<
-    HtsLevelClassification[]
-  >([]);
+  const [classification, setClassification] = useState<Classification>({
+    articleDescription: "",
+    articleAnalysis: "",
+    progressionDescription: "",
+    levels: [],
+  });
 
-  const addToClassificationProgression = (
-    level: HtsLevel,
-    candidates: HtsElement[]
-  ) => {
-    setClassificationProgression((prev) => [...prev, { level, candidates }]);
+  const setArticleDescription = (description: string) => {
+    setClassification((prev) => ({
+      ...prev,
+      articleDescription: description,
+    }));
   };
 
-  const clearClassificationProgression = () => {
-    setClassificationProgression([]);
+  const setProgressionDescription = (description: string) => {
+    setClassification((prev) => ({
+      ...prev,
+      progressionDescription: description,
+    }));
+  };
+
+  const setArticleAnalysis = (analysis: string) => {
+    setClassification((prev) => ({
+      ...prev,
+      articleAnalysis: analysis,
+    }));
+  };
+
+  const addLevel = (
+    candidates: HtsElement[],
+    selection?: HtsElement,
+    reasoning?: string
+  ) => {
+    setClassification((prev) => ({
+      ...prev,
+      levels: [
+        ...prev.levels,
+        {
+          candidates,
+          selection,
+          reasoning,
+        },
+      ],
+    }));
+  };
+
+  const updateLevel = (
+    index: number,
+    updates: Partial<ClassificationProgression>
+  ) => {
+    setClassification((prev) => {
+      // This code safely updates a specific progression level in the classification state
+      // 1. First spread creates a new array copy to avoid mutating the original state
+      const newProgressionLevels = [...prev.levels];
+
+      // 2. For the progression level we want to update:
+      // - First spread copies all existing properties from the original level
+      // - Second spread overlays any new/updated properties on top
+      // This ensures we keep all original properties while updating only what changed
+      newProgressionLevels[index] = {
+        ...newProgressionLevels[index], // Keep existing properties
+        ...updates, // Override with any new values
+      };
+
+      // 3. Create new state object with updated progression levels
+      return {
+        ...prev,
+        levels: newProgressionLevels,
+      };
+    });
+  };
+
+  const clearClassification = () => {
+    setClassification({
+      articleDescription: "",
+      articleAnalysis: "",
+      progressionDescription: "",
+      levels: [],
+    });
   };
 
   return (
     <ClassificationContext.Provider
       value={{
-        classificationProgression,
-        setClassificationProgression,
-        addToClassificationProgression,
-        clearClassificationProgression,
+        classification,
+        setClassification,
+        setArticleDescription,
+        setProgressionDescription,
+        setArticleAnalysis,
+        addLevel,
+        updateLevel,
+        clearClassification,
       }}
     >
       {children}

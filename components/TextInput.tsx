@@ -1,24 +1,33 @@
 "use client";
 
-import { useRef, ChangeEvent, useState, Dispatch, SetStateAction } from "react";
+import { useRef, ChangeEvent, useState, useEffect } from "react";
 import { classNames } from "../utilities/style";
-import { SparklesIcon } from "@heroicons/react/24/solid";
-import { TertiaryInformation } from "./TertiaryInformation";
+import { TertiaryText } from "./TertiaryText";
 import SquareIconButton from "./SqaureIconButton";
+import { CheckIcon } from "@heroicons/react/24/solid";
 
 interface Props {
-  label: string;
+  label?: string;
   placeholder: string;
-  setProductDescription: Dispatch<SetStateAction<string>>;
+  defaultValue?: string;
+  onSubmit?: (value: string) => void;
+  onChange?: (value: string) => void;
+  disabled?: boolean;
+  showCharacterCount?: boolean;
 }
 
 export default function TextInput({
   label,
   placeholder,
-  setProductDescription,
+  defaultValue,
+  onChange,
+  onSubmit,
+  showCharacterCount = true,
 }: Props) {
   const characterLimit = 500;
-  const [localProductDescription, setLocalProductDescription] = useState("");
+  const [localProductDescription, setLocalProductDescription] = useState(
+    defaultValue || ""
+  );
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const adjustTextAreaHeight = (): void => {
@@ -32,28 +41,27 @@ export default function TextInput({
 
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>): void => {
     setLocalProductDescription(e.target.value);
+    onChange && onChange(e.target.value);
     adjustTextAreaHeight();
   };
 
-  const classifyProduct = (): void => {
-    if (localProductDescription.trim()) {
-      setProductDescription(localProductDescription.trim());
-    }
-  };
-
-  //   const handleKeyDown = (event: KeyboardEvent) => {
-  //     if (event.key === "Enter") {
-  //       event.preventDefault(); // Prevent the default behavior of Enter
-  //       classifyProduct();
-  //     }
-  //   };
+  useEffect(() => {
+    adjustTextAreaHeight();
+  }, []);
 
   return (
-    <div className="w-full flex flex-col gap-2">
-      <TertiaryInformation label={label} value="" />
+    <div
+      className="w-full flex flex-col gap-2 border-2 border-base-content/50 rounded-md"
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        textareaRef.current?.focus();
+      }}
+    >
+      {label && <TertiaryText value={label} />}
       <div
         className={
-          "w-full flex flex-col gap-2 bg-base-300 rounded-md px-4 py-3"
+          "w-full flex flex-col gap-2 bg-base-100 rounded-md px-4 py-3"
         }
       >
         <textarea
@@ -62,41 +70,43 @@ export default function TextInput({
           rows={1}
           value={localProductDescription}
           onChange={handleInputChange}
-          // @ts-ignore
-          //   onKeyDown={handleKeyDown}
-          className="textarea text-base rounded-none resize-none bg-inherit text-black dark:text-white placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-0"
+          className="textarea text-base max-h-96 rounded-none resize-none bg-inherit text-black dark:text-white placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-0"
         ></textarea>
 
-        <div className="flex justify-between items-center">
-          <p
-            className={classNames(
-              "text-neutral-500 text-xs",
-              localProductDescription.length > characterLimit
-                ? "font-bold"
-                : undefined
-            )}
-          >
-            <span
-              className={
-                localProductDescription.length > characterLimit
-                  ? "text-red-600"
-                  : undefined
-              }
-            >
-              {localProductDescription.length}
-            </span>
-            {` / ${characterLimit}`}
-          </p>
-
-          <SquareIconButton
-            icon={<SparklesIcon className="h-4 w-4" />}
-            onClick={classifyProduct}
-            disabled={
-              !localProductDescription ||
-              localProductDescription.length > characterLimit
-            }
-          />
-        </div>
+        {showCharacterCount ||
+          (onSubmit && (
+            <div className="flex justify-between items-center">
+              {showCharacterCount && (
+                <p
+                  className={classNames(
+                    "text-neutral-500 text-xs",
+                    localProductDescription.length > characterLimit
+                      ? "font-bold"
+                      : undefined
+                  )}
+                >
+                  <span
+                    className={
+                      localProductDescription.length > characterLimit
+                        ? "text-red-600"
+                        : undefined
+                    }
+                  >
+                    {localProductDescription.length}
+                  </span>
+                  {` / ${characterLimit}`}
+                </p>
+              )}
+              {onSubmit && (
+                <SquareIconButton
+                  icon={<CheckIcon className="h-4 w-4" />}
+                  onClick={() => {
+                    onSubmit(localProductDescription);
+                  }}
+                />
+              )}
+            </div>
+          ))}
       </div>
     </div>
   );

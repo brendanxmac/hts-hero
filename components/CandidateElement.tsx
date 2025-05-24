@@ -1,51 +1,58 @@
 import { useEffect, useState } from "react";
 import { useChapters } from "../contexts/ChaptersContext";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
-import {
-  HtsElement,
-  Navigatable,
-  HtsLevelClassification,
-} from "../interfaces/hts";
+import { HtsElement, Navigatable } from "../interfaces/hts";
 import SquareIconButton from "./SqaureIconButton";
 import {
+  SparklesIcon,
+  TrashIcon,
   DocumentTextIcon,
-  XMarkIcon,
-  MagnifyingGlassIcon,
+  PencilSquareIcon,
 } from "@heroicons/react/24/solid";
+import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
 import { PDFProps } from "./Element";
 import PDF from "./PDF";
 import { classNames } from "../utilities/style";
-import { getDirectChildrenElements, getHtsLevel } from "../libs/hts";
-import { TertiaryInformation } from "./TertiaryInformation";
+import { TertiaryText } from "./TertiaryText";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
-import { SecondaryInformation } from "./SecondaryInformation";
-
+import { SecondaryText } from "./SecondaryText";
+import { useClassification } from "../contexts/ClassificationContext";
+import { Color } from "../enums/style";
+import { SecondaryLabel } from "./SecondaryLabel";
+import { useClassifyTab } from "../contexts/ClassifyTabContext";
+import { ClassifyTab } from "../enums/classify";
+import TextInput from "./TextInput";
+import { TertiaryLabel } from "./TertiaryLabel";
 interface Props {
   element: HtsElement;
-  isSelectedElement: boolean;
   indentLevel: number;
-  setSelectedElement: (element: HtsElement) => void;
-  classificationProgression: HtsLevelClassification[];
-  setClassificationProgression: (
-    classificationProgression: HtsLevelClassification[]
-  ) => void;
+  locallySelectedElement: HtsElement | undefined;
+  setLocallySelectedElement: (element: HtsElement) => void;
 }
 
 export const CandidateElement = ({
   element,
-  isSelectedElement,
-  setSelectedElement,
-  classificationProgression,
   indentLevel,
-  setClassificationProgression,
+  locallySelectedElement,
+  setLocallySelectedElement,
 }: Props) => {
-  const { htsno, chapter, description, suggested, suggestedReasoning } =
-    element;
-  const { fetchChapter, getChapterElements } = useChapters();
+  const {
+    htsno,
+    chapter,
+    description,
+    recommended,
+    recommendedReason,
+    indent,
+  } = element;
+  const { fetchChapter } = useChapters();
   const { addBreadcrumb, clearBreadcrumbs } = useBreadcrumbs();
+  const { setActiveTab } = useClassifyTab();
   const { findChapterByNumber } = useHtsSections();
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [_, setLoading] = useState(false);
+  const { classification, updateLevel, setClassification } =
+    useClassification();
+  const [showNotes, setShowNotes] = useState(false);
 
   useEffect(() => {
     const loadChapterData = async () => {
@@ -56,118 +63,172 @@ export const CandidateElement = ({
     loadChapterData();
   }, [chapter, fetchChapter]);
 
+  // Check all progression levels to see if this element is selected in any of them
+  const isLevelSelection = Boolean(
+    classification.levels.some(
+      (level) => level.selection && level.selection.uuid === element.uuid
+    )
+  );
+
+  const isLocallySelected = locallySelectedElement?.uuid === element.uuid;
+
   return (
     <div
       className={classNames(
-        "flex flex-col w-full rounded-md bg-primary/30 dark:bg-primary/30 p-4 gap-4",
-        isSelectedElement
-          ? "bg-secondary/50 dark:bg-secondary/50"
-          : "hover:bg-primary/50 transition duration-100 ease-in-out hover:cursor-pointer"
+        "flex w-full rounded-md bg-base-100 p-4 gap-4 transition duration-100 ease-in-out",
+        // FIXME: this inset syntax won't work in daisyUI v5, https://chatgpt.com/c/680acac7-5db4-8000-a309-b4ba81c63e8c
+        isLevelSelection &&
+          !locallySelectedElement &&
+          "shadow-[inset_0_0_0_4px_oklch(var(--p))]",
+        isLevelSelection &&
+          locallySelectedElement &&
+          !isLocallySelected &&
+          "shadow-[inset_0_0_0_2px_oklch(var(--nc))]",
+        isLocallySelected && "shadow-[inset_0_0_0_4px_oklch(var(--p))]",
+        !isLevelSelection &&
+          !isLocallySelected &&
+          "hover:cursor-pointer hover:bg-base-200 shadow-[inset_0_0_0_1px_oklch(var(--n))]"
       )}
       onClick={() => {
-        if (isSelectedElement) {
-          setSelectedElement(null);
-          const newClassificationProgression = classificationProgression.slice(
-            0,
-            indentLevel + 1
-          );
-          newClassificationProgression[indentLevel].selection = null;
-          setClassificationProgression(newClassificationProgression);
+        if (isLocallySelected) {
+          setLocallySelectedElement(undefined);
         } else {
-          setSelectedElement(element);
-          clearBreadcrumbs();
-          const ch = findChapterByNumber(element.chapter);
-          if (ch) {
-            addBreadcrumb({
-              type: Navigatable.CHAPTER,
-              ...ch,
-            });
-          }
-          addBreadcrumb(element);
-          const children = getDirectChildrenElements(
-            element,
-            getChapterElements(chapter)
-          );
+          setLocallySelectedElement(element);
 
-          if (children.length > 0) {
-            const newClassificationProgression =
-              classificationProgression.slice(0, indentLevel + 1);
-            newClassificationProgression[indentLevel].selection = element;
-            setClassificationProgression([
-              ...newClassificationProgression,
-              {
-                level: getHtsLevel(htsno || ""),
-                candidates: children,
-                selection: null,
-                reasoning: "",
-              },
-            ]);
-          } else {
-            // TADA! classification complete, do something special
-          }
+          // clearBreadcrumbs();
+          // const ch = findChapterByNumber(element.chapter);
+          // if (ch) {
+          //   addBreadcrumb({
+          //     type: Navigatable.CHAPTER,
+          //     ...ch,
+          //   });
+          // }
+          // addBreadcrumb(element);
         }
       }}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="w-full flex items-center justify-between gap-2">
-          <div className="min-w-20 md:min-w-32">
-            <TertiaryInformation
-              label={htsno ? `${htsno}` : description}
-              value={""}
-            />
-          </div>
-          <div className="flex gap-2">
-            <SquareIconButton
-              icon={<DocumentTextIcon className="h-4 w-4" />}
-              onClick={() =>
-                setShowPDF({
-                  title: `Chapter ${chapter} Notes`,
-                  file: `/notes/chapter/Chapter ${chapter}.pdf`,
-                })
-              }
-            />
-            <SquareIconButton
-              icon={<MagnifyingGlassIcon className="h-4 w-4" />}
-              onClick={() => {
-                clearBreadcrumbs();
-                const chapter = findChapterByNumber(element.chapter);
-                if (chapter) {
-                  addBreadcrumb({
-                    type: Navigatable.CHAPTER,
-                    ...chapter,
-                  });
+      <div className="flex flex-col w-full gap-4">
+        <div className="flex items-start justify-between">
+          <div className="w-full flex items-center justify-between gap-2">
+            <SecondaryText value={htsno ? `${htsno}` : "Prequalifier"} />
+            <div className="flex gap-2">
+              <SquareIconButton
+                icon={<DocumentTextIcon className="h-4 w-4" />}
+                onClick={() =>
+                  setShowPDF({
+                    title: `Chapter ${chapter} Notes`,
+                    file: `/notes/chapter/Chapter ${chapter}.pdf`,
+                  })
                 }
-                addBreadcrumb({
-                  ...element,
+                transparent
+              />
+              <SquareIconButton
+                icon={<MagnifyingGlassIcon className="h-4 w-4" />}
+                onClick={() => {
+                  clearBreadcrumbs();
+                  const chapter = findChapterByNumber(element.chapter);
+                  if (chapter) {
+                    addBreadcrumb({
+                      type: Navigatable.CHAPTER,
+                      ...chapter,
+                    });
+                  }
+                  addBreadcrumb({
+                    ...element,
+                  });
+                  setActiveTab(ClassifyTab.EXPLORE);
+                }}
+                transparent
+              />
+              <SquareIconButton
+                icon={<PencilSquareIcon className="h-4 w-4" />}
+                onClick={() => {
+                  setShowNotes(!showNotes);
+                }}
+                transparent={!element.notes}
+              />
+              {indent === "0" && (
+                <SquareIconButton
+                  icon={<TrashIcon className="h-4 w-4 text-error" />}
+                  onClick={() => {
+                    if (isLevelSelection) {
+                      const newClassificationProgression =
+                        classification.levels.slice(0, indentLevel + 1);
+                      newClassificationProgression[indentLevel].selection =
+                        null;
+
+                      // remove this element from the candidates of this level
+                      newClassificationProgression[indentLevel].candidates =
+                        newClassificationProgression[
+                          indentLevel
+                        ].candidates.filter(
+                          (candidate) => candidate.uuid !== element.uuid
+                        );
+
+                      setClassification({
+                        ...classification,
+                        levels: newClassificationProgression,
+                      });
+                    } else {
+                      const newClassificationProgression =
+                        classification.levels.slice(0, indentLevel + 1);
+
+                      newClassificationProgression[indentLevel].candidates =
+                        newClassificationProgression[
+                          indentLevel
+                        ].candidates.filter(
+                          (candidate) => candidate.uuid !== element.uuid
+                        );
+                      updateLevel(indentLevel, {
+                        candidates:
+                          newClassificationProgression[indentLevel].candidates,
+                      });
+                    }
+                  }}
+                  color="error"
+                  transparent
+                />
+              )}
+            </div>
+          </div>
+        </div>
+
+        <SecondaryLabel value={description} color={Color.WHITE} />
+
+        {showNotes && (
+          <div className="flex flex-col gap-2 rounded-md">
+            <TertiaryLabel value="Notes" />
+            <TextInput
+              defaultValue={element.notes}
+              placeholder="Why is this candidate good or bad compared to others for the classification?"
+              showCharacterCount={false}
+              onChange={(str) => {
+                const updatedCandidates = classification.levels[
+                  indentLevel
+                ].candidates.map((candidate) => {
+                  if (candidate.uuid === element.uuid) {
+                    return { ...candidate, notes: str };
+                  }
+                  return candidate;
+                });
+                updateLevel(indentLevel, {
+                  candidates: updatedCandidates,
                 });
               }}
             />
-            <SquareIconButton
-              icon={<XMarkIcon className="h-4 w-4" />}
-              onClick={() => {
-                const newClassificationProgression =
-                  classificationProgression.slice(0, indentLevel + 1);
-
-                newClassificationProgression[indentLevel].candidates =
-                  newClassificationProgression[indentLevel].candidates.filter(
-                    (candidate) => candidate.uuid !== element.uuid
-                  );
-                setClassificationProgression(newClassificationProgression);
-              }}
-              color="error"
-            />
           </div>
-        </div>
+        )}
+
+        {recommended && (
+          <div className="flex flex-col gap-2 bg-base-300 rounded-md p-2">
+            <div className="flex gap-2 text-accent">
+              <SparklesIcon className="h-4 w-4" />
+              <TertiaryText value="Suggested" />
+            </div>
+            <p className="text-sm dark:text-white/90">{recommendedReason}</p>
+          </div>
+        )}
       </div>
-
-      {htsno && <SecondaryInformation value={description} />}
-
-      {suggested && (
-        <div className="flex flex-col gap-2">
-          <TertiaryInformation label="Suggested Candidate" value="" loud />
-          <TertiaryInformation value={suggestedReasoning} />
-        </div>
-      )}
 
       {showPDF && (
         <PDF

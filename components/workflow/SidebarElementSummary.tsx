@@ -1,0 +1,62 @@
+import { ChevronRightIcon } from "@heroicons/react/16/solid";
+import { HtsElement } from "../../interfaces/hts";
+import { TertiaryText } from "../TertiaryText";
+import { Color } from "../../enums/style";
+import { SecondaryLabel } from "../SecondaryLabel";
+import { classNames } from "../../utilities/style";
+
+interface Props {
+  isActive: boolean;
+  element: HtsElement;
+  chapter: number;
+  onClick: () => void;
+}
+
+export const SidebarElementSummary = ({
+  isActive,
+  element,
+  onClick,
+}: Props) => {
+  const { htsno, description } = element;
+
+  return (
+    <div
+      className={classNames(
+        "flex flex-col gap-2 w-full rounded-md bg-base-100 border border-neutral",
+        isActive && "bg-primary/80"
+      )}
+    >
+      <div
+        className={classNames(
+          "flex items-center justify-between w-full",
+          !isActive && "hover:bg-neutral"
+        )}
+        onClick={onClick}
+      >
+        <div className="w-full flex flex-col items-start justify-between gap-1 px-4 py-2">
+          {htsno && (
+            <div className="min-w-20 md:min-w-32">
+              <TertiaryText
+                value={htsno}
+                color={isActive ? Color.WHITE : Color.NEUTRAL_CONTENT}
+              />
+            </div>
+          )}
+
+          <div className="w-full flex items-center justify-between gap-2">
+            <SecondaryLabel value={description} color={Color.WHITE} />
+          </div>
+        </div>
+
+        <div className="flex items-center justify-center pr-3">
+          <ChevronRightIcon
+            className={classNames(
+              "shrink-0 w-5 h-5 text-primary",
+              isActive && "text-white"
+            )}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};

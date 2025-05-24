@@ -1,11 +1,13 @@
+import { Color } from "../enums/style";
+
 interface Props {
   value: string;
+  color?: Color;
 }
 
-export const PrimaryLabel = ({ value }: Props) => {
-  return (
-    <h4 className="text-[#40C969] uppercase font-bold text-sm sm:text-base">
-      {value}
-    </h4>
-  );
+export const PrimaryLabel = ({
+  value,
+  color = Color.NEUTRAL_CONTENT,
+}: Props) => {
+  return <h2 className={`text-${color} font-bold md:text-xl`}>{value}</h2>;
 };

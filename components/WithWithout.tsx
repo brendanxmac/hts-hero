@@ -36,29 +36,6 @@ const painPoints: PainPoint[] = [
   },
 ];
 
-const pleasurePoints: PainPoint[] = [
-  {
-    title: "Searching for Suitable Headings",
-    time: "0 min",
-  },
-  {
-    title: "Fetching HTS Notes & References",
-    time: "0 min",
-  },
-  {
-    title: "Finding Relevant CROSS Rulings",
-    time: "0 min",
-  },
-  {
-    title: "Doing Tariff Calculation",
-    time: "0 min",
-  },
-  {
-    title: "Generating Client Reports",
-    time: "10 min",
-  },
-];
-
 const WithWithout = () => {
   return (
     <section className="bg-neutral-900">

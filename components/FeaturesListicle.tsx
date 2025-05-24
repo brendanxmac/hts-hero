@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import type { JSX } from "react";
 import PuzzlePieceSVG from "./svg/PuzzlePieceSVG";
 import { FeaturePoint, FeaturePoints } from "./FeaturePoints";
@@ -241,14 +241,14 @@ const FeaturesListicle = ({
                 featureSelected === "Notes & References"
                   ? RegistrationTrigger.feature_notes
                   : featureSelected === "CROSS Rulings"
-                  ? RegistrationTrigger.feature_cross_rulings
-                  : featureSelected === "Match Suggestions"
-                  ? RegistrationTrigger.feature_match_suggestions
-                  : featureSelected === "Product Analysis"
-                  ? RegistrationTrigger.feature_product_analysis
-                  : featureSelected === "Report Generation"
-                  ? RegistrationTrigger.feature_report_generation
-                  : RegistrationTrigger.feature_more_features;
+                    ? RegistrationTrigger.feature_cross_rulings
+                    : featureSelected === "Match Suggestions"
+                      ? RegistrationTrigger.feature_match_suggestions
+                      : featureSelected === "Product Analysis"
+                        ? RegistrationTrigger.feature_product_analysis
+                        : featureSelected === "Report Generation"
+                          ? RegistrationTrigger.feature_report_generation
+                          : RegistrationTrigger.feature_more_features;
               setIsRegisterOpen(true);
               setRegistrationTrigger(trigger);
             }}

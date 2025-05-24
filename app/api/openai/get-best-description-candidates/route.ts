@@ -4,6 +4,7 @@ import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { requesterIsAuthenticated } from "../../supabase/server";
 import { getMinMaxRangeText } from "../../../../utilities/data";
+import { OpenAIModel } from "../../../../libs/openai";
 
 export const dynamic = "force-dynamic";
 
@@ -97,13 +98,13 @@ export async function POST(req: NextRequest) {
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const gptResponse = await openai.chat.completions.create({
       temperature: 0,
-      model: "gpt-4o-2024-11-20",
+      model: OpenAIModel.FOUR_LATEST,
       response_format: responseFormat,
       messages: [
         {
           role: "system",
           content: `You are a United States Harmonized Tariff System Expert who follows the General Rules of Interpretation (GRI) for the Harmonized System perfectly.\n
-            Your job is to take a product description and a list of classification descriptions, and figure out which description(s) from the list most closely fit the product description (${minMaxRangeText}).\n
+            Your job is to take a product description and a list of item descriptions, and figure out which description(s) from the list most closely fit the product description (${minMaxRangeText}).\n
             ${
               isSectionOrChapter
                 ? ""
