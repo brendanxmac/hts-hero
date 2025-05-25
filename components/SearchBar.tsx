@@ -26,7 +26,7 @@ export const SearchBar = ({ placeholder, onChange }: Props) => {
         type="text"
         value={value}
         placeholder={placeholder}
-        className="input input-bordered input-md w-full focus:ring-0 focus:outline-none pr-8"
+        className="input input-bordered input-md h-10 w-full focus:ring-0 focus:outline-none pr-8"
         onChange={handleChange}
       />
       {value && (

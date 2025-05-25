@@ -14,6 +14,7 @@ import { Color } from "../enums/style";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { ButtonWithIcon } from "./ButtonWithIcon";
 import { TertiaryLabel } from "./TertiaryLabel";
+import { SecondaryText } from "./SecondaryText";
 
 interface Props {
   summaryOnly?: boolean;
@@ -38,7 +39,6 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
 
   const getElementWithTariffDetails = () => {
     if (element.general || element.special || element.other) {
-      console.log("GOT IT");
       return element;
     }
 
@@ -119,12 +119,6 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
   const getParentDescriptionsFromBreadcrumbs = () => {
     let descriptions = "";
     breadcrumbs.forEach((breadcrumb, index) => {
-      // Skip if this is the current element
-      // const isLastBreadCrumb = breadcrumbs.length - 1 === index;
-      // if (isLastBreadCrumb) {
-      //   return;
-      // }
-
       // Only process chapters and other elements
       if (
         breadcrumb.element.type === Navigatable.CHAPTER ||
@@ -225,33 +219,37 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
     OTHER = "other",
   }
 
-  const extractHTSCodes = (input: string): string[] => {
-    const regex = /\b\d{4}\.\d{2}\.\d{2}\b/g;
-    const matches = input.match(regex);
-    if (!matches) return [];
-
-    return matches.map((code) => code.replace(/\.$/, ""));
-  };
-
-  const getTemporaryTairffModifications = (
+  const getFootnotesForTariffType = (
     element: HtsElement,
     tariffType: TariffType
-  ): string | string[] => {
-    const footnote = element.footnotes?.find((footnote) =>
+  ) => {
+    return element.footnotes?.filter((footnote) =>
       footnote.columns.includes(tariffType)
     );
+  };
 
-    if (footnote) {
-      const htsCodes = extractHTSCodes(footnote.value);
+  const getTemporaryTariffText = (
+    element: HtsElement,
+    tariffType: TariffType
+  ): JSX.Element | null => {
+    const footnotes = getFootnotesForTariffType(element, tariffType);
 
-      if (htsCodes.length > 0) {
-        return htsCodes;
-      }
-
-      return footnote.value;
+    if (!footnotes.length) {
+      return null;
     }
 
-    return null;
+    return (
+      <div className="flex flex-col gap-1">
+        <TertiaryLabel value={"Temporary or Special Adjustments"} />
+        <SecondaryText
+          key={`${tariffType}-tariff-footnotes`}
+          value={footnotes
+            .map((footnote) => footnote.value.trim().replace(/\.*$/g, ""))
+            .join(", ")}
+          color={Color.WHITE}
+        />
+      </div>
+    );
   };
 
   return (
@@ -294,152 +292,43 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                       key={`${i}-${unit}`}
                       className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24"
                     >
-                      <TertiaryText value={`Unit`} />
-                      <SecondaryLabel value={unit || "-"} color={Color.WHITE} />
+                      <TertiaryLabel value={`Unit`} />
+                      <SecondaryText value={unit || "-"} color={Color.WHITE} />
                     </div>
                   ))}
 
-                <div className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24">
-                  <TertiaryText value={"General"} />
-                  <SecondaryLabel
-                    value={tariffElement.general || "-"}
-                    color={Color.WHITE}
-                  />
-                  {getTemporaryTairffModifications(
-                    tariffElement,
-                    TariffType.GENERAL
-                  ) &&
-                  typeof getTemporaryTairffModifications(
-                    tariffElement,
-                    TariffType.GENERAL
-                  ) === "string" ? (
-                    <>
-                      <TertiaryText value={"Temporary Modifications"} />
-                      <SecondaryLabel
-                        value={
-                          getTemporaryTairffModifications(
-                            tariffElement,
-                            TariffType.GENERAL
-                          ) as string
-                        }
-                        color={Color.WHITE}
-                      />
-                    </>
-                  ) : (
-                    (
-                      getTemporaryTairffModifications(
-                        tariffElement,
-                        TariffType.GENERAL
-                      ) as string[]
-                    ).map((htsCode) => (
-                      <button
-                        key={htsCode}
-                        className="btn btn-link btn-xs text-xs p-0 hover:text-secondary hover:scale-110"
-                        onClick={() => {
-                          setBreadcrumbs([
-                            ...breadcrumbs,
-                            {
-                              title: htsCode,
-                              element: { ...tariffElement, htsno: htsCode },
-                            },
-                          ]);
-                        }}
-                      >
-                        {htsCode}
-                      </button>
-                    ))
-                  )}
-                </div>
-
-                <div className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24">
-                  <TertiaryText value={"Special"} />
-                  <SecondaryLabel
-                    value={getPrefixFromSpecial(tariffElement.special) || "-"}
-                    color={Color.WHITE}
-                  />
-
-                  {getDetailsFromSpecial(tariffElement.special) && (
-                    <div className="flex gap-x-1 flex-wrap">
-                      {getDetailsFromSpecial(tariffElement.special)
-                        .split(",")
-                        .map((specialTariffSymbol, index) => (
-                          <div key={`${specialTariffSymbol}-${index}`}>
-                            <button
-                              className="btn btn-link btn-xs text-xs p-0 hover:text-secondary hover:scale-110"
-                              onClick={() => {
-                                const note =
-                                  getGeneralNoteFromSpecialTariffSymbol(
-                                    specialTariffSymbol.trim()
-                                  );
-                                setShowPDF({
-                                  title: note?.title || "",
-                                  file: note?.pdfURL || "",
-                                });
-                              }}
-                            >
-                              {specialTariffSymbol}
-                            </button>
-                          </div>
-                        ))}
-                    </div>
-                  )}
-
-                  {getTemporaryTairffModifications(
-                    tariffElement,
-                    TariffType.SPECIAL
-                  ) && (
-                    <>
-                      <TertiaryText value={"Temporary Modifications"} />
-                      <SecondaryLabel
-                        value={
-                          getTemporaryTairffModifications(
-                            tariffElement,
-                            TariffType.SPECIAL
-                          ) as string
-                        }
-                        color={Color.WHITE}
-                      />
-                    </>
-                  )}
-                </div>
-
-                <div className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24">
-                  <TertiaryText value={"Other"} />
-                  <SecondaryLabel
-                    value={tariffElement.other || "-"}
-                    color={Color.WHITE}
-                  />
-                  {getTemporaryTairffModifications(
-                    tariffElement,
-                    TariffType.OTHER
-                  ) && (
-                    <>
-                      <TertiaryText value={"Temporary Modifications"} />
-                      <SecondaryLabel
-                        value={
-                          getTemporaryTairffModifications(
-                            tariffElement,
-                            TariffType.OTHER
-                          ) as string
-                        }
-                        color={Color.WHITE}
-                      />
-                    </>
-                  )}
-                </div>
-
-                {/* {tariffElement.footnotes && (
-                  <div className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24">
-                    <TertiaryText value={"Temporary Modifications"} />
-                    {tariffElement.footnotes.map((footnote, index) => (
-                      <SecondaryLabel
-                        key={`${index}-${footnote}`}
-                        value={`For ${footnote.columns.map((column) => column.replace(/^[A-Z]/, (char) => char.toLowerCase())).join(", ")}: ${footnote.value || "-"}`}
-                        color={Color.WHITE}
-                      />
-                    ))}
+                <div className="flex flex-col gap-3 p-3 bg-base-300 rounded-md min-w-24">
+                  <div>
+                    <TertiaryLabel value={"General"} />
+                    <SecondaryText
+                      value={tariffElement.general || "-"}
+                      color={Color.WHITE}
+                    />
                   </div>
-                )} */}
+                  {getTemporaryTariffText(tariffElement, TariffType.GENERAL)}
+                </div>
+
+                <div className="flex flex-col gap-3 p-3 bg-base-300 rounded-md min-w-24">
+                  <div>
+                    <TertiaryLabel value={"Special"} />
+                    <SecondaryText
+                      value={getPrefixFromSpecial(tariffElement.special) || "-"}
+                      color={Color.WHITE}
+                    />
+                  </div>
+                  {getTemporaryTariffText(tariffElement, TariffType.SPECIAL)}
+                </div>
+
+                <div className="flex flex-col gap-3 p-3 bg-base-300 rounded-md min-w-24">
+                  <div>
+                    <TertiaryLabel value={"Other"} />
+                    <SecondaryText
+                      value={tariffElement.other || "-"}
+                      color={Color.WHITE}
+                    />
+                  </div>
+                  {getTemporaryTariffText(tariffElement, TariffType.OTHER)}
+                </div>
               </div>
             </div>
           )}
