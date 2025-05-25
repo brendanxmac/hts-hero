@@ -50,7 +50,7 @@ export const Explore = () => {
       const elements = getChapterElements(0);
 
       if (elements) {
-        setFuse(new Fuse(elements, { keys: ["description"] }));
+        setFuse(new Fuse(elements, { keys: ["description", "htsno"] }));
       }
     }
   }, [loadedElements]);
@@ -85,7 +85,6 @@ export const Explore = () => {
     if (fuse) {
       const results = fuse.search(searchValue);
       console.log(`Search Results: ${results.length}`);
-      // Grab the top 20 results (at most)
       const topResults = results.slice(0, 20);
       setSearchResults(topResults.map((result) => result.item));
     }

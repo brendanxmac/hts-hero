@@ -43,7 +43,7 @@ export const SectionHeader = ({
       </div>
       <div className="w-full max-w-xs">
         <SearchBar
-          placeholder="Search"
+          placeholder="Search Elements"
           onChange={(value) => onSearchInput(value)}
         />
       </div>
