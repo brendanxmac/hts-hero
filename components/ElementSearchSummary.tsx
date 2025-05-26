@@ -12,6 +12,7 @@ import { Color } from "../enums/style";
 import { SecondaryText } from "./SecondaryText";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { PrimaryLabel } from "./PrimaryLabel";
+import { SecondaryLabel } from "./SecondaryLabel";
 
 interface Props {
   element: HtsElement;
@@ -111,23 +112,21 @@ export const ElementSearchSummary = ({
           className={`flex py-2 items-center justify-between w-full`}
           onClick={onClick}
         >
-          <div className="w-full flex flex-col items-start justify-between gap-4 px-4 py-2">
+          <div className="w-full flex flex-col items-start justify-between gap-6 px-4 py-2">
             <div className="flex flex-col gap-3 breadcrumbs text-sm py-0 overflow-hidden">
               <div className="text-xs">
                 {breadcrumbs.map((breadcrumb, i) => (
                   <span key={`breadcrumb-${i}`}>
                     {breadcrumb.label && <b>{breadcrumb.label} </b>}
                     <span className="text-white">{breadcrumb.value}</span>
-                    {i < breadcrumbs.length - 1 && (
-                      <span className="mx-2">›</span>
-                    )}
+                    <span className="text-white mx-2">›</span>
                   </span>
                 ))}
               </div>
             </div>
 
             <div className="flex flex-col">
-              {htsno && <TertiaryLabel value={htsno} />}
+              {htsno && <SecondaryLabel value={htsno} />}
               <PrimaryLabel value={description} color={Color.WHITE} />
             </div>
 
