@@ -18,6 +18,7 @@ import {
   Navigatable,
   Classification,
   FetchedClassification,
+  SectionAndChapterDetails,
 } from "../interfaces/hts";
 import {
   elementsAtClassificationLevel,
@@ -505,6 +506,63 @@ export const getHtsChapterData = async (
     chapter: Number(chapter),
     type: Navigatable.ELEMENT,
   }));
+};
+
+export const getSectionAndChapterFromChapterNumber = (
+  sections: HtsSection[],
+  chapterNumber: number
+): SectionAndChapterDetails | null => {
+  for (const section of sections) {
+    const chapter = section.chapters.find((ch) => ch.number === chapterNumber);
+    if (chapter) {
+      return {
+        section: {
+          number: section.number,
+          description: section.description,
+          notesPath: section.notesPath,
+        },
+        chapter,
+      };
+    }
+  }
+  return null; // Not found
+};
+
+export const getChapterFromHtsElement = (
+  element: HtsElement,
+  parents: HtsElement[]
+) => {
+  console.log("==========================");
+  console.log("element", element.htsno);
+  if (element.htsno) {
+    return element.htsno.substring(0, 2);
+  }
+
+  console.log("parents", parents);
+  return parents.find((p) => p.htsno)?.htsno.substring(0, 2);
+};
+
+export const getHtsElementParents = (
+  element: HtsElement,
+  elements: HtsElement[]
+): HtsElement[] => {
+  // If element is at indent 0, it has no parents
+  if (element.indent === "0") {
+    return [];
+  }
+
+  // Get index of this element
+  const elementIndex = elements.findIndex((e) => e.uuid === element.uuid);
+
+  // Iterate through elements backwards until we find an element with an indent level that is one less than the current element
+  for (let i = elementIndex - 1; i >= 0; i--) {
+    if (elements[i].indent === String(Number(element.indent) - 1)) {
+      // Add current element to end parents array and recurse
+      return [...getHtsElementParents(elements[i], elements), elements[i]];
+    }
+  }
+
+  return [];
 };
 
 // NOTE: this will get all elements in an array of Hts Elements that are at a given indent level.
