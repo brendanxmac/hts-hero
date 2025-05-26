@@ -8,7 +8,7 @@ interface SectionHeaderProps {
   tabs: Tab[];
   activeTab: string;
   onTabChange: (tab: string) => void;
-  onSearchInput: (value: string) => void;
+  onSearch: (value: string) => void;
 }
 
 export const SectionHeader = ({
@@ -16,7 +16,7 @@ export const SectionHeader = ({
   tabs,
   activeTab,
   onTabChange,
-  onSearchInput,
+  onSearch,
 }: SectionHeaderProps) => {
   return (
     <div className="flex gap-4 items-center justify-between">
@@ -44,7 +44,7 @@ export const SectionHeader = ({
       <div className="w-full max-w-xs">
         <SearchBar
           placeholder="Search Elements"
-          onChange={(value) => onSearchInput(value)}
+          onSearch={(value) => onSearch(value)}
         />
       </div>
     </div>
