@@ -13,6 +13,15 @@ import { ExploreTab } from "../enums/explore";
 import Fuse from "fuse.js";
 import { useChapters } from "../contexts/ChaptersContext";
 import { ElementSummary } from "./ElementSummary";
+import { PrimaryLabel } from "./PrimaryLabel";
+import { TertiaryLabel } from "./TertiaryLabel";
+import { ElementSearchSummary } from "./ElementSearchSummary";
+import {
+  getChapterFromHtsCode,
+  getChapterFromHtsElement,
+  getHtsElementParents,
+  getSectionAndChapterFromChapterNumber,
+} from "../libs/hts";
 
 const ExploreTabs: Tab[] = [
   {
@@ -83,10 +92,14 @@ export const Explore = () => {
 
   useEffect(() => {
     if (fuse) {
-      const results = fuse.search(searchValue);
-      console.log(`Search Results: ${results.length}`);
-      const topResults = results.slice(0, 20);
-      setSearchResults(topResults.map((result) => result.item));
+      const timeoutId = setTimeout(() => {
+        const results = fuse.search(searchValue);
+        console.log(`Search Results: ${results.length}`);
+        const topResults = results.slice(0, 20);
+        setSearchResults(topResults.map((result) => result.item));
+      }, 300);
+
+      return () => clearTimeout(timeoutId);
     }
   }, [searchValue]);
 
@@ -101,13 +114,30 @@ export const Explore = () => {
       />
 
       {searchResults.length > 0 && (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 pb-4">
+          <TertiaryLabel value={`Search Results (${searchResults.length})`} />
           {searchResults.map((result, index) => (
-            <ElementSummary
+            <ElementSearchSummary
               key={`search-result-${index}`}
               element={result}
+              sectionAndChapter={getSectionAndChapterFromChapterNumber(
+                sections,
+                Number(
+                  getChapterFromHtsElement(
+                    result,
+                    getHtsElementParents(result, getChapterElements(0))
+                  )
+                )
+              )}
+              parents={getHtsElementParents(result, getChapterElements(0))}
               onClick={() => {
                 console.log("Clicked", result);
+                const parents = getHtsElementParents(
+                  result,
+                  getChapterElements(0)
+                );
+                console.log("Parents", parents);
+                console.log(getChapterFromHtsElement(result, parents));
               }}
             />
           ))}

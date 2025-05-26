@@ -21,6 +21,15 @@ export enum Navigatable {
   ELEMENT = "element",
 }
 
+export interface SectionAndChapterDetails {
+  section: {
+    number: number;
+    description: string;
+    notesPath: string;
+  };
+  chapter: HtsSectionAndChapterBase;
+}
+
 export interface HtsSection extends HtsSectionAndChapterBase {
   chapters: HtsSectionAndChapterBase[];
 }
