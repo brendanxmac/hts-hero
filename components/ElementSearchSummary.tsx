@@ -39,6 +39,21 @@ export const ElementSearchSummary = ({
       )
   );
 
+  const breadcrumbs = [
+    {
+      label: `Section ${sectionAndChapter.section.number}:`,
+      value: sectionAndChapter.section.description,
+    },
+    {
+      label: `Chapter ${sectionAndChapter.chapter.number}:`,
+      value: sectionAndChapter.chapter.description,
+    },
+    ...parents.map((parent) => ({
+      label: parent.htsno && `${parent.htsno}:`,
+      value: parent.description,
+    })),
+  ];
+
   const isHeading =
     indent === "0" && classification && classification.levels[0];
 
@@ -96,31 +111,24 @@ export const ElementSearchSummary = ({
           className={`flex py-2 items-center justify-between w-full`}
           onClick={onClick}
         >
-          <div className="w-full flex flex-col items-start justify-between gap-1 px-4 py-2">
-            {htsno && (
-              <div className="min-w-20 md:min-w-32">
-                <TertiaryLabel value={htsno} />
+          <div className="w-full flex flex-col items-start justify-between gap-4 px-4 py-2">
+            <div className="flex flex-col gap-3 breadcrumbs text-sm py-0 overflow-hidden">
+              <div className="text-xs">
+                {breadcrumbs.map((breadcrumb, i) => (
+                  <span key={`breadcrumb-${i}`}>
+                    {breadcrumb.label && <b>{breadcrumb.label} </b>}
+                    <span className="text-white">{breadcrumb.value}</span>
+                    {i < breadcrumbs.length - 1 && (
+                      <span className="mx-2">›</span>
+                    )}
+                  </span>
+                ))}
               </div>
-            )}
-
-            <div className="w-full flex items-center justify-between gap-2">
-              <PrimaryLabel value={description} color={Color.WHITE} />
             </div>
 
-            <div className="flex flex-col gap-2">
-              <TertiaryText
-                value={`Section ${sectionAndChapter.section.number}: ${sectionAndChapter.section.description}`}
-              />
-              <TertiaryText
-                value={`Chapter ${sectionAndChapter.chapter.number}: ${sectionAndChapter.chapter.description}`}
-              />
-              {parents.length > 0 &&
-                parents.map((parent) => (
-                  <TertiaryText
-                    key={parent.uuid}
-                    value={`${parent.htsno && `${parent.htsno}: `}${parent.description}`}
-                  />
-                ))}
+            <div className="flex flex-col">
+              {htsno && <TertiaryLabel value={htsno} />}
+              <PrimaryLabel value={description} color={Color.WHITE} />
             </div>
 
             {recommended && (
