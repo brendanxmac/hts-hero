@@ -12,16 +12,14 @@ import { HtsElement, Navigatable } from "../interfaces/hts";
 import { ExploreTab } from "../enums/explore";
 import Fuse from "fuse.js";
 import { useChapters } from "../contexts/ChaptersContext";
-import { ElementSummary } from "./ElementSummary";
-import { PrimaryLabel } from "./PrimaryLabel";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { ElementSearchSummary } from "./ElementSearchSummary";
 import {
-  getChapterFromHtsCode,
   getChapterFromHtsElement,
   getHtsElementParents,
   getSectionAndChapterFromChapterNumber,
 } from "../libs/hts";
+import { Loader } from "../interfaces/ui";
 
 const ExploreTabs: Tab[] = [
   {
@@ -32,24 +30,32 @@ const ExploreTabs: Tab[] = [
     label: "Notes",
     value: ExploreTab.NOTES,
   },
+  {
+    label: "Search",
+    value: ExploreTab.SEARCH,
+  },
 ];
 
 export const Explore = () => {
-  // read in the all-elements.json from hts-chapters
-
+  const [{ isLoading, text: loadingText }, setLoading] = useState<Loader>({
+    isLoading: true,
+    text: "Fetching Sections",
+  });
   const [searchValue, setSearchValue] = useState("");
   const [loadedElements, setLoadedElements] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState(ExploreTabs[0].value);
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
-  const { sections, loading, getSections } = useHtsSections();
+  const { sections, getSections } = useHtsSections();
   const { fetchChapter, getChapterElements } = useChapters();
   const [fuse, setFuse] = useState<Fuse<HtsElement> | null>(null);
   const [searchResults, setSearchResults] = useState<HtsElement[]>([]);
 
   useEffect(() => {
     const loadChapters = async () => {
+      setLoading({ isLoading: true, text: "Fetching Chapters" });
       await fetchChapter(0);
       setLoadedElements(true);
+      setLoading({ isLoading: false, text: "" });
     };
     loadChapters();
   }, []);
@@ -86,6 +92,7 @@ export const Explore = () => {
           },
         ]);
       }
+      setLoading({ isLoading: false, text: "" });
     };
     initializeSections();
   }, [activeTab]);
@@ -97,6 +104,8 @@ export const Explore = () => {
         console.log(`Search Results: ${results.length}`);
         const topResults = results.slice(0, 20);
         setSearchResults(topResults.map((result) => result.item));
+        setActiveTab(ExploreTab.SEARCH);
+        setLoading({ isLoading: false, text: "" });
       }, 300);
 
       return () => clearTimeout(timeoutId);
@@ -110,49 +119,69 @@ export const Explore = () => {
         tabs={ExploreTabs}
         activeTab={activeTab}
         onTabChange={setActiveTab}
-        onSearchInput={setSearchValue}
+        onSearch={(value) => {
+          setSearchValue(value);
+          setLoading({ isLoading: true, text: "Searching Elements" });
+        }}
       />
 
-      {searchResults.length > 0 && (
-        <div className="flex flex-col gap-4 pb-4">
-          <TertiaryLabel value={`Search Results (${searchResults.length})`} />
-          {searchResults.map((result, index) => (
-            <ElementSearchSummary
-              key={`search-result-${index}`}
-              element={result}
-              sectionAndChapter={getSectionAndChapterFromChapterNumber(
-                sections,
-                Number(
-                  getChapterFromHtsElement(
-                    result,
-                    getHtsElementParents(result, getChapterElements(0))
-                  )
-                )
-              )}
-              parents={getHtsElementParents(result, getChapterElements(0))}
-              onClick={() => {
-                console.log("Clicked", result);
-                const parents = getHtsElementParents(
-                  result,
-                  getChapterElements(0)
-                );
-                console.log("Parents", parents);
-                console.log(getChapterFromHtsElement(result, parents));
-              }}
-            />
-          ))}
-        </div>
-      )}
+      <div className="h-full grow flex flex-col gap-4 overflow-y-auto">
+        {isLoading && <LoadingIndicator text={loadingText} />}
+        {!isLoading && activeTab === ExploreTab.ELEMENTS && (
+          <Elements sections={sections} />
+        )}
+        {!isLoading && activeTab === ExploreTab.NOTES && <Notes />}
+        {!isLoading && activeTab === ExploreTab.SEARCH && (
+          <div className="flex flex-col gap-4">
+            {/* TODO: add recents */}
+            {searchResults.length === 0 ? (
+              <div className="w-full h-96 flex flex-col gap-4 justify-center items-center">
+                <TertiaryLabel value="No results yet, start a search above" />
+              </div>
+            ) : (
+              <div className="flex flex-col gap-4 pb-4">
+                <div className="w-full flex justify-between">
+                  <TertiaryLabel
+                    value={searchResults.length ? `Top Results` : "No Results"}
+                  />
+                  <button className="btn btn-xs btn-outline">
+                    Search Synonyms (TODO)
+                  </button>
+                </div>
 
-      {searchResults.length === 0 && (
-        <div className="h-full grow flex flex-col gap-4 overflow-y-auto">
-          {loading && <LoadingIndicator text="Loading Sections" />}
-          {!loading && activeTab === ExploreTab.ELEMENTS && (
-            <Elements sections={sections} />
-          )}
-          {!loading && activeTab === ExploreTab.NOTES && <Notes />}
-        </div>
-      )}
+                {searchResults.map((result, index) => (
+                  <ElementSearchSummary
+                    key={`search-result-${index}`}
+                    element={result}
+                    sectionAndChapter={getSectionAndChapterFromChapterNumber(
+                      sections,
+                      Number(
+                        getChapterFromHtsElement(
+                          result,
+                          getHtsElementParents(result, getChapterElements(0))
+                        )
+                      )
+                    )}
+                    parents={getHtsElementParents(
+                      result,
+                      getChapterElements(0)
+                    )}
+                    onClick={() => {
+                      console.log("Clicked", result);
+                      const parents = getHtsElementParents(
+                        result,
+                        getChapterElements(0)
+                      );
+                      console.log("Parents", parents);
+                      console.log(getChapterFromHtsElement(result, parents));
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
