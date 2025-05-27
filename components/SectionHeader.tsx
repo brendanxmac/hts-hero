@@ -32,8 +32,8 @@ export const SectionHeader = ({
               role="tab"
               onClick={() => onTabChange(tab.value)}
               className={classNames(
-                "tab",
-                tab.value === activeTab && "tab-active"
+                "tab transition-all duration-200 ease-in",
+                tab.value === activeTab && "tab-active font-semibold"
               )}
             >
               {tab.label}
