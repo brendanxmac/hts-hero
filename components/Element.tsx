@@ -1,8 +1,12 @@
-import { HtsElement, Navigatable } from "../interfaces/hts";
+import { HtsElement, HtsSection, Navigatable } from "../interfaces/hts";
 import { useEffect, useState } from "react";
-import { getDirectChildrenElements } from "../libs/hts";
+import {
+  generateBreadcrumbsForHtsElement,
+  getDirectChildrenElements,
+  getHtsElementParents,
+  getSectionAndChapterFromChapterNumber,
+} from "../libs/hts";
 import { ElementSummary } from "./ElementSummary";
-import { TertiaryText } from "./TertiaryText";
 import { DocumentTextIcon } from "@heroicons/react/24/solid";
 import PDF from "./PDF";
 import { notes } from "../public/notes/notes";
@@ -13,6 +17,7 @@ import { ButtonWithIcon } from "./ButtonWithIcon";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { SecondaryText } from "./SecondaryText";
 import { useHts } from "../contexts/HtsContext";
+import { useHtsSections } from "../contexts/HtsSectionsContext";
 
 interface Props {
   summaryOnly?: boolean;
@@ -30,6 +35,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { htsElements } = useHts();
+  const { sections } = useHtsSections();
 
   useEffect(() => {
     const elementChildren = getDirectChildrenElements(element, htsElements);
@@ -44,6 +50,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
     // Starting at the end of the breadcrumbs list, find the first element that has tariff details using a reverseing for loop
     for (let i = breadcrumbs.length - 1; i >= 0; i--) {
       const breadcrumb = breadcrumbs[i];
+      console.log(`breadcrumb ${i}`, breadcrumb.element.type);
       if (
         breadcrumb.element.type === Navigatable.ELEMENT &&
         (breadcrumb.element.general ||
@@ -64,34 +71,6 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
   useEffect(() => {
     setTariffElement(getElementWithTariffDetails());
   }, [breadcrumbs]);
-
-  // FIXME: we don't even want to be running this at all since we no longer need chapter data
-  // useEffect(() => {
-  //   const loadChapterData = async () => {
-  //     const chapterElements = getChapterElements(chapter);
-
-  //     if (!chapterElements) {
-  //       setLoading({ isLoading: true, text: "Loading..." });
-  //       await fetchChapter(chapter);
-  //       const updatedChapterElements = getChapterElements(chapter);
-  //       if (updatedChapterElements) {
-  //         const directChildrenElements = getDirectChildrenElements(
-  //           element,
-  //           updatedChapterElements
-  //         );
-  //         setChildren(directChildrenElements);
-  //       }
-  //     } else {
-  //       const directChildrenElements = getDirectChildrenElements(
-  //         element,
-  //         chapterElements
-  //       );
-  //       setChildren(directChildrenElements);
-  //     }
-  //     setLoading({ isLoading: false, text: "" });
-  //   };
-  //   loadChapterData();
-  // }, [chapter, fetchChapter, getChapterElements, element]);
 
   // Regex that gets the prefix of the special text
   const getPrefixFromSpecial = (special: string) => {
@@ -116,27 +95,60 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
     return note;
   };
 
-  const getParentDescriptionsFromBreadcrumbs = () => {
-    let descriptions = "";
-    breadcrumbs.forEach((breadcrumb, index) => {
-      // Only process chapters and other elements
-      if (
-        breadcrumb.element.type === Navigatable.CHAPTER ||
-        breadcrumb.element.type === Navigatable.ELEMENT
-      ) {
-        let description = breadcrumb.element.description;
-        if (description.endsWith(":")) {
-          description = description.replace(/:$/, "");
-        }
+  const getBreadCrumbsForElement = (
+    element: HtsElement,
+    sections: HtsSection[]
+  ): { label: string; value: string }[] => {
+    const { chapter, section } = getSectionAndChapterFromChapterNumber(
+      sections,
+      element.chapter
+    );
 
-        const isLastVisibleBreadCrumb = breadcrumbs.length - 1 === index;
+    const parentElements = getHtsElementParents(element, htsElements);
 
-        descriptions += description + (isLastVisibleBreadCrumb ? "" : " > ");
-      }
-    });
+    const breadcrumbs = generateBreadcrumbsForHtsElement(
+      sections,
+      chapter,
+      parentElements
+    );
 
-    return descriptions;
+    return [
+      {
+        label: `Section ${section.number}:`,
+        value: section.description,
+      },
+      {
+        label: `Chapter ${chapter.number}:`,
+        value: chapter.description,
+      },
+      ...parentElements.map((parent) => ({
+        label: parent.htsno && `${parent.htsno}:`,
+        value: parent.description,
+      })),
+    ];
   };
+
+  // const getParentDescriptionsFromBreadcrumbs = () => {
+  //   let descriptions = "";
+  //   breadcrumbs.forEach((breadcrumb, index) => {
+  //     // Only process chapters and other elements
+  //     if (
+  //       breadcrumb.element.type === Navigatable.CHAPTER ||
+  //       breadcrumb.element.type === Navigatable.ELEMENT
+  //     ) {
+  //       let description = breadcrumb.element.description;
+  //       if (description.endsWith(":")) {
+  //         description = description.replace(/:$/, "");
+  //       }
+
+  //       const isLastVisibleBreadCrumb = breadcrumbs.length - 1 === index;
+
+  //       descriptions += description + (isLastVisibleBreadCrumb ? "" : " > ");
+  //     }
+  //   });
+
+  //   return descriptions;
+  // };
 
   // const getFullHtsDescription = (
   //   classificationProgression: ClassificationProgression[]
@@ -254,29 +266,45 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
 
   return (
     <div className="card bg-base-100 p-4 rounded-xl border border-base-content/10 w-full flex flex-col items-start justify-between gap-8 pt-2 sm:pt-4 overflow-y-auto">
-      <div className="w-full flex flex-col gap-1">
-        <div className="w-full flex justify-between items-center">
-          <TertiaryLabel value={getHtsnoLabel()} />
-          <ButtonWithIcon
-            icon={<DocumentTextIcon className="h-4 w-4" />}
-            label="Notes"
-            onClick={() =>
-              setShowPDF({
-                title: `Chapter ${chapter} Notes`,
-                file: `/notes/chapter/Chapter ${chapter}.pdf`,
-              })
-            }
-          />
+      <div className="w-full flex flex-col gap-4">
+        <div className="flex flex-col gap-3 breadcrumbs text-sm py-0 overflow-hidden">
+          <div className="text-xs">
+            {getBreadCrumbsForElement(element, sections).map(
+              (breadcrumb, i) => (
+                <span key={`breadcrumb-${i}`}>
+                  {breadcrumb.label && <b>{breadcrumb.label} </b>}
+                  <span className="text-white">{breadcrumb.value}</span>
+                  <span className="text-white mx-2">›</span>
+                </span>
+              )
+            )}
+          </div>
         </div>
-        <div className="flex flex-col gap-1">
-          <h2 className="text-2xl font-bold text-white">{description}</h2>
-        </div>
-        {getParentDescriptionsFromBreadcrumbs().length > 0 && (
+
+        {/* {getParentDescriptionsFromBreadcrumbs().length > 0 && (
           <TertiaryText
             key={description}
             value={getParentDescriptionsFromBreadcrumbs()}
           />
-        )}
+        )} */}
+        <div className="flex flex-col gap-1">
+          <div className="w-full flex justify-between items-center">
+            <TertiaryLabel value={getHtsnoLabel()} />
+            <ButtonWithIcon
+              icon={<DocumentTextIcon className="h-4 w-4" />}
+              label="Notes"
+              onClick={() =>
+                setShowPDF({
+                  title: `Chapter ${chapter} Notes`,
+                  file: `/notes/chapter/Chapter ${chapter}.pdf`,
+                })
+              }
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <h2 className="text-2xl font-bold text-white">{description}</h2>
+          </div>
+        </div>
       </div>
 
       {!summaryOnly && (
