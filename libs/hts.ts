@@ -501,6 +501,7 @@ export const getHtsData = async (): Promise<HtsElement[]> => {
     chapter: Number(
       getChapterFromHtsElement(e, getHtsElementParents(e, htsData))
     ),
+    type: Navigatable.ELEMENT,
   }));
 };
 
@@ -523,7 +524,6 @@ export const getHtsChapterData = async (
 };
 
 export const generateBreadcrumbsForHtsElement = (
-  element: HtsElement,
   sections: HtsSection[],
   chapter: HtsSectionAndChapterBase,
   parentElements: HtsElement[]
