@@ -1,6 +1,10 @@
 import { HtsElement, Navigatable } from "../interfaces/hts";
 import { useEffect, useState } from "react";
-import { getDirectChildrenElements } from "../libs/hts";
+import {
+  getChapterFromHtsElement,
+  getDirectChildrenElements,
+  getHtsElementParents,
+} from "../libs/hts";
 import { ElementSummary } from "./ElementSummary";
 import { TertiaryText } from "./TertiaryText";
 import { DocumentTextIcon } from "@heroicons/react/24/solid";
@@ -36,6 +40,13 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
   const { fetchChapter, getChapterElements } = useChapters();
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
+
+  const parents = getHtsElementParents(element, getChapterElements(0));
+  // removes prefixed 0 from chapter if it exists
+  const chapterComputed = getChapterFromHtsElement(element, parents).replace(
+    /^0+/,
+    ""
+  );
 
   const getElementWithTariffDetails = () => {
     if (element.general || element.special || element.other) {
@@ -262,8 +273,8 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
             label="Notes"
             onClick={() =>
               setShowPDF({
-                title: `Chapter ${chapter} Notes`,
-                file: `/notes/chapter/Chapter ${chapter}.pdf`,
+                title: `Chapter ${chapterComputed} Notes`,
+                file: `/notes/chapter/Chapter ${chapterComputed}.pdf`,
               })
             }
           />
