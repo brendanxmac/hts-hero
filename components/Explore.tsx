@@ -15,6 +15,7 @@ import { useChapters } from "../contexts/ChaptersContext";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { ElementSearchSummary } from "./ElementSearchSummary";
 import {
+  generateBreadcrumbsForHtsElement,
   getChapterFromHtsElement,
   getHtsElementParents,
   getSectionAndChapterFromChapterNumber,
@@ -102,7 +103,7 @@ export const Explore = () => {
       const timeoutId = setTimeout(() => {
         const results = fuse.search(searchValue);
         console.log(`Search Results: ${results.length}`);
-        const topResults = results.slice(0, 20);
+        const topResults = results.slice(0, 10);
         setSearchResults(topResults.map((result) => result.item));
         setActiveTab(ExploreTab.SEARCH);
         setLoading({ isLoading: false, text: "" });
@@ -172,8 +173,27 @@ export const Explore = () => {
                         result,
                         getChapterElements(0)
                       );
+                      const { chapter } = getSectionAndChapterFromChapterNumber(
+                        sections,
+                        Number(
+                          getChapterFromHtsElement(
+                            result,
+                            getHtsElementParents(result, getChapterElements(0))
+                          )
+                        )
+                      );
                       console.log("Parents", parents);
                       console.log(getChapterFromHtsElement(result, parents));
+                      // Set breadcrumbs to the parents, starting with the section, then chapter, then elements if applicable
+                      setBreadcrumbs(
+                        generateBreadcrumbsForHtsElement(
+                          result,
+                          sections,
+                          chapter,
+                          [...parents, result]
+                        )
+                      );
+                      setActiveTab(ExploreTab.ELEMENTS);
                     }}
                   />
                 ))}

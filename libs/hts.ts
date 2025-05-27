@@ -27,6 +27,7 @@ import {
 import { OpenAIModel } from "./openai";
 import apiClient from "@/libs/api";
 import { HtsLevel } from "../enums/hts";
+import { NavigatableElement } from "../components/Elements";
 
 export const mapFetchedClassificationToClassification = (
   c: FetchedClassification
@@ -506,6 +507,45 @@ export const getHtsChapterData = async (
     chapter: Number(chapter),
     type: Navigatable.ELEMENT,
   }));
+};
+
+export const generateBreadcrumbsForHtsElement = (
+  element: HtsElement,
+  sections: HtsSection[],
+  chapter: HtsSectionAndChapterBase,
+  parentElements: HtsElement[]
+): NavigatableElement[] => {
+  const breadcrumbs: NavigatableElement[] = [
+    {
+      title: "Sections",
+      element: {
+        type: Navigatable.SECTIONS,
+        sections,
+      },
+    },
+    {
+      title: `Chapter ${chapter.number.toString()}`,
+      element: {
+        type: Navigatable.CHAPTER,
+        ...chapter,
+      },
+    },
+  ];
+
+  if (parentElements.length === 0) {
+    return breadcrumbs;
+  }
+
+  return [
+    ...breadcrumbs,
+    ...parentElements.map((e) => ({
+      title: `${e.htsno || e.description.split(" ").slice(0, 2).join(" ") + "..."}`,
+      element: {
+        type: Navigatable.ELEMENT,
+        ...e,
+      },
+    })),
+  ];
 };
 
 export const getSectionAndChapterFromChapterNumber = (
