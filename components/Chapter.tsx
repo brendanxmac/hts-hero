@@ -1,34 +1,32 @@
-import { HtsSectionAndChapterBase } from "../interfaces/hts";
-import { useEffect, useState } from "react";
+import { HtsElement, HtsSectionAndChapterBase } from "../interfaces/hts";
+import { useState } from "react";
 import {
   getDirectChildrenElements,
   getElementsAtIndentLevel,
 } from "../libs/hts";
-import { LoadingIndicator } from "./LoadingIndicator";
 import { ElementSummary } from "./ElementSummary";
 import { DocumentTextIcon } from "@heroicons/react/24/solid";
 import PDF from "./PDF";
-import { useChapters } from "../contexts/ChaptersContext";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { ButtonWithIcon } from "./ButtonWithIcon";
 import { SecondaryLabel } from "./SecondaryLabel";
 import { TertiaryLabel } from "./TertiaryLabel";
+import { useHts } from "../contexts/HtsContext";
 
 interface Props {
   chapter: HtsSectionAndChapterBase;
 }
 
+const getChapterElements = (elements: HtsElement[], chapter: number) => {
+  return elements.filter((e) => e.chapter === chapter);
+};
+
 export const Chapter = ({ chapter }: Props) => {
   const { number, description, notesPath } = chapter;
+  const { htsElements } = useHts();
   const [showNotes, setShowNotes] = useState(false);
-  const { fetchChapter, getChapterElements, loadingChapters } = useChapters();
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
-
-  useEffect(() => {
-    fetchChapter(number);
-  }, [number, fetchChapter]);
-
-  const chapterElements = getChapterElements(number);
+  const chapterElements = getChapterElements(htsElements, number);
   const elementsAtIndentLevel = chapterElements
     ? getElementsAtIndentLevel(chapterElements, 0)
     : [];
@@ -60,9 +58,6 @@ export const Chapter = ({ chapter }: Props) => {
 
       <div className="flex flex-col gap-2 bg-base-100">
         <SecondaryLabel value="Headings" />
-        {loadingChapters.includes(number) && (
-          <LoadingIndicator text="Fetching Headings" />
-        )}
         <div className="flex flex-col gap-2">
           {elementsWithChildren.map((element, i) => {
             return (

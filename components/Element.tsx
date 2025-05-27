@@ -1,18 +1,11 @@
 import { HtsElement, Navigatable } from "../interfaces/hts";
 import { useEffect, useState } from "react";
-import {
-  getChapterFromHtsElement,
-  getDirectChildrenElements,
-  getHtsElementParents,
-} from "../libs/hts";
+import { getDirectChildrenElements } from "../libs/hts";
 import { ElementSummary } from "./ElementSummary";
 import { TertiaryText } from "./TertiaryText";
 import { DocumentTextIcon } from "@heroicons/react/24/solid";
 import PDF from "./PDF";
 import { notes } from "../public/notes/notes";
-import { useChapters } from "../contexts/ChaptersContext";
-import { Loader } from "../interfaces/ui";
-import { LoadingIndicator } from "./LoadingIndicator";
 import { SecondaryLabel } from "./SecondaryLabel";
 import { Color } from "../enums/style";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
@@ -34,21 +27,14 @@ export interface PDFProps {
 export const Element = ({ element, summaryOnly = false }: Props) => {
   const { description, chapter, htsno } = element;
   const [children, setChildren] = useState<HtsElement[]>([]);
-  const [loading, setLoading] = useState<Loader>({
-    isLoading: false,
-    text: "",
-  });
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
-  const { fetchChapter, getChapterElements } = useChapters();
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { htsElements } = useHts();
 
-  const parents = getHtsElementParents(element, htsElements);
-  // removes prefixed 0 from chapter if it exists
-  const chapterComputed = getChapterFromHtsElement(element, parents).replace(
-    /^0+/,
-    ""
-  );
+  useEffect(() => {
+    const elementChildren = getDirectChildrenElements(element, htsElements);
+    setChildren(elementChildren);
+  }, [element]);
 
   const getElementWithTariffDetails = () => {
     if (element.general || element.special || element.other) {
@@ -79,32 +65,33 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
     setTariffElement(getElementWithTariffDetails());
   }, [breadcrumbs]);
 
-  useEffect(() => {
-    const loadChapterData = async () => {
-      const chapterElements = getChapterElements(chapter);
+  // FIXME: we don't even want to be running this at all since we no longer need chapter data
+  // useEffect(() => {
+  //   const loadChapterData = async () => {
+  //     const chapterElements = getChapterElements(chapter);
 
-      if (!chapterElements) {
-        setLoading({ isLoading: true, text: "Loading..." });
-        await fetchChapter(chapter);
-        const updatedChapterElements = getChapterElements(chapter);
-        if (updatedChapterElements) {
-          const directChildrenElements = getDirectChildrenElements(
-            element,
-            updatedChapterElements
-          );
-          setChildren(directChildrenElements);
-        }
-      } else {
-        const directChildrenElements = getDirectChildrenElements(
-          element,
-          chapterElements
-        );
-        setChildren(directChildrenElements);
-      }
-      setLoading({ isLoading: false, text: "" });
-    };
-    loadChapterData();
-  }, [chapter, fetchChapter, getChapterElements, element]);
+  //     if (!chapterElements) {
+  //       setLoading({ isLoading: true, text: "Loading..." });
+  //       await fetchChapter(chapter);
+  //       const updatedChapterElements = getChapterElements(chapter);
+  //       if (updatedChapterElements) {
+  //         const directChildrenElements = getDirectChildrenElements(
+  //           element,
+  //           updatedChapterElements
+  //         );
+  //         setChildren(directChildrenElements);
+  //       }
+  //     } else {
+  //       const directChildrenElements = getDirectChildrenElements(
+  //         element,
+  //         chapterElements
+  //       );
+  //       setChildren(directChildrenElements);
+  //     }
+  //     setLoading({ isLoading: false, text: "" });
+  //   };
+  //   loadChapterData();
+  // }, [chapter, fetchChapter, getChapterElements, element]);
 
   // Regex that gets the prefix of the special text
   const getPrefixFromSpecial = (special: string) => {
@@ -275,8 +262,8 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
             label="Notes"
             onClick={() =>
               setShowPDF({
-                title: `Chapter ${chapterComputed} Notes`,
-                file: `/notes/chapter/Chapter ${chapterComputed}.pdf`,
+                title: `Chapter ${chapter} Notes`,
+                file: `/notes/chapter/Chapter ${chapter}.pdf`,
               })
             }
           />
@@ -346,37 +333,29 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
             </div>
           )}
           {children.length > 0 && (
-            <div className="w-full flex flex-col gap-2">
-              {loading.isLoading && (
-                <div className="flex items-center justify-center">
-                  <LoadingIndicator text={loading.text} />
-                </div>
-              )}
-
-              <div className="flex flex-col gap-4">
-                <SecondaryLabel value="Next Level" />
-                <div className="flex flex-col gap-2">
-                  {children.map((child, i) => {
-                    return (
-                      <ElementSummary
-                        key={`${i}-${child.htsno}`}
-                        element={child}
-                        onClick={() => {
-                          setBreadcrumbs([
-                            ...breadcrumbs,
-                            {
-                              title: `${child.htsno || child.description.split(" ").slice(0, 2).join(" ") + "..."}`,
-                              element: {
-                                ...child,
-                                chapter,
-                              },
+            <div className="w-full flex flex-col gap-4">
+              <SecondaryLabel value="Next Level" />
+              <div className="flex flex-col gap-2">
+                {children.map((child, i) => {
+                  return (
+                    <ElementSummary
+                      key={`${i}-${child.htsno}`}
+                      element={child}
+                      onClick={() => {
+                        setBreadcrumbs([
+                          ...breadcrumbs,
+                          {
+                            title: `${child.htsno || child.description.split(" ").slice(0, 2).join(" ") + "..."}`,
+                            element: {
+                              ...child,
+                              chapter,
                             },
-                          ]);
-                        }}
-                      />
-                    );
-                  })}
-                </div>
+                          },
+                        ]);
+                      }}
+                    />
+                  );
+                })}
               </div>
             </div>
           )}
