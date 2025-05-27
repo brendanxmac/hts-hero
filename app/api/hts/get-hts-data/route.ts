@@ -1,0 +1,30 @@
+import { NextResponse, NextRequest } from "next/server";
+import { requesterIsAuthenticated } from "../../supabase/server";
+import { readFile } from "fs/promises";
+import path from "path";
+
+export const dynamic = "force-dynamic";
+
+export async function GET(req: NextRequest) {
+  try {
+    const requesterIsAllowed = await requesterIsAuthenticated(req);
+
+    // Users who are not logged in can't make a gpt requests
+    if (!requesterIsAllowed) {
+      return NextResponse.json(
+        { error: "You must be logged in to complete this action" },
+        { status: 401 }
+      );
+    }
+
+    const htsData = await readFile(
+      path.join(process.cwd(), "hts-chapters", "all.json"),
+      "utf8"
+    );
+
+    return NextResponse.json(JSON.parse(htsData));
+  } catch (e) {
+    console.error(e);
+    return NextResponse.json({ error: e?.message }, { status: 500 });
+  }
+}

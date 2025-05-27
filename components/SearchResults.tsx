@@ -41,9 +41,14 @@ export const SearchResults = ({
         <p>
           Results for <span className="font-bold">{`"${searchString}"`}</span>
         </p>
-        <button className="btn btn-xs btn-outline">
-          Search Synonyms (TODO)
-        </button>
+        <div className="flex gap-2">
+          <button className="btn btn-xs btn-outline">
+            Search Synonyms (Coming soon)
+          </button>
+          <button className="btn btn-xs btn-outline">
+            Find Item with AI (Coming soon)
+          </button>
+        </div>
       </div>
 
       {results.map((result, index) => {

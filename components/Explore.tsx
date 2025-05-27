@@ -97,7 +97,6 @@ export const Explore = () => {
     if (fuse) {
       const timeoutId = setTimeout(() => {
         const results = fuse.search(searchValue);
-        console.log(`Search Results: ${results.length}`);
         const topResults = results.slice(0, 30);
         setSearchResults(topResults.map((result) => result.item));
         setActiveTab(ExploreTab.SEARCH);
