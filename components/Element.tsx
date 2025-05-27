@@ -19,6 +19,7 @@ import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { ButtonWithIcon } from "./ButtonWithIcon";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { SecondaryText } from "./SecondaryText";
+import { useHts } from "../contexts/HtsContext";
 
 interface Props {
   summaryOnly?: boolean;
@@ -40,8 +41,9 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
   const { fetchChapter, getChapterElements } = useChapters();
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
+  const { htsElements } = useHts();
 
-  const parents = getHtsElementParents(element, getChapterElements(0));
+  const parents = getHtsElementParents(element, htsElements);
   // removes prefixed 0 from chapter if it exists
   const chapterComputed = getChapterFromHtsElement(element, parents).replace(
     /^0+/,

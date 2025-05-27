@@ -1,6 +1,5 @@
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { generateBreadcrumbsForHtsElement } from "../libs/hts";
-import { useChapters } from "../contexts/ChaptersContext";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { ExploreTab } from "../enums/explore";
 import { HtsElement } from "../interfaces/hts";
@@ -11,6 +10,7 @@ import {
 } from "../libs/hts";
 import { ElementSearchSummary } from "./ElementSearchSummary";
 import { TertiaryLabel } from "./TertiaryLabel";
+import { useHts } from "../contexts/HtsContext";
 
 interface Props {
   searchString: string;
@@ -23,7 +23,7 @@ export const SearchResults = ({
   searchString,
   setActiveTab,
 }: Props) => {
-  const { getChapterElements } = useChapters();
+  const { htsElements } = useHts();
   const { sections } = useHtsSections();
   const { setBreadcrumbs } = useBreadcrumbs();
 
@@ -54,14 +54,9 @@ export const SearchResults = ({
       {results.map((result, index) => {
         const sectionAndChapter = getSectionAndChapterFromChapterNumber(
           sections,
-          Number(
-            getChapterFromHtsElement(
-              result,
-              getHtsElementParents(result, getChapterElements(0))
-            )
-          )
+          Number(getChapterFromHtsElement(result, htsElements))
         );
-        const parents = getHtsElementParents(result, getChapterElements(0));
+        const parents = getHtsElementParents(result, htsElements);
         const breadcrumbs = generateBreadcrumbsForHtsElement(
           result,
           sections,

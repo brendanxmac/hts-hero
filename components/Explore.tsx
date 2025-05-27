@@ -11,9 +11,9 @@ import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { HtsElement, Navigatable } from "../interfaces/hts";
 import { ExploreTab } from "../enums/explore";
 import Fuse from "fuse.js";
-import { useChapters } from "../contexts/ChaptersContext";
 import { Loader } from "../interfaces/ui";
 import { SearchResults } from "./SearchResults";
+import { useHts } from "../contexts/HtsContext";
 
 const ExploreTabs: Tab[] = [
   {
@@ -39,28 +39,31 @@ export const Explore = () => {
   const [loadedElements, setLoadedElements] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState(ExploreTabs[0].value);
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
-  const { sections, getSections } = useHtsSections();
-  const { fetchChapter, getChapterElements } = useChapters();
+  const { sections, loading: loadingSections, getSections } = useHtsSections();
   const [fuse, setFuse] = useState<Fuse<HtsElement> | null>(null);
   const [searchResults, setSearchResults] = useState<HtsElement[]>([]);
+  const { htsElements, fetchElements } = useHts();
 
   useEffect(() => {
-    const loadChapters = async () => {
-      setLoading({ isLoading: true, text: "Fetching Chapters" });
-      await fetchChapter(0);
+    const loadAllElements = async () => {
+      setLoading({ isLoading: true, text: "Fetching All Elements" });
+      await fetchElements();
       setLoadedElements(true);
-      setLoading({ isLoading: false, text: "" });
+      if (loadingText === "Fetching All Elements") {
+        setLoading({ isLoading: false, text: "" });
+      }
     };
-    loadChapters();
+    loadAllElements();
   }, []);
 
   useEffect(() => {
     if (loadedElements) {
-      const elements = getChapterElements(0);
-
-      if (elements) {
+      if (htsElements) {
         setFuse(
-          new Fuse(elements, { keys: ["description", "htsno"], threshold: 0.5 })
+          new Fuse(htsElements, {
+            keys: ["description", "htsno"],
+            threshold: 0.5,
+          })
         );
       }
     }
@@ -74,7 +77,7 @@ export const Explore = () => {
 
   useEffect(() => {
     const initializeSections = async () => {
-      if (sections.length === 0) {
+      if (sections.length === 0 && !loadingSections) {
         await getSections();
       }
       if (breadcrumbs.length === 0) {
@@ -91,7 +94,7 @@ export const Explore = () => {
       setLoading({ isLoading: false, text: "" });
     };
     initializeSections();
-  }, [activeTab]);
+  }, []);
 
   useEffect(() => {
     if (fuse) {

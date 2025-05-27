@@ -28,9 +28,6 @@ export const Classify = ({ setPage }: Props) => {
     number | undefined
   >(undefined);
 
-  console.log("classification:");
-  console.log(classification);
-
   useEffect(() => {
     if (
       chapters.length === 0 &&
