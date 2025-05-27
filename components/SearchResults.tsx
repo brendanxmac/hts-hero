@@ -54,7 +54,6 @@ export const SearchResults = ({
         );
         const parents = getHtsElementParents(result, htsElements);
         const breadcrumbs = generateBreadcrumbsForHtsElement(
-          result,
           sections,
           sectionAndChapter.chapter,
           [...parents, result]
