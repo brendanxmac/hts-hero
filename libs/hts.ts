@@ -491,6 +491,11 @@ export const getHtsSectionsAndChapters = (): Promise<{
   return apiClient.get("/hts/get-sections-and-chapters", {});
 };
 
+export const getHtsData = async (): Promise<HtsElement[]> => {
+  const htsData: HtsElement[] = await apiClient.get("/hts/get-hts-data", {});
+  return htsData;
+};
+
 export const getHtsChapterData = async (
   chapter: string
 ): Promise<HtsElement[]> => {

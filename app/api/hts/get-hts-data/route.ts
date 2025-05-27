@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
     }
 
     const htsData = await readFile(
-      path.join(process.cwd(), "hts-chapters", "all.json"),
+      path.join(process.cwd(), "hts-elements", "2025-13.json"),
       "utf8"
     );
 
