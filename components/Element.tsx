@@ -50,7 +50,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
     // Starting at the end of the breadcrumbs list, find the first element that has tariff details using a reverseing for loop
     for (let i = breadcrumbs.length - 1; i >= 0; i--) {
       const breadcrumb = breadcrumbs[i];
-      console.log(`breadcrumb ${i}`, breadcrumb.element.type);
+
       if (
         breadcrumb.element.type === Navigatable.ELEMENT &&
         (breadcrumb.element.general ||
@@ -101,16 +101,10 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
   ): { label: string; value: string }[] => {
     const { chapter, section } = getSectionAndChapterFromChapterNumber(
       sections,
-      element.chapter
+      Number(element.chapter)
     );
 
     const parentElements = getHtsElementParents(element, htsElements);
-
-    const breadcrumbs = generateBreadcrumbsForHtsElement(
-      sections,
-      chapter,
-      parentElements
-    );
 
     return [
       {
