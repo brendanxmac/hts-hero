@@ -37,7 +37,7 @@ export const Explore = () => {
   });
   const [searchValue, setSearchValue] = useState("");
   const [loadedElements, setLoadedElements] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState(ExploreTabs[0].value);
+  const [activeTab, setActiveTab] = useState(ExploreTabs[1].value);
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { sections, loading: loadingSections, getSections } = useHtsSections();
   const [fuse, setFuse] = useState<Fuse<HtsElement> | null>(null);
