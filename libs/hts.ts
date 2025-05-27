@@ -572,13 +572,10 @@ export const getChapterFromHtsElement = (
   element: HtsElement,
   parents: HtsElement[]
 ) => {
-  console.log("==========================");
-  console.log("element", element.htsno);
   if (element.htsno) {
     return element.htsno.substring(0, 2);
   }
 
-  console.log("parents", parents);
   return parents.find((p) => p.htsno)?.htsno.substring(0, 2);
 };
 

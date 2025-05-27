@@ -12,17 +12,14 @@ import { HtsElement, Navigatable } from "../interfaces/hts";
 import { ExploreTab } from "../enums/explore";
 import Fuse from "fuse.js";
 import { useChapters } from "../contexts/ChaptersContext";
-import { TertiaryLabel } from "./TertiaryLabel";
-import { ElementSearchSummary } from "./ElementSearchSummary";
-import {
-  generateBreadcrumbsForHtsElement,
-  getChapterFromHtsElement,
-  getHtsElementParents,
-  getSectionAndChapterFromChapterNumber,
-} from "../libs/hts";
 import { Loader } from "../interfaces/ui";
+import { SearchResults } from "./SearchResults";
 
 const ExploreTabs: Tab[] = [
+  {
+    label: "Search",
+    value: ExploreTab.SEARCH,
+  },
   {
     label: "Elements",
     value: ExploreTab.ELEMENTS,
@@ -30,10 +27,6 @@ const ExploreTabs: Tab[] = [
   {
     label: "Notes",
     value: ExploreTab.NOTES,
-  },
-  {
-    label: "Search",
-    value: ExploreTab.SEARCH,
   },
 ];
 
@@ -66,7 +59,9 @@ export const Explore = () => {
       const elements = getChapterElements(0);
 
       if (elements) {
-        setFuse(new Fuse(elements, { keys: ["description", "htsno"] }));
+        setFuse(
+          new Fuse(elements, { keys: ["description", "htsno"], threshold: 0.5 })
+        );
       }
     }
   }, [loadedElements]);
@@ -103,7 +98,7 @@ export const Explore = () => {
       const timeoutId = setTimeout(() => {
         const results = fuse.search(searchValue);
         console.log(`Search Results: ${results.length}`);
-        const topResults = results.slice(0, 10);
+        const topResults = results.slice(0, 30);
         setSearchResults(topResults.map((result) => result.item));
         setActiveTab(ExploreTab.SEARCH);
         setLoading({ isLoading: false, text: "" });
@@ -133,73 +128,11 @@ export const Explore = () => {
         )}
         {!isLoading && activeTab === ExploreTab.NOTES && <Notes />}
         {!isLoading && activeTab === ExploreTab.SEARCH && (
-          <div className="flex flex-col gap-4">
-            {/* TODO: add recents */}
-            {searchResults.length === 0 ? (
-              <div className="w-full h-96 flex flex-col gap-4 justify-center items-center">
-                <TertiaryLabel value="No results yet, start a search above" />
-              </div>
-            ) : (
-              <div className="flex flex-col gap-4 pb-4">
-                <div className="w-full flex justify-between">
-                  <TertiaryLabel
-                    value={searchResults.length ? `Top Results` : "No Results"}
-                  />
-                  <button className="btn btn-xs btn-outline">
-                    Search Synonyms (TODO)
-                  </button>
-                </div>
-
-                {searchResults.map((result, index) => (
-                  <ElementSearchSummary
-                    key={`search-result-${index}`}
-                    element={result}
-                    sectionAndChapter={getSectionAndChapterFromChapterNumber(
-                      sections,
-                      Number(
-                        getChapterFromHtsElement(
-                          result,
-                          getHtsElementParents(result, getChapterElements(0))
-                        )
-                      )
-                    )}
-                    parents={getHtsElementParents(
-                      result,
-                      getChapterElements(0)
-                    )}
-                    onClick={() => {
-                      console.log("Clicked", result);
-                      const parents = getHtsElementParents(
-                        result,
-                        getChapterElements(0)
-                      );
-                      const { chapter } = getSectionAndChapterFromChapterNumber(
-                        sections,
-                        Number(
-                          getChapterFromHtsElement(
-                            result,
-                            getHtsElementParents(result, getChapterElements(0))
-                          )
-                        )
-                      );
-                      console.log("Parents", parents);
-                      console.log(getChapterFromHtsElement(result, parents));
-                      // Set breadcrumbs to the parents, starting with the section, then chapter, then elements if applicable
-                      setBreadcrumbs(
-                        generateBreadcrumbsForHtsElement(
-                          result,
-                          sections,
-                          chapter,
-                          [...parents, result]
-                        )
-                      );
-                      setActiveTab(ExploreTab.ELEMENTS);
-                    }}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
+          <SearchResults
+            results={searchResults}
+            searchString={searchValue}
+            setActiveTab={setActiveTab}
+          />
         )}
       </div>
     </div>
