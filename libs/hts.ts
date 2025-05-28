@@ -565,6 +565,10 @@ export const getSectionAndChapterFromChapterNumber = (
   sections: HtsSection[],
   chapterNumber: number
 ): SectionAndChapterDetails | null => {
+  if (isNaN(chapterNumber)) {
+    throw new Error(`Invalid chapter number: ${chapterNumber}`);
+  }
+
   for (const section of sections) {
     const chapter = section.chapters.find((ch) => ch.number === chapterNumber);
     if (chapter) {
@@ -587,6 +591,10 @@ export const getChapterFromHtsElement = (
 ) => {
   if (element.htsno) {
     return element.htsno.substring(0, 2);
+  }
+
+  if (parents.length === 0) {
+    console.log(`No parents: ${element.description}`);
   }
 
   // also should remove 0 prefix if it exists

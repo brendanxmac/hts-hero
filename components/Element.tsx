@@ -1,7 +1,6 @@
 import { HtsElement, HtsSection, Navigatable } from "../interfaces/hts";
 import { useEffect, useState } from "react";
 import {
-  generateBreadcrumbsForHtsElement,
   getDirectChildrenElements,
   getHtsElementParents,
   getSectionAndChapterFromChapterNumber,
@@ -99,6 +98,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
     element: HtsElement,
     sections: HtsSection[]
   ): { label: string; value: string }[] => {
+    console.log("element", element);
     const { chapter, section } = getSectionAndChapterFromChapterNumber(
       sections,
       Number(element.chapter)
@@ -267,7 +267,11 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
               (breadcrumb, i) => (
                 <span key={`breadcrumb-${i}`}>
                   {breadcrumb.label && <b>{breadcrumb.label} </b>}
-                  <span className="text-white">{breadcrumb.value}</span>
+                  <span
+                    className={`${!breadcrumb.value ? "font-bold" : "text-white"}`}
+                  >
+                    {breadcrumb.value}
+                  </span>
                   <span className="text-white mx-2">›</span>
                 </span>
               )
@@ -275,12 +279,6 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
           </div>
         </div>
 
-        {/* {getParentDescriptionsFromBreadcrumbs().length > 0 && (
-          <TertiaryText
-            key={description}
-            value={getParentDescriptionsFromBreadcrumbs()}
-          />
-        )} */}
         <div className="flex flex-col gap-1">
           <div className="w-full flex justify-between items-center">
             <TertiaryLabel value={getHtsnoLabel()} />
