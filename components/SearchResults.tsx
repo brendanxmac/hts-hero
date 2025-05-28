@@ -66,6 +66,7 @@ export const SearchResults = ({
             sectionAndChapter={sectionAndChapter}
             parents={parents}
             onClick={() => {
+              console.log("parents", parents);
               setBreadcrumbs(breadcrumbs);
               setActiveTab(ExploreTab.ELEMENTS);
             }}

@@ -118,8 +118,10 @@ export const Explore = () => {
         activeTab={activeTab}
         onTabChange={setActiveTab}
         onSearch={(value) => {
-          setSearchValue(value);
-          setLoading({ isLoading: true, text: "Searching Elements" });
+          if (searchValue !== value) {
+            setSearchValue(value);
+            setLoading({ isLoading: true, text: "Searching Elements" });
+          }
         }}
       />
 

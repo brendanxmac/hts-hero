@@ -1,9 +1,5 @@
 import { ChangeEvent, useState } from "react";
-import {
-  ArrowRightIcon,
-  MagnifyingGlassIcon,
-  XMarkIcon,
-} from "@heroicons/react/16/solid";
+import { ArrowRightIcon, XMarkIcon } from "@heroicons/react/16/solid";
 
 interface Props {
   placeholder: string;
