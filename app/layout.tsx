@@ -8,6 +8,8 @@ import config from "@/config";
 import "./globals.css";
 import { HtsSectionsProvider } from "../contexts/HtsSectionsContext";
 import { ClassificationProvider } from "../contexts/ClassificationContext";
+import { HtsProvider } from "../contexts/HtsContext";
+import { UserProvider } from "../contexts/UserContext";
 
 const font = Inter({ subsets: ["latin"] });
 
@@ -26,12 +28,16 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" data-theme={config.colors.theme} className={font.className}>
       <body>
-        <HtsSectionsProvider>
-          <ClassificationProvider>
-            {/* ClientLayout contains all the client wrappers (Crisp chat support, toast messages, tooltips, etc.) */}
-            <ClientLayout>{children}</ClientLayout>
-          </ClassificationProvider>
-        </HtsSectionsProvider>
+        <UserProvider>
+          <HtsSectionsProvider>
+            <ClassificationProvider>
+              <HtsProvider>
+                {/* ClientLayout contains all the client wrappers (Crisp chat support, toast messages, tooltips, etc.) */}
+                <ClientLayout>{children}</ClientLayout>
+              </HtsProvider>
+            </ClassificationProvider>
+          </HtsSectionsProvider>
+        </UserProvider>
         <GoogleAnalytics gaId="G-V2DRE5Y0NV" />
       </body>
     </html>

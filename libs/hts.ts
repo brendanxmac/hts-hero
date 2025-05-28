@@ -18,6 +18,7 @@ import {
   Navigatable,
   Classification,
   FetchedClassification,
+  SectionAndChapterDetails,
 } from "../interfaces/hts";
 import {
   elementsAtClassificationLevel,
@@ -26,6 +27,13 @@ import {
 import { OpenAIModel } from "./openai";
 import apiClient from "@/libs/api";
 import { HtsLevel } from "../enums/hts";
+import { NavigatableElement } from "../components/Elements";
+
+// Filters from the overall set of elements -- room for imporvement
+export const getElementsForChapter = (
+  elements: HtsElement[],
+  chapter: number
+) => elements.filter((e) => e.chapter == chapter);
 
 export const mapFetchedClassificationToClassification = (
   c: FetchedClassification
@@ -489,6 +497,15 @@ export const getHtsSectionsAndChapters = (): Promise<{
   return apiClient.get("/hts/get-sections-and-chapters", {});
 };
 
+export const getHtsData = async (): Promise<HtsElement[]> => {
+  const htsData: HtsElement[] = await apiClient.get("/hts/get-hts-data", {});
+
+  // Data is already enriched with uuid, chapter, and type in preprocessing prior to being stored
+  // so we can simply return the parsed data back to the user -- since the file is large this needed
+  // to happen in preprocessing to avoid UI lag and a bad user experience
+  return htsData;
+};
+
 export const getHtsChapterData = async (
   chapter: string
 ): Promise<HtsElement[]> => {
@@ -507,6 +524,109 @@ export const getHtsChapterData = async (
   }));
 };
 
+export const generateBreadcrumbsForHtsElement = (
+  sections: HtsSection[],
+  chapter: HtsSectionAndChapterBase,
+  parentElements: HtsElement[]
+): NavigatableElement[] => {
+  const breadcrumbs: NavigatableElement[] = [
+    {
+      title: "Sections",
+      element: {
+        type: Navigatable.SECTIONS,
+        sections,
+      },
+    },
+    {
+      title: `Chapter ${chapter.number.toString()}`,
+      element: {
+        type: Navigatable.CHAPTER,
+        ...chapter,
+      },
+    },
+  ];
+
+  if (parentElements.length === 0) {
+    return breadcrumbs;
+  }
+
+  return [
+    ...breadcrumbs,
+    ...parentElements.map((e) => ({
+      title: `${e.htsno || e.description.split(" ").slice(0, 2).join(" ") + "..."}`,
+      element: {
+        type: Navigatable.ELEMENT,
+        ...e,
+      },
+    })),
+  ];
+};
+
+export const getSectionAndChapterFromChapterNumber = (
+  sections: HtsSection[],
+  chapterNumber: number
+): SectionAndChapterDetails | null => {
+  if (isNaN(chapterNumber)) {
+    throw new Error(`Invalid chapter number: ${chapterNumber}`);
+  }
+
+  for (const section of sections) {
+    const chapter = section.chapters.find((ch) => ch.number === chapterNumber);
+    if (chapter) {
+      return {
+        section: {
+          number: section.number,
+          description: section.description,
+          notesPath: section.notesPath,
+        },
+        chapter,
+      };
+    }
+  }
+  return null; // Not found
+};
+
+export const getChapterFromHtsElement = (
+  element: HtsElement,
+  allElements: HtsElement[]
+) => {
+  if (element.htsno) {
+    return element.htsno.substring(0, 2).replace(/^0+/, "");
+  }
+
+  const parents = getHtsElementParents(element, allElements);
+  const parentWithHtsno = parents.find((p) => p.htsno);
+
+  if (!parentWithHtsno) {
+    console.log(`No parents with HTSNO: ${element.uuid}`);
+  }
+
+  // also should remove 0 prefix if it exists
+  return parentWithHtsno.htsno.substring(0, 2).replace(/^0+/, "");
+};
+
+export const getHtsElementParents = (
+  element: HtsElement,
+  elements: HtsElement[]
+): HtsElement[] => {
+  // If element is at indent 0, it has no parents
+  if (element.indent === "0") {
+    return [];
+  }
+  // Get index of this element
+  const elementIndex = elements.findIndex((e) => e.uuid === element.uuid);
+
+  // Iterate through elements backwards until we find an element with an indent level that is one less than the current element
+  for (let i = elementIndex - 1; i >= 0; i--) {
+    if (elements[i].indent === String(Number(element.indent) - 1)) {
+      // Add current element to end parents array and recurse
+      return [...getHtsElementParents(elements[i], elements), elements[i]];
+    }
+  }
+
+  return [];
+};
+
 // NOTE: this will get all elements in an array of Hts Elements that are at a given indent level.
 // You will not just get the elements up until the next indent level match, at a level.
 export const getElementsAtIndentLevel = (
@@ -518,11 +638,9 @@ export const getElementsAtIndentLevel = (
 
 export const getDirectChildrenElements = (
   element: HtsElement | HtsElementWithParentReference,
-  chapterElements: HtsElement[] | HtsElementWithParentReference[]
+  htsElements: HtsElement[] | HtsElementWithParentReference[]
 ) => {
-  const parentsIndex = chapterElements.findIndex(
-    (e) => e.uuid === element.uuid
-  );
+  const parentsIndex = htsElements.findIndex((e) => e.uuid === element.uuid);
 
   // console.log("parentsIndex", parentsIndex);
 
@@ -533,7 +651,7 @@ export const getDirectChildrenElements = (
 
   // Get index of next element at same indent level at parent
   const firstSiblingsIndex = getIndexOfLastElementBeforeIndentLevel(
-    chapterElements,
+    htsElements,
     parentsIndex + 1,
     Number(element.indent)
   );
@@ -542,7 +660,7 @@ export const getDirectChildrenElements = (
   // console.log("Total", firstSiblingsIndex - parentsIndex);
 
   // Get all elements between the parent and the first sibling at the same indent level
-  const childrenElements = chapterElements.filter(
+  const childrenElements = htsElements.filter(
     (childElement, index) =>
       Number(childElement.indent) == Number(element.indent) + 1 &&
       index <= firstSiblingsIndex &&

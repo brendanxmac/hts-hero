@@ -8,10 +8,18 @@ import { Tab } from "../interfaces/tab";
 import { SectionHeader } from "./SectionHeader";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
-import { Navigatable } from "../interfaces/hts";
+import { HtsElement, Navigatable } from "../interfaces/hts";
 import { ExploreTab } from "../enums/explore";
+import Fuse, { FuseResult } from "fuse.js";
+import { Loader } from "../interfaces/ui";
+import { SearchResults } from "./SearchResults";
+import { useHts } from "../contexts/HtsContext";
 
 const ExploreTabs: Tab[] = [
+  {
+    label: "Search",
+    value: ExploreTab.SEARCH,
+  },
   {
     label: "Elements",
     value: ExploreTab.ELEMENTS,
@@ -23,9 +31,44 @@ const ExploreTabs: Tab[] = [
 ];
 
 export const Explore = () => {
-  const [activeTab, setActiveTab] = useState(ExploreTabs[0].value);
+  const [{ isLoading, text: loadingText }, setLoading] = useState<Loader>({
+    isLoading: true,
+    text: "Fetching Sections",
+  });
+  const [searchValue, setSearchValue] = useState("");
+  const [activeTab, setActiveTab] = useState(ExploreTabs[1].value);
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
-  const { sections, loading, getSections } = useHtsSections();
+  const { sections, loading: loadingSections, getSections } = useHtsSections();
+  const [fuse, setFuse] = useState<Fuse<HtsElement> | null>(null);
+  const [searchResults, setSearchResults] = useState<FuseResult<HtsElement>[]>(
+    []
+  );
+  const { htsElements, fetchElements } = useHts();
+
+  useEffect(() => {
+    const loadAllElements = async () => {
+      setLoading({ isLoading: true, text: "Fetching All Elements" });
+      await fetchElements();
+      if (loadingText === "Fetching All Elements") {
+        setLoading({ isLoading: false, text: "" });
+      }
+    };
+    loadAllElements();
+  }, []);
+
+  useEffect(() => {
+    if (htsElements.length > 0) {
+      setFuse(
+        new Fuse(htsElements, {
+          keys: ["description", "htsno"],
+          threshold: 0.3,
+          findAllMatches: true,
+          ignoreLocation: true,
+          includeMatches: true,
+        })
+      );
+    }
+  }, [htsElements]);
 
   useEffect(() => {
     if (activeTab !== ExploreTab.ELEMENTS) {
@@ -35,7 +78,7 @@ export const Explore = () => {
 
   useEffect(() => {
     const initializeSections = async () => {
-      if (sections.length === 0) {
+      if (sections.length === 0 && !loadingSections) {
         await getSections();
       }
       if (breadcrumbs.length === 0) {
@@ -49,9 +92,31 @@ export const Explore = () => {
           },
         ]);
       }
+      setLoading({ isLoading: false, text: "" });
     };
     initializeSections();
-  }, [activeTab]);
+  }, []);
+
+  useEffect(() => {
+    if (fuse) {
+      const timeoutId = setTimeout(() => {
+        console.log(
+          searchValue.split(" ").length === 1 ? `'${searchValue} ` : searchValue
+        );
+        const results = fuse.search(
+          searchValue.split(" ").length === 1
+            ? `'${searchValue} `
+            : `'${searchValue}`
+        );
+        const topResults = results.slice(0, 30);
+        setSearchResults(topResults);
+        setActiveTab(ExploreTab.SEARCH);
+        setLoading({ isLoading: false, text: "" });
+      }, 300);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [searchValue]);
 
   return (
     <div className="p-6 h-full flex flex-col gap-4">
@@ -60,13 +125,30 @@ export const Explore = () => {
         tabs={ExploreTabs}
         activeTab={activeTab}
         onTabChange={setActiveTab}
+        onSearch={(value) => {
+          if (searchValue !== value) {
+            setSearchValue(value);
+            setLoading({ isLoading: true, text: "Searching Elements" });
+          }
+          if (activeTab !== ExploreTab.SEARCH) {
+            setActiveTab(ExploreTab.SEARCH);
+          }
+        }}
       />
+
       <div className="h-full grow flex flex-col gap-4 overflow-y-auto">
-        {loading && <LoadingIndicator text="Loading Sections" />}
-        {!loading && activeTab === ExploreTab.ELEMENTS && (
+        {isLoading && <LoadingIndicator text={loadingText} />}
+        {!isLoading && activeTab === ExploreTab.ELEMENTS && (
           <Elements sections={sections} />
         )}
-        {!loading && activeTab === ExploreTab.NOTES && <Notes />}
+        {!isLoading && activeTab === ExploreTab.NOTES && <Notes />}
+        {!isLoading && activeTab === ExploreTab.SEARCH && (
+          <SearchResults
+            results={searchResults}
+            searchString={searchValue}
+            setActiveTab={setActiveTab}
+          />
+        )}
       </div>
     </div>
   );

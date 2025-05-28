@@ -56,9 +56,12 @@ export const HtsSectionsProvider = ({ children }: { children: ReactNode }) => {
     return undefined;
   };
 
-  useEffect(() => {
-    getSections();
-  }, []);
+  // TODO: might want to put this back in so only ever need to fethc once
+  // and don't end up calling it in different components... but for now
+  // we'll just fetch it when we need it and go from there<
+  // useEffect(() => {
+  //   getSections();
+  // }, []);
 
   return (
     <HtsSectionsContext.Provider
