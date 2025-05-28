@@ -114,11 +114,16 @@ export const ElementSearchSummary = ({
             <div className="flex flex-col gap-3 breadcrumbs text-sm py-0 overflow-hidden">
               <div className="text-xs">
                 {breadcrumbs.map((breadcrumb, i) => (
-                  <span key={`breadcrumb-${i}`}>
-                    {breadcrumb.label && <b>{breadcrumb.label} </b>}
-                    <span className="text-white">{breadcrumb.value}</span>
-                    <span className="text-white mx-2">›</span>
-                  </span>
+                  <div
+                    className="flex items-center gap-2"
+                    key={`breadcrumb-${i}`}
+                  >
+                    <p className="min-w-20">
+                      {breadcrumb.label && <b>{breadcrumb.label} </b>}
+                    </p>
+                    <span className={"text-white"}>{breadcrumb.value}</span>
+                    {/* <span className="text-white ml-2">›</span> */}
+                  </div>
                 ))}
               </div>
             </div>
