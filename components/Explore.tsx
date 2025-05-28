@@ -10,7 +10,7 @@ import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { HtsElement, Navigatable } from "../interfaces/hts";
 import { ExploreTab } from "../enums/explore";
-import Fuse from "fuse.js";
+import Fuse, { FuseResult } from "fuse.js";
 import { Loader } from "../interfaces/ui";
 import { SearchResults } from "./SearchResults";
 import { useHts } from "../contexts/HtsContext";
@@ -40,7 +40,9 @@ export const Explore = () => {
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { sections, loading: loadingSections, getSections } = useHtsSections();
   const [fuse, setFuse] = useState<Fuse<HtsElement> | null>(null);
-  const [searchResults, setSearchResults] = useState<HtsElement[]>([]);
+  const [searchResults, setSearchResults] = useState<FuseResult<HtsElement>[]>(
+    []
+  );
   const { htsElements, fetchElements } = useHts();
 
   useEffect(() => {
@@ -59,9 +61,10 @@ export const Explore = () => {
       setFuse(
         new Fuse(htsElements, {
           keys: ["description", "htsno"],
-          threshold: 0.5,
+          threshold: 0.3,
           findAllMatches: true,
           ignoreLocation: true,
+          includeMatches: true,
         })
       );
     }
@@ -97,9 +100,16 @@ export const Explore = () => {
   useEffect(() => {
     if (fuse) {
       const timeoutId = setTimeout(() => {
-        const results = fuse.search(searchValue);
+        console.log(
+          searchValue.split(" ").length === 1 ? `'${searchValue} ` : searchValue
+        );
+        const results = fuse.search(
+          searchValue.split(" ").length === 1
+            ? `'${searchValue} `
+            : `'${searchValue}`
+        );
         const topResults = results.slice(0, 30);
-        setSearchResults(topResults.map((result) => result.item));
+        setSearchResults(topResults);
         setActiveTab(ExploreTab.SEARCH);
         setLoading({ isLoading: false, text: "" });
       }, 300);

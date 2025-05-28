@@ -11,10 +11,11 @@ import {
 import { ElementSearchSummary } from "./ElementSearchSummary";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { useHts } from "../contexts/HtsContext";
+import { FuseResult } from "fuse.js";
 
 interface Props {
   searchString: string;
-  results: HtsElement[];
+  results: FuseResult<HtsElement>[];
   setActiveTab: (tab: ExploreTab) => void;
 }
 
@@ -48,21 +49,23 @@ export const SearchResults = ({
       </div>
 
       {results.map((result, index) => {
+        const { item: element, matches } = result;
+        console.log(matches);
         const sectionAndChapter = getSectionAndChapterFromChapterNumber(
           sections,
-          Number(getChapterFromHtsElement(result, htsElements))
+          Number(getChapterFromHtsElement(element, htsElements))
         );
-        const parents = getHtsElementParents(result, htsElements);
+        const parents = getHtsElementParents(element, htsElements);
         const breadcrumbs = generateBreadcrumbsForHtsElement(
           sections,
           sectionAndChapter.chapter,
-          [...parents, result]
+          [...parents, element]
         );
 
         return (
           <ElementSearchSummary
             key={`search-result-${index}`}
-            element={result}
+            element={element}
             sectionAndChapter={sectionAndChapter}
             parents={parents}
             onClick={() => {

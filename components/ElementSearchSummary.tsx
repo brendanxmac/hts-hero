@@ -10,7 +10,7 @@ import { TertiaryText } from "./TertiaryText";
 import { useClassification } from "../contexts/ClassificationContext";
 import { Color } from "../enums/style";
 import { PrimaryLabel } from "./PrimaryLabel";
-import { SecondaryLabel } from "./SecondaryLabel";
+import { TertiaryLabel } from "./TertiaryLabel";
 
 interface Props {
   element: HtsElement;
@@ -110,26 +110,23 @@ export const ElementSearchSummary = ({
           className={`flex py-2 items-center justify-between w-full`}
           onClick={onClick}
         >
-          <div className="w-full flex flex-col items-start justify-between gap-6 px-4 py-2">
+          <div className="w-full flex flex-col items-start justify-between gap-2 px-4 py-2">
             <div className="flex flex-col gap-3 breadcrumbs text-sm py-0 overflow-hidden">
               <div className="text-xs">
                 {breadcrumbs.map((breadcrumb, i) => (
-                  <div
-                    className="flex items-center gap-2"
-                    key={`breadcrumb-${i}`}
-                  >
-                    <p className="min-w-20">
-                      {breadcrumb.label && <b>{breadcrumb.label} </b>}
-                    </p>
-                    <span className={"text-white"}>{breadcrumb.value}</span>
-                    {/* <span className="text-white ml-2">›</span> */}
-                  </div>
+                  <span key={`breadcrumb-${i}`}>
+                    {breadcrumb.label && (
+                      <b className="text-accent">{breadcrumb.label} </b>
+                    )}
+                    <span className="text-white">{breadcrumb.value}</span>
+                    <span className="text-white mx-2">›</span>
+                  </span>
                 ))}
               </div>
             </div>
 
             <div className="flex flex-col">
-              {htsno && <SecondaryLabel value={htsno} />}
+              {htsno && <TertiaryLabel value={htsno} />}
               <PrimaryLabel value={description} color={Color.WHITE} />
             </div>
 
