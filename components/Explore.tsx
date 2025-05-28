@@ -36,7 +36,6 @@ export const Explore = () => {
     text: "Fetching Sections",
   });
   const [searchValue, setSearchValue] = useState("");
-  const [loadedElements, setLoadedElements] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState(ExploreTabs[1].value);
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { sections, loading: loadingSections, getSections } = useHtsSections();
@@ -48,7 +47,6 @@ export const Explore = () => {
     const loadAllElements = async () => {
       setLoading({ isLoading: true, text: "Fetching All Elements" });
       await fetchElements();
-      setLoadedElements(true);
       if (loadingText === "Fetching All Elements") {
         setLoading({ isLoading: false, text: "" });
       }
@@ -57,17 +55,16 @@ export const Explore = () => {
   }, []);
 
   useEffect(() => {
-    if (loadedElements) {
-      if (htsElements) {
-        setFuse(
-          new Fuse(htsElements, {
-            keys: ["description", "htsno"],
-            threshold: 0.5,
-          })
-        );
-      }
+    console.log("htsElements set");
+    if (htsElements.length > 0) {
+      setFuse(
+        new Fuse(htsElements, {
+          keys: ["description", "htsno"],
+          threshold: 0.5,
+        })
+      );
     }
-  }, [loadedElements]);
+  }, [htsElements]);
 
   useEffect(() => {
     if (activeTab !== ExploreTab.ELEMENTS) {
