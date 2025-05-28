@@ -55,12 +55,13 @@ export const Explore = () => {
   }, []);
 
   useEffect(() => {
-    console.log("htsElements set");
     if (htsElements.length > 0) {
       setFuse(
         new Fuse(htsElements, {
           keys: ["description", "htsno"],
           threshold: 0.5,
+          findAllMatches: true,
+          ignoreLocation: true,
         })
       );
     }
@@ -118,6 +119,9 @@ export const Explore = () => {
           if (searchValue !== value) {
             setSearchValue(value);
             setLoading({ isLoading: true, text: "Searching Elements" });
+          }
+          if (activeTab !== ExploreTab.SEARCH) {
+            setActiveTab(ExploreTab.SEARCH);
           }
         }}
       />
