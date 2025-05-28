@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/app/api/supabase/server";
 import config from "@/config";
-import { AuthenticatedHeader } from "../../components/AuthenticatedHeader";
+import Header from "../../components/Header";
 
 // This is a server-side component to ensure the user is logged in.
 // If not, it will redirect to the login page.
@@ -23,7 +23,8 @@ export default async function LayoutPrivate({
 
   return (
     <div className="flex flex-col max-h-svh">
-      <AuthenticatedHeader />
+      <Header />
+      {/* <AuthenticatedHeader /> */}
       {children}
     </div>
   );
