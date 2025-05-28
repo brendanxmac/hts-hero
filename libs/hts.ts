@@ -494,18 +494,10 @@ export const getHtsSectionsAndChapters = (): Promise<{
 export const getHtsData = async (): Promise<HtsElement[]> => {
   const htsData: HtsElement[] = await apiClient.get("/hts/get-hts-data", {});
 
-  // This would be fixed if we did this prior to fetching the data
-  const elementsWithUuid = htsData.map((e) => ({
-    ...e,
-    uuid: crypto.randomUUID(),
-  }));
-
-  // add uuid to each element
-  return elementsWithUuid.map((e) => ({
-    ...e,
-    chapter: Number(getChapterFromHtsElement(e, elementsWithUuid)),
-    type: Navigatable.ELEMENT,
-  }));
+  // Data is already enriched with uuid, chapter, and type in preprocessing prior to being stored
+  // so we can simply return the parsed data back to the user -- since the file is large this needed
+  // to happen in preprocessing to avoid UI lag and a bad user experience
+  return htsData;
 };
 
 export const getHtsChapterData = async (
