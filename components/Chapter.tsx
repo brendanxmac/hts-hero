@@ -17,10 +17,6 @@ interface Props {
   chapter: HtsSectionAndChapterBase;
 }
 
-const getChapterElements = (elements: HtsElement[], chapter: number) => {
-  return elements.filter((e) => e.chapter === chapter);
-};
-
 export const Chapter = ({ chapter }: Props) => {
   const { number, description, notesPath } = chapter;
   const { htsElements } = useHts();

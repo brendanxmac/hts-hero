@@ -29,6 +29,12 @@ import apiClient from "@/libs/api";
 import { HtsLevel } from "../enums/hts";
 import { NavigatableElement } from "../components/Elements";
 
+// Filters from the overall set of elements -- room for imporvement
+export const getElementsForChapter = (
+  elements: HtsElement[],
+  chapter: number
+) => elements.filter((e) => e.chapter == chapter);
+
 export const mapFetchedClassificationToClassification = (
   c: FetchedClassification
 ): Classification => ({
