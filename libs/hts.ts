@@ -494,13 +494,16 @@ export const getHtsSectionsAndChapters = (): Promise<{
 export const getHtsData = async (): Promise<HtsElement[]> => {
   const htsData: HtsElement[] = await apiClient.get("/hts/get-hts-data", {});
 
-  // add uuid to each element
-  return htsData.map((e) => ({
+  // This would be fixed if we did this prior to fetching the data
+  const elementsWithUuid = htsData.map((e) => ({
     ...e,
     uuid: crypto.randomUUID(),
-    chapter: Number(
-      getChapterFromHtsElement(e, getHtsElementParents(e, htsData))
-    ),
+  }));
+
+  // add uuid to each element
+  return elementsWithUuid.map((e) => ({
+    ...e,
+    chapter: Number(getChapterFromHtsElement(e, elementsWithUuid)),
     type: Navigatable.ELEMENT,
   }));
 };
@@ -587,21 +590,21 @@ export const getSectionAndChapterFromChapterNumber = (
 
 export const getChapterFromHtsElement = (
   element: HtsElement,
-  parents: HtsElement[]
+  allElements: HtsElement[]
 ) => {
   if (element.htsno) {
-    return element.htsno.substring(0, 2);
+    return element.htsno.substring(0, 2).replace(/^0+/, "");
   }
 
-  if (parents.length === 0) {
-    console.log(`No parents: ${element.description}`);
+  const parents = getHtsElementParents(element, allElements);
+  const parentWithHtsno = parents.find((p) => p.htsno);
+
+  if (!parentWithHtsno) {
+    console.log(`No parents with HTSNO: ${element.uuid}`);
   }
 
   // also should remove 0 prefix if it exists
-  return parents
-    .find((p) => p.htsno)
-    ?.htsno.substring(0, 2)
-    .replace(/^0+/, "");
+  return parentWithHtsno.htsno.substring(0, 2).replace(/^0+/, "");
 };
 
 export const getHtsElementParents = (

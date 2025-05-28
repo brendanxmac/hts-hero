@@ -98,7 +98,6 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
     element: HtsElement,
     sections: HtsSection[]
   ): { label: string; value: string }[] => {
-    console.log("element", element);
     const { chapter, section } = getSectionAndChapterFromChapterNumber(
       sections,
       Number(element.chapter)
