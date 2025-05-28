@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search } from "../../components/Search";
+import { SearchSection } from "../../components/SearchSection";
 import { ExploreAuto } from "../../components/ExploreAuto";
 
 export default function Home() {
@@ -15,7 +15,7 @@ export default function Home() {
           setProductDescription={setProductDescription}
         />
       ) : (
-        <Search setProductDescription={setProductDescription} />
+        <SearchSection setProductDescription={setProductDescription} />
       )}
     </main>
   );

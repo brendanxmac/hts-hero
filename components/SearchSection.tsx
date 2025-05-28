@@ -5,7 +5,7 @@ interface Props {
   setProductDescription: Dispatch<SetStateAction<string>>;
 }
 
-export const Search = ({ setProductDescription }: Props) => {
+export const SearchSection = ({ setProductDescription }: Props) => {
   return (
     <section className="grow h-full items-center overflow-auto flex flex-col">
       <div className="grow w-full h-full flex flex-col gap-5 flex-1 items-center justify-center">

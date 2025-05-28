@@ -1,11 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Popover, Transition } from "@headlessui/react";
-import { User } from "@supabase/supabase-js";
-import { createClient } from "@/libs/supabase/client";
 import apiClient from "@/libs/api";
+import { useUser } from "../contexts/UserContext";
 
 // A button to show user some account actions
 //  1. Billing: open a Stripe Customer Portal to manage their billing (cancel subscription, update payment method, etc.).
@@ -14,24 +13,11 @@ import apiClient from "@/libs/api";
 //  2. Logout: sign out and go back to homepage
 // See more at https://shipfa.st/docs/components/buttonAccount
 const ButtonAccount = () => {
-  const supabase = createClient();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [user, setUser] = useState<User>(null);
-
-  useEffect(() => {
-    const getUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      setUser(user);
-    };
-
-    getUser();
-  }, [supabase]);
+  const { user, signOut } = useUser();
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
+    await signOut();
     window.location.href = "/";
   };
 
