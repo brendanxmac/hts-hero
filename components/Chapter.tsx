@@ -3,6 +3,7 @@ import { useState } from "react";
 import {
   getDirectChildrenElements,
   getElementsAtIndentLevel,
+  getElementsForChapter,
 } from "../libs/hts";
 import { ElementSummary } from "./ElementSummary";
 import { DocumentTextIcon } from "@heroicons/react/24/solid";
@@ -22,7 +23,7 @@ export const Chapter = ({ chapter }: Props) => {
   const { htsElements } = useHts();
   const [showNotes, setShowNotes] = useState(false);
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
-  const chapterElements = getChapterElements(htsElements, number);
+  const chapterElements = getElementsForChapter(htsElements, number);
   const elementsAtIndentLevel = chapterElements
     ? getElementsAtIndentLevel(chapterElements, 0)
     : [];
