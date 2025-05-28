@@ -2,6 +2,22 @@ import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/app/api/supabase/middleware";
 
 export async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+
+  const isAllowed =
+    pathname === "/explore" ||
+    pathname.startsWith("/_next") ||
+    pathname === "/favicon.ico" ||
+    pathname.startsWith("/api") ||
+    pathname === "/robots.txt" ||
+    pathname.startsWith("/hts-elements") || // ✅ allow access to static JSON files
+    pathname.startsWith("/notes") || // ✅ allow access to PDF notes
+    pathname.match(/\.(png|jpg|jpeg|gif|svg|webp)$/); // ✅ allow access to image files
+
+  if (!isAllowed) {
+    return NextResponse.redirect(new URL("/explore", req.url));
+  }
+
   const IS_TEST_ENV = process.env.APP_ENV === "test";
   const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
