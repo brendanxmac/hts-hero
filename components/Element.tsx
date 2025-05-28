@@ -245,7 +245,10 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
 
     return (
       <div className="flex flex-col gap-1">
-        <TertiaryLabel value={"Temporary or Special Adjustments"} />
+        <TertiaryLabel
+          value={"Temporary or Special Adjustments"}
+          color={Color.PRIMARY}
+        />
         <SecondaryText
           key={`${tariffType}-tariff-footnotes`}
           value={footnotes
@@ -309,16 +312,16 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                   tariffElement.units.map((unit, i) => (
                     <div
                       key={`${i}-${unit}`}
-                      className="flex flex-col gap-1 p-3 bg-base-300 rounded-md min-w-24"
+                      className="flex flex-col gap-1 p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24"
                     >
-                      <TertiaryLabel value={`Unit`} />
+                      <TertiaryLabel value={`Unit`} color={Color.PRIMARY} />
                       <SecondaryText value={unit || "-"} color={Color.WHITE} />
                     </div>
                   ))}
 
-                <div className="flex flex-col gap-3 p-3 bg-base-300 rounded-md min-w-24">
+                <div className="flex flex-col gap-3 p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24">
                   <div>
-                    <TertiaryLabel value={"General"} />
+                    <TertiaryLabel value={"General"} color={Color.PRIMARY} />
                     <SecondaryText
                       value={tariffElement.general || "-"}
                       color={Color.WHITE}
@@ -327,9 +330,9 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                   {getTemporaryTariffText(tariffElement, TariffType.GENERAL)}
                 </div>
 
-                <div className="flex flex-col gap-3 p-3 bg-base-300 rounded-md min-w-24">
+                <div className="flex flex-col gap-3 p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24">
                   <div>
-                    <TertiaryLabel value={"Special"} />
+                    <TertiaryLabel value={"Special"} color={Color.PRIMARY} />
                     <SecondaryText
                       value={getPrefixFromSpecial(tariffElement.special) || "-"}
                       color={Color.WHITE}
@@ -338,9 +341,9 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                   {getTemporaryTariffText(tariffElement, TariffType.SPECIAL)}
                 </div>
 
-                <div className="flex flex-col gap-3 p-3 bg-base-300 rounded-md min-w-24">
+                <div className="flex flex-col gap-3 p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24">
                   <div>
-                    <TertiaryLabel value={"Other"} />
+                    <TertiaryLabel value={"Other"} color={Color.PRIMARY} />
                     <SecondaryText
                       value={tariffElement.other || "-"}
                       color={Color.WHITE}
