@@ -30,8 +30,9 @@ export const SearchResults = ({
 
   if (results.length === 0) {
     return (
-      <div className="w-full h-96 flex flex-col gap-4 justify-center items-center">
+      <div className="w-full h-96 flex gap-2 justify-center items-center">
         <TertiaryLabel value="No results yet, start a search above" />
+        <span className="text-lg">👆</span>
       </div>
     );
   }
