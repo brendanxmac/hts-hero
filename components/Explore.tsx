@@ -100,9 +100,6 @@ export const Explore = () => {
   useEffect(() => {
     if (fuse) {
       const timeoutId = setTimeout(() => {
-        console.log(
-          searchValue.split(" ").length === 1 ? `'${searchValue} ` : searchValue
-        );
         const results = fuse.search(
           searchValue.split(" ").length === 1
             ? `'${searchValue} `
