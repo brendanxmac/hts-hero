@@ -19,7 +19,7 @@ export const SectionHeader = ({
   onSearch,
 }: SectionHeaderProps) => {
   return (
-    <div className="flex gap-4 items-center justify-between">
+    <div className="flex gap-4 items-center justify-between flex-col sm:flex-row">
       <div className="flex gap-4 items-center">
         <PrimaryLabel value={title} />
         <div
