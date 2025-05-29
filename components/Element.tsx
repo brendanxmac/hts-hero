@@ -281,12 +281,16 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-1">
-          <div className="w-full flex justify-between items-center">
-            <TertiaryLabel value={getHtsnoLabel()} />
+        {/* Add a dull gray horizontal line */}
+        <div className="w-full h-[1px] bg-base-content/10" />
+
+        <div className="flex flex-col gap-3">
+          <div className="w-full flex justify-between items-start gap-2">
+            <SecondaryLabel value={getHtsnoLabel()} />
+
             <ButtonWithIcon
               icon={<DocumentTextIcon className="h-4 w-4" />}
-              label="Notes"
+              label={`Chapter ${chapter} Notes`}
               onClick={() =>
                 setShowPDF({
                   title: `Chapter ${chapter} Notes`,
@@ -295,9 +299,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
               }
             />
           </div>
-          <div className="flex flex-col gap-1">
-            <h2 className="text-2xl font-bold text-white">{description}</h2>
-          </div>
+          <h2 className="text-2xl font-bold text-white">{description}</h2>
         </div>
       </div>
 
@@ -308,16 +310,19 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
               <SecondaryLabel value="Tariff Details" />
 
               <div className="grid grid-cols-2 gap-2">
-                {tariffElement.units &&
-                  tariffElement.units.map((unit, i) => (
-                    <div
-                      key={`${i}-${unit}`}
-                      className="flex flex-col gap-1 p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24"
-                    >
-                      <TertiaryLabel value={`Unit`} color={Color.PRIMARY} />
-                      <SecondaryText value={unit || "-"} color={Color.WHITE} />
-                    </div>
-                  ))}
+                {tariffElement.units && (
+                  <div className="flex flex-col gap-1 p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24">
+                    <TertiaryLabel value={`Units`} color={Color.PRIMARY} />
+                    {tariffElement.units.map((unit, i) => (
+                      <div key={`${i}-${unit}`} className="flex flex-col gap-1">
+                        <SecondaryText
+                          value={unit || "-"}
+                          color={Color.WHITE}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 <div className="flex flex-col gap-3 p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24">
                   <div>
