@@ -45,7 +45,9 @@ export default function Home() {
       <main>
         <ExploreHero />
         <ExploreProblem />
-        <ExploreFeaturesAccordion />
+        <Suspense>
+          <ExploreFeaturesAccordion />
+        </Suspense>
         <ExploreCTA />
       </main>
       <ExploreFooter />

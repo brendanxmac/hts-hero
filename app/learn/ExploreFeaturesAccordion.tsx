@@ -67,9 +67,9 @@ const features = [
     ),
   },
   {
-    title: "One Tab",
+    title: "Seamless PDF Viewing",
     description:
-      "See all of the HTS elements and notes on a single page. Say goodbye to PDF downloads, squinting at tables, and switching tabs",
+      "See all the HTS elements and notes without needing to download PDFs or jump between apps / browser tabs.",
     type: "video",
     path: "/one-tab.mp4",
     format: "video/mp4",
