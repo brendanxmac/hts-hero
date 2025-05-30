@@ -6,6 +6,10 @@ export async function middleware(req: NextRequest) {
 
   const isAllowed =
     pathname === "/explore" ||
+    pathname === "/learn" ||
+    pathname === "/learn#features" ||
+    pathname === "/tos" ||
+    pathname === "/privacy-policy" ||
     pathname.startsWith("/_next") ||
     pathname === "/favicon.ico" ||
     pathname.startsWith("/api") ||
