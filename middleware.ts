@@ -6,13 +6,17 @@ export async function middleware(req: NextRequest) {
 
   const isAllowed =
     pathname === "/explore" ||
+    pathname === "/learn" ||
+    pathname === "/learn#features" ||
+    pathname === "/tos" ||
+    pathname === "/privacy-policy" ||
     pathname.startsWith("/_next") ||
     pathname === "/favicon.ico" ||
     pathname.startsWith("/api") ||
     pathname === "/robots.txt" ||
     pathname.startsWith("/hts-elements") || // ✅ allow access to static JSON files
     pathname.startsWith("/notes") || // ✅ allow access to PDF notes
-    pathname.match(/\.(png|jpg|jpeg|gif|svg|webp)$/); // ✅ allow access to image files
+    pathname.match(/\.(png|jpg|jpeg|gif|svg|webp|mp4|webm|mov)$/); // ✅ allow access to image and video files
 
   if (!isAllowed) {
     return NextResponse.redirect(new URL("/explore", req.url));
@@ -46,8 +50,9 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - video files (mp4, webm, mov)
      * Feel free to modify this pattern to include more paths.
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|mp4|webm|mov)$).*)",
   ],
 };
