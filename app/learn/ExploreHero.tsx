@@ -8,7 +8,8 @@ const ExploreHero = () => {
           Find any HTS code <span className="text-primary">in seconds</span>
         </h1>
         <p className="flex flex-col text-lg text-gray-300 leading-relaxed">
-          Fast and accurate search with easy navigation. No more PDF's & tables
+          Fast and accurate search with easy navigation. Say goodbye to PDF
+          downloads & squinting at tables.
         </p>
 
         <Link
