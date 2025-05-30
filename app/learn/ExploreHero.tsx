@@ -27,7 +27,7 @@ const ExploreHero = () => {
           muted
           loop
           playsInline
-          src="/about-hero-demo.mp4"
+          src="/explore.mp4"
         ></video>
       </div>
     </section>

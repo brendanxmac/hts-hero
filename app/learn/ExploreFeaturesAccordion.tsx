@@ -19,11 +19,11 @@ interface Feature {
 
 const features = [
   {
-    title: "Fast search, that works...",
+    title: "Lightning Fast Search",
     description:
-      "Get the results you expect in milliseconds, without all the fluff",
+      "Get the results you expect in milliseconds with added context and instantly jump to element details.",
     type: "video",
-    path: "/quick-copy.mp4",
+    path: "/search.mp4",
     format: "video/mp4",
     svg: (
       <svg
@@ -43,11 +43,11 @@ const features = [
     ),
   },
   {
-    title: "Click to Navigate",
+    title: "Easy Navigation",
     description:
-      "Easily explore the entire HTS, drill into different levels, and jump back up. All you need to do is click.",
+      "Quickly explore the entire HTS level by level, or jump around as needed. Just click.",
     type: "video",
-    path: "/step-by-step.mp4",
+    path: "/navigate.mp4",
     format: "video/mp4",
     svg: (
       <svg
@@ -67,10 +67,11 @@ const features = [
     ),
   },
   {
-    title: "No more PDF downloads",
-    description: "See all the HTS elements and notes right in your browser",
+    title: "One Tab",
+    description:
+      "See all of the HTS elements and notes on a single page. Say goodbye to PDF downloads, squinting at tables, and switching tabs",
     type: "video",
-    path: "/results-in-seconds.mp4",
+    path: "/one-tab.mp4",
     format: "video/mp4",
     svg: (
       <svg
