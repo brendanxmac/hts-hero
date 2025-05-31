@@ -335,15 +335,39 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                   {getTemporaryTariffText(tariffElement, TariffType.GENERAL)}
                 </div>
 
-                <div className="flex flex-col gap-3 p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24">
-                  <div>
-                    <TertiaryLabel value={"Special"} color={Color.PRIMARY} />
-                    <SecondaryText
-                      value={getPrefixFromSpecial(tariffElement.special) || "-"}
-                      color={Color.WHITE}
-                    />
-                  </div>
+                <div className="flex flex-col p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24">
+                  <TertiaryLabel value={"Special"} color={Color.PRIMARY} />
+                  <SecondaryText
+                    value={getPrefixFromSpecial(tariffElement.special) || "-"}
+                    color={Color.WHITE}
+                  />
+
                   {getTemporaryTariffText(tariffElement, TariffType.SPECIAL)}
+                  {getDetailsFromSpecial(tariffElement.special) && (
+                    <div className="flex gap-x-1">
+                      {getDetailsFromSpecial(tariffElement.special)
+                        .split(",")
+                        .map((specialTariffSymbol, index) => (
+                          <div key={`${specialTariffSymbol}-${index}`}>
+                            <button
+                              className="btn btn-link btn-xs text-xs p-0 hover:text-secondary hover:scale-110"
+                              onClick={() => {
+                                const note =
+                                  getGeneralNoteFromSpecialTariffSymbol(
+                                    specialTariffSymbol.trim()
+                                  );
+                                setShowPDF({
+                                  title: note?.title || "",
+                                  file: note?.pdfURL || "",
+                                });
+                              }}
+                            >
+                              {specialTariffSymbol}
+                            </button>
+                          </div>
+                        ))}
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-3 p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24">
