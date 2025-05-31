@@ -17,6 +17,7 @@ import { TertiaryLabel } from "./TertiaryLabel";
 import { SecondaryText } from "./SecondaryText";
 import { useHts } from "../contexts/HtsContext";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
+import { TertiaryText } from "./TertiaryText";
 
 interface Props {
   summaryOnly?: boolean;
@@ -326,7 +327,10 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
 
                 <div className="flex flex-col gap-3 p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24">
                   <div>
-                    <TertiaryLabel value={"General"} color={Color.PRIMARY} />
+                    <TertiaryLabel
+                      value={"General Rate"}
+                      color={Color.PRIMARY}
+                    />
                     <SecondaryText
                       value={tariffElement.general || "-"}
                       color={Color.WHITE}
@@ -335,20 +339,49 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                   {getTemporaryTariffText(tariffElement, TariffType.GENERAL)}
                 </div>
 
-                <div className="flex flex-col gap-3 p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24">
-                  <div>
-                    <TertiaryLabel value={"Special"} color={Color.PRIMARY} />
-                    <SecondaryText
-                      value={getPrefixFromSpecial(tariffElement.special) || "-"}
-                      color={Color.WHITE}
-                    />
-                  </div>
+                <div className="flex flex-col p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24">
+                  <TertiaryLabel value={"Special Rate"} color={Color.PRIMARY} />
+                  <SecondaryText
+                    value={getPrefixFromSpecial(tariffElement.special) || "-"}
+                    color={Color.WHITE}
+                  />
+
                   {getTemporaryTariffText(tariffElement, TariffType.SPECIAL)}
+                  {getDetailsFromSpecial(tariffElement.special) && (
+                    <div className="flex flex-col mt-3">
+                      <TertiaryText
+                        value={"Qualifications (at least 1 required):"}
+                      />
+                      <div className="flex gap-1">
+                        {getDetailsFromSpecial(tariffElement.special)
+                          .split(",")
+                          .map((specialTariffSymbol, index) => (
+                            <div key={`${specialTariffSymbol}-${index}`}>
+                              <button
+                                className="btn btn-link btn-xs text-xs p-0 hover:text-secondary hover:scale-110"
+                                onClick={() => {
+                                  const note =
+                                    getGeneralNoteFromSpecialTariffSymbol(
+                                      specialTariffSymbol.trim()
+                                    );
+                                  setShowPDF({
+                                    title: note?.title || "",
+                                    file: note?.pdfURL || "",
+                                  });
+                                }}
+                              >
+                                {specialTariffSymbol}
+                              </button>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-3 p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24">
                   <div>
-                    <TertiaryLabel value={"Other"} color={Color.PRIMARY} />
+                    <TertiaryLabel value={"Other Rate"} color={Color.PRIMARY} />
                     <SecondaryText
                       value={tariffElement.other || "-"}
                       color={Color.WHITE}
