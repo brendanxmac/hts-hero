@@ -17,6 +17,7 @@ import { TertiaryLabel } from "./TertiaryLabel";
 import { SecondaryText } from "./SecondaryText";
 import { useHts } from "../contexts/HtsContext";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
+import { TertiaryText } from "./TertiaryText";
 
 interface Props {
   summaryOnly?: boolean;
@@ -348,7 +349,9 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                   {getTemporaryTariffText(tariffElement, TariffType.SPECIAL)}
                   {getDetailsFromSpecial(tariffElement.special) && (
                     <div className="flex flex-col mt-3">
-                      <TertiaryLabel value={"Qualified Recipients"} />
+                      <TertiaryText
+                        value={"Qualifications (at least 1 required):"}
+                      />
                       <div className="flex gap-1">
                         {getDetailsFromSpecial(tariffElement.special)
                           .split(",")
