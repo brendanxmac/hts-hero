@@ -46,14 +46,29 @@ export const Explore = () => {
   const { htsElements, fetchElements } = useHts();
 
   useEffect(() => {
-    const loadAllElements = async () => {
+    const loadAllData = async () => {
       setLoading({ isLoading: true, text: "Fetching All Elements" });
-      await fetchElements();
-      if (loadingText === "Fetching All Elements") {
-        setLoading({ isLoading: false, text: "" });
-      }
+      await Promise.all([fetchElements(), getSections()]);
+      setLoading({ isLoading: false, text: "" });
     };
-    loadAllElements();
+
+    if (!sections.length || !htsElements.length) {
+      loadAllData();
+    } else {
+      setLoading({ isLoading: false, text: "" });
+    }
+
+    if (breadcrumbs.length === 0) {
+      setBreadcrumbs([
+        {
+          title: "Sections",
+          element: {
+            type: Navigatable.SECTIONS,
+            sections,
+          },
+        },
+      ]);
+    }
   }, []);
 
   useEffect(() => {
@@ -77,28 +92,7 @@ export const Explore = () => {
   }, [breadcrumbs]);
 
   useEffect(() => {
-    const initializeSections = async () => {
-      if (sections.length === 0 && !loadingSections) {
-        await getSections();
-      }
-      if (breadcrumbs.length === 0) {
-        setBreadcrumbs([
-          {
-            title: "Sections",
-            element: {
-              type: Navigatable.SECTIONS,
-              sections,
-            },
-          },
-        ]);
-      }
-      setLoading({ isLoading: false, text: "" });
-    };
-    initializeSections();
-  }, []);
-
-  useEffect(() => {
-    if (fuse) {
+    if (fuse && searchValue.length > 0) {
       const timeoutId = setTimeout(() => {
         const results = fuse.search(
           searchValue.split(" ").length === 1
