@@ -73,26 +73,26 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
   }, [breadcrumbs]);
 
   // Regex that gets the prefix of the special text
-  const getPrefixFromSpecial = (special: string) => {
+  const getTextBeforeOpeningParenthesis = (special: string) => {
     const regex = /^[^(]+/;
     const match = special.match(regex);
     return match ? match[0].trim() : special;
   };
 
   // Regex that gets whatever is inside the parentheses of special text, if exists
-  const getDetailsFromSpecial = (special: string) => {
+  const getStringBetweenParenthesis = (special: string) => {
     const regex = /\(([^)]+)\)/;
     const match = special.match(regex);
+    // We also add a space after each comma
     return match ? match[1].replace(/,/g, ", ") : null;
   };
 
   const getGeneralNoteFromSpecialTariffSymbol = (
     specialTariffSymbol: string
   ) => {
-    const note = notes.find((note) =>
+    return notes.find((note) =>
       note.specialTariffTreatmentCodes?.includes(specialTariffSymbol)
     );
-    return note;
   };
 
   const getBreadCrumbsForElement = (
@@ -311,20 +311,6 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
               <SecondaryLabel value="Tariff Details" />
 
               <div className="grid grid-cols-2 gap-2">
-                {tariffElement.units && (
-                  <div className="flex flex-col gap-1 p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24">
-                    <TertiaryLabel value={`Units`} color={Color.PRIMARY} />
-                    {tariffElement.units.map((unit, i) => (
-                      <div key={`${i}-${unit}`} className="flex flex-col gap-1">
-                        <SecondaryText
-                          value={unit || "-"}
-                          color={Color.WHITE}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
-
                 <div className="flex flex-col gap-3 p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24">
                   <div>
                     <TertiaryLabel
@@ -339,44 +325,61 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                   {getTemporaryTariffText(tariffElement, TariffType.GENERAL)}
                 </div>
 
-                <div className="flex flex-col p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24">
+                <div className="flex flex-col p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24 gap-3">
                   <TertiaryLabel value={"Special Rate"} color={Color.PRIMARY} />
-                  <SecondaryText
-                    value={getPrefixFromSpecial(tariffElement.special) || "-"}
-                    color={Color.WHITE}
-                  />
+                  <div className="flex flex-col">
+                    <SecondaryText
+                      value={
+                        getTextBeforeOpeningParenthesis(
+                          tariffElement.special
+                        ) || "-"
+                      }
+                      color={Color.WHITE}
+                    />
+                    <span className="text-xs italic text-white">
+                      If qualified based on the acts/agreemnts below
+                    </span>
+                  </div>
 
-                  {getTemporaryTariffText(tariffElement, TariffType.SPECIAL)}
-                  {getDetailsFromSpecial(tariffElement.special) && (
-                    <div className="flex flex-col mt-3">
-                      <TertiaryText
-                        value={"Qualifications (at least 1 required):"}
-                      />
+                  {getStringBetweenParenthesis(tariffElement.special) && (
+                    <div className="flex flex-col">
                       <div className="flex gap-1">
-                        {getDetailsFromSpecial(tariffElement.special)
+                        {getStringBetweenParenthesis(tariffElement.special)
                           .split(",")
-                          .map((specialTariffSymbol, index) => (
-                            <div key={`${specialTariffSymbol}-${index}`}>
-                              <button
-                                className="btn btn-link btn-xs text-xs p-0 hover:text-secondary hover:scale-110"
-                                onClick={() => {
-                                  const note =
-                                    getGeneralNoteFromSpecialTariffSymbol(
-                                      specialTariffSymbol.trim()
-                                    );
-                                  setShowPDF({
-                                    title: note?.title || "",
-                                    file: note?.pdfURL || "",
-                                  });
-                                }}
+                          .map((specialTariffSymbol, index) => {
+                            const note = getGeneralNoteFromSpecialTariffSymbol(
+                              specialTariffSymbol.trim()
+                            );
+                            return (
+                              <div
+                                key={`${specialTariffSymbol}-${index}`}
+                                className="tooltip tooltip-primary tooltip-bottom"
+                                data-tip={
+                                  note?.description || note?.title || null
+                                }
                               >
-                                {specialTariffSymbol}
-                              </button>
-                            </div>
-                          ))}
+                                <button
+                                  className="btn btn-link btn-xs text-xs p-0 hover:text-secondary hover:scale-110"
+                                  onClick={() => {
+                                    const note =
+                                      getGeneralNoteFromSpecialTariffSymbol(
+                                        specialTariffSymbol.trim()
+                                      );
+                                    setShowPDF({
+                                      title: note?.title || "",
+                                      file: note?.pdfURL || "",
+                                    });
+                                  }}
+                                >
+                                  {specialTariffSymbol}
+                                </button>
+                              </div>
+                            );
+                          })}
                       </div>
                     </div>
                   )}
+                  {getTemporaryTariffText(tariffElement, TariffType.SPECIAL)}
                 </div>
 
                 <div className="flex flex-col gap-3 p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24">
@@ -388,6 +391,14 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                     />
                   </div>
                   {getTemporaryTariffText(tariffElement, TariffType.OTHER)}
+                </div>
+
+                <div className="flex flex-col gap-1 p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24">
+                  <TertiaryLabel value={`Units`} color={Color.PRIMARY} />
+                  <SecondaryText
+                    value={tariffElement.units.join(", ") || "-"}
+                    color={Color.WHITE}
+                  />
                 </div>
               </div>
             </div>
