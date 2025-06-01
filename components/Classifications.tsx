@@ -5,18 +5,38 @@ import { Color } from "../enums/style";
 import { useClassifications } from "../contexts/ClassificationsContext";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { useUser } from "../contexts/UserContext";
+import { useEffect, useState } from "react";
+import { Loader } from "../interfaces/ui";
+import { useHts } from "../contexts/HtsContext";
+import { useHtsSections } from "../contexts/HtsSectionsContext";
 
 interface Props {
   setPage: (page: ClassifyPage) => void;
 }
 
 export const Classifications = ({ setPage }: Props) => {
-  const {
-    classifications,
-    isLoading: classificationsLoading,
-    error: classificationsError,
-  } = useClassifications();
-  const { user, isLoading: userLoading, error: userError } = useUser();
+  const [loading, setLoading] = useState<Loader>({
+    isLoading: true,
+    text: "",
+  });
+  const { htsElements, fetchElements } = useHts();
+  const { getSections, sections } = useHtsSections();
+  const { classifications, error: classificationsError } = useClassifications();
+  const { user, error: userError } = useUser();
+
+  useEffect(() => {
+    const loadAllData = async () => {
+      setLoading({ isLoading: true, text: "Fetching All Data" });
+      await Promise.all([fetchElements(), getSections()]);
+      setLoading({ isLoading: false, text: "" });
+    };
+
+    if (!sections.length || !htsElements.length) {
+      loadAllData();
+    } else {
+      setLoading({ isLoading: false, text: "" });
+    }
+  }, []);
 
   const getUserNameMessage = () => {
     let message = "Welcome back";
@@ -29,7 +49,7 @@ export const Classifications = ({ setPage }: Props) => {
     return `${message} 👋`;
   };
 
-  if (classificationsLoading || userLoading) {
+  if (loading.isLoading) {
     return (
       <div className="h-full w-full flex items-center justify-center">
         <LoadingIndicator text="Fetching your classifications" />
