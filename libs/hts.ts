@@ -29,6 +29,35 @@ import apiClient from "@/libs/api";
 import { HtsLevel } from "../enums/hts";
 import { NavigatableElement } from "../components/Elements";
 
+export const getBreadCrumbsForElement = (
+  element: HtsElement,
+  sections: HtsSection[],
+  htsElements: HtsElement[]
+): { label: string; value: string }[] => {
+  console.log("element", element);
+  const { chapter, section } = getSectionAndChapterFromChapterNumber(
+    sections,
+    Number(element.chapter)
+  );
+
+  const parentElements = getHtsElementParents(element, htsElements);
+
+  return [
+    {
+      label: `Section ${section.number}:`,
+      value: section.description,
+    },
+    {
+      label: `Chapter ${chapter.number}:`,
+      value: chapter.description,
+    },
+    ...parentElements.map((parent) => ({
+      label: parent.htsno && `${parent.htsno}:`,
+      value: parent.description,
+    })),
+  ];
+};
+
 // Filters from the overall set of elements -- room for imporvement
 export const getElementsForChapter = (
   elements: HtsElement[],
