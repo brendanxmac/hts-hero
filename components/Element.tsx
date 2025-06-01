@@ -313,7 +313,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
 
                   {getStringBetweenParenthesis(tariffElement.special) && (
                     <div className="flex flex-col">
-                      <div className="flex gap-1">
+                      <div className="flex flex-wrap gap-x-1">
                         {getStringBetweenParenthesis(tariffElement.special)
                           .split(",")
                           .map((specialTariffSymbol, index) => {
