@@ -78,7 +78,7 @@ export const notes: Note[] = [
     title: "General Note 11",
     description: "United States-Mexico-Canada Agreement",
     pdfURL: "/notes/general/General Note 11.pdf",
-    specialTariffTreatmentCodes: [],
+    specialTariffTreatmentCodes: ["S", "S+"],
   },
   {
     title: "General Note 12",
