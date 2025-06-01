@@ -1,9 +1,8 @@
-import { HtsElement, HtsSection, Navigatable } from "../interfaces/hts";
+import { HtsElement, Navigatable } from "../interfaces/hts";
 import { useEffect, useState } from "react";
 import {
   getDirectChildrenElements,
-  getHtsElementParents,
-  getSectionAndChapterFromChapterNumber,
+  getBreadCrumbsForElement,
 } from "../libs/hts";
 import { ElementSummary } from "./ElementSummary";
 import { DocumentTextIcon } from "@heroicons/react/24/solid";
@@ -17,7 +16,6 @@ import { TertiaryLabel } from "./TertiaryLabel";
 import { SecondaryText } from "./SecondaryText";
 import { useHts } from "../contexts/HtsContext";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
-import { TertiaryText } from "./TertiaryText";
 
 interface Props {
   summaryOnly?: boolean;
@@ -93,33 +91,6 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
     return notes.find((note) =>
       note.specialTariffTreatmentCodes?.includes(specialTariffSymbol)
     );
-  };
-
-  const getBreadCrumbsForElement = (
-    element: HtsElement,
-    sections: HtsSection[]
-  ): { label: string; value: string }[] => {
-    const { chapter, section } = getSectionAndChapterFromChapterNumber(
-      sections,
-      Number(element.chapter)
-    );
-
-    const parentElements = getHtsElementParents(element, htsElements);
-
-    return [
-      {
-        label: `Section ${section.number}:`,
-        value: section.description,
-      },
-      {
-        label: `Chapter ${chapter.number}:`,
-        value: chapter.description,
-      },
-      ...parentElements.map((parent) => ({
-        label: parent.htsno && `${parent.htsno}:`,
-        value: parent.description,
-      })),
-    ];
   };
 
   // const getParentDescriptionsFromBreadcrumbs = () => {
@@ -266,7 +237,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
       <div className="w-full flex flex-col gap-4">
         <div className="flex flex-col gap-3 breadcrumbs text-sm py-0 overflow-hidden">
           <div className="text-xs">
-            {getBreadCrumbsForElement(element, sections).map(
+            {getBreadCrumbsForElement(element, sections, htsElements).map(
               (breadcrumb, i) => (
                 <span key={`breadcrumb-${i}`}>
                   {breadcrumb.label && <b>{breadcrumb.label} </b>}
@@ -282,7 +253,6 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
           </div>
         </div>
 
-        {/* Add a dull gray horizontal line */}
         <div className="w-full h-[1px] bg-base-content/10" />
 
         <div className="flex flex-col gap-3">
