@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { useChapters } from "../contexts/ChaptersContext";
+import { useState } from "react";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { HtsElement, Navigatable } from "../interfaces/hts";
 import SquareIconButton from "./SqaureIconButton";
@@ -46,25 +45,15 @@ export const CandidateElement = ({
     recommendedReason,
     indent,
   } = element;
-  const { fetchChapter } = useChapters();
+
   const { addBreadcrumb, clearBreadcrumbs } = useBreadcrumbs();
   const { setActiveTab } = useClassifyTab();
   const { findChapterByNumber, sections } = useHtsSections();
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
-  const [_, setLoading] = useState(false);
   const { classification, updateLevel, setClassification } =
     useClassification();
   const [showNotes, setShowNotes] = useState(false);
   const { htsElements } = useHts();
-
-  useEffect(() => {
-    const loadChapterData = async () => {
-      setLoading(true);
-      await fetchChapter(chapter);
-      setLoading(false);
-    };
-    loadChapterData();
-  }, [chapter, fetchChapter]);
 
   // Check all progression levels to see if this element is selected in any of them
   const isLevelSelection = Boolean(
@@ -112,7 +101,7 @@ export const CandidateElement = ({
     >
       <div className="flex flex-col w-full gap-4">
         <div className="flex flex-col gap-2">
-          <div className="flex">
+          <div className="flex flex-wrap">
             {getBreadCrumbsForElement(element, sections, htsElements).map(
               (breadcrumb, i) => (
                 <span key={`breadcrumb-${i}`} className="text-xs">

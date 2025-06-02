@@ -26,7 +26,9 @@ export const AuthenticatedHeader = () => {
             width={32}
             height={32}
           />
-          <span className="font-extrabold text-lg">{config.appName}</span>
+          <span className="text-white font-extrabold text-lg">
+            {config.appName}
+          </span>
         </Link>
 
         {/* <div className="flex items-center justify-start gap-4">

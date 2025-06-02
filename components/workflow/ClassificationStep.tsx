@@ -7,11 +7,11 @@ import { CandidateElements } from "../CandidateElements";
 import {
   getBestDescriptionCandidates,
   getDirectChildrenElements,
+  getElementsInChapter,
 } from "../../libs/hts";
 import { CandidateSelection, HtsElement } from "../../interfaces/hts";
 import { HtsSection } from "../../interfaces/hts";
 import { getHtsSectionsAndChapters } from "../../libs/hts";
-import { useChapters } from "../../contexts/ChaptersContext";
 import { setIndexInArray } from "../../utilities/data";
 import { elementsAtClassificationLevel } from "../../utilities/data";
 import { TertiaryText } from "../TertiaryText";
@@ -23,6 +23,7 @@ import { useClassifyTab } from "../../contexts/ClassifyTabContext";
 import { ClassifyTab } from "../../enums/classify";
 import { createClassification } from "../../libs/classification";
 import { ConfirmationCard } from "../ConfirmationCard";
+import { useHts } from "../../contexts/HtsContext";
 
 export interface ClassificationStepProps {
   setWorkflowStep: (step: WorkflowStep) => void;
@@ -40,7 +41,6 @@ export const ClassificationStep = ({
     isLoading: false,
     text: "",
   });
-  const { fetchChapter, getChapterElements } = useChapters();
   const { classification, addLevel, updateLevel, setClassification } =
     useClassification();
   const { articleDescription, levels } = classification;
@@ -55,6 +55,7 @@ export const ClassificationStep = ({
     HtsElement | undefined
   >(undefined);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const { htsElements } = useHts();
 
   const selectionForLevel = levels[classificationLevel]?.selection;
 
@@ -65,14 +66,10 @@ export const ClassificationStep = ({
       return false;
     }
 
-    console.log("ASFHAKSDFHKASDFHAS");
-    console.log(selectedElement.chapter);
-    console.log(getChapterElements(selectedElement.chapter));
-
     return (
       getDirectChildrenElements(
         selectedElement,
-        getChapterElements(selectedElement.chapter)
+        getElementsInChapter(htsElements, selectedElement.chapter)
       ).length === 0
     );
   };
@@ -146,16 +143,6 @@ export const ClassificationStep = ({
       })
     );
 
-    // Fetch Chapter Data for the best candidates
-    await Promise.all(
-      candidatesForChapter.map(async (chapter) => {
-        const chapterElements = getChapterElements(chapter.index);
-        if (!chapterElements) {
-          await fetchChapter(chapter.index);
-        }
-      })
-    );
-
     setChapterCandidates(candidatesForChapter);
     setLoading({ isLoading: false, text: "" });
   };
@@ -166,15 +153,14 @@ export const ClassificationStep = ({
     const candidatesForHeading: HtsElement[] = [];
     await Promise.all(
       chapterCandidates.map(async (chapter) => {
-        let chapterData = getChapterElements(chapter.index);
-        if (!chapterData) {
-          await fetchChapter(chapter.index);
-          chapterData = getChapterElements(chapter.index);
-        }
+        const chapterElements = getElementsInChapter(
+          htsElements,
+          chapter.index
+        );
 
-        const chapterDataWithParentIndex = setIndexInArray(chapterData);
+        const chapterElementsWithParentIndex = setIndexInArray(chapterElements);
         const elementsAtLevel = elementsAtClassificationLevel(
-          chapterDataWithParentIndex,
+          chapterElementsWithParentIndex,
           0
         );
         const bestCandidateHeadings = await getBestDescriptionCandidates(
@@ -297,7 +283,7 @@ export const ClassificationStep = ({
                   disabled={loading.isLoading}
                 >
                   <MagnifyingGlassIcon className="h-5 w-5" />
-                  Search
+                  Search Headings
                 </button>
               )}
             </div>
@@ -344,7 +330,10 @@ export const ClassificationStep = ({
 
                 const childrenOfSelectedElement = getDirectChildrenElements(
                   locallySelectedElement,
-                  getChapterElements(locallySelectedElement.chapter)
+                  getElementsInChapter(
+                    htsElements,
+                    locallySelectedElement.chapter
+                  )
                 );
 
                 if (childrenOfSelectedElement.length > 0) {

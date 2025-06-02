@@ -1,6 +1,6 @@
 import SVG, { SVGProps } from "./SVG";
 
-export default function LightBulbSVG({ color, size, viewBox }: SVGProps) {
+export default function MoreSVG({ color, size, viewBox }: SVGProps) {
   return (
     <SVG
       color={color}
