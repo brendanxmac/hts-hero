@@ -6,7 +6,6 @@ import {
   SparklesIcon,
   TrashIcon,
   DocumentTextIcon,
-  PencilSquareIcon,
 } from "@heroicons/react/24/solid";
 import {
   ChatBubbleBottomCenterTextIcon,
@@ -17,10 +16,8 @@ import PDF from "./PDF";
 import { classNames } from "../utilities/style";
 import { TertiaryText } from "./TertiaryText";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
-import { SecondaryText } from "./SecondaryText";
 import { useClassification } from "../contexts/ClassificationContext";
 import { Color } from "../enums/style";
-import { SecondaryLabel } from "./SecondaryLabel";
 import { useClassifyTab } from "../contexts/ClassifyTabContext";
 import { ClassifyTab } from "../enums/classify";
 import TextInput from "./TextInput";
@@ -33,7 +30,6 @@ import {
   getSectionAndChapterFromChapterNumber,
 } from "../libs/hts";
 import { useHts } from "../contexts/HtsContext";
-import { ButtonWithIcon } from "./ButtonWithIcon";
 import { PrimaryLabel } from "./PrimaryLabel";
 interface Props {
   element: HtsElement;
@@ -48,14 +44,7 @@ export const CandidateElement = ({
   locallySelectedElement,
   setLocallySelectedElement,
 }: Props) => {
-  const {
-    htsno,
-    chapter,
-    description,
-    recommended,
-    recommendedReason,
-    indent,
-  } = element;
+  const { htsno, chapter, description, indent } = element;
 
   const { clearBreadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { setActiveTab } = useClassifyTab();
@@ -65,6 +54,12 @@ export const CandidateElement = ({
     useClassification();
   const [showNotes, setShowNotes] = useState(false);
   const { htsElements } = useHts();
+
+  const isRecommended =
+    classification.levels[indentLevel].recommendedElement?.uuid ===
+    element.uuid;
+  const recommendedReason =
+    classification.levels[indentLevel].recommendationReason;
 
   // Check all progression levels to see if this element is selected in any of them
   const isLevelSelection = Boolean(
@@ -252,7 +247,7 @@ export const CandidateElement = ({
           </div>
         )}
 
-        {recommended && (
+        {isRecommended && (
           <div className="flex flex-col gap-2 bg-base-300 rounded-md p-2">
             <div className="flex gap-2 text-accent">
               <SparklesIcon className="h-4 w-4" />
