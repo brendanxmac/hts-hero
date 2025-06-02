@@ -15,11 +15,11 @@ import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { Loader } from "../interfaces/ui";
 import { useHts } from "../contexts/HtsContext";
 
-interface Props {
-  setPage: (page: ClassifyPage) => void;
-}
+// interface Props {
+//   setPage: (page: ClassifyPage) => void;
+// }
 
-export const Classify = ({ setPage }: Props) => {
+export const Classify = () => {
   // TODO: do not need to fetch all chapter, or at least change the language...
   const [loading, setLoading] = useState<Loader>({
     isLoading: true,
@@ -65,7 +65,7 @@ export const Classify = ({ setPage }: Props) => {
           setWorkflowStep={setWorkflowStep}
           classificationLevel={classificationLevel}
           setClassificationLevel={setClassificationLevel}
-          setPage={setPage}
+          // setPage={setPage}
         />
       </div>
 

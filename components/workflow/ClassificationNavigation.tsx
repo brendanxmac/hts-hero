@@ -19,7 +19,7 @@ export interface ClassificationNavigationProps {
   setWorkflowStep: (step: WorkflowStep) => void;
   classificationLevel: number | undefined;
   setClassificationLevel: (level: number | undefined) => void;
-  setPage: (page: ClassifyPage) => void;
+  // setPage: (page: ClassifyPage) => void;
 }
 
 export const ClassificationNavigation = ({
@@ -27,7 +27,6 @@ export const ClassificationNavigation = ({
   setWorkflowStep,
   classificationLevel,
   setClassificationLevel,
-  setPage,
 }: ClassificationNavigationProps) => {
   const { activeTab, setActiveTab } = useClassifyTab();
   const { classification, setClassification } = useClassification();
@@ -37,7 +36,7 @@ export const ClassificationNavigation = ({
     <div className="h-full flex flex-col">
       <div className="flex justify-between items-center border-b border-neutral px-4 py-2">
         <div className="flex items-center gap-2">
-          <button
+          {/* <button
             className="btn btn-link btn-primary px-0 gap-0 hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
             onClick={() => {
               setPage(ClassifyPage.CLASSIFICATIONS);
@@ -45,7 +44,7 @@ export const ClassificationNavigation = ({
             }}
           >
             <HomeIcon className="w-5 h-5" />
-          </button>
+          </button> */}
 
           <div className="w-px h-6 bg-base-content/20" />
 
