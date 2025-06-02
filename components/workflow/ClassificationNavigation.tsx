@@ -75,9 +75,8 @@ export const ClassificationNavigation = ({
       </div>
 
       <div className="h-full flex flex-col gap-6 p-4 overflow-y-scroll">
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-3">
           <TextNavigationStep
-            large
             title="Article Description"
             text={articleDescription}
             active={workflowStep === WorkflowStep.DESCRIPTION}
@@ -97,7 +96,6 @@ export const ClassificationNavigation = ({
             }}
           />
           <TextNavigationStep
-            large
             title="Article Analysis"
             text={articleAnalysis}
             active={workflowStep === WorkflowStep.ANALYSIS}

@@ -306,9 +306,11 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                       }
                       color={Color.WHITE}
                     />
-                    <span className="text-xs italic text-white">
-                      If qualified based on the acts/agreemnts below
-                    </span>
+                    {getTextBeforeOpeningParenthesis(tariffElement.special) && (
+                      <span className="text-xs italic text-white">
+                        If qualified based on the acts/agreemnts below
+                      </span>
+                    )}
                   </div>
 
                   {getStringBetweenParenthesis(tariffElement.special) && (
