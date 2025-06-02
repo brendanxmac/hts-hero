@@ -153,11 +153,14 @@ export const ClassificationStep = ({
     const candidatesForHeading: HtsElement[] = [];
     await Promise.all(
       chapterCandidates.map(async (chapter) => {
-        let chapterData = getElementsInChapter(htsElements, chapter.index);
+        const chapterElements = getElementsInChapter(
+          htsElements,
+          chapter.index
+        );
 
-        const chapterDataWithParentIndex = setIndexInArray(chapterData);
+        const chapterElementsWithParentIndex = setIndexInArray(chapterElements);
         const elementsAtLevel = elementsAtClassificationLevel(
-          chapterDataWithParentIndex,
+          chapterElementsWithParentIndex,
           0
         );
         const bestCandidateHeadings = await getBestDescriptionCandidates(
