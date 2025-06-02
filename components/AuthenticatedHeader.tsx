@@ -6,13 +6,14 @@ import config from "@/config";
 import logo from "@/app/logo.png";
 import ButtonAccount from "./ButtonAccount";
 import ButtonSupport from "./ButtonSupport";
+import { usePathname } from "next/navigation";
 
 export const AuthenticatedHeader = () => {
-  // const pathname = usePathname();
+  const pathname = usePathname();
 
   return (
     <header className="h-16 z-10 bg-base-100 flex items-center justify-between p-4 border-b border-base-200">
-      <div className="flex gap-4">
+      <div className="flex gap-6">
         <Link
           className="flex items-center gap-2 shrink-0"
           href="/explore"
@@ -31,10 +32,10 @@ export const AuthenticatedHeader = () => {
           </span>
         </Link>
 
-        {/* <div className="flex items-center justify-start gap-4">
+        <div className="flex items-center justify-start gap-4">
           <Link href="/explore">
             <button
-              className={`btn btn-link px-0 gap-0 hover:scale-105 transition-all duration-100 ease-in-out ${
+              className={`btn btn-link px-0 gap-0 ${
                 pathname === "/explore"
                   ? "text-primary underline"
                   : "text-base-content no-underline"
@@ -45,7 +46,7 @@ export const AuthenticatedHeader = () => {
           </Link>
           <Link href="/classify">
             <button
-              className={`btn btn-link px-0 gap-0 hover:scale-105 transition-all duration-100 ease-in-out ${
+              className={`btn btn-link px-0 gap-0 ${
                 pathname === "/classify"
                   ? "text-primary underline"
                   : "text-base-content no-underline"
@@ -54,7 +55,7 @@ export const AuthenticatedHeader = () => {
               Classify
             </button>
           </Link>
-        </div> */}
+        </div>
       </div>
 
       <div className="flex items-center gap-2">

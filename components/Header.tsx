@@ -6,7 +6,7 @@ import Image from "next/image";
 import ButtonSignin from "./ButtonSignin";
 import logo from "@/app/logo.svg";
 import config from "@/config";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 const links: {
   href: string;
@@ -25,6 +25,7 @@ const cta: JSX.Element = <ButtonSignin extraStyle="btn-primary rounded-md" />;
 const Header = () => {
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const pathname = usePathname();
 
   // setIsOpen(false) when the route changes (i.e: when the user clicks on a link on mobile)
   useEffect(() => {
@@ -32,13 +33,13 @@ const Header = () => {
   }, [searchParams]);
 
   return (
-    <header className="w-full bg-base-100">
+    <header className="h-16 z-10 bg-base-100 flex items-center justify-between p-4 border-b border-base-200">
       <nav
-        className="w-full flex items-center justify-between px-8 py-4"
+        className="w-full flex items-center justify-between"
         aria-label="Global"
       >
         {/* Your logo/name on large screens */}
-        <div className="flex lg:flex-1">
+        <div className="flex gap-6 lg:flex-1">
           <Link
             className="flex items-center gap-2 shrink-0 "
             href="/explore"
@@ -59,7 +60,32 @@ const Header = () => {
               Beta
             </span> */}
           </Link>
+          <div className="flex items-center justify-start gap-4">
+            <Link href="/explore">
+              <button
+                className={`btn btn-link px-0 gap-0 ${
+                  pathname === "/explore"
+                    ? "text-primary underline"
+                    : "text-base-content no-underline"
+                }`}
+              >
+                Explore
+              </button>
+            </Link>
+            <Link href="/classify">
+              <button
+                className={`btn btn-link px-0 gap-0 ${
+                  pathname === "/classify"
+                    ? "text-primary underline"
+                    : "text-base-content no-underline"
+                }`}
+              >
+                Classify
+              </button>
+            </Link>
+          </div>
         </div>
+
         {/* Burger button to open menu on mobile */}
         <div className="flex lg:hidden">
           <button
