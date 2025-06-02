@@ -8,7 +8,10 @@ import {
   DocumentTextIcon,
   PencilSquareIcon,
 } from "@heroicons/react/24/solid";
-import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
+import {
+  ChatBubbleBottomCenterTextIcon,
+  MagnifyingGlassIcon,
+} from "@heroicons/react/16/solid";
 import { PDFProps } from "./Element";
 import PDF from "./PDF";
 import { classNames } from "../utilities/style";
@@ -30,6 +33,8 @@ import {
   getSectionAndChapterFromChapterNumber,
 } from "../libs/hts";
 import { useHts } from "../contexts/HtsContext";
+import { ButtonWithIcon } from "./ButtonWithIcon";
+import { PrimaryLabel } from "./PrimaryLabel";
 interface Props {
   element: HtsElement;
   indentLevel: number;
@@ -105,7 +110,7 @@ export const CandidateElement = ({
         }
       }}
     >
-      <div className="flex flex-col w-full gap-4">
+      <div className="flex flex-col w-full gap-5">
         {indent === "0" && (
           <div className="flex flex-col gap-2">
             <div className="flex flex-wrap">
@@ -126,22 +131,27 @@ export const CandidateElement = ({
             <div className="w-full h-[1px] bg-base-content/10" />
           </div>
         )}
-        <div className="flex items-start justify-between">
-          <div className="w-full flex items-center justify-between gap-2">
-            <SecondaryText value={htsno ? `${htsno}` : "Prequalifier"} />
+
+        <div className="flex flex-col gap-3">
+          <div className="flex justify-between items-center">
+            <TertiaryLabel value={htsno ? `${htsno}` : "Prequalifier"} />
             <div className="flex gap-2">
               <SquareIconButton
+                transparent
                 icon={<DocumentTextIcon className="h-4 w-4" />}
+                // label={`Chapter ${chapter} Notes`}
                 onClick={() =>
                   setShowPDF({
                     title: `Chapter ${chapter} Notes`,
                     file: `/notes/chapter/Chapter ${chapter}.pdf`,
                   })
                 }
-                transparent
               />
+
               <SquareIconButton
+                transparent
                 icon={<MagnifyingGlassIcon className="h-4 w-4" />}
+                // label={`View Element`}
                 onClick={() => {
                   clearBreadcrumbs();
                   const sectionAndChapter =
@@ -161,18 +171,21 @@ export const CandidateElement = ({
 
                   setActiveTab(ClassifyTab.EXPLORE);
                 }}
-                transparent
               />
+
               <SquareIconButton
-                icon={<PencilSquareIcon className="h-4 w-4" />}
+                transparent
+                icon={<ChatBubbleBottomCenterTextIcon className="h-4 w-4" />}
+                // label={`${showNotes ? "Hide" : "Show"} Comments`}
                 onClick={() => {
                   setShowNotes(!showNotes);
                 }}
-                transparent={!element.notes}
               />
               {indent === "0" && (
                 <SquareIconButton
-                  icon={<TrashIcon className="h-4 w-4 text-error" />}
+                  transparent
+                  icon={<TrashIcon className="h-4 w-4" />}
+                  // label={`Remove`}
                   onClick={() => {
                     if (isLevelSelection) {
                       const newClassificationProgression =
@@ -208,19 +221,16 @@ export const CandidateElement = ({
                       });
                     }
                   }}
-                  color="error"
-                  transparent
                 />
               )}
             </div>
           </div>
+          <PrimaryLabel value={description} color={Color.WHITE} />
         </div>
-
-        <SecondaryLabel value={description} color={Color.WHITE} />
 
         {showNotes && (
           <div className="flex flex-col gap-2 rounded-md">
-            <TertiaryLabel value="Notes" />
+            <TertiaryLabel value="Comments" />
             <TextInput
               defaultValue={element.notes}
               placeholder="Why is this candidate good or bad compared to others for the classification?"
