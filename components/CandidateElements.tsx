@@ -30,7 +30,7 @@ export const CandidateElements = ({
   useEffect(() => {
     if (
       candidates.length > 0 &&
-      !classification.levels[indentLevel].recommended
+      !classification.levels[indentLevel].recommendedElement
     ) {
       console.log("Getting best candidate automatically");
       getBestCandidate();
@@ -60,18 +60,6 @@ export const CandidateElements = ({
 
     console.log("bestCandidate", bestCandidate);
 
-    // Update this classification progressions candidates to mark the bestCandidate element as suggested
-    // const updatedCandidates = candidates.map((e) => {
-    //   if (e.uuid === bestCandidate.uuid) {
-    //     return {
-    //       ...e,
-    //       recommended: true,
-    //       recommendedReason: bestProgressionResponse.logic,
-    //     };
-    //   }
-    //   return { ...e, recommended: false, recommendedReason: "" };
-    // });
-
     setClassification((prev: Classification) => {
       const newProgressionLevels = [...prev.levels];
       newProgressionLevels[indentLevel] = {
@@ -89,8 +77,6 @@ export const CandidateElements = ({
       isLoading: false,
       text: "",
     });
-
-    setRecommended(bestCandidate);
   };
 
   return (

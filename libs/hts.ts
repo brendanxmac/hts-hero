@@ -34,7 +34,6 @@ export const getBreadCrumbsForElement = (
   sections: HtsSection[],
   htsElements: HtsElement[]
 ): { label: string; value: string }[] => {
-  console.log("element", element);
   const { chapter, section } = getSectionAndChapterFromChapterNumber(
     sections,
     Number(element.chapter)

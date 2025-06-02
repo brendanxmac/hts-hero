@@ -248,10 +248,11 @@ export const CandidateElement = ({
         )}
 
         {isRecommended && (
-          <div className="flex flex-col gap-2 bg-base-300 rounded-md p-2">
+          <div className="flex flex-col gap-2">
+            {/* <div className="w-full h-[1px] bg-base-content/30" /> */}
             <div className="flex gap-2 text-accent">
               <SparklesIcon className="h-4 w-4" />
-              <TertiaryText value="Suggested" />
+              <TertiaryLabel value="Suggested" color={Color.ACCENT} />
             </div>
             <p className="text-sm dark:text-white/90">{recommendedReason}</p>
           </div>
