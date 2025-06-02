@@ -25,8 +25,7 @@ export const ElementSearchSummary = ({
   sectionAndChapter,
   onClick,
 }: Props) => {
-  const { htsno, description, indent, recommended, recommendedReason } =
-    element;
+  const { htsno, description, indent } = element;
   const { classification, updateLevel: updateProgressionLevel } =
     useClassification();
 
@@ -37,6 +36,10 @@ export const ElementSearchSummary = ({
         (candidate) => candidate.uuid === element.uuid
       )
   );
+
+  const isRecommended =
+    classification.levels[0].recommendedElement?.uuid === element.uuid;
+  const recommendedReason = classification.levels[0].recommendationReason;
 
   const breadcrumbs = [
     {
@@ -130,7 +133,7 @@ export const ElementSearchSummary = ({
               <PrimaryLabel value={description} color={Color.WHITE} />
             </div>
 
-            {recommended && (
+            {isRecommended && (
               <div className="flex flex-col gap-2 bg-base-300 rounded-md p-2">
                 <div className="flex gap-2 text-accent">
                   <SparklesIcon className="h-4 w-4" />
