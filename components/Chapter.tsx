@@ -1,9 +1,9 @@
-import { HtsElement, HtsSectionAndChapterBase } from "../interfaces/hts";
+import { HtsSectionAndChapterBase } from "../interfaces/hts";
 import { useState } from "react";
 import {
   getDirectChildrenElements,
   getElementsAtIndentLevel,
-  getElementsForChapter,
+  getElementsInChapter,
 } from "../libs/hts";
 import { ElementSummary } from "./ElementSummary";
 import { DocumentTextIcon } from "@heroicons/react/24/solid";
@@ -11,7 +11,6 @@ import PDF from "./PDF";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { ButtonWithIcon } from "./ButtonWithIcon";
 import { SecondaryLabel } from "./SecondaryLabel";
-import { TertiaryLabel } from "./TertiaryLabel";
 import { useHts } from "../contexts/HtsContext";
 
 interface Props {
@@ -23,7 +22,7 @@ export const Chapter = ({ chapter }: Props) => {
   const { htsElements } = useHts();
   const [showNotes, setShowNotes] = useState(false);
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
-  const chapterElements = getElementsForChapter(htsElements, number);
+  const chapterElements = getElementsInChapter(htsElements, number);
   const elementsAtIndentLevel = chapterElements
     ? getElementsAtIndentLevel(chapterElements, 0)
     : [];
