@@ -59,10 +59,8 @@ export const getBreadCrumbsForElement = (
 };
 
 // Filters from the overall set of elements -- room for imporvement
-export const getElementsForChapter = (
-  elements: HtsElement[],
-  chapter: number
-) => elements.filter((e) => e.chapter == chapter);
+export const getElementsInChapter = (elements: HtsElement[], chapter: number) =>
+  elements.filter((e) => e.chapter == chapter);
 
 export const mapFetchedClassificationToClassification = (
   c: FetchedClassification

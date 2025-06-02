@@ -59,7 +59,7 @@ export const Classify = ({ setPage }: Props) => {
   return (
     <div className="h-full w-full bg-base-300 flex">
       {/* Sidebar Navigation */}
-      <div className="h-full bg-base-100 grow max-w-md min-w-sm overflow-hidden">
+      <div className="h-full bg-base-100 max-w-[450px] min-w-[400px] overflow-hidden">
         <ClassificationNavigation
           workflowStep={workflowStep}
           setWorkflowStep={setWorkflowStep}
