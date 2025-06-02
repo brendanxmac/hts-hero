@@ -90,7 +90,7 @@ export const CandidateElement = ({
         isLocallySelected && "shadow-[inset_0_0_0_4px_oklch(var(--p))]",
         !isLevelSelection &&
           !isLocallySelected &&
-          "hover:cursor-pointer hover:bg-base-200 shadow-[inset_0_0_0_1px_oklch(var(--n))]"
+          "hover:cursor-pointer hover:bg-base-200 shadow-[inset_0_0_0_2px_oklch(var(--n))]"
       )}
       onClick={() => {
         if (isLocallySelected) {

@@ -46,7 +46,7 @@ export const ClassificationNavigation = ({
             <HomeIcon className="w-5 h-5" />
           </button> */}
 
-          <div className="w-px h-6 bg-base-content/20" />
+          {/* <div className="w-px h-6 bg-base-content/20" /> */}
 
           <div className="grow text-center">
             <SecondaryLabel value="New Classification" color={Color.WHITE} />
@@ -75,8 +75,9 @@ export const ClassificationNavigation = ({
 
       <div className="h-full flex flex-col gap-6 p-4 overflow-y-scroll">
         <div className="flex flex-col gap-3">
+          <SecondaryLabel value="Item Details" />
           <TextNavigationStep
-            title="Article Description"
+            title="Item Description"
             text={articleDescription}
             active={workflowStep === WorkflowStep.DESCRIPTION}
             icon={
@@ -95,7 +96,7 @@ export const ClassificationNavigation = ({
             }}
           />
           <TextNavigationStep
-            title="Article Analysis"
+            title="Item Analysis"
             text={articleAnalysis}
             active={workflowStep === WorkflowStep.ANALYSIS}
             icon={
@@ -117,8 +118,8 @@ export const ClassificationNavigation = ({
         </div>
 
         <div className="flex-1 flex flex-col">
-          <SecondaryLabel value="Classification Progress" />
-          <div className="flex flex-col gap-4 py-3">
+          <SecondaryLabel value="Classification Levels" />
+          <div className="flex flex-col gap-3 py-3">
             {levels.map((level, index) => (
               <ElementsNavigationStep
                 key={index}
