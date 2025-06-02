@@ -278,7 +278,7 @@ export const ClassificationStep = ({
               </div>
               {classificationLevel === 0 && (
                 <button
-                  className="btn btn-primary btn-sm text-white flex items-center gap-1"
+                  className="btn btn-primary btn-sm bg-primary/20 border-none text-white flex items-center gap-1"
                   onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
                   disabled={loading.isLoading}
                 >
