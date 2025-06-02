@@ -4,21 +4,13 @@ import { updateSession } from "@/app/api/supabase/middleware";
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  const isAllowed =
-    pathname === "/explore" ||
-    pathname === "/learn" ||
-    pathname === "/learn#features" ||
-    pathname === "/tos" ||
-    pathname === "/privacy-policy" ||
-    pathname.startsWith("/_next") ||
-    pathname === "/favicon.ico" ||
-    pathname.startsWith("/api") ||
-    pathname === "/robots.txt" ||
-    pathname.startsWith("/hts-elements") || // ✅ allow access to static JSON files
-    pathname.startsWith("/notes") || // ✅ allow access to PDF notes
-    pathname.match(/\.(png|jpg|jpeg|gif|svg|webp|mp4|webm|mov)$/); // ✅ allow access to image and video files
+  const isNotAllowed =
+    pathname === "/" ||
+    pathname === "/about" ||
+    pathname === "/app" ||
+    pathname === "/blog";
 
-  if (!isAllowed) {
+  if (isNotAllowed) {
     return NextResponse.redirect(new URL("/explore", req.url));
   }
 
