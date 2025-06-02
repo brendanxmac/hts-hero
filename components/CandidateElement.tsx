@@ -52,9 +52,9 @@ export const CandidateElement = ({
     indent,
   } = element;
 
-  const { addBreadcrumb, clearBreadcrumbs, setBreadcrumbs } = useBreadcrumbs();
+  const { clearBreadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { setActiveTab } = useClassifyTab();
-  const { findChapterByNumber, sections } = useHtsSections();
+  const { sections } = useHtsSections();
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
   const { classification, updateLevel, setClassification } =
     useClassification();
@@ -106,24 +106,26 @@ export const CandidateElement = ({
       }}
     >
       <div className="flex flex-col w-full gap-4">
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-wrap">
-            {getBreadCrumbsForElement(element, sections, htsElements).map(
-              (breadcrumb, i) => (
-                <span key={`breadcrumb-${i}`} className="text-xs">
-                  {breadcrumb.label && <b>{breadcrumb.label} </b>}
-                  <span
-                    className={`${!breadcrumb.value ? "font-bold" : "text-white"}`}
-                  >
-                    {breadcrumb.value}
+        {indent === "0" && (
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-wrap">
+              {getBreadCrumbsForElement(element, sections, htsElements).map(
+                (breadcrumb, i) => (
+                  <span key={`breadcrumb-${i}`} className="text-xs">
+                    {breadcrumb.label && <b>{breadcrumb.label} </b>}
+                    <span
+                      className={`${!breadcrumb.value ? "font-bold" : "text-white"}`}
+                    >
+                      {breadcrumb.value}
+                    </span>
+                    <span className="text-white mx-2">›</span>
                   </span>
-                  <span className="text-white mx-2">›</span>
-                </span>
-              )
-            )}
+                )
+              )}
+            </div>
+            <div className="w-full h-[1px] bg-base-content/10" />
           </div>
-          <div className="w-full h-[1px] bg-base-content/10" />
-        </div>
+        )}
         <div className="flex items-start justify-between">
           <div className="w-full flex items-center justify-between gap-2">
             <SecondaryText value={htsno ? `${htsno}` : "Prequalifier"} />
