@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
-import { HtsElement, Navigatable } from "../interfaces/hts";
+import { HtsElement } from "../interfaces/hts";
 import SquareIconButton from "./SqaureIconButton";
 import {
   SparklesIcon,
@@ -22,7 +22,13 @@ import { useClassifyTab } from "../contexts/ClassifyTabContext";
 import { ClassifyTab } from "../enums/classify";
 import TextInput from "./TextInput";
 import { TertiaryLabel } from "./TertiaryLabel";
-import { getBreadCrumbsForElement } from "../libs/hts";
+import {
+  generateBreadcrumbsForHtsElement,
+  getBreadCrumbsForElement,
+  getChapterFromHtsElement,
+  getHtsElementParents,
+  getSectionAndChapterFromChapterNumber,
+} from "../libs/hts";
 import { useHts } from "../contexts/HtsContext";
 interface Props {
   element: HtsElement;
@@ -46,7 +52,7 @@ export const CandidateElement = ({
     indent,
   } = element;
 
-  const { addBreadcrumb, clearBreadcrumbs } = useBreadcrumbs();
+  const { addBreadcrumb, clearBreadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { setActiveTab } = useClassifyTab();
   const { findChapterByNumber, sections } = useHtsSections();
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
@@ -136,16 +142,21 @@ export const CandidateElement = ({
                 icon={<MagnifyingGlassIcon className="h-4 w-4" />}
                 onClick={() => {
                   clearBreadcrumbs();
-                  const chapter = findChapterByNumber(element.chapter);
-                  if (chapter) {
-                    addBreadcrumb({
-                      type: Navigatable.CHAPTER,
-                      ...chapter,
-                    });
-                  }
-                  addBreadcrumb({
-                    ...element,
-                  });
+                  const sectionAndChapter =
+                    getSectionAndChapterFromChapterNumber(
+                      sections,
+                      Number(getChapterFromHtsElement(element, htsElements))
+                    );
+
+                  const parents = getHtsElementParents(element, htsElements);
+                  const breadcrumbs = generateBreadcrumbsForHtsElement(
+                    sections,
+                    sectionAndChapter.chapter,
+                    [...parents, element]
+                  );
+
+                  setBreadcrumbs(breadcrumbs);
+
                   setActiveTab(ClassifyTab.EXPLORE);
                 }}
                 transparent

@@ -50,7 +50,7 @@ export const SearchResults = ({
       </div>
 
       {results.map((result, index) => {
-        const { item: element, matches } = result;
+        const { item: element } = result;
         const sectionAndChapter = getSectionAndChapterFromChapterNumber(
           sections,
           Number(getChapterFromHtsElement(element, htsElements))
