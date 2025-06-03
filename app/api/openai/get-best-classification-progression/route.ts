@@ -4,6 +4,7 @@ import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { requesterIsAuthenticated } from "../../supabase/server";
 import { SimplifiedHtsElement } from "../../../../interfaces/hts";
+import { ChatMessage } from "../../../../types/chat";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +12,7 @@ interface GetBestClassificationProgressionDto {
   elements: SimplifiedHtsElement[];
   productDescription: string;
   htsDescription: string;
+  chatHistory?: ChatMessage[];
 }
 
 const TestBestProgression = z.object({
@@ -39,6 +41,7 @@ export async function POST(req: NextRequest) {
       elements,
       productDescription,
       htsDescription,
+      chatHistory,
     }: GetBestClassificationProgressionDto = await req.json();
 
     if (!elements || !productDescription) {
@@ -89,7 +92,7 @@ export async function POST(req: NextRequest) {
             ${
               isTestEnv
                 ? "The 0-based index of the best option must be included in your response\n"
-                : "The logic you used to pick the best option based on the GRI must be included in your response, and so should the index (0 based) and description of the best option.\n"
+                : "The logic you used to pick the best option based on the GRI must be included in your response, and so should the description of the best option.\n"
             }
             `,
         },
@@ -103,6 +106,10 @@ export async function POST(req: NextRequest) {
           }
           Descriptions:\n ${labelledDescriptions.join("\n")}`,
         },
+        ...(chatHistory || []).map((message) => ({
+          role: message.role,
+          content: message.content,
+        })),
       ],
     });
 

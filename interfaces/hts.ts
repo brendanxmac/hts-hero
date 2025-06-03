@@ -1,5 +1,6 @@
 import { NavigatableElementType } from "../components/Elements";
 import { HtsLevel } from "../enums/hts";
+import { ChatMessage } from "../types/chat";
 
 export interface Eval {
   index: number;
@@ -80,6 +81,11 @@ export interface HsHeading {
   logic: string;
 }
 
+export interface FollowUpQuestionResponse {
+  followUpQuestion: string | null;
+  reason: string | null;
+}
+
 export interface BestProgressionResponse {
   index: number;
   description: string;
@@ -134,6 +140,7 @@ export interface Classification {
   articleAnalysis: string;
   progressionDescription: string;
   levels: ClassificationProgression[];
+  chatMessages?: ChatMessage[]; // only add the LLM's follow up questions here and the users responses
 }
 
 export interface ClassificationProgression {

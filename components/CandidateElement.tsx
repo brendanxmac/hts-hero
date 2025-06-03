@@ -14,7 +14,6 @@ import {
 import { PDFProps } from "./Element";
 import PDF from "./PDF";
 import { classNames } from "../utilities/style";
-import { TertiaryText } from "./TertiaryText";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { useClassification } from "../contexts/ClassificationContext";
 import { Color } from "../enums/style";

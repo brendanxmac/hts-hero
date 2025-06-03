@@ -14,6 +14,8 @@ import { LoadingIndicator } from "./LoadingIndicator";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { Loader } from "../interfaces/ui";
 import { useHts } from "../contexts/HtsContext";
+import { Chat } from "./Chat";
+import { useClassification } from "../contexts/ClassificationContext";
 
 // interface Props {
 //   setPage: (page: ClassifyPage) => void;
@@ -26,13 +28,13 @@ export const Classify = () => {
     text: "",
   });
   const { activeTab } = useClassifyTab();
-  // const { classification } = useClassification();
   const [workflowStep, setWorkflowStep] = useState(WorkflowStep.DESCRIPTION);
   const [classificationLevel, setClassificationLevel] = useState<
     number | undefined
   >(undefined);
   const { fetchElements, htsElements } = useHts();
   const { getSections, sections } = useHtsSections();
+  const { classification } = useClassification();
 
   useEffect(() => {
     const loadAllData = async () => {
@@ -94,6 +96,13 @@ export const Classify = () => {
         )}
         {/* Explore Tab */}
         {activeTab === ClassifyTab.EXPLORE && <Explore />}
+        {activeTab === ClassifyTab.CHAT && (
+          <Chat
+            messages={classification.chatMessages}
+            onSendMessage={() => {}}
+            isInputEnabled={true}
+          />
+        )}
       </div>
     </div>
   );

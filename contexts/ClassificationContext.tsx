@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 import { Classification, ClassificationProgression } from "../interfaces/hts";
 import { HtsElement } from "../interfaces/hts";
+import { ChatMessage } from "../types/chat";
 
 interface ClassificationContextType {
   classification: Classification;
@@ -10,6 +11,7 @@ interface ClassificationContextType {
     classification: Classification | ((prev: Classification) => Classification)
   ) => void;
   // Helper functions
+  addChatMessage: (message: ChatMessage) => void;
   setArticleDescription: (description: string) => void;
   setProgressionDescription: (description: string) => void;
   setArticleAnalysis: (analysis: string) => void;
@@ -39,7 +41,15 @@ export const ClassificationProvider = ({
     articleAnalysis: "",
     progressionDescription: "",
     levels: [],
+    chatMessages: [],
   });
+
+  const addChatMessage = (message: ChatMessage) => {
+    setClassification((prev) => ({
+      ...prev,
+      chatMessages: [...(prev.chatMessages || []), message],
+    }));
+  };
 
   const setArticleDescription = (description: string) => {
     setClassification((prev) => ({
@@ -120,6 +130,7 @@ export const ClassificationProvider = ({
       value={{
         classification,
         setClassification,
+        addChatMessage,
         setArticleDescription,
         setProgressionDescription,
         setArticleAnalysis,

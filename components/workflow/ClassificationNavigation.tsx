@@ -64,7 +64,7 @@ export const ClassificationNavigation = ({
               onClick={() => setActiveTab(tab.value as ClassifyTab)}
               className={classNames(
                 "tab px-1 hover:text-primary hover:scale-105 transition-all duration-100 ease-in-out",
-                tab.value === activeTab && "tab-active"
+                tab.value === activeTab && "tab-active text-white"
               )}
             >
               {tab.icon}
@@ -92,7 +92,10 @@ export const ClassificationNavigation = ({
             }
             button={{
               label: "Edit",
-              onClick: () => setWorkflowStep(WorkflowStep.DESCRIPTION),
+              onClick: () => {
+                setWorkflowStep(WorkflowStep.DESCRIPTION);
+                setActiveTab(ClassifyTab.CLASSIFY);
+              },
             }}
           />
           <TextNavigationStep
@@ -112,7 +115,10 @@ export const ClassificationNavigation = ({
             showButton={Boolean(articleDescription)}
             button={{
               label: articleAnalysis.length === 0 ? "Add" : "Edit",
-              onClick: () => setWorkflowStep(WorkflowStep.ANALYSIS),
+              onClick: () => {
+                setWorkflowStep(WorkflowStep.ANALYSIS);
+                setActiveTab(ClassifyTab.CLASSIFY);
+              },
             }}
           />
         </div>
@@ -134,6 +140,7 @@ export const ClassificationNavigation = ({
                     setWorkflowStep(WorkflowStep.CLASSIFICATION);
                   }
                   setClassificationLevel(index);
+                  setActiveTab(ClassifyTab.CLASSIFY);
                 }}
               />
             ))}

@@ -19,6 +19,7 @@ import {
   Classification,
   FetchedClassification,
   SectionAndChapterDetails,
+  FollowUpQuestionResponse,
 } from "../interfaces/hts";
 import {
   elementsAtClassificationLevel,
@@ -28,6 +29,7 @@ import { OpenAIModel } from "./openai";
 import apiClient from "@/libs/api";
 import { HtsLevel } from "../enums/hts";
 import { NavigatableElement } from "../components/Elements";
+import { ChatMessage } from "../types/chat";
 
 export const getBreadCrumbsForElement = (
   element: HtsElement,
@@ -322,25 +324,54 @@ export const evaluateBestHeadings = async (
   return JSON.parse(bestHeadingResponse[0].message.content);
 };
 
-export const getBestClassificationProgression = async (
+export const seeIfAnyInformationIsMissing = async (
   elements: SimplifiedHtsElement[],
+  productDescription: string,
   htsDescription: string,
-  productDescription: string
-): Promise<BestProgressionResponse> => {
-  const bestCandidatesResponse: Array<ChatCompletion.Choice> =
-    await apiClient.post("/openai/get-best-classification-progression", {
+  chatHistory?: ChatMessage[]
+): Promise<FollowUpQuestionResponse> => {
+  const response: Array<ChatCompletion.Choice> = await apiClient.post(
+    "/openai/check-if-more-information-required",
+    {
       elements,
       productDescription,
       htsDescription,
-    });
+      chatHistory,
+    }
+  );
 
-  const bestCandidate = bestCandidatesResponse[0].message.content;
+  const gptResponse = response[0].message.content;
 
-  if (bestCandidate === null) {
-    throw new Error(`Failed to get best description matches`);
+  console.log("gptResponse", gptResponse);
+
+  return JSON.parse(gptResponse);
+};
+
+export const getBestClassificationProgression = async (
+  elements: SimplifiedHtsElement[],
+  htsDescription: string,
+  productDescription: string,
+  chatHistory?: ChatMessage[]
+): Promise<BestProgressionResponse | FollowUpQuestionResponse> => {
+  const response: Array<ChatCompletion.Choice> = await apiClient.post(
+    "/openai/get-best-classification-progression",
+    {
+      elements,
+      productDescription,
+      htsDescription,
+      chatHistory,
+    }
+  );
+
+  const gptResponse = response[0].message.content;
+
+  console.log("gptResponse", gptResponse);
+
+  if (gptResponse === null) {
+    throw new Error(`Failed to get best classification progression`);
   }
 
-  return JSON.parse(bestCandidate);
+  return JSON.parse(gptResponse);
 };
 
 export const getBestChaptersForProductDescription = async (

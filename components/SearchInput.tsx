@@ -50,10 +50,10 @@ export default function SearchInput({
   };
 
   return (
-    <div className="w-full flex flex-col gap-2 bg-black py-4 items-center">
+    <div className="w-full flex flex-col gap-2 py-4 items-center">
       <div
         className={
-          "w-full sm:max-w-2xl flex flex-col gap-2 bg-neutral-900 rounded-2xl px-4 py-3"
+          "w-full sm:max-w-2xl flex flex-col gap-2 bg-base-100 border border-base-content/20 rounded-2xl px-4 py-3"
         }
       >
         <textarea
@@ -92,15 +92,13 @@ export default function SearchInput({
             type="button"
             disabled={localProductDescription.length > characterLimit}
             className={classNames(
-              localProductDescription ? "bg-white" : "bg-neutral-700",
-              "h-7 w-7 rounded-lg flex items-center justify-center text-sm font-bold disabled:bg-neutral-600"
+              localProductDescription && "bg-white hover:cursor-pointer",
+              "h-7 w-7 rounded-lg flex items-center justify-center text-sm font-bold disabled:bg-neutral-700 disabled:hover:cursor-auto"
             )}
           >
             <ArrowUpIcon
               className={classNames(
-                localProductDescription
-                  ? "text-[#202020]"
-                  : "text-gray-characterLimit",
+                localProductDescription ? "text-[#202020]" : "text-white",
                 "h-5 w-5"
               )}
             />
