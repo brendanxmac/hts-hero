@@ -1,12 +1,7 @@
-import {
-  ChevronRightIcon,
-  SparklesIcon,
-  XMarkIcon,
-} from "@heroicons/react/16/solid";
+import { ChevronRightIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { HtsElement, SectionAndChapterDetails } from "../interfaces/hts";
 import SquareIconButton from "./SqaureIconButton";
 import { PlusIcon } from "@heroicons/react/24/solid";
-import { TertiaryText } from "./TertiaryText";
 import { useClassification } from "../contexts/ClassificationContext";
 import { Color } from "../enums/style";
 import { PrimaryLabel } from "./PrimaryLabel";
@@ -36,10 +31,6 @@ export const ElementSearchSummary = ({
         (candidate) => candidate.uuid === element.uuid
       )
   );
-
-  const isRecommended =
-    classification.levels[0].recommendedElement?.uuid === element.uuid;
-  const recommendedReason = classification.levels[0].recommendationReason;
 
   const breadcrumbs = [
     {
@@ -132,18 +123,6 @@ export const ElementSearchSummary = ({
               {htsno && <TertiaryLabel value={htsno} />}
               <PrimaryLabel value={description} color={Color.WHITE} />
             </div>
-
-            {isRecommended && (
-              <div className="flex flex-col gap-2 bg-base-300 rounded-md p-2">
-                <div className="flex gap-2 text-accent">
-                  <SparklesIcon className="h-4 w-4" />
-                  <TertiaryText value="Suggested" />
-                </div>
-                <p className="text-sm dark:text-white/90">
-                  {recommendedReason}
-                </p>
-              </div>
-            )}
           </div>
           <div className="flex items-center justify-center pr-3">
             <ChevronRightIcon className="shrink-0 w-5 h-5 text-primary" />
