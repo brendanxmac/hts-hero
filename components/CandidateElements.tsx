@@ -25,7 +25,7 @@ export const CandidateElements = ({
   const { classification, setClassification } = useClassification();
   const { levels } = classification;
   const { candidates } = levels[indentLevel];
-  const { articleDescription } = classification;
+  const { articleDescription, articleAnalysis } = classification;
 
   useEffect(() => {
     if (
@@ -51,7 +51,7 @@ export const CandidateElements = ({
     const bestProgressionResponse = await getBestClassificationProgression(
       simplifiedCandidates,
       getProgressionDescription(levels),
-      articleDescription
+      articleDescription + "\n" + articleAnalysis
     );
 
     console.log("bestProgressionResponse", bestProgressionResponse);
