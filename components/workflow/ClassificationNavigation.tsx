@@ -95,7 +95,7 @@ export const ClassificationNavigation = ({
               onClick: () => setWorkflowStep(WorkflowStep.DESCRIPTION),
             }}
           />
-          <TextNavigationStep
+          {/* <TextNavigationStep
             title="Item Analysis"
             text={articleAnalysis}
             active={workflowStep === WorkflowStep.ANALYSIS}
@@ -114,11 +114,11 @@ export const ClassificationNavigation = ({
               label: articleAnalysis.length === 0 ? "Add" : "Edit",
               onClick: () => setWorkflowStep(WorkflowStep.ANALYSIS),
             }}
-          />
+          /> */}
         </div>
 
         <div className="flex-1 flex flex-col">
-          <SecondaryLabel value="Classification Levels" />
+          <SecondaryLabel value="Classification Progress" />
           <div className="flex flex-col gap-3 py-3">
             {levels.map((level, index) => (
               <ElementsNavigationStep

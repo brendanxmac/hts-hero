@@ -24,6 +24,8 @@ import { ClassifyTab } from "../../enums/classify";
 import { createClassification } from "../../libs/classification";
 import { ConfirmationCard } from "../ConfirmationCard";
 import { useHts } from "../../contexts/HtsContext";
+import { SecondaryLabel } from "../SecondaryLabel";
+import { SecondaryText } from "../SecondaryText";
 
 export interface ClassificationStepProps {
   setWorkflowStep: (step: WorkflowStep) => void;
@@ -43,7 +45,7 @@ export const ClassificationStep = ({
   });
   const { classification, addLevel, updateLevel, setClassification } =
     useClassification();
-  const { articleDescription, levels } = classification;
+  const { articleDescription, levels, progressionDescription } = classification;
   const [htsSections, setHtsSections] = useState<HtsSection[]>([]);
   const [sectionCandidates, setSectionCandidates] = useState<
     CandidateSelection[]
@@ -236,7 +238,7 @@ export const ClassificationStep = ({
     if (classificationLevel === 0) {
       return "Select the most accurate heading";
     } else if (classificationLevel > 0) {
-      return "Select the element that best matches the article description";
+      return "Select the option that best matches the item description";
     }
   };
 
@@ -244,7 +246,7 @@ export const ClassificationStep = ({
     if (classificationLevel === 0) {
       return "You can seach for and add candidates to the list using the explorer ->";
     } else if (classificationLevel > 0) {
-      return "Which candidate most accurately matches the article description if it was added onto the in-progress classification?";
+      return "If an option was added onto the in-progress classification below, which would most accurately match the item description?";
     }
   };
 
@@ -254,41 +256,59 @@ export const ClassificationStep = ({
     setLoading({ isLoading: false, text: "" });
   };
 
+  const getProgressionDescription = () => {
+    return classification.levels
+      .slice(0, classificationLevel + 1)
+      .map((level) => level.selection?.description);
+  };
+
   return (
     <div className="h-full flex flex-col pt-8">
       {/* Content */}
       <div className="flex-1 overflow-hidden px-8 w-full max-w-3xl mx-auto flex flex-col gap-4">
-        <div className="flex flex-col gap-14">
-          <div className="flex flex-col gap-4">
-            <TertiaryText
-              value={`Step ${2 + classificationLevel + 1}`}
-              color={Color.NEUTRAL_CONTENT}
-            />
-            <div className="w-full flex justify-between items-end">
-              <div className="flex flex-col">
-                <PrimaryLabel
-                  value={getStepDescription()}
-                  color={Color.WHITE}
-                />
+        <div className="flex flex-col gap-2">
+          <TertiaryText
+            value={`Level ${classificationLevel + 1}`}
+            color={Color.NEUTRAL_CONTENT}
+          />
+          <div className="w-full flex justify-between items-end">
+            <div className="flex flex-col">
+              <PrimaryLabel value={getStepDescription()} color={Color.WHITE} />
 
-                <TertiaryText
-                  value={getStepInstructions()}
-                  color={Color.NEUTRAL_CONTENT}
-                />
-              </div>
-              {classificationLevel === 0 && (
-                <button
-                  className="btn btn-primary btn-sm bg-primary/20 border-none text-white flex items-center gap-1"
-                  onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
-                  disabled={loading.isLoading}
-                >
-                  <MagnifyingGlassIcon className="h-5 w-5" />
-                  Search Headings
-                </button>
-              )}
+              <TertiaryText
+                value={getStepInstructions()}
+                color={Color.NEUTRAL_CONTENT}
+              />
             </div>
+            {classificationLevel === 0 && (
+              <button
+                className="btn btn-primary btn-sm bg-primary/20 border-none text-white flex items-center gap-1"
+                onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
+                disabled={loading.isLoading}
+              >
+                <MagnifyingGlassIcon className="h-5 w-5" />
+                Search Headings
+              </button>
+            )}
+          </div>
+          <div className="mt-8">
+            {getProgressionDescription().map(
+              (description, index) =>
+                description && (
+                  <TertiaryText
+                    key={index}
+                    value={
+                      index === 0
+                        ? description
+                        : `${"-".repeat(index)} ${description}`
+                    }
+                    color={Color.NEUTRAL_CONTENT}
+                  />
+                )
+            )}
           </div>
         </div>
+
         <div className="h-full flex flex-col gap-8 overflow-hidden">
           {loading.isLoading && <LoadingIndicator text={loading.text} />}
 
@@ -339,6 +359,10 @@ export const ClassificationStep = ({
                 if (childrenOfSelectedElement.length > 0) {
                   setClassification({
                     ...classification,
+                    progressionDescription:
+                      progressionDescription +
+                      " > " +
+                      locallySelectedElement.description,
                     levels: [
                       ...newProgressionLevels,
                       {
@@ -350,6 +374,10 @@ export const ClassificationStep = ({
                 } else {
                   setClassification({
                     ...classification,
+                    progressionDescription:
+                      progressionDescription +
+                      " > " +
+                      locallySelectedElement.description,
                     levels: newProgressionLevels,
                   });
                   setShowConfirmation(true);

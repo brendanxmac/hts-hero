@@ -75,14 +75,17 @@ export const Classify = () => {
         {activeTab === ClassifyTab.CLASSIFY && (
           <>
             {workflowStep === WorkflowStep.DESCRIPTION && (
-              <DescriptionStep setWorkflowStep={setWorkflowStep} />
-            )}
-            {workflowStep === WorkflowStep.ANALYSIS && (
-              <AnalysisStep
+              <DescriptionStep
                 setWorkflowStep={setWorkflowStep}
                 setClassificationLevel={setClassificationLevel}
               />
             )}
+            {/* {workflowStep === WorkflowStep.ANALYSIS && (
+              <AnalysisStep
+                setWorkflowStep={setWorkflowStep}
+                setClassificationLevel={setClassificationLevel}
+              />
+            )} */}
             {workflowStep === WorkflowStep.CLASSIFICATION && (
               <ClassificationStep
                 setWorkflowStep={setWorkflowStep}
