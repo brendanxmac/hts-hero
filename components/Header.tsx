@@ -60,7 +60,7 @@ const Header = () => {
               Beta
             </span> */}
           </Link>
-          <div className="flex items-center justify-start gap-4">
+          {/* <div className="flex items-center justify-start gap-4">
             <Link href="/explore">
               <button
                 className={`btn btn-link px-0 gap-0 ${
@@ -83,7 +83,7 @@ const Header = () => {
                 Classify
               </button>
             </Link>
-          </div>
+          </div> */}
         </div>
 
         {/* Burger button to open menu on mobile */}

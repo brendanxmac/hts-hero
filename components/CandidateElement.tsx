@@ -56,10 +56,10 @@ export const CandidateElement = ({
   const { htsElements } = useHts();
 
   const isRecommended =
-    classification.levels[indentLevel].recommendedElement?.uuid ===
+    classification.levels[indentLevel]?.recommendedElement?.uuid ===
     element.uuid;
   const recommendedReason =
-    classification.levels[indentLevel].recommendationReason;
+    classification.levels[indentLevel]?.recommendationReason;
 
   // Check all progression levels to see if this element is selected in any of them
   const isLevelSelection = Boolean(
@@ -127,14 +127,14 @@ export const CandidateElement = ({
           </div>
         )}
 
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-1">
           <div className="flex justify-between items-center">
             <TertiaryLabel value={htsno ? `${htsno}` : "Prequalifier"} />
             <div className="flex gap-2">
               <SquareIconButton
                 transparent
+                tooltip={`Chapter ${chapter} Notes`}
                 icon={<DocumentTextIcon className="h-4 w-4" />}
-                // label={`Chapter ${chapter} Notes`}
                 onClick={() =>
                   setShowPDF({
                     title: `Chapter ${chapter} Notes`,
@@ -146,7 +146,7 @@ export const CandidateElement = ({
               <SquareIconButton
                 transparent
                 icon={<MagnifyingGlassIcon className="h-4 w-4" />}
-                // label={`View Element`}
+                tooltip={`View Element`}
                 onClick={() => {
                   clearBreadcrumbs();
                   const sectionAndChapter =
@@ -171,7 +171,7 @@ export const CandidateElement = ({
               <SquareIconButton
                 transparent
                 icon={<ChatBubbleBottomCenterTextIcon className="h-4 w-4" />}
-                // label={`${showNotes ? "Hide" : "Show"} Comments`}
+                tooltip={`${showNotes ? "Hide" : "Show"} Comments`}
                 onClick={() => {
                   setShowNotes(!showNotes);
                 }}
@@ -180,7 +180,7 @@ export const CandidateElement = ({
                 <SquareIconButton
                   transparent
                   icon={<TrashIcon className="h-4 w-4" />}
-                  // label={`Remove`}
+                  tooltip={`Remove`}
                   onClick={() => {
                     if (isLevelSelection) {
                       const newClassificationProgression =
