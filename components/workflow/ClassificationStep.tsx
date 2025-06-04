@@ -386,6 +386,8 @@ export const ClassificationStep = ({
                 }
               }
 
+              setClassificationLevel(classificationLevel + 1);
+
               if (getNextNavigationLabel() === "Complete") {
                 setShowConfirmation(true);
               }
