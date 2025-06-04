@@ -3,24 +3,19 @@ import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { HtsElement } from "../interfaces/hts";
 import SquareIconButton from "./SqaureIconButton";
 import {
-  SparklesIcon,
   TrashIcon,
   DocumentTextIcon,
+  SparklesIcon,
 } from "@heroicons/react/24/solid";
-import {
-  ChatBubbleBottomCenterTextIcon,
-  MagnifyingGlassIcon,
-} from "@heroicons/react/16/solid";
+import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
 import { PDFProps } from "./Element";
 import PDF from "./PDF";
 import { classNames } from "../utilities/style";
-import { TertiaryText } from "./TertiaryText";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { useClassification } from "../contexts/ClassificationContext";
 import { Color } from "../enums/style";
 import { useClassifyTab } from "../contexts/ClassifyTabContext";
 import { ClassifyTab } from "../enums/classify";
-import TextInput from "./TextInput";
 import { TertiaryLabel } from "./TertiaryLabel";
 import {
   generateBreadcrumbsForHtsElement,
@@ -52,7 +47,7 @@ export const CandidateElement = ({
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
   const { classification, updateLevel, setClassification } =
     useClassification();
-  const [showNotes, setShowNotes] = useState(false);
+  // const [showNotes, setShowNotes] = useState(false);
   const { htsElements } = useHts();
 
   const isRecommended =
@@ -168,14 +163,14 @@ export const CandidateElement = ({
                 }}
               />
 
-              <SquareIconButton
+              {/* <SquareIconButton
                 transparent
                 icon={<ChatBubbleBottomCenterTextIcon className="h-4 w-4" />}
                 tooltip={`${showNotes ? "Hide" : "Show"} Comments`}
                 onClick={() => {
                   setShowNotes(!showNotes);
                 }}
-              />
+              /> */}
               {indent === "0" && (
                 <SquareIconButton
                   transparent
@@ -223,7 +218,7 @@ export const CandidateElement = ({
           <PrimaryLabel value={description} color={Color.WHITE} />
         </div>
 
-        {showNotes && (
+        {/* {showNotes && (
           <div className="flex flex-col gap-2 rounded-md">
             <TertiaryLabel value="Comments" />
             <TextInput
@@ -245,15 +240,21 @@ export const CandidateElement = ({
               }}
             />
           </div>
-        )}
+        )} */}
 
         {isRecommended && (
           <div className="flex flex-col gap-2">
-            {/* <div className="w-full h-[1px] bg-base-content/30" /> */}
-            <div className="flex gap-2 text-accent">
-              <SparklesIcon className="h-4 w-4" />
+            <div className="flex gap-1 text-accent items-center">
+              <SquareIconButton
+                transparent
+                iconOnly
+                icon={<SparklesIcon className="h-4 w-4 text-accent" />}
+                tooltip={`HTS Hero can make mistakes, check important information`}
+                onClick={() => {}}
+              />
               <TertiaryLabel value="Suggested" color={Color.ACCENT} />
             </div>
+
             <p className="text-sm dark:text-white/90">{recommendedReason}</p>
           </div>
         )}

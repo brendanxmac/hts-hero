@@ -20,8 +20,17 @@ export const ConfirmationCard = ({
       <div className="card bg-neutral text-neutral-content w-96">
         <div className="card-body">
           <h2 className="card-title">{title}</h2>
-          <p>{description}</p>
-          <div className="card-actions justify-end mt-6">
+          <div className="flex flex-col gap-4">
+            {description.split(".").map((sentence, index) => (
+              <p
+                key={index}
+                className={index > 0 && "text-sm font-bold text-accent"}
+              >
+                {`${sentence}.`}
+              </p>
+            ))}
+          </div>
+          <div className="card-actions justify-end">
             <button className="btn btn-sm btn-ghost" onClick={onCancel}>
               {cancelText}
             </button>

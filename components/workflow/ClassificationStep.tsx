@@ -239,18 +239,33 @@ export const ClassificationStep = ({
   }, [chapterCandidates]);
 
   const getStepDescription = () => {
-    if (classificationLevel === 0) {
-      return "Select the most accurate heading";
-    } else if (classificationLevel > 0) {
-      return "Select the option that best matches the item description";
-    }
+    return "Select the option that best matches the item description";
   };
 
   const getStepInstructions = () => {
     if (classificationLevel === 0) {
-      return "You can seach for and add candidates to the list using the explorer ->";
-    } else if (classificationLevel > 0) {
-      return "If an option was added onto the in-progress classification below, which would most accurately match the item description?";
+      return (
+        <div className="w-full flex justify-between items-center">
+          <div className="text-sm">
+            Don&apos;t see any options that make sense? You find and add
+            candidates to the list using the{" "}
+            <button
+              className="btn-link"
+              onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
+              disabled={loading.isLoading}
+            >
+              explorer
+            </button>
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <TertiaryText
+          value="If an option below was added onto the following in-progress classification, which best matches the item description?"
+          color={Color.NEUTRAL_CONTENT}
+        />
+      );
     }
   };
 
@@ -285,57 +300,43 @@ export const ClassificationStep = ({
       {/* Content */}
       <div className="flex-1 overflow-hidden px-8 w-full max-w-3xl mx-auto flex flex-col gap-4">
         <div className="flex flex-col gap-2">
-          <TertiaryText
-            value={`Level ${classificationLevel + 1}`}
-            color={Color.NEUTRAL_CONTENT}
-          />
+          <div className="flex justify-between">
+            <TertiaryText
+              value={`Level ${classificationLevel + 1}`}
+              color={Color.NEUTRAL_CONTENT}
+            />
+            {loading.isLoading && <LoadingIndicator text={loading.text} />}
+          </div>
           <div className="w-full flex justify-between items-end">
-            <div className="flex flex-col">
+            <div className="w-full flex flex-col">
               <PrimaryLabel value={getStepDescription()} color={Color.WHITE} />
-
-              <TertiaryText
-                value={getStepInstructions()}
-                color={Color.NEUTRAL_CONTENT}
-              />
+              {getStepInstructions()}
             </div>
-            {classificationLevel === 0 && (
-              <button
-                className="btn btn-primary btn-sm bg-primary/20 border-none text-white flex items-center gap-1"
-                onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
-                disabled={loading.isLoading}
-              >
-                <MagnifyingGlassIcon className="h-5 w-5" />
-                Search Headings
-              </button>
-            )}
           </div>
-          <div className="mt-8">
-            {getProgressionDescriptions(
-              classification,
-              classificationLevel
-            ).map(
-              (description, index) =>
-                description && (
-                  <TertiaryText
-                    key={index}
-                    value={
-                      index === 0
-                        ? description
-                        : `${"-".repeat(index)} ${description}`
-                    }
-                    color={Color.NEUTRAL_CONTENT}
-                  />
-                )
-            )}
-          </div>
+          {classificationLevel > 0 && (
+            <div className="">
+              {getProgressionDescriptions(
+                classification,
+                classificationLevel - 1
+              ).map(
+                (description, index) =>
+                  description && (
+                    <TertiaryText
+                      key={index}
+                      value={`${"-".repeat(index + 1)} ${description}`}
+                      color={Color.NEUTRAL_CONTENT}
+                    />
+                  )
+              )}
+            </div>
+          )}
         </div>
 
         <div className="h-full flex flex-col gap-8 overflow-hidden">
-          {loading.isLoading && <LoadingIndicator text={loading.text} />}
-
           {levels[classificationLevel] &&
             levels[classificationLevel].candidates.length > 0 && (
-              <div className="h-full gap-4">
+              <div className="h-full flex flex-col gap-4">
+                {/* <SecondaryLabel value="Options:" color={Color.WHITE} /> */}
                 <CandidateElements
                   key={`classification-level-${classificationLevel}`}
                   indentLevel={classificationLevel}
@@ -428,8 +429,8 @@ export const ClassificationStep = ({
       </div>
       {showConfirmation && (
         <ConfirmationCard
-          title="Classification Complete!"
-          description="IMPORTANT: After closing this window or refreshing the page, your classification will NOT be saved (if you want this feature, let us know). To download a report of the classification, click the button below."
+          title="🎉 Classification Complete"
+          description="To download a report of the classification, click the button below. NOTE: After closing this window or refreshing the page, your classification will NOT be saved"
           confirmText="Download Report"
           cancelText="Close"
           onConfirm={completeClassification}

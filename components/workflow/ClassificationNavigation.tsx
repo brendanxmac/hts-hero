@@ -30,7 +30,7 @@ export const ClassificationNavigation = ({
 }: ClassificationNavigationProps) => {
   const { activeTab, setActiveTab } = useClassifyTab();
   const { classification, setClassification } = useClassification();
-  const { articleDescription, articleAnalysis, levels } = classification;
+  const { articleDescription, levels } = classification;
 
   return (
     <div className="h-full flex flex-col">
@@ -118,7 +118,7 @@ export const ClassificationNavigation = ({
         </div>
 
         <div className="flex-1 flex flex-col">
-          <SecondaryLabel value="Classification Progress" />
+          <SecondaryLabel value="Classification Levels" />
           <div className="flex flex-col gap-3 py-3">
             {levels.map((level, index) => (
               <ElementsNavigationStep

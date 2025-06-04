@@ -9,6 +9,7 @@ interface Props {
   tooltip?: string;
   color?: "primary" | "secondary" | "accent" | "error";
   transparent?: boolean;
+  iconOnly?: boolean;
 }
 
 export default function SquareIconButton({
@@ -18,6 +19,7 @@ export default function SquareIconButton({
   color = "primary",
   transparent = false,
   tooltip,
+  iconOnly = false,
 }: Props) {
   // TooltipPortal implementation
   function TooltipPortal({
@@ -72,9 +74,11 @@ export default function SquareIconButton({
       disabled={disabled}
       className={classNames(
         `btn btn-xs btn-square shrink-0 text-white hover:text-white hover:shadow-md border-none hover:cursor-pointer`,
-        transparent
-          ? `bg-${color}/20 hover:bg-${color}/80`
-          : `bg-${color} hover:btn-secondary`
+        iconOnly
+          ? "bg-none"
+          : transparent
+            ? `bg-${color}/20 hover:bg-${color}/80`
+            : `bg-${color} hover:btn-secondary`
       )}
       onClick={(e) => {
         e.preventDefault();
