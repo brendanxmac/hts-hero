@@ -13,6 +13,10 @@ import { Color } from "../../enums/style";
 import { useClassifyTab } from "../../contexts/ClassifyTabContext";
 import { ClassifyPage, ClassifyTab } from "../../enums/classify";
 import { ClassifyTabs } from "../../constants/classify";
+import { generateClassificationReport } from "../../libs/classification";
+import { downloadClassificationReport } from "../../libs/hts";
+import { ConfirmationCard } from "../ConfirmationCard";
+import { useState } from "react";
 
 export interface ClassificationNavigationProps {
   workflowStep: WorkflowStep;
@@ -30,8 +34,8 @@ export const ClassificationNavigation = ({
 }: ClassificationNavigationProps) => {
   const { activeTab, setActiveTab } = useClassifyTab();
   const { classification, setClassification } = useClassification();
-  const { articleDescription, levels } = classification;
-
+  const { articleDescription, levels, isComplete } = classification;
+  const [showConfirmation, setShowConfirmation] = useState(false);
   return (
     <div className="h-full flex flex-col">
       <div className="flex justify-between items-center border-b border-neutral px-4 py-2">
@@ -139,7 +143,40 @@ export const ClassificationNavigation = ({
             ))}
           </div>
         </div>
+        {isComplete && (
+          <div className="w-full flex justify-between gap-2">
+            <button
+              className="grow btn btn-primary"
+              onClick={() => {
+                setShowConfirmation(true);
+              }}
+            >
+              New Classification
+            </button>
+
+            <button
+              className="grow btn btn-primary"
+              onClick={() => {
+                downloadClassificationReport(classification);
+              }}
+            >
+              Download Report
+            </button>
+          </div>
+        )}
       </div>
+      {showConfirmation && (
+        <ConfirmationCard
+          title="Start New Classification?"
+          description="If you want to start a new classification click start below. NOTE: Your current classification will NOT be saved if you leave this page, be sure to download it first"
+          confirmText="Start"
+          cancelText="Close"
+          onConfirm={() => {
+            window.location.reload();
+          }}
+          onCancel={() => setShowConfirmation(false)}
+        />
+      )}
     </div>
   );
 };

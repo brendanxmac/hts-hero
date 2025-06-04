@@ -28,6 +28,31 @@ import { OpenAIModel } from "./openai";
 import apiClient from "@/libs/api";
 import { HtsLevel } from "../enums/hts";
 import { NavigatableElement } from "../components/Elements";
+import { generateClassificationReport } from "./classification";
+
+export const downloadClassificationReport = async (
+  classification: Classification
+) => {
+  const doc = await generateClassificationReport(classification);
+
+  // Generate a filename based on the current date and time
+  const now = new Date();
+  const formattedDate = now
+    .toLocaleString("en-US", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    })
+    .replace(/[/:]/g, "-")
+    .replace(",", "");
+
+  // Save the PDF
+  doc.save(`hts-hero-classification-${formattedDate}.pdf`);
+};
 
 // Create a function that takes a classification and iterates in reverse through the levels to find the first level with tariff data
 export const getElementWithTariffDataFromClassification = (

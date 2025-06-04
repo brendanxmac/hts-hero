@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Loader } from "../../interfaces/ui";
 import { CandidateElements } from "../CandidateElements";
 import {
+  downloadClassificationReport,
   getBestDescriptionCandidates,
   getDirectChildrenElements,
   getElementsInChapter,
@@ -22,10 +23,6 @@ import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
 import { StepNavigation } from "./StepNavigation";
 import { useClassifyTab } from "../../contexts/ClassifyTabContext";
 import { ClassifyTab } from "../../enums/classify";
-import {
-  createClassification,
-  generateClassificationReport,
-} from "../../libs/classification";
 import { ConfirmationCard } from "../ConfirmationCard";
 import { useHts } from "../../contexts/HtsContext";
 import { SecondaryLabel } from "../SecondaryLabel";
@@ -85,9 +82,9 @@ export const ClassificationStep = ({
     const isFinalElement = selectedElementIsFinalElement();
 
     if (isFinalElement) {
-      return "Finish";
+      return "Complete";
     } else {
-      return "Continue";
+      return "Next";
     }
   };
 
@@ -272,26 +269,7 @@ export const ClassificationStep = ({
 
   const completeClassification = async () => {
     setLoading({ isLoading: true, text: "Generating Report" });
-    const doc = await generateClassificationReport(classification);
-
-    // Generate a filename based on the current date and time
-    const now = new Date();
-    const formattedDate = now
-      .toLocaleString("en-US", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false,
-      })
-      .replace(/[/:]/g, "-")
-      .replace(",", "");
-
-    // Save the PDF
-    doc.save(`hts-hero-classification-${formattedDate}.pdf`);
-
+    await downloadClassificationReport(classification);
     setLoading({ isLoading: false, text: "" });
     setShowConfirmation(false);
   };
@@ -381,6 +359,7 @@ export const ClassificationStep = ({
                 if (childrenOfSelectedElement.length > 0) {
                   setClassification({
                     ...classification,
+                    isComplete: false,
                     progressionDescription:
                       progressionDescription +
                       " > " +
@@ -396,6 +375,7 @@ export const ClassificationStep = ({
                 } else {
                   setClassification({
                     ...classification,
+                    isComplete: true,
                     progressionDescription:
                       progressionDescription +
                       " > " +
@@ -406,13 +386,16 @@ export const ClassificationStep = ({
                 }
               }
 
-              if (getNextNavigationLabel() === "Finish") {
+              if (getNextNavigationLabel() === "Complete") {
                 setShowConfirmation(true);
               }
 
               setLocallySelectedElement(undefined);
             },
-            disabled: !locallySelectedElement && !selectionForLevel,
+            disabled:
+              (!locallySelectedElement && !selectionForLevel) ||
+              (classificationLevel === classification.levels.length - 1 &&
+                classification.isComplete),
           }}
           previous={{
             label: "Back",
@@ -429,7 +412,7 @@ export const ClassificationStep = ({
       {showConfirmation && (
         <ConfirmationCard
           title="🎉 Classification Complete"
-          description="To download a report of the classification, click the button below. NOTE: After closing this window or refreshing the page, your classification will NOT be saved"
+          description="To download a report of the classification, click the button below. NOTE: Your classification will NOT be saved if you leave this page"
           confirmText="Download Report"
           cancelText="Close"
           onConfirm={completeClassification}
