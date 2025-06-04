@@ -33,7 +33,8 @@ export const ClassificationNavigation = ({
   setClassificationLevel,
 }: ClassificationNavigationProps) => {
   const { activeTab, setActiveTab } = useClassifyTab();
-  const { classification, setClassification } = useClassification();
+  const { classification, setClassification, clearClassification } =
+    useClassification();
   const { articleDescription, levels, isComplete } = classification;
   const [showConfirmation, setShowConfirmation] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -163,7 +164,7 @@ export const ClassificationNavigation = ({
 
         <div className="flex-1 flex flex-col">
           <SecondaryLabel value="Classification Levels" />
-          <div className="flex flex-col gap-3 py-3">
+          <div className="flex flex-col gap-3 pt-3">
             {levels.map((level, index) => (
               <div
                 key={index}
@@ -189,36 +190,49 @@ export const ClassificationNavigation = ({
             ))}
           </div>
         </div>
-        {isComplete && (
-          <div className="w-full flex justify-between gap-2">
-            <button
-              className="grow btn btn-primary"
-              onClick={() => {
-                setShowConfirmation(true);
-              }}
-            >
-              New Classification
-            </button>
+      </div>
 
-            <button
-              className="grow btn btn-primary"
-              onClick={() => {
-                downloadClassificationReport(classification);
-              }}
-            >
-              Download Report
-            </button>
-          </div>
-        )}
+      <div className="sticky bottom-0 left-0 right-0 bg-base-100 border-t-2 border-neutral p-4">
+        <div className="w-full flex justify-between gap-2">
+          <button
+            className={classNames(
+              "grow btn btn-sm btn-primary",
+              levels.length === 0 && "btn-disabled",
+              isComplete && "btn-disabled"
+            )}
+            disabled={levels.length === 0}
+            onClick={() => {
+              setShowConfirmation(true);
+            }}
+          >
+            Start Over
+          </button>
+
+          <button
+            className={classNames(
+              "grow btn btn-sm btn-primary",
+              !isComplete && "btn-disabled"
+            )}
+            disabled={!isComplete}
+            onClick={() => {
+              downloadClassificationReport(classification);
+            }}
+          >
+            Download Report
+          </button>
+        </div>
       </div>
       {showConfirmation && (
         <ConfirmationCard
           title="Start New Classification?"
-          description="If you want to start a new classification click start below. NOTE: Your current classification will NOT be saved if you leave this page, be sure to download it first"
+          description="If you want to start a new classification click start below. NOTE: Your current classification will NOT be saved if you leave this page, if already completed, be sure to download it first"
           confirmText="Start"
           cancelText="Close"
           onConfirm={() => {
-            window.location.reload();
+            clearClassification();
+            setWorkflowStep(WorkflowStep.DESCRIPTION);
+            setClassificationLevel(undefined);
+            setShowConfirmation(false);
           }}
           onCancel={() => setShowConfirmation(false)}
         />
