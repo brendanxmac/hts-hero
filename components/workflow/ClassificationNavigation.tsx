@@ -16,7 +16,7 @@ import { ClassifyTabs } from "../../constants/classify";
 import { generateClassificationReport } from "../../libs/classification";
 import { downloadClassificationReport } from "../../libs/hts";
 import { ConfirmationCard } from "../ConfirmationCard";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export interface ClassificationNavigationProps {
   workflowStep: WorkflowStep;
@@ -36,6 +36,14 @@ export const ClassificationNavigation = ({
   const { classification, setClassification } = useClassification();
   const { articleDescription, levels, isComplete } = classification;
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+    }
+  }, [levels]);
+
   return (
     <div className="h-full flex flex-col">
       <div className="flex justify-between items-center border-b border-neutral px-4 py-2">
@@ -77,7 +85,10 @@ export const ClassificationNavigation = ({
         </div>
       </div>
 
-      <div className="h-full flex flex-col gap-6 p-4 overflow-y-scroll">
+      <div
+        ref={containerRef}
+        className="h-full flex flex-col gap-6 p-4 overflow-y-scroll"
+      >
         <div className="flex flex-col gap-3">
           <SecondaryLabel value="Item Details" />
           <TextNavigationStep
