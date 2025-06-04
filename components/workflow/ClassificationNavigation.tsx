@@ -37,12 +37,39 @@ export const ClassificationNavigation = ({
   const { articleDescription, levels, isComplete } = classification;
   const [showConfirmation, setShowConfirmation] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const descriptionRef = useRef<HTMLDivElement>(null);
+  const levelRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+    if (!containerRef.current) return;
+
+    let elementToScrollTo: HTMLElement | null = null;
+
+    if (workflowStep === WorkflowStep.DESCRIPTION) {
+      elementToScrollTo = descriptionRef.current;
+    } else if (
+      workflowStep === WorkflowStep.CLASSIFICATION &&
+      classificationLevel !== undefined
+    ) {
+      elementToScrollTo = levelRefs.current[classificationLevel] || null;
     }
-  }, [levels]);
+
+    if (elementToScrollTo) {
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const elementRect = elementToScrollTo.getBoundingClientRect();
+
+      // Calculate if the element is outside the visible area
+      const isAbove = elementRect.top < containerRect.top;
+      const isBelow = elementRect.bottom > containerRect.bottom;
+
+      if (isAbove || isBelow) {
+        elementToScrollTo.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }
+    }
+  }, [workflowStep, classificationLevel]);
 
   return (
     <div className="h-full flex flex-col">
@@ -91,25 +118,27 @@ export const ClassificationNavigation = ({
       >
         <div className="flex flex-col gap-3">
           <SecondaryLabel value="Item Details" />
-          <TextNavigationStep
-            title="Item Description"
-            text={articleDescription}
-            active={workflowStep === WorkflowStep.DESCRIPTION}
-            icon={
-              <Bars3BottomLeftIcon
-                className={classNames(
-                  "w-5 h-5 m-1",
-                  workflowStep === WorkflowStep.DESCRIPTION
-                    ? "text-white"
-                    : "text-content-neutral"
-                )}
-              />
-            }
-            button={{
-              label: "Edit",
-              onClick: () => setWorkflowStep(WorkflowStep.DESCRIPTION),
-            }}
-          />
+          <div ref={descriptionRef}>
+            <TextNavigationStep
+              title="Item Description"
+              text={articleDescription}
+              active={workflowStep === WorkflowStep.DESCRIPTION}
+              icon={
+                <Bars3BottomLeftIcon
+                  className={classNames(
+                    "w-5 h-5 m-1",
+                    workflowStep === WorkflowStep.DESCRIPTION
+                      ? "text-white"
+                      : "text-content-neutral"
+                  )}
+                />
+              }
+              button={{
+                label: "Edit",
+                onClick: () => setWorkflowStep(WorkflowStep.DESCRIPTION),
+              }}
+            />
+          </div>
           {/* <TextNavigationStep
             title="Item Analysis"
             text={articleAnalysis}
@@ -136,21 +165,27 @@ export const ClassificationNavigation = ({
           <SecondaryLabel value="Classification Levels" />
           <div className="flex flex-col gap-3 py-3">
             {levels.map((level, index) => (
-              <ElementsNavigationStep
+              <div
                 key={index}
-                index={index}
-                classificationProgression={level}
-                active={
-                  workflowStep === WorkflowStep.CLASSIFICATION &&
-                  classificationLevel === index
-                }
-                onClick={() => {
-                  if (workflowStep !== WorkflowStep.CLASSIFICATION) {
-                    setWorkflowStep(WorkflowStep.CLASSIFICATION);
-                  }
-                  setClassificationLevel(index);
+                ref={(el) => {
+                  levelRefs.current[index] = el;
                 }}
-              />
+              >
+                <ElementsNavigationStep
+                  index={index}
+                  classificationProgression={level}
+                  active={
+                    workflowStep === WorkflowStep.CLASSIFICATION &&
+                    classificationLevel === index
+                  }
+                  onClick={() => {
+                    if (workflowStep !== WorkflowStep.CLASSIFICATION) {
+                      setWorkflowStep(WorkflowStep.CLASSIFICATION);
+                    }
+                    setClassificationLevel(index);
+                  }}
+                />
+              </div>
             ))}
           </div>
         </div>
