@@ -8,6 +8,7 @@ import {
   getBestDescriptionCandidates,
   getDirectChildrenElements,
   getElementsInChapter,
+  getProgressionDescriptions,
 } from "../../libs/hts";
 import { CandidateSelection, HtsElement } from "../../interfaces/hts";
 import { HtsSection } from "../../interfaces/hts";
@@ -21,7 +22,10 @@ import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
 import { StepNavigation } from "./StepNavigation";
 import { useClassifyTab } from "../../contexts/ClassifyTabContext";
 import { ClassifyTab } from "../../enums/classify";
-import { createClassification } from "../../libs/classification";
+import {
+  createClassification,
+  generateClassificationReport,
+} from "../../libs/classification";
 import { ConfirmationCard } from "../ConfirmationCard";
 import { useHts } from "../../contexts/HtsContext";
 import { SecondaryLabel } from "../SecondaryLabel";
@@ -251,15 +255,29 @@ export const ClassificationStep = ({
   };
 
   const completeClassification = async () => {
-    setLoading({ isLoading: true, text: "Completing Classification" });
-    await createClassification(classification);
-    setLoading({ isLoading: false, text: "" });
-  };
+    setLoading({ isLoading: true, text: "Generating Report" });
+    const doc = await generateClassificationReport(classification);
 
-  const getProgressionDescription = () => {
-    return classification.levels
-      .slice(0, classificationLevel + 1)
-      .map((level) => level.selection?.description);
+    // Generate a filename based on the current date and time
+    const now = new Date();
+    const formattedDate = now
+      .toLocaleString("en-US", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      })
+      .replace(/[/:]/g, "-")
+      .replace(",", "");
+
+    // Save the PDF
+    doc.save(`hts-hero-classification-${formattedDate}.pdf`);
+
+    setLoading({ isLoading: false, text: "" });
+    setShowConfirmation(false);
   };
 
   return (
@@ -292,7 +310,10 @@ export const ClassificationStep = ({
             )}
           </div>
           <div className="mt-8">
-            {getProgressionDescription().map(
+            {getProgressionDescriptions(
+              classification,
+              classificationLevel
+            ).map(
               (description, index) =>
                 description && (
                   <TertiaryText
@@ -381,7 +402,12 @@ export const ClassificationStep = ({
                     levels: newProgressionLevels,
                   });
                   setShowConfirmation(true);
+                  console.log("HEREREERE");
                 }
+              }
+
+              if (getNextNavigationLabel() === "Finish") {
+                setShowConfirmation(true);
               }
 
               setLocallySelectedElement(undefined);
@@ -402,10 +428,10 @@ export const ClassificationStep = ({
       </div>
       {showConfirmation && (
         <ConfirmationCard
-          title="Complete Classification?"
-          description="Are you sure you want to complete the classification?"
-          confirmText="Complete"
-          cancelText="Cancel"
+          title="Classification Complete!"
+          description="IMPORTANT: After closing this window or refreshing the page, your classification will NOT be saved (if you want this feature, let us know). To download a report of the classification, click the button below."
+          confirmText="Download Report"
+          cancelText="Close"
           onConfirm={completeClassification}
           onCancel={() => setShowConfirmation(false)}
         />

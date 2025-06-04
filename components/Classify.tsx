@@ -14,6 +14,7 @@ import { LoadingIndicator } from "./LoadingIndicator";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { Loader } from "../interfaces/ui";
 import { useHts } from "../contexts/HtsContext";
+import { ClassificationSummaryPage } from "./ClassificationSummaryPage";
 
 // interface Props {
 //   setPage: (page: ClassifyPage) => void;
@@ -92,6 +93,9 @@ export const Classify = () => {
                 classificationLevel={classificationLevel}
                 setClassificationLevel={setClassificationLevel}
               />
+            )}
+            {workflowStep === WorkflowStep.SUMMARY && (
+              <ClassificationSummaryPage />
             )}
           </>
         )}
