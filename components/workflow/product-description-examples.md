@@ -1,4 +1,4 @@
-Men’s 100% cotton denim jeans, pre-washed and imported from Mexico
+Men’s 100% cotton denim jeans, dyed blue, pre-washed, and tailored for an atheltic figure
 
 Lithium-ion batteries for use in electric vehicles, cylindrical cell format, capacity 3000 mAh
 

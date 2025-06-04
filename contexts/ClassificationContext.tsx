@@ -112,6 +112,7 @@ export const ClassificationProvider = ({
       articleAnalysis: "",
       progressionDescription: "",
       levels: [],
+      isComplete: false,
     });
   };
 

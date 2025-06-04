@@ -386,10 +386,10 @@ export const ClassificationStep = ({
                 }
               }
 
-              setClassificationLevel(classificationLevel + 1);
-
-              if (getNextNavigationLabel() === "Complete") {
+              if (selectedElementIsFinalElement()) {
                 setShowConfirmation(true);
+              } else {
+                setClassificationLevel(classificationLevel + 1);
               }
 
               setLocallySelectedElement(undefined);
