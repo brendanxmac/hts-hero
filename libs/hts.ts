@@ -29,6 +29,32 @@ import apiClient from "@/libs/api";
 import { HtsLevel } from "../enums/hts";
 import { NavigatableElement } from "../components/Elements";
 
+// Create a function that takes a classification and iterates in reverse through the levels to find the first level with tariff data
+export const getElementWithTariffDataFromClassification = (
+  classification: Classification
+) => {
+  for (let i = classification.levels.length - 1; i >= 0; i--) {
+    if (
+      classification.levels[i].selection?.general ||
+      classification.levels[i].selection?.special ||
+      classification.levels[i].selection?.other
+    ) {
+      return classification.levels[i].selection;
+    }
+  }
+};
+
+export const getProgressionDescriptions = (
+  classification: Classification,
+  upToLevel?: number
+) => {
+  const stopAtLevel = upToLevel ? upToLevel + 1 : classification.levels.length;
+
+  return classification.levels
+    .slice(0, stopAtLevel)
+    .map((level) => level.selection?.description);
+};
+
 export const getBreadCrumbsForElement = (
   element: HtsElement,
   sections: HtsSection[],
@@ -219,7 +245,7 @@ export const extractFirst8DigitHtsCode = (input: string): string => {
   return match ? match[1] : "";
 };
 
-export const getProgressionDescription = (
+export const getProgressionDescriptionWithArrows = (
   classificationProgression: ClassificationProgression[]
 ) => {
   let fullDescription = "";

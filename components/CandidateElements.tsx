@@ -4,7 +4,7 @@ import { Loader } from "../interfaces/ui";
 import { CandidateElement } from "./CandidateElement";
 import { useEffect, useState } from "react";
 import { useClassification } from "../contexts/ClassificationContext";
-import { getProgressionDescription } from "../libs/hts";
+import { getProgressionDescriptionWithArrows } from "../libs/hts";
 import { getBestClassificationProgression } from "../libs/hts";
 
 interface Props {
@@ -50,7 +50,7 @@ export const CandidateElements = ({
 
     const bestProgressionResponse = await getBestClassificationProgression(
       simplifiedCandidates,
-      getProgressionDescription(levels),
+      getProgressionDescriptionWithArrows(levels),
       articleDescription + "\n" + articleAnalysis
     );
 

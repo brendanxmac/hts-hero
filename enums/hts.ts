@@ -2,6 +2,7 @@ export enum WorkflowStep {
   DESCRIPTION = "description",
   ANALYSIS = "analysis",
   CLASSIFICATION = "classification",
+  SUMMARY = "summary",
 }
 
 export enum HtsLevel {
