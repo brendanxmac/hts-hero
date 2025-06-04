@@ -134,6 +134,7 @@ export interface Classification {
   articleAnalysis: string;
   progressionDescription: string;
   levels: ClassificationProgression[];
+  isComplete: boolean;
 }
 
 export interface ClassificationProgression {
