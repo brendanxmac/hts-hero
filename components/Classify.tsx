@@ -58,9 +58,9 @@ export const Classify = () => {
   }
 
   return (
-    <div className="h-full w-full bg-base-300 flex">
+    <div className="h-full w-full bg-base-300 grid grid-cols-12">
       {/* Sidebar Navigation */}
-      <div className="h-full bg-base-100 max-w-[450px] min-w-[400px] overflow-hidden">
+      <div className="h-full bg-base-100 col-span-5 xl:col-span-4 overflow-hidden">
         <ClassificationNavigation
           workflowStep={workflowStep}
           setWorkflowStep={setWorkflowStep}
@@ -72,7 +72,7 @@ export const Classify = () => {
 
       {/* Classify Tab */}
 
-      <div className="h-full grow overflow-hidden">
+      <div className="h-full col-span-7 xl:col-span-8 overflow-hidden">
         {activeTab === ClassifyTab.CLASSIFY && (
           <>
             {workflowStep === WorkflowStep.DESCRIPTION && (

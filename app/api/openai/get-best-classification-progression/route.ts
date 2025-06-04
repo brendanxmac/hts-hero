@@ -86,7 +86,7 @@ export async function POST(req: NextRequest) {
           Your job is to determine which description from a list would most accurately match a product description if it were added onto the end of the current classification description.\n
           If the current classification description is not provided, just determine which description best matches the product description.\n
           Finally, you must pick a single description. If you are unsure and "Other:" is available as an option, you should pick it.\n
-          Your "logic" for your selection should be a concise explanation of why you picked the description you did.\n
+          Your "logic" for your selection should be a concise explanation of why you picked the description you did, and whether the product description is missing information needed to make a better decision.\n
             ${
               isTestEnv &&
               "The 0-based index of the best option must be included in your response\n"

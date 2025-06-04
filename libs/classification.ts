@@ -154,20 +154,47 @@ export const generateClassificationReport = async (
   doc.text("Selection Progression:", margin, yPosition);
   yPosition += 7;
 
-  const progressionDescriptions = getProgressionDescriptions(classification);
-  progressionDescriptions.forEach((description, index) => {
+  classification.levels.forEach((level, index) => {
+    const description = level.selection?.description;
+    const htsno = level.selection?.htsno;
     // Add indentation dashes based on level
     const indentation = "-".repeat(index + 1);
     const prefix = `${indentation} `;
     if (description) {
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
-      const descLines = doc.splitTextToSize(
-        prefix + " " + description,
-        contentWidth
-      );
-      doc.text(descLines, margin, yPosition);
-      yPosition += descLines.length * 6 + 2;
+
+      if (htsno) {
+        // Draw the prefix in normal weight
+        doc.setFont("helvetica", "normal");
+        doc.text(prefix, margin, yPosition);
+        const prefixWidth = doc.getTextWidth(prefix);
+
+        // Draw the HTS number in bold
+        doc.setFont("helvetica", "bold");
+        doc.text(htsno + ": ", margin + prefixWidth, yPosition);
+        const htsnoWidth = doc.getTextWidth(htsno + ": ");
+
+        // Move to next line for description
+        yPosition += 6;
+
+        // Draw the description in normal weight, indented to align with HTS number
+        doc.setFont("helvetica", "normal");
+        const descLines = doc.splitTextToSize(
+          description,
+          contentWidth - prefixWidth - htsnoWidth
+        );
+        doc.text(descLines, margin + prefixWidth, yPosition);
+        yPosition += descLines.length * 6 + 2;
+      } else {
+        // If no HTS number, just draw the description
+        const descLines = doc.splitTextToSize(
+          prefix + " " + description,
+          contentWidth
+        );
+        doc.text(descLines, margin, yPosition);
+        yPosition += descLines.length * 6 + 2;
+      }
     }
   });
 
