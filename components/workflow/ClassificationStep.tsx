@@ -30,6 +30,7 @@ import { ConfirmationCard } from "../ConfirmationCard";
 import { useHts } from "../../contexts/HtsContext";
 import { SecondaryLabel } from "../SecondaryLabel";
 import { SecondaryText } from "../SecondaryText";
+import { TertiaryLabel } from "../TertiaryLabel";
 
 export interface ClassificationStepProps {
   setWorkflowStep: (step: WorkflowStep) => void;
@@ -92,7 +93,7 @@ export const ClassificationStep = ({
 
   // Get 2-3 Best Sections
   const getSections = async () => {
-    setLoading({ isLoading: true, text: "Finding Best Sections" });
+    setLoading({ isLoading: true, text: "Finding Best Options" });
     const sectionsResponse = await getHtsSectionsAndChapters();
     setHtsSections(sectionsResponse.sections);
     const sections = sectionsResponse.sections;
@@ -118,7 +119,7 @@ export const ClassificationStep = ({
 
   // Get 2-3 Best Chapters
   const getChapters = async () => {
-    setLoading({ isLoading: true, text: "Finding Best Chapters" });
+    setLoading({ isLoading: true, text: "Finding Best Options" });
     const candidateSections = htsSections.filter((section) => {
       return sectionCandidates.some((candidate) => {
         return candidate.index === section.number;
@@ -155,7 +156,7 @@ export const ClassificationStep = ({
 
   // Get up to 2 Best Headings Per Chapter
   const getHeadings = async () => {
-    setLoading({ isLoading: true, text: "Finding Best Headings" });
+    setLoading({ isLoading: true, text: "Finding Best Options" });
     const candidatesForHeading: HtsElement[] = [];
     await Promise.all(
       chapterCandidates.map(async (chapter) => {
@@ -262,7 +263,7 @@ export const ClassificationStep = ({
     } else {
       return (
         <TertiaryText
-          value="If an option below was added onto the following in-progress classification, which best matches the item description?"
+          value="Which option would most accurately describe the item if it was added onto your prior selection(s)?"
           color={Color.NEUTRAL_CONTENT}
         />
       );
@@ -300,20 +301,17 @@ export const ClassificationStep = ({
       {/* Content */}
       <div className="flex-1 overflow-hidden px-8 w-full max-w-3xl mx-auto flex flex-col gap-4">
         <div className="flex flex-col gap-2">
-          <div className="flex justify-between">
-            <TertiaryText
-              value={`Level ${classificationLevel + 1}`}
-              color={Color.NEUTRAL_CONTENT}
-            />
-            {loading.isLoading && <LoadingIndicator text={loading.text} />}
-          </div>
+          <TertiaryText
+            value={`Level ${classificationLevel + 1}`}
+            color={Color.NEUTRAL_CONTENT}
+          />
           <div className="w-full flex justify-between items-end">
             <div className="w-full flex flex-col">
               <PrimaryLabel value={getStepDescription()} color={Color.WHITE} />
               {getStepInstructions()}
             </div>
           </div>
-          {classificationLevel > 0 && (
+          {/* {classificationLevel > 0 && (
             <div className="">
               {getProgressionDescriptions(
                 classification,
@@ -321,16 +319,18 @@ export const ClassificationStep = ({
               ).map(
                 (description, index) =>
                   description && (
-                    <TertiaryText
+                    <TertiaryLabel
                       key={index}
                       value={`${"-".repeat(index + 1)} ${description}`}
-                      color={Color.NEUTRAL_CONTENT}
+                      color={Color.WHITE}
                     />
                   )
               )}
             </div>
-          )}
+          )} */}
         </div>
+
+        {loading.isLoading && <LoadingIndicator text={loading.text} />}
 
         <div className="h-full flex flex-col gap-8 overflow-hidden">
           {levels[classificationLevel] &&
@@ -403,7 +403,6 @@ export const ClassificationStep = ({
                     levels: newProgressionLevels,
                   });
                   setShowConfirmation(true);
-                  console.log("HEREREERE");
                 }
               }
 
