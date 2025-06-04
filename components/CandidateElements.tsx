@@ -32,7 +32,6 @@ export const CandidateElements = ({
       candidates.length > 0 &&
       !classification.levels[indentLevel].recommendedElement
     ) {
-      console.log("Getting best candidate automatically");
       getBestCandidate();
     }
   }, []);
@@ -40,7 +39,7 @@ export const CandidateElements = ({
   const getBestCandidate = async () => {
     setLoading({
       isLoading: true,
-      text: "Getting Best Candidate",
+      text: "Suggesting Best Option",
     });
 
     const simplifiedCandidates = candidates.map((e) => ({
@@ -54,11 +53,7 @@ export const CandidateElements = ({
       articleDescription + "\n" + articleAnalysis
     );
 
-    console.log("bestProgressionResponse", bestProgressionResponse);
-
     const bestCandidate = candidates[bestProgressionResponse.index];
-
-    console.log("bestCandidate", bestCandidate);
 
     setClassification((prev: Classification) => {
       const newProgressionLevels = [...prev.levels];
