@@ -43,10 +43,19 @@ export const generateClassificationReport = async (
   // 3. Add HTS Hero logo with correct aspect ratio and centered
   const logo = new Image();
   logo.src = "/hts-hero-logo-with-text.png";
-  const logoWidth = 45; // Slightly smaller
-  const logoHeight = (logoWidth * 96) / 415; // Maintain aspect ratio
+  const logoWidth = 45; // Keep the same display size
+  const logoHeight = (logoWidth * 106) / 499; // Use new image dimensions for aspect ratio
   const logoX = (pageWidth - logoWidth) / 2; // Center horizontally
-  doc.addImage(logo, "PNG", logoX, margin + 5, logoWidth, logoHeight);
+  doc.addImage(
+    logo,
+    "PNG",
+    logoX,
+    margin + 5,
+    logoWidth,
+    logoHeight,
+    undefined,
+    "FAST"
+  ); // Add quality parameter
 
   // 4. Add a classification Details header
   let yPosition = margin + logoHeight + 20;
@@ -256,8 +265,11 @@ export const generateClassificationReport = async (
       });
     }
 
-    doc.addPage();
-    yPosition = margin;
+    // If not last page, add a page break
+    if (index < classification.levels.length - 1) {
+      doc.addPage();
+      yPosition = margin;
+    }
   });
 
   return doc;
