@@ -82,7 +82,7 @@ export const ClassificationStep = ({
     const isFinalElement = selectedElementIsFinalElement();
 
     if (isFinalElement) {
-      return "Complete";
+      return "🎉 Complete";
     } else {
       return "Next";
     }
@@ -403,7 +403,7 @@ export const ClassificationStep = ({
             label: "Back",
             onClick: () => {
               if (classificationLevel === 0) {
-                setWorkflowStep(WorkflowStep.ANALYSIS);
+                setWorkflowStep(WorkflowStep.DESCRIPTION);
               } else {
                 setClassificationLevel(classificationLevel - 1);
               }

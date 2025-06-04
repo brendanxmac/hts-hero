@@ -80,7 +80,7 @@ export const DescriptionStep = ({
       <div className="w-full max-w-3xl mx-auto px-8">
         <StepNavigation
           next={{
-            label: "Continue",
+            label: "Next",
             onClick: () => {
               setProductDescription(localProductDescription);
               setWorkflowStep(WorkflowStep.CLASSIFICATION);
