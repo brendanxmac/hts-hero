@@ -20,26 +20,26 @@ const Pricing = ({
     <section className="bg-neutral-900 overflow-hidden" id="pricing">
       <div className="py-16 px-8 max-w-7xl mx-auto">
         <div className="flex flex-col text-center w-full mb-20">
-          <p className="font-medium text-[#40C969] mb-8">Pricing</p>
-          <h2 className="font-bold text-3xl sm:text-4xl md:text-5xl max-w-3xl mx-auto tracking-relaxed">
+          <p className="font-medium text-primary mb-8">Pricing</p>
+          <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-5xl max-w-3xl mx-auto tracking-relaxed">
             Save hours on classification,
             <br /> for less than your daily coffee
           </h2>
         </div>
 
-        <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8">
+        <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8 text-white">
           {config.stripe.plans.map((plan) => (
             <div
               key={plan.priceId}
               className={classNames(
                 "relative w-full max-w-lg",
-                plan.isFeatured && "border-2 border-[#40C969] rounded-lg"
+                plan.isFeatured && "border-2 border-primary rounded-lg"
               )}
             >
-              {plan.isFeatured && (
+              {/* {plan.isFeatured && (
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
                   <span
-                    className={`badge text-xs text-black font-semibold border-0 bg-[#40C969]`}
+                    className={`badge text-xs text-black font-semibold border-0 bg-primary`}
                   >
                     SAVE 25%
                   </span>
@@ -50,7 +50,7 @@ const Pricing = ({
                 <div
                   className={`absolute -inset-[1px] rounded-[9px] bg-primary z-10`}
                 ></div>
-              )}
+              )} */}
 
               <div className="relative flex flex-col h-full gap-5 lg:gap-8 z-10 bg-base-100 p-8 rounded-lg">
                 <div className="flex justify-between items-center gap-4">
@@ -63,8 +63,8 @@ const Pricing = ({
                     )}
                   </div>
                 </div>
-                <div className="flex gap-2 items-center">
-                  {plan.priceAnchor && (
+                <div className="w-full flex flex-col gap-1">
+                  {/* {plan.priceAnchor && (
                     <div className="flex flex-col justify-end mb-[4px] text-lg ">
                       <p className="relative">
                         <span className="absolute bg-neutral-500 h-[2px] inset-x-0 top-[45%]"></span>
@@ -73,27 +73,55 @@ const Pricing = ({
                         </span>
                       </p>
                     </div>
-                  )}
+                  )} */}
                   {plan.price === 0 ? (
                     <p className={`text-4xl tracking-tight font-extrabold`}>
                       Free
                     </p>
                   ) : (
-                    <>
-                      <p
-                        className={`text-5xl text-base-content tracking-tight font-extrabold`}
-                      >
-                        ${plan.price}
+                    <div className="flex flex-col justify-end mb-[4px] text-lg ">
+                      <p className="relative">
+                        {/* <span className="absolute bg-base-content h-[2px] inset-x-0 top-[50%]"></span> */}
+                        <div className="flex gap-2">
+                          <span className="text-2xl text-base-content tracking-tight font-extrabold line-through">
+                            ${plan.price}/mo
+                          </span>
+                          {/* <div className="flex flex-col justify-center pt-1 mb-[4px]">
+                            <p className="text-xs text-base-content/40">USD</p>
+                            <p className="text-sm text-base-content font-bold">
+                              per month
+                            </p>
+                          </div> */}
+                        </div>
                       </p>
-                      <div className="flex flex-col justify-center pt-1 mb-[4px]">
-                        <p className="text-xs text-base-content/40">USD</p>
-                        <p className="text-sm text-base-content font-bold">
-                          per month
-                        </p>
-                      </div>
-                    </>
+                    </div>
+                    // <div className="flex gap-2">
+                    //   <p
+                    //     className={`text-5xl text-base-content tracking-tight font-extrabold line-through`}
+                    //   >
+                    //     ${plan.price}
+                    //   </p>
+                    //   <div className="flex flex-col justify-center pt-1 mb-[4px]">
+                    //     <p className="text-xs text-base-content/40">USD</p>
+                    //     <p className="text-sm text-base-content font-bold">
+                    //       per month
+                    //     </p>
+                    //   </div>
+                    // </div>
+                  )}
+                  {plan.isFeatured && (
+                    <h2 className="text-5xl font-bold text-primary">Free!</h2>
+                  )}
+                  {plan.isFeatured && (
+                    <div>
+                      <p className="text-base-content text-sm">
+                        During the beta period, all access to HTS Hero will be
+                        free!
+                      </p>
+                    </div>
                   )}
                 </div>
+
                 {plan.features && (
                   <ul className="space-y-4 leading-relaxed text-base flex-1">
                     {plan.features.map((feature, i) => (
@@ -137,7 +165,7 @@ const Pricing = ({
                           >
                             <p>{feature.name} </p>
                             {feature.comingSoon && (
-                              <span className="bg-neutral-800 px-2 py-1 rounded-md text-stone-300 font-semibold text-xs">
+                              <span className="bg-neutral-600 px-2 py-1 rounded-md text-stone-300 font-semibold text-xs">
                                 Coming Soon
                               </span>
                             )}
@@ -158,16 +186,16 @@ const Pricing = ({
                       plan.name === PricingPlan.Starter
                         ? "Try Now"
                         : plan.name === PricingPlan.Standard
-                        ? "Get Standard"
-                        : "Go Pro"
+                          ? "Get Standard"
+                          : "Try Pro"
                     }
                     onClick={() => {
                       const trigger =
                         plan.name === PricingPlan.Starter
                           ? RegistrationTrigger.starter
                           : plan.name === PricingPlan.Standard
-                          ? RegistrationTrigger.standard
-                          : RegistrationTrigger.pro;
+                            ? RegistrationTrigger.standard
+                            : RegistrationTrigger.pro;
 
                       setIsRegisterOpen(true);
                       setRegistrationTrigger(trigger);

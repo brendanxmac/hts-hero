@@ -4,11 +4,7 @@ import { updateSession } from "@/app/api/supabase/middleware";
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  const isNotAllowed =
-    pathname === "/" ||
-    pathname === "/about" ||
-    pathname === "/app" ||
-    pathname === "/blog";
+  const isNotAllowed = pathname === "/app" || pathname === "/blog";
 
   if (isNotAllowed) {
     return NextResponse.redirect(new URL("/explore", req.url));
