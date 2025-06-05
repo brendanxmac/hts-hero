@@ -69,6 +69,8 @@ export enum PricingPlan {
   Starter = "Starter",
   Standard = "Standard",
   Pro = "Pro",
+  Explore = "Explore",
+  Classify = "Classify",
 }
 
 export interface ConfigProps {

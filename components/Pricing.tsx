@@ -80,7 +80,7 @@ const Pricing = ({
                     </p>
                   ) : (
                     <div className="flex flex-col justify-end mb-[4px] text-lg ">
-                      <p className="relative">
+                      <div className="relative">
                         {/* <span className="absolute bg-base-content h-[2px] inset-x-0 top-[50%]"></span> */}
                         <div className="flex gap-2">
                           <span className="text-2xl text-base-content tracking-tight font-extrabold line-through">
@@ -93,7 +93,7 @@ const Pricing = ({
                             </p>
                           </div> */}
                         </div>
-                      </p>
+                      </div>
                     </div>
                     // <div className="flex gap-2">
                     //   <p
