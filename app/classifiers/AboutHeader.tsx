@@ -45,8 +45,8 @@ const AboutHeader = () => {
         {/* Your logo/name on large screens */}
         <div className="flex lg:flex-1">
           <Link
-            className="flex items-center gap-2 shrink-0 "
-            href="/about"
+            className="text-white flex items-center gap-2 shrink-0 "
+            href="/classify"
             title={`${config.appName} homepage`}
           >
             <Image
@@ -59,7 +59,7 @@ const AboutHeader = () => {
             />
             <span className="font-extrabold text-lg">{config.appName}</span>
             <span className="bg-stone-800 px-2 py-1 rounded-md text-stone-300 font-semibold text-xs">
-              Coming Soon
+              Beta
             </span>
           </Link>
         </div>

@@ -4,12 +4,12 @@ import {
   isSimpleTariff,
   sumPercentages,
   getTemporaryTariffRate,
-} from "../../libs/hts";
+} from "@/libs/hts";
 import {
   HtsElement,
   ClassificationProgression,
   TemporaryTariff,
-} from "../../interfaces/hts";
+} from "@/interfaces/hts";
 
 export class Tariff {
   htsCode: string;

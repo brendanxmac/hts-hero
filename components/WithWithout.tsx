@@ -12,27 +12,31 @@ interface PainPoint {
 const painPoints: PainPoint[] = [
   {
     title: "finding headings",
-    time: "10 min",
+    time: "10 minutes",
   },
   {
-    title: "fetching relevant notes",
-    time: "10 min",
+    title: "fetching notes",
+    time: "10 minutes",
   },
   {
     title: "looking up references",
-    time: "10 min",
+    time: "10 minutes",
   },
-  {
-    title: "finding CROSS rulings",
-    time: "20 min",
-  },
-  {
-    title: "for tariff calculation",
-    time: "15 min",
-  },
+  // {
+  //   title: "finding CROSS rulings",
+  //   time: "20 min",
+  // },
+  // {
+  //   title: "for tariff calculation",
+  //   time: "15 min",
+  // },
   {
     title: "creating client reports",
-    time: "30 min",
+    time: "10 minutes",
+  },
+  {
+    title: "ensuring auditability",
+    time: "5 minutes",
   },
 ];
 
@@ -40,15 +44,17 @@ const WithWithout = () => {
   return (
     <section className="bg-neutral-900">
       <div className="max-w-5xl mx-auto px-8 py-16 md:py-32 ">
-        <h2 className="text-center font-extrabold text-3xl md:text-5xl tracking-tight mb-8 md:mb-12">
+        <h2 className="text-white text-center font-extrabold text-3xl md:text-5xl tracking-tight mb-8 md:mb-12">
           {/* Spending too much time classifying products? */}
           {/* Tired of lengthy classifications? */}
           {/* Tired of Tedious Classification Work? */}
-          Classifications are Tedious
+          {/* Classifications are Tedious */}
+          Are you still <span className="text-primary">manually</span>{" "}
+          classifying?
         </h2>
 
         <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-8 md:gap-12">
-          <div className="bg-red-900/30 text-neutral-900 p-8 md:p-16 rounded-lg">
+          <div className="bg-primary/30 text-neutral-900 p-8 md:p-16 rounded-lg">
             {/* <h3 className="text-red-600 font-bold text-lg mb-4">
               Classification without HTS Hero
             </h3> */}
@@ -58,7 +64,7 @@ const WithWithout = () => {
               {painPoints.map((pain, index) => (
                 <li key={index} className="flex gap-2 items-center font-bold">
                   <p>
-                    <span className="text-red-600">
+                    <span className="text-primary">
                       {index === 0 ? "\u00A0\u00A0\u00A0" : "+"}
                       {pain.time}
                       {"\u00A0\u00A0"}
@@ -71,20 +77,13 @@ const WithWithout = () => {
               ))}
             </ul>
             <li className="flex flex-col gap-2 mt-2">
-              <hr className="w-full border border-red-600/20 mt-3" />
+              <hr className="w-full border border-primary/20 mt-3" />
               <div className="flex gap-2 items-end mt-5 justify-center">
-                <span className="text-red-600 font-bold text-2xl">
-                  ~ 1.5 hrs
+                <span className="text-primary font-bold text-2xl">
+                  ~ 45 minutes
                 </span>
-                <span className="text-red-600 font-bold">
-                  Per Classification
-                </span>
+                <span className="text-primary font-bold">/ Classification</span>
               </div>
-              {/* <div className="flex gap-2 items-center -mt-2">
-                // <span className="text-red-600 font-bold">
-                //   Per Classification
-                // </span>
-              </div> */}
             </li>
           </div>
 

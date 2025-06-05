@@ -37,44 +37,44 @@ const config = {
           {
             name: "Everything in one place, no more finding & downloading PDF's",
           },
-          {
-            name: "Jump to referenced elements with a single click",
-          },
+          // {
+          //   name: "Jump to referenced elements with a single click",
+          // },
           // {
           //   name: "Ongoing update that improve upon the USITC website issues",
           // },
           // { name: "Free forever for early adopters" },
         ],
       },
-      {
-        // REQUIRED — we use this to find the plan in the webhook (for instance if you want to update the user's credits based on the plan)
-        priceId:
-          process.env.NODE_ENV === "development"
-            ? "price_1Niyy5AxyNprDp7iZIqEyD2h"
-            : "price_456",
-        //  REQUIRED - Name of the plan, displayed on the pricing page
-        name: PricingPlan.Standard,
-        // A friendly description of the plan, displayed on the pricing page. Tip: explain why this plan and not others
-        description: "No more looking up notes, rulings, or references.",
-        // The price you want to display, the one user will be charged on Stripe.
-        price: 40,
-        // If you have an anchor price (i.e. $29) that you want to display crossed out, put it here. Otherwise, leave it empty
-        priceAnchor: null,
-        features: [
-          {
-            name: "Everything in Starter",
-          },
-          {
-            name: "Finds Related CROSS Rulings",
-          },
-          { name: "Finds Relevant Notes" },
-          {
-            name: "Finds HTS Element References",
-            details:
-              "Get the details of references like 'See Heading 9902.22.84' without searching for it",
-          },
-        ],
-      },
+      // {
+      //   // REQUIRED — we use this to find the plan in the webhook (for instance if you want to update the user's credits based on the plan)
+      //   priceId:
+      //     process.env.NODE_ENV === "development"
+      //       ? "price_1Niyy5AxyNprDp7iZIqEyD2h"
+      //       : "price_456",
+      //   //  REQUIRED - Name of the plan, displayed on the pricing page
+      //   name: PricingPlan.Standard,
+      //   // A friendly description of the plan, displayed on the pricing page. Tip: explain why this plan and not others
+      //   description: "No more looking up notes, rulings, or references.",
+      //   // The price you want to display, the one user will be charged on Stripe.
+      //   price: 40,
+      //   // If you have an anchor price (i.e. $29) that you want to display crossed out, put it here. Otherwise, leave it empty
+      //   priceAnchor: null,
+      //   features: [
+      //     {
+      //       name: "Everything in Starter",
+      //     },
+      //     {
+      //       name: "Finds Related CROSS Rulings",
+      //     },
+      //     { name: "Finds Relevant Notes" },
+      //     {
+      //       name: "Finds HTS Element References",
+      //       details:
+      //         "Get the details of references like 'See Heading 9902.22.84' without searching for it",
+      //     },
+      //   ],
+      // },
       {
         priceId:
           process.env.NODE_ENV === "development"
@@ -90,22 +90,24 @@ const config = {
         priceAnchor: 80,
         features: [
           {
-            name: "Everything in Standard",
+            name: "Everything in Starter",
           },
-          { name: "Product Analysis" },
-          { name: "Automatic Classifications" },
-          { name: "GRI Reasoning for Each Choice" },
+          // { name: "Product Analysis" },
+          { name: "Header Suggestions" },
           {
             name: "Best Match Suggestions",
-            details: "Autocomplete for Classifiers",
+            details: "For each classification level",
           },
-          { name: "Report Generation" },
+          { name: "Classification Reports" },
           {
-            name: "Tariff Calculator",
-            details:
-              "Get the tariff for your classification based on the country of origin",
-            comingSoon: true,
+            name: "Selection Logic for Each Level",
+            details: "Based on the GRI & Additional US Rules",
           },
+          // {
+          //   name: "Tariff Calculator",
+          //   details: "Get the tariff for any HTS Code in seconds",
+          //   comingSoon: true,
+          // },
         ],
       },
     ],
