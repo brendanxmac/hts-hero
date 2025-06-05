@@ -20,9 +20,9 @@ const features = [
   {
     title: "Results in Seconds",
     description:
-      "Type in your product description and in seconds, you'll have your HTS code plus tariff",
+      "No consultations & no delays. You'll have your code in just moments.",
     type: "video",
-    path: "/results-in-seconds.mp4",
+    path: "/classifiers-hero.mp4",
     format: "video/mp4",
     svg: (
       <svg
@@ -45,9 +45,9 @@ const features = [
     title: "Step by Step",
     description:
       "We move step by step through the product classification and show you all available options at every level. This allows you to easily explore alternatives & verify the selected option.",
-    type: "video",
-    path: "/step-by-step.mp4",
-    format: "video/mp4",
+    type: "image",
+    path: "/step-by-step.png",
+    format: "image/png",
     svg: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -66,12 +66,12 @@ const features = [
     ),
   },
   {
-    title: "Selection Logic",
+    title: "Intelligent Suggestions",
     description:
-      "For each step we include the reason why we chose the selected option. This helps you verify the selection and is a useful resource if customs asks how the code was determined",
+      "For each step we suggest the best option based on your description, and include the reason why we chose it. This helps you verify the selection and is a useful resource if customs asks you how the code was determined",
     type: "image",
     alt: "Selection Logic Image",
-    path: "/selection-logic.png",
+    path: "/suggested.png",
     svg: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -90,12 +90,11 @@ const features = [
     ),
   },
   {
-    title: "Quick Copy",
+    title: "Classification Report",
     description:
-      "Copy your code or tariff in a single click for quick use in other applications.",
-    type: "video",
-    path: "/quick-copy.mp4",
-    format: "video/mp4",
+      "We'll generate a detailed report of your entire classification, including the HTS Code, description, and tariff rates. Useful for later on if customs asks you for more information.",
+    type: "image",
+    path: "/classification-report.png",
     svg: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -109,27 +108,6 @@ const features = [
           strokeLinecap="round"
           strokeLinejoin="round"
           d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"
-        />
-      </svg>
-    ),
-  },
-  {
-    title: "Explore Alternatives (Coming Soon)",
-    description:
-      "Think there's a different code that's a better match at any step? Soon you'll be able to select another code from the list and HTS Hero will automatically compute the full classification and tariff for you.",
-    svg: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth="1.5"
-        stroke="currentColor"
-        className="size-6"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z"
         />
       </svg>
     ),
@@ -162,7 +140,7 @@ const Item = ({
           }}
           aria-expanded={isOpen}
         >
-          <span className={`duration-100 ${isOpen ? "text-[#40C969]" : ""}`}>
+          <span className={`duration-100 ${isOpen ? "text-primary" : ""}`}>
             {svg}
           </span>
           <span
@@ -172,7 +150,7 @@ const Item = ({
           >
             <h3
               className={`inline ${
-                isOpen ? "text-[#40C969]" : "text-neutral-200"
+                isOpen ? "text-primary" : "text-neutral-200"
               } `}
             >
               {title}
@@ -267,9 +245,15 @@ const FeaturesAccordion = () => {
       id="features"
     >
       <div className="px-3">
-        <h2 className="font-extrabold text-4xl lg:text-6xl tracking-tight mb-12 md:mb-24">
-          Type Description, Get Code
-        </h2>
+        <div className="flex flex-col gap-5 mb-6 md:mb-12">
+          <h2 className="text-white font-extrabold text-4xl lg:text-6xl tracking-tight">
+            Type Description, Get Code
+          </h2>
+          <p>
+            Simply type in your product description, and we'll guide you to your
+            HTS Code in a few quick steps
+          </p>
+        </div>
         <div className=" flex flex-col md:flex-row gap-12 md:gap-24">
           <div className="grid grid-cols-1 items-stretch gap-8 sm:gap-12 xl:grid-cols-2 lg:gap-20">
             <ul className="w-full xl:flex xl:flex-col xl:gap-5">

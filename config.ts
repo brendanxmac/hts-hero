@@ -5,8 +5,7 @@ const config = {
   // REQUIRED
   appName: "HTS Hero",
   // REQUIRED: a short description of your app for SEO tags (can be overwritten)
-  appDescription:
-    "The HTS code finder that helps you import with less worry & surprises to your bottom line.",
+  appDescription: "Classify anything in seconds",
   // REQUIRED (no https://, not trialing slash at the end, just the naked domain)
   domainName: "htshero.com",
   crisp: {
@@ -22,7 +21,7 @@ const config = {
         // REQUIRED — we use this to find the plan in the webhook (for instance if you want to update the user's credits based on the plan)
         priceId: process.env.NODE_ENV === "development" ? "lol" : "haha",
         //  REQUIRED - Name of the plan, displayed on the pricing page
-        name: PricingPlan.Starter,
+        name: PricingPlan.Explore,
         // A friendly description of the plan, displayed on the pricing page. Tip: explain why this plan and not others
         description:
           "Access the premium HTS explorer tool designed for classifiers", // & based on the USITC
@@ -82,7 +81,7 @@ const config = {
             : "price_456",
         // This plan will look different on the pricing page, it will be highlighted. You can only have one plan with isFeatured: true
         isFeatured: true,
-        name: PricingPlan.Pro,
+        name: PricingPlan.Classify,
         // Your Personal Classification Assistant
         // Autocomplete for Classifiers
         description: "Your Personal Classification Assistant",
@@ -90,7 +89,7 @@ const config = {
         priceAnchor: 80,
         features: [
           {
-            name: "Everything in Starter",
+            name: "Everything in Explore",
           },
           // { name: "Product Analysis" },
           { name: "Header Suggestions" },

@@ -34,7 +34,7 @@ const AboutFooter = () => {
             </Link>
 
             <p className="mt-3 text-sm text-base-content/80">
-              Classify any product in minutes
+              Classify any item in seconds
               {/* {config.appDescription} */}
             </p>
             <p className="mt-3 text-sm text-base-content/60">

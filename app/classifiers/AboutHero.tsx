@@ -39,7 +39,7 @@ const AboutHero = ({
           muted
           loop
           playsInline
-          src="/classify-hero.mp4"
+          src="/classifiers-hero.mp4"
         ></video>
       </div>
     </section>

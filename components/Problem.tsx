@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const Arrow = ({ extraStyle }: { extraStyle: string }) => {
   return (
     <svg
@@ -34,21 +36,24 @@ const Problem = () => {
   return (
     <section className="bg-neutral-900 text-neutral-content">
       <div className="max-w-7xl mx-auto px-8 py-16 md:py-32 text-center">
-        <h2 className="max-w-3xl mx-auto font-extrabold text-4xl md:text-5xl tracking-tight mb-16">
-          HTS Codes are... Difficult
+        <h2 className="text-white max-w-3xl mx-auto font-extrabold text-4xl md:text-5xl tracking-tight mb-16">
+          HTS Codes are... Complicated
         </h2>
         <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-8 sm:gap-3 mb-16">
           <div className="flex flex-col justify-center items-center">
-            <Step emoji="😅" text="Constant Updates" />
-            <p className="text-neutral-400 text-xs italic">ChatGPT fails</p>
+            {/* <Step emoji="😅" text="Constant Updates" /> */}
+            <Step emoji="😳" text="Lots of Rules" />
+            <p className="text-neutral-400 text-xs italic">
+              Applicable at different times
+            </p>
           </div>
 
           <Arrow extraStyle="max-md:-scale-x-100 md:-rotate-90" />
 
           <div className="flex flex-col justify-center items-center">
-            <Step emoji="⏳" text="Temporary Changes" />
+            <Step emoji="🔄" text="Constant Updates" />
             <p className="text-neutral-400 text-xs italic">
-              e.g. Trump Tariffs
+              13 this year alone
             </p>
           </div>
 
@@ -62,10 +67,33 @@ const Problem = () => {
           </div>
         </div>
 
-        <p className="max-w-3xl mx-auto text-lg opacity-90 leading-relaxed">
+        <p className="text-base-content max-w-3xl mx-auto text-lg opacity-90 leading-relaxed">
           Finding the right code typically means hiring an expert 💰, or trying
           to become one 📚
         </p>
+        <div className="flex items-center justify-center gap-1 w-full mt-8 md:mt-20 animate-pulse">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-4 h-4 text-neutral-300"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"
+            />
+          </svg>
+
+          <Link
+            className="text-center text-sm text-neutral-300 tracking-tight"
+            href="/importers#features"
+          >
+            There&apos;s an easier way
+          </Link>
+        </div>
       </div>
     </section>
   );

@@ -41,7 +41,7 @@ export default function Home() {
   return (
     <>
       <Suspense>
-        <AboutHeader />
+        <AboutHeader page="classifiers" />
       </Suspense>
       <main>
         <Register

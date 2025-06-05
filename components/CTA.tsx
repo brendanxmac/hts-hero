@@ -7,17 +7,15 @@ const CTA = () => {
       <div className="relative hero-overlay bg-neutral-900"></div>
       <div className="relative hero-content text-center text-neutral-content p-8">
         <div className="flex flex-col items-center max-w-3xl p-8 md:p-0">
-          <h2 className="font-bold text-4xl md:text-6xl tracking-tight mb-8 md:mb-12">
-            Make HTS Codes Easy!
+          <h2 className="text-white font-bold text-4xl md:text-6xl tracking-tight mb-8 md:mb-12">
+            Get your HTS Code now!
           </h2>
-          <p className="md:text-lg opacity-80 mb-12 md:mb-16">
-            Save yourself from reading through endless PDF&apos;s and hoping you
-            didn&apos;t miss something, or hiring someone for more who takes 10x
-            longer
+          <p className="md:text-lg mb-12 md:mb-16">
+            Spare your sanity and your wallet, you deserve it.
           </p>
 
           <Link
-            className="btn btn-primary bg-white text-black hover:text-white btn-wide rounded-md"
+            className="btn btn-primary btn-wide"
             href={config.auth.loginUrl}
           >
             Get {config.appName}
