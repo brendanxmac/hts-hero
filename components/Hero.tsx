@@ -11,7 +11,7 @@ const Hero = () => {
         </h1>
         <p className="text-lg text-neutral-300 leading-relaxed">
           Save hours of work, avoid fines or delays at customs, & stop blindly
-          relying on suppliers to get your code...
+          relying on suppliers to get your code right...
         </p>
 
         <Link
