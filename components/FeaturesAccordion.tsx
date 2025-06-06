@@ -44,7 +44,7 @@ const features = [
   {
     title: "Step by Step",
     description:
-      "We move step by step through the product classification and show you all available options at every level. This allows you to easily explore alternatives & verify the selected option.",
+      "We move step by step through the product classification and show you the options available at every level. This allows you to easily explore alternatives & verify suggestions (see below).",
     type: "image",
     path: "/step-by-step.png",
     format: "image/png",
@@ -92,7 +92,7 @@ const features = [
   {
     title: "Classification Report",
     description:
-      "We'll generate a detailed report of your entire classification, including the HTS Code, description, and tariff rates. Useful for later on if customs asks you for more information.",
+      "Get a detailed report of your entire classification. This includes the options, selection, and details at each level, as well as the final HTS Code, description, and tariff rates. Useful for later on if customs asks you for more information.",
     type: "image",
     path: "/classification-report.png",
     svg: (
@@ -250,8 +250,8 @@ const FeaturesAccordion = () => {
             Type Description, Get Code
           </h2>
           <p>
-            Simply type in your product description, and we'll guide you to your
-            HTS Code in a few quick steps
+            Simply type in your product description, and we'll guide you
+            step-by-step to a valid HTS Code for your product
           </p>
         </div>
         <div className=" flex flex-col md:flex-row gap-12 md:gap-24">
