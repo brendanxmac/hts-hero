@@ -1,5 +1,5 @@
 import themes from "daisyui/src/theming/themes";
-import { ConfigProps, PricingPlan } from "./types/config";
+import { ConfigProps, PricingPlan, PricingType } from "./types/config";
 
 const config = {
   // REQUIRED
@@ -16,33 +16,142 @@ const config = {
   },
   stripe: {
     // Create multiple plans in your Stripe dashboard, then add them here. You can add as many plans as you want, just make sure to add the priceId
-    plans: [
+    importerPlans: [
+      // {
+      //   priceId: process.env.NODE_ENV === "development" ? "1" : "2",
+      //   name: PricingPlan.MANUAL_SINGLE,
+      //   description: "A single classification from a manual classifier",
+      //   type: PricingType.ONE_TIME,
+      //   price: 150,
+      //   priceAnchor: null,
+      //   isCompetitor: true,
+      //   features: [
+      //     {
+      //       name: "Usually takes over a day",
+      //     },
+      //     {
+      //       name: "Might required lots of back and forth",
+      //     },
+      //     {
+      //       name: "Might need to pay more in some cases...",
+      //     },
+      //   ],
+      // },
       {
         // REQUIRED — we use this to find the plan in the webhook (for instance if you want to update the user's credits based on the plan)
-        priceId: process.env.NODE_ENV === "development" ? "lol" : "haha",
+        priceId: process.env.NODE_ENV === "development" ? "3" : "4",
         //  REQUIRED - Name of the plan, displayed on the pricing page
-        name: PricingPlan.Explore,
+        name: PricingPlan.ONE_DAY_PASS,
         // A friendly description of the plan, displayed on the pricing page. Tip: explain why this plan and not others
-        description:
-          "Access the premium HTS explorer tool designed for classifiers", // & based on the USITC
+        description: "Get your code, and get on with your day", // & based on the USITC
+        // The type of pricing plan, either one time or subscription
+        type: PricingType.ONE_TIME,
         // The price you want to display, the one user will be charged on Stripe.
-        price: 0,
+        price: 25,
         // If you have an anchor price (i.e. $29) that you want to display crossed out, put it here. Otherwise, leave it empty
-        priceAnchor: null,
+        priceAnchor: 40,
         features: [
           {
-            name: "Navigate & Search the HTS with ease",
+            name: "The HTS Hero Classification Assistant",
+            details: "Type description, get code",
           },
           {
-            name: "Everything in one place, no more finding & downloading PDF's",
+            name: "Downloadable classification reports",
           },
-          // {
-          //   name: "Jump to referenced elements with a single click",
-          // },
-          // {
-          //   name: "Ongoing update that improve upon the USITC website issues",
-          // },
-          // { name: "Free forever for early adopters" },
+          {
+            name: "Access for up to 1 day",
+          },
+        ],
+      },
+      {
+        priceId: process.env.NODE_ENV === "development" ? "5" : "6",
+        name: PricingPlan.FIVE_DAY_PASS,
+        description: "Get your code, take your time",
+        type: PricingType.ONE_TIME,
+        price: 40,
+        priceAnchor: 60,
+        isFeatured: true,
+        features: [
+          {
+            name: "The HTS Hero Classification Assistant",
+            details: "Type description, get code",
+          },
+          {
+            name: "Downloadable classification reports",
+          },
+          {
+            name: "Access for up to 5 days",
+          },
+        ],
+      },
+      // {
+      //   // REQUIRED — we use this to find the plan in the webhook (for instance if you want to update the user's credits based on the plan)
+      //   priceId: process.env.NODE_ENV === "development" ? "lol" : "haha",
+      //   //  REQUIRED - Name of the plan, displayed on the pricing page
+      //   name: PricingPlan.PRO,
+      //   // A friendly description of the plan, displayed on the pricing page. Tip: explain why this plan and not others
+      //   description: "Full access, as long as you want", // & based on the USITC
+      //   type: PricingType.SUBSCRIPTION,
+      //   // The price you want to display, the one user will be charged on Stripe.
+      //   price: 30,
+      //   // If you have an anchor price (i.e. $29) that you want to display crossed out, put it here. Otherwise, leave it empty
+      //   priceAnchor: 45,
+      //   features: [
+      //     {
+      //       name: "Get the full HTS Hero experience",
+      //       details: "Including all of the classification features",
+      //     },
+      //     {
+      //       name: "Download & keep your classification reports",
+      //     },
+      //     {
+      //       name: "Unlimited access",
+      //     },
+      //   ],
+      // },
+    ],
+    classifierPlans: [
+      {
+        priceId: process.env.NODE_ENV === "development" ? "lol" : "haha",
+        name: PricingPlan.STANDARD,
+        description:
+          "Instantly Access to our intelligent classification system", // & based on the USITC
+        type: PricingType.SUBSCRIPTION,
+        price: 30,
+        priceAnchor: 45,
+        features: [
+          { name: "Header Suggestions" },
+          {
+            name: "Best Match Suggestions",
+            details: "For each classification level",
+          },
+          { name: "Classification Reports" },
+          {
+            name: "Selection Logic for Each Level",
+            details: "Based on the GRI & Additional US Rules",
+          },
+        ],
+      },
+      {
+        priceId: process.env.NODE_ENV === "development" ? "lol" : "haha",
+        name: PricingPlan.PRO,
+        description: "Download & keep classification reports forever", // & based on the USITC
+        type: PricingType.SUBSCRIPTION,
+        price: 40,
+        priceAnchor: 60,
+        isFeatured: true,
+        features: [
+          { name: "Header Suggestions" },
+          {
+            name: "Best Match Suggestions",
+            details: "For each classification level",
+          },
+          { name: "Classification Reports" },
+          {
+            name: "Selection Logic for Each Level",
+            details: "Based on the GRI & Additional US Rules",
+          },
+          { name: "Download & keep your classification reports" },
         ],
       },
       // {
@@ -74,41 +183,6 @@ const config = {
       //     },
       //   ],
       // },
-      {
-        priceId:
-          process.env.NODE_ENV === "development"
-            ? "price_1O5KtcAxyNprDp7iftKnrrpw"
-            : "price_456",
-        // This plan will look different on the pricing page, it will be highlighted. You can only have one plan with isFeatured: true
-        isFeatured: true,
-        name: PricingPlan.Classify,
-        // Your Personal Classification Assistant
-        // Autocomplete for Classifiers
-        description: "Your Personal Classification Assistant",
-        price: 60,
-        priceAnchor: 80,
-        features: [
-          {
-            name: "Everything in Explore",
-          },
-          // { name: "Product Analysis" },
-          { name: "Header Suggestions" },
-          {
-            name: "Best Match Suggestions",
-            details: "For each classification level",
-          },
-          { name: "Classification Reports" },
-          {
-            name: "Selection Logic for Each Level",
-            details: "Based on the GRI & Additional US Rules",
-          },
-          // {
-          //   name: "Tariff Calculator",
-          //   details: "Get the tariff for any HTS Code in seconds",
-          //   comingSoon: true,
-          // },
-        ],
-      },
     ],
   },
   // aws: {

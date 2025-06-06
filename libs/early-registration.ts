@@ -3,7 +3,8 @@ import apiClient from "@/libs/api";
 export enum RegistrationTrigger {
   referral = "referral",
   hero = "hero",
-  starter = "pricing_starter",
+  oneDayPass = "pricing_one_day_pass",
+  fiveDayPass = "pricing_five_day_pass",
   standard = "pricing_standard",
   pro = "pricing_pro",
   cta = "cta",

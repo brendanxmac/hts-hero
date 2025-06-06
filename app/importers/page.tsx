@@ -19,10 +19,7 @@ export default function Home() {
         <Hero />
         <Problem />
         <FeaturesAccordion />
-        <Pricing
-          setIsRegisterOpen={() => {}}
-          setRegistrationTrigger={() => {}}
-        />
+        <Pricing customerType="importer" />
         <CTA />
         {/* <FAQ /> */}
       </main>

@@ -53,7 +53,7 @@ const Problem = () => {
           <div className="flex flex-col justify-center items-center">
             <Step emoji="🔄" text="Constant Updates" />
             <p className="text-neutral-400 text-xs italic">
-              13 this year alone
+              13 this year already!
             </p>
           </div>
 
@@ -62,14 +62,14 @@ const Problem = () => {
           <div className="flex flex-col justify-center items-center">
             <Step emoji="😵‍💫" text="Confusing References" />
             <p className="text-neutral-400 text-xs italic">
-              &quot;See Note 14(c)(iii)(3)&quot;
+              Like: &quot;See Note 14(c)(iii)(3)&quot;
             </p>
           </div>
         </div>
 
-        <p className="text-base-content max-w-3xl mx-auto text-lg opacity-90 leading-relaxed">
-          Finding the right code typically means hiring an expert 💰, or trying
-          to become one 📚
+        <p className="text-white max-w-3xl mx-auto text-xl font-bold opacity-90 leading-relaxed">
+          Finding the right code means hiring an expert 💰, or trying to become
+          one 📚
         </p>
         <div className="flex items-center justify-center gap-1 w-full mt-8 md:mt-20 animate-pulse">
           <svg

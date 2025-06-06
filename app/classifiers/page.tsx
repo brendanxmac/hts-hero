@@ -61,6 +61,7 @@ export default function Home() {
           setRegistrationTrigger={setRegistrationTrigger}
         />
         <Pricing
+          customerType="classifier"
           setIsRegisterOpen={setIsRegisterOpen}
           setRegistrationTrigger={setRegistrationTrigger}
         />

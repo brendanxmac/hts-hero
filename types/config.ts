@@ -66,11 +66,32 @@ export type Theme = "black" | "light" | "dark" | "";
 // | "";
 
 export enum PricingPlan {
-  Starter = "Starter",
-  Standard = "Standard",
-  Pro = "Pro",
-  Explore = "Explore",
-  Classify = "Classify",
+  MANUAL_SINGLE = "Single Classification",
+  ONE_DAY_PASS = "One Day Pass", // 1 day access to classify (downloads included)
+  FIVE_DAY_PASS = "Five Day Pass", // 5 days of access to classify (downloads included)
+  STANDARD = "Standard", // classify access - no reports
+  PRO = "Pro", // standard + reports
+}
+
+export enum PricingType {
+  ONE_TIME = "One Time",
+  SUBSCRIPTION = "Subscription",
+}
+
+interface PricingPlanI {
+  isFeatured?: boolean;
+  isCompetitor?: boolean;
+  type: PricingType;
+  priceId: string;
+  name: PricingPlan;
+  description?: string;
+  price: number;
+  priceAnchor?: number;
+  features: {
+    name: string;
+    details?: string;
+    comingSoon?: boolean;
+  }[];
 }
 
 export interface ConfigProps {
@@ -82,19 +103,8 @@ export interface ConfigProps {
     onlyShowOnRoutes?: string[];
   };
   stripe: {
-    plans: {
-      isFeatured?: boolean;
-      priceId: string;
-      name: PricingPlan;
-      description?: string;
-      price: number;
-      priceAnchor?: number;
-      features: {
-        name: string;
-        details?: string;
-        comingSoon?: boolean;
-      }[];
-    }[];
+    importerPlans: PricingPlanI[];
+    classifierPlans: PricingPlanI[];
   };
   aws?: {
     bucket?: string;
