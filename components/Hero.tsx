@@ -10,8 +10,8 @@ const Hero = () => {
           <span className="text-primary">in Seconds</span>
         </h1>
         <p className="text-lg text-neutral-300 leading-relaxed">
-          Save hours of work, avoid fines or delays at customs, & stop blindly
-          relying on suppliers to get your code right...
+          Save hours of work, avoid fines or delays at customs, and verify codes
+          from suppliers.
         </p>
 
         <Link
@@ -30,7 +30,7 @@ const Hero = () => {
           muted
           loop
           playsInline
-          src="/classifiers-hero.mp4"
+          src="/finalish.mp4"
         ></video>
       </div>
     </section>

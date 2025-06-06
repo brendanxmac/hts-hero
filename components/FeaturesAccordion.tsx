@@ -18,34 +18,11 @@ interface Feature {
 
 const features = [
   {
-    title: "Results in Seconds",
-    description:
-      "No consultations & no delays. You'll have your code in just moments.",
-    type: "video",
-    path: "/classifiers-hero.mp4",
-    format: "video/mp4",
-    svg: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth="1.5"
-        stroke="currentColor"
-        className="size-6"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"
-        />
-      </svg>
-    ),
-  },
-  {
     title: "Step by Step",
     description:
       "We move step by step through the product classification and show you the options available at every level. This allows you to easily explore alternatives & verify suggestions (see below).",
     type: "image",
+    alt: "Step by Step Image",
     path: "/step-by-step.png",
     format: "image/png",
     svg: (
@@ -70,7 +47,7 @@ const features = [
     description:
       "For each step we suggest the best option based on your description, and include the reason why we chose it. This helps you verify the selection and is a useful resource if customs asks you how the code was determined",
     type: "image",
-    alt: "Selection Logic Image",
+    alt: "Intelligent Suggestions Image",
     path: "/suggested.png",
     svg: (
       <svg
@@ -90,10 +67,36 @@ const features = [
     ),
   },
   {
+    title: "Results in Seconds",
+    description:
+      "No consultations & no delays. You'll have your code in just moments.",
+    type: "video",
+    alt: "Results in Seconds Video",
+    path: "/classifiers-hero.mp4",
+    format: "video/mp4",
+    svg: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth="1.5"
+        stroke="currentColor"
+        className="size-6"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"
+        />
+      </svg>
+    ),
+  },
+  {
     title: "Classification Report",
     description:
       "Get a detailed report of your entire classification. This includes the options, selection, and details at each level, as well as the final HTS Code, description, and tariff rates. Useful for later on if customs asks you for more information.",
     type: "image",
+    alt: "Classification Report Image",
     path: "/classification-report.png",
     svg: (
       <svg
@@ -241,7 +244,7 @@ const FeaturesAccordion = () => {
 
   return (
     <section
-      className="py-24 md:py-32 space-y-24 md:space-y-32 max-w-7xl mx-auto bg-base-100 "
+      className="px-6 lg:px-0 py-24 md:py-32 space-y-24 md:space-y-32 max-w-7xl mx-auto bg-base-100 "
       id="features"
     >
       <div className="px-3">
@@ -249,9 +252,8 @@ const FeaturesAccordion = () => {
           <h2 className="text-white font-extrabold text-4xl lg:text-6xl tracking-tight">
             Type Description, Get Code
           </h2>
-          <p>
-            Simply type in your product description, and we'll guide you
-            step-by-step to a valid HTS Code for your product
+          <p className="pl-2 text-base-content">
+            We guide you step-by-step to a valid HTS Code for your product
           </p>
         </div>
         <div className=" flex flex-col md:flex-row gap-12 md:gap-24">
