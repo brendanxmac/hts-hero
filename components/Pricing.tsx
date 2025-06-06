@@ -10,6 +10,7 @@ import { PricingPlan, PricingType } from "../types";
 
 interface PricingProps {
   customerType: "importer" | "classifier";
+  setShowItsFree: (show: boolean) => void;
 }
 
 const getPricingPlans = (customerType: "importer" | "classifier") => {
@@ -35,7 +36,7 @@ const getPricingHeadline = (customerType: "importer" | "classifier") => {
   );
 };
 
-const Pricing = ({ customerType }: PricingProps) => {
+const Pricing = ({ customerType, setShowItsFree }: PricingProps) => {
   return (
     <section className="bg-neutral-900 overflow-hidden" id="pricing">
       <div className="py-16 px-8 max-w-7xl mx-auto">
@@ -202,15 +203,14 @@ const Pricing = ({ customerType }: PricingProps) => {
                         //     : "Go Pro"
                       }
                       onClick={() => {
-                        const trigger =
-                          plan.name === PricingPlan.ONE_DAY_PASS
-                            ? RegistrationTrigger.oneDayPass
-                            : plan.name === PricingPlan.FIVE_DAY_PASS
-                              ? RegistrationTrigger.fiveDayPass
-                              : RegistrationTrigger.pro;
+                        // const trigger =
+                        //   plan.name === PricingPlan.ONE_DAY_PASS
+                        //     ? RegistrationTrigger.oneDayPass
+                        //     : plan.name === PricingPlan.FIVE_DAY_PASS
+                        //       ? RegistrationTrigger.fiveDayPass
+                        //       : RegistrationTrigger.pro;
 
-                        setIsRegisterOpen(true);
-                        setRegistrationTrigger(trigger);
+                        setShowItsFree(true);
                       }}
                     />
                   </div>
