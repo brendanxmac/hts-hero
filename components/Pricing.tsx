@@ -28,6 +28,10 @@ const getPricingHeadline = (customerType: "importer" | "classifier") => {
     return (
       <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-5xl max-w-4xl mx-auto tracking-relaxed">
         Fast & Affordable HTS Codes <br /> for Busy Importers
+        <br />
+        <span className="text-xl text-red-600">
+          ---- ADD MONEY BACK GUARANTEE! ----
+        </span>
       </h2>
     );
   }

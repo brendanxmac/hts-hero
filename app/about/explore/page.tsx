@@ -3,12 +3,12 @@
 import { Suspense } from "react";
 // import Register from "../../components/Register";
 // import { RegistrationTrigger } from "../../libs/early-registration";
-import ExploreCTA from "./ExploreCTA";
-import ExploreFooter from "./ExploreFooter";
-import ExploreHeader from "./ExploreHeader";
-import ExploreHero from "./ExploreHero";
-import ExploreProblem from "./ExploreProblem";
-import ExploreFeaturesAccordion from "./ExploreFeaturesAccordion";
+import ExploreCTA from "../../../components/ExploreCTA";
+import ExploreFooter from "../../../components/ExploreFooter";
+import ExploreHeader from "../../../components/ExploreHeader";
+import ExploreHero from "../../../components/ExploreHero";
+import ExploreProblem from "../../../components/ExploreProblem";
+import ExploreFeaturesAccordion from "../../../components/ExploreFeaturesAccordion";
 
 export default function Home() {
   // const [ref, setRef] = useState<string | null>();

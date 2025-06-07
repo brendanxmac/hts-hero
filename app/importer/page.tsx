@@ -8,6 +8,8 @@ import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
 import Pricing from "@/components/Pricing";
 import { BuyAttempt } from "../api/buy-attempt/route";
+import ItsFree from "../../components/ItsFree";
+import AboutHeader from "../../components/AboutHeader";
 
 export default function Home() {
   const [buyAttempt, setBuyAttempt] = useState<BuyAttempt | null>(null);

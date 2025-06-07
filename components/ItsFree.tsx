@@ -47,7 +47,7 @@ export default function ItsFree({ buyAttempt, isOpen, onClose }: ItsFreeProps) {
               </div>
               <div className="mb-6 flex flex-col gap-4">
                 <p className="text-gray-100">
-                  Instead of charging you, we're offering full access to
+                  Instead of charging you, we&apos;re offering full access to
                   everyone who helps us shape the future of HTS Hero.
                 </p>
                 <p className="text-gray-100">

@@ -46,7 +46,7 @@ const AboutHeader = ({ page }: { page: "classifiers" | "importers" }) => {
         <div className="flex lg:flex-1">
           <Link
             className="text-white flex items-center gap-2 shrink-0 "
-            href="/classify"
+            href="/app"
             title={`${config.appName} homepage`}
           >
             <Image
