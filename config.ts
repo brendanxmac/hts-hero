@@ -43,7 +43,8 @@ const config = {
         //  REQUIRED - Name of the plan, displayed on the pricing page
         name: PricingPlan.ONE_DAY_PASS,
         // A friendly description of the plan, displayed on the pricing page. Tip: explain why this plan and not others
-        description: "Get your code, and get on with your day", // & based on the USITC
+        description:
+          "The most affordable way to get your code and get on with your day", // & based on the USITC
         // The type of pricing plan, either one time or subscription
         type: PricingType.ONE_TIME,
         // The price you want to display, the one user will be charged on Stripe.
@@ -52,35 +53,36 @@ const config = {
         priceAnchor: 40,
         features: [
           {
-            name: "The HTS Hero Classification Assistant",
-            details: "Type description, get code",
+            name: "Full Access to the Classification Tool",
           },
           {
-            name: "Downloadable classification reports",
+            name: "Ability to Download Classification Reports",
+            details: "For your records & if customs asks questions",
           },
           {
-            name: "Access for up to 1 day",
+            name: "Expires after 1 day",
           },
         ],
       },
       {
         priceId: process.env.NODE_ENV === "development" ? "5" : "6",
         name: PricingPlan.FIVE_DAY_PASS,
-        description: "Get your code, take your time",
+        description:
+          "More time to get your code and cover yourself if any updates come about.",
         type: PricingType.ONE_TIME,
         price: 40,
         priceAnchor: 60,
         isFeatured: true,
         features: [
           {
-            name: "The HTS Hero Classification Assistant",
-            details: "Type description, get code",
+            name: "Full Access to the Classification Tool",
           },
           {
-            name: "Downloadable classification reports",
+            name: "Ability to Download Classification Reports",
+            details: "For your records & if customs asks questions",
           },
           {
-            name: "Access for up to 5 days",
+            name: "Extended Access for up to 5 days",
           },
         ],
       },

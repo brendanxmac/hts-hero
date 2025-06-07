@@ -37,7 +37,7 @@ const AboutHeader = ({ page }: { page: "classifiers" | "importers" }) => {
   }, [searchParams]);
 
   return (
-    <header className="bg-black">
+    <header className="bg-base-100">
       <nav
         className="container flex items-center justify-between px-8 py-4 mx-auto"
         aria-label="Global"
@@ -58,7 +58,7 @@ const AboutHeader = ({ page }: { page: "classifiers" | "importers" }) => {
               height={32}
             />
             <span className="font-extrabold text-lg">{config.appName}</span>
-            <span className="bg-stone-800 px-2 py-1 rounded-md text-stone-300 font-semibold text-xs">
+            <span className="bg-base-300 px-2 py-1 rounded-md text-stone-300 font-semibold text-xs">
               Beta
             </span>
           </Link>
