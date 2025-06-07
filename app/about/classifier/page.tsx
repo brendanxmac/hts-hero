@@ -1,17 +1,15 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import AboutHeader from "./AboutHeader";
-import AboutHero from "./AboutHero";
-import AboutCTA from "./AboutCTA";
-import AboutFooter from "./AboutFooter";
-import FeaturesListicle from "../../components/FeaturesListicle";
-import Pricing from "../../components/Pricing";
-import Register from "../../components/Register";
-import { RegistrationTrigger } from "../../libs/early-registration";
-import WithWithout from "../../components/WithWithout";
-import { BuyAttempt } from "../api/buy-attempt/route";
-import ItsFree from "../../components/ItsFree";
+import AboutHeader from "../../../components/AboutHeader";
+import AboutHero from "../../../components/AboutHero";
+import AboutCTA from "../../../components/AboutCTA";
+import AboutFooter from "../../../components/AboutFooter";
+import Pricing from "../../../components/Pricing";
+import WithWithout from "../../../components/WithWithout";
+import ItsFree from "../../../components/ItsFree";
+import FeaturesListicle from "../../../components/FeaturesListicle";
+import { BuyAttempt } from "../../api/buy-attempt/route";
 
 export default function Home() {
   // const [ref, setRef] = useState<string | null>();
