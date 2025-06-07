@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const CTA = () => {
   return (
-    <section className="bg-base-100 hero overflow-hidden min-h-[75vh]">
+    <section className="hero overflow-hidden min-h-[75vh]">
       <div className="relative hero-overlay bg-base-100"></div>
       <div className="relative hero-content text-center text-neutral-content p-8">
         <div className="flex flex-col items-center max-w-3xl p-8 md:p-0">

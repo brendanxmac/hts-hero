@@ -21,7 +21,7 @@ export default function Home() {
         <FeaturesAccordion />
         {/* <Pricing /> */}
         <CTA />
-        <FAQ />
+        {/* <FAQ /> */}
       </main>
       <Footer />
     </>
