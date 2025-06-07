@@ -4,20 +4,21 @@ import React, { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
+import { BuyAttempt } from "../app/api/buy-attempt/route";
+import { upsertBuyAttempt } from "../libs/buy-attempt";
 
 interface ItsFreeProps {
+  buyAttempt: BuyAttempt;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export default function ItsFree({ isOpen, onClose }: ItsFreeProps) {
+export default function ItsFree({ buyAttempt, isOpen, onClose }: ItsFreeProps) {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState("");
-
-  const handleSignUp = () => {
-    // Here you could save the feedback before redirecting
-    router.push("/signin");
-  };
+  const [jobTitle, setJobTitle] = useState("");
+  const [customJobTitle, setCustomJobTitle] = useState("");
 
   return (
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
@@ -53,18 +54,59 @@ export default function ItsFree({ isOpen, onClose }: ItsFreeProps) {
                   Your feedback helps us build the right features — and
                   eventually, the right pricing too.
                 </p>
+
                 <div className="mt-2">
+                  <select
+                    value={jobTitle}
+                    onChange={(e) => setJobTitle(e.target.value)}
+                    className="select select-bordered w-full bg-gray-800 text-white border-gray-700"
+                  >
+                    <option value="">What&apos;s your job title?</option>
+                    <option value="Customs Broker">Customs Broker</option>
+                    <option value="Freight Forwarder">Freight Forwarder</option>
+                    <option value="Ecommerce Seller">Ecommerce Seller</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  {jobTitle === "Other" && (
+                    <input
+                      type="text"
+                      value={customJobTitle}
+                      onChange={(e) => setCustomJobTitle(e.target.value)}
+                      placeholder="Please specify your job title"
+                      className="input input-bordered w-full mt-2 bg-gray-800 text-white placeholder:text-gray-400 border-gray-700"
+                    />
+                  )}
                   <textarea
                     value={feedback}
                     onChange={(e) => setFeedback(e.target.value)}
-                    placeholder="What are you most excited about with HTS Hero?"
-                    className="resize-none w-full input input-bordered bg-gray-800 text-white placeholder:text-gray-400 border-gray-700 transition-colors min-h-[100px] p-3 rounded-md"
+                    placeholder="What excites you about HTS Hero?"
+                    className="textarea textarea-bordered resize-none w-full mt-4 bg-gray-800 text-white placeholder:text-gray-400 border-gray-700 min-h-[100px]"
                   />
                 </div>
               </div>
 
-              <button onClick={handleSignUp} className="btn btn-primary w-full">
-                Get Started
+              <button
+                onClick={async () => {
+                  setLoading(true);
+                  await upsertBuyAttempt({
+                    ...buyAttempt,
+                    reason: feedback,
+                    job_title:
+                      jobTitle === "Other"
+                        ? customJobTitle || "Other"
+                        : jobTitle,
+                  });
+                  setLoading(false);
+                  router.push("/signin");
+                }}
+                className="btn btn-primary w-full"
+                disabled={loading}
+              >
+                {loading ? (
+                  <span className="loading loading-spinner loading-xs"></span>
+                ) : (
+                  "Try it Free!"
+                )}
               </button>
             </div>
           </Dialog.Panel>

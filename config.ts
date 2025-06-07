@@ -112,7 +112,7 @@ const config = {
     ],
     classifierPlans: [
       {
-        priceId: process.env.NODE_ENV === "development" ? "lol" : "haha",
+        priceId: process.env.NODE_ENV === "development" ? "7" : "8",
         name: PricingPlan.STANDARD,
         description:
           "Instantly Access to our intelligent classification system", // & based on the USITC
@@ -133,7 +133,7 @@ const config = {
         ],
       },
       {
-        priceId: process.env.NODE_ENV === "development" ? "lol" : "haha",
+        priceId: process.env.NODE_ENV === "development" ? "9" : "10",
         name: PricingPlan.PRO,
         description: "Download & keep classification reports forever", // & based on the USITC
         type: PricingType.SUBSCRIPTION,

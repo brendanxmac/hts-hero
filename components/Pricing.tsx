@@ -1,8 +1,10 @@
 import config from "@/config";
 import { classNames } from "../utilities/style";
-import { RegistrationTrigger } from "../libs/early-registration";
 import FakeButtonCheckout from "./FakeButtonCheckout";
 import { PricingPlan, PricingType } from "../types";
+import { BuyAttempt } from "../app/api/buy-attempt/route";
+import { upsertBuyAttempt } from "../libs/buy-attempt";
+import { useState } from "react";
 
 // <Pricing/> displays the pricing plans for your app
 // It's your Stripe config in config.js.stripe.plans[] that will be used to display the plans
@@ -10,6 +12,7 @@ import { PricingPlan, PricingType } from "../types";
 
 interface PricingProps {
   customerType: "importer" | "classifier";
+  setBuyAttempt: (buyAttempt: BuyAttempt) => void;
   setShowItsFree: (show: boolean) => void;
 }
 
@@ -30,13 +33,21 @@ const getPricingHeadline = (customerType: "importer" | "classifier") => {
   }
   return (
     <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-5xl max-w-3xl mx-auto tracking-relaxed">
+      {/* A Personal Classification Assistant */}
+      {/* An Expert Classification Assistant */}
       Save hours on classification,
       <br /> for less than your daily coffee
     </h2>
   );
 };
 
-const Pricing = ({ customerType, setShowItsFree }: PricingProps) => {
+const Pricing = ({
+  customerType,
+  setShowItsFree,
+  setBuyAttempt,
+}: PricingProps) => {
+  const [buyingPlan, setBuyingPlan] = useState<PricingPlan | null>(null);
+
   return (
     <section className="bg-neutral-900 overflow-hidden" id="pricing">
       <div className="py-16 px-8 max-w-7xl mx-auto">
@@ -194,23 +205,18 @@ const Pricing = ({ customerType, setShowItsFree }: PricingProps) => {
                     {/* TODO: Enable this in the future before go live*/}
                     {/* <ButtonCheckout priceId={plan.priceId} mode="subscription" /> */}
                     <FakeButtonCheckout
-                      text={
-                        "Buy now!"
-                        // plan.name === PricingPlan.Starter
-                        //   ? "Try Now"
-                        //   : plan.name === PricingPlan.Standard
-                        //     ? "Get Standard"
-                        //     : "Go Pro"
-                      }
-                      onClick={() => {
-                        // const trigger =
-                        //   plan.name === PricingPlan.ONE_DAY_PASS
-                        //     ? RegistrationTrigger.oneDayPass
-                        //     : plan.name === PricingPlan.FIVE_DAY_PASS
-                        //       ? RegistrationTrigger.fiveDayPass
-                        //       : RegistrationTrigger.pro;
-
+                      loading={buyingPlan === plan.name}
+                      text={"Buy now!"}
+                      onClick={async () => {
+                        setBuyingPlan(plan.name);
+                        const buyAttempt = await upsertBuyAttempt({
+                          window_id: window.name,
+                          pricing_plan: plan.name,
+                          plan_type: plan.type,
+                        });
+                        setBuyAttempt(buyAttempt);
                         setShowItsFree(true);
+                        setBuyingPlan(null);
                       }}
                     />
                   </div>

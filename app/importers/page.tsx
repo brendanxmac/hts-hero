@@ -1,5 +1,6 @@
 "use client";
-import { Suspense, useState } from "react";
+
+import { Suspense, useEffect, useState } from "react";
 import Hero from "@/components/Hero";
 import Problem from "@/components/Problem";
 import FeaturesAccordion from "@/components/FeaturesAccordion";
@@ -9,20 +10,37 @@ import Footer from "@/components/Footer";
 import AboutHeader from "../classifiers/AboutHeader";
 import Pricing from "@/components/Pricing";
 import ItsFree from "../../components/ItsFree";
+import { BuyAttempt } from "../api/buy-attempt/route";
 
 export default function Home() {
+  const [buyAttempt, setBuyAttempt] = useState<BuyAttempt | null>(null);
   const [showItsFree, setShowItsFree] = useState(false);
+
+  useEffect(() => {
+    if (!window.name) {
+      window.name = crypto.randomUUID(); // Generate a unique ID to set a 'session' for the user
+    }
+  }, []);
+
   return (
     <>
       <Suspense>
         <AboutHeader page="importers" />
       </Suspense>
       <main>
-        <ItsFree isOpen={showItsFree} onClose={() => setShowItsFree(false)} />
+        <ItsFree
+          buyAttempt={buyAttempt}
+          isOpen={showItsFree}
+          onClose={() => setShowItsFree(false)}
+        />
         <Hero />
         <Problem />
         <FeaturesAccordion />
-        <Pricing customerType="importer" setShowItsFree={setShowItsFree} />
+        <Pricing
+          customerType="importer"
+          setBuyAttempt={setBuyAttempt}
+          setShowItsFree={setShowItsFree}
+        />
         <CTA />
         {/* <FAQ /> */}
       </main>
