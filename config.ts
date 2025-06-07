@@ -122,38 +122,38 @@ const config = {
         price: 30,
         priceAnchor: 45,
         features: [
-          { name: "Header Suggestions" },
+          { name: "Heading Discovery" },
           {
-            name: "Best Match Suggestions",
-            details: "For each classification level",
-          },
-          { name: "Classification Reports" },
-          {
-            name: "Selection Logic for Each Level",
+            name: "Best Match Suggestions at Every Level",
             details: "Based on the GRI & Additional US Rules",
+          },
+          { name: "Fetches Relevant Notes" },
+          {
+            name: "Built-in PDF Viewer",
+            details:
+              "No need to download something just to find what you're looking for",
           },
         ],
       },
       {
         priceId: process.env.NODE_ENV === "development" ? "9" : "10",
         name: PricingPlan.PRO,
-        description: "Download & keep classification reports forever", // & based on the USITC
+        description: "Automactically Generate & Download Reports", // & based on the USITC
         type: PricingType.SUBSCRIPTION,
         price: 40,
         priceAnchor: 60,
         isFeatured: true,
         features: [
-          { name: "Header Suggestions" },
+          { name: "Everything in Standard, Plus:" },
           {
-            name: "Best Match Suggestions",
-            details: "For each classification level",
+            name: "Generates Full Classification Reports",
+            details: "Ready to share with clients or customs",
           },
-          { name: "Classification Reports" },
           {
-            name: "Selection Logic for Each Level",
-            details: "Based on the GRI & Additional US Rules",
+            name: "Saves all your classifications",
+            details: "For easy access, reference, & auditability",
+            comingSoon: true,
           },
-          { name: "Download & keep your classification reports" },
         ],
       },
       // {
