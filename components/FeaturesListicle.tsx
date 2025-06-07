@@ -2,13 +2,10 @@
 
 import { useState, useRef } from "react";
 import type { JSX } from "react";
-import PuzzlePieceSVG from "./svg/PuzzlePieceSVG";
 import { FeaturePoint, FeaturePoints } from "./FeaturePoints";
-import CheckBadgeSVG from "./svg/CheckBadgeSVG";
 import DocumentSearchSVG from "./svg/DocumentSearchSVG";
 import LightBulbSVG from "./svg/LightBulbSVG";
 import DocumentCheckSVG from "./svg/DocumentCheckSVG";
-import MoreSVG from "./svg/MoreSVG";
 import { classNames } from "../utilities/style";
 import { RegistrationTrigger } from "../libs/early-registration";
 import LightningSVG from "./svg/LightningSVG";
@@ -20,17 +17,17 @@ const features: {
   svg: JSX.Element;
 }[] = [
   {
-    name: "Automatic Headings",
+    name: "Discovers Headings",
     points: [
       {
         point:
-          "Jump start your classification by seeing the most likely headings",
+          "Jump start classification for any item by immediately seeing the most likely headings",
       },
       {
         point: "Discover headings you might have missed",
       },
       {
-        point: "Easily find & add your own, if needed",
+        point: "Easily find & apply your own, if needed",
       },
       {
         point: "~20 minutes saved",
@@ -41,19 +38,21 @@ const features: {
     svg: <LightningSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
   {
-    name: "Best-Fit Suggestions",
+    name: "Suggests Best Candidate",
     points: [
       {
         point:
-          "Streamline decisions by seeing which candidate is the best fit at every level",
+          "At every level of classification, HTS Hero suggests the best option available",
+        detail: "⚡️ Greatly improves classification speed for complex items",
       },
       {
         point:
-          "Includes the reasoning for each suggestion based on the GRI & Additional US Rules",
+          "Each suggestion includes an explanation based on the GRI & Additional US Rules",
+        detail: "Formatted to read just like a CROSS ruling",
       },
       {
         point:
-          "Written to sound like a CROSS ruling, ready to include in your reports",
+          "Suggestions are automatically added to your reports, ready to share with clients or customs",
       },
       {
         point: "~10 minutes saved",
@@ -64,7 +63,7 @@ const features: {
     svg: <LightBulbSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
   {
-    name: "Report Generation",
+    name: "Generates Reports",
     points: [
       {
         point:
@@ -86,7 +85,7 @@ const features: {
     svg: <DocumentCheckSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
   {
-    name: "Notes & References",
+    name: "Fetches Notes",
     points: [
       {
         point:
@@ -109,7 +108,7 @@ const features: {
     svg: <DocumentSearchSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
   {
-    name: "Enhanced Search",
+    name: "Simplifies Search",
     points: [
       {
         point:

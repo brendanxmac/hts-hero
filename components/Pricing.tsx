@@ -187,7 +187,7 @@ const Pricing = ({
                           >
                             <p>{feature.name} </p>
                             {feature.comingSoon && (
-                              <span className="bg-neutral-800 px-2 py-1 rounded-md text-stone-300 font-semibold text-xs">
+                              <span className="bg-neutral-700 px-2 py-1 rounded-md text-stone-300 font-semibold text-xs">
                                 Coming Soon
                               </span>
                             )}
