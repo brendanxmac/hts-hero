@@ -1,4 +1,4 @@
-import { RegistrationTrigger } from "../../libs/early-registration";
+import { RegistrationTrigger } from "../libs/early-registration";
 
 interface AboutHeroProps {
   setIsRegisterOpen: (isOpen: boolean) => void;
