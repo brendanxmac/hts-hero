@@ -20,20 +20,17 @@ const features: {
   svg: JSX.Element;
 }[] = [
   {
-    name: "Heading Suggestions",
+    name: "Automatic Headings",
     points: [
       {
         point:
-          "Immediately see the most likely headings for the item you're classifying",
+          "Jump start your classification by seeing the most likely headings",
       },
       {
         point: "Discover headings you might have missed",
       },
       {
-        point: "Much faster than manually searching",
-      },
-      {
-        point: "Fully supports manual adjustments if needed",
+        point: "Easily find & add your own, if needed",
       },
       {
         point: "~20 minutes saved",
@@ -44,13 +41,15 @@ const features: {
     svg: <LightningSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
   {
-    name: "Match Suggestions",
+    name: "Best-Fit Suggestions",
     points: [
       {
-        point: "See the most likely match at each classification level",
+        point:
+          "Streamline decisions by seeing which candidate is the best fit at every level",
       },
       {
-        point: "Includes reasoning based on the GRI & Additional US Rules",
+        point:
+          "Includes the reasoning for each suggestion based on the GRI & Additional US Rules",
       },
       {
         point:
@@ -68,7 +67,8 @@ const features: {
     name: "Report Generation",
     points: [
       {
-        point: "Get a client-ready classification report, in a single click",
+        point:
+          "Generate client-ready classification reports, in a single click",
       },
       {
         point:
@@ -90,7 +90,7 @@ const features: {
     points: [
       {
         point:
-          "We automatically fetch the notes that might impact your classification",
+          "See the notes that might impact your classification, without leaving the page",
         detail: "General, Section, Chapter, Subheading, etc...",
       },
       {
@@ -113,11 +113,11 @@ const features: {
     points: [
       {
         point:
-          "Quickly find and HTS code or note with our HTS explorer tailor made for brokers and forwarders",
+          "A brand new HTS explorer tailor-made for brokers and forwarders",
       },
       {
         point:
-          "Built in PDF viewer. No more downloads or opening another tab just to find what you're looking for",
+          "Built in PDF viewer - No more downloads or opening another tab just to find what you're looking for",
       },
       {
         point: "Built specifically to improve on the USITC website",
@@ -204,7 +204,7 @@ const FeaturesListicle = ({
         <div className="bg-base-100 max-md:px-8 max-w-4xl mb-8 md:px-12">
           <h2 className="text-white font-extrabold text-4xl lg:text-5xl tracking-tight mb-5">
             {/* 💡 COPY TIP: Remind visitors about the value of your product. Why do they need it? */}
-            Streamline your Classifications
+            Autocomplete for Classifiers
           </h2>
           <div className="text-neutral-300 leading-relaxed mb-3 lg:text-lg">
             {/* 💡 COPY TIP: Explain how your product delivers what you promise in the headline. */}

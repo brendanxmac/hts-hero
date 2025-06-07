@@ -83,7 +83,7 @@ export default function Login() {
 
       <div className="space-y-8 max-w-xl mx-auto">
         <button
-          className="btn btn-block"
+          className="btn btn-block btn-primary"
           onClick={(e) =>
             handleSignup(e, { type: "oauth", provider: "google" })
           }
@@ -94,7 +94,7 @@ export default function Login() {
           ) : (
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="w-6 h-6"
+              className="w-6 h-6 bg-white rounded-md p-1"
               viewBox="0 0 48 48"
             >
               <path
