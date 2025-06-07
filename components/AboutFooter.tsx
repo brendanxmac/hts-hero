@@ -13,7 +13,7 @@ const AboutFooter = () => {
         <div className=" flex lg:items-start md:flex-row md:flex-nowrap flex-wrap flex-col">
           <div className="w-64 flex-shrink-0 md:mx-0 mx-auto text-center md:text-left">
             <Link
-              href="/classify"
+              href="/app"
               aria-current="page"
               className="flex gap-2 justify-center md:justify-start items-center"
             >

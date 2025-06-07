@@ -37,18 +37,27 @@ const Problem = () => {
     <section className="bg-neutral-900 text-neutral-content">
       <div className="max-w-7xl mx-auto px-8 py-16 md:py-32 text-center">
         <h2 className="text-white max-w-3xl mx-auto font-extrabold text-4xl md:text-5xl tracking-tight mb-16">
-          HTS Codes are... Complicated
+          HTS Codes are... <span className="text-primary">Complicated</span>
         </h2>
         <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-8 sm:gap-3 mb-16">
           <div className="flex flex-col justify-center items-center">
+            <Step emoji="🧐" text="17,000+ Codes" />
+            <p className="text-neutral-400 text-xs italic">
+              And more than one might apply
+            </p>
+          </div>
+
+          <Arrow extraStyle="max-md:-scale-x-100 md:-rotate-90" />
+
+          <div className="flex flex-col justify-center items-center">
             {/* <Step emoji="😅" text="Constant Updates" /> */}
-            <Step emoji="😳" text="Lots of Rules" />
+            <Step emoji="🤦‍♂️" text="Tricky Rules" />
             <p className="text-neutral-400 text-xs italic">
               Applicable at different times
             </p>
           </div>
 
-          <Arrow extraStyle="max-md:-scale-x-100 md:-rotate-90" />
+          <Arrow extraStyle="md:-scale-x-100 md:-rotate-90" />
 
           <div className="flex flex-col justify-center items-center">
             <Step emoji="🔄" text="Constant Updates" />
@@ -57,7 +66,7 @@ const Problem = () => {
             </p>
           </div>
 
-          <Arrow extraStyle="md:-scale-x-100 md:-rotate-90" />
+          <Arrow extraStyle="max-md:-scale-x-100 md:-rotate-90" />
 
           <div className="flex flex-col justify-center items-center">
             <Step emoji="😵‍💫" text="Confusing References" />

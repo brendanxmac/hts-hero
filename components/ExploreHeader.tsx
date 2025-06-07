@@ -1,31 +1,33 @@
 "use client";
 
-import { useEffect, useState, type JSX } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import ButtonSignin from "./ButtonSignin";
 import logo from "@/app/logo.svg";
 import config from "@/config";
-import { usePathname, useSearchParams } from "next/navigation";
 
 const links: {
   href: string;
   label: string;
 }[] = [
   {
-    href: "/learn",
-    label: "About",
+    href: "/about/explore#features",
+    label: "Features",
   },
 ];
 
-const cta: JSX.Element = <ButtonSignin extraStyle="btn-primary rounded-md" />;
+const cta: JSX.Element = (
+  <Link href="/explore" className="btn btn-primary btn-sm">
+    Try now
+  </Link>
+);
 
 // A header with a logo on the left, links in the center (like Pricing, etc...), and a CTA (like Get Started or Login) on the right.
 // The header is responsive, and on mobile, the links are hidden behind a burger button.
-const Header = () => {
+const ExploreHeader = () => {
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const pathname = usePathname();
 
   // setIsOpen(false) when the route changes (i.e: when the user clicks on a link on mobile)
   useEffect(() => {
@@ -33,13 +35,13 @@ const Header = () => {
   }, [searchParams]);
 
   return (
-    <header className="h-16 z-10 bg-base-100 flex items-center justify-between p-4 border-b border-base-200">
+    <header className="bg-base-100">
       <nav
-        className="w-full flex items-center justify-between"
+        className="container flex items-center justify-between px-8 py-4 mx-auto"
         aria-label="Global"
       >
         {/* Your logo/name on large screens */}
-        <div className="flex gap-6 lg:flex-1">
+        <div className="flex lg:flex-1">
           <Link
             className="flex items-center gap-2 shrink-0 "
             href="/explore"
@@ -56,36 +58,11 @@ const Header = () => {
             <span className="text-white font-extrabold text-lg">
               {config.appName}
             </span>
-            {/* <span className="bg-white px-2 py-1 rounded-md text-black font-semibold text-xs">
+            <span className="bg-stone-800 px-2 py-1 rounded-md text-stone-300 font-semibold text-xs">
               Beta
-            </span> */}
+            </span>
           </Link>
-          {/* <div className="flex items-center justify-start gap-4">
-            <Link href="/explore">
-              <button
-                className={`btn btn-link px-0 gap-0 ${
-                  pathname === "/explore"
-                    ? "text-primary underline"
-                    : "text-base-content no-underline"
-                }`}
-              >
-                Explore
-              </button>
-            </Link>
-            <Link href="/classify">
-              <button
-                className={`btn btn-link px-0 gap-0 ${
-                  pathname === "/classify"
-                    ? "text-primary underline"
-                    : "text-base-content no-underline"
-                }`}
-              >
-                Classify
-              </button>
-            </Link>
-          </div> */}
         </div>
-
         {/* Burger button to open menu on mobile */}
         <div className="flex lg:hidden">
           <button
@@ -117,7 +94,7 @@ const Header = () => {
             <Link
               href={link.href}
               key={link.href}
-              className="font-semibold link link-hover"
+              className="link link-hover font-bold"
               title={link.label}
             >
               {link.label}
@@ -126,7 +103,7 @@ const Header = () => {
         </div>
 
         {/* CTA on large screens */}
-        {/* <div className="hidden lg:flex lg:justify-end lg:flex-1">{cta}</div> */}
+        <div className="hidden lg:flex lg:justify-end lg:flex-1">{cta}</div>
       </nav>
 
       {/* Mobile menu, show/hide based on menu state. */}
@@ -139,7 +116,7 @@ const Header = () => {
             <Link
               className="flex items-center gap-2 shrink-0 "
               title={`${config.appName} homepage`}
-              href="/"
+              href="/about"
             >
               <Image
                 src={logo}
@@ -182,7 +159,7 @@ const Header = () => {
                   <Link
                     href={link.href}
                     key={link.href}
-                    className="font-semibold link link-hover"
+                    className="link link-hover font-bold"
                     title={link.label}
                   >
                     {link.label}
@@ -192,7 +169,7 @@ const Header = () => {
             </div>
             <div className="divider"></div>
             {/* Your CTA on small screens */}
-            {/* <div className="flex flex-col">{cta}</div> */}
+            <div className="flex flex-col">{cta}</div>
           </div>
         </div>
       </div>
@@ -200,4 +177,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default ExploreHeader;

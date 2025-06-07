@@ -1,6 +1,6 @@
 "use client";
 import { Suspense } from "react";
-import Header from "@/components/Header";
+import UnauthenticatedHeader from "@/components/UnauthenticatedHeader";
 import Hero from "@/components/Hero";
 import Problem from "@/components/Problem";
 import FeaturesAccordion from "@/components/FeaturesAccordion";
@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <>
       <Suspense>
-        <Header />
+        <UnauthenticatedHeader />
       </Suspense>
       <main>
         <Hero />

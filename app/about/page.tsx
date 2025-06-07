@@ -1,10 +1,10 @@
 import Link from "next/link";
-import Header from "../../components/Header";
+import HeaderLogoOnly from "../../components/HeaderLogoOnly";
 
 export default function AboutPage() {
   return (
     <div className="min-h-screen max-h-screen overflow-hidden">
-      <Header />
+      <HeaderLogoOnly />
       <section className="max-w-4xl mx-auto flex flex-col items-center justify-center gap-6 p-8 bg-base-100">
         {/* <h3 className="w-full text-xl md:text-2xl font-extrabold tracking-tight text-white ">
           Welcome to HTS Hero!

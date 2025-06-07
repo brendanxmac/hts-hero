@@ -44,10 +44,10 @@ export const AuthenticatedHeader = () => {
               Explore
             </button>
           </Link>
-          <Link href="/classify">
+          <Link href="/app">
             <button
               className={`btn btn-link px-0 gap-0 ${
-                pathname === "/classify"
+                pathname === "/app"
                   ? "text-primary underline"
                   : "text-base-content no-underline"
               }`}
