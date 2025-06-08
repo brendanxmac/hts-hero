@@ -43,11 +43,11 @@ const config = {
         //  REQUIRED - Name of the plan, displayed on the pricing page
         name: PricingPlan.ONE_DAY_PASS,
         // A friendly description of the plan, displayed on the pricing page. Tip: explain why this plan and not others
-        description: "The most affordable way to get your code", // & based on the USITC
+        description: "The most affordable way to get your codes", // & based on the USITC
         // The type of pricing plan, either one time or subscription
         type: PricingType.ONE_TIME,
         // The price you want to display, the one user will be charged on Stripe.
-        price: 25,
+        price: 30,
         // If you have an anchor price (i.e. $29) that you want to display crossed out, put it here. Otherwise, leave it empty
         priceAnchor: 40,
         features: [
@@ -61,6 +61,11 @@ const config = {
           {
             name: "Free access to our explorer tool, forever",
           },
+          // {
+          //   name: "Customs Approval Guarantee",
+          //   details:
+          //     "We guarantee a code that customs will accept, or your money back!",
+          // },
           {
             name: "Expires after 1 day",
           },
@@ -70,7 +75,7 @@ const config = {
         priceId: process.env.NODE_ENV === "development" ? "5" : "6",
         name: PricingPlan.FIVE_DAY_PASS,
         description:
-          "More time to get your code and cover yourself if any updates come about.",
+          "More time to get your codes and cover yourself if any updates come about.",
         type: PricingType.ONE_TIME,
         price: 40,
         priceAnchor: 60,
@@ -121,22 +126,21 @@ const config = {
       {
         priceId: process.env.NODE_ENV === "development" ? "7" : "8",
         name: PricingPlan.STANDARD,
-        description:
-          "Instantly Access to our intelligent classification system", // & based on the USITC
+        description: "Your Personal Classification Assistant", // & based on the USITC
         type: PricingType.SUBSCRIPTION,
         price: 30,
         priceAnchor: 45,
         features: [
+          { name: "Unlimited Classifications" },
           { name: "Heading Discovery" },
           {
-            name: "Best Match Suggestions at Every Level",
+            name: "Best Candidate Suggestions at Every Level",
             details: "Based on the GRI & Additional US Rules",
           },
           { name: "Fetches Relevant Notes" },
           {
             name: "Built-in PDF Viewer",
-            details:
-              "No need to download something just to find what you're looking for",
+            details: "No downloads needed to find what you're looking for!",
           },
         ],
       },

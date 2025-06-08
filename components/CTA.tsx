@@ -10,11 +10,14 @@ const CTA = () => {
           <h2 className="text-white font-bold text-4xl md:text-5xl tracking-tight mb-8 md:mb-12">
             Spare your sanity and your wallet
           </h2>
-          <p className="md:text-lg mb-12 md:mb-16">Get your HTS Code now!</p>
+          <p className="md:text-lg mb-12 md:mb-16">
+            Save yourself from the manual searching, stress, and pricey
+            alternatives. <br /> Get a valid HTS Code for your product now!
+          </p>
 
           <Link
             className="btn btn-primary btn-wide"
-            href={config.auth.loginUrl}
+            href={"/about/importer#pricing"}
           >
             Get {config.appName}
           </Link>

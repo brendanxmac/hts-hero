@@ -5,6 +5,7 @@ import type { JSX } from "react";
 import Image from "next/image";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
+import Link from "next/link";
 
 interface Feature {
   title: string; // The title of the feature
@@ -18,9 +19,34 @@ interface Feature {
 
 const features = [
   {
-    title: "Step by Step",
+    title: "Gets Results in Seconds",
     description:
-      "We move step by step through the product classification and show you the options available at every level. This allows you to easily explore alternatives & verify suggestions (see below).",
+      "No consultations & no delays. You'll have your code in just moments.",
+    type: "video",
+    alt: "Results in Seconds Video",
+    path: "/finalish.mp4",
+    format: "video/mp4",
+    svg: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth="1.5"
+        stroke="currentColor"
+        className="size-6"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"
+        />
+      </svg>
+    ),
+  },
+  {
+    title: "Finds the Best Candidates",
+    description:
+      "We find the most likely candidates for your product and move step-by-step to the final code.",
     type: "image",
     alt: "Step by Step Image",
     path: "/step-by-step.png",
@@ -43,9 +69,9 @@ const features = [
     ),
   },
   {
-    title: "Intelligent Suggestions",
+    title: "Suggests the Best Option",
     description:
-      "For each step we suggest the best option based on your description, and include the reason why we chose it. This helps you verify the selection and is a useful resource if customs asks you how the code was determined",
+      "At each step we suggest the best option based on your description, and include the rules-based reason why we chose it. This helps you quickly verify the selection and is useful if customs asks how the code was determined.",
     type: "image",
     alt: "Intelligent Suggestions Image",
     path: "/suggested.png",
@@ -67,34 +93,9 @@ const features = [
     ),
   },
   {
-    title: "Results in Seconds",
+    title: "Generates Reports",
     description:
-      "No consultations & no delays. You'll have your code in just moments.",
-    type: "video",
-    alt: "Results in Seconds Video",
-    path: "/classifiers-hero.mp4",
-    format: "video/mp4",
-    svg: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth="1.5"
-        stroke="currentColor"
-        className="size-6"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"
-        />
-      </svg>
-    ),
-  },
-  {
-    title: "Classification Report",
-    description:
-      "Get a detailed report of your entire classification. This includes the options, selection, and details at each level, as well as the final HTS Code, description, and tariff rates. Useful for later on if customs asks you for more information.",
+      "Get a detailed report of your entire classification for your own records and to show suppliers or customs. This includes the options, selection, and details at each level, as well as the final HTS Code, description, and tariff rates.",
     type: "image",
     alt: "Classification Report Image",
     path: "/classification-report.png",
@@ -108,9 +109,9 @@ const features = [
         className="size-6"
       >
         <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
         />
       </svg>
     ),
@@ -253,8 +254,15 @@ const FeaturesAccordion = () => {
             Type Description, Get Code
           </h2>
           <p className="pl-2 text-base-content">
-            We guide you step-by-step to a valid HTS Code for your product
+            HTS Hero guides you step-by-step to a valid HTS Code for your
+            product. <br /> No experience needed, just a clear description.
           </p>
+          <Link
+            className="btn btn-primary btn-wide"
+            href={"/about/importer#pricing"}
+          >
+            Try it now!
+          </Link>
         </div>
         <div className=" flex flex-col md:flex-row gap-12 md:gap-24">
           <div className="grid grid-cols-1 items-stretch gap-8 sm:gap-12 xl:grid-cols-2 lg:gap-20">

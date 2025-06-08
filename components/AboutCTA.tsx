@@ -1,5 +1,6 @@
 import config from "@/config";
 import { RegistrationTrigger } from "@/libs/early-registration";
+import Link from "next/link";
 
 interface ExploreCTAProps {
   setIsRegisterOpen: (isOpen: boolean) => void;
@@ -18,23 +19,20 @@ const ExploreCTA = ({
           <h2 className="text-white font-bold text-4xl md:text-6xl tracking-tight mb-8 md:mb-12">
             {/* Make Classification a Easy! */}
             {/* Classify with Ease! */}
-            Experience the smarter way to classify.
+            Experience the <span className="text-primary">smarter</span>
+            <br /> way to classify
           </h2>
           <p className="md:text-lg mb-12 md:mb-16">
-            Save yourself from the manual searching, report creation, and
-            analysis.
+            Save yourself from manual searching, report creation, and analysis.
             <br /> Get the intelligent assistant for classifiers.
           </p>
 
-          <button
+          <Link
             className="btn btn-primary btn-wide"
-            onClick={() => {
-              setIsRegisterOpen(true);
-              setRegistrationTrigger(RegistrationTrigger.cta);
-            }}
+            href="/about/classifier#pricing"
           >
             Get {config.appName}!
-          </button>
+          </Link>
         </div>
       </div>
     </section>

@@ -10,6 +10,7 @@ import { classNames } from "../utilities/style";
 import { RegistrationTrigger } from "../libs/early-registration";
 import LightningSVG from "./svg/LightningSVG";
 import SearchSVG from "./svg/SearchSVG";
+import Link from "next/link";
 
 const features: {
   name: string;
@@ -267,28 +268,29 @@ const FeaturesListicle = ({
               />
             </div>
           </div>
-          <button
+          <Link
             className="mt-8 btn btn-primary btn-wide"
-            onClick={() => {
-              const trigger =
-                featureSelected === "Notes & References"
-                  ? RegistrationTrigger.feature_notes
-                  : featureSelected === "CROSS Rulings"
-                    ? RegistrationTrigger.feature_cross_rulings
-                    : featureSelected === "Match Suggestions"
-                      ? RegistrationTrigger.feature_match_suggestions
-                      : featureSelected === "Product Analysis"
-                        ? RegistrationTrigger.feature_product_analysis
-                        : featureSelected === "Report Generation"
-                          ? RegistrationTrigger.feature_report_generation
-                          : RegistrationTrigger.feature_more_features;
-              setIsRegisterOpen(true);
-              setRegistrationTrigger(trigger);
-            }}
+            href={"/about/classifier#pricing"}
+            // onClick={() => {
+            //   const trigger =
+            //     featureSelected === "Notes & References"
+            //       ? RegistrationTrigger.feature_notes
+            //       : featureSelected === "CROSS Rulings"
+            //         ? RegistrationTrigger.feature_cross_rulings
+            //         : featureSelected === "Match Suggestions"
+            //           ? RegistrationTrigger.feature_match_suggestions
+            //           : featureSelected === "Product Analysis"
+            //             ? RegistrationTrigger.feature_product_analysis
+            //             : featureSelected === "Report Generation"
+            //               ? RegistrationTrigger.feature_report_generation
+            //               : RegistrationTrigger.feature_more_features;
+            //   setIsRegisterOpen(true);
+            //   setRegistrationTrigger(trigger);
+            // }}
           >
-            Try it free!
+            Try it now!
             {/* Get {config.appName} */}
-          </button>
+          </Link>
         </div>
       </div>
       {/* Just used to know it's the end of the autoscroll feature (optional, see useEffect) */}

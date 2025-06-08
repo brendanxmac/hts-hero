@@ -16,9 +16,9 @@ const Hero = () => {
 
         <Link
           className="btn btn-primary btn-wide"
-          href={config.auth.callbackUrl}
+          href={"/about/importer#pricing"}
         >
-          Try it free!
+          Try it now!
         </Link>
 
         {/* <TestimonialsAvatars priority={true} /> */}

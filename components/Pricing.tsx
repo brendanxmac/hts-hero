@@ -5,6 +5,8 @@ import { PricingPlan, PricingType } from "../types";
 import { BuyAttempt } from "../app/api/buy-attempt/route";
 import { upsertBuyAttempt } from "../libs/buy-attempt";
 import { useState } from "react";
+import { ShieldCheckIcon } from "@heroicons/react/24/solid";
+import Link from "next/link";
 
 // <Pricing/> displays the pricing plans for your app
 // It's your Stripe config in config.js.stripe.plans[] that will be used to display the plans
@@ -23,15 +25,27 @@ const getPricingPlans = (customerType: "importer" | "classifier") => {
   return config.stripe.classifierPlans;
 };
 
+const getBuyButtonText = (plan: PricingPlan) => {
+  if (plan === PricingPlan.ONE_DAY_PASS || plan === PricingPlan.FIVE_DAY_PASS) {
+    return "Buy Now!";
+  }
+
+  if (plan === PricingPlan.STANDARD) {
+    return `Get ${plan}!`;
+  }
+
+  if (plan === PricingPlan.PRO) {
+    return `Go ${plan}!`;
+  }
+
+  return "Buy Now!";
+};
+
 const getPricingHeadline = (customerType: "importer" | "classifier") => {
   if (customerType === "importer") {
     return (
       <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-5xl max-w-4xl mx-auto tracking-relaxed">
         Fast & Affordable HTS Codes <br /> for Busy Importers
-        <br />
-        <span className="text-xl text-red-600">
-          ---- ADD MONEY BACK GUARANTEE! ----
-        </span>
       </h2>
     );
   }
@@ -55,7 +69,7 @@ const Pricing = ({
   return (
     <section className="bg-neutral-900 overflow-hidden" id="pricing">
       <div className="py-16 px-8 max-w-7xl mx-auto">
-        <div className="flex flex-col text-center w-full mb-20">
+        <div className="flex flex-col text-center w-full mb-12">
           <p className="font-medium text-primary mb-8">Pricing</p>
           {getPricingHeadline(customerType)}
         </div>
@@ -210,7 +224,7 @@ const Pricing = ({
                     {/* <ButtonCheckout priceId={plan.priceId} mode="subscription" /> */}
                     <FakeButtonCheckout
                       loading={buyingPlan === plan.name}
-                      text={"Buy now!"}
+                      text={getBuyButtonText(plan.name)}
                       onClick={async () => {
                         setBuyingPlan(plan.name);
                         const buyAttempt = await upsertBuyAttempt({
@@ -229,6 +243,29 @@ const Pricing = ({
             </div>
           ))}
         </div>
+
+        {/* {customerType === "importer" && (
+          <div className="mt-16 flex flex-col gap-2 justify-center items-center">
+            <div className="flex gap-1 items-center">
+              <ShieldCheckIcon className="w-6 h-6 text-secondary" />
+              <h3 className="text-lg font-extrabold text-secondary">
+                Customs Code Approval Guarantee
+              </h3>
+            </div>
+            <p className="text-white">
+              We guarantee codes that customs will accept or you get a full
+              refund!
+            </p>
+            <p className="text-sm text-base-content/80">
+              <sup>
+                See{" "}
+                <Link href="/terms" className="hover:underline">
+                  terms and conditions
+                </Link>
+              </sup>{" "}
+            </p>
+          </div>
+        )} */}
       </div>
     </section>
   );
