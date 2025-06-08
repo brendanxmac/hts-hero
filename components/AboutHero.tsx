@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { RegistrationTrigger } from "../libs/early-registration";
 
 interface AboutHeroProps {
@@ -18,18 +19,15 @@ const AboutHero = ({
         </h1>
         <p className="text-lg text-neutral-300 leading-relaxed">
           Built to make brokers & forwarders extraordinarily productive, HTS
-          Hero is the best way to do HTS Classifications.
+          Hero is the best way to do classifications.
         </p>
 
-        <button
+        <Link
           className="btn btn-wide btn-primary"
-          onClick={() => {
-            setIsRegisterOpen(true);
-            setRegistrationTrigger(RegistrationTrigger.hero);
-          }}
+          href={"/about/classifier#pricing"}
         >
-          Try it free!
-        </button>
+          Try it now!
+        </Link>
 
         {/* <TestimonialsAvatars priority={true} /> */}
       </div>

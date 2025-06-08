@@ -24,7 +24,7 @@ export default function Home() {
   return (
     <>
       <Suspense>
-        <AboutHeader page="importers" />
+        <AboutHeader page="importer" />
       </Suspense>
       <main>
         <ItsFree
