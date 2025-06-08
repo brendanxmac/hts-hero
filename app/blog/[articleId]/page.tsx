@@ -89,7 +89,6 @@ export default async function Article({
         <Link
           href="/blog"
           className="link !no-underline text-base-content/80 hover:text-base-content inline-flex items-center gap-1"
-          title="Back to Blog"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -156,7 +155,6 @@ export default async function Article({
                         <Link
                           href={`/blog/${article.slug}`}
                           className="link link-hover hover:link-primary font-medium"
-                          title={article.title}
                           rel="bookmark"
                         >
                           {article.title}

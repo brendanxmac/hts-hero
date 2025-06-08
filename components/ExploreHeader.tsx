@@ -160,7 +160,6 @@ const ExploreHeader = () => {
                     href={link.href}
                     key={link.href}
                     className="link link-hover font-bold"
-                    title={link.label}
                   >
                     {link.label}
                   </Link>
