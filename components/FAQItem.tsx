@@ -1,12 +1,17 @@
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import { useRef, useState } from "react";
 
-export interface FAQItemProps {
+export interface FAQItem {
   question: string;
   answer: JSX.Element;
 }
 
-export const FaqItem = ({ item }: { item: FAQItemProps }) => {
+export interface Props {
+  item: FAQItem;
+}
+
+export const FaqItem = ({ item }: Props) => {
+  const { question, answer } = item;
   const accordion = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -20,9 +25,7 @@ export const FaqItem = ({ item }: { item: FAQItemProps }) => {
         }}
         aria-expanded={isOpen}
       >
-        <span className={`flex-1 ${isOpen && "text-primary"}`}>
-          {item?.question}
-        </span>
+        <span className={`flex-1 ${isOpen && "text-primary"}`}>{question}</span>
         {isOpen ? (
           <ChevronDownIcon
             className={"text-white h-6 w-6"}
@@ -51,7 +54,7 @@ export const FaqItem = ({ item }: { item: FAQItemProps }) => {
             : { maxHeight: 0, opacity: 0 }
         }
       >
-        <div className="pb-5 leading-relaxed">{item?.answer}</div>
+        <div className="pb-5 leading-relaxed">{answer}</div>
       </div>
     </li>
   );
