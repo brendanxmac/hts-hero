@@ -4,14 +4,11 @@ import { updateSession } from "@/app/api/supabase/middleware";
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  const isNotAllowed = pathname === "/blog";
+  const isNotAllowed =
+    pathname === "/blog" || pathname === "/" || pathname === "/about";
 
   if (isNotAllowed) {
-    return NextResponse.redirect(new URL("/explore", req.url));
-  }
-
-  if (pathname === "/") {
-    return NextResponse.redirect(new URL("/about", req.url));
+    return NextResponse.redirect(new URL("/about/importer", req.url));
   }
 
   const IS_TEST_ENV = process.env.APP_ENV === "test";

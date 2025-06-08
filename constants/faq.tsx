@@ -9,7 +9,7 @@ export const classifierFaqList: FAQItem[] = [
       <div className="space-y-2 leading-relaxed">
         Depending on your{" "}
         <Link
-          href={"/about/importer#pricing"}
+          href={"/about/classifier#pricing"}
           className="text-secondary underline"
         >
           plan
@@ -17,7 +17,7 @@ export const classifierFaqList: FAQItem[] = [
         , you&apos;ll immdeiately have access to the HTS classification tool &
         the{" "}
         <Link
-          href={"/about/importer#features"}
+          href={"/about/classifier#features"}
           className="text-secondary underline"
         >
           features mentioned above
@@ -58,7 +58,7 @@ export const classifierFaqList: FAQItem[] = [
         <p>
           Be sure to checkout our{" "}
           <Link
-            href={"/about/importer#pricing"}
+            href={"/about/classifier#pricing"}
             className="text-secondary underline"
           >
             current offers.
