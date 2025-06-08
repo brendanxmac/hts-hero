@@ -47,7 +47,6 @@ const ClassifierHeader = ({ page }: { page: "classifier" | "importer" }) => {
           <Link
             className="text-white flex items-center gap-2 shrink-0 "
             href="/app"
-            title={`${config.appName} homepage`}
           >
             <Image
               src={logo}
@@ -95,7 +94,6 @@ const ClassifierHeader = ({ page }: { page: "classifier" | "importer" }) => {
               href={link.href}
               key={link.href}
               className="link link-hover font-bold"
-              title={link.label}
             >
               {link.label}
             </Link>
@@ -113,11 +111,7 @@ const ClassifierHeader = ({ page }: { page: "classifier" | "importer" }) => {
         >
           {/* Your logo/name on small screens */}
           <div className="flex items-center justify-between">
-            <Link
-              className="flex items-center gap-2 shrink-0 "
-              title={`${config.appName} homepage`}
-              href="/about"
-            >
+            <Link className="flex items-center gap-2 shrink-0 " href="/about">
               <Image
                 src={logo}
                 alt={`${config.appName} logo`}
@@ -160,7 +154,6 @@ const ClassifierHeader = ({ page }: { page: "classifier" | "importer" }) => {
                     href={link.href}
                     key={link.href}
                     className="link link-hover font-bold"
-                    title={link.label}
                   >
                     {link.label}
                   </Link>

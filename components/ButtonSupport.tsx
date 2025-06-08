@@ -25,7 +25,6 @@ const ButtonSupport = () => {
       onClick={handleClick}
       data-tooltip-id="tooltip"
       data-tooltip-content="Talk to support"
-      title="Chat with support"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

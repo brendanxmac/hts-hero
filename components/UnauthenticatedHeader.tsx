@@ -40,11 +40,7 @@ const UnauthenticatedHeader = () => {
       >
         {/* Your logo/name on large screens */}
         <div className="flex gap-6 lg:flex-1">
-          <Link
-            className="flex items-center gap-2 shrink-0 "
-            href="/explore"
-            title={`${config.appName} homepage`}
-          >
+          <Link className="flex items-center gap-2 shrink-0 " href="/explore">
             <Image
               src={logo}
               alt={`${config.appName} logo`}
@@ -118,7 +114,6 @@ const UnauthenticatedHeader = () => {
               href={link.href}
               key={link.href}
               className="btn btn-secondary btn-sm font-semibold link link-hover"
-              title={link.label}
             >
               {link.label}
             </Link>
@@ -136,11 +131,7 @@ const UnauthenticatedHeader = () => {
         >
           {/* Your logo/name on small screens */}
           <div className="flex items-center justify-between">
-            <Link
-              className="flex items-center gap-2 shrink-0 "
-              title={`${config.appName} homepage`}
-              href="/"
-            >
+            <Link className="flex items-center gap-2 shrink-0 " href="/">
               <Image
                 src={logo}
                 alt={`${config.appName} logo`}
@@ -183,7 +174,6 @@ const UnauthenticatedHeader = () => {
                     href={link.href}
                     key={link.href}
                     className="font-semibold link link-hover"
-                    title={link.label}
                   >
                     {link.label}
                   </Link>

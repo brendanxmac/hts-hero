@@ -273,7 +273,6 @@ const HeaderBlog = () => {
                     href={link.href}
                     key={link.href}
                     className="link link-hover"
-                    title={link.label}
                   >
                     {link.label}
                   </Link>
