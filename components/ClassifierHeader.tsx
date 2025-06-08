@@ -9,7 +9,7 @@ import config from "@/config";
 
 // A header with a logo on the left, links in the center (like Pricing, etc...), and a CTA (like Get Started or Login) on the right.
 // The header is responsive, and on mobile, the links are hidden behind a burger button.
-const AboutHeader = ({ page }: { page: "classifier" | "importer" }) => {
+const ClassifierHeader = ({ page }: { page: "classifier" | "importer" }) => {
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -177,4 +177,4 @@ const AboutHeader = ({ page }: { page: "classifier" | "importer" }) => {
   );
 };
 
-export default AboutHeader;
+export default ClassifierHeader;

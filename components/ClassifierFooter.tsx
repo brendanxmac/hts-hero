@@ -6,7 +6,7 @@ import logo from "@/app/logo.png";
 // Add the Footer to the bottom of your landing page and more.
 // The support link is connected to the config.js file. If there's no config.resend.supportEmail, the link won't be displayed.
 
-const AboutFooter = () => {
+const ClassifierFooter = () => {
   return (
     <footer className="bg-black border-t border-base-content/10">
       <div className="max-w-7xl mx-auto px-8 py-24">
@@ -34,7 +34,7 @@ const AboutFooter = () => {
             </Link>
 
             <p className="mt-3 text-sm text-base-content/80">
-              Classify any item in seconds
+              The Smarter Way to Classify
               {/* {config.appDescription} */}
             </p>
             <p className="mt-3 text-sm text-base-content/60">
@@ -88,4 +88,4 @@ const AboutFooter = () => {
   );
 };
 
-export default AboutFooter;
+export default ClassifierFooter;

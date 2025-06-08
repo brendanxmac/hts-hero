@@ -1,40 +1,10 @@
 "use client";
 
-import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
-import { useRef, useState } from "react";
-import type { JSX } from "react";
 import config from "@/config";
 import Link from "next/link";
-
-// <FAQ> component is a lsit of <Item> component
-// Just import the FAQ & add your FAQ content to the const faqList arrayy below.
-
-interface FAQItemProps {
-  question: string;
-  answer: JSX.Element;
-}
+import { FaqItem, FAQItemProps } from "./FAQItem";
 
 const faqList: FAQItemProps[] = [
-  {
-    question: "How much does it cost?",
-    answer: (
-      <div className="flex flex-col gap-2">
-        <p className="font-bold">
-          We do our best to make gettings HTS codes affordable for everyone!
-        </p>
-
-        <p>
-          Be sure to checkout our{" "}
-          <Link
-            href={"/about/importer#pricing"}
-            className="text-secondary underline"
-          >
-            current offers.
-          </Link>{" "}
-        </p>
-      </div>
-    ),
-  },
   {
     question: "What do I get exactly?",
     answer: (
@@ -80,6 +50,26 @@ const faqList: FAQItemProps[] = [
     ),
   },
   {
+    question: "How much does it cost?",
+    answer: (
+      <div className="flex flex-col gap-2">
+        <p className="font-bold">
+          We do our best to make gettings HTS codes affordable for everyone!
+        </p>
+
+        <p>
+          Be sure to checkout our{" "}
+          <Link
+            href={"/about/importer#pricing"}
+            className="text-secondary underline"
+          >
+            current offers.
+          </Link>{" "}
+        </p>
+      </div>
+    ),
+  },
+  {
     question: "Does this work for all countries?",
     answer: (
       <div className="flex flex-col gap-4">
@@ -115,57 +105,6 @@ const faqList: FAQItemProps[] = [
     ),
   },
 ];
-
-const FaqItem = ({ item }: { item: FAQItemProps }) => {
-  const accordion = useRef(null);
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <li>
-      <button
-        className="relative flex gap-2 items-center w-full py-3 text-base font-semibold text-left border-t md:text-lg border-base-content/10"
-        onClick={(e) => {
-          e.preventDefault();
-          setIsOpen(!isOpen);
-        }}
-        aria-expanded={isOpen}
-      >
-        <span className={`flex-1 ${isOpen && "text-primary"}`}>
-          {item?.question}
-        </span>
-        {isOpen ? (
-          <ChevronDownIcon
-            className={"text-white h-6 w-6"}
-            onClick={(e) => {
-              e.preventDefault();
-              setIsOpen(false);
-            }}
-          />
-        ) : (
-          <ChevronRightIcon
-            className={"text-white h-6 w-6"}
-            onClick={(e) => {
-              e.preventDefault();
-              setIsOpen(true);
-            }}
-          />
-        )}
-      </button>
-
-      <div
-        ref={accordion}
-        className={`transition-all duration-300 ease-in-out opacity-80 overflow-hidden`}
-        style={
-          isOpen
-            ? { maxHeight: accordion?.current?.scrollHeight, opacity: 1 }
-            : { maxHeight: 0, opacity: 0 }
-        }
-      >
-        <div className="pb-5 leading-relaxed">{item?.answer}</div>
-      </div>
-    </li>
-  );
-};
 
 const FAQ = () => {
   return (

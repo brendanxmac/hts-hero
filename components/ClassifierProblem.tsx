@@ -30,7 +30,7 @@ const Step = ({ emoji, text }: { emoji: string; text: string }) => {
   );
 };
 
-const AboutProblem = () => {
+const ClassifierProblem = () => {
   return (
     <section className="bg-neutral-900 text-neutral-content">
       <div className="max-w-7xl mx-auto px-8 py-16 md:py-32 text-center">
@@ -74,4 +74,4 @@ const AboutProblem = () => {
   );
 };
 
-export default AboutProblem;
+export default ClassifierProblem;

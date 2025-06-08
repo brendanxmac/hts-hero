@@ -1,15 +1,16 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import AboutHeader from "../../../components/AboutHeader";
-import AboutHero from "../../../components/AboutHero";
-import AboutCTA from "../../../components/AboutCTA";
-import AboutFooter from "../../../components/AboutFooter";
+import ClassifierHeader from "../../../components/ClassifierHeader";
+import ClassifierHero from "../../../components/ClassifierHero";
+import ClassifierCTA from "../../../components/ClassifierCTA";
+import ClassifierFooter from "../../../components/ClassifierFooter";
 import Pricing from "../../../components/Pricing";
 import WithWithout from "../../../components/WithWithout";
 import ItsFree from "../../../components/ItsFree";
 import FeaturesListicle from "../../../components/FeaturesListicle";
 import { BuyAttempt } from "../../api/buy-attempt/route";
+import ClassifierFAQ from "../../../components/ClassifierFAQ";
 
 export default function Home() {
   // const [ref, setRef] = useState<string | null>();
@@ -44,7 +45,7 @@ export default function Home() {
   return (
     <>
       <Suspense>
-        <AboutHeader page="classifier" />
+        <ClassifierHeader page="classifier" />
       </Suspense>
       <main>
         {/* <Register
@@ -58,7 +59,7 @@ export default function Home() {
           isOpen={showItsFree}
           onClose={() => setShowItsFree(false)}
         />
-        <AboutHero
+        <ClassifierHero
           setIsRegisterOpen={() => {}}
           setRegistrationTrigger={() => {}}
         />
@@ -73,13 +74,10 @@ export default function Home() {
           setBuyAttempt={setBuyAttempt}
           setShowItsFree={setShowItsFree}
         />
-        {/* <AboutFAQ /> */}
-        <AboutCTA
-          setIsRegisterOpen={() => {}}
-          setRegistrationTrigger={() => {}}
-        />
+        <ClassifierFAQ />
+        <ClassifierCTA />
       </main>
-      <AboutFooter />
+      <ClassifierFooter />
     </>
   );
 }
