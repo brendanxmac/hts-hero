@@ -7,10 +7,11 @@ import FeaturesAccordion from "@/components/FeaturesAccordion";
 import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
 import Pricing from "@/components/Pricing";
-import FAQ from "@/components/ImporterFAQ";
 import ItsFree from "../../../components/ItsFree";
 import { BuyAttempt } from "../../api/buy-attempt/route";
 import ClassifierHeader from "../../../components/ClassifierHeader";
+import { FAQ } from "../../../components/FAQ";
+import { importerFaqList } from "../../../constants/faq";
 
 export default function Home() {
   const [buyAttempt, setBuyAttempt] = useState<BuyAttempt | null>(null);
@@ -42,7 +43,7 @@ export default function Home() {
           setShowItsFree={setShowItsFree}
         />
         <CTA />
-        <FAQ />
+        <FAQ faqItems={importerFaqList} />
       </main>
       <Footer />
     </>

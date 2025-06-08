@@ -10,7 +10,8 @@ import WithWithout from "../../../components/WithWithout";
 import ItsFree from "../../../components/ItsFree";
 import FeaturesListicle from "../../../components/FeaturesListicle";
 import { BuyAttempt } from "../../api/buy-attempt/route";
-import ClassifierFAQ from "../../../components/ClassifierFAQ";
+import { FAQ } from "../../../components/FAQ";
+import { classifierFaqList } from "../../../constants/faq";
 
 export default function Home() {
   // const [ref, setRef] = useState<string | null>();
@@ -74,7 +75,7 @@ export default function Home() {
           setBuyAttempt={setBuyAttempt}
           setShowItsFree={setShowItsFree}
         />
-        <ClassifierFAQ />
+        <FAQ faqItems={classifierFaqList} />
         <ClassifierCTA />
       </main>
       <ClassifierFooter />
