@@ -7,6 +7,7 @@ import FeaturesAccordion from "@/components/FeaturesAccordion";
 import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
 import Pricing from "@/components/Pricing";
+import FAQ from "@/components/ImporterFAQ";
 import ItsFree from "../../../components/ItsFree";
 import { BuyAttempt } from "../../api/buy-attempt/route";
 import AboutHeader from "../../../components/AboutHeader";
@@ -41,7 +42,7 @@ export default function Home() {
           setShowItsFree={setShowItsFree}
         />
         <CTA />
-        {/* <FAQ /> */}
+        <FAQ />
       </main>
       <Footer />
     </>

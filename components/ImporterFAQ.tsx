@@ -1,0 +1,209 @@
+"use client";
+
+import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
+import { useRef, useState } from "react";
+import type { JSX } from "react";
+import config from "@/config";
+import Link from "next/link";
+
+// <FAQ> component is a lsit of <Item> component
+// Just import the FAQ & add your FAQ content to the const faqList arrayy below.
+
+interface FAQItemProps {
+  question: string;
+  answer: JSX.Element;
+}
+
+const faqList: FAQItemProps[] = [
+  {
+    question: "How much does it cost?",
+    answer: (
+      <div className="flex flex-col gap-2">
+        <p className="font-bold">
+          We do our best to make gettings HTS codes affordable for everyone!
+        </p>
+
+        <p>
+          Be sure to checkout our{" "}
+          <Link
+            href={"/about/importer#pricing"}
+            className="text-secondary underline"
+          >
+            current offers.
+          </Link>{" "}
+        </p>
+      </div>
+    ),
+  },
+  {
+    question: "What do I get exactly?",
+    answer: (
+      <div className="space-y-2 leading-relaxed">
+        Depending on your{" "}
+        <Link
+          href={"/about/importer#pricing"}
+          className="text-secondary underline"
+        >
+          plan
+        </Link>
+        , you&apos;ll immdeiately have access to the HTS classification tool &
+        the{" "}
+        <Link
+          href={"/about/importer#features"}
+          className="text-secondary underline"
+        >
+          features mentioned above
+        </Link>
+        . This will allow you to find the HTS code(s) for whatever it is
+        you&apos;re importing!
+      </div>
+    ),
+  },
+  {
+    question: "How can I get access?",
+    answer: (
+      <div className="flex flex-col gap-4">
+        <p>
+          All you need is a{" "}
+          <Link
+            href={"/about/importer#pricing"}
+            className="text-secondary underline"
+          >
+            plan
+          </Link>{" "}
+          and an account!
+        </p>
+        <button className="btn btn-wide btn-primary">
+          <Link href={config.auth.loginUrl}>Sign Up Now</Link>
+        </button>{" "}
+      </div>
+    ),
+  },
+  {
+    question: "Does this work for all countries?",
+    answer: (
+      <div className="flex flex-col gap-4">
+        <p>
+          HTS Hero only provides classifications codes for{" "}
+          <span className="font-bold italic">imports to the United States</span>
+          . However, we&apos;re considering expanding to other countries soon!
+        </p>
+      </div>
+    ),
+  },
+  {
+    question: "Does this work for exports from the United States?",
+    answer: (
+      <div className="flex flex-col gap-4">
+        <p>
+          HTS codes are used for classifying{" "}
+          <span className="font-bold italic">imports</span> to the United
+          States, whereas "Schedule B" codes are used for classifying{" "}
+          <span className="font-bold italic">exports</span> from the United
+          States.
+          <br /> <br /> Currently HTS Hero only provides HTS Codes and not
+          Schedule B.
+          <br /> However, support for Schedule B is on our roadmap!
+          <br />
+          <br />
+          Note: The first six digits of both HTS and Schedule B codes are
+          identical & reflect the international accepted Harmonized System (HS)
+          code.
+          <br />
+        </p>
+      </div>
+    ),
+  },
+];
+
+const FaqItem = ({ item }: { item: FAQItemProps }) => {
+  const accordion = useRef(null);
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <li>
+      <button
+        className="relative flex gap-2 items-center w-full py-3 text-base font-semibold text-left border-t md:text-lg border-base-content/10"
+        onClick={(e) => {
+          e.preventDefault();
+          setIsOpen(!isOpen);
+        }}
+        aria-expanded={isOpen}
+      >
+        <span className={`flex-1 ${isOpen && "text-primary"}`}>
+          {item?.question}
+        </span>
+        {isOpen ? (
+          <ChevronDownIcon
+            className={"text-white h-6 w-6"}
+            onClick={(e) => {
+              e.preventDefault();
+              setIsOpen(false);
+            }}
+          />
+        ) : (
+          <ChevronRightIcon
+            className={"text-white h-6 w-6"}
+            onClick={(e) => {
+              e.preventDefault();
+              setIsOpen(true);
+            }}
+          />
+        )}
+      </button>
+
+      <div
+        ref={accordion}
+        className={`transition-all duration-300 ease-in-out opacity-80 overflow-hidden`}
+        style={
+          isOpen
+            ? { maxHeight: accordion?.current?.scrollHeight, opacity: 1 }
+            : { maxHeight: 0, opacity: 0 }
+        }
+      >
+        <div className="pb-5 leading-relaxed">{item?.answer}</div>
+      </div>
+    </li>
+  );
+};
+
+const FAQ = () => {
+  return (
+    <section className="bg-black" id="faq">
+      <div className="py-24 px-8 max-w-7xl mx-auto flex flex-col md:flex-row gap-12">
+        <div className="flex flex-col text-left basis-1/2">
+          <p className="inline-block font-semibold text-primary mb-4">FAQ</p>
+          <p className="sm:text-4xl text-3xl font-extrabold text-base-content">
+            Frequently Asked Questions
+          </p>
+          <div className="pt-3 text-neutral-400">
+            Have another question? Contact us on{" "}
+            <a
+              className="link text-base-content"
+              target="_blank"
+              href="https://x.com/htshero"
+            >
+              Twitter
+            </a>{" "}
+            or by{" "}
+            <a
+              href="mailto:support@htshero.com"
+              target="_blank"
+              className="link text-base-content"
+            >
+              email
+            </a>
+          </div>
+        </div>
+
+        <ul className="basis-1/2 flex flex-col gap-1">
+          {faqList.map((item, i) => (
+            <FaqItem key={i} item={item} />
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+};
+
+export default FAQ;
