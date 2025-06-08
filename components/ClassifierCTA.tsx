@@ -1,16 +1,7 @@
 import config from "@/config";
-import { RegistrationTrigger } from "@/libs/early-registration";
 import Link from "next/link";
 
-interface ExploreCTAProps {
-  setIsRegisterOpen: (isOpen: boolean) => void;
-  setRegistrationTrigger: (trigger: RegistrationTrigger) => void;
-}
-
-const ExploreCTA = ({
-  setIsRegisterOpen,
-  setRegistrationTrigger,
-}: ExploreCTAProps) => {
+const ClassifierCTA = () => {
   return (
     <section className="hero overflow-hidden min-h-[75vh]">
       <div className="relative hero-overlay bg-black"></div>
@@ -39,4 +30,4 @@ const ExploreCTA = ({
   );
 };
 
-export default ExploreCTA;
+export default ClassifierCTA;

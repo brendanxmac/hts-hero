@@ -1,113 +1,77 @@
 "use client";
 
-import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
-import { useRef, useState } from "react";
-import type { JSX } from "react";
-import config from "@/config";
 import Link from "next/link";
-
-// <FAQ> component is a lsit of <Item> component
-// Just import the FAQ & add your FAQ content to the const faqList arrayy below.
-
-interface FAQItemProps {
-  question: string;
-  answer: JSX.Element;
-}
+import config from "../config";
+import { FaqItem, FAQItemProps } from "./FAQItem";
 
 const faqList: FAQItemProps[] = [
-  {
-    question: "What's the price?",
-    answer: (
-      <div className="flex flex-col gap-2">
-        <p className="text-2xl font-bold">Free!</p>
-        <p>
-          While we&apos;re in Beta all usage of HTS Hero is free, but if you
-          feel like helping us out you can share it with anyone who might get
-          some value from it.
-        </p>
-      </div>
-    ),
-  },
   {
     question: "What do I get exactly?",
     answer: (
       <div className="space-y-2 leading-relaxed">
-        After loging in, as long as you have enough credits<sup>*</sup>{" "}
-        you&apos;ll immdeiately have access to the HTS lookup tool & the
-        features mentioned above.
-        <span className="block mt-3 text-xs">
-          <sup>*</sup>Everyone has unlimited credits while we&apos;re in Beta,
-          however there are limits on overall daily usage so I can afford to eat
-          tomorrow 😆.
-        </span>
+        Depending on your{" "}
+        <Link
+          href={"/about/importer#pricing"}
+          className="text-secondary underline"
+        >
+          plan
+        </Link>
+        , you&apos;ll immdeiately have access to the HTS classification tool &
+        the{" "}
+        <Link
+          href={"/about/importer#features"}
+          className="text-secondary underline"
+        >
+          features mentioned above
+        </Link>
+        . This will allow you to find the HTS code(s) for whatever it is
+        you&apos;re importing!
       </div>
     ),
   },
   {
     question: "How can I get access?",
     answer: (
-      <div className="leading-relaxed flex flex-col gap-2">
-        <p>All you need is an account! </p>
-        <button className="btn btn-wide bg-white rounded-md text-black hover:bg-neutral-800 hover:text-white">
+      <div className="flex flex-col gap-4">
+        <p>
+          All you need is a{" "}
+          <Link
+            href={"/about/importer#pricing"}
+            className="text-secondary underline"
+          >
+            plan
+          </Link>{" "}
+          and an account!
+        </p>
+        <button className="btn btn-wide btn-primary">
           <Link href={config.auth.loginUrl}>Sign Up Now</Link>
-        </button>
+        </button>{" "}
+      </div>
+    ),
+  },
+  {
+    question: "How much does it cost?",
+    answer: (
+      <div className="flex flex-col gap-2">
+        <p className="font-bold">
+          We do our best to make gettings HTS codes affordable for everyone!
+        </p>
+
+        <p>
+          Be sure to checkout our{" "}
+          <Link
+            href={"/about/importer#pricing"}
+            className="text-secondary underline"
+          >
+            current offers.
+          </Link>{" "}
+        </p>
       </div>
     ),
   },
 ];
 
-const FaqItem = ({ item }: { item: FAQItemProps }) => {
-  const accordion = useRef(null);
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <li>
-      <button
-        className="relative flex gap-2 items-center w-full py-5 text-base font-semibold text-left border-t md:text-lg border-base-content/10"
-        onClick={(e) => {
-          e.preventDefault();
-          setIsOpen(!isOpen);
-        }}
-        aria-expanded={isOpen}
-      >
-        <span className={`flex-1 ${isOpen && "text-[#40C969]"}`}>
-          {item?.question}
-        </span>
-        {isOpen ? (
-          <ChevronDownIcon
-            className={"text-white h-6 w-6"}
-            onClick={(e) => {
-              e.preventDefault();
-              setIsOpen(false);
-            }}
-          />
-        ) : (
-          <ChevronRightIcon
-            className={"text-white h-6 w-6"}
-            onClick={(e) => {
-              e.preventDefault();
-              setIsOpen(true);
-            }}
-          />
-        )}
-      </button>
-
-      <div
-        ref={accordion}
-        className={`transition-all duration-300 ease-in-out opacity-80 overflow-hidden`}
-        style={
-          isOpen
-            ? { maxHeight: accordion?.current?.scrollHeight, opacity: 1 }
-            : { maxHeight: 0, opacity: 0 }
-        }
-      >
-        <div className="pb-5 leading-relaxed">{item?.answer}</div>
-      </div>
-    </li>
-  );
-};
-
-const FAQ = () => {
+const ClassifierFAQ = () => {
   return (
     <section className="bg-black" id="faq">
       <div className="py-24 px-8 max-w-7xl mx-auto flex flex-col md:flex-row gap-12">
@@ -117,15 +81,7 @@ const FAQ = () => {
             Frequently Asked Questions
           </p>
           <div className="pt-3 text-neutral-400">
-            Have another question? Contact me on{" "}
-            <a
-              className="link text-base-content"
-              target="_blank"
-              href="https://twitter.com/brendanxmac"
-            >
-              Twitter
-            </a>{" "}
-            or by{" "}
+            Have another question? Feel free to drop us an{" "}
             <a
               href="mailto:support@htshero.com"
               target="_blank"
@@ -133,10 +89,11 @@ const FAQ = () => {
             >
               email
             </a>
+            .
           </div>
         </div>
 
-        <ul className="basis-1/2 flex flex-col gap-3">
+        <ul className="basis-1/2 flex flex-col gap-1">
           {faqList.map((item, i) => (
             <FaqItem key={i} item={item} />
           ))}
@@ -146,4 +103,4 @@ const FAQ = () => {
   );
 };
 
-export default FAQ;
+export default ClassifierFAQ;

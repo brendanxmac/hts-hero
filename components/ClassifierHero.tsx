@@ -6,7 +6,7 @@ interface AboutHeroProps {
   setRegistrationTrigger: (trigger: RegistrationTrigger) => void;
 }
 
-const AboutHero = ({
+const ClassifierHero = ({
   setIsRegisterOpen,
   setRegistrationTrigger,
 }: AboutHeroProps) => {
@@ -45,4 +45,4 @@ const AboutHero = ({
   );
 };
 
-export default AboutHero;
+export default ClassifierHero;

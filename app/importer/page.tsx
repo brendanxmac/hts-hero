@@ -9,7 +9,7 @@ import Footer from "@/components/Footer";
 import Pricing from "@/components/Pricing";
 import { BuyAttempt } from "../api/buy-attempt/route";
 import ItsFree from "../../components/ItsFree";
-import AboutHeader from "../../components/AboutHeader";
+import ClassifierHeader from "../../components/ClassifierHeader";
 
 export default function Home() {
   const [buyAttempt, setBuyAttempt] = useState<BuyAttempt | null>(null);
@@ -24,7 +24,7 @@ export default function Home() {
   return (
     <>
       <Suspense>
-        <AboutHeader page="importer" />
+        <ClassifierHeader page="importer" />
       </Suspense>
       <main>
         <ItsFree
