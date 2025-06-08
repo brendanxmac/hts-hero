@@ -47,7 +47,7 @@ const config = {
         // The type of pricing plan, either one time or subscription
         type: PricingType.ONE_TIME,
         // The price you want to display, the one user will be charged on Stripe.
-        price: 30,
+        price: 20,
         // If you have an anchor price (i.e. $29) that you want to display crossed out, put it here. Otherwise, leave it empty
         priceAnchor: 40,
         features: [
@@ -77,7 +77,7 @@ const config = {
         description:
           "More time to get your codes and cover yourself if any updates come about.",
         type: PricingType.ONE_TIME,
-        price: 40,
+        price: 30,
         priceAnchor: 60,
         isFeatured: true,
         features: [
