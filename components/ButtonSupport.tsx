@@ -21,7 +21,7 @@ const ButtonSupport = () => {
 
   return (
     <button
-      className="btn btn-sm btn-outline"
+      className="btn btn-sm"
       onClick={handleClick}
       data-tooltip-id="tooltip"
     >

@@ -11,7 +11,7 @@ import ButtonGuide from "./ButtonGuide";
 import { HowToGuide } from "./HowToGuide";
 import { useState } from "react";
 import { HowToStep } from "./HowToStep";
-import { classifyFeatures } from "./FeaturesAccordion";
+import { classifyHowToSteps } from "../constants/how-to";
 
 export const AuthenticatedHeader = () => {
   const pathname = usePathname();
@@ -35,27 +35,25 @@ export const AuthenticatedHeader = () => {
         </Link>
 
         <div className="flex items-center justify-start gap-4">
-          <Link href="/explore">
-            <button
-              className={`btn btn-link px-0 gap-0 ${
-                pathname === "/explore"
-                  ? "text-primary underline"
-                  : "text-base-content no-underline"
-              }`}
-            >
-              Explore
-            </button>
+          <Link
+            href="/explore"
+            className={`btn btn-link px-0 gap-0 ${
+              pathname === "/explore"
+                ? "text-primary underline"
+                : "text-base-content no-underline"
+            }`}
+          >
+            Explore
           </Link>
-          <Link href="/app">
-            <button
-              className={`btn btn-link px-0 gap-0 ${
-                pathname === "/app"
-                  ? "text-primary underline"
-                  : "text-base-content no-underline"
-              }`}
-            >
-              Classify
-            </button>
+          <Link
+            href="/app"
+            className={`btn btn-link px-0 gap-0 ${
+              pathname === "/app"
+                ? "text-primary underline"
+                : "text-base-content no-underline"
+            }`}
+          >
+            Classify
           </Link>
         </div>
       </div>
@@ -67,8 +65,8 @@ export const AuthenticatedHeader = () => {
       </div>
 
       <HowToGuide
-        steps={classifyFeatures.map((feature, i) => (
-          <HowToStep feature={feature} key={`how-to-step-${i}`} />
+        steps={classifyHowToSteps.map((step, i) => (
+          <HowToStep step={step} key={`how-to-step-${i}`} />
         ))}
         isOpen={showGuide}
         onClose={() => setShowGuide(false)}

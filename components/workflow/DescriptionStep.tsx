@@ -7,7 +7,6 @@ import TextInput from "../TextInput";
 import { useEffect, useState } from "react";
 import { StepNavigation } from "./StepNavigation";
 import { TertiaryLabel } from "../TertiaryLabel";
-import { SecondaryLabel } from "../SecondaryLabel";
 
 interface DescriptionStepProps {
   setWorkflowStep: (step: WorkflowStep) => void;
@@ -19,8 +18,7 @@ export const DescriptionStep = ({
   setClassificationLevel,
 }: DescriptionStepProps) => {
   const [localProductDescription, setLocalProductDescription] = useState("");
-  const { classification, setArticleDescription: setProductDescription } =
-    useClassification();
+  const { classification, startNewClassification } = useClassification();
   const { articleDescription: productDescription } = classification;
 
   useEffect(() => {
@@ -82,7 +80,7 @@ export const DescriptionStep = ({
           next={{
             label: "Next",
             onClick: () => {
-              setProductDescription(localProductDescription);
+              startNewClassification(localProductDescription);
               setWorkflowStep(WorkflowStep.CLASSIFICATION);
               setClassificationLevel(0);
             },

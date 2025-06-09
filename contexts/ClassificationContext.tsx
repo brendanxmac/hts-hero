@@ -23,6 +23,7 @@ interface ClassificationContextType {
     updates: Partial<ClassificationProgression>
   ) => void;
   clearClassification: () => void;
+  startNewClassification: (articleDescription?: string) => void;
 }
 
 const ClassificationContext = createContext<
@@ -39,6 +40,7 @@ export const ClassificationProvider = ({
     articleAnalysis: "",
     progressionDescription: "",
     levels: [],
+    isComplete: false,
   });
 
   const setArticleDescription = (description: string) => {
@@ -116,6 +118,19 @@ export const ClassificationProvider = ({
     });
   };
 
+  // Note: This just resets the classification progress,
+  // and will start over with the same description if none is passed in
+  const startNewClassification = (articleDescription?: string) => {
+    setClassification({
+      articleDescription:
+        articleDescription || classification.articleDescription,
+      articleAnalysis: "",
+      progressionDescription: "",
+      levels: [],
+      isComplete: false,
+    });
+  };
+
   return (
     <ClassificationContext.Provider
       value={{
@@ -127,6 +142,7 @@ export const ClassificationProvider = ({
         addLevel,
         updateLevel,
         clearClassification,
+        startNewClassification,
       }}
     >
       {children}

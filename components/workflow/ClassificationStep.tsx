@@ -1,7 +1,7 @@
 import { useClassification } from "../../contexts/ClassificationContext";
 import { WorkflowStep } from "../../enums/hts";
 import { LoadingIndicator } from "../LoadingIndicator";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Loader } from "../../interfaces/ui";
 import { CandidateElements } from "../CandidateElements";
 import {
@@ -9,7 +9,6 @@ import {
   getBestDescriptionCandidates,
   getDirectChildrenElements,
   getElementsInChapter,
-  getProgressionDescriptions,
 } from "../../libs/hts";
 import { CandidateSelection, HtsElement } from "../../interfaces/hts";
 import { HtsSection } from "../../interfaces/hts";
@@ -19,15 +18,11 @@ import { elementsAtClassificationLevel } from "../../utilities/data";
 import { TertiaryText } from "../TertiaryText";
 import { PrimaryLabel } from "../PrimaryLabel";
 import { Color } from "../../enums/style";
-import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
 import { StepNavigation } from "./StepNavigation";
 import { useClassifyTab } from "../../contexts/ClassifyTabContext";
 import { ClassifyTab } from "../../enums/classify";
 import { ConfirmationCard } from "../ConfirmationCard";
 import { useHts } from "../../contexts/HtsContext";
-import { SecondaryLabel } from "../SecondaryLabel";
-import { SecondaryText } from "../SecondaryText";
-import { TertiaryLabel } from "../TertiaryLabel";
 
 export interface ClassificationStepProps {
   setWorkflowStep: (step: WorkflowStep) => void;
@@ -45,9 +40,9 @@ export const ClassificationStep = ({
     isLoading: false,
     text: "",
   });
-  const { classification, addLevel, updateLevel, setClassification } =
-    useClassification();
+  const { classification, addLevel, setClassification } = useClassification();
   const { articleDescription, levels, progressionDescription } = classification;
+  const previousArticleDescriptionRef = useRef<string>(articleDescription);
   const [htsSections, setHtsSections] = useState<HtsSection[]>([]);
   const [sectionCandidates, setSectionCandidates] = useState<
     CandidateSelection[]
@@ -90,10 +85,17 @@ export const ClassificationStep = ({
 
   // Get 2-3 Best Sections
   const getSections = async () => {
+    console.log("Getting Sections");
     setLoading({ isLoading: true, text: "Finding Best Options" });
-    const sectionsResponse = await getHtsSectionsAndChapters();
-    setHtsSections(sectionsResponse.sections);
-    const sections = sectionsResponse.sections;
+
+    let sections = htsSections;
+
+    if (sections.length === 0) {
+      const sectionsResponse = await getHtsSectionsAndChapters();
+      setHtsSections(sectionsResponse.sections);
+      sections = sectionsResponse.sections;
+    }
+
     const bestSectionCandidates = await getBestDescriptionCandidates(
       [],
       articleDescription,
@@ -116,6 +118,7 @@ export const ClassificationStep = ({
 
   // Get 2-3 Best Chapters
   const getChapters = async () => {
+    console.log("Getting Chapters");
     setLoading({ isLoading: true, text: "Finding Best Options" });
     const candidateSections = htsSections.filter((section) => {
       return sectionCandidates.some((candidate) => {
@@ -153,6 +156,7 @@ export const ClassificationStep = ({
 
   // Get up to 2 Best Headings Per Chapter
   const getHeadings = async () => {
+    console.log("Getting Headings");
     setLoading({ isLoading: true, text: "Finding Best Options" });
     const candidatesForHeading: HtsElement[] = [];
     await Promise.all(
@@ -198,22 +202,53 @@ export const ClassificationStep = ({
       })
     );
 
-    updateLevel(0, {
-      candidates: candidatesForHeading,
-    });
+    addLevel(candidatesForHeading);
 
     // DO not move this down, it will break the classification as the timing is critical
     setLoading({ isLoading: false, text: "" });
   };
 
   useEffect(() => {
-    if (classificationLevel === 0 && levels.length === 0) {
+    if (previousArticleDescriptionRef.current !== articleDescription) {
+      console.log("Article Description Changed:", articleDescription);
       setClassificationLevel(0);
-      // TODO: see if we already do this elsewhere and if it should happen here
-      addLevel([]);
+      setSectionCandidates([]);
+      setChapterCandidates([]);
+      setLocallySelectedElement(undefined);
+      previousArticleDescriptionRef.current = articleDescription;
+    }
+  }, [articleDescription]);
+
+  useEffect(() => {
+    console.log("classificationLevel", classificationLevel);
+    console.log("sectionCandidates", sectionCandidates);
+    console.log("chapterCandidates", chapterCandidates);
+    console.log("locallySelectedElement", locallySelectedElement);
+    console.log("loading", loading);
+    console.log(
+      "classification.levels[classificationLevel].candidates",
+      classification.levels[classificationLevel] &&
+        classification.levels[classificationLevel].candidates
+    );
+
+    if (
+      levels[classificationLevel] === undefined ||
+      (levels[classificationLevel] !== undefined &&
+        levels[classificationLevel].candidates.length === 0)
+    ) {
+      console.log("Kicking off new classification");
       getSections();
     }
-  }, []);
+  }, [classificationLevel]);
+
+  // useEffect(() => {
+  //   if (classificationLevel === 0 && levels.length === 0) {
+  //     setClassificationLevel(0);
+  //     // TODO: see if we already do this elsewhere and if it should happen here
+  //     addLevel([]);
+  //     getSections();
+  //   }
+  // }, []);
 
   useEffect(() => {
     if (
@@ -226,12 +261,7 @@ export const ClassificationStep = ({
   }, [sectionCandidates]);
 
   useEffect(() => {
-    if (
-      chapterCandidates &&
-      chapterCandidates.length > 0 &&
-      levels[0] &&
-      levels[0].candidates.length === 0
-    ) {
+    if (chapterCandidates && chapterCandidates.length > 0) {
       getHeadings();
     }
   }, [chapterCandidates]);
