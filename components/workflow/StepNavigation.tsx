@@ -7,31 +7,28 @@ interface Step {
 }
 
 interface StepNavigationProps {
-  next: Step;
+  next?: Step;
   previous?: Step;
 }
 
 export const StepNavigation = ({ next, previous }: StepNavigationProps) => {
   return (
     <div className="max-w-3xl mx-auto py-4 flex items-center justify-between">
-      {previous ? (
-        <button
-          className="btn btn-link btn-sm btn-primary px-0 gap-0 no-underline text-white hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
-          disabled={previous.disabled}
-          onClick={previous.onClick}
-        >
-          <ChevronLeftIcon className="w-5 h-5" />
-          {previous.label}
-        </button>
-      ) : (
-        <div className="w-5 h-5" />
-      )}
+      <button
+        className="btn btn-link btn-sm btn-primary px-0 gap-0 no-underline text-white hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
+        disabled={!previous || previous.disabled}
+        onClick={previous?.onClick}
+      >
+        <ChevronLeftIcon className="w-5 h-5" />
+        {previous?.label || "Back"}
+      </button>
+
       <button
         className="btn btn-primary btn-sm text-white gap-0"
-        disabled={next.disabled}
-        onClick={next.onClick}
+        disabled={!next || next.disabled}
+        onClick={next?.onClick}
       >
-        {next.label}
+        {next?.label || "Next"}
         <ChevronRightIcon className="w-5 h-5" />
       </button>
     </div>
