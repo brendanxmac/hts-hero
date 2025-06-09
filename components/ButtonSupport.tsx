@@ -21,10 +21,9 @@ const ButtonSupport = () => {
 
   return (
     <button
-      className="btn btn-sm"
+      className="btn btn-sm btn-outline"
       onClick={handleClick}
       data-tooltip-id="tooltip"
-      data-tooltip-content="Talk to support"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

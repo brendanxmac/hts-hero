@@ -7,26 +7,26 @@ import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import Link from "next/link";
 
-interface Feature {
+export interface Feature {
   title: string; // The title of the feature
   description: string; // The description of the feature (when clicked)
-  type?: "video" | "image"; // The type of media (video or image)
-  path?: string; // The path to the media (for better SEO, try to use a local path)
-  format?: string; // The format of the media (if type is 'video')
-  alt?: string; // The alt text of the image (if type is 'image')
-  svg?: JSX.Element;
+  mediaType?: "video" | "image"; // The type of media (video or image)
+  mediaPath?: string; // The path to the media (for better SEO, try to use a local path)
+  mediaFormat?: string; // The format of the media (if type is 'video')
+  altText?: string; // The alt text of the image (if type is 'image')
+  titleSvg?: JSX.Element;
 }
 
-const features = [
+export const classifyFeatures = [
   {
     title: "Gets Results in Seconds",
     description:
       "No consultations & no delays. You'll have your code in just moments.",
-    type: "video",
-    alt: "Results in Seconds Video",
-    path: "/finalish.mp4",
-    format: "video/mp4",
-    svg: (
+    mediaType: "video",
+    altText: "Results in Seconds Video",
+    mediaPath: "/finalish.mp4",
+    mediaFormat: "video/mp4",
+    titleSvg: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -47,11 +47,11 @@ const features = [
     title: "Finds the Best Candidates",
     description:
       "We find the most likely candidates for your product and move step-by-step to the final code.",
-    type: "image",
-    alt: "Step by Step Image",
-    path: "/step-by-step.png",
-    format: "image/png",
-    svg: (
+    mediaType: "image",
+    altText: "Step by Step Image",
+    mediaPath: "/step-by-step.png",
+    mediaFormat: "image/png",
+    titleSvg: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -72,10 +72,10 @@ const features = [
     title: "Suggests the Best Option",
     description:
       "At each step we suggest the best option based on your description, and include the rules-based reason why we chose it. This helps you quickly verify the selection and is useful if customs asks how the code was determined.",
-    type: "image",
-    alt: "Intelligent Suggestions Image",
-    path: "/suggested.png",
-    svg: (
+    mediaType: "image",
+    altText: "Intelligent Suggestions Image",
+    mediaPath: "/suggested.png",
+    titleSvg: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -96,10 +96,10 @@ const features = [
     title: "Generates Reports",
     description:
       "Get a detailed report of your entire classification for your own records and to show suppliers or customs. This includes the options, selection, and details at each level, as well as the final HTS Code, description, and tariff rates.",
-    type: "image",
-    alt: "Classification Report Image",
-    path: "/classification-report.png",
-    svg: (
+    mediaType: "image",
+    altText: "Classification Report Image",
+    mediaPath: "/classification-report.png",
+    titleSvg: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -131,7 +131,7 @@ const Item = ({
   setFeatureSelected: () => void;
 }) => {
   const accordion = useRef(null);
-  const { title, description, svg } = feature;
+  const { title, description, titleSvg: svg } = feature;
 
   return (
     <li className="flex flex-col">
@@ -192,7 +192,7 @@ const Item = ({
       >
         <div className="">{description}</div>
         <div className="w-full h-full flex justify-center self-center xl:hidden">
-          <Media feature={features[index]} key={index} />
+          <Media feature={classifyFeatures[index]} key={index} />
         </div>
       </div>
     </li>
@@ -201,37 +201,35 @@ const Item = ({
 
 // A component to display the media (video or image) of the feature. If the type is not specified, it will display an empty div.
 // Video are set to autoplay for best UX.
-const Media = ({ feature }: { feature: Feature }) => {
-  const { type, path, format, alt } = feature;
-  const style = "w-full rounded-2xl sm:max-w-2xl sm:rounded-3xl";
-  const size = {
-    width: 500,
-    height: 500,
-  };
+export const Media = ({ feature }: { feature: Feature }) => {
+  const {
+    mediaType: type,
+    mediaPath: path,
+    mediaFormat: format,
+    altText: alt,
+  } = feature;
+  const style =
+    "w-full h-full rounded-2xl sm:max-w-2xl sm:rounded-3xl object-contain";
 
   if (type === "video") {
     return (
-      <video
-        className={style}
-        autoPlay
-        muted
-        loop
-        playsInline
-        width={size.width}
-        height={size.height}
-      >
-        <source src={path} type={format} />
-      </video>
+      <div className="place-self-center relative w-full aspect-video bg-base-200">
+        <video className={style} autoPlay muted loop playsInline>
+          <source src={path} type={format} />
+        </video>
+      </div>
     );
   } else if (type === "image") {
     return (
-      <Image
-        src={path}
-        alt={alt}
-        className={`${style} object-cover object-center`}
-        width={size.width}
-        height={size.height}
-      />
+      <div className="relative w-full aspect-video bg-base-200">
+        <Image
+          src={path}
+          alt={alt}
+          className={style}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        />
+      </div>
     );
   } else {
     return <div className={`${style} !border-none`}></div>;
@@ -267,7 +265,7 @@ const FeaturesAccordion = () => {
         <div className=" flex flex-col md:flex-row gap-12 md:gap-24">
           <div className="grid grid-cols-1 items-stretch gap-8 sm:gap-12 xl:grid-cols-2 lg:gap-20">
             <ul className="w-full xl:flex xl:flex-col xl:gap-5">
-              {features.map((feature, i) => (
+              {classifyFeatures.map((feature, i) => (
                 <Item
                   key={feature.title}
                   index={i}
@@ -280,7 +278,7 @@ const FeaturesAccordion = () => {
 
             <div className="w-full h-fit justify-center self-center hidden xl:flex">
               <Media
-                feature={features[featureSelected]}
+                feature={classifyFeatures[featureSelected]}
                 key={featureSelected}
               />
             </div>
