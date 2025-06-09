@@ -23,7 +23,6 @@ export interface ClassificationNavigationProps {
   setWorkflowStep: (step: WorkflowStep) => void;
   classificationLevel: number | undefined;
   setClassificationLevel: (level: number | undefined) => void;
-  // setPage: (page: ClassifyPage) => void;
 }
 
 export const ClassificationNavigation = ({

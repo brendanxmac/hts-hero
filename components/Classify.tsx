@@ -21,13 +21,11 @@ import { ClassificationSummaryPage } from "./ClassificationSummaryPage";
 // }
 
 export const Classify = () => {
-  // TODO: do not need to fetch all chapter, or at least change the language...
   const [loading, setLoading] = useState<Loader>({
     isLoading: true,
     text: "",
   });
   const { activeTab } = useClassifyTab();
-  // const { classification } = useClassification();
   const [workflowStep, setWorkflowStep] = useState(WorkflowStep.DESCRIPTION);
   const [classificationLevel, setClassificationLevel] = useState<
     number | undefined
@@ -66,12 +64,10 @@ export const Classify = () => {
           setWorkflowStep={setWorkflowStep}
           classificationLevel={classificationLevel}
           setClassificationLevel={setClassificationLevel}
-          // setPage={setPage}
         />
       </div>
 
       {/* Classify Tab */}
-
       <div className="h-full col-span-7 xl:col-span-8 overflow-hidden">
         {activeTab === ClassifyTab.CLASSIFY && (
           <>

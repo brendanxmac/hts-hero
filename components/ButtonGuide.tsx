@@ -7,11 +7,7 @@ interface Props {
 
 const ButtonGuide = ({ onClick }: Props) => {
   return (
-    <button
-      className="btn btn-sm btn-outline"
-      onClick={onClick}
-      data-tooltip-id="tooltip"
-    >
+    <button className="btn btn-sm" onClick={onClick} data-tooltip-id="tooltip">
       <NumberedListIcon className="w-5 h-5" />
       Guide
     </button>

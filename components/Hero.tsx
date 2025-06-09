@@ -10,8 +10,8 @@ const Hero = () => {
           <span className="text-primary">in Seconds</span>
         </h1>
         <p className="text-lg text-neutral-300 leading-relaxed">
-          Save hours on searching for one, avoid fines or delays at customs, and
-          verify codes from suppliers.
+          Save hours of work, avoid fines or delays at customs, and verify codes
+          from suppliers.
         </p>
 
         <Link
