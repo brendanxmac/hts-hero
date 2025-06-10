@@ -41,7 +41,7 @@ export const ClassificationStep = ({
     text: "",
   });
   const { classification, addLevel, setClassification } = useClassification();
-  const { articleDescription, levels, progressionDescription } = classification;
+  const { articleDescription, levels } = classification;
   const previousArticleDescriptionRef = useRef<string>(articleDescription);
   const [htsSections, setHtsSections] = useState<HtsSection[]>([]);
   const [sectionCandidates, setSectionCandidates] = useState<
@@ -50,25 +50,20 @@ export const ClassificationStep = ({
   const [chapterCandidates, setChapterCandidates] = useState<
     CandidateSelection[]
   >([]);
-  const [locallySelectedElement, setLocallySelectedElement] = useState<
-    HtsElement | undefined
-  >(undefined);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const { htsElements } = useHts();
 
   const selectionForLevel = levels[classificationLevel]?.selection;
 
   const selectedElementIsFinalElement = () => {
-    const selectedElement = locallySelectedElement || selectionForLevel;
-
-    if (!selectedElement) {
+    if (!selectionForLevel) {
       return false;
     }
 
     return (
       getDirectChildrenElements(
-        selectedElement,
-        getElementsInChapter(htsElements, selectedElement.chapter)
+        selectionForLevel,
+        getElementsInChapter(htsElements, selectionForLevel.chapter)
       ).length === 0
     );
   };
@@ -210,45 +205,22 @@ export const ClassificationStep = ({
 
   useEffect(() => {
     if (previousArticleDescriptionRef.current !== articleDescription) {
-      console.log("Article Description Changed:", articleDescription);
       setClassificationLevel(0);
       setSectionCandidates([]);
       setChapterCandidates([]);
-      setLocallySelectedElement(undefined);
       previousArticleDescriptionRef.current = articleDescription;
     }
   }, [articleDescription]);
 
   useEffect(() => {
-    console.log("classificationLevel", classificationLevel);
-    console.log("sectionCandidates", sectionCandidates);
-    console.log("chapterCandidates", chapterCandidates);
-    console.log("locallySelectedElement", locallySelectedElement);
-    console.log("loading", loading);
-    console.log(
-      "classification.levels[classificationLevel].candidates",
-      classification.levels[classificationLevel] &&
-        classification.levels[classificationLevel].candidates
-    );
-
     if (
       levels[classificationLevel] === undefined ||
       (levels[classificationLevel] !== undefined &&
         levels[classificationLevel].candidates.length === 0)
     ) {
-      console.log("Kicking off new classification");
       getSections();
     }
   }, [classificationLevel]);
-
-  // useEffect(() => {
-  //   if (classificationLevel === 0 && levels.length === 0) {
-  //     setClassificationLevel(0);
-  //     // TODO: see if we already do this elsewhere and if it should happen here
-  //     addLevel([]);
-  //     getSections();
-  //   }
-  // }, []);
 
   useEffect(() => {
     if (
@@ -344,12 +316,10 @@ export const ClassificationStep = ({
           {levels[classificationLevel] &&
             levels[classificationLevel].candidates.length > 0 && (
               <div className="h-full flex flex-col gap-4">
-                {/* <SecondaryLabel value="Options:" color={Color.WHITE} /> */}
                 <CandidateElements
                   key={`classification-level-${classificationLevel}`}
-                  indentLevel={classificationLevel}
-                  locallySelectedElement={locallySelectedElement}
-                  setLocallySelectedElement={setLocallySelectedElement}
+                  classificationLevel={classificationLevel}
+                  setClassificationLevel={setClassificationLevel}
                 />
               </div>
             )}
@@ -363,71 +333,13 @@ export const ClassificationStep = ({
           next={{
             label: getNextNavigationLabel(),
             onClick: () => {
-              // * If a local selection has been made, want to:
-              // 1. Take the current level and update the selection to be the locally selected element
-              // 2. If any children exist for the locally selected element create a new level with those children
-              // 3. Regardless of whether a local selection was made,
-              //    a. Set locally selected to undefined
-              //    b. Increment the classification level
-
-              if (locallySelectedElement) {
-                const newProgressionLevels = levels.slice(
-                  0,
-                  classificationLevel + 1
-                );
-                newProgressionLevels[classificationLevel].selection =
-                  locallySelectedElement;
-
-                const childrenOfSelectedElement = getDirectChildrenElements(
-                  locallySelectedElement,
-                  getElementsInChapter(
-                    htsElements,
-                    locallySelectedElement.chapter
-                  )
-                );
-
-                if (childrenOfSelectedElement.length > 0) {
-                  setClassification({
-                    ...classification,
-                    isComplete: false,
-                    progressionDescription:
-                      progressionDescription +
-                      " > " +
-                      locallySelectedElement.description,
-                    levels: [
-                      ...newProgressionLevels,
-                      {
-                        candidates: childrenOfSelectedElement,
-                      },
-                    ],
-                  });
-                  setClassificationLevel(classificationLevel + 1);
-                } else {
-                  setClassification({
-                    ...classification,
-                    isComplete: true,
-                    progressionDescription:
-                      progressionDescription +
-                      " > " +
-                      locallySelectedElement.description,
-                    levels: newProgressionLevels,
-                  });
-                  setShowConfirmation(true);
-                }
-              }
-
               if (selectedElementIsFinalElement()) {
                 setShowConfirmation(true);
               } else {
                 setClassificationLevel(classificationLevel + 1);
               }
-
-              setLocallySelectedElement(undefined);
             },
-            disabled:
-              (!locallySelectedElement && !selectionForLevel) ||
-              (classificationLevel === classification.levels.length - 1 &&
-                classification.isComplete),
+            disabled: classificationLevel === classification.levels.length - 1,
           }}
           previous={{
             label: "Back",

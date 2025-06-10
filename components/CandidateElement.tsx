@@ -19,8 +19,9 @@ import { ClassifyTab } from "../enums/classify";
 import { TertiaryLabel } from "./TertiaryLabel";
 import {
   generateBreadcrumbsForHtsElement,
-  getBreadCrumbsForElement,
   getChapterFromHtsElement,
+  getDirectChildrenElements,
+  getElementsInChapter,
   getHtsElementParents,
   getSectionAndChapterFromChapterNumber,
 } from "../libs/hts";
@@ -28,33 +29,30 @@ import { useHts } from "../contexts/HtsContext";
 import { PrimaryLabel } from "./PrimaryLabel";
 interface Props {
   element: HtsElement;
-  indentLevel: number;
-  locallySelectedElement: HtsElement | undefined;
-  setLocallySelectedElement: (element: HtsElement) => void;
+  classificationLevel: number;
+  setClassificationLevel: (level: number | undefined) => void;
 }
 
 export const CandidateElement = ({
   element,
-  indentLevel,
-  locallySelectedElement,
-  setLocallySelectedElement,
+  classificationLevel,
+  setClassificationLevel,
 }: Props) => {
   const { htsno, chapter, description, indent } = element;
-
+  const [isPressed, setIsPressed] = useState(false);
   const { clearBreadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { setActiveTab } = useClassifyTab();
   const { sections } = useHtsSections();
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
   const { classification, updateLevel, setClassification } =
     useClassification();
-  // const [showNotes, setShowNotes] = useState(false);
   const { htsElements } = useHts();
-
+  const { levels, progressionDescription } = classification;
   const isRecommended =
-    classification.levels[indentLevel]?.recommendedElement?.uuid ===
+    classification.levels[classificationLevel]?.recommendedElement?.uuid ===
     element.uuid;
   const recommendedReason =
-    classification.levels[indentLevel]?.recommendationReason;
+    classification.levels[classificationLevel]?.recommendationReason;
 
   // Check all progression levels to see if this element is selected in any of them
   const isLevelSelection = Boolean(
@@ -63,40 +61,48 @@ export const CandidateElement = ({
     )
   );
 
-  const isLocallySelected = locallySelectedElement?.uuid === element.uuid;
-
   return (
     <div
       className={classNames(
-        "flex w-full rounded-md bg-base-100 p-4 gap-4 transition duration-100 ease-in-out",
-        // FIXME: this inset syntax won't work in daisyUI v5, https://chatgpt.com/c/680acac7-5db4-8000-a309-b4ba81c63e8c
-        isLevelSelection &&
-          !locallySelectedElement &&
-          "shadow-[inset_0_0_0_4px_oklch(var(--p))]",
-        isLevelSelection &&
-          locallySelectedElement &&
-          !isLocallySelected &&
-          "shadow-[inset_0_0_0_2px_oklch(var(--nc))]",
-        isLocallySelected && "shadow-[inset_0_0_0_4px_oklch(var(--p))]",
+        "flex w-full rounded-md bg-base-100 p-4 gap-4 transition duration-100 ease-in-out scale-[0.99]",
+        isLevelSelection && "shadow-[inset_0_0_0_4px_oklch(var(--p))]",
         !isLevelSelection &&
-          !isLocallySelected &&
-          "hover:cursor-pointer hover:bg-base-200 shadow-[inset_0_0_0_2px_oklch(var(--n))]"
+          "hover:cursor-pointer hover:bg-base-300 border-2 border-neutral-content",
+        !isPressed && "hover:scale-[1]",
+        isPressed && "scale-[0.98]"
       )}
+      onMouseDown={() => setIsPressed(true)}
+      onMouseUp={() => setIsPressed(false)}
+      onMouseLeave={() => setIsPressed(false)}
       onClick={() => {
-        if (isLocallySelected) {
-          setLocallySelectedElement(undefined);
+        const newProgressionLevels = levels.slice(0, classificationLevel + 1);
+        newProgressionLevels[classificationLevel].selection = element;
+        const childrenOfSelectedElement = getDirectChildrenElements(
+          element,
+          getElementsInChapter(htsElements, element.chapter)
+        );
+        if (childrenOfSelectedElement.length > 0) {
+          setClassification({
+            ...classification,
+            isComplete: false,
+            progressionDescription:
+              progressionDescription + " > " + element.description,
+            levels: [
+              ...newProgressionLevels,
+              {
+                candidates: childrenOfSelectedElement,
+              },
+            ],
+          });
+          setClassificationLevel(classificationLevel + 1);
         } else {
-          setLocallySelectedElement(element);
-
-          // clearBreadcrumbs();
-          // const ch = findChapterByNumber(element.chapter);
-          // if (ch) {
-          //   addBreadcrumb({
-          //     type: Navigatable.CHAPTER,
-          //     ...ch,
-          //   });
-          // }
-          // addBreadcrumb(element);
+          setClassification({
+            ...classification,
+            isComplete: true,
+            progressionDescription:
+              progressionDescription + " > " + element.description,
+            levels: newProgressionLevels,
+          });
         }
       }}
     >
@@ -179,17 +185,19 @@ export const CandidateElement = ({
                   onClick={() => {
                     if (isLevelSelection) {
                       const newClassificationProgression =
-                        classification.levels.slice(0, indentLevel + 1);
-                      newClassificationProgression[indentLevel].selection =
-                        null;
+                        classification.levels.slice(0, classificationLevel + 1);
+                      newClassificationProgression[
+                        classificationLevel
+                      ].selection = null;
 
                       // remove this element from the candidates of this level
-                      newClassificationProgression[indentLevel].candidates =
-                        newClassificationProgression[
-                          indentLevel
-                        ].candidates.filter(
-                          (candidate) => candidate.uuid !== element.uuid
-                        );
+                      newClassificationProgression[
+                        classificationLevel
+                      ].candidates = newClassificationProgression[
+                        classificationLevel
+                      ].candidates.filter(
+                        (candidate) => candidate.uuid !== element.uuid
+                      );
 
                       setClassification({
                         ...classification,
@@ -197,17 +205,19 @@ export const CandidateElement = ({
                       });
                     } else {
                       const newClassificationProgression =
-                        classification.levels.slice(0, indentLevel + 1);
+                        classification.levels.slice(0, classificationLevel + 1);
 
-                      newClassificationProgression[indentLevel].candidates =
-                        newClassificationProgression[
-                          indentLevel
-                        ].candidates.filter(
-                          (candidate) => candidate.uuid !== element.uuid
-                        );
-                      updateLevel(indentLevel, {
+                      newClassificationProgression[
+                        classificationLevel
+                      ].candidates = newClassificationProgression[
+                        classificationLevel
+                      ].candidates.filter(
+                        (candidate) => candidate.uuid !== element.uuid
+                      );
+                      updateLevel(classificationLevel, {
                         candidates:
-                          newClassificationProgression[indentLevel].candidates,
+                          newClassificationProgression[classificationLevel]
+                            .candidates,
                       });
                     }
                   }}
