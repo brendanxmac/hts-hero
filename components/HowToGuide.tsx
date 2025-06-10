@@ -100,9 +100,9 @@ export const HowToGuide = ({ guideName }: HowToGuideProps) => {
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-8 pointer-events-none">
         <div className="w-full max-w-5xl max-h-[90vh] h-full border-2 border-base-content/30 bg-base-100 rounded-lg shadow-xl relative flex flex-col pointer-events-auto">
-          <div className="p-8 flex justify-between">
+          <div className="px-8 py-6 flex justify-between">
             <h1 className="text-3xl md:text-4xl text-white font-bold">
-              How to use {config.appName}
+              How to Find Your Code
             </h1>
             <button
               onClick={hideGuide}
