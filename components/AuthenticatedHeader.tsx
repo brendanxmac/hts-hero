@@ -8,14 +8,12 @@ import ButtonAccount from "./ButtonAccount";
 import ButtonSupport from "./ButtonSupport";
 import { usePathname } from "next/navigation";
 import ButtonGuide from "./ButtonGuide";
-import { HowToGuide } from "./HowToGuide";
-import { useState } from "react";
-import { HowToStep } from "./HowToStep";
-import { classifyHowToSteps } from "../constants/how-to";
+import { useGuide } from "@/contexts/GuideContext";
+import { GuideName } from "@/types/guides";
 
 export const AuthenticatedHeader = () => {
   const pathname = usePathname();
-  const [showGuide, setShowGuide] = useState(false);
+  const { showGuide } = useGuide();
 
   return (
     <header className="h-16 z-10 bg-base-100 flex items-center justify-between p-4 border-b border-base-200">
@@ -59,18 +57,10 @@ export const AuthenticatedHeader = () => {
       </div>
 
       <div className="flex items-center gap-2">
-        <ButtonGuide onClick={() => setShowGuide(true)} />
+        <ButtonGuide onClick={() => showGuide(GuideName.CLASSIFY)} />
         <ButtonSupport />
         <ButtonAccount />
       </div>
-
-      <HowToGuide
-        steps={classifyHowToSteps.map((step, i) => (
-          <HowToStep step={step} key={`how-to-step-${i}`} />
-        ))}
-        isOpen={showGuide}
-        onClose={() => setShowGuide(false)}
-      />
     </header>
   );
 };

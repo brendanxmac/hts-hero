@@ -2,23 +2,25 @@ import { useState } from "react";
 import { StepNavigation } from "./workflow/StepNavigation";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import config from "../config";
+import { useGuide } from "@/contexts/GuideContext";
+import { GuideName } from "@/types/guides";
+import { HowToStep } from "./HowToStep";
 
 interface HowToGuideProps {
-  steps: JSX.Element[];
-  isOpen: boolean;
-  onClose: () => void;
+  guideName: GuideName;
 }
 
-export const HowToGuide = ({ steps, isOpen, onClose }: HowToGuideProps) => {
+export const HowToGuide = ({ guideName }: HowToGuideProps) => {
   const [currentStep, setCurrentStep] = useState(0);
+  const { showGuide, hideGuide, isGuideVisible, guideSteps } = useGuide();
 
-  if (!isOpen) return null;
+  if (!isGuideVisible) return null;
 
   const handleNext = () => {
-    if (currentStep < steps.length - 1) {
+    if (currentStep < guideSteps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      onClose();
+      hideGuide();
     }
   };
 
@@ -33,7 +35,7 @@ export const HowToGuide = ({ steps, isOpen, onClose }: HowToGuideProps) => {
       {/* Backdrop */}
       <div
         className="h-screen w-screen fixed inset-0 bg-black bg-opacity-50 z-40"
-        onClick={onClose}
+        onClick={hideGuide}
       />
 
       {/* Modal */}
@@ -44,7 +46,7 @@ export const HowToGuide = ({ steps, isOpen, onClose }: HowToGuideProps) => {
               How to use {config.appName}
             </h1>
             <button
-              onClick={onClose}
+              onClick={hideGuide}
               className="rounded-full border border-base-content/30 h-7 w-7 text-white p-1 hover:bg-base-content/10 flex items-center justify-center"
             >
               <XMarkIcon className="w-5 h-5" />
@@ -53,7 +55,9 @@ export const HowToGuide = ({ steps, isOpen, onClose }: HowToGuideProps) => {
 
           {/* Content */}
           <div className="flex-1 min-h-0 px-8 overflow-y-auto">
-            <div className="h-full">{steps[currentStep]}</div>
+            <div className="h-full">
+              <HowToStep step={guideSteps[currentStep]} />
+            </div>
           </div>
 
           <div className="border-t border-neutral-content/20 w-full" />
@@ -70,7 +74,7 @@ export const HowToGuide = ({ steps, isOpen, onClose }: HowToGuideProps) => {
                   : undefined
               }
               next={
-                currentStep < steps.length - 1
+                currentStep < guideSteps.length - 1
                   ? {
                       label: "Next",
                       onClick: handleNext,
