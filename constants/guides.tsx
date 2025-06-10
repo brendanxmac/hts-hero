@@ -1,68 +1,79 @@
 import { Feature } from "../components/FeaturesAccordion";
 import { Guide, GuideName } from "../types/guides";
 
+const stepOne = (
+  <div className="flex flex-col gap-2">
+    <p>
+      Enter your product description in the text box and{" "}
+      <span className="font-bold">then hit next</span>.
+    </p>
+    <p>We immdeiately start finding the best candidates for you.</p>
+    <p>
+      Important: Be sure to follow the good description tips (⚡️) to get the
+      best possible results.
+    </p>
+  </div>
+);
+
+const stepTwo = (
+  <div className="flex flex-col gap-2">
+    <p>
+      After finding the most likely candidates for your product, we suggest the
+      one we think is the best fit.
+    </p>
+    <p>You click the best option you see and hit next.</p>
+    <p>
+      We then move to the next level (if needed), and repeat the process until
+      we have the official 10 digit code.
+    </p>
+    <p>
+      The first level is usually 4 digits, the next is 6, and so on until 10.
+    </p>
+  </div>
+);
+
+const stepThree = (
+  <div className="flex flex-col gap-2">
+    <p>Once we've gotten to a full 10 digit HTS Code, you're all set!</p>
+    <p>
+      Click the download report button for your records and to show customs if
+      needed.
+    </p>
+  </div>
+);
+
 export const classifyGuideSteps: Feature[] = [
   {
-    title: "The Classify Page has 2 Sections",
+    title: "Navigation",
     description: (
       <div className="flex flex-col gap-2">
         <p>
           <span className="font-bold text-primary">Summary</span> shows you the
-          different steps of your classification and allows you to jump between
+          different steps for finding your code and allows you to jump between
           them.
         </p>
         <p>
           <span className="font-bold text-secondary">Current step</span> is the
-          'working area' that allows you enter product descriptions and select
-          from the best-fitting options.
+          where you enter product descriptions and select from the best-fitting
+          options.
         </p>
       </div>
     ),
     mediaType: "image",
-    mediaPath: "/classify-sections.png",
+    mediaPath: "/two-sections.png",
     mediaFormat: "image/png",
     altText: "Classify Sections",
   },
   {
     title: "Step 1: Enter your Product Description",
-    description: (
-      <div className="flex flex-col gap-2">
-        <p>
-          Enter your product description in the text box and{" "}
-          <span className="font-bold">then hit next</span>.
-        </p>
-        <p>
-          We immdeiately start finding the best candidates for your product
-          description.
-        </p>
-        <p>
-          Be sure to follow the good description tips (⚡️) to get the best
-          possible results.
-        </p>
-      </div>
-    ),
+    description: stepOne,
     mediaType: "image",
     mediaPath: "/start-by.png",
     mediaFormat: "image/png",
   },
   {
     title: "Step 1: Enter your Product Description",
-    description: (
-      <div className="flex flex-col gap-2">
-        <p>
-          Enter your product description in the text box and{" "}
-          <span className="font-bold">then hit next</span>.
-        </p>
-        <p>
-          We immdeiately start finding the best candidates for your product
-          description.
-        </p>
-        <p>
-          Be sure to follow the good description tips (⚡️) to get the best
-          possible results.
-        </p>
-      </div>
-    ),
+    description: stepOne,
     mediaType: "video",
     mediaPath: "/start-classification.mp4",
     mediaFormat: "video/mp4",
@@ -70,20 +81,7 @@ export const classifyGuideSteps: Feature[] = [
   },
   {
     title: "Step 2: Verify our Suggestions",
-    description: (
-      <div className="flex flex-col gap-2">
-        <p>
-          After finding the most likely candidates for your product, we suggest
-          the one we think is the best fit.
-        </p>
-        <p>All you need to do is click the best option you see and hit next.</p>
-        <p>
-          We then move to the next level (which is based on your selection) and
-          repeat the process until we land on your final code, about 3 levels on
-          average.
-        </p>
-      </div>
-    ),
+    description: stepTwo,
     mediaType: "image",
     mediaPath: "/select-the-best.png",
     mediaFormat: "image/png",
@@ -91,20 +89,7 @@ export const classifyGuideSteps: Feature[] = [
   },
   {
     title: "Step 2: Verify our Suggestions",
-    description: (
-      <div className="flex flex-col gap-2">
-        <p>
-          After finding the most likely candidates for your product, we suggest
-          the one we think is the best fit.
-        </p>
-        <p>All you need to do is click the best option you see and hit next.</p>
-        <p>
-          We then move to the next level (which is based on your selection) and
-          repeat the process until we land on your final code, about 3 levels on
-          average.
-        </p>
-      </div>
-    ),
+    description: stepTwo,
     mediaType: "video",
     mediaPath: "/select-best-candidate.mp4",
     mediaFormat: "video/mp4",
@@ -112,15 +97,7 @@ export const classifyGuideSteps: Feature[] = [
   },
   {
     title: "Step 3: Get your Code!",
-    description: (
-      <div className="flex flex-col gap-2">
-        <p>Once we've gotten to a full 10 digit HTS Code, you're all set!</p>
-        <p>
-          Click the download report button for your records and to show customs
-          if needed.
-        </p>
-      </div>
-    ),
+    description: stepThree,
     mediaType: "video",
     mediaPath: "/download-report.mp4",
     mediaFormat: "video/mp4",
