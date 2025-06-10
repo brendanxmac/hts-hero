@@ -1,6 +1,7 @@
 import { Feature } from "../components/FeaturesAccordion";
+import { Guide, GuideName } from "../types/guides";
 
-export const classifyHowToSteps: Feature[] = [
+export const classifyGuideSteps: Feature[] = [
   {
     title: "The Classify Page has 2 Sections",
     description: (
@@ -165,5 +166,14 @@ export const classifyHowToSteps: Feature[] = [
     mediaPath: "/jump-to-explore.mp4",
     mediaFormat: "video/mp4",
     altText: "Jump to Explore",
+  },
+];
+
+export const guides: Guide[] = [
+  {
+    name: GuideName.CLASSIFY,
+    steps: classifyGuideSteps,
+    routes: ["/app"],
+    daysUntilShowAgain: 3,
   },
 ];

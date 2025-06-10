@@ -15,6 +15,8 @@ import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { Loader } from "../interfaces/ui";
 import { useHts } from "../contexts/HtsContext";
 import { ClassificationSummaryPage } from "./ClassificationSummaryPage";
+import { GuideName } from "../types/guides";
+import { HowToGuide } from "./HowToGuide";
 
 // interface Props {
 //   setPage: (page: ClassifyPage) => void;
@@ -98,6 +100,7 @@ export const Classify = () => {
         {/* Explore Tab */}
         {activeTab === ClassifyTab.EXPLORE && <Explore />}
       </div>
+      <HowToGuide guideName={GuideName.CLASSIFY} />
     </div>
   );
 };

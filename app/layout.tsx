@@ -10,6 +10,10 @@ import { HtsSectionsProvider } from "../contexts/HtsSectionsContext";
 import { ClassificationProvider } from "../contexts/ClassificationContext";
 import { HtsProvider } from "../contexts/HtsContext";
 import { UserProvider } from "../contexts/UserContext";
+import { GuideProvider } from "@/contexts/GuideContext";
+import { GuideInitializer } from "@/components/GuideInitializer";
+import { classifyGuideSteps, guides } from "@/constants/guides";
+import { GuideName } from "@/types/guides";
 
 const font = Inter({ subsets: ["latin"] });
 
@@ -28,16 +32,19 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" data-theme={config.colors.theme} className={font.className}>
       <body>
-        <UserProvider>
-          <HtsSectionsProvider>
-            <ClassificationProvider>
-              <HtsProvider>
-                {/* ClientLayout contains all the client wrappers (Crisp chat support, toast messages, tooltips, etc.) */}
-                <ClientLayout>{children}</ClientLayout>
-              </HtsProvider>
-            </ClassificationProvider>
-          </HtsSectionsProvider>
-        </UserProvider>
+        <GuideProvider guides={guides}>
+          <GuideInitializer />
+          <UserProvider>
+            <HtsSectionsProvider>
+              <ClassificationProvider>
+                <HtsProvider>
+                  {/* ClientLayout contains all the client wrappers (Crisp chat support, toast messages, tooltips, etc.) */}
+                  <ClientLayout>{children}</ClientLayout>
+                </HtsProvider>
+              </ClassificationProvider>
+            </HtsSectionsProvider>
+          </UserProvider>
+        </GuideProvider>
         <GoogleAnalytics gaId="G-V2DRE5Y0NV" />
       </body>
     </html>
