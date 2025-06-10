@@ -8,15 +8,13 @@ import { getProgressionDescriptionWithArrows } from "../libs/hts";
 import { getBestClassificationProgression } from "../libs/hts";
 
 interface Props {
-  indentLevel: number;
-  locallySelectedElement: HtsElement | undefined;
-  setLocallySelectedElement: (element: HtsElement) => void;
+  classificationLevel: number;
+  setClassificationLevel: (level: number | undefined) => void;
 }
 
 export const CandidateElements = ({
-  indentLevel,
-  locallySelectedElement,
-  setLocallySelectedElement,
+  classificationLevel,
+  setClassificationLevel,
 }: Props) => {
   const [loading, setLoading] = useState<Loader>({
     isLoading: false,
@@ -24,13 +22,13 @@ export const CandidateElements = ({
   });
   const { classification, setClassification } = useClassification();
   const { levels } = classification;
-  const { candidates } = levels[indentLevel];
+  const { candidates } = levels[classificationLevel];
   const { articleDescription, articleAnalysis } = classification;
 
   useEffect(() => {
     if (
       candidates.length > 0 &&
-      !classification.levels[indentLevel].recommendedElement
+      !classification.levels[classificationLevel].recommendedElement
     ) {
       getBestCandidate();
     }
@@ -57,8 +55,8 @@ export const CandidateElements = ({
 
     setClassification((prev: Classification) => {
       const newProgressionLevels = [...prev.levels];
-      newProgressionLevels[indentLevel] = {
-        ...newProgressionLevels[indentLevel],
+      newProgressionLevels[classificationLevel] = {
+        ...newProgressionLevels[classificationLevel],
         recommendedElement: bestCandidate,
         recommendationReason: bestProgressionResponse.logic,
       };
@@ -83,14 +81,13 @@ export const CandidateElements = ({
               <LoadingIndicator text={loading.text} />
             </div>
           )}
-          <div className="h-full flex flex-col gap-6 overflow-y-scroll pb-4">
+          <div className="h-full flex flex-col gap-4 overflow-y-scroll pb-4">
             {candidates.map((element) => (
               <CandidateElement
                 key={element.uuid}
                 element={element}
-                indentLevel={indentLevel}
-                locallySelectedElement={locallySelectedElement}
-                setLocallySelectedElement={setLocallySelectedElement}
+                classificationLevel={classificationLevel}
+                setClassificationLevel={setClassificationLevel}
               />
             ))}
           </div>

@@ -7,6 +7,7 @@ import TextInput from "../TextInput";
 import { useEffect, useState } from "react";
 import { StepNavigation } from "./StepNavigation";
 import { TertiaryLabel } from "../TertiaryLabel";
+import { SecondaryLabel } from "../SecondaryLabel";
 
 interface DescriptionStepProps {
   setWorkflowStep: (step: WorkflowStep) => void;
@@ -28,7 +29,7 @@ export const DescriptionStep = ({
   return (
     <div className="h-full flex flex-col">
       {/* Content */}
-      <div className="grow w-full max-w-3xl mx-auto flex flex-col px-8 justify-center gap-8">
+      <div className="grow w-full max-w-3xl mx-auto flex flex-col px-8 justify-center gap-5">
         <div className="flex flex-col gap-2">
           <div className="flex justify-between items-center">
             <TertiaryLabel
@@ -40,11 +41,11 @@ export const DescriptionStep = ({
             </button> */}
           </div>
           <h2 className={`text-white font-bold text-2xl`}>
-            Enter your product description
+            Enter a detailed description of your item
           </h2>
         </div>
         <TextInput
-          placeholder="Enter item description"
+          placeholder="e.g. Men’s 100% cotton denim jeans, dyed blue, pre-washed, and tailored for an atheltic figure"
           defaultValue={productDescription}
           // onSubmit={(value) => {
           //   setProductDescription(value);
@@ -56,21 +57,21 @@ export const DescriptionStep = ({
         />
 
         <div className="flex flex-col">
-          <TertiaryLabel
-            value="🚀 For best results, include:"
+          <SecondaryLabel
+            value="👉 Tips for best results:"
             color={Color.NEUTRAL_CONTENT}
           />
           <ul>
             <TertiaryText
-              value="-> Details that help identify the item, such as color, size, material, etc."
+              value="-> Include details that help identify the item, such as color, size, material, weight, etc."
               color={Color.NEUTRAL_CONTENT}
             />
             <TertiaryText
-              value="-> Describe each part of material and mention which one is dominant or most important."
+              value="-> Describe each component / material and mention which one is dominant or most important."
               color={Color.NEUTRAL_CONTENT}
             />
             <TertiaryText
-              value="-> The intended use or audience (e.g. 'for children', 'for dogs', 'for human consumption', etc)."
+              value="-> Include the intended use or audience (e.g. 'for children', 'for dogs', 'for human consumption', etc)."
               color={Color.NEUTRAL_CONTENT}
             />
           </ul>

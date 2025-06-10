@@ -24,7 +24,7 @@ export const StepNavigation = ({ next, previous }: StepNavigationProps) => {
       </button>
 
       <button
-        className="btn btn-primary btn-sm text-white gap-0"
+        className="btn btn-link btn-sm btn-primary gap-0 no-underline text-white hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
         disabled={!next || next.disabled}
         onClick={next?.onClick}
       >
