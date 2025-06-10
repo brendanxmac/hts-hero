@@ -10,16 +10,14 @@ import { getBestClassificationProgression } from "../libs/hts";
 interface Props {
   classificationLevel: number;
   setClassificationLevel: (level: number | undefined) => void;
+  setLoading: (loading: Loader) => void;
 }
 
 export const CandidateElements = ({
   classificationLevel,
   setClassificationLevel,
+  setLoading,
 }: Props) => {
-  const [loading, setLoading] = useState<Loader>({
-    isLoading: false,
-    text: "",
-  });
   const { classification, setClassification } = useClassification();
   const { levels } = classification;
   const { candidates } = levels[classificationLevel];
@@ -75,22 +73,15 @@ export const CandidateElements = ({
   return (
     <div className="h-full flex flex-col gap-4">
       {candidates.length > 0 && (
-        <div className="h-full flex flex-col gap-2">
-          {loading.isLoading && (
-            <div className="py-3">
-              <LoadingIndicator text={loading.text} />
-            </div>
-          )}
-          <div className="h-full flex flex-col gap-4 overflow-y-scroll pb-4">
-            {candidates.map((element) => (
-              <CandidateElement
-                key={element.uuid}
-                element={element}
-                classificationLevel={classificationLevel}
-                setClassificationLevel={setClassificationLevel}
-              />
-            ))}
-          </div>
+        <div className="h-full flex flex-col gap-4 overflow-y-scroll pb-4">
+          {candidates.map((element) => (
+            <CandidateElement
+              key={element.uuid}
+              element={element}
+              classificationLevel={classificationLevel}
+              setClassificationLevel={setClassificationLevel}
+            />
+          ))}
         </div>
       )}
     </div>

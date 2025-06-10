@@ -278,19 +278,22 @@ export const ClassificationStep = ({
 
   return (
     <div className="h-full flex flex-col pt-8">
-      {/* Content */}
       <div className="flex-1 overflow-hidden px-8 w-full max-w-3xl mx-auto flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <TertiaryText
-            value={`Level ${classificationLevel + 1}`}
-            color={Color.NEUTRAL_CONTENT}
-          />
+        <div className="flex flex-col gap-4">
+          <div className="flex justify-between items-center">
+            <TertiaryText
+              value={`Level ${classificationLevel + 1}`}
+              color={Color.NEUTRAL_CONTENT}
+            />
+            {loading.isLoading && <LoadingIndicator text={loading.text} />}
+          </div>
           <div className="w-full flex justify-between items-end">
             <div className="w-full flex flex-col">
               <PrimaryLabel value={getStepDescription()} color={Color.WHITE} />
               {getStepInstructions()}
             </div>
           </div>
+          {/* Breadcrumbs to show where element came from */}
           {/* {classificationLevel > 0 && (
             <div className="">
               {getProgressionDescriptions(
@@ -310,8 +313,6 @@ export const ClassificationStep = ({
           )} */}
         </div>
 
-        {loading.isLoading && <LoadingIndicator text={loading.text} />}
-
         <div className="h-full flex flex-col gap-8 overflow-hidden">
           {levels[classificationLevel] &&
             levels[classificationLevel].candidates.length > 0 && (
@@ -320,6 +321,7 @@ export const ClassificationStep = ({
                   key={`classification-level-${classificationLevel}`}
                   classificationLevel={classificationLevel}
                   setClassificationLevel={setClassificationLevel}
+                  setLoading={setLoading}
                 />
               </div>
             )}
@@ -339,7 +341,9 @@ export const ClassificationStep = ({
                 setClassificationLevel(classificationLevel + 1);
               }
             },
-            disabled: classificationLevel === classification.levels.length - 1,
+            disabled:
+              classification.levels.length === 0 ||
+              classificationLevel === classification.levels.length - 1,
           }}
           previous={{
             label: "Back",

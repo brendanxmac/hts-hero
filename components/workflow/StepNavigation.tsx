@@ -2,6 +2,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/16/solid";
 
 interface Step {
   label: string;
+  fill?: boolean;
   onClick?: () => void;
   disabled?: boolean;
 }
@@ -15,7 +16,11 @@ export const StepNavigation = ({ next, previous }: StepNavigationProps) => {
   return (
     <div className="max-w-3xl mx-auto py-4 flex items-center justify-between">
       <button
-        className="btn btn-link btn-sm btn-primary gap-0 no-underline text-white hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
+        className={
+          previous && previous.fill
+            ? "btn btn-primary btn-sm text-white gap-0"
+            : "btn btn-link btn-sm btn-primary gap-0 no-underline text-white hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
+        }
         disabled={!previous || previous.disabled}
         onClick={previous?.onClick}
       >
@@ -24,7 +29,11 @@ export const StepNavigation = ({ next, previous }: StepNavigationProps) => {
       </button>
 
       <button
-        className="btn btn-link btn-sm btn-primary gap-0 no-underline text-white hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
+        className={
+          next && next.fill
+            ? "btn btn-primary btn-sm text-white gap-0"
+            : "btn btn-link btn-sm btn-primary gap-0 no-underline text-white hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
+        }
         disabled={!next || next.disabled}
         onClick={next?.onClick}
       >

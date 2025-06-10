@@ -255,12 +255,13 @@ export const CandidateElement = ({
         {isRecommended && (
           <div className="flex flex-col gap-2">
             <div className="flex gap-1 text-accent items-center">
-              <SquareIconButton
+              {/* <SquareIconButton
                 iconOnly
                 icon={<SparklesIcon className="h-4 w-4 text-accent" />}
                 tooltip={`HTS Hero can make mistakes, check important information`}
                 onClick={() => {}}
-              />
+              /> */}
+              <SparklesIcon className="h-4 w-4 text-accent" />
               <TertiaryLabel
                 value="Suggested by HTS Hero"
                 color={Color.ACCENT}
