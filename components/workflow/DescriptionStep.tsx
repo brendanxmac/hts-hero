@@ -84,6 +84,7 @@ export const DescriptionStep = ({
         <StepNavigation
           next={{
             label: "Next",
+            fill: true,
             onClick: () => {
               startNewClassification(localProductDescription);
               setWorkflowStep(WorkflowStep.CLASSIFICATION);
