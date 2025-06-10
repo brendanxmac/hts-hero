@@ -21,30 +21,38 @@ export const HowToGuide = ({ guideName }: HowToGuideProps) => {
     // Ensure code only runs client-side
     if (typeof window === "undefined") return;
 
-    // Find the guide config for the current route
-    const guideConfig = guides.find((config) =>
-      config.routes?.includes(pathname)
-    );
+    // Find the guide config for the current guide
+    const guideConfig = guides.find((config) => config.name === guideName);
 
-    if (guideConfig) {
-      const storageKey = `guide-${guideConfig.name.toLowerCase()}`;
-      const guideRaw = localStorage.getItem(storageKey);
+    if (!guideConfig) {
+      console.error(`Guide config not found for guide: ${guideName}`);
+      return;
+    }
 
-      if (!guideRaw) {
-        showGuide(guideConfig.name);
+    const currentRouteIsGuideRoute = guideConfig.routes?.includes(pathname);
+
+    if (!currentRouteIsGuideRoute) {
+      return;
+    }
+
+    if (currentRouteIsGuideRoute) {
+      const storageKey = `guide-${guideName.toLowerCase()}`;
+      const localStorageGuide = localStorage.getItem(storageKey);
+
+      if (!localStorageGuide) {
         localStorage.setItem(
           storageKey,
           JSON.stringify({
-            seen: true,
             expiresAt:
               Date.now() + guideConfig.daysUntilShowAgain * 24 * 60 * 60 * 1000,
           })
         );
+        showGuide(guideConfig.name);
         return;
       }
 
       try {
-        const guide = JSON.parse(guideRaw);
+        const guide = JSON.parse(localStorageGuide);
         const hasExpired = Date.now() > guide.expiresAt;
 
         if (hasExpired) {
@@ -52,7 +60,6 @@ export const HowToGuide = ({ guideName }: HowToGuideProps) => {
           localStorage.setItem(
             storageKey,
             JSON.stringify({
-              seen: false,
               expiresAt:
                 Date.now() +
                 guideConfig.daysUntilShowAgain * 24 * 60 * 60 * 1000,
