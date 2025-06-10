@@ -11,9 +11,7 @@ import { ClassificationProvider } from "../contexts/ClassificationContext";
 import { HtsProvider } from "../contexts/HtsContext";
 import { UserProvider } from "../contexts/UserContext";
 import { GuideProvider } from "@/contexts/GuideContext";
-import { GuideInitializer } from "@/components/GuideInitializer";
-import { classifyGuideSteps, guides } from "@/constants/guides";
-import { GuideName } from "@/types/guides";
+import { guides } from "@/constants/guides";
 
 const font = Inter({ subsets: ["latin"] });
 
@@ -32,9 +30,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" data-theme={config.colors.theme} className={font.className}>
       <body>
-        <GuideProvider guides={guides}>
-          <GuideInitializer />
-          <UserProvider>
+        <UserProvider>
+          <GuideProvider guides={guides}>
             <HtsSectionsProvider>
               <ClassificationProvider>
                 <HtsProvider>
@@ -43,8 +40,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 </HtsProvider>
               </ClassificationProvider>
             </HtsSectionsProvider>
-          </UserProvider>
-        </GuideProvider>
+          </GuideProvider>
+        </UserProvider>
         <GoogleAnalytics gaId="G-V2DRE5Y0NV" />
       </body>
     </html>

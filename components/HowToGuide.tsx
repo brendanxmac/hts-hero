@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { StepNavigation } from "./workflow/StepNavigation";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import config from "../config";
@@ -12,7 +13,58 @@ interface HowToGuideProps {
 
 export const HowToGuide = ({ guideName }: HowToGuideProps) => {
   const [currentStep, setCurrentStep] = useState(0);
-  const { showGuide, hideGuide, isGuideVisible, guideSteps } = useGuide();
+  const pathname = usePathname();
+  const { showGuide, hideGuide, isGuideVisible, guideSteps, guides } =
+    useGuide();
+
+  useEffect(() => {
+    // Ensure code only runs client-side
+    if (typeof window === "undefined") return;
+
+    // Find the guide config for the current route
+    const guideConfig = guides.find((config) =>
+      config.routes?.includes(pathname)
+    );
+
+    if (guideConfig) {
+      const storageKey = `guide-${guideConfig.name.toLowerCase()}`;
+      const guideRaw = localStorage.getItem(storageKey);
+
+      if (!guideRaw) {
+        showGuide(guideConfig.name);
+        localStorage.setItem(
+          storageKey,
+          JSON.stringify({
+            seen: true,
+            expiresAt:
+              Date.now() + guideConfig.daysUntilShowAgain * 24 * 60 * 60 * 1000,
+          })
+        );
+        return;
+      }
+
+      try {
+        const guide = JSON.parse(guideRaw);
+        const hasExpired = Date.now() > guide.expiresAt;
+
+        if (hasExpired) {
+          showGuide(guideConfig.name);
+          localStorage.setItem(
+            storageKey,
+            JSON.stringify({
+              seen: false,
+              expiresAt:
+                Date.now() +
+                guideConfig.daysUntilShowAgain * 24 * 60 * 60 * 1000,
+            })
+          );
+        }
+      } catch {
+        // If data is corrupted, show the guide
+        showGuide(guideConfig.name);
+      }
+    }
+  }, [pathname, showGuide, guides]);
 
   if (!isGuideVisible) return null;
 
