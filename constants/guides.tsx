@@ -36,8 +36,8 @@ const stepThree = (
   <div className="flex flex-col gap-2">
     <p>Once we've gotten to a full 10 digit HTS Code, you're all set!</p>
     <p>
-      Click the download report button for your records and to show customs if
-      needed.
+      Click the download button to save your classification and to show customs
+      if needed.
     </p>
   </div>
 );

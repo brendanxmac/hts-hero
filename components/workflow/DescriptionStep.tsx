@@ -30,35 +30,18 @@ export const DescriptionStep = ({
       {/* Content */}
       <div className="grow w-full max-w-3xl mx-auto flex flex-col px-8 justify-center gap-8">
         <div className="flex flex-col gap-2">
-          <TertiaryLabel
-            value="Item Description"
-            color={Color.NEUTRAL_CONTENT}
-          />
-          <PrimaryLabel
-            value="Describe the article you are classifying"
-            color={Color.WHITE}
-          />
-
-          <div className="flex flex-col">
+          <div className="flex justify-between items-center">
             <TertiaryLabel
-              value="⚡️ For best results, include:"
+              value="Item Description"
               color={Color.NEUTRAL_CONTENT}
             />
-            <ul>
-              <TertiaryText
-                value="-> Details that help identify the item, such as color, size, material, etc."
-                color={Color.NEUTRAL_CONTENT}
-              />
-              <TertiaryText
-                value="-> Describe each part of material and mention which one is dominant or most important."
-                color={Color.NEUTRAL_CONTENT}
-              />
-              <TertiaryText
-                value="-> The intended use or audience (e.g. 'for children', 'for dogs', 'for human consumption', etc)."
-                color={Color.NEUTRAL_CONTENT}
-              />
-            </ul>
+            {/* <button className="btn w-fit btn-xs text-white border border-neutral-content hover:bg-primary">
+              <span className="text-base">🚀</span> Tips for best results
+            </button> */}
           </div>
+          <h2 className={`text-white font-bold text-2xl`}>
+            Enter your product description
+          </h2>
         </div>
         <TextInput
           placeholder="Enter item description"
@@ -71,6 +54,27 @@ export const DescriptionStep = ({
             setLocalProductDescription(value);
           }}
         />
+
+        <div className="flex flex-col">
+          <TertiaryLabel
+            value="🚀 For best results, include:"
+            color={Color.NEUTRAL_CONTENT}
+          />
+          <ul>
+            <TertiaryText
+              value="-> Details that help identify the item, such as color, size, material, etc."
+              color={Color.NEUTRAL_CONTENT}
+            />
+            <TertiaryText
+              value="-> Describe each part of material and mention which one is dominant or most important."
+              color={Color.NEUTRAL_CONTENT}
+            />
+            <TertiaryText
+              value="-> The intended use or audience (e.g. 'for children', 'for dogs', 'for human consumption', etc)."
+              color={Color.NEUTRAL_CONTENT}
+            />
+          </ul>
+        </div>
       </div>
       {/* Horizontal line */}
       <div className="w-full border-t-2 border-base-100" />

@@ -101,7 +101,7 @@ export const CandidateElement = ({
       }}
     >
       <div className="flex flex-col w-full gap-5">
-        {indent === "0" && (
+        {/* {indent === "0" && (
           <div className="flex flex-col gap-2">
             <div className="flex flex-wrap">
               {getBreadCrumbsForElement(element, sections, htsElements).map(
@@ -120,7 +120,7 @@ export const CandidateElement = ({
             </div>
             <div className="w-full h-[1px] bg-base-content/10" />
           </div>
-        )}
+        )} */}
 
         <div className="flex flex-col gap-1">
           <div className="flex justify-between items-center">
@@ -246,13 +246,15 @@ export const CandidateElement = ({
           <div className="flex flex-col gap-2">
             <div className="flex gap-1 text-accent items-center">
               <SquareIconButton
-                transparent
                 iconOnly
                 icon={<SparklesIcon className="h-4 w-4 text-accent" />}
                 tooltip={`HTS Hero can make mistakes, check important information`}
                 onClick={() => {}}
               />
-              <TertiaryLabel value="Suggested" color={Color.ACCENT} />
+              <TertiaryLabel
+                value="Suggested by HTS Hero"
+                color={Color.ACCENT}
+              />
             </div>
 
             <p className="text-sm dark:text-white/90">{recommendedReason}</p>
