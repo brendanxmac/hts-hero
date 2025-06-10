@@ -445,7 +445,7 @@ export const ClassificationStep = ({
         <ConfirmationCard
           title="🎉 Classification Complete"
           description="To download a report of the classification, click the button below. NOTE: Your classification will NOT be saved if you leave this page"
-          confirmText="Download Report"
+          confirmText="Download"
           cancelText="Close"
           onConfirm={completeClassification}
           onCancel={() => setShowConfirmation(false)}

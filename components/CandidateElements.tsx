@@ -83,7 +83,7 @@ export const CandidateElements = ({
               <LoadingIndicator text={loading.text} />
             </div>
           )}
-          <div className="h-full flex flex-col gap-4 overflow-y-scroll pb-4">
+          <div className="h-full flex flex-col gap-6 overflow-y-scroll pb-4">
             {candidates.map((element) => (
               <CandidateElement
                 key={element.uuid}

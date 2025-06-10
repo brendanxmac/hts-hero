@@ -199,20 +199,19 @@ export const ClassificationNavigation = ({
           <button
             className={classNames(
               "grow btn btn-sm btn-primary",
-              levels.length === 0 && "btn-disabled",
-              isComplete && "btn-disabled"
+              levels.length === 0 && "btn-disabled"
             )}
             disabled={levels.length === 0}
             onClick={() => {
               setShowConfirmation(true);
             }}
           >
-            Start Over
+            Restart
           </button>
 
           <button
             className={classNames(
-              "grow btn btn-sm btn-primary",
+              "grow btn btn-sm btn-secondary",
               !isComplete && "btn-disabled"
             )}
             disabled={!isComplete}
@@ -220,7 +219,7 @@ export const ClassificationNavigation = ({
               downloadClassificationReport(classification);
             }}
           >
-            Download Report
+            Download
           </button>
         </div>
       </div>
