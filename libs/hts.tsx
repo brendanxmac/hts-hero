@@ -26,9 +26,13 @@ import {
 } from "../utilities/data";
 import { OpenAIModel } from "./openai";
 import apiClient from "@/libs/api";
-import { HtsLevel } from "../enums/hts";
+import { HtsLevel, TariffType } from "../enums/hts";
 import { NavigatableElement } from "../components/Elements";
 import { generateClassificationReport } from "./classification";
+import { SecondaryText } from "../components/SecondaryText";
+import { TertiaryLabel } from "../components/TertiaryLabel";
+import { Color } from "../enums/style";
+import { notes } from "../public/notes/notes";
 
 export const downloadClassificationReport = async (
   classification: Classification
@@ -680,6 +684,90 @@ export const getChapterFromHtsElement = (
 
   // also should remove 0 prefix if it exists
   return parentWithHtsno.htsno.substring(0, 2).replace(/^0+/, "");
+};
+
+export const getGeneralNoteFromSpecialTariffSymbol = (
+  specialTariffSymbol: string
+) => {
+  return notes.find((note) =>
+    note.specialTariffTreatmentCodes?.includes(specialTariffSymbol)
+  );
+};
+
+export const getFootnotesForTariffType = (
+  element: HtsElement,
+  tariffType: TariffType
+) => {
+  return element.footnotes?.filter((footnote) =>
+    footnote.columns.includes(tariffType)
+  );
+};
+
+export const getTemporaryTariffText = (
+  element: HtsElement,
+  tariffType: TariffType
+): JSX.Element | null => {
+  const footnotes = getFootnotesForTariffType(element, tariffType);
+
+  if (!footnotes.length) {
+    return null;
+  }
+
+  return (
+    <div className="flex flex-col gap-1">
+      <TertiaryLabel
+        value={"Temporary or Special Adjustments"}
+        color={Color.PRIMARY}
+      />
+      <SecondaryText
+        key={`${tariffType}-tariff-footnotes`}
+        value={footnotes
+          .map((footnote) => footnote.value.trim().replace(/\.*$/g, ""))
+          .join(", ")}
+        color={Color.WHITE}
+      />
+    </div>
+  );
+};
+
+export const getTariffDetails = (
+  element: HtsElement,
+  elements: HtsElement[],
+  breadcrumbs?: NavigatableElement[]
+) => {
+  if (element.general || element.special || element.other) {
+    return element;
+  }
+
+  if (breadcrumbs && breadcrumbs.length > 0) {
+    // Starting at the end of the breadcrumbs list, find the first element that has tariff details using a reverseing for loop
+    for (let i = breadcrumbs.length - 1; i >= 0; i--) {
+      const breadcrumb = breadcrumbs[i];
+
+      if (
+        breadcrumb.element.type === Navigatable.ELEMENT &&
+        (breadcrumb.element.general ||
+          breadcrumb.element.special ||
+          breadcrumb.element.other)
+      ) {
+        return breadcrumb.element;
+      }
+    }
+  }
+
+  const parentElements = getHtsElementParents(element, elements);
+  for (let i = parentElements.length - 1; i >= 0; i--) {
+    const parentElement = parentElements[i];
+
+    if (
+      parentElement.type === Navigatable.ELEMENT &&
+      (parentElement.general || parentElement.special || parentElement.other)
+    ) {
+      return parentElement;
+    }
+  }
+
+  return undefined;
 };
 
 export const getHtsElementParents = (

@@ -6,16 +6,19 @@ import { useEffect, useState } from "react";
 import { useClassification } from "../contexts/ClassificationContext";
 import { getProgressionDescriptionWithArrows } from "../libs/hts";
 import { getBestClassificationProgression } from "../libs/hts";
+import { WorkflowStep } from "../enums/hts";
 
 interface Props {
   classificationLevel: number;
   setClassificationLevel: (level: number | undefined) => void;
+  setWorkflowStep: (step: WorkflowStep) => void;
   setLoading: (loading: Loader) => void;
 }
 
 export const CandidateElements = ({
   classificationLevel,
   setClassificationLevel,
+  setWorkflowStep,
   setLoading,
 }: Props) => {
   const { classification, setClassification } = useClassification();
@@ -80,6 +83,7 @@ export const CandidateElements = ({
               element={element}
               classificationLevel={classificationLevel}
               setClassificationLevel={setClassificationLevel}
+              setWorkflowStep={setWorkflowStep}
             />
           ))}
         </div>

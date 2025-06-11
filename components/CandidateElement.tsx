@@ -27,16 +27,19 @@ import {
 } from "../libs/hts";
 import { useHts } from "../contexts/HtsContext";
 import { PrimaryLabel } from "./PrimaryLabel";
+import { WorkflowStep } from "../enums/hts";
 interface Props {
   element: HtsElement;
   classificationLevel: number;
   setClassificationLevel: (level: number | undefined) => void;
+  setWorkflowStep: (step: WorkflowStep) => void;
 }
 
 export const CandidateElement = ({
   element,
   classificationLevel,
   setClassificationLevel,
+  setWorkflowStep,
 }: Props) => {
   const { htsno, chapter, description, indent } = element;
   const [isPressed, setIsPressed] = useState(false);
@@ -65,16 +68,21 @@ export const CandidateElement = ({
     <div
       className={classNames(
         "flex w-full rounded-md bg-base-100 p-4 gap-4 transition duration-100 ease-in-out scale-[0.99]",
-        isLevelSelection && "shadow-[inset_0_0_0_4px_oklch(var(--p))]",
+        isLevelSelection &&
+          "shadow-[inset_0_0_0_4px_oklch(var(--p))] scale-[1]",
         !isLevelSelection &&
           "hover:cursor-pointer hover:bg-base-300 border-2 border-neutral-content",
-        !isPressed && "hover:scale-[1]",
+        !isPressed && !isLevelSelection && "hover:scale-[1]",
         isPressed && "scale-[0.98]"
       )}
       onMouseDown={() => setIsPressed(true)}
       onMouseUp={() => setIsPressed(false)}
       onMouseLeave={() => setIsPressed(false)}
       onClick={() => {
+        if (isLevelSelection) {
+          return;
+        }
+
         const newProgressionLevels = levels.slice(0, classificationLevel + 1);
         newProgressionLevels[classificationLevel].selection = element;
         const childrenOfSelectedElement = getDirectChildrenElements(
@@ -103,6 +111,7 @@ export const CandidateElement = ({
               progressionDescription + " > " + element.description,
             levels: newProgressionLevels,
           });
+          setWorkflowStep(WorkflowStep.RESULT);
         }
       }}
     >
