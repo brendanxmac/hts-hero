@@ -5,7 +5,7 @@ interface CreateCheckoutParams {
   mode: "payment" | "subscription";
   successUrl: string;
   cancelUrl: string;
-  couponId?: string | null;
+  promotionCode?: string | null;
   clientReferenceId?: string;
   user?: {
     customerId?: string;
@@ -26,7 +26,7 @@ export const createCheckout = async ({
   successUrl,
   cancelUrl,
   priceId,
-  couponId,
+  promotionCode,
 }: CreateCheckoutParams): Promise<string> => {
   try {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
@@ -60,7 +60,7 @@ export const createCheckout = async ({
 
     const stripeSession = await stripe.checkout.sessions.create({
       mode,
-      allow_promotion_codes: true,
+      // allow_promotion_codes: true,
       client_reference_id: clientReferenceId,
       line_items: [
         {
@@ -68,10 +68,10 @@ export const createCheckout = async ({
           quantity: 1,
         },
       ],
-      discounts: couponId
+      discounts: promotionCode
         ? [
             {
-              coupon: couponId,
+              promotion_code: promotionCode,
             },
           ]
         : [],
