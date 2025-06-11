@@ -7,6 +7,7 @@ import { upsertBuyAttempt } from "../libs/buy-attempt";
 import { useState } from "react";
 import { ShieldCheckIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
+import ButtonCheckout from "./ButtonCheckout";
 
 // <Pricing/> displays the pricing plans for your app
 // It's your Stripe config in config.js.stripe.plans[] that will be used to display the plans
@@ -228,8 +229,16 @@ const Pricing = ({
                 {!plan.isCompetitor && (
                   <div className="space-y-2">
                     {/* TODO: Enable this in the future before go live*/}
-                    {/* <ButtonCheckout priceId={plan.priceId} mode="subscription" /> */}
-                    <FakeButtonCheckout
+                    <ButtonCheckout
+                      priceId={plan.priceId}
+                      mode={
+                        plan.type === PricingType.SUBSCRIPTION
+                          ? "subscription"
+                          : "payment"
+                      }
+                      promotionCode={plan.promotionCode}
+                    />
+                    {/* <FakeButtonCheckout
                       loading={buyingPlan === plan.name}
                       text={getBuyButtonText(plan.name)}
                       onClick={async () => {
@@ -243,7 +252,7 @@ const Pricing = ({
                         setShowItsFree(true);
                         setBuyingPlan(null);
                       }}
-                    />
+                    /> */}
                   </div>
                 )}
               </div>

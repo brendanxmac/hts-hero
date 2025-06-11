@@ -14,7 +14,7 @@ const FakeButtonCheckout = ({
 }) => {
   return (
     <button
-      className="btn bg-primary/80 hover:bg-white hover:text-primary text-white rounded-md  btn-block group"
+      className="btn bg-primary/80 hover:bg-white hover:text-primary text-white rounded-md btn-block group"
       disabled={loading}
       onClick={onClick}
     >

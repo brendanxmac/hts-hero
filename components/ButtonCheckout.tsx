@@ -11,9 +11,11 @@ import config from "@/config";
 const ButtonCheckout = ({
   priceId,
   mode = "payment",
+  promotionCode,
 }: {
   priceId: string;
   mode?: "payment" | "subscription";
+  promotionCode?: string;
 }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -25,9 +27,10 @@ const ButtonCheckout = ({
         "/stripe/create-checkout",
         {
           priceId,
-          successUrl: window.location.href,
-          cancelUrl: window.location.href,
+          // successUrl: window.location.href,
+          // cancelUrl: window.location.href,
           mode,
+          promotionCode,
         }
       );
 
@@ -41,14 +44,14 @@ const ButtonCheckout = ({
 
   return (
     <button
-      className="btn bg-[#40C969]/80 hover:bg-white hover:text-[#40C969] text-white rounded-md  btn-block group"
+      className="btn bg-primary/80 hover:bg-white hover:text-primary text-white rounded-md btn-block group"
       onClick={() => handlePayment()}
     >
       {isLoading ? (
         <span className="loading loading-spinner loading-xs"></span>
       ) : (
         <svg
-          className="w-5 h-5 fill-white group-hover:fill-[#40C969] group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-200"
+          className="w-5 h-5 fill-white group-hover:fill-primary group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-200"
           viewBox="0 0 375 509"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"

@@ -1,7 +1,7 @@
 import themes from "daisyui/src/theming/themes";
 import { ConfigProps, PricingPlan, PricingType } from "./types/config";
 
-const config = {
+const config: ConfigProps = {
   // REQUIRED
   appName: "HTS Hero",
   // REQUIRED: a short description of your app for SEO tags (can be overwritten)
@@ -38,17 +38,15 @@ const config = {
       //   ],
       // },
       {
-        // REQUIRED — we use this to find the plan in the webhook (for instance if you want to update the user's credits based on the plan)
-        priceId: process.env.NODE_ENV === "development" ? "3" : "4",
-        //  REQUIRED - Name of the plan, displayed on the pricing page
+        priceId:
+          process.env.NODE_ENV === "development"
+            ? "price_1RYkodGaYOWjsQmtIkvo3sEo"
+            : "TODO",
+        promotionCode: "promo_1RYkrYGaYOWjsQmtzivXVRyG", // 50% off for launch
         name: PricingPlan.ONE_DAY_PASS,
-        // A friendly description of the plan, displayed on the pricing page. Tip: explain why this plan and not others
-        description: "The most affordable way to get your codes", // & based on the USITC
-        // The type of pricing plan, either one time or subscription
+        description: "The most affordable way to get your codes",
         type: PricingType.ONE_TIME,
-        // The price you want to display, the one user will be charged on Stripe.
         price: 20,
-        // If you have an anchor price (i.e. $29) that you want to display crossed out, put it here. Otherwise, leave it empty
         priceAnchor: 40,
         features: [
           {
@@ -61,18 +59,17 @@ const config = {
           {
             name: "Free access to our explorer tool, forever",
           },
-          // {
-          //   name: "Customs Approval Guarantee",
-          //   details:
-          //     "We guarantee a code that customs will accept, or your money back!",
-          // },
           {
             name: "Expires after 1 day",
           },
         ],
       },
       {
-        priceId: process.env.NODE_ENV === "development" ? "5" : "6",
+        priceId:
+          process.env.NODE_ENV === "development"
+            ? "price_1RYkpwGaYOWjsQmtdPKa9bjF"
+            : "TODO",
+        promotionCode: "promo_1RYkrYGaYOWjsQmtzivXVRyG", // 50% off for launch
         name: PricingPlan.FIVE_DAY_PASS,
         description:
           "More time to get your codes and cover yourself if any updates come about.",
@@ -126,7 +123,7 @@ const config = {
       {
         priceId: process.env.NODE_ENV === "development" ? "7" : "8",
         name: PricingPlan.STANDARD,
-        description: "Your Personal Classification Assistant", // & based on the USITC
+        description: "Your Personal Classification Assistant",
         type: PricingType.SUBSCRIPTION,
         price: 30,
         priceAnchor: 45,

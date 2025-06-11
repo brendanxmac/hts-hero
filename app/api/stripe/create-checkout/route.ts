@@ -13,12 +13,13 @@ export async function POST(req: NextRequest) {
       { error: "Price ID is required" },
       { status: 400 }
     );
-  } else if (!body.successUrl || !body.cancelUrl) {
-    return NextResponse.json(
-      { error: "Success and cancel URLs are required" },
-      { status: 400 }
-    );
-  } else if (!body.mode) {
+  }
+  // else if (!body.successUrl || !body.cancelUrl) {
+  //   return NextResponse.json(
+  //     { error: "Success and cancel URLs are required" },
+  //     { status: 400 }
+  //   );
+  else if (!body.mode) {
     return NextResponse.json(
       {
         error:
@@ -35,7 +36,7 @@ export async function POST(req: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    const { priceId, mode, successUrl, cancelUrl } = body;
+    const { priceId, mode } = body;
 
     const { data } = await supabase
       .from("profiles")
@@ -43,9 +44,16 @@ export async function POST(req: NextRequest) {
       .eq("id", user?.id)
       .single();
 
+    const successUrl = `${process.env.BASE_URL}/app`;
+    const cancelUrl = `${process.env.BASE_URL}/app`;
+
+    console.log("successUrl", successUrl);
+    console.log("cancelUrl", cancelUrl);
+
     const stripeSessionURL = await createCheckout({
       priceId,
       mode,
+      promotionCode: body.promotionCode,
       successUrl,
       cancelUrl,
       // If user is logged in, it will pass the user ID to the Stripe Session so it can be retrieved in the webhook later

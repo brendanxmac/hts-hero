@@ -86,6 +86,7 @@ interface PricingPlanI {
   name: PricingPlan;
   description?: string;
   price: number;
+  promotionCode?: string;
   priceAnchor?: number;
   features: {
     name: string;
