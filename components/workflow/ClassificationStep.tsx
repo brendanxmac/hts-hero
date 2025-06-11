@@ -23,6 +23,7 @@ import { useClassifyTab } from "../../contexts/ClassifyTabContext";
 import { ClassifyTab } from "../../enums/classify";
 import { ConfirmationCard } from "../ConfirmationCard";
 import { useHts } from "../../contexts/HtsContext";
+import { TertiaryLabel } from "../TertiaryLabel";
 
 export interface ClassificationStepProps {
   workflowStep: WorkflowStep;
@@ -240,8 +241,14 @@ export const ClassificationStep = ({
     }
   }, [chapterCandidates]);
 
-  const getStepDescription = () => {
-    return "Select the option that best matches the item description";
+  const getStepDescription = (level: number) => {
+    if (level === 0) {
+      return "Select the option that best matches your item description";
+    } else if (level === 1) {
+      return "Select the option that best matches your item description when added onto your first selection";
+    } else {
+      return "Select the option that best matches your item description when added onto your prior selection(s)";
+    }
   };
 
   const getStepInstructions = () => {
@@ -249,8 +256,8 @@ export const ClassificationStep = ({
       return (
         <div className="w-full flex justify-between items-center">
           <div className="text-sm">
-            Don&apos;t see any options that make sense? You find and add
-            candidates to the list using the{" "}
+            Don&apos;t see any good options? Easily find and add new ones using
+            the{" "}
             <button
               className="btn-link"
               onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
@@ -264,7 +271,7 @@ export const ClassificationStep = ({
     } else {
       return (
         <TertiaryText
-          value="Which option would most accurately describe the item if it was added onto your prior selection(s)?"
+          value="If and option below was added onto your prior selection(s) which would most accurately describe your item?"
           color={Color.NEUTRAL_CONTENT}
         />
       );
@@ -283,7 +290,7 @@ export const ClassificationStep = ({
       <div className="flex-1 overflow-hidden px-8 w-full max-w-3xl mx-auto flex flex-col gap-4">
         <div className="flex flex-col gap-4">
           <div className="flex justify-between items-center">
-            <TertiaryText
+            <TertiaryLabel
               value={`Level ${classificationLevel + 1}`}
               color={Color.NEUTRAL_CONTENT}
             />
@@ -291,7 +298,10 @@ export const ClassificationStep = ({
           </div>
           <div className="w-full flex justify-between items-end">
             <div className="w-full flex flex-col">
-              <PrimaryLabel value={getStepDescription()} color={Color.WHITE} />
+              <PrimaryLabel
+                value={getStepDescription(classificationLevel)}
+                color={Color.WHITE}
+              />
               {getStepInstructions()}
             </div>
           </div>

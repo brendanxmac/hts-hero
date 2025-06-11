@@ -221,7 +221,7 @@ export const ClassificationNavigation = ({
         <div className="w-full flex justify-between gap-2">
           <button
             className={classNames(
-              "grow btn btn-sm btn-primary",
+              "grow btn btn-outline",
               levels.length === 0 && "btn-disabled"
             )}
             disabled={levels.length === 0}
@@ -249,7 +249,7 @@ export const ClassificationNavigation = ({
       {showConfirmation && (
         <ConfirmationCard
           title="Start New Classification?"
-          description="If you want to start a new classification click start below. NOTE: Your current classification will NOT be saved if you leave this page, if already completed, be sure to download it first"
+          description="To start a new classification click start below. NOTE: Your current classification will NOT be saved if you leave this page. If you completed the classification, be sure to download it first"
           confirmText="Start"
           cancelText="Close"
           onConfirm={() => {
