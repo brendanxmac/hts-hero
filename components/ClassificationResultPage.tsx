@@ -1,114 +1,133 @@
-import { HtsElement, Navigatable } from "../interfaces/hts";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useClassification } from "../contexts/ClassificationContext";
+import { useHts } from "../contexts/HtsContext";
+import { TariffType, WorkflowStep } from "../enums/hts";
+import { Color } from "../enums/style";
 import {
-  getDirectChildrenElements,
-  getBreadCrumbsForElement,
+  downloadClassificationReport,
+  generateBreadcrumbsForHtsElement,
+  getChapterFromHtsElement,
+  getGeneralNoteFromSpecialTariffSymbol,
+  getHtsElementParents,
+  getProgressionDescriptions,
+  getSectionAndChapterFromChapterNumber,
   getTariffDetails,
   getTemporaryTariffText,
-  getGeneralNoteFromSpecialTariffSymbol,
 } from "../libs/hts";
-import { ElementSummary } from "./ElementSummary";
-import { DocumentTextIcon } from "@heroicons/react/24/solid";
-import PDF from "./PDF";
-import { SecondaryLabel } from "./SecondaryLabel";
-import { Color } from "../enums/style";
-import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
-import { ButtonWithIcon } from "./ButtonWithIcon";
-import { TertiaryLabel } from "./TertiaryLabel";
-import { SecondaryText } from "./SecondaryText";
-import { useHts } from "../contexts/HtsContext";
-import { useHtsSections } from "../contexts/HtsSectionsContext";
-import { TariffType } from "../enums/hts";
 import {
-  getStringBetweenParenthesis,
   getTextBeforeOpeningParenthesis,
+  getStringBetweenParenthesis,
 } from "../utilities/hts";
+import { PrimaryLabel } from "./PrimaryLabel";
+import { SecondaryLabel } from "./SecondaryLabel";
+import { SecondaryText } from "./SecondaryText";
+import { TertiaryLabel } from "./TertiaryLabel";
 import { PDFProps } from "../interfaces/ui";
+import PDF from "./PDF";
+import { StepNavigation } from "./workflow/StepNavigation";
+import { TertiaryText } from "./TertiaryText";
+import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
+import { ArrowDownTrayIcon } from "@heroicons/react/16/solid";
+import { useHtsSections } from "../contexts/HtsSectionsContext";
+import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
+import { useClassifyTab } from "../contexts/ClassifyTabContext";
+import { ClassifyTab } from "../enums/classify";
 
 interface Props {
-  summaryOnly?: boolean;
-  element: HtsElement;
+  setWorkflowStep: (step: WorkflowStep) => void;
+  setClassificationLevel: (level: number) => void;
 }
 
-export const Element = ({ element, summaryOnly = false }: Props) => {
-  const { description, chapter, htsno } = element;
-  const [children, setChildren] = useState<HtsElement[]>([]);
-  const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
-  const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
+export const ClassificationResultPage = ({
+  setWorkflowStep,
+  setClassificationLevel,
+}: Props) => {
+  const { classification } = useClassification();
   const { htsElements } = useHts();
-  const { sections } = useHtsSections();
-
-  useEffect(() => {
-    const elementChildren = getDirectChildrenElements(element, htsElements);
-    setChildren(elementChildren);
-  }, [element]);
-
-  const [tariffElement, setTariffElement] = useState<HtsElement | null>(
-    getTariffDetails(element, htsElements, breadcrumbs)
+  const { levels } = classification;
+  const tariffElement = getTariffDetails(
+    classification.levels[levels.length - 1].selection,
+    htsElements
   );
-
-  useEffect(() => {
-    setTariffElement(getTariffDetails(element, htsElements, breadcrumbs));
-  }, [breadcrumbs]);
-
-  const getHtsnoLabel = () => {
-    if (htsno) {
-      return htsno;
-    }
-
-    // Find parent breadcrumb, if it's of type ELEMENT, then return the htsno
-    const parentBreadcrumb = breadcrumbs[breadcrumbs.length - 2];
-
-    if (parentBreadcrumb.element.type === Navigatable.ELEMENT) {
-      return `${parentBreadcrumb.element.htsno} /`;
-    }
-
-    return "Missing HTS Number";
-  };
+  const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
+  const element = classification.levels[levels.length - 1].selection;
+  const { sections } = useHtsSections();
+  const { clearBreadcrumbs, setBreadcrumbs } = useBreadcrumbs();
+  const { setActiveTab } = useClassifyTab();
 
   return (
-    <div className="card bg-base-100 p-4 rounded-xl border border-base-content/10 w-full flex flex-col items-start justify-between gap-8 pt-2 sm:pt-4 overflow-y-auto">
-      <div className="w-full flex flex-col gap-4">
-        <div className="flex flex-col gap-3 breadcrumbs text-sm py-0 overflow-hidden">
-          <div className="text-xs">
-            {getBreadCrumbsForElement(element, sections, htsElements).map(
-              (breadcrumb, i) => (
-                <span key={`breadcrumb-${i}`}>
-                  {breadcrumb.label && <b>{breadcrumb.label} </b>}
-                  <span
-                    className={`${!breadcrumb.value ? "font-bold" : "text-white"}`}
-                  >
-                    {breadcrumb.value}
-                  </span>
-                  <span className="text-white mx-2">›</span>
-                </span>
+    <div className="h-full px-4 pt-8 w-full max-w-3xl mx-auto flex flex-col">
+      <div className="flex-1 overflow-hidden flex flex-col gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="flex justify-between items-center">
+            <PrimaryLabel
+              value="🎉 Classification Complete!"
+              color={Color.WHITE}
+            />
+            <button
+              className="btn btn-xs btn-secondary"
+              onClick={() => {
+                downloadClassificationReport(classification);
+              }}
+            >
+              <ArrowDownTrayIcon className="w-4 h-4" />
+              Download Report
+            </button>
+          </div>
+          <TertiaryText value="You have successfully classified your product and can see the tariff details below or download a full report of the classification for your records." />
+        </div>
+        <div className=" flex flex-col gap-2">
+          <div className="flex justify-between items-center">
+            <TertiaryLabel value="HTS Code" />
+            <button
+              className="btn btn-xs btn-primary"
+              onClick={() => {
+                clearBreadcrumbs();
+                const sectionAndChapter = getSectionAndChapterFromChapterNumber(
+                  sections,
+                  Number(getChapterFromHtsElement(element, htsElements))
+                );
+
+                const parents = getHtsElementParents(element, htsElements);
+                const breadcrumbs = generateBreadcrumbsForHtsElement(
+                  sections,
+                  sectionAndChapter.chapter,
+                  [...parents, element]
+                );
+
+                setBreadcrumbs(breadcrumbs);
+
+                setActiveTab(ClassifyTab.EXPLORE);
+              }}
+            >
+              <MagnifyingGlassIcon className="w-4 h-4" />
+              View in Explorer
+            </button>
+          </div>
+          <h2 className="text-3xl md:text-5xl text-white font-extrabold">
+            {classification.levels[levels.length - 1].selection?.htsno}
+          </h2>
+        </div>
+        <div className="flex flex-col gap-2">
+          <TertiaryLabel value="HTS Description" />
+          <div className="flex flex-col gap-2">
+            {getProgressionDescriptions(classification).map(
+              (description, index) => (
+                <div className="flex gap-1">
+                  {index > 0 && (
+                    <div className="shrink-0">
+                      <SecondaryText
+                        value={`${"-".repeat(index)}`}
+                        color={Color.WHITE}
+                      />
+                    </div>
+                  )}
+                  <SecondaryText value={description} color={Color.WHITE} />
+                </div>
               )
             )}
           </div>
         </div>
-
-        <div className="w-full h-[1px] bg-base-content/10" />
-
-        <div className="flex flex-col gap-3">
-          <div className="w-full flex justify-between items-start gap-2">
-            <SecondaryLabel value={getHtsnoLabel()} />
-
-            <ButtonWithIcon
-              icon={<DocumentTextIcon className="h-4 w-4" />}
-              label={`Chapter ${chapter} Notes`}
-              onClick={() =>
-                setShowPDF({
-                  title: `Chapter ${chapter} Notes`,
-                  file: `/notes/chapter/Chapter ${chapter}.pdf`,
-                })
-              }
-            />
-          </div>
-          <h2 className="text-2xl font-bold text-white">{description}</h2>
-        </div>
-      </div>
-
-      {!summaryOnly && (
         <>
           {tariffElement && (
             <div className="w-full flex flex-col gap-4">
@@ -209,35 +228,22 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
               </div>
             </div>
           )}
-          {children.length > 0 && (
-            <div className="w-full flex flex-col gap-4">
-              <SecondaryLabel value="Next Level" />
-              <div className="flex flex-col gap-2">
-                {children.map((child, i) => {
-                  return (
-                    <ElementSummary
-                      key={`${i}-${child.htsno}`}
-                      element={child}
-                      onClick={() => {
-                        setBreadcrumbs([
-                          ...breadcrumbs,
-                          {
-                            title: `${child.htsno || child.description.split(" ").slice(0, 2).join(" ") + "..."}`,
-                            element: {
-                              ...child,
-                              chapter,
-                            },
-                          },
-                        ]);
-                      }}
-                    />
-                  );
-                })}
-              </div>
-            </div>
-          )}
         </>
-      )}
+      </div>
+      {/* Horizontal line */}
+      <div className="w-full border-t-2 border-base-100" />
+      {/* Navigation */}
+      <div className="w-full max-w-3xl mx-auto px-8">
+        <StepNavigation
+          previous={{
+            label: "Back",
+            onClick: () => {
+              setWorkflowStep(WorkflowStep.CLASSIFICATION);
+              setClassificationLevel(levels.length - 1);
+            },
+          }}
+        />
+      </div>
       {showPDF && (
         <PDF
           title={showPDF.title}

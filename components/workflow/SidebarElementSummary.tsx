@@ -22,7 +22,7 @@ export const SidebarElementSummary = ({
   return (
     <div
       className={classNames(
-        "w-full flex justify-between items-center rounded-md bg-base-100 border-2 border-neutral px-4 py-2",
+        "w-full flex justify-between items-center rounded-md bg-base-100 border-2 border-neutral-content/40 px-4 py-2",
         isActive && "bg-primary/80",
         !isActive && "hover:cursor-pointer hover:bg-primary/40"
       )}

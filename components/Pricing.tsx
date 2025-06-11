@@ -50,7 +50,7 @@ const getPricingHeadline = (customerType: "importer" | "classifier") => {
         </h2>
         <div>
           <p className="text-xl md:text-2xl font-bold text-secondary">
-            🚀 Special Launch Offer: Get 50% off until June 25th!
+            🚀 Launch Deal: 50% off until July!
           </p>
         </div>
       </div>

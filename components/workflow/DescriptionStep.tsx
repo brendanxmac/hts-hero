@@ -1,7 +1,6 @@
 import { useClassification } from "../../contexts/ClassificationContext";
 import { WorkflowStep } from "../../enums/hts";
 import { Color } from "../../enums/style";
-import { PrimaryLabel } from "../PrimaryLabel";
 import { TertiaryText } from "../TertiaryText";
 import TextInput from "../TextInput";
 import { useEffect, useState } from "react";
@@ -86,7 +85,9 @@ export const DescriptionStep = ({
             label: "Next",
             fill: true,
             onClick: () => {
-              startNewClassification(localProductDescription);
+              if (localProductDescription !== productDescription) {
+                startNewClassification(localProductDescription);
+              }
               setWorkflowStep(WorkflowStep.CLASSIFICATION);
               setClassificationLevel(0);
             },

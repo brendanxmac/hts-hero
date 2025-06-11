@@ -17,6 +17,8 @@ import { generateClassificationReport } from "../../libs/classification";
 import { downloadClassificationReport } from "../../libs/hts";
 import { ConfirmationCard } from "../ConfirmationCard";
 import { useState, useRef, useEffect } from "react";
+import { TertiaryLabel } from "../TertiaryLabel";
+import { Element } from "../Element";
 
 export interface ClassificationNavigationProps {
   workflowStep: WorkflowStep;
@@ -120,7 +122,7 @@ export const ClassificationNavigation = ({
         className="h-full flex flex-col gap-6 p-4 overflow-y-scroll"
       >
         <div className="flex flex-col gap-3">
-          <SecondaryLabel value="Item Details" />
+          <SecondaryLabel value="Item" />
           <div ref={descriptionRef}>
             <TextNavigationStep
               title="Item Description"
@@ -164,8 +166,8 @@ export const ClassificationNavigation = ({
           /> */}
         </div>
 
-        <div className="flex-1 flex flex-col">
-          <SecondaryLabel value="Classification Levels" />
+        <div className="flex flex-col">
+          <SecondaryLabel value="Selections" />
           <div className="flex flex-col gap-3 pt-3">
             {levels.map((level, index) => (
               <div
@@ -192,6 +194,27 @@ export const ClassificationNavigation = ({
             ))}
           </div>
         </div>
+
+        {classification.isComplete && (
+          <div className="flex flex-col gap-3">
+            <SecondaryLabel value="Result" />
+            <div
+              className={classNames(
+                "flex flex-col gap-2 p-4 rounded-md border-2 border-neutral hover:cursor-pointer hover:bg-primary/50",
+                workflowStep === WorkflowStep.RESULT &&
+                  "bg-primary/50 border-primary"
+              )}
+              onClick={() => {
+                setWorkflowStep(WorkflowStep.RESULT);
+              }}
+            >
+              <TertiaryLabel value="HTS Code" color={Color.WHITE} />
+              <h2 className="text-2xl md:text-3xl text-white font-extrabold">
+                {classification.levels[levels.length - 1].selection?.htsno}
+              </h2>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="sticky bottom-0 left-0 right-0 bg-base-100 border-t-2 border-neutral p-4">
@@ -209,7 +232,7 @@ export const ClassificationNavigation = ({
             Restart
           </button>
 
-          <button
+          {/* <button
             className={classNames(
               "grow btn btn-sm btn-secondary",
               !isComplete && "btn-disabled"
@@ -220,7 +243,7 @@ export const ClassificationNavigation = ({
             }}
           >
             Download
-          </button>
+          </button> */}
         </div>
       </div>
       {showConfirmation && (

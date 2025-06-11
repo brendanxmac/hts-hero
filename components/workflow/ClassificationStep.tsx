@@ -25,12 +25,14 @@ import { ConfirmationCard } from "../ConfirmationCard";
 import { useHts } from "../../contexts/HtsContext";
 
 export interface ClassificationStepProps {
+  workflowStep: WorkflowStep;
   setWorkflowStep: (step: WorkflowStep) => void;
   classificationLevel: number | undefined;
   setClassificationLevel: (level: number | undefined) => void;
 }
 
 export const ClassificationStep = ({
+  workflowStep,
   setWorkflowStep,
   classificationLevel,
   setClassificationLevel,
@@ -72,7 +74,7 @@ export const ClassificationStep = ({
     const isFinalElement = selectedElementIsFinalElement();
 
     if (isFinalElement) {
-      return "🎉 Complete";
+      return "Results";
     } else {
       return "Next";
     }
@@ -322,6 +324,7 @@ export const ClassificationStep = ({
                   classificationLevel={classificationLevel}
                   setClassificationLevel={setClassificationLevel}
                   setLoading={setLoading}
+                  setWorkflowStep={setWorkflowStep}
                 />
               </div>
             )}
@@ -336,14 +339,15 @@ export const ClassificationStep = ({
             label: getNextNavigationLabel(),
             onClick: () => {
               if (selectedElementIsFinalElement()) {
-                setShowConfirmation(true);
+                setWorkflowStep(WorkflowStep.RESULT);
               } else {
                 setClassificationLevel(classificationLevel + 1);
               }
             },
             disabled:
               classification.levels.length === 0 ||
-              classificationLevel === classification.levels.length - 1,
+              workflowStep === WorkflowStep.RESULT ||
+              !selectionForLevel,
           }}
           previous={{
             label: "Back",

@@ -14,7 +14,7 @@ import { LoadingIndicator } from "./LoadingIndicator";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { Loader } from "../interfaces/ui";
 import { useHts } from "../contexts/HtsContext";
-import { ClassificationSummaryPage } from "./ClassificationSummaryPage";
+import { ClassificationResultPage } from "./ClassificationResultPage";
 import { GuideName } from "../types/guides";
 import { HowToGuide } from "./HowToGuide";
 
@@ -58,9 +58,9 @@ export const Classify = () => {
   }
 
   return (
-    <div className="h-full w-full bg-base-300 grid grid-cols-12">
+    <div className="h-full w-full bg-base-300 flex">
       {/* Sidebar Navigation */}
-      <div className="h-full bg-base-100 col-span-5 xl:col-span-4 overflow-hidden">
+      <div className="h-full bg-base-100 min-w-[350px] max-w-[450px] lg:min-w-[500px] overflow-hidden">
         <ClassificationNavigation
           workflowStep={workflowStep}
           setWorkflowStep={setWorkflowStep}
@@ -70,7 +70,7 @@ export const Classify = () => {
       </div>
 
       {/* Classify Tab */}
-      <div className="h-full col-span-7 xl:col-span-8 overflow-hidden">
+      <div className="h-full grow overflow-hidden">
         {activeTab === ClassifyTab.CLASSIFY && (
           <>
             {workflowStep === WorkflowStep.DESCRIPTION && (
@@ -87,13 +87,17 @@ export const Classify = () => {
             )} */}
             {workflowStep === WorkflowStep.CLASSIFICATION && (
               <ClassificationStep
+                workflowStep={workflowStep}
                 setWorkflowStep={setWorkflowStep}
                 classificationLevel={classificationLevel}
                 setClassificationLevel={setClassificationLevel}
               />
             )}
-            {workflowStep === WorkflowStep.SUMMARY && (
-              <ClassificationSummaryPage />
+            {workflowStep === WorkflowStep.RESULT && (
+              <ClassificationResultPage
+                setWorkflowStep={setWorkflowStep}
+                setClassificationLevel={setClassificationLevel}
+              />
             )}
           </>
         )}
