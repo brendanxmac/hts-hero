@@ -57,22 +57,32 @@ export const DescriptionStep = ({
 
         <div className="flex flex-col">
           <SecondaryLabel
-            value="👉 Tips for best results:"
+            value="For Best Results:"
             color={Color.NEUTRAL_CONTENT}
           />
-          <ul>
-            <TertiaryText
-              value="-> Include details that help identify the item, such as color, size, material, weight, etc."
-              color={Color.NEUTRAL_CONTENT}
-            />
-            <TertiaryText
-              value="-> Describe each component / material and mention which one is dominant or most important."
-              color={Color.NEUTRAL_CONTENT}
-            />
-            <TertiaryText
-              value="-> Include the intended use or audience (e.g. 'for children', 'for dogs', 'for human consumption', etc)."
-              color={Color.NEUTRAL_CONTENT}
-            />
+          <ul className="pl-2">
+            <div className="flex gap-3">
+              <p>1️⃣</p>
+              <TertiaryText
+                value={`Include details that help identify the item, such as color, size, material, weight, etc.`}
+                color={Color.NEUTRAL_CONTENT}
+              />
+            </div>
+            <div className="flex gap-3">
+              <p>2️⃣</p>
+              <TertiaryText
+                value="Describe each component / material and mention which one is dominant or most important."
+                color={Color.NEUTRAL_CONTENT}
+              />
+            </div>
+            <div className="flex gap-3">
+              <p>3️⃣</p>
+
+              <TertiaryText
+                value="Include the intended use or audience (e.g. 'for children', 'for dogs', 'for human consumption', etc)."
+                color={Color.NEUTRAL_CONTENT}
+              />
+            </div>
           </ul>
         </div>
       </div>

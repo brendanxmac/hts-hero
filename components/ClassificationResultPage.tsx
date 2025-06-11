@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useClassification } from "../contexts/ClassificationContext";
 import { useHts } from "../contexts/HtsContext";
 import { TariffType, WorkflowStep } from "../enums/hts";
@@ -26,12 +26,18 @@ import { PDFProps } from "../interfaces/ui";
 import PDF from "./PDF";
 import { StepNavigation } from "./workflow/StepNavigation";
 import { TertiaryText } from "./TertiaryText";
-import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
+import {
+  CheckCircleIcon,
+  MagnifyingGlassIcon,
+} from "@heroicons/react/16/solid";
 import { ArrowDownTrayIcon } from "@heroicons/react/16/solid";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { useClassifyTab } from "../contexts/ClassifyTabContext";
 import { ClassifyTab } from "../enums/classify";
+import SquareIconButton from "./SqaureIconButton";
+import { CheckIcon, Square2StackIcon } from "@heroicons/react/24/solid";
+import { copyToClipboard } from "../utilities/data";
 
 interface Props {
   setWorkflowStep: (step: WorkflowStep) => void;
@@ -54,10 +60,20 @@ export const ClassificationResultPage = ({
   const { sections } = useHtsSections();
   const { clearBreadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { setActiveTab } = useClassifyTab();
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (copied) {
+      setTimeout(() => {
+        setCopied(false);
+      }, 1500);
+    }
+  }, [copied]);
 
   return (
-    <div className="h-full px-4 pt-8 w-full max-w-3xl mx-auto flex flex-col">
-      <div className="flex-1 overflow-hidden flex flex-col gap-4">
+    <div className="h-full pt-8 w-full max-w-3xl mx-auto flex flex-col">
+      <div className="px-8 flex-1 flex flex-col gap-4">
+        <TertiaryLabel value="Results" color={Color.NEUTRAL_CONTENT} />
         <div className="flex flex-col gap-1">
           <div className="flex justify-between items-center">
             <PrimaryLabel
@@ -77,36 +93,55 @@ export const ClassificationResultPage = ({
           <TertiaryText value="You have successfully classified your product and can see the tariff details below or download a full report of the classification for your records." />
         </div>
         <div className=" flex flex-col gap-2">
-          <div className="flex justify-between items-center">
-            <TertiaryLabel value="HTS Code" />
-            <button
-              className="btn btn-xs btn-primary"
-              onClick={() => {
-                clearBreadcrumbs();
-                const sectionAndChapter = getSectionAndChapterFromChapterNumber(
-                  sections,
-                  Number(getChapterFromHtsElement(element, htsElements))
-                );
+          <TertiaryLabel value="HTS Code" />
+          <div className="flex gap-3 items-center">
+            <h2 className="text-3xl md:text-5xl lg:text-6xl text-white font-extrabold">
+              {classification.levels[levels.length - 1].selection?.htsno}
+            </h2>
+            <div className="flex flex-col gap-1">
+              <SquareIconButton
+                transparent
+                tooltip="Copy"
+                icon={
+                  copied ? (
+                    <CheckCircleIcon className="w-4 h-4 text-accent" />
+                  ) : (
+                    <Square2StackIcon className="w-4 h-4" />
+                  )
+                }
+                onClick={() => {
+                  copyToClipboard(
+                    classification.levels[levels.length - 1].selection?.htsno
+                  );
+                  setCopied(true);
+                }}
+              />
+              <SquareIconButton
+                transparent
+                tooltip="View in Explorer"
+                icon={<MagnifyingGlassIcon className="w-4 h-4" />}
+                onClick={() => {
+                  clearBreadcrumbs();
+                  const sectionAndChapter =
+                    getSectionAndChapterFromChapterNumber(
+                      sections,
+                      Number(getChapterFromHtsElement(element, htsElements))
+                    );
 
-                const parents = getHtsElementParents(element, htsElements);
-                const breadcrumbs = generateBreadcrumbsForHtsElement(
-                  sections,
-                  sectionAndChapter.chapter,
-                  [...parents, element]
-                );
+                  const parents = getHtsElementParents(element, htsElements);
+                  const breadcrumbs = generateBreadcrumbsForHtsElement(
+                    sections,
+                    sectionAndChapter.chapter,
+                    [...parents, element]
+                  );
 
-                setBreadcrumbs(breadcrumbs);
+                  setBreadcrumbs(breadcrumbs);
 
-                setActiveTab(ClassifyTab.EXPLORE);
-              }}
-            >
-              <MagnifyingGlassIcon className="w-4 h-4" />
-              View in Explorer
-            </button>
+                  setActiveTab(ClassifyTab.EXPLORE);
+                }}
+              />
+            </div>
           </div>
-          <h2 className="text-3xl md:text-5xl text-white font-extrabold">
-            {classification.levels[levels.length - 1].selection?.htsno}
-          </h2>
         </div>
         <div className="flex flex-col gap-2">
           <TertiaryLabel value="HTS Description" />
@@ -117,12 +152,20 @@ export const ClassificationResultPage = ({
                   {index > 0 && (
                     <div className="shrink-0">
                       <SecondaryText
-                        value={`${"-".repeat(index)}`}
+                        value={`${"  ".repeat(index)}`}
                         color={Color.WHITE}
                       />
                     </div>
                   )}
-                  <SecondaryText value={description} color={Color.WHITE} />
+
+                  <div
+                    className={`${index > 0 ? "border-l-2 border-neutral-content/50 pl-2" : ""}`}
+                  >
+                    <SecondaryText
+                      value={`${description}`}
+                      color={Color.WHITE}
+                    />
+                  </div>
                 </div>
               )
             )}
