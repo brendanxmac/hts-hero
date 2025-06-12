@@ -2,7 +2,12 @@
 
 import { createContext, useContext, useState, useEffect } from "react";
 import { User } from "@supabase/supabase-js";
-import { createClient } from "@/libs/supabase/client";
+import { createSupabaseClient } from "@/libs/supabase/client";
+import { fetchUserProfile, UserProfile } from "../libs/supabase/user";
+
+// interface EnrichedUser extends User {
+//   profile: UserProfile;
+// }
 
 interface UserContextType {
   user: User | null;
@@ -18,7 +23,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const supabase = createClient();
+  const supabase = createSupabaseClient();
 
   const refreshUser = async () => {
     try {

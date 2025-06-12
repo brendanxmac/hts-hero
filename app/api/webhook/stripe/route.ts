@@ -1,9 +1,36 @@
-import configFile from "@/config";
 import { findCheckoutSession } from "@/libs/stripe";
-import { SupabaseClient } from "@supabase/supabase-js";
+import { SupabaseClient, UserResponse } from "@supabase/supabase-js";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+import { PricingPlan } from "../../../../types";
+import { getIsoDateInFuture } from "../../../../utilities/time";
+import { createPurchase } from "../../../../libs/supabase/purchase";
+import {
+  fetchUserProfile,
+  fetchUserProfileByEmail,
+  updateUserProfile,
+  UserProfile,
+} from "../../../../libs/supabase/user";
+
+const getExpirationDate = (plan: PricingPlan) => {
+  if (plan === PricingPlan.ONE_DAY_PASS) {
+    return getIsoDateInFuture(1);
+  }
+  if (plan === PricingPlan.FIVE_DAY_PASS) {
+    return getIsoDateInFuture(5);
+  }
+};
+
+export const getPlanFromPriceId = (priceId: string) => {
+  if (priceId === process.env.STRIPE_ONE_DAY_PASS_PRICE_ID) {
+    return PricingPlan.ONE_DAY_PASS;
+  }
+  if (priceId === process.env.STRIPE_FIVE_DAY_PASS_PRICE_ID) {
+    return PricingPlan.FIVE_DAY_PASS;
+  }
+  return null;
+};
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2023-08-16",
@@ -50,56 +77,86 @@ export async function POST(req: NextRequest) {
         const stripeObject: Stripe.Checkout.Session = stripeEvent.data
           .object as Stripe.Checkout.Session;
 
+        console.log("UserId from Stripe:", stripeObject.client_reference_id);
+
         const session = await findCheckoutSession(stripeObject.id);
+
+        // console.log("Stripe Session:", session);
 
         const customerId = session?.customer;
         const priceId = session?.line_items?.data[0]?.price.id;
         const userId = stripeObject.client_reference_id;
-        const plan = configFile.stripe.plans.find((p) => p.priceId === priceId);
+        const plan = getPlanFromPriceId(priceId);
 
         const customer = (await stripe.customers.retrieve(
           customerId as string
         )) as Stripe.Customer;
 
-        if (!plan) break;
+        // console.log("Customer:", customer);
 
-        let user;
+        if (!plan) {
+          console.error("Plan not found for priceId: ", priceId);
+          break;
+        }
+
+        let user: UserProfile | null = null;
+
         if (!userId) {
+          console.log("No userId found, checking if user already exists");
           // check if user already exists
-          const { data: profile } = await supabase
-            .from("profiles")
-            .select("*")
-            .eq("email", customer.email)
-            .single();
-          if (profile) {
-            user = profile;
+          const userProfile = await fetchUserProfileByEmail(customer.email);
+
+          if (userProfile) {
+            console.log("User already exists:", userProfile.email);
+            user = userProfile;
           } else {
-            // create a new user using supabase auth admin
-            const { data } = await supabase.auth.admin.createUser({
+            console.log("User does not exist, creating new user");
+            const { data, error } = await supabase.auth.admin.createUser({
               email: customer.email,
             });
 
-            user = data?.user;
+            console.log("User created:", data);
+            console.log(data.user);
+
+            if (error) {
+              console.error("Failed to create user:", error);
+              break;
+            }
+
+            console.log("Fetching user PROFILE by email");
+
+            user = await fetchUserProfileByEmail(customer.email);
+            console.log("User profile:", user);
           }
         } else {
-          // find user by ID
-          const { data: profile } = await supabase
-            .from("profiles")
-            .select("*")
-            .eq("id", userId)
-            .single();
-
-          user = profile;
+          console.log(
+            "UserId included in stripe response - Fetching user PROFILE by userId"
+          );
+          user = await fetchUserProfile(userId);
         }
 
-        await supabase
-          .from("profiles")
-          .update({
-            customer_id: customerId,
-            price_id: priceId,
-            has_access: true,
-          })
-          .eq("id", user?.id);
+        if (!user) {
+          console.error("User not found");
+          throw new Error(
+            `Failed to set user on purchase -- userId: ${userId} -- email: ${customer.email}`
+          );
+        }
+
+        console.log("creating purchase for user:");
+
+        const purchase = await createPurchase({
+          user_id: user.id,
+          customer_id: customerId as string,
+          price_id: priceId,
+          product_name: plan,
+          expires_at: getExpirationDate(plan),
+        });
+
+        console.log("Purchase created:", purchase);
+
+        // TODO: Send Thank you email to user for their purchase
+        // Include instructions to have them sign in with THIS email they're
+        // receiving this email at (either w/ google or magic link)
 
         // Extra: send email with user link, product page, etc...
         // try {
@@ -180,7 +237,7 @@ export async function POST(req: NextRequest) {
       // Unhandled event type
     }
   } catch (e) {
-    console.error("stripe error: ", e.message);
+    console.error(`stripe ${eventType} webhook handling error:`, e.message);
   }
 
   return NextResponse.json({});

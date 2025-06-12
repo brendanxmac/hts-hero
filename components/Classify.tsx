@@ -17,12 +17,17 @@ import { useHts } from "../contexts/HtsContext";
 import { ClassificationResultPage } from "./ClassificationResultPage";
 import { GuideName } from "../types/guides";
 import { HowToGuide } from "./HowToGuide";
+import { useUser } from "../contexts/UserContext";
+import { fetchUserProfile } from "../libs/supabase/user";
+import { userHasActivePurchase } from "../libs/supabase/purchase";
+import { useRouter } from "next/navigation";
 
 // interface Props {
 //   setPage: (page: ClassifyPage) => void;
 // }
 
 export const Classify = () => {
+  const { user } = useUser();
   const [loading, setLoading] = useState<Loader>({
     isLoading: true,
     text: "",
@@ -34,6 +39,21 @@ export const Classify = () => {
   >(undefined);
   const { fetchElements, htsElements } = useHts();
   const { getSections, sections } = useHtsSections();
+
+  useEffect(() => {
+    const checkUserHasActivePurchase = async () => {
+      if (user) {
+        const hasActivePurchase = await userHasActivePurchase(user.id);
+        console.log("hasActivePurchase", hasActivePurchase);
+        if (!hasActivePurchase) {
+        }
+      } else {
+        console.log("waiting on user to be logged in");
+      }
+    };
+
+    checkUserHasActivePurchase();
+  }, [user]);
 
   useEffect(() => {
     const loadAllData = async () => {

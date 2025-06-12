@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import logo from "@/app/logo.svg";
 import config from "@/config";
+import ButtonSignin from "./ButtonSignin";
 
 // A header with a logo on the left, links in the center (like Pricing, etc...), and a CTA (like Get Started or Login) on the right.
 // The header is responsive, and on mobile, the links are hidden behind a burger button.
@@ -98,6 +99,7 @@ const ClassifierHeader = ({ page }: { page: "classifier" | "importer" }) => {
               {link.label}
             </Link>
           ))}
+          <ButtonSignin />
         </div>
 
         {/* CTA on large screens */}

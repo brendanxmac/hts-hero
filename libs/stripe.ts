@@ -1,5 +1,7 @@
 import Stripe from "stripe";
 
+export type StripePaymentMode = "payment" | "subscription";
+
 interface CreateCheckoutParams {
   priceId: string;
   mode: "payment" | "subscription";
