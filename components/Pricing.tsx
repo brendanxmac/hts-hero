@@ -1,12 +1,7 @@
 import config from "@/config";
 import { classNames } from "../utilities/style";
-import FakeButtonCheckout from "./FakeButtonCheckout";
 import { PricingPlan, PricingType } from "../types";
 import { BuyAttempt } from "../app/api/buy-attempt/route";
-import { upsertBuyAttempt } from "../libs/buy-attempt";
-import { useState } from "react";
-import { ShieldCheckIcon } from "@heroicons/react/24/solid";
-import Link from "next/link";
 import ButtonCheckout from "./ButtonCheckout";
 
 // <Pricing/> displays the pricing plans for your app
@@ -59,21 +54,13 @@ const getPricingHeadline = (customerType: "importer" | "classifier") => {
   }
   return (
     <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-5xl max-w-3xl mx-auto tracking-relaxed">
-      {/* A Personal Classification Assistant */}
-      {/* An Expert Classification Assistant */}
       Save hours on classification,
       <br /> for less than your daily coffee
     </h2>
   );
 };
 
-const Pricing = ({
-  customerType,
-  setShowItsFree,
-  setBuyAttempt,
-}: PricingProps) => {
-  const [buyingPlan, setBuyingPlan] = useState<PricingPlan | null>(null);
-
+const Pricing = ({ customerType }: PricingProps) => {
   return (
     <section className="bg-neutral-900 overflow-hidden" id="pricing">
       <div className="py-16 px-8 max-w-7xl mx-auto">
@@ -85,7 +72,7 @@ const Pricing = ({
         <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8 text-white">
           {getPricingPlans(customerType).map((plan, index) => (
             <div
-              key={plan.priceId}
+              key={index}
               className={classNames(
                 "relative w-full max-w-lg",
                 plan.isFeatured && "border-2 border-primary rounded-lg"
@@ -228,16 +215,7 @@ const Pricing = ({
                 )}
                 {!plan.isCompetitor && (
                   <div className="space-y-2">
-                    {/* TODO: Enable this in the future before go live*/}
-                    <ButtonCheckout
-                      priceId={plan.priceId}
-                      mode={
-                        plan.type === PricingType.SUBSCRIPTION
-                          ? "subscription"
-                          : "payment"
-                      }
-                      promotionCode={plan.promotionCode}
-                    />
+                    <ButtonCheckout itemId={plan.name} />
                     {/* <FakeButtonCheckout
                       loading={buyingPlan === plan.name}
                       text={getBuyButtonText(plan.name)}

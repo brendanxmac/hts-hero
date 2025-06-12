@@ -1,5 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/app/api/supabase/middleware";
+import { userHasActivePurchase } from "./libs/supabase/purchase";
+import { requesterIsAuthenticated } from "./app/api/supabase/server";
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -9,6 +11,12 @@ export async function middleware(req: NextRequest) {
 
   if (isNotAllowed) {
     return NextResponse.redirect(new URL("/about/importer", req.url));
+  }
+
+  const requesterIsLoggedIn = await requesterIsAuthenticated(req);
+
+  if (pathname === "/app" && !requesterIsLoggedIn) {
+    return NextResponse.redirect(new URL("/signin", req.url));
   }
 
   const IS_TEST_ENV = process.env.APP_ENV === "test";

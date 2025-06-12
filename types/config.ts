@@ -67,8 +67,8 @@ export type Theme = "black" | "light" | "dark" | "";
 
 export enum PricingPlan {
   MANUAL_SINGLE = "Single Classification",
-  ONE_DAY_PASS = "One Day Pass", // 1 day access to classify (downloads included)
-  FIVE_DAY_PASS = "Five Day Pass", // 5 days of access to classify (downloads included)
+  ONE_DAY_PASS = "1 Day Pass", // 1 day access to classify (downloads included)
+  FIVE_DAY_PASS = "5 Day Pass", // 5 days of access to classify (downloads included)
   STANDARD = "Standard", // classify access - no reports
   PRO = "Pro", // standard + reports
 }
@@ -82,11 +82,11 @@ interface PricingPlanI {
   isFeatured?: boolean;
   isCompetitor?: boolean;
   type: PricingType;
-  priceId: string;
+  // priceId: string;
   name: PricingPlan;
   description?: string;
   price: number;
-  promotionCode?: string;
+  // promotionCode?: string;
   priceAnchor?: number;
   features: {
     name: string;

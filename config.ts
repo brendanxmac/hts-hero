@@ -17,32 +17,9 @@ const config: ConfigProps = {
   stripe: {
     // Create multiple plans in your Stripe dashboard, then add them here. You can add as many plans as you want, just make sure to add the priceId
     importerPlans: [
-      // {
-      //   priceId: process.env.NODE_ENV === "development" ? "1" : "2",
-      //   name: PricingPlan.MANUAL_SINGLE,
-      //   description: "A single classification from a manual classifier",
-      //   type: PricingType.ONE_TIME,
-      //   price: 150,
-      //   priceAnchor: null,
-      //   isCompetitor: true,
-      //   features: [
-      //     {
-      //       name: "Usually takes over a day",
-      //     },
-      //     {
-      //       name: "Might required lots of back and forth",
-      //     },
-      //     {
-      //       name: "Might need to pay more in some cases...",
-      //     },
-      //   ],
-      // },
       {
-        priceId:
-          process.env.NODE_ENV === "development"
-            ? "price_1RYkodGaYOWjsQmtIkvo3sEo"
-            : "TODO",
-        promotionCode: "promo_1RYkrYGaYOWjsQmtzivXVRyG", // 50% off for launch
+        // priceId: process.env.STRIPE_ONE_DAY_PASS_PRICE_ID || "",
+        // promotionCode: process.env.STRIPE_HALF_OFF_PROMO_ID || "", // 50% off for launch
         name: PricingPlan.ONE_DAY_PASS,
         description: "The most affordable way to get your codes",
         type: PricingType.ONE_TIME,
@@ -65,12 +42,9 @@ const config: ConfigProps = {
         ],
       },
       {
-        priceId:
-          process.env.NODE_ENV === "development"
-            ? "price_1RYkpwGaYOWjsQmtdPKa9bjF"
-            : "TODO",
-        promotionCode: "promo_1RYkrYGaYOWjsQmtzivXVRyG", // 50% off for launch
         name: PricingPlan.FIVE_DAY_PASS,
+        // priceId: process.env.STRIPE_FIVE_DAY_PASS_PRICE_ID || "",
+        // promotionCode: process.env.STRIPE_HALF_OFF_PROMO_ID || "", // 50% off for launch
         description:
           "More time to get your codes and cover yourself if any updates come about.",
         type: PricingType.ONE_TIME,
@@ -93,105 +67,51 @@ const config: ConfigProps = {
           },
         ],
       },
-      // {
-      //   // REQUIRED — we use this to find the plan in the webhook (for instance if you want to update the user's credits based on the plan)
-      //   priceId: process.env.NODE_ENV === "development" ? "lol" : "haha",
-      //   //  REQUIRED - Name of the plan, displayed on the pricing page
-      //   name: PricingPlan.PRO,
-      //   // A friendly description of the plan, displayed on the pricing page. Tip: explain why this plan and not others
-      //   description: "Full access, as long as you want", // & based on the USITC
-      //   type: PricingType.SUBSCRIPTION,
-      //   // The price you want to display, the one user will be charged on Stripe.
-      //   price: 30,
-      //   // If you have an anchor price (i.e. $29) that you want to display crossed out, put it here. Otherwise, leave it empty
-      //   priceAnchor: 45,
-      //   features: [
-      //     {
-      //       name: "Get the full HTS Hero experience",
-      //       details: "Including all of the classification features",
-      //     },
-      //     {
-      //       name: "Download & keep your classification reports",
-      //     },
-      //     {
-      //       name: "Unlimited access",
-      //     },
-      //   ],
-      // },
     ],
-    classifierPlans: [
-      {
-        priceId: process.env.NODE_ENV === "development" ? "7" : "8",
-        name: PricingPlan.STANDARD,
-        description: "Your Personal Classification Assistant",
-        type: PricingType.SUBSCRIPTION,
-        price: 30,
-        priceAnchor: 45,
-        features: [
-          { name: "Unlimited Classifications" },
-          { name: "Heading Discovery" },
-          {
-            name: "Best Candidate Suggestions at Every Level",
-            details: "Based on the GRI & Additional US Rules",
-          },
-          { name: "Fetches Relevant Notes" },
-          {
-            name: "Built-in PDF Viewer",
-            details: "No downloads needed to find what you're looking for!",
-          },
-        ],
-      },
-      {
-        priceId: process.env.NODE_ENV === "development" ? "9" : "10",
-        name: PricingPlan.PRO,
-        description: "Automactically Generate & Download Reports", // & based on the USITC
-        type: PricingType.SUBSCRIPTION,
-        price: 40,
-        priceAnchor: 60,
-        isFeatured: true,
-        features: [
-          { name: "Everything in Standard, Plus:" },
-          {
-            name: "Generates Full Classification Reports",
-            details: "Ready to share with clients or customs",
-          },
-          {
-            name: "Saves all your classifications",
-            details: "For easy access, reference, & auditability",
-            comingSoon: true,
-          },
-        ],
-      },
-      // {
-      //   // REQUIRED — we use this to find the plan in the webhook (for instance if you want to update the user's credits based on the plan)
-      //   priceId:
-      //     process.env.NODE_ENV === "development"
-      //       ? "price_1Niyy5AxyNprDp7iZIqEyD2h"
-      //       : "price_456",
-      //   //  REQUIRED - Name of the plan, displayed on the pricing page
-      //   name: PricingPlan.Standard,
-      //   // A friendly description of the plan, displayed on the pricing page. Tip: explain why this plan and not others
-      //   description: "No more looking up notes, rulings, or references.",
-      //   // The price you want to display, the one user will be charged on Stripe.
-      //   price: 40,
-      //   // If you have an anchor price (i.e. $29) that you want to display crossed out, put it here. Otherwise, leave it empty
-      //   priceAnchor: null,
-      //   features: [
-      //     {
-      //       name: "Everything in Starter",
-      //     },
-      //     {
-      //       name: "Finds Related CROSS Rulings",
-      //     },
-      //     { name: "Finds Relevant Notes" },
-      //     {
-      //       name: "Finds HTS Element References",
-      //       details:
-      //         "Get the details of references like 'See Heading 9902.22.84' without searching for it",
-      //     },
-      //   ],
-      // },
-    ],
+    // classifierPlans: [
+    //   {
+    //     priceId: process.env.NODE_ENV === "development" ? "7" : "8",
+    //     name: PricingPlan.STANDARD,
+    //     description: "Your Personal Classification Assistant",
+    //     type: PricingType.SUBSCRIPTION,
+    //     price: 30,
+    //     priceAnchor: 45,
+    //     features: [
+    //       { name: "Unlimited Classifications" },
+    //       { name: "Heading Discovery" },
+    //       {
+    //         name: "Best Candidate Suggestions at Every Level",
+    //         details: "Based on the GRI & Additional US Rules",
+    //       },
+    //       { name: "Fetches Relevant Notes" },
+    //       {
+    //         name: "Built-in PDF Viewer",
+    //         details: "No downloads needed to find what you're looking for!",
+    //       },
+    //     ],
+    //   },
+    //   {
+    //     priceId: process.env.NODE_ENV === "development" ? "9" : "10",
+    //     name: PricingPlan.PRO,
+    //     description: "Automactically Generate & Download Reports", // & based on the USITC
+    //     type: PricingType.SUBSCRIPTION,
+    //     price: 40,
+    //     priceAnchor: 60,
+    //     isFeatured: true,
+    //     features: [
+    //       { name: "Everything in Standard, Plus:" },
+    //       {
+    //         name: "Generates Full Classification Reports",
+    //         details: "Ready to share with clients or customs",
+    //       },
+    //       {
+    //         name: "Saves all your classifications",
+    //         details: "For easy access, reference, & auditability",
+    //         comingSoon: true,
+    //       },
+    //     ],
+    //   },
+    // ],
   },
   // aws: {
   //   // If you use AWS S3/Cloudfront, put values in here
@@ -218,7 +138,7 @@ const config: ConfigProps = {
     // REQUIRED — the path to log in users. It's use to protect private routes (like /dashboard). It's used in apiClient (/libs/api.js) upon 401 errors from our API
     loginUrl: "/signin",
     // REQUIRED — the path you want to redirect users after successfull login (i.e. /dashboard, /private). This is normally a private page for users to manage their accounts. It's used in apiClient (/libs/api.js) upon 401 errors from our API & in ButtonSignin.js
-    callbackUrl: "/explore",
+    callbackUrl: "/classify",
   },
 } as ConfigProps;
 
