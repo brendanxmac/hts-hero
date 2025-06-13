@@ -1,15 +1,10 @@
 import config from "@/config";
 import { classNames } from "../utilities/style";
 import { PricingType } from "../types";
-import { BuyAttempt } from "../app/api/buy-attempt/route";
 import ButtonCheckout from "./ButtonCheckout";
 import { CustomerType } from "../enums/classify";
-import { PrimaryLabel } from "./PrimaryLabel";
-import { Color } from "../enums/style";
-import { TertiaryLabel } from "./TertiaryLabel";
-import { SecondaryLabel } from "./SecondaryLabel";
 import { TertiaryText } from "./TertiaryText";
-import { SecondaryText } from "./SecondaryText";
+import Link from "next/link";
 
 // <Pricing/> displays the pricing plans for your app
 // It's your Stripe config in config.js.stripe.plans[] that will be used to display the plans
@@ -31,56 +26,168 @@ const Pricing = ({ customerType, itemDescription }: Props) => {
   return (
     <section className="bg-neutral-900 overflow-hidden" id="pricing">
       <div className="py-16 px-8 max-w-7xl mx-auto flex flex-col items-center justify-center">
-        <div className="mb-10 flex flex-col gap-2 items-center">
-          <TertiaryLabel value="HTS Code:" />
-          <h2 className="text-4xl md:text-5xl text-secondary font-extrabold blur-md select-none text-center">
-            XXXX.XX.XX.XX
+        {/* <div className="mb-10 flex flex-col gap-2 items-center border-2 border-neutral-content/20 rounded-lg p-4">
+          <TertiaryLabel value="🎁 Your HTS Code:" />
+          <h2 className="text-3xl md:text-4xl text-secondary font-extrabold select-none text-center">
+            xxxx.xx.xx.xx
           </h2>
-        </div>
-        <h1 className="text-white text-2xl sm:text-3xl md:text-4xl font-bold">
-          Your HTS Code is Waiting!
+          <div className="flex items-center justify-center gap-1 w-full animate-pulse">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-4 h-4 text-neutral-300"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"
+              />
+            </svg>
+
+            <p className="text-center text-sm text-neutral-300 tracking-tight">
+              HTS Code Hidden, Get Access Below
+            </p>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-4 h-4 text-neutral-300"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"
+              />
+            </svg>
+          </div>
+        </div> */}
+
+        {/* <div className="flex gap-2 items-center">
+          <h1 className="text-white text-2xl sm:text-3xl md:text-4xl font-bold">
+            Your HTS Code is:
+          </h1>
+          <div className="bg-white rounded-lg p-2">
+            <div className="flex items-center justify-center gap-1 w-full animate-pulse">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={3}
+                stroke="currentColor"
+                className="w-4 h-4 text-secondary"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"
+                />
+              </svg>
+
+              <p className="text-center font-bold text-sm text-secondary tracking-tight">
+                HTS Code Hidden, Get Access Below
+              </p>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={3}
+                stroke="currentColor"
+                className="w-4 h-4 text-secondary"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"
+                />
+              </svg>
+            </div>
+          </div>
+        </div> */}
+
+        <h1 className="text-white text-2xl sm:text-3xl md:text-5xl font-extrabold">
+          Get Your HTS Code <span className="text-primary">in Seconds</span>
+          {/* Type Description, Get Code */}
+          {/* Your Code Awaits! */}
+          {/* Almost There! */}
+          {/* Your HTS Code is Waiting! */}
         </h1>
+        {/* <div className="mt-4 w-full max-w-xs bg-secondary rounded-lg p-2 backdrop-blur-sm">
+          <div className="bg-white rounded-lg px-2 py-4">
+            <div className="flex items-center justify-center gap-1 w-full animate-pulse">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={3}
+                stroke="currentColor"
+                className="w-4 h-4 text-secondary"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"
+                />
+              </svg>
 
-        {/* <div className="w-full max-w-2xl grid grid-cols-1 sm:grid-cols-2 gap-4 mt-10"> */}
-        {/* <div className="flex flex-col gap-2 col-span-1">
-            <TertiaryLabel value="Item Description" />
-            <SecondaryText value={itemDescription} color={Color.WHITE} />
-          </div> */}
-
-        {/* <div className="flex flex-col gap-2 col-span-1">
-            <TertiaryLabel value="HTS Code" />
-            <h2 className="text-wrap text-4xl text-accent font-extrabold blur-md select-none">
-              XXXX.XX.XX.XX
-            </h2>
+              <p className="text-center font-bold text-sm text-secondary tracking-tight">
+                Code Hidden, Waiting for Payment
+              </p>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={3}
+                stroke="currentColor"
+                className="w-4 h-4 text-secondary"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"
+                />
+              </svg>
+            </div>
           </div>
         </div> */}
 
-        <h2 className="mt-5 mb-6 max-w-4xl text-lg sm:text-xl md:text-2xl text-primary font-extrabold text-center">
-          Choose a pass for full access to our classification assistant
+        <h2 className="m-5 mb-8 max-w-4xl text-lg sm:text-xl md:text-2xl text-secondary font-extrabold text-center">
+          Select a pass to unlock full access to Code Finder:
+          {/* Select a pass to complete your classification */}
         </h2>
+        {/* <div className=" flex flex-col md:flex-row gap-12 md:gap-24">
+          <div className="grid grid-cols-1 items-stretch gap-8 sm:gap-12 xl:grid-cols-2 lg:gap-20">
+            <ul className="w-full xl:flex xl:flex-col xl:gap-5">
+              {classifyFeatures.map((feature, i) => (
+                <AccordionItem
+                  key={feature.title}
+                  index={i}
+                  features={classifyFeatures}
+                  feature={feature}
+                  isOpen={featureSelected === i}
+                  setFeatureSelected={() => setFeatureSelected(i)}
+                />
+              ))}
+            </ul>
 
-        {/* <h1 className="text-white text-3xl font-bold">
-          HTS Code:{" "}
-          <span className="text-white font-extrabold blur-xl select-none">
-            XXXX.XX.XX.XX
-          </span>
-        </h1> */}
-
-        {/* <div className="flex gap-8 justify-between">
-          <div className="flex flex-col gap-2">
-            <TertiaryLabel value="Item Description" />
-            <SecondaryLabel value={itemDescription} color={Color.WHITE} />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <TertiaryLabel value="HTS Code" />
-            <h2 className="text-3xl text-white font-extrabold blur-md select-none">
-              XXXX.XX.XX.XX
-            </h2>
+            <div className="w-full h-fit justify-center self-center hidden xl:flex">
+              <Media
+                feature={classifyFeatures[featureSelected]}
+                key={featureSelected}
+              />
+            </div>
           </div>
         </div> */}
+        {/* <p className="mb-6 text-sm font-semibold text-white">
+          🚀 Launch Deal:{" "}
+          <span className="text-accent">50% off until July!</span>
+        </p> */}
 
-        <div className="relative flex justify-between flex-col lg:flex-row items-center lg:items-stretch gap-8 text-white">
+        <div className="w-full relative flex justify-evenly flex-col lg:flex-row items-center lg:items-stretch gap-8 text-white">
           {getPricingPlans(customerType).map((plan, index) => (
             <div
               key={index}
@@ -114,16 +221,6 @@ const Pricing = ({ customerType, itemDescription }: Props) => {
                 <div className="flex justify-between items-center gap-4">
                   <div className="flex flex-col">
                     {/* <div className="flex mb-4 gap-2">
-                      {!plan.isCompetitor && (
-                        <Image
-                          src={logo}
-                          alt={`${config.appName} logo`}
-                          className="w-6"
-                          priority={true}
-                          width={32}
-                          height={32}
-                        />
-                      )}
                       <span className="font-extrabold text-lg">
                         {plan.isCompetitor
                           ? "Manual Classifier"
@@ -165,7 +262,6 @@ const Pricing = ({ customerType, itemDescription }: Props) => {
                           ? "/ month"
                           : ""}
                       </p>
-                      {/* </div> */}
                     </div>
                   )}
                 </div>
@@ -228,27 +324,23 @@ const Pricing = ({ customerType, itemDescription }: Props) => {
                 {!plan.isCompetitor && (
                   <div className="space-y-2">
                     <ButtonCheckout itemId={plan.name} />
-                    {/* <FakeButtonCheckout
-                      loading={buyingPlan === plan.name}
-                      text={getBuyButtonText(plan.name)}
-                      onClick={async () => {
-                        setBuyingPlan(plan.name);
-                        const buyAttempt = await upsertBuyAttempt({
-                          window_id: window.name,
-                          pricing_plan: plan.name,
-                          plan_type: plan.type,
-                        });
-                        setBuyAttempt(buyAttempt);
-                        setShowItsFree(true);
-                        setBuyingPlan(null);
-                      }}
-                    /> */}
                   </div>
                 )}
               </div>
             </div>
           ))}
         </div>
+
+        <div className="mt-4">
+          <TertiaryText value="One-time purchase. No Subscriptions. Instant access." />
+        </div>
+
+        <Link
+          href="/about/importer"
+          className="mt-2 text-base-content/80 text-sm hover:underline"
+        >
+          Learn More
+        </Link>
 
         {/* {customerType === "importer" && (
           <div className="mt-16 flex flex-col gap-2 justify-center items-center">
