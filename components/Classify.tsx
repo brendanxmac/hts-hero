@@ -6,10 +6,8 @@ import { Explore } from "./Explore";
 import { ClassificationStep } from "./workflow/ClassificationStep";
 import { ClassificationNavigation } from "./workflow/ClassificationNavigation";
 import { DescriptionStep } from "./workflow/DescriptionStep";
-import { AnalysisStep } from "./workflow/AnalysisStep";
 import { useClassifyTab } from "../contexts/ClassifyTabContext";
 import { ClassifyTab, CustomerType } from "../enums/classify";
-import { ClassifyPage } from "../enums/classify";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { Loader } from "../interfaces/ui";
@@ -17,15 +15,10 @@ import { useHts } from "../contexts/HtsContext";
 import { ClassificationResultPage } from "./ClassificationResultPage";
 import { GuideName } from "../types/guides";
 import { HowToGuide } from "./HowToGuide";
-import { useUser } from "../contexts/UserContext";
-import Pricing from "./Pricing";
 import Modal from "./Modal";
 import ConversionPricing from "./ConversionPricing";
 import { useClassification } from "../contexts/ClassificationContext";
-
-// interface Props {
-//   setPage: (page: ClassifyPage) => void;
-// }
+import { useSearchParams } from "next/navigation";
 
 export const Classify = () => {
   const [showPricing, setShowPricing] = useState(false);
@@ -40,9 +33,15 @@ export const Classify = () => {
   >(undefined);
   const { fetchElements, htsElements } = useHts();
   const { getSections, sections } = useHtsSections();
-  const { classification } = useClassification();
+  const { classification, setArticleDescription } = useClassification();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
+    const productDescription = searchParams.get("productDescription");
+    if (productDescription) {
+      setArticleDescription(productDescription);
+    }
+
     const loadAllData = async () => {
       setLoading({ isLoading: true, text: "Fetching All Data" });
       await Promise.all([fetchElements(), getSections()]);
