@@ -12,6 +12,7 @@ import { BuyAttempt } from "../../api/buy-attempt/route";
 import ClassifierHeader from "../../../components/ClassifierHeader";
 import { FAQ } from "../../../components/FAQ";
 import { importerFaqList } from "../../../constants/faq";
+import { CustomerType } from "../../../enums/classify";
 
 export default function Home() {
   const [buyAttempt, setBuyAttempt] = useState<BuyAttempt | null>(null);
@@ -26,7 +27,7 @@ export default function Home() {
   return (
     <>
       <Suspense>
-        <ClassifierHeader page="importer" />
+        <ClassifierHeader page={CustomerType.IMPORTER} />
       </Suspense>
       <main>
         <ItsFree
@@ -38,7 +39,7 @@ export default function Home() {
         <Problem />
         <FeaturesAccordion />
         <Pricing
-          customerType="importer"
+          customerType={CustomerType.IMPORTER}
           setBuyAttempt={setBuyAttempt}
           setShowItsFree={setShowItsFree}
         />

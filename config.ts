@@ -27,43 +27,38 @@ const config: ConfigProps = {
         priceAnchor: 40,
         features: [
           {
-            name: "Unlimited Classifications",
+            name: "Code Finder",
+            details: "Unlimited Use of our Classification Assistant",
           },
           {
-            name: "Ability to Download Classification Reports",
-            details: "For your records & if customs asks questions",
+            name: "Classification Reports",
+            // details:
+            //   "In case customs asks questions or suppliers pull a fast one",
           },
           {
-            name: "Free access to our explorer tool, forever",
-          },
-          {
-            name: "Expires after 1 day",
+            name: "Access for 1 day",
           },
         ],
       },
       {
         name: PricingPlan.FIVE_DAY_PASS,
-        // priceId: process.env.STRIPE_FIVE_DAY_PASS_PRICE_ID || "",
-        // promotionCode: process.env.STRIPE_HALF_OFF_PROMO_ID || "", // 50% off for launch
-        description:
-          "More time to get your codes and cover yourself if any updates come about.",
+        description: "Get your codes and cover yourself in case of updates",
         type: PricingType.ONE_TIME,
         price: 30,
         priceAnchor: 60,
         isFeatured: true,
         features: [
           {
-            name: "Unlimited Classifications",
+            name: "Code Finder",
+            details: "Unlimited Use of our Classification Assistant",
           },
           {
-            name: "Ability to Download Classification Reports",
-            details: "For your records & if customs asks questions",
+            name: "Classification Reports",
+            // details:
+            //   "In case customs asks questions or suppliers pull a fast one",
           },
           {
-            name: "Free access to our explorer tool, forever",
-          },
-          {
-            name: "Expires after 5 days",
+            name: "Access for 5 days",
           },
         ],
       },
@@ -138,7 +133,7 @@ const config: ConfigProps = {
     // REQUIRED — the path to log in users. It's use to protect private routes (like /dashboard). It's used in apiClient (/libs/api.js) upon 401 errors from our API
     loginUrl: "/signin",
     // REQUIRED — the path you want to redirect users after successfull login (i.e. /dashboard, /private). This is normally a private page for users to manage their accounts. It's used in apiClient (/libs/api.js) upon 401 errors from our API & in ButtonSignin.js
-    callbackUrl: "/classify",
+    callbackUrl: "/app",
   },
 } as ConfigProps;
 

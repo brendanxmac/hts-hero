@@ -1,22 +1,22 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/app/api/supabase/middleware";
-import { userHasActivePurchase } from "./libs/supabase/purchase";
-import { requesterIsAuthenticated } from "./app/api/supabase/server";
+import { createClient } from "./app/api/supabase/server";
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+  const supabase = createClient();
+  const { data } = await supabase.auth.getUser();
+  const user = data.user;
 
-  const isNotAllowed =
-    pathname === "/blog" || pathname === "/" || pathname === "/about";
-
-  if (isNotAllowed) {
-    return NextResponse.redirect(new URL("/about/importer", req.url));
+  if (user && pathname === "/") {
+    return NextResponse.redirect(new URL("/app", req.url));
   }
 
-  const requesterIsLoggedIn = await requesterIsAuthenticated(req);
+  const isRedirectPath =
+    pathname === "/blog" || pathname === "/" || pathname === "/about";
 
-  if (pathname === "/app" && !requesterIsLoggedIn) {
-    return NextResponse.redirect(new URL("/signin", req.url));
+  if (isRedirectPath) {
+    return NextResponse.redirect(new URL("/about/importer", req.url));
   }
 
   const IS_TEST_ENV = process.env.APP_ENV === "test";

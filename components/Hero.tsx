@@ -14,10 +14,7 @@ const Hero = () => {
           from suppliers.
         </p>
 
-        <Link
-          className="btn btn-primary btn-wide"
-          href={"/about/importer#pricing"}
-        >
+        <Link className="btn btn-primary btn-wide" href={"/app"}>
           Try it now!
         </Link>
 

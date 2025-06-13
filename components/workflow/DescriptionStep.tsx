@@ -7,18 +7,24 @@ import { useEffect, useState } from "react";
 import { StepNavigation } from "./StepNavigation";
 import { TertiaryLabel } from "../TertiaryLabel";
 import { SecondaryLabel } from "../SecondaryLabel";
+import { userHasActivePurchase } from "../../libs/supabase/purchase";
+import { useUser } from "../../contexts/UserContext";
 
-interface DescriptionStepProps {
+interface Props {
   setWorkflowStep: (step: WorkflowStep) => void;
   setClassificationLevel: (level: number | undefined) => void;
+  setShowPricing: (show: boolean) => void;
 }
 
 export const DescriptionStep = ({
   setWorkflowStep,
   setClassificationLevel,
-}: DescriptionStepProps) => {
+  setShowPricing,
+}: Props) => {
+  const { user } = useUser();
   const [localProductDescription, setLocalProductDescription] = useState("");
-  const { classification, startNewClassification } = useClassification();
+  const { classification, startNewClassification, setArticleDescription } =
+    useClassification();
   const { articleDescription: productDescription } = classification;
 
   useEffect(() => {
@@ -46,10 +52,6 @@ export const DescriptionStep = ({
         <TextInput
           placeholder="e.g. Men’s 100% cotton denim jeans, dyed blue, pre-washed, and tailored for an atheltic figure"
           defaultValue={productDescription}
-          // onSubmit={(value) => {
-          //   setProductDescription(value);
-          //   setWorkflowStep(WorkflowStep.ANALYSIS);
-          // }}
           onChange={(value) => {
             setLocalProductDescription(value);
           }}
@@ -92,14 +94,21 @@ export const DescriptionStep = ({
       <div className="w-full max-w-3xl mx-auto px-8">
         <StepNavigation
           next={{
-            label: "Next",
+            label: "Get Code",
             fill: true,
-            onClick: () => {
-              if (localProductDescription !== productDescription) {
-                startNewClassification(localProductDescription);
+            onClick: async () => {
+              const isPayingUser = await userHasActivePurchase(user.id);
+
+              if (isPayingUser) {
+                if (localProductDescription !== productDescription) {
+                  startNewClassification(localProductDescription);
+                }
+                setWorkflowStep(WorkflowStep.CLASSIFICATION);
+                setClassificationLevel(0);
+              } else {
+                setArticleDescription(localProductDescription);
+                setShowPricing(true);
               }
-              setWorkflowStep(WorkflowStep.CLASSIFICATION);
-              setClassificationLevel(0);
             },
             disabled: localProductDescription.length === 0,
           }}

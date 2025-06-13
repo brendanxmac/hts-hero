@@ -15,10 +15,7 @@ const CTA = () => {
             alternatives. <br /> Get a valid HTS Code for your product now!
           </p>
 
-          <Link
-            className="btn btn-primary btn-wide"
-            href={"/about/importer#pricing"}
-          >
+          <Link className="btn btn-primary btn-wide" href={"/app"}>
             Get {config.appName}
           </Link>
         </div>

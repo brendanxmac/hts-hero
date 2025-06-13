@@ -9,7 +9,7 @@ import { useUser } from "../contexts/UserContext";
 // It automatically redirects user to callbackUrl (config.auth.callbackUrl) after login, which is normally a private page for users to manage their accounts.
 // If the user is already logged in, it will show their profile picture & redirect them to callbackUrl immediately.
 const ButtonSignin = ({
-  text = "Get started",
+  text = "Sign In",
   extraStyle,
 }: {
   text?: string;

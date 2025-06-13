@@ -5,20 +5,16 @@ import { WorkflowStep } from "../../enums/hts";
 import { SecondaryLabel } from "../SecondaryLabel";
 import { classNames } from "../../utilities/style";
 import { useClassification } from "../../contexts/ClassificationContext";
-import { ChartPieIcon } from "@heroicons/react/16/solid";
-import { HomeIcon } from "@heroicons/react/24/solid";
 import { TextNavigationStep } from "./TextNavigationStep";
 import { ElementsNavigationStep } from "./ElementsNavigationStep";
 import { Color } from "../../enums/style";
 import { useClassifyTab } from "../../contexts/ClassifyTabContext";
-import { ClassifyPage, ClassifyTab } from "../../enums/classify";
+import { ClassifyTab } from "../../enums/classify";
 import { ClassifyTabs } from "../../constants/classify";
-import { generateClassificationReport } from "../../libs/classification";
-import { downloadClassificationReport } from "../../libs/hts";
 import { ConfirmationCard } from "../ConfirmationCard";
 import { useState, useRef, useEffect } from "react";
 import { TertiaryLabel } from "../TertiaryLabel";
-import { Element } from "../Element";
+import { PrimaryLabel } from "../PrimaryLabel";
 
 export interface ClassificationNavigationProps {
   workflowStep: WorkflowStep;
@@ -90,10 +86,7 @@ export const ClassificationNavigation = ({
           {/* <div className="w-px h-6 bg-base-content/20" /> */}
 
           <div className="grow text-center">
-            <SecondaryLabel
-              value="Classification Summary"
-              color={Color.WHITE}
-            />
+            <PrimaryLabel value="Code Finder" color={Color.WHITE} />
           </div>
         </div>
 
