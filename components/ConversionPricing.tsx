@@ -1,18 +1,23 @@
 import config from "@/config";
 import { classNames } from "../utilities/style";
-import { PricingPlan, PricingType } from "../types";
+import { PricingType } from "../types";
 import { BuyAttempt } from "../app/api/buy-attempt/route";
 import ButtonCheckout from "./ButtonCheckout";
 import { CustomerType } from "../enums/classify";
+import { PrimaryLabel } from "./PrimaryLabel";
+import { Color } from "../enums/style";
+import { TertiaryLabel } from "./TertiaryLabel";
+import { SecondaryLabel } from "./SecondaryLabel";
+import { TertiaryText } from "./TertiaryText";
+import { SecondaryText } from "./SecondaryText";
 
 // <Pricing/> displays the pricing plans for your app
 // It's your Stripe config in config.js.stripe.plans[] that will be used to display the plans
 // <ButtonCheckout /> renders a button that will redirect the user to Stripe checkout called the /api/stripe/create-checkout API endpoint with the correct priceId
 
-interface PricingProps {
+interface Props {
   customerType: CustomerType;
-  setBuyAttempt?: (buyAttempt: BuyAttempt) => void;
-  setShowItsFree?: (show: boolean) => void;
+  itemDescription: string;
 }
 
 const getPricingPlans = (customerType: CustomerType) => {
@@ -22,39 +27,60 @@ const getPricingPlans = (customerType: CustomerType) => {
   return config.stripe.classifierPlans;
 };
 
-const getPricingHeadline = (customerType: CustomerType) => {
-  if (customerType === CustomerType.IMPORTER) {
-    return (
-      <div className="flex flex-col gap-8">
-        <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-5xl max-w-4xl mx-auto tracking-relaxed">
-          Fast & Affordable HTS Codes <br /> for Busy Importers
-        </h2>
-        <div>
-          <p className="text-xl md:text-2xl font-bold text-secondary">
-            🚀 Launch Deal: 50% off until July!
-          </p>
-        </div>
-      </div>
-    );
-  }
-  return (
-    <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-5xl max-w-3xl mx-auto tracking-relaxed">
-      Save hours on classification,
-      <br /> for less than your daily coffee
-    </h2>
-  );
-};
-
-const Pricing = ({ customerType }: PricingProps) => {
+const Pricing = ({ customerType, itemDescription }: Props) => {
   return (
     <section className="bg-neutral-900 overflow-hidden" id="pricing">
-      <div className="py-16 px-8 max-w-7xl mx-auto">
-        <div className="flex flex-col text-center w-full mb-12">
-          <p className="font-medium text-primary mb-8">Pricing</p>
-          {getPricingHeadline(customerType)}
+      <div className="py-16 px-8 max-w-7xl mx-auto flex flex-col items-center justify-center">
+        <div className="mb-10 flex flex-col gap-2 items-center">
+          <TertiaryLabel value="HTS Code:" />
+          <h2 className="text-4xl md:text-5xl text-secondary font-extrabold blur-md select-none text-center">
+            XXXX.XX.XX.XX
+          </h2>
         </div>
+        <h1 className="text-white text-2xl sm:text-3xl md:text-4xl font-bold">
+          Your HTS Code is Waiting!
+        </h1>
 
-        <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8 text-white">
+        {/* <div className="w-full max-w-2xl grid grid-cols-1 sm:grid-cols-2 gap-4 mt-10"> */}
+        {/* <div className="flex flex-col gap-2 col-span-1">
+            <TertiaryLabel value="Item Description" />
+            <SecondaryText value={itemDescription} color={Color.WHITE} />
+          </div> */}
+
+        {/* <div className="flex flex-col gap-2 col-span-1">
+            <TertiaryLabel value="HTS Code" />
+            <h2 className="text-wrap text-4xl text-accent font-extrabold blur-md select-none">
+              XXXX.XX.XX.XX
+            </h2>
+          </div>
+        </div> */}
+
+        <h2 className="mt-5 mb-6 max-w-4xl text-lg sm:text-xl md:text-2xl text-primary font-extrabold text-center">
+          Choose a pass for full access to our classification assistant
+        </h2>
+
+        {/* <h1 className="text-white text-3xl font-bold">
+          HTS Code:{" "}
+          <span className="text-white font-extrabold blur-xl select-none">
+            XXXX.XX.XX.XX
+          </span>
+        </h1> */}
+
+        {/* <div className="flex gap-8 justify-between">
+          <div className="flex flex-col gap-2">
+            <TertiaryLabel value="Item Description" />
+            <SecondaryLabel value={itemDescription} color={Color.WHITE} />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <TertiaryLabel value="HTS Code" />
+            <h2 className="text-3xl text-white font-extrabold blur-md select-none">
+              XXXX.XX.XX.XX
+            </h2>
+          </div>
+        </div> */}
+
+        <div className="relative flex justify-between flex-col lg:flex-row items-center lg:items-stretch gap-8 text-white">
           {getPricingPlans(customerType).map((plan, index) => (
             <div
               key={index}

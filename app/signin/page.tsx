@@ -144,7 +144,7 @@ export default function Login() {
             {isLoading && (
               <span className="loading loading-spinner loading-xs"></span>
             )}
-            Send Magic Link
+            Send Access Link
           </button>
         </form>
       </div>

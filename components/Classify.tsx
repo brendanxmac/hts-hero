@@ -8,7 +8,7 @@ import { ClassificationNavigation } from "./workflow/ClassificationNavigation";
 import { DescriptionStep } from "./workflow/DescriptionStep";
 import { AnalysisStep } from "./workflow/AnalysisStep";
 import { useClassifyTab } from "../contexts/ClassifyTabContext";
-import { ClassifyTab } from "../enums/classify";
+import { ClassifyTab, CustomerType } from "../enums/classify";
 import { ClassifyPage } from "../enums/classify";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
@@ -18,16 +18,17 @@ import { ClassificationResultPage } from "./ClassificationResultPage";
 import { GuideName } from "../types/guides";
 import { HowToGuide } from "./HowToGuide";
 import { useUser } from "../contexts/UserContext";
-import { fetchUserProfile } from "../libs/supabase/user";
-import { userHasActivePurchase } from "../libs/supabase/purchase";
-import { useRouter } from "next/navigation";
+import Pricing from "./Pricing";
+import Modal from "./Modal";
+import ConversionPricing from "./ConversionPricing";
+import { useClassification } from "../contexts/ClassificationContext";
 
 // interface Props {
 //   setPage: (page: ClassifyPage) => void;
 // }
 
 export const Classify = () => {
-  const { user } = useUser();
+  const [showPricing, setShowPricing] = useState(false);
   const [loading, setLoading] = useState<Loader>({
     isLoading: true,
     text: "",
@@ -39,21 +40,7 @@ export const Classify = () => {
   >(undefined);
   const { fetchElements, htsElements } = useHts();
   const { getSections, sections } = useHtsSections();
-
-  useEffect(() => {
-    const checkUserHasActivePurchase = async () => {
-      if (user) {
-        const hasActivePurchase = await userHasActivePurchase(user.id);
-        console.log("hasActivePurchase", hasActivePurchase);
-        if (!hasActivePurchase) {
-        }
-      } else {
-        console.log("waiting on user to be logged in");
-      }
-    };
-
-    checkUserHasActivePurchase();
-  }, [user]);
+  const { classification } = useClassification();
 
   useEffect(() => {
     const loadAllData = async () => {
@@ -97,6 +84,7 @@ export const Classify = () => {
               <DescriptionStep
                 setWorkflowStep={setWorkflowStep}
                 setClassificationLevel={setClassificationLevel}
+                setShowPricing={setShowPricing}
               />
             )}
             {/* {workflowStep === WorkflowStep.ANALYSIS && (
@@ -125,6 +113,14 @@ export const Classify = () => {
         {activeTab === ClassifyTab.EXPLORE && <Explore />}
       </div>
       <HowToGuide guideName={GuideName.CLASSIFY} />
+      {showPricing && (
+        <Modal isModalOpen={showPricing} setIsModalOpen={setShowPricing}>
+          <ConversionPricing
+            customerType={CustomerType.IMPORTER}
+            itemDescription={classification.articleDescription}
+          />
+        </Modal>
+      )}
     </div>
   );
 };

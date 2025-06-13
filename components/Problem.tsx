@@ -77,8 +77,10 @@ const Problem = () => {
         </div>
 
         <p className="text-white max-w-3xl mx-auto text-xl font-bold opacity-90 leading-relaxed">
-          Finding the right code means hiring an expert 💰, or trying to become
-          one 📚
+          Finding the right code means hiring an expert {"-> "}
+          <span className="text-red-500">$200</span>
+          <br /> or studying to become one {"-> "}
+          <span className="text-red-500">100hrs</span>
         </p>
         <div className="flex items-center justify-center gap-1 w-full mt-8 md:mt-20 animate-pulse">
           <svg

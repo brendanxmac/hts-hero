@@ -1,6 +1,6 @@
 import { Feature } from "../components/FeaturesAccordion";
 
-export const classifyFeatures = [
+export const classifyFeatures: Feature[] = [
   {
     title: "Gets Results in Seconds",
     description:
@@ -76,9 +76,9 @@ export const classifyFeatures = [
     ),
   },
   {
-    title: "Generates Reports",
+    title: "Generates Classification Reports",
     description:
-      "Get a detailed report of your entire classification for your own records and to show suppliers or customs. This includes the options, selection, and details at each level, as well as the final HTS Code, description, and tariff rates.",
+      "Classification reports can save you from being fooled by suppliers or questioned by customs. Each code you get includes a report with the options, suggestion, and selection for every level. It also includes the final HTS Code and applicable tariff rates.",
     mediaType: "image",
     altText: "Classification Report Image",
     mediaPath: "/classification-report.png",
@@ -99,4 +99,4 @@ export const classifyFeatures = [
       </svg>
     ),
   },
-] as Feature[];
+];

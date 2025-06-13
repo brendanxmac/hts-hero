@@ -41,7 +41,7 @@ export const AuthenticatedHeader = () => {
                 : "text-base-content no-underline"
             }`}
           >
-            Explore
+            Explorer
           </Link>
           <Link
             href="/app"
@@ -51,7 +51,7 @@ export const AuthenticatedHeader = () => {
                 : "text-base-content no-underline"
             }`}
           >
-            Classify
+            Code Finder
           </Link>
         </div>
       </div>
