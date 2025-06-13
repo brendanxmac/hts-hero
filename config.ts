@@ -21,45 +21,69 @@ const config: ConfigProps = {
         // priceId: process.env.STRIPE_ONE_DAY_PASS_PRICE_ID || "",
         // promotionCode: process.env.STRIPE_HALF_OFF_PROMO_ID || "", // 50% off for launch
         name: PricingPlan.ONE_DAY_PASS,
-        description: "The most affordable way to get your codes",
+        description: "Unlimited Access to Code Finder for 24 Hours",
         type: PricingType.ONE_TIME,
         price: 20,
         priceAnchor: 40,
         features: [
           {
-            name: "Code Finder",
-            details: "Unlimited Use of our Classification Assistant",
+            name: "Finds the Best Candidates",
           },
           {
-            name: "Classification Reports",
-            // details:
-            //   "In case customs asks questions or suppliers pull a fast one",
+            name: "Suggests the Best Option",
           },
           {
-            name: "Access for 1 day",
+            name: "Gets Results in Seconds",
           },
+          {
+            name: "Generates Full Classification Reports",
+          },
+          // {
+          //   name: "Code Finder",
+          //   details: "Unlimited Use of our Classification Assistant",
+          // },
+          // {
+          //   name: "Classification Reports",
+          //   // details:
+          //   //   "In case customs asks questions or suppliers pull a fast one",
+          // },
+          // {
+          //   name: "Access for 1 day",
+          // },
         ],
       },
       {
         name: PricingPlan.FIVE_DAY_PASS,
-        description: "Get your codes and cover yourself in case of updates",
+        description: "Unlimited Access to Code Finder for 5 Days",
         type: PricingType.ONE_TIME,
         price: 30,
         priceAnchor: 60,
         isFeatured: true,
         features: [
           {
-            name: "Code Finder",
-            details: "Unlimited Use of our Classification Assistant",
+            name: "Finds the Best Candidates",
           },
           {
-            name: "Classification Reports",
-            // details:
-            //   "In case customs asks questions or suppliers pull a fast one",
+            name: "Suggests the Best Option",
           },
           {
-            name: "Access for 5 days",
+            name: "Gets Results in Seconds",
           },
+          {
+            name: "Generates Full Classification Reports",
+          },
+          // {
+          //   name: "Code Finder",
+          //   details: "Unlimited Use of our Classification Assistant",
+          // },
+          // {
+          //   name: "Classification Reports",
+          //   // details:
+          //   //   "In case customs asks questions or suppliers pull a fast one",
+          // },
+          // {
+          //   name: "Access for 5 days",
+          // },
         ],
       },
     ],

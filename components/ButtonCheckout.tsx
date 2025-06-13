@@ -9,8 +9,12 @@ interface Props {
 }
 
 const getBuyButtonText = (plan: PricingPlan) => {
-  if (plan === PricingPlan.ONE_DAY_PASS || plan === PricingPlan.FIVE_DAY_PASS) {
-    return "Buy Now!";
+  if (plan === PricingPlan.ONE_DAY_PASS) {
+    return "Get 1-Day Pass";
+  }
+
+  if (plan === PricingPlan.FIVE_DAY_PASS) {
+    return "Get 5-Day Pass";
   }
 
   if (plan === PricingPlan.STANDARD) {
