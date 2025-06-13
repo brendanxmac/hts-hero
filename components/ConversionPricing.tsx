@@ -12,7 +12,6 @@ import Link from "next/link";
 
 interface Props {
   customerType: CustomerType;
-  itemDescription: string;
 }
 
 const getPricingPlans = (customerType: CustomerType) => {
@@ -22,7 +21,7 @@ const getPricingPlans = (customerType: CustomerType) => {
   return config.stripe.classifierPlans;
 };
 
-const Pricing = ({ customerType, itemDescription }: Props) => {
+const Pricing = ({ customerType }: Props) => {
   return (
     <section className="bg-neutral-900 overflow-hidden" id="pricing">
       <div className="py-16 px-8 max-w-7xl mx-auto flex flex-col items-center justify-center">
@@ -155,7 +154,7 @@ const Pricing = ({ customerType, itemDescription }: Props) => {
           </div>
         </div> */}
 
-        <h2 className="m-5 mb-8 max-w-4xl text-lg sm:text-xl md:text-2xl text-secondary font-extrabold text-center">
+        <h2 className="m-5 mb-2 max-w-4xl text-lg sm:text-xl md:text-2xl text-primary font-extrabold text-center">
           Select a pass to unlock full access to Code Finder:
           {/* Select a pass to complete your classification */}
         </h2>
@@ -182,6 +181,9 @@ const Pricing = ({ customerType, itemDescription }: Props) => {
             </div>
           </div>
         </div> */}
+        <p className="mb-8 text-lg md:text-xl font-bold text-secondary">
+          ⚡️ 50% off until July!
+        </p>
         {/* <p className="mb-6 text-sm font-semibold text-white">
           🚀 Launch Deal:{" "}
           <span className="text-accent">50% off until July!</span>
