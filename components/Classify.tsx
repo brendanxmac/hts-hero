@@ -114,10 +114,7 @@ export const Classify = () => {
       <HowToGuide guideName={GuideName.CLASSIFY} />
       {showPricing && (
         <Modal isModalOpen={showPricing} setIsModalOpen={setShowPricing}>
-          <ConversionPricing
-            customerType={CustomerType.IMPORTER}
-            itemDescription={classification.articleDescription}
-          />
+          <ConversionPricing customerType={CustomerType.IMPORTER} />
         </Modal>
       )}
     </div>
