@@ -20,7 +20,7 @@ export interface Feature {
 // A component to display 2 to 5 features in an accordion.
 // By default, the first feature is selected. When a feature is clicked, the others are closed.
 const FeaturesAccordion = () => {
-  const [featureSelected, setFeatureSelected] = useState<number>(0);
+  const [featureSelected, setFeatureSelected] = useState<number | null>(0);
 
   return (
     <section
@@ -33,7 +33,7 @@ const FeaturesAccordion = () => {
             Type Description, Get Code
           </h2>
           <p className="pl-2 text-base-content">
-            HTS Hero guides you step-by-step to a valid HTS Code for your
+            Code Finder guides you step-by-step to a valid HTS Code for your
             product. <br /> No experience needed, just a clear description.
           </p>
           <Link className="btn btn-primary btn-wide" href={"/app"}>
@@ -50,7 +50,13 @@ const FeaturesAccordion = () => {
                   features={classifyFeatures}
                   feature={feature}
                   isOpen={featureSelected === i}
-                  setFeatureSelected={() => setFeatureSelected(i)}
+                  setFeatureSelected={() => {
+                    if (featureSelected === i) {
+                      setFeatureSelected(null);
+                    } else {
+                      setFeatureSelected(i);
+                    }
+                  }}
                 />
               ))}
             </ul>

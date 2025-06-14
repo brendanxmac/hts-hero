@@ -4,6 +4,10 @@ import { Feature } from "./FeaturesAccordion";
 
 // Video are set to autoplay for best UX.
 export const Media = ({ feature }: { feature: Feature }) => {
+  if (!feature) {
+    return null;
+  }
+
   const { mediaType, mediaPath, mediaFormat, altText } = feature;
   const style = "w-full h-full rounded-2xl object-contain";
 

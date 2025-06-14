@@ -27,7 +27,8 @@ const getPricingHeadline = (customerType: CustomerType) => {
     return (
       <div className="flex flex-col gap-8">
         <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-5xl max-w-4xl mx-auto tracking-relaxed">
-          Fast & Affordable HTS Codes <br /> for Busy Importers
+          Fast & Affordable HTS <br />
+          Codes for Busy Importers
         </h2>
         <div>
           <p className="text-xl md:text-2xl font-bold text-secondary">

@@ -155,7 +155,7 @@ const ConversionPricing = ({ customerType }: Props) => {
         </div> */}
 
         <h2 className="mt-6 md:mt-10 mb-1 sm:mb-3 max-w-4xl text-xl sm:text-2xl md:text-3xl text-secondary font-extrabold text-center">
-          Select a Pass to Unlock Code Finder
+          Select a Pass to Access Code Finder
           {/* Select a pass to complete your classification */}
         </h2>
         {/* <div className=" flex flex-col md:flex-row gap-12 md:gap-24">
