@@ -110,7 +110,7 @@ export const Explore = () => {
   }, [searchValue]);
 
   return (
-    <div className="p-6 h-full flex flex-col gap-4">
+    <div className="w-full p-6 h-full flex flex-col gap-4">
       <SectionHeader
         title="Explore"
         tabs={ExploreTabs}
@@ -127,7 +127,7 @@ export const Explore = () => {
         }}
       />
 
-      <div className="h-full grow flex flex-col gap-4 overflow-y-auto">
+      <div className="w-full h-full grow flex flex-col gap-4 overflow-y-auto">
         {isLoading && <LoadingIndicator text={loadingText} />}
         {!isLoading && activeTab === ExploreTab.ELEMENTS && (
           <Elements sections={sections} />

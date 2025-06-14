@@ -12,20 +12,6 @@ export async function POST(req: NextRequest) {
   if (!body.itemId) {
     return NextResponse.json({ error: "Item ID is required" }, { status: 400 });
   }
-  // else if (!body.successUrl || !body.cancelUrl) {
-  //   return NextResponse.json(
-  //     { error: "Success and cancel URLs are required" },
-  //     { status: 400 }
-  //   );
-  // else if (!body.mode) {
-  //   return NextResponse.json(
-  //     {
-  //       error:
-  //         "Mode is required (either 'payment' for one-time payments or 'subscription' for recurring subscription)",
-  //     },
-  //     { status: 400 }
-  //   );
-  // }
 
   try {
     const supabase = createClient();
@@ -36,8 +22,8 @@ export async function POST(req: NextRequest) {
 
     const { itemId } = body;
 
-    const { data } = await supabase
-      .from("profiles")
+    const { data: userProfile } = await supabase
+      .from("users")
       .select("*")
       .eq("id", user?.id)
       .single();
@@ -74,7 +60,7 @@ export async function POST(req: NextRequest) {
     const mode = getMode();
     const promotionCode = getPromotionCode(itemId);
 
-    console.log("User Data", data);
+    console.log("User Data", userProfile);
 
     console.log("successUrl", successUrl);
     console.log("cancelUrl", cancelUrl);
@@ -89,11 +75,11 @@ export async function POST(req: NextRequest) {
       successUrl,
       cancelUrl,
       // If user is logged in, it will pass the user ID to the Stripe Session so it can be retrieved in the webhook later
-      clientReferenceId: user?.id,
+      clientReferenceId: userProfile?.id,
       user: {
-        email: data?.email,
+        email: userProfile?.email,
         // If the user has already purchased, it will automatically prefill it's credit card
-        customerId: data?.customer_id,
+        customerId: userProfile?.customer_id,
       },
       // If you send coupons from the frontend, you can pass it here
       // couponId: body.couponId,

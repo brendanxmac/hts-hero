@@ -24,7 +24,7 @@ const FeaturesAccordion = () => {
 
   return (
     <section
-      className="px-6 lg:px-0 py-24 md:py-32 space-y-24 md:space-y-32 max-w-7xl mx-auto bg-base-100 "
+      className="px-8 py-24 md:py-32 space-y-24 md:space-y-32 max-w-7xl mx-auto bg-base-100 "
       id="features"
     >
       <div className="px-3">
