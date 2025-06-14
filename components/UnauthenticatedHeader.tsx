@@ -7,6 +7,9 @@ import ButtonSignin from "./ButtonSignin";
 import logo from "@/app/logo.svg";
 import config from "@/config";
 import { usePathname, useSearchParams } from "next/navigation";
+import { exploreTutorial, classifyTutorial } from "../tutorials";
+import Modal from "./Modal";
+import { PlayIcon } from "@heroicons/react/24/solid";
 
 const cta: JSX.Element = <ButtonSignin />;
 
@@ -14,6 +17,7 @@ const cta: JSX.Element = <ButtonSignin />;
 // The header is responsive, and on mobile, the links are hidden behind a burger button.
 const UnauthenticatedHeader = () => {
   const searchParams = useSearchParams();
+  const [showTutorial, setShowTutorial] = useState(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const pathname = usePathname();
 
@@ -107,9 +111,17 @@ const UnauthenticatedHeader = () => {
           </button>
         </div>
 
-        <div className="hidden sm:flex items-center justify-between gap-2">
+        <div className="hidden sm:flex items-center gap-2">
           {/* Your links on large screens */}
-          <div className="hidden sm:flex sm:justify-center sm:gap-12 sm:items-center">
+          <div className="hidden sm:flex sm:justify-center sm:gap-4 sm:items-center">
+            <button
+              className="btn btn-sm"
+              onClick={() => setShowTutorial(true)}
+              data-tooltip-id="tooltip"
+            >
+              <PlayIcon className="w-5 h-5" />
+              Tutorial
+            </button>
             {links.map((link) => (
               <Link
                 href={link.href}
@@ -174,6 +186,14 @@ const UnauthenticatedHeader = () => {
             <div className="flow-root mt-6">
               <div className="py-4">
                 <div className="flex flex-col gap-y-4 items-start">
+                  <button
+                    className="btn btn-sm"
+                    onClick={() => setShowTutorial(true)}
+                    data-tooltip-id="tooltip"
+                  >
+                    <PlayIcon className="w-5 h-5" />
+                    Tutorial
+                  </button>
                   {links.map((link) => (
                     <Link
                       href={link.href}
@@ -194,6 +214,11 @@ const UnauthenticatedHeader = () => {
           </div>
         </div>
       )}
+      <Modal isOpen={showTutorial} setIsOpen={setShowTutorial}>
+        <div className="w-full h-full aspect-video">
+          {pathname === "/explore" ? exploreTutorial : classifyTutorial}
+        </div>
+      </Modal>
     </header>
   );
 };
