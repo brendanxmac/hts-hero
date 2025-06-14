@@ -54,14 +54,13 @@ export async function POST(req: NextRequest) {
       return null;
     };
 
-    const successUrl = `${process.env.BASE_URL}/app`;
+    const successUrl = `${process.env.BASE_URL}/signin`;
     const cancelUrl = `${process.env.BASE_URL}/about/importer#pricing`;
     const priceId = getPriceId(itemId);
     const mode = getMode();
     const promotionCode = getPromotionCode(itemId);
 
     console.log("User Data", userProfile);
-
     console.log("successUrl", successUrl);
     console.log("cancelUrl", cancelUrl);
     console.log("priceId", priceId);

@@ -25,7 +25,8 @@ export const createPurchase = async (purchase: CreatePurchaseDto) => {
   const { data, error } = await supabase
     .from("purchases")
     .insert(purchase)
-    .select(); // returns inserted row
+    .select()
+    .single<Purchase>(); // returns inserted row
 
   if (error) {
     console.error("Failed to insert purchase:", error);
