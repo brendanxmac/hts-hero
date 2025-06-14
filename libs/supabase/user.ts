@@ -5,6 +5,7 @@ export interface UserProfile {
   name: string;
   email: string;
   image: string;
+  stripe_customer_id?: string;
   created_at: string;
   updated_at: string;
 }
@@ -52,9 +53,17 @@ export const updateUserProfile = async (
 ) => {
   const supabase = createSupabaseClient();
 
-  const { data, error } = await supabase
+  const { data: updatedUserProfile, error } = await supabase
     .from("users")
     .update(userProfile)
     .eq("id", userId)
     .select();
+
+  if (error) {
+    console.error("Failed to update user profile:", error);
+    // TODO: throw error?
+    return null;
+  }
+
+  return updatedUserProfile;
 };

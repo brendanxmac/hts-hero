@@ -140,9 +140,9 @@ const config: ConfigProps = {
   // },
   resend: {
     // REQUIRED — Email 'From' field to be used when sending magic login links
-    fromNoReply: `HTS Hero <noreply@notify.htshero.com>`, // TODO: fix this using your email
+    fromNoReply: `HTS Hero <noreply@notify.htshero.com>`,
     // REQUIRED — Email 'From' field to be used when sending other emails, like abandoned carts, updates etc..
-    fromAdmin: `Brendan at HTS Hero <brendan@notify.htshero.com>`, // TODO: fix this using your email
+    fromAdmin: `Brendan at HTS Hero <brendan@notify.htshero.com>`,
     // Email shown to customer if need support. Leave empty if not needed => if empty, set up Crisp above, otherwise you won't be able to offer customer support."
     supportEmail: "support@htshero.com",
   },

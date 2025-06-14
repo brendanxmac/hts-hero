@@ -1,5 +1,5 @@
 import { findCheckoutSession } from "@/libs/stripe";
-import { SupabaseClient, UserResponse } from "@supabase/supabase-js";
+import { SupabaseClient } from "@supabase/supabase-js";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
@@ -12,6 +12,11 @@ import {
   updateUserProfile,
   UserProfile,
 } from "../../../../libs/supabase/user";
+import { sendEmail } from "../../../../libs/resend";
+import {
+  purchaseConfirmationEmailHtml,
+  purchaseConfirmationEmailText,
+} from "../../../../emails/purchase-confirmation/purchase-confirmation-email";
 
 const getExpirationDate = (plan: PricingPlan) => {
   if (plan === PricingPlan.ONE_DAY_PASS) {
@@ -152,18 +157,29 @@ export async function POST(req: NextRequest) {
           expires_at: getExpirationDate(plan),
         });
 
+        // Set customer_id in user profile if it doesn't exist
+        if (!user.stripe_customer_id) {
+          await updateUserProfile(user.id, {
+            stripe_customer_id: customerId as string,
+          });
+        }
+
         console.log("Purchase created:", purchase);
 
-        // TODO: Send Thank you email to user for their purchase
-        // Include instructions to have them sign in with THIS email they're
-        // receiving this email at (either w/ google or magic link)
-
-        // Extra: send email with user link, product page, etc...
-        // try {
-        //   await sendEmail(...);
-        // } catch (e) {
-        //   console.error("Email issue:" + e?.message);
-        // }
+        try {
+          await sendEmail({
+            to: user.email,
+            subject: "Purchase Confirmation",
+            text: purchaseConfirmationEmailText(purchase),
+            html: purchaseConfirmationEmailHtml(purchase),
+            replyTo: "brendan@htshero.com",
+          });
+        } catch (e) {
+          console.error(
+            "Error sending purchase confirmation email:",
+            e?.message
+          );
+        }
 
         break;
       }
