@@ -6,20 +6,20 @@ import { Fragment } from "react";
 import React from "react";
 
 interface ModalProps {
-  isModalOpen: boolean;
-  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   children: JSX.Element;
 }
 
 // A simple modal component which can be shown/hidden with a boolean and a function
 // Because of the setIsModalOpen function, you can't use it in a server component.
-const Modal = ({ isModalOpen, setIsModalOpen, children }: ModalProps) => {
+const Modal = ({ isOpen, setIsOpen, children }: ModalProps) => {
   return (
-    <Transition appear show={isModalOpen} as={Fragment}>
+    <Transition appear show={isOpen} as={Fragment}>
       <Dialog
         as="div"
         className="relative z-50"
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => setIsOpen(false)}
       >
         <Transition.Child
           as={Fragment}
@@ -47,7 +47,7 @@ const Modal = ({ isModalOpen, setIsModalOpen, children }: ModalProps) => {
               <Dialog.Panel className="border border-base-content/30 relative w-full max-w-6xl h-full overflow-hidden transform text-left align-middle shadow-xl transition-all rounded-xl bg-base-100">
                 <button
                   className="absolute top-4 right-4 btn btn-square btn-ghost btn-sm"
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={() => setIsOpen(false)}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -59,7 +59,7 @@ const Modal = ({ isModalOpen, setIsModalOpen, children }: ModalProps) => {
                   </svg>
                 </button>
 
-                {children}
+                <div className="w-full h-full z-50">{children}</div>
               </Dialog.Panel>
             </Transition.Child>
           </div>

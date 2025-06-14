@@ -111,9 +111,9 @@ export const Classify = () => {
         {/* Explore Tab */}
         {activeTab === ClassifyTab.EXPLORE && <Explore />}
       </div>
-      <HowToGuide guideName={GuideName.CLASSIFY} />
+      {/* <HowToGuide guideName={GuideName.CLASSIFY} /> */}
       {showPricing && (
-        <Modal isModalOpen={showPricing} setIsModalOpen={setShowPricing}>
+        <Modal isOpen={showPricing} setIsOpen={setShowPricing}>
           <ConversionPricing customerType={CustomerType.IMPORTER} />
         </Modal>
       )}

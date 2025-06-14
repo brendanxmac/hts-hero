@@ -10,10 +10,14 @@ import { usePathname } from "next/navigation";
 import ButtonGuide from "./ButtonGuide";
 import { useGuide } from "@/contexts/GuideContext";
 import { GuideName } from "@/types/guides";
+import Modal from "./Modal";
+import { useState } from "react";
+import { PlayIcon } from "@heroicons/react/24/solid";
+import { classifyTutorial, exploreTutorial } from "../tutorials";
 
 export const AuthenticatedHeader = () => {
   const pathname = usePathname();
-  const { showGuide } = useGuide();
+  const [showTutorial, setShowTutorial] = useState(false);
 
   return (
     <header className="h-16 z-10 bg-base-100 flex items-center justify-between p-4 border-b border-base-200">
@@ -57,10 +61,22 @@ export const AuthenticatedHeader = () => {
       </div>
 
       <div className="flex items-center gap-2">
-        <ButtonGuide onClick={() => showGuide(GuideName.CLASSIFY)} />
+        <button
+          className="btn btn-sm"
+          onClick={() => setShowTutorial(true)}
+          data-tooltip-id="tooltip"
+        >
+          <PlayIcon className="w-5 h-5" />
+          Tutorial
+        </button>
         <ButtonSupport />
         <ButtonAccount />
       </div>
+      <Modal isOpen={showTutorial} setIsOpen={setShowTutorial}>
+        <div className="w-full h-full aspect-video">
+          {pathname === "/explore" ? exploreTutorial : classifyTutorial}
+        </div>
+      </Modal>
     </header>
   );
 };
