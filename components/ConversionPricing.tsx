@@ -21,10 +21,10 @@ const getPricingPlans = (customerType: CustomerType) => {
   return config.stripe.classifierPlans;
 };
 
-const Pricing = ({ customerType }: Props) => {
+const ConversionPricing = ({ customerType }: Props) => {
   return (
     <section className="bg-neutral-900 overflow-hidden" id="pricing">
-      <div className="py-16 px-8 max-w-7xl mx-auto flex flex-col items-center justify-center">
+      <div className="py-16 px-4 sm:px-8 max-w-7xl mx-auto flex flex-col items-center justify-center">
         {/* <div className="mb-10 flex flex-col gap-2 items-center border-2 border-neutral-content/20 rounded-lg p-4">
           <TertiaryLabel value="🎁 Your HTS Code:" />
           <h2 className="text-3xl md:text-4xl text-secondary font-extrabold select-none text-center">
@@ -108,7 +108,7 @@ const Pricing = ({ customerType }: Props) => {
           </div>
         </div> */}
 
-        <h1 className="text-white text-2xl sm:text-3xl md:text-5xl font-extrabold">
+        <h1 className="text-white text-4xl md:text-5xl font-extrabold text-center">
           Get Your HTS Code <span className="text-primary">in Seconds</span>
           {/* Type Description, Get Code */}
           {/* Your Code Awaits! */}
@@ -154,8 +154,8 @@ const Pricing = ({ customerType }: Props) => {
           </div>
         </div> */}
 
-        <h2 className="m-5 mb-2 max-w-4xl text-lg sm:text-xl md:text-2xl text-primary font-extrabold text-center">
-          Select a pass to unlock full access to Code Finder:
+        <h2 className="mt-6 md:mt-10 mb-1 sm:mb-3 max-w-4xl text-xl sm:text-2xl md:text-3xl text-secondary font-extrabold text-center">
+          Select a Pass to Unlock Code Finder
           {/* Select a pass to complete your classification */}
         </h2>
         {/* <div className=" flex flex-col md:flex-row gap-12 md:gap-24">
@@ -181,8 +181,8 @@ const Pricing = ({ customerType }: Props) => {
             </div>
           </div>
         </div> */}
-        <p className="mb-8 text-lg md:text-xl font-bold text-secondary">
-          ⚡️ 50% off until July!
+        <p className="mb-4 sm:mb-8 text-sm sm:text-lg md:text-xl font-bold text-white">
+          🚀 Launch Deal: 50% off until July!
         </p>
         {/* <p className="mb-6 text-sm font-semibold text-white">
           🚀 Launch Deal:{" "}
@@ -371,4 +371,4 @@ const Pricing = ({ customerType }: Props) => {
   );
 };
 
-export default Pricing;
+export default ConversionPricing;

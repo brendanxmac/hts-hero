@@ -17,7 +17,7 @@ apiClient.interceptors.response.use(
 
     if (error.response?.status === 401) {
       // User not auth, ask to re login
-      toast.error("Please login");
+      toast.error("Please Sign In");
       // Sends the user to the login page
       redirect(config.auth.loginUrl);
     } else if (error.response?.status === 403) {

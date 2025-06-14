@@ -3,32 +3,45 @@
 
 import Link from "next/link";
 import config from "@/config";
-import { useUser } from "../contexts/UserContext";
 import { usePathname } from "next/navigation";
 
 // A simple button to sign in with our providers (Google & Magic Links).
 // It automatically redirects user to callbackUrl (config.auth.callbackUrl) after login, which is normally a private page for users to manage their accounts.
 // If the user is already logged in, it will show their profile picture & redirect them to callbackUrl immediately.
 const ButtonSignin = ({
-  text = "Get Started",
+  text = "Get HTS Code",
   extraStyle,
 }: {
   text?: string;
   extraStyle?: string;
 }) => {
-  const { user } = useUser();
+  const getButtonText = (pathname: string) => {
+    if (pathname === "/app") {
+      return "Sign In";
+    }
 
-  if (user) {
-    return (
-      <Link
-        href={config.auth.callbackUrl}
-        className={`btn btn-primary btn-sm ${extraStyle ? extraStyle : ""}`}
-      >
-        <div className="flex gap-2 items-center">
-          <p>Launch app</p>
-          <p className="text-lg">🚀</p>
-        </div>
-        {/* {user?.user_metadata?.avatar_url ? (
+    return "Get HTS Code";
+  };
+
+  const getRedirectUrl = (pathname: string) => {
+    if (pathname === "/app") {
+      return config.auth.loginUrl;
+    }
+
+    return config.auth.callbackUrl;
+  };
+  const pathname = usePathname();
+
+  return (
+    <Link
+      href={getRedirectUrl(pathname)}
+      className={`btn btn-primary btn-sm ${extraStyle ? extraStyle : ""}`}
+    >
+      <div className="flex gap-2 items-center">
+        {pathname !== "/app" && <p className="text-lg">⚡️</p>}
+        <p>{getButtonText(pathname)}</p>
+      </div>
+      {/* {user?.user_metadata?.avatar_url ? (
           <img
             src={user?.user_metadata?.avatar_url}
             alt={user?.user_metadata?.name || "Account"}
@@ -43,18 +56,17 @@ const ButtonSignin = ({
           </span>
         )}
         {user?.user_metadata?.name || user?.email || "Account"} */}
-      </Link>
-    );
-  }
-
-  return (
-    <Link
-      className={`btn btn-primary btn-sm ${extraStyle ? extraStyle : ""}`}
-      href={config.auth.loginUrl}
-    >
-      {text}
     </Link>
   );
+
+  // return (
+  //   <Link
+  //     className={`btn btn-primary btn-sm ${extraStyle ? extraStyle : ""}`}
+  //     href={config.auth.loginUrl}
+  //   >
+  //     {text}
+  //   </Link>
+  // );
 };
 
 export default ButtonSignin;

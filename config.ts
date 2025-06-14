@@ -27,7 +27,7 @@ const config: ConfigProps = {
         priceAnchor: 40,
         features: [
           {
-            name: "Finds the Best Candidates",
+            name: "Finds the Best Candidates for your Product",
           },
           {
             name: "Suggests the Best Option",
@@ -61,7 +61,7 @@ const config: ConfigProps = {
         isFeatured: true,
         features: [
           {
-            name: "Finds the Best Candidates",
+            name: "Finds the Best Candidates for your Product",
           },
           {
             name: "Suggests the Best Option",

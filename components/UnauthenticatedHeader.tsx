@@ -8,16 +8,6 @@ import logo from "@/app/logo.svg";
 import config from "@/config";
 import { usePathname, useSearchParams } from "next/navigation";
 
-const links: {
-  href: string;
-  label: string;
-}[] = [
-  {
-    href: "/about/importer",
-    label: "Need an HTS Code?",
-  },
-];
-
 const cta: JSX.Element = <ButtonSignin />;
 
 // A header with a logo on the left, links in the center (like Pricing, etc...), and a CTA (like Get Started or Login) on the right.
@@ -26,6 +16,16 @@ const UnauthenticatedHeader = () => {
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const pathname = usePathname();
+
+  const links: {
+    href: string;
+    label: string;
+  }[] = [
+    {
+      href: "/about/importer",
+      label: pathname === "/app" ? "Learn More" : "Need an HTS Code?",
+    },
+  ];
 
   // setIsOpen(false) when the route changes (i.e: when the user clicks on a link on mobile)
   useEffect(() => {

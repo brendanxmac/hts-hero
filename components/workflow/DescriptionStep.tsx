@@ -97,7 +97,9 @@ export const DescriptionStep = ({
             label: "Get Code",
             fill: true,
             onClick: async () => {
-              const isPayingUser = await userHasActivePurchase(user.id);
+              const isPayingUser = user
+                ? await userHasActivePurchase(user.id)
+                : false;
 
               if (isPayingUser) {
                 if (localProductDescription !== productDescription) {
