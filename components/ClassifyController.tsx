@@ -12,13 +12,13 @@ export const ClassifyController = () => {
 
   return (
     <UserProvider>
-      <ClassificationsProvider>
-        <div className="h-full w-full bg-base-300">
-          <div className="h-full w-full bg-base-100 col-span-1 overflow-hidden">
-            <Classify />
-          </div>
+      {/* <ClassificationsProvider> */}
+      <div className="h-full w-full bg-base-300">
+        <div className="h-full w-full bg-base-100 col-span-1 overflow-hidden">
+          <Classify />
         </div>
-      </ClassificationsProvider>
+      </div>
+      {/* </ClassificationsProvider> */}
     </UserProvider>
   );
 };

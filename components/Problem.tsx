@@ -42,9 +42,9 @@ const Problem = () => {
         <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-8 sm:gap-3 mb-16">
           <div className="flex flex-col justify-center items-center">
             <Step emoji="🧐" text="17,000+ Codes" />
-            <p className="text-neutral-400 text-xs italic">
+            {/* <p className="text-neutral-400 text-xs italic">
               And more than one might apply
-            </p>
+            </p> */}
           </div>
 
           <Arrow extraStyle="max-md:-scale-x-100 md:-rotate-90" />
@@ -52,35 +52,35 @@ const Problem = () => {
           <div className="flex flex-col justify-center items-center">
             {/* <Step emoji="😅" text="Constant Updates" /> */}
             <Step emoji="🤦‍♂️" text="Tricky Rules" />
-            <p className="text-neutral-400 text-xs italic">
+            {/* <p className="text-neutral-400 text-xs italic">
               Applicable at different times
-            </p>
+            </p> */}
           </div>
 
           <Arrow extraStyle="md:-scale-x-100 md:-rotate-90" />
 
           <div className="flex flex-col justify-center items-center">
             <Step emoji="🔄" text="Constant Updates" />
-            <p className="text-neutral-400 text-xs italic">
+            {/* <p className="text-neutral-400 text-xs italic">
               13 this year already!
-            </p>
+            </p> */}
           </div>
 
           <Arrow extraStyle="max-md:-scale-x-100 md:-rotate-90" />
 
           <div className="flex flex-col justify-center items-center">
             <Step emoji="😵‍💫" text="Confusing References" />
-            <p className="text-neutral-400 text-xs italic">
+            {/* <p className="text-neutral-400 text-xs italic">
               Like: &quot;See Note 14(c)(iii)(3)&quot;
-            </p>
+            </p> */}
           </div>
         </div>
 
         <p className="text-white max-w-3xl mx-auto text-xl font-bold opacity-90 leading-relaxed">
-          Finding the right code means hiring an expert {"-> "}
+          Finding the right code usually means hiring an expert {"-> "}
           <span className="text-red-500">$200</span>
-          <br /> or studying to become one {"-> "}
-          <span className="text-red-500">100hrs</span>
+          <br /> or becoming one {"-> "}
+          <span className="text-red-500">100 hours</span>
         </p>
         <div className="flex items-center justify-center gap-1 w-full mt-8 md:mt-20 animate-pulse">
           <svg
