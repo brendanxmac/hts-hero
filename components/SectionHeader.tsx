@@ -20,7 +20,7 @@ export const SectionHeader = ({
 }: SectionHeaderProps) => {
   return (
     <div className="flex gap-4 items-center justify-between flex-col sm:flex-row">
-      <div className="flex gap-4 items-center">
+      <div className="w-full flex gap-4 items-center justify-between sm:justify-normal">
         <PrimaryLabel value={title} />
         <div
           role="tablist"
@@ -41,7 +41,7 @@ export const SectionHeader = ({
           ))}
         </div>
       </div>
-      <div className="w-full max-w-xs">
+      <div className="w-full sm:max-w-xs">
         <SearchBar
           placeholder="Search Elements"
           onSearch={(value) => onSearch(value)}

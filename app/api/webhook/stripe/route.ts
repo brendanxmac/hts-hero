@@ -184,42 +184,41 @@ export async function POST(req: NextRequest) {
       case "customer.subscription.deleted": {
         // The customer subscription stopped
         // ❌ Revoke access to the product
-        const stripeObject: Stripe.Subscription = stripeEvent.data
-          .object as Stripe.Subscription;
-        const subscription = await stripe.subscriptions.retrieve(
-          stripeObject.id
-        );
-
-        await supabase
-          .from("profiles")
-          .update({ has_access: false })
-          .eq("customer_id", subscription.customer);
+        // const stripeObject: Stripe.Subscription = stripeEvent.data
+        //   .object as Stripe.Subscription;
+        // const subscription = await stripe.subscriptions.retrieve(
+        //   stripeObject.id
+        // );
+        // await supabase
+        //   .from("users")
+        //   .update({ has_access: false }) // TODO: this does not exist, need to update
+        //   .eq("stripe_customer_id", subscription.customer);
         break;
       }
 
       case "invoice.paid": {
         // Customer just paid an invoice (for instance, a recurring payment for a subscription)
         // ✅ Grant access to the product
-        const stripeObject: Stripe.Invoice = stripeEvent.data
-          .object as Stripe.Invoice;
-        const priceId = stripeObject.lines.data[0].price.id;
-        const customerId = stripeObject.customer;
+        // const stripeObject: Stripe.Invoice = stripeEvent.data
+        //   .object as Stripe.Invoice;
+        // const priceId = stripeObject.lines.data[0].price.id;
+        // const customerId = stripeObject.customer;
 
-        // Find profile where customer_id equals the customerId (in table called 'profiles')
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("customer_id", customerId)
-          .single();
+        // // Find profile where customer_id equals the customerId (in table called 'users')
+        // const { data: profile } = await supabase
+        //   .from("users")
+        //   .select("*")
+        //   .eq("stripe_customer_id", customerId)
+        //   .single();
 
-        // Make sure the invoice is for the same plan (priceId) the user subscribed to
-        if (profile.price_id !== priceId) break;
+        // // Make sure the invoice is for the same plan (priceId) the user subscribed to
+        // if (profile.price_id !== priceId) break;
 
-        // Grant the profile access to your product. It's a boolean in the database, but could be a number of credits, etc...
-        await supabase
-          .from("profiles")
-          .update({ has_access: true })
-          .eq("customer_id", customerId);
+        // // Grant the profile access to your product. It's a boolean in the database, but could be a number of credits, etc...
+        // await supabase
+        //   .from("users")
+        //   .update({ has_access: true })
+        //   .eq("stripe_customer_id", customerId);
 
         break;
       }

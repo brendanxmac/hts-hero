@@ -1,7 +1,6 @@
 import { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/app/api/supabase/server";
-import config from "@/config";
 import { AuthenticatedHeader } from "../../components/AuthenticatedHeader";
 import { ClassifyTabProvider } from "../../contexts/ClassifyTabContext";
 
@@ -19,7 +18,7 @@ export default async function LayoutPrivate({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect(config.auth.loginUrl);
+    redirect("/about/importer");
   }
 
   return (
