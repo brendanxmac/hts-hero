@@ -33,9 +33,7 @@ export const AccordionItem = ({
           }}
           aria-expanded={isOpen}
         >
-          <span className={`duration-100 ${isOpen ? "text-primary" : ""}`}>
-            {svg}
-          </span>
+          <span className={`${isOpen ? "text-primary" : ""}`}>{svg}</span>
           <span
             className={`flex-1 text-base-content ${
               isOpen ? "text-primary font-semibold" : ""
@@ -72,7 +70,7 @@ export const AccordionItem = ({
 
       <div
         ref={accordion}
-        className={`transition-all duration-300 ease-in-out text-base-content-secondary overflow-hidden flex flex-col gap-4`}
+        className={`transition-all duration-100 ease-in-out text-base-content-secondary overflow-hidden flex flex-col gap-4`}
         style={
           isOpen
             ? { maxHeight: accordion?.current?.scrollHeight, opacity: 1 }
