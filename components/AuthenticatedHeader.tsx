@@ -7,17 +7,19 @@ import logo from "@/app/logo.png";
 import ButtonAccount from "./ButtonAccount";
 import ButtonSupport from "./ButtonSupport";
 import { usePathname } from "next/navigation";
-import ButtonGuide from "./ButtonGuide";
-import { useGuide } from "@/contexts/GuideContext";
-import { GuideName } from "@/types/guides";
-import Modal from "./Modal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PlayIcon } from "@heroicons/react/24/solid";
-import { classifyTutorial, exploreTutorial } from "../tutorials";
+import { getTutorialFromPathname, Tutorial, TutorialI } from "./Tutorial";
 
 export const AuthenticatedHeader = () => {
   const pathname = usePathname();
   const [showTutorial, setShowTutorial] = useState(false);
+  const [tutorial, setTutorial] = useState<TutorialI | null>(null);
+
+  useEffect(() => {
+    const tutorial = getTutorialFromPathname(pathname);
+    setTutorial(tutorial);
+  }, [pathname]);
 
   return (
     <header className="h-16 z-10 bg-base-100 flex items-center justify-between p-4 border-b border-base-200">
@@ -61,22 +63,31 @@ export const AuthenticatedHeader = () => {
       </div>
 
       <div className="flex items-center gap-2">
-        <button
-          className="btn btn-sm"
-          onClick={() => setShowTutorial(true)}
-          data-tooltip-id="tooltip"
-        >
-          <PlayIcon className="w-5 h-5" />
-          Tutorial
-        </button>
+        {tutorial && (
+          <button
+            className="btn btn-sm"
+            onClick={() => setShowTutorial(true)}
+            data-tooltip-id="tooltip"
+          >
+            <PlayIcon className="w-5 h-5" />
+            Tutorial
+          </button>
+        )}
         <ButtonSupport />
         <ButtonAccount />
       </div>
-      <Modal isOpen={showTutorial} setIsOpen={setShowTutorial}>
+      {tutorial && (
+        <Tutorial
+          tutorial={tutorial}
+          showTutorial={showTutorial}
+          setShowTutorial={setShowTutorial}
+        />
+      )}
+      {/* <Modal isOpen={showTutorial} setIsOpen={setShowTutorial}>
         <div className="w-full h-full aspect-video">
           {pathname === "/explore" ? exploreTutorial : classifyTutorial}
         </div>
-      </Modal>
+      </Modal> */}
     </header>
   );
 };

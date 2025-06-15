@@ -16,6 +16,7 @@ import { sendEmail } from "../../../../libs/resend";
 import {
   purchaseConfirmationEmailHtml,
   purchaseConfirmationEmailText,
+  sendPurchaseConfirmationEmail,
 } from "../../../../emails/purchase-confirmation/purchase-confirmation-email";
 
 const getExpirationDate = (plan: PricingPlan) => {
@@ -81,12 +82,7 @@ export async function POST(req: NextRequest) {
         // ✅ Grant access to the product
         const stripeObject: Stripe.Checkout.Session = stripeEvent.data
           .object as Stripe.Checkout.Session;
-
-        console.log("UserId from Stripe:", stripeObject.client_reference_id);
-
         const session = await findCheckoutSession(stripeObject.id);
-
-        // console.log("Stripe Session:", session);
 
         const customerId = session?.customer;
         const priceId = session?.line_items?.data[0]?.price.id;
@@ -107,36 +103,24 @@ export async function POST(req: NextRequest) {
         let user: UserProfile | null = null;
 
         if (!userId) {
-          console.log("No userId found, checking if user already exists");
           // check if user already exists
           const userProfile = await fetchUserProfileByEmail(customer.email);
 
           if (userProfile) {
-            console.log("User already exists:", userProfile.email);
             user = userProfile;
           } else {
-            console.log("User does not exist, creating new user");
             const { data, error } = await supabase.auth.admin.createUser({
               email: customer.email,
             });
-
-            console.log("User created:", data);
-            console.log(data.user);
 
             if (error) {
               console.error("Failed to create user:", error);
               break;
             }
 
-            console.log("Fetching user PROFILE by email");
-
             user = await fetchUserProfileByEmail(customer.email);
-            console.log("User profile:", user);
           }
         } else {
-          console.log(
-            "UserId included in stripe response - Fetching user PROFILE by userId"
-          );
           user = await fetchUserProfile(userId);
         }
 
@@ -146,8 +130,6 @@ export async function POST(req: NextRequest) {
             `Failed to set user on purchase -- userId: ${userId} -- email: ${customer.email}`
           );
         }
-
-        console.log("creating purchase for user:");
 
         const purchase = await createPurchase({
           user_id: user.id,
@@ -167,13 +149,7 @@ export async function POST(req: NextRequest) {
         console.log("Purchase created:", purchase);
 
         try {
-          await sendEmail({
-            to: user.email,
-            subject: "Purchase Confirmation",
-            text: purchaseConfirmationEmailText(purchase),
-            html: purchaseConfirmationEmailHtml(purchase),
-            replyTo: "brendan@htshero.com",
-          });
+          await sendPurchaseConfirmationEmail(user.email, purchase);
         } catch (e) {
           console.error(
             "Error sending purchase confirmation email:",
