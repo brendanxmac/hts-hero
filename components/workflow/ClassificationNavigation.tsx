@@ -30,13 +30,13 @@ export const ClassificationNavigation = ({
   setClassificationLevel,
 }: ClassificationNavigationProps) => {
   const { activeTab, setActiveTab } = useClassifyTab();
-  const { classification, setClassification, clearClassification } =
-    useClassification();
-  const { articleDescription, levels, isComplete } = classification;
+  const { classification, clearClassification } = useClassification();
+  const { articleDescription, levels } = classification;
   const [showConfirmation, setShowConfirmation] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const descriptionRef = useRef<HTMLDivElement>(null);
   const levelRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const resultRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -50,6 +50,8 @@ export const ClassificationNavigation = ({
       classificationLevel !== undefined
     ) {
       elementToScrollTo = levelRefs.current[classificationLevel] || null;
+    } else if (workflowStep === WorkflowStep.RESULT) {
+      elementToScrollTo = resultRef.current;
     }
 
     if (elementToScrollTo) {
@@ -189,7 +191,7 @@ export const ClassificationNavigation = ({
         </div>
 
         {classification.isComplete && (
-          <div className="flex flex-col gap-3">
+          <div ref={resultRef} className="flex flex-col gap-3">
             <SecondaryLabel value="Result" />
             <div
               className={classNames(
