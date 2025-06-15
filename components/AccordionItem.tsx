@@ -78,7 +78,7 @@ export const AccordionItem = ({
         }
       >
         <div className="">{description}</div>
-        <div className="w-full h-full flex justify-center self-center xl:hidden">
+        <div className="w-full h-full flex justify-center self-center lg:hidden">
           <Media feature={features[index]} key={index} />
         </div>
       </div>

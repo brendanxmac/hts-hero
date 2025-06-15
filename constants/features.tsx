@@ -6,8 +6,8 @@ export const classifyFeatures: Feature[] = [
     description:
       "We find the most likely candidates for your product and move step-by-step to the final code.",
     mediaType: "image",
-    altText: "Step by Step Image",
-    mediaPath: "/step-by-step.png",
+    altText: "Finds the Best Candidates Image",
+    mediaPath: "/finds-the-best-candidates.png",
     mediaFormat: "image/png",
     titleSvg: (
       <svg
@@ -31,8 +31,8 @@ export const classifyFeatures: Feature[] = [
     description:
       "At each step we suggest the best option based on your description, and include the rules-based reason why we chose it. This helps you quickly verify the selection and is useful if customs asks how the code was determined.",
     mediaType: "image",
-    altText: "Intelligent Suggestions Image",
-    mediaPath: "/suggested.png",
+    altText: "Suggests the Best Option Image",
+    mediaPath: "/suggests-the-best-option.png",
     titleSvg: (
       <svg
         xmlns="http://www.w3.org/2000/svg"

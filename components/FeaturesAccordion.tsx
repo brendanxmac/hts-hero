@@ -41,8 +41,8 @@ const FeaturesAccordion = () => {
           </Link>
         </div>
         <div className=" flex flex-col md:flex-row gap-12 md:gap-24">
-          <div className="grid grid-cols-1 items-stretch gap-8 sm:gap-12 xl:grid-cols-2 lg:gap-20">
-            <ul className="w-full xl:flex xl:flex-col xl:gap-5">
+          <div className="grid grid-cols-1 items-stretch gap-8 sm:gap-12 lg:grid-cols-2 lg:gap-20">
+            <ul className="w-full lg:flex lg:flex-col lg:gap-5">
               {classifyFeatures.map((feature, i) => (
                 <AccordionItem
                   key={feature.title}
@@ -61,7 +61,7 @@ const FeaturesAccordion = () => {
               ))}
             </ul>
 
-            <div className="w-full h-fit justify-center self-center hidden xl:flex">
+            <div className="w-full h-fit justify-center self-center hidden lg:flex">
               <Media
                 feature={classifyFeatures[featureSelected]}
                 key={featureSelected}

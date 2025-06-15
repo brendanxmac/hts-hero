@@ -13,8 +13,6 @@ import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { Loader } from "../interfaces/ui";
 import { useHts } from "../contexts/HtsContext";
 import { ClassificationResultPage } from "./ClassificationResultPage";
-import { GuideName } from "../types/guides";
-import { HowToGuide } from "./HowToGuide";
 import Modal from "./Modal";
 import ConversionPricing from "./ConversionPricing";
 import { useClassification } from "../contexts/ClassificationContext";
@@ -33,7 +31,7 @@ export const Classify = () => {
   >(undefined);
   const { fetchElements, htsElements } = useHts();
   const { getSections, sections } = useHtsSections();
-  const { classification, setArticleDescription } = useClassification();
+  const { setArticleDescription } = useClassification();
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -111,7 +109,6 @@ export const Classify = () => {
         {/* Explore Tab */}
         {activeTab === ClassifyTab.EXPLORE && <Explore />}
       </div>
-      {/* <HowToGuide guideName={GuideName.CLASSIFY} /> */}
       {showPricing && (
         <Modal isOpen={showPricing} setIsOpen={setShowPricing}>
           <ConversionPricing customerType={CustomerType.IMPORTER} />
