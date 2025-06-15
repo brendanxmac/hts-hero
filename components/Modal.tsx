@@ -46,7 +46,7 @@ const Modal = ({ isOpen, setIsOpen, children }: ModalProps) => {
             >
               <Dialog.Panel className="border border-base-content/30 relative w-full max-w-6xl h-full overflow-hidden transform text-left align-middle shadow-xl transition-all rounded-xl bg-base-100">
                 <button
-                  className="absolute top-4 right-4 btn btn-square btn-ghost btn-sm"
+                  className="z-50 absolute top-4 right-4 btn btn-square btn-ghost btn-sm hover:bg-white hover:text-black"
                   onClick={() => setIsOpen(false)}
                 >
                   <svg
