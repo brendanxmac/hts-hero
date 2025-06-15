@@ -135,7 +135,12 @@ export const ClassificationNavigation = ({
               }
               button={{
                 label: "Edit",
-                onClick: () => setWorkflowStep(WorkflowStep.DESCRIPTION),
+                onClick: () => {
+                  if (activeTab !== ClassifyTab.CLASSIFY) {
+                    setActiveTab(ClassifyTab.CLASSIFY);
+                  }
+                  setWorkflowStep(WorkflowStep.DESCRIPTION);
+                },
               }}
             />
           </div>
@@ -179,9 +184,11 @@ export const ClassificationNavigation = ({
                     classificationLevel === index
                   }
                   onClick={() => {
-                    if (workflowStep !== WorkflowStep.CLASSIFICATION) {
-                      setWorkflowStep(WorkflowStep.CLASSIFICATION);
+                    if (activeTab !== ClassifyTab.CLASSIFY) {
+                      setActiveTab(ClassifyTab.CLASSIFY);
                     }
+
+                    setWorkflowStep(WorkflowStep.CLASSIFICATION);
                     setClassificationLevel(index);
                   }}
                 />
@@ -200,6 +207,9 @@ export const ClassificationNavigation = ({
                   "bg-primary/50 border-primary"
               )}
               onClick={() => {
+                if (activeTab !== ClassifyTab.CLASSIFY) {
+                  setActiveTab(ClassifyTab.CLASSIFY);
+                }
                 setWorkflowStep(WorkflowStep.RESULT);
               }}
             >
