@@ -72,7 +72,7 @@ export const ClassificationResultPage = ({
 
   return (
     <div className="h-full pt-8 w-full max-w-3xl mx-auto flex flex-col">
-      <div className="px-8 flex-1 flex flex-col gap-4">
+      <div className="px-8 pb-6 flex-1 flex flex-col gap-4 overflow-y-auto">
         <TertiaryLabel value="Results" color={Color.NEUTRAL_CONTENT} />
         <div className="flex flex-col gap-1">
           <div className="flex justify-between items-center">

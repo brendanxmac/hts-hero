@@ -22,7 +22,7 @@ const Hero = () => {
       </div>
       <div className="lg:w-full flex justify-center">
         <video
-          className="rounded-2xl w-full sm:w-[34rem]"
+          className="rounded-2xl w-full sm:w-[34rem] border border-white/20"
           autoPlay
           muted
           loop

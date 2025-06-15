@@ -21,7 +21,7 @@ const productDescriptions = [
   "Pre-packaged frozen shrimp dumplings (ready-to-steam)",
   "Antique oak wood dining table with hand-carved legs",
   "Smartphone screen replacement kit with tools included",
-  "Pet carrier backpack with mesh sides for small dogs",
+  "Pet carrier backpack made of leather for small dogs",
   "Electric violin with headphone jack and built-in tuner",
   "Unisex bamboo toothbrushes (pack of 6, biodegradable)",
   "High-performance synthetic motor oil (5W-30, 1 gallon)",
