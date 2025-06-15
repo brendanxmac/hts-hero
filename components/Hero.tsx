@@ -1,7 +1,17 @@
-import config from "@/config";
+"use client";
+
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 
 const Hero = () => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.playbackRate = 1.5;
+    }
+  }, []);
+
   return (
     <section className="bg-none max-w-7xl mx-auto bg-base-100 flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-20 px-8 py-8 lg:py-28">
       <div className="flex flex-col gap-10 items-center justify-center text-center lg:text-left lg:items-start">
@@ -22,12 +32,13 @@ const Hero = () => {
       </div>
       <div className="lg:w-full flex justify-center">
         <video
+          ref={videoRef}
           className="rounded-2xl w-full sm:w-[34rem] border border-white/20"
           autoPlay
           muted
           loop
           playsInline
-          src="/finalish.mp4"
+          src="/demo.mp4"
         ></video>
       </div>
     </section>
