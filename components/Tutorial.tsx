@@ -35,7 +35,9 @@ export const Tutorial = ({
 
   return (
     <Modal isOpen={showTutorial} setIsOpen={setShowTutorial}>
-      <div className="w-full h-full aspect-video">{element}</div>
+      <div className="w-full h-[80vh] min-h-[500px]">
+        <div className="w-full h-full aspect-video">{element}</div>
+      </div>
     </Modal>
   );
 };

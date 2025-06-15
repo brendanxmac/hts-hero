@@ -7,8 +7,6 @@ import ButtonSignin from "./ButtonSignin";
 import logo from "@/app/logo.svg";
 import config from "@/config";
 import { usePathname, useSearchParams } from "next/navigation";
-import { exploreTutorial, classifyTutorial } from "../tutorials";
-import Modal from "./Modal";
 import { PlayIcon } from "@heroicons/react/24/solid";
 import { getTutorialFromPathname, Tutorial, TutorialI } from "./Tutorial";
 

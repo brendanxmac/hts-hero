@@ -21,7 +21,7 @@ const ExploreTabs: Tab[] = [
     value: ExploreTab.SEARCH,
   },
   {
-    label: "Elements",
+    label: "Codes",
     value: ExploreTab.ELEMENTS,
   },
   {
