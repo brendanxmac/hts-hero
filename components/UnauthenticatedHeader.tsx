@@ -10,16 +10,23 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { exploreTutorial, classifyTutorial } from "../tutorials";
 import Modal from "./Modal";
 import { PlayIcon } from "@heroicons/react/24/solid";
+import { getTutorialFromPathname, Tutorial, TutorialI } from "./Tutorial";
 
 const cta: JSX.Element = <ButtonSignin />;
 
 // A header with a logo on the left, links in the center (like Pricing, etc...), and a CTA (like Get Started or Login) on the right.
 // The header is responsive, and on mobile, the links are hidden behind a burger button.
 const UnauthenticatedHeader = () => {
-  const searchParams = useSearchParams();
-  const [showTutorial, setShowTutorial] = useState(false);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [tutorial, setTutorial] = useState<TutorialI | null>(null);
+
+  useEffect(() => {
+    const tutorial = getTutorialFromPathname(pathname);
+    setTutorial(tutorial);
+  }, [pathname]);
 
   const links: {
     href: string;
@@ -214,11 +221,13 @@ const UnauthenticatedHeader = () => {
           </div>
         </div>
       )}
-      <Modal isOpen={showTutorial} setIsOpen={setShowTutorial}>
-        <div className="w-full h-full aspect-video">
-          {pathname === "/explore" ? exploreTutorial : classifyTutorial}
-        </div>
-      </Modal>
+      {tutorial && (
+        <Tutorial
+          showTutorial={showTutorial}
+          setShowTutorial={setShowTutorial}
+          tutorial={tutorial}
+        />
+      )}
     </header>
   );
 };

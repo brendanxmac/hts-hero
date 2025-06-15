@@ -31,16 +31,16 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en" data-theme={config.colors.theme} className={font.className}>
       <body>
         <UserProvider>
-          <GuideProvider guides={guides}>
-            <HtsSectionsProvider>
-              <ClassificationProvider>
-                <HtsProvider>
-                  {/* ClientLayout contains all the client wrappers (Crisp chat support, toast messages, tooltips, etc.) */}
-                  <ClientLayout>{children}</ClientLayout>
-                </HtsProvider>
-              </ClassificationProvider>
-            </HtsSectionsProvider>
-          </GuideProvider>
+          {/* <GuideProvider guides={guides}> */}
+          <HtsSectionsProvider>
+            <ClassificationProvider>
+              <HtsProvider>
+                {/* ClientLayout contains all the client wrappers (Crisp chat support, toast messages, tooltips, etc.) */}
+                <ClientLayout>{children}</ClientLayout>
+              </HtsProvider>
+            </ClassificationProvider>
+          </HtsSectionsProvider>
+          {/* </GuideProvider> */}
         </UserProvider>
         <GoogleAnalytics gaId="G-V2DRE5Y0NV" />
       </body>
