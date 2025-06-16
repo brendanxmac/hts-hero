@@ -1,15 +1,14 @@
+"use client";
+
 import Link from "next/link";
-import { RegistrationTrigger } from "../libs/early-registration";
+// import { RegistrationTrigger } from "../libs/early-registration";
 
 interface AboutHeroProps {
-  setIsRegisterOpen: (isOpen: boolean) => void;
-  setRegistrationTrigger: (trigger: RegistrationTrigger) => void;
+  // setIsRegisterOpen: (isOpen: boolean) => void;
+  // setRegistrationTrigger: (trigger: RegistrationTrigger) => void;
 }
 
-const ClassifierHero = ({
-  setIsRegisterOpen,
-  setRegistrationTrigger,
-}: AboutHeroProps) => {
+const ClassifierHero = () => {
   return (
     <section className="bg-none max-w-7xl mx-auto bg-base-100 flex flex-col lg:flex-row items-center justify-center gap-10 px-8 py-8 lg:py-28">
       <div className="flex flex-col gap-10 items-center justify-center text-center lg:text-left lg:items-start">
@@ -38,7 +37,7 @@ const ClassifierHero = ({
           muted
           loop
           playsInline
-          src="/finalish.mp4"
+          src="/demo.mp4"
         ></video>
       </div>
     </section>

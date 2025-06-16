@@ -2,6 +2,7 @@ import { createCheckout, StripePaymentMode } from "@/libs/stripe";
 import { createClient } from "@/app/api/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { PricingPlan } from "../../../../types";
+import { fetchUserProfile, UserProfile } from "../../../../libs/supabase/user";
 
 // This function is used to create a Stripe Checkout Session (one-time payment or subscription)
 // It's called by the <ButtonCheckout /> component
@@ -22,11 +23,11 @@ export async function POST(req: NextRequest) {
 
     const { itemId } = body;
 
-    const { data: userProfile } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", user?.id)
-      .single();
+    let userProfile: UserProfile | null = null;
+
+    if (user) {
+      userProfile = await fetchUserProfile(user.id);
+    }
 
     const getPriceId = (itemId: string) => {
       if (itemId === PricingPlan.ONE_DAY_PASS) {
@@ -60,7 +61,7 @@ export async function POST(req: NextRequest) {
     const mode = getMode();
     const promotionCode = getPromotionCode(itemId);
 
-    console.log("User Data", userProfile);
+    console.log(`User: ${user?.id}`);
     console.log("successUrl", successUrl);
     console.log("cancelUrl", cancelUrl);
     console.log("priceId", priceId);
@@ -74,11 +75,11 @@ export async function POST(req: NextRequest) {
       successUrl,
       cancelUrl,
       // If user is logged in, it will pass the user ID to the Stripe Session so it can be retrieved in the webhook later
-      clientReferenceId: userProfile?.id,
+      clientReferenceId: userProfile ? userProfile.id : user.id,
       user: {
-        email: userProfile?.email,
+        email: userProfile ? userProfile.email : user.email,
         // If the user has already purchased, it will automatically prefill it's credit card
-        customerId: userProfile?.customer_id,
+        customerId: userProfile ? userProfile.stripe_customer_id : null,
       },
       // If you send coupons from the frontend, you can pass it here
       // couponId: body.couponId,

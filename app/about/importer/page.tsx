@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
+import { Suspense } from "react";
 import Hero from "@/components/Hero";
 import Problem from "@/components/Problem";
 import FeaturesAccordion from "@/components/FeaturesAccordion";
@@ -16,11 +16,11 @@ export default function Home() {
   // const [buyAttempt, setBuyAttempt] = useState<BuyAttempt | null>(null);
   // const [showItsFree, setShowItsFree] = useState(false);
 
-  useEffect(() => {
-    if (!window.name) {
-      window.name = crypto.randomUUID(); // Generate a unique ID to set a 'session' for the user
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!window.name) {
+  //     window.name = crypto.randomUUID(); // Generate a unique ID to set a 'session' for the user
+  //   }
+  // }, []);
 
   return (
     <>

@@ -12,12 +12,7 @@ import {
   updateUserProfile,
   UserProfile,
 } from "../../../../libs/supabase/user";
-import { sendEmail } from "../../../../libs/resend";
-import {
-  purchaseConfirmationEmailHtml,
-  purchaseConfirmationEmailText,
-  sendPurchaseConfirmationEmail,
-} from "../../../../emails/purchase-confirmation/purchase-confirmation-email";
+import { sendPurchaseConfirmationEmail } from "../../../../emails/purchase-confirmation/purchase-confirmation-email";
 
 const getExpirationDate = (plan: PricingPlan) => {
   if (plan === PricingPlan.ONE_DAY_PASS) {
@@ -28,7 +23,7 @@ const getExpirationDate = (plan: PricingPlan) => {
   }
 };
 
-export const getPlanFromPriceId = (priceId: string) => {
+const getPlanFromPriceId = (priceId: string) => {
   if (priceId === process.env.STRIPE_ONE_DAY_PASS_PRICE_ID) {
     return PricingPlan.ONE_DAY_PASS;
   }
