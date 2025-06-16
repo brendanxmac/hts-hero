@@ -12,7 +12,7 @@ import { redirect } from "next/navigation";
 // This a login/singup page for Supabase Auth.
 // Successfull login redirects to /api/auth/callback where the Code Exchange is processed (see app/api/auth/callback/route.js).
 export default function Login() {
-  const { user, isLoading: isLoadingUser } = useUser();
+  const { user } = useUser();
 
   if (user) {
     redirect("/app");
@@ -136,6 +136,7 @@ export default function Login() {
         >
           <input
             required
+            name="email"
             type="email"
             value={email}
             autoComplete="email"

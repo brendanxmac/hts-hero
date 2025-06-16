@@ -62,8 +62,6 @@ export async function POST(req: NextRequest) {
     const promotionCode = getPromotionCode(itemId);
 
     console.log(`User: ${user?.id}`);
-    console.log("successUrl", successUrl);
-    console.log("cancelUrl", cancelUrl);
     console.log("priceId", priceId);
     console.log("mode", mode);
     console.log("promotionCode", promotionCode);
@@ -75,9 +73,9 @@ export async function POST(req: NextRequest) {
       successUrl,
       cancelUrl,
       // If user is logged in, it will pass the user ID to the Stripe Session so it can be retrieved in the webhook later
-      clientReferenceId: userProfile ? userProfile.id : user.id,
+      clientReferenceId: userProfile ? userProfile.id : user?.id,
       user: {
-        email: userProfile ? userProfile.email : user.email,
+        email: userProfile ? userProfile.email : user?.email,
         // If the user has already purchased, it will automatically prefill it's credit card
         customerId: userProfile ? userProfile.stripe_customer_id : null,
       },
