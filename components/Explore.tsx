@@ -14,6 +14,7 @@ import Fuse, { FuseResult } from "fuse.js";
 import { Loader } from "../interfaces/ui";
 import { SearchResults } from "./SearchResults";
 import { useHts } from "../contexts/HtsContext";
+import { isHTSCode } from "../libs/hts";
 
 const ExploreTabs: Tab[] = [
   {
@@ -33,12 +34,12 @@ const ExploreTabs: Tab[] = [
 export const Explore = () => {
   const [{ isLoading, text: loadingText }, setLoading] = useState<Loader>({
     isLoading: true,
-    text: "Fetching Sections",
+    text: "Loading",
   });
   const [searchValue, setSearchValue] = useState("");
   const [activeTab, setActiveTab] = useState(ExploreTabs[1].value);
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
-  const { sections, loading: loadingSections, getSections } = useHtsSections();
+  const { sections, getSections } = useHtsSections();
   const [fuse, setFuse] = useState<Fuse<HtsElement> | null>(null);
   const [searchResults, setSearchResults] = useState<FuseResult<HtsElement>[]>(
     []
@@ -47,7 +48,7 @@ export const Explore = () => {
 
   useEffect(() => {
     const loadAllData = async () => {
-      setLoading({ isLoading: true, text: "Fetching All Elements" });
+      setLoading({ isLoading: true, text: "Loading" });
       await Promise.all([fetchElements(), getSections()]);
       setLoading({ isLoading: false, text: "" });
     };
@@ -94,11 +95,13 @@ export const Explore = () => {
   useEffect(() => {
     if (fuse && searchValue.length > 0) {
       const timeoutId = setTimeout(() => {
-        const results = fuse.search(
-          searchValue.split(" ").length === 1
+        const searchString = isHTSCode(searchValue)
+          ? searchValue
+          : searchValue.split(" ").length === 1
             ? `'${searchValue} `
-            : `'${searchValue}`
-        );
+            : `'${searchValue}`;
+
+        const results = fuse.search(searchString);
         const topResults = results.slice(0, 30);
         setSearchResults(topResults);
         setActiveTab(ExploreTab.SEARCH);

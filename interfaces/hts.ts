@@ -126,6 +126,7 @@ export interface FetchedClassification {
   analysis: string;
   progression_description: string;
   decisions: ClassificationProgression[];
+  is_complete?: boolean;
   created_at: string;
 }
 

@@ -126,7 +126,21 @@ export const mapFetchedClassificationToClassification = (
     candidates: decision.candidates,
     selection: decision.selection,
   })),
+  isComplete: c.is_complete || false,
 });
+
+export const isHTSCode = (input: string): boolean => {
+  const trimmed = input.trim();
+
+  // Acceptable formats:
+  // - With optional dots (max 3 groups of 2 digits after 4-digit prefix)
+  const dottedFormat = /^(\d{4})(\.(\d{2})?)?(\.(\d{2})?)?(\.(\d{2})?)?\.?$/;
+
+  // - Or a numeric-only version with 4, 6, 8, or 10 digits (HTS codes are hierarchical)
+  const numericOnlyFormat = /^\d{4}(\d{2}){0,3}$/;
+
+  return dottedFormat.test(trimmed) || numericOnlyFormat.test(trimmed);
+};
 
 export function isFullHTSCode(code: string) {
   // Regular expression to validate HTS code with the updated format
