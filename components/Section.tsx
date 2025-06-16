@@ -39,7 +39,7 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
     <div
       className={classNames(
         !showDetails && "hover:bg-neutral",
-        "bg-base-100 border border-neutral w-full flex flex-col gap-6 py-6 px-4 rounded-md transition duration-100 ease-in-out",
+        "bg-base-100 border-2 border-base-content/40 w-full flex flex-col gap-6 py-6 px-4 rounded-md transition duration-100 ease-in-out",
         disabled ? "pointer-events-none" : "hover:cursor-pointer"
       )}
       onClick={(e) => {

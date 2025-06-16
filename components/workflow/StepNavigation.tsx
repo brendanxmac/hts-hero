@@ -2,12 +2,13 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/16/solid";
 
 interface Step {
   label: string;
+  fill?: boolean;
   onClick?: () => void;
   disabled?: boolean;
 }
 
 interface StepNavigationProps {
-  next: Step;
+  next?: Step;
   previous?: Step;
 }
 
@@ -16,24 +17,37 @@ export const StepNavigation = ({ next, previous }: StepNavigationProps) => {
     <div className="max-w-3xl mx-auto py-4 flex items-center justify-between">
       {previous ? (
         <button
-          className="btn btn-link btn-sm btn-primary px-0 gap-0 no-underline text-white hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
-          disabled={previous.disabled}
-          onClick={previous.onClick}
+          className={
+            previous && previous.fill
+              ? "btn btn-primary btn-sm text-white gap-0"
+              : "btn btn-link btn-sm btn-primary gap-0 no-underline text-white hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
+          }
+          disabled={!previous || previous.disabled}
+          onClick={previous?.onClick}
         >
           <ChevronLeftIcon className="w-5 h-5" />
-          {previous.label}
+          {previous?.label || "Back"}
         </button>
       ) : (
-        <div className="w-5 h-5" />
+        <div></div>
       )}
-      <button
-        className="btn btn-primary btn-sm text-white gap-0"
-        disabled={next.disabled}
-        onClick={next.onClick}
-      >
-        {next.label}
-        <ChevronRightIcon className="w-5 h-5" />
-      </button>
+
+      {next ? (
+        <button
+          className={
+            next && next.fill
+              ? "btn btn-primary btn-sm text-white gap-0"
+              : "btn btn-link btn-sm btn-primary gap-0 no-underline text-white hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
+          }
+          disabled={!next || next.disabled}
+          onClick={next?.onClick}
+        >
+          {next?.label || "Next"}
+          <ChevronRightIcon className="w-5 h-5" />
+        </button>
+      ) : (
+        <div></div>
+      )}
     </div>
   );
 };

@@ -2,15 +2,23 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { createClient } from "@/libs/supabase/client";
+import { createSupabaseClient } from "@/libs/supabase/client";
 import { Provider } from "@supabase/supabase-js";
 import toast from "react-hot-toast";
 import config from "@/config";
+import { useUser } from "../../contexts/UserContext";
+import { redirect } from "next/navigation";
 
 // This a login/singup page for Supabase Auth.
 // Successfull login redirects to /api/auth/callback where the Code Exchange is processed (see app/api/auth/callback/route.js).
 export default function Login() {
-  const supabase = createClient();
+  const { user } = useUser();
+
+  if (user) {
+    redirect("/app");
+  }
+
+  const supabase = createSupabaseClient();
   const [email, setEmail] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
@@ -83,7 +91,7 @@ export default function Login() {
 
       <div className="space-y-8 max-w-xl mx-auto">
         <button
-          className="btn btn-block"
+          className="btn btn-block btn-primary"
           onClick={(e) =>
             handleSignup(e, { type: "oauth", provider: "google" })
           }
@@ -94,7 +102,7 @@ export default function Login() {
           ) : (
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="w-6 h-6"
+              className="w-6 h-6 bg-white rounded-md p-1"
               viewBox="0 0 48 48"
             >
               <path
@@ -128,6 +136,7 @@ export default function Login() {
         >
           <input
             required
+            name="email"
             type="email"
             value={email}
             autoComplete="email"
@@ -144,7 +153,7 @@ export default function Login() {
             {isLoading && (
               <span className="loading loading-spinner loading-xs"></span>
             )}
-            Send Magic Link
+            Send Access Link
           </button>
         </form>
       </div>

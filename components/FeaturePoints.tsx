@@ -19,11 +19,26 @@ export const FeaturePoints = ({ points }: Props) => {
           key={point}
           className={classNames(
             "flex items-start gap-3",
-            isKey && "text-[#40C969] font-medium pt-3",
+            isKey && "text-primary font-medium pt-3",
             !isKey && "text-gray-100"
           )}
         >
-          {!isKey && <CheckSVG viewBox="0 0 20 20" />}
+          {!isKey && (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="size-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="m4.5 12.75 6 6 9-13.5"
+              />
+            </svg>
+          )}
           <div className="flex flex-col gap-1 -mt-1">
             <span>{point}</span>
             {detail && <span className="text-xs text-gray-400">{detail}</span>}

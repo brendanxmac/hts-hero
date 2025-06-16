@@ -1,12 +1,7 @@
-import {
-  ChevronRightIcon,
-  SparklesIcon,
-  XMarkIcon,
-} from "@heroicons/react/16/solid";
+import { ChevronRightIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { HtsElement, SectionAndChapterDetails } from "../interfaces/hts";
 import SquareIconButton from "./SqaureIconButton";
 import { PlusIcon } from "@heroicons/react/24/solid";
-import { TertiaryText } from "./TertiaryText";
 import { useClassification } from "../contexts/ClassificationContext";
 import { Color } from "../enums/style";
 import { PrimaryLabel } from "./PrimaryLabel";
@@ -25,8 +20,7 @@ export const ElementSearchSummary = ({
   sectionAndChapter,
   onClick,
 }: Props) => {
-  const { htsno, description, indent, recommended, recommendedReason } =
-    element;
+  const { htsno, description, indent } = element;
   const { classification, updateLevel: updateProgressionLevel } =
     useClassification();
 
@@ -57,7 +51,7 @@ export const ElementSearchSummary = ({
     indent === "0" && classification && classification.levels[0];
 
   return (
-    <div className="flex flex-col gap-2 w-full bg-base-100 rounded-md border border-base-content/20 hover:cursor-pointer hover:bg-neutral">
+    <div className="flex flex-col gap-2 w-full bg-base-100 rounded-md border-2 border-base-content/40 hover:cursor-pointer hover:bg-neutral transition duration-100 ease-in-out scale-[0.99] hover:scale-[1] active:scale-[0.98]">
       <div className="flex">
         {isHeading && (
           <div className="flex items-center justify-center">
@@ -129,18 +123,6 @@ export const ElementSearchSummary = ({
               {htsno && <TertiaryLabel value={htsno} />}
               <PrimaryLabel value={description} color={Color.WHITE} />
             </div>
-
-            {recommended && (
-              <div className="flex flex-col gap-2 bg-base-300 rounded-md p-2">
-                <div className="flex gap-2 text-accent">
-                  <SparklesIcon className="h-4 w-4" />
-                  <TertiaryText value="Suggested" />
-                </div>
-                <p className="text-sm dark:text-white/90">
-                  {recommendedReason}
-                </p>
-              </div>
-            )}
           </div>
           <div className="flex items-center justify-center pr-3">
             <ChevronRightIcon className="shrink-0 w-5 h-5 text-primary" />

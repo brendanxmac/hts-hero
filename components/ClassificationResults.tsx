@@ -67,6 +67,7 @@ export const ClassificationResults = ({
       articleAnalysis: "",
       progressionDescription: "",
       levels: [],
+      isComplete: false,
     });
     setCurrentHtsDescription("");
     setHtsElementsChunk([]);

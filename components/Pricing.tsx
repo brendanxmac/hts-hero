@@ -1,47 +1,76 @@
 import config from "@/config";
 import { classNames } from "../utilities/style";
-import { RegistrationTrigger } from "../libs/early-registration";
-import FakeButtonCheckout from "./FakeButtonCheckout";
-import { PricingPlan } from "../types";
+import { PricingType } from "../types";
+import ButtonCheckout from "./ButtonCheckout";
+import { AboutPage } from "../enums/classify";
+
 // <Pricing/> displays the pricing plans for your app
 // It's your Stripe config in config.js.stripe.plans[] that will be used to display the plans
 // <ButtonCheckout /> renders a button that will redirect the user to Stripe checkout called the /api/stripe/create-checkout API endpoint with the correct priceId
 
 interface PricingProps {
-  setIsRegisterOpen: (isOpen: boolean) => void;
-  setRegistrationTrigger: (trigger: RegistrationTrigger) => void;
+  customerType: AboutPage;
+  // setBuyAttempt?: (buyAttempt: BuyAttempt) => void;
+  // setShowItsFree?: (show: boolean) => void;
 }
 
-const Pricing = ({
-  setIsRegisterOpen,
-  setRegistrationTrigger,
-}: PricingProps) => {
+const getPricingPlans = (customerType: AboutPage) => {
+  if (customerType === AboutPage.IMPORTER) {
+    return config.stripe.importerPlans;
+  }
+  return [];
+  // config.stripe.classifierPlans
+};
+
+const getPricingHeadline = (customerType: AboutPage) => {
+  if (customerType === AboutPage.IMPORTER) {
+    return (
+      <div className="flex flex-col gap-8">
+        <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-5xl max-w-4xl mx-auto tracking-relaxed">
+          Fast & Affordable HTS <br />
+          Codes for Busy Importers
+        </h2>
+        <div>
+          <p className="text-xl md:text-2xl font-bold text-secondary">
+            🚀 Launch Deal: 50% off until July!
+          </p>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-5xl max-w-3xl mx-auto tracking-relaxed">
+      Save hours on classification,
+      <br /> for less than your daily coffee
+    </h2>
+  );
+};
+
+const Pricing = ({ customerType }: PricingProps) => {
   return (
     <section className="bg-neutral-900 overflow-hidden" id="pricing">
       <div className="py-16 px-8 max-w-7xl mx-auto">
-        <div className="flex flex-col text-center w-full mb-20">
-          <p className="font-medium text-[#40C969] mb-8">Pricing</p>
-          <h2 className="font-bold text-3xl sm:text-4xl md:text-5xl max-w-3xl mx-auto tracking-relaxed">
-            Save hours on classification,
-            <br /> for less than your daily coffee
-          </h2>
+        <div className="flex flex-col text-center w-full mb-12">
+          <p className="font-medium text-primary mb-8">Pricing</p>
+          {getPricingHeadline(customerType)}
         </div>
 
-        <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8">
-          {config.stripe.plans.map((plan) => (
+        <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8 text-white">
+          {getPricingPlans(customerType).map((plan, index) => (
             <div
-              key={plan.priceId}
+              key={index}
               className={classNames(
                 "relative w-full max-w-lg",
-                plan.isFeatured && "border-2 border-[#40C969] rounded-lg"
+                plan.isFeatured && "border-2 border-primary rounded-lg",
+                !plan.isFeatured && "border-2 border-base-content/20 rounded-lg"
               )}
             >
               {plan.isFeatured && (
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
                   <span
-                    className={`badge text-xs text-black font-semibold border-0 bg-[#40C969]`}
+                    className={`badge text-xs text-black font-semibold border-0 bg-primary`}
                   >
-                    SAVE 25%
+                    BEST VALUE
                   </span>
                 </div>
               )}
@@ -52,20 +81,41 @@ const Pricing = ({
                 ></div>
               )}
 
-              <div className="relative flex flex-col h-full gap-5 lg:gap-8 z-10 bg-base-100 p-8 rounded-lg">
+              <div
+                className={`relative flex flex-col h-full gap-4 lg:gap-8 z-10 bg-base-100 p-8 rounded-lg ${
+                  plan.isCompetitor && "bg-red-500/20"
+                }`}
+              >
                 <div className="flex justify-between items-center gap-4">
-                  <div>
-                    <p className="text-lg lg:text-xl font-bold">{plan.name}</p>
+                  <div className="flex flex-col">
+                    {/* <div className="flex mb-4 gap-2">
+                      {!plan.isCompetitor && (
+                        <Image
+                          src={logo}
+                          alt={`${config.appName} logo`}
+                          className="w-6"
+                          priority={true}
+                          width={32}
+                          height={32}
+                        />
+                      )}
+                      <span className="font-extrabold text-lg">
+                        {plan.isCompetitor
+                          ? "Manual Classifier"
+                          : config.appName}
+                      </span>
+                    </div> */}
+
+                    <p className="text-2xl font-bold">{plan.name}</p>
                     {plan.description && (
-                      <p className="text-base-content/80 mt-2">
-                        {plan.description}
-                      </p>
+                      <p className="text-base-content/80">{plan.description}</p>
                     )}
                   </div>
                 </div>
                 <div className="flex gap-2 items-center">
                   {plan.priceAnchor && (
                     <div className="flex flex-col justify-end mb-[4px] text-lg ">
+                      <p className="text-xs text-base-content/40">USD</p>
                       <p className="relative">
                         <span className="absolute bg-neutral-500 h-[2px] inset-x-0 top-[45%]"></span>
                         <span className="text-base-content/50 text-xl font-bold">
@@ -79,19 +129,19 @@ const Pricing = ({
                       Free
                     </p>
                   ) : (
-                    <>
+                    <div className="flex items-end">
                       <p
-                        className={`text-5xl text-base-content tracking-tight font-extrabold`}
+                        className={`${plan.isCompetitor ? "text-red-600" : "text-white"} text-5xl text-base-content tracking-tight font-extrabold`}
                       >
                         ${plan.price}
                       </p>
-                      <div className="flex flex-col justify-center pt-1 mb-[4px]">
-                        <p className="text-xs text-base-content/40">USD</p>
-                        <p className="text-sm text-base-content font-bold">
-                          per month
-                        </p>
-                      </div>
-                    </>
+                      <p className="pl-1 pb-1 text-sm text-white font-bold">
+                        {plan.type === PricingType.SUBSCRIPTION
+                          ? "/ month"
+                          : ""}
+                      </p>
+                      {/* </div> */}
+                    </div>
                   )}
                 </div>
                 {plan.features && (
@@ -137,7 +187,7 @@ const Pricing = ({
                           >
                             <p>{feature.name} </p>
                             {feature.comingSoon && (
-                              <span className="bg-neutral-800 px-2 py-1 rounded-md text-stone-300 font-semibold text-xs">
+                              <span className="bg-neutral-700 px-2 py-1 rounded-md text-stone-300 font-semibold text-xs">
                                 Coming Soon
                               </span>
                             )}
@@ -150,34 +200,53 @@ const Pricing = ({
                     ))}
                   </ul>
                 )}
-                <div className="space-y-2">
-                  {/* TODO: Enable this in the future before go live*/}
-                  {/* <ButtonCheckout priceId={plan.priceId} mode="subscription" /> */}
-                  <FakeButtonCheckout
-                    text={
-                      plan.name === PricingPlan.Starter
-                        ? "Try Now"
-                        : plan.name === PricingPlan.Standard
-                        ? "Get Standard"
-                        : "Go Pro"
-                    }
-                    onClick={() => {
-                      const trigger =
-                        plan.name === PricingPlan.Starter
-                          ? RegistrationTrigger.starter
-                          : plan.name === PricingPlan.Standard
-                          ? RegistrationTrigger.standard
-                          : RegistrationTrigger.pro;
-
-                      setIsRegisterOpen(true);
-                      setRegistrationTrigger(trigger);
-                    }}
-                  />
-                </div>
+                {!plan.isCompetitor && (
+                  <div className="space-y-2">
+                    <ButtonCheckout itemId={plan.name} />
+                    {/* <FakeButtonCheckout
+                      loading={buyingPlan === plan.name}
+                      text={getBuyButtonText(plan.name)}
+                      onClick={async () => {
+                        setBuyingPlan(plan.name);
+                        const buyAttempt = await upsertBuyAttempt({
+                          window_id: window.name,
+                          pricing_plan: plan.name,
+                          plan_type: plan.type,
+                        });
+                        setBuyAttempt(buyAttempt);
+                        setShowItsFree(true);
+                        setBuyingPlan(null);
+                      }}
+                    /> */}
+                  </div>
+                )}
               </div>
             </div>
           ))}
         </div>
+
+        {/* {customerType === "importer" && (
+          <div className="mt-16 flex flex-col gap-2 justify-center items-center">
+            <div className="flex gap-1 items-center">
+              <ShieldCheckIcon className="w-6 h-6 text-secondary" />
+              <h3 className="text-lg font-extrabold text-secondary">
+                Customs Code Approval Guarantee
+              </h3>
+            </div>
+            <p className="text-white">
+              We guarantee codes that customs will accept or you get a full
+              refund!
+            </p>
+            <p className="text-sm text-base-content/80">
+              <sup>
+                See{" "}
+                <Link href="/terms" className="hover:underline">
+                  terms and conditions
+                </Link>
+              </sup>{" "}
+            </p>
+          </div>
+        )} */}
       </div>
     </section>
   );

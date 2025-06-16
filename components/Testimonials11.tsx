@@ -288,7 +288,6 @@ const VideoTestimonial = ({ i }: { i: number }) => {
             <button
               className="group cursor-pointer"
               type="button"
-              title="Play video"
               aria-label="Play video"
               onClick={handlePlayVideo}
             >

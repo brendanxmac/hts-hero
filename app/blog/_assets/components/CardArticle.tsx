@@ -25,7 +25,6 @@ const CardArticle = ({
         <Link
           href={`/blog/${article.slug}`}
           className="link link-hover hover:link-primary"
-          title={article.title}
           rel="bookmark"
         >
           <figure>
@@ -56,7 +55,6 @@ const CardArticle = ({
           <Link
             href={`/blog/${article.slug}`}
             className="link link-hover hover:link-primary"
-            title={article.title}
             rel="bookmark"
           >
             {article.title}

@@ -6,18 +6,25 @@ import config from "@/config";
 import logo from "@/app/logo.png";
 import ButtonAccount from "./ButtonAccount";
 import ButtonSupport from "./ButtonSupport";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { PlayIcon } from "@heroicons/react/24/solid";
+import { getTutorialFromPathname, Tutorial, TutorialI } from "./Tutorial";
 
 export const AuthenticatedHeader = () => {
-  // const pathname = usePathname();
+  const pathname = usePathname();
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [tutorial, setTutorial] = useState<TutorialI | null>(null);
+
+  useEffect(() => {
+    const tutorial = getTutorialFromPathname(pathname);
+    setTutorial(tutorial);
+  }, [pathname]);
 
   return (
     <header className="h-16 z-10 bg-base-100 flex items-center justify-between p-4 border-b border-base-200">
-      <div className="flex gap-4">
-        <Link
-          className="flex items-center gap-2 shrink-0"
-          href="/explore"
-          title={`${config.appName} homepage`}
-        >
+      <div className="flex gap-6">
+        <Link className="flex items-center gap-2 shrink-0" href="/explore">
           <Image
             src={logo}
             alt={`${config.appName} logo`}
@@ -31,36 +38,56 @@ export const AuthenticatedHeader = () => {
           </span>
         </Link>
 
-        {/* <div className="flex items-center justify-start gap-4">
-          <Link href="/explore">
-            <button
-              className={`btn btn-link px-0 gap-0 hover:scale-105 transition-all duration-100 ease-in-out ${
-                pathname === "/explore"
-                  ? "text-primary underline"
-                  : "text-base-content no-underline"
-              }`}
-            >
-              Explore
-            </button>
+        <div className="flex items-center justify-start gap-4">
+          <Link
+            href="/explore"
+            className={`btn btn-link px-0 gap-0 ${
+              pathname === "/explore"
+                ? "text-primary underline"
+                : "text-base-content no-underline"
+            }`}
+          >
+            Explorer
           </Link>
-          <Link href="/classify">
-            <button
-              className={`btn btn-link px-0 gap-0 hover:scale-105 transition-all duration-100 ease-in-out ${
-                pathname === "/classify"
-                  ? "text-primary underline"
-                  : "text-base-content no-underline"
-              }`}
-            >
-              Classify
-            </button>
+          <Link
+            href="/app"
+            className={`btn btn-link px-0 gap-0 ${
+              pathname === "/app"
+                ? "text-primary underline"
+                : "text-base-content no-underline"
+            }`}
+          >
+            Code Finder
           </Link>
-        </div> */}
+        </div>
       </div>
 
       <div className="flex items-center gap-2">
+        {tutorial && (
+          <button
+            className="btn btn-sm"
+            onClick={() => setShowTutorial(true)}
+            data-tooltip-id="tooltip"
+          >
+            <PlayIcon className="w-5 h-5" />
+            Tutorial
+          </button>
+        )}
         <ButtonSupport />
         <ButtonAccount />
       </div>
+      {tutorial && (
+        <Tutorial
+          tutorial={tutorial}
+          showTutorial={showTutorial}
+          setShowTutorial={setShowTutorial}
+        />
+      )}
+      {/* <Modal isOpen={showTutorial} setIsOpen={setShowTutorial}>
+        <div className="w-full h-full aspect-video">
+          {pathname === "/explore" ? exploreTutorial : classifyTutorial}
+        </div>
+      </Modal> */}
     </header>
   );
 };
