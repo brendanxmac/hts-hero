@@ -56,7 +56,7 @@ export const classifyFeatures: Feature[] = [
       "No consultations & no delays. You'll have your code in just moments.",
     mediaType: "video",
     altText: "Results in Seconds Video",
-    mediaPath: "/finalish.mp4",
+    mediaPath: "/demo.mp4",
     mediaFormat: "video/mp4",
     titleSvg: (
       <svg

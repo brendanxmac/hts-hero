@@ -7,11 +7,15 @@ import Image from "next/image";
 import logo from "@/app/logo.svg";
 import config from "@/config";
 import ButtonSignin from "./ButtonSignin";
-import { CustomerType } from "../enums/classify";
+import { AboutPage } from "../enums/classify";
+
+interface Props {
+  page: AboutPage;
+}
 
 // A header with a logo on the left, links in the center (like Pricing, etc...), and a CTA (like Get Started or Login) on the right.
 // The header is responsive, and on mobile, the links are hidden behind a burger button.
-const ClassifierHeader = ({ page }: { page: CustomerType }) => {
+const AboutHeader = ({ page }: Props) => {
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -27,10 +31,10 @@ const ClassifierHeader = ({ page }: { page: CustomerType }) => {
       href: `${page}/#pricing`,
       label: "Pricing",
     },
-    // {
-    //   href: `${page}/#faq`,
-    //   label: "FAQ",
-    // },
+    {
+      href: `${page}/#faq`,
+      label: "FAQ",
+    },
   ];
 
   // setIsOpen(false) when the route changes (i.e: when the user clicks on a link on mobile)
@@ -161,6 +165,7 @@ const ClassifierHeader = ({ page }: { page: CustomerType }) => {
                     {link.label}
                   </Link>
                 ))}
+                <ButtonSignin />
               </div>
             </div>
             <div className="divider"></div>
@@ -173,4 +178,4 @@ const ClassifierHeader = ({ page }: { page: CustomerType }) => {
   );
 };
 
-export default ClassifierHeader;
+export default AboutHeader;

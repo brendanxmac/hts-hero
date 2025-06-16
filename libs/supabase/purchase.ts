@@ -45,8 +45,6 @@ export const userHasActivePurchase = async (userId: string) => {
     .eq("user_id", userId)
     .gte("expires_at", new Date().toISOString());
 
-  console.log("purchases", purchases);
-
   if (error) {
     console.error("Failed to fetch active purchases:", error);
     throw error;

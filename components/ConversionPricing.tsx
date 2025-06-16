@@ -2,7 +2,7 @@ import config from "@/config";
 import { classNames } from "../utilities/style";
 import { PricingType } from "../types";
 import ButtonCheckout from "./ButtonCheckout";
-import { CustomerType } from "../enums/classify";
+import { AboutPage } from "../enums/classify";
 import { TertiaryText } from "./TertiaryText";
 import Link from "next/link";
 
@@ -11,11 +11,11 @@ import Link from "next/link";
 // <ButtonCheckout /> renders a button that will redirect the user to Stripe checkout called the /api/stripe/create-checkout API endpoint with the correct priceId
 
 interface Props {
-  customerType: CustomerType;
+  customerType: AboutPage;
 }
 
-const getPricingPlans = (customerType: CustomerType) => {
-  if (customerType === CustomerType.IMPORTER) {
+const getPricingPlans = (customerType: AboutPage) => {
+  if (customerType === AboutPage.IMPORTER) {
     return config.stripe.importerPlans;
   }
   return config.stripe.classifierPlans;
