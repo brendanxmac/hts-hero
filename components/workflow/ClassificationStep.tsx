@@ -30,6 +30,7 @@ export interface ClassificationStepProps {
   setWorkflowStep: (step: WorkflowStep) => void;
   classificationLevel: number | undefined;
   setClassificationLevel: (level: number | undefined) => void;
+  setFetchingOptionsOrSuggestions: (fetching: boolean) => void;
 }
 
 export const ClassificationStep = ({
@@ -37,6 +38,7 @@ export const ClassificationStep = ({
   setWorkflowStep,
   classificationLevel,
   setClassificationLevel,
+  setFetchingOptionsOrSuggestions,
 }: ClassificationStepProps) => {
   const { setActiveTab } = useClassifyTab();
   const [loading, setLoading] = useState<Loader>({
@@ -57,6 +59,10 @@ export const ClassificationStep = ({
   const { htsElements } = useHts();
 
   const selectionForLevel = levels[classificationLevel]?.selection;
+
+  useEffect(() => {
+    setFetchingOptionsOrSuggestions(loading.isLoading);
+  }, [loading.isLoading]);
 
   const selectedElementIsFinalElement = () => {
     if (!selectionForLevel) {

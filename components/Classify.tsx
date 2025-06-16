@@ -19,6 +19,8 @@ import { useClassification } from "../contexts/ClassificationContext";
 import { useSearchParams } from "next/navigation";
 
 export const Classify = () => {
+  const [fetchingOptionsOrSuggestions, setFetchingOptionsOrSuggestions] =
+    useState(false);
   const [showPricing, setShowPricing] = useState(false);
   const [loading, setLoading] = useState<Loader>({
     isLoading: true,
@@ -70,6 +72,7 @@ export const Classify = () => {
           setWorkflowStep={setWorkflowStep}
           classificationLevel={classificationLevel}
           setClassificationLevel={setClassificationLevel}
+          fetchingOptionsOrSuggestions={fetchingOptionsOrSuggestions}
         />
       </div>
 
@@ -96,6 +99,9 @@ export const Classify = () => {
                 setWorkflowStep={setWorkflowStep}
                 classificationLevel={classificationLevel}
                 setClassificationLevel={setClassificationLevel}
+                setFetchingOptionsOrSuggestions={
+                  setFetchingOptionsOrSuggestions
+                }
               />
             )}
             {workflowStep === WorkflowStep.RESULT && (
