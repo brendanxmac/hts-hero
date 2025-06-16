@@ -76,20 +76,21 @@ export async function POST(req: NextRequest) {
       temperature: 0,
       model: "gpt-4o-2024-11-20",
       response_format: responseFormat,
-      //   TODO: consider whether or not to generalize this to just ask for the next best string match... and not using so much classification language
+      //   TODO: consider whether or not to generalize this to just ask for the next best string match... and not using so much classification
+      // If the product description is provided it will be formatted is Parent > child > grandchild > etc.\n
+      // If only the top parent is in description, there will be no > symbols which indicate the hierarchy.\n language
       messages: [
         {
           role: "system",
           content: `You are a United States Harmonized Tariff System Expert who follows the General Rules of Interpretation (GRI) for the Harmonized System perfectly.\n
           Your job is to determine which description from a list would most accurately match a product description if it were added onto the end of the current classification description.\n
-          The current classification description might not be provided, in which case just compare directly against the product description.\n
-          If the product description is provided it will be formatted is Parent > child > grandchild > etc.\n
-          If only the top parent is in description, there will be no > symbols which indicate the hierarchy.\n
-          Finally, you must pick one description. If you are unsure and "Other:" is available as an option, you should pick it.\n
+          If the current classification description is not provided, just determine which description best matches the product description.\n
+          Finally, you must pick a single description. If you are unsure and "Other:" is available as an option, you should pick it.\n
+          Your "logic" for your selection should be a concise explanation of why you picked the description you did (without referncing descriptions by their list number), and whether the product description is missing information needed to make a better decision.\n
             ${
-              isTestEnv
-                ? "The 0-based index of the best option must be included in your response\n"
-                : "The logic you used to pick the best option based on the GRI must be included in your response, and so should the index (0 based) and description of the best option.\n"
+              isTestEnv &&
+              "The 0-based index of the best option must be included in your response\n"
+              // : "The logic you used to pick the best option based on the GRI must be included in your response, and so should the index (0 based) and description of the best option.\n"
             }
             `,
         },

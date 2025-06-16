@@ -15,7 +15,6 @@ const Category = ({
       className={`badge badge-sm md:badge-md hover:badge-primary ${
         extraStyle ? extraStyle : ""
       }`}
-      title={`Posts in ${category.title}`}
       rel="tag"
     >
       {category.titleShort}

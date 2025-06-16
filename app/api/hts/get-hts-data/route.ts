@@ -17,8 +17,10 @@ export async function GET(req: NextRequest) {
     //   );
     // }
 
+    // TODO: Add some logic to grab the latest and get it from S3?
+
     const htsData = await readFile(
-      path.join(process.cwd(), "hts-elements", "2025-13.json"),
+      path.join(process.cwd(), "hts-elements", "2025-14.json"),
       "utf8"
     );
 

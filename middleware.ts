@@ -1,25 +1,22 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/app/api/supabase/middleware";
+import { createClient } from "./app/api/supabase/server";
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+  const supabase = createClient();
+  const { data } = await supabase.auth.getUser();
+  const user = data.user;
 
-  const isAllowed =
-    pathname === "/explore" ||
-    pathname === "/learn" ||
-    pathname === "/learn#features" ||
-    pathname === "/tos" ||
-    pathname === "/privacy-policy" ||
-    pathname.startsWith("/_next") ||
-    pathname === "/favicon.ico" ||
-    pathname.startsWith("/api") ||
-    pathname === "/robots.txt" ||
-    pathname.startsWith("/hts-elements") || // ✅ allow access to static JSON files
-    pathname.startsWith("/notes") || // ✅ allow access to PDF notes
-    pathname.match(/\.(png|jpg|jpeg|gif|svg|webp|mp4|webm|mov)$/); // ✅ allow access to image and video files
+  if (user && pathname === "/") {
+    return NextResponse.redirect(new URL("/app", req.url));
+  }
 
-  if (!isAllowed) {
-    return NextResponse.redirect(new URL("/explore", req.url));
+  const isRedirectPath =
+    pathname === "/blog" || pathname === "/" || pathname === "/about";
+
+  if (isRedirectPath) {
+    return NextResponse.redirect(new URL("/about/importer", req.url));
   }
 
   const IS_TEST_ENV = process.env.APP_ENV === "test";

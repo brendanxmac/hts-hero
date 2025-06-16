@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import { PrimaryLabel } from "./PrimaryLabel";
-import { Tariff } from "../app/classes/tariff";
+import { Tariff } from "../classes/tariff";
 
 interface Props {
   tariff: Tariff | undefined;

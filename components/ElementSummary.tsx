@@ -18,8 +18,7 @@ interface Props {
 }
 
 export const ElementSummary = ({ element, onClick }: Props) => {
-  const { htsno, description, indent, recommended, recommendedReason } =
-    element;
+  const { htsno, description, indent } = element;
   const { classification, updateLevel: updateProgressionLevel } =
     useClassification();
 
@@ -31,11 +30,15 @@ export const ElementSummary = ({ element, onClick }: Props) => {
       )
   );
 
+  const isRecommended =
+    classification.levels[0]?.recommendedElement?.uuid === element.uuid;
+  const recommendedReason = classification.levels[0]?.recommendationReason;
+
   const isHeading =
     indent === "0" && classification && classification.levels[0];
 
   return (
-    <div className="flex flex-col gap-2 w-full bg-primary/20 rounded-md border border-base-content/20 hover:cursor-pointer hover:bg-primary/40">
+    <div className="flex flex-col gap-2 w-full bg-base-100 rounded-md border-2 border-base-content/40 hover:bg-neutral transition duration-75 ease-in-out scale-[0.99] hover:scale-[1] active:scale-[0.98] cursor-pointer">
       <div className="flex">
         {isHeading && (
           <div className="flex items-center justify-center">
@@ -99,7 +102,7 @@ export const ElementSummary = ({ element, onClick }: Props) => {
               <SecondaryText value={description} color={Color.WHITE} />
             </div>
 
-            {recommended && (
+            {isRecommended && (
               <div className="flex flex-col gap-2 bg-base-300 rounded-md p-2">
                 <div className="flex gap-2 text-accent">
                   <SparklesIcon className="h-4 w-4" />

@@ -3,23 +3,19 @@ import Link from "next/link";
 
 const CTA = () => {
   return (
-    <section className="bg-neutral-900 hero overflow-hidden min-h-[75vh]">
-      <div className="relative hero-overlay bg-neutral-900"></div>
+    <section className="hero overflow-hidden min-h-[75vh]">
+      <div className="relative hero-overlay bg-base-100"></div>
       <div className="relative hero-content text-center text-neutral-content p-8">
         <div className="flex flex-col items-center max-w-3xl p-8 md:p-0">
-          <h2 className="font-bold text-4xl md:text-6xl tracking-tight mb-8 md:mb-12">
-            Make HTS Codes Easy!
+          <h2 className="text-white font-bold text-4xl md:text-5xl tracking-tight mb-8 md:mb-12">
+            Spare your sanity and your wallet
           </h2>
-          <p className="md:text-lg opacity-80 mb-12 md:mb-16">
-            Save yourself from reading through endless PDF&apos;s and hoping you
-            didn&apos;t miss something, or hiring someone for more who takes 10x
-            longer
+          <p className="md:text-lg mb-12 md:mb-16">
+            Save yourself from the manual searching, stress, and pricey
+            alternatives. <br /> Get a valid HTS Code for your product now!
           </p>
 
-          <Link
-            className="btn btn-primary bg-white text-black hover:text-white btn-wide rounded-md"
-            href={config.auth.loginUrl}
-          >
+          <Link className="btn btn-primary btn-wide" href={"/app"}>
             Get {config.appName}
           </Link>
         </div>

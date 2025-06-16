@@ -65,8 +65,6 @@ export interface HtsElement {
   footnotes: Footnote[];
   quotaQuantity: string | null;
   additionalDuties: string | null;
-  recommended?: boolean;
-  recommendedReason?: string;
   notes?: string;
 }
 
@@ -128,6 +126,7 @@ export interface FetchedClassification {
   analysis: string;
   progression_description: string;
   decisions: ClassificationProgression[];
+  is_complete?: boolean;
   created_at: string;
 }
 
@@ -136,10 +135,13 @@ export interface Classification {
   articleAnalysis: string;
   progressionDescription: string;
   levels: ClassificationProgression[];
+  isComplete: boolean;
 }
 
 export interface ClassificationProgression {
   candidates: HtsElement[];
+  recommendedElement?: HtsElement;
+  recommendationReason?: string;
   selection?: HtsElement;
   reasoning?: string;
 }

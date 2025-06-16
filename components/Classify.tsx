@@ -6,35 +6,42 @@ import { Explore } from "./Explore";
 import { ClassificationStep } from "./workflow/ClassificationStep";
 import { ClassificationNavigation } from "./workflow/ClassificationNavigation";
 import { DescriptionStep } from "./workflow/DescriptionStep";
-import { AnalysisStep } from "./workflow/AnalysisStep";
 import { useClassifyTab } from "../contexts/ClassifyTabContext";
-import { ClassifyTab } from "../enums/classify";
-import { ClassifyPage } from "../enums/classify";
+import { ClassifyTab, AboutPage } from "../enums/classify";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { Loader } from "../interfaces/ui";
 import { useHts } from "../contexts/HtsContext";
+import { ClassificationResultPage } from "./ClassificationResultPage";
+import Modal from "./Modal";
+import ConversionPricing from "./ConversionPricing";
+import { useClassification } from "../contexts/ClassificationContext";
+import { useSearchParams } from "next/navigation";
 
-interface Props {
-  setPage: (page: ClassifyPage) => void;
-}
-
-export const Classify = ({ setPage }: Props) => {
-  // TODO: do not need to fetch all chapter, or at least change the language...
+export const Classify = () => {
+  const [fetchingOptionsOrSuggestions, setFetchingOptionsOrSuggestions] =
+    useState(false);
+  const [showPricing, setShowPricing] = useState(false);
   const [loading, setLoading] = useState<Loader>({
     isLoading: true,
     text: "",
   });
   const { activeTab } = useClassifyTab();
-  // const { classification } = useClassification();
   const [workflowStep, setWorkflowStep] = useState(WorkflowStep.DESCRIPTION);
   const [classificationLevel, setClassificationLevel] = useState<
     number | undefined
   >(undefined);
   const { fetchElements, htsElements } = useHts();
   const { getSections, sections } = useHtsSections();
+  const { setArticleDescription } = useClassification();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
+    const productDescription = searchParams.get("productDescription");
+    if (productDescription) {
+      setArticleDescription(productDescription);
+    }
+
     const loadAllData = async () => {
       setLoading({ isLoading: true, text: "Fetching All Data" });
       await Promise.all([fetchElements(), getSections()]);
@@ -59,34 +66,47 @@ export const Classify = ({ setPage }: Props) => {
   return (
     <div className="h-full w-full bg-base-300 flex">
       {/* Sidebar Navigation */}
-      <div className="h-full bg-base-100 max-w-[450px] min-w-[400px] overflow-hidden">
+      <div className="hidden md:block h-full bg-base-100 min-w-[350px] max-w-[450px] lg:min-w-[500px] overflow-hidden">
         <ClassificationNavigation
           workflowStep={workflowStep}
           setWorkflowStep={setWorkflowStep}
           classificationLevel={classificationLevel}
           setClassificationLevel={setClassificationLevel}
-          setPage={setPage}
+          fetchingOptionsOrSuggestions={fetchingOptionsOrSuggestions}
         />
       </div>
 
       {/* Classify Tab */}
-
       <div className="h-full grow overflow-hidden">
         {activeTab === ClassifyTab.CLASSIFY && (
           <>
             {workflowStep === WorkflowStep.DESCRIPTION && (
-              <DescriptionStep setWorkflowStep={setWorkflowStep} />
+              <DescriptionStep
+                setWorkflowStep={setWorkflowStep}
+                setClassificationLevel={setClassificationLevel}
+                setShowPricing={setShowPricing}
+              />
             )}
-            {workflowStep === WorkflowStep.ANALYSIS && (
+            {/* {workflowStep === WorkflowStep.ANALYSIS && (
               <AnalysisStep
                 setWorkflowStep={setWorkflowStep}
                 setClassificationLevel={setClassificationLevel}
               />
-            )}
+            )} */}
             {workflowStep === WorkflowStep.CLASSIFICATION && (
               <ClassificationStep
+                workflowStep={workflowStep}
                 setWorkflowStep={setWorkflowStep}
                 classificationLevel={classificationLevel}
+                setClassificationLevel={setClassificationLevel}
+                setFetchingOptionsOrSuggestions={
+                  setFetchingOptionsOrSuggestions
+                }
+              />
+            )}
+            {workflowStep === WorkflowStep.RESULT && (
+              <ClassificationResultPage
+                setWorkflowStep={setWorkflowStep}
                 setClassificationLevel={setClassificationLevel}
               />
             )}
@@ -95,6 +115,11 @@ export const Classify = ({ setPage }: Props) => {
         {/* Explore Tab */}
         {activeTab === ClassifyTab.EXPLORE && <Explore />}
       </div>
+      {showPricing && (
+        <Modal isOpen={showPricing} setIsOpen={setShowPricing}>
+          <ConversionPricing customerType={AboutPage.IMPORTER} />
+        </Modal>
+      )}
     </div>
   );
 };

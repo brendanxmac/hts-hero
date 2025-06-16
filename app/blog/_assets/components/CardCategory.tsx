@@ -16,7 +16,6 @@ const CardCategory = ({
     <Link
       className="p-4 bg-base-200 text-base-content rounded-box duration-200 hover:bg-neutral hover:text-neutral-content"
       href={`/blog/category/${category.slug}`}
-      title={category.title}
       rel="tag"
     >
       <TitleTag className="md:text-lg font-medium">

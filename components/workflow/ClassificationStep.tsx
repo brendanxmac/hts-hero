@@ -1,10 +1,11 @@
 import { useClassification } from "../../contexts/ClassificationContext";
 import { WorkflowStep } from "../../enums/hts";
 import { LoadingIndicator } from "../LoadingIndicator";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Loader } from "../../interfaces/ui";
 import { CandidateElements } from "../CandidateElements";
 import {
+  downloadClassificationReport,
   getBestDescriptionCandidates,
   getDirectChildrenElements,
   getElementsInChapter,
@@ -17,33 +18,36 @@ import { elementsAtClassificationLevel } from "../../utilities/data";
 import { TertiaryText } from "../TertiaryText";
 import { PrimaryLabel } from "../PrimaryLabel";
 import { Color } from "../../enums/style";
-import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
 import { StepNavigation } from "./StepNavigation";
 import { useClassifyTab } from "../../contexts/ClassifyTabContext";
 import { ClassifyTab } from "../../enums/classify";
-import { createClassification } from "../../libs/classification";
 import { ConfirmationCard } from "../ConfirmationCard";
 import { useHts } from "../../contexts/HtsContext";
+import { TertiaryLabel } from "../TertiaryLabel";
 
 export interface ClassificationStepProps {
+  workflowStep: WorkflowStep;
   setWorkflowStep: (step: WorkflowStep) => void;
   classificationLevel: number | undefined;
   setClassificationLevel: (level: number | undefined) => void;
+  setFetchingOptionsOrSuggestions: (fetching: boolean) => void;
 }
 
 export const ClassificationStep = ({
+  workflowStep,
   setWorkflowStep,
   classificationLevel,
   setClassificationLevel,
+  setFetchingOptionsOrSuggestions,
 }: ClassificationStepProps) => {
   const { setActiveTab } = useClassifyTab();
   const [loading, setLoading] = useState<Loader>({
     isLoading: false,
     text: "",
   });
-  const { classification, addLevel, updateLevel, setClassification } =
-    useClassification();
+  const { classification, addLevel, setClassification } = useClassification();
   const { articleDescription, levels } = classification;
+  const previousArticleDescriptionRef = useRef<string>(articleDescription);
   const [htsSections, setHtsSections] = useState<HtsSection[]>([]);
   const [sectionCandidates, setSectionCandidates] = useState<
     CandidateSelection[]
@@ -51,25 +55,24 @@ export const ClassificationStep = ({
   const [chapterCandidates, setChapterCandidates] = useState<
     CandidateSelection[]
   >([]);
-  const [locallySelectedElement, setLocallySelectedElement] = useState<
-    HtsElement | undefined
-  >(undefined);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const { htsElements } = useHts();
 
   const selectionForLevel = levels[classificationLevel]?.selection;
 
-  const selectedElementIsFinalElement = () => {
-    const selectedElement = locallySelectedElement || selectionForLevel;
+  useEffect(() => {
+    setFetchingOptionsOrSuggestions(loading.isLoading);
+  }, [loading.isLoading]);
 
-    if (!selectedElement) {
+  const selectedElementIsFinalElement = () => {
+    if (!selectionForLevel) {
       return false;
     }
 
     return (
       getDirectChildrenElements(
-        selectedElement,
-        getElementsInChapter(htsElements, selectedElement.chapter)
+        selectionForLevel,
+        getElementsInChapter(htsElements, selectionForLevel.chapter)
       ).length === 0
     );
   };
@@ -78,18 +81,24 @@ export const ClassificationStep = ({
     const isFinalElement = selectedElementIsFinalElement();
 
     if (isFinalElement) {
-      return "Finish";
+      return "Results";
     } else {
-      return "Continue";
+      return "Next";
     }
   };
 
   // Get 2-3 Best Sections
   const getSections = async () => {
-    setLoading({ isLoading: true, text: "Finding Best Sections" });
-    const sectionsResponse = await getHtsSectionsAndChapters();
-    setHtsSections(sectionsResponse.sections);
-    const sections = sectionsResponse.sections;
+    setLoading({ isLoading: true, text: "Finding Best Options" });
+
+    let sections = htsSections;
+
+    if (sections.length === 0) {
+      const sectionsResponse = await getHtsSectionsAndChapters();
+      setHtsSections(sectionsResponse.sections);
+      sections = sectionsResponse.sections;
+    }
+
     const bestSectionCandidates = await getBestDescriptionCandidates(
       [],
       articleDescription,
@@ -112,7 +121,7 @@ export const ClassificationStep = ({
 
   // Get 2-3 Best Chapters
   const getChapters = async () => {
-    setLoading({ isLoading: true, text: "Finding Best Chapters" });
+    setLoading({ isLoading: true, text: "Finding Best Options" });
     const candidateSections = htsSections.filter((section) => {
       return sectionCandidates.some((candidate) => {
         return candidate.index === section.number;
@@ -149,7 +158,7 @@ export const ClassificationStep = ({
 
   // Get up to 2 Best Headings Per Chapter
   const getHeadings = async () => {
-    setLoading({ isLoading: true, text: "Finding Best Headings" });
+    setLoading({ isLoading: true, text: "Finding Best Options" });
     const candidatesForHeading: HtsElement[] = [];
     await Promise.all(
       chapterCandidates.map(async (chapter) => {
@@ -194,22 +203,30 @@ export const ClassificationStep = ({
       })
     );
 
-    updateLevel(0, {
-      candidates: candidatesForHeading,
-    });
+    addLevel(candidatesForHeading);
 
     // DO not move this down, it will break the classification as the timing is critical
     setLoading({ isLoading: false, text: "" });
   };
 
   useEffect(() => {
-    if (classificationLevel === 0 && levels.length === 0) {
+    if (previousArticleDescriptionRef.current !== articleDescription) {
       setClassificationLevel(0);
-      // TODO: see if we already do this elsewhere and if it should happen here
-      addLevel([]);
+      setSectionCandidates([]);
+      setChapterCandidates([]);
+      previousArticleDescriptionRef.current = articleDescription;
+    }
+  }, [articleDescription]);
+
+  useEffect(() => {
+    if (
+      levels[classificationLevel] === undefined ||
+      (levels[classificationLevel] !== undefined &&
+        levels[classificationLevel].candidates.length === 0)
+    ) {
       getSections();
     }
-  }, []);
+  }, [classificationLevel]);
 
   useEffect(() => {
     if (
@@ -222,84 +239,105 @@ export const ClassificationStep = ({
   }, [sectionCandidates]);
 
   useEffect(() => {
-    if (
-      chapterCandidates &&
-      chapterCandidates.length > 0 &&
-      levels[0] &&
-      levels[0].candidates.length === 0
-    ) {
+    if (chapterCandidates && chapterCandidates.length > 0) {
       getHeadings();
     }
   }, [chapterCandidates]);
 
-  const getStepDescription = () => {
-    if (classificationLevel === 0) {
-      return "Select the most accurate heading";
-    } else if (classificationLevel > 0) {
-      return "Select the element that best matches the article description";
+  const getStepDescription = (level: number) => {
+    if (level === 0) {
+      return "Select the option that best matches your item description";
+    } else if (level === 1) {
+      return "Select the option that best matches your item description when added onto your first selection";
+    } else {
+      return "Select the option that best matches your item description when added onto your prior selection(s)";
     }
   };
 
   const getStepInstructions = () => {
     if (classificationLevel === 0) {
-      return "You can seach for and add candidates to the list using the explorer ->";
-    } else if (classificationLevel > 0) {
-      return "Which candidate most accurately matches the article description if it was added onto the in-progress classification?";
+      return (
+        <div className="w-full flex justify-between items-center">
+          <div className="text-sm">
+            Don&apos;t see any good options? Easily find and add new ones using
+            the{" "}
+            <button
+              className="btn-link"
+              onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
+              disabled={loading.isLoading}
+            >
+              explorer
+            </button>
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <TertiaryText
+          value="If and option below was added onto your prior selection(s) which would most accurately describe your item?"
+          color={Color.NEUTRAL_CONTENT}
+        />
+      );
     }
   };
 
   const completeClassification = async () => {
-    setLoading({ isLoading: true, text: "Completing Classification" });
-    await createClassification(classification);
+    setLoading({ isLoading: true, text: "Generating Report" });
+    await downloadClassificationReport(classification);
     setLoading({ isLoading: false, text: "" });
+    setShowConfirmation(false);
   };
 
   return (
     <div className="h-full flex flex-col pt-8">
-      {/* Content */}
       <div className="flex-1 overflow-hidden px-8 w-full max-w-3xl mx-auto flex flex-col gap-4">
-        <div className="flex flex-col gap-14">
-          <div className="flex flex-col gap-4">
-            <TertiaryText
-              value={`Step ${2 + classificationLevel + 1}`}
+        <div className="flex flex-col gap-4">
+          <div className="flex justify-between items-center">
+            <TertiaryLabel
+              value={`Level ${classificationLevel + 1}`}
               color={Color.NEUTRAL_CONTENT}
             />
-            <div className="w-full flex justify-between items-end">
-              <div className="flex flex-col">
-                <PrimaryLabel
-                  value={getStepDescription()}
-                  color={Color.WHITE}
-                />
-
-                <TertiaryText
-                  value={getStepInstructions()}
-                  color={Color.NEUTRAL_CONTENT}
-                />
-              </div>
-              {classificationLevel === 0 && (
-                <button
-                  className="btn btn-primary btn-sm text-white flex items-center gap-1"
-                  onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
-                  disabled={loading.isLoading}
-                >
-                  <MagnifyingGlassIcon className="h-5 w-5" />
-                  Search Headings
-                </button>
-              )}
+            {loading.isLoading && <LoadingIndicator text={loading.text} />}
+          </div>
+          <div className="w-full flex justify-between items-end">
+            <div className="w-full flex flex-col">
+              <PrimaryLabel
+                value={getStepDescription(classificationLevel)}
+                color={Color.WHITE}
+              />
+              {getStepInstructions()}
             </div>
           </div>
+          {/* Breadcrumbs to show where element came from */}
+          {/* {classificationLevel > 0 && (
+            <div className="">
+              {getProgressionDescriptions(
+                classification,
+                classificationLevel - 1
+              ).map(
+                (description, index) =>
+                  description && (
+                    <TertiaryLabel
+                      key={index}
+                      value={`${"-".repeat(index + 1)} ${description}`}
+                      color={Color.WHITE}
+                    />
+                  )
+              )}
+            </div>
+          )} */}
         </div>
-        <div className="h-full flex flex-col gap-8 overflow-hidden">
-          {loading.isLoading && <LoadingIndicator text={loading.text} />}
 
+        <div className="h-full flex flex-col gap-8 overflow-hidden">
           {levels[classificationLevel] &&
             levels[classificationLevel].candidates.length > 0 && (
-              <div className="h-full gap-4">
+              <div className="h-full flex flex-col gap-4">
                 <CandidateElements
                   key={`classification-level-${classificationLevel}`}
-                  indentLevel={classificationLevel}
-                  locallySelectedElement={locallySelectedElement}
-                  setLocallySelectedElement={setLocallySelectedElement}
+                  classificationLevel={classificationLevel}
+                  setClassificationLevel={setClassificationLevel}
+                  setLoading={setLoading}
+                  setWorkflowStep={setWorkflowStep}
                 />
               </div>
             )}
@@ -313,58 +351,22 @@ export const ClassificationStep = ({
           next={{
             label: getNextNavigationLabel(),
             onClick: () => {
-              // * If a local selection has been made, want to:
-              // 1. Take the current level and update the selection to be the locally selected element
-              // 2. If any children exist for the locally selected element create a new level with those children
-              // 3. Regardless of whether a local selection was made,
-              //    a. Set locally selected to undefined
-              //    b. Increment the classification level
-
-              if (locallySelectedElement) {
-                const newProgressionLevels = levels.slice(
-                  0,
-                  classificationLevel + 1
-                );
-                newProgressionLevels[classificationLevel].selection =
-                  locallySelectedElement;
-
-                const childrenOfSelectedElement = getDirectChildrenElements(
-                  locallySelectedElement,
-                  getElementsInChapter(
-                    htsElements,
-                    locallySelectedElement.chapter
-                  )
-                );
-
-                if (childrenOfSelectedElement.length > 0) {
-                  setClassification({
-                    ...classification,
-                    levels: [
-                      ...newProgressionLevels,
-                      {
-                        candidates: childrenOfSelectedElement,
-                      },
-                    ],
-                  });
-                  setClassificationLevel(classificationLevel + 1);
-                } else {
-                  setClassification({
-                    ...classification,
-                    levels: newProgressionLevels,
-                  });
-                  setShowConfirmation(true);
-                }
+              if (selectedElementIsFinalElement()) {
+                setWorkflowStep(WorkflowStep.RESULT);
+              } else {
+                setClassificationLevel(classificationLevel + 1);
               }
-
-              setLocallySelectedElement(undefined);
             },
-            disabled: !locallySelectedElement && !selectionForLevel,
+            disabled:
+              classification.levels.length === 0 ||
+              workflowStep === WorkflowStep.RESULT ||
+              !selectionForLevel,
           }}
           previous={{
             label: "Back",
             onClick: () => {
               if (classificationLevel === 0) {
-                setWorkflowStep(WorkflowStep.ANALYSIS);
+                setWorkflowStep(WorkflowStep.DESCRIPTION);
               } else {
                 setClassificationLevel(classificationLevel - 1);
               }
@@ -374,10 +376,10 @@ export const ClassificationStep = ({
       </div>
       {showConfirmation && (
         <ConfirmationCard
-          title="Complete Classification?"
-          description="Are you sure you want to complete the classification?"
-          confirmText="Complete"
-          cancelText="Cancel"
+          title="🎉 Classification Complete"
+          description="To download a report of the classification, click the button below. NOTE: Your classification will NOT be saved if you leave this page"
+          confirmText="Download"
+          cancelText="Close"
           onConfirm={completeClassification}
           onCancel={() => setShowConfirmation(false)}
         />

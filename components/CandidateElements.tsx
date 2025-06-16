@@ -1,116 +1,91 @@
-import { HtsElement } from "../interfaces/hts";
+import { Classification, HtsElement } from "../interfaces/hts";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { Loader } from "../interfaces/ui";
 import { CandidateElement } from "./CandidateElement";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useClassification } from "../contexts/ClassificationContext";
+import { getProgressionDescriptionWithArrows } from "../libs/hts";
+import { getBestClassificationProgression } from "../libs/hts";
+import { WorkflowStep } from "../enums/hts";
 
 interface Props {
-  indentLevel: number;
-  locallySelectedElement: HtsElement | undefined;
-  setLocallySelectedElement: (element: HtsElement) => void;
+  classificationLevel: number;
+  setClassificationLevel: (level: number | undefined) => void;
+  setWorkflowStep: (step: WorkflowStep) => void;
+  setLoading: (loading: Loader) => void;
 }
 
 export const CandidateElements = ({
-  indentLevel,
-  locallySelectedElement,
-  setLocallySelectedElement,
+  classificationLevel,
+  setClassificationLevel,
+  setWorkflowStep,
+  setLoading,
 }: Props) => {
-  const [loading, _] = useState<Loader>({
-    isLoading: false,
-    text: "",
-  });
-  const { classification } = useClassification();
+  const { classification, setClassification } = useClassification();
   const { levels } = classification;
-  const { candidates } = levels[indentLevel];
-  // const [_, setRecommended] = useState<HtsElement | undefined>(undefined);
+  const { candidates } = levels[classificationLevel];
+  const { articleDescription, articleAnalysis } = classification;
 
-  // FIXME: recommended gets lost every time we navigate away from this component to another tab
-  // which means that this flow control will not only ever do the best candidate once, but every time we come to this component
-  // useEffect(() => {
-  //   console.log("INITIAL RENDER HERE");
-  //   console.log("recommended", recommended);
-  //   if (candidates.length > 0 && !recommended) {
-  //     console.log("Getting best candidate automatically");
-  //     getBestCandidate();
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (
+      candidates.length > 0 &&
+      !classification.levels[classificationLevel].recommendedElement
+    ) {
+      getBestCandidate();
+    }
+  }, []);
 
-  // const getBestCandidate = async () => {
-  //   setLoading({
-  //     isLoading: true,
-  //     text: "Getting Best Candidate",
-  //   });
+  const getBestCandidate = async () => {
+    setLoading({
+      isLoading: true,
+      text: "Suggesting Best Option",
+    });
 
-  //   const simplifiedCandidates = candidates.map((e) => ({
-  //     code: e.htsno,
-  //     description: e.description,
-  //   }));
+    const simplifiedCandidates = candidates.map((e) => ({
+      code: e.htsno,
+      description: e.description,
+    }));
 
-  //   const bestProgressionResponse = await getBestClassificationProgression(
-  //     simplifiedCandidates,
-  //     getProgressionDescription(levels),
-  //     articleDescription
-  //   );
+    const bestProgressionResponse = await getBestClassificationProgression(
+      simplifiedCandidates,
+      getProgressionDescriptionWithArrows(levels),
+      articleDescription + "\n" + articleAnalysis
+    );
 
-  //   console.log("bestProgressionResponse", bestProgressionResponse);
+    const bestCandidate = candidates[bestProgressionResponse.index];
 
-  //   const bestCandidate = candidates[bestProgressionResponse.index];
+    setClassification((prev: Classification) => {
+      const newProgressionLevels = [...prev.levels];
+      newProgressionLevels[classificationLevel] = {
+        ...newProgressionLevels[classificationLevel],
+        recommendedElement: bestCandidate,
+        recommendationReason: bestProgressionResponse.logic,
+      };
+      return {
+        ...prev,
+        levels: newProgressionLevels,
+      };
+    });
 
-  //   console.log("bestCandidate", bestCandidate);
-
-  //   // Update this classification progressions candidates to mark the bestCandidate element as suggested
-  //   const updatedCandidates = candidates.map((e) => {
-  //     if (e.uuid === bestCandidate.uuid) {
-  //       return {
-  //         ...e,
-  //         recommended: true,
-  //         recommendedReason: bestProgressionResponse.logic,
-  //       };
-  //     }
-  //     return { ...e, recommended: false, recommendedReason: "" };
-  //   });
-
-  //   setClassification((prev: Classification) => {
-  //     const newProgressionLevels = [...prev.levels];
-  //     newProgressionLevels[indentLevel] = {
-  //       ...newProgressionLevels[indentLevel],
-  //       candidates: updatedCandidates,
-  //     };
-  //     return {
-  //       ...prev,
-  //       levels: newProgressionLevels,
-  //     };
-  //   });
-
-  //   setLoading({
-  //     isLoading: false,
-  //     text: "",
-  //   });
-
-  //   setRecommended(bestCandidate);
-  // };
+    setLoading({
+      isLoading: false,
+      text: "",
+    });
+  };
 
   return (
     <div className="h-full flex flex-col gap-4">
       {candidates.length > 0 && (
-        <div className="h-full flex flex-col gap-2">
-          {loading.isLoading && (
-            <div className="py-3">
-              <LoadingIndicator text={loading.text} />
-            </div>
-          )}
-          <div className="h-full flex flex-col gap-4 overflow-y-scroll pb-4">
-            {candidates.map((element) => (
-              <CandidateElement
-                key={element.uuid}
-                element={element}
-                indentLevel={indentLevel}
-                locallySelectedElement={locallySelectedElement}
-                setLocallySelectedElement={setLocallySelectedElement}
-              />
-            ))}
-          </div>
+        <div className="h-full flex flex-col gap-4 overflow-y-scroll pb-4">
+          {candidates.map((element) => (
+            <CandidateElement
+              key={element.uuid}
+              element={element}
+              classificationLevel={classificationLevel}
+              setClassificationLevel={setClassificationLevel}
+              setWorkflowStep={setWorkflowStep}
+            />
+          ))}
         </div>
       )}
     </div>

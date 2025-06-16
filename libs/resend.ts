@@ -21,7 +21,7 @@ export const sendEmail = async ({
   replyTo?: string | string[];
 }) => {
   const { data, error } = await resend.emails.send({
-    from: config.resend.fromAdmin,
+    from: config.resend.fromNoReply,
     to,
     subject,
     text,

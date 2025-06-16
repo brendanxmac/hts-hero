@@ -1,9 +1,37 @@
-import configFile from "@/config";
 import { findCheckoutSession } from "@/libs/stripe";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+import { PricingPlan } from "../../../../types";
+import { getIsoDateInFuture } from "../../../../utilities/time";
+import { createPurchase } from "../../../../libs/supabase/purchase";
+import {
+  fetchUserProfile,
+  fetchUserProfileByEmail,
+  updateUserProfile,
+  UserProfile,
+} from "../../../../libs/supabase/user";
+import { sendPurchaseConfirmationEmail } from "../../../../emails/purchase-confirmation/purchase-confirmation-email";
+
+const getExpirationDate = (plan: PricingPlan) => {
+  if (plan === PricingPlan.ONE_DAY_PASS) {
+    return getIsoDateInFuture(1);
+  }
+  if (plan === PricingPlan.FIVE_DAY_PASS) {
+    return getIsoDateInFuture(5);
+  }
+};
+
+const getPlanFromPriceId = (priceId: string) => {
+  if (priceId === process.env.STRIPE_ONE_DAY_PASS_PRICE_ID) {
+    return PricingPlan.ONE_DAY_PASS;
+  }
+  if (priceId === process.env.STRIPE_FIVE_DAY_PASS_PRICE_ID) {
+    return PricingPlan.FIVE_DAY_PASS;
+  }
+  return null;
+};
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2023-08-16",
@@ -49,64 +77,80 @@ export async function POST(req: NextRequest) {
         // ✅ Grant access to the product
         const stripeObject: Stripe.Checkout.Session = stripeEvent.data
           .object as Stripe.Checkout.Session;
-
         const session = await findCheckoutSession(stripeObject.id);
 
         const customerId = session?.customer;
         const priceId = session?.line_items?.data[0]?.price.id;
         const userId = stripeObject.client_reference_id;
-        const plan = configFile.stripe.plans.find((p) => p.priceId === priceId);
+        const plan = getPlanFromPriceId(priceId);
 
         const customer = (await stripe.customers.retrieve(
           customerId as string
         )) as Stripe.Customer;
 
-        if (!plan) break;
+        // console.log("Customer:", customer);
 
-        let user;
+        if (!plan) {
+          console.error("Plan not found for priceId: ", priceId);
+          break;
+        }
+
+        let user: UserProfile | null = null;
+
         if (!userId) {
           // check if user already exists
-          const { data: profile } = await supabase
-            .from("profiles")
-            .select("*")
-            .eq("email", customer.email)
-            .single();
-          if (profile) {
-            user = profile;
+          const userProfile = await fetchUserProfileByEmail(customer.email);
+
+          if (userProfile) {
+            user = userProfile;
           } else {
-            // create a new user using supabase auth admin
-            const { data } = await supabase.auth.admin.createUser({
+            const { data, error } = await supabase.auth.admin.createUser({
               email: customer.email,
             });
 
-            user = data?.user;
+            if (error) {
+              console.error("Failed to create user:", error);
+              break;
+            }
+
+            user = await fetchUserProfileByEmail(customer.email);
           }
         } else {
-          // find user by ID
-          const { data: profile } = await supabase
-            .from("profiles")
-            .select("*")
-            .eq("id", userId)
-            .single();
-
-          user = profile;
+          user = await fetchUserProfile(userId);
         }
 
-        await supabase
-          .from("profiles")
-          .update({
-            customer_id: customerId,
-            price_id: priceId,
-            has_access: true,
-          })
-          .eq("id", user?.id);
+        if (!user) {
+          console.error("User not found");
+          throw new Error(
+            `Failed to set user on purchase -- userId: ${userId} -- email: ${customer.email}`
+          );
+        }
 
-        // Extra: send email with user link, product page, etc...
-        // try {
-        //   await sendEmail(...);
-        // } catch (e) {
-        //   console.error("Email issue:" + e?.message);
-        // }
+        const purchase = await createPurchase({
+          user_id: user.id,
+          customer_id: customerId as string,
+          price_id: priceId,
+          product_name: plan,
+          expires_at: getExpirationDate(plan),
+        });
+
+        // Set customer_id in user profile if it doesn't exist
+        if (!user.stripe_customer_id) {
+          await updateUserProfile(user.id, {
+            stripe_customer_id: customerId as string,
+          });
+        }
+
+        console.log("Purchase created:", purchase);
+
+        try {
+          await sendPurchaseConfirmationEmail(user.email, purchase);
+        } catch (e) {
+          console.error(
+            "Error sending purchase confirmation email:",
+            e?.message
+          );
+        }
 
         break;
       }
@@ -127,42 +171,41 @@ export async function POST(req: NextRequest) {
       case "customer.subscription.deleted": {
         // The customer subscription stopped
         // ❌ Revoke access to the product
-        const stripeObject: Stripe.Subscription = stripeEvent.data
-          .object as Stripe.Subscription;
-        const subscription = await stripe.subscriptions.retrieve(
-          stripeObject.id
-        );
-
-        await supabase
-          .from("profiles")
-          .update({ has_access: false })
-          .eq("customer_id", subscription.customer);
+        // const stripeObject: Stripe.Subscription = stripeEvent.data
+        //   .object as Stripe.Subscription;
+        // const subscription = await stripe.subscriptions.retrieve(
+        //   stripeObject.id
+        // );
+        // await supabase
+        //   .from("users")
+        //   .update({ has_access: false }) // TODO: this does not exist, need to update
+        //   .eq("stripe_customer_id", subscription.customer);
         break;
       }
 
       case "invoice.paid": {
         // Customer just paid an invoice (for instance, a recurring payment for a subscription)
         // ✅ Grant access to the product
-        const stripeObject: Stripe.Invoice = stripeEvent.data
-          .object as Stripe.Invoice;
-        const priceId = stripeObject.lines.data[0].price.id;
-        const customerId = stripeObject.customer;
+        // const stripeObject: Stripe.Invoice = stripeEvent.data
+        //   .object as Stripe.Invoice;
+        // const priceId = stripeObject.lines.data[0].price.id;
+        // const customerId = stripeObject.customer;
 
-        // Find profile where customer_id equals the customerId (in table called 'profiles')
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("customer_id", customerId)
-          .single();
+        // // Find profile where customer_id equals the customerId (in table called 'users')
+        // const { data: profile } = await supabase
+        //   .from("users")
+        //   .select("*")
+        //   .eq("stripe_customer_id", customerId)
+        //   .single();
 
-        // Make sure the invoice is for the same plan (priceId) the user subscribed to
-        if (profile.price_id !== priceId) break;
+        // // Make sure the invoice is for the same plan (priceId) the user subscribed to
+        // if (profile.price_id !== priceId) break;
 
-        // Grant the profile access to your product. It's a boolean in the database, but could be a number of credits, etc...
-        await supabase
-          .from("profiles")
-          .update({ has_access: true })
-          .eq("customer_id", customerId);
+        // // Grant the profile access to your product. It's a boolean in the database, but could be a number of credits, etc...
+        // await supabase
+        //   .from("users")
+        //   .update({ has_access: true })
+        //   .eq("stripe_customer_id", customerId);
 
         break;
       }
@@ -180,7 +223,7 @@ export async function POST(req: NextRequest) {
       // Unhandled event type
     }
   } catch (e) {
-    console.error("stripe error: ", e.message);
+    console.error(`stripe ${eventType} webhook handling error:`, e.message);
   }
 
   return NextResponse.json({});

@@ -1,76 +1,36 @@
-"use client";
+import Link from "next/link";
+import HeaderLogoOnly from "../../components/HeaderLogoOnly";
 
-import { Suspense, useEffect, useState } from "react";
-import AboutHeader from "./AboutHeader";
-import AboutHero from "./AboutHero";
-import AboutCTA from "./AboutCTA";
-import AboutFooter from "./AboutFooter";
-import FeaturesListicle from "../../components/FeaturesListicle";
-import Pricing from "../../components/Pricing";
-import Register from "../../components/Register";
-import { RegistrationTrigger } from "../../libs/early-registration";
-import WithWithout from "../../components/WithWithout";
-
-export default function Home() {
-  const [ref, setRef] = useState<string | null>();
-  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
-  const [registrationTrigger, setRegistrationTrigger] = useState<
-    RegistrationTrigger | undefined
-  >(undefined);
-
-  useEffect(() => {
-    if (!window.name) {
-      window.name = crypto.randomUUID(); // Generate a unique ID
-    }
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const ref = params.get("ref");
-      if (ref) {
-        setRef(ref);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    if (ref) {
-      setIsRegisterOpen(true);
-      setRegistrationTrigger(RegistrationTrigger.referral);
-    }
-  }, [ref]);
-
+export default function AboutPage() {
   return (
-    <>
-      <Suspense>
-        <AboutHeader />
-      </Suspense>
-      <main>
-        <Register
-          triggerButton={registrationTrigger}
-          isOpen={isRegisterOpen}
-          onClose={() => setIsRegisterOpen(false)}
-          source={ref}
-        />
-        <AboutHero
-          setIsRegisterOpen={setIsRegisterOpen}
-          setRegistrationTrigger={setRegistrationTrigger}
-        />
-        {/* <AboutProblem /> */}
-        <WithWithout />
-        <FeaturesListicle
-          setIsRegisterOpen={setIsRegisterOpen}
-          setRegistrationTrigger={setRegistrationTrigger}
-        />
-        <Pricing
-          setIsRegisterOpen={setIsRegisterOpen}
-          setRegistrationTrigger={setRegistrationTrigger}
-        />
-        {/* <AboutFAQ /> */}
-        <AboutCTA
-          setIsRegisterOpen={setIsRegisterOpen}
-          setRegistrationTrigger={setRegistrationTrigger}
-        />
-      </main>
-      <AboutFooter />
-    </>
+    <div className="min-h-screen max-h-screen overflow-hidden">
+      <HeaderLogoOnly />
+      <section className="max-w-4xl mx-auto flex flex-col items-center justify-center gap-6 p-8 bg-base-100">
+        {/* <h3 className="w-full text-xl md:text-2xl font-extrabold tracking-tight text-white ">
+          Welcome to HTS Hero!
+        </h3> */}
+
+        <div className="w-full space-y-12">
+          <h2 className="w-full text-3xl md:text-4xl font-extrabold text-white">
+            Welcome! Which sounds more like you?
+          </h2>
+          <div className="w-full flex flex-col gap-6">
+            <Link
+              href="/about/importer"
+              className="grow btn btn-primary h-60 text-3xl"
+            >
+              Importer looking for the right HTS Code
+            </Link>
+
+            <Link
+              href="/about/classifier"
+              className="grow btn btn-secondary h-60 text-3xl"
+            >
+              Classifier looking to speed up my workflow
+            </Link>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }

@@ -116,7 +116,7 @@ export default function Custom404() {
           Home
         </Link>
 
-        <ButtonSupport />
+        {/* <ButtonSupport /> */}
       </div>
     </section>
   );
