@@ -8,7 +8,7 @@ export enum ClassifyPage {
   CLASSIFY = "classify",
 }
 
-export enum CustomerType {
+export enum AboutPage {
   IMPORTER = "importer",
   CLASSIFIER = "classifier",
 }

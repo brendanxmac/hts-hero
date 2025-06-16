@@ -148,7 +148,7 @@ export const ClassificationResultPage = ({
           <div className="flex flex-col gap-2">
             {getProgressionDescriptions(classification).map(
               (description, index) => (
-                <div className="flex gap-1">
+                <div key={`description-${index}`} className="flex gap-1">
                   {index > 0 && (
                     <div className="shrink-0">
                       <SecondaryText

@@ -83,7 +83,6 @@ export const ClassificationStep = ({
 
   // Get 2-3 Best Sections
   const getSections = async () => {
-    console.log("Getting Sections");
     setLoading({ isLoading: true, text: "Finding Best Options" });
 
     let sections = htsSections;
@@ -116,7 +115,6 @@ export const ClassificationStep = ({
 
   // Get 2-3 Best Chapters
   const getChapters = async () => {
-    console.log("Getting Chapters");
     setLoading({ isLoading: true, text: "Finding Best Options" });
     const candidateSections = htsSections.filter((section) => {
       return sectionCandidates.some((candidate) => {
@@ -154,7 +152,6 @@ export const ClassificationStep = ({
 
   // Get up to 2 Best Headings Per Chapter
   const getHeadings = async () => {
-    console.log("Getting Headings");
     setLoading({ isLoading: true, text: "Finding Best Options" });
     const candidatesForHeading: HtsElement[] = [];
     await Promise.all(

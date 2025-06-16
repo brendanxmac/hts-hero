@@ -1,29 +1,28 @@
 import config from "@/config";
 import { classNames } from "../utilities/style";
-import { PricingPlan, PricingType } from "../types";
-import { BuyAttempt } from "../app/api/buy-attempt/route";
+import { PricingType } from "../types";
 import ButtonCheckout from "./ButtonCheckout";
-import { CustomerType } from "../enums/classify";
+import { AboutPage } from "../enums/classify";
 
 // <Pricing/> displays the pricing plans for your app
 // It's your Stripe config in config.js.stripe.plans[] that will be used to display the plans
 // <ButtonCheckout /> renders a button that will redirect the user to Stripe checkout called the /api/stripe/create-checkout API endpoint with the correct priceId
 
 interface PricingProps {
-  customerType: CustomerType;
-  setBuyAttempt?: (buyAttempt: BuyAttempt) => void;
-  setShowItsFree?: (show: boolean) => void;
+  customerType: AboutPage;
+  // setBuyAttempt?: (buyAttempt: BuyAttempt) => void;
+  // setShowItsFree?: (show: boolean) => void;
 }
 
-const getPricingPlans = (customerType: CustomerType) => {
-  if (customerType === CustomerType.IMPORTER) {
+const getPricingPlans = (customerType: AboutPage) => {
+  if (customerType === AboutPage.IMPORTER) {
     return config.stripe.importerPlans;
   }
   return config.stripe.classifierPlans;
 };
 
-const getPricingHeadline = (customerType: CustomerType) => {
-  if (customerType === CustomerType.IMPORTER) {
+const getPricingHeadline = (customerType: AboutPage) => {
+  if (customerType === AboutPage.IMPORTER) {
     return (
       <div className="flex flex-col gap-8">
         <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-5xl max-w-4xl mx-auto tracking-relaxed">
