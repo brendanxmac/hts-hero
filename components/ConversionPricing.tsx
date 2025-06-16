@@ -18,7 +18,8 @@ const getPricingPlans = (customerType: AboutPage) => {
   if (customerType === AboutPage.IMPORTER) {
     return config.stripe.importerPlans;
   }
-  return config.stripe.classifierPlans;
+  return [];
+  // config.stripe.classifierPlans
 };
 
 const ConversionPricing = ({ customerType }: Props) => {

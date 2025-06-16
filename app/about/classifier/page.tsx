@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
+import { Suspense } from "react";
 import AboutHeader from "../../../components/AboutHeader";
 import ClassifierHero from "../../../components/ClassifierHero";
 import ClassifierCTA from "../../../components/ClassifierCTA";
@@ -19,18 +19,18 @@ export default function Home() {
   //   RegistrationTrigger | undefined
   // >(undefined);
 
-  useEffect(() => {
-    if (!window.name) {
-      window.name = crypto.randomUUID(); // Generate a unique ID
-    }
-    // if (typeof window !== "undefined") {
-    //   const params = new URLSearchParams(window.location.search);
-    //   const ref = params.get("ref");
-    //   if (ref) {
-    //     setRef(ref);
-    //   }
-    // }
-  }, []);
+  // useEffect(() => {
+  // if (!window.name) {
+  // window.name = crypto.randomUUID(); // Generate a unique ID
+  // }
+  // if (typeof window !== "undefined") {
+  //   const params = new URLSearchParams(window.location.search);
+  //   const ref = params.get("ref");
+  //   if (ref) {
+  //     setRef(ref);
+  //   }
+  // }
+  // }, []);
 
   // useEffect(() => {
   //   if (ref) {
@@ -48,16 +48,10 @@ export default function Home() {
         <AboutHeader page={AboutPage.CLASSIFIER} />
       </Suspense>
       <main>
-        <ClassifierHero
-          setIsRegisterOpen={() => {}}
-          setRegistrationTrigger={() => {}}
-        />
+        <ClassifierHero />
         {/* <AboutProblem /> */}
         <WithWithout />
-        <FeaturesListicle
-          setIsRegisterOpen={() => {}}
-          setRegistrationTrigger={() => {}}
-        />
+        <FeaturesListicle />
         <Pricing customerType={AboutPage.CLASSIFIER} />
         <FAQ faqItems={classifierFaqList} />
         <ClassifierCTA />

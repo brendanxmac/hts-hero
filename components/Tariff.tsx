@@ -6,8 +6,8 @@ import { SectionLabel } from "./SectionLabel";
 import { findFirstElementInProgressionWithTariff } from "../libs/hts";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { TariffDetails } from "./TariffDetails";
-import { Tariff } from "../app/classes/tariff";
 import { TariffSummary } from "./TariffSummary";
+import { Tariff } from "../classes/tariff";
 
 interface Props {
   classificationProgression: ClassificationProgression[];

@@ -8,7 +8,6 @@ import {
   SparklesIcon,
 } from "@heroicons/react/24/solid";
 import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
-import { PDFProps } from "./Element";
 import PDF from "./PDF";
 import { classNames } from "../utilities/style";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
@@ -28,6 +27,8 @@ import {
 import { useHts } from "../contexts/HtsContext";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { WorkflowStep } from "../enums/hts";
+import { PDFProps } from "../interfaces/ui";
+
 interface Props {
   element: HtsElement;
   classificationLevel: number;

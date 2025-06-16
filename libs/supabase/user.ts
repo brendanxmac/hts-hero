@@ -21,7 +21,7 @@ export const fetchUserProfile = async (userId: string) => {
 
   if (error) {
     console.error("Failed to fetch user profile:", error);
-    throw error;
+    return null;
   }
 
   return data;

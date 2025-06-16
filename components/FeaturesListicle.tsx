@@ -7,7 +7,7 @@ import DocumentSearchSVG from "./svg/DocumentSearchSVG";
 import LightBulbSVG from "./svg/LightBulbSVG";
 import DocumentCheckSVG from "./svg/DocumentCheckSVG";
 import { classNames } from "../utilities/style";
-import { RegistrationTrigger } from "../libs/early-registration";
+// import { RegistrationTrigger } from "../libs/early-registration";
 import LightningSVG from "./svg/LightningSVG";
 import SearchSVG from "./svg/SearchSVG";
 import Link from "next/link";
@@ -185,13 +185,7 @@ const features: {
   // },
 ];
 
-const FeaturesListicle = ({
-  setIsRegisterOpen,
-  setRegistrationTrigger,
-}: {
-  setIsRegisterOpen: (isOpen: boolean) => void;
-  setRegistrationTrigger: (trigger: RegistrationTrigger) => void;
-}) => {
+const FeaturesListicle = () => {
   const featuresEndRef = useRef<null>(null);
   const [featureSelected, setFeatureSelected] = useState<string>(
     features[0].name
