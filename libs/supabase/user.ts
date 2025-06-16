@@ -2,9 +2,9 @@ import { createSupabaseClient } from "./client";
 
 export interface UserProfile {
   id: string;
-  name: string;
+  name?: string;
   email: string;
-  image: string;
+  image?: string;
   stripe_customer_id?: string;
   created_at: string;
   updated_at: string;
