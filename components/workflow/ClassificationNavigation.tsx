@@ -21,6 +21,7 @@ export interface ClassificationNavigationProps {
   setWorkflowStep: (step: WorkflowStep) => void;
   classificationLevel: number | undefined;
   setClassificationLevel: (level: number | undefined) => void;
+  fetchingOptionsOrSuggestions: boolean;
 }
 
 export const ClassificationNavigation = ({
@@ -28,6 +29,7 @@ export const ClassificationNavigation = ({
   setWorkflowStep,
   classificationLevel,
   setClassificationLevel,
+  fetchingOptionsOrSuggestions,
 }: ClassificationNavigationProps) => {
   const { activeTab, setActiveTab } = useClassifyTab();
   const { classification, clearClassification } = useClassification();
@@ -97,17 +99,19 @@ export const ClassificationNavigation = ({
           className="tabs tabs-boxed tabs-sm bg-primary-content p-1.5 gap-1 rounded-xl"
         >
           {ClassifyTabs.map((tab) => (
-            <a
+            <button
               key={tab.value}
               role="tab"
+              disabled={fetchingOptionsOrSuggestions}
               onClick={() => setActiveTab(tab.value as ClassifyTab)}
               className={classNames(
                 "tab px-1 hover:text-primary hover:scale-105 transition-all duration-100 ease-in-out",
-                tab.value === activeTab && "tab-active"
+                tab.value === activeTab && "tab-active",
+                fetchingOptionsOrSuggestions && "tab-disabled"
               )}
             >
               {tab.icon}
-            </a>
+            </button>
           ))}
         </div>
       </div>
