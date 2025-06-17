@@ -23,8 +23,8 @@ const config: ConfigProps = {
         name: PricingPlan.ONE_DAY_PASS,
         description: "Unlimited Access to Code Finder for 24 Hours",
         type: PricingType.ONE_TIME,
-        price: 20,
-        priceAnchor: 40,
+        price: 10,
+        priceAnchor: 20,
         features: [
           {
             name: "Finds the Best Candidates for your Product",
@@ -56,8 +56,8 @@ const config: ConfigProps = {
         name: PricingPlan.FIVE_DAY_PASS,
         description: "Unlimited Access to Code Finder for 5 Days",
         type: PricingType.ONE_TIME,
-        price: 30,
-        priceAnchor: 60,
+        price: 20,
+        priceAnchor: 40,
         isFeatured: true,
         features: [
           {
