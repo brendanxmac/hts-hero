@@ -76,7 +76,9 @@ export async function POST(req: NextRequest) {
           .object as Stripe.Checkout.Session;
         const session = await findCheckoutSession(stripeObject.id);
 
-        console.log("Session:", session);
+        console.log("User:", session.client_reference_id);
+        console.log("Email:", session.customer_details?.email);
+        console.log("Item:", session.line_items?.data[0]?.description);
 
         const customerId = session?.customer;
         const priceId = session?.line_items?.data[0]?.price.id;
@@ -86,8 +88,6 @@ export async function POST(req: NextRequest) {
         const customer = (await stripe.customers.retrieve(
           customerId as string
         )) as Stripe.Customer;
-
-        // console.log("Customer:", customer);
 
         if (!plan) {
           console.error("Plan not found for priceId: ", priceId);
@@ -140,7 +140,7 @@ export async function POST(req: NextRequest) {
           });
         }
 
-        console.log("Purchase created:", purchase);
+        console.log("Purchase created:", purchase.id);
 
         try {
           await sendPurchaseConfirmationEmail(user.email, purchase);
@@ -162,7 +162,12 @@ export async function POST(req: NextRequest) {
           .object as Stripe.Checkout.Session;
         const session = await findCheckoutSession(stripeObject.id);
 
-        console.log("Session:", session);
+        if (session) {
+          console.log("Session:", session.id);
+          console.log("User:", session.client_reference_id);
+          console.log("Email:", session.customer_details?.email);
+          console.log("Item:", session.line_items?.data[0]?.description);
+        }
 
         break;
       }
