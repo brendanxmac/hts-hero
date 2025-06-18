@@ -100,7 +100,7 @@ const Problem = () => {
 
           <Link
             className="text-center text-sm text-neutral-300 tracking-tight"
-            href="/importers#features"
+            href="/about/importer#features"
           >
             There&apos;s an easier way
           </Link>
