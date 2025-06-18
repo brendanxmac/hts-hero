@@ -76,9 +76,11 @@ export async function POST(req: NextRequest) {
           .object as Stripe.Checkout.Session;
         const session = await findCheckoutSession(stripeObject.id);
 
-        console.log("User:", session.client_reference_id);
-        console.log("Email:", session.customer_details?.email);
-        console.log("Item:", session.line_items?.data[0]?.description);
+        if (session) {
+          console.log("User:", session.client_reference_id);
+          console.log("Email:", session.customer_details?.email);
+          console.log("Item:", session.line_items?.data[0]?.description);
+        }
 
         const customerId = session?.customer;
         const priceId = session?.line_items?.data[0]?.price.id;
