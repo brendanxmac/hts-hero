@@ -25,33 +25,10 @@ import config from "@/config";
 
 // Please write a simple privacy policy for my site. Add the current date.  Do not add or explain your reasoning. Answer:
 
-const current = `Effective Date: May 30, 2025
+const current = `Effective Date: June 18, 2025
 
-At HTS Hero ("we," "us," or "our"), we value your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, and safeguard your data when you visit our website (https://htshero.com).
-
-1. Information We Collect
-We only collect non-personal information through the use of cookies to improve your experience and analyze website performance.
-
-2. How We Use Your Information
-We use the information collected to improve our website and services
-
-3. Data Sharing
-We do not share any information with any third parties.
-
-4. Children's Privacy
-Our website is not intended for children under the age of 13, and we do not knowingly collect information from children.
-
-5. Updates to This Privacy Policy
-We may update this Privacy Policy from time to time.
-
-6. Contact Us
-If you have any questions about this Privacy Policy, please contact us at: support@htshero.com
-
-By using HTS Hero, you consent to the terms of this Privacy Policy.`;
-
-const future = `Effective Date: ????????
-
-At HTS Hero ("we," "us," or "our"), we value your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, and safeguard your data when you visit our website (https://htshero.com).
+At HTS Hero ("we," "us," or "our"), we value your privacy and are committed to protecting your personal information.
+This Privacy Policy explains how we collect, use, and safeguard your data when you visit our website (https://htshero.com).
 
 1. Information We Collect
 
@@ -60,19 +37,18 @@ We may collect the following personal information when you interact with our sit
 - Name
 - Email address
 - Payment information
-- Product descriptions
 
 Non-Personal Information:
 We also collect non-personal information through the use of cookies to improve your experience and analyze website performance.
 
 2. How We Use Your Information
 We use the information collected for the following purposes:
-- To process orders and payments
+- To process & support orders
 - To communicate with you regarding your account or transactions
 - To improve our website and services
 
 3. Data Sharing
-We do not share your personal or non-personal information with any third parties.
+We do not share personal or non-personal information with any third parties.
 
 4. Children's Privacy
 Our website is not intended for children under the age of 13, and we do not knowingly collect personal information from children.

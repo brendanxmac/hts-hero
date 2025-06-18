@@ -25,52 +25,15 @@ import config from "@/config";
 
 // Please write a simple Terms & Services for my site. Add the current date. Do not add or explain your reasoning.
 
-const current = `Effective Date: May 30, 2025
-
-Welcome to HTS Hero ("we," "us," or "our"). By accessing and using our website (https://htshero.com), you agree to comply with the following Terms & Services. Please read these terms carefully.
-
-1. Use of Service
-HTS Hero provides a tool that helps users find the HTS codes. Users are welcome to use the platform and the information it provides at their discretion. However, HTS Hero does not guarantee the accuracy or completeness of the results provided.
-
-2. User Responsibilities
-By using our website, you agree to:
-- Refrain from any unlawful use of our services.
-
-3. Data Collection
-We collect only non-personal data through cookies as outlined in our [Privacy Policy](https://htshero.com/privacy-policy). 
-None of this data is shared with third parties.
-
-4. Ownership of Content
-HTS Hero retains ownership over all content and materials it creates and provides on the platform. This includes the tool, its outputs, and any proprietary algorithms, systems, or databases used to generate results. All content provided by HTS Hero remains the intellectual property of HTS Hero.
-
-Your Use Rights:
-Users may use the results provided by us at their discretion for their personal or business purposes, such as applying an HTS code to a article/product.
-However, this does not grant users ownership of the platform, its systems, or its methodologies.
-
-Limits of Use:
-
-Users may not:
-- Reproduce, redistribute, or repurpose the HTS Hero platform, its data, or its content for commercial use without explicit permission from HTS Hero.
-- Reverse-engineer, decompile, or attempt to extract proprietary elements of the platform.
-
-5. Updates to Terms
-We reserve the right to update these Terms & Services at any time.
-
-6. Governing Law
-These Terms & Services are governed by the laws of the United States of America. Any disputes arising from these terms will be resolved under U.S. jurisdiction.
-
-7. Contact Us
-If you have any questions about these Terms & Services, please contact us at: support@htshero.com
-
-Thank you for using HTS Hero.`;
-
-const future = `Effective Date: January 12, 2025
+const current = `Effective Date: June 18, 2025
 
 Welcome to HTS Hero ("we," "us," or "our"). By accessing and using our website (https://htshero.com), you agree to comply with the following Terms & Services. Please read these terms carefully.
 
 1. Use of Service
 
-HTS Hero provides tools that help users find the appropriate HTS code for their product(s). Users are welcome to use the platform and the suggestions it provides at their discretion. However, HTS Hero does not guarantee the accuracy or completeness of the results provided.
+HTS Hero provides tools that help users find HTS code(s) for their product(s).
+Users are welcome to use the platform and the suggestions it provides at their discretion.
+HTS Hero does not guarantee the accuracy or completeness of the results provided.
 
 
 2. Payments
@@ -90,16 +53,20 @@ By using our website, you agree to:
 4. Data Collection
 
 We collect and process personal and non-personal data as outlined in our [Privacy Policy](https://htshero.com/privacy-policy). This includes:
-- Personal Information: name, email, payment information, and product descriptions.
-- Non-Personal Information via browser cookies.
+- Personal Information: name and email.
+- Purchase Information: What was purchased & when.
+- Non-Personal Information via browser cookies
 None of this data is shared with third parties.
 
 5. Ownership of Content
 
-HTS Hero retains ownership over all content and materials it creates and provides on the platform. This includes all tools, their outputs, and any proprietary algorithms, systems, or databases used to generate results. All content provided by HTS Hero, including classification suggestions, remains the intellectual property of HTS Hero.
+HTS Hero retains ownership over all content and materials it creates and provides on the platform.
+This includes all tools, their outputs, and any proprietary algorithms, systems, or databases used to generate results.
+All content provided by HTS Hero, including classification suggestions, remains the intellectual property of HTS Hero.
 
 Your Use Rights:
-Users may use the suggestions at their discretion for their personal or business purposes, such as applying an HTS code to a product. However, this does not grant users ownership of the platform, its systems, or its methodologies.
+Users may use the suggestions at their discretion for their personal or business purposes, such as applying an HTS code to a product.
+This does not grant users ownership of the platform, its systems, or its methodologies.
 
 Limits of Use:
 
@@ -109,17 +76,14 @@ Users may not:
 
 
 6. Updates to Terms
-
 We reserve the right to update these Terms & Services at any time. If changes are made, users will be notified via the email address provided.
 
 
 7. Governing Law
-
 These Terms & Services are governed by the laws of the United States of America. Any disputes arising from these terms will be resolved under U.S. jurisdiction.
 
 
 8. Contact Us
-
 If you have any questions about these Terms & Services, please contact us at: support@htshero.com
 
 Thank you for using HTS Hero.`;
