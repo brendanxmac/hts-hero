@@ -69,11 +69,14 @@ export async function POST(req: NextRequest) {
   try {
     switch (eventType) {
       case "checkout.session.completed": {
+        console.log("Stripe Session Completed: User Purchased!");
         // First payment is successful and a subscription is created (if mode was set to "subscription" in ButtonCheckout)
         // ✅ Grant access to the product
         const stripeObject: Stripe.Checkout.Session = stripeEvent.data
           .object as Stripe.Checkout.Session;
         const session = await findCheckoutSession(stripeObject.id);
+
+        console.log("Session:", session);
 
         const customerId = session?.customer;
         const priceId = session?.line_items?.data[0]?.price.id;
@@ -152,8 +155,15 @@ export async function POST(req: NextRequest) {
       }
 
       case "checkout.session.expired": {
+        console.log("Stripe Session Expired: User Did Not Purchase!");
         // User didn't complete the transaction
         // You don't need to do anything here, by you can send an email to the user to remind him to complete the transaction, for instance
+        const stripeObject: Stripe.Checkout.Session = stripeEvent.data
+          .object as Stripe.Checkout.Session;
+        const session = await findCheckoutSession(stripeObject.id);
+
+        console.log("Session:", session);
+
         break;
       }
 
