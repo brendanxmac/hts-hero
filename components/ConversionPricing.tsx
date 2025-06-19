@@ -1,10 +1,10 @@
 import config from "@/config";
 import { classNames } from "../utilities/style";
-import { PricingType } from "../types";
 import ButtonCheckout from "./ButtonCheckout";
 import { AboutPage } from "../enums/classify";
 import { TertiaryText } from "./TertiaryText";
 import Link from "next/link";
+import { StripePaymentMode } from "../libs/stripe";
 
 // <Pricing/> displays the pricing plans for your app
 // It's your Stripe config in config.js.stripe.plans[] that will be used to display the plans
@@ -261,7 +261,7 @@ const ConversionPricing = ({ customerType }: Props) => {
                         ${plan.price}
                       </p>
                       <p className="pl-1 pb-1 text-sm text-white font-bold">
-                        {plan.type === PricingType.SUBSCRIPTION
+                        {plan.mode === StripePaymentMode.SUBSCRIPTION
                           ? "/ month"
                           : ""}
                       </p>

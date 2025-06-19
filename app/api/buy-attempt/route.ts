@@ -1,12 +1,13 @@
 import { NextResponse, NextRequest } from "next/server";
-import { PricingPlan, PricingType } from "../../../types";
+import { PricingPlan } from "../../../types";
 import { createClient } from "../supabase/server";
+import { StripePaymentMode } from "../../../libs/stripe";
 
 export interface BuyAttempt {
   id: string;
   window_id?: string;
   pricing_plan: PricingPlan; // e.g., "starter", "pro", etc.
-  plan_type?: PricingType; // e.g., "monthly", "annual", etc.
+  plan_type?: StripePaymentMode; // e.g., "monthly", "annual", etc.
   job_title?: string;
   reason?: string | null;
   created_at: string; // ISO timestamp format (timestamptz)

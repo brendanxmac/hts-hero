@@ -1,5 +1,6 @@
 import themes from "daisyui/src/theming/themes";
-import { ConfigProps, PricingPlan, PricingType } from "./types/config";
+import { ConfigProps, PricingPlan } from "./types/config";
+import { StripePaymentMode } from "./libs/stripe";
 
 const config: ConfigProps = {
   // REQUIRED
@@ -21,8 +22,8 @@ const config: ConfigProps = {
         // priceId: process.env.STRIPE_ONE_DAY_PASS_PRICE_ID || "",
         // promotionCode: process.env.STRIPE_HALF_OFF_PROMO_ID || "", // 50% off for launch
         name: PricingPlan.ONE_DAY_PASS,
-        description: "Unlimited Access to Code Finder for 24 Hours",
-        type: PricingType.ONE_TIME,
+        description: "Access Code Finder for 24 Hours",
+        mode: StripePaymentMode.PAYMENT,
         price: 10,
         priceAnchor: 20,
         features: [
@@ -38,26 +39,14 @@ const config: ConfigProps = {
           {
             name: "Generates Full Classification Reports",
           },
-          // {
-          //   name: "Code Finder",
-          //   details: "Unlimited Use of our Classification Assistant",
-          // },
-          // {
-          //   name: "Classification Reports",
-          //   // details:
-          //   //   "In case customs asks questions or suppliers pull a fast one",
-          // },
-          // {
-          //   name: "Access for 1 day",
-          // },
         ],
       },
       {
         name: PricingPlan.FIVE_DAY_PASS,
-        description: "Unlimited Access to Code Finder for 5 Days",
-        type: PricingType.ONE_TIME,
-        price: 20,
-        priceAnchor: 40,
+        description: "Access Code Finder for 5 Days",
+        mode: StripePaymentMode.PAYMENT,
+        price: 30,
+        priceAnchor: 60,
         isFeatured: true,
         features: [
           {
@@ -72,65 +61,78 @@ const config: ConfigProps = {
           {
             name: "Generates Full Classification Reports",
           },
-          // {
-          //   name: "Code Finder",
-          //   details: "Unlimited Use of our Classification Assistant",
-          // },
-          // {
-          //   name: "Classification Reports",
-          //   // details:
-          //   //   "In case customs asks questions or suppliers pull a fast one",
-          // },
-          // {
-          //   name: "Access for 5 days",
-          // },
+        ],
+      },
+      {
+        name: PricingPlan.IMPORTER,
+        description: "Unlimited Access to Code Finder",
+        mode: StripePaymentMode.SUBSCRIPTION,
+        price: 20,
+        priceAnchor: 40,
+        features: [
+          { name: "No cutoff date, ready to use whenever you need it" },
+          {
+            name: "Finds the Best Candidates for your Product",
+          },
+          {
+            name: "Suggests the Best Option",
+          },
+          {
+            name: "Gets Results in Seconds",
+          },
+          {
+            name: "Generates Full Classification Reports",
+          },
         ],
       },
     ],
-    // classifierPlans: [
-    //   {
-    //     priceId: process.env.NODE_ENV === "development" ? "7" : "8",
-    //     name: PricingPlan.STANDARD,
-    //     description: "Your Personal Classification Assistant",
-    //     type: PricingType.SUBSCRIPTION,
-    //     price: 30,
-    //     priceAnchor: 45,
-    //     features: [
-    //       { name: "Unlimited Classifications" },
-    //       { name: "Heading Discovery" },
-    //       {
-    //         name: "Best Candidate Suggestions at Every Level",
-    //         details: "Based on the GRI & Additional US Rules",
-    //       },
-    //       { name: "Fetches Relevant Notes" },
-    //       {
-    //         name: "Built-in PDF Viewer",
-    //         details: "No downloads needed to find what you're looking for!",
-    //       },
-    //     ],
-    //   },
-    //   {
-    //     priceId: process.env.NODE_ENV === "development" ? "9" : "10",
-    //     name: PricingPlan.PRO,
-    //     description: "Automactically Generate & Download Reports", // & based on the USITC
-    //     type: PricingType.SUBSCRIPTION,
-    //     price: 40,
-    //     priceAnchor: 60,
-    //     isFeatured: true,
-    //     features: [
-    //       { name: "Everything in Standard, Plus:" },
-    //       {
-    //         name: "Generates Full Classification Reports",
-    //         details: "Ready to share with clients or customs",
-    //       },
-    //       {
-    //         name: "Saves all your classifications",
-    //         details: "For easy access, reference, & auditability",
-    //         comingSoon: true,
-    //       },
-    //     ],
-    //   },
-    // ],
+    classifierPlans: [
+      {
+        name: PricingPlan.STANDARD,
+        // description: "Your Personal Classification Assistant",
+        mode: StripePaymentMode.SUBSCRIPTION,
+        price: 20,
+        priceAnchor: 40,
+        features: [
+          { name: "Unlimited Classifications" },
+          { name: "Heading Discovery" },
+          {
+            name: "Best Candidate Suggestions at Every Level",
+            details: "Based on the GRI & Additional US Rules",
+          },
+          { name: "Fetches Relevant Notes" },
+          {
+            name: "Built-in PDF Viewer",
+            details: "No downloads needed to find what you're looking for!",
+          },
+        ],
+      },
+      {
+        name: PricingPlan.PRO,
+        // description: "Automactically Generate & Download Reports", // & based on the USITC
+        mode: StripePaymentMode.SUBSCRIPTION,
+        price: 30,
+        priceAnchor: 60,
+        isFeatured: true,
+        features: [
+          { name: "Everything in Standard, Plus:" },
+          {
+            name: "Generates Full Classification Reports",
+            details: "Ready to share with clients or customs",
+          },
+          {
+            name: "Saves all your classifications",
+            details: "For easy access, reference, & auditability",
+            comingSoon: true,
+          },
+          {
+            name: "Helps you Calculate Tariffs",
+            details: "Simplifies the seemingly endless complexity",
+            roadmap: true,
+          },
+        ],
+      },
+    ],
   },
   // aws: {
   //   // If you use AWS S3/Cloudfront, put values in here

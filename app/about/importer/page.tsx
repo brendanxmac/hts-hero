@@ -13,15 +13,6 @@ import { importerFaqList } from "../../../constants/faq";
 import { AboutPage } from "../../../enums/classify";
 
 export default function Home() {
-  // const [buyAttempt, setBuyAttempt] = useState<BuyAttempt | null>(null);
-  // const [showItsFree, setShowItsFree] = useState(false);
-
-  // useEffect(() => {
-  //   if (!window.name) {
-  //     window.name = crypto.randomUUID(); // Generate a unique ID to set a 'session' for the user
-  //   }
-  // }, []);
-
   return (
     <>
       <Suspense>
