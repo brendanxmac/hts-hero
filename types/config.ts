@@ -1,3 +1,5 @@
+import { StripePaymentMode } from "../libs/stripe";
+
 export enum DaisyTheme {
   LIGHT = "light",
   DARK = "dark",
@@ -71,28 +73,27 @@ export enum PricingPlan {
   FIVE_DAY_PASS = "5-Day Pass", // 5 days of access to classify (downloads included)
   STANDARD = "Standard", // classify access - no reports
   PRO = "Pro", // standard + reports
+  IMPORTER = "Importer",
 }
 
-export enum PricingType {
-  ONE_TIME = "One Time",
-  SUBSCRIPTION = "Subscription",
+export interface FeatureI {
+  name: string;
+  details?: string;
+  comingSoon?: boolean;
+  roadmap?: boolean;
 }
 
-interface PricingPlanI {
+export interface PricingPlanI {
   isFeatured?: boolean;
   isCompetitor?: boolean;
-  type: PricingType;
+  mode: StripePaymentMode;
   // priceId: string;
   name: PricingPlan;
   description?: string;
   price: number;
   // promotionCode?: string;
   priceAnchor?: number;
-  features: {
-    name: string;
-    details?: string;
-    comingSoon?: boolean;
-  }[];
+  features: FeatureI[];
 }
 
 export interface ConfigProps {

@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    const { itemId } = body;
+    const { itemId, cancelUrl } = body;
 
     let userProfile: UserProfile | null = null;
 
@@ -30,36 +30,48 @@ export async function POST(req: NextRequest) {
     }
 
     const getPriceId = (itemId: string) => {
+      console.log("itemId", itemId);
       if (itemId === PricingPlan.ONE_DAY_PASS) {
         return process.env.STRIPE_ONE_DAY_PASS_PRICE_ID;
       }
       if (itemId === PricingPlan.FIVE_DAY_PASS) {
         return process.env.STRIPE_FIVE_DAY_PASS_PRICE_ID;
       }
-
-      return null;
-    };
-
-    const getMode = (): StripePaymentMode => {
-      return "payment";
-    };
-
-    const getPromotionCode = (itemId: string) => {
-      if (
-        itemId === PricingPlan.ONE_DAY_PASS ||
-        itemId === PricingPlan.FIVE_DAY_PASS
-      ) {
-        return process.env.STRIPE_HALF_OFF_PROMO_ID;
+      if (itemId === PricingPlan.IMPORTER) {
+        return process.env.STRIPE_IMPORTER_PRICE_ID;
+      }
+      if (itemId === PricingPlan.STANDARD) {
+        return process.env.STRIPE_STANDARD_PRICE_ID;
+      }
+      if (itemId === PricingPlan.PRO) {
+        return process.env.STRIPE_PRO_PRICE_ID;
       }
 
       return null;
     };
 
+    const getMode = (itemId: PricingPlan): StripePaymentMode => {
+      switch (itemId) {
+        case PricingPlan.ONE_DAY_PASS:
+        case PricingPlan.FIVE_DAY_PASS:
+          return StripePaymentMode.PAYMENT;
+        case PricingPlan.IMPORTER:
+        case PricingPlan.STANDARD:
+        case PricingPlan.PRO:
+          return StripePaymentMode.SUBSCRIPTION;
+      }
+    };
+
+    const getPromotionCode = () => {
+      return process.env.STRIPE_HALF_OFF_PROMO_ID;
+    };
+
     const successUrl = `${process.env.BASE_URL}/signin`;
-    const cancelUrl = `${process.env.BASE_URL}/about/importer#pricing`;
     const priceId = getPriceId(itemId);
-    const mode = getMode();
-    const promotionCode = getPromotionCode(itemId);
+    const mode = getMode(itemId);
+    const promotionCode = getPromotionCode();
+
+    console.log("cancelUrl", cancelUrl);
 
     console.log(`User: ${user?.id}`);
     console.log("priceId", priceId);
@@ -71,7 +83,7 @@ export async function POST(req: NextRequest) {
       mode,
       promotionCode,
       successUrl,
-      cancelUrl,
+      cancelUrl: cancelUrl || `${process.env.BASE_URL}/about`,
       // If user is logged in, it will pass the user ID to the Stripe Session so it can be retrieved in the webhook later
       clientReferenceId: userProfile ? userProfile.id : user?.id,
       user: {

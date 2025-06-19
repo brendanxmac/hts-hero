@@ -1,4 +1,4 @@
-import { findCheckoutSession } from "@/libs/stripe";
+import { findCheckoutSession, StripePaymentMode } from "@/libs/stripe";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
@@ -15,26 +15,39 @@ import {
 import { sendPurchaseConfirmationEmail } from "../../../../emails/purchase-confirmation/purchase-confirmation-email";
 
 const getExpirationDate = (plan: PricingPlan) => {
-  if (plan === PricingPlan.ONE_DAY_PASS) {
-    return getIsoDateInFuture(1);
-  }
-  if (plan === PricingPlan.FIVE_DAY_PASS) {
-    return getIsoDateInFuture(5);
+  switch (plan) {
+    case PricingPlan.ONE_DAY_PASS:
+      return getIsoDateInFuture(1);
+    case PricingPlan.FIVE_DAY_PASS:
+      return getIsoDateInFuture(5);
+    case PricingPlan.IMPORTER:
+      return getIsoDateInFuture(31);
+    case PricingPlan.STANDARD:
+      return getIsoDateInFuture(31);
+    case PricingPlan.PRO:
+      return getIsoDateInFuture(31);
   }
 };
 
-const getPlanFromPriceId = (priceId: string) => {
-  if (priceId === process.env.STRIPE_ONE_DAY_PASS_PRICE_ID) {
-    return PricingPlan.ONE_DAY_PASS;
+const getPlanFromPriceId = (priceId: string): PricingPlan | null => {
+  switch (priceId) {
+    case process.env.STRIPE_ONE_DAY_PASS_PRICE_ID:
+      return PricingPlan.ONE_DAY_PASS;
+    case process.env.STRIPE_FIVE_DAY_PASS_PRICE_ID:
+      return PricingPlan.FIVE_DAY_PASS;
+    case process.env.STRIPE_IMPORTER_PRICE_ID:
+      return PricingPlan.IMPORTER;
+    case process.env.STRIPE_STANDARD_PRICE_ID:
+      return PricingPlan.STANDARD;
+    case process.env.STRIPE_PRO_PRICE_ID:
+      return PricingPlan.PRO;
+    default:
+      return null;
   }
-  if (priceId === process.env.STRIPE_FIVE_DAY_PASS_PRICE_ID) {
-    return PricingPlan.FIVE_DAY_PASS;
-  }
-  return null;
 };
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2023-08-16",
+  apiVersion: "2025-05-28.basil",
   typescript: true,
 });
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -74,16 +87,18 @@ export async function POST(req: NextRequest) {
         // ✅ Grant access to the product
         const stripeObject: Stripe.Checkout.Session = stripeEvent.data
           .object as Stripe.Checkout.Session;
-        const session = await findCheckoutSession(stripeObject.id);
+        const checkoutSession = await findCheckoutSession(stripeObject.id);
 
-        if (session) {
-          console.log("User:", session.client_reference_id);
-          console.log("Email:", session.customer_details?.email);
-          console.log("Item:", session.line_items?.data[0]?.description);
+        if (checkoutSession) {
+          console.log("User:", checkoutSession.client_reference_id);
+          console.log("Email:", checkoutSession.customer_details?.email);
+          console.log("Session:", checkoutSession);
+          console.log("Line Items:", checkoutSession.line_items?.data[0]);
+          // console.log("Item:", session.line_items?.data[0]?.description);
         }
 
-        const customerId = session?.customer;
-        const priceId = session?.line_items?.data[0]?.price.id;
+        const customerId = checkoutSession?.customer;
+        const priceId = checkoutSession?.line_items?.data[0]?.price.id;
         const userId = stripeObject.client_reference_id;
         const plan = getPlanFromPriceId(priceId);
 
@@ -128,9 +143,9 @@ export async function POST(req: NextRequest) {
         }
 
         const purchase = await createPurchase({
-          user_id: user.id,
-          customer_id: customerId as string,
-          price_id: priceId,
+          user_id: (checkoutSession.client_reference_id as string) || user.id,
+          customer_id: checkoutSession.customer as string,
+          price_id: checkoutSession.line_items?.data[0]?.price.id,
           product_name: plan,
           expires_at: getExpirationDate(plan),
         });
@@ -145,7 +160,11 @@ export async function POST(req: NextRequest) {
         console.log("Purchase created:", purchase.id);
 
         try {
-          await sendPurchaseConfirmationEmail(user.email, purchase);
+          await sendPurchaseConfirmationEmail(
+            user.email,
+            purchase,
+            checkoutSession.mode as StripePaymentMode
+          );
         } catch (e) {
           console.error(
             "Error sending purchase confirmation email:",
