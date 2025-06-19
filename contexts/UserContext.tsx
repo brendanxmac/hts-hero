@@ -3,7 +3,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { User } from "@supabase/supabase-js";
 import { createSupabaseClient } from "@/libs/supabase/client";
-import { fetchUserProfile, UserProfile } from "../libs/supabase/user";
 
 // interface EnrichedUser extends User {
 //   profile: UserProfile;
