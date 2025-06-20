@@ -2,19 +2,6 @@ import { sendEmail } from "../../libs/resend";
 import { StripePaymentMode } from "../../libs/stripe";
 import { Purchase } from "../../libs/supabase/purchase";
 
-// TODO: ADD AUTO RENEW VERBIAGE TO EMAIL
-// TODO: ADD AUTO RENEW VERBIAGE TO EMAIL
-// TODO: ADD AUTO RENEW VERBIAGE TO EMAIL
-// TODO: ADD AUTO RENEW VERBIAGE TO EMAIL
-// TODO: ADD AUTO RENEW VERBIAGE TO EMAIL
-// TODO: ADD AUTO RENEW VERBIAGE TO EMAIL
-// TODO: ADD AUTO RENEW VERBIAGE TO EMAIL
-// TODO: ADD AUTO RENEW VERBIAGE TO EMAIL
-// TODO: ADD AUTO RENEW VERBIAGE TO EMAIL
-// TODO: ADD AUTO RENEW VERBIAGE TO EMAIL
-// TODO: ADD AUTO RENEW VERBIAGE TO EMAIL
-// TODO: ADD AUTO RENEW VERBIAGE TO EMAIL
-
 export const sendPurchaseConfirmationEmail = async (
   recipient: string,
   purchase: Purchase,
@@ -79,15 +66,18 @@ export const purchaseConfirmationEmailHtml = (
       <p><strong>Order ID:</strong> ${purchase.id}</p>
       <p><strong>Plan:</strong> ${purchase.product_name}</p>
       <p><strong>Type:</strong> ${mode === StripePaymentMode.PAYMENT ? "One-Time Payment" : "Subscription"}</p>
-      <p><strong>Expires:</strong> ${new Date(purchase.expires_at).toLocaleString()}</p>
+      ${
+        mode === StripePaymentMode.PAYMENT
+          ? `<p><strong>Expires:</strong> ${new Date(purchase.expires_at).toLocaleString()}</p>`
+          : `<p><strong>Renews:</strong> Monthly</p>`
+      }
       <p><strong>Purchase Date:</strong> ${new Date(purchase.created_at).toLocaleString()}</p>
     </div>
 
     <h3>What's next?</h3>
-    <p>🚨 If you didn't sign up prior to purchasing,<span style="color: red; font-weight: bold;"> you must sign up with the same email you used to purchase</span></p>
-    
-    <p>Otherwise, after logging in (if not already) you'll be able to access all the features of the <a href="https://htshero.com/signin">app</a> that you purchased!</p>
-
+    <p>🚨 If you didn't sign up prior to purchasing,<span style="color: red; font-weight: bold;"> you must sign up with the same email you used to purchase.</span></p>
+    <p>Once logged in, you'll be able to access all the HTS Hero features that you purchased!</p>
+    <p>To view or manage your purchase, log into HTS Hero & click on your profile icon in the top right corner, then click "Billing".</p>
     <p>If you have any questions or need assistance, our support team (support@htshero.com) is here to help!</p>
     
 
