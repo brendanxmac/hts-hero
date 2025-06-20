@@ -72,10 +72,8 @@ export const ClassificationResultPage = ({
   const [latestPurchase, setLatestPurchase] = useState<Purchase | null>(null);
 
   useEffect(() => {
-    console.log("user:", user);
     if (user) {
       getLatestPurchase(user.id).then((purchase) => {
-        console.log("latest purchase:", purchase);
         setLatestPurchase(purchase);
       });
     }
