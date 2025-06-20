@@ -68,12 +68,10 @@ export type Theme = "black" | "light" | "dark" | "";
 // | "";
 
 export enum PricingPlan {
-  MANUAL_SINGLE = "Single Classification",
   ONE_DAY_PASS = "1-Day Pass", // 1 day access to classify (downloads included)
   FIVE_DAY_PASS = "5-Day Pass", // 5 days of access to classify (downloads included)
-  STANDARD = "Standard", // classify access - no reports
-  PRO = "Pro", // standard + reports
-  IMPORTER = "Importer",
+  PRO = "Pro", // Code Finder, no reports
+  PREMIUM = "Premium", // Code Finder + Reports
 }
 
 export interface FeatureI {
@@ -107,6 +105,7 @@ export interface ConfigProps {
   stripe: {
     importerPlans: PricingPlanI[];
     classifierPlans: PricingPlanI[];
+    conversionPlans: PricingPlanI[];
   };
   aws?: {
     bucket?: string;

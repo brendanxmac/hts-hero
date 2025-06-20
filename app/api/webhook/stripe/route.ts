@@ -22,9 +22,9 @@ const getExpirationDate = (plan: PricingPlan) => {
       return getIsoDateInFuture(5);
     case PricingPlan.IMPORTER:
       return getIsoDateInFuture(31);
-    case PricingPlan.STANDARD:
-      return getIsoDateInFuture(31);
     case PricingPlan.PRO:
+      return getIsoDateInFuture(31);
+    case PricingPlan.PREMIUM:
       return getIsoDateInFuture(31);
   }
 };
@@ -38,9 +38,9 @@ const getPlanFromPriceId = (priceId: string): PricingPlan | null => {
     case process.env.STRIPE_IMPORTER_PRICE_ID:
       return PricingPlan.IMPORTER;
     case process.env.STRIPE_STANDARD_PRICE_ID:
-      return PricingPlan.STANDARD;
-    case process.env.STRIPE_PRO_PRICE_ID:
       return PricingPlan.PRO;
+    case process.env.STRIPE_PRO_PRICE_ID:
+      return PricingPlan.PREMIUM;
     default:
       return null;
   }

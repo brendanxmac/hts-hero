@@ -15,7 +15,7 @@ interface PricingProps {
   // setShowItsFree?: (show: boolean) => void;
 }
 
-const getFeatureSupportingLabel = (feature: FeatureI) => {
+export const getFeatureSupportingLabel = (feature: FeatureI) => {
   if (feature.comingSoon) {
     return "Coming Soon";
   }
@@ -26,7 +26,7 @@ const getFeatureSupportingLabel = (feature: FeatureI) => {
   return "";
 };
 
-const getFeatureIcon = (feature: FeatureI) => {
+export const getFeatureIcon = (feature: FeatureI) => {
   if (feature.comingSoon) {
     return (
       <svg
@@ -251,7 +251,7 @@ const Pricing = ({ customerType }: PricingProps) => {
                         <div className="flex flex-col -mt-1">
                           <div
                             className={classNames(
-                              "flex items-center gap-2",
+                              "flex items-center justify-between gap-2 w-full",
                               feature.comingSoon && "mb-1"
                             )}
                           >

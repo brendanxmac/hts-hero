@@ -17,11 +17,11 @@ const getBuyButtonText = (plan: PricingPlan) => {
     return "Get 5-Day Pass";
   }
 
-  if (plan === PricingPlan.STANDARD) {
+  if (plan === PricingPlan.PRO) {
     return `Get ${plan}!`;
   }
 
-  if (plan === PricingPlan.PRO) {
+  if (plan === PricingPlan.PREMIUM) {
     return `Go ${plan}!`;
   }
 

@@ -52,3 +52,24 @@ export const userHasActivePurchase = async (userId: string) => {
 
   return purchases.length > 0;
 };
+
+export const getLatestPurchase = async (
+  userId: string
+): Promise<Purchase | null> => {
+  const supabase = createSupabaseClient();
+
+  const { data: purchase, error } = await supabase
+    .from("purchases")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single<Purchase>();
+
+  if (error) {
+    console.error("Failed to fetch active purchases:", error);
+    throw error;
+  }
+
+  return purchase;
+};

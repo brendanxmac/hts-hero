@@ -44,7 +44,7 @@ const Modal = ({ isOpen, setIsOpen, children }: ModalProps) => {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="border border-base-content/30 relative w-full max-w-6xl h-full overflow-hidden transform text-left align-middle shadow-xl transition-all rounded-xl bg-base-100">
+              <Dialog.Panel className="border border-base-content/30 relative w-full max-w-7xl h-full overflow-hidden transform text-left align-middle shadow-xl transition-all rounded-xl bg-base-100">
                 <button
                   className="z-50 absolute top-4 right-4 btn btn-square btn-ghost btn-sm hover:bg-white hover:text-black"
                   onClick={() => setIsOpen(false)}
