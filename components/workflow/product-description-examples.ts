@@ -66,7 +66,7 @@ const lol = [
   "Ceramic floor tiles Hard surface tiles used for residential or commercial flooring",
   "Handheld video game console A portable electronic device designed for gaming",
   "Synthetic leather inflatable soccer ball A sports ball with a stitched synthetic exterior for durability",
-  "Portable camping stove A lightweight gas or fuel-powered stove for cooking outdoors",
+  "Portable camping stove - A lightweight gas or fuel-powered stove for cooking outdoors",
   "Inkjet printer An office device that prints documents using liquid ink sprayed through nozzles",
   "Plastic storage bins Stackable containers used to organize or store household goods",
   "Battery-powered wall clock A timekeeping device designed to be hung on a wall and run by batteries",
