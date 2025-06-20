@@ -28,16 +28,16 @@ const config: ConfigProps = {
         priceAnchor: 20,
         features: [
           {
-            name: "Finds the Best Candidates for your Product",
+            name: "Candidate Discovery",
           },
           {
-            name: "Suggests the Best Option",
+            name: "Candidate Analysis & Suggestions",
           },
           {
-            name: "Gets Results in Seconds",
+            name: "Results in Seconds",
           },
           {
-            name: "Generates Full Classification Reports",
+            name: "Full Classification Reports",
           },
         ],
       },
@@ -50,46 +50,46 @@ const config: ConfigProps = {
         isFeatured: true,
         features: [
           {
-            name: "Finds the Best Candidates for your Product",
+            name: "Candidate Discovery",
           },
           {
-            name: "Suggests the Best Option",
+            name: "Candidate Analysis & Suggestions",
           },
           {
-            name: "Gets Results in Seconds",
+            name: "Results in Seconds",
           },
           {
-            name: "Generates Full Classification Reports",
+            name: "Full Classification Reports",
           },
         ],
       },
-      {
-        name: PricingPlan.IMPORTER,
-        description: "Unlimited Access to Code Finder",
-        mode: StripePaymentMode.SUBSCRIPTION,
-        price: 20,
-        priceAnchor: 40,
-        features: [
-          { name: "No cutoff date, ready to use whenever you need it" },
-          {
-            name: "Finds the Best Candidates for your Product",
-          },
-          {
-            name: "Suggests the Best Option",
-          },
-          {
-            name: "Gets Results in Seconds",
-          },
-          {
-            name: "Generates Full Classification Reports",
-          },
-        ],
-      },
+      // {
+      //   name: PricingPlan.IMPORTER,
+      //   description: "Unlimited Access to Code Finder",
+      //   mode: StripePaymentMode.SUBSCRIPTION,
+      //   price: 20,
+      //   priceAnchor: 40,
+      //   features: [
+      //     { name: "No cutoff date, ready to use whenever you need it" },
+      //     {
+      //       name: "Candidate Discovery",
+      //     },
+      //     {
+      //       name: "Candidate Analysis & Suggestions",
+      //     },
+      //     {
+      //       name: "Results in Seconds",
+      //     },
+      //     {
+      //       name: "Full Classification Reports",
+      //     },
+      //   ],
+      // },
     ],
     classifierPlans: [
       {
-        name: PricingPlan.STANDARD,
-        // description: "Your Personal Classification Assistant",
+        name: PricingPlan.PRO,
+        description: "Unlimited Access to Code Finder ",
         mode: StripePaymentMode.SUBSCRIPTION,
         price: 20,
         priceAnchor: 40,
@@ -97,7 +97,7 @@ const config: ConfigProps = {
           { name: "Unlimited Classifications" },
           { name: "Heading Discovery" },
           {
-            name: "Best Candidate Suggestions at Every Level",
+            name: "Candidate Analysis & Suggestions",
             details: "Based on the GRI & Additional US Rules",
           },
           { name: "Fetches Relevant Notes" },
@@ -108,8 +108,8 @@ const config: ConfigProps = {
         ],
       },
       {
-        name: PricingPlan.PRO,
-        // description: "Automactically Generate & Download Reports", // & based on the USITC
+        name: PricingPlan.PREMIUM,
+        description: "Code Finder + Report Generation",
         mode: StripePaymentMode.SUBSCRIPTION,
         price: 30,
         priceAnchor: 60,
@@ -117,18 +117,81 @@ const config: ConfigProps = {
         features: [
           { name: "Everything in Standard, Plus:" },
           {
-            name: "Generates Full Classification Reports",
-            details: "Ready to share with clients or customs",
+            name: "Report Generation",
+            details: "Get Client-Ready Classification Reports",
           },
           {
-            name: "Saves all your classifications",
+            name: "Classification History",
             details: "For easy access, reference, & auditability",
             comingSoon: true,
           },
           {
-            name: "Helps you Calculate Tariffs",
-            details: "Simplifies the seemingly endless complexity",
+            name: "Tariff Assistant",
+            details: "Simplifies tariff calculations",
             roadmap: true,
+          },
+        ],
+      },
+    ],
+    conversionPlans: [
+      {
+        name: PricingPlan.PRO,
+        description: "Unlimited Access to Code Finder ",
+        mode: StripePaymentMode.SUBSCRIPTION,
+        price: 20,
+        priceAnchor: 40,
+        features: [
+          { name: "Unlimited Classifications" },
+          { name: "Heading Discovery" },
+          {
+            name: "Candidate Analysis & Suggestions",
+            details: "Based on the GRI & Additional US Rules",
+          },
+          { name: "Fetches Relevant Notes" },
+          {
+            name: "Built-in PDF Viewer",
+            details: "No downloads needed!",
+          },
+        ],
+      },
+      {
+        name: PricingPlan.PREMIUM,
+        description: "Code Finder + Report Generation",
+        mode: StripePaymentMode.SUBSCRIPTION,
+        price: 30,
+        priceAnchor: 60,
+        isFeatured: true,
+        features: [
+          { name: "Everything in Standard, Plus:" },
+          {
+            name: "Report Generation",
+            details: "Get Client-Ready Classification Reports",
+          },
+          {
+            name: "Classification History",
+            comingSoon: true,
+          },
+          {
+            name: "Tariff Assistant",
+            roadmap: true,
+          },
+        ],
+      },
+      {
+        name: PricingPlan.FIVE_DAY_PASS,
+        description: "Access HTS Hero Pro for 5 Days",
+        mode: StripePaymentMode.PAYMENT,
+        price: 30,
+        priceAnchor: 60,
+        features: [
+          {
+            name: "Includes everything in Pro",
+          },
+          {
+            name: "One-Time Payment",
+          },
+          {
+            name: "Unlimited Access for 5 Days",
           },
         ],
       },

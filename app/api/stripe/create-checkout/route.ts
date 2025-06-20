@@ -40,10 +40,10 @@ export async function POST(req: NextRequest) {
       if (itemId === PricingPlan.IMPORTER) {
         return process.env.STRIPE_IMPORTER_PRICE_ID;
       }
-      if (itemId === PricingPlan.STANDARD) {
+      if (itemId === PricingPlan.PRO) {
         return process.env.STRIPE_STANDARD_PRICE_ID;
       }
-      if (itemId === PricingPlan.PRO) {
+      if (itemId === PricingPlan.PREMIUM) {
         return process.env.STRIPE_PRO_PRICE_ID;
       }
 
@@ -56,8 +56,8 @@ export async function POST(req: NextRequest) {
         case PricingPlan.FIVE_DAY_PASS:
           return StripePaymentMode.PAYMENT;
         case PricingPlan.IMPORTER:
-        case PricingPlan.STANDARD:
         case PricingPlan.PRO:
+        case PricingPlan.PREMIUM:
           return StripePaymentMode.SUBSCRIPTION;
       }
     };
