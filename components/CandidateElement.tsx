@@ -74,7 +74,7 @@ export const CandidateElement = ({
         !isLevelSelection &&
           "hover:cursor-pointer hover:bg-base-300 border-2 border-neutral-content",
         !isPressed && !isLevelSelection && "hover:scale-[1]",
-        isPressed && "scale-[0.98]"
+        isPressed && "scale-[0.99]"
       )}
       onMouseDown={() => setIsPressed(true)}
       onMouseUp={() => setIsPressed(false)}
