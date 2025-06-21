@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "@/app/api/supabase/server";
 import { createCustomerPortal } from "@/libs/stripe";
-import { fetchUserProfile } from "../../../../libs/supabase/user";
+import { fetchUser } from "../../../../libs/supabase/user";
 
 export async function POST(req: NextRequest) {
   try {
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Get user profile
-    const userProfile = await fetchUserProfile(user?.id);
+    const userProfile = await fetchUser(user?.id);
 
     if (!userProfile?.stripe_customer_id) {
       return NextResponse.json(

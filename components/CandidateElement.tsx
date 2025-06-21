@@ -53,10 +53,12 @@ export const CandidateElement = ({
   const { htsElements } = useHts();
   const { levels, progressionDescription } = classification;
   const isRecommended =
-    classification.levels[classificationLevel]?.recommendedElement?.uuid ===
+    classification.levels[classificationLevel]?.suggestedElement?.uuid ===
     element.uuid;
   const recommendedReason =
-    classification.levels[classificationLevel]?.recommendationReason;
+    classification.levels[classificationLevel]?.suggestionReason;
+  const suggestedQuestions =
+    classification.levels[classificationLevel]?.suggestionQuestions;
 
   // Check all progression levels to see if this element is selected in any of them
   const isLevelSelection = Boolean(
@@ -278,7 +280,28 @@ export const CandidateElement = ({
               />
             </div>
 
-            <p className="text-sm dark:text-white/90">{recommendedReason}</p>
+            <div className="flex flex-col gap-2">
+              <TertiaryLabel value="Reasoning:" />
+              <p className="text-sm dark:text-white/90 ml-2">
+                {recommendedReason}
+              </p>
+            </div>
+
+            {suggestedQuestions && suggestedQuestions.length > 0 && (
+              <div className="flex flex-col gap-2">
+                <TertiaryLabel value="Potential Clarifications:" />
+                <div className="flex flex-col gap-1 ml-2">
+                  {suggestedQuestions.map((question, i) => (
+                    <p
+                      key={`suggested-question-${i}`}
+                      className="text-sm dark:text-white/90"
+                    >
+                      {question}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

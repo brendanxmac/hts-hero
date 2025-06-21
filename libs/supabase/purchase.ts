@@ -19,7 +19,10 @@ export interface CreatePurchaseDto {
   expires_at: string;
 }
 
-export const createPurchase = async (purchase: CreatePurchaseDto) => {
+export const createPurchase = async (
+  purchase: CreatePurchaseDto,
+  stripeEvent?: string
+) => {
   const supabase = createSupabaseClient();
 
   const { data, error } = await supabase
@@ -29,7 +32,10 @@ export const createPurchase = async (purchase: CreatePurchaseDto) => {
     .single<Purchase>(); // returns inserted row
 
   if (error) {
-    console.error("Failed to insert purchase:", error);
+    console.error(
+      `Failed to insert purchase for stripe event for user ${purchase.user_id} ${stripeEvent ? `and stripe event ${stripeEvent}` : ""}:`,
+      error
+    );
     throw error;
   }
 

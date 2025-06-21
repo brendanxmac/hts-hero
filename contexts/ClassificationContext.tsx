@@ -16,7 +16,8 @@ interface ClassificationContextType {
   addLevel: (
     candidates: HtsElement[],
     selection?: HtsElement,
-    reasoning?: string
+    reasoning?: string,
+    questions?: string[]
   ) => void;
   updateLevel: (
     index: number,
@@ -67,7 +68,8 @@ export const ClassificationProvider = ({
   const addLevel = (
     candidates: HtsElement[],
     selection?: HtsElement,
-    reasoning?: string
+    reasoning?: string,
+    questions?: string[]
   ) => {
     setClassification((prev) => ({
       ...prev,
@@ -77,6 +79,7 @@ export const ClassificationProvider = ({
           candidates,
           selection,
           reasoning,
+          questions,
         },
       ],
     }));
