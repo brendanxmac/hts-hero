@@ -120,7 +120,8 @@ const features: {
           "Built in PDF viewer - No more downloads or opening new tabs to find what you're looking for",
       },
       {
-        point: "Built specifically to improve on the USITC website",
+        point: "~10 minutes saved",
+        detail: "per classification",
         isKey: true,
       },
     ],
@@ -202,8 +203,8 @@ const FeaturesListicle = () => {
           </h2>
           <div className="text-neutral-300 leading-relaxed mb-3 lg:text-lg">
             {/* 💡 COPY TIP: Explain how your product delivers what you promise in the headline. */}
-            Automate time-consuming classification tasks & quickly get the
-            information you need to classify with confidence.
+            HTS Hero automates time-consuming classification tasks & quickly
+            finds the information you need to classify with confidence.
           </div>
         </div>
       </div>

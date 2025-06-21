@@ -18,11 +18,11 @@ const getBuyButtonText = (plan: PricingPlan) => {
   }
 
   if (plan === PricingPlan.PRO) {
-    return `Get ${plan}!`;
+    return `Go ${plan}!`;
   }
 
   if (plan === PricingPlan.PREMIUM) {
-    return `Go ${plan}!`;
+    return `Get ${plan}!`;
   }
 
   return "Buy Now!";

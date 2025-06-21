@@ -115,7 +115,7 @@ const config: ConfigProps = {
         priceAnchor: 60,
         isFeatured: true,
         features: [
-          { name: "Everything in Standard, Plus:" },
+          { name: "Everything in Pro, Plus:" },
           {
             name: "Report Generation",
             details: "Get Client-Ready Classification Reports",
@@ -162,7 +162,7 @@ const config: ConfigProps = {
         priceAnchor: 60,
         isFeatured: true,
         features: [
-          { name: "Everything in Standard, Plus:" },
+          { name: "Everything in Pro, Plus:" },
           {
             name: "Report Generation",
             details: "Get Client-Ready Classification Reports",
@@ -179,7 +179,7 @@ const config: ConfigProps = {
       },
       {
         name: PricingPlan.FIVE_DAY_PASS,
-        description: "Access HTS Hero Pro for 5 Days",
+        description: "Access HTS Hero Premium for 5 Days",
         mode: StripePaymentMode.PAYMENT,
         price: 30,
         priceAnchor: 60,

@@ -21,6 +21,7 @@ const BestProgression = z.object({
   index: z.number(),
   description: z.string(),
   logic: z.string(),
+  questions: z.array(z.string()),
 });
 
 export async function POST(req: NextRequest) {
@@ -51,7 +52,7 @@ export async function POST(req: NextRequest) {
     }
 
     const labelledDescriptions = elements.map(
-      ({ description }, i) => `${i}: ${description}`
+      ({ description }, i) => `${i + 1}: ${description}`
     );
 
     const isTestEnv = process.env.APP_ENV === "test";
@@ -76,20 +77,18 @@ export async function POST(req: NextRequest) {
       temperature: 0,
       model: "gpt-4o-2024-11-20",
       response_format: responseFormat,
-      //   TODO: consider whether or not to generalize this to just ask for the next best string match... and not using so much classification
-      // If the product description is provided it will be formatted is Parent > child > grandchild > etc.\n
-      // If only the top parent is in description, there will be no > symbols which indicate the hierarchy.\n language
       messages: [
         {
           role: "system",
-          content: `You are a United States Harmonized Tariff System Expert who follows the General Rules of Interpretation (GRI) for the Harmonized System perfectly.\n
-          Your job is to determine which description from a list would most accurately match a product description if it were added onto the end of the current classification description.\n
-          If the current classification description is not provided, just determine which description best matches the product description.\n
-          Finally, you must pick a single description. If you are unsure and "Other:" is available as an option, you should pick it.\n
-          Your "logic" for your selection should be a concise explanation of why you picked the description you did (without referncing descriptions by their list number), and whether the product description is missing information needed to make a better decision.\n
+          content: `Your job is to determine which description from the list would most accurately match the product description if it were added onto the end of the current description.\n
+          If the current description is not provided, just determine which description best matches the product description itself.\n
+          You must pick a single description. If you are unsure and "Other" is available as an option, you should pick it.\n
+          Note: The use of semicolons (;) in the descriptions should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".\n
+          In your response, "logic" for your selection should explain why the description you picked is the most accurate match.\n
+          In your response, "questions" is optional, and should only have questions about the product that would help make a better decision between the options, if answered.\n
             ${
               isTestEnv &&
-              "The 0-based index of the best option must be included in your response\n"
+              "The index of the best option must be included in your response\n"
               // : "The logic you used to pick the best option based on the GRI must be included in your response, and so should the index (0 based) and description of the best option.\n"
             }
             `,
@@ -97,11 +96,7 @@ export async function POST(req: NextRequest) {
         {
           role: "user",
           content: `Product Description: ${productDescription}\n
-          ${
-            htsDescription
-              ? `Current Classification Description: ${htsDescription}\n`
-              : ""
-          }
+          ${htsDescription ? `Current Description: ${htsDescription}\n` : ""}
           Descriptions:\n ${labelledDescriptions.join("\n")}`,
         },
       ],

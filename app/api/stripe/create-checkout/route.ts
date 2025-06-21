@@ -2,7 +2,7 @@ import { createCheckout, StripePaymentMode } from "@/libs/stripe";
 import { createClient } from "@/app/api/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { PricingPlan } from "../../../../types";
-import { fetchUserProfile, UserProfile } from "../../../../libs/supabase/user";
+import { fetchUser, UserProfile } from "../../../../libs/supabase/user";
 
 // This function is used to create a Stripe Checkout Session (one-time payment or subscription)
 // It's called by the <ButtonCheckout /> component
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     let userProfile: UserProfile | null = null;
 
     if (user) {
-      userProfile = await fetchUserProfile(user.id);
+      userProfile = await fetchUser(user.id);
     }
 
     const getPriceId = (itemId: string) => {
@@ -37,14 +37,11 @@ export async function POST(req: NextRequest) {
       if (itemId === PricingPlan.FIVE_DAY_PASS) {
         return process.env.STRIPE_FIVE_DAY_PASS_PRICE_ID;
       }
-      if (itemId === PricingPlan.IMPORTER) {
-        return process.env.STRIPE_IMPORTER_PRICE_ID;
-      }
       if (itemId === PricingPlan.PRO) {
-        return process.env.STRIPE_STANDARD_PRICE_ID;
+        return process.env.STRIPE_PRO_PRICE_ID;
       }
       if (itemId === PricingPlan.PREMIUM) {
-        return process.env.STRIPE_PRO_PRICE_ID;
+        return process.env.STRIPE_PREMIUM_PRICE_ID;
       }
 
       return null;
@@ -55,7 +52,6 @@ export async function POST(req: NextRequest) {
         case PricingPlan.ONE_DAY_PASS:
         case PricingPlan.FIVE_DAY_PASS:
           return StripePaymentMode.PAYMENT;
-        case PricingPlan.IMPORTER:
         case PricingPlan.PRO:
         case PricingPlan.PREMIUM:
           return StripePaymentMode.SUBSCRIPTION;

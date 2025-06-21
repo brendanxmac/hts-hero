@@ -84,6 +84,7 @@ export interface BestProgressionResponse {
   index: number;
   description: string;
   logic: string;
+  questions: string[];
 }
 
 export interface BestHeadingEvaluationResponse {
@@ -140,8 +141,9 @@ export interface Classification {
 
 export interface ClassificationProgression {
   candidates: HtsElement[];
-  recommendedElement?: HtsElement;
-  recommendationReason?: string;
+  suggestedElement?: HtsElement;
+  suggestionReason?: string;
+  suggestionQuestions?: string[];
   selection?: HtsElement;
   reasoning?: string;
 }

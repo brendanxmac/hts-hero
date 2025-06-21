@@ -10,7 +10,24 @@ export interface UserProfile {
   updated_at: string;
 }
 
-export const fetchUserProfile = async (userId: string) => {
+export const fetchUserByStripeCustomerId = async (stripeCustomerId: string) => {
+  const supabase = createSupabaseClient();
+
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("stripe_customer_id", stripeCustomerId)
+    .single<UserProfile>();
+
+  if (error) {
+    console.error("Failed to fetch user profile:", error);
+    return null;
+  }
+
+  return data;
+};
+
+export const fetchUser = async (userId: string) => {
   const supabase = createSupabaseClient();
 
   const { data, error } = await supabase
@@ -27,7 +44,7 @@ export const fetchUserProfile = async (userId: string) => {
   return data;
 };
 
-export const fetchUserProfileByEmail = async (
+export const fetchUserByEmail = async (
   email: string
 ): Promise<UserProfile | null> => {
   const supabase = createSupabaseClient();

@@ -5,25 +5,26 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { PricingPlan } from "../../../../types";
 import { getIsoDateInFuture } from "../../../../utilities/time";
-import { createPurchase } from "../../../../libs/supabase/purchase";
 import {
-  fetchUserProfile,
-  fetchUserProfileByEmail,
+  createPurchase,
+  getLatestPurchase,
+} from "../../../../libs/supabase/purchase";
+import {
+  fetchUser,
+  fetchUserByEmail,
+  fetchUserByStripeCustomerId,
   updateUserProfile,
   UserProfile,
 } from "../../../../libs/supabase/user";
 import { sendPurchaseConfirmationEmail } from "../../../../emails/purchase-confirmation/purchase-confirmation-email";
 
-const getExpirationDate = (plan: PricingPlan) => {
+const getPlanExpirationDate = (plan: PricingPlan) => {
   switch (plan) {
     case PricingPlan.ONE_DAY_PASS:
       return getIsoDateInFuture(1);
     case PricingPlan.FIVE_DAY_PASS:
       return getIsoDateInFuture(5);
-    case PricingPlan.IMPORTER:
-      return getIsoDateInFuture(31);
     case PricingPlan.PRO:
-      return getIsoDateInFuture(31);
     case PricingPlan.PREMIUM:
       return getIsoDateInFuture(31);
   }
@@ -35,11 +36,9 @@ const getPlanFromPriceId = (priceId: string): PricingPlan | null => {
       return PricingPlan.ONE_DAY_PASS;
     case process.env.STRIPE_FIVE_DAY_PASS_PRICE_ID:
       return PricingPlan.FIVE_DAY_PASS;
-    case process.env.STRIPE_IMPORTER_PRICE_ID:
-      return PricingPlan.IMPORTER;
-    case process.env.STRIPE_STANDARD_PRICE_ID:
-      return PricingPlan.PRO;
     case process.env.STRIPE_PRO_PRICE_ID:
+      return PricingPlan.PRO;
+    case process.env.STRIPE_PREMIUM_PRICE_ID:
       return PricingPlan.PREMIUM;
     default:
       return null;
@@ -82,7 +81,7 @@ export async function POST(req: NextRequest) {
   try {
     switch (eventType) {
       case "checkout.session.completed": {
-        console.log("Stripe Session Completed: User Purchased!");
+        console.log("Stripe Checkout Session Completed");
         // First payment is successful and a subscription is created (if mode was set to "subscription" in ButtonCheckout)
         // ✅ Grant access to the product
         const stripeObject: Stripe.Checkout.Session = stripeEvent.data
@@ -92,9 +91,10 @@ export async function POST(req: NextRequest) {
         if (checkoutSession) {
           console.log("User:", checkoutSession.client_reference_id);
           console.log("Email:", checkoutSession.customer_details?.email);
-          console.log("Session:", checkoutSession);
-          console.log("Line Items:", checkoutSession.line_items?.data[0]);
-          // console.log("Item:", session.line_items?.data[0]?.description);
+          console.log(
+            "Purchase:",
+            checkoutSession.line_items?.data[0]?.description
+          );
         }
 
         const customerId = checkoutSession?.customer;
@@ -115,7 +115,7 @@ export async function POST(req: NextRequest) {
 
         if (!userId) {
           // check if user already exists
-          const userProfile = await fetchUserProfileByEmail(customer.email);
+          const userProfile = await fetchUserByEmail(customer.email);
 
           if (userProfile) {
             user = userProfile;
@@ -129,10 +129,10 @@ export async function POST(req: NextRequest) {
               break;
             }
 
-            user = await fetchUserProfileByEmail(customer.email);
+            user = await fetchUserByEmail(customer.email);
           }
         } else {
-          user = await fetchUserProfile(userId);
+          user = await fetchUser(userId);
         }
 
         if (!user) {
@@ -142,13 +142,16 @@ export async function POST(req: NextRequest) {
           );
         }
 
-        const purchase = await createPurchase({
-          user_id: (checkoutSession.client_reference_id as string) || user.id,
-          customer_id: checkoutSession.customer as string,
-          price_id: checkoutSession.line_items?.data[0]?.price.id,
-          product_name: plan,
-          expires_at: getExpirationDate(plan),
-        });
+        const purchase = await createPurchase(
+          {
+            user_id: (checkoutSession.client_reference_id as string) || user.id,
+            customer_id: checkoutSession.customer as string,
+            price_id: checkoutSession.line_items?.data[0]?.price.id,
+            product_name: plan,
+            expires_at: getPlanExpirationDate(plan),
+          },
+          "checkout.session.completed"
+        );
 
         // Set customer_id in user profile if it doesn't exist
         if (!user.stripe_customer_id) {
@@ -176,7 +179,7 @@ export async function POST(req: NextRequest) {
       }
 
       case "checkout.session.expired": {
-        console.log("Stripe Session Expired: User Did Not Purchase!");
+        console.log("Stripe Checkout Session Expired");
         // User didn't complete the transaction
         // You don't need to do anything here, by you can send an email to the user to remind him to complete the transaction, for instance
         const stripeObject: Stripe.Checkout.Session = stripeEvent.data
@@ -194,6 +197,7 @@ export async function POST(req: NextRequest) {
       }
 
       case "customer.subscription.updated": {
+        console.log("Stripe Customer Subscription Updated");
         // The customer might have changed the plan (higher or lower plan, cancel soon etc...)
         // You don't need to do anything here, because Stripe will let us know when the subscription is canceled for good (at the end of the billing cycle) in the "customer.subscription.deleted" event
         // You can update the user data to show a "Cancel soon" badge for instance
@@ -201,6 +205,7 @@ export async function POST(req: NextRequest) {
       }
 
       case "customer.subscription.deleted": {
+        console.log("Stripe Customer Subscription Deleted");
         // The customer subscription stopped
         // ❌ Revoke access to the product
         // const stripeObject: Stripe.Subscription = stripeEvent.data
@@ -216,33 +221,80 @@ export async function POST(req: NextRequest) {
       }
 
       case "invoice.paid": {
+        console.log("Stripe Invoice Paid");
+        // TODO: Need to test this for subscriptions
+        // TODO: Does this get called when a user buys the first time? (No)
+        // TODO: What happens if a user upgrades / downgrades?
+        // TODO: Do we even allow that? Can we prevent it to simplify?
+
         // Customer just paid an invoice (for instance, a recurring payment for a subscription)
         // ✅ Grant access to the product
-        // const stripeObject: Stripe.Invoice = stripeEvent.data
-        //   .object as Stripe.Invoice;
-        // const priceId = stripeObject.lines.data[0].price.id;
-        // const customerId = stripeObject.customer;
+        const stripeInvoice: Stripe.Invoice = stripeEvent.data
+          .object as Stripe.Invoice;
 
-        // // Find profile where customer_id equals the customerId (in table called 'users')
-        // const { data: profile } = await supabase
-        //   .from("users")
-        //   .select("*")
-        //   .eq("stripe_customer_id", customerId)
-        //   .single();
+        // Only proceed if this is a subscription cycle - ignore all other events for now
+        if (stripeInvoice.billing_reason !== "subscription_cycle") {
+          console.log(
+            `Invoice Paid but not a subscription cycle (${stripeInvoice.billing_reason}), skipping purchase creation`
+          );
+          break;
+        }
+
+        const priceId = stripeInvoice.lines.data[0].pricing.price_details.price;
+        const customerId = stripeInvoice.customer;
+        console.log("Price ID:", priceId);
+        console.log("Customer ID:", customerId);
+
+        // // Find user where stripe_customer_id equals the customerId (in table called 'users')
+        const user = await fetchUserByStripeCustomerId(customerId as string);
+
+        if (!user) {
+          console.error(
+            `User with customer Id ${customerId} and email ${stripeInvoice.customer_email} not found during invoice paid`
+          );
+          break; // Here we break so that the logic that triggers during initial payments can handle setup
+        }
+
+        const latestUserPurchase = await getLatestPurchase(user?.id);
 
         // // Make sure the invoice is for the same plan (priceId) the user subscribed to
-        // if (profile.price_id !== priceId) break;
+        if (latestUserPurchase.price_id !== priceId) {
+          console.log("User has a different current plan than the invoice");
+          break;
+        }
 
-        // // Grant the profile access to your product. It's a boolean in the database, but could be a number of credits, etc...
-        // await supabase
-        //   .from("users")
-        //   .update({ has_access: true })
-        //   .eq("stripe_customer_id", customerId);
+        const plan = getPlanFromPriceId(priceId);
+
+        if (!plan) {
+          console.error("Plan not found for priceId: ", priceId);
+          break;
+        }
+
+        // This is what will create a new purchase record in the database which
+        // is used to determine if a user has access to the product via expires_at
+        await createPurchase(
+          {
+            user_id: user.id,
+            customer_id: customerId as string,
+            price_id: priceId,
+            product_name: plan,
+            expires_at: getPlanExpirationDate(plan),
+          },
+          "invoice.paid"
+        );
 
         break;
       }
 
       case "invoice.payment_failed":
+        const stripeInvoice: Stripe.Invoice = stripeEvent.data
+          .object as Stripe.Invoice;
+
+        console.log(
+          "Stripe Invoice Payment Failed for customer:",
+          stripeInvoice.customer
+        );
+
         // A payment failed (for instance the customer does not have a valid payment method)
         // ❌ Revoke access to the product
         // ⏳ OR wait for the customer to pay (more friendly):
