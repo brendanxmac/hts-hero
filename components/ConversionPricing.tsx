@@ -6,6 +6,8 @@ import { TertiaryText } from "./TertiaryText";
 import Link from "next/link";
 import { StripePaymentMode } from "../libs/stripe";
 import { getFeatureIcon, getFeatureSupportingLabel } from "./Pricing";
+import router from "next/router";
+import { useUser } from "../contexts/UserContext";
 
 // <Pricing/> displays the pricing plans for your app
 // It's your Stripe config in config.js.stripe.plans[] that will be used to display the plans
@@ -21,6 +23,8 @@ const getPricingPlans = (customerType: AboutPage) => {
 };
 
 const ConversionPricing = ({ customerType }: Props) => {
+  const { user } = useUser();
+
   return (
     <section className="bg-neutral-900 overflow-hidden" id="pricing">
       <div className="py-16 px-4 sm:px-8 max-w-7xl mx-auto flex flex-col items-center justify-center">
@@ -242,6 +246,19 @@ const ConversionPricing = ({ customerType }: Props) => {
             </div>
           ))}
         </div>
+
+        {/* Add a button to go to sign in page */}
+        {!user && (
+          <div className="mt-8 text-sm">
+            Already Purchased?{" "}
+            <button
+              className="hover:underline"
+              onClick={() => router.push("/signin")}
+            >
+              Sign In
+            </button>
+          </div>
+        )}
 
         {/* <div className="mt-4">
           <TertiaryText value="One-time purchase. No Subscriptions. Instant access." />

@@ -222,11 +222,6 @@ export async function POST(req: NextRequest) {
 
       case "invoice.paid": {
         console.log("Stripe Invoice Paid");
-        // TODO: Need to test this for subscriptions
-        // TODO: Does this get called when a user buys the first time? (No)
-        // TODO: What happens if a user upgrades / downgrades?
-        // TODO: Do we even allow that? Can we prevent it to simplify?
-
         // Customer just paid an invoice (for instance, a recurring payment for a subscription)
         // ✅ Grant access to the product
         const stripeInvoice: Stripe.Invoice = stripeEvent.data
