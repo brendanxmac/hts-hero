@@ -21,7 +21,7 @@ const BestProgression = z.object({
   index: z.number(),
   description: z.string(),
   logic: z.string(),
-  questions: z.array(z.string()),
+  // questions: z.optional(z.array(z.string())),
 });
 
 export async function POST(req: NextRequest) {
@@ -77,15 +77,16 @@ export async function POST(req: NextRequest) {
       temperature: 0,
       model: "gpt-4o-2024-11-20",
       response_format: responseFormat,
+      // In your response, "questions" is optional, and should only have questions about the product that would help make a better decision between the options, if answered.\n
       messages: [
         {
           role: "system",
           content: `Your job is to determine which description from the list would most accurately match the product description if it were added onto the end of the current description.\n
           If the current description is not provided, just determine which description best matches the product description itself.\n
+          If two or more options all sound like they could be a good fit, you should pick the one that is the most specific, for example if the product description is "jeans" and the options are "cotton fabric" and "trousers", you should pick "trousers" because it is more specific.\n
           You must pick a single description. If you are unsure and "Other" is available as an option, you should pick it.\n
           Note: The use of semicolons (;) in the descriptions should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".\n
-          In your response, "logic" for your selection should explain why the description you picked is the most accurate match.\n
-          In your response, "questions" is optional, and should only have questions about the product that would help make a better decision between the options, if answered.\n
+          In your response, "logic" for your selection should explain why the description you picked is the most suitable match.\n
             ${
               isTestEnv &&
               "The index of the best option must be included in your response\n"
