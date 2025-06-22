@@ -1,10 +1,13 @@
 import Stripe from "stripe";
 
-export type StripePaymentMode = "payment" | "subscription";
+export enum StripePaymentMode {
+  PAYMENT = "payment",
+  SUBSCRIPTION = "subscription",
+}
 
 interface CreateCheckoutParams {
   priceId: string;
-  mode: "payment" | "subscription";
+  mode: StripePaymentMode;
   successUrl: string;
   cancelUrl: string;
   promotionCode?: string | null;
@@ -32,7 +35,7 @@ export const createCheckout = async ({
 }: CreateCheckoutParams): Promise<string> => {
   try {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: "2023-08-16", // TODO: update this when Stripe updates their API
+      apiVersion: "2025-05-28.basil",
       typescript: true,
     });
 
@@ -48,7 +51,7 @@ export const createCheckout = async ({
     if (user?.customerId) {
       extraParams.customer = user.customerId;
     } else {
-      if (mode === "payment") {
+      if (mode === StripePaymentMode.PAYMENT) {
         extraParams.customer_creation = "always";
         // The option below costs 0.4% (up to $2) per invoice. Alternatively, you can use https://zenvoice.io/ to create unlimited invoices automatically.
         // extraParams.invoice_creation = { enabled: true };
@@ -95,7 +98,7 @@ export const createCustomerPortal = async ({
   returnUrl,
 }: CreateCustomerPortalParams): Promise<string> => {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: "2023-08-16", // TODO: update this when Stripe updates their API
+    apiVersion: "2025-05-28.basil",
     typescript: true,
   });
 
@@ -111,7 +114,7 @@ export const createCustomerPortal = async ({
 export const findCheckoutSession = async (sessionId: string) => {
   try {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: "2023-08-16", // TODO: update this when Stripe updates their API
+      apiVersion: "2025-05-28.basil",
       typescript: true,
     });
 

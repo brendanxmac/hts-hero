@@ -251,13 +251,13 @@ export const generateClassificationReport = async (
       yPosition += descriptionLines.length * 6 + 6;
 
       // Recommendation Reason
-      if (level.recommendationReason) {
+      if (level.suggestionReason) {
         doc.setFont("helvetica", "bold");
         doc.text("Recommendation Reason:", margin, yPosition);
         yPosition += 6;
         doc.setFont("helvetica", "normal");
         const reasonLines = doc.splitTextToSize(
-          level.recommendationReason,
+          level.suggestionReason,
           contentWidth
         );
         doc.text(reasonLines, margin, yPosition);

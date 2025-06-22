@@ -44,12 +44,12 @@ const features: {
       {
         point:
           "At every level of classification, HTS Hero suggests the best option available",
-        detail: "⚡️ Greatly improves classification speed for complex items",
+        // detail: "⚡️ Greatly improves classification speed for complex items",
       },
       {
         point:
           "Each suggestion includes an explanation based on the GRI & Additional US Rules",
-        detail: "Formatted to read just like a CROSS ruling",
+        // detail: "Formatted to read just like a CROSS ruling",
       },
       {
         point:
@@ -117,10 +117,11 @@ const features: {
       },
       {
         point:
-          "Built in PDF viewer - No more downloads or opening another tab just to find what you're looking for",
+          "Built in PDF viewer - No more downloads or opening new tabs to find what you're looking for",
       },
       {
-        point: "Built specifically to improve on the USITC website",
+        point: "~10 minutes saved",
+        detail: "per classification",
         isKey: true,
       },
     ],
@@ -194,22 +195,22 @@ const FeaturesListicle = () => {
 
   return (
     <section className="py-24" id="features">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-base-100 max-md:px-8 max-w-4xl mb-8 md:px-12">
-          <h2 className="text-white font-extrabold text-4xl lg:text-5xl tracking-tight mb-5">
+      <div className="max-w-5xl mx-auto">
+        <div className="bg-base-100 max-md:px-8 max-w-5xl mb-8 md:px-12">
+          <h2 className="text-white font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-tight mb-5">
             {/* 💡 COPY TIP: Remind visitors about the value of your product. Why do they need it? */}
             Autocomplete for Classifiers
           </h2>
           <div className="text-neutral-300 leading-relaxed mb-3 lg:text-lg">
             {/* 💡 COPY TIP: Explain how your product delivers what you promise in the headline. */}
-            Automate time-consuming classification tasks & get the information
-            you need to classify quickly with confidence.
+            HTS Hero automates time-consuming classification tasks & quickly
+            finds the information you need to classify with confidence.
           </div>
         </div>
       </div>
 
       <div className="mx-6 md:mx-12">
-        <div className="grid grid-cols-3 md:flex justify-between px-2 gap-4 max-w-3xl mx-auto mb-8">
+        <div className="grid grid-cols-3 md:flex justify-between px-2 gap-4 max-w-4xl mx-auto mb-8">
           {features.map((feature) => (
             <div
               key={feature.name}
@@ -245,7 +246,7 @@ const FeaturesListicle = () => {
             </div>
           ))}
         </div>
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <div className="flex flex-col md:flex-row justify-center md:justify-start md:items-center gap-12">
             <div
               className="leading-relaxed space-y-4 max-w-3xl animate-opacity"

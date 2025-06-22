@@ -44,7 +44,7 @@ const ButtonAccount = () => {
     <Popover>
       {() => (
         <div>
-          <Popover.Button className="overflow-clip focus:outline-none">
+          <Popover.Button className="overflow-clip focus:outline-none border border-base-content/50 rounded-full">
             {user?.user_metadata?.avatar_url ? (
               <img
                 src={user?.user_metadata?.avatar_url}
@@ -75,7 +75,7 @@ const ButtonAccount = () => {
             leaveFrom="transform scale-100 opacity-100"
             leaveTo="transform scale-95 opacity-0"
           >
-            <Popover.Panel className="rounded-xl border border-base-300 absolute z-30 right-0 w-screen max-w-[8rem]">
+            <Popover.Panel className="rounded-xl border border-base-content/50 absolute z-30 right-5 top-14 w-screen max-w-[8rem]">
               <div className="w-full rounded-xl shadow-xl ring-1 ring-base-content ring-opacity-5 bg-base-100 p-1">
                 <div className="space-y-0.5 text-sm flex flex-col w-full">
                   <button

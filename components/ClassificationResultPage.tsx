@@ -38,6 +38,13 @@ import { ClassifyTab } from "../enums/classify";
 import SquareIconButton from "./SqaureIconButton";
 import { CheckIcon, Square2StackIcon } from "@heroicons/react/24/solid";
 import { copyToClipboard } from "../utilities/data";
+import {
+  getLatestPurchase,
+  Purchase,
+  userHasActivePurchase,
+} from "../libs/supabase/purchase";
+import { useUser } from "../contexts/UserContext";
+import { PricingPlan } from "../types";
 
 interface Props {
   setWorkflowStep: (step: WorkflowStep) => void;
@@ -61,6 +68,16 @@ export const ClassificationResultPage = ({
   const { clearBreadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { setActiveTab } = useClassifyTab();
   const [copied, setCopied] = useState(false);
+  const { user } = useUser();
+  const [latestPurchase, setLatestPurchase] = useState<Purchase | null>(null);
+
+  useEffect(() => {
+    if (user) {
+      getLatestPurchase(user.id).then((purchase) => {
+        setLatestPurchase(purchase);
+      });
+    }
+  }, [user]);
 
   useEffect(() => {
     if (copied) {
@@ -80,15 +97,18 @@ export const ClassificationResultPage = ({
               value="🎉 Classification Complete!"
               color={Color.WHITE}
             />
-            <button
-              className="btn btn-xs btn-secondary"
-              onClick={() => {
-                downloadClassificationReport(classification);
-              }}
-            >
-              <ArrowDownTrayIcon className="w-4 h-4" />
-              Download Report
-            </button>
+            {latestPurchase &&
+              latestPurchase.product_name !== PricingPlan.PRO && (
+                <button
+                  className="btn btn-xs btn-secondary"
+                  onClick={() => {
+                    downloadClassificationReport(classification);
+                  }}
+                >
+                  <ArrowDownTrayIcon className="w-4 h-4" />
+                  Download Report
+                </button>
+              )}
           </div>
           <TertiaryText value="You have successfully classified your product and can see the tariff details below or download a full report of the classification for your records." />
         </div>

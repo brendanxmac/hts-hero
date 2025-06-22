@@ -97,10 +97,16 @@ export const ClassificationResults = ({
       productDescription
     );
 
+    const {
+      index: suggestedCandidateIndex,
+      logic: suggestionReason,
+      questions: suggestionQuestions,
+    } = bestProgressionResponse;
+
     console.log("Best Progression Response:", bestProgressionResponse);
     console.log("Elements At Level:", elementsAtLevel);
 
-    const bestMatchElement = elementsAtLevel[bestProgressionResponse.index];
+    const bestMatchElement = elementsAtLevel[suggestedCandidateIndex - 1];
 
     console.log("Best Match Element:", bestMatchElement);
 
@@ -112,7 +118,12 @@ export const ClassificationResults = ({
     );
 
     // Get & Set next selection progression
-    addLevel(elementsAtLevel, bestMatchElement, bestProgressionResponse.logic);
+    addLevel(
+      elementsAtLevel,
+      bestMatchElement,
+      suggestionReason,
+      suggestionQuestions
+    );
 
     // Get Next HTS Elements Chunk
     const nextChunkStartIndex = bestMatchElement.indexInParentArray + 1;
