@@ -29,7 +29,7 @@ export const CandidateElements = ({
   useEffect(() => {
     if (
       candidates.length > 0 &&
-      !classification.levels[classificationLevel].recommendedElement
+      !classification.levels[classificationLevel].suggestedElement
     ) {
       getBestCandidate();
     }
@@ -46,20 +46,25 @@ export const CandidateElements = ({
       description: e.description,
     }));
 
-    const bestProgressionResponse = await getBestClassificationProgression(
+    const {
+      index: suggestedCandidateIndex,
+      logic: suggestionReason,
+      questions: suggestionQuestions,
+    } = await getBestClassificationProgression(
       simplifiedCandidates,
       getProgressionDescriptionWithArrows(levels),
       articleDescription + "\n" + articleAnalysis
     );
 
-    const bestCandidate = candidates[bestProgressionResponse.index];
+    const bestCandidate = candidates[suggestedCandidateIndex - 1];
 
     setClassification((prev: Classification) => {
       const newProgressionLevels = [...prev.levels];
       newProgressionLevels[classificationLevel] = {
         ...newProgressionLevels[classificationLevel],
-        recommendedElement: bestCandidate,
-        recommendationReason: bestProgressionResponse.logic,
+        suggestedElement: bestCandidate,
+        suggestionReason,
+        suggestionQuestions,
       };
       return {
         ...prev,

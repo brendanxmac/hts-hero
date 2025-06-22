@@ -1,23 +1,28 @@
 import { sendEmail } from "../../libs/resend";
+import { StripePaymentMode } from "../../libs/stripe";
 import { Purchase } from "../../libs/supabase/purchase";
 
 export const sendPurchaseConfirmationEmail = async (
   recipient: string,
-  purchase: Purchase
+  purchase: Purchase,
+  mode: StripePaymentMode
 ) => {
-  const html = purchaseConfirmationEmailHtml(purchase);
-  const text = purchaseConfirmationEmailText(purchase);
+  const html = purchaseConfirmationEmailHtml(purchase, mode);
+  const text = purchaseConfirmationEmailText(purchase, mode);
 
   await sendEmail({
     to: recipient,
-    subject: "Purchase Confirmation",
+    subject: `Purchase Confirmation`,
     text,
     html,
     replyTo: "brendan@htshero.com",
   });
 };
 
-export const purchaseConfirmationEmailHtml = (purchase: Purchase) => {
+export const purchaseConfirmationEmailHtml = (
+  purchase: Purchase,
+  mode: StripePaymentMode
+) => {
   return `<!DOCTYPE html>
 <html>
   <head>
@@ -54,21 +59,25 @@ export const purchaseConfirmationEmailHtml = (purchase: Purchase) => {
   </head>
   <body>
     <p>Thank you for choosing HTS Hero! 🎉</p>
-    <p>Your purchase has been confirmed, you now have full access to Code Finder.</p>
+    <p>Your purchase has been confirmed.</p>
 
     <div class="purchase-details">
       <h3>Purchase Details:</h3>
       <p><strong>Order ID:</strong> ${purchase.id}</p>
       <p><strong>Plan:</strong> ${purchase.product_name}</p>
-      <p><strong>Expires:</strong> ${new Date(purchase.expires_at).toLocaleString()}</p>
+      <p><strong>Type:</strong> ${mode === StripePaymentMode.PAYMENT ? "One-Time Payment" : "Subscription"}</p>
+      ${
+        mode === StripePaymentMode.PAYMENT
+          ? `<p><strong>Expires:</strong> ${new Date(purchase.expires_at).toLocaleString()}</p>`
+          : `<p><strong>Renews:</strong> Monthly</p>`
+      }
       <p><strong>Purchase Date:</strong> ${new Date(purchase.created_at).toLocaleString()}</p>
     </div>
 
     <h3>What's next?</h3>
-    <p>🚨 If you didn't sign up prior to purchasing,<span style="color: red; font-weight: bold;"> you must sign up with the same email you used to purchase</span></p>
-    
-    <p>Otherwise, after logging in (if not already) you can go directly to the <a href="https://htshero.com/signin">app</a> to get your HTS Code!</p>
-
+    <p>🚨 If you didn't sign up prior to purchasing,<span style="color: red; font-weight: bold;"> you must sign up with the same email you used to purchase.</span></p>
+    <p>Once logged in, you'll be able to access all the HTS Hero features that you purchased!</p>
+    <p>To view or manage your purchase, log into HTS Hero & click on your profile icon in the top right corner, then click "Billing".</p>
     <p>If you have any questions or need assistance, our support team (support@htshero.com) is here to help!</p>
     
 
@@ -85,23 +94,27 @@ export const purchaseConfirmationEmailHtml = (purchase: Purchase) => {
 </html>`;
 };
 
-export const purchaseConfirmationEmailText = (purchase: Purchase) => {
+export const purchaseConfirmationEmailText = (
+  purchase: Purchase,
+  mode: StripePaymentMode
+) => {
   return `Thank you for choosing HTS Hero! 🎉
 
-Your purchase has been confirmed, you now have full access to Code Finder.
+Your purchase has been confirmed.
 
 Purchase Details:
 Order ID: ${purchase.id}
 Plan: ${purchase.product_name}
+Type: ${mode === StripePaymentMode.PAYMENT ? "One-Time Payment" : "Subscription"}
 Expires: ${new Date(purchase.expires_at).toLocaleString()}
 Purchase Date: ${new Date(purchase.created_at).toLocaleString()}
 
 What's next?
 🚨 If you didn't sign up before purchasing, you must sign up with the same email you used to purchase
 
-Otherwise after logging in (if not already) and go to the app (https://htshero.com/app) to get your HTS Code!
+Otherwise after logging in (if not already) you'll be able to access all the features of the app that you purchased!
 
-Get your HTS Code: https://htshero.com/app
+To access the app, go to: https://htshero.com/app
 
 If you have any questions or need assistance, our support team is here to help (support@htshero.com)!
 

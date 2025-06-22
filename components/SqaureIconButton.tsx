@@ -96,12 +96,12 @@ export default function SquareIconButton({
 
   if (tooltip) {
     return (
-      <>
+      <div>
         {button}
         {showTooltip && (
           <TooltipPortal anchorRef={buttonRef}>{tooltip}</TooltipPortal>
         )}
-      </>
+      </div>
     );
   }
 

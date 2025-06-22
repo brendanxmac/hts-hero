@@ -3,6 +3,10 @@
 import { useState } from "react";
 import apiClient from "@/libs/api";
 import { PricingPlan } from "../types";
+import { fetchUser } from "../libs/supabase/user";
+import { useUser } from "../contexts/UserContext";
+import { userHasActivePurchase } from "../libs/supabase/purchase";
+import toast from "react-hot-toast";
 
 interface Props {
   itemId: PricingPlan;
@@ -17,12 +21,12 @@ const getBuyButtonText = (plan: PricingPlan) => {
     return "Get 5-Day Pass";
   }
 
-  if (plan === PricingPlan.STANDARD) {
-    return `Get ${plan}!`;
-  }
-
   if (plan === PricingPlan.PRO) {
     return `Go ${plan}!`;
+  }
+
+  if (plan === PricingPlan.PREMIUM) {
+    return `Get ${plan}!`;
   }
 
   return "Buy Now!";
@@ -33,16 +37,27 @@ const getBuyButtonText = (plan: PricingPlan) => {
 // Users must be authenticated. It will prefill the Checkout data with their email and/or credit card (if any)
 // You can also change the mode to "subscription" if you want to create a subscription instead of a one-time payment
 const ButtonCheckout = ({ itemId }: Props) => {
+  const { user } = useUser();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handlePayment = async () => {
     setIsLoading(true);
+
+    // Check if user has an active purchase
+    const userAlreadyHasAccess = user && (await userHasActivePurchase(user.id));
+
+    if (userAlreadyHasAccess) {
+      toast.success("You already have an active purchase");
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const { url }: { url: string } = await apiClient.post(
         "/stripe/create-checkout",
         {
           itemId,
+          cancelUrl: window.location.href,
         }
       );
 
