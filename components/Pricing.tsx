@@ -136,7 +136,7 @@ const getPricingHeadline = (customerType: AboutPage) => {
       </h2>
       <div className="flex flex-col justify-center items-center">
         <p className="text-xl font-bold text-primary">
-          Launch Deal: 50% off for 2 Months!
+          Launch Deal: 50% Off Monthly Plans!
         </p>
         <div className="flex items-center gap-1">
           <svg
