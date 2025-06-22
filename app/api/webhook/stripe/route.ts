@@ -281,7 +281,7 @@ export async function POST(req: NextRequest) {
         break;
       }
 
-      case "invoice.payment_failed":
+      case "invoice.payment_failed": {
         const stripeInvoice: Stripe.Invoice = stripeEvent.data
           .object as Stripe.Invoice;
 
@@ -297,6 +297,7 @@ export async function POST(req: NextRequest) {
         //      - We will receive a "customer.subscription.deleted" when all retries were made and the subscription has expired
 
         break;
+      }
 
       default:
       // Unhandled event type
