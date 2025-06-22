@@ -12,8 +12,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/app", req.url));
   }
 
-  const isRedirectPath =
-    pathname === "/blog" || pathname === "/" || pathname === "/about";
+  const isRedirectPath = pathname === "/blog" || pathname === "/";
 
   if (isRedirectPath) {
     return NextResponse.redirect(new URL("/about/importer", req.url));
