@@ -84,7 +84,7 @@ export interface BestProgressionResponse {
   index: number;
   description: string;
   logic: string;
-  questions: string[];
+  questions?: string[];
 }
 
 export interface BestHeadingEvaluationResponse {
