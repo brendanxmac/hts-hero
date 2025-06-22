@@ -11,15 +11,20 @@ export default function AboutPage() {
         </h3> */}
 
         <div className="w-full space-y-12">
-          <h2 className="w-full text-3xl md:text-4xl font-extrabold text-white">
-            Welcome! Which sounds more like you?
-          </h2>
+          <div>
+            <h2 className="w-full text-lg md:text-xl font-semibold text-white">
+              Welcome to HTS Hero!
+            </h2>
+            <h3 className="mt-2 w-full text-3xl md:text-4xl font-extrabold text-white">
+              Which sounds more like you?
+            </h3>
+          </div>
           <div className="w-full flex flex-col gap-6">
             <Link
               href="/about/importer"
               className="grow btn btn-primary h-60 text-3xl"
             >
-              Importer looking for the right HTS Code
+              Importer looking for HTS Code
             </Link>
 
             <Link
