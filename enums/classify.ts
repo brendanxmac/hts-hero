@@ -11,4 +11,5 @@ export enum ClassifyPage {
 export enum AboutPage {
   IMPORTER = "importer",
   CLASSIFIER = "classifier",
+  PARTNER = "partner",
 }
