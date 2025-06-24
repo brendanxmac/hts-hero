@@ -12,10 +12,15 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/app", req.url));
   }
 
-  const isRedirectPath = pathname === "/blog" || pathname === "/";
+  const isRedirectPath =
+    pathname === "/blog" ||
+    pathname === "/" ||
+    pathname === "/about" ||
+    pathname === "/about/importer" ||
+    pathname.includes("/about/importer/");
 
   if (isRedirectPath) {
-    return NextResponse.redirect(new URL("/about/importer", req.url));
+    return NextResponse.redirect(new URL("/about/classifier", req.url));
   }
 
   const IS_TEST_ENV = process.env.APP_ENV === "test";
