@@ -21,8 +21,8 @@ const ClassifierHero = () => {
         <p className="text-lg text-neutral-300 leading-relaxed">
           {/* Self-Service HTS Codes for your clients with help and upsells
           opportunities just a click away. */}
-          The self-service classification system that gets more clients through
-          the door & leads directly to upsells.
+          The self-service classification system that gets more clients & leads
+          to upsells.
         </p>
 
         <Link
