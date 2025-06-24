@@ -30,11 +30,11 @@ const FeaturesAccordion = () => {
       <div className="px-3">
         <div className="flex flex-col gap-5 mb-6 md:mb-12">
           <h2 className="text-white font-extrabold text-4xl lg:text-6xl tracking-tight">
-            Type Description, Get Code
+            But you can do it!
           </h2>
           <p className="pl-2 text-base-content">
-            Code Finder guides you step-by-step to a valid HTS Code for your
-            product. <br /> No experience needed, just a clear description.
+            If you have a clear and accurate description of your product, you
+            can self-classify
           </p>
           <Link className="btn btn-primary btn-wide" href={"/app"}>
             Try it now!

@@ -19,7 +19,7 @@ export const FeaturePoints = ({ points }: Props) => {
           key={point}
           className={classNames(
             "flex items-start gap-3",
-            isKey && "text-primary font-medium pt-3",
+            isKey && "text-secondary font-medium pt-3",
             !isKey && "text-gray-100"
           )}
         >
