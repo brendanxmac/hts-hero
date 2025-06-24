@@ -25,9 +25,9 @@ const Arrow = ({ extraStyle }: { extraStyle: string }) => {
 };
 const Step = ({ emoji, text }: { emoji: string; text: string }) => {
   return (
-    <div className="w-full md:w-48 flex flex-col gap-2 items-center justify-center">
+    <div className="w-full lg:w-48 flex flex-col gap-2 items-center justify-center">
       <span className="text-4xl">{emoji}</span>
-      <h3 className="font-bold">{text}</h3>
+      <h3 className="font-bold text-white">{text}</h3>
     </div>
   );
 };
@@ -35,11 +35,11 @@ const Step = ({ emoji, text }: { emoji: string; text: string }) => {
 const Problem = () => {
   return (
     <section className="bg-base-300 text-neutral-content">
-      <div className="max-w-7xl mx-auto px-8 py-16 md:py-32 text-center">
-        <h2 className="text-white max-w-3xl mx-auto font-extrabold text-4xl md:text-5xl tracking-tight mb-16">
-          How it Works:
+      <div className="max-w-7xl mx-auto px-8 py-16 lg:py-32 text-center">
+        <h2 className="text-white max-w-3xl mx-auto font-extrabold text-4xl lg:text-5xl tracking-tight mb-16">
+          How does it work?
         </h2>
-        <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-8 sm:gap-3 mb-16">
+        <div className="flex flex-col lg:flex-row justify-center items-center lg:items-start gap-8 sm:gap-3">
           <div className="flex flex-col justify-center items-center">
             <Step emoji="🎁" text="You Sell Classification" />
             <p className="text-neutral-400 text-xs italic">
@@ -47,7 +47,7 @@ const Problem = () => {
             </p>
           </div>
 
-          <Arrow extraStyle="max-md:-scale-x-100 md:-rotate-90" />
+          <Arrow extraStyle="max-lg:-scale-x-100 lg:-rotate-90" />
 
           <div className="flex flex-col justify-center items-center">
             <Step emoji="✅" text="Client gets HTS Hero" />
@@ -56,7 +56,7 @@ const Problem = () => {
             </p>
           </div>
 
-          <Arrow extraStyle="md:-scale-x-100 md:-rotate-90" />
+          <Arrow extraStyle="lg:-scale-x-100 lg:-rotate-90" />
 
           <div className="flex flex-col justify-center items-center">
             <Step emoji="🎉" text="Client Finds Code" />
@@ -65,41 +65,58 @@ const Problem = () => {
             </p>
           </div>
 
-          <Arrow extraStyle="max-md:-scale-x-100 md:-rotate-90" />
+          <Arrow extraStyle="max-lg:-scale-x-100 lg:-rotate-90" />
 
           <div className="flex flex-col justify-center items-center">
-            <Step emoji="🚀" text="HTS Hero funnels them to your services" />
+            <Step emoji="🚀" text="We Promote Your Offers" />
             <p className="text-neutral-400 text-xs italic">
-              And provides valuable updates if configured
+              So clients see what else you can help with
             </p>
           </div>
         </div>
 
-        <p className="text-white max-w-3xl mx-auto text-xl font-bold opacity-90 leading-relaxed">
-          More clients, more upsells, premium service
-        </p>
-        <div className="flex items-center justify-center gap-1 w-full mt-8 md:mt-20 animate-pulse">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="w-4 h-4 text-neutral-300"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"
-            />
-          </svg>
+        <div className="flex flex-col justify-center items-center gap-6 mt-10 lg:mt-24">
+          <p className="text-white max-w-3xl mx-auto text-xl font-bold opacity-90 leading-relaxed">
+            More clients, more upsells, premium service
+          </p>
+          <div className="flex items-center justify-center gap-1 w-full animate-pulse">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-4 h-4 text-neutral-300"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"
+              />
+            </svg>
 
-          <Link
-            className="text-center text-sm text-neutral-300 tracking-tight"
-            href="/about/importer#features"
-          >
-            What does this mean for your business?
-          </Link>
+            <Link
+              className="text-center text-sm text-neutral-300 tracking-tight"
+              href="/about/partner#features"
+            >
+              What could this mean for your business?
+            </Link>
+
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-4 h-4 text-neutral-300"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"
+              />
+            </svg>
+          </div>
         </div>
       </div>
     </section>

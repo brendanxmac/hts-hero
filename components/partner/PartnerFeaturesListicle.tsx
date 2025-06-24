@@ -23,10 +23,11 @@ const features: {
       },
       {
         point:
-          "Frees up your classifiers to work on other parts of the business",
+          "Free up you or your employees time to work on other parts of the business",
       },
       {
-        point: "Drives more revenue via upsells & established trust",
+        point: "Premium experience that builds trust",
+        detail: "Without spending 1000's on a tech team",
       },
       {
         point: "Result: more clients & more upsells",
@@ -36,7 +37,7 @@ const features: {
     svg: <LightningSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
   {
-    name: "Capture More Clients & Upsells",
+    name: "Capture More Clients",
     points: [
       {
         point:
@@ -61,22 +62,47 @@ const features: {
     svg: <LightBulbSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
   {
-    name: "Plug & Play",
+    name: "Reduce your Workload",
     points: [
       {
-        point:
-          "Generate client-ready classification reports, in a single click",
+        point: "We handle everything from product analysis to final reports",
+        detail: "But allow you to have control over the process",
       },
       {
         point:
-          "Includes all reasoning and a detailed breakdown for each selection",
+          "We promote your other services to help you land upsells beyond classification",
       },
       {
-        point: "Easily store for your own records & auditability",
+        point:
+          "This frees up you or your employees to work on other parts of the business",
       },
       {
-        point: "~20 minutes saved",
-        detail: "per classification",
+        point:
+          "Result: more clients, more upsells, & time to build your business",
+        isKey: true,
+      },
+    ],
+    svg: <LightBulbSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
+  },
+  {
+    name: "Set Up in Minutes",
+    points: [
+      {
+        point: "We create a custom link for your clients to use",
+      },
+      {
+        point:
+          "They sign up in a single click, and are linked to your business",
+      },
+      {
+        point:
+          "We handle training, tech, & support so you can focus on your business",
+        detail:
+          "Or, opt-in to be the point of contact or expert help for your clients",
+      },
+      {
+        point: "Result: Automatic classifications in minutes",
+        detail: "and you stand out from the competition",
         isKey: true,
       },
     ],
@@ -97,13 +123,16 @@ const FeaturesListicle = () => {
         <div className="bg-base-100 max-md:px-8 max-w-5xl mb-8 md:px-12">
           <h2 className="text-white font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-tight mb-5">
             {/* 💡 COPY TIP: Remind visitors about the value of your product. Why do they need it? */}
-            {/* Classifications that Drive Revenue  */}
-            Expand Revenue via Classifications
+            {/* Grow Revenue via Classifications */}
+            {/* Grow your Offerings, Not your Workload */}
+            {/* Service Clients without Lifting a Finger */}
+            {/* HTS Code that Work While You Sleep */}
+            More Classifications, Less Work
           </h2>
           <div className="text-neutral-300 leading-relaxed mb-3 lg:text-lg">
             {/* 💡 COPY TIP: Explain how your product delivers what you promise in the headline. */}
-            HTS Hero enables low or no-touch classifications & provides an
-            afforable yet premium experience that builds trust.
+            HTS Hero provides affordable low or no-touch classifications and a
+            premium experience that builds trust.
           </div>
         </div>
       </div>
