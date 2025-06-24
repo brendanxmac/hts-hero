@@ -10,14 +10,17 @@ const PartnerCTA = () => {
           <h2 className="text-white font-bold text-4xl md:text-6xl tracking-tight mb-8 md:mb-12">
             {/* Make Classification a Easy! */}
             {/* Classify with Ease! */}
-            Watch your Business grow with{" "}
-            <span className="text-primary">automatic</span>
-            <br /> classifications
+            {/* Watch your Business grow with{" "} */}
+            {/* <span className="text-primary">automatic</span> */}
+            {/* <br /> classifications */}
+            Plug in HTS Hero,
+            <br /> Grow your Business.
           </h2>
           <p className="md:text-lg mb-12 md:mb-16">
-            Provide a desirable offering, free up your resources, and drive more
-            upsells.
-            <br /> Get the intelligent classification assistant.
+            Provide a unique and desired offering, free up your resources, and
+            drive upsells.
+            <br /> Get the Self-Classification System that clients are asking
+            for.
           </p>
 
           <Link

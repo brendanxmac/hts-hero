@@ -75,7 +75,7 @@ const Problem = () => {
           </div>
         </div>
 
-        <div className="flex flex-col justify-center items-center gap-6 mt-10 lg:mt-24">
+        {/* <div className="flex flex-col justify-center items-center gap-6 mt-10 lg:mt-24">
           <p className="text-white max-w-3xl mx-auto text-xl font-bold opacity-90 leading-relaxed">
             More clients, more upsells, premium service
           </p>
@@ -117,7 +117,7 @@ const Problem = () => {
               />
             </svg>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );

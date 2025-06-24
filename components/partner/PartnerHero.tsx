@@ -16,7 +16,7 @@ const ClassifierHero = () => {
           {/* HTS Codes for your Clients
           <br />
           <span className="text-primary">without Lifting a Finger</span> */}
-          Automatic HTS Codes that Boost your Business
+          Boost your Business with Classifications
         </h1>
         <p className="text-lg text-neutral-300 leading-relaxed">
           {/* Self-Service HTS Codes for your clients with help and upsells

@@ -8,6 +8,10 @@ import DocumentCheckSVG from "../svg/DocumentCheckSVG";
 import { classNames } from "../../utilities/style";
 import LightningSVG from "../svg/LightningSVG";
 import Link from "next/link";
+import StarSVG from "../svg/StarSVG";
+import FunnelSVG from "../svg/FunnelSVG";
+import UpRightArrowSVG from "../svg/UpTrendSVG";
+import RocketSVG from "../svg/RocketSVG";
 
 const features: {
   name: string;
@@ -19,70 +23,81 @@ const features: {
     points: [
       {
         point:
-          "Offer an affordable, modern, & fast classification tool your clients will love.",
+          "Offer an affordable, modern, & fast self-classification tool your clients will love.",
       },
       {
-        point:
-          "Free up you or your employees time to work on other parts of the business",
+        point: "Supercharge your internal classifications",
       },
       {
-        point: "Premium experience that builds trust",
-        detail: "Without spending 1000's on a tech team",
+        point: "Free up time to focus on other parts of the business",
       },
       {
-        point: "Result: more clients & more upsells",
+        point: "Provide a premium experience that builds trust",
+      },
+      {
+        point: "Result: More clients & more upsell potential",
         isKey: true,
       },
     ],
-    svg: <LightningSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
+    svg: <StarSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
   {
     name: "Capture More Clients",
     points: [
       {
         point:
-          "At every level of classification, HTS Hero suggests the best option available",
-        // detail: "⚡️ Greatly improves classification speed for complex items",
+          "A budget option sells unsure prospects & lets you demonstrate value",
       },
       {
         point:
-          "Each suggestion includes an explanation based on the GRI & Additional US Rules",
-        // detail: "Formatted to read just like a CROSS ruling",
+          "Self-Service + Quicker Internal Classifications = More Clients & Higher Margins",
       },
       {
-        point:
-          "Suggestions are automatically added to your reports, ready to share with clients or customs",
-      },
-      {
-        point: "~10 minutes saved",
-        detail: "per classification",
+        point: "Result: More clients & more upsell potential",
         isKey: true,
       },
     ],
-    svg: <LightBulbSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
+    svg: <FunnelSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
+  },
+  {
+    name: "Encourage Upsells",
+    points: [
+      {
+        point:
+          "Together, we provide a premium experience that establishes trust",
+      },
+      {
+        point: "HTS Hero then highlights other problems they might have",
+      },
+      {
+        point: "And your offerings that solve those problems are a click away",
+      },
+      {
+        point: "Result: More upsells",
+        isKey: true,
+      },
+    ],
+    svg: <UpRightArrowSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
   {
     name: "Reduce your Workload",
     points: [
       {
-        point: "We handle everything from product analysis to final reports",
-        detail: "But allow you to have control over the process",
+        point:
+          "We handle everything from product analysis to report generation",
+        detail:
+          "But provide control & customization over each step of the process",
       },
       {
         point:
           "We promote your other services to help you land upsells beyond classification",
       },
       {
-        point:
-          "This frees up you or your employees to work on other parts of the business",
-      },
-      {
-        point:
-          "Result: more clients, more upsells, & time to build your business",
+        point: "Result: More time to build your business",
         isKey: true,
       },
     ],
-    svg: <LightBulbSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
+    svg: <RocketSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
   {
     name: "Set Up in Minutes",
@@ -95,18 +110,17 @@ const features: {
           "They sign up in a single click, and are linked to your business",
       },
       {
-        point:
-          "We handle training, tech, & support so you can focus on your business",
-        detail:
-          "Or, opt-in to be the point of contact or expert help for your clients",
+        point: "We handle the training, tech, and support",
       },
       {
-        point: "Result: Automatic classifications in minutes",
-        detail: "and you stand out from the competition",
+        point: "You customise the experience for your brand & business",
+      },
+      {
+        point: "Result: Client-ready in minutes",
         isKey: true,
       },
     ],
-    svg: <DocumentCheckSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
+    svg: <LightningSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
 ];
 
@@ -131,8 +145,8 @@ const FeaturesListicle = () => {
           </h2>
           <div className="text-neutral-300 leading-relaxed mb-3 lg:text-lg">
             {/* 💡 COPY TIP: Explain how your product delivers what you promise in the headline. */}
-            HTS Hero provides affordable low or no-touch classifications and a
-            premium experience that builds trust.
+            Affordable low-touch classifications and a premium experience that
+            builds trust & drives upsells.
           </div>
         </div>
       </div>
@@ -193,26 +207,9 @@ const FeaturesListicle = () => {
           </div>
           <Link
             className="mt-8 btn btn-primary btn-wide"
-            href={"/about/classifier#pricing"}
-            // onClick={() => {
-            //   const trigger =
-            //     featureSelected === "Notes & References"
-            //       ? RegistrationTrigger.feature_notes
-            //       : featureSelected === "CROSS Rulings"
-            //         ? RegistrationTrigger.feature_cross_rulings
-            //         : featureSelected === "Match Suggestions"
-            //           ? RegistrationTrigger.feature_match_suggestions
-            //           : featureSelected === "Product Analysis"
-            //             ? RegistrationTrigger.feature_product_analysis
-            //             : featureSelected === "Report Generation"
-            //               ? RegistrationTrigger.feature_report_generation
-            //               : RegistrationTrigger.feature_more_features;
-            //   setIsRegisterOpen(true);
-            //   setRegistrationTrigger(trigger);
-            // }}
+            href={"/about/partner#pricing"}
           >
-            Try it now!
-            {/* Get {config.appName} */}
+            Find out More
           </Link>
         </div>
       </div>
