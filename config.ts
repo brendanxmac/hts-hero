@@ -1,6 +1,79 @@
 import themes from "daisyui/src/theming/themes";
-import { ConfigProps, PricingPlan } from "./types/config";
+import { ConfigProps, PricingPlan, PricingPlanI } from "./types/config";
 import { StripePaymentMode } from "./libs/stripe";
+
+const proPlan: PricingPlanI = {
+  name: PricingPlan.PRO,
+  description: "The Classification Assistant for Customs Brokers",
+  mode: StripePaymentMode.SUBSCRIPTION,
+  price: 20,
+  priceAnchor: 40,
+  isFeatured: true,
+  features: [
+    { name: "Heading Discovery" },
+    { name: "Candidate Suggestions" },
+    { name: "Report Generation" },
+    { name: "Note Fetching" },
+    {
+      name: "Enhanced HTS Explorer",
+    },
+    {
+      name: "Built-in PDF Viewer",
+      details: "No downloads needed to find what you're looking for!",
+    },
+  ],
+};
+
+const premiumPlan: PricingPlanI = {
+  name: PricingPlan.PREMIUM,
+  description: "Your Supercharged Classification Assistant",
+  mode: StripePaymentMode.SUBSCRIPTION,
+  price: 30,
+  priceAnchor: 60,
+  features: [
+    { name: "Everything in Pro, Plus:" },
+    {
+      name: "Classification History",
+      details: "For easy access, reference, & auditability",
+      comingSoon: true,
+    },
+    {
+      name: "Branded Reports",
+      details: "Your branding & logo on every report",
+      comingSoon: true,
+    },
+    {
+      name: "Sharable Classifications",
+      details:
+        "Secure view-only links to classifications for clients & customs",
+      comingSoon: true,
+    },
+    {
+      name: "Tariff Finder",
+      details: "Cut through the noise & nail your tariff calculations",
+      comingSoon: true,
+    },
+  ],
+};
+
+const fiveDayPassPlan: PricingPlanI = {
+  name: PricingPlan.FIVE_DAY_PASS,
+  description: "Try HTS Hero Pro for 5 Days",
+  mode: StripePaymentMode.PAYMENT,
+  price: 20,
+  priceAnchor: 40,
+  features: [
+    {
+      name: "Includes everything in Pro",
+    },
+    {
+      name: "One-Time Payment",
+    },
+    {
+      name: "Unlimited Access for 5 Days",
+    },
+  ],
+};
 
 const config: ConfigProps = {
   // REQUIRED
@@ -17,192 +90,8 @@ const config: ConfigProps = {
   },
   stripe: {
     // Create multiple plans in your Stripe dashboard, then add them here. You can add as many plans as you want, just make sure to add the priceId
-    importerPlans: [
-      {
-        // priceId: process.env.STRIPE_ONE_DAY_PASS_PRICE_ID || "",
-        // promotionCode: process.env.STRIPE_HALF_OFF_PROMO_ID || "", // 50% off for launch
-        name: PricingPlan.ONE_DAY_PASS,
-        description: "Access Code Finder for 24 Hours",
-        mode: StripePaymentMode.PAYMENT,
-        price: 10,
-        priceAnchor: 20,
-        features: [
-          {
-            name: "Candidate Discovery",
-          },
-          {
-            name: "Candidate Analysis & Suggestions",
-          },
-          {
-            name: "Results in Seconds",
-          },
-          {
-            name: "Full Classification Reports",
-          },
-        ],
-      },
-      {
-        name: PricingPlan.FIVE_DAY_PASS,
-        description: "Access Code Finder for 5 Days",
-        mode: StripePaymentMode.PAYMENT,
-        price: 25,
-        priceAnchor: 50,
-        isFeatured: true,
-        features: [
-          {
-            name: "Candidate Discovery",
-          },
-          {
-            name: "Candidate Analysis & Suggestions",
-          },
-          {
-            name: "Results in Seconds",
-          },
-          {
-            name: "Full Classification Reports",
-          },
-        ],
-      },
-      // {
-      //   name: PricingPlan.IMPORTER,
-      //   description: "Unlimited Access to Code Finder",
-      //   mode: StripePaymentMode.SUBSCRIPTION,
-      //   price: 20,
-      //   priceAnchor: 40,
-      //   features: [
-      //     { name: "No cutoff date, ready to use whenever you need it" },
-      //     {
-      //       name: "Candidate Discovery",
-      //     },
-      //     {
-      //       name: "Candidate Analysis & Suggestions",
-      //     },
-      //     {
-      //       name: "Results in Seconds",
-      //     },
-      //     {
-      //       name: "Full Classification Reports",
-      //     },
-      //   ],
-      // },
-    ],
-    classifierPlans: [
-      {
-        name: PricingPlan.PRO,
-        description: "The Classification Sidekick for Customs Brokers",
-        mode: StripePaymentMode.SUBSCRIPTION,
-        price: 20,
-        priceAnchor: 40,
-        isFeatured: true,
-        features: [
-          { name: "Heading Discovery" },
-          { name: "Candidate Suggestions" },
-          { name: "Report Generation" },
-          { name: "Note Fetching" },
-          {
-            name: "Enhanced HTS Explorer",
-          },
-          {
-            name: "Built-in PDF Viewer",
-            details: "No downloads needed to find what you're looking for!",
-          },
-        ],
-      },
-      // {
-      //   name: PricingPlan.PREMIUM,
-      //   description: "Your Supercharged Classification Assistant",
-      //   mode: StripePaymentMode.SUBSCRIPTION,
-      //   price: 30,
-      //   priceAnchor: 60,
-      //   features: [
-      //     { name: "Everything in Pro, Plus:" },
-      //     {
-      //       name: "Classification History",
-      //       details: "For easy access, reference, & auditability",
-      //       comingSoon: true,
-      //     },
-      //     {
-      //       name: "Branded Reports",
-      //       details: "Your branding & logo on every report",
-      //       comingSoon: true,
-      //     },
-      //     {
-      //       name: "Sharable Classifications",
-      //       details:
-      //         "Secure view-only links to classifications for clients & customs",
-      //       comingSoon: true,
-      //     },
-      //     {
-      //       name: "Tariff Finder",
-      //       details: "Cut through the noise & nail your tariff calculations",
-      //       comingSoon: true,
-      //     },
-      //   ],
-      // },
-    ],
-    conversionPlans: [
-      {
-        name: PricingPlan.PRO,
-        description: "Unlimited Access to Code Finder ",
-        mode: StripePaymentMode.SUBSCRIPTION,
-        price: 20,
-        priceAnchor: 40,
-        features: [
-          { name: "Unlimited Classifications" },
-          { name: "Heading Discovery" },
-          {
-            name: "Candidate Analysis & Suggestions",
-            details: "Based on the GRI & Additional US Rules",
-          },
-          { name: "Fetches Relevant Notes" },
-          {
-            name: "Built-in PDF Viewer",
-            details: "No downloads needed!",
-          },
-        ],
-      },
-      {
-        name: PricingPlan.PREMIUM,
-        description: "Code Finder + Report Generation",
-        mode: StripePaymentMode.SUBSCRIPTION,
-        price: 30,
-        priceAnchor: 60,
-        isFeatured: true,
-        features: [
-          { name: "Everything in Pro, Plus:" },
-          {
-            name: "Report Generation",
-            details: "Get Ready-to-Share Classification Reports",
-          },
-          {
-            name: "Classification History",
-            comingSoon: true,
-          },
-          {
-            name: "Tariff Assistant",
-            roadmap: true,
-          },
-        ],
-      },
-      {
-        name: PricingPlan.FIVE_DAY_PASS,
-        description: "Access HTS Hero Premium for 5 Days",
-        mode: StripePaymentMode.PAYMENT,
-        price: 25,
-        priceAnchor: 50,
-        features: [
-          {
-            name: "Includes everything in Pro",
-          },
-          {
-            name: "One-Time Payment",
-          },
-          {
-            name: "Unlimited Access for 5 Days",
-          },
-        ],
-      },
-    ],
+    classifierPlans: [fiveDayPassPlan, proPlan],
+    conversionPlans: [fiveDayPassPlan, proPlan],
   },
   // aws: {
   //   // If you use AWS S3/Cloudfront, put values in here
