@@ -90,7 +90,7 @@ export const ClassificationNavigation = ({
           {/* <div className="w-px h-6 bg-base-content/20" /> */}
 
           <div className="grow text-center">
-            <PrimaryLabel value="Code Finder" color={Color.WHITE} />
+            <PrimaryLabel value="Classify" color={Color.WHITE} />
           </div>
         </div>
 

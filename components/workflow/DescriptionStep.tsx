@@ -94,7 +94,7 @@ export const DescriptionStep = ({
       <div className="w-full max-w-3xl mx-auto px-8">
         <StepNavigation
           next={{
-            label: "Get Code",
+            label: "Start",
             fill: true,
             onClick: async () => {
               const isPayingUser = user

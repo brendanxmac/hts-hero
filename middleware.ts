@@ -12,9 +12,6 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/app", req.url));
   }
 
-  console.log("pathname", pathname);
-  console.log("pathname", pathname.includes("/about/parnter"));
-
   const isRedirectPath =
     pathname === "/blog" ||
     pathname === "/" ||

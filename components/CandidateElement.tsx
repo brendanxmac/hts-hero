@@ -274,15 +274,12 @@ export const CandidateElement = ({
                 onClick={() => {}}
               /> */}
               <SparklesIcon className="h-4 w-4 text-accent" />
-              <TertiaryLabel
-                value="Suggested by HTS Hero"
-                color={Color.ACCENT}
-              />
+              <TertiaryLabel value="Suggested" color={Color.ACCENT} />
             </div>
 
             <div className="flex flex-col gap-2">
-              <TertiaryLabel value="Reasoning:" />
-              <p className="text-sm dark:text-white/90 ml-2">
+              {/* <TertiaryLabel value="Reasoning:" /> */}
+              <p className="text-sm italic text-base-content ml-2">
                 {recommendedReason}
               </p>
             </div>
