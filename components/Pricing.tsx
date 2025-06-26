@@ -81,9 +81,9 @@ export const getFeatureIcon = (feature: FeatureI) => {
 };
 
 const getPricingPlans = (customerType: AboutPage) => {
-  if (customerType === AboutPage.IMPORTER) {
-    return config.stripe.importerPlans;
-  }
+  // if (customerType === AboutPage.IMPORTER) {
+  //   return config.stripe.importerPlans;
+  // }
 
   if (customerType === AboutPage.CLASSIFIER) {
     return config.stripe.classifierPlans;
@@ -135,7 +135,9 @@ const getPricingHeadline = (customerType: AboutPage) => {
         <br /> for less than $1 per day
       </h2>
       <div className="flex flex-col justify-center items-center">
-        <p className="text-xl font-bold text-primary">Launch Deal: 50% Off!</p>
+        <p className="text-xl font-bold text-primary">
+          Launch Deal: 50% Off all plans!
+        </p>
         <div className="flex items-center gap-1">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -182,11 +184,11 @@ const Pricing = ({ customerType }: PricingProps) => {
             >
               {plan.isFeatured && (
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
-                  {/* <span
+                  <span
                     className={`badge text-xs text-black font-semibold border-0 bg-primary`}
                   >
-                    Offer Expires Soon!
-                  </span> */}
+                    BEST VALUE
+                  </span>
                 </div>
               )}
 

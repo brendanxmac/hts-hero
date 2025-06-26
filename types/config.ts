@@ -103,7 +103,7 @@ export interface ConfigProps {
     onlyShowOnRoutes?: string[];
   };
   stripe: {
-    importerPlans: PricingPlanI[];
+    // importerPlans: PricingPlanI[];
     classifierPlans: PricingPlanI[];
     conversionPlans: PricingPlanI[];
   };

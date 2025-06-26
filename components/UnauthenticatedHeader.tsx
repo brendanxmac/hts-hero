@@ -74,7 +74,7 @@ const UnauthenticatedHeader = () => {
                     : "text-base-content no-underline"
                 }`}
               >
-                Explorer
+                Explore
               </button>
             </Link>
             <Link href="/app">
@@ -85,7 +85,7 @@ const UnauthenticatedHeader = () => {
                     : "text-base-content no-underline"
                 }`}
               >
-                Code Finder
+                Classify
               </button>
             </Link>
           </div>
