@@ -89,49 +89,56 @@ const config: ConfigProps = {
     classifierPlans: [
       {
         name: PricingPlan.PRO,
-        description: "Unlimited Access to Code Finder ",
+        description: "The Classification Sidekick for Customs Brokers",
         mode: StripePaymentMode.SUBSCRIPTION,
         price: 20,
         priceAnchor: 40,
+        isFeatured: true,
         features: [
-          { name: "Unlimited Classifications" },
           { name: "Heading Discovery" },
+          { name: "Candidate Suggestions" },
+          { name: "Report Generation" },
+          { name: "Note Fetching" },
           {
-            name: "Candidate Analysis & Suggestions",
-            details: "Based on the GRI & Additional US Rules",
+            name: "Enhanced HTS Explorer",
           },
-          { name: "Fetches Relevant Notes" },
           {
             name: "Built-in PDF Viewer",
             details: "No downloads needed to find what you're looking for!",
           },
         ],
       },
-      {
-        name: PricingPlan.PREMIUM,
-        description: "Code Finder + Report Generation",
-        mode: StripePaymentMode.SUBSCRIPTION,
-        price: 30,
-        priceAnchor: 60,
-        isFeatured: true,
-        features: [
-          { name: "Everything in Pro, Plus:" },
-          {
-            name: "Report Generation",
-            details: "Get Client-Ready Classification Reports",
-          },
-          {
-            name: "Classification History",
-            details: "For easy access, reference, & auditability",
-            comingSoon: true,
-          },
-          {
-            name: "Tariff Assistant",
-            details: "Simplifies tariff calculations",
-            roadmap: true,
-          },
-        ],
-      },
+      // {
+      //   name: PricingPlan.PREMIUM,
+      //   description: "Your Supercharged Classification Assistant",
+      //   mode: StripePaymentMode.SUBSCRIPTION,
+      //   price: 30,
+      //   priceAnchor: 60,
+      //   features: [
+      //     { name: "Everything in Pro, Plus:" },
+      //     {
+      //       name: "Classification History",
+      //       details: "For easy access, reference, & auditability",
+      //       comingSoon: true,
+      //     },
+      //     {
+      //       name: "Branded Reports",
+      //       details: "Your branding & logo on every report",
+      //       comingSoon: true,
+      //     },
+      //     {
+      //       name: "Sharable Classifications",
+      //       details:
+      //         "Secure view-only links to classifications for clients & customs",
+      //       comingSoon: true,
+      //     },
+      //     {
+      //       name: "Tariff Finder",
+      //       details: "Cut through the noise & nail your tariff calculations",
+      //       comingSoon: true,
+      //     },
+      //   ],
+      // },
     ],
     conversionPlans: [
       {
