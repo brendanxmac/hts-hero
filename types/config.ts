@@ -68,10 +68,10 @@ export type Theme = "black" | "light" | "dark" | "";
 // | "";
 
 export enum PricingPlan {
-  ONE_DAY_PASS = "1-Day Pass", // 1 day access to classify (downloads included)
-  FIVE_DAY_PASS = "5-Day Pass", // 5 days of access to classify (downloads included)
-  PRO = "Pro", // Code Finder, no reports
-  PREMIUM = "Premium", // Code Finder + Reports
+  ONE_DAY_PASS = "1-Day Pass",
+  FIVE_DAY_PASS = "5-Day Pass",
+  PRO = "Pro",
+  PREMIUM = "Premium",
 }
 
 export interface FeatureI {
