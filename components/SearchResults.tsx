@@ -12,17 +12,23 @@ import { ElementSearchSummary } from "./ElementSearchSummary";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { useHts } from "../contexts/HtsContext";
 import { FuseResult } from "fuse.js";
+import { TertiaryText } from "./TertiaryText";
+import { Color } from "../enums/style";
 
 interface Props {
   searchString: string;
   results: FuseResult<HtsElement>[];
   setActiveTab: (tab: ExploreTab) => void;
+  setSearchResults: (results: FuseResult<HtsElement>[]) => void;
+  setSearchValue: (value: string) => void;
 }
 
 export const SearchResults = ({
   results,
   searchString,
   setActiveTab,
+  setSearchResults,
+  setSearchValue,
 }: Props) => {
   const { htsElements } = useHts();
   const { sections } = useHtsSections();
@@ -43,10 +49,15 @@ export const SearchResults = ({
         <p>
           Results for <span className="font-bold">{`"${searchString}"`}</span>
         </p>
-        {/* <div className="flex gap-2">
-          <button className="btn btn-xs btn-outline">Search Synonyms</button>
-          <button className="btn btn-xs btn-outline">Find Item with AI</button>
-        </div> */}
+        <button
+          className="btn btn-sm btn-primary"
+          onClick={() => {
+            setSearchResults([]);
+            setSearchValue("");
+          }}
+        >
+          Clear Results
+        </button>
       </div>
 
       {results.map((result, index) => {
