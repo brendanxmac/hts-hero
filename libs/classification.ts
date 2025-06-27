@@ -151,7 +151,7 @@ export const generateClassificationReport = async (
   // Add progression descriptions
   doc.setFont("helvetica", "bold");
   doc.setFontSize(12);
-  doc.text("Selection Progression:", margin, yPosition);
+  doc.text("Selections:", margin, yPosition);
   yPosition += 7;
 
   classification.levels.forEach((level, index) => {

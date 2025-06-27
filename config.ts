@@ -11,7 +11,7 @@ const proPlan: PricingPlanI = {
   isFeatured: true,
   features: [
     { name: "Heading Discovery" },
-    { name: "Candidate Suggestions" },
+    { name: "Candidate Analysis" },
     { name: "Report Generation" },
     { name: "Note Fetching" },
     {

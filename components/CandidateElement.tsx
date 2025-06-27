@@ -274,13 +274,16 @@ export const CandidateElement = ({
                 onClick={() => {}}
               /> */}
               <SparklesIcon className="h-4 w-4 text-accent" />
-              <TertiaryLabel value="Suggested" color={Color.ACCENT} />
+              <TertiaryLabel value="HTS Hero Favorite" color={Color.ACCENT} />
             </div>
 
             <div className="flex flex-col gap-2">
               {/* <TertiaryLabel value="Reasoning:" /> */}
-              <p className="text-sm italic text-base-content ml-2">
+              <p className="text-white font-semibold ml-2">
                 {recommendedReason}
+              </p>
+              <p className="text-xs text-gray-400 ml-2">
+                HTS Hero can make mistakes. Always exercise your own judgement
               </p>
             </div>
 
