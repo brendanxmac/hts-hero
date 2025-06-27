@@ -40,7 +40,7 @@ const ClassifierHero = () => {
           muted
           loop
           playsInline
-          src="/demo.mp4"
+          src="/classify-hero.mp4"
         ></video>
       </div>
     </section>
