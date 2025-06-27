@@ -1,6 +1,6 @@
 import config from "@/config";
 import { classNames } from "../utilities/style";
-import { FeatureI } from "../types";
+import { FeatureI, PricingPlan } from "../types";
 import ButtonCheckout from "./ButtonCheckout";
 import { AboutPage } from "../enums/classify";
 import { StripePaymentMode } from "../libs/stripe";
@@ -81,9 +81,9 @@ export const getFeatureIcon = (feature: FeatureI) => {
 };
 
 const getPricingPlans = (customerType: AboutPage) => {
-  if (customerType === AboutPage.IMPORTER) {
-    return config.stripe.importerPlans;
-  }
+  // if (customerType === AboutPage.IMPORTER) {
+  //   return config.stripe.importerPlans;
+  // }
 
   if (customerType === AboutPage.CLASSIFIER) {
     return config.stripe.classifierPlans;
@@ -136,7 +136,7 @@ const getPricingHeadline = (customerType: AboutPage) => {
       </h2>
       <div className="flex flex-col justify-center items-center">
         <p className="text-xl font-bold text-primary">
-          Launch Deal: 50% Off Monthly Plans!
+          Launch Deal: 50% Off all plans!
         </p>
         <div className="flex items-center gap-1">
           <svg
@@ -205,7 +205,13 @@ const Pricing = ({ customerType }: PricingProps) => {
               >
                 <div className="flex justify-between items-center gap-4">
                   <div className="flex flex-col">
+                    {/* {plan.name === PricingPlan.PREMIUM && (
+                      <span className="mb-4 w-fit bg-neutral-700 px-2 py-1 rounded-md text-stone-300 font-semibold">
+                        Coming Soon
+                      </span>
+                    )} */}
                     <p className="text-2xl font-bold">{plan.name}</p>
+
                     {plan.description && (
                       <p className="text-base-content/80">{plan.description}</p>
                     )}
@@ -251,7 +257,7 @@ const Pricing = ({ customerType }: PricingProps) => {
                         <div className="flex flex-col -mt-1">
                           <div
                             className={classNames(
-                              "flex items-center justify-between gap-2 w-full",
+                              "flex items-center gap-2 w-full",
                               feature.comingSoon && "mb-1"
                             )}
                           >
@@ -270,7 +276,7 @@ const Pricing = ({ customerType }: PricingProps) => {
                     ))}
                   </ul>
                 )}
-                {!plan.isCompetitor && (
+                {!plan.isCompetitor && plan.name !== PricingPlan.PREMIUM && (
                   <div className="space-y-2">
                     <ButtonCheckout itemId={plan.name} />
                   </div>

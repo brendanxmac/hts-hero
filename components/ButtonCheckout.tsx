@@ -57,7 +57,9 @@ const ButtonCheckout = ({ itemId }: Props) => {
         "/stripe/create-checkout",
         {
           itemId,
-          cancelUrl: window.location.href,
+          cancelUrl: window.location.href.includes("#")
+            ? window.location.href
+            : window.location.href + "#pricing",
         }
       );
 

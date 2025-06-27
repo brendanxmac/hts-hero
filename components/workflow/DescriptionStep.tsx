@@ -59,7 +59,7 @@ export const DescriptionStep = ({
 
         <div className="flex flex-col">
           <SecondaryLabel
-            value="For Best Results:"
+            value="For Best Assistance:"
             color={Color.NEUTRAL_CONTENT}
           />
           <ul className="pl-2">
@@ -73,7 +73,7 @@ export const DescriptionStep = ({
             <div className="flex gap-3">
               <p>2️⃣</p>
               <TertiaryText
-                value="Describe each component / material and mention which one is dominant or most important."
+                value="Describe each component / material and mention which one is dominant."
                 color={Color.NEUTRAL_CONTENT}
               />
             </div>
@@ -81,7 +81,15 @@ export const DescriptionStep = ({
               <p>3️⃣</p>
 
               <TertiaryText
-                value="Include the intended use or audience (e.g. 'for children', 'for dogs', 'for human consumption', etc)."
+                value="Include the intended audience -> 'for children / dogs /  firefighters / etc...'"
+                color={Color.NEUTRAL_CONTENT}
+              />
+            </div>
+            <div className="flex gap-3">
+              <p>4️⃣</p>
+
+              <TertiaryText
+                value="Include the intended use -> 'for commercial / personal / industrial / outdoor use'"
                 color={Color.NEUTRAL_CONTENT}
               />
             </div>
@@ -94,7 +102,7 @@ export const DescriptionStep = ({
       <div className="w-full max-w-3xl mx-auto px-8">
         <StepNavigation
           next={{
-            label: "Get Code",
+            label: "Start",
             fill: true,
             onClick: async () => {
               const isPayingUser = user

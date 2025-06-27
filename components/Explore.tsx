@@ -77,10 +77,9 @@ export const Explore = () => {
       setFuse(
         new Fuse(htsElements, {
           keys: ["description", "htsno"],
-          threshold: 0.3,
+          threshold: 0.4,
           findAllMatches: true,
           ignoreLocation: true,
-          includeMatches: true,
         })
       );
     }
@@ -141,6 +140,8 @@ export const Explore = () => {
             results={searchResults}
             searchString={searchValue}
             setActiveTab={setActiveTab}
+            setSearchResults={setSearchResults}
+            setSearchValue={setSearchValue}
           />
         )}
       </div>

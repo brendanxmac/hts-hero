@@ -20,7 +20,6 @@ export default function Home() {
       </Suspense>
       <main>
         <ClassifierHero />
-        {/* <AboutProblem /> */}
         <WithWithout />
         <FeaturesListicle />
         <Pricing customerType={AboutPage.CLASSIFIER} />

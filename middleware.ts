@@ -16,8 +16,8 @@ export async function middleware(req: NextRequest) {
     pathname === "/blog" ||
     pathname === "/" ||
     pathname === "/about" ||
-    pathname === "/about/importer" ||
-    pathname.includes("/about/importer/");
+    pathname.includes("/about/importer") ||
+    pathname.includes("/about/partner");
 
   if (isRedirectPath) {
     return NextResponse.redirect(new URL("/about/classifier", req.url));

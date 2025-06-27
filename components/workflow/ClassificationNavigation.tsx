@@ -90,7 +90,7 @@ export const ClassificationNavigation = ({
           {/* <div className="w-px h-6 bg-base-content/20" /> */}
 
           <div className="grow text-center">
-            <PrimaryLabel value="Code Finder" color={Color.WHITE} />
+            <PrimaryLabel value="Classify" color={Color.WHITE} />
           </div>
         </div>
 
@@ -171,7 +171,7 @@ export const ClassificationNavigation = ({
         </div>
 
         <div className="flex flex-col">
-          <SecondaryLabel value="Selections" />
+          <SecondaryLabel value="Your Selections" />
           <div className="flex flex-col gap-3 pt-3">
             {levels.map((level, index) => (
               <div
