@@ -112,11 +112,12 @@ const ConversionPricing = ({ customerType }: Props) => {
         </div> */}
 
         <h1 className="text-white text-4xl md:text-5xl font-extrabold text-center">
-          Find HTS Codes in Seconds
+          The Classification Assistant
+          <br /> for Customs Brokers
         </h1>
 
         <h2 className="mt-6 mb-1 sm:mb-3 max-w-4xl text-xl sm:text-2xl md:text-3xl text-primary font-extrabold text-center">
-          Select a Plan to Access Code Finder
+          Select a plan to access classify
         </h2>
 
         <div className="flex items-center gap-1 mb-4 sm:mb-8">

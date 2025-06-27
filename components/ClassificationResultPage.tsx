@@ -89,31 +89,26 @@ export const ClassificationResultPage = ({
 
   return (
     <div className="h-full pt-8 w-full max-w-3xl mx-auto flex flex-col">
-      <div className="px-8 pb-6 flex-1 flex flex-col gap-4 overflow-y-auto">
-        <TertiaryLabel value="Results" color={Color.NEUTRAL_CONTENT} />
-        <div className="flex flex-col gap-1">
-          <div className="flex justify-between items-center">
-            <PrimaryLabel
-              value="🎉 Classification Complete!"
-              color={Color.WHITE}
-            />
-            {latestPurchase &&
-              latestPurchase.product_name !== PricingPlan.PRO && (
-                <button
-                  className="btn btn-xs btn-secondary"
-                  onClick={() => {
-                    downloadClassificationReport(classification);
-                  }}
-                >
-                  <ArrowDownTrayIcon className="w-4 h-4" />
-                  Download Report
-                </button>
-              )}
+      <div className="px-8 pb-6 flex-1 flex flex-col gap-8 overflow-y-auto">
+        <div className="flex flex-col gap-2">
+          <div className="flex justify-between items-end">
+            <PrimaryLabel value="Result" color={Color.WHITE} />
+            <button
+              className="btn btn-xs btn-secondary"
+              onClick={() => {
+                downloadClassificationReport(classification);
+              }}
+            >
+              <ArrowDownTrayIcon className="w-4 h-4" />
+              Download Report
+            </button>
           </div>
-          <TertiaryText value="You have successfully classified your product and can see the tariff details below or download a full report of the classification for your records." />
+          <div className="flex flex-col">
+            <TertiaryText value="You have classified the item and can download a full report of the classification for your records." />
+          </div>
         </div>
         <div className=" flex flex-col gap-2">
-          <TertiaryLabel value="HTS Code" />
+          <SecondaryLabel value="HTS Code" color={Color.WHITE} />
           <div className="flex gap-3 items-center">
             <h2 className="text-3xl md:text-5xl lg:text-6xl text-white font-extrabold">
               {classification.levels[levels.length - 1].selection?.htsno}
@@ -124,7 +119,7 @@ export const ClassificationResultPage = ({
                 tooltip="Copy"
                 icon={
                   copied ? (
-                    <CheckCircleIcon className="w-4 h-4 text-accent" />
+                    <CheckCircleIcon className="w-4 h-4 text-WHITE" />
                   ) : (
                     <Square2StackIcon className="w-4 h-4" />
                   )
@@ -164,7 +159,7 @@ export const ClassificationResultPage = ({
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <TertiaryLabel value="HTS Description" />
+          <SecondaryLabel value="Full Description" color={Color.WHITE} />
           <div className="flex flex-col gap-2">
             {getProgressionDescriptions(classification).map(
               (description, index) => (
@@ -194,7 +189,7 @@ export const ClassificationResultPage = ({
         <>
           {tariffElement && (
             <div className="w-full flex flex-col gap-4">
-              <SecondaryLabel value="Tariff Details" />
+              <SecondaryLabel value="Tariff Details" color={Color.WHITE} />
 
               <div className="grid grid-cols-2 gap-2">
                 <div className="flex flex-col gap-3 p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24">

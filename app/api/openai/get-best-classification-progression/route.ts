@@ -81,12 +81,13 @@ export async function POST(req: NextRequest) {
       messages: [
         {
           role: "system",
-          content: `Your job is to determine which description from the list would most accurately match the product description if it were added onto the end of the current description.\n
-          If the current description is not provided, just determine which description best matches the product description itself.\n
-          If two or more options all sound like they could be a good fit, you should pick the one that is the most specific, for example if the product description is "jeans" and the options are "cotton fabric" and "trousers", you should pick "trousers" because it is more specific.\n
-          You must pick a single description. If you are unsure and "Other" is available as an option, you should pick it.\n
+          content: `Your job is to determine which description from the list would most accurately match the item description if it were added onto the end of the current description.\n
+          If the current description is not provided just determine which description best matches the item description itself.\n
+          If two or more options all sound like they could be a good fit, you should pick the one that is the most specific, for example if the item description is "jeans" and the options are "cotton fabric" and "trousers", you should pick "trousers" because it is more specific.\n
+          You must pick a single description. If option sounds suitable and "Other" is available as an option, you should pick it.\n
           Note: The use of semicolons (;) in the descriptions should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".\n
           In your response, "logic" for your selection should explain why the description you picked is the most suitable match.\n
+          You should refer to the selected option as "this option" instead of writing out the option description, truncate the descriptions of the others options if beyond 30 characters if mentioned, and the item description itself should be always be referred to as "item description".\n
             ${
               isTestEnv &&
               "The index of the best option must be included in your response\n"
@@ -96,7 +97,7 @@ export async function POST(req: NextRequest) {
         },
         {
           role: "user",
-          content: `Product Description: ${productDescription}\n
+          content: `Item Description: ${productDescription}\n
           ${htsDescription ? `Current Description: ${htsDescription}\n` : ""}
           Descriptions:\n ${labelledDescriptions.join("\n")}`,
         },
