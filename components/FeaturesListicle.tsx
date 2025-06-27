@@ -38,17 +38,16 @@ const features: {
     svg: <LightningSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
   {
-    name: "Suggests Candidates",
+    name: "Analyzes Candidates",
     points: [
       {
-        point: "Suggests a best match at every level of classification",
+        point:
+          "Provides an analysis of the candidates at every level of classification",
+        detail: "Based on the GRI & Additional US Rules",
       },
       {
-        point: "Provides reasoning based on the GRI & Additional US Rules",
-      },
-      {
-        point: "Lets you add your own notes or reasoning",
-        detail: "-> Which are automatically included in your reports",
+        point: "Lets you easily add your own",
+        detail: "Which will be automatically included in your reports",
       },
       {
         point: "~10 minutes saved",

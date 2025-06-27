@@ -171,7 +171,7 @@ export const ClassificationNavigation = ({
         </div>
 
         <div className="flex flex-col">
-          <SecondaryLabel value="Selections" />
+          <SecondaryLabel value="Your Selections" />
           <div className="flex flex-col gap-3 pt-3">
             {levels.map((level, index) => (
               <div

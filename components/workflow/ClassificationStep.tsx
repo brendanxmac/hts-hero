@@ -24,6 +24,8 @@ import { ClassifyTab } from "../../enums/classify";
 import { ConfirmationCard } from "../ConfirmationCard";
 import { useHts } from "../../contexts/HtsContext";
 import { TertiaryLabel } from "../TertiaryLabel";
+import { ListBulletIcon } from "@heroicons/react/24/solid";
+import { SecondaryLabel } from "../SecondaryLabel";
 
 export interface ClassificationStepProps {
   workflowStep: WorkflowStep;
@@ -59,6 +61,7 @@ export const ClassificationStep = ({
   const { htsElements } = useHts();
 
   const selectionForLevel = levels[classificationLevel]?.selection;
+  const optionsForLevel = levels[classificationLevel]?.candidates.length;
 
   useEffect(() => {
     setFetchingOptionsOrSuggestions(loading.isLoading);
@@ -89,7 +92,7 @@ export const ClassificationStep = ({
 
   // Get 2-3 Best Sections
   const getSections = async () => {
-    setLoading({ isLoading: true, text: "Finding Best Options" });
+    setLoading({ isLoading: true, text: "Looking for Candidates" });
 
     let sections = htsSections;
 
@@ -121,7 +124,7 @@ export const ClassificationStep = ({
 
   // Get 2-3 Best Chapters
   const getChapters = async () => {
-    setLoading({ isLoading: true, text: "Finding Best Options" });
+    setLoading({ isLoading: true, text: "Looking for Candidates" });
     const candidateSections = htsSections.filter((section) => {
       return sectionCandidates.some((candidate) => {
         return candidate.index === section.number;
@@ -158,7 +161,7 @@ export const ClassificationStep = ({
 
   // Get up to 2 Best Headings Per Chapter
   const getHeadings = async () => {
-    setLoading({ isLoading: true, text: "Finding Best Options" });
+    setLoading({ isLoading: true, text: "Looking for Candidates" });
     const candidatesForHeading: HtsElement[] = [];
     await Promise.all(
       chapterCandidates.map(async (chapter) => {
@@ -246,7 +249,7 @@ export const ClassificationStep = ({
 
   const getStepDescription = (level: number) => {
     if (level === 0) {
-      return "Select the option that best matches your item description";
+      return "Find & select the most suitable heading for this item";
     } else if (level === 1) {
       return "Select the option that best matches your item description when added onto your first selection";
     } else {
@@ -258,9 +261,8 @@ export const ClassificationStep = ({
     if (classificationLevel === 0) {
       return (
         <div className="w-full flex justify-between items-center">
-          <div className="text-sm">
-            Don&apos;t see any good options? Easily find and add new ones using
-            the{" "}
+          <div>
+            Easily find and add candidates using the{" "}
             <button
               className="btn-link"
               onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
@@ -274,7 +276,7 @@ export const ClassificationStep = ({
     } else {
       return (
         <TertiaryText
-          value="If and option below was added onto your prior selection(s) which would most accurately describe your item?"
+          value="If an option below was added onto your prior selection(s) which would best describe your item?"
           color={Color.NEUTRAL_CONTENT}
         />
       );
@@ -289,16 +291,14 @@ export const ClassificationStep = ({
   };
 
   return (
-    <div className="h-full flex flex-col pt-8">
-      <div className="flex-1 overflow-hidden px-8 w-full max-w-3xl mx-auto flex flex-col gap-4">
-        <div className="flex flex-col gap-4">
-          <div className="flex justify-between items-center">
-            <TertiaryLabel
-              value={`Level ${classificationLevel + 1}`}
-              color={Color.NEUTRAL_CONTENT}
-            />
-            {loading.isLoading && <LoadingIndicator text={loading.text} />}
-          </div>
+    <div className="h-full flex flex-col pt-8 overflow-hidden">
+      <div className="flex-1 overflow-hidden px-8 w-full max-w-3xl mx-auto flex flex-col gap-4 overflow-y-scroll">
+        <div className="flex flex-col gap-3">
+          <TertiaryLabel
+            value={`Level ${classificationLevel + 1}`}
+            color={Color.NEUTRAL_CONTENT}
+          />
+
           <div className="w-full flex justify-between items-end">
             <div className="w-full flex flex-col">
               <PrimaryLabel
@@ -308,6 +308,29 @@ export const ClassificationStep = ({
               {getStepInstructions()}
             </div>
           </div>
+          {/* TODO: show the analysis (suggestion) for the current level */}
+          {
+            // levels[classificationLevel] &&
+            //   levels[classificationLevel].suggestionReason && (
+            //     <div className="flex flex-col gap-2">
+            //       <div className="flex gap-1 text-accent items-center">
+            //         <SparklesIcon className="h-4 w-4 text-accent" />
+            //         <SecondaryLabel value="Analysis" color={Color.ACCENT} />
+            //       </div>
+            //       <div className="flex flex-col gap-2">
+            //         {/* <TertiaryLabel value="Reasoning:" /> */}
+            //         <p className="text-white">
+            //           {levels[classificationLevel].suggestionReason}
+            //         </p>
+            //         <p className="text-xs italic text-gray-400">
+            //           HTS Hero can make mistakes. Always exercise your own
+            //           judgement
+            //         </p>
+            //       </div>
+            //     </div>
+            //   )
+          }
+
           {/* Breadcrumbs to show where element came from */}
           {/* {classificationLevel > 0 && (
             <div className="">
@@ -328,7 +351,24 @@ export const ClassificationStep = ({
           )} */}
         </div>
 
-        <div className="h-full flex flex-col gap-8 overflow-hidden">
+        <div className="h-full flex flex-col gap-3">
+          <div className="flex justify-between items-center">
+            <div className="flex gap-2 items-center">
+              {/* <ListBulletIcon className="h-5 w-5 text-white" /> */}
+              {/* Get the number of options for this level */}
+              <SecondaryLabel
+                value={
+                  optionsForLevel ? `Options (${optionsForLevel})` : "Options"
+                }
+                color={Color.WHITE}
+              />
+            </div>
+            {loading.isLoading && <LoadingIndicator text={loading.text} />}
+            {/* <button className="btn btn-xs btn-primary">
+              <MagnifyingGlassIcon className="h-4 w-4 text-white" />
+              <TertiaryText value="Find Headings" color={Color.WHITE} />
+            </button> */}
+          </div>
           {levels[classificationLevel] &&
             levels[classificationLevel].candidates.length > 0 && (
               <div className="h-full flex flex-col gap-4">

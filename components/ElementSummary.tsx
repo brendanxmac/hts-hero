@@ -106,7 +106,7 @@ export const ElementSummary = ({ element, onClick }: Props) => {
               <div className="flex flex-col gap-2 bg-base-300 rounded-md p-2">
                 <div className="flex gap-2 text-accent">
                   <SparklesIcon className="h-4 w-4" />
-                  <TertiaryText value="Suggested" />
+                  <TertiaryText value="HTS Hero Analysis" />
                 </div>
                 <p className="text-sm dark:text-white/90">
                   {recommendedReason}

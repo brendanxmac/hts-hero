@@ -1,8 +1,7 @@
-import { Classification, HtsElement } from "../interfaces/hts";
-import { LoadingIndicator } from "./LoadingIndicator";
+import { Classification } from "../interfaces/hts";
 import { Loader } from "../interfaces/ui";
 import { CandidateElement } from "./CandidateElement";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useClassification } from "../contexts/ClassificationContext";
 import { getProgressionDescriptionWithArrows } from "../libs/hts";
 import { getBestClassificationProgression } from "../libs/hts";
@@ -38,7 +37,7 @@ export const CandidateElements = ({
   const getBestCandidate = async () => {
     setLoading({
       isLoading: true,
-      text: "Suggesting Best Option",
+      text: "Analyzing Candidates",
     });
 
     const simplifiedCandidates = candidates.map((e) => ({
@@ -81,7 +80,7 @@ export const CandidateElements = ({
   return (
     <div className="h-full flex flex-col gap-4">
       {candidates.length > 0 && (
-        <div className="h-full flex flex-col gap-4 overflow-y-scroll pb-4">
+        <div className="h-full flex flex-col gap-4 pb-4">
           {candidates.map((element) => (
             <CandidateElement
               key={element.uuid}
