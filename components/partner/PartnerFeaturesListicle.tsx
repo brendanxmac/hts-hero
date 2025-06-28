@@ -3,8 +3,6 @@
 import { useState, useRef } from "react";
 import type { JSX } from "react";
 import { FeaturePoint, FeaturePoints } from "../FeaturePoints";
-import LightBulbSVG from "../svg/LightBulbSVG";
-import DocumentCheckSVG from "../svg/DocumentCheckSVG";
 import { classNames } from "../../utilities/style";
 import LightningSVG from "../svg/LightningSVG";
 import Link from "next/link";

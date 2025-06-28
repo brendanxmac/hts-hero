@@ -18,8 +18,6 @@ export interface BuyAttempt {
 export async function POST(req: NextRequest) {
   const body: Partial<BuyAttempt> = await req.json();
 
-  console.log("body", body);
-
   if (!body.pricing_plan) {
     return NextResponse.json({ error: "Plan is required" }, { status: 400 });
   }
@@ -27,7 +25,7 @@ export async function POST(req: NextRequest) {
   try {
     // If the attempt already exists, update it
     const supabase = createClient();
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("buy_attempt")
       .upsert<Partial<BuyAttempt>>(
         {

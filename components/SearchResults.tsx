@@ -12,8 +12,6 @@ import { ElementSearchSummary } from "./ElementSearchSummary";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { useHts } from "../contexts/HtsContext";
 import { FuseResult } from "fuse.js";
-import { TertiaryText } from "./TertiaryText";
-import { Color } from "../enums/style";
 
 interface Props {
   searchString: string;

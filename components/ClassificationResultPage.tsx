@@ -36,15 +36,8 @@ import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { useClassifyTab } from "../contexts/ClassifyTabContext";
 import { ClassifyTab } from "../enums/classify";
 import SquareIconButton from "./SqaureIconButton";
-import { CheckIcon, Square2StackIcon } from "@heroicons/react/24/solid";
+import { Square2StackIcon } from "@heroicons/react/24/solid";
 import { copyToClipboard } from "../utilities/data";
-import {
-  getLatestPurchase,
-  Purchase,
-  userHasActivePurchase,
-} from "../libs/supabase/purchase";
-import { useUser } from "../contexts/UserContext";
-import { PricingPlan } from "../types";
 
 interface Props {
   setWorkflowStep: (step: WorkflowStep) => void;
@@ -68,16 +61,16 @@ export const ClassificationResultPage = ({
   const { clearBreadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { setActiveTab } = useClassifyTab();
   const [copied, setCopied] = useState(false);
-  const { user } = useUser();
-  const [latestPurchase, setLatestPurchase] = useState<Purchase | null>(null);
+  // const { user } = useUser();
+  // const [latestPurchase, setLatestPurchase] = useState<Purchase | null>(null);
 
-  useEffect(() => {
-    if (user) {
-      getLatestPurchase(user.id).then((purchase) => {
-        setLatestPurchase(purchase);
-      });
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (user) {
+  //     getLatestPurchase(user.id).then((purchase) => {
+  //       setLatestPurchase(purchase);
+  //     });
+  //   }
+  // }, [user]);
 
   useEffect(() => {
     if (copied) {

@@ -3,10 +3,10 @@
 import Link from "next/link";
 // import { RegistrationTrigger } from "../libs/early-registration";
 
-interface AboutHeroProps {
-  // setIsRegisterOpen: (isOpen: boolean) => void;
-  // setRegistrationTrigger: (trigger: RegistrationTrigger) => void;
-}
+// interface AboutHeroProps {
+//   // setIsRegisterOpen: (isOpen: boolean) => void;
+//   // setRegistrationTrigger: (trigger: RegistrationTrigger) => void;
+// }
 
 const ClassifierHero = () => {
   return (

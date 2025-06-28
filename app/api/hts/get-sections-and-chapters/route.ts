@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 // import { requesterIsAuthenticated } from "../../supabase/server";
 import { readFile } from "fs/promises";
 import path from "path";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     // const requesterIsAllowed = await requesterIsAuthenticated(req);
 

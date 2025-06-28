@@ -8,19 +8,13 @@ import { usePathname } from "next/navigation";
 // A simple button to sign in with our providers (Google & Magic Links).
 // It automatically redirects user to callbackUrl (config.auth.callbackUrl) after login, which is normally a private page for users to manage their accounts.
 // If the user is already logged in, it will show their profile picture & redirect them to callbackUrl immediately.
-const ButtonSignin = ({
-  text = "Get HTS Code",
-  extraStyle,
-}: {
-  text?: string;
-  extraStyle?: string;
-}) => {
+const ButtonSignin = ({ extraStyle }: { extraStyle?: string }) => {
   const getButtonText = (pathname: string) => {
     if (pathname === "/app") {
       return "Sign In";
     }
 
-    return "Get HTS Code";
+    return "Get HTS Hero";
   };
 
   const getRedirectUrl = (pathname: string) => {

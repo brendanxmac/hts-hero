@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { StepNavigation } from "./workflow/StepNavigation";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import config from "../config";
 import { useGuide } from "@/contexts/GuideContext";
 import { GuideName } from "@/types/guides";
 import { HowToStep } from "./HowToStep";

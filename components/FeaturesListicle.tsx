@@ -142,19 +142,13 @@ const FeaturesListicle = () => {
         <div className="bg-base-100 max-md:px-8 max-w-5xl mb-8 md:px-12">
           <h2 className="text-white font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-tight mb-5">
             {/* 💡 COPY TIP: Remind visitors about the value of your product. Why do they need it? */}
-            {/* Turbocharged Classifications */}
-            {/* Classifications, Turbocharged */}
             Your Classification Sidekick
           </h2>
-          <div className="text-neutral-300 leading-relaxed mb-3 lg:text-lg">
+          <p className="text-neutral-300 leading-relaxed mb-3 lg:text-lg">
             {/* 💡 COPY TIP: Explain how your product delivers what you promise in the headline. */}
-            {/* HTS Hero helps you classify quickly with confidence & creates a
-            delightful client experience. */}
-            {/* HTS Hero finds the information you need to classify quickly with
-            confidence and creates a delightful experience for your clients. */}
             HTS Hero finds the information you need to classify and generates
             polished client reports.
-          </div>
+          </p>
         </div>
       </div>
 

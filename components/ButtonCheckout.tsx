@@ -3,7 +3,6 @@
 import { useState } from "react";
 import apiClient from "@/libs/api";
 import { PricingPlan } from "../types";
-import { fetchUser } from "../libs/supabase/user";
 import { useUser } from "../contexts/UserContext";
 import { userHasActivePurchase } from "../libs/supabase/purchase";
 import toast from "react-hot-toast";

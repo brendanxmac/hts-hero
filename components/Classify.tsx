@@ -7,7 +7,7 @@ import { ClassificationStep } from "./workflow/ClassificationStep";
 import { ClassificationNavigation } from "./workflow/ClassificationNavigation";
 import { DescriptionStep } from "./workflow/DescriptionStep";
 import { useClassifyTab } from "../contexts/ClassifyTabContext";
-import { ClassifyTab, AboutPage } from "../enums/classify";
+import { ClassifyTab } from "../enums/classify";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { Loader } from "../interfaces/ui";
@@ -117,7 +117,7 @@ export const Classify = () => {
       </div>
       {showPricing && (
         <Modal isOpen={showPricing} setIsOpen={setShowPricing}>
-          <ConversionPricing customerType={AboutPage.IMPORTER} />
+          <ConversionPricing />
         </Modal>
       )}
     </div>
