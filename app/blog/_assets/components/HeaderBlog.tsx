@@ -21,9 +21,7 @@ const links: {
   },
 ];
 
-const cta: JSX.Element = (
-  <ButtonSignin text="Prevent disputes" extraStyle="btn-primary md:btn-sm" />
-);
+const cta: JSX.Element = <ButtonSignin extraStyle="btn-primary md:btn-sm" />;
 
 const ButtonPopoverCategories = () => {
   return (

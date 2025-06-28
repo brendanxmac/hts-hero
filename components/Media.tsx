@@ -1,5 +1,6 @@
 // A component to display the media (video or image) of the feature. If the type is not specified, it will display an empty div.
 
+import Image from "next/image";
 import { Feature } from "./FeaturesAccordion";
 
 // Video are set to autoplay for best UX.
@@ -30,7 +31,14 @@ export const Media = ({ feature }: { feature: Feature }) => {
   } else if (mediaType === "image") {
     return (
       <div className="w-full h-full bg-base-200" key={mediaPath}>
-        <img src={mediaPath} alt={altText} className={style} key={mediaPath} />
+        <Image
+          src={mediaPath}
+          alt={altText}
+          className={style}
+          key={mediaPath}
+          width={1000}
+          height={1000}
+        />
       </div>
     );
   } else {

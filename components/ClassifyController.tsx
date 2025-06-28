@@ -1,10 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { Classifications } from "./Classifications";
 import { Classify } from "./Classify";
-import { ClassifyPage } from "../enums/classify";
-import { ClassificationsProvider } from "../contexts/ClassificationsContext";
 import { UserProvider } from "../contexts/UserContext";
 
 export const ClassifyController = () => {
