@@ -9,7 +9,7 @@ import { usePathname } from "next/navigation";
 // It automatically redirects user to callbackUrl (config.auth.callbackUrl) after login, which is normally a private page for users to manage their accounts.
 // If the user is already logged in, it will show their profile picture & redirect them to callbackUrl immediately.
 const ButtonSignin = ({
-  text = "Get HTS Code",
+  text = "Get HTS Hero",
   extraStyle,
 }: {
   text?: string;
@@ -20,7 +20,7 @@ const ButtonSignin = ({
       return "Sign In";
     }
 
-    return "Get HTS Code";
+    return "Get HTS Hero";
   };
 
   const getRedirectUrl = (pathname: string) => {

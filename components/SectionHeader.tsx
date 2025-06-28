@@ -43,7 +43,7 @@ export const SectionHeader = ({
       </div>
       <div className="w-full sm:max-w-xs">
         <SearchBar
-          placeholder="Search Elements"
+          placeholder="Search by code or description"
           onSearch={(value) => {
             if (value.length > 0) {
               onSearch(value);
