@@ -1,7 +1,6 @@
 "use client";
 
 import config from "@/config";
-import { LoadingIndicator } from "./LoadingIndicator";
 
 const FakeButtonCheckout = ({
   onClick,

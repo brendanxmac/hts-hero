@@ -120,7 +120,7 @@ export async function POST(req: NextRequest) {
           if (userProfile) {
             user = userProfile;
           } else {
-            const { data, error } = await supabase.auth.admin.createUser({
+            const { error } = await supabase.auth.admin.createUser({
               email: customer.email,
             });
 

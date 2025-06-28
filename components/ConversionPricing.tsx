@@ -1,9 +1,6 @@
 import config from "@/config";
 import { classNames } from "../utilities/style";
 import ButtonCheckout from "./ButtonCheckout";
-import { AboutPage } from "../enums/classify";
-import { TertiaryText } from "./TertiaryText";
-import Link from "next/link";
 import { StripePaymentMode } from "../libs/stripe";
 import { getFeatureIcon, getFeatureSupportingLabel } from "./Pricing";
 import router from "next/router";
@@ -13,16 +10,11 @@ import { useUser } from "../contexts/UserContext";
 // It's your Stripe config in config.js.stripe.plans[] that will be used to display the plans
 // <ButtonCheckout /> renders a button that will redirect the user to Stripe checkout called the /api/stripe/create-checkout API endpoint with the correct priceId
 
-interface Props {
-  customerType: AboutPage;
-}
+// interface Props {
+//   customerType: AboutPage;
+// }
 
-const getPricingPlans = (customerType: AboutPage) => {
-  return config.stripe.conversionPlans;
-  // config.stripe.classifierPlans
-};
-
-const ConversionPricing = ({ customerType }: Props) => {
+const ConversionPricing = () => {
   const { user } = useUser();
 
   return (
@@ -142,7 +134,7 @@ const ConversionPricing = ({ customerType }: Props) => {
         </div>
 
         <div className="w-full relative flex justify-evenly flex-col lg:flex-row items-center lg:items-stretch gap-8 text-white">
-          {getPricingPlans(customerType).map((plan, index) => (
+          {config.stripe.conversionPlans.map((plan, index) => (
             <div
               key={index}
               className={classNames(

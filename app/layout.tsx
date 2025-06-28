@@ -10,8 +10,6 @@ import { HtsSectionsProvider } from "../contexts/HtsSectionsContext";
 import { ClassificationProvider } from "../contexts/ClassificationContext";
 import { HtsProvider } from "../contexts/HtsContext";
 import { UserProvider } from "../contexts/UserContext";
-import { GuideProvider } from "@/contexts/GuideContext";
-import { guides } from "@/constants/guides";
 
 const font = Inter({ subsets: ["latin"] });
 
