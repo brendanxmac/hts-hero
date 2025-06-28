@@ -24,7 +24,6 @@ import { ClassifyTab } from "../../enums/classify";
 import { ConfirmationCard } from "../ConfirmationCard";
 import { useHts } from "../../contexts/HtsContext";
 import { TertiaryLabel } from "../TertiaryLabel";
-import { ListBulletIcon } from "@heroicons/react/24/solid";
 import { SecondaryLabel } from "../SecondaryLabel";
 
 export interface ClassificationStepProps {
@@ -47,7 +46,7 @@ export const ClassificationStep = ({
     isLoading: false,
     text: "",
   });
-  const { classification, addLevel, setClassification } = useClassification();
+  const { classification, addLevel } = useClassification();
   const { articleDescription, levels } = classification;
   const previousArticleDescriptionRef = useRef<string>(articleDescription);
   const [htsSections, setHtsSections] = useState<HtsSection[]>([]);

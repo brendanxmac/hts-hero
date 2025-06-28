@@ -25,8 +25,8 @@ export default function Register({
 }: RegisterProps) {
   const [isRegistered, setIsRegistered] = useState(false);
   const [email, setEmail] = useState("");
-  const [jobTitle, setJobTitle] = useState("");
-  const [otherJobTitle, setOtherJobTitle] = useState("");
+  // const [jobTitle, setJobTitle] = useState("");
+  // const [otherJobTitle, setOtherJobTitle] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -41,13 +41,13 @@ export default function Register({
     return emailRegex.test(email);
   };
 
-  const getJobTitle = () => {
-    if (jobTitle === "other") {
-      return otherJobTitle !== "" ? otherJobTitle : "other";
-    }
+  // const getJobTitle = () => {
+  //   if (jobTitle === "other") {
+  //     return otherJobTitle !== "" ? otherJobTitle : "other";
+  //   }
 
-    return jobTitle;
-  };
+  //   return jobTitle;
+  // };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

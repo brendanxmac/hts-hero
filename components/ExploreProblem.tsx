@@ -36,8 +36,8 @@ const ExploreProblem = () => {
   return (
     <section className="bg-neutral-900 text-neutral-content">
       <div className="max-w-7xl mx-auto px-8 py-16 md:py-32 text-center">
-        <h2 className="text-white max-w-3xl mx-auto font-extrabold text-4xl md:text-5xl tracking-tight mb-16">
-          Finding HTS codes is tedious...
+        <h2 className="text-white max-w-4xl mx-auto font-extrabold text-4xl md:text-6xl tracking-tight mb-16">
+          Finding HTS codes is <span className="text-primary">Painful</span>
         </h2>
         <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-8 sm:gap-3 mb-16">
           <div className="flex flex-col justify-center items-center">

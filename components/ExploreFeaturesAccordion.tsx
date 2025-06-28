@@ -177,7 +177,8 @@ const Item = ({
 // Video are set to autoplay for best UX.
 const Media = ({ feature }: { feature: Feature }) => {
   const { type, path, format, alt } = feature;
-  const style = "w-full rounded-2xl sm:max-w-2xl sm:rounded-3xl";
+  const style =
+    "w-full rounded-2xl sm:max-w-2xl sm:rounded-3xl border-2 border-white/80";
   const size = {
     width: 500,
     height: 500,
@@ -222,10 +223,17 @@ const ExploreFeaturesAccordion = () => {
       className="py-24 md:py-32 space-y-24 md:space-y-32 max-w-7xl mx-auto bg-base-100 "
       id="features"
     >
-      <div className="px-3">
-        <h2 className="text-white font-extrabold text-4xl lg:text-5xl tracking-tight mb-5">
-          Supercharge your Search
-        </h2>
+      <div className="px-3 flex flex-col gap-6">
+        <div>
+          <h2 className="text-white font-extrabold text-4xl lg:text-6xl tracking-tight mb-5">
+            Supercharge your Search
+          </h2>
+          <p className="text-neutral-300 leading-relaxed mb-3 lg:text-lg">
+            {/* 💡 COPY TIP: Explain how your product delivers what you promise in the headline. */}
+            HTS Hero simplifies HTS Search with clickable navigation and
+            seamless PDF viewing.
+          </p>
+        </div>
         <div className=" flex flex-col md:flex-row gap-12 md:gap-24">
           <div className="grid grid-cols-1 items-stretch gap-8 sm:gap-12 xl:grid-cols-2 lg:gap-20">
             <ul className="w-full xl:flex xl:flex-col xl:gap-5">
