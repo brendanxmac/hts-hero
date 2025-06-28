@@ -33,7 +33,7 @@ const ClassifierHero = () => {
       </div>
       <div className="lg:w-full flex justify-center">
         <video
-          className="rounded-2xl w-full border-2 border-base-300"
+          className="rounded-2xl w-full border-2 border-neutral-content/20"
           autoPlay
           muted
           loop
