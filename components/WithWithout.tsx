@@ -31,6 +31,10 @@ const painPoints: PainPoint[] = [
     time: "10 min",
   },
   {
+    title: "Googling / ChatGPT",
+    time: "10 min",
+  },
+  {
     title: "ensuring compliance",
     time: "?? min",
   },
@@ -46,24 +50,18 @@ const WithWithout = () => {
         </h2>
 
         <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-8 md:gap-12">
-          <div className="bg-primary/30 text-neutral-900 p-8 md:p-10 rounded-lg flex flex-col gap-4">
-            {/* <div className="flex flex-col">
-              <h3 className="text-2xl font-bold text-white text-center mb-2">
-                Manual Tasks
-              </h3>
-              <hr className="w-full border border-primary/20" />
-            </div> */}
+          <div className="bg-primary/30 text-neutral-900 p-8 md:p-16 rounded-lg flex flex-col gap-4">
             <ul className="flex flex-col gap-4 md:text-lg justify-start items-start">
               {/* Pains the user is experiencing by not using your product */}
               {painPoints.map((pain, index) => (
                 <li key={index} className="flex gap-2 font-bold">
                   <p>
-                    <span className="text-primary">
+                    <span className="text-primary text-2xl">
                       {index === 0 ? "\u00A0\u00A0\u00A0\u00A0" : "+ "}
                       {pain.time}
                       {"\u00A0\u00A0"}
                     </span>
-                    <span className="text-neutral-100 font-semibold">
+                    <span className="text-2xl text-neutral-100 font-semibold">
                       {pain.title}
                     </span>
                   </p>
@@ -73,7 +71,7 @@ const WithWithout = () => {
             <li className="flex flex-col gap-2">
               <hr className="w-full border border-primary/20" />
               <div className="flex flex-col mt-5">
-                <p className="text-primary font-bold text-3xl">~50 Minutes</p>
+                <p className="text-primary font-bold text-5xl">~1 Hour</p>
                 <p className="text-white text-sm font-bold ml-6">
                   Per Classification
                 </p>
