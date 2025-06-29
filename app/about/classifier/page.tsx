@@ -16,7 +16,7 @@ export default function Home() {
   return (
     <>
       <Suspense>
-        <AboutHeader page={AboutPage.CLASSIFIER} />
+        <AboutHeader />
       </Suspense>
       <main>
         <ClassifierHero />

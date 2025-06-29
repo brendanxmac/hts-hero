@@ -208,7 +208,7 @@ const FeaturesListicle = () => {
           </div>
           <Link
             className="mt-8 btn btn-primary btn-wide"
-            href={"/about/classifier#pricing"}
+            href={"/about#pricing"}
           >
             Try it now!
             {/* Get {config.appName} */}

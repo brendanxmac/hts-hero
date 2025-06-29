@@ -128,7 +128,7 @@ const WithWithout = () => {
 
           <Link
             className="text-center text-sm text-neutral-300 tracking-tight"
-            href="/about/classifier#features"
+            href="/about#features"
           >
             There&apos;s a better way
           </Link>

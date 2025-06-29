@@ -1,41 +1,74 @@
-import Link from "next/link";
-import HeaderLogoOnly from "../../components/HeaderLogoOnly";
+// import Link from "next/link";
+// import HeaderLogoOnly from "../../components/HeaderLogoOnly";
 
-export default function AboutPage() {
+// export default function AboutPage() {
+//   return (
+//     <div className="min-h-screen max-h-screen overflow-hidden">
+//       <HeaderLogoOnly />
+//       <section className="max-w-4xl mx-auto flex flex-col items-center justify-center gap-6 p-8 bg-base-100">
+//         {/* <h3 className="w-full text-xl md:text-2xl font-extrabold tracking-tight text-white ">
+//           Welcome to HTS Hero!
+//         </h3> */}
+
+//         <div className="w-full space-y-12">
+//           <div>
+//             <h2 className="w-full text-lg md:text-xl font-semibold text-white">
+//               Welcome to HTS Hero!
+//             </h2>
+//             <h3 className="mt-2 w-full text-3xl md:text-4xl font-extrabold text-white">
+//               Which sounds more like you?
+//             </h3>
+//           </div>
+//           <div className="w-full flex flex-col gap-6">
+//             <Link
+//               href="/about/importer"
+//               className="grow btn btn-primary h-60 text-3xl"
+//             >
+//               Importer looking for HTS Code
+//             </Link>
+
+//             <Link
+//               href="/about/classifier"
+//               className="grow btn btn-secondary h-60 text-3xl"
+//             >
+//               Classifier looking to speed up my workflow
+//             </Link>
+//           </div>
+//         </div>
+//       </section>
+//     </div>
+//   );
+// }
+
+"use client";
+
+import { Suspense } from "react";
+import AboutHeader from "../../components/AboutHeader";
+import ClassifierHero from "../../components/ClassifierHero";
+import ClassifierCTA from "../../components/ClassifierCTA";
+import ClassifierFooter from "../../components/ClassifierFooter";
+import Pricing from "../../components/Pricing";
+import WithWithout from "../../components/WithWithout";
+import FeaturesListicle from "../../components/FeaturesListicle";
+import { FAQ } from "../../components/FAQ";
+import { classifierFaqList } from "../../constants/faq";
+import { AboutPage } from "../../enums/classify";
+
+export default function Home() {
   return (
-    <div className="min-h-screen max-h-screen overflow-hidden">
-      <HeaderLogoOnly />
-      <section className="max-w-4xl mx-auto flex flex-col items-center justify-center gap-6 p-8 bg-base-100">
-        {/* <h3 className="w-full text-xl md:text-2xl font-extrabold tracking-tight text-white ">
-          Welcome to HTS Hero!
-        </h3> */}
-
-        <div className="w-full space-y-12">
-          <div>
-            <h2 className="w-full text-lg md:text-xl font-semibold text-white">
-              Welcome to HTS Hero!
-            </h2>
-            <h3 className="mt-2 w-full text-3xl md:text-4xl font-extrabold text-white">
-              Which sounds more like you?
-            </h3>
-          </div>
-          <div className="w-full flex flex-col gap-6">
-            <Link
-              href="/about/importer"
-              className="grow btn btn-primary h-60 text-3xl"
-            >
-              Importer looking for HTS Code
-            </Link>
-
-            <Link
-              href="/about/classifier"
-              className="grow btn btn-secondary h-60 text-3xl"
-            >
-              Classifier looking to speed up my workflow
-            </Link>
-          </div>
-        </div>
-      </section>
-    </div>
+    <>
+      <Suspense>
+        <AboutHeader />
+      </Suspense>
+      <main>
+        <ClassifierHero />
+        <WithWithout />
+        <FeaturesListicle />
+        <Pricing customerType={AboutPage.CLASSIFIER} />
+        <ClassifierCTA />
+        <FAQ faqItems={classifierFaqList} />
+      </main>
+      <ClassifierFooter />
+    </>
   );
 }
