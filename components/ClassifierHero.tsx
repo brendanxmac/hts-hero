@@ -24,10 +24,7 @@ const ClassifierHero = () => {
           </p>
         </div>
 
-        <Link
-          className="btn btn-wide btn-primary"
-          href={"/about/classifier#pricing"}
-        >
+        <Link className="btn btn-wide btn-primary" href={"/about#pricing"}>
           Try it Free!
         </Link>
 
