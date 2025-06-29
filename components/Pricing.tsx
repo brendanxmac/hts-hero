@@ -4,6 +4,7 @@ import { FeatureI, PricingPlan } from "../types";
 import ButtonCheckout from "./ButtonCheckout";
 import { AboutPage } from "../enums/classify";
 import { StripePaymentMode } from "../libs/stripe";
+import Link from "next/link";
 
 // <Pricing/> displays the pricing plans for your app
 // It's your Stripe config in config.js.stripe.plans[] that will be used to display the plans
@@ -136,7 +137,7 @@ const getPricingHeadline = (customerType: AboutPage) => {
       </h2>
       <div className="flex flex-col justify-center items-center">
         <p className="text-xl font-bold text-primary">
-          Launch Deal: 50% Off all plans!
+          Launch Deal: 50% Off Your First 2 Months!
         </p>
         <div className="flex items-center gap-1">
           <svg
@@ -187,7 +188,7 @@ const Pricing = ({ customerType }: PricingProps) => {
                   <span
                     className={`badge text-xs text-black font-semibold border-0 bg-primary`}
                   >
-                    BEST VALUE
+                    Limited Time Offer
                   </span>
                 </div>
               )}
@@ -278,7 +279,30 @@ const Pricing = ({ customerType }: PricingProps) => {
                 )}
                 {!plan.isCompetitor && plan.name !== PricingPlan.PREMIUM && (
                   <div className="space-y-2">
-                    <ButtonCheckout itemId={plan.name} />
+                    {plan.name === PricingPlan.FREE_TRIAL ? (
+                      <Link
+                        href="/signin"
+                        className="btn bg-primary/80 hover:bg-white hover:text-primary text-white rounded-md btn-block group"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth="1.5"
+                          stroke="currentColor"
+                          className="w-5 h-5 fill-white group-hover:fill-primary group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-200"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"
+                          />
+                        </svg>
+                        Start Free Trial
+                      </Link>
+                    ) : (
+                      <ButtonCheckout itemId={plan.name} />
+                    )}
                   </div>
                 )}
               </div>
