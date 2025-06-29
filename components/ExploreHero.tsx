@@ -1,5 +1,7 @@
 // import Link from "next/link";
 
+import Link from "next/link";
+
 const ExploreHero = () => {
   return (
     <section className="bg-none max-w-7xl mx-auto bg-base-100 flex flex-col items-center justify-center gap-10 p-12">
@@ -12,12 +14,12 @@ const ExploreHero = () => {
           downloads & squinting at tables.
         </p>
 
-        {/* <Link
+        <Link
           className="btn btn-wide btn-primary hover:text-white rounded-md"
           href="/explore"
         >
-          Try it free!
-        </Link> */}
+          Try Now!
+        </Link>
 
         {/* <TestimonialsAvatars priority={true} /> */}
       </div>
