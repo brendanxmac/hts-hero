@@ -28,6 +28,10 @@ import { useHts } from "../contexts/HtsContext";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { WorkflowStep } from "../enums/hts";
 import { PDFProps } from "../interfaces/ui";
+import { trackEvent } from "../libs/mixpanel";
+import { userHasActivePurchase } from "../libs/supabase/purchase";
+import { isWithinPastNDays } from "../utilities/time";
+import { useUser } from "../contexts/UserContext";
 
 interface Props {
   element: HtsElement;
@@ -42,6 +46,7 @@ export const CandidateElement = ({
   setClassificationLevel,
   setWorkflowStep,
 }: Props) => {
+  const { user } = useUser();
   const { htsno, chapter, description, indent } = element;
   const [isPressed, setIsPressed] = useState(false);
   const { clearBreadcrumbs, setBreadcrumbs } = useBreadcrumbs();
@@ -66,6 +71,22 @@ export const CandidateElement = ({
       (level) => level.selection && level.selection.uuid === element.uuid
     )
   );
+
+  const handleClassificationCompleted = async () => {
+    const userCreatedDate = user ? new Date(user.created_at) : null;
+    const isTrialUser = userCreatedDate
+      ? isWithinPastNDays(userCreatedDate, 14)
+      : false;
+
+    const isPayingUser = user ? await userHasActivePurchase(user.id) : false;
+
+    // Track classification completed event
+    trackEvent("classification_completed", {
+      hts_code: element.htsno,
+      is_paying_user: isPayingUser,
+      is_trial_user: isTrialUser,
+    });
+  };
 
   return (
     <div
@@ -114,7 +135,10 @@ export const CandidateElement = ({
               progressionDescription + " > " + element.description,
             levels: newProgressionLevels,
           });
+
           setWorkflowStep(WorkflowStep.RESULT);
+
+          handleClassificationCompleted();
         }
       }}
     >
