@@ -4,17 +4,20 @@
 import Link from "next/link";
 import config from "@/config";
 import { usePathname } from "next/navigation";
+import { useUser } from "../contexts/UserContext";
 
 // A simple button to sign in with our providers (Google & Magic Links).
 // It automatically redirects user to callbackUrl (config.auth.callbackUrl) after login, which is normally a private page for users to manage their accounts.
 // If the user is already logged in, it will show their profile picture & redirect them to callbackUrl immediately.
 const ButtonSignin = ({ extraStyle }: { extraStyle?: string }) => {
-  const getButtonText = (pathname: string) => {
-    if (pathname === "/app") {
-      return "Sign In";
+  const { user } = useUser();
+
+  const getButtonText = () => {
+    if (user) {
+      return "🚀 Launch App";
     }
 
-    return "Get HTS Hero";
+    return "Sign In";
   };
 
   const getRedirectUrl = (pathname: string) => {
@@ -31,10 +34,10 @@ const ButtonSignin = ({ extraStyle }: { extraStyle?: string }) => {
       href={getRedirectUrl(pathname)}
       className={`btn btn-primary btn-sm ${extraStyle ? extraStyle : ""}`}
     >
-      <div className="flex gap-2 items-center">
-        {pathname !== "/app" && <p className="text-lg">⚡️</p>}
-        <p>{getButtonText(pathname)}</p>
-      </div>
+      {/* <div className="flex gap-2 items-center"> */}
+      {/* {pathname !== "/app" && <p className="text-lg">⚡️</p>} */}
+      <p>{getButtonText()}</p>
+      {/* </div> */}
       {/* {user?.user_metadata?.avatar_url ? (
           <img
             src={user?.user_metadata?.avatar_url}

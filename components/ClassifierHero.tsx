@@ -1,9 +1,11 @@
 "use client";
 
+import Link from "next/link";
+
 const ClassifierHero = () => {
   return (
     <section className="bg-none max-w-7xl mx-auto bg-base-100 flex flex-col items-center justify-center gap-10 p-8">
-      <div className="flex flex-col gap-10 items-center justify-center text-center">
+      <div className="flex flex-col gap-6 items-center justify-center text-center">
         <div className="flex flex-col gap-4 md:gap-8">
           <h1 className="text-white font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-tight md:-mb-4">
             <span>
@@ -22,14 +24,14 @@ const ClassifierHero = () => {
           </p>
         </div>
 
-        {/* <Link
+        <Link
           className="btn btn-wide btn-primary"
           href={"/about/classifier#pricing"}
         >
-          Try it now!
-        </Link> */}
+          Try it Free!
+        </Link>
 
-        {/* <TestimonialsAvatars priority={true} /> */}
+        {/* {/* <TestimonialsAvatars priority={true} /> */}
       </div>
       <div className="lg:w-full flex justify-center">
         <video

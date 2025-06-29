@@ -17,11 +17,8 @@ const ClassifierCTA = () => {
             Get the classification assistant built for customs brokers.
           </p>
 
-          <Link
-            className="btn btn-primary btn-wide"
-            href="/about/classifier#pricing"
-          >
-            Get {config.appName}!
+          <Link className="btn btn-primary btn-wide" href="/signin">
+            Try {config.appName}!
           </Link>
         </div>
       </div>

@@ -9,6 +9,7 @@ import { TertiaryLabel } from "../TertiaryLabel";
 import { SecondaryLabel } from "../SecondaryLabel";
 import { userHasActivePurchase } from "../../libs/supabase/purchase";
 import { useUser } from "../../contexts/UserContext";
+import { isWithinPastNDays } from "../../utilities/time";
 
 interface Props {
   setWorkflowStep: (step: WorkflowStep) => void;
@@ -50,7 +51,7 @@ export const DescriptionStep = ({
           </h2>
         </div>
         <TextInput
-          placeholder="e.g. Men’s 100% cotton denim jeans, dyed blue, pre-washed, and tailored for an atheltic figure"
+          placeholder="e.g. Men's 100% cotton denim jeans, dyed blue, pre-washed, and tailored for an atheltic figure"
           defaultValue={productDescription}
           onChange={(value) => {
             setLocalProductDescription(value);
@@ -105,11 +106,20 @@ export const DescriptionStep = ({
             label: "Start",
             fill: true,
             onClick: async () => {
+              const userCreatedDate = user ? new Date(user.created_at) : null;
+              const isTrialUser = userCreatedDate
+                ? isWithinPastNDays(userCreatedDate, 8)
+                : false;
+
+              console.log("isTrialUser", isTrialUser);
+
               const isPayingUser = user
                 ? await userHasActivePurchase(user.id)
                 : false;
 
-              if (isPayingUser) {
+              console.log("isPayingUser", isPayingUser);
+
+              if (isPayingUser || isTrialUser) {
                 if (localProductDescription !== productDescription) {
                   startNewClassification(localProductDescription);
                 }
