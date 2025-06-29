@@ -10,6 +10,7 @@ import { SecondaryLabel } from "../SecondaryLabel";
 import { userHasActivePurchase } from "../../libs/supabase/purchase";
 import { useUser } from "../../contexts/UserContext";
 import { isWithinPastNDays } from "../../utilities/time";
+import { trackEvent } from "../../libs/mixpanel";
 
 interface Props {
   setWorkflowStep: (step: WorkflowStep) => void;
@@ -111,20 +112,24 @@ export const DescriptionStep = ({
                 ? isWithinPastNDays(userCreatedDate, 14)
                 : false;
 
-              console.log("isTrialUser", isTrialUser);
-
               const isPayingUser = user
                 ? await userHasActivePurchase(user.id)
                 : false;
-
-              console.log("isPayingUser", isPayingUser);
 
               if (isPayingUser || isTrialUser) {
                 if (localProductDescription !== productDescription) {
                   startNewClassification(localProductDescription);
                 }
+
                 setWorkflowStep(WorkflowStep.CLASSIFICATION);
                 setClassificationLevel(0);
+
+                // Track classification started event
+                trackEvent("classification_started", {
+                  item: localProductDescription,
+                  is_paying_user: isPayingUser,
+                  is_trial_user: isTrialUser,
+                });
               } else {
                 setArticleDescription(localProductDescription);
                 setShowPricing(true);
