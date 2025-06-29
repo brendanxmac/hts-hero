@@ -49,14 +49,23 @@ export const classifierFaqList: FAQItem[] = [
     answer: (
       <div className="flex flex-col gap-2">
         <p className="font-bold">
-          We do our best to make gettings HTS codes affordable for everyone!
+          We do our best to make having a classification assistant affordable
+          for everyone!
         </p>
 
         <p>
-          Be sure to checkout our{" "}
+          Checkout our{" "}
           <Link href={"/about#pricing"} className="text-secondary underline">
-            current offers.
+            current offers
           </Link>{" "}
+          and if you have and questions don&apos;t hesitate to contact us at{" "}
+          <Link
+            href={`mailto:${config.resend.supportEmail}`}
+            className="text-secondary underline"
+          >
+            {config.resend.supportEmail}
+          </Link>
+          .
         </p>
       </div>
     ),
