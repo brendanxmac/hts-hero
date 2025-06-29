@@ -56,6 +56,27 @@ const premiumPlan: PricingPlanI = {
   ],
 };
 
+const twoWeekTrial: PricingPlanI = {
+  name: PricingPlan.FREE_TRIAL,
+  description: "Try HTS Hero Pro free for 14 days",
+  mode: StripePaymentMode.PAYMENT,
+  price: 0,
+  priceAnchor: 40,
+  features: [
+    { name: "Heading Discovery" },
+    { name: "Candidate Analysis" },
+    { name: "Report Generation" },
+    { name: "Note Fetching" },
+    {
+      name: "Enhanced HTS Explorer",
+    },
+    {
+      name: "Built-in PDF Viewer",
+      details: "No downloads needed to find what you're looking for!",
+    },
+  ],
+};
+
 const fiveDayPassPlan: PricingPlanI = {
   name: PricingPlan.FIVE_DAY_PASS,
   description: "Try HTS Hero Pro for 5 Days",
@@ -90,7 +111,7 @@ const config: ConfigProps = {
   },
   stripe: {
     // Create multiple plans in your Stripe dashboard, then add them here. You can add as many plans as you want, just make sure to add the priceId
-    classifierPlans: [fiveDayPassPlan, proPlan],
+    classifierPlans: [twoWeekTrial, proPlan],
     conversionPlans: [fiveDayPassPlan, proPlan],
   },
   // aws: {
