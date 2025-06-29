@@ -31,8 +31,8 @@ const UnauthenticatedHeader = () => {
     label: string;
   }[] = [
     {
-      href: "/about/importer",
-      label: pathname === "/app" ? "Learn More" : "Need an HTS Code?",
+      href: "/about",
+      label: pathname === "/app" ? "Learn More" : "Want to Classify Quicker?",
     },
   ];
 

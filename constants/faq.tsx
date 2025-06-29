@@ -7,23 +7,16 @@ export const classifierFaqList: FAQItem[] = [
     question: "What do I get exactly?",
     answer: (
       <div className="space-y-2 leading-relaxed">
-        Depending on your{" "}
-        <Link
-          href={"/about/classifier#pricing"}
-          className="text-secondary underline"
-        >
-          plan
+        After starting your trial or purchasing the{" "}
+        <Link href={"/about#pricing"} className="text-secondary underline">
+          Pro plan
         </Link>
-        , you&apos;ll immdeiately have access to the HTS classification tool &
-        the{" "}
-        <Link
-          href={"/about/classifier#features"}
-          className="text-secondary underline"
-        >
+        , you&apos;ll immdeiately have access to HTS Hero & the{" "}
+        <Link href={"/about#features"} className="text-secondary underline">
           features mentioned above
         </Link>
-        . This will allow you to find the HTS code(s) for whatever it is
-        you&apos;re importing!
+        . You will keep access to HTS Hero for as long as you have an active
+        subscription or trial.
       </div>
     ),
   },
@@ -32,18 +25,22 @@ export const classifierFaqList: FAQItem[] = [
     answer: (
       <div className="flex flex-col gap-4">
         <p>
-          All you need is a{" "}
-          <Link
-            href={"/about/importer#pricing"}
-            className="text-secondary underline"
-          >
-            plan
-          </Link>{" "}
-          and an account!
+          All you need is an account and a valid trial or{" "}
+          <Link href={"/about#pricing"} className="text-secondary underline">
+            subscription
+          </Link>
+          . <br />
         </p>
         <button className="btn btn-wide btn-primary">
           <Link href={config.auth.loginUrl}>Sign Up Now</Link>
         </button>{" "}
+        <p>
+          If you just want to use the{" "}
+          <Link href={"/about/explore"} className="text-secondary underline">
+            explorer
+          </Link>{" "}
+          tool, you can access it for free without an account.
+        </p>
       </div>
     ),
   },
@@ -57,10 +54,7 @@ export const classifierFaqList: FAQItem[] = [
 
         <p>
           Be sure to checkout our{" "}
-          <Link
-            href={"/about/classifier#pricing"}
-            className="text-secondary underline"
-          >
+          <Link href={"/about#pricing"} className="text-secondary underline">
             current offers.
           </Link>{" "}
         </p>

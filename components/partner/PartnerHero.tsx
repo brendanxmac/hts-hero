@@ -25,10 +25,7 @@ const ClassifierHero = () => {
           to upsells.
         </p>
 
-        <Link
-          className="btn btn-wide btn-primary"
-          href={"/about/classifier#pricing"}
-        >
+        <Link className="btn btn-wide btn-primary" href={"/about#pricing"}>
           Try it now!
         </Link>
 
