@@ -6,10 +6,10 @@ This app now includes Mixpanel analytics to track user behavior. Currently track
 
 1. **`classification_started`** - Triggered when a user starts a new classification
 
-   - Properties: `description_length`, `is_paying_user`, `is_trial_user`
+   - Properties: `item`, `is_paying_user`, `is_trial_user`
 
 2. **`classification_completed`** - Triggered when a user completes a classification
-   - Properties: `final_hts_code`, `classification_levels`, `final_description`
+   - Properties: `hts_code`, `is_paying_user`, `is_trial_user`
 
 ## Setup Instructions
 
