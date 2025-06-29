@@ -9,13 +9,13 @@ import config from "@/config";
 import ButtonSignin from "./ButtonSignin";
 import { AboutPage } from "../enums/classify";
 
-interface Props {
-  page: AboutPage;
-}
+// interface Props {
+//   page: AboutPage;
+// }
 
 // A header with a logo on the left, links in the center (like Pricing, etc...), and a CTA (like Get Started or Login) on the right.
 // The header is responsive, and on mobile, the links are hidden behind a burger button.
-const AboutHeader = ({ page }: Props) => {
+const AboutHeader = () => {
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -24,15 +24,15 @@ const AboutHeader = ({ page }: Props) => {
     label: string;
   }[] = [
     {
-      href: `${page}/#features`,
+      href: `#features`,
       label: "Features",
     },
     {
-      href: `${page}/#pricing`,
+      href: `#pricing`,
       label: "Pricing",
     },
     {
-      href: `${page}/#faq`,
+      href: `#faq`,
       label: "FAQ",
     },
   ];

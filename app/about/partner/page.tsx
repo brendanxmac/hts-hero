@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import AboutHeader from "../../../components/AboutHeader";
 import { FAQ } from "../../../components/FAQ";
 import { classifierFaqList } from "../../../constants/faq";
-import { AboutPage } from "../../../enums/classify";
+// import { AboutPage } from "../../../enums/classify";
 import PartnerCTA from "../../../components/partner/PartnerCTA";
 import PartnerHero from "../../../components/partner/PartnerHero";
 import PartnerFeaturesListicle from "../../../components/partner/PartnerFeaturesListicle";
@@ -15,7 +15,7 @@ export default function Home() {
   return (
     <>
       <Suspense>
-        <AboutHeader page={AboutPage.CLASSIFIER} />
+        <AboutHeader />
       </Suspense>
       <main>
         <PartnerHero />

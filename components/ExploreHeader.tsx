@@ -19,7 +19,7 @@ const links: {
 
 const cta: JSX.Element = (
   <Link href="/explore" className="btn btn-primary btn-sm">
-    Try now
+    🚀 Launch Explore
   </Link>
 );
 
