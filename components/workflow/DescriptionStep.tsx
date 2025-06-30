@@ -10,7 +10,7 @@ import { SecondaryLabel } from "../SecondaryLabel";
 import { userHasActivePurchase } from "../../libs/supabase/purchase";
 import { useUser } from "../../contexts/UserContext";
 import { isWithinPastNDays } from "../../utilities/time";
-import { MixpanelEvent, trackBrowserEvent } from "../../libs/mixpanel";
+import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 
 interface Props {
   setWorkflowStep: (step: WorkflowStep) => void;
@@ -125,7 +125,7 @@ export const DescriptionStep = ({
                 setClassificationLevel(0);
 
                 // Track classification started event
-                trackBrowserEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
+                trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
                   item: localProductDescription,
                   is_paying_user: isPayingUser,
                   is_trial_user: isTrialUser,

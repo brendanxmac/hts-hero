@@ -28,7 +28,7 @@ import { useHts } from "../contexts/HtsContext";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { WorkflowStep } from "../enums/hts";
 import { PDFProps } from "../interfaces/ui";
-import { MixpanelEvent, trackBrowserEvent } from "../libs/mixpanel";
+import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
 import { userHasActivePurchase } from "../libs/supabase/purchase";
 import { isWithinPastNDays } from "../utilities/time";
 import { useUser } from "../contexts/UserContext";
@@ -81,7 +81,7 @@ export const CandidateElement = ({
     const isPayingUser = user ? await userHasActivePurchase(user.id) : false;
 
     // Track classification completed event
-    trackBrowserEvent(MixpanelEvent.CLASSIFICATION_COMPLETED, {
+    trackEvent(MixpanelEvent.CLASSIFICATION_COMPLETED, {
       hts_code: element.htsno,
       is_paying_user: isPayingUser,
       is_trial_user: isTrialUser,
