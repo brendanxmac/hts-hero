@@ -11,6 +11,7 @@ import { useUser } from "../contexts/UserContext";
 // If the user is already logged in, it will show their profile picture & redirect them to callbackUrl immediately.
 const ButtonSignin = ({ extraStyle }: { extraStyle?: string }) => {
   const { user } = useUser();
+  const pathname = usePathname();
 
   const getButtonText = () => {
     if (user) {
@@ -21,13 +22,12 @@ const ButtonSignin = ({ extraStyle }: { extraStyle?: string }) => {
   };
 
   const getRedirectUrl = (pathname: string) => {
-    if (pathname === "/app") {
-      return config.auth.loginUrl;
+    if (user) {
+      return config.auth.callbackUrl;
     }
 
-    return config.auth.callbackUrl;
+    return config.auth.loginUrl;
   };
-  const pathname = usePathname();
 
   return (
     <Link

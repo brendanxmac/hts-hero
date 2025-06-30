@@ -4,6 +4,7 @@ import mixpanel from "mixpanel-browser";
 // You'll need to replace this with your actual Mixpanel project token
 const MIXPANEL_TOKEN = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN || "";
 
+// Browser-side Mixpanel initialization
 if (typeof window !== "undefined" && MIXPANEL_TOKEN) {
   mixpanel.init(MIXPANEL_TOKEN, {
     debug: process.env.NODE_ENV === "development",
@@ -12,8 +13,15 @@ if (typeof window !== "undefined" && MIXPANEL_TOKEN) {
   });
 }
 
+export enum MixpanelEvent {
+  CLASSIFICATION_STARTED = "classification_started",
+  CLASSIFICATION_COMPLETED = "classification_completed",
+  SIGN_UP = "sign_up",
+}
+
+// Browser-side tracking functions
 export const trackEvent = (
-  eventName: string,
+  eventName: MixpanelEvent,
   properties?: Record<string, any>
 ) => {
   if (typeof window !== "undefined" && MIXPANEL_TOKEN) {
