@@ -1,4 +1,3 @@
-import { getIsoDateInFuture } from "../../utilities/time";
 import { createSupabaseClient } from "./client";
 
 export interface UserProfile {
@@ -7,6 +6,7 @@ export interface UserProfile {
   email: string;
   image?: string;
   stripe_customer_id?: string;
+  logo_url?: string;
   created_at: string;
   updated_at: string;
 }
