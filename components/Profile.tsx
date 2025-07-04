@@ -87,7 +87,7 @@ export default function Profile({ user }: Props) {
 
         {/* Logo Section */}
         <div className="w-full flex flex-col gap-4">
-          <SecondaryLabel value="Company Logo" />
+          <TertiaryLabel value="Company Logo" />
           <div className="w-full flex items-center gap-4">
             <div className="w-full flex flex-col items-center gap-2">
               <LogoUploader userId={user.id} />
@@ -97,10 +97,10 @@ export default function Profile({ user }: Props) {
 
         {/* Company Disclaimer Section */}
         <div className="w-full flex flex-col gap-4">
-          <SecondaryLabel value="Company Disclaimer" />
+          <TertiaryLabel value="Company Disclaimer" />
           <div className="w-full flex flex-col gap-3">
             <textarea
-              className="w-full resize-none p-3 bg-base-200 border border-base-content/20 rounded-lg text-base-content placeholder-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full resize-none p-3 bg-base-200 border-2 border-base-content/20 rounded-lg text-base-content placeholder-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="Enter your company disclaimer..."
               rows={4}
               value={disclaimer}

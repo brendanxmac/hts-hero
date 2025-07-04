@@ -7,10 +7,16 @@ console.log("supabaseUrl", supabaseUrl);
 const nextConfig = {
   reactStrictMode: false,
   images: {
-    domains: [
+    remotePatterns: [
       // NextJS <Image> component needs to whitelist domains for src={}
-      supabaseDomain,
-      "lh3.googleusercontent.com",
+      {
+        protocol: "https",
+        hostname: supabaseDomain,
+      },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
     ],
   },
   webpack: (config) => {

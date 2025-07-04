@@ -79,15 +79,15 @@ export default function LogoUploader({ userId }: { userId: string }) {
   return (
     <div className="w-full flex flex-col items-start gap-4">
       {(loading || previewUrl) && (
-        <div className="h-24 w-full  flex-gap items-center gap-2">
+        <div className="h-24 w-full flex-col items-center justify-center gap-2">
           {loading && <LoadingIndicator text="Fetching logo" />}
           {previewUrl && (
             <Image
               src={previewUrl}
               alt="Logo"
-              className="h-24 w-auto rounded-lg border-2 border-gray-500"
+              className="h-24 w-auto rounded-lg border-2 border-base-content/20"
               width={400}
-              height={300}
+              height={400}
             />
           )}
         </div>

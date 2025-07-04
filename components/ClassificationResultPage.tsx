@@ -94,7 +94,6 @@ export const ClassificationResultPage = ({
             <button
               className="btn btn-xs btn-secondary"
               onClick={async () => {
-                //  Get Users Profile
                 setLoading(true);
                 const userProfile = await fetchUser(user.id);
                 await downloadClassificationReport(classification, userProfile);
