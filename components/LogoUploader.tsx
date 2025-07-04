@@ -7,6 +7,7 @@ import { TertiaryText } from "./TertiaryText";
 import { SecondaryLabel } from "./SecondaryLabel";
 import { fetchLogo, uploadLogo } from "../libs/supabase/storage";
 import { LoadingIndicator } from "./LoadingIndicator";
+import Image from "next/image";
 
 export default function LogoUploader({ userId }: { userId: string }) {
   const [loading, setLoading] = useState(true);
@@ -78,13 +79,15 @@ export default function LogoUploader({ userId }: { userId: string }) {
   return (
     <div className="w-full flex flex-col items-start gap-4">
       {(loading || previewUrl) && (
-        <div className="h-24 w-full flex items-center gap-2">
+        <div className="h-24 w-full  flex-gap items-center gap-2">
           {loading && <LoadingIndicator text="Fetching logo" />}
           {previewUrl && (
-            <img
+            <Image
               src={previewUrl}
               alt="Logo"
-              className="h-24 w-auto rounded-lg"
+              className="h-24 w-auto rounded-lg border-2 border-gray-500"
+              width={400}
+              height={300}
             />
           )}
         </div>
