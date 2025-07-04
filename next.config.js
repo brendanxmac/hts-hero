@@ -1,14 +1,22 @@
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseDomain = new URL(supabaseUrl).hostname;
+
+console.log("supabaseUrl", supabaseUrl);
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
   images: {
-    domains: [
+    remotePatterns: [
       // NextJS <Image> component needs to whitelist domains for src={}
-      // TODO: see what can be removed here...
-      "lh3.googleusercontent.com",
-      // "pbs.twimg.com",
-      // "images.unsplash.com",
-      // "logos-world.net",
+      {
+        protocol: "https",
+        hostname: supabaseDomain,
+      },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
     ],
   },
   webpack: (config) => {

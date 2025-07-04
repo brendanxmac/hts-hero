@@ -33,11 +33,13 @@ import { SecondaryText } from "../components/SecondaryText";
 import { TertiaryLabel } from "../components/TertiaryLabel";
 import { Color } from "../enums/style";
 import { notes } from "../public/notes/notes";
+import { UserProfile } from "./supabase/user";
 
 export const downloadClassificationReport = async (
-  classification: Classification
+  classification: Classification,
+  userProfile: UserProfile
 ) => {
-  const doc = await generateClassificationReport(classification);
+  const doc = await generateClassificationReport(classification, userProfile);
 
   // Generate a filename based on the current date and time
   const now = new Date();
