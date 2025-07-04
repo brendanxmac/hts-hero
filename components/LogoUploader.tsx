@@ -18,7 +18,7 @@ export default function LogoUploader({ userId }: { userId: string }) {
     const fetchLogoUrl = async () => {
       setLoading(true);
       const user = await fetchUser(userId);
-      if (user && user.logo_url) {
+      if (user && user.company_logo) {
         const { signedUrl, error } = await fetchLogo();
         if (error) {
           setError(error);
@@ -77,12 +77,18 @@ export default function LogoUploader({ userId }: { userId: string }) {
 
   return (
     <div className="w-full flex flex-col items-start gap-4">
-      <div className="h-24 w-full flex items-center gap-2">
-        {loading && <LoadingIndicator text="Fetching logo" />}
-        {previewUrl && (
-          <img src={previewUrl} alt="Logo" className="h-24 w-auto rounded-lg" />
-        )}
-      </div>
+      {(loading || previewUrl) && (
+        <div className="h-24 w-full flex items-center gap-2">
+          {loading && <LoadingIndicator text="Fetching logo" />}
+          {previewUrl && (
+            <img
+              src={previewUrl}
+              alt="Logo"
+              className="h-24 w-auto rounded-lg"
+            />
+          )}
+        </div>
+      )}
       <div
         {...getRootProps()}
         className={`w-full border-dashed border-2 p-6 text-center rounded cursor-pointer transition flex flex-col items-center

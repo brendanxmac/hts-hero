@@ -40,7 +40,7 @@ export async function POST(req: Request) {
   console.log("userId", userId);
 
   const ext = fileType === "image/png" ? "png" : "jpg";
-  const path = `${userId}/${Date.now()}.${ext}`;
+  const path = `${userId}/company-logo.${ext}`;
 
   const { error: uploadError } = await supabase.storage
     .from("logos")
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
 
   // Update user profile with logo url
   const updatedUserProfile = await updateUserProfile(userId, {
-    logo_url: path,
+    company_logo: path,
   });
   console.log("updatedUserProfile", updatedUserProfile);
 
