@@ -3,14 +3,11 @@
 import { fetchUser, UserProfile } from "../../libs/supabase/user";
 import { useEffect, useState } from "react";
 import { LoadingIndicator } from "../../components/LoadingIndicator";
-import { User } from "@supabase/supabase-js";
 import Profile from "../../components/Profile";
+import { useUser } from "../../contexts/UserContext";
 
-interface Props {
-  user: User;
-}
-
-export default function ProfilePage({ user }: Props) {
+export default function Home() {
+  const { user } = useUser();
   const [isLoading, setIsLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
@@ -22,12 +19,10 @@ export default function ProfilePage({ user }: Props) {
   };
 
   useEffect(() => {
-    getUserProfile();
-  }, []);
-
-  const handleProfileUpdate = (updatedProfile: UserProfile) => {
-    setUserProfile(updatedProfile);
-  };
+    if (user) {
+      getUserProfile();
+    }
+  }, [user]);
 
   return (
     <main className="h-full w-full bg-base-300 overflow-hidden">
@@ -37,7 +32,7 @@ export default function ProfilePage({ user }: Props) {
         </div>
       ) : userProfile ? (
         <div className="h-full overflow-y-auto">
-          <Profile user={userProfile} onProfileUpdate={handleProfileUpdate} />
+          <Profile user={userProfile} />
         </div>
       ) : (
         <div className="flex justify-center items-center h-full">

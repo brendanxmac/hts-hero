@@ -25,6 +25,8 @@ import { ConfirmationCard } from "../ConfirmationCard";
 import { useHts } from "../../contexts/HtsContext";
 import { TertiaryLabel } from "../TertiaryLabel";
 import { SecondaryLabel } from "../SecondaryLabel";
+import { fetchUser } from "../../libs/supabase/user";
+import { useUser } from "../../contexts/UserContext";
 
 export interface ClassificationStepProps {
   workflowStep: WorkflowStep;
@@ -46,6 +48,7 @@ export const ClassificationStep = ({
     isLoading: false,
     text: "",
   });
+  const { user } = useUser();
   const { classification, addLevel } = useClassification();
   const { articleDescription, levels } = classification;
   const previousArticleDescriptionRef = useRef<string>(articleDescription);
@@ -284,7 +287,8 @@ export const ClassificationStep = ({
 
   const completeClassification = async () => {
     setLoading({ isLoading: true, text: "Generating Report" });
-    await downloadClassificationReport(classification);
+    const userProfile = await fetchUser(user.id);
+    await downloadClassificationReport(classification, userProfile);
     setLoading({ isLoading: false, text: "" });
     setShowConfirmation(false);
   };
