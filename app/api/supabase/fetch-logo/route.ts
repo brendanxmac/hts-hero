@@ -28,13 +28,13 @@ export async function GET() {
 
   const userProfile = await fetchUser(user.id);
 
-  if (!userProfile?.logo_url) {
+  if (!userProfile?.company_logo) {
     return NextResponse.json({ signedUrl: null });
   }
 
   const { signedUrl, error } = await getSignedUrl(
     "logos",
-    userProfile.logo_url
+    userProfile.company_logo
   );
 
   if (error) {

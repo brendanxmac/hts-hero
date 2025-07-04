@@ -6,7 +6,8 @@ export interface UserProfile {
   email: string;
   image?: string;
   stripe_customer_id?: string;
-  logo_url?: string;
+  company_logo?: string;
+  company_disclaimer?: string;
   created_at: string;
   updated_at: string;
 }

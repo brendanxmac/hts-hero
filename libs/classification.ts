@@ -56,7 +56,7 @@ export const generateClassificationReport = async (
   const logo = new Image();
   const companyLogo = await fetchLogo();
   const companyLogoFormat = getImageFormatFromFilename(
-    userProfile.logo_url || ""
+    userProfile.company_logo || ""
   );
   logo.src = companyLogo.signedUrl || "/hts-hero-logo-with-text.png";
 
