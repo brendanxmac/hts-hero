@@ -85,7 +85,7 @@ export default function LogoUploader({ userId }: { userId: string }) {
             <Image
               src={previewUrl}
               alt="Logo"
-              className="h-24 w-auto rounded-lg border-2 border-base-content/20"
+              className="h-24 w-auto rounded-lg"
               width={400}
               height={400}
             />
