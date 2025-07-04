@@ -38,11 +38,9 @@ export async function GET() {
   );
 
   if (error) {
-    console.log("error", error);
+    console.error("error", error);
     return NextResponse.json({ error }, { status: 500 });
   }
-
-  console.log("signedUrl", signedUrl);
 
   return NextResponse.json({ signedUrl });
 }

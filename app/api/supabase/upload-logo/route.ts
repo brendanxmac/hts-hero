@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient, getSignedUrl } from "../server";
-import { updateUserProfile } from "../../../../libs/supabase/user";
+import { fetchUser, updateUserProfile } from "../../../../libs/supabase/user";
+import { v4 as uuidv4 } from "uuid";
 
 // Specifies that this API route should run on Edge Runtime
 // This means the API route will run on Edge servers (CDN nodes) closer to users
@@ -36,15 +37,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
   }
 
-  console.log("file", file);
-  console.log("userId", userId);
-
   const ext = fileType === "image/png" ? "png" : "jpg";
-  const path = `${userId}/company-logo.${ext}`;
+  const fileName = `${uuidv4()}.${ext}`;
 
   const { error: uploadError } = await supabase.storage
     .from("logos")
-    .upload(path, file, {
+    .upload(fileName, file, {
       cacheControl: "3600",
       upsert: true,
     });
@@ -54,20 +52,28 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: uploadError.message }, { status: 500 });
   }
 
-  // Update user profile with logo url
-  const updatedUserProfile = await updateUserProfile(userId, {
-    company_logo: path,
-  });
-  console.log("updatedUserProfile", updatedUserProfile);
+  const userProfile = await fetchUser(userId);
 
-  const { signedUrl, error } = await getSignedUrl("logos", path);
-
-  if (error) {
-    console.log("error", error);
-    return NextResponse.json({ error }, { status: 500 });
+  if (userProfile?.company_logo) {
+    await supabase.storage
+      .from("logos")
+      .remove([userProfile.company_logo])
+      .catch((error) => {
+        console.log("error removing old logo", error);
+      });
   }
 
-  console.log("signedUrl", signedUrl);
+  // Update user profile with logo url
+  await updateUserProfile(userId, {
+    company_logo: fileName,
+  });
+
+  const { signedUrl, error } = await getSignedUrl("logos", fileName);
+
+  if (error) {
+    console.error("error getting signed url", error);
+    return NextResponse.json({ error }, { status: 500 });
+  }
 
   return NextResponse.json({ signedUrl });
 }

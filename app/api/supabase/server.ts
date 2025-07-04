@@ -61,13 +61,9 @@ export const getSignedUrl = async (
     .from(bucket)
     .createSignedUrl(path, 60 * 60 * 1); // valid for 1 hour
 
-  console.log("data", data);
-  console.log("error", error);
-
   if (error) {
     console.error("Failed to fetch logo url:", error);
-    return { signedUrl: null, error: error.message };
   }
 
-  return { signedUrl: data.signedUrl, error: null };
+  return { signedUrl: data.signedUrl, error: error?.message };
 };
