@@ -53,7 +53,7 @@ export default function LogoUploader({ userId }: { userId: string }) {
       setUploading(true);
       setError(null);
 
-      const { signedUrl, error } = await uploadLogo(userId, file);
+      const { signedUrl, error } = await uploadLogo(formData);
 
       if (error) {
         setError(error || "Upload failed");

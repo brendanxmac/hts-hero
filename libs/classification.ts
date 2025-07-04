@@ -1,10 +1,9 @@
 import { Classification, FetchedClassification } from "../interfaces/hts";
 import apiClient from "./api";
 import jsPDF from "jspdf";
-import {
-  getElementWithTariffDataFromClassification,
-  getProgressionDescriptions,
-} from "./hts";
+import { getElementWithTariffDataFromClassification } from "./hts";
+import { UserProfile } from "./supabase/user";
+import { fetchLogo } from "./supabase/storage";
 
 const formatHtsNumber = (htsno: string | undefined | null): string => {
   return htsno?.trim() || "-";
@@ -28,8 +27,21 @@ export const fetchClassifications = async (): Promise<
   return classifications;
 };
 
+const getImageFormatFromFilename = (filename: string): string => {
+  const extension = filename.split(".").pop();
+
+  if (extension === "png") {
+    return "PNG";
+  } else if (extension === "jpg" || extension === "jpeg") {
+    return "JPEG";
+  }
+
+  return "PNG";
+};
+
 export const generateClassificationReport = async (
-  classification: Classification
+  classification: Classification,
+  userProfile: UserProfile
 ): Promise<jsPDF> => {
   const elementWithTariffData =
     getElementWithTariffDataFromClassification(classification);
@@ -40,15 +52,29 @@ export const generateClassificationReport = async (
   const margin = 20;
   const contentWidth = pageWidth - 2 * margin;
 
-  // 3. Add HTS Hero logo with correct aspect ratio and centered
+  // 3. Add HTS Hero logo or users company logo with correct aspect ratio and centered
   const logo = new Image();
-  logo.src = "/hts-hero-logo-with-text.png";
-  const logoWidth = 45; // Keep the same display size
-  const logoHeight = (logoWidth * 106) / 499; // Use new image dimensions for aspect ratio
+  const companyLogo = await fetchLogo();
+  const companyLogoFormat = getImageFormatFromFilename(
+    userProfile.logo_url || ""
+  );
+  logo.src = companyLogo.signedUrl || "/hts-hero-logo-with-text.png";
+
+  // Wait for image to load to get actual dimensions
+  await new Promise((resolve, reject) => {
+    logo.onload = resolve;
+    logo.onerror = reject;
+  });
+
+  const targetHeight = 40; // Set your desired height here
+  const aspectRatio = logo.width / logo.height;
+  const logoWidth = targetHeight * aspectRatio;
+  const logoHeight = targetHeight;
   const logoX = (pageWidth - logoWidth) / 2; // Center horizontally
+
   doc.addImage(
     logo,
-    "PNG",
+    companyLogoFormat || "PNG",
     logoX,
     margin + 5,
     logoWidth,
