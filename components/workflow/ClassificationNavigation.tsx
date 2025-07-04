@@ -240,19 +240,6 @@ export const ClassificationNavigation = ({
           >
             Restart
           </button>
-
-          {/* <button
-            className={classNames(
-              "grow btn btn-sm btn-secondary",
-              !isComplete && "btn-disabled"
-            )}
-            disabled={!isComplete}
-            onClick={() => {
-              downloadClassificationReport(classification);
-            }}
-          >
-            Download
-          </button> */}
         </div>
       </div>
       {showConfirmation && (

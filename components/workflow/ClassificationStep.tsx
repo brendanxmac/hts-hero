@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from "react";
 import { Loader } from "../../interfaces/ui";
 import { CandidateElements } from "../CandidateElements";
 import {
-  downloadClassificationReport,
   getBestDescriptionCandidates,
   getDirectChildrenElements,
   getElementsInChapter,
@@ -21,10 +20,11 @@ import { Color } from "../../enums/style";
 import { StepNavigation } from "./StepNavigation";
 import { useClassifyTab } from "../../contexts/ClassifyTabContext";
 import { ClassifyTab } from "../../enums/classify";
-import { ConfirmationCard } from "../ConfirmationCard";
 import { useHts } from "../../contexts/HtsContext";
 import { TertiaryLabel } from "../TertiaryLabel";
 import { SecondaryLabel } from "../SecondaryLabel";
+import { fetchUser } from "../../libs/supabase/user";
+import { useUser } from "../../contexts/UserContext";
 
 export interface ClassificationStepProps {
   workflowStep: WorkflowStep;
@@ -46,6 +46,7 @@ export const ClassificationStep = ({
     isLoading: false,
     text: "",
   });
+  const { user } = useUser();
   const { classification, addLevel } = useClassification();
   const { articleDescription, levels } = classification;
   const previousArticleDescriptionRef = useRef<string>(articleDescription);
@@ -56,7 +57,7 @@ export const ClassificationStep = ({
   const [chapterCandidates, setChapterCandidates] = useState<
     CandidateSelection[]
   >([]);
-  const [showConfirmation, setShowConfirmation] = useState(false);
+  // const [showConfirmation, setShowConfirmation] = useState(false);
   const { htsElements } = useHts();
 
   const selectionForLevel = levels[classificationLevel]?.selection;
@@ -282,12 +283,13 @@ export const ClassificationStep = ({
     }
   };
 
-  const completeClassification = async () => {
-    setLoading({ isLoading: true, text: "Generating Report" });
-    await downloadClassificationReport(classification);
-    setLoading({ isLoading: false, text: "" });
-    setShowConfirmation(false);
-  };
+  // const completeClassification = async () => {
+  //   setLoading({ isLoading: true, text: "Generating Report" });
+  //   const userProfile = await fetchUser(user.id);
+  //   await downloadClassificationReport(classification, userProfile);
+  //   setLoading({ isLoading: false, text: "" });
+  //   setShowConfirmation(false);
+  // };
 
   return (
     <div className="h-full flex flex-col pt-8 overflow-hidden">
@@ -413,7 +415,7 @@ export const ClassificationStep = ({
           }}
         />
       </div>
-      {showConfirmation && (
+      {/* {showConfirmation && (
         <ConfirmationCard
           title="🎉 Classification Complete"
           description="To download a report of the classification, click the button below. NOTE: Your classification will NOT be saved if you leave this page"
@@ -422,7 +424,7 @@ export const ClassificationStep = ({
           onConfirm={completeClassification}
           onCancel={() => setShowConfirmation(false)}
         />
-      )}
+      )} */}
     </div>
   );
 };

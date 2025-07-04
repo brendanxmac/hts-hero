@@ -38,6 +38,9 @@ import { ClassifyTab } from "../enums/classify";
 import SquareIconButton from "./SqaureIconButton";
 import { Square2StackIcon } from "@heroicons/react/24/solid";
 import { copyToClipboard } from "../utilities/data";
+import { useUser } from "../contexts/UserContext";
+import { fetchUser } from "../libs/supabase/user";
+import { LoadingIndicator } from "./LoadingIndicator";
 
 interface Props {
   setWorkflowStep: (step: WorkflowStep) => void;
@@ -48,6 +51,7 @@ export const ClassificationResultPage = ({
   setWorkflowStep,
   setClassificationLevel,
 }: Props) => {
+  const { user } = useUser();
   const { classification } = useClassification();
   const { htsElements } = useHts();
   const { levels } = classification;
@@ -61,6 +65,7 @@ export const ClassificationResultPage = ({
   const { clearBreadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { setActiveTab } = useClassifyTab();
   const [copied, setCopied] = useState(false);
+  const [loading, setLoading] = useState(false);
   // const { user } = useUser();
   // const [latestPurchase, setLatestPurchase] = useState<Purchase | null>(null);
 
@@ -88,12 +93,21 @@ export const ClassificationResultPage = ({
             <PrimaryLabel value="Result" color={Color.WHITE} />
             <button
               className="btn btn-xs btn-secondary"
-              onClick={() => {
-                downloadClassificationReport(classification);
+              onClick={async () => {
+                setLoading(true);
+                const userProfile = await fetchUser(user.id);
+                await downloadClassificationReport(classification, userProfile);
+                setLoading(false);
               }}
             >
-              <ArrowDownTrayIcon className="w-4 h-4" />
-              Download Report
+              {loading ? (
+                <LoadingIndicator text="Downloading" />
+              ) : (
+                <>
+                  <ArrowDownTrayIcon className="w-4 h-4" />
+                  Download Report
+                </>
+              )}
             </button>
           </div>
           <div className="flex flex-col">
