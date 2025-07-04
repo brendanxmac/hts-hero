@@ -6,13 +6,9 @@ export interface FileUploadDownloadResponse {
 }
 
 export const uploadLogo = async (
-  userId: string,
-  file: File
+  formData: FormData
 ): Promise<FileUploadDownloadResponse> => {
-  return apiClient.post("/supabase/upload-logo", {
-    file,
-    userId,
-  });
+  return apiClient.post("/supabase/upload-logo", formData);
 };
 
 export const fetchLogo = async (): Promise<FileUploadDownloadResponse> => {
