@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
+import { FileUploadDownloadResponse } from "../../../libs/supabase/storage";
 
 export function createClient() {
   const cookieStore = cookies();
@@ -50,3 +51,23 @@ export async function requesterIsAuthenticated(req: NextRequest) {
 
   return Boolean(user);
 }
+
+export const getSignedUrl = async (
+  bucket: string,
+  path: string
+): Promise<FileUploadDownloadResponse> => {
+  const supabase = createClient();
+  const { data, error } = await supabase.storage
+    .from(bucket)
+    .createSignedUrl(path, 60 * 60 * 1); // valid for 1 hour
+
+  console.log("data", data);
+  console.log("error", error);
+
+  if (error) {
+    console.error("Failed to fetch logo url:", error);
+    return { signedUrl: null, error: error.message };
+  }
+
+  return { signedUrl: data.signedUrl, error: null };
+};

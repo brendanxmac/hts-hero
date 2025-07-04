@@ -5,22 +5,28 @@ import { useDropzone } from "react-dropzone";
 import { fetchUser } from "../libs/supabase/user";
 import { TertiaryText } from "./TertiaryText";
 import { SecondaryLabel } from "./SecondaryLabel";
+import { fetchLogo, uploadLogo } from "../libs/supabase/storage";
+import { LoadingIndicator } from "./LoadingIndicator";
 
-export default function LogoUploader({
-  userId,
-  onUploaded,
-}: {
-  userId: string;
-  onUploaded?: (url: string, path: string) => void;
-}) {
+export default function LogoUploader({ userId }: { userId: string }) {
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchLogoUrl = async () => {
+      setLoading(true);
       const user = await fetchUser(userId);
-      setPreviewUrl(user?.logo_url || null);
+      if (user && user.logo_url) {
+        const { signedUrl, error } = await fetchLogo();
+        if (error) {
+          setError(error);
+        } else {
+          setPreviewUrl(signedUrl || null);
+        }
+      }
+      setLoading(false);
     };
     fetchLogoUrl();
   }, [userId]);
@@ -47,23 +53,17 @@ export default function LogoUploader({
       setUploading(true);
       setError(null);
 
-      const res = await fetch("/api/supabase/upload-logo", {
-        method: "POST",
-        body: formData,
-      });
+      const { signedUrl, error } = await uploadLogo(userId, file);
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || "Upload failed");
+      if (error) {
+        setError(error || "Upload failed");
       } else {
-        setPreviewUrl(data.signedUrl);
-        if (onUploaded) onUploaded(data.signedUrl, data.path);
+        setPreviewUrl(signedUrl);
       }
 
       setUploading(false);
     },
-    [userId, onUploaded]
+    [userId]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -77,9 +77,12 @@ export default function LogoUploader({
 
   return (
     <div className="w-full flex flex-col items-start gap-4">
-      {previewUrl && (
-        <img src={previewUrl} alt="Logo" className="h-24 w-auto rounded-lg" />
-      )}
+      <div className="h-24 w-full flex items-center gap-2">
+        {loading && <LoadingIndicator text="Fetching logo" />}
+        {previewUrl && (
+          <img src={previewUrl} alt="Logo" className="h-24 w-auto rounded-lg" />
+        )}
+      </div>
       <div
         {...getRootProps()}
         className={`w-full border-dashed border-2 p-6 text-center rounded cursor-pointer transition flex flex-col items-center
