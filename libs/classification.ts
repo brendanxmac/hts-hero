@@ -325,5 +325,21 @@ export const generateClassificationReport = async (
     }
   });
 
+  if (userProfile.company_disclaimer) {
+    doc.addPage();
+    yPosition = margin;
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Company Disclaimer:", margin, margin);
+    yPosition += 6;
+    doc.setFont("helvetica", "normal");
+    const disclaimerLines = doc.splitTextToSize(
+      userProfile.company_disclaimer,
+      contentWidth
+    );
+    doc.text(disclaimerLines, margin, yPosition);
+    yPosition += disclaimerLines.length * 6 + 5;
+  }
+
   return doc;
 };
