@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "../server";
+import { createClient, getSignedUrl } from "../server";
 import { updateUserProfile } from "../../../../libs/supabase/user";
 
 // Specifies that this API route should run on Edge Runtime
@@ -60,16 +60,14 @@ export async function POST(req: Request) {
   });
   console.log("updatedUserProfile", updatedUserProfile);
 
-  const { data: signedUrlData, error: signedError } = await supabase.storage
-    .from("logos")
-    .createSignedUrl(path, 60 * 60 * 24 * 7); // valid for 7 days
+  const { signedUrl, error } = await getSignedUrl("logos", path);
 
-  if (signedError) {
-    console.log("signedError", signedError);
-    return NextResponse.json({ error: signedError.message }, { status: 500 });
+  if (error) {
+    console.log("error", error);
+    return NextResponse.json({ error }, { status: 500 });
   }
 
-  console.log("signedUrlData", signedUrlData);
+  console.log("signedUrl", signedUrl);
 
-  return NextResponse.json({ signedUrl: signedUrlData.signedUrl });
+  return NextResponse.json({ signedUrl });
 }
