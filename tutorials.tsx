@@ -15,7 +15,7 @@ export const exploreTutorial = (
 
 export const classifyTutorial = (
   <iframe
-    src="https://www.youtube.com/embed/1O4U7D6DK90?si=KOWj3Vp270uAU_Rt"
+    src="https://www.youtube.com/embed/qoptx3EpNrc?si=_xvYkdlgZlc9xW6V"
     allowFullScreen
     className="w-full h-full"
   ></iframe>
