@@ -5,11 +5,10 @@ import { TertiaryText } from "./TertiaryText";
 import { Color } from "../enums/style";
 
 interface Props {
-  options?: string[];
   searchTerm: string;
 }
 
-export const SearchCrossRulings = ({ searchTerm, options }: Props) => {
+export const SearchCrossRulings = ({ searchTerm }: Props) => {
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
 
   const handleSearch = (searchTerm?: string) => {
@@ -53,19 +52,6 @@ export const SearchCrossRulings = ({ searchTerm, options }: Props) => {
                 Search Rulings
               </button>
             </div>
-
-            {options && (
-              <div className="flex gap-2 flex-wrap">
-                {options.map((option) => (
-                  <button
-                    className="btn btn-primary btn-sm text-start transition-colors w-fit"
-                    onClick={() => handleSearch(option)}
-                  >
-                    Search {option}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
         </div>
       </div>
