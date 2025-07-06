@@ -279,7 +279,7 @@ export const generateClassificationReport = async (
       // Recommendation Reason
       if (level.suggestionReason) {
         doc.setFont("helvetica", "bold");
-        doc.text("Recommendation Reason:", margin, yPosition);
+        doc.text("HTS Hero Analysis:", margin, yPosition);
         yPosition += 6;
         doc.setFont("helvetica", "normal");
         const reasonLines = doc.splitTextToSize(

@@ -298,7 +298,7 @@ export const CandidateElement = ({
                 onClick={() => {}}
               /> */}
               <SparklesIcon className="h-4 w-4 text-accent" />
-              <TertiaryLabel value="HTS Hero Favorite" color={Color.ACCENT} />
+              <TertiaryLabel value="HTS Hero Analysis" color={Color.ACCENT} />
             </div>
 
             <div className="flex flex-col gap-2">
