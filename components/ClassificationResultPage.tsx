@@ -35,8 +35,7 @@ import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { useClassifyTab } from "../contexts/ClassifyTabContext";
 import { ClassifyTab } from "../enums/classify";
-import SquareIconButton from "./SqaureIconButton";
-import { Square2StackIcon } from "@heroicons/react/24/solid";
+import { Square2StackIcon } from "@heroicons/react/24/outline";
 import { copyToClipboard } from "../utilities/data";
 import { useUser } from "../contexts/UserContext";
 import { fetchUser } from "../libs/supabase/user";
@@ -90,9 +89,12 @@ export const ClassificationResultPage = ({
       <div className="px-8 pb-6 flex-1 flex flex-col gap-8 overflow-y-auto">
         <div className="flex flex-col gap-2">
           <div className="flex justify-between items-end">
-            <PrimaryLabel value="Result" color={Color.WHITE} />
+            <PrimaryLabel
+              value="Your Classification Summary"
+              color={Color.WHITE}
+            />
             <button
-              className="btn btn-xs btn-secondary"
+              className="btn btn-xs btn-primary"
               onClick={async () => {
                 setLoading(true);
                 const userProfile = await fetchUser(user.id);
@@ -111,17 +113,72 @@ export const ClassificationResultPage = ({
             </button>
           </div>
           <div className="flex flex-col">
-            <TertiaryText value="You have classified the item and can download a full report of the classification for your records." />
+            <TertiaryText value="Below are the results of your classification for the item. Download the full report of your classification for your records as the results will not be saved after you close this page." />
           </div>
         </div>
         <div className=" flex flex-col gap-2">
           <SecondaryLabel value="HTS Code" color={Color.WHITE} />
-          <div className="flex gap-3 items-center">
+          <div className="flex flex-col gap-3">
             <h2 className="text-3xl md:text-5xl lg:text-6xl text-white font-extrabold">
               {classification.levels[levels.length - 1].selection?.htsno}
             </h2>
-            <div className="flex flex-col gap-1">
-              <SquareIconButton
+            <div className="flex gap-2">
+              <button
+                className="btn btn-xs btn-primary"
+                onClick={() => {
+                  copyToClipboard(
+                    classification.levels[levels.length - 1].selection?.htsno
+                  );
+                  setCopied(true);
+                }}
+              >
+                {copied ? (
+                  <CheckCircleIcon className="w-4 h-4 text-white" />
+                ) : (
+                  <Square2StackIcon className="w-4 h-4" />
+                )}
+                {copied ? "Copied" : "Copy"}
+              </button>
+              <button
+                className="btn btn-xs btn-primary"
+                onClick={() => {
+                  clearBreadcrumbs();
+                  const sectionAndChapter =
+                    getSectionAndChapterFromChapterNumber(
+                      sections,
+                      Number(getChapterFromHtsElement(element, htsElements))
+                    );
+
+                  const parents = getHtsElementParents(element, htsElements);
+                  const breadcrumbs = generateBreadcrumbsForHtsElement(
+                    sections,
+                    sectionAndChapter.chapter,
+                    [...parents, element]
+                  );
+
+                  setBreadcrumbs(breadcrumbs);
+
+                  setActiveTab(ClassifyTab.EXPLORE);
+                }}
+              >
+                <MagnifyingGlassIcon className="w-4 h-4" />
+                Show in Explorer
+              </button>
+              <button
+                className="btn btn-xs btn-primary"
+                onClick={() => {
+                  window.open(
+                    `https://rulings.cbp.gov/search?term=${encodeURIComponent(
+                      classification.levels[levels.length - 1].selection?.htsno
+                    )}`,
+                    "_blank"
+                  );
+                }}
+              >
+                <MagnifyingGlassIcon className="w-4 h-4" />
+                Search CROSS
+              </button>
+              {/* <SquareIconButton
                 transparent
                 tooltip="Copy"
                 icon={
@@ -161,7 +218,7 @@ export const ClassificationResultPage = ({
 
                   setActiveTab(ClassifyTab.EXPLORE);
                 }}
-              />
+              /> */}
             </div>
           </div>
         </div>
