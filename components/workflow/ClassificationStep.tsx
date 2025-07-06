@@ -23,8 +23,9 @@ import { ClassifyTab } from "../../enums/classify";
 import { useHts } from "../../contexts/HtsContext";
 import { TertiaryLabel } from "../TertiaryLabel";
 import { SecondaryLabel } from "../SecondaryLabel";
-import { fetchUser } from "../../libs/supabase/user";
-import { useUser } from "../../contexts/UserContext";
+import Modal from "../Modal";
+import { SearchCrossRulings } from "../SearchCrossRulings";
+import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
 
 export interface ClassificationStepProps {
   workflowStep: WorkflowStep;
@@ -46,7 +47,7 @@ export const ClassificationStep = ({
     isLoading: false,
     text: "",
   });
-  const { user } = useUser();
+  const [showCrossRulingsModal, setShowCrossRulingsModal] = useState(false);
   const { classification, addLevel } = useClassification();
   const { articleDescription, levels } = classification;
   const previousArticleDescriptionRef = useRef<string>(articleDescription);
@@ -251,9 +252,9 @@ export const ClassificationStep = ({
     if (level === 0) {
       return "Find & select the most suitable heading for this item";
     } else if (level === 1) {
-      return "Select the option that best matches your item description when added onto your first selection";
+      return "Select the candidate that best matches your item description when added onto your first selection";
     } else {
-      return "Select the option that best matches your item description when added onto your prior selection(s)";
+      return "Select the candidate that best matches your item description when added onto your prior selection(s)";
     }
   };
 
@@ -261,16 +262,13 @@ export const ClassificationStep = ({
     if (classificationLevel === 0) {
       return (
         <div className="w-full flex justify-between items-center">
-          <div>
-            Easily find and add candidates using the{" "}
-            <button
-              className="btn-link"
-              onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
-              disabled={loading.isLoading}
-            >
-              explorer
-            </button>
-          </div>
+          <button
+            className="btn btn-xs btn-primary"
+            onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
+            disabled={loading.isLoading}
+          >
+            Search Headings
+          </button>
         </div>
       );
     } else {
@@ -301,12 +299,39 @@ export const ClassificationStep = ({
           />
 
           <div className="w-full flex justify-between items-end">
-            <div className="w-full flex flex-col">
+            <div className="w-full flex flex-col gap-2">
               <PrimaryLabel
                 value={getStepDescription(classificationLevel)}
                 color={Color.WHITE}
               />
-              {getStepInstructions()}
+              {/* {getStepInstructions()} */}
+              <div className="flex gap-2">
+                <button
+                  className="btn btn-sm btn-primary"
+                  onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
+                  disabled={loading.isLoading}
+                >
+                  <MagnifyingGlassIcon className="w-4 h-4" />
+                  Search Headings
+                </button>
+                <button
+                  className="btn btn-sm btn-primary"
+                  onClick={() => {
+                    setShowCrossRulingsModal(true);
+                  }}
+                  disabled={loading.isLoading}
+                >
+                  <MagnifyingGlassIcon className="w-4 h-4" />
+                  Search CROSS
+                </button>
+                {/* <button
+                  className="btn btn-sm btn-primary"
+                  onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
+                  disabled={loading.isLoading}
+                >
+                  📝 Add Notes
+                </button> */}
+              </div>
             </div>
           </div>
           {/* TODO: show the analysis (suggestion) for the current level */}
@@ -359,7 +384,9 @@ export const ClassificationStep = ({
               {/* Get the number of options for this level */}
               <SecondaryLabel
                 value={
-                  optionsForLevel ? `Options (${optionsForLevel})` : "Options"
+                  optionsForLevel
+                    ? `Candidates (${optionsForLevel})`
+                    : "Candidates"
                 }
                 color={Color.WHITE}
               />
@@ -415,16 +442,14 @@ export const ClassificationStep = ({
           }}
         />
       </div>
-      {/* {showConfirmation && (
-        <ConfirmationCard
-          title="🎉 Classification Complete"
-          description="To download a report of the classification, click the button below. NOTE: Your classification will NOT be saved if you leave this page"
-          confirmText="Download"
-          cancelText="Close"
-          onConfirm={completeClassification}
-          onCancel={() => setShowConfirmation(false)}
-        />
-      )} */}
+      {showCrossRulingsModal && (
+        <Modal
+          isOpen={showCrossRulingsModal}
+          setIsOpen={setShowCrossRulingsModal}
+        >
+          <SearchCrossRulings searchTerm={articleDescription} />
+        </Modal>
+      )}
     </div>
   );
 };
