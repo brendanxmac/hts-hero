@@ -32,6 +32,10 @@ import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
 import { userHasActivePurchase } from "../libs/supabase/purchase";
 import { isWithinPastNDays } from "../utilities/time";
 import { useUser } from "../contexts/UserContext";
+import { SecondaryText } from "./SecondaryText";
+import { PrimaryText } from "./PrimaryText";
+import { SecondaryLabel } from "./SecondaryLabel";
+import { TertiaryText } from "./TertiaryText";
 
 interface Props {
   element: HtsElement;
@@ -206,14 +210,6 @@ export const CandidateElement = ({
                 }}
               />
 
-              {/* <SquareIconButton
-                transparent
-                icon={<ChatBubbleBottomCenterTextIcon className="h-4 w-4" />}
-                tooltip={`${showNotes ? "Hide" : "Show"} Comments`}
-                onClick={() => {
-                  setShowNotes(!showNotes);
-                }}
-              /> */}
               {indent === "0" && (
                 <SquareIconButton
                   transparent
@@ -262,54 +258,25 @@ export const CandidateElement = ({
               )}
             </div>
           </div>
-          <PrimaryLabel value={description} color={Color.WHITE} />
+          <PrimaryText value={description} color={Color.WHITE} />
         </div>
-
-        {/* {showNotes && (
-          <div className="flex flex-col gap-2 rounded-md">
-            <TertiaryLabel value="Comments" />
-            <TextInput
-              defaultValue={element.notes}
-              placeholder="Why is this candidate good or bad compared to others for the classification?"
-              showCharacterCount={false}
-              onChange={(str) => {
-                const updatedCandidates = classification.levels[
-                  indentLevel
-                ].candidates.map((candidate) => {
-                  if (candidate.uuid === element.uuid) {
-                    return { ...candidate, notes: str };
-                  }
-                  return candidate;
-                });
-                updateLevel(indentLevel, {
-                  candidates: updatedCandidates,
-                });
-              }}
-            />
-          </div>
-        )} */}
 
         {isRecommended && (
           <div className="flex flex-col gap-2">
             <div className="flex gap-1 text-accent items-center">
-              {/* <SquareIconButton
-                iconOnly
-                icon={<SparklesIcon className="h-4 w-4 text-accent" />}
-                tooltip={`HTS Hero can make mistakes, check important information`}
-                onClick={() => {}}
-              /> */}
               <SparklesIcon className="h-4 w-4 text-primary" />
               <TertiaryLabel value="HTS Hero Analysis" color={Color.PRIMARY} />
             </div>
 
-            <div className="flex flex-col gap-2 ml-3">
-              <p className="text-white text-sm ml-2">{recommendedReason}</p>
-              <p className="text-xs text-gray-400 ml-2">
+            <div className="flex flex-col gap-2 ml-1">
+              <TertiaryText color={Color.WHITE} value={recommendedReason} />
+
+              <p className="text-xs text-gray-400">
                 HTS Hero can make mistakes. Always exercise your own judgement
               </p>
             </div>
 
-            {suggestedQuestions && suggestedQuestions.length > 0 && (
+            {/* {suggestedQuestions && suggestedQuestions.length > 0 && (
               <div className="flex flex-col gap-2">
                 <TertiaryLabel value="Potential Clarifications:" />
                 <div className="flex flex-col gap-1 ml-2">
@@ -323,7 +290,7 @@ export const CandidateElement = ({
                   ))}
                 </div>
               </div>
-            )}
+            )} */}
           </div>
         )}
       </div>

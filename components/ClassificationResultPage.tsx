@@ -24,7 +24,6 @@ import { SecondaryText } from "./SecondaryText";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { PDFProps } from "../interfaces/ui";
 import PDF from "./PDF";
-import { StepNavigation } from "./workflow/StepNavigation";
 import { TertiaryText } from "./TertiaryText";
 import {
   CheckCircleIcon,
@@ -40,16 +39,10 @@ import { copyToClipboard } from "../utilities/data";
 import { useUser } from "../contexts/UserContext";
 import { fetchUser } from "../libs/supabase/user";
 import { LoadingIndicator } from "./LoadingIndicator";
+import { PencilSquareIcon } from "@heroicons/react/24/solid";
+import { XMarkIcon } from "@heroicons/react/16/solid";
 
-interface Props {
-  setWorkflowStep: (step: WorkflowStep) => void;
-  setClassificationLevel: (level: number) => void;
-}
-
-export const ClassificationResultPage = ({
-  setWorkflowStep,
-  setClassificationLevel,
-}: Props) => {
+export const ClassificationResultPage = () => {
   const { user } = useUser();
   const { classification, setClassification } = useClassification();
   const { htsElements } = useHts();
@@ -65,16 +58,7 @@ export const ClassificationResultPage = ({
   const { setActiveTab } = useClassifyTab();
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
-  // const { user } = useUser();
-  // const [latestPurchase, setLatestPurchase] = useState<Purchase | null>(null);
-
-  // useEffect(() => {
-  //   if (user) {
-  //     getLatestPurchase(user.id).then((purchase) => {
-  //       setLatestPurchase(purchase);
-  //     });
-  //   }
-  // }, [user]);
+  const [showNotes, setShowNotes] = useState(false);
 
   useEffect(() => {
     if (copied) {
@@ -93,24 +77,40 @@ export const ClassificationResultPage = ({
               value="Your Classification Result"
               color={Color.WHITE}
             />
-            <button
-              className="btn btn-xs btn-primary"
-              onClick={async () => {
-                setLoading(true);
-                const userProfile = await fetchUser(user.id);
-                await downloadClassificationReport(classification, userProfile);
-                setLoading(false);
-              }}
-            >
-              {loading ? (
-                <LoadingIndicator text="Downloading" color={Color.WHITE} />
-              ) : (
-                <>
-                  <ArrowDownTrayIcon className="w-4 h-4" />
-                  Download Report
-                </>
+            <div className="flex gap-2">
+              <button
+                className="btn btn-xs btn-primary"
+                onClick={async () => {
+                  setLoading(true);
+                  const userProfile = await fetchUser(user.id);
+                  await downloadClassificationReport(
+                    classification,
+                    userProfile
+                  );
+                  setLoading(false);
+                }}
+              >
+                {loading ? (
+                  <LoadingIndicator text="Downloading" color={Color.WHITE} />
+                ) : (
+                  <>
+                    <ArrowDownTrayIcon className="w-4 h-4" />
+                    Download Report
+                  </>
+                )}
+              </button>
+              {!showNotes && (
+                <button
+                  className="mx-auto btn btn-xs btn-primary"
+                  onClick={() => {
+                    setShowNotes(true);
+                  }}
+                >
+                  <PencilSquareIcon className="w-4 h-4" />
+                  Add Notes
+                </button>
               )}
-            </button>
+            </div>
           </div>
           <div className="flex flex-col">
             <TertiaryText value="Below are the results of your classification for the item. Download the full report of your classification for your records as the results will not be saved after you close this page." />
@@ -130,11 +130,11 @@ export const ClassificationResultPage = ({
                 }}
               >
                 {copied ? (
-                  <CheckCircleIcon className="w-4 h-4 text-white" />
+                  <CheckCircleIcon className="w-4 h-4" />
                 ) : (
                   <Square2StackIcon className="w-4 h-4" />
                 )}
-                {copied ? "Copied" : "Copy"}
+                {copied ? "Copied!" : "Copy"}
               </button>
               <button
                 className="btn btn-xs btn-primary"
@@ -312,35 +312,43 @@ export const ClassificationResultPage = ({
             </div>
           )}
         </>
-        <div className="w-full flex flex-col gap-2">
-          <SecondaryLabel value="Final Notes" color={Color.WHITE} />
-          <textarea
-            className="min-h-32 textarea textarea-bordered border-2 focus:outline-none text-white text-base w-full"
-            placeholder="Add any final notes here"
-            value={classification.notes || ""}
-            onChange={(e) => {
-              setClassification({
-                ...classification,
-                notes: e.target.value,
-              });
-            }}
-          />
-        </div>
+        {/* NOTES */}
+        {showNotes && (
+          <div className="w-full flex flex-col gap-2">
+            <div className="flex flex-col">
+              <div className="flex items-center justify-between gap-1">
+                <SecondaryLabel value="Final Notes" color={Color.WHITE} />
+                <button
+                  className="btn btn-xs btn-primary"
+                  onClick={() => {
+                    setShowNotes(false);
+                    setClassification({
+                      ...classification,
+                      notes: "",
+                    });
+                  }}
+                >
+                  <XMarkIcon className="w-4 h-4" />
+                  Remove Notes
+                </button>
+              </div>
+            </div>
+
+            <textarea
+              className="min-h-36 textarea textarea-bordered border-2 focus:outline-none text-white placeholder:text-white/20 placeholder:italic text-base w-full"
+              placeholder="Add any final notes here. These notes will be included in your classification report."
+              autoFocus
+              value={classification.notes || ""}
+              onChange={(e) => {
+                setClassification({
+                  ...classification,
+                  notes: e.target.value,
+                });
+              }}
+            />
+          </div>
+        )}
       </div>
-      {/* Horizontal line */}
-      {/* <div className="w-full border-t-2 border-base-100" /> */}
-      {/* Navigation */}
-      {/* <div className="w-full max-w-3xl mx-auto px-8">
-        <StepNavigation
-          previous={{
-            label: "Back",
-            onClick: () => {
-              setWorkflowStep(WorkflowStep.CLASSIFICATION);
-              setClassificationLevel(levels.length - 1);
-            },
-          }}
-        />
-      </div> */}
       {showPDF && (
         <PDF
           title={showPDF.title}

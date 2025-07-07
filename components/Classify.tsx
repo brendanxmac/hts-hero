@@ -100,7 +100,6 @@ export const Classify = () => {
             )} */}
             {workflowStep === WorkflowStep.CLASSIFICATION && (
               <ClassificationStep
-                workflowStep={workflowStep}
                 setWorkflowStep={setWorkflowStep}
                 classificationLevel={classificationLevel}
                 setClassificationLevel={setClassificationLevel}
@@ -110,10 +109,7 @@ export const Classify = () => {
               />
             )}
             {workflowStep === WorkflowStep.RESULT && (
-              <ClassificationResultPage
-                setWorkflowStep={setWorkflowStep}
-                setClassificationLevel={setClassificationLevel}
-              />
+              <ClassificationResultPage />
             )}
           </>
         )}

@@ -1,6 +1,7 @@
 "use client";
 
 import { Bars3BottomLeftIcon } from "@heroicons/react/24/solid";
+import { PlusIcon } from "@heroicons/react/20/solid";
 import { WorkflowStep } from "../../enums/hts";
 import { SecondaryLabel } from "../SecondaryLabel";
 import { classNames } from "../../utilities/style";
@@ -96,12 +97,12 @@ export const ClassificationNavigation = ({
 
         <div className="flex items-center justify-center gap-4">
           <button
-            className="btn btn-sm btn-primary"
+            className="btn btn-sm btn-primary btn-square"
             onClick={() => {
               setShowConfirmation(true);
             }}
           >
-            New
+            <PlusIcon className="w-5 h-5" />
           </button>
           <div
             role="tablist"

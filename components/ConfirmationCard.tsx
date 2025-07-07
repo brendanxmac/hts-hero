@@ -19,14 +19,14 @@ export const ConfirmationCard = ({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="card bg-neutral text-neutral-content w-96">
         <div className="card-body">
-          <h2 className="card-title">{title}</h2>
+          <h2 className="card-title text-white">{title}</h2>
           <div className="flex flex-col gap-4">
             {description.split(".").map((sentence, index) => (
               <p
                 key={index}
                 className={index > 0 ? "text-sm font-bold text-secondary" : ""}
               >
-                {`${sentence}.`}
+                {`${sentence}`}
               </p>
             ))}
           </div>
