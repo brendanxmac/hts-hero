@@ -103,7 +103,7 @@ export const ClassificationResultPage = ({
               }}
             >
               {loading ? (
-                <LoadingIndicator text="Downloading" />
+                <LoadingIndicator text="Downloading" color={Color.WHITE} />
               ) : (
                 <>
                   <ArrowDownTrayIcon className="w-4 h-4" />

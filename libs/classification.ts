@@ -237,7 +237,7 @@ export const generateClassificationReport = async (
   classification.levels.forEach((level, index) => {
     // Level header
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(14);
+    doc.setFontSize(18);
     doc.text(`Level ${index + 1}`, margin, yPosition);
     yPosition += 4;
 
@@ -249,25 +249,20 @@ export const generateClassificationReport = async (
     // Selected Element Section
     if (level.selection) {
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(12);
-      doc.text("Selected Element:", margin, yPosition);
-      yPosition += 7;
+      doc.setFontSize(15);
+      doc.text("Selection:", margin, yPosition);
 
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
+      yPosition += 10;
+      doc.setFontSize(12);
 
       // HTS Code
       doc.setFont("helvetica", "bold");
-      doc.text("HTS Code:", margin, yPosition);
-      yPosition += 7;
-      doc.setFont("helvetica", "normal");
+      doc.setTextColor(34, 197, 94);
       doc.text(formatHtsNumber(level.selection.htsno), margin, yPosition);
-      yPosition += 12;
+      yPosition += 4;
 
       // Description
-      doc.setFont("helvetica", "bold");
-      doc.text("Description:", margin, yPosition);
-      yPosition += 6;
+      doc.setTextColor(0, 0, 0);
       doc.setFont("helvetica", "normal");
       const descriptionLines = doc.splitTextToSize(
         level.selection.description,
@@ -276,45 +271,60 @@ export const generateClassificationReport = async (
       doc.text(descriptionLines, margin, yPosition);
       yPosition += descriptionLines.length * 6 + 6;
 
-      // Recommendation Reason
-      if (level.suggestionReason) {
+      // Classifier Notes
+      if (level.notes) {
         doc.setFont("helvetica", "bold");
-        doc.text("HTS Hero Analysis:", margin, yPosition);
+        doc.text("Classifier Notes:", margin, yPosition);
         yPosition += 6;
         doc.setFont("helvetica", "normal");
-        const reasonLines = doc.splitTextToSize(
-          level.suggestionReason,
-          contentWidth
-        );
-        doc.text(reasonLines, margin, yPosition);
-        yPosition += reasonLines.length * 6 + 5;
+        const notesLines = doc.splitTextToSize(level.notes, contentWidth);
+        doc.text(notesLines, margin, yPosition);
+        yPosition += notesLines.length * 6 + 5;
       }
+
+      // Recommendation Reason
+      // if (level.analysisReason) {
+      //   doc.setFont("helvetica", "bold");
+      //   doc.text("HTS Hero Analysis:", margin, yPosition);
+      //   yPosition += 6;
+      //   doc.setFont("helvetica", "normal");
+      //   const reasonLines = doc.splitTextToSize(
+      //     level.analysisReason,
+      //     contentWidth
+      //   );
+      //   doc.text(reasonLines, margin, yPosition);
+      //   yPosition += reasonLines.length * 6 + 5;
+      // }
     }
 
     // Other Candidates Section
     if (level.candidates && level.candidates.length > 0) {
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(12);
-      doc.text("Other Candidates:", margin, yPosition);
+      doc.setFontSize(15);
+      doc.text("Candidates:", margin, yPosition);
       yPosition += 7;
 
       level.candidates.forEach((candidate) => {
-        if (candidate.htsno !== level.selection?.htsno) {
-          // HTS Code
-          doc.setFont("helvetica", "normal");
-          doc.setFontSize(9);
-          doc.text(formatHtsNumber(candidate.htsno), margin, yPosition);
-          yPosition += 4;
-
-          // Description
-          const candidateLines = doc.splitTextToSize(
-            candidate.description,
-            contentWidth - 10
-          );
+        doc.setFontSize(10);
+        if (candidate.htsno === level.selection?.htsno) {
+          doc.setTextColor(34, 197, 94);
           doc.setFont("helvetica", "bold");
-          doc.text(candidateLines, margin + 5, yPosition);
-          yPosition += candidateLines.length * 6 + 2;
+        } else {
+          doc.setFont("helvetica", "normal");
+          doc.setTextColor(0, 0, 0);
         }
+        doc.text(formatHtsNumber(candidate.htsno), margin, yPosition);
+        yPosition += 4;
+
+        // Description
+        const candidateLines = doc.splitTextToSize(
+          candidate.description,
+          contentWidth - 10
+        );
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(0, 0, 0);
+        doc.text(candidateLines, margin, yPosition);
+        yPosition += candidateLines.length * 6 + 2;
       });
     }
 

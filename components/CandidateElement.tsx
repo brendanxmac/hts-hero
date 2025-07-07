@@ -58,12 +58,12 @@ export const CandidateElement = ({
   const { htsElements } = useHts();
   const { levels, progressionDescription } = classification;
   const isRecommended =
-    classification.levels[classificationLevel]?.suggestedElement?.uuid ===
+    classification.levels[classificationLevel]?.analysisElement?.uuid ===
     element.uuid;
   const recommendedReason =
-    classification.levels[classificationLevel]?.suggestionReason;
+    classification.levels[classificationLevel]?.analysisReason;
   const suggestedQuestions =
-    classification.levels[classificationLevel]?.suggestionQuestions;
+    classification.levels[classificationLevel]?.analysisQuestions;
 
   // Check all progression levels to see if this element is selected in any of them
   const isLevelSelection = Boolean(
@@ -83,6 +83,7 @@ export const CandidateElement = ({
     // Track classification completed event
     trackEvent(MixpanelEvent.CLASSIFICATION_COMPLETED, {
       hts_code: element.htsno,
+      item: classification.articleDescription,
       is_paying_user: isPayingUser,
       is_trial_user: isTrialUser,
     });
