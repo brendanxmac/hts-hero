@@ -112,11 +112,9 @@ export const ClassificationProvider = ({
     });
   };
 
-  const clearClassification = (keepArticleDescription?: boolean) => {
+  const clearClassification = () => {
     setClassification({
-      articleDescription: keepArticleDescription
-        ? classification.articleDescription
-        : "",
+      articleDescription: "",
       articleAnalysis: "",
       progressionDescription: "",
       levels: [],
