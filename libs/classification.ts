@@ -314,6 +314,7 @@ export const generateClassificationReport = async (
 
       level.candidates.forEach((candidate) => {
         doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
         doc.text(formatHtsNumber(candidate.htsno), margin, yPosition);
         yPosition += 4;
 
