@@ -85,12 +85,12 @@ export const ClassificationResultPage = ({
   }, [copied]);
 
   return (
-    <div className="h-full pt-8 w-full max-w-3xl mx-auto flex flex-col">
-      <div className="px-8 pb-6 flex-1 flex flex-col gap-8 overflow-y-auto">
+    <div className="h-full w-full max-w-4xl mx-auto flex flex-col">
+      <div className="px-8 py-6 flex-1 flex flex-col gap-8 overflow-y-auto">
         <div className="flex flex-col gap-2">
-          <div className="flex justify-between items-end">
+          <div className="flex justify-between items-center">
             <PrimaryLabel
-              value="Your Classification Summary"
+              value="Your Classification Result"
               color={Color.WHITE}
             />
             <button
@@ -117,11 +117,8 @@ export const ClassificationResultPage = ({
           </div>
         </div>
         <div className=" flex flex-col gap-2">
-          <SecondaryLabel value="HTS Code" color={Color.WHITE} />
-          <div className="flex flex-col gap-3">
-            <h2 className="text-3xl md:text-5xl lg:text-6xl text-white font-extrabold">
-              {classification.levels[levels.length - 1].selection?.htsno}
-            </h2>
+          <div className="flex justify-between items-center">
+            <SecondaryLabel value="HTS Code" color={Color.WHITE} />
             <div className="flex gap-2">
               <button
                 className="btn btn-xs btn-primary"
@@ -179,6 +176,11 @@ export const ClassificationResultPage = ({
                 Search CROSS
               </button>
             </div>
+          </div>
+          <div className="flex flex-col gap-3">
+            <h2 className="text-3xl md:text-5xl lg:text-6xl text-white font-extrabold">
+              {classification.levels[levels.length - 1].selection?.htsno}
+            </h2>
           </div>
         </div>
         <div className="flex flex-col gap-2">
@@ -314,7 +316,7 @@ export const ClassificationResultPage = ({
           <SecondaryLabel value="Final Notes" color={Color.WHITE} />
           <textarea
             className="min-h-32 textarea textarea-bordered border-2 focus:outline-none text-white text-base w-full"
-            placeholder="Add your final notes here"
+            placeholder="Add any final notes here"
             value={classification.notes || ""}
             onChange={(e) => {
               setClassification({
@@ -326,9 +328,9 @@ export const ClassificationResultPage = ({
         </div>
       </div>
       {/* Horizontal line */}
-      <div className="w-full border-t-2 border-base-100" />
+      {/* <div className="w-full border-t-2 border-base-100" /> */}
       {/* Navigation */}
-      <div className="w-full max-w-3xl mx-auto px-8">
+      {/* <div className="w-full max-w-3xl mx-auto px-8">
         <StepNavigation
           previous={{
             label: "Back",
@@ -338,7 +340,7 @@ export const ClassificationResultPage = ({
             },
           }}
         />
-      </div>
+      </div> */}
       {showPDF && (
         <PDF
           title={showPDF.title}

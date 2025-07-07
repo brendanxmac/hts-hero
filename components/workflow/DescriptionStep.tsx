@@ -45,9 +45,6 @@ export const DescriptionStep = ({
               value="Item Description"
               color={Color.NEUTRAL_CONTENT}
             />
-            {/* <button className="btn w-fit btn-xs text-white border border-neutral-content hover:bg-primary">
-              <span className="text-base">🚀</span> Tips for best results
-            </button> */}
           </div>
           <h2 className={`text-white font-bold text-2xl`}>
             Enter a detailed description of your item
@@ -59,6 +56,36 @@ export const DescriptionStep = ({
           onChange={(value) => {
             setLocalProductDescription(value);
           }}
+          onSubmit={async () => {
+            const userCreatedDate = user ? new Date(user.created_at) : null;
+            const isTrialUser = userCreatedDate
+              ? isWithinPastNDays(userCreatedDate, 14)
+              : false;
+
+            const isPayingUser = user
+              ? await userHasActivePurchase(user.id)
+              : false;
+
+            if (isPayingUser || isTrialUser) {
+              if (localProductDescription !== productDescription) {
+                startNewClassification(localProductDescription);
+              }
+
+              setWorkflowStep(WorkflowStep.CLASSIFICATION);
+              setClassificationLevel(0);
+
+              // Track classification started event
+              trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
+                item: localProductDescription,
+                is_paying_user: isPayingUser,
+                is_trial_user: isTrialUser,
+              });
+            } else {
+              setArticleDescription(localProductDescription);
+              setShowPricing(true);
+            }
+          }}
+          disabled={localProductDescription.length === 0}
         />
 
         <div className="flex flex-col">
@@ -101,9 +128,9 @@ export const DescriptionStep = ({
         </div>
       </div>
       {/* Horizontal line */}
-      <div className="w-full border-t-2 border-base-100" />
+      {/* <div className="w-full border-t-2 border-base-100" /> */}
       {/* Navigation */}
-      <div className="w-full max-w-3xl mx-auto px-8">
+      {/* <div className="w-full max-w-3xl mx-auto px-8">
         <StepNavigation
           next={{
             label: "Start",
@@ -140,7 +167,7 @@ export const DescriptionStep = ({
             disabled: localProductDescription.length === 0,
           }}
         />
-      </div>
+      </div> */}
     </div>
   );
 };

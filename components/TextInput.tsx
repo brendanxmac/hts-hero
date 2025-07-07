@@ -5,6 +5,8 @@ import { classNames } from "../utilities/style";
 import { TertiaryText } from "./TertiaryText";
 import SquareIconButton from "./SqaureIconButton";
 import { CheckIcon } from "@heroicons/react/24/solid";
+import { ArrowUpIcon } from "@heroicons/react/16/solid";
+import { Color } from "../enums/style";
 
 interface Props {
   label?: string;
@@ -73,40 +75,39 @@ export default function TextInput({
           className="textarea text-base max-h-96 min-h-12 rounded-none resize-none bg-inherit text-black dark:text-white placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-0"
         ></textarea>
 
-        {showCharacterCount ||
-          (onSubmit && (
-            <div className="flex justify-between items-center">
-              {showCharacterCount && (
-                <p
-                  className={classNames(
-                    "text-neutral-500 text-xs",
+        {(showCharacterCount || onSubmit) && (
+          <div className="flex justify-between items-center">
+            {showCharacterCount && (
+              <p
+                className={classNames(
+                  "text-neutral-500 text-xs",
+                  localProductDescription.length > characterLimit
+                    ? "font-bold"
+                    : undefined
+                )}
+              >
+                <span
+                  className={
                     localProductDescription.length > characterLimit
-                      ? "font-bold"
+                      ? "text-red-600"
                       : undefined
-                  )}
+                  }
                 >
-                  <span
-                    className={
-                      localProductDescription.length > characterLimit
-                        ? "text-red-600"
-                        : undefined
-                    }
-                  >
-                    {localProductDescription.length}
-                  </span>
-                  {` / ${characterLimit}`}
-                </p>
-              )}
-              {onSubmit && (
-                <SquareIconButton
-                  icon={<CheckIcon className="h-4 w-4" />}
-                  onClick={() => {
-                    onSubmit(localProductDescription);
-                  }}
-                />
-              )}
-            </div>
-          ))}
+                  {localProductDescription.length}
+                </span>
+                {` / ${characterLimit}`}
+              </p>
+            )}
+            {onSubmit && (
+              <SquareIconButton
+                icon={<ArrowUpIcon className="h-4 w-4" />}
+                onClick={() => {
+                  onSubmit(localProductDescription);
+                }}
+              />
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

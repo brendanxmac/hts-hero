@@ -258,8 +258,9 @@ export const ClassificationStep = ({
   };
 
   return (
-    <div className="h-full flex flex-col pt-8 overflow-hidden">
-      <div className="flex-1 px-8 w-full max-w-3xl mx-auto flex flex-col gap-4 overflow-y-scroll pb-6">
+    <div className="h-full flex flex-col overflow-y-scroll">
+      <div className="flex-1 p-8 w-full max-w-4xl mx-auto flex flex-col gap-8">
+        {/* HEADER */}
         <div className="flex flex-col gap-2">
           <TertiaryLabel
             value={`Level ${classificationLevel + 1}`}
@@ -268,15 +269,14 @@ export const ClassificationStep = ({
 
           <div className="w-full flex justify-between items-end">
             <div className="w-full flex flex-col gap-2">
-              <PrimaryLabel
-                value={getStepDescription(classificationLevel)}
-                color={Color.WHITE}
-              />
+              <h2 className="text-2xl font-bold text-white">
+                {getStepDescription(classificationLevel)}
+              </h2>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="w-full flex gap-4 justify-between">
             <button
-              className="btn btn-xs btn-primary"
+              className="grow btn btn-sm btn-secondary"
               onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
               disabled={loading.isLoading}
             >
@@ -284,7 +284,7 @@ export const ClassificationStep = ({
               Search Headings
             </button>
             <button
-              className="btn btn-xs btn-primary"
+              className="grow btn btn-sm btn-secondary"
               onClick={() => {
                 setShowCrossRulingsModal(true);
               }}
@@ -296,35 +296,18 @@ export const ClassificationStep = ({
           </div>
         </div>
 
-        <div className="w-full flex flex-col gap-2">
-          <SecondaryLabel value="Notes" color={Color.WHITE} />
-          <textarea
-            className="min-h-36 textarea textarea-bordered border-2 focus:outline-none text-white text-base w-full"
-            placeholder="Add your notes here"
-            disabled={loading.isLoading}
-            value={levels[classificationLevel]?.notes || ""}
-            onChange={(e) => {
-              updateLevel(classificationLevel, {
-                notes: e.target.value,
-              });
-            }}
-          />
-        </div>
-
-        <div className="h-full flex flex-col gap-3">
+        {/* CANDIDATES */}
+        <div className="h-full w-full flex flex-col gap-3">
           <div className="flex justify-between items-center">
-            <div className="flex gap-2 items-center">
-              {/* <ListBulletIcon className="h-5 w-5 text-white" /> */}
-              {/* Get the number of options for this level */}
-              <SecondaryLabel
-                value={
-                  optionsForLevel
-                    ? `Candidates (${optionsForLevel})`
-                    : "Candidates"
-                }
-                color={Color.WHITE}
-              />
-            </div>
+            <SecondaryLabel
+              value={
+                optionsForLevel
+                  ? `Candidates (${optionsForLevel})`
+                  : "Candidates"
+              }
+              color={Color.WHITE}
+            />
+
             {loading.isLoading && <LoadingIndicator text={loading.text} />}
           </div>
           {levels[classificationLevel] &&
@@ -340,11 +323,30 @@ export const ClassificationStep = ({
               </div>
             )}
         </div>
+
+        {/* NOTES */}
+        <div className="w-full flex flex-col gap-2">
+          <div className="flex flex-col">
+            <SecondaryLabel value="Classifier Notes" color={Color.WHITE} />
+            <TertiaryText value="You can add any notes about your decision below, which will be saved with your classification and included in your report." />
+          </div>
+          <textarea
+            className="min-h-36 textarea textarea-bordered border-2 focus:outline-none text-white text-base w-full"
+            placeholder="Enter notes..."
+            disabled={loading.isLoading}
+            value={levels[classificationLevel]?.notes || ""}
+            onChange={(e) => {
+              updateLevel(classificationLevel, {
+                notes: e.target.value,
+              });
+            }}
+          />
+        </div>
       </div>
       {/* Horizontal line */}
-      <div className="w-full border-t-2 border-base-100" />
+      {/* <div className="w-full border-t-2 border-base-100" /> */}
       {/* Navigation */}
-      <div className="w-full max-w-3xl mx-auto px-8">
+      {/* <div className="w-full max-w-3xl mx-auto px-8">
         <StepNavigation
           next={{
             label: getNextNavigationLabel(),
@@ -371,7 +373,7 @@ export const ClassificationStep = ({
             },
           }}
         />
-      </div>
+      </div> */}
       {showCrossRulingsModal && (
         <Modal
           isOpen={showCrossRulingsModal}

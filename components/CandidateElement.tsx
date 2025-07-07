@@ -298,15 +298,12 @@ export const CandidateElement = ({
                 tooltip={`HTS Hero can make mistakes, check important information`}
                 onClick={() => {}}
               /> */}
-              <SparklesIcon className="h-4 w-4 text-accent" />
-              <TertiaryLabel value="HTS Hero Analysis" color={Color.ACCENT} />
+              <SparklesIcon className="h-4 w-4 text-primary" />
+              <TertiaryLabel value="HTS Hero Analysis" color={Color.PRIMARY} />
             </div>
 
-            <div className="flex flex-col gap-2">
-              {/* <TertiaryLabel value="Reasoning:" /> */}
-              <p className="text-white font-semibold ml-2">
-                {recommendedReason}
-              </p>
+            <div className="flex flex-col gap-2 ml-3">
+              <p className="text-white text-sm ml-2">{recommendedReason}</p>
               <p className="text-xs text-gray-400 ml-2">
                 HTS Hero can make mistakes. Always exercise your own judgement
               </p>
