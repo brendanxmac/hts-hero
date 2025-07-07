@@ -58,7 +58,7 @@ export const ClassificationResultPage = () => {
   const { setActiveTab } = useClassifyTab();
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showNotes, setShowNotes] = useState(false);
+  const [showNotes, setShowNotes] = useState(Boolean(classification.notes));
 
   useEffect(() => {
     if (copied) {
