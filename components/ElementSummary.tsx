@@ -31,8 +31,8 @@ export const ElementSummary = ({ element, onClick }: Props) => {
   );
 
   const isRecommended =
-    classification.levels[0]?.suggestedElement?.uuid === element.uuid;
-  const recommendedReason = classification.levels[0]?.suggestionReason;
+    classification.levels[0]?.analysisElement?.uuid === element.uuid;
+  const recommendedReason = classification.levels[0]?.analysisReason;
 
   const isHeading =
     indent === "0" && classification && classification.levels[0];

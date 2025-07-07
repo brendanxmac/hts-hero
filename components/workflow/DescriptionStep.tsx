@@ -24,9 +24,11 @@ export const DescriptionStep = ({
   setShowPricing,
 }: Props) => {
   const { user } = useUser();
-  const [localProductDescription, setLocalProductDescription] = useState("");
   const { classification, startNewClassification, setArticleDescription } =
     useClassification();
+  const [localProductDescription, setLocalProductDescription] = useState(
+    classification.articleDescription
+  );
   const { articleDescription: productDescription } = classification;
 
   useEffect(() => {
