@@ -259,12 +259,12 @@ export const ClassificationStep = ({
 
   return (
     <div className="h-full flex flex-col pt-8 overflow-hidden">
-      <div className="flex-1 overflow-hidden px-8 w-full max-w-3xl mx-auto flex flex-col gap-4 overflow-y-scroll">
-        <div className="flex flex-col gap-1">
-          {/* <TertiaryLabel
+      <div className="flex-1 px-8 w-full max-w-3xl mx-auto flex flex-col gap-4 overflow-y-scroll pb-6">
+        <div className="flex flex-col gap-2">
+          <TertiaryLabel
             value={`Level ${classificationLevel + 1}`}
             color={Color.NEUTRAL_CONTENT}
-          /> */}
+          />
 
           <div className="w-full flex justify-between items-end">
             <div className="w-full flex flex-col gap-2">
@@ -274,7 +274,6 @@ export const ClassificationStep = ({
               />
             </div>
           </div>
-
           <div className="flex gap-2">
             <button
               className="btn btn-xs btn-primary"
@@ -300,7 +299,7 @@ export const ClassificationStep = ({
         <div className="w-full flex flex-col gap-2">
           <SecondaryLabel value="Notes" color={Color.WHITE} />
           <textarea
-            className="textarea textarea-bordered border-2 focus:outline-none text-white text-base w-full"
+            className="min-h-36 textarea textarea-bordered border-2 focus:outline-none text-white text-base w-full"
             placeholder="Add your notes here"
             disabled={loading.isLoading}
             value={levels[classificationLevel]?.notes || ""}
