@@ -23,7 +23,7 @@ interface ClassificationContextType {
     index: number,
     updates: Partial<ClassificationProgression>
   ) => void;
-  clearClassification: () => void;
+  clearClassification: (keepArticleDescription?: boolean) => void;
   startNewClassification: (articleDescription?: string) => void;
 }
 
@@ -37,6 +37,7 @@ export const ClassificationProvider = ({
   children: ReactNode;
 }) => {
   const [classification, setClassification] = useState<Classification>({
+    notes: "",
     articleDescription: "",
     articleAnalysis: "",
     progressionDescription: "",
@@ -111,13 +112,16 @@ export const ClassificationProvider = ({
     });
   };
 
-  const clearClassification = () => {
+  const clearClassification = (keepArticleDescription?: boolean) => {
     setClassification({
-      articleDescription: "",
+      articleDescription: keepArticleDescription
+        ? classification.articleDescription
+        : "",
       articleAnalysis: "",
       progressionDescription: "",
       levels: [],
       isComplete: false,
+      notes: "",
     });
   };
 
@@ -131,6 +135,7 @@ export const ClassificationProvider = ({
       progressionDescription: "",
       levels: [],
       isComplete: false,
+      notes: "",
     });
   };
 

@@ -28,7 +28,7 @@ export const CandidateElements = ({
   useEffect(() => {
     if (
       candidates.length > 0 &&
-      !classification.levels[classificationLevel].suggestedElement
+      !classification.levels[classificationLevel].analysisElement
     ) {
       getBestCandidate();
     }
@@ -61,9 +61,9 @@ export const CandidateElements = ({
       const newProgressionLevels = [...prev.levels];
       newProgressionLevels[classificationLevel] = {
         ...newProgressionLevels[classificationLevel],
-        suggestedElement: bestCandidate,
-        suggestionReason,
-        suggestionQuestions,
+        analysisElement: bestCandidate,
+        analysisReason: suggestionReason,
+        analysisQuestions: suggestionQuestions,
       };
       return {
         ...prev,

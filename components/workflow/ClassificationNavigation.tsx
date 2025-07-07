@@ -249,7 +249,7 @@ export const ClassificationNavigation = ({
           confirmText="Start"
           cancelText="Close"
           onConfirm={() => {
-            clearClassification();
+            clearClassification(true);
             setWorkflowStep(WorkflowStep.DESCRIPTION);
             setClassificationLevel(undefined);
             setShowConfirmation(false);

@@ -47,8 +47,9 @@ export const ClassificationStep = ({
     isLoading: false,
     text: "",
   });
+
   const [showCrossRulingsModal, setShowCrossRulingsModal] = useState(false);
-  const { classification, addLevel } = useClassification();
+  const { classification, addLevel, updateLevel } = useClassification();
   const { articleDescription, levels } = classification;
   const previousArticleDescriptionRef = useRef<string>(articleDescription);
   const [htsSections, setHtsSections] = useState<HtsSection[]>([]);
@@ -250,53 +251,20 @@ export const ClassificationStep = ({
 
   const getStepDescription = (level: number) => {
     if (level === 0) {
-      return "Find & select the most suitable heading for this item";
-    } else if (level === 1) {
-      return "Select the candidate that best matches your item description when added onto your first selection";
+      return "Find & select the most suitable heading for the item";
     } else {
-      return "Select the candidate that best matches your item description when added onto your prior selection(s)";
+      return "Select the most suitable candidate for the item";
     }
   };
-
-  const getStepInstructions = () => {
-    if (classificationLevel === 0) {
-      return (
-        <div className="w-full flex justify-between items-center">
-          <button
-            className="btn btn-xs btn-primary"
-            onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
-            disabled={loading.isLoading}
-          >
-            Search Headings
-          </button>
-        </div>
-      );
-    } else {
-      return (
-        <TertiaryText
-          value="If an option below was added onto your prior selection(s) which would best describe your item?"
-          color={Color.NEUTRAL_CONTENT}
-        />
-      );
-    }
-  };
-
-  // const completeClassification = async () => {
-  //   setLoading({ isLoading: true, text: "Generating Report" });
-  //   const userProfile = await fetchUser(user.id);
-  //   await downloadClassificationReport(classification, userProfile);
-  //   setLoading({ isLoading: false, text: "" });
-  //   setShowConfirmation(false);
-  // };
 
   return (
     <div className="h-full flex flex-col pt-8 overflow-hidden">
       <div className="flex-1 overflow-hidden px-8 w-full max-w-3xl mx-auto flex flex-col gap-4 overflow-y-scroll">
-        <div className="flex flex-col gap-3">
-          <TertiaryLabel
+        <div className="flex flex-col gap-1">
+          {/* <TertiaryLabel
             value={`Level ${classificationLevel + 1}`}
             color={Color.NEUTRAL_CONTENT}
-          />
+          /> */}
 
           <div className="w-full flex justify-between items-end">
             <div className="w-full flex flex-col gap-2">
@@ -304,77 +272,44 @@ export const ClassificationStep = ({
                 value={getStepDescription(classificationLevel)}
                 color={Color.WHITE}
               />
-              {/* {getStepInstructions()} */}
-              <div className="flex gap-2">
-                <button
-                  className="btn btn-sm btn-primary"
-                  onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
-                  disabled={loading.isLoading}
-                >
-                  <MagnifyingGlassIcon className="w-4 h-4" />
-                  Search Headings
-                </button>
-                <button
-                  className="btn btn-sm btn-primary"
-                  onClick={() => {
-                    setShowCrossRulingsModal(true);
-                  }}
-                  disabled={loading.isLoading}
-                >
-                  <MagnifyingGlassIcon className="w-4 h-4" />
-                  Search CROSS
-                </button>
-                {/* <button
-                  className="btn btn-sm btn-primary"
-                  onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
-                  disabled={loading.isLoading}
-                >
-                  📝 Add Notes
-                </button> */}
-              </div>
             </div>
           </div>
-          {/* TODO: show the analysis (suggestion) for the current level */}
-          {
-            // levels[classificationLevel] &&
-            //   levels[classificationLevel].suggestionReason && (
-            //     <div className="flex flex-col gap-2">
-            //       <div className="flex gap-1 text-accent items-center">
-            //         <SparklesIcon className="h-4 w-4 text-accent" />
-            //         <SecondaryLabel value="Analysis" color={Color.ACCENT} />
-            //       </div>
-            //       <div className="flex flex-col gap-2">
-            //         {/* <TertiaryLabel value="Reasoning:" /> */}
-            //         <p className="text-white">
-            //           {levels[classificationLevel].suggestionReason}
-            //         </p>
-            //         <p className="text-xs italic text-gray-400">
-            //           HTS Hero can make mistakes. Always exercise your own
-            //           judgement
-            //         </p>
-            //       </div>
-            //     </div>
-            //   )
-          }
 
-          {/* Breadcrumbs to show where element came from */}
-          {/* {classificationLevel > 0 && (
-            <div className="">
-              {getProgressionDescriptions(
-                classification,
-                classificationLevel - 1
-              ).map(
-                (description, index) =>
-                  description && (
-                    <TertiaryLabel
-                      key={index}
-                      value={`${"-".repeat(index + 1)} ${description}`}
-                      color={Color.WHITE}
-                    />
-                  )
-              )}
-            </div>
-          )} */}
+          <div className="flex gap-2">
+            <button
+              className="btn btn-xs btn-primary"
+              onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
+              disabled={loading.isLoading}
+            >
+              <MagnifyingGlassIcon className="w-4 h-4" />
+              Search Headings
+            </button>
+            <button
+              className="btn btn-xs btn-primary"
+              onClick={() => {
+                setShowCrossRulingsModal(true);
+              }}
+              disabled={loading.isLoading}
+            >
+              <MagnifyingGlassIcon className="w-4 h-4" />
+              Search CROSS
+            </button>
+          </div>
+        </div>
+
+        <div className="w-full flex flex-col gap-2">
+          <SecondaryLabel value="Notes" color={Color.WHITE} />
+          <textarea
+            className="textarea textarea-bordered border-2 focus:outline-none text-white text-base w-full"
+            placeholder="Add your notes here"
+            disabled={loading.isLoading}
+            value={levels[classificationLevel]?.notes || ""}
+            onChange={(e) => {
+              updateLevel(classificationLevel, {
+                notes: e.target.value,
+              });
+            }}
+          />
         </div>
 
         <div className="h-full flex flex-col gap-3">
@@ -392,10 +327,6 @@ export const ClassificationStep = ({
               />
             </div>
             {loading.isLoading && <LoadingIndicator text={loading.text} />}
-            {/* <button className="btn btn-xs btn-primary">
-              <MagnifyingGlassIcon className="h-4 w-4 text-white" />
-              <TertiaryText value="Find Headings" color={Color.WHITE} />
-            </button> */}
           </div>
           {levels[classificationLevel] &&
             levels[classificationLevel].candidates.length > 0 && (
