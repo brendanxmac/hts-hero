@@ -24,7 +24,7 @@ export const ConfirmationCard = ({
             {description.split(".").map((sentence, index) => (
               <p
                 key={index}
-                className={index > 0 ? "text-sm font-bold text-accent" : ""}
+                className={index > 0 ? "text-sm font-bold text-secondary" : ""}
               >
                 {`${sentence}.`}
               </p>
