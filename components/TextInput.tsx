@@ -4,9 +4,7 @@ import { useRef, ChangeEvent, useState, useEffect } from "react";
 import { classNames } from "../utilities/style";
 import { TertiaryText } from "./TertiaryText";
 import SquareIconButton from "./SqaureIconButton";
-import { CheckIcon } from "@heroicons/react/24/solid";
 import { ArrowUpIcon } from "@heroicons/react/16/solid";
-import { Color } from "../enums/style";
 
 interface Props {
   label?: string;
@@ -14,6 +12,7 @@ interface Props {
   defaultValue?: string;
   onSubmit?: (value: string) => void;
   onChange?: (value: string) => void;
+  loading?: boolean;
   disabled?: boolean;
   showCharacterCount?: boolean;
 }
@@ -25,6 +24,7 @@ export default function TextInput({
   onChange,
   onSubmit,
   disabled,
+  loading,
   showCharacterCount = true,
 }: Props) {
   const characterLimit = 500;
@@ -73,6 +73,13 @@ export default function TextInput({
           rows={1}
           value={localProductDescription}
           onChange={handleInputChange}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              e.stopPropagation();
+              onSubmit && onSubmit(localProductDescription);
+            }
+          }}
           className="textarea text-base max-h-96 min-h-12 rounded-none resize-none bg-inherit text-black dark:text-white placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-0"
         ></textarea>
 
@@ -101,8 +108,14 @@ export default function TextInput({
             )}
             {onSubmit && (
               <SquareIconButton
-                disabled={disabled}
-                icon={<ArrowUpIcon className="h-4 w-4" />}
+                disabled={disabled || loading}
+                icon={
+                  loading ? (
+                    <span className="loading loading-spinner loading-xs"></span>
+                  ) : (
+                    <ArrowUpIcon className="h-4 w-4" />
+                  )
+                }
                 onClick={() => {
                   onSubmit(localProductDescription);
                 }}
