@@ -37,6 +37,7 @@ export const ClassificationProvider = ({
   children: ReactNode;
 }) => {
   const [classification, setClassification] = useState<Classification>({
+    notes: "",
     articleDescription: "",
     articleAnalysis: "",
     progressionDescription: "",
@@ -120,6 +121,7 @@ export const ClassificationProvider = ({
       progressionDescription: "",
       levels: [],
       isComplete: false,
+      notes: "",
     });
   };
 
@@ -133,6 +135,7 @@ export const ClassificationProvider = ({
       progressionDescription: "",
       levels: [],
       isComplete: false,
+      notes: "",
     });
   };
 

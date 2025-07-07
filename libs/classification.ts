@@ -76,7 +76,7 @@ export const generateClassificationReport = async (
     logo,
     companyLogoFormat || "PNG",
     logoX,
-    margin + 5,
+    10,
     logoWidth,
     logoHeight,
     undefined,
@@ -84,7 +84,7 @@ export const generateClassificationReport = async (
   ); // Add quality parameter
 
   // 4. Add a classification Details header
-  let yPosition = margin + logoHeight + 20;
+  let yPosition = logoHeight + margin;
   doc.setFont("helvetica", "bold");
   doc.setFontSize(20);
   doc.text("Classification Summary", margin, yPosition);
@@ -104,8 +104,8 @@ export const generateClassificationReport = async (
   // 5. Add item description section
   doc.setFont("helvetica", "bold");
   doc.setFontSize(12);
-  doc.text("Item Description", margin, yPosition);
-  yPosition += 7;
+  doc.text("Item Description:", margin, yPosition);
+  yPosition += 5;
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(11);
@@ -121,6 +121,7 @@ export const generateClassificationReport = async (
 
   const finalLevel =
     classification.levels[classification.levels.length - 1].selection;
+
   if (finalLevel) {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(11);
@@ -128,7 +129,7 @@ export const generateClassificationReport = async (
     // HTS Code
     doc.setFont("helvetica", "bold");
     doc.text("HTS Code:", margin, yPosition);
-    yPosition += 7;
+    yPosition += 5;
     doc.setFont("helvetica", "normal");
     doc.text(formatHtsNumber(finalLevel.htsno), margin, yPosition);
     yPosition += 10;
@@ -137,7 +138,7 @@ export const generateClassificationReport = async (
     if (elementWithTariffData.general) {
       doc.setFont("helvetica", "bold");
       doc.text("General Tariff:", margin, yPosition);
-      yPosition += 7;
+      yPosition += 5;
       doc.setFont("helvetica", "normal");
       const generalLines = doc.splitTextToSize(
         elementWithTariffData.general,
@@ -150,7 +151,7 @@ export const generateClassificationReport = async (
     if (elementWithTariffData.special) {
       doc.setFont("helvetica", "bold");
       doc.text("Special Tariff:", margin, yPosition);
-      yPosition += 7;
+      yPosition += 5;
       doc.setFont("helvetica", "normal");
       const specialLines = doc.splitTextToSize(
         elementWithTariffData.special,
@@ -163,7 +164,7 @@ export const generateClassificationReport = async (
     if (elementWithTariffData.other) {
       doc.setFont("helvetica", "bold");
       doc.text("Other Tariff:", margin, yPosition);
-      yPosition += 7;
+      yPosition += 5;
       doc.setFont("helvetica", "normal");
       const otherLines = doc.splitTextToSize(
         elementWithTariffData.other,
@@ -174,55 +175,63 @@ export const generateClassificationReport = async (
     }
   }
 
-  // Add progression descriptions
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(12);
-  doc.text("Selections:", margin, yPosition);
-  yPosition += 7;
+  doc.text("Classifier Notes:", margin, yPosition);
+  yPosition += 6;
+  doc.setFont("helvetica", "normal");
+  const notesLines = doc.splitTextToSize(classification.notes, contentWidth);
+  doc.text(notesLines, margin, yPosition);
+  yPosition += notesLines.length * 6 + 15;
 
-  classification.levels.forEach((level, index) => {
-    const description = level.selection?.description;
-    const htsno = level.selection?.htsno;
-    // Add indentation dashes based on level
-    const indentation = "-".repeat(index + 1);
-    const prefix = `${indentation} `;
-    if (description) {
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
+  // Add progression descriptions
+  // doc.setFont("helvetica", "bold");
+  // doc.setFontSize(12);
+  // doc.text("Selections:", margin, yPosition);
+  // yPosition += 7;
 
-      if (htsno) {
-        // Draw the prefix in normal weight
-        doc.setFont("helvetica", "normal");
-        doc.text(prefix, margin, yPosition);
-        const prefixWidth = doc.getTextWidth(prefix);
+  // classification.levels.forEach((level, index) => {
+  //   const description = level.selection?.description;
+  //   const htsno = level.selection?.htsno;
+  //   // Add indentation dashes based on level
+  //   const indentation = "-".repeat(index + 1);
+  //   const prefix = `${indentation} `;
+  //   if (description) {
+  //     doc.setFont("helvetica", "normal");
+  //     doc.setFontSize(10);
 
-        // Draw the HTS number in bold
-        doc.setFont("helvetica", "bold");
-        doc.text(htsno + ": ", margin + prefixWidth, yPosition);
-        const htsnoWidth = doc.getTextWidth(htsno + ": ");
+  //     if (htsno) {
+  //       // Draw the prefix in normal weight
+  //       doc.setFont("helvetica", "normal");
+  //       doc.text(prefix, margin, yPosition);
+  //       const prefixWidth = doc.getTextWidth(prefix);
 
-        // Move to next line for description
-        yPosition += 6;
+  //       // Draw the HTS number in bold
+  //       doc.setFont("helvetica", "bold");
+  //       doc.text(htsno + ": ", margin + prefixWidth, yPosition);
+  //       const htsnoWidth = doc.getTextWidth(htsno + ": ");
 
-        // Draw the description in normal weight, indented to align with HTS number
-        doc.setFont("helvetica", "normal");
-        const descLines = doc.splitTextToSize(
-          description,
-          contentWidth - prefixWidth - htsnoWidth
-        );
-        doc.text(descLines, margin + prefixWidth, yPosition);
-        yPosition += descLines.length * 6 + 2;
-      } else {
-        // If no HTS number, just draw the description
-        const descLines = doc.splitTextToSize(
-          prefix + " " + description,
-          contentWidth
-        );
-        doc.text(descLines, margin, yPosition);
-        yPosition += descLines.length * 6 + 2;
-      }
-    }
-  });
+  //       // Move to next line for description
+  //       yPosition += 6;
+
+  //       // Draw the description in normal weight, indented to align with HTS number
+  //       doc.setFont("helvetica", "normal");
+  //       const descLines = doc.splitTextToSize(
+  //         description,
+  //         contentWidth - prefixWidth - htsnoWidth
+  //       );
+  //       doc.text(descLines, margin + prefixWidth, yPosition);
+  //       yPosition += descLines.length * 6 + 2;
+  //     } else {
+  //       // If no HTS number, just draw the description
+  //       const descLines = doc.splitTextToSize(
+  //         prefix + " " + description,
+  //         contentWidth
+  //       );
+  //       doc.text(descLines, margin, yPosition);
+  //       yPosition += descLines.length * 6 + 2;
+  //     }
+  //   }
+  // });
 
   doc.addPage();
   yPosition = margin;
@@ -230,14 +239,14 @@ export const generateClassificationReport = async (
   // 7. Add classification levels section
   doc.setFont("helvetica", "bold");
   doc.setFontSize(20);
-  doc.text("Classification Levels", margin, yPosition);
+  doc.text("Classification Details", margin, yPosition);
   yPosition += 14;
 
   // Process each level
   classification.levels.forEach((level, index) => {
     // Level header
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(18);
+    doc.setFontSize(16);
     doc.text(`Level ${index + 1}`, margin, yPosition);
     yPosition += 4;
 
@@ -249,7 +258,7 @@ export const generateClassificationReport = async (
     // Selected Element Section
     if (level.selection) {
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(15);
+      doc.setFontSize(14);
       doc.text("Selection:", margin, yPosition);
 
       yPosition += 10;
@@ -257,12 +266,10 @@ export const generateClassificationReport = async (
 
       // HTS Code
       doc.setFont("helvetica", "bold");
-      doc.setTextColor(34, 197, 94);
       doc.text(formatHtsNumber(level.selection.htsno), margin, yPosition);
-      yPosition += 4;
+      yPosition += 6;
 
       // Description
-      doc.setTextColor(0, 0, 0);
       doc.setFont("helvetica", "normal");
       const descriptionLines = doc.splitTextToSize(
         level.selection.description,
@@ -274,12 +281,15 @@ export const generateClassificationReport = async (
       // Classifier Notes
       if (level.notes) {
         doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
         doc.text("Classifier Notes:", margin, yPosition);
         yPosition += 6;
         doc.setFont("helvetica", "normal");
         const notesLines = doc.splitTextToSize(level.notes, contentWidth);
         doc.text(notesLines, margin, yPosition);
-        yPosition += notesLines.length * 6 + 5;
+        yPosition += notesLines.length * 6 + 15;
+      } else {
+        yPosition += 15;
       }
 
       // Recommendation Reason
@@ -300,7 +310,7 @@ export const generateClassificationReport = async (
     // Other Candidates Section
     if (level.candidates && level.candidates.length > 0) {
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(15);
+      doc.setFontSize(14);
       doc.text("Candidates:", margin, yPosition);
       yPosition += 7;
 
@@ -322,7 +332,6 @@ export const generateClassificationReport = async (
           contentWidth - 10
         );
         doc.setFont("helvetica", "bold");
-        doc.setTextColor(0, 0, 0);
         doc.text(candidateLines, margin, yPosition);
         yPosition += candidateLines.length * 6 + 2;
       });

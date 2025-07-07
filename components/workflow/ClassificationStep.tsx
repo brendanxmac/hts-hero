@@ -257,37 +257,6 @@ export const ClassificationStep = ({
     }
   };
 
-  // const getStepInstructions = () => {
-  //   if (classificationLevel === 0) {
-  //     return (
-  //       <div className="w-full flex justify-between items-center">
-  //         <button
-  //           className="btn btn-xs btn-primary"
-  //           onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
-  //           disabled={loading.isLoading}
-  //         >
-  //           Search Headings
-  //         </button>
-  //       </div>
-  //     );
-  //   } else {
-  //     return (
-  //       <TertiaryText
-  //         value="If an option below was added onto your prior selection(s) which would best describe your item?"
-  //         color={Color.NEUTRAL_CONTENT}
-  //       />
-  //     );
-  //   }
-  // };
-
-  // const completeClassification = async () => {
-  //   setLoading({ isLoading: true, text: "Generating Report" });
-  //   const userProfile = await fetchUser(user.id);
-  //   await downloadClassificationReport(classification, userProfile);
-  //   setLoading({ isLoading: false, text: "" });
-  //   setShowConfirmation(false);
-  // };
-
   return (
     <div className="h-full flex flex-col pt-8 overflow-hidden">
       <div className="flex-1 overflow-hidden px-8 w-full max-w-3xl mx-auto flex flex-col gap-4 overflow-y-scroll">
@@ -328,22 +297,20 @@ export const ClassificationStep = ({
           </div>
         </div>
 
-        {!loading.isLoading && (
-          <div className="w-full flex flex-col gap-2">
-            <SecondaryLabel value="Notes" color={Color.WHITE} />
-            <textarea
-              className="textarea textarea-bordered border-2 focus:outline-none text-white text-base w-full"
-              placeholder="Add your notes here"
-              disabled={loading.isLoading}
-              value={levels[classificationLevel]?.notes || ""}
-              onChange={(e) => {
-                updateLevel(classificationLevel, {
-                  notes: e.target.value,
-                });
-              }}
-            />
-          </div>
-        )}
+        <div className="w-full flex flex-col gap-2">
+          <SecondaryLabel value="Notes" color={Color.WHITE} />
+          <textarea
+            className="textarea textarea-bordered border-2 focus:outline-none text-white text-base w-full"
+            placeholder="Add your notes here"
+            disabled={loading.isLoading}
+            value={levels[classificationLevel]?.notes || ""}
+            onChange={(e) => {
+              updateLevel(classificationLevel, {
+                notes: e.target.value,
+              });
+            }}
+          />
+        </div>
 
         <div className="h-full flex flex-col gap-3">
           <div className="flex justify-between items-center">
