@@ -141,9 +141,10 @@ export interface Classification {
 
 export interface ClassificationProgression {
   candidates: HtsElement[];
-  suggestedElement?: HtsElement;
-  suggestionReason?: string;
-  suggestionQuestions?: string[];
+  analysisElement?: HtsElement;
+  analysisReason?: string;
+  analysisQuestions?: string[];
+  notes?: string;
   selection?: HtsElement;
   reasoning?: string;
 }

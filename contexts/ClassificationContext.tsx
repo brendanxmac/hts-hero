@@ -23,7 +23,7 @@ interface ClassificationContextType {
     index: number,
     updates: Partial<ClassificationProgression>
   ) => void;
-  clearClassification: () => void;
+  clearClassification: (keepArticleDescription?: boolean) => void;
   startNewClassification: (articleDescription?: string) => void;
 }
 
@@ -111,9 +111,11 @@ export const ClassificationProvider = ({
     });
   };
 
-  const clearClassification = () => {
+  const clearClassification = (keepArticleDescription?: boolean) => {
     setClassification({
-      articleDescription: "",
+      articleDescription: keepArticleDescription
+        ? classification.articleDescription
+        : "",
       articleAnalysis: "",
       progressionDescription: "",
       levels: [],
