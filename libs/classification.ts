@@ -288,8 +288,6 @@ export const generateClassificationReport = async (
         const notesLines = doc.splitTextToSize(level.notes, contentWidth);
         doc.text(notesLines, margin, yPosition);
         yPosition += notesLines.length * 6 + 15;
-      } else {
-        yPosition += 15;
       }
 
       // Recommendation Reason
@@ -316,15 +314,14 @@ export const generateClassificationReport = async (
 
       level.candidates.forEach((candidate) => {
         doc.setFontSize(10);
-        if (candidate.htsno === level.selection?.htsno) {
-          doc.setTextColor(34, 197, 94);
-          doc.setFont("helvetica", "bold");
-        } else {
-          doc.setFont("helvetica", "normal");
-          doc.setTextColor(0, 0, 0);
-        }
         doc.text(formatHtsNumber(candidate.htsno), margin, yPosition);
         yPosition += 4;
+
+        if (candidate.htsno === level.selection?.htsno) {
+          doc.setTextColor(34, 197, 94);
+        } else {
+          doc.setTextColor(0, 0, 0);
+        }
 
         // Description
         const candidateLines = doc.splitTextToSize(
@@ -334,6 +331,7 @@ export const generateClassificationReport = async (
         doc.setFont("helvetica", "bold");
         doc.text(candidateLines, margin, yPosition);
         yPosition += candidateLines.length * 6 + 2;
+        doc.setTextColor(0, 0, 0);
       });
     }
 
