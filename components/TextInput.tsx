@@ -24,6 +24,7 @@ export default function TextInput({
   defaultValue,
   onChange,
   onSubmit,
+  disabled,
   showCharacterCount = true,
 }: Props) {
   const characterLimit = 500;
@@ -100,6 +101,7 @@ export default function TextInput({
             )}
             {onSubmit && (
               <SquareIconButton
+                disabled={disabled}
                 icon={<ArrowUpIcon className="h-4 w-4" />}
                 onClick={() => {
                   onSubmit(localProductDescription);

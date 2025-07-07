@@ -253,7 +253,7 @@ export const ClassificationStep = ({
     if (level === 0) {
       return "Find & select the most suitable heading for the item";
     } else {
-      return "Select the most suitable candidate for the item";
+      return "Select the most suitable candidate based on the item description";
     }
   };
 
@@ -262,10 +262,13 @@ export const ClassificationStep = ({
       <div className="flex-1 p-8 w-full max-w-4xl mx-auto flex flex-col gap-8">
         {/* HEADER */}
         <div className="flex flex-col gap-2">
-          <TertiaryLabel
-            value={`Level ${classificationLevel + 1}`}
-            color={Color.NEUTRAL_CONTENT}
-          />
+          <div className="flex justify-between items-center">
+            <TertiaryLabel
+              value={`Level ${classificationLevel + 1}`}
+              color={Color.NEUTRAL_CONTENT}
+            />
+            {loading.isLoading && <LoadingIndicator text={loading.text} />}
+          </div>
 
           <div className="w-full flex justify-between items-end">
             <div className="w-full flex flex-col gap-2">
@@ -273,26 +276,6 @@ export const ClassificationStep = ({
                 {getStepDescription(classificationLevel)}
               </h2>
             </div>
-          </div>
-          <div className="w-full flex gap-4 justify-between">
-            <button
-              className="grow btn btn-sm btn-secondary"
-              onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
-              disabled={loading.isLoading}
-            >
-              <MagnifyingGlassIcon className="w-4 h-4" />
-              Search Headings
-            </button>
-            <button
-              className="grow btn btn-sm btn-secondary"
-              onClick={() => {
-                setShowCrossRulingsModal(true);
-              }}
-              disabled={loading.isLoading}
-            >
-              <MagnifyingGlassIcon className="w-4 h-4" />
-              Search CROSS
-            </button>
           </div>
         </div>
 
@@ -308,7 +291,26 @@ export const ClassificationStep = ({
               color={Color.WHITE}
             />
 
-            {loading.isLoading && <LoadingIndicator text={loading.text} />}
+            <div className="flex gap-4 justify-between">
+              <button
+                className="grow btn btn-xs btn-secondary"
+                onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
+                disabled={loading.isLoading}
+              >
+                <MagnifyingGlassIcon className="w-4 h-4" />
+                Search Headings
+              </button>
+              <button
+                className="grow btn btn-xs btn-secondary"
+                onClick={() => {
+                  setShowCrossRulingsModal(true);
+                }}
+                disabled={loading.isLoading}
+              >
+                <MagnifyingGlassIcon className="w-4 h-4" />
+                Search CROSS
+              </button>
+            </div>
           </div>
           {levels[classificationLevel] &&
             levels[classificationLevel].candidates.length > 0 && (
@@ -325,23 +327,27 @@ export const ClassificationStep = ({
         </div>
 
         {/* NOTES */}
-        <div className="w-full flex flex-col gap-2">
-          <div className="flex flex-col">
-            <SecondaryLabel value="Classifier Notes" color={Color.WHITE} />
-            <TertiaryText value="You can add any notes about your decision below, which will be saved with your classification and included in your report." />
-          </div>
-          <textarea
-            className="min-h-36 textarea textarea-bordered border-2 focus:outline-none text-white text-base w-full"
-            placeholder="Enter notes..."
-            disabled={loading.isLoading}
-            value={levels[classificationLevel]?.notes || ""}
-            onChange={(e) => {
-              updateLevel(classificationLevel, {
-                notes: e.target.value,
-              });
-            }}
-          />
-        </div>
+        {/* only show this if there is at least one candidate */}
+        {levels[classificationLevel] &&
+          levels[classificationLevel].candidates.length > 0 && (
+            <div className="w-full flex flex-col gap-2">
+              <div className="flex flex-col">
+                <SecondaryLabel value="Classifier Notes" color={Color.WHITE} />
+                <TertiaryText value="You can add any notes about your decision below, which will be saved with your classification and included in your report." />
+              </div>
+              <textarea
+                className="min-h-36 textarea textarea-bordered border-2 focus:outline-none text-white text-base w-full"
+                placeholder="Enter notes..."
+                disabled={loading.isLoading}
+                value={levels[classificationLevel]?.notes || ""}
+                onChange={(e) => {
+                  updateLevel(classificationLevel, {
+                    notes: e.target.value,
+                  });
+                }}
+              />
+            </div>
+          )}
       </div>
       {/* Horizontal line */}
       {/* <div className="w-full border-t-2 border-base-100" /> */}
