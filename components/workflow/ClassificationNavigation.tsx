@@ -1,6 +1,7 @@
 "use client";
 
 import { Bars3BottomLeftIcon } from "@heroicons/react/24/solid";
+import { PlusIcon } from "@heroicons/react/20/solid";
 import { WorkflowStep } from "../../enums/hts";
 import { SecondaryLabel } from "../SecondaryLabel";
 import { classNames } from "../../utilities/style";
@@ -75,7 +76,7 @@ export const ClassificationNavigation = ({
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex justify-between items-center border-b border-neutral px-4 py-2">
+      <div className="flex justify-between items-center border-b border-base-content/10 p-4 ">
         <div className="flex items-center gap-2">
           {/* <button
             className="btn btn-link btn-primary px-0 gap-0 hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
@@ -94,25 +95,35 @@ export const ClassificationNavigation = ({
           </div>
         </div>
 
-        <div
-          role="tablist"
-          className="tabs tabs-boxed tabs-sm bg-primary-content p-1.5 gap-1 rounded-xl"
-        >
-          {ClassifyTabs.map((tab) => (
-            <button
-              key={tab.value}
-              role="tab"
-              disabled={fetchingOptionsOrSuggestions}
-              onClick={() => setActiveTab(tab.value as ClassifyTab)}
-              className={classNames(
-                "tab px-1 hover:text-primary hover:scale-105 transition-all duration-100 ease-in-out",
-                tab.value === activeTab && "tab-active",
-                fetchingOptionsOrSuggestions && "tab-disabled"
-              )}
-            >
-              {tab.icon}
-            </button>
-          ))}
+        <div className="flex items-center justify-center gap-4">
+          <button
+            className="btn btn-sm btn-primary btn-square"
+            onClick={() => {
+              setShowConfirmation(true);
+            }}
+          >
+            <PlusIcon className="w-5 h-5" />
+          </button>
+          <div
+            role="tablist"
+            className="tabs tabs-boxed tabs-sm bg-primary-content p-1.5 gap-1 rounded-xl"
+          >
+            {ClassifyTabs.map((tab) => (
+              <button
+                key={tab.value}
+                role="tab"
+                disabled={fetchingOptionsOrSuggestions}
+                onClick={() => setActiveTab(tab.value as ClassifyTab)}
+                className={classNames(
+                  "tab px-1 hover:text-primary hover:scale-105 transition-all duration-100 ease-in-out",
+                  tab.value === activeTab && "tab-active",
+                  fetchingOptionsOrSuggestions && "tab-disabled"
+                )}
+              >
+                {tab.icon}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -121,7 +132,7 @@ export const ClassificationNavigation = ({
         className="h-full flex flex-col gap-6 p-4 overflow-y-scroll"
       >
         <div className="flex flex-col gap-3">
-          <SecondaryLabel value="Item" />
+          <SecondaryLabel value="Item" color={Color.WHITE} />
           <div ref={descriptionRef}>
             <TextNavigationStep
               title="Item Description"
@@ -171,7 +182,7 @@ export const ClassificationNavigation = ({
         </div>
 
         <div className="flex flex-col">
-          <SecondaryLabel value="Your Selections" />
+          <SecondaryLabel value="Your Selections" color={Color.WHITE} />
           <div className="flex flex-col gap-3 pt-3">
             {levels.map((level, index) => (
               <div
@@ -203,7 +214,7 @@ export const ClassificationNavigation = ({
 
         {classification.isComplete && (
           <div ref={resultRef} className="flex flex-col gap-3">
-            <SecondaryLabel value="Result" />
+            <SecondaryLabel value="Result" color={Color.WHITE} />
             <div
               className={classNames(
                 "flex flex-col gap-2 p-4 rounded-md border-2 border-neutral hover:cursor-pointer hover:bg-primary/50",
@@ -226,7 +237,7 @@ export const ClassificationNavigation = ({
         )}
       </div>
 
-      <div className="sticky bottom-0 left-0 right-0 bg-base-100 border-t-2 border-neutral p-4">
+      {/* <div className="sticky bottom-0 left-0 right-0 bg-base-100 border-t-2 border-neutral p-4">
         <div className="w-full flex justify-between gap-2">
           <button
             className={classNames(
@@ -241,15 +252,15 @@ export const ClassificationNavigation = ({
             Restart
           </button>
         </div>
-      </div>
+      </div> */}
       {showConfirmation && (
         <ConfirmationCard
           title="Start New Classification?"
-          description="To start a new classification click start below. NOTE: Your current classification will NOT be saved if you leave this page. If you completed the classification, be sure to download it first"
+          description="To start a new classification click start. NOTE: Your current classification will NOT be saved"
           confirmText="Start"
           cancelText="Close"
           onConfirm={() => {
-            clearClassification(true);
+            clearClassification();
             setWorkflowStep(WorkflowStep.DESCRIPTION);
             setClassificationLevel(undefined);
             setShowConfirmation(false);

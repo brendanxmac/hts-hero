@@ -6,7 +6,6 @@ import { Loader } from "../../interfaces/ui";
 import { CandidateElements } from "../CandidateElements";
 import {
   getBestDescriptionCandidates,
-  getDirectChildrenElements,
   getElementsInChapter,
 } from "../../libs/hts";
 import { CandidateSelection, HtsElement } from "../../interfaces/hts";
@@ -17,18 +16,16 @@ import { elementsAtClassificationLevel } from "../../utilities/data";
 import { TertiaryText } from "../TertiaryText";
 import { PrimaryLabel } from "../PrimaryLabel";
 import { Color } from "../../enums/style";
-import { StepNavigation } from "./StepNavigation";
 import { useClassifyTab } from "../../contexts/ClassifyTabContext";
 import { ClassifyTab } from "../../enums/classify";
 import { useHts } from "../../contexts/HtsContext";
-import { TertiaryLabel } from "../TertiaryLabel";
 import { SecondaryLabel } from "../SecondaryLabel";
 import Modal from "../Modal";
 import { SearchCrossRulings } from "../SearchCrossRulings";
-import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
+import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/16/solid";
+import { PencilSquareIcon } from "@heroicons/react/24/solid";
 
 export interface ClassificationStepProps {
-  workflowStep: WorkflowStep;
   setWorkflowStep: (step: WorkflowStep) => void;
   classificationLevel: number | undefined;
   setClassificationLevel: (level: number | undefined) => void;
@@ -36,7 +33,6 @@ export interface ClassificationStepProps {
 }
 
 export const ClassificationStep = ({
-  workflowStep,
   setWorkflowStep,
   classificationLevel,
   setClassificationLevel,
@@ -47,7 +43,7 @@ export const ClassificationStep = ({
     isLoading: false,
     text: "",
   });
-
+  const [showNotes, setShowNotes] = useState(false);
   const [showCrossRulingsModal, setShowCrossRulingsModal] = useState(false);
   const { classification, addLevel, updateLevel } = useClassification();
   const { articleDescription, levels } = classification;
@@ -59,38 +55,13 @@ export const ClassificationStep = ({
   const [chapterCandidates, setChapterCandidates] = useState<
     CandidateSelection[]
   >([]);
-  // const [showConfirmation, setShowConfirmation] = useState(false);
   const { htsElements } = useHts();
 
-  const selectionForLevel = levels[classificationLevel]?.selection;
   const optionsForLevel = levels[classificationLevel]?.candidates.length;
 
   useEffect(() => {
     setFetchingOptionsOrSuggestions(loading.isLoading);
   }, [loading.isLoading]);
-
-  const selectedElementIsFinalElement = () => {
-    if (!selectionForLevel) {
-      return false;
-    }
-
-    return (
-      getDirectChildrenElements(
-        selectionForLevel,
-        getElementsInChapter(htsElements, selectionForLevel.chapter)
-      ).length === 0
-    );
-  };
-
-  const getNextNavigationLabel = () => {
-    const isFinalElement = selectedElementIsFinalElement();
-
-    if (isFinalElement) {
-      return "Results";
-    } else {
-      return "Next";
-    }
-  };
 
   // Get 2-3 Best Sections
   const getSections = async () => {
@@ -253,18 +224,22 @@ export const ClassificationStep = ({
     if (level === 0) {
       return "Find & select the most suitable heading for the item";
     } else {
-      return "Select the most suitable candidate for the item";
+      return "Select the most suitable candidate based on the item description";
     }
   };
 
   return (
-    <div className="h-full flex flex-col pt-8 overflow-hidden">
-      <div className="flex-1 overflow-hidden px-8 w-full max-w-3xl mx-auto flex flex-col gap-4 overflow-y-scroll">
-        <div className="flex flex-col gap-1">
-          {/* <TertiaryLabel
-            value={`Level ${classificationLevel + 1}`}
-            color={Color.NEUTRAL_CONTENT}
-          /> */}
+    <div className="h-full flex flex-col overflow-y-scroll">
+      <div className="flex-1 p-8 w-full max-w-4xl mx-auto flex flex-col gap-5">
+        {/* HEADER */}
+        <div className="flex flex-col gap-2">
+          <div className="flex justify-between items-center">
+            <TertiaryText
+              value={`Level ${classificationLevel + 1}`}
+              color={Color.NEUTRAL_CONTENT}
+            />
+            {loading.isLoading && <LoadingIndicator text={loading.text} />}
+          </div>
 
           <div className="w-full flex justify-between items-end">
             <div className="w-full flex flex-col gap-2">
@@ -274,63 +249,56 @@ export const ClassificationStep = ({
               />
             </div>
           </div>
-
-          <div className="flex gap-2">
-            <button
-              className="btn btn-xs btn-primary"
-              onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
-              disabled={loading.isLoading}
-            >
-              <MagnifyingGlassIcon className="w-4 h-4" />
-              Search Headings
-            </button>
-            <button
-              className="btn btn-xs btn-primary"
-              onClick={() => {
-                setShowCrossRulingsModal(true);
-              }}
-              disabled={loading.isLoading}
-            >
-              <MagnifyingGlassIcon className="w-4 h-4" />
-              Search CROSS
-            </button>
-          </div>
         </div>
 
-        <div className="w-full flex flex-col gap-2">
-          <SecondaryLabel value="Notes" color={Color.WHITE} />
-          <textarea
-            className="textarea textarea-bordered border-2 focus:outline-none text-white text-base w-full"
-            placeholder="Add your notes here"
-            disabled={loading.isLoading}
-            value={levels[classificationLevel]?.notes || ""}
-            onChange={(e) => {
-              updateLevel(classificationLevel, {
-                notes: e.target.value,
-              });
-            }}
-          />
-        </div>
-
-        <div className="h-full flex flex-col gap-3">
+        {/* CANDIDATES */}
+        <div className="w-full flex flex-col gap-3">
           <div className="flex justify-between items-center">
-            <div className="flex gap-2 items-center">
-              {/* <ListBulletIcon className="h-5 w-5 text-white" /> */}
-              {/* Get the number of options for this level */}
-              <SecondaryLabel
-                value={
-                  optionsForLevel
-                    ? `Candidates (${optionsForLevel})`
-                    : "Candidates"
-                }
-                color={Color.WHITE}
-              />
+            <SecondaryLabel
+              value={
+                optionsForLevel
+                  ? `Candidates (${optionsForLevel})`
+                  : "Candidates"
+              }
+              color={Color.WHITE}
+            />
+
+            <div className="flex gap-2 justify-between">
+              <button
+                className="grow btn btn-xs btn-primary"
+                onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
+                disabled={loading.isLoading}
+              >
+                <MagnifyingGlassIcon className="w-4 h-4" />
+                Search Headings
+              </button>
+              <button
+                className="grow btn btn-xs btn-primary"
+                onClick={() => {
+                  setShowCrossRulingsModal(true);
+                }}
+                disabled={loading.isLoading}
+              >
+                <MagnifyingGlassIcon className="w-4 h-4" />
+                Search CROSS
+              </button>
+              {!showNotes && (
+                <button
+                  className="mx-auto btn btn-xs btn-primary"
+                  onClick={() => {
+                    setShowNotes(true);
+                  }}
+                  disabled={loading.isLoading}
+                >
+                  <PencilSquareIcon className="w-4 h-4" />
+                  Add Notes
+                </button>
+              )}
             </div>
-            {loading.isLoading && <LoadingIndicator text={loading.text} />}
           </div>
           {levels[classificationLevel] &&
             levels[classificationLevel].candidates.length > 0 && (
-              <div className="h-full flex flex-col gap-4">
+              <div className="flex flex-col gap-4">
                 <CandidateElements
                   key={`classification-level-${classificationLevel}`}
                   classificationLevel={classificationLevel}
@@ -341,37 +309,43 @@ export const ClassificationStep = ({
               </div>
             )}
         </div>
-      </div>
-      {/* Horizontal line */}
-      <div className="w-full border-t-2 border-base-100" />
-      {/* Navigation */}
-      <div className="w-full max-w-3xl mx-auto px-8">
-        <StepNavigation
-          next={{
-            label: getNextNavigationLabel(),
-            onClick: () => {
-              if (selectedElementIsFinalElement()) {
-                setWorkflowStep(WorkflowStep.RESULT);
-              } else {
-                setClassificationLevel(classificationLevel + 1);
-              }
-            },
-            disabled:
-              classification.levels.length === 0 ||
-              workflowStep === WorkflowStep.RESULT ||
-              !selectionForLevel,
-          }}
-          previous={{
-            label: "Back",
-            onClick: () => {
-              if (classificationLevel === 0) {
-                setWorkflowStep(WorkflowStep.DESCRIPTION);
-              } else {
-                setClassificationLevel(classificationLevel - 1);
-              }
-            },
-          }}
-        />
+
+        {/* NOTES */}
+        {showNotes && (
+          <div className="w-full flex flex-col gap-2">
+            <div className="flex flex-col">
+              <div className="flex items-center justify-between gap-1">
+                <SecondaryLabel value="Classifier Notes" color={Color.WHITE} />
+                <button
+                  className="btn btn-xs btn-primary"
+                  onClick={() => {
+                    setShowNotes(false);
+                    updateLevel(classificationLevel, {
+                      notes: "",
+                    });
+                  }}
+                  disabled={loading.isLoading}
+                >
+                  <XMarkIcon className="w-4 h-4" />
+                  Remove Notes
+                </button>
+              </div>
+            </div>
+
+            <textarea
+              className="min-h-36 textarea textarea-bordered border-2 focus:outline-none text-white placeholder:text-white/20 placeholder:italic text-base w-full"
+              placeholder="Notes added to this level are saved to your classification and included in your report."
+              autoFocus
+              disabled={loading.isLoading}
+              value={levels[classificationLevel]?.notes || ""}
+              onChange={(e) => {
+                updateLevel(classificationLevel, {
+                  notes: e.target.value,
+                });
+              }}
+            />
+          </div>
+        )}
       </div>
       {showCrossRulingsModal && (
         <Modal

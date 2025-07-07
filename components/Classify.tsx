@@ -33,7 +33,7 @@ export const Classify = () => {
   >(undefined);
   const { fetchElements, htsElements } = useHts();
   const { getSections, sections } = useHtsSections();
-  const { setArticleDescription } = useClassification();
+  const { classification, setArticleDescription } = useClassification();
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -64,17 +64,22 @@ export const Classify = () => {
   }
 
   return (
-    <div className="h-full w-full bg-base-300 flex">
+    <div className="h-full w-full bg-base-300 flex border-t border-base-content/30">
       {/* Sidebar Navigation */}
-      <div className="hidden md:block h-full bg-base-100 min-w-[350px] max-w-[450px] lg:min-w-[500px] overflow-hidden">
-        <ClassificationNavigation
-          workflowStep={workflowStep}
-          setWorkflowStep={setWorkflowStep}
-          classificationLevel={classificationLevel}
-          setClassificationLevel={setClassificationLevel}
-          fetchingOptionsOrSuggestions={fetchingOptionsOrSuggestions}
-        />
-      </div>
+      {!(
+        workflowStep === WorkflowStep.DESCRIPTION &&
+        !classification.articleDescription
+      ) && (
+        <div className="hidden md:block h-full bg-base-100 min-w-[350px] max-w-[450px] lg:min-w-[500px] overflow-hidden border-r border-base-content/30">
+          <ClassificationNavigation
+            workflowStep={workflowStep}
+            setWorkflowStep={setWorkflowStep}
+            classificationLevel={classificationLevel}
+            setClassificationLevel={setClassificationLevel}
+            fetchingOptionsOrSuggestions={fetchingOptionsOrSuggestions}
+          />
+        </div>
+      )}
 
       {/* Classify Tab */}
       <div className="h-full grow overflow-hidden">
@@ -95,7 +100,6 @@ export const Classify = () => {
             )} */}
             {workflowStep === WorkflowStep.CLASSIFICATION && (
               <ClassificationStep
-                workflowStep={workflowStep}
                 setWorkflowStep={setWorkflowStep}
                 classificationLevel={classificationLevel}
                 setClassificationLevel={setClassificationLevel}
@@ -105,10 +109,7 @@ export const Classify = () => {
               />
             )}
             {workflowStep === WorkflowStep.RESULT && (
-              <ClassificationResultPage
-                setWorkflowStep={setWorkflowStep}
-                setClassificationLevel={setClassificationLevel}
-              />
+              <ClassificationResultPage />
             )}
           </>
         )}
