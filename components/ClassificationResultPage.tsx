@@ -181,20 +181,6 @@ export const ClassificationResultPage = ({
             </div>
           </div>
         </div>
-        <div className="w-full flex flex-col gap-2">
-          <SecondaryLabel value="Final Notes" color={Color.WHITE} />
-          <textarea
-            className="textarea textarea-bordered border-2 focus:outline-none text-white text-base w-full"
-            placeholder="Add your final notes here"
-            value={classification.notes || ""}
-            onChange={(e) => {
-              setClassification({
-                ...classification,
-                notes: e.target.value,
-              });
-            }}
-          />
-        </div>
         <div className="flex flex-col gap-2">
           <SecondaryLabel value="Full Description" color={Color.WHITE} />
           <div className="flex flex-col gap-2">
@@ -324,6 +310,20 @@ export const ClassificationResultPage = ({
             </div>
           )}
         </>
+        <div className="w-full flex flex-col gap-2">
+          <SecondaryLabel value="Final Notes" color={Color.WHITE} />
+          <textarea
+            className="min-h-32 textarea textarea-bordered border-2 focus:outline-none text-white text-base w-full"
+            placeholder="Add your final notes here"
+            value={classification.notes || ""}
+            onChange={(e) => {
+              setClassification({
+                ...classification,
+                notes: e.target.value,
+              });
+            }}
+          />
+        </div>
       </div>
       {/* Horizontal line */}
       <div className="w-full border-t-2 border-base-100" />
