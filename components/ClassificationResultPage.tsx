@@ -51,7 +51,7 @@ export const ClassificationResultPage = ({
   setClassificationLevel,
 }: Props) => {
   const { user } = useUser();
-  const { classification } = useClassification();
+  const { classification, setClassification } = useClassification();
   const { htsElements } = useHts();
   const { levels } = classification;
   const tariffElement = getTariffDetails(
@@ -178,49 +178,22 @@ export const ClassificationResultPage = ({
                 <MagnifyingGlassIcon className="w-4 h-4" />
                 Search CROSS
               </button>
-              {/* <SquareIconButton
-                transparent
-                tooltip="Copy"
-                icon={
-                  copied ? (
-                    <CheckCircleIcon className="w-4 h-4 text-WHITE" />
-                  ) : (
-                    <Square2StackIcon className="w-4 h-4" />
-                  )
-                }
-                onClick={() => {
-                  copyToClipboard(
-                    classification.levels[levels.length - 1].selection?.htsno
-                  );
-                  setCopied(true);
-                }}
-              />
-              <SquareIconButton
-                transparent
-                tooltip="View in Explorer"
-                icon={<MagnifyingGlassIcon className="w-4 h-4" />}
-                onClick={() => {
-                  clearBreadcrumbs();
-                  const sectionAndChapter =
-                    getSectionAndChapterFromChapterNumber(
-                      sections,
-                      Number(getChapterFromHtsElement(element, htsElements))
-                    );
-
-                  const parents = getHtsElementParents(element, htsElements);
-                  const breadcrumbs = generateBreadcrumbsForHtsElement(
-                    sections,
-                    sectionAndChapter.chapter,
-                    [...parents, element]
-                  );
-
-                  setBreadcrumbs(breadcrumbs);
-
-                  setActiveTab(ClassifyTab.EXPLORE);
-                }}
-              /> */}
             </div>
           </div>
+        </div>
+        <div className="w-full flex flex-col gap-2">
+          <SecondaryLabel value="Final Notes" color={Color.WHITE} />
+          <textarea
+            className="textarea textarea-bordered border-2 focus:outline-none text-white text-base w-full"
+            placeholder="Add your final notes here"
+            value={classification.notes || ""}
+            onChange={(e) => {
+              setClassification({
+                ...classification,
+                notes: e.target.value,
+              });
+            }}
+          />
         </div>
         <div className="flex flex-col gap-2">
           <SecondaryLabel value="Full Description" color={Color.WHITE} />

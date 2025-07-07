@@ -137,6 +137,7 @@ export interface Classification {
   progressionDescription: string;
   levels: ClassificationProgression[];
   isComplete: boolean;
+  notes?: string;
 }
 
 export interface ClassificationProgression {
