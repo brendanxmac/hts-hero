@@ -43,10 +43,12 @@ export const ClassificationStep = ({
     isLoading: false,
     text: "",
   });
-  const [showNotes, setShowNotes] = useState(false);
   const [showCrossRulingsModal, setShowCrossRulingsModal] = useState(false);
   const { classification, addLevel, updateLevel } = useClassification();
   const { articleDescription, levels } = classification;
+  const [showNotes, setShowNotes] = useState(
+    Boolean(levels[classificationLevel]?.notes)
+  );
   const previousArticleDescriptionRef = useRef<string>(articleDescription);
   const [htsSections, setHtsSections] = useState<HtsSection[]>([]);
   const [sectionCandidates, setSectionCandidates] = useState<
