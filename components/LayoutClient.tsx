@@ -13,7 +13,7 @@ import { useUser } from "../contexts/UserContext";
 // This component is separated from ClientLayout because it needs to be wrapped with <SessionProvider> to use useSession() hook
 const CrispChat = (): null => {
   const pathname = usePathname();
-  const { authUser: user } = useUser();
+  const { user } = useUser();
 
   useEffect(() => {
     if (config?.crisp?.id) {

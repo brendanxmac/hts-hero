@@ -7,7 +7,7 @@ import Profile from "../../components/Profile";
 import { useUser } from "../../contexts/UserContext";
 
 export default function Home() {
-  const { authUser: user } = useUser();
+  const { user } = useUser();
   const [isLoading, setIsLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 

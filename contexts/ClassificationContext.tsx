@@ -16,6 +16,8 @@ import {
 
 interface ClassificationContextType {
   classification: Classification;
+  classificationId: string | null;
+  setClassificationId: (id: string | null) => void;
   setClassification: (
     classification: Classification | ((prev: Classification) => Classification)
   ) => void;
@@ -58,7 +60,7 @@ export const ClassificationProvider = ({
   });
 
   useEffect(() => {
-    if (!classificationId) return;
+    if (!classification || !classificationId) return;
 
     const timeoutId = setTimeout(() => {
       console.log("Saving classification");
@@ -173,6 +175,8 @@ export const ClassificationProvider = ({
     <ClassificationContext.Provider
       value={{
         classification,
+        classificationId,
+        setClassificationId,
         setClassification,
         setArticleDescription,
         setProgressionDescription,

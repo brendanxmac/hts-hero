@@ -36,7 +36,7 @@ const getBuyButtonText = (plan: PricingPlan) => {
 // Users must be authenticated. It will prefill the Checkout data with their email and/or credit card (if any)
 // You can also change the mode to "subscription" if you want to create a subscription instead of a one-time payment
 const ButtonCheckout = ({ itemId }: Props) => {
-  const { authUser: user } = useUser();
+  const { user } = useUser();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handlePayment = async () => {

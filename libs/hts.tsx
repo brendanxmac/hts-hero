@@ -118,19 +118,6 @@ export const getBreadCrumbsForElement = (
 export const getElementsInChapter = (elements: HtsElement[], chapter: number) =>
   elements.filter((e) => e.chapter == chapter);
 
-export const mapFetchedClassificationToClassification = (
-  c: FetchedClassification
-): Classification => ({
-  articleDescription: c.description,
-  articleAnalysis: c.analysis,
-  progressionDescription: c.progression_description,
-  levels: c.decisions.map((decision) => ({
-    candidates: decision.candidates,
-    selection: decision.selection,
-  })),
-  isComplete: c.is_complete || false,
-});
-
 export const isHTSCode = (input: string): boolean => {
   const trimmed = input.trim();
 
