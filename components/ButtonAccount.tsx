@@ -14,7 +14,7 @@ import { useUser } from "../contexts/UserContext";
 // See more at https://shipfa.st/docs/components/buttonAccount
 const ButtonAccount = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { authUser: user, signOut } = useUser();
+  const { user, signOut } = useUser();
 
   const handleSignOut = async () => {
     await signOut();

@@ -15,7 +15,7 @@ import { useUser } from "../contexts/UserContext";
 // }
 
 const ConversionPricing = () => {
-  const { authUser: user } = useUser();
+  const { user } = useUser();
 
   return (
     <section className="bg-neutral-900 overflow-hidden" id="pricing">

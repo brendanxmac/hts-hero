@@ -1,6 +1,6 @@
 "use client";
 
-import { Bars3BottomLeftIcon } from "@heroicons/react/24/solid";
+import { Bars3BottomLeftIcon, HomeIcon } from "@heroicons/react/24/solid";
 import { PlusIcon } from "@heroicons/react/20/solid";
 import { WorkflowStep } from "../../enums/hts";
 import { SecondaryLabel } from "../SecondaryLabel";
@@ -10,7 +10,7 @@ import { TextNavigationStep } from "./TextNavigationStep";
 import { ElementsNavigationStep } from "./ElementsNavigationStep";
 import { Color } from "../../enums/style";
 import { useClassifyTab } from "../../contexts/ClassifyTabContext";
-import { ClassifyTab } from "../../enums/classify";
+import { ClassifyPage, ClassifyTab } from "../../enums/classify";
 import { ClassifyTabs } from "../../constants/classify";
 import { ConfirmationCard } from "../ConfirmationCard";
 import { useState, useRef, useEffect } from "react";
@@ -18,6 +18,7 @@ import { TertiaryLabel } from "../TertiaryLabel";
 import { PrimaryLabel } from "../PrimaryLabel";
 
 export interface ClassificationNavigationProps {
+  setPage: (page: ClassifyPage) => void;
   workflowStep: WorkflowStep;
   setWorkflowStep: (step: WorkflowStep) => void;
   classificationLevel: number | undefined;
@@ -26,6 +27,7 @@ export interface ClassificationNavigationProps {
 }
 
 export const ClassificationNavigation = ({
+  setPage,
   workflowStep,
   setWorkflowStep,
   classificationLevel,
@@ -33,7 +35,8 @@ export const ClassificationNavigation = ({
   fetchingOptionsOrSuggestions,
 }: ClassificationNavigationProps) => {
   const { activeTab, setActiveTab } = useClassifyTab();
-  const { classification, clearClassification } = useClassification();
+  const { classification, clearClassification, setClassification } =
+    useClassification();
   const { articleDescription, levels } = classification;
   const [showConfirmation, setShowConfirmation] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -78,7 +81,7 @@ export const ClassificationNavigation = ({
     <div className="h-full flex flex-col">
       <div className="flex justify-between items-center border-b border-base-content/10 p-4 ">
         <div className="flex items-center gap-2">
-          {/* <button
+          <button
             className="btn btn-link btn-primary px-0 gap-0 hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
             onClick={() => {
               setPage(ClassifyPage.CLASSIFICATIONS);
@@ -86,10 +89,9 @@ export const ClassificationNavigation = ({
             }}
           >
             <HomeIcon className="w-5 h-5" />
-          </button> */}
+          </button>
 
           {/* <div className="w-px h-6 bg-base-content/20" /> */}
-
           <div className="grow text-center">
             <PrimaryLabel value="Classify" color={Color.WHITE} />
           </div>

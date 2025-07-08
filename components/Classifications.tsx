@@ -22,7 +22,7 @@ export const Classifications = ({ setPage }: Props) => {
   const { htsElements, fetchElements } = useHts();
   const { getSections, sections } = useHtsSections();
   const { classifications, error: classificationsError } = useClassifications();
-  const { authUser: user, error: userError } = useUser();
+  const { user, error: userError } = useUser();
 
   useEffect(() => {
     const loadAllData = async () => {
@@ -96,7 +96,7 @@ export const Classifications = ({ setPage }: Props) => {
           {classifications.map((classification, index) => (
             <ClassificationSummary
               key={`classification-${index}`}
-              classification={classification}
+              classificationRecord={classification}
               setPage={setPage}
             />
           ))}

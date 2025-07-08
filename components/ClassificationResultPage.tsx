@@ -41,9 +41,10 @@ import { fetchUser } from "../libs/supabase/user";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import { XMarkIcon } from "@heroicons/react/16/solid";
+import { PrimaryText } from "./PrimaryText";
 
 export const ClassificationResultPage = () => {
-  const { authUser: user } = useUser();
+  const { user } = useUser();
   const { classification, setClassification } = useClassification();
   const { htsElements } = useHts();
   const { levels } = classification;
@@ -118,7 +119,7 @@ export const ClassificationResultPage = () => {
         </div>
         <div className=" flex flex-col gap-2">
           <div className="flex justify-between items-center">
-            <SecondaryLabel value="HTS Code" color={Color.WHITE} />
+            <TertiaryText value="HTS Code" color={Color.NEUTRAL_CONTENT} />
             <div className="flex gap-2">
               <button
                 className="btn btn-xs btn-primary"
@@ -184,7 +185,20 @@ export const ClassificationResultPage = () => {
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <SecondaryLabel value="Full Description" color={Color.WHITE} />
+          <TertiaryText
+            value="Item Description"
+            color={Color.NEUTRAL_CONTENT}
+          />
+          <PrimaryLabel
+            value={classification.articleDescription || ""}
+            color={Color.WHITE}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <TertiaryText
+            value="Classification Selections"
+            color={Color.NEUTRAL_CONTENT}
+          />
           <div className="flex flex-col gap-2">
             {getProgressionDescriptions(classification).map(
               (description, index) => (
@@ -201,7 +215,7 @@ export const ClassificationResultPage = () => {
                   <div
                     className={`${index > 0 ? "border-l-2 border-neutral-content/50 pl-2" : ""}`}
                   >
-                    <SecondaryText
+                    <SecondaryLabel
                       value={`${description}`}
                       color={Color.WHITE}
                     />
@@ -337,7 +351,6 @@ export const ClassificationResultPage = () => {
             <textarea
               className="min-h-36 textarea textarea-bordered border-2 focus:outline-none text-white placeholder:text-white/20 placeholder:italic text-base w-full"
               placeholder="Add any final notes here. These notes will be included in your classification report."
-              autoFocus
               value={classification.notes || ""}
               onChange={(e) => {
                 setClassification({
