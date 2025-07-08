@@ -18,7 +18,7 @@ export async function GET() {
     }
 
     const { data: classifications, error } = await supabase
-      .from("classification")
+      .from("classifications")
       .select("*")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });

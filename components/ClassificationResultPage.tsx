@@ -43,7 +43,7 @@ import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import { XMarkIcon } from "@heroicons/react/16/solid";
 
 export const ClassificationResultPage = () => {
-  const { user } = useUser();
+  const { authUser: user } = useUser();
   const { classification, setClassification } = useClassification();
   const { htsElements } = useHts();
   const { levels } = classification;

@@ -7,7 +7,8 @@ import {
 
 export const dynamic = "force-dynamic";
 
-interface CreateClassificationDto {
+interface UpdateClassificationDto {
+  id: string;
   classification: Classification;
 }
 
@@ -25,7 +26,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { classification }: CreateClassificationDto = await req.json();
+    const { id, classification }: UpdateClassificationDto = await req.json();
 
     console.log(classification);
 
@@ -40,12 +41,10 @@ export async function POST(req: NextRequest) {
 
     const { data: classificationRecord, error } = await supabase
       .from("classifications")
-      .insert([
-        {
-          user_id: user.id,
-          classification: classification,
-        },
-      ])
+      .update({
+        classification,
+      })
+      .eq("id", id)
       .select()
       .single<ClassificationRecord>();
 
@@ -56,7 +55,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json(classificationRecord, { status: 200 });
+    return NextResponse.json({ success: true }, { status: 200 });
   } catch (e) {
     console.error(e);
     return NextResponse.json({ error: e?.message }, { status: 500 });

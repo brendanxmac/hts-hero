@@ -5,10 +5,6 @@ import { User } from "@supabase/supabase-js";
 import { createSupabaseClient } from "@/libs/supabase/client";
 import { identifyUser, resetUser } from "@/libs/mixpanel";
 
-// interface EnrichedUser extends User {
-//   profile: UserProfile;
-// }
-
 interface UserContextType {
   user: User | null;
   isLoading: boolean;

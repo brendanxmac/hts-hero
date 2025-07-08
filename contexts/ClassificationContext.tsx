@@ -1,8 +1,18 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 import { Classification, ClassificationProgression } from "../interfaces/hts";
 import { HtsElement } from "../interfaces/hts";
+import {
+  createClassification,
+  updateClassification,
+} from "../libs/classification";
 
 interface ClassificationContextType {
   classification: Classification;
@@ -25,6 +35,7 @@ interface ClassificationContextType {
   ) => void;
   clearClassification: (keepArticleDescription?: boolean) => void;
   startNewClassification: (articleDescription?: string) => void;
+  saveClassification: () => Promise<void>;
 }
 
 const ClassificationContext = createContext<
@@ -36,6 +47,7 @@ export const ClassificationProvider = ({
 }: {
   children: ReactNode;
 }) => {
+  const [classificationId, setClassificationId] = useState<string | null>(null);
   const [classification, setClassification] = useState<Classification>({
     notes: "",
     articleDescription: "",
@@ -44,6 +56,17 @@ export const ClassificationProvider = ({
     levels: [],
     isComplete: false,
   });
+
+  useEffect(() => {
+    if (!classificationId) return;
+
+    const timeoutId = setTimeout(() => {
+      console.log("Saving classification");
+      saveClassification();
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [classification]);
 
   const setArticleDescription = (description: string) => {
     setClassification((prev) => ({
@@ -123,18 +146,27 @@ export const ClassificationProvider = ({
     });
   };
 
-  // Note: This just resets the classification progress,
-  // and will start over with the same description if none is passed in
-  const startNewClassification = (articleDescription?: string) => {
-    setClassification({
-      articleDescription:
-        articleDescription || classification.articleDescription,
+  const saveClassification = async () => {
+    if (!classificationId) {
+      throw new Error("Classification ID is not set");
+    }
+
+    await updateClassification(classificationId, classification);
+  };
+
+  // This creates a record in the DB and sets up the context record for local changes
+  const startNewClassification = async (articleDescription: string) => {
+    const newClassification: Classification = {
+      articleDescription,
       articleAnalysis: "",
       progressionDescription: "",
       levels: [],
       isComplete: false,
       notes: "",
-    });
+    };
+    const classificationRecord = await createClassification(newClassification);
+    setClassificationId(classificationRecord.id);
+    setClassification(newClassification);
   };
 
   return (
@@ -149,6 +181,7 @@ export const ClassificationProvider = ({
         updateLevel,
         clearClassification,
         startNewClassification,
+        saveClassification,
       }}
     >
       {children}
