@@ -15,8 +15,8 @@ import {
 } from "../libs/classification";
 
 interface ClassificationContextType {
-  classification: Classification;
-  classificationId: string | null;
+  classification?: Classification;
+  classificationId?: string;
   setClassificationId: (id: string | null) => void;
   setClassification: (
     classification: Classification | ((prev: Classification) => Classification)

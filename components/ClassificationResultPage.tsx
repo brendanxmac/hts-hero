@@ -165,9 +165,12 @@ export const ClassificationResultPage = () => {
               <button
                 className="btn btn-xs btn-primary"
                 onClick={() => {
+                  const htsCode =
+                    classification.levels[levels.length - 1].selection?.htsno;
+                  const htsCodeWithoutStatSuffix = htsCode?.slice(0, -3);
                   window.open(
                     `https://rulings.cbp.gov/search?term=${encodeURIComponent(
-                      classification.levels[levels.length - 1].selection?.htsno
+                      htsCodeWithoutStatSuffix
                     )}`,
                     "_blank"
                   );

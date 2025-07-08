@@ -38,7 +38,9 @@ export const Classify = ({ setPage }: Props) => {
   const { getSections, sections } = useHtsSections();
   const { classification, setArticleDescription } = useClassification();
   const [workflowStep, setWorkflowStep] = useState(
-    classification.isComplete ? WorkflowStep.RESULT : WorkflowStep.DESCRIPTION
+    classification && classification.isComplete
+      ? WorkflowStep.RESULT
+      : WorkflowStep.DESCRIPTION
   );
   const searchParams = useSearchParams();
 
@@ -72,21 +74,22 @@ export const Classify = ({ setPage }: Props) => {
   return (
     <div className="h-full w-full bg-base-300 flex border-t border-base-content/30">
       {/* Sidebar Navigation */}
-      {!(
-        workflowStep === WorkflowStep.DESCRIPTION &&
-        !classification.articleDescription
-      ) && (
-        <div className="hidden md:block h-full bg-base-100 min-w-[350px] max-w-[450px] lg:min-w-[500px] overflow-hidden border-r border-base-content/30">
-          <ClassificationNavigation
-            setPage={setPage}
-            workflowStep={workflowStep}
-            setWorkflowStep={setWorkflowStep}
-            classificationLevel={classificationLevel}
-            setClassificationLevel={setClassificationLevel}
-            fetchingOptionsOrSuggestions={fetchingOptionsOrSuggestions}
-          />
-        </div>
-      )}
+      {classification &&
+        !(
+          workflowStep === WorkflowStep.DESCRIPTION &&
+          !classification.articleDescription
+        ) && (
+          <div className="hidden md:block h-full bg-base-100 min-w-[350px] max-w-[450px] lg:min-w-[500px] overflow-hidden border-r border-base-content/30">
+            <ClassificationNavigation
+              setPage={setPage}
+              workflowStep={workflowStep}
+              setWorkflowStep={setWorkflowStep}
+              classificationLevel={classificationLevel}
+              setClassificationLevel={setClassificationLevel}
+              fetchingOptionsOrSuggestions={fetchingOptionsOrSuggestions}
+            />
+          </div>
+        )}
 
       {/* Classify Tab */}
       <div className="h-full grow overflow-hidden">
@@ -94,6 +97,7 @@ export const Classify = ({ setPage }: Props) => {
           <>
             {workflowStep === WorkflowStep.DESCRIPTION && (
               <DescriptionStep
+                setPage={setPage}
                 setWorkflowStep={setWorkflowStep}
                 setClassificationLevel={setClassificationLevel}
                 setShowPricing={setShowPricing}
