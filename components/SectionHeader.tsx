@@ -24,7 +24,7 @@ export const SectionHeader = ({
         <PrimaryLabel value={title} />
         <div
           role="tablist"
-          className="tabs tabs-boxed tabs-sm bg-primary-content p-1.5 rounded-xl"
+          className="tabs tabs-boxed tabs-sm p-1.5 rounded-xl"
         >
           {tabs.map((tab) => (
             <a

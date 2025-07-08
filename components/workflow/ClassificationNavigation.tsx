@@ -1,7 +1,7 @@
 "use client";
 
-import { Bars3BottomLeftIcon, HomeIcon } from "@heroicons/react/24/solid";
-import { PlusIcon } from "@heroicons/react/20/solid";
+import { ArrowLeftIcon } from "@heroicons/react/16/solid";
+import { Bars3BottomLeftIcon } from "@heroicons/react/24/solid";
 import { WorkflowStep } from "../../enums/hts";
 import { SecondaryLabel } from "../SecondaryLabel";
 import { classNames } from "../../utilities/style";
@@ -12,10 +12,8 @@ import { Color } from "../../enums/style";
 import { useClassifyTab } from "../../contexts/ClassifyTabContext";
 import { ClassifyPage, ClassifyTab } from "../../enums/classify";
 import { ClassifyTabs } from "../../constants/classify";
-import { ConfirmationCard } from "../ConfirmationCard";
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { TertiaryLabel } from "../TertiaryLabel";
-import { PrimaryLabel } from "../PrimaryLabel";
 
 export interface ClassificationNavigationProps {
   setPage: (page: ClassifyPage) => void;
@@ -35,10 +33,8 @@ export const ClassificationNavigation = ({
   fetchingOptionsOrSuggestions,
 }: ClassificationNavigationProps) => {
   const { activeTab, setActiveTab } = useClassifyTab();
-  const { classification, clearClassification, setClassification } =
-    useClassification();
+  const { classification, setClassification } = useClassification();
   const { articleDescription, levels } = classification;
-  const [showConfirmation, setShowConfirmation] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const descriptionRef = useRef<HTMLDivElement>(null);
   const levelRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -79,36 +75,25 @@ export const ClassificationNavigation = ({
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex justify-between items-center border-b border-base-content/10 p-4 ">
+      <div className="flex justify-between items-center p-4 shadow-xl border-b border-base-content/10">
         <div className="flex items-center gap-2">
           <button
-            className="btn btn-link btn-primary px-0 gap-0 hover:text-secondary hover:scale-105 transition-all duration-100 ease-in-out"
+            className="btn btn-sm gap-0 transition-all duration-100 ease-in-out"
             onClick={() => {
+              setActiveTab(ClassifyTab.CLASSIFY);
               setPage(ClassifyPage.CLASSIFICATIONS);
               setClassification(undefined);
             }}
           >
-            <HomeIcon className="w-5 h-5" />
+            <ArrowLeftIcon className="w-4 h-4" />
+            &nbsp;All Classifications
           </button>
-
-          {/* <div className="w-px h-6 bg-base-content/20" /> */}
-          <div className="grow text-center">
-            <PrimaryLabel value="Classify" color={Color.WHITE} />
-          </div>
         </div>
 
         <div className="flex items-center justify-center gap-4">
-          <button
-            className="btn btn-sm btn-primary btn-square"
-            onClick={() => {
-              setShowConfirmation(true);
-            }}
-          >
-            <PlusIcon className="w-5 h-5" />
-          </button>
           <div
             role="tablist"
-            className="tabs tabs-boxed tabs-sm bg-primary-content p-1.5 gap-1 rounded-xl"
+            className="tabs tabs-boxed tabs-sm p-1.5 gap-1 rounded-xl"
           >
             {ClassifyTabs.map((tab) => (
               <button
@@ -238,38 +223,6 @@ export const ClassificationNavigation = ({
           </div>
         )}
       </div>
-
-      {/* <div className="sticky bottom-0 left-0 right-0 bg-base-100 border-t-2 border-neutral p-4">
-        <div className="w-full flex justify-between gap-2">
-          <button
-            className={classNames(
-              "grow btn btn-outline",
-              levels.length === 0 && "btn-disabled"
-            )}
-            disabled={levels.length === 0}
-            onClick={() => {
-              setShowConfirmation(true);
-            }}
-          >
-            Restart
-          </button>
-        </div>
-      </div> */}
-      {showConfirmation && (
-        <ConfirmationCard
-          title="Start New Classification?"
-          description="To start a new classification click start. NOTE: Your current classification will NOT be saved"
-          confirmText="Start"
-          cancelText="Close"
-          onConfirm={() => {
-            clearClassification();
-            setWorkflowStep(WorkflowStep.DESCRIPTION);
-            setClassificationLevel(undefined);
-            setShowConfirmation(false);
-          }}
-          onCancel={() => setShowConfirmation(false)}
-        />
-      )}
     </div>
   );
 };

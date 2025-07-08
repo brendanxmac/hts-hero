@@ -48,9 +48,15 @@ export const ClassificationSummary = ({
             color={Color.PRIMARY}
           />
         )}
-        <TertiaryLabel
-          value={formatHumanReadableDate(classificationRecord.created_at)}
-        />
+        <div className="flex items-center gap-2">
+          <TertiaryLabel
+            value={formatHumanReadableDate(classificationRecord.created_at)}
+          />
+          {/* <TertiaryLabel
+            value={classification.isComplete ? "Complete" : "Incomplete"}
+            color={classification.isComplete ? Color.ACCENT : Color.SECONDARY}
+          /> */}
+        </div>
       </div>
       <PrimaryText
         value={classification.articleDescription}
