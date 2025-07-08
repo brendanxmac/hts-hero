@@ -22,7 +22,7 @@ export const Classifications = ({ setPage }: Props) => {
   const { htsElements, fetchElements } = useHts();
   const { getSections, sections } = useHtsSections();
   const { classifications, error: classificationsError } = useClassifications();
-  const { user, error: userError } = useUser();
+  const { authUser: user, error: userError } = useUser();
 
   useEffect(() => {
     const loadAllData = async () => {
