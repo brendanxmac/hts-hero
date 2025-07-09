@@ -1,4 +1,4 @@
-import { Classification, FetchedClassification } from "../interfaces/hts";
+import { Classification, ClassificationRecord } from "../interfaces/hts";
 import apiClient from "./api";
 import jsPDF from "jspdf";
 import { getElementWithTariffDataFromClassification } from "./hts";
@@ -9,18 +9,35 @@ const formatHtsNumber = (htsno: string | undefined | null): string => {
   return htsno?.trim() || "-";
 };
 
-export const createClassification = async (classification: Classification) => {
-  const response = await apiClient.post("/classification/create", {
-    classification: classification,
+export const createClassification = async (
+  classification: Classification
+): Promise<ClassificationRecord> => {
+  const classificationRecord = await apiClient.post<
+    Classification,
+    ClassificationRecord
+  >("/classification/create", {
+    classification,
+  });
+
+  return classificationRecord;
+};
+
+export const updateClassification = async (
+  id: string,
+  classification: Classification
+) => {
+  const response = await apiClient.post("/classification/update", {
+    id,
+    classification,
   });
 
   return response.data;
 };
 
 export const fetchClassifications = async (): Promise<
-  FetchedClassification[]
+  ClassificationRecord[]
 > => {
-  const classifications: FetchedClassification[] = await apiClient.get(
+  const classifications: ClassificationRecord[] = await apiClient.get(
     "/classification/fetch"
   );
 

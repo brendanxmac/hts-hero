@@ -337,7 +337,6 @@ export const ClassificationStep = ({
             <textarea
               className="min-h-36 textarea textarea-bordered border-2 focus:outline-none text-white placeholder:text-white/20 placeholder:italic text-base w-full"
               placeholder="Notes added to this level are saved to your classification and included in your report."
-              autoFocus
               disabled={loading.isLoading}
               value={levels[classificationLevel]?.notes || ""}
               onChange={(e) => {

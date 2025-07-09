@@ -10,14 +10,18 @@ import { userHasActivePurchase } from "../../libs/supabase/purchase";
 import { useUser } from "../../contexts/UserContext";
 import { isWithinPastNDays } from "../../utilities/time";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
+import { ClassifyPage } from "../../enums/classify";
+import { ArrowLeftIcon } from "@heroicons/react/16/solid";
 
 interface Props {
+  setPage: (page: ClassifyPage) => void;
   setWorkflowStep: (step: WorkflowStep) => void;
   setClassificationLevel: (level: number | undefined) => void;
   setShowPricing: (show: boolean) => void;
 }
 
 export const DescriptionStep = ({
+  setPage,
   setWorkflowStep,
   setClassificationLevel,
   setShowPricing,
@@ -25,20 +29,28 @@ export const DescriptionStep = ({
   const { user } = useUser();
   const { classification, startNewClassification, setArticleDescription } =
     useClassification();
-  const [localProductDescription, setLocalProductDescription] = useState(
-    classification.articleDescription
+  const [localItemDescription, setLocalItemDescription] = useState(
+    classification?.articleDescription || ""
   );
   const [loading, setLoading] = useState(false);
-  const { articleDescription: productDescription } = classification;
 
   useEffect(() => {
-    setLocalProductDescription(productDescription);
-  }, [productDescription]);
+    setLocalItemDescription(classification?.articleDescription || "");
+  }, [classification?.articleDescription]);
 
   return (
     <div className="h-full flex flex-col">
       {/* Content */}
       <div className="grow w-full max-w-3xl mx-auto flex flex-col px-8 justify-center gap-5">
+        {/* Add a button to go back to classifications */}
+        {(!classification || !classification?.articleDescription) && (
+          <button
+            className="w-fit btn btn-sm btn-square p-2"
+            onClick={() => setPage(ClassifyPage.CLASSIFICATIONS)}
+          >
+            <ArrowLeftIcon className="w-4 h-4" />
+          </button>
+        )}
         <div className="flex flex-col gap-2">
           <div className="flex justify-between items-center">
             <TertiaryLabel
@@ -52,9 +64,9 @@ export const DescriptionStep = ({
         </div>
         <TextInput
           placeholder="e.g. Men's 100% cotton denim jeans, dyed blue & pre-washed for an athletic figure"
-          defaultValue={productDescription}
+          defaultValue={classification?.articleDescription || ""}
           onChange={(value) => {
-            setLocalProductDescription(value);
+            setLocalItemDescription(value);
           }}
           onSubmit={async () => {
             setLoading(true);
@@ -68,26 +80,25 @@ export const DescriptionStep = ({
               : false;
 
             if (isPayingUser || isTrialUser) {
-              if (localProductDescription !== productDescription) {
-                startNewClassification(localProductDescription);
+              if (localItemDescription !== classification?.articleDescription) {
+                await startNewClassification(localItemDescription);
+                // Track classification started event
+                trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
+                  item: localItemDescription,
+                  is_paying_user: isPayingUser,
+                  is_trial_user: isTrialUser,
+                });
               }
 
               setWorkflowStep(WorkflowStep.CLASSIFICATION);
               setClassificationLevel(0);
-
-              // Track classification started event
-              trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
-                item: localProductDescription,
-                is_paying_user: isPayingUser,
-                is_trial_user: isTrialUser,
-              });
             } else {
-              setArticleDescription(localProductDescription);
+              setArticleDescription(localItemDescription);
               setShowPricing(true);
             }
             setLoading(false);
           }}
-          disabled={localProductDescription.length === 0}
+          disabled={localItemDescription.length === 0}
           loading={loading}
         />
 

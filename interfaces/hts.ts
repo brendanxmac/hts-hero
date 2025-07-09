@@ -120,15 +120,12 @@ export interface CandidateSelection {
   logic: string;
 }
 
-export interface FetchedClassification {
+export interface ClassificationRecord {
   id: string;
   user_id: string;
-  description: string;
-  analysis: string;
-  progression_description: string;
-  decisions: ClassificationProgression[];
-  is_complete?: boolean;
+  classification: Classification;
   created_at: string;
+  updated_at: string;
 }
 
 export interface Classification {
