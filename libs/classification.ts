@@ -1,8 +1,4 @@
-import {
-  Classification,
-  ClassificationRecord,
-  FetchedClassification,
-} from "../interfaces/hts";
+import { Classification, ClassificationRecord } from "../interfaces/hts";
 import apiClient from "./api";
 import jsPDF from "jspdf";
 import { getElementWithTariffDataFromClassification } from "./hts";

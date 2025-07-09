@@ -14,7 +14,7 @@ export const ClassifyController = () => {
     <UserProvider>
       <ClassificationsProvider>
         <div className="h-full w-full bg-base-300">
-          <div className="h-full w-full bg-base-100 col-span-1 overflow-hidden">
+          <div className="h-full w-full bg-base-300 overflow-hidden">
             {page === ClassifyPage.CLASSIFICATIONS && (
               <Classifications page={page} setPage={setPage} />
             )}

@@ -75,7 +75,7 @@ export const ClassificationNavigation = ({
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex justify-between items-center p-4 shadow-xl border-b border-base-content/10">
+      <div className="z-10 flex justify-between items-center px-4 py-2 border-b border-base-content/20">
         <div className="flex items-center gap-2">
           <button
             className="btn btn-sm gap-0 transition-all duration-100 ease-in-out"
@@ -118,23 +118,21 @@ export const ClassificationNavigation = ({
         ref={containerRef}
         className="h-full flex flex-col gap-6 p-4 overflow-y-scroll"
       >
+        <h2 className="text-2xl text-neutral-50 font-bold">
+          Classification Summary
+        </h2>
+        {/* <TertiaryText
+          color={Color.NEUTRAL_CONTENT}
+        /> */}
+
         <div className="flex flex-col gap-3">
           <SecondaryLabel value="Item" color={Color.WHITE} />
           <div ref={descriptionRef}>
             <TextNavigationStep
-              title="Item Description"
+              large
+              title="Description"
               text={articleDescription}
               active={workflowStep === WorkflowStep.DESCRIPTION}
-              icon={
-                <Bars3BottomLeftIcon
-                  className={classNames(
-                    "w-5 h-5 m-1",
-                    workflowStep === WorkflowStep.DESCRIPTION
-                      ? "text-white"
-                      : "text-content-neutral"
-                  )}
-                />
-              }
               button={{
                 label: "Edit",
                 onClick: () => {

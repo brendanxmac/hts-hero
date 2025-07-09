@@ -17,7 +17,6 @@ import {
   BestChaptersResponse,
   Navigatable,
   Classification,
-  FetchedClassification,
   SectionAndChapterDetails,
 } from "../interfaces/hts";
 import {

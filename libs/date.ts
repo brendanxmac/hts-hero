@@ -3,15 +3,17 @@ import { format, isToday, isYesterday, parseISO } from "date-fns";
 export const formatHumanReadableDate = (dateString: string): string => {
   const date = parseISO(dateString);
   const hours = date.getHours();
-  const minutes = date.getMinutes();
-  const time = `${hours}:${minutes}`;
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  const ampm = hours >= 12 ? "PM" : "AM";
+  const displayHours = hours % 12 || 12;
+  const time = `${displayHours}:${minutes} ${ampm}`;
 
   if (isToday(date)) {
-    return `Today at ${time}`;
+    return `Today, ${time}`;
   }
 
   if (isYesterday(date)) {
-    return `Yesterday at ${time}`;
+    return `Yesterday, ${time}`;
   }
 
   // Get the day of the month with the appropriate suffix

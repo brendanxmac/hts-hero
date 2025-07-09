@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { Loader } from "../interfaces/ui";
 import { useHts } from "../contexts/HtsContext";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
+import { PrimaryLabel } from "./PrimaryLabel";
 
 interface Props {
   page: ClassifyPage;
@@ -80,42 +81,42 @@ export const Classifications = ({ page, setPage }: Props) => {
   }
 
   return (
-    <div className="h-full w-full max-w-3xl mx-auto pt-12 flex flex-col gap-8 overflow-hidden">
+    <div className="h-full w-full max-w-3xl mx-auto pt-8 px-4 flex flex-col gap-4 overflow-y-scroll">
       <div className="flex flex-col gap-2">
         <h1 className="text-4xl text-neutral-50 font-bold">
           {getUserNameMessage()}
         </h1>
         <SecondaryText
           value="Review your classifications or start a new one now."
-          color={Color.WHITE}
+          color={Color.NEUTRAL_CONTENT}
         />
       </div>
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl text-neutral-50 font-bold">
-          Your Classifications
-        </h2>
-        {loader.isLoading || classificationsLoading ? (
-          <LoadingIndicator text={loader.text || "Loading Classifications"} />
-        ) : (
-          <button
-            className="btn btn-primary btn-sm"
-            onClick={() => setPage(ClassifyPage.CLASSIFY)}
-          >
-            New Classification
-          </button>
+      <div className="flex flex-col">
+        <div className="flex justify-between items-center shadow-xl py-2">
+          <PrimaryLabel value="Your Classifications" color={Color.WHITE} />
+          {loader.isLoading || classificationsLoading ? (
+            <LoadingIndicator text={loader.text || "Loading Classifications"} />
+          ) : (
+            <button
+              className="btn btn-primary btn-sm"
+              onClick={() => setPage(ClassifyPage.CLASSIFY)}
+            >
+              New Classification
+            </button>
+          )}
+        </div>
+        {classifications && (
+          <div className="flex flex-col gap-2 pb-6">
+            {classifications.map((classification, index) => (
+              <ClassificationSummary
+                key={`classification-${index}`}
+                classificationRecord={classification}
+                setPage={setPage}
+              />
+            ))}
+          </div>
         )}
       </div>
-      {classifications && (
-        <div className="flex flex-col gap-4 overflow-y-auto pb-6">
-          {classifications.map((classification, index) => (
-            <ClassificationSummary
-              key={`classification-${index}`}
-              classificationRecord={classification}
-              setPage={setPage}
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 };
