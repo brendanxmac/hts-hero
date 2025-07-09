@@ -59,7 +59,8 @@ export const Classifications = ({ page, setPage }: Props) => {
   }, []);
 
   const getUserNameMessage = () => {
-    let message = "Welcome back";
+    const hasClassifications = classifications && classifications.length > 0;
+    let message = hasClassifications ? "Welcome back" : "Welcome to HTS Hero";
 
     if (user?.user_metadata?.name) {
       const firstName = user.user_metadata.name.split(" ")[0];
@@ -88,7 +89,7 @@ export const Classifications = ({ page, setPage }: Props) => {
           {getUserNameMessage()}
         </h1>
         <SecondaryText
-          value="Review your classifications or start a new one now."
+          value="This dashboard lets you easily review your classifications or start a new one now."
           color={Color.NEUTRAL_CONTENT}
         />
       </div>
@@ -142,7 +143,7 @@ export const Classifications = ({ page, setPage }: Props) => {
                     color={Color.WHITE}
                   />
                   <TertiaryText
-                    value="You haven't started or completed any classifications yet, but can start your first one now."
+                    value="You haven't started or completed any classifications yet, but can start one now."
                     color={Color.NEUTRAL_CONTENT}
                   />
                 </div>
