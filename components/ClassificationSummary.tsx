@@ -8,7 +8,7 @@ import {
 import { formatHumanReadableDate } from "../libs/date";
 import { PrimaryText } from "./PrimaryText";
 import { SecondaryLabel } from "./SecondaryLabel";
-import { TertiaryLabel } from "./TertiaryLabel";
+import { TertiaryText } from "./TertiaryText";
 
 interface Props {
   classificationRecord: ClassificationRecord;
@@ -34,7 +34,7 @@ export const ClassificationSummary = ({
 
   return (
     <div
-      className="bg-base-300 p-4 rounded-md cursor-pointer flex flex-col gap-2 border-2 border-base-content/30 transition duration-100 ease-in-out scale-[0.99] hover:scale-[1]"
+      className="bg-base-100 p-4 rounded-md cursor-pointer flex flex-col gap-2 border-2 border-base-content/30 transition duration-100 ease-in-out hover:scale-[1.02] hover:bg-base-300"
       onClick={() => {
         setClassification(classification);
         setClassificationId(classificationRecord.id);
@@ -45,17 +45,13 @@ export const ClassificationSummary = ({
         {getFinalClassificationElement(classification.levels) && (
           <SecondaryLabel
             value={getFinalClassificationElement(classification.levels).htsno}
-            color={Color.PRIMARY}
+            color={Color.NEUTRAL_CONTENT}
           />
         )}
         <div className="flex items-center gap-2">
-          <TertiaryLabel
+          <TertiaryText
             value={formatHumanReadableDate(classificationRecord.created_at)}
           />
-          {/* <TertiaryLabel
-            value={classification.isComplete ? "Complete" : "Incomplete"}
-            color={classification.isComplete ? Color.ACCENT : Color.SECONDARY}
-          /> */}
         </div>
       </div>
       <PrimaryText

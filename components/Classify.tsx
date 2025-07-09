@@ -72,7 +72,7 @@ export const Classify = ({ setPage }: Props) => {
   }
 
   return (
-    <div className="h-full w-full bg-base-300 flex border-t border-base-content/30">
+    <div className="h-full w-full bg-base-300 flex">
       {/* Sidebar Navigation */}
       {classification &&
         !(
