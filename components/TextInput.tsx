@@ -69,6 +69,7 @@ export default function TextInput({
       >
         <textarea
           ref={textareaRef}
+          autoFocus
           placeholder={placeholder}
           rows={1}
           value={localProductDescription}

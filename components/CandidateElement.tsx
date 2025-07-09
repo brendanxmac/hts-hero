@@ -25,16 +25,13 @@ import {
   getSectionAndChapterFromChapterNumber,
 } from "../libs/hts";
 import { useHts } from "../contexts/HtsContext";
-import { PrimaryLabel } from "./PrimaryLabel";
 import { WorkflowStep } from "../enums/hts";
 import { PDFProps } from "../interfaces/ui";
 import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
 import { userHasActivePurchase } from "../libs/supabase/purchase";
 import { isWithinPastNDays } from "../utilities/time";
 import { useUser } from "../contexts/UserContext";
-import { SecondaryText } from "./SecondaryText";
 import { PrimaryText } from "./PrimaryText";
-import { SecondaryLabel } from "./SecondaryLabel";
 import { TertiaryText } from "./TertiaryText";
 
 interface Props {
@@ -66,8 +63,8 @@ export const CandidateElement = ({
     element.uuid;
   const recommendedReason =
     classification.levels[classificationLevel]?.analysisReason;
-  const suggestedQuestions =
-    classification.levels[classificationLevel]?.analysisQuestions;
+  // const suggestedQuestions =
+  //   classification.levels[classificationLevel]?.analysisQuestions;
 
   // Check all progression levels to see if this element is selected in any of them
   const isLevelSelection = Boolean(
@@ -97,8 +94,7 @@ export const CandidateElement = ({
     <div
       className={classNames(
         "flex w-full rounded-md bg-base-100 p-4 gap-4 transition duration-100 ease-in-out scale-[0.99]",
-        isLevelSelection &&
-          "shadow-[inset_0_0_0_4px_oklch(var(--p))] scale-[1]",
+        isLevelSelection && "shadow-[inset_0_0_0_2px_oklch(var(--p))]",
         !isLevelSelection &&
           "hover:cursor-pointer hover:bg-base-300 border-2 border-neutral-content",
         !isPressed && !isLevelSelection && "hover:scale-[1]",

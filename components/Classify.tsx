@@ -7,7 +7,7 @@ import { ClassificationStep } from "./workflow/ClassificationStep";
 import { ClassificationNavigation } from "./workflow/ClassificationNavigation";
 import { DescriptionStep } from "./workflow/DescriptionStep";
 import { useClassifyTab } from "../contexts/ClassifyTabContext";
-import { ClassifyTab } from "../enums/classify";
+import { ClassifyPage, ClassifyTab } from "../enums/classify";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { Loader } from "../interfaces/ui";
@@ -18,7 +18,11 @@ import ConversionPricing from "./ConversionPricing";
 import { useClassification } from "../contexts/ClassificationContext";
 import { useSearchParams } from "next/navigation";
 
-export const Classify = () => {
+interface Props {
+  setPage: (page: ClassifyPage) => void;
+}
+
+export const Classify = ({ setPage }: Props) => {
   const [fetchingOptionsOrSuggestions, setFetchingOptionsOrSuggestions] =
     useState(false);
   const [showPricing, setShowPricing] = useState(false);
@@ -27,13 +31,17 @@ export const Classify = () => {
     text: "",
   });
   const { activeTab } = useClassifyTab();
-  const [workflowStep, setWorkflowStep] = useState(WorkflowStep.DESCRIPTION);
   const [classificationLevel, setClassificationLevel] = useState<
     number | undefined
   >(undefined);
   const { fetchElements, htsElements } = useHts();
   const { getSections, sections } = useHtsSections();
   const { classification, setArticleDescription } = useClassification();
+  const [workflowStep, setWorkflowStep] = useState(
+    classification && classification.isComplete
+      ? WorkflowStep.RESULT
+      : WorkflowStep.DESCRIPTION
+  );
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -64,22 +72,24 @@ export const Classify = () => {
   }
 
   return (
-    <div className="h-full w-full bg-base-300 flex border-t border-base-content/30">
+    <div className="h-full w-full bg-base-300 flex">
       {/* Sidebar Navigation */}
-      {!(
-        workflowStep === WorkflowStep.DESCRIPTION &&
-        !classification.articleDescription
-      ) && (
-        <div className="hidden md:block h-full bg-base-100 min-w-[350px] max-w-[450px] lg:min-w-[500px] overflow-hidden border-r border-base-content/30">
-          <ClassificationNavigation
-            workflowStep={workflowStep}
-            setWorkflowStep={setWorkflowStep}
-            classificationLevel={classificationLevel}
-            setClassificationLevel={setClassificationLevel}
-            fetchingOptionsOrSuggestions={fetchingOptionsOrSuggestions}
-          />
-        </div>
-      )}
+      {classification &&
+        !(
+          workflowStep === WorkflowStep.DESCRIPTION &&
+          !classification.articleDescription
+        ) && (
+          <div className="hidden md:block h-full bg-base-100 min-w-[350px] max-w-[450px] lg:min-w-[500px] overflow-hidden border-r border-base-content/30">
+            <ClassificationNavigation
+              setPage={setPage}
+              workflowStep={workflowStep}
+              setWorkflowStep={setWorkflowStep}
+              classificationLevel={classificationLevel}
+              setClassificationLevel={setClassificationLevel}
+              fetchingOptionsOrSuggestions={fetchingOptionsOrSuggestions}
+            />
+          </div>
+        )}
 
       {/* Classify Tab */}
       <div className="h-full grow overflow-hidden">
@@ -87,6 +97,7 @@ export const Classify = () => {
           <>
             {workflowStep === WorkflowStep.DESCRIPTION && (
               <DescriptionStep
+                setPage={setPage}
                 setWorkflowStep={setWorkflowStep}
                 setClassificationLevel={setClassificationLevel}
                 setShowPricing={setShowPricing}

@@ -1,9 +1,9 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { FetchedClassification } from "../interfaces/hts";
+import { ClassificationRecord } from "../interfaces/hts";
 import { fetchClassifications } from "../libs/classification";
 
 interface ClassificationsContextType {
-  classifications: FetchedClassification[];
+  classifications: ClassificationRecord[];
   isLoading: boolean;
   error: Error | null;
   refreshClassifications: () => Promise<void>;
@@ -19,7 +19,7 @@ export function ClassificationsProvider({
   children: React.ReactNode;
 }) {
   const [classifications, setClassifications] = useState<
-    FetchedClassification[]
+    ClassificationRecord[]
   >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);

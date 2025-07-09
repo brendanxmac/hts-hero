@@ -14,7 +14,7 @@ interface Props {
   text?: string;
   large?: boolean;
   active: boolean;
-  icon: JSX.Element;
+  icon?: JSX.Element;
   button?: Button;
   showButton?: boolean;
 }
@@ -30,7 +30,7 @@ export const TextNavigationStep = ({
   return (
     <div
       className={classNames(
-        "flex flex-col rounded-md gap-4 p-2 border-2 border-neutral-content/40 hover:cursor-pointer",
+        "flex flex-col rounded-md gap-2 p-3 border-2 border-neutral-content/40 hover:cursor-pointer",
         active && "bg-primary/80 transition-all duration-300 ease-in-out",
         !text && "py-4",
         !active && "hover:bg-primary/40"
@@ -41,7 +41,7 @@ export const TextNavigationStep = ({
     >
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-1">
-          {icon}
+          {icon && icon}
           <TertiaryLabel
             value={title}
             color={active ? Color.WHITE : Color.NEUTRAL_CONTENT}
