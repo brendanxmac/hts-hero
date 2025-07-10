@@ -27,6 +27,7 @@ import PDF from "./PDF";
 import { TertiaryText } from "./TertiaryText";
 import {
   CheckCircleIcon,
+  ChevronDownIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/16/solid";
 import { ArrowDownTrayIcon } from "@heroicons/react/16/solid";
@@ -74,10 +75,9 @@ export const ClassificationResultPage = () => {
       <div className="px-8 py-6 flex-1 flex flex-col gap-8 overflow-y-auto">
         <div className="flex flex-col gap-2">
           <div className="flex justify-between items-center">
-            <PrimaryLabel
-              value="Your Classification Result"
-              color={Color.WHITE}
-            />
+            <h2 className="text-2xl md:text-3xl font-bold text-white">
+              Your Classification Result
+            </h2>
             <div className="flex gap-2">
               <button
                 className="btn btn-xs btn-primary"
@@ -117,9 +117,52 @@ export const ClassificationResultPage = () => {
             <TertiaryText value="Below are the results of your classification for the item. Download the full report of your classification for your records as the results will not be saved after you close this page." />
           </div>
         </div>
-        <div className=" flex flex-col gap-2">
+
+        {/* <div className="flex flex-col gap-2">
+          <TertiaryLabel
+            value="Item Description"
+            color={Color.NEUTRAL_CONTENT}
+          />
+          <PrimaryText
+            value={classification.articleDescription || ""}
+            color={Color.WHITE}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <TertiaryLabel
+            value="Classification Selections"
+            color={Color.NEUTRAL_CONTENT}
+          />
+          <div className="flex flex-col gap-2">
+            {getProgressionDescriptions(classification).map(
+              (description, index, array) => (
+                <div key={`description-${index}`} className="flex gap-1">
+                  <div className="flex items-center">
+                    <SecondaryText
+                      value={`${"  ".repeat(index)}`}
+                      color={Color.WHITE}
+                    />
+                    {index < array.length - 1 && (
+                      <ChevronDownIcon className="w-4 h-4" />
+                    )}
+                    {index === array.length - 1 && (
+                      <SecondaryText
+                        value={`${" ".repeat(index)}`}
+                        color={Color.WHITE}
+                      />
+                    )}
+                  </div>
+
+                  <PrimaryText value={`${description}`} color={Color.WHITE} />
+                </div>
+              )
+            )}
+          </div>
+        </div> */}
+
+        <div className=" flex flex-col gap-6">
           <div className="flex justify-between items-center">
-            <TertiaryText value="HTS Code" color={Color.NEUTRAL_CONTENT} />
+            <PrimaryLabel value="HTS Code" color={Color.WHITE} />
             <div className="flex gap-2">
               <button
                 className="btn btn-xs btn-primary"
@@ -187,143 +230,101 @@ export const ClassificationResultPage = () => {
             </h2>
           </div>
         </div>
-        <div className="flex flex-col gap-2">
-          <TertiaryText
-            value="Item Description"
-            color={Color.NEUTRAL_CONTENT}
-          />
-          <PrimaryLabel
-            value={classification.articleDescription || ""}
-            color={Color.WHITE}
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <TertiaryText
-            value="Classification Selections"
-            color={Color.NEUTRAL_CONTENT}
-          />
-          <div className="flex flex-col gap-2">
-            {getProgressionDescriptions(classification).map(
-              (description, index) => (
-                <div key={`description-${index}`} className="flex gap-1">
-                  {index > 0 && (
-                    <div className="shrink-0">
-                      <SecondaryText
-                        value={`${"  ".repeat(index)}`}
-                        color={Color.WHITE}
-                      />
-                    </div>
-                  )}
-
-                  <div
-                    className={`${index > 0 ? "border-l-2 border-neutral-content/50 pl-2" : ""}`}
-                  >
-                    <SecondaryLabel
-                      value={`${description}`}
-                      color={Color.WHITE}
-                    />
-                  </div>
-                </div>
-              )
-            )}
-          </div>
-        </div>
         <>
           {tariffElement && (
             <div className="w-full flex flex-col gap-4">
-              <SecondaryLabel value="Tariff Details" color={Color.WHITE} />
+              <PrimaryLabel value="Tariff Details" color={Color.WHITE} />
 
               <div className="grid grid-cols-2 gap-2">
-                <div className="flex flex-col gap-3 p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24">
-                  <div>
-                    <TertiaryLabel
-                      value={"General Rate"}
-                      color={Color.PRIMARY}
-                    />
-                    <SecondaryText
-                      value={tariffElement.general || "-"}
-                      color={Color.WHITE}
-                    />
-                  </div>
+                <div className="flex flex-col p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24 gap-3">
+                  <TertiaryLabel
+                    value={"General Rate"}
+                    color={Color.NEUTRAL_CONTENT}
+                  />
+                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white">
+                    {tariffElement.general || "-"}
+                  </h2>
+
                   {getTemporaryTariffText(tariffElement, TariffType.GENERAL)}
                 </div>
-
                 <div className="flex flex-col p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24 gap-3">
-                  <TertiaryLabel value={"Special Rate"} color={Color.PRIMARY} />
+                  <TertiaryLabel
+                    value={"Special Rate"}
+                    color={Color.NEUTRAL_CONTENT}
+                  />
                   <div className="flex flex-col">
-                    <SecondaryText
-                      value={
-                        getTextBeforeOpeningParenthesis(
-                          tariffElement.special
-                        ) || "-"
-                      }
-                      color={Color.WHITE}
-                    />
+                    <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white">
+                      {getTextBeforeOpeningParenthesis(tariffElement.special) ||
+                        "-"}
+                    </h2>
                     {getTextBeforeOpeningParenthesis(tariffElement.special) && (
-                      <span className="text-xs italic text-white">
-                        If qualified based on the acts/agreemnts below
+                      <span className="mt-2 text-xs italic text-white">
+                        If qualified based on the following acts/agreemnts:
                       </span>
                     )}
-                  </div>
-
-                  {getStringBetweenParenthesis(tariffElement.special) && (
-                    <div className="flex flex-col">
-                      <div className="flex flex-wrap gap-x-1">
-                        {getStringBetweenParenthesis(tariffElement.special)
-                          .split(",")
-                          .map((specialTariffSymbol, index) => {
-                            const note = getGeneralNoteFromSpecialTariffSymbol(
-                              specialTariffSymbol.trim()
-                            );
-                            return (
-                              <div
-                                key={`${specialTariffSymbol}-${index}`}
-                                className="tooltip tooltip-primary tooltip-bottom"
-                                data-tip={
-                                  note?.description || note?.title || null
-                                }
-                              >
-                                <button
-                                  className="btn btn-link btn-xs text-xs p-0 hover:text-secondary hover:scale-110"
-                                  onClick={() => {
-                                    const note =
-                                      getGeneralNoteFromSpecialTariffSymbol(
-                                        specialTariffSymbol.trim()
-                                      );
-                                    setShowPDF({
-                                      title: note?.title || "",
-                                      file: note?.pdfURL || "",
-                                    });
-                                  }}
+                    {getStringBetweenParenthesis(tariffElement.special) && (
+                      <div className="flex flex-col">
+                        <div className="flex flex-wrap gap-x-1">
+                          {getStringBetweenParenthesis(tariffElement.special)
+                            .split(",")
+                            .map((specialTariffSymbol, index) => {
+                              const note =
+                                getGeneralNoteFromSpecialTariffSymbol(
+                                  specialTariffSymbol.trim()
+                                );
+                              return (
+                                <div
+                                  key={`${specialTariffSymbol}-${index}`}
+                                  className="tooltip tooltip-primary tooltip-bottom"
+                                  data-tip={
+                                    note?.description || note?.title || null
+                                  }
                                 >
-                                  {specialTariffSymbol}
-                                </button>
-                              </div>
-                            );
-                          })}
+                                  <button
+                                    className="btn btn-link btn-xs text-xs p-0 hover:text-secondary hover:scale-110"
+                                    onClick={() => {
+                                      const note =
+                                        getGeneralNoteFromSpecialTariffSymbol(
+                                          specialTariffSymbol.trim()
+                                        );
+                                      setShowPDF({
+                                        title: note?.title || "",
+                                        file: note?.pdfURL || "",
+                                      });
+                                    }}
+                                  >
+                                    {specialTariffSymbol}
+                                  </button>
+                                </div>
+                              );
+                            })}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                   {getTemporaryTariffText(tariffElement, TariffType.SPECIAL)}
                 </div>
 
-                <div className="flex flex-col gap-3 p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24">
-                  <div>
-                    <TertiaryLabel value={"Other Rate"} color={Color.PRIMARY} />
-                    <SecondaryText
-                      value={tariffElement.other || "-"}
-                      color={Color.WHITE}
-                    />
-                  </div>
+                <div className="flex flex-col p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24 gap-3">
+                  <TertiaryLabel
+                    value={"Other Rate"}
+                    color={Color.NEUTRAL_CONTENT}
+                  />
+                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white">
+                    {tariffElement.other || "-"}
+                  </h2>
+
                   {getTemporaryTariffText(tariffElement, TariffType.OTHER)}
                 </div>
 
-                <div className="flex flex-col gap-1 p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24">
-                  <TertiaryLabel value={`Units`} color={Color.PRIMARY} />
-                  <SecondaryText
-                    value={tariffElement.units.join(", ") || "-"}
-                    color={Color.WHITE}
+                <div className="flex flex-col p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24 gap-3">
+                  <TertiaryLabel
+                    value={`Units`}
+                    color={Color.NEUTRAL_CONTENT}
                   />
+                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white">
+                    {tariffElement.units.join(", ") || "-"}
+                  </h2>
                 </div>
               </div>
             </div>
