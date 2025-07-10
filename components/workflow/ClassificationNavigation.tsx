@@ -1,9 +1,7 @@
 "use client";
 
 import { ArrowLeftIcon } from "@heroicons/react/16/solid";
-import { Bars3BottomLeftIcon } from "@heroicons/react/24/solid";
 import { WorkflowStep } from "../../enums/hts";
-import { SecondaryLabel } from "../SecondaryLabel";
 import { classNames } from "../../utilities/style";
 import { useClassification } from "../../contexts/ClassificationContext";
 import { TextNavigationStep } from "./TextNavigationStep";
@@ -14,6 +12,7 @@ import { ClassifyPage, ClassifyTab } from "../../enums/classify";
 import { ClassifyTabs } from "../../constants/classify";
 import { useRef, useEffect } from "react";
 import { TertiaryLabel } from "../TertiaryLabel";
+import { PrimaryLabel } from "../PrimaryLabel";
 
 export interface ClassificationNavigationProps {
   setPage: (page: ClassifyPage) => void;
@@ -75,58 +74,61 @@ export const ClassificationNavigation = ({
 
   return (
     <div className="h-full flex flex-col">
-      <div className="z-10 flex justify-between items-center px-4 py-2 border-b border-base-content/20">
-        <div className="flex items-center gap-2">
-          <button
-            className="btn btn-sm gap-0 transition-all duration-100 ease-in-out"
-            onClick={() => {
-              setActiveTab(ClassifyTab.CLASSIFY);
-              setPage(ClassifyPage.CLASSIFICATIONS);
-              setClassification(undefined);
-            }}
-          >
-            <ArrowLeftIcon className="w-4 h-4" />
-            &nbsp;All Classifications
-          </button>
-        </div>
+      {/* Header */}
+      <div className="flex flex-col px-4 py-2 border-b border-base-content/20 gap-2">
+        <div className="z-10 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <button
+              className="btn btn-sm btn-link gap-0 no-underline hover:no-underline px-0 hover:text-secondary hover:scale-[1.02] transition-all duration-100 ease-in-out"
+              onClick={() => {
+                setActiveTab(ClassifyTab.CLASSIFY);
+                setPage(ClassifyPage.CLASSIFICATIONS);
+                setClassification(undefined);
+              }}
+            >
+              <ArrowLeftIcon className="w-4 h-4" />
+              &nbsp;All Classifications
+            </button>
+          </div>
 
-        <div className="flex items-center justify-center gap-4">
-          <div
-            role="tablist"
-            className="tabs tabs-boxed tabs-sm p-1.5 gap-1 rounded-xl"
-          >
-            {ClassifyTabs.map((tab) => (
-              <button
-                key={tab.value}
-                role="tab"
-                disabled={fetchingOptionsOrSuggestions}
-                onClick={() => setActiveTab(tab.value as ClassifyTab)}
-                className={classNames(
-                  "tab px-1 hover:text-primary hover:scale-105 transition-all duration-100 ease-in-out",
-                  tab.value === activeTab && "tab-active",
-                  fetchingOptionsOrSuggestions && "tab-disabled"
-                )}
-              >
-                {tab.icon}
-              </button>
-            ))}
+          <div className="flex items-center justify-center gap-4">
+            <div
+              role="tablist"
+              className="tabs tabs-boxed tabs-sm p-1.5 gap-1 rounded-xl"
+            >
+              {ClassifyTabs.map((tab) => (
+                <button
+                  key={tab.value}
+                  role="tab"
+                  disabled={fetchingOptionsOrSuggestions}
+                  onClick={() => setActiveTab(tab.value as ClassifyTab)}
+                  className={classNames(
+                    "tab px-1 hover:text-primary hover:scale-105 transition-all duration-100 ease-in-out",
+                    tab.value === activeTab && "tab-active",
+                    fetchingOptionsOrSuggestions && "tab-disabled"
+                  )}
+                >
+                  {tab.icon}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
+        <h2 className="text-2xl text-neutral-50 font-bold">
+          Classification Summary
+        </h2>
       </div>
 
       <div
         ref={containerRef}
         className="h-full flex flex-col gap-6 p-4 overflow-y-scroll"
       >
-        <h2 className="text-2xl text-neutral-50 font-bold">
-          Classification Summary
-        </h2>
         {/* <TertiaryText
           color={Color.NEUTRAL_CONTENT}
         /> */}
 
         <div className="flex flex-col gap-3">
-          <SecondaryLabel value="Item" color={Color.WHITE} />
+          <PrimaryLabel value="Item" color={Color.WHITE} />
           <div ref={descriptionRef}>
             <TextNavigationStep
               large
@@ -166,9 +168,9 @@ export const ClassificationNavigation = ({
           /> */}
         </div>
 
-        <div className="flex flex-col">
-          <SecondaryLabel value="Your Selections" color={Color.WHITE} />
-          <div className="flex flex-col gap-3 pt-3">
+        <div className="flex flex-col gap-3">
+          <PrimaryLabel value="Selections" color={Color.WHITE} />
+          <div className="flex flex-col gap-3">
             {levels.map((level, index) => (
               <div
                 key={index}
@@ -199,12 +201,12 @@ export const ClassificationNavigation = ({
 
         {classification.isComplete && (
           <div ref={resultRef} className="flex flex-col gap-3">
-            <SecondaryLabel value="Result" color={Color.WHITE} />
+            <PrimaryLabel value="Result" color={Color.WHITE} />
             <div
               className={classNames(
-                "flex flex-col gap-2 p-4 rounded-md border-2 border-neutral hover:cursor-pointer hover:bg-primary/50",
+                "flex flex-col gap-2 p-4 rounded-md border-2 border-neutral-content/40 hover:scale-[1.02] transition-all duration-200 ease-in-out hover:cursor-pointer hover:bg-base-300",
                 workflowStep === WorkflowStep.RESULT &&
-                  "bg-primary/50 border-primary"
+                  "bg-primary/80 border border-primary scale-[1.02] hover:bg-primary/80"
               )}
               onClick={() => {
                 if (activeTab !== ClassifyTab.CLASSIFY) {
@@ -213,8 +215,22 @@ export const ClassificationNavigation = ({
                 setWorkflowStep(WorkflowStep.RESULT);
               }}
             >
-              <TertiaryLabel value="HTS Code" color={Color.WHITE} />
-              <h2 className="text-2xl md:text-3xl text-white font-extrabold">
+              <TertiaryLabel
+                value="HTS Code"
+                color={
+                  workflowStep === WorkflowStep.RESULT
+                    ? Color.BLACK
+                    : Color.WHITE
+                }
+              />
+              <h2
+                className={classNames(
+                  "text-2xl md:text-3xl font-extrabold",
+                  workflowStep === WorkflowStep.RESULT
+                    ? "text-black"
+                    : "text-white"
+                )}
+              >
                 {classification.levels[levels.length - 1].selection?.htsno}
               </h2>
             </div>

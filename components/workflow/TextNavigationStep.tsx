@@ -1,8 +1,8 @@
 import { Color } from "../../enums/style";
 import { classNames } from "../../utilities/style";
-import { PrimaryText } from "../PrimaryText";
-import { SecondaryText } from "../SecondaryText";
-import { TertiaryLabel } from "../TertiaryLabel";
+import { PrimaryLabel } from "../PrimaryLabel";
+import { SecondaryLabel } from "../SecondaryLabel";
+import { TertiaryText } from "../TertiaryText";
 
 interface Button {
   label: string;
@@ -30,10 +30,10 @@ export const TextNavigationStep = ({
   return (
     <div
       className={classNames(
-        "flex flex-col rounded-md gap-2 p-3 border-2 border-neutral-content/40 hover:cursor-pointer",
-        active && "bg-primary/80 transition-all duration-300 ease-in-out",
+        "flex flex-col rounded-md gap-2 p-3 border-2 border-neutral-content/40 hover:scale-[1.02] transition-all duration-200 ease-in-out hover:cursor-pointer",
+        active && "bg-primary/80 border border-primary scale-[1.02]",
         !text && "py-4",
-        !active && "hover:bg-primary/40"
+        !active && "hover:bg-base-300"
       )}
       onClick={() => {
         button.onClick();
@@ -42,9 +42,9 @@ export const TextNavigationStep = ({
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-1">
           {icon && icon}
-          <TertiaryLabel
+          <TertiaryText
             value={title}
-            color={active ? Color.WHITE : Color.NEUTRAL_CONTENT}
+            color={active ? Color.BLACK : Color.NEUTRAL_CONTENT}
           />
         </div>
         {/* {!active && button && showButton && (
@@ -58,9 +58,15 @@ export const TextNavigationStep = ({
       </div>
       {text ? (
         large ? (
-          <PrimaryText value={text} color={Color.WHITE} />
+          <PrimaryLabel
+            value={text}
+            color={active ? Color.BLACK : Color.WHITE}
+          />
         ) : (
-          <SecondaryText value={text} color={Color.WHITE} />
+          <SecondaryLabel
+            value={text}
+            color={active ? Color.BLACK : Color.WHITE}
+          />
         )
       ) : null}
     </div>
