@@ -22,9 +22,9 @@ export const SidebarElementSummary = ({
   return (
     <div
       className={classNames(
-        "w-full flex justify-between items-center rounded-md bg-base-100 border-2 border-neutral-content/40 px-4 py-2",
-        isActive && "bg-primary/80",
-        !isActive && "hover:cursor-pointer hover:bg-primary/40"
+        "w-full flex justify-between items-center rounded-md bg-base-100 border-2 border-neutral-content/40 px-4 py-2 hover:bg-base-300 hover:scale-[1.02] transition-all duration-200 ease-in-out hover:cursor-pointer",
+        isActive &&
+          "bg-primary/80 border border-primary scale-[1.02] hover:bg-primary/80"
       )}
       onClick={onClick}
     >
@@ -34,13 +34,16 @@ export const SidebarElementSummary = ({
             <div className="min-w-20 md:min-w-32">
               <TertiaryText
                 value={htsno}
-                color={isActive ? Color.WHITE : Color.NEUTRAL_CONTENT}
+                color={isActive ? Color.BLACK : Color.NEUTRAL_CONTENT}
               />
             </div>
           )}
 
           <div className="w-full flex items-center justify-between gap-2">
-            <SecondaryLabel value={description} color={Color.WHITE} />
+            <SecondaryLabel
+              value={description}
+              color={isActive ? Color.BLACK : Color.WHITE}
+            />
           </div>
         </div>
       </div>

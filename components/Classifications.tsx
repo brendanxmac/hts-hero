@@ -107,19 +107,21 @@ export const Classifications = ({ page, setPage }: Props) => {
             </button>
           )}
         </div>
+        {classifications && classifications.length > 0 && (
+          <div className="flex flex-col gap-2 pb-6">
+            {classifications.map((classification, index) => (
+              <ClassificationSummary
+                key={`classification-${index}`}
+                classificationRecord={classification}
+                setPage={setPage}
+              />
+            ))}
+          </div>
+        )}
         {!loader.isLoading &&
           !classificationsLoading &&
-          (classifications && classifications.length > 0 ? (
-            <div className="flex flex-col gap-2 pb-6">
-              {classifications.map((classification, index) => (
-                <ClassificationSummary
-                  key={`classification-${index}`}
-                  classificationRecord={classification}
-                  setPage={setPage}
-                />
-              ))}
-            </div>
-          ) : (
+          classifications &&
+          classifications.length === 0 && (
             <div className="flex-1 flex flex-col items-center justify-center gap-3">
               <div className="w-24 h-24 text-neutral-content">
                 <svg
@@ -155,7 +157,7 @@ export const Classifications = ({ page, setPage }: Props) => {
                 </button>
               </div>
             </div>
-          ))}
+          )}
       </div>
     </div>
   );
