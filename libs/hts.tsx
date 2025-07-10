@@ -719,7 +719,7 @@ export const getTemporaryTariffText = (
     <div className="flex flex-col gap-1">
       <TertiaryLabel
         value={"Temporary or Special Adjustments"}
-        color={Color.PRIMARY}
+        color={Color.NEUTRAL_CONTENT}
       />
       <SecondaryText
         key={`${tariffType}-tariff-footnotes`}
