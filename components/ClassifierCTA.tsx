@@ -4,7 +4,7 @@ import Link from "next/link";
 const ClassifierCTA = () => {
   return (
     <section className="hero overflow-hidden min-h-[75vh]">
-      <div className="relative hero-overlay bg-base-100"></div>
+      <div className="relative hero-overlay bg-base-300"></div>
       <div className="relative hero-content text-center text-neutral-content p-8">
         <div className="flex flex-col items-center max-w-4xl">
           <h2 className="text-white font-bold text-4xl md:text-6xl tracking-tight mb-8 md:mb-12">

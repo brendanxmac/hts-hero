@@ -2,13 +2,13 @@ import { FeatureI } from "../interfaces/ui";
 
 export const classifyFeatures: FeatureI[] = [
   {
-    title: "Discovers Headings",
+    title: "Finds Headings",
     description:
-      "Automtically finds the most likely headings for the item you're classifying",
-    mediaType: "image",
-    altText: "Finds the Best Candidates Image",
-    mediaPath: "/finds-the-best-candidates.png",
-    mediaFormat: "image/png",
+      "Automtically gets the most likely headings for the item you're classifying",
+    mediaType: "video",
+    altText: "Finds the Best Candidates Video",
+    mediaPath: "/finds-candidates.mp4",
+    mediaFormat: "video/mp4",
     titleSvg: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -29,10 +29,11 @@ export const classifyFeatures: FeatureI[] = [
   {
     title: "Suggests the Best Candidate",
     description:
-      "Analyzes candidates and suggests the best fit option at each level, using the GRI",
-    mediaType: "image",
-    altText: "Suggests the Best Option Image",
-    mediaPath: "/suggests-the-best-option.png",
+      "Analyzes and suggests a candidate at each level using the GRI",
+    mediaType: "video",
+    altText: "Suggests the Best Option Video",
+    mediaPath: "/suggests-the-best.mp4",
+    mediaFormat: "video/mp4",
     titleSvg: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -55,8 +56,8 @@ export const classifyFeatures: FeatureI[] = [
     description:
       "Finds relevant HTS Notes and CROSS rulings for the item you're classifying",
     mediaType: "video",
-    altText: "Results in Seconds Video",
-    mediaPath: "/demo.mp4",
+    altText: "Fetches Notes & Rulings Video",
+    mediaPath: "/fetches-notes-and-rulings.mp4",
     mediaFormat: "video/mp4",
     titleSvg: (
       <svg
@@ -79,9 +80,10 @@ export const classifyFeatures: FeatureI[] = [
     title: "Generates Classification Reports",
     description:
       "Get client-ready reports that include your logo, disclaimers, and any notes you've added",
-    mediaType: "image",
-    altText: "Classification Report Image",
-    mediaPath: "/classification-report.png",
+    mediaType: "video",
+    altText: "Generates Classification Reports Video",
+    mediaPath: "/generates-classification-reports.mp4",
+    mediaFormat: "video/mp4",
     titleSvg: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -103,9 +105,10 @@ export const classifyFeatures: FeatureI[] = [
     title: "Saves All Classifications",
     description:
       "Quickly find, edit, and share classifications with your team or clients",
-    mediaType: "image",
-    altText: "Classification Report Image",
-    mediaPath: "/classification-report.png",
+    mediaType: "video",
+    altText: "Saves All Classifications Video",
+    mediaPath: "/saves-all-classifications.mp4",
+    mediaFormat: "video/mp4",
     titleSvg: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -127,9 +130,10 @@ export const classifyFeatures: FeatureI[] = [
     title: "Simplifies Search",
     description:
       "Free HTS Explorer built for brokers that makes it easy to find and compare codes",
-    mediaType: "image",
-    altText: "Classification Report Image",
-    mediaPath: "/classification-report.png",
+    mediaType: "video",
+    altText: "Simplifies Search Video",
+    mediaPath: "/simplifies-search.mp4",
+    mediaFormat: "video/mp4",
     titleSvg: (
       <svg
         xmlns="http://www.w3.org/2000/svg"

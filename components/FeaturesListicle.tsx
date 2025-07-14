@@ -137,9 +137,9 @@ const FeaturesListicle = () => {
   const [hasClicked, setHasClicked] = useState<boolean>(false);
 
   return (
-    <section className="py-24" id="features">
+    <section className="py-24 bg-base-100" id="features">
       <div className="max-w-5xl mx-auto">
-        <div className="bg-base-100 max-md:px-8 max-w-5xl mb-8 md:px-12">
+        <div className="max-md:px-8 max-w-5xl mb-8 md:px-12">
           <h2 className="text-white font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-tight mb-5">
             {/* 💡 COPY TIP: Remind visitors about the value of your product. Why do they need it? */}
             Your Classification Sidekick

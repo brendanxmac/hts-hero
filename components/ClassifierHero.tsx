@@ -31,7 +31,7 @@ const ClassifierHero = () => {
 
         {/* <TestimonialsAvatars priority={true} /> */}
       </div>
-      <div className="lg:w-full flex justify-center rounded-2xl overflow-hidden">
+      <div className="flex justify-center rounded-2xl overflow-hidden">
         <Image
           className="rounded-3xl border-2 border-neutral-content/20"
           src="/classifications.png"

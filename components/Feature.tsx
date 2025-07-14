@@ -12,10 +12,11 @@ export const Feature = ({ feature }: Props) => {
         <h2 className="text-white text-3xl md:text-5xl font-bold text-center">
           {feature.title}
         </h2>
-        <p className="text-sm md:text-lg text-white text-center max-w-4xl">
+        <p className="text-sm md:text-xl text-white font-light text-center max-w-4xl">
           {feature.description}
         </p>
       </div>
+
       <Media feature={feature} />
     </div>
   );

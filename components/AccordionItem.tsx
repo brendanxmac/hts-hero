@@ -1,7 +1,8 @@
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/16/solid";
 import { useRef } from "react";
-import { FeatureI } from "./FeaturesAccordion";
 import { Media } from "./Media";
+import { classNames } from "../utilities/style";
+import { FeatureI } from "../interfaces/ui";
 
 interface Props {
   index: number;
@@ -23,8 +24,8 @@ export const AccordionItem = ({
   const { title, description, titleSvg: svg } = feature;
 
   return (
-    <li className="flex flex-col">
-      <div className="flex justify-between items-center">
+    <li className="w-full flex flex-col">
+      <div className="w-full flex justify-between items-center">
         <button
           className="relative flex gap-2 items-center w-full py-5 text-base font-bold text-left md:text-lg"
           onClick={(e) => {
@@ -70,15 +71,15 @@ export const AccordionItem = ({
 
       <div
         ref={accordion}
-        className={`transition-all duration-100 ease-in-out text-base-content-secondary overflow-hidden flex flex-col gap-4`}
-        style={
-          isOpen
-            ? { maxHeight: accordion?.current?.scrollHeight, opacity: 1 }
-            : { maxHeight: 0, opacity: 0 }
-        }
+        className={`w-full h-full transition-all duration-100 ease-in-out text-base-content-secondary overflow-hidden flex flex-col gap-4`}
       >
         <div className="">{description}</div>
-        <div className="w-full h-full flex justify-center self-center lg:hidden">
+        <div
+          className={classNames(
+            "w-full h-full flex justify-center self-center object-cover",
+            isOpen ? "block" : "hidden"
+          )}
+        >
           <Media feature={features[index]} key={index} />
         </div>
       </div>

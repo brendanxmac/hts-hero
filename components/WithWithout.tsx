@@ -38,7 +38,7 @@ const painPoints: PainPoint[] = [
 
 const WithWithout = () => {
   return (
-    <section className="bg-neutral-900">
+    <section className="bg-base-300">
       <div className="max-w-5xl mx-auto px-8 py-16 md:py-32 ">
         <h2 className="text-white text-center font-extrabold text-4xl md:text-5xl tracking-tight mb-8 md:mb-12">
           Classification is <span className="text-red-500">time consuming</span>

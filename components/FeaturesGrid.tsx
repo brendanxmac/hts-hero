@@ -3,9 +3,9 @@ import React from "react";
 
 const features = [
   {
-    title: "Collect user feedback",
+    title: "Finds Headings",
     description:
-      "Use your Insighto's board to let users submit features they want.",
+      "Automtically gets the most likely headings for the item you're classifying.",
     styles: "bg-primary text-primary-content",
     demo: (
       <div className="overflow-hidden h-full flex items-stretch">
@@ -34,8 +34,9 @@ const features = [
     ),
   },
   {
-    title: "Prioritize features",
-    description: "Users upvote features they want. You know what to ship next.",
+    title: "Analyzes Candidates",
+    description:
+      "Applies the GRI to candidates at each level and provides a summary of findings",
     styles: "md:col-span-2 bg-base-300 text-base-content",
     demo: (
       <div className="px-6 max-w-[600px] flex flex-col gap-4 overflow-hidden">
@@ -92,7 +93,7 @@ const features = [
     ),
   },
   {
-    title: "Your brand, your board",
+    title: "Fetches Notes & Rulings",
     description: "Customize your Insighto board with 7 themes.",
     styles: "md:col-span-2 bg-base-100 text-base-content",
     demo: (
@@ -183,7 +184,7 @@ const features = [
     ),
   },
   {
-    title: "Discover new ideas",
+    title: "Generates Reports",
     description: "Users can chat and discuss features.",
     styles: "bg-neutral text-neutral-content",
     demo: (
@@ -239,13 +240,13 @@ const features = [
 ];
 const FeaturesGrid = () => {
   return (
-    <section className="flex justify-center items-center w-full bg-base-200/50 text-base-content py-20 lg:py-32">
+    <section className="flex justify-center items-center w-full bg-base-200 text-base-content py-20 lg:py-32">
       <div className="flex flex-col max-w-[82rem] gap-16 md:gap-20 px-4">
-        <h2 className="max-w-3xl font-black text-4xl md:text-6xl tracking-[-0.01em]">
-          Ship features <br /> users{" "}
-          <span className="underline decoration-dashed underline-offset-8 decoration-base-300">
-            really want
-          </span>
+        <h2 className="font-black text-4xl md:text-5xl">
+          <span className="underline decoration-dashed underline-offset-8 decoration-primary">
+            Supercharge
+          </span>{" "}
+          Your Classifications
         </h2>
         <div className="flex flex-col w-full h-fit gap-4 lg:gap-10 text-text-default max-w-[82rem]">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-10">

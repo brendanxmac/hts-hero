@@ -97,7 +97,7 @@ const getPricingHeadline = (customerType: AboutPage) => {
   if (customerType === AboutPage.IMPORTER) {
     return (
       <div className="flex flex-col gap-8">
-        <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-5xl max-w-4xl mx-auto tracking-relaxed">
+        <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-6xl max-w-4xl mx-auto tracking-relaxed">
           Fast & Affordable HTS <br />
           Codes for Busy Importers
         </h2>
@@ -131,7 +131,7 @@ const getPricingHeadline = (customerType: AboutPage) => {
   }
   return (
     <div className="flex flex-col gap-8">
-      <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-5xl max-w-3xl mx-auto tracking-relaxed">
+      <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-6xl max-w-4xl mx-auto tracking-relaxed">
         Save hours on classification, for less than your daily coffee
       </h2>
       <div className="flex flex-col justify-center items-center">
@@ -165,7 +165,7 @@ const getPricingHeadline = (customerType: AboutPage) => {
 
 const Pricing = ({ customerType }: PricingProps) => {
   return (
-    <section className="bg-neutral-900 overflow-hidden" id="pricing">
+    <section className="bg-base-300 overflow-hidden" id="pricing">
       <div className="py-16 px-8 max-w-7xl mx-auto">
         <div className="flex flex-col text-center w-full mb-12">
           <p className="font-medium text-primary mb-8">Pricing</p>
@@ -199,7 +199,7 @@ const Pricing = ({ customerType }: PricingProps) => {
               )}
 
               <div
-                className={`relative flex flex-col h-full gap-4 lg:gap-8 z-10 bg-base-100 p-8 rounded-lg ${
+                className={`relative flex flex-col h-full gap-4 lg:gap-8 z-10 bg-base-300 p-8 rounded-lg ${
                   plan.isCompetitor && "bg-red-500/20"
                 }`}
               >
