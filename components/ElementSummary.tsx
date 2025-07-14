@@ -83,7 +83,7 @@ export const ElementSummary = ({ element, onClick }: Props) => {
               )}
             </div>
 
-            <div className="h-full w-[1px] bg-base-300 dark:bg-base-content/10" />
+            <div className="h-full w-[1px] bg-base-content/10" />
           </div>
         )}
 
@@ -108,9 +108,7 @@ export const ElementSummary = ({ element, onClick }: Props) => {
                   <SparklesIcon className="h-4 w-4" />
                   <TertiaryText value="HTS Hero Analysis" />
                 </div>
-                <p className="text-sm dark:text-white/90">
-                  {recommendedReason}
-                </p>
+                <p className="text-sm text-white/90">{recommendedReason}</p>
               </div>
             )}
           </div>
