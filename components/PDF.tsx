@@ -93,7 +93,7 @@ export default function PDF({ file, isOpen, setIsOpen, title }: Props) {
             <div className="bg-base-100 z-10 sticky top-0 p-2 sm:px-5 sm:py-4 sm:bg-base-300 border-b border-base-300 w-full">
               <div className="flex justify-between items-center max-w-full ">
                 <div className="shrink-0 hidden sm:flex items-center gap-4">
-                  <Dialog.Title className="font-semibold text-base-content dark:text-gray-100">
+                  <Dialog.Title className="font-semibold text-gray-100">
                     {title}
                   </Dialog.Title>
 

@@ -96,7 +96,7 @@ export const ElementSearchSummary = ({
               )}
             </div>
 
-            <div className="h-full w-[1px] bg-base-300 dark:bg-base-content/10" />
+            <div className="h-full w-[1px] bg-base-content/10" />
           </div>
         )}
 
