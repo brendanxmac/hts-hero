@@ -1,21 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import type { JSX } from "react";
 import Link from "next/link";
 import { Media } from "./Media";
 import { classifyFeatures } from "../constants/features";
 import { AccordionItem } from "./AccordionItem";
-
-export interface Feature {
-  title: string; // The title of the feature
-  description: JSX.Element | string; // The description of the feature (when clicked)
-  mediaType?: "video" | "image"; // The type of media (video or image)
-  mediaPath?: string; // The path to the media (for better SEO, try to use a local path)
-  mediaFormat?: string; // The format of the media (if type is 'video')
-  altText?: string; // The alt text of the image (if type is 'image')
-  titleSvg?: JSX.Element;
-}
 
 // A component to display 2 to 5 features in an accordion.
 // By default, the first feature is selected. When a feature is clicked, the others are closed.

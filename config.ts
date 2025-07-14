@@ -6,8 +6,8 @@ const proPlan: PricingPlanI = {
   name: PricingPlan.PRO,
   description: "The Classification Assistant for Customs Brokers",
   mode: StripePaymentMode.SUBSCRIPTION,
-  price: 20,
-  priceAnchor: 40,
+  price: 40,
+  priceAnchor: 80,
   isFeatured: true,
   features: [
     { name: "Heading Discovery" },

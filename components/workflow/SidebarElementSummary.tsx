@@ -28,32 +28,23 @@ export const SidebarElementSummary = ({
       )}
       onClick={onClick}
     >
-      <div className="flex flex-col gap-2 w-full">
-        <div className="w-full flex flex-col items-start justify-between gap-1">
-          {htsno && (
-            <div className="min-w-20 md:min-w-32">
-              <TertiaryText
-                value={htsno}
-                color={isActive ? Color.BLACK : Color.NEUTRAL_CONTENT}
-              />
-            </div>
-          )}
-
-          <div className="w-full flex items-center justify-between gap-2">
-            <SecondaryLabel
-              value={description}
-              color={isActive ? Color.BLACK : Color.WHITE}
+      <div className="w-full flex flex-col items-start justify-between gap-1">
+        {htsno && (
+          <div className="min-w-20 md:min-w-32">
+            <TertiaryText
+              value={htsno}
+              color={isActive ? Color.BLACK : Color.NEUTRAL_CONTENT}
             />
           </div>
+        )}
+
+        <div className="w-full flex items-center justify-between gap-2">
+          <SecondaryLabel
+            value={description}
+            color={isActive ? Color.BLACK : Color.WHITE}
+          />
         </div>
       </div>
-
-      <ChevronRightIcon
-        className={classNames(
-          "shrink-0 w-5 h-5 text-primary",
-          isActive && "text-white"
-        )}
-      />
     </div>
   );
 };

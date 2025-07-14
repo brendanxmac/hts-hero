@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 
 const ClassifierHero = () => {
   return (
@@ -28,17 +29,24 @@ const ClassifierHero = () => {
           Try it Free!
         </Link>
 
-        {/* {/* <TestimonialsAvatars priority={true} /> */}
+        {/* <TestimonialsAvatars priority={true} /> */}
       </div>
-      <div className="lg:w-full flex justify-center">
-        <video
+      <div className="lg:w-full flex justify-center rounded-2xl overflow-hidden">
+        <Image
+          className="rounded-3xl border-2 border-neutral-content/20"
+          src="/classifications.png"
+          alt="Classifications"
+          width={1000}
+          height={1000}
+        />
+        {/* <video
           className="rounded-2xl w-full border-2 border-neutral-content/20"
           autoPlay
           muted
           loop
           playsInline
           src="/broker-demo.mp4"
-        ></video>
+        ></video> */}
       </div>
     </section>
   );

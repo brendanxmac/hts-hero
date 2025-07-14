@@ -22,7 +22,11 @@ const getLastDecision = (decisions: ClassificationProgression[]) => {
 const getFinalClassificationElement = (
   decisions: ClassificationProgression[]
 ) => {
-  return getLastDecision(decisions).selection;
+  const lastDecision = getLastDecision(decisions);
+  if (!lastDecision) {
+    return null;
+  }
+  return lastDecision.selection;
 };
 
 export const ClassificationSummary = ({
@@ -42,11 +46,13 @@ export const ClassificationSummary = ({
       }}
     >
       <div className="flex justify-between">
-        {getFinalClassificationElement(classification.levels) && (
+        {getFinalClassificationElement(classification.levels) ? (
           <SecondaryLabel
             value={getFinalClassificationElement(classification.levels).htsno}
-            color={Color.NEUTRAL_CONTENT}
+            color={Color.PRIMARY}
           />
+        ) : (
+          <SecondaryLabel value="In Progress" color={Color.SECONDARY} />
         )}
         <div className="flex items-center gap-2">
           <TertiaryText

@@ -1,6 +1,6 @@
 import config from "@/config";
 import { classNames } from "../utilities/style";
-import { FeatureI, PricingPlan } from "../types";
+import { PricingFeatureI, PricingPlan } from "../types";
 import ButtonCheckout from "./ButtonCheckout";
 import { AboutPage } from "../enums/classify";
 import { StripePaymentMode } from "../libs/stripe";
@@ -16,7 +16,7 @@ interface PricingProps {
   // setShowItsFree?: (show: boolean) => void;
 }
 
-export const getFeatureSupportingLabel = (feature: FeatureI) => {
+export const getFeatureSupportingLabel = (feature: PricingFeatureI) => {
   if (feature.comingSoon) {
     return "Coming Soon";
   }
@@ -27,7 +27,7 @@ export const getFeatureSupportingLabel = (feature: FeatureI) => {
   return "";
 };
 
-export const getFeatureIcon = (feature: FeatureI) => {
+export const getFeatureIcon = (feature: PricingFeatureI) => {
   if (feature.comingSoon) {
     return (
       <svg
@@ -132,8 +132,7 @@ const getPricingHeadline = (customerType: AboutPage) => {
   return (
     <div className="flex flex-col gap-8">
       <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-5xl max-w-3xl mx-auto tracking-relaxed">
-        Save hours on classification,
-        <br /> for less than $1 per day
+        Save hours on classification, for less than your daily coffee
       </h2>
       <div className="flex flex-col justify-center items-center">
         <p className="text-xl font-bold text-primary">

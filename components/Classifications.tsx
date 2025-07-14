@@ -89,7 +89,7 @@ export const Classifications = ({ page, setPage }: Props) => {
           {getUserNameMessage()}
         </h1>
         <SecondaryText
-          value="This dashboard lets you easily review your classifications or start a new one now."
+          value="Review your classifications or start a new one now."
           color={Color.NEUTRAL_CONTENT}
         />
       </div>
@@ -103,7 +103,7 @@ export const Classifications = ({ page, setPage }: Props) => {
               className="btn btn-primary btn-sm"
               onClick={() => setPage(ClassifyPage.CLASSIFY)}
             >
-              New Classification
+              Start New Classification
             </button>
           )}
         </div>

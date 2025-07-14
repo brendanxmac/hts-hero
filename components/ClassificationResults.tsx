@@ -154,8 +154,8 @@ export const ClassificationResults = ({
     const candidates: CandidateSelection[] =
       bestSectionCandidates.bestCandidates.map((sectionCandidate) => ({
         index: sections[sectionCandidate.index].number,
-        description: sections[sectionCandidate.index].description,
-        logic: sectionCandidate.logic,
+        // description: sections[sectionCandidate.index].description,
+        // logic: sectionCandidate.logic,
       }));
 
     // console.log(
@@ -204,8 +204,8 @@ export const ClassificationResults = ({
         const candidates: CandidateSelection[] =
           bestChapterCandidates.bestCandidates.map((chapterCandidate) => ({
             index: section.chapters[chapterCandidate.index].number,
-            description: section.chapters[chapterCandidate.index].description,
-            logic: chapterCandidate.logic,
+            // description: section.chapters[chapterCandidate.index].description,
+            // logic: chapterCandidate.logic,
           }));
 
         candidatesForChapter.push(...candidates);

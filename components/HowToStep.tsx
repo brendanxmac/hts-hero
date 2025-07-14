@@ -1,10 +1,10 @@
 import { Color } from "../enums/style";
-import { Feature } from "./FeaturesAccordion";
+import { FeatureI } from "./FeaturesAccordion";
 import { Media } from "./Media";
 import { PrimaryLabel } from "./PrimaryLabel";
 
 interface Props {
-  step: Feature;
+  step: FeatureI;
 }
 
 export const HowToStep = ({ step }: Props) => {

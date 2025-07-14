@@ -2,14 +2,14 @@
 
 import { createContext, useContext, ReactNode, useState } from "react";
 import { Guide, GuideName } from "@/types/guides";
-import { Feature } from "@/components/FeaturesAccordion";
+import { FeatureI } from "@/components/FeaturesAccordion";
 
 interface GuideContextType {
   showGuide: (guideName: GuideName) => void;
   hideGuide: () => void;
   isGuideVisible: boolean;
   currentGuide: GuideName | null;
-  guideSteps: Feature[];
+  guideSteps: FeatureI[];
   guides: Guide[];
 }
 

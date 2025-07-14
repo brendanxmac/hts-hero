@@ -28,8 +28,6 @@ export async function POST(req: NextRequest) {
 
     const { id, classification }: UpdateClassificationDto = await req.json();
 
-    console.log(classification);
-
     if (!classification) {
       return NextResponse.json(
         {
@@ -47,8 +45,6 @@ export async function POST(req: NextRequest) {
       .eq("id", id)
       .select()
       .single<ClassificationRecord>();
-
-    console.log(classificationRecord);
 
     if (error) {
       console.error("Error creating classification:", error);

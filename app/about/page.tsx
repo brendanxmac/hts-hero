@@ -49,10 +49,11 @@ import ClassifierCTA from "../../components/ClassifierCTA";
 import ClassifierFooter from "../../components/ClassifierFooter";
 import Pricing from "../../components/Pricing";
 import WithWithout from "../../components/WithWithout";
-import FeaturesListicle from "../../components/FeaturesListicle";
 import { FAQ } from "../../components/FAQ";
 import { classifierFaqList } from "../../constants/faq";
 import { AboutPage } from "../../enums/classify";
+import { classifyFeatures } from "../../constants/features";
+import { Feature } from "../../components/Feature";
 
 export default function Home() {
   return (
@@ -63,7 +64,11 @@ export default function Home() {
       <main>
         <ClassifierHero />
         <WithWithout />
-        <FeaturesListicle />
+        <div className="py-32 bg-base-100 flex flex-col gap-16 md:gap-32">
+          {classifyFeatures.map((feature) => (
+            <Feature key={feature.title} feature={feature} />
+          ))}
+        </div>
         <Pricing customerType={AboutPage.CLASSIFIER} />
         <ClassifierCTA />
         <FAQ faqItems={classifierFaqList} />

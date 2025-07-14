@@ -204,7 +204,7 @@ export const ClassificationNavigation = ({
             <PrimaryLabel value="Result" color={Color.WHITE} />
             <div
               className={classNames(
-                "flex flex-col gap-2 p-4 rounded-md border-2 border-neutral-content/40 hover:scale-[1.02] transition-all duration-200 ease-in-out hover:cursor-pointer hover:bg-base-300",
+                "flex flex-col gap-1 p-4 rounded-md border-2 border-neutral-content/40 hover:scale-[1.02] transition-all duration-200 ease-in-out hover:cursor-pointer hover:bg-base-300",
                 workflowStep === WorkflowStep.RESULT &&
                   "bg-primary/80 border border-primary scale-[1.02] hover:bg-primary/80"
               )}

@@ -73,10 +73,10 @@ export const ClassificationResultPage = () => {
   return (
     <div className="h-full w-full max-w-4xl mx-auto flex flex-col">
       <div className="px-8 py-6 flex-1 flex flex-col gap-8 overflow-y-auto">
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl md:text-3xl font-bold text-white">
-              Your Classification Result
+              Result
             </h2>
             <div className="flex gap-2">
               <button
@@ -114,7 +114,7 @@ export const ClassificationResultPage = () => {
             </div>
           </div>
           <div className="flex flex-col">
-            <TertiaryText value="Below are the results of your classification for the item. Download the full report of your classification for your records as the results will not be saved after you close this page." />
+            <TertiaryText value="Below are the US HTS details for the code you found during your classification." />
           </div>
         </div>
 
@@ -160,7 +160,7 @@ export const ClassificationResultPage = () => {
           </div>
         </div> */}
 
-        <div className=" flex flex-col gap-6">
+        <div className=" flex flex-col gap-2">
           <div className="flex justify-between items-center">
             <PrimaryLabel value="HTS Code" color={Color.WHITE} />
             <div className="flex gap-2">

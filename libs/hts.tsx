@@ -18,6 +18,7 @@ import {
   Navigatable,
   Classification,
   SectionAndChapterDetails,
+  SelectionWithReason,
 } from "../interfaces/hts";
 import {
   elementsAtClassificationLevel,
@@ -430,6 +431,8 @@ export const getBestDescriptionCandidates = async (
     });
 
   const bestCandidates = bestCandidatesResponse[0].message.content;
+  console.log("Best Candidates:");
+  console.log(bestCandidates);
 
   if (bestCandidates === null) {
     throw new Error(`Failed to get best description matches`);
@@ -472,7 +475,7 @@ export const getBestIndentLevelMatch = async (
     throw new Error(`Best match is null for descriptions`);
   }
 
-  const bestMatchJson: CandidateSelection = JSON.parse(bestMatch); // TODO: handle errors
+  const bestMatchJson: SelectionWithReason = JSON.parse(bestMatch); // TODO: handle errors
   const bestMatchElement = elementsAtIndent[Number(bestMatchJson.index)];
 
   // FIXME: MAKE SURE WE'RE CONSTRUCTING THE RIGHT HTS STRING (PIVOTAL)

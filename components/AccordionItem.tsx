@@ -1,12 +1,12 @@
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/16/solid";
 import { useRef } from "react";
-import { Feature } from "./FeaturesAccordion";
+import { FeatureI } from "./FeaturesAccordion";
 import { Media } from "./Media";
 
 interface Props {
   index: number;
-  feature: Feature;
-  features: Feature[];
+  feature: FeatureI;
+  features: FeatureI[];
   isOpen: boolean;
   setFeatureSelected: () => void;
 }

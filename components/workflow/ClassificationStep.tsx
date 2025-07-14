@@ -81,16 +81,16 @@ export const ClassificationStep = ({
       [],
       articleDescription,
       true,
-      0,
-      2,
+      1,
+      3,
       sections.map((s) => s.description)
     );
 
     const candidates: CandidateSelection[] =
-      bestSectionCandidates.bestCandidates.map((sectionCandidate) => ({
-        index: sections[sectionCandidate.index].number,
-        description: sections[sectionCandidate.index].description,
-        logic: sectionCandidate.logic,
+      bestSectionCandidates.bestCandidates.map((candidateIndex) => ({
+        index: sections[candidateIndex].number,
+        // description: sections[sectionCandidate.index].description,
+        // logic: sectionCandidate.logic,
       }));
 
     setSectionCandidates(candidates);
@@ -114,16 +114,16 @@ export const ClassificationStep = ({
           [],
           articleDescription,
           true,
-          0,
-          2,
+          1,
+          3,
           section.chapters.map((c) => c.description)
         );
 
         const candidates: CandidateSelection[] =
-          bestChapterCandidates.bestCandidates.map((chapterCandidate) => ({
-            index: section.chapters[chapterCandidate.index].number,
-            description: section.chapters[chapterCandidate.index].description,
-            logic: chapterCandidate.logic,
+          bestChapterCandidates.bestCandidates.map((candidateIndex) => ({
+            index: section.chapters[candidateIndex].number,
+            // description: section.chapters[chapterCandidate.index].description,
+            // logic: chapterCandidate.logic,
           }));
 
         candidatesForChapter.push(...candidates);
@@ -154,8 +154,8 @@ export const ClassificationStep = ({
           elementsAtLevel,
           articleDescription,
           false,
-          0,
-          2,
+          1,
+          3,
           elementsAtLevel.map((e) => e.description)
         );
 
@@ -165,13 +165,13 @@ export const ClassificationStep = ({
         }
 
         // Handle Negative Index Case (sometimes chatGPT will do this)
-        if (bestCandidateHeadings.bestCandidates[0].index < 0) {
+        if (bestCandidateHeadings.bestCandidates[0] < 0) {
           return;
         }
 
         const candidates = bestCandidateHeadings.bestCandidates
-          .map((candidate) => {
-            return elementsAtLevel[candidate.index];
+          .map((candidateIndex) => {
+            return elementsAtLevel[candidateIndex];
           })
           .map((candidate) => ({
             ...candidate,

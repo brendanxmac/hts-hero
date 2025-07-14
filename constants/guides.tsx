@@ -1,4 +1,4 @@
-import { Feature } from "../components/FeaturesAccordion";
+import { FeatureI } from "../components/FeaturesAccordion";
 import { Guide, GuideName } from "../types/guides";
 
 const stepOne = (
@@ -42,7 +42,7 @@ const stepThree = (
   </div>
 );
 
-export const classifyGuideSteps: Feature[] = [
+export const classifyGuideSteps: FeatureI[] = [
   {
     title: "Navigation",
     description: (

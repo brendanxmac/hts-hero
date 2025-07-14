@@ -11,31 +11,27 @@ interface PainPoint {
 
 const painPoints: PainPoint[] = [
   {
-    title: "finding headings",
+    title: "Finding Headings",
     time: "10 min",
   },
   {
-    title: "searching CROSS",
+    title: "Searching CROSS",
     time: "10 min",
   },
   {
-    title: "fetching notes",
+    title: "Fetching Notes",
     time: "10 min",
   },
   {
-    title: "finding references",
+    title: "Finding References",
     time: "10 min",
   },
   {
-    title: "creating reports",
+    title: "Creating Reports",
     time: "10 min",
   },
   {
-    title: "Googling / ChatGPT",
-    time: "10 min",
-  },
-  {
-    title: "ensuring compliance",
+    title: "Ensuring Compliance",
     time: "?? min",
   },
 ];
@@ -44,24 +40,23 @@ const WithWithout = () => {
   return (
     <section className="bg-neutral-900">
       <div className="max-w-5xl mx-auto px-8 py-16 md:py-32 ">
-        <h2 className="text-white text-center font-extrabold text-3xl md:text-5xl tracking-tight mb-8 md:mb-12">
-          Are you still <span className="text-primary">manually</span>{" "}
-          classifying?
+        <h2 className="text-white text-center font-extrabold text-4xl md:text-5xl tracking-tight mb-8 md:mb-12">
+          Classification is <span className="text-red-500">time consuming</span>
         </h2>
 
         <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-8 md:gap-12">
-          <div className="bg-primary/30 text-neutral-900 p-8 md:p-16 rounded-lg flex flex-col gap-4">
+          <div className="bg-red-500 text-neutral-900 p-6 md:p-16 rounded-lg flex flex-col gap-4">
             <ul className="flex flex-col gap-4 md:text-lg justify-start items-start">
               {/* Pains the user is experiencing by not using your product */}
               {painPoints.map((pain, index) => (
                 <li key={index} className="flex gap-2 font-bold">
                   <p>
-                    <span className="text-primary text-2xl">
+                    <span className="text-black md:text-xl">
                       {index === 0 ? "\u00A0\u00A0\u00A0\u00A0" : "+ "}
                       {pain.time}
                       {"\u00A0\u00A0"}
                     </span>
-                    <span className="text-2xl text-neutral-100 font-semibold">
+                    <span className="md:text-xl text-white font-semibold">
                       {pain.title}
                     </span>
                   </p>
@@ -69,10 +64,12 @@ const WithWithout = () => {
               ))}
             </ul>
             <li className="flex flex-col gap-2">
-              <hr className="w-full border border-primary/20" />
-              <div className="flex flex-col mt-5">
-                <p className="text-primary font-bold text-5xl">~1 Hour</p>
-                <p className="text-white text-sm font-bold ml-6">
+              <hr className="w-full border border-black" />
+              <div className="flex flex-col mt-2">
+                <p className="text-black font-bold text-3xl md:text-4xl">
+                  ~1 Hour
+                </p>
+                <p className="text-white text-sm md:text-lg font-bold ml-6">
                   Per Classification
                 </p>
               </div>

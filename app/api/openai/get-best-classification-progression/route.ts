@@ -4,6 +4,7 @@ import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { requesterIsAuthenticated } from "../../supabase/server";
 import { SimplifiedHtsElement } from "../../../../interfaces/hts";
+import { OpenAIModel } from "../../../../libs/openai";
 
 export const dynamic = "force-dynamic";
 
@@ -75,7 +76,7 @@ export async function POST(req: NextRequest) {
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const gptResponse = await openai.chat.completions.create({
       temperature: 0,
-      model: "gpt-4o-2024-11-20",
+      model: OpenAIModel.FOUR_ONE,
       response_format: responseFormat,
       // In your response, "questions" is optional, and should only have questions about the product that would help make a better decision between the options, if answered.\n
       messages: [
@@ -88,12 +89,7 @@ export async function POST(req: NextRequest) {
           Note: The use of semicolons (;) in the descriptions should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".\n
           In your response, "logic" for your selection should explain why the description you picked is the most suitable match.\n
           You should refer to the selected option as "this option" instead of writing out the option description, truncate the descriptions of the others options if beyond 30 characters if mentioned, and the item description itself should be always be referred to as "item description".\n
-            ${
-              isTestEnv &&
-              "The index of the best option must be included in your response\n"
-              // : "The logic you used to pick the best option based on the GRI must be included in your response, and so should the index (0 based) and description of the best option.\n"
-            }
-            `,
+            ${isTestEnv && "The index of the best option must be included in your response\n"}`,
         },
         {
           role: "user",
@@ -103,6 +99,9 @@ export async function POST(req: NextRequest) {
         },
       ],
     });
+
+    console.log("GPT Response:");
+    console.log(gptResponse.usage);
 
     return NextResponse.json(gptResponse.choices);
   } catch (e) {

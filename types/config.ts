@@ -75,7 +75,7 @@ export enum PricingPlan {
   PREMIUM = "Premium",
 }
 
-export interface FeatureI {
+export interface PricingFeatureI {
   name: string;
   details?: string;
   comingSoon?: boolean;
@@ -92,7 +92,7 @@ export interface PricingPlanI {
   price: number;
   // promotionCode?: string;
   priceAnchor?: number;
-  features: FeatureI[];
+  features: PricingFeatureI[];
 }
 
 export interface ConfigProps {
