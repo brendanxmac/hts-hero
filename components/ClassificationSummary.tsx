@@ -22,7 +22,16 @@ const getLastDecision = (decisions: ClassificationProgression[]) => {
 const getFinalClassificationElement = (
   decisions: ClassificationProgression[]
 ) => {
-  return getLastDecision(decisions).selection;
+  if (decisions.length === 0) {
+    return null;
+  }
+
+  const lastDecision = getLastDecision(decisions);
+
+  if (!lastDecision) {
+    return null;
+  }
+  return lastDecision.selection;
 };
 
 export const ClassificationSummary = ({
