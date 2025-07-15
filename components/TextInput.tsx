@@ -81,7 +81,7 @@ export default function TextInput({
               onSubmit && onSubmit(localProductDescription);
             }
           }}
-          className="textarea text-base max-h-96 min-h-12 rounded-none resize-none bg-inherit text-black dark:text-white placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-0"
+          className="textarea text-base max-h-96 min-h-12 rounded-none resize-none bg-inherit text-white placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-0"
         ></textarea>
 
         {(showCharacterCount || onSubmit) && (

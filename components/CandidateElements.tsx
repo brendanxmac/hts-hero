@@ -57,6 +57,14 @@ export const CandidateElements = ({
 
     const bestCandidate = candidates[suggestedCandidateIndex - 1];
 
+    // TODO: find a way to prevent this from happening
+    // specifically, when user leaves the page (goes back to classifications)
+    // this event below will trigger cause the component is still mounted and
+    // classification will be undefined cause we set it that way when use leaves page
+    // Ideas:
+    // - Don't set to undefined when user leaves page
+    // - Don't classifications should be its own page
+
     setClassification((prev: Classification) => {
       const newProgressionLevels = [...prev.levels];
       newProgressionLevels[classificationLevel] = {

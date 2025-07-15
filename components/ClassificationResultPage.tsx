@@ -42,7 +42,6 @@ import { fetchUser } from "../libs/supabase/user";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import { XMarkIcon } from "@heroicons/react/16/solid";
-import { PrimaryText } from "./PrimaryText";
 
 export const ClassificationResultPage = () => {
   const { user } = useUser();
