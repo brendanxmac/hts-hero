@@ -17,7 +17,7 @@ const features: {
   svg: JSX.Element;
 }[] = [
   {
-    name: "Discovers Headings",
+    name: "Finds Headings",
     points: [
       {
         point:
@@ -30,7 +30,7 @@ const features: {
         point: "Easily find & apply your own",
       },
       {
-        point: "~15 minutes saved",
+        point: "~10 minutes saved",
         detail: "per classification",
         isKey: true,
       },
@@ -62,16 +62,15 @@ const features: {
     points: [
       {
         point: "Generate classification reports, in a single click",
-        detail: "A clean & easy to digest report of your decisions",
       },
       {
-        point: "Includes all your notes and a breakdown of each selection",
-        detail: "Coming Soon: Apply your logo and branding to your reports",
+        point:
+          "Includes your notes, branding, disclaimers, and a breakdown all decisions",
       },
       {
-        point: "Easily export & share with your clients or customs",
+        point: "Easily export & share with your clients",
         detail:
-          "Coming Soon: Email directly to clients & generate secure view-only links",
+          "⏳ Coming Soon: Send reports client in a click, or let them view their classifications right in HTS Hero",
       },
       {
         point: "~20 minutes saved",
@@ -94,10 +93,6 @@ const features: {
         detail: `e.g. "See heading 9902.22.84" or "Articles of heading 4601"`,
       },
       {
-        point: "Coming Soon: Get help parsing complex or lengthy notes",
-        comingSoon: true,
-      },
-      {
         point: "~10 minutes saved",
         detail: "per classification",
         isKey: true,
@@ -109,15 +104,14 @@ const features: {
     name: "Simplifies Search",
     points: [
       {
+        point: "Automatic CROSS ruling lookup",
+      },
+      {
         point: "A brand new HTS explorer tailor-made for brokers",
       },
       {
         point:
           "Built in PDF viewer - No more downloads or opening new tabs to find what you're looking for",
-      },
-      {
-        point: "Coming Soon: Automatic CROSS ruling lookup",
-        comingSoon: true,
       },
       {
         point: "~10 minutes saved",
@@ -139,7 +133,7 @@ const FeaturesListicle = () => {
   return (
     <section className="py-24 bg-base-100" id="features">
       <div className="max-w-5xl mx-auto">
-        <div className="max-md:px-8 max-w-5xl mb-8 md:px-12">
+        <div className="text-center max-md:px-8 max-w-5xl mb-8 md:px-12">
           <h2 className="text-white font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-tight mb-5">
             {/* 💡 COPY TIP: Remind visitors about the value of your product. Why do they need it? */}
             Your Classification Sidekick
@@ -153,7 +147,7 @@ const FeaturesListicle = () => {
       </div>
 
       <div className="mx-6 md:mx-12">
-        <div className="grid grid-cols-3 md:flex justify-between px-2 gap-4 max-w-4xl mx-auto mb-8">
+        <div className="grid grid-cols-3 md:flex justify-between px-2 gap-4 max-w-3xl mx-auto mb-8">
           {features.map((feature) => (
             <div
               key={feature.name}
@@ -189,10 +183,10 @@ const FeaturesListicle = () => {
             </div>
           ))}
         </div>
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-3xl mx-auto">
           <div className="flex flex-col md:flex-row justify-center md:justify-start md:items-center gap-12">
             <div
-              className="leading-relaxed space-y-4 max-w-3xl animate-opacity"
+              className="leading-relaxed flex flex-col gap-4 max-w-3xl animate-opacity"
               key={featureSelected}
             >
               <h3 className="text-white font-semibold text-lg">
@@ -206,13 +200,6 @@ const FeaturesListicle = () => {
               />
             </div>
           </div>
-          <Link
-            className="mt-8 btn btn-primary btn-wide"
-            href={"/about#pricing"}
-          >
-            Try it now!
-            {/* Get {config.appName} */}
-          </Link>
         </div>
       </div>
       {/* Just used to know it's the end of the autoscroll feature (optional, see useEffect) */}

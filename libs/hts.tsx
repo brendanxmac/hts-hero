@@ -278,19 +278,25 @@ export const extractFirst8DigitHtsCode = (input: string): string => {
 };
 
 export const getProgressionDescriptionWithArrows = (
-  classificationProgression: ClassificationProgression[]
+  classificationProgression: ClassificationProgression[],
+  upToLevel?: number
 ) => {
-  let fullDescription = "";
-  classificationProgression.forEach((progression, index) => {
-    if (progression.selection) {
-      // if the string has a : at the end, strip it off
-      const desc = progression.selection.description.endsWith(":")
-        ? progression.selection.description.slice(0, -1)
-        : progression.selection.description;
+  const stopAtLevel =
+    upToLevel !== undefined ? upToLevel : classificationProgression.length;
 
-      fullDescription += index === 0 ? `${desc}` : ` > ${desc}`;
-    }
-  });
+  let fullDescription = "";
+  classificationProgression
+    .slice(0, stopAtLevel)
+    .forEach((progression, index) => {
+      if (progression.selection) {
+        // if the string has a : at the end, strip it off
+        const desc = progression.selection.description.endsWith(":")
+          ? progression.selection.description.slice(0, -1)
+          : progression.selection.description;
+
+        fullDescription += index === 0 ? `${desc}` : ` > ${desc}`;
+      }
+    });
 
   return fullDescription;
 };

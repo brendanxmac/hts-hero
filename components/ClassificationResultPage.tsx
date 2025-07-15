@@ -74,9 +74,7 @@ export const ClassificationResultPage = () => {
       <div className="px-8 py-6 flex-1 flex flex-col gap-8 overflow-y-auto">
         <div className="flex flex-col gap-1">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl md:text-3xl font-bold text-white">
-              Result
-            </h2>
+            <h2 className="text-xl md:text-2xl font-bold text-white">Result</h2>
             <div className="flex gap-2">
               <button
                 className="btn btn-xs btn-primary"

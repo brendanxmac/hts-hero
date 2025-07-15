@@ -17,6 +17,7 @@ import Modal from "./Modal";
 import ConversionPricing from "./ConversionPricing";
 import { useClassification } from "../contexts/ClassificationContext";
 import { useSearchParams } from "next/navigation";
+import { classNames } from "../utilities/style";
 
 interface Props {
   setPage: (page: ClassifyPage) => void;
@@ -92,7 +93,16 @@ export const Classify = ({ setPage }: Props) => {
         )}
 
       {/* Classify Tab */}
-      <div className="h-full grow overflow-hidden col-span-8">
+      <div
+        className={classNames(
+          "h-full grow overflow-hidden",
+          workflowStep === WorkflowStep.DESCRIPTION &&
+            classification &&
+            !classification.articleDescription
+            ? "col-span-12"
+            : "col-span-8"
+        )}
+      >
         {activeTab === ClassifyTab.CLASSIFY && (
           <>
             {workflowStep === WorkflowStep.DESCRIPTION && (

@@ -24,17 +24,6 @@ const TestBestDescriptionMatches = z.object({
   bestCandidates: z.array(TestDescriptionMatch),
 });
 
-// const DescriptionMatch = z.object({
-//   index: z.number(),
-//   // description: z.string(),
-//   // logic: z.string(),
-// });
-
-// TODO: we just need to return an array of indicies...
-// TODO: we just need to return an array of indicies...
-// TODO: we just need to return an array of indicies...
-// TODO: we just need to return an array of indicies...
-
 const BestDescriptionMatches = z.object({
   bestCandidates: z.array(z.number()),
 });
@@ -115,7 +104,7 @@ export async function POST(req: NextRequest) {
                 : "You must use the GRI rules sequentially (as needed) and consider all options in the list to shape your decision making logic.\n"
             }
             Note: The use of semicolons (;) in the descriptions should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".\n
-            The best fitting candidate must be first in the list, and if none are good candidates, return an empty array.
+            If there are no good candidates, return an empty array.
             `,
         },
         {

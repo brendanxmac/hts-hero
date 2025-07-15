@@ -67,9 +67,9 @@ export default function Home() {
       <main>
         <ClassifierHero />
         <WithWithout />
-        <FeaturesGrid />
+        {/* <FeaturesGrid /> */}
         {/* <div className="hidden sm:block"> */}
-        <FeaturesAccordion features={classifyFeatures} />
+        {/* <FeaturesAccordion features={classifyFeatures} /> */}
         {/* </div> */}
         {/* <div className="block sm:hidden"> */}
         <FeaturesListicle />

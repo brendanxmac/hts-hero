@@ -5,10 +5,16 @@ import { useEffect, useRef, useState } from "react";
 import { Loader } from "../../interfaces/ui";
 import { CandidateElements } from "../CandidateElements";
 import {
+  getBestClassificationProgression,
   getBestDescriptionCandidates,
   getElementsInChapter,
+  getProgressionDescriptionWithArrows,
 } from "../../libs/hts";
-import { CandidateSelection, HtsElement } from "../../interfaces/hts";
+import {
+  CandidateSelection,
+  Classification,
+  HtsElement,
+} from "../../interfaces/hts";
 import { HtsSection } from "../../interfaces/hts";
 import { getHtsSectionsAndChapters } from "../../libs/hts";
 import { setIndexInArray } from "../../utilities/data";
@@ -23,7 +29,8 @@ import { SecondaryLabel } from "../SecondaryLabel";
 import Modal from "../Modal";
 import { SearchCrossRulings } from "../SearchCrossRulings";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/16/solid";
-import { PencilSquareIcon } from "@heroicons/react/24/solid";
+import { PencilSquareIcon, SparklesIcon } from "@heroicons/react/24/solid";
+import { TertiaryLabel } from "../TertiaryLabel";
 
 export interface ClassificationStepProps {
   setWorkflowStep: (step: WorkflowStep) => void;
@@ -44,7 +51,8 @@ export const ClassificationStep = ({
     text: "",
   });
   const [showCrossRulingsModal, setShowCrossRulingsModal] = useState(false);
-  const { classification, addLevel, updateLevel } = useClassification();
+  const { classification, addLevel, updateLevel, setClassification } =
+    useClassification();
   const { articleDescription, levels } = classification;
   const [showNotes, setShowNotes] = useState(
     Boolean(levels[classificationLevel]?.notes)
@@ -187,6 +195,69 @@ export const ClassificationStep = ({
     setLoading({ isLoading: false, text: "" });
   };
 
+  // const getBestCandidate = async () => {
+  //   const candidates = levels[classificationLevel].candidates;
+
+  //   setLoading({
+  //     isLoading: true,
+  //     text: "Analyzing Candidates",
+  //   });
+
+  //   const simplifiedCandidates = candidates.map((e) => ({
+  //     code: e.htsno,
+  //     description: e.description,
+  //   }));
+
+  //   const progressionDescription = getProgressionDescriptionWithArrows(
+  //     levels,
+  //     classificationLevel
+  //   );
+
+  //   const {
+  //     index: suggestedCandidateIndex,
+  //     logic: suggestionReason,
+  //     questions: suggestionQuestions,
+  //   } = await getBestClassificationProgression(
+  //     simplifiedCandidates,
+  //     progressionDescription,
+  //     articleDescription
+  //   );
+
+  //   console.log(progressionDescription);
+  //   console.log(suggestedCandidateIndex);
+  //   console.log(suggestionReason);
+  //   console.log(suggestionQuestions);
+
+  //   const bestCandidate = candidates[suggestedCandidateIndex - 1];
+
+  //   // TODO: find a way to prevent this from happening
+  //   // specifically, when user leaves the page (goes back to classifications)
+  //   // this event below will trigger cause the component is still mounted and
+  //   // classification will be undefined cause we set it that way when use leaves page
+  //   // Ideas:
+  //   // - Don't set to undefined when user leaves page
+  //   // - Don't classifications should be its own page
+
+  //   setClassification((prev: Classification) => {
+  //     const newProgressionLevels = [...prev.levels];
+  //     newProgressionLevels[classificationLevel] = {
+  //       ...newProgressionLevels[classificationLevel],
+  //       analysisElement: bestCandidate,
+  //       analysisReason: suggestionReason,
+  //       analysisQuestions: suggestionQuestions,
+  //     };
+  //     return {
+  //       ...prev,
+  //       levels: newProgressionLevels,
+  //     };
+  //   });
+
+  //   setLoading({
+  //     isLoading: false,
+  //     text: "",
+  //   });
+  // };
+
   useEffect(() => {
     if (previousArticleDescriptionRef.current !== articleDescription) {
       setClassificationLevel(0);
@@ -236,7 +307,7 @@ export const ClassificationStep = ({
         {/* HEADER */}
         <div className="flex flex-col gap-2">
           <div className="flex justify-between items-center">
-            <TertiaryText
+            <TertiaryLabel
               value={`Level ${classificationLevel + 1}`}
               color={Color.NEUTRAL_CONTENT}
             />
@@ -272,7 +343,7 @@ export const ClassificationStep = ({
                 disabled={loading.isLoading}
               >
                 <MagnifyingGlassIcon className="w-4 h-4" />
-                Search Headings
+                Find Headings
               </button>
               <button
                 className="grow btn btn-xs btn-primary"
@@ -284,6 +355,22 @@ export const ClassificationStep = ({
                 <MagnifyingGlassIcon className="w-4 h-4" />
                 Search CROSS
               </button>
+              {/* <button
+                className="btn btn-xs btn-primary"
+                onClick={() => {
+                  // remove analysis from this level if it exists
+                  updateLevel(classificationLevel, {
+                    analysisElement: undefined,
+                    analysisReason: undefined,
+                    analysisQuestions: undefined,
+                  });
+                  getBestCandidate();
+                }}
+                disabled={loading.isLoading}
+              >
+                <SparklesIcon className="w-4 h-4" />
+                Analyze Options
+              </button> */}
               {!showNotes && (
                 <button
                   className="mx-auto btn btn-xs btn-primary"

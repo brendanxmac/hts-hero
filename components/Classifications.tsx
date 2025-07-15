@@ -12,6 +12,7 @@ import { PrimaryLabel } from "./PrimaryLabel";
 import { TertiaryText } from "./TertiaryText";
 import { ArrowPathIcon, PlusIcon } from "@heroicons/react/16/solid";
 import { formatHumanReadableDate } from "../libs/date";
+import { useClassification } from "../contexts/ClassificationContext";
 
 interface Props {
   page: ClassifyPage;
@@ -32,6 +33,7 @@ export const Classifications = ({ page, setPage }: Props) => {
     isLoading: classificationsLoading,
     refreshClassifications,
   } = useClassifications();
+  const { setClassification } = useClassification();
   const { user, error: userError } = useUser();
 
   useEffect(() => {
@@ -105,19 +107,30 @@ export const Classifications = ({ page, setPage }: Props) => {
         <div className="flex justify-between items-center py-2">
           <div className="flex flex-col">
             <PrimaryLabel value="Your Classifications" color={Color.WHITE} />
-            {lastUpdated && (
-              <TertiaryText
-                value={`Last updated: ${formatHumanReadableDate(
-                  lastUpdated.toISOString()
-                )}`}
-                color={Color.NEUTRAL_CONTENT}
-              />
-            )}
+
+            <TertiaryText
+              value={`Last updated: ${
+                lastUpdated
+                  ? formatHumanReadableDate(lastUpdated.toISOString())
+                  : "--"
+              }`}
+              color={Color.NEUTRAL_CONTENT}
+            />
           </div>
           <div className="flex gap-2">
             <button
               className="btn btn-primary btn-sm gap-1"
-              onClick={() => setPage(ClassifyPage.CLASSIFY)}
+              onClick={() => {
+                setClassification({
+                  articleDescription: "",
+                  articleAnalysis: "",
+                  progressionDescription: "",
+                  levels: [],
+                  isComplete: false,
+                  notes: "",
+                });
+                setPage(ClassifyPage.CLASSIFY);
+              }}
             >
               <PlusIcon className="h-5 w-5" />
               New

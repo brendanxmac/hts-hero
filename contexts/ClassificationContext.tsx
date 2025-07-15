@@ -63,7 +63,6 @@ export const ClassificationProvider = ({
     if (!classification || !classificationId) return;
 
     const timeoutId = setTimeout(() => {
-      console.log("Saving classification");
       saveClassification();
     }, 500);
 
