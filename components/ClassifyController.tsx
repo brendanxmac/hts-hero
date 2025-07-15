@@ -15,10 +15,11 @@ export const ClassifyController = () => {
       <ClassificationsProvider>
         <div className="h-full w-full bg-base-300">
           <div className="h-full w-full bg-base-300 overflow-hidden">
-            {page === ClassifyPage.CLASSIFICATIONS && (
+            {page === ClassifyPage.CLASSIFICATIONS ? (
               <Classifications page={page} setPage={setPage} />
+            ) : (
+              <Classify setPage={setPage} />
             )}
-            {page === ClassifyPage.CLASSIFY && <Classify setPage={setPage} />}
           </div>
         </div>
       </ClassificationsProvider>

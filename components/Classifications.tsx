@@ -3,7 +3,6 @@ import { ClassificationSummary } from "./ClassificationSummary";
 import { SecondaryText } from "./SecondaryText";
 import { Color } from "../enums/style";
 import { useClassifications } from "../contexts/ClassificationsContext";
-import { LoadingIndicator } from "./LoadingIndicator";
 import { useUser } from "../contexts/UserContext";
 import { useEffect, useState } from "react";
 import { Loader } from "../interfaces/ui";
@@ -11,6 +10,8 @@ import { useHts } from "../contexts/HtsContext";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { TertiaryText } from "./TertiaryText";
+import { ArrowPathIcon, PlusIcon } from "@heroicons/react/16/solid";
+import { formatHumanReadableDate } from "../libs/date";
 
 interface Props {
   page: ClassifyPage;
@@ -22,6 +23,7 @@ export const Classifications = ({ page, setPage }: Props) => {
     isLoading: true,
     text: "",
   });
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const { htsElements, fetchElements } = useHts();
   const { getSections, sections } = useHtsSections();
   const {
@@ -36,6 +38,7 @@ export const Classifications = ({ page, setPage }: Props) => {
     const fetchClassifications = async () => {
       setLoader({ isLoading: true, text: "Fetching Classifications" });
       await refreshClassifications();
+      setLastUpdated(new Date());
       setLoader({ isLoading: false, text: "" });
     };
 
@@ -70,6 +73,11 @@ export const Classifications = ({ page, setPage }: Props) => {
     return `${message} 👋`;
   };
 
+  const handleRefreshClassifications = async () => {
+    await refreshClassifications();
+    setLastUpdated(new Date());
+  };
+
   if (classificationsError || userError) {
     return (
       <div className="h-full w-full max-w-3xl mx-auto pt-12 flex flex-col gap-8">
@@ -95,17 +103,36 @@ export const Classifications = ({ page, setPage }: Props) => {
       </div>
       <div className="flex flex-col h-full">
         <div className="flex justify-between items-center py-2">
-          <PrimaryLabel value="Your Classifications" color={Color.WHITE} />
-          {loader.isLoading || classificationsLoading ? (
-            <LoadingIndicator text={loader.text || "Loading Classifications"} />
-          ) : (
+          <div className="flex flex-col">
+            <PrimaryLabel value="Your Classifications" color={Color.WHITE} />
+            {lastUpdated && (
+              <TertiaryText
+                value={`Last updated: ${formatHumanReadableDate(
+                  lastUpdated.toISOString()
+                )}`}
+                color={Color.NEUTRAL_CONTENT}
+              />
+            )}
+          </div>
+          <div className="flex gap-2">
             <button
-              className="btn btn-primary btn-sm"
+              className="btn btn-primary btn-sm gap-1"
               onClick={() => setPage(ClassifyPage.CLASSIFY)}
             >
-              Start New Classification
+              <PlusIcon className="h-5 w-5" />
+              New
             </button>
-          )}
+            <button
+              className="btn btn-primary btn-sm btn-square"
+              onClick={handleRefreshClassifications}
+            >
+              {loader.isLoading || classificationsLoading ? (
+                <span className={`loading loading-spinner loading-sm`}></span>
+              ) : (
+                <ArrowPathIcon className="h-5 w-5" />
+              )}
+            </button>
+          </div>
         </div>
         {classifications && classifications.length > 0 && (
           <div className="flex flex-col gap-2 pb-6">

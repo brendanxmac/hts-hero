@@ -34,6 +34,7 @@ import { useUser } from "../contexts/UserContext";
 import { PrimaryText } from "./PrimaryText";
 import { TertiaryText } from "./TertiaryText";
 import { SecondaryText } from "./SecondaryText";
+import { PrimaryLabel } from "./PrimaryLabel";
 
 interface Props {
   element: HtsElement;
@@ -91,13 +92,11 @@ export const CandidateElement = ({
     });
   };
 
-  // shadow-[inset_0_0_0_4px_oklch(var(--p))]
-
   return (
     <div
       className={classNames(
         "flex w-full rounded-md bg-base-100 p-4 gap-4 transition duration-100 ease-in-out scale-[0.99]",
-        isLevelSelection && "bg-primary",
+        isLevelSelection && "shadow-[inset_0_0_0_4px_oklch(var(--p))]",
         !isLevelSelection &&
           "hover:cursor-pointer hover:bg-base-300 border-2 border-neutral-content",
         !isPressed && !isLevelSelection && "hover:scale-[1]",
@@ -172,7 +171,7 @@ export const CandidateElement = ({
           <div className="flex justify-between items-center">
             <TertiaryLabel
               value={htsno ? `${htsno}` : "Prequalifier"}
-              color={isLevelSelection ? Color.BLACK : Color.NEUTRAL_CONTENT}
+              color={Color.NEUTRAL_CONTENT}
             />
             <div className="flex gap-2">
               <SquareIconButton
@@ -260,39 +259,24 @@ export const CandidateElement = ({
               )}
             </div>
           </div>
-          <PrimaryText
-            value={description}
-            color={isLevelSelection ? Color.BLACK : Color.WHITE}
-          />
+          {isLevelSelection ? (
+            <PrimaryLabel value={description} color={Color.WHITE} />
+          ) : (
+            <PrimaryText value={description} color={Color.WHITE} />
+          )}
         </div>
 
         {isRecommended && (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 mt-2">
             <div className="flex gap-1 text-accent items-center">
-              <SparklesIcon
-                className={classNames(
-                  "h-4 w-4",
-                  isLevelSelection ? "text-black" : "text-primary"
-                )}
-              />
-              <TertiaryLabel
-                value="HTS Hero Analysis"
-                color={isLevelSelection ? Color.BLACK : Color.PRIMARY}
-              />
+              <SparklesIcon className="h-4 w-4 text-primary" />
+              <TertiaryLabel value="HTS Hero Analysis" color={Color.PRIMARY} />
             </div>
 
             <div className="flex flex-col gap-2 ml-1">
-              <SecondaryText
-                color={isLevelSelection ? Color.BLACK : Color.WHITE}
-                value={recommendedReason}
-              />
+              <SecondaryText color={Color.WHITE} value={recommendedReason} />
 
-              <p
-                className={classNames(
-                  "text-xs",
-                  isLevelSelection ? "text-gray-800" : "text-gray-400"
-                )}
-              >
+              <p className="text-xs font-bold text-gray-400">
                 HTS Hero can make mistakes. Always exercise your own judgement
               </p>
             </div>

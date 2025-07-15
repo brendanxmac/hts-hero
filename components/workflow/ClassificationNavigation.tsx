@@ -83,11 +83,11 @@ export const ClassificationNavigation = ({
               onClick={() => {
                 setActiveTab(ClassifyTab.CLASSIFY);
                 setPage(ClassifyPage.CLASSIFICATIONS);
-                setClassification(undefined);
+                // setClassification(undefined);
               }}
             >
               <ArrowLeftIcon className="w-4 h-4" />
-              &nbsp;All Classifications
+              &nbsp;Classifications
             </button>
           </div>
 
@@ -123,10 +123,6 @@ export const ClassificationNavigation = ({
         ref={containerRef}
         className="h-full flex flex-col gap-6 p-4 overflow-y-scroll"
       >
-        {/* <TertiaryText
-          color={Color.NEUTRAL_CONTENT}
-        /> */}
-
         <div className="flex flex-col gap-3">
           <PrimaryLabel value="Item" color={Color.WHITE} />
           <div ref={descriptionRef}>
@@ -206,7 +202,7 @@ export const ClassificationNavigation = ({
               className={classNames(
                 "flex flex-col gap-1 p-4 rounded-md border-2 border-neutral-content/40 hover:scale-[1.02] transition-all duration-200 ease-in-out hover:cursor-pointer hover:bg-base-300",
                 workflowStep === WorkflowStep.RESULT &&
-                  "bg-primary/80 border border-primary scale-[1.02] hover:bg-primary/80"
+                  "bg-primary border border-primary hover:bg-primary"
               )}
               onClick={() => {
                 if (activeTab !== ClassifyTab.CLASSIFY) {

@@ -72,14 +72,14 @@ export const Classify = ({ setPage }: Props) => {
   }
 
   return (
-    <div className="h-full w-full bg-base-300 flex">
+    <div className="h-full w-full bg-base-300 grid grid-cols-12">
       {/* Sidebar Navigation */}
       {classification &&
         !(
           workflowStep === WorkflowStep.DESCRIPTION &&
           !classification.articleDescription
         ) && (
-          <div className="hidden md:block h-full bg-base-100 min-w-[350px] max-w-[450px] lg:min-w-[500px] overflow-hidden border-r border-base-content/30">
+          <div className="h-full bg-base-100 overflow-hidden border-r border-base-content/30 col-span-4">
             <ClassificationNavigation
               setPage={setPage}
               workflowStep={workflowStep}
@@ -92,7 +92,7 @@ export const Classify = ({ setPage }: Props) => {
         )}
 
       {/* Classify Tab */}
-      <div className="h-full grow overflow-hidden">
+      <div className="h-full grow overflow-hidden col-span-8">
         {activeTab === ClassifyTab.CLASSIFY && (
           <>
             {workflowStep === WorkflowStep.DESCRIPTION && (

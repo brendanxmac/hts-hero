@@ -160,7 +160,7 @@ export const ClassificationResultPage = () => {
         </div> */}
 
         <div className=" flex flex-col gap-2">
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-2 md:gap-0">
             <PrimaryLabel value="HTS Code" color={Color.WHITE} />
             <div className="flex gap-2">
               <button
@@ -202,7 +202,7 @@ export const ClassificationResultPage = () => {
                 }}
               >
                 <MagnifyingGlassIcon className="w-4 h-4" />
-                Show in Explorer
+                View
               </button>
               <button
                 className="btn btn-xs btn-primary"
@@ -234,7 +234,7 @@ export const ClassificationResultPage = () => {
             <div className="w-full flex flex-col gap-4">
               <PrimaryLabel value="Tariff Details" color={Color.WHITE} />
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <div className="flex flex-col p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24 gap-3">
                   <TertiaryLabel
                     value={"General Rate"}
