@@ -1,0 +1,10 @@
+814845612f4e52cddb18acc1bed39affd406696f 43969191 demo.mp4
+d6ac6251f3fc9b016a8df8f12eb34d0d16a2c805 33563767 explore.mp4
+1785860a645f9da78b7ecd0024c2518fede7d1f9 157113304 fetches-notes-and-rulings.mp4
+efb0d1e4e9cc2da0338c3880f7f3b245a7ab3e55 42851785 finds-candidates.mp4
+c2ab830dff812107858e1ccaa8a609a0bcabde74 93666074 generates-classification-reports.mp4
+5185afb67c049d8f78a2a00db6b4225fe8c332f3 25459575 one-tab.mp4
+406204db5c447ae547e607c111cea9cd45724dce 56879818 saves-all-classifications.mp4
+d5fc233ddb8b6905344c83a84ad9df8435173d42 24754806 select-best-candidate.mp4
+0ea2b4263d282f7680c5ee9c63174bace20ee2b1 121892198 simplifies-search.mp4
+99d3c93afb939cd50d89a1418c0750748d2aaff2 87165954 suggests-the-best.mp4
