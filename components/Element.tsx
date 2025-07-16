@@ -24,6 +24,7 @@ import {
   getTextBeforeOpeningParenthesis,
 } from "../utilities/hts";
 import { PDFProps } from "../interfaces/ui";
+import { SupabaseBuckets } from "../constants/supabase";
 
 interface Props {
   summaryOnly?: boolean;
@@ -99,7 +100,8 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
               onClick={() =>
                 setShowPDF({
                   title: `Chapter ${chapter} Notes`,
-                  file: `/notes/chapter/Chapter ${chapter}.pdf`,
+                  bucket: SupabaseBuckets.NOTES,
+                  filePath: `/chapters/Chapter ${chapter}.pdf`,
                 })
               }
             />
@@ -173,7 +175,8 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                                       );
                                     setShowPDF({
                                       title: note?.title || "",
-                                      file: note?.pdfURL || "",
+                                      bucket: SupabaseBuckets.NOTES,
+                                      filePath: note?.filePath || "",
                                     });
                                   }}
                                 >
@@ -241,7 +244,8 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
       {showPDF && (
         <PDF
           title={showPDF.title}
-          file={showPDF.file}
+          bucket={showPDF.bucket}
+          filePath={showPDF.filePath}
           isOpen={showPDF !== null}
           setIsOpen={(isOpen) => {
             if (!isOpen) {

@@ -12,6 +12,7 @@ import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { ButtonWithIcon } from "./ButtonWithIcon";
 import { SecondaryLabel } from "./SecondaryLabel";
 import { useHts } from "../contexts/HtsContext";
+import { SupabaseBuckets } from "../constants/supabase";
 
 interface Props {
   chapter: HtsSectionAndChapterBase;
@@ -80,7 +81,8 @@ export const Chapter = ({ chapter }: Props) => {
       {showNotes && (
         <PDF
           title={`Chapter ${number.toString()} Notes`}
-          file={notesPath}
+          bucket={SupabaseBuckets.NOTES}
+          filePath={notesPath}
           isOpen={showNotes}
           setIsOpen={setShowNotes}
         />

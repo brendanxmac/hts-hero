@@ -2,15 +2,20 @@
 
 import { Document, Page, pdfjs } from "react-pdf";
 import type { PDFDocumentProxy } from "pdfjs-dist";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { Dialog } from "@headlessui/react";
 import { Transition } from "@headlessui/react";
 import { useResizeObserver } from "@wojtekmaj/react-hooks";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import "react-pdf/dist/esm/Page/TextLayer.css";
+import { fetchPDF } from "../libs/supabase/storage";
+import { LoadingIndicator } from "./LoadingIndicator";
+import { Color } from "../enums/style";
+import { SupabaseBuckets } from "../constants/supabase";
 
 interface Props {
-  file: string;
+  bucket: SupabaseBuckets;
+  filePath: string;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   title: string;
@@ -21,12 +26,60 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 const resizeObserverOptions = {};
 const maxWidth = 1000;
 
-export default function PDF({ file, isOpen, setIsOpen, title }: Props) {
+export default function PDF({
+  bucket,
+  filePath,
+  isOpen,
+  setIsOpen,
+  title,
+}: Props) {
   const [numPages, setNumPages] = useState(0);
   const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
   const [containerWidth, setContainerWidth] = useState<number>();
   const [scale, setScale] = useState(1);
   const [pdfWidth, setPdfWidth] = useState<number>(0);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch PDF from Supabase storage when component mounts or file changes
+  useEffect(() => {
+    const fetchPDFFromStorage = async () => {
+      if (!filePath) return;
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        // Check if the file is already a full URL (external) or a local path
+        if (filePath.startsWith("http://") || filePath.startsWith("https://")) {
+          // External URL, use as is
+          setPdfUrl(filePath);
+        } else {
+          // Local path, fetch from Supabase storage
+          const { signedUrl, error: fetchError } = await fetchPDF(
+            bucket,
+            filePath
+          );
+
+          if (fetchError) {
+            setError(fetchError);
+          } else {
+            setPdfUrl(signedUrl);
+          }
+        }
+      } catch (err) {
+        setError("Failed to load PDF");
+        console.error("Error fetching PDF:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (isOpen) {
+      fetchPDFFromStorage();
+    }
+  }, [filePath, isOpen, bucket]);
 
   // @ts-ignore
   const onResize = useCallback<ResizeObserverCallback>(
@@ -54,19 +107,22 @@ export default function PDF({ file, isOpen, setIsOpen, title }: Props) {
     setNumPages(nextNumPages);
 
     // Get the first page to determine PDF dimensions
-    const firstPage = await pdfjs
-      .getDocument(file)
-      .promise.then((doc) => doc.getPage(1));
-    const viewport = firstPage.getViewport({ scale: 1 });
-    setPdfWidth(viewport.width);
+    if (pdfUrl) {
+      const firstPage = await pdfjs
+        .getDocument(pdfUrl)
+        .promise.then((doc) => doc.getPage(1));
+      const viewport = firstPage.getViewport({ scale: 1 });
+      setPdfWidth(viewport.width);
 
-    // Calculate initial scale to fit width
-    if (containerWidth) {
-      const paddingFactor = 0.6;
-      const initialScale = (containerWidth * paddingFactor) / viewport.width;
-      setScale(Math.min(Math.max(initialScale, 1), 2)); // Keep between 100% and 200%
+      // Calculate initial scale to fit width
+      if (containerWidth) {
+        const paddingFactor = 0.6;
+        const initialScale = (containerWidth * paddingFactor) / viewport.width;
+        setScale(Math.min(Math.max(initialScale, 1), 2)); // Keep between 100% and 200%
+      }
     }
   }
+
   return (
     <Transition appear show={isOpen}>
       <Dialog as="div" onClose={() => setIsOpen(false)}>
@@ -100,7 +156,7 @@ export default function PDF({ file, isOpen, setIsOpen, title }: Props) {
                   <div className="text-center">
                     <a
                       download
-                      href={file}
+                      href={pdfUrl || filePath}
                       className="btn btn-xs cursor-pointer focus:outline-none text-white bg-primary hover:bg-primary/80 shrink-0"
                       target="_blank"
                       rel="noreferrer"
@@ -177,21 +233,38 @@ export default function PDF({ file, isOpen, setIsOpen, title }: Props) {
               ref={setContainerRef}
               className="bg-base-100 w-full h-full overflow-auto"
             >
-              {/* @ts-ignore */}
-              <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
-                {Array.from({ length: numPages }, (_, index) => (
-                  <Page
-                    key={`page_${index + 1}`}
-                    pageNumber={index + 1}
-                    scale={scale}
-                    width={
-                      containerWidth
-                        ? Math.min(containerWidth, maxWidth)
-                        : maxWidth
-                    }
-                  />
-                ))}
-              </Document>
+              {loading && (
+                <div className="flex items-center justify-center h-full">
+                  <LoadingIndicator text="Loading PDF..." color={Color.WHITE} />
+                </div>
+              )}
+
+              {error && (
+                <div className="flex items-center justify-center h-full">
+                  <div className="text-center">
+                    <p className="text-red-400 mb-4">Failed to load PDF</p>
+                    <p className="text-gray-400 text-sm">{error}</p>
+                  </div>
+                </div>
+              )}
+
+              {!loading && !error && pdfUrl && (
+                /* @ts-ignore */
+                <Document file={pdfUrl} onLoadSuccess={onDocumentLoadSuccess}>
+                  {Array.from({ length: numPages }, (_, index) => (
+                    <Page
+                      key={`page_${index + 1}`}
+                      pageNumber={index + 1}
+                      scale={scale}
+                      width={
+                        containerWidth
+                          ? Math.min(containerWidth, maxWidth)
+                          : maxWidth
+                      }
+                    />
+                  ))}
+                </Document>
+              )}
             </div>
           </Dialog.Panel>
         </Transition.Child>

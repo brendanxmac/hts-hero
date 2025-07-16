@@ -9,7 +9,8 @@
     "postbuild": "next-sitemap",
     "start": "next start",
     "lint": "next lint",
-    "tests": "APP_ENV=test npx tsx testing/run-tests.ts"
+    "tests": "APP_ENV=test npx tsx testing/run-tests.ts",
+    "upload-pdfs": "npx tsx scripts/upload-pdfs.ts"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",

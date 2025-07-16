@@ -42,6 +42,7 @@ import { fetchUser } from "../libs/supabase/user";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import { XMarkIcon } from "@heroicons/react/16/solid";
+import { SupabaseBuckets } from "../constants/supabase";
 
 export const ClassificationResultPage = () => {
   const { user } = useUser();
@@ -286,7 +287,8 @@ export const ClassificationResultPage = () => {
                                         );
                                       setShowPDF({
                                         title: note?.title || "",
-                                        file: note?.pdfURL || "",
+                                        bucket: SupabaseBuckets.NOTES,
+                                        filePath: note?.filePath || "",
                                       });
                                     }}
                                   >
@@ -366,7 +368,8 @@ export const ClassificationResultPage = () => {
       {showPDF && (
         <PDF
           title={showPDF.title}
-          file={showPDF.file}
+          bucket={showPDF.bucket}
+          filePath={showPDF.filePath}
           isOpen={showPDF !== null}
           setIsOpen={(isOpen) => {
             if (!isOpen) {

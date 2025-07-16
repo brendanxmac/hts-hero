@@ -4,13 +4,19 @@ import PDF from "./PDF";
 import { TertiaryText } from "./TertiaryText";
 import { Color } from "../enums/style";
 import { PrimaryLabel } from "./PrimaryLabel";
+import { SupabaseBuckets } from "../constants/supabase";
 
 interface Props {
   note: NoteType;
 }
 
 export const Note = ({ note }: Props) => {
-  const { description, title, pdfURL, specialTariffTreatmentCodes } = note;
+  const {
+    description,
+    title,
+    filePath: pdfURL,
+    specialTariffTreatmentCodes,
+  } = note;
   const [show, setShow] = useState(false);
 
   return (
@@ -46,7 +52,13 @@ export const Note = ({ note }: Props) => {
       </div>
 
       {show && (
-        <PDF title={title} file={pdfURL} isOpen={show} setIsOpen={setShow} />
+        <PDF
+          title={title}
+          bucket={SupabaseBuckets.NOTES}
+          filePath={pdfURL}
+          isOpen={show}
+          setIsOpen={setShow}
+        />
       )}
     </div>
   );

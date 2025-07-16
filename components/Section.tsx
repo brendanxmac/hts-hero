@@ -12,6 +12,7 @@ import { PrimaryLabel } from "./PrimaryLabel";
 import { Color } from "../enums/style";
 import { ButtonWithIcon } from "./ButtonWithIcon";
 import { TertiaryLabel } from "./TertiaryLabel";
+import { SupabaseBuckets } from "../constants/supabase";
 interface Props {
   section: HtsSection;
   breadcrumbs: NavigatableElement[];
@@ -107,7 +108,8 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
       {notesPath && showNotes && (
         <PDF
           title={`Section ${number.toString()} Notes`}
-          file={notesPath}
+          bucket={SupabaseBuckets.NOTES}
+          filePath={notesPath}
           isOpen={showNotes}
           setIsOpen={setShowNotes}
         />

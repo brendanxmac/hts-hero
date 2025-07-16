@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { HtsElement } from "../interfaces/hts";
 import SquareIconButton from "./SqaureIconButton";
@@ -35,6 +35,7 @@ import { PrimaryText } from "./PrimaryText";
 import { TertiaryText } from "./TertiaryText";
 import { SecondaryText } from "./SecondaryText";
 import { PrimaryLabel } from "./PrimaryLabel";
+import { SupabaseBuckets } from "../constants/supabase";
 
 interface Props {
   element: HtsElement;
@@ -91,6 +92,10 @@ export const CandidateElement = ({
       is_trial_user: isTrialUser,
     });
   };
+
+  useEffect(() => {
+    console.log("PDF", showPDF);
+  }, [showPDF]);
 
   return (
     <div
@@ -181,7 +186,8 @@ export const CandidateElement = ({
                 onClick={() =>
                   setShowPDF({
                     title: `Chapter ${chapter} Notes`,
-                    file: `/notes/chapter/Chapter ${chapter}.pdf`,
+                    bucket: SupabaseBuckets.NOTES,
+                    filePath: `/chapters/Chapter ${chapter}.pdf`,
                   })
                 }
               />
@@ -303,7 +309,8 @@ export const CandidateElement = ({
       {showPDF && (
         <PDF
           title={showPDF.title}
-          file={showPDF.file}
+          bucket={showPDF.bucket}
+          filePath={showPDF.filePath}
           isOpen={showPDF !== null}
           setIsOpen={(isOpen) => {
             if (!isOpen) {

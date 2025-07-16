@@ -14,3 +14,12 @@ export const uploadLogo = async (
 export const fetchLogo = async (): Promise<FileUploadDownloadResponse> => {
   return apiClient.get("/supabase/fetch-logo");
 };
+
+export const fetchPDF = async (
+  bucket: string,
+  filePath: string
+): Promise<FileUploadDownloadResponse> => {
+  return apiClient.get(
+    `/supabase/fetch-pdf?bucket=${bucket}&path=${encodeURIComponent(filePath)}`
+  );
+};

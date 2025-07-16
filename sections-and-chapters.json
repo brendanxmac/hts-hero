@@ -3,84 +3,84 @@
     {
       "number": 1,
       "description": "Live Animals; Animal Products",
-      "notesPath": "/notes/section/Section 1.pdf",
+      "notesPath": "/sections/Section 1.pdf",
       "chapters": [
         {
           "number": 1,
           "description": "Live animals",
-          "notesPath": "/notes/chapter/Chapter 1.pdf"
+          "notesPath": "/chapters/Chapter 1.pdf"
         },
         {
           "number": 2,
           "description": "Meat and edible meat offal",
-          "notesPath": "/notes/chapter/Chapter 2.pdf"
+          "notesPath": "/chapters/Chapter 2.pdf"
         },
         {
           "number": 3,
           "description": "Fish and crustaceans, molluscs and other aquatic invertebrates",
-          "notesPath": "/notes/chapter/Chapter 3.pdf"
+          "notesPath": "/chapters/Chapter 3.pdf"
         },
         {
           "number": 4,
           "description": "Dairy produce; birds eggs; natural honey; edible products of animal origin, not elsewhere specified or included",
-          "notesPath": "/notes/chapter/Chapter 4.pdf"
+          "notesPath": "/chapters/Chapter 4.pdf"
         },
         {
           "number": 5,
           "description": "Products of animal origin, not elsewhere specified or included",
-          "notesPath": "/notes/chapter/Chapter 5.pdf"
+          "notesPath": "/chapters/Chapter 5.pdf"
         }
       ]
     },
     {
       "number": 2,
       "description": "Vegetable Products",
-      "notesPath": "/notes/section/Section 2.pdf",
+      "notesPath": "/sections/Section 2.pdf",
       "chapters": [
         {
           "number": 6,
           "description": "Live trees and other plants; bulbs, roots and the like; cut flowers and ornamental foliage",
-          "notesPath": "/notes/chapter/Chapter 6.pdf"
+          "notesPath": "/chapters/Chapter 6.pdf"
         },
         {
           "number": 7,
           "description": "Edible vegetables and certain roots and tubers",
-          "notesPath": "/notes/chapter/Chapter 7.pdf"
+          "notesPath": "/chapters/Chapter 7.pdf"
         },
         {
           "number": 8,
           "description": "Edible fruit and nuts; peel of citrus fruit or melons",
-          "notesPath": "/notes/chapter/Chapter 8.pdf"
+          "notesPath": "/chapters/Chapter 8.pdf"
         },
         {
           "number": 9,
           "description": "Coffee, tea, maté and spices",
-          "notesPath": "/notes/chapter/Chapter 9.pdf"
+          "notesPath": "/chapters/Chapter 9.pdf"
         },
         {
           "number": 10,
           "description": "Cereals",
-          "notesPath": "/notes/chapter/Chapter 10.pdf"
+          "notesPath": "/chapters/Chapter 10.pdf"
         },
         {
           "number": 11,
           "description": "Products of the milling industry; malt; starches; inulin; wheat gluten",
-          "notesPath": "/notes/chapter/Chapter 11.pdf"
+          "notesPath": "/chapters/Chapter 11.pdf"
         },
         {
           "number": 12,
           "description": "Oil seeds and oleaginous fruits; miscellaneous grains, seeds and fruits; industrial or medicinal plants; straw and fodder",
-          "notesPath": "/notes/chapter/Chapter 12.pdf"
+          "notesPath": "/chapters/Chapter 12.pdf"
         },
         {
           "number": 13,
           "description": "Lac; gums, resins and other vegetable saps and extracts",
-          "notesPath": "/notes/chapter/Chapter 13.pdf"
+          "notesPath": "/chapters/Chapter 13.pdf"
         },
         {
           "number": 14,
           "description": "Vegetable plaiting materials; vegetable products not elsewhere specified or included",
-          "notesPath": "/notes/chapter/Chapter 14.pdf"
+          "notesPath": "/chapters/Chapter 14.pdf"
         }
       ]
     },
@@ -92,59 +92,59 @@
         {
           "number": 15,
           "description": "Animal or vegetable fats and oils and their cleavage products prepared edible fats; animal or vegetable waxes",
-          "notesPath": "/notes/chapter/Chapter 15.pdf"
+          "notesPath": "/chapters/Chapter 15.pdf"
         }
       ]
     },
     {
       "number": 4,
       "description": "Prepared Foodstuffs; Beverages, Spirits, and Vinegar; Tobacco and Manufactured Tobacco Substitutes",
-      "notesPath": "/notes/section/Section 4.pdf",
+      "notesPath": "/sections/Section 4.pdf",
       "chapters": [
         {
           "number": 16,
           "description": "Preparations of meat, of fish or of crustaceans, molluscs or other aquatic invertebrates",
-          "notesPath": "/notes/chapter/Chapter 16.pdf"
+          "notesPath": "/chapters/Chapter 16.pdf"
         },
         {
           "number": 17,
           "description": "Sugars and sugar confectionery",
-          "notesPath": "/notes/chapter/Chapter 17.pdf"
+          "notesPath": "/chapters/Chapter 17.pdf"
         },
         {
           "number": 18,
           "description": "Cocoa and cocoa preparations",
-          "notesPath": "/notes/chapter/Chapter 18.pdf"
+          "notesPath": "/chapters/Chapter 18.pdf"
         },
         {
           "number": 19,
           "description": "Preparations of cereals, flour, starch or milk; bakers' wares",
-          "notesPath": "/notes/chapter/Chapter 19.pdf"
+          "notesPath": "/chapters/Chapter 19.pdf"
         },
         {
           "number": 20,
           "description": "Preparations of vegetables, fruit, nuts or other parts of plants",
-          "notesPath": "/notes/chapter/Chapter 20.pdf"
+          "notesPath": "/chapters/Chapter 20.pdf"
         },
         {
           "number": 21,
           "description": "Miscellaneous edible preparations",
-          "notesPath": "/notes/chapter/Chapter 21.pdf"
+          "notesPath": "/chapters/Chapter 21.pdf"
         },
         {
           "number": 22,
           "description": "Beverages, spirits and vinegar",
-          "notesPath": "/notes/chapter/Chapter 22.pdf"
+          "notesPath": "/chapters/Chapter 22.pdf"
         },
         {
           "number": 23,
           "description": "Residues and waste from the food industries; prepared animal feed",
-          "notesPath": "/notes/chapter/Chapter 23.pdf"
+          "notesPath": "/chapters/Chapter 23.pdf"
         },
         {
           "number": 24,
           "description": "Tobacco and manufactured tobacco substitutes",
-          "notesPath": "/notes/chapter/Chapter 24.pdf"
+          "notesPath": "/chapters/Chapter 24.pdf"
         }
       ]
     },
@@ -156,96 +156,96 @@
         {
           "number": 25,
           "description": "Salt; sulfur; earths and stone; plastering materials, lime and cement",
-          "notesPath": "/notes/chapter/Chapter 25.pdf"
+          "notesPath": "/chapters/Chapter 25.pdf"
         },
         {
           "number": 26,
           "description": "Ores, slag and ash",
-          "notesPath": "/notes/chapter/Chapter 26.pdf"
+          "notesPath": "/chapters/Chapter 26.pdf"
         },
         {
           "number": 27,
           "description": "Mineral fuels, mineral oils and products of their distillation; bituminous substances; mineral waxes",
-          "notesPath": "/notes/chapter/Chapter 27.pdf"
+          "notesPath": "/chapters/Chapter 27.pdf"
         }
       ]
     },
     {
       "number": 6,
       "description": "Products of the Chemical or Allied Industries",
-      "notesPath": "/notes/section/Section 6.pdf",
+      "notesPath": "/sections/Section 6.pdf",
       "chapters": [
         {
           "number": 28,
           "description": "Inorganic chemicals; organic or inorganic compounds of precious metals, of rare-earth metals, of radioactive elements or of isotopes",
-          "notesPath": "/notes/chapter/Chapter 28.pdf"
+          "notesPath": "/chapters/Chapter 28.pdf"
         },
         {
           "number": 29,
           "description": "Organic chemicals",
-          "notesPath": "/notes/chapter/Chapter 29.pdf"
+          "notesPath": "/chapters/Chapter 29.pdf"
         },
         {
           "number": 30,
           "description": "Pharmaceutical products",
-          "notesPath": "/notes/chapter/Chapter 30.pdf"
+          "notesPath": "/chapters/Chapter 30.pdf"
         },
         {
           "number": 31,
           "description": "Fertilizers",
-          "notesPath": "/notes/chapter/Chapter 31.pdf"
+          "notesPath": "/chapters/Chapter 31.pdf"
         },
         {
           "number": 32,
           "description": "Tanning or dyeing extracts; dyes, pigments, paints, varnishes, putty and mastics",
-          "notesPath": "/notes/chapter/Chapter 32.pdf"
+          "notesPath": "/chapters/Chapter 32.pdf"
         },
         {
           "number": 33,
           "description": "Essential oils and resinoids; perfumery, cosmetic or toilet preparations",
-          "notesPath": "/notes/chapter/Chapter 33.pdf"
+          "notesPath": "/chapters/Chapter 33.pdf"
         },
         {
           "number": 34,
           "description": "Soap, organic surface-active agents, washing preparations, lubricating preparations, artificial waxes, prepared waxes, polishing or scouring preparations, candles and similar articles, modeling pastes, 'dental waxes' and dental preparations with a basis of plaster",
-          "notesPath": "/notes/chapter/Chapter 34.pdf"
+          "notesPath": "/chapters/Chapter 34.pdf"
         },
         {
           "number": 35,
           "description": "Albuminoidal substances; modified starches; glues; enzymes",
-          "notesPath": "/notes/chapter/Chapter 35.pdf"
+          "notesPath": "/chapters/Chapter 35.pdf"
         },
         {
           "number": 36,
           "description": "Explosives; pyrotechnic products; matches; pyrophoric alloys; certain combustible preparations",
-          "notesPath": "/notes/chapter/Chapter 36.pdf"
+          "notesPath": "/chapters/Chapter 36.pdf"
         },
         {
           "number": 37,
           "description": "Photographic or cinematographic goods",
-          "notesPath": "/notes/chapter/Chapter 37.pdf"
+          "notesPath": "/chapters/Chapter 37.pdf"
         },
         {
           "number": 38,
           "description": "Miscellaneous chemical products",
-          "notesPath": "/notes/chapter/Chapter 38.pdf"
+          "notesPath": "/chapters/Chapter 38.pdf"
         }
       ]
     },
     {
       "number": 7,
       "description": "Plastics and Articles Thereof Rubber and Articles Thereof",
-      "notesPath": "/notes/section/Section 7.pdf",
+      "notesPath": "/sections/Section 7.pdf",
       "chapters": [
         {
           "number": 39,
           "description": "Plastics and articles thereof",
-          "notesPath": "/notes/chapter/Chapter 39.pdf"
+          "notesPath": "/chapters/Chapter 39.pdf"
         },
         {
           "number": 40,
           "description": "Rubber and articles thereof",
-          "notesPath": "/notes/chapter/Chapter 40.pdf"
+          "notesPath": "/chapters/Chapter 40.pdf"
         }
       ]
     },
@@ -257,17 +257,17 @@
         {
           "number": 41,
           "description": "Raw hides and skins (other than furskins) and leather",
-          "notesPath": "/notes/chapter/Chapter 41.pdf"
+          "notesPath": "/chapters/Chapter 41.pdf"
         },
         {
           "number": 42,
           "description": "Articles of leather; saddlery and harness; travel goods, handbags and similar containers; articles of animal gut (other than silkworm gut)",
-          "notesPath": "/notes/chapter/Chapter 42.pdf"
+          "notesPath": "/chapters/Chapter 42.pdf"
         },
         {
           "number": 43,
           "description": "Furskins and artificial fur; manufactures thereof",
-          "notesPath": "/notes/chapter/Chapter 43.pdf"
+          "notesPath": "/chapters/Chapter 43.pdf"
         }
       ]
     },
@@ -279,116 +279,116 @@
         {
           "number": 44,
           "description": "Wood and articles of wood; wood charcoal",
-          "notesPath": "/notes/chapter/Chapter 44.pdf"
+          "notesPath": "/chapters/Chapter 44.pdf"
         },
         {
           "number": 45,
           "description": "Cork and articles of cork",
-          "notesPath": "/notes/chapter/Chapter 45.pdf"
+          "notesPath": "/chapters/Chapter 45.pdf"
         },
         {
           "number": 46,
           "description": "Manufactures of straw, of esparto or of other plaiting materials; basketware and wickerwork",
-          "notesPath": "/notes/chapter/Chapter 46.pdf"
+          "notesPath": "/chapters/Chapter 46.pdf"
         }
       ]
     },
     {
       "number": 10,
       "description": "Pulp of Wood or of Other Fibrous Cellulosic Material; Waste and Scrap of Paper or Paperboard; Paper and Paperboard and Articles Thereof",
-      "notesPath": "/notes/section/Section 10.pdf",
+      "notesPath": "/sections/Section 10.pdf",
       "chapters": [
         {
           "number": 47,
           "description": "Pulp of wood or of other fibrous cellulosic material; waste and scrap of paper or paperboard",
-          "notesPath": "/notes/chapter/Chapter 47.pdf"
+          "notesPath": "/chapters/Chapter 47.pdf"
         },
         {
           "number": 48,
           "description": "Paper and paperboard; articles of paper pulp, of paper or of paperboard",
-          "notesPath": "/notes/chapter/Chapter 48.pdf"
+          "notesPath": "/chapters/Chapter 48.pdf"
         },
         {
           "number": 49,
           "description": "Printed books, newspapers, pictures and other products of the printing industry; manuscripts, typescripts and plans",
-          "notesPath": "/notes/chapter/Chapter 49.pdf"
+          "notesPath": "/chapters/Chapter 49.pdf"
         }
       ]
     },
     {
       "number": 11,
       "description": "Textile and Textile Articles",
-      "notesPath": "/notes/section/Section 11.pdf",
+      "notesPath": "/sections/Section 11.pdf",
       "chapters": [
         {
           "number": 50,
           "description": "Silk",
-          "notesPath": "/notes/chapter/Chapter 50.pdf"
+          "notesPath": "/chapters/Chapter 50.pdf"
         },
         {
           "number": 51,
           "description": "Wool, fine or coarse animal hair; horsehair yarn and woven fabric",
-          "notesPath": "/notes/chapter/Chapter 51.pdf"
+          "notesPath": "/chapters/Chapter 51.pdf"
         },
         {
           "number": 52,
           "description": "Cotton",
-          "notesPath": "/notes/chapter/Chapter 52.pdf"
+          "notesPath": "/chapters/Chapter 52.pdf"
         },
         {
           "number": 53,
           "description": "Other vegetable textile fibers; paper yarn and woven fabric of paper yarn",
-          "notesPath": "/notes/chapter/Chapter 53.pdf"
+          "notesPath": "/chapters/Chapter 53.pdf"
         },
         {
           "number": 54,
           "description": "Man-made filaments",
-          "notesPath": "/notes/chapter/Chapter 54.pdf"
+          "notesPath": "/chapters/Chapter 54.pdf"
         },
         {
           "number": 55,
           "description": "Man-made staple fibers",
-          "notesPath": "/notes/chapter/Chapter 55.pdf"
+          "notesPath": "/chapters/Chapter 55.pdf"
         },
         {
           "number": 56,
           "description": "Wadding, felt and nonwovens; special yarns, twine, cordage, ropes and cables and articles thereof",
-          "notesPath": "/notes/chapter/Chapter 56.pdf"
+          "notesPath": "/chapters/Chapter 56.pdf"
         },
         {
           "number": 57,
           "description": "Carpets and other textile floor coverings",
-          "notesPath": "/notes/chapter/Chapter 57.pdf"
+          "notesPath": "/chapters/Chapter 57.pdf"
         },
         {
           "number": 58,
           "description": "Special woven fabrics; tufted textile fabrics; lace, tapestries; trimmings; embroidery",
-          "notesPath": "/notes/chapter/Chapter 58.pdf"
+          "notesPath": "/chapters/Chapter 58.pdf"
         },
         {
           "number": 59,
           "description": "Impregnated, coated, covered or laminated textile fabrics; textile articles of a kind suitable for industrial use",
-          "notesPath": "/notes/chapter/Chapter 59.pdf"
+          "notesPath": "/chapters/Chapter 59.pdf"
         },
         {
           "number": 60,
           "description": "Knitted or crocheted fabrics",
-          "notesPath": "/notes/chapter/Chapter 60.pdf"
+          "notesPath": "/chapters/Chapter 60.pdf"
         },
         {
           "number": 61,
           "description": "Articles of apparel and clothing accessories, knitted or crocheted",
-          "notesPath": "/notes/chapter/Chapter 61.pdf"
+          "notesPath": "/chapters/Chapter 61.pdf"
         },
         {
           "number": 62,
           "description": "Articles of apparel and clothing accessories, not knitted or crocheted",
-          "notesPath": "/notes/chapter/Chapter 62.pdf"
+          "notesPath": "/chapters/Chapter 62.pdf"
         },
         {
           "number": 63,
           "description": "Other made up textile articles; sets; worn clothing and worn textile articles; rags",
-          "notesPath": "/notes/chapter/Chapter 63.pdf"
+          "notesPath": "/chapters/Chapter 63.pdf"
         }
       ]
     },
@@ -400,22 +400,22 @@
         {
           "number": 64,
           "description": "Footwear, gaiters and the like; parts of such articles",
-          "notesPath": "/notes/chapter/Chapter 64.pdf"
+          "notesPath": "/chapters/Chapter 64.pdf"
         },
         {
           "number": 65,
           "description": "Headgear and parts thereof",
-          "notesPath": "/notes/chapter/Chapter 65.pdf"
+          "notesPath": "/chapters/Chapter 65.pdf"
         },
         {
           "number": 66,
           "description": "Umbrellas, sun umbrellas, walking sticks, seatsticks, whips, riding-crops and parts thereof",
-          "notesPath": "/notes/chapter/Chapter 66.pdf"
+          "notesPath": "/chapters/Chapter 66.pdf"
         },
         {
           "number": 67,
           "description": "Prepared feathers and down and articles made of feathers or of down; artificial flowers; articles of human hair",
-          "notesPath": "/notes/chapter/Chapter 67.pdf"
+          "notesPath": "/chapters/Chapter 67.pdf"
         }
       ]
     },
@@ -427,17 +427,17 @@
         {
           "number": 68,
           "description": "Articles of stone, plaster, cement, asbestos, mica or similar materials",
-          "notesPath": "/notes/chapter/Chapter 68.pdf"
+          "notesPath": "/chapters/Chapter 68.pdf"
         },
         {
           "number": 69,
           "description": "Ceramic products",
-          "notesPath": "/notes/chapter/Chapter 69.pdf"
+          "notesPath": "/chapters/Chapter 69.pdf"
         },
         {
           "number": 70,
           "description": "Glass and glassware",
-          "notesPath": "/notes/chapter/Chapter 70.pdf"
+          "notesPath": "/chapters/Chapter 70.pdf"
         }
       ]
     },
@@ -449,39 +449,39 @@
         {
           "number": 71,
           "description": "Natural or cultured pearls, precious or semi-precious stones,precious metals, metals clad with precious metal and articles thereof; imitation jewelry; coin",
-          "notesPath": "/notes/chapter/Chapter 71.pdf"
+          "notesPath": "/chapters/Chapter 71.pdf"
         }
       ]
     },
     {
       "number": 15,
       "description": "Base Metals and Articles of Base Metal",
-      "notesPath": "/notes/section/Section 15.pdf",
+      "notesPath": "/sections/Section 15.pdf",
       "chapters": [
         {
           "number": 72,
           "description": "Iron and steel",
-          "notesPath": "/notes/chapter/Chapter 72.pdf"
+          "notesPath": "/chapters/Chapter 72.pdf"
         },
         {
           "number": 73,
           "description": "Articles of iron or steel",
-          "notesPath": "/notes/chapter/Chapter 73.pdf"
+          "notesPath": "/chapters/Chapter 73.pdf"
         },
         {
           "number": 74,
           "description": "Copper and articles thereof",
-          "notesPath": "/notes/chapter/Chapter 74.pdf"
+          "notesPath": "/chapters/Chapter 74.pdf"
         },
         {
           "number": 75,
           "description": "Nickel and articles thereof",
-          "notesPath": "/notes/chapter/Chapter 75.pdf"
+          "notesPath": "/chapters/Chapter 75.pdf"
         },
         {
           "number": 76,
           "description": "Aluminum and articles thereof",
-          "notesPath": "/notes/chapter/Chapter 76.pdf"
+          "notesPath": "/chapters/Chapter 76.pdf"
         },
         {
           "number": 77,
@@ -491,76 +491,76 @@
         {
           "number": 78,
           "description": "Lead and articles thereof",
-          "notesPath": "/notes/chapter/Chapter 78.pdf"
+          "notesPath": "/chapters/Chapter 78.pdf"
         },
         {
           "number": 79,
           "description": "Zinc and articles thereof",
-          "notesPath": "/notes/chapter/Chapter 79.pdf"
+          "notesPath": "/chapters/Chapter 79.pdf"
         },
         {
           "number": 80,
           "description": "Tin and articles thereof",
-          "notesPath": "/notes/chapter/Chapter 80.pdf"
+          "notesPath": "/chapters/Chapter 80.pdf"
         },
         {
           "number": 81,
           "description": "Other base metals; cermets; articles thereof",
-          "notesPath": "/notes/chapter/Chapter 81.pdf"
+          "notesPath": "/chapters/Chapter 81.pdf"
         },
         {
           "number": 82,
           "description": "Tools, implements, cutlery, spoons and forks, of base metal; parts thereof of base metal",
-          "notesPath": "/notes/chapter/Chapter 82.pdf"
+          "notesPath": "/chapters/Chapter 82.pdf"
         },
         {
           "number": 83,
           "description": "Miscellaneous articles of base metal",
-          "notesPath": "/notes/chapter/Chapter 83.pdf"
+          "notesPath": "/chapters/Chapter 83.pdf"
         }
       ]
     },
     {
       "number": 16,
       "description": "Machinery and Mechanical Appliances; Electrical Equipment; Parts Thereof; Sound Recorders and Reproducers, Television Image and Sound Recorders and Reproducers, and Parts and Accessories of Such Articles",
-      "notesPath": "/notes/section/Section 16.pdf",
+      "notesPath": "/sections/Section 16.pdf",
       "chapters": [
         {
           "number": 84,
           "description": "Nuclear reactors, boilers, machinery and mechanical appliances; parts thereof",
-          "notesPath": "/notes/chapter/Chapter 84.pdf"
+          "notesPath": "/chapters/Chapter 84.pdf"
         },
         {
           "number": 85,
           "description": "Electrical machinery and equipment and parts thereof; sound recorders and reproducers, television image and sound recorders and reproducers, and parts and accessories of such articles",
-          "notesPath": "/notes/chapter/Chapter 85.pdf"
+          "notesPath": "/chapters/Chapter 85.pdf"
         }
       ]
     },
     {
       "number": 17,
       "description": "Vehicles, Aircraft, Vessels and Associated Transport Equipment",
-      "notesPath": "/notes/section/Section 17.pdf",
+      "notesPath": "/sections/Section 17.pdf",
       "chapters": [
         {
           "number": 86,
           "description": "Railway or tramway locomotives, rolling-stock and parts thereof; railway or tramway track fixtures and fittings and parts thereof; mechanical (including electro-mechanical) traffic signalling equipment of all kinds",
-          "notesPath": "/notes/chapter/Chapter 86.pdf"
+          "notesPath": "/chapters/Chapter 86.pdf"
         },
         {
           "number": 87,
           "description": "Vehicles other than railway or tramway rolling stock, and parts and accessories thereof",
-          "notesPath": "/notes/chapter/Chapter 87.pdf"
+          "notesPath": "/chapters/Chapter 87.pdf"
         },
         {
           "number": 88,
           "description": "Aircraft, spacecraft, and parts thereof",
-          "notesPath": "/notes/chapter/Chapter 88.pdf"
+          "notesPath": "/chapters/Chapter 88.pdf"
         },
         {
           "number": 89,
           "description": "Ships, boats and floating structures",
-          "notesPath": "/notes/chapter/Chapter 89.pdf"
+          "notesPath": "/chapters/Chapter 89.pdf"
         }
       ]
     },
@@ -572,17 +572,17 @@
         {
           "number": 90,
           "description": "Optical, photographic, cinematographic, measuring, checking, precision, medical or surgical instruments and apparatus; parts and accessories thereof",
-          "notesPath": "/notes/chapter/Chapter 90.pdf"
+          "notesPath": "/chapters/Chapter 90.pdf"
         },
         {
           "number": 91,
           "description": "Clocks and watches and parts thereof",
-          "notesPath": "/notes/chapter/Chapter 91.pdf"
+          "notesPath": "/chapters/Chapter 91.pdf"
         },
         {
           "number": 92,
           "description": "Musical instruments; parts and accessories of such articles",
-          "notesPath": "/notes/chapter/Chapter 92.pdf"
+          "notesPath": "/chapters/Chapter 92.pdf"
         }
       ]
     },
@@ -594,7 +594,7 @@
         {
           "number": 93,
           "description": "Arms and ammunition; parts and accessories thereof",
-          "notesPath": "/notes/chapter/Chapter 93.pdf"
+          "notesPath": "/chapters/Chapter 93.pdf"
         }
       ]
     },
@@ -606,17 +606,17 @@
         {
           "number": 94,
           "description": "Furniture; bedding, mattresses, mattress supports, cushions and similar stuffed furnishings; lamps and lighting fittings, not elsewhere specified or included; illuminated sign illuminated nameplates and the like; prefabricated buildings",
-          "notesPath": "/notes/chapter/Chapter 94.pdf"
+          "notesPath": "/chapters/Chapter 94.pdf"
         },
         {
           "number": 95,
           "description": "Toys, games and sports requisites; parts and accessories thereof",
-          "notesPath": "/notes/chapter/Chapter 95.pdf"
+          "notesPath": "/chapters/Chapter 95.pdf"
         },
         {
           "number": 96,
           "description": "Miscellaneous manufactured articles",
-          "notesPath": "/notes/chapter/Chapter 96.pdf"
+          "notesPath": "/chapters/Chapter 96.pdf"
         }
       ]
     },
@@ -628,7 +628,7 @@
         {
           "number": 97,
           "description": "Works of art, collectors' pieces and antiques",
-          "notesPath": "/notes/chapter/Chapter 97.pdf"
+          "notesPath": "/chapters/Chapter 97.pdf"
         }
       ]
     },
@@ -640,12 +640,12 @@
         {
           "number": 98,
           "description": "Special classification provisions",
-          "notesPath": "/notes/chapter/Chapter 98.pdf"
+          "notesPath": "/chapters/Chapter 98.pdf"
         },
         {
           "number": 99,
           "description": "Temporary legislation; temporary modifications proclaimed pursuant to trade agreements legislation; additional import restrictions proclaimed pursuant to section 22 of the Agricultural Adjustment Act, as amended",
-          "notesPath": "/notes/chapter/Chapter 99.pdf"
+          "notesPath": "/chapters/Chapter 99.pdf"
         }
       ]
     }

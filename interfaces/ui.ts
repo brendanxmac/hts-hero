@@ -1,3 +1,5 @@
+import { SupabaseBuckets } from "../constants/supabase";
+
 export interface Loader {
   isLoading: boolean;
   text?: string;
@@ -5,7 +7,8 @@ export interface Loader {
 
 export interface PDFProps {
   title: string;
-  file: string;
+  bucket: SupabaseBuckets;
+  filePath: string;
 }
 
 export interface FeatureI {
