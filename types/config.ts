@@ -68,7 +68,7 @@ export type Theme = "black" | "light" | "dark" | "";
 // | "";
 
 export enum PricingPlan {
-  FREE_TRIAL = "14-Day Trial",
+  FREE_TRIAL = "7-Day Trial",
   ONE_DAY_PASS = "1-Day Pass",
   FIVE_DAY_PASS = "5-Day Pass",
   PRO = "Pro",

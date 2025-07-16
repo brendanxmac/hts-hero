@@ -51,12 +51,8 @@ import Pricing from "../../components/Pricing";
 import { FAQ } from "../../components/FAQ";
 import { classifierFaqList } from "../../constants/faq";
 import { AboutPage } from "../../enums/classify";
-import { classifyFeatures } from "../../constants/features";
-import { Feature } from "../../components/Feature";
 import FeaturesListicle from "../../components/FeaturesListicle";
 import WithWithout from "../../components/WithWithout";
-import FeaturesAccordion from "../../components/FeaturesAccordion";
-import FeaturesGrid from "../../components/FeaturesGrid";
 
 export default function Home() {
   return (
@@ -67,18 +63,7 @@ export default function Home() {
       <main>
         <ClassifierHero />
         <WithWithout />
-        {/* <FeaturesGrid /> */}
-        {/* <div className="hidden sm:block"> */}
-        {/* <FeaturesAccordion features={classifyFeatures} /> */}
-        {/* </div> */}
-        {/* <div className="block sm:hidden"> */}
         <FeaturesListicle />
-        {/* </div> */}
-        {/* <div className="hidden sm:flex py-32 bg-base-100 flex-col gap-10 md:gap-32">
-          {classifyFeatures.map((feature) => (
-            <Feature key={feature.title} feature={feature} />
-          ))}
-        </div> */}
         <Pricing customerType={AboutPage.CLASSIFIER} />
         <ClassifierCTA />
         <FAQ faqItems={classifierFaqList} />

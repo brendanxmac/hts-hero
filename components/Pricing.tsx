@@ -132,11 +132,12 @@ const getPricingHeadline = (customerType: AboutPage) => {
   return (
     <div className="flex flex-col gap-8">
       <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-6xl max-w-4xl mx-auto tracking-relaxed">
-        Save hours on classification, for less than your daily coffee
+        Save <span className="text-primary">hours</span> on classification, for
+        less than your daily coffee
       </h2>
       <div className="flex flex-col justify-center items-center">
         <p className="text-xl font-bold text-primary">
-          Launch Deal: 50% Off Your First 2 Months!
+          50% Off Your First 2 Months!
         </p>
         <div className="flex items-center gap-1">
           <svg
