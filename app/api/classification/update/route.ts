@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { data: classificationRecord, error } = await supabase
+    const { error } = await supabase
       .from("classifications")
       .update({
         classification,

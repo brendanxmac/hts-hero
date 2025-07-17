@@ -5,21 +5,14 @@ import { useEffect, useRef, useState } from "react";
 import { Loader } from "../../interfaces/ui";
 import { CandidateElements } from "../CandidateElements";
 import {
-  getBestClassificationProgression,
   getBestDescriptionCandidates,
   getElementsInChapter,
-  getProgressionDescriptionWithArrows,
 } from "../../libs/hts";
-import {
-  CandidateSelection,
-  Classification,
-  HtsElement,
-} from "../../interfaces/hts";
+import { CandidateSelection, HtsElement } from "../../interfaces/hts";
 import { HtsSection } from "../../interfaces/hts";
 import { getHtsSectionsAndChapters } from "../../libs/hts";
 import { setIndexInArray } from "../../utilities/data";
 import { elementsAtClassificationLevel } from "../../utilities/data";
-import { TertiaryText } from "../TertiaryText";
 import { PrimaryLabel } from "../PrimaryLabel";
 import { Color } from "../../enums/style";
 import { useClassifyTab } from "../../contexts/ClassifyTabContext";
@@ -29,7 +22,7 @@ import { SecondaryLabel } from "../SecondaryLabel";
 import Modal from "../Modal";
 import { SearchCrossRulings } from "../SearchCrossRulings";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/16/solid";
-import { PencilSquareIcon, SparklesIcon } from "@heroicons/react/24/solid";
+import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import { TertiaryLabel } from "../TertiaryLabel";
 
 export interface ClassificationStepProps {
@@ -51,8 +44,7 @@ export const ClassificationStep = ({
     text: "",
   });
   const [showCrossRulingsModal, setShowCrossRulingsModal] = useState(false);
-  const { classification, addLevel, updateLevel, setClassification } =
-    useClassification();
+  const { classification, addLevel, updateLevel } = useClassification();
   const { articleDescription, levels } = classification;
   const [showNotes, setShowNotes] = useState(
     Boolean(levels[classificationLevel]?.notes)

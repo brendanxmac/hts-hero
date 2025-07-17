@@ -1,4 +1,4 @@
-import { FeatureI } from "@/components/FeaturesAccordion";
+import { FeatureI } from "../interfaces/ui";
 
 export enum GuideName {
   EXPLORE = "EXPLORE",

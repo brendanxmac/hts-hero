@@ -2,7 +2,7 @@
 
 import { createContext, useContext, ReactNode, useState } from "react";
 import { Guide, GuideName } from "@/types/guides";
-import { FeatureI } from "@/components/FeaturesAccordion";
+import { FeatureI } from "@/interfaces/ui";
 
 interface GuideContextType {
   showGuide: (guideName: GuideName) => void;

@@ -1,4 +1,4 @@
-import { FeatureI } from "../components/FeaturesAccordion";
+import { FeatureI } from "../interfaces/ui";
 import { Guide, GuideName } from "../types/guides";
 
 const stepOne = (

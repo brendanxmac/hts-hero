@@ -1,4 +1,3 @@
-import { ChevronRightIcon } from "@heroicons/react/16/solid";
 import { HtsElement } from "../../interfaces/hts";
 import { TertiaryText } from "../TertiaryText";
 import { Color } from "../../enums/style";

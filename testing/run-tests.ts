@@ -60,7 +60,7 @@ const getSectionCandidates = async (productDescription: string) => {
 
   return sections.filter((section) =>
     bestSectionCandidates.bestCandidates.some(
-      (candidate) => candidate.index + 1 === section.number
+      (candidateIndex) => candidateIndex + 1 === section.number
     )
   );
 };
@@ -80,13 +80,15 @@ const getChapterCandidates = async (
         section.chapters.map((c) => c.description)
       );
 
-      return bestChapterCandidates.bestCandidates.map((chapterCandidate) => ({
-        index: section.chapters[chapterCandidate.index].number,
-        description: section.chapters[chapterCandidate.index].description,
-        // TODO: toggle this to get the logic from the best progression response
-        // will also need to update the GPT response format to include the logic
-        logic: "", // chapterCandidate.logic
-      }));
+      return bestChapterCandidates.bestCandidates.map(
+        (chapterCandidateIndex) => ({
+          index: section.chapters[chapterCandidateIndex].number,
+          description: section.chapters[chapterCandidateIndex].description,
+          // TODO: toggle this to get the logic from the best progression response
+          // will also need to update the GPT response format to include the logic
+          logic: "", // chapterCandidate.logic
+        })
+      );
     })
   );
 
@@ -121,13 +123,13 @@ const getHeadingCandidates = async (
       }
 
       // Handle Negative Index Case (sometimes chatGPT will do this)
-      if (bestCandidateHeadings.bestCandidates[0].index < 0) {
+      if (bestCandidateHeadings.bestCandidates[0] < 0) {
         console.log("Negative Index");
         return [];
       }
 
-      return bestCandidateHeadings.bestCandidates.map((candidate) => {
-        return elementsAtLevel[candidate.index];
+      return bestCandidateHeadings.bestCandidates.map((candidateIndex) => {
+        return elementsAtLevel[candidateIndex];
       });
     })
   );

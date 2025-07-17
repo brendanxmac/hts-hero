@@ -1,5 +1,5 @@
 import { Color } from "../enums/style";
-import { FeatureI } from "./FeaturesAccordion";
+import { FeatureI } from "../interfaces/ui";
 import { Media } from "./Media";
 import { PrimaryLabel } from "./PrimaryLabel";
 

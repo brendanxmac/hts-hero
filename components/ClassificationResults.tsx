@@ -152,8 +152,8 @@ export const ClassificationResults = ({
     );
 
     const candidates: CandidateSelection[] =
-      bestSectionCandidates.bestCandidates.map((sectionCandidate) => ({
-        index: sections[sectionCandidate.index].number,
+      bestSectionCandidates.bestCandidates.map((sectionCandidateIndex) => ({
+        index: sections[sectionCandidateIndex].number,
         // description: sections[sectionCandidate.index].description,
         // logic: sectionCandidate.logic,
       }));
@@ -202,8 +202,8 @@ export const ClassificationResults = ({
         );
 
         const candidates: CandidateSelection[] =
-          bestChapterCandidates.bestCandidates.map((chapterCandidate) => ({
-            index: section.chapters[chapterCandidate.index].number,
+          bestChapterCandidates.bestCandidates.map((chapterCandidateIndex) => ({
+            index: section.chapters[chapterCandidateIndex].number,
             // description: section.chapters[chapterCandidate.index].description,
             // logic: chapterCandidate.logic,
           }));
@@ -242,13 +242,13 @@ export const ClassificationResults = ({
         }
 
         // Handle Negative Index Case (sometimes chatGPT will do this)
-        if (bestCandidateHeadings.bestCandidates[0].index < 0) {
+        if (bestCandidateHeadings.bestCandidates[0] < 0) {
           return;
         }
 
         const candidates = bestCandidateHeadings.bestCandidates.map(
-          (candidate) => {
-            return elementsAtLevel[candidate.index];
+          (candidateIndex) => {
+            return elementsAtLevel[candidateIndex];
           }
         );
 

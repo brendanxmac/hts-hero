@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Media } from "./Media";
 import { AccordionItem } from "./AccordionItem";
 import { FeatureI } from "../interfaces/ui";
 

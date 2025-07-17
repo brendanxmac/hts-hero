@@ -32,7 +32,6 @@ import { userHasActivePurchase } from "../libs/supabase/purchase";
 import { isWithinPastNDays } from "../utilities/time";
 import { useUser } from "../contexts/UserContext";
 import { PrimaryText } from "./PrimaryText";
-import { TertiaryText } from "./TertiaryText";
 import { SecondaryText } from "./SecondaryText";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { SupabaseBuckets } from "../constants/supabase";

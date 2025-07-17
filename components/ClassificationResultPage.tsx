@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useClassification } from "../contexts/ClassificationContext";
 import { useHts } from "../contexts/HtsContext";
-import { TariffType, WorkflowStep } from "../enums/hts";
+import { TariffType } from "../enums/hts";
 import { Color } from "../enums/style";
 import {
   downloadClassificationReport,
@@ -9,7 +9,6 @@ import {
   getChapterFromHtsElement,
   getGeneralNoteFromSpecialTariffSymbol,
   getHtsElementParents,
-  getProgressionDescriptions,
   getSectionAndChapterFromChapterNumber,
   getTariffDetails,
   getTemporaryTariffText,
@@ -20,14 +19,12 @@ import {
 } from "../utilities/hts";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { SecondaryLabel } from "./SecondaryLabel";
-import { SecondaryText } from "./SecondaryText";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { PDFProps } from "../interfaces/ui";
 import PDF from "./PDF";
 import { TertiaryText } from "./TertiaryText";
 import {
   CheckCircleIcon,
-  ChevronDownIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/16/solid";
 import { ArrowDownTrayIcon } from "@heroicons/react/16/solid";

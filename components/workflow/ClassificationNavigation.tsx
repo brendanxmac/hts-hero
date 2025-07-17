@@ -32,7 +32,7 @@ export const ClassificationNavigation = ({
   fetchingOptionsOrSuggestions,
 }: ClassificationNavigationProps) => {
   const { activeTab, setActiveTab } = useClassifyTab();
-  const { classification, setClassification } = useClassification();
+  const { classification } = useClassification();
   const { articleDescription, levels } = classification;
   const containerRef = useRef<HTMLDivElement>(null);
   const descriptionRef = useRef<HTMLDivElement>(null);
