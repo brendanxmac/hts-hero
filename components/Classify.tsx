@@ -20,10 +20,11 @@ import { useSearchParams } from "next/navigation";
 import { classNames } from "../utilities/style";
 
 interface Props {
+  page: ClassifyPage;
   setPage: (page: ClassifyPage) => void;
 }
 
-export const Classify = ({ setPage }: Props) => {
+export const Classify = ({ page, setPage }: Props) => {
   const [fetchingOptionsOrSuggestions, setFetchingOptionsOrSuggestions] =
     useState(false);
   const [showPricing, setShowPricing] = useState(false);
@@ -35,7 +36,7 @@ export const Classify = ({ setPage }: Props) => {
   const [classificationLevel, setClassificationLevel] = useState<
     number | undefined
   >(undefined);
-  const { fetchElements, htsElements } = useHts();
+  const { fetchElements, htsElements, isFetching, revision } = useHts();
   const { getSections, sections } = useHtsSections();
   const { classification, setArticleDescription } = useClassification();
   const [workflowStep, setWorkflowStep] = useState(
@@ -53,18 +54,18 @@ export const Classify = ({ setPage }: Props) => {
 
     const loadAllData = async () => {
       setLoading({ isLoading: true, text: "Fetching All Data" });
-      await Promise.all([fetchElements(), getSections()]);
+      await Promise.all([fetchElements("latest"), getSections()]);
       setLoading({ isLoading: false, text: "" });
     };
 
-    if (!sections.length || !htsElements.length) {
+    if (!sections.length || !htsElements.length || revision !== "latest") {
       loadAllData();
     } else {
       setLoading({ isLoading: false, text: "" });
     }
-  }, []);
+  }, [page]);
 
-  if (loading.isLoading) {
+  if (loading.isLoading || isFetching) {
     return (
       <div className="h-full w-full flex items-center justify-center">
         <LoadingIndicator text={loading.text} />

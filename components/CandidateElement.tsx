@@ -92,10 +92,6 @@ export const CandidateElement = ({
     });
   };
 
-  useEffect(() => {
-    console.log("PDF", showPDF);
-  }, [showPDF]);
-
   return (
     <div
       className={classNames(

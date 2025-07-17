@@ -130,6 +130,7 @@ export interface ClassificationRecord {
   classification: Classification;
   created_at: string;
   updated_at: string;
+  revision: string;
 }
 
 export interface Classification {

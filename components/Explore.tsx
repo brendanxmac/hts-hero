@@ -15,6 +15,12 @@ import { Loader } from "../interfaces/ui";
 import { SearchResults } from "./SearchResults";
 import { useHts } from "../contexts/HtsContext";
 import { isHTSCode } from "../libs/hts";
+import { Color } from "../enums/style";
+import { SecondaryLabel } from "./SecondaryLabel";
+import { PrimaryLabel } from "./PrimaryLabel";
+import { SecondaryText } from "./SecondaryText";
+import { TertiaryText } from "./TertiaryText";
+import { TertiaryLabel } from "./TertiaryLabel";
 
 const ExploreTabs: Tab[] = [
   {
@@ -44,12 +50,12 @@ export const Explore = () => {
   const [searchResults, setSearchResults] = useState<FuseResult<HtsElement>[]>(
     []
   );
-  const { htsElements, fetchElements } = useHts();
+  const { htsElements, fetchElements, revision } = useHts();
 
   useEffect(() => {
     const loadAllData = async () => {
       setLoading({ isLoading: true, text: "Loading" });
-      await Promise.all([fetchElements(), getSections()]);
+      await Promise.all([fetchElements("latest"), getSections()]);
       setLoading({ isLoading: false, text: "" });
     };
 
@@ -128,6 +134,14 @@ export const Explore = () => {
           }
         }}
       />
+
+      <div className="flex gap-2 items-center">
+        <TertiaryLabel value="Revision:" color={Color.WHITE} />
+        <TertiaryText
+          value={revision === "latest" ? "Latest" : revision}
+          color={Color.WHITE}
+        />
+      </div>
 
       <div className="w-full h-full grow flex flex-col gap-4 overflow-y-auto">
         {isLoading && <LoadingIndicator text={loadingText} />}

@@ -2,7 +2,6 @@ import { ChatCompletion } from "openai/resources";
 import {
   HtsElementWithParentReference,
   ClassificationProgression,
-  CandidateSelection,
   HsHeading,
   HtsElement,
   TemporaryTariff,
@@ -32,8 +31,9 @@ import { generateClassificationReport } from "./classification";
 import { SecondaryText } from "../components/SecondaryText";
 import { TertiaryLabel } from "../components/TertiaryLabel";
 import { Color } from "../enums/style";
-import { notes } from "../public/notes/notes";
 import { UserProfile } from "./supabase/user";
+import { notes } from "../public/notes/notes";
+import { inflate } from "pako";
 
 export const downloadClassificationReport = async (
   classification: Classification,
@@ -589,13 +589,21 @@ export const getHtsSectionsAndChapters = (): Promise<{
   return apiClient.get("/hts/get-sections-and-chapters", {});
 };
 
-export const getHtsData = async (): Promise<HtsElement[]> => {
-  const htsData: HtsElement[] = await apiClient.get("/hts/get-hts-data", {});
+export const getHtsData = async (revision: string): Promise<HtsElement[]> => {
+  const response = await fetch(`/api/hts/get-hts-data?revision=${revision}`);
 
-  // Data is already enriched with uuid, chapter, and type in preprocessing prior to being stored
-  // so we can simply return the parsed data back to the user -- since the file is large this needed
-  // to happen in preprocessing to avoid UI lag and a bad user experience
-  return htsData;
+  if (!response.ok) {
+    throw new Error(`Failed to fetch HTS data: ${response.statusText}`);
+  }
+
+  // Convert Blob to ArrayBuffer and decompress the gzipped JSON
+  const htsData = await response.blob();
+  const arrayBuffer = await htsData.arrayBuffer();
+  const decompressedData = inflate(new Uint8Array(arrayBuffer), {
+    to: "string",
+  });
+
+  return JSON.parse(decompressedData);
 };
 
 export const getHtsChapterData = async (

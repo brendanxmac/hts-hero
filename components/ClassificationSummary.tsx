@@ -1,4 +1,5 @@
 import { useClassification } from "../contexts/ClassificationContext";
+import { useHts } from "../contexts/HtsContext";
 import { ClassifyPage } from "../enums/classify";
 import { Color } from "../enums/style";
 import {
@@ -39,12 +40,18 @@ export const ClassificationSummary = ({
   setPage,
 }: Props) => {
   const { setClassification, setClassificationId } = useClassification();
+  const { fetchElements } = useHts();
   const classification = classificationRecord.classification;
 
   return (
     <div
       className="bg-base-100 p-4 rounded-md cursor-pointer flex flex-col gap-2 border-2 border-base-content/30 transition duration-100 ease-in-out hover:scale-[1.02] hover:bg-base-300"
       onClick={() => {
+        // Get the classifications revision and see if we need to use useHts to fetch the elements
+        const revision = classificationRecord.revision;
+        if (revision !== "latest") {
+          fetchElements(revision);
+        }
         setClassification(classification);
         setClassificationId(classificationRecord.id);
         setPage(ClassifyPage.CLASSIFY);

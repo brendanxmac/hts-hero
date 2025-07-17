@@ -52,7 +52,7 @@ export const Classifications = ({ page, setPage }: Props) => {
   useEffect(() => {
     const loadAllData = async () => {
       setLoader({ isLoading: true, text: "Loading Classifications" });
-      await Promise.all([fetchElements(), getSections()]);
+      await Promise.all([fetchElements("latest"), getSections()]);
       setLoader({ isLoading: false, text: "" });
     };
 
