@@ -233,7 +233,7 @@ export const Classifications = ({ page, setPage }: Props) => {
           )}
         </div>
         {filteredClassifications && filteredClassifications.length > 0 && (
-          <div className="flex flex-col gap-2 pb-6">
+          <div className="flex flex-col gap-2 pt-2 pb-6">
             {filteredClassifications.map((classification, index) => (
               <ClassificationSummary
                 key={`classification-${index}`}
