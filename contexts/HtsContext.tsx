@@ -6,24 +6,29 @@ import { getHtsData } from "../libs/hts";
 
 interface HtsContextType {
   htsElements: HtsElement[];
-  revision: string | null;
+  revision: Revision | null;
   isFetching: boolean;
   fetchElements: (revision: string) => Promise<void>;
+}
+
+interface Revision {
+  name: string;
+  isLatest: boolean;
 }
 
 const HtsContext = createContext<HtsContextType | undefined>(undefined);
 
 export const HtsProvider = ({ children }: { children: ReactNode }) => {
   const [htsElements, setHtsElements] = useState<HtsElement[]>([]);
-  const [revision, setRevision] = useState<string | null>(null);
+  const [revision, setRevision] = useState<Revision | null>(null);
   const [isFetching, setIsFetching] = useState<boolean>(false);
 
   const fetchElements = async (revision: string) => {
     setIsFetching(true);
     try {
-      const elements = await getHtsData(revision);
+      const { data: elements, revisionName } = await getHtsData(revision);
       setHtsElements(elements);
-      setRevision(revision);
+      setRevision({ name: revisionName, isLatest: revision === "latest" });
     } finally {
       setIsFetching(false);
     }

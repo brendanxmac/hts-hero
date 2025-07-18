@@ -1,6 +1,5 @@
 import { Tab } from "../interfaces/tab";
 import { classNames } from "../utilities/style";
-import { PrimaryLabel } from "./PrimaryLabel";
 import { SearchBar } from "./SearchBar";
 
 interface SectionHeaderProps {
@@ -21,7 +20,8 @@ export const SectionHeader = ({
   return (
     <div className="flex gap-4 items-center justify-between flex-col sm:flex-row">
       <div className="w-full flex gap-4 items-center justify-between sm:justify-normal">
-        <PrimaryLabel value={title} />
+        <h1 className="text-2xl font-bold text-white">{title}</h1>
+
         <div
           role="tablist"
           className="tabs tabs-boxed tabs-sm p-1.5 rounded-xl"

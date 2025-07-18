@@ -47,6 +47,7 @@ export async function GET(req: NextRequest) {
       headers: {
         "Content-Type": "application/gzip",
         "Content-Disposition": `attachment; filename="${revisionInstance.name}.json.gz"`,
+        "X-Revision-Name": revisionInstance.name,
       },
     });
   } catch (e) {

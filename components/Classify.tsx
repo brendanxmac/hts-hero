@@ -58,7 +58,7 @@ export const Classify = ({ page, setPage }: Props) => {
       setLoading({ isLoading: false, text: "" });
     };
 
-    if (!sections.length || !htsElements.length || revision !== "latest") {
+    if (!sections.length || !htsElements.length || !revision?.isLatest) {
       loadAllData();
     } else {
       setLoading({ isLoading: false, text: "" });

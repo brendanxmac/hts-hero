@@ -589,12 +589,17 @@ export const getHtsSectionsAndChapters = (): Promise<{
   return apiClient.get("/hts/get-sections-and-chapters", {});
 };
 
-export const getHtsData = async (revision: string): Promise<HtsElement[]> => {
+export const getHtsData = async (
+  revision: string
+): Promise<{ data: HtsElement[]; revisionName: string }> => {
   const response = await fetch(`/api/hts/get-hts-data?revision=${revision}`);
 
   if (!response.ok) {
     throw new Error(`Failed to fetch HTS data: ${response.statusText}`);
   }
+
+  // Get the X-Revision-Name header
+  const revisionName = response.headers.get("X-Revision-Name") || "";
 
   // Convert Blob to ArrayBuffer and decompress the gzipped JSON
   const htsData = await response.blob();
@@ -603,7 +608,10 @@ export const getHtsData = async (revision: string): Promise<HtsElement[]> => {
     to: "string",
   });
 
-  return JSON.parse(decompressedData);
+  return {
+    data: JSON.parse(decompressedData),
+    revisionName,
+  };
 };
 
 export const getHtsChapterData = async (
