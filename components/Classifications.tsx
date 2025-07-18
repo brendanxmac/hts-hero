@@ -17,6 +17,7 @@ import {
 } from "@heroicons/react/16/solid";
 import { useClassification } from "../contexts/ClassificationContext";
 import Fuse from "fuse.js";
+import { LoadingIndicator } from "./LoadingIndicator";
 
 interface Props {
   page: ClassifyPage;
@@ -149,6 +150,19 @@ export const Classifications = ({ page, setPage }: Props) => {
           {classificationsError &&
             `Error loading classifications: ${classificationsError.message}`}
           {userError && `Error loading user: ${userError.message}`}
+        </div>
+      </div>
+    );
+  }
+
+  // Show full screen loading when data is being loaded
+  if (loader.isLoading) {
+    return (
+      <div className="h-full w-full flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="text-center">
+            <LoadingIndicator />
+          </div>
         </div>
       </div>
     );
