@@ -18,8 +18,8 @@ const ConversionPricing = () => {
   const { user } = useUser();
 
   return (
-    <section className="bg-neutral-900 overflow-hidden" id="pricing">
-      <div className="py-16 px-4 sm:px-8 max-w-7xl mx-auto flex flex-col items-center justify-center">
+    <section className="bg-base-300 overflow-hidden" id="pricing">
+      <div className="py-12 px-4 sm:px-8 max-w-7xl mx-auto flex flex-col items-center justify-center">
         {/* <div className="mb-10 flex flex-col gap-2 items-center border-2 border-neutral-content/20 rounded-lg p-4">
           <TertiaryLabel value="🎁 Your HTS Code:" />
           <h2 className="text-3xl md:text-4xl text-secondary font-extrabold select-none text-center">
@@ -103,34 +103,37 @@ const ConversionPricing = () => {
           </div>
         </div> */}
 
-        <h1 className="text-white text-4xl md:text-5xl font-extrabold text-center">
-          The Classification Assistant
-          <br /> for Customs Brokers
+        <h1 className="text-white text-3xl md:text-4xl font-extrabold text-center">
+          {/* The <span className="text-primary">Classification Assistant</span>
+          <br /> for Customs Brokers */}
+          Upgrade to <span className="text-primary">Pro</span> to Access
+          Classify
         </h1>
 
-        <h2 className="mt-6 mb-1 sm:mb-3 max-w-4xl text-xl sm:text-2xl md:text-3xl text-primary font-extrabold text-center">
-          Select a plan to access classify
-        </h2>
-
-        <div className="flex items-center gap-1 mb-4 sm:mb-8">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-            stroke="currentColor"
-            className="size-5 text-accent animate-pulse"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-            />
-          </svg>
-
-          <p className="text-sm sm:text-base text-accent font-semibold">
-            50% off until August 1st
+        <div className="flex flex-col justify-center items-center py-6">
+          <p className="text-xl font-bold text-primary">
+            50% Off Your First 2 Months!
           </p>
+          <div className="flex items-center gap-1">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="size-5 animate-pulse text-secondary"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+              />
+            </svg>
+
+            <p className="text-sm text-secondary font-semibold">
+              Offer valid until <span className="underline">August 1st</span>
+            </p>
+          </div>
         </div>
 
         <div className="w-full relative flex justify-evenly flex-col lg:flex-row items-center lg:items-stretch gap-8 text-white">
@@ -148,7 +151,7 @@ const ConversionPricing = () => {
                   <span
                     className={`badge text-xs text-black font-semibold border-0 bg-primary`}
                   >
-                    BEST VALUE
+                    Limited Time Offer
                   </span>
                 </div>
               )}

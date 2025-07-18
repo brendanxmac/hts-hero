@@ -241,11 +241,16 @@ const Pricing = ({ customerType }: PricingProps) => {
                       >
                         ${plan.price}
                       </p>
-                      <p className="pl-1 pb-1 text-sm text-white font-bold">
-                        {plan.mode === StripePaymentMode.SUBSCRIPTION
-                          ? "/ month"
-                          : ""}
-                      </p>
+                      {plan.mode === StripePaymentMode.SUBSCRIPTION && (
+                        <div className="flex flex-col">
+                          {/* <p className="pl-2 text-sm text-base-content/80 font-semibold">
+                            / month / user
+                          </p> */}
+                          <p className="pl-1 pb-1 text-sm text-base-content/80 font-semibold">
+                            / user / month
+                          </p>
+                        </div>
+                      )}
                       {/* </div> */}
                     </div>
                   )}

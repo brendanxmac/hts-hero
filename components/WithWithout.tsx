@@ -30,10 +30,10 @@ const painPoints: PainPoint[] = [
     title: "Creating Reports",
     time: "15 min",
   },
-  // {
-  //   title: "Finding & Updating Previous Classifications",
-  //   time: "?? min",
-  // },
+  {
+    title: "Save, Share, Find, and Update Classifications",
+    time: "?? min",
+  },
 ];
 
 const pleasurePoints: PainPoint[] = [
@@ -57,10 +57,10 @@ const pleasurePoints: PainPoint[] = [
     title: "Creating Reports",
     time: "0 min",
   },
-  // {
-  //   title: "Finding & Updating Previous Classifications",
-  //   time: "30 sec",
-  // },
+  {
+    title: "Save, Share, Find, and Update Classifications",
+    time: "0 min",
+  },
 ];
 
 const WithWithout = () => {
@@ -68,8 +68,7 @@ const WithWithout = () => {
     <section className="bg-base-300">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-16 md:py-24">
         <h2 className="text-center font-black text-white text-4xl sm:text-5xl lg:text-6xl mb-6 sm:mb-8 md:mb-10 lg:mb-12">
-          <span className="text-green-500">Supercharge</span> Your
-          Classifications
+          <span className="text-primary">Supercharge</span> Your Classifications
         </h2>
 
         <div className="flex flex-col lg:flex-row justify-center items-center lg:items-start gap-4 sm:gap-6 md:gap-8 lg:gap-12">
