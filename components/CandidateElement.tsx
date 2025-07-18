@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { HtsElement } from "../interfaces/hts";
 import SquareIconButton from "./SqaureIconButton";
