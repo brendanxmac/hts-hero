@@ -1,29 +1,55 @@
-import { NextResponse } from "next/server";
-import { readFile } from "fs/promises";
-import path from "path";
+import { NextRequest, NextResponse } from "next/server";
+import { createAdminClient } from "../../supabase/server";
+import { SupabaseBuckets } from "../../../../constants/supabase";
+import { getHtsRevisionRecord } from "../../../../libs/supabase/hts-revision";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    // const requesterIsAllowed = await requesterIsAuthenticated(req);
+    // Get the revision number from the query params
+    const revision = req.nextUrl.searchParams.get("revision");
 
-    // // Users who are not logged in can't make a gpt requests
-    // if (!requesterIsAllowed) {
-    //   return NextResponse.json(
-    //     { error: "You must be logged in to complete this action" },
-    //     { status: 401 }
-    //   );
-    // }
+    if (!revision) {
+      return NextResponse.json(
+        { error: "Revision is required" },
+        { status: 400 }
+      );
+    }
 
-    // TODO: Add some logic to grab the latest and get it from S3?
+    // find the matching revision in the revisions table in supabase
+    const revisionInstance = await getHtsRevisionRecord(revision);
 
-    const htsData = await readFile(
-      path.join(process.cwd(), "hts-elements", "2025-14.json"),
-      "utf8"
-    );
+    if (!revisionInstance) {
+      return NextResponse.json(
+        { error: `Revision ${revision} not found` },
+        { status: 404 }
+      );
+    }
 
-    return NextResponse.json(JSON.parse(htsData));
+    const supabase = createAdminClient();
+
+    // Fetch the revision from supabase storage
+    const { data: revisionData, error: revisionError } = await supabase.storage
+      .from(SupabaseBuckets.HTS_REVISIONS)
+      .download(`${revisionInstance.name}.json.gz`);
+
+    if (revisionError) {
+      console.error("revisionError", revisionError);
+      return NextResponse.json(
+        { error: revisionError.message },
+        { status: 500 }
+      );
+    }
+
+    // Return the Blob directly with appropriate headers
+    return new NextResponse(revisionData, {
+      headers: {
+        "Content-Type": "application/gzip",
+        "Content-Disposition": `attachment; filename="${revisionInstance.name}.json.gz"`,
+        "X-Revision-Name": revisionInstance.name,
+      },
+    });
   } catch (e) {
     console.error(e);
     return NextResponse.json({ error: e?.message }, { status: 500 });

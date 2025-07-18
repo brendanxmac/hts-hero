@@ -1,4 +1,4 @@
-import { Feature } from "@/components/FeaturesAccordion";
+import { FeatureI } from "../interfaces/ui";
 
 export enum GuideName {
   EXPLORE = "EXPLORE",
@@ -8,7 +8,7 @@ export enum GuideName {
 
 export interface Guide {
   name: GuideName;
-  steps: Feature[];
+  steps: FeatureI[];
   routes?: string[];
   daysUntilShowAgain?: number;
 }

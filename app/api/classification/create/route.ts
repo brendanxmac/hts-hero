@@ -4,6 +4,8 @@ import {
   Classification,
   ClassificationRecord,
 } from "../../../../interfaces/hts";
+import { getHtsData } from "../../../../libs/hts";
+import { getHtsRevisionRecord } from "../../../../libs/supabase/hts-revision";
 
 export const dynamic = "force-dynamic";
 
@@ -27,8 +29,6 @@ export async function POST(req: NextRequest) {
 
     const { classification }: CreateClassificationDto = await req.json();
 
-    console.log(classification);
-
     if (!classification) {
       return NextResponse.json(
         {
@@ -38,18 +38,20 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Get the latest revision of the HTS data
+    const revision = await getHtsRevisionRecord("latest");
+
     const { data: classificationRecord, error } = await supabase
       .from("classifications")
       .insert([
         {
           user_id: user.id,
           classification: classification,
+          revision: revision.name,
         },
       ])
       .select()
       .single<ClassificationRecord>();
-
-    console.log(classificationRecord);
 
     if (error) {
       console.error("Error creating classification:", error);

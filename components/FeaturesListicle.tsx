@@ -9,7 +9,7 @@ import DocumentCheckSVG from "./svg/DocumentCheckSVG";
 import { classNames } from "../utilities/style";
 import LightningSVG from "./svg/LightningSVG";
 import SearchSVG from "./svg/SearchSVG";
-import Link from "next/link";
+import CursorSVG from "./svg/CursorSVG";
 
 const features: {
   name: string;
@@ -17,20 +17,23 @@ const features: {
   svg: JSX.Element;
 }[] = [
   {
-    name: "Discovers Headings",
+    name: "Finds Headings",
     points: [
       {
+        point: "Enter an item description and get suitable headings in seconds",
+      },
+      {
         point:
-          "Jump start any classification by automatically seeing potential headings",
+          "Jump-starts your classifications instead of you starting from scratch",
       },
       {
         point: "Discover headings you might have missed",
       },
       {
-        point: "Easily find & apply your own",
+        point: "Lets you easily find & apply your own",
       },
       {
-        point: "~15 minutes saved",
+        point: "~10 minutes saved",
         detail: "per classification",
         isKey: true,
       },
@@ -41,13 +44,15 @@ const features: {
     name: "Analyzes Candidates",
     points: [
       {
-        point:
-          "Provides an analysis of the candidates at every level of classification",
-        detail: "Based on the GRI & Additional US Rules",
+        point: "Gives you a GRI analysis of the candidates at every level",
       },
       {
-        point: "Lets you easily add your own",
-        detail: "Which will be automatically included in your reports",
+        point: "Helps you quickly find the best candidate",
+      },
+      {
+        point: "Lets you easily add your own notes for any decision",
+        detail:
+          "Which are automatically included in your reports and help refresh your memory later on",
       },
       {
         point: "~10 minutes saved",
@@ -62,16 +67,15 @@ const features: {
     points: [
       {
         point: "Generate classification reports, in a single click",
-        detail: "A clean & easy to digest report of your decisions",
       },
       {
-        point: "Includes all your notes and a breakdown of each selection",
-        detail: "Coming Soon: Apply your logo and branding to your reports",
+        point:
+          "Includes your notes, branding, disclaimers, and a breakdown all decisions",
       },
       {
-        point: "Easily export & share with your clients or customs",
+        point: "Easily export & share with your clients",
         detail:
-          "Coming Soon: Email directly to clients & generate secure view-only links",
+          "⏳ Coming Soon: Send reports client in a click, or let them view their classifications right in HTS Hero",
       },
       {
         point: "~20 minutes saved",
@@ -86,16 +90,12 @@ const features: {
     points: [
       {
         point:
-          "See the notes that might impact your classification, without leaving the page",
+          "Immediately see the notes that might impact your classification",
         detail: "General, Section, Chapter, Subheading, etc...",
       },
       {
-        point: "Quickly find the details of HTS references with missing links",
-        detail: `e.g. "See heading 9902.22.84" or "Articles of heading 4601"`,
-      },
-      {
-        point: "Coming Soon: Get help parsing complex or lengthy notes",
-        comingSoon: true,
+        point: "Helps you find the details of HTS references",
+        detail: `👉 "See heading 9902.22.84" 👉 "Articles of heading 4601"`,
       },
       {
         point: "~10 minutes saved",
@@ -106,18 +106,11 @@ const features: {
     svg: <DocumentSearchSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
   {
-    name: "Simplifies Search",
+    name: "Finds CROSS Rulings",
     points: [
       {
-        point: "A brand new HTS explorer tailor-made for brokers",
-      },
-      {
-        point:
-          "Built in PDF viewer - No more downloads or opening new tabs to find what you're looking for",
-      },
-      {
-        point: "Coming Soon: Automatic CROSS ruling lookup",
-        comingSoon: true,
+        point: "Automatically searches CROSS rulings for you",
+        detail: "Based on the item description & final code",
       },
       {
         point: "~10 minutes saved",
@@ -126,6 +119,21 @@ const features: {
       },
     ],
     svg: <SearchSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
+  },
+  {
+    name: "HTS Explorer",
+    points: [
+      {
+        point: "A 'clickable' HTS explorer tailor-made for the broker workflow",
+        detail:
+          "Navigate the entire HTS without the downloads and initial search, just click",
+      },
+      {
+        point:
+          "A built in PDF viewer lets see everything you need in a single tab",
+      },
+    ],
+    svg: <CursorSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
 ];
 
@@ -137,9 +145,9 @@ const FeaturesListicle = () => {
   const [hasClicked, setHasClicked] = useState<boolean>(false);
 
   return (
-    <section className="py-24" id="features">
+    <section className="py-24 bg-base-100" id="features">
       <div className="max-w-5xl mx-auto">
-        <div className="bg-base-100 max-md:px-8 max-w-5xl mb-8 md:px-12">
+        <div className="text-center max-md:px-8 max-w-5xl mb-8 md:px-12">
           <h2 className="text-white font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-tight mb-5">
             {/* 💡 COPY TIP: Remind visitors about the value of your product. Why do they need it? */}
             Your Classification Sidekick
@@ -147,13 +155,13 @@ const FeaturesListicle = () => {
           <p className="text-neutral-300 leading-relaxed mb-3 lg:text-lg">
             {/* 💡 COPY TIP: Explain how your product delivers what you promise in the headline. */}
             HTS Hero finds the information you need to classify and generates
-            polished client reports.
+            polished reports.
           </p>
         </div>
       </div>
 
       <div className="mx-6 md:mx-12">
-        <div className="grid grid-cols-3 md:flex justify-between px-2 gap-4 max-w-4xl mx-auto mb-8">
+        <div className="grid grid-cols-3 md:flex justify-between px-2 gap-4 max-w-3xl mx-auto mb-8">
           {features.map((feature) => (
             <div
               key={feature.name}
@@ -189,10 +197,10 @@ const FeaturesListicle = () => {
             </div>
           ))}
         </div>
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-3xl mx-auto">
           <div className="flex flex-col md:flex-row justify-center md:justify-start md:items-center gap-12">
             <div
-              className="leading-relaxed space-y-4 max-w-3xl animate-opacity"
+              className="leading-relaxed flex flex-col gap-4 max-w-3xl animate-opacity"
               key={featureSelected}
             >
               <h3 className="text-white font-semibold text-lg">
@@ -206,13 +214,6 @@ const FeaturesListicle = () => {
               />
             </div>
           </div>
-          <Link
-            className="mt-8 btn btn-primary btn-wide"
-            href={"/about#pricing"}
-          >
-            Try it now!
-            {/* Get {config.appName} */}
-          </Link>
         </div>
       </div>
       {/* Just used to know it's the end of the autoscroll feature (optional, see useEffect) */}

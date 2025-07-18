@@ -1,7 +1,6 @@
 "use client";
 
 import { UserProfile, updateUserProfile } from "../libs/supabase/user";
-import { SecondaryLabel } from "./SecondaryLabel";
 import { SecondaryText } from "./SecondaryText";
 import { TertiaryText } from "./TertiaryText";
 import LogoUploader from "./LogoUploader";

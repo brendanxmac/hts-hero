@@ -68,14 +68,14 @@ export type Theme = "black" | "light" | "dark" | "";
 // | "";
 
 export enum PricingPlan {
-  FREE_TRIAL = "14-Day Trial",
+  FREE_TRIAL = "7-Day Trial",
   ONE_DAY_PASS = "1-Day Pass",
   FIVE_DAY_PASS = "5-Day Pass",
   PRO = "Pro",
   PREMIUM = "Premium",
 }
 
-export interface FeatureI {
+export interface PricingFeatureI {
   name: string;
   details?: string;
   comingSoon?: boolean;
@@ -92,7 +92,7 @@ export interface PricingPlanI {
   price: number;
   // promotionCode?: string;
   priceAnchor?: number;
-  features: FeatureI[];
+  features: PricingFeatureI[];
 }
 
 export interface ConfigProps {

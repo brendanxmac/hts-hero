@@ -19,7 +19,7 @@ export const FeaturePoints = ({ points }: Props) => {
           key={point}
           className={classNames(
             "flex items-start gap-3",
-            isKey && "text-secondary font-medium pt-3",
+            isKey && "text-primary pt-3 text-xl font-extrabold",
             !isKey && "text-gray-100"
           )}
         >
@@ -30,7 +30,7 @@ export const FeaturePoints = ({ points }: Props) => {
               viewBox="0 0 24 24"
               strokeWidth={1.5}
               stroke="currentColor"
-              className="size-5"
+              className="shrink-0 size-5"
             >
               <path
                 strokeLinecap="round"

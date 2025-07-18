@@ -6,4 +6,5 @@ export interface Tab {
 export interface IconTab<T> {
   value: T;
   icon: React.ReactNode;
+  text?: string;
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useClassification } from "../contexts/ClassificationContext";
 import { useHts } from "../contexts/HtsContext";
-import { TariffType, WorkflowStep } from "../enums/hts";
+import { TariffType } from "../enums/hts";
 import { Color } from "../enums/style";
 import {
   downloadClassificationReport,
@@ -9,7 +9,6 @@ import {
   getChapterFromHtsElement,
   getGeneralNoteFromSpecialTariffSymbol,
   getHtsElementParents,
-  getProgressionDescriptions,
   getSectionAndChapterFromChapterNumber,
   getTariffDetails,
   getTemporaryTariffText,
@@ -20,14 +19,12 @@ import {
 } from "../utilities/hts";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { SecondaryLabel } from "./SecondaryLabel";
-import { SecondaryText } from "./SecondaryText";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { PDFProps } from "../interfaces/ui";
 import PDF from "./PDF";
 import { TertiaryText } from "./TertiaryText";
 import {
   CheckCircleIcon,
-  ChevronDownIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/16/solid";
 import { ArrowDownTrayIcon } from "@heroicons/react/16/solid";
@@ -42,6 +39,7 @@ import { fetchUser } from "../libs/supabase/user";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import { XMarkIcon } from "@heroicons/react/16/solid";
+import { SupabaseBuckets } from "../constants/supabase";
 
 export const ClassificationResultPage = () => {
   const { user } = useUser();
@@ -72,11 +70,9 @@ export const ClassificationResultPage = () => {
   return (
     <div className="h-full w-full max-w-4xl mx-auto flex flex-col">
       <div className="px-8 py-6 flex-1 flex flex-col gap-8 overflow-y-auto">
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl md:text-3xl font-bold text-white">
-              Your Classification Result
-            </h2>
+            <h2 className="text-xl md:text-2xl font-bold text-white">Result</h2>
             <div className="flex gap-2">
               <button
                 className="btn btn-xs btn-primary"
@@ -113,7 +109,7 @@ export const ClassificationResultPage = () => {
             </div>
           </div>
           <div className="flex flex-col">
-            <TertiaryText value="Below are the results of your classification for the item. Download the full report of your classification for your records as the results will not be saved after you close this page." />
+            <TertiaryText value="Below are the US HTS details for the code you found during your classification." />
           </div>
         </div>
 
@@ -159,8 +155,8 @@ export const ClassificationResultPage = () => {
           </div>
         </div> */}
 
-        <div className=" flex flex-col gap-6">
-          <div className="flex justify-between items-center">
+        <div className=" flex flex-col gap-2">
+          <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-2 md:gap-0">
             <PrimaryLabel value="HTS Code" color={Color.WHITE} />
             <div className="flex gap-2">
               <button
@@ -202,7 +198,7 @@ export const ClassificationResultPage = () => {
                 }}
               >
                 <MagnifyingGlassIcon className="w-4 h-4" />
-                Show in Explorer
+                View
               </button>
               <button
                 className="btn btn-xs btn-primary"
@@ -234,7 +230,7 @@ export const ClassificationResultPage = () => {
             <div className="w-full flex flex-col gap-4">
               <PrimaryLabel value="Tariff Details" color={Color.WHITE} />
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <div className="flex flex-col p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24 gap-3">
                   <TertiaryLabel
                     value={"General Rate"}
@@ -288,7 +284,8 @@ export const ClassificationResultPage = () => {
                                         );
                                       setShowPDF({
                                         title: note?.title || "",
-                                        file: note?.pdfURL || "",
+                                        bucket: SupabaseBuckets.NOTES,
+                                        filePath: note?.filePath || "",
                                       });
                                     }}
                                   >
@@ -368,7 +365,8 @@ export const ClassificationResultPage = () => {
       {showPDF && (
         <PDF
           title={showPDF.title}
-          file={showPDF.file}
+          bucket={showPDF.bucket}
+          filePath={showPDF.filePath}
           isOpen={showPDF !== null}
           setIsOpen={(isOpen) => {
             if (!isOpen) {

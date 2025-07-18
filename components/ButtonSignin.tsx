@@ -3,7 +3,6 @@
 
 import Link from "next/link";
 import config from "@/config";
-import { usePathname } from "next/navigation";
 import { useUser } from "../contexts/UserContext";
 
 // A simple button to sign in with our providers (Google & Magic Links).
@@ -11,7 +10,6 @@ import { useUser } from "../contexts/UserContext";
 // If the user is already logged in, it will show their profile picture & redirect them to callbackUrl immediately.
 const ButtonSignin = ({ extraStyle }: { extraStyle?: string }) => {
   const { user } = useUser();
-  const pathname = usePathname();
 
   const getButtonText = () => {
     if (user) {
@@ -21,7 +19,7 @@ const ButtonSignin = ({ extraStyle }: { extraStyle?: string }) => {
     return "Sign In";
   };
 
-  const getRedirectUrl = (pathname: string) => {
+  const getRedirectUrl = () => {
     if (user) {
       return config.auth.callbackUrl;
     }
@@ -31,7 +29,7 @@ const ButtonSignin = ({ extraStyle }: { extraStyle?: string }) => {
 
   return (
     <Link
-      href={getRedirectUrl(pathname)}
+      href={getRedirectUrl()}
       className={`btn btn-primary btn-sm ${extraStyle ? extraStyle : ""}`}
     >
       {/* <div className="flex gap-2 items-center"> */}

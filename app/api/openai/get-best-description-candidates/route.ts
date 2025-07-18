@@ -24,14 +24,8 @@ const TestBestDescriptionMatches = z.object({
   bestCandidates: z.array(TestDescriptionMatch),
 });
 
-const DescriptionMatch = z.object({
-  index: z.number(),
-  description: z.string(),
-  logic: z.string(),
-});
-
 const BestDescriptionMatches = z.object({
-  bestCandidates: z.array(DescriptionMatch),
+  bestCandidates: z.array(z.number()),
 });
 
 export async function POST(req: NextRequest) {
@@ -80,8 +74,7 @@ export async function POST(req: NextRequest) {
 
     const isTestEnv = process.env.APP_ENV === "test";
     const responseFormatOptions = {
-      description:
-        "Used to get the best description matches from an array with selection logic included",
+      description: "Used to get the best description matches from an array",
     };
     const responseFormat = isTestEnv
       ? zodResponseFormat(
@@ -97,34 +90,39 @@ export async function POST(req: NextRequest) {
 
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const gptResponse = await openai.chat.completions.create({
-      temperature: 0,
-      model: OpenAIModel.FOUR_LATEST,
+      temperature: 0.2,
+      model: OpenAIModel.FOUR_ONE,
       response_format: responseFormat,
       messages: [
         {
           role: "system",
           content: `You are a United States Harmonized Tariff System Expert who follows the General Rules of Interpretation (GRI) for the Harmonized System perfectly.\n
-            Your job is to take a product description and a list of item descriptions, and figure out which description(s) from the list most closely fit the product description (${minMaxRangeText}).\n
+            Your job is to take an item description and a list of options, and figure out which options(s) from the list are similar to the item description (${minMaxRangeText}).\n
             ${
               isSectionOrChapter
                 ? ""
                 : "You must use the GRI rules sequentially (as needed) and consider all options in the list to shape your decision making logic.\n"
             }
-            ${
-              isTestEnv
-                ? ""
-                : "The logic you used to pick an option as a good candidate must be included in your response, and so should the original unchanged description.\n"
-            }
-            The best fitting candidate must be first in the list, and if none are good candidates, return an empty array.
+            Note: The use of semicolons (;) in the descriptions should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".\n
+            If there are no good candidates, return an empty array.
             `,
         },
         {
           role: "user",
-          content: `Product Description: ${productDescription}\n
-         Classification Descriptions: ${labelledDescriptions.join("\n")}`,
+          content: `Item Description: ${productDescription}\n
+         Options: ${labelledDescriptions.join("\n")}`,
         },
       ],
     });
+
+    console.log("GPT Response:");
+    console.log(gptResponse.usage);
+
+    //     ${
+    //   isTestEnv
+    //     ? ""
+    //     : "The logic you used to pick an option as a good candidate must be included in your response\n"
+    // }
 
     return NextResponse.json(gptResponse.choices);
   } catch (e) {

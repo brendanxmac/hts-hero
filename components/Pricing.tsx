@@ -1,6 +1,6 @@
 import config from "@/config";
 import { classNames } from "../utilities/style";
-import { FeatureI, PricingPlan } from "../types";
+import { PricingFeatureI, PricingPlan } from "../types";
 import ButtonCheckout from "./ButtonCheckout";
 import { AboutPage } from "../enums/classify";
 import { StripePaymentMode } from "../libs/stripe";
@@ -16,7 +16,7 @@ interface PricingProps {
   // setShowItsFree?: (show: boolean) => void;
 }
 
-export const getFeatureSupportingLabel = (feature: FeatureI) => {
+export const getFeatureSupportingLabel = (feature: PricingFeatureI) => {
   if (feature.comingSoon) {
     return "Coming Soon";
   }
@@ -27,7 +27,7 @@ export const getFeatureSupportingLabel = (feature: FeatureI) => {
   return "";
 };
 
-export const getFeatureIcon = (feature: FeatureI) => {
+export const getFeatureIcon = (feature: PricingFeatureI) => {
   if (feature.comingSoon) {
     return (
       <svg
@@ -97,7 +97,7 @@ const getPricingHeadline = (customerType: AboutPage) => {
   if (customerType === AboutPage.IMPORTER) {
     return (
       <div className="flex flex-col gap-8">
-        <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-5xl max-w-4xl mx-auto tracking-relaxed">
+        <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-6xl max-w-4xl mx-auto tracking-relaxed">
           Fast & Affordable HTS <br />
           Codes for Busy Importers
         </h2>
@@ -131,13 +131,13 @@ const getPricingHeadline = (customerType: AboutPage) => {
   }
   return (
     <div className="flex flex-col gap-8">
-      <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-5xl max-w-3xl mx-auto tracking-relaxed">
-        Save hours on classification,
-        <br /> for less than $1 per day
+      <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-6xl max-w-4xl mx-auto tracking-relaxed">
+        Save <span className="text-primary">hours</span> on classification, for
+        less than your daily coffee
       </h2>
       <div className="flex flex-col justify-center items-center">
         <p className="text-xl font-bold text-primary">
-          Launch Deal: 50% Off Your First 2 Months!
+          50% Off Your First 2 Months!
         </p>
         <div className="flex items-center gap-1">
           <svg
@@ -166,7 +166,7 @@ const getPricingHeadline = (customerType: AboutPage) => {
 
 const Pricing = ({ customerType }: PricingProps) => {
   return (
-    <section className="bg-neutral-900 overflow-hidden" id="pricing">
+    <section className="bg-base-300 overflow-hidden" id="pricing">
       <div className="py-16 px-8 max-w-7xl mx-auto">
         <div className="flex flex-col text-center w-full mb-12">
           <p className="font-medium text-primary mb-8">Pricing</p>
@@ -200,7 +200,7 @@ const Pricing = ({ customerType }: PricingProps) => {
               )}
 
               <div
-                className={`relative flex flex-col h-full gap-4 lg:gap-8 z-10 bg-base-100 p-8 rounded-lg ${
+                className={`relative flex flex-col h-full gap-4 lg:gap-8 z-10 bg-base-300 p-8 rounded-lg ${
                   plan.isCompetitor && "bg-red-500/20"
                 }`}
               >
@@ -241,11 +241,16 @@ const Pricing = ({ customerType }: PricingProps) => {
                       >
                         ${plan.price}
                       </p>
-                      <p className="pl-1 pb-1 text-sm text-white font-bold">
-                        {plan.mode === StripePaymentMode.SUBSCRIPTION
-                          ? "/ month"
-                          : ""}
-                      </p>
+                      {plan.mode === StripePaymentMode.SUBSCRIPTION && (
+                        <div className="flex flex-col">
+                          {/* <p className="pl-2 text-sm text-base-content/80 font-semibold">
+                            / month / user
+                          </p> */}
+                          <p className="pl-1 pb-1 text-sm text-base-content/80 font-semibold">
+                            / user / month
+                          </p>
+                        </div>
+                      )}
                       {/* </div> */}
                     </div>
                   )}

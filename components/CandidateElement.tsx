@@ -32,7 +32,9 @@ import { userHasActivePurchase } from "../libs/supabase/purchase";
 import { isWithinPastNDays } from "../utilities/time";
 import { useUser } from "../contexts/UserContext";
 import { PrimaryText } from "./PrimaryText";
-import { TertiaryText } from "./TertiaryText";
+import { SecondaryText } from "./SecondaryText";
+import { PrimaryLabel } from "./PrimaryLabel";
+import { SupabaseBuckets } from "../constants/supabase";
 
 interface Props {
   element: HtsElement;
@@ -94,7 +96,7 @@ export const CandidateElement = ({
     <div
       className={classNames(
         "flex w-full rounded-md bg-base-100 p-4 gap-4 transition duration-100 ease-in-out scale-[0.99]",
-        isLevelSelection && "shadow-[inset_0_0_0_2px_oklch(var(--p))]",
+        isLevelSelection && "shadow-[inset_0_0_0_4px_oklch(var(--p))]",
         !isLevelSelection &&
           "hover:cursor-pointer hover:bg-base-300 border-2 border-neutral-content",
         !isPressed && !isLevelSelection && "hover:scale-[1]",
@@ -167,7 +169,10 @@ export const CandidateElement = ({
 
         <div className="flex flex-col gap-1">
           <div className="flex justify-between items-center">
-            <TertiaryLabel value={htsno ? `${htsno}` : "Prequalifier"} />
+            <TertiaryLabel
+              value={htsno ? `${htsno}` : "Prequalifier"}
+              color={Color.NEUTRAL_CONTENT}
+            />
             <div className="flex gap-2">
               <SquareIconButton
                 transparent
@@ -176,7 +181,8 @@ export const CandidateElement = ({
                 onClick={() =>
                   setShowPDF({
                     title: `Chapter ${chapter} Notes`,
-                    file: `/notes/chapter/Chapter ${chapter}.pdf`,
+                    bucket: SupabaseBuckets.NOTES,
+                    filePath: `/chapters/Chapter ${chapter}.pdf`,
                   })
                 }
               />
@@ -254,20 +260,24 @@ export const CandidateElement = ({
               )}
             </div>
           </div>
-          <PrimaryText value={description} color={Color.WHITE} />
+          {isLevelSelection ? (
+            <PrimaryLabel value={description} color={Color.WHITE} />
+          ) : (
+            <PrimaryText value={description} color={Color.WHITE} />
+          )}
         </div>
 
         {isRecommended && (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 mt-2">
             <div className="flex gap-1 text-accent items-center">
               <SparklesIcon className="h-4 w-4 text-primary" />
               <TertiaryLabel value="HTS Hero Analysis" color={Color.PRIMARY} />
             </div>
 
             <div className="flex flex-col gap-2 ml-1">
-              <TertiaryText color={Color.WHITE} value={recommendedReason} />
+              <SecondaryText color={Color.WHITE} value={recommendedReason} />
 
-              <p className="text-xs text-gray-400">
+              <p className="text-xs font-bold text-gray-400">
                 HTS Hero can make mistakes. Always exercise your own judgement
               </p>
             </div>
@@ -294,7 +304,8 @@ export const CandidateElement = ({
       {showPDF && (
         <PDF
           title={showPDF.title}
-          file={showPDF.file}
+          bucket={showPDF.bucket}
+          filePath={showPDF.filePath}
           isOpen={showPDF !== null}
           setIsOpen={(isOpen) => {
             if (!isOpen) {

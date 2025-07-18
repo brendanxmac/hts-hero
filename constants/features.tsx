@@ -1,14 +1,14 @@
-import { Feature } from "../components/FeaturesAccordion";
+import { FeatureI } from "../interfaces/ui";
 
-export const classifyFeatures: Feature[] = [
+export const classifyFeatures: FeatureI[] = [
   {
-    title: "Finds the Best Candidates",
+    title: "Finds Headings",
     description:
-      "We find the most likely candidates for your product and move step-by-step to the final code.",
-    mediaType: "image",
-    altText: "Finds the Best Candidates Image",
-    mediaPath: "/finds-the-best-candidates.png",
-    mediaFormat: "image/png",
+      "Automtically gets the most likely headings for the item you're classifying",
+    mediaType: "video",
+    altText: "Finds the Best Candidates Video",
+    mediaPath: "/finds-candidates.mp4",
+    mediaFormat: "video/mp4",
     titleSvg: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -27,12 +27,13 @@ export const classifyFeatures: Feature[] = [
     ),
   },
   {
-    title: "Suggests the Best Option",
+    title: "Suggests the Best Candidate",
     description:
-      "At each step we suggest the best option based on your description, and include the rules-based reason why we chose it. This helps you quickly verify the selection and is useful if customs asks how the code was determined.",
-    mediaType: "image",
-    altText: "Suggests the Best Option Image",
-    mediaPath: "/suggests-the-best-option.png",
+      "Analyzes and suggests a candidate at each level using the GRI",
+    mediaType: "video",
+    altText: "Suggests the Best Option Video",
+    mediaPath: "/suggests-the-best.mp4",
+    mediaFormat: "video/mp4",
     titleSvg: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -51,12 +52,12 @@ export const classifyFeatures: Feature[] = [
     ),
   },
   {
-    title: "Gets Results in Seconds",
+    title: "Fetches Notes & Rulings",
     description:
-      "No consultations & no delays. You'll have your code in just moments.",
+      "Finds relevant HTS Notes and CROSS rulings for the item you're classifying",
     mediaType: "video",
-    altText: "Results in Seconds Video",
-    mediaPath: "/demo.mp4",
+    altText: "Fetches Notes & Rulings Video",
+    mediaPath: "/fetches-notes-and-rulings.mp4",
     mediaFormat: "video/mp4",
     titleSvg: (
       <svg
@@ -78,10 +79,61 @@ export const classifyFeatures: Feature[] = [
   {
     title: "Generates Classification Reports",
     description:
-      "Classification reports can save you from being fooled by suppliers or questioned by customs. Each code you get includes a report with the options, suggestion, and selection for every level. It also includes the final HTS Code and applicable tariff rates.",
-    mediaType: "image",
-    altText: "Classification Report Image",
-    mediaPath: "/classification-report.png",
+      "Get client-ready reports that include your logo, disclaimers, and any notes you've added",
+    mediaType: "video",
+    altText: "Generates Classification Reports Video",
+    mediaPath: "/generates-classification-reports.mp4",
+    mediaFormat: "video/mp4",
+    titleSvg: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth="1.5"
+        stroke="currentColor"
+        className="size-6"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
+        />
+      </svg>
+    ),
+  },
+  {
+    title: "Saves All Classifications",
+    description:
+      "Quickly find, edit, and share classifications with your team or clients",
+    mediaType: "video",
+    altText: "Saves All Classifications Video",
+    mediaPath: "/saves-all-classifications.mp4",
+    mediaFormat: "video/mp4",
+    titleSvg: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth="1.5"
+        stroke="currentColor"
+        className="size-6"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
+        />
+      </svg>
+    ),
+  },
+  {
+    title: "Simplifies Search",
+    description:
+      "Free HTS Explorer built for brokers that makes it easy to find and compare codes",
+    mediaType: "video",
+    altText: "Simplifies Search Video",
+    mediaPath: "/simplifies-search.mp4",
+    mediaFormat: "video/mp4",
     titleSvg: (
       <svg
         xmlns="http://www.w3.org/2000/svg"

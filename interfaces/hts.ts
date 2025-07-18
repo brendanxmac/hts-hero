@@ -101,7 +101,7 @@ export interface RankedCandidateSelection extends CandidateSelection {
 }
 
 export interface BestCandidatesResponse {
-  bestCandidates: CandidateSelection[];
+  bestCandidates: number[];
 }
 
 export interface BestChaptersResponse {
@@ -114,10 +114,14 @@ export interface HeadingSelection {
   logic: string;
 }
 
+export interface SelectionWithReason extends CandidateSelection {
+  logic: string;
+}
+
 export interface CandidateSelection {
   index: number;
-  description: string;
-  logic: string;
+  // description: string;
+  // logic: string;
 }
 
 export interface ClassificationRecord {
@@ -126,6 +130,7 @@ export interface ClassificationRecord {
   classification: Classification;
   created_at: string;
   updated_at: string;
+  revision: string;
 }
 
 export interface Classification {

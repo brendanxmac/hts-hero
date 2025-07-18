@@ -1,25 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import type { JSX } from "react";
 import Link from "next/link";
-import { Media } from "./Media";
-import { classifyFeatures } from "../constants/features";
 import { AccordionItem } from "./AccordionItem";
+import { FeatureI } from "../interfaces/ui";
 
-export interface Feature {
-  title: string; // The title of the feature
-  description: JSX.Element | string; // The description of the feature (when clicked)
-  mediaType?: "video" | "image"; // The type of media (video or image)
-  mediaPath?: string; // The path to the media (for better SEO, try to use a local path)
-  mediaFormat?: string; // The format of the media (if type is 'video')
-  altText?: string; // The alt text of the image (if type is 'image')
-  titleSvg?: JSX.Element;
+interface Props {
+  features: FeatureI[];
 }
 
 // A component to display 2 to 5 features in an accordion.
 // By default, the first feature is selected. When a feature is clicked, the others are closed.
-const FeaturesAccordion = () => {
+const FeaturesAccordion = ({ features }: Props) => {
   const [featureSelected, setFeatureSelected] = useState<number | null>(0);
 
   return (
@@ -29,25 +21,25 @@ const FeaturesAccordion = () => {
     >
       <div className="px-3">
         <div className="flex flex-col gap-5 mb-6 md:mb-12">
-          <h2 className="text-white font-extrabold text-4xl lg:text-6xl tracking-tight">
-            But you can do it!
+          <h2 className="text-white font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-tight">
+            Your Classification Sidekick
           </h2>
           <p className="pl-2 text-base-content">
-            If you have a clear and accurate description of your product, you
-            can self-classify
+            HTS Hero finds the information you need to classify and generates
+            polished client reports.
           </p>
           <Link className="btn btn-primary btn-wide" href={"/app"}>
             Try it now!
           </Link>
         </div>
-        <div className=" flex flex-col md:flex-row gap-12 md:gap-24">
-          <div className="grid grid-cols-1 items-stretch gap-8 sm:gap-12 lg:grid-cols-2 lg:gap-20">
+        <div className="w-full flex flex-col md:flex-row gap-12 md:gap-24">
+          <div className="w-full grid grid-cols-1 items-stretch gap-8 sm:gap-12 lg:gap-20">
             <ul className="w-full lg:flex lg:flex-col lg:gap-5">
-              {classifyFeatures.map((feature, i) => (
+              {features.map((feature, i) => (
                 <AccordionItem
                   key={feature.title}
                   index={i}
-                  features={classifyFeatures}
+                  features={features}
                   feature={feature}
                   isOpen={featureSelected === i}
                   setFeatureSelected={() => {
@@ -61,12 +53,12 @@ const FeaturesAccordion = () => {
               ))}
             </ul>
 
-            <div className="w-full h-fit justify-center self-center hidden lg:flex">
+            {/* <div className="w-full h-fit justify-center self-center hidden lg:flex lg:col-span-2">
               <Media
-                feature={classifyFeatures[featureSelected]}
+                feature={features[featureSelected]}
                 key={featureSelected}
               />
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

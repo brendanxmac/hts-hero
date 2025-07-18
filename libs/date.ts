@@ -8,6 +8,15 @@ export const formatHumanReadableDate = (dateString: string): string => {
   const displayHours = hours % 12 || 12;
   const time = `${displayHours}:${minutes} ${ampm}`;
 
+  const now = new Date();
+  const diffInMinutes = Math.floor(
+    (now.getTime() - date.getTime()) / (1000 * 60)
+  );
+
+  if (diffInMinutes < 2) {
+    return "Just Now";
+  }
+
   if (isToday(date)) {
     return `Today, ${time}`;
   }

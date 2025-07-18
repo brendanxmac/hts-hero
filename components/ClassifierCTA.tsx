@@ -12,9 +12,10 @@ const ClassifierCTA = () => {
             <br /> way to classify
           </h2>
           <p className="md:text-lg mb-12 md:mb-16">
-            Save hours on classification & delight your clients.
-            <br />
-            Get the classification assistant built for customs brokers.
+            {/* Save hours on classification & delight your clients.
+            <br /> */}
+            Get the classification assistant built to make customs brokers
+            incredibly productive.
           </p>
 
           <Link className="btn btn-primary btn-wide" href="/signin">

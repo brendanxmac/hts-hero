@@ -13,7 +13,6 @@ import { HtsSection } from "../../interfaces/hts";
 import { getHtsSectionsAndChapters } from "../../libs/hts";
 import { setIndexInArray } from "../../utilities/data";
 import { elementsAtClassificationLevel } from "../../utilities/data";
-import { TertiaryText } from "../TertiaryText";
 import { PrimaryLabel } from "../PrimaryLabel";
 import { Color } from "../../enums/style";
 import { useClassifyTab } from "../../contexts/ClassifyTabContext";
@@ -24,6 +23,7 @@ import Modal from "../Modal";
 import { SearchCrossRulings } from "../SearchCrossRulings";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
+import { TertiaryLabel } from "../TertiaryLabel";
 
 export interface ClassificationStepProps {
   setWorkflowStep: (step: WorkflowStep) => void;
@@ -81,16 +81,16 @@ export const ClassificationStep = ({
       [],
       articleDescription,
       true,
-      0,
-      2,
+      1,
+      3,
       sections.map((s) => s.description)
     );
 
     const candidates: CandidateSelection[] =
-      bestSectionCandidates.bestCandidates.map((sectionCandidate) => ({
-        index: sections[sectionCandidate.index].number,
-        description: sections[sectionCandidate.index].description,
-        logic: sectionCandidate.logic,
+      bestSectionCandidates.bestCandidates.map((candidateIndex) => ({
+        index: sections[candidateIndex].number,
+        // description: sections[sectionCandidate.index].description,
+        // logic: sectionCandidate.logic,
       }));
 
     setSectionCandidates(candidates);
@@ -114,16 +114,16 @@ export const ClassificationStep = ({
           [],
           articleDescription,
           true,
-          0,
-          2,
+          1,
+          3,
           section.chapters.map((c) => c.description)
         );
 
         const candidates: CandidateSelection[] =
-          bestChapterCandidates.bestCandidates.map((chapterCandidate) => ({
-            index: section.chapters[chapterCandidate.index].number,
-            description: section.chapters[chapterCandidate.index].description,
-            logic: chapterCandidate.logic,
+          bestChapterCandidates.bestCandidates.map((candidateIndex) => ({
+            index: section.chapters[candidateIndex].number,
+            // description: section.chapters[chapterCandidate.index].description,
+            // logic: chapterCandidate.logic,
           }));
 
         candidatesForChapter.push(...candidates);
@@ -154,8 +154,8 @@ export const ClassificationStep = ({
           elementsAtLevel,
           articleDescription,
           false,
-          0,
-          2,
+          1,
+          3,
           elementsAtLevel.map((e) => e.description)
         );
 
@@ -165,13 +165,13 @@ export const ClassificationStep = ({
         }
 
         // Handle Negative Index Case (sometimes chatGPT will do this)
-        if (bestCandidateHeadings.bestCandidates[0].index < 0) {
+        if (bestCandidateHeadings.bestCandidates[0] < 0) {
           return;
         }
 
         const candidates = bestCandidateHeadings.bestCandidates
-          .map((candidate) => {
-            return elementsAtLevel[candidate.index];
+          .map((candidateIndex) => {
+            return elementsAtLevel[candidateIndex];
           })
           .map((candidate) => ({
             ...candidate,
@@ -186,6 +186,69 @@ export const ClassificationStep = ({
     // DO not move this down, it will break the classification as the timing is critical
     setLoading({ isLoading: false, text: "" });
   };
+
+  // const getBestCandidate = async () => {
+  //   const candidates = levels[classificationLevel].candidates;
+
+  //   setLoading({
+  //     isLoading: true,
+  //     text: "Analyzing Candidates",
+  //   });
+
+  //   const simplifiedCandidates = candidates.map((e) => ({
+  //     code: e.htsno,
+  //     description: e.description,
+  //   }));
+
+  //   const progressionDescription = getProgressionDescriptionWithArrows(
+  //     levels,
+  //     classificationLevel
+  //   );
+
+  //   const {
+  //     index: suggestedCandidateIndex,
+  //     logic: suggestionReason,
+  //     questions: suggestionQuestions,
+  //   } = await getBestClassificationProgression(
+  //     simplifiedCandidates,
+  //     progressionDescription,
+  //     articleDescription
+  //   );
+
+  //   console.log(progressionDescription);
+  //   console.log(suggestedCandidateIndex);
+  //   console.log(suggestionReason);
+  //   console.log(suggestionQuestions);
+
+  //   const bestCandidate = candidates[suggestedCandidateIndex - 1];
+
+  //   // TODO: find a way to prevent this from happening
+  //   // specifically, when user leaves the page (goes back to classifications)
+  //   // this event below will trigger cause the component is still mounted and
+  //   // classification will be undefined cause we set it that way when use leaves page
+  //   // Ideas:
+  //   // - Don't set to undefined when user leaves page
+  //   // - Don't classifications should be its own page
+
+  //   setClassification((prev: Classification) => {
+  //     const newProgressionLevels = [...prev.levels];
+  //     newProgressionLevels[classificationLevel] = {
+  //       ...newProgressionLevels[classificationLevel],
+  //       analysisElement: bestCandidate,
+  //       analysisReason: suggestionReason,
+  //       analysisQuestions: suggestionQuestions,
+  //     };
+  //     return {
+  //       ...prev,
+  //       levels: newProgressionLevels,
+  //     };
+  //   });
+
+  //   setLoading({
+  //     isLoading: false,
+  //     text: "",
+  //   });
+  // };
 
   useEffect(() => {
     if (previousArticleDescriptionRef.current !== articleDescription) {
@@ -236,7 +299,7 @@ export const ClassificationStep = ({
         {/* HEADER */}
         <div className="flex flex-col gap-2">
           <div className="flex justify-between items-center">
-            <TertiaryText
+            <TertiaryLabel
               value={`Level ${classificationLevel + 1}`}
               color={Color.NEUTRAL_CONTENT}
             />
@@ -272,7 +335,7 @@ export const ClassificationStep = ({
                 disabled={loading.isLoading}
               >
                 <MagnifyingGlassIcon className="w-4 h-4" />
-                Search Headings
+                Find Headings
               </button>
               <button
                 className="grow btn btn-xs btn-primary"
@@ -284,6 +347,22 @@ export const ClassificationStep = ({
                 <MagnifyingGlassIcon className="w-4 h-4" />
                 Search CROSS
               </button>
+              {/* <button
+                className="btn btn-xs btn-primary"
+                onClick={() => {
+                  // remove analysis from this level if it exists
+                  updateLevel(classificationLevel, {
+                    analysisElement: undefined,
+                    analysisReason: undefined,
+                    analysisQuestions: undefined,
+                  });
+                  getBestCandidate();
+                }}
+                disabled={loading.isLoading}
+              >
+                <SparklesIcon className="w-4 h-4" />
+                Analyze Options
+              </button> */}
               {!showNotes && (
                 <button
                   className="mx-auto btn btn-xs btn-primary"

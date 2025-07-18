@@ -28,16 +28,24 @@ const ClassifierHero = () => {
           Try it Free!
         </Link>
 
-        {/* {/* <TestimonialsAvatars priority={true} /> */}
+        {/* <TestimonialsAvatars priority={true} /> */}
       </div>
-      <div className="lg:w-full flex justify-center">
+      <div className="flex justify-center sm:rounded-2xl overflow-hidden -mx-5 md:mx-0">
+        {/* <Image
+          className="rounded-3xl border-2 border-neutral-content/20"
+          priority={true}
+          src="/classifications.png"
+          alt="Classifications"
+          width={1000}
+          height={1000}
+        /> */}
         <video
-          className="rounded-2xl w-full border-2 border-neutral-content/20"
+          className="w-full border-2 border-neutral-content/20 rounded-md md:rounded-2xl"
           autoPlay
           muted
           loop
           playsInline
-          src="/broker-demo.mp4"
+          src="/hero-demo.mp4"
         ></video>
       </div>
     </section>

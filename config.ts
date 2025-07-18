@@ -6,20 +6,22 @@ const proPlan: PricingPlanI = {
   name: PricingPlan.PRO,
   description: "The Classification Assistant for Customs Brokers",
   mode: StripePaymentMode.SUBSCRIPTION,
-  price: 20,
-  priceAnchor: 40,
+  price: 40,
+  priceAnchor: 80,
   isFeatured: true,
   features: [
-    { name: "Heading Discovery" },
-    { name: "Candidate Analysis" },
-    { name: "Report Generation" },
-    { name: "Note Fetching" },
+    { name: "Finds Headings" },
+    { name: "Analyzes Candidates" },
+    { name: "Generates Reports" },
+    { name: "Fetches Notes" },
+    {
+      name: "Finds CROSS Rulings",
+    },
     {
       name: "Enhanced HTS Explorer",
     },
     {
       name: "Built-in PDF Viewer",
-      details: "No downloads needed to find what you're looking for!",
     },
   ],
 };
@@ -56,23 +58,25 @@ const premiumPlan: PricingPlanI = {
   ],
 };
 
-const twoWeekTrial: PricingPlanI = {
+const freeTrial: PricingPlanI = {
   name: PricingPlan.FREE_TRIAL,
-  description: "Try HTS Hero Pro free for 14 days",
+  description: "Try HTS Hero Pro free for 7 days",
   mode: StripePaymentMode.PAYMENT,
   price: 0,
   priceAnchor: 40,
   features: [
-    { name: "Heading Discovery" },
-    { name: "Candidate Analysis" },
-    { name: "Report Generation" },
-    { name: "Note Fetching" },
+    { name: "Finds Headings" },
+    { name: "Analyzes Candidates" },
+    { name: "Generates Reports" },
+    { name: "Fetches Notes" },
+    {
+      name: "Finds CROSS Rulings",
+    },
     {
       name: "Enhanced HTS Explorer",
     },
     {
       name: "Built-in PDF Viewer",
-      details: "No downloads needed to find what you're looking for!",
     },
   ],
 };
@@ -111,8 +115,8 @@ const config: ConfigProps = {
   },
   stripe: {
     // Create multiple plans in your Stripe dashboard, then add them here. You can add as many plans as you want, just make sure to add the priceId
-    classifierPlans: [twoWeekTrial, proPlan],
-    conversionPlans: [fiveDayPassPlan, proPlan],
+    classifierPlans: [proPlan],
+    conversionPlans: [proPlan],
   },
   // aws: {
   //   // If you use AWS S3/Cloudfront, put values in here

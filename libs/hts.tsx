@@ -2,7 +2,6 @@ import { ChatCompletion } from "openai/resources";
 import {
   HtsElementWithParentReference,
   ClassificationProgression,
-  CandidateSelection,
   HsHeading,
   HtsElement,
   TemporaryTariff,
@@ -18,6 +17,7 @@ import {
   Navigatable,
   Classification,
   SectionAndChapterDetails,
+  SelectionWithReason,
 } from "../interfaces/hts";
 import {
   elementsAtClassificationLevel,
@@ -31,8 +31,9 @@ import { generateClassificationReport } from "./classification";
 import { SecondaryText } from "../components/SecondaryText";
 import { TertiaryLabel } from "../components/TertiaryLabel";
 import { Color } from "../enums/style";
-import { notes } from "../public/notes/notes";
 import { UserProfile } from "./supabase/user";
+import { notes } from "../public/notes/notes";
+import { inflate } from "pako";
 
 export const downloadClassificationReport = async (
   classification: Classification,
@@ -277,19 +278,25 @@ export const extractFirst8DigitHtsCode = (input: string): string => {
 };
 
 export const getProgressionDescriptionWithArrows = (
-  classificationProgression: ClassificationProgression[]
+  classificationProgression: ClassificationProgression[],
+  upToLevel?: number
 ) => {
-  let fullDescription = "";
-  classificationProgression.forEach((progression, index) => {
-    if (progression.selection) {
-      // if the string has a : at the end, strip it off
-      const desc = progression.selection.description.endsWith(":")
-        ? progression.selection.description.slice(0, -1)
-        : progression.selection.description;
+  const stopAtLevel =
+    upToLevel !== undefined ? upToLevel : classificationProgression.length;
 
-      fullDescription += index === 0 ? `${desc}` : ` > ${desc}`;
-    }
-  });
+  let fullDescription = "";
+  classificationProgression
+    .slice(0, stopAtLevel)
+    .forEach((progression, index) => {
+      if (progression.selection) {
+        // if the string has a : at the end, strip it off
+        const desc = progression.selection.description.endsWith(":")
+          ? progression.selection.description.slice(0, -1)
+          : progression.selection.description;
+
+        fullDescription += index === 0 ? `${desc}` : ` > ${desc}`;
+      }
+    });
 
   return fullDescription;
 };
@@ -430,6 +437,8 @@ export const getBestDescriptionCandidates = async (
     });
 
   const bestCandidates = bestCandidatesResponse[0].message.content;
+  console.log("Best Candidates:");
+  console.log(bestCandidates);
 
   if (bestCandidates === null) {
     throw new Error(`Failed to get best description matches`);
@@ -472,7 +481,7 @@ export const getBestIndentLevelMatch = async (
     throw new Error(`Best match is null for descriptions`);
   }
 
-  const bestMatchJson: CandidateSelection = JSON.parse(bestMatch); // TODO: handle errors
+  const bestMatchJson: SelectionWithReason = JSON.parse(bestMatch); // TODO: handle errors
   const bestMatchElement = elementsAtIndent[Number(bestMatchJson.index)];
 
   // FIXME: MAKE SURE WE'RE CONSTRUCTING THE RIGHT HTS STRING (PIVOTAL)
@@ -580,13 +589,29 @@ export const getHtsSectionsAndChapters = (): Promise<{
   return apiClient.get("/hts/get-sections-and-chapters", {});
 };
 
-export const getHtsData = async (): Promise<HtsElement[]> => {
-  const htsData: HtsElement[] = await apiClient.get("/hts/get-hts-data", {});
+export const getHtsData = async (
+  revision: string
+): Promise<{ data: HtsElement[]; revisionName: string }> => {
+  const response = await fetch(`/api/hts/get-hts-data?revision=${revision}`);
 
-  // Data is already enriched with uuid, chapter, and type in preprocessing prior to being stored
-  // so we can simply return the parsed data back to the user -- since the file is large this needed
-  // to happen in preprocessing to avoid UI lag and a bad user experience
-  return htsData;
+  if (!response.ok) {
+    throw new Error(`Failed to fetch HTS data: ${response.statusText}`);
+  }
+
+  // Get the X-Revision-Name header
+  const revisionName = response.headers.get("X-Revision-Name") || "";
+
+  // Convert Blob to ArrayBuffer and decompress the gzipped JSON
+  const htsData = await response.blob();
+  const arrayBuffer = await htsData.arrayBuffer();
+  const decompressedData = inflate(new Uint8Array(arrayBuffer), {
+    to: "string",
+  });
+
+  return {
+    data: JSON.parse(decompressedData),
+    revisionName,
+  };
 };
 
 export const getHtsChapterData = async (

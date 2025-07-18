@@ -1,17 +1,17 @@
 // A component to display the media (video or image) of the feature. If the type is not specified, it will display an empty div.
 
 import Image from "next/image";
-import { Feature } from "./FeaturesAccordion";
+import { FeatureI } from "../interfaces/ui";
 
 // Video are set to autoplay for best UX.
-export const Media = ({ feature }: { feature: Feature }) => {
+export const Media = ({ feature }: { feature: FeatureI }) => {
   if (!feature) {
     return null;
   }
 
   const { mediaType, mediaPath, mediaFormat, altText } = feature;
   const style =
-    "w-full h-full rounded-2xl object-contain border border-white/30 lg:shadow-xl lg:shadow-white/30";
+    "w-full h-full rounded-2xl object-contain border-2 border-white/20";
 
   if (mediaType === "video") {
     return (

@@ -23,8 +23,6 @@ export async function GET() {
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
 
-    console.log(classifications);
-
     if (error) {
       console.error("Error creating classification:", error);
       return NextResponse.json({ error: error.message }, { status: 500 });
