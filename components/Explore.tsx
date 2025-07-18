@@ -121,7 +121,7 @@ export const Explore = () => {
           <LoadingIndicator text={loadingText} />
         </div>
       ) : (
-        <div className="w-full h-full grow flex flex-col gap-4 overflow-y-auto">
+        <div className="w-full h-full grow flex flex-col gap-4 overflow-y-scroll">
           <div className="flex gap-4 items-center justify-between flex-col md:flex-row">
             <div className="w-full flex gap-4 items-center justify-between md:justify-normal">
               <div className="flex flex-col -space-y-1">

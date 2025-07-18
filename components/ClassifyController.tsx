@@ -16,9 +16,11 @@ export const ClassifyController = () => {
         <div className="h-full w-full bg-base-300">
           <div className="h-full w-full bg-base-300 overflow-hidden">
             {page === ClassifyPage.CLASSIFICATIONS ? (
-              <Classifications page={page} setPage={setPage} />
+              <div className="h-full w-full overflow-y-scroll">
+                <Classifications page={page} setPage={setPage} />
+              </div>
             ) : (
-              <Classify setPage={setPage} />
+              <Classify page={page} setPage={setPage} />
             )}
           </div>
         </div>

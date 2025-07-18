@@ -193,7 +193,7 @@ export const ClassificationNavigation = ({
         </div>
 
         {classification.isComplete && (
-          <div ref={resultRef} className="flex flex-col gap-3">
+          <div ref={resultRef} className="flex flex-col gap-3 pb-4">
             <PrimaryLabel value="Result" color={Color.WHITE} />
             <div
               className={classNames(

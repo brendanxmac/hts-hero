@@ -40,7 +40,7 @@ export const Chapter = ({ chapter }: Props) => {
   });
 
   return (
-    <div className="card flex flex-col w-full gap-6 rounded-xl bg-base-100 border border-base-content/10 p-4 pt-2 sm:pt-6 transition duration-100 ease-in-out overflow-y-auto">
+    <div className="card flex flex-col w-full gap-6 rounded-xl bg-base-100 border border-base-content/10 p-4 pt-2 sm:pt-6 transition duration-100 ease-in-out">
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-3">
           <SecondaryLabel value={`Chapter ${number.toString()}`} />

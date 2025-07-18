@@ -68,7 +68,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
   };
 
   return (
-    <div className="card bg-base-100 p-4 rounded-xl border border-base-content/10 w-full flex flex-col items-start justify-between gap-8 pt-2 sm:pt-4 overflow-y-auto">
+    <div className="card bg-base-100 p-4 rounded-xl border border-base-content/10 w-full flex flex-col items-start justify-between gap-8 pt-2 sm:pt-4">
       <div className="w-full flex flex-col gap-4">
         <div className="flex flex-col gap-3 breadcrumbs text-sm py-0 overflow-hidden">
           <div className="text-xs">
