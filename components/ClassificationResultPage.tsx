@@ -40,6 +40,7 @@ import { LoadingIndicator } from "./LoadingIndicator";
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import { XMarkIcon } from "@heroicons/react/16/solid";
 import { SupabaseBuckets } from "../constants/supabase";
+import { CountrySelection } from "./CountrySelection";
 
 export const ClassificationResultPage = () => {
   const { user } = useUser();
@@ -228,7 +229,10 @@ export const ClassificationResultPage = () => {
         <>
           {tariffElement && (
             <div className="w-full flex flex-col gap-4">
-              <PrimaryLabel value="Tariff Details" color={Color.WHITE} />
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2">
+                <PrimaryLabel value="Tariff Details" color={Color.WHITE} />
+                <CountrySelection />
+              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <div className="flex flex-col p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24 gap-3">

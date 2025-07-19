@@ -16,7 +16,7 @@ import {
   MagnifyingGlassIcon,
 } from "@heroicons/react/16/solid";
 import { useClassification } from "../contexts/ClassificationContext";
-import Fuse from "fuse.js";
+import Fuse, { IFuseOptions } from "fuse.js";
 import { LoadingIndicator } from "./LoadingIndicator";
 
 interface Props {
@@ -72,14 +72,15 @@ export const Classifications = ({ page, setPage }: Props) => {
   }, [classifications]);
 
   // Configure Fuse.js options
-  const fuseOptions = {
+  const fuseOptions: IFuseOptions<SearchableClassification> = {
     keys: [
       { name: "articleDescription", weight: 0.4 },
       { name: "htsCodes", weight: 0.4 },
     ],
-    threshold: 0.3, // Lower threshold = more strict matching
-    includeScore: true,
+    threshold: 0.4, // Lower threshold = more strict matching
     includeMatches: true,
+    findAllMatches: true,
+    ignoreLocation: true,
   };
 
   // Create Fuse instance

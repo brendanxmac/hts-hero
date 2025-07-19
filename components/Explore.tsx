@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { Elements } from "./Elements";
 import { Notes } from "./Notes";
@@ -48,6 +48,7 @@ export const Explore = () => {
     []
   );
   const { htsElements, fetchElements, revision } = useHts();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const loadAllData = async () => {
@@ -94,6 +95,13 @@ export const Explore = () => {
     }
   }, [breadcrumbs]);
 
+  // Scroll to top when breadcrumbs change (navigation occurs)
+  useEffect(() => {
+    if (scrollContainerRef.current && breadcrumbs.length > 1) {
+      scrollContainerRef.current.scrollTo({ top: 0, behavior: "instant" });
+    }
+  }, [breadcrumbs]);
+
   useEffect(() => {
     if (fuse && searchValue.length > 0) {
       const timeoutId = setTimeout(() => {
@@ -121,7 +129,10 @@ export const Explore = () => {
           <LoadingIndicator text={loadingText} />
         </div>
       ) : (
-        <div className="w-full h-full grow flex flex-col gap-4 overflow-y-scroll">
+        <div
+          ref={scrollContainerRef}
+          className="w-full h-full grow flex flex-col gap-4 overflow-y-scroll"
+        >
           <div className="flex gap-4 items-center justify-between flex-col md:flex-row">
             <div className="w-full flex gap-4 items-center justify-between md:justify-normal">
               <div className="flex flex-col -space-y-1">
