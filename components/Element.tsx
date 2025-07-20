@@ -125,11 +125,11 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
             <div className="w-full flex flex-col gap-2">
               <div className="flex flex-col">
                 <SecondaryLabel
-                  value="Find Tariff By Country"
+                  value="Find Tariff by Country of Origin"
                   color={Color.WHITE}
                 />
                 <TertiaryText
-                  value="Select countries from the dropdown below to open Flexports Tariff Simulator for each country"
+                  value="Select countries then click seach to launch Flexports Tariff Simulator"
                   color={Color.NEUTRAL_CONTENT}
                 />
               </div>
