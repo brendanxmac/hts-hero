@@ -52,17 +52,6 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
     >
       <div className={"flex flex-col gap-4"}>
         <div className="flex gap-4">
-          <div className="flex flex-col">
-            <div className="grow flex gap-5 self-center items-center">
-              <ChevronUpIcon
-                className={classNames(
-                  "w-6 h-6 text-primary transition-transform duration-200 ease-in-out",
-                  showDetails && "rotate-180"
-                )}
-              />
-            </div>
-          </div>
-
           <div className="grow flex flex-col gap-3">
             <div className="w-full flex gap-4 items-center justify-between">
               <SecondaryLabel value={`Section ${number.toString()}`} />
@@ -88,9 +77,16 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
               <TertiaryText value={getChapterRange(section)} />
             </div>
           </div>
+
+          <ChevronUpIcon
+            className={classNames(
+              "w-6 h-6 text-primary transition-transform duration-200 ease-in-out",
+              showDetails && "rotate-180"
+            )}
+          />
         </div>
         {showDetails && (
-          <div className="ml-11 flex flex-col gap-2">
+          <div className="flex flex-col gap-2">
             {section.chapters.map((chapter) => {
               return (
                 <ChapterSummary

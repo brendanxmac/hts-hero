@@ -18,6 +18,7 @@ import { SearchBar } from "./SearchBar";
 import { classNames } from "../utilities/style";
 import { Color } from "../enums/style";
 import { PrimaryLabel } from "./PrimaryLabel";
+import { SecondaryLabel } from "./SecondaryLabel";
 
 const ExploreTabs: Tab[] = [
   {
@@ -136,12 +137,12 @@ export const Explore = () => {
           <div className="flex gap-4 items-center justify-between flex-col md:flex-row">
             <div className="w-full flex gap-4 items-center justify-between md:justify-normal">
               <div className="flex flex-col -space-y-1">
-                <div className="flex gap-2 items-end">
+                <div className="flex gap-2 items-start">
                   <h1 className="text-2xl md:text-3xl font-bold text-white">
                     HTS {revision?.name.split("-")[0]}
                   </h1>
                   <div className="mb-0.5">
-                    <PrimaryLabel
+                    <SecondaryLabel
                       value={`v${revision?.name.split("-")[1]}`}
                       color={Color.PRIMARY}
                     />
@@ -168,9 +169,9 @@ export const Explore = () => {
                 ))}
               </div>
             </div>
-            <div className="w-full md:max-w-[250px] lg:max-w-[350px]">
+            <div className="w-full md:max-w-[350px] lg:max-w-[400px]">
               <SearchBar
-                placeholder="Search by code or description"
+                placeholder="Search HTS code or description"
                 onSearch={(value) => {
                   if (value.length > 0) {
                     if (searchValue !== value) {

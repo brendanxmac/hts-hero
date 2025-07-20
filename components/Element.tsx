@@ -8,7 +8,10 @@ import {
   getGeneralNoteFromSpecialTariffSymbol,
 } from "../libs/hts";
 import { ElementSummary } from "./ElementSummary";
-import { DocumentTextIcon } from "@heroicons/react/24/solid";
+import {
+  DocumentTextIcon,
+  MagnifyingGlassIcon,
+} from "@heroicons/react/24/solid";
 import PDF from "./PDF";
 import { SecondaryLabel } from "./SecondaryLabel";
 import { Color } from "../enums/style";
@@ -25,6 +28,10 @@ import {
 } from "../utilities/hts";
 import { PDFProps } from "../interfaces/ui";
 import { SupabaseBuckets } from "../constants/supabase";
+import { CountrySelection } from "./CountrySelection";
+import { Country } from "../constants/countries";
+import { PrimaryLabel } from "./PrimaryLabel";
+import { TertiaryText } from "./TertiaryText";
 
 interface Props {
   summaryOnly?: boolean;
@@ -38,6 +45,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { htsElements } = useHts();
   const { sections } = useHtsSections();
+  const [selectedCountries, setSelectedCountries] = useState<Country[]>([]);
 
   useEffect(() => {
     const elementChildren = getDirectChildrenElements(element, htsElements);
@@ -112,9 +120,47 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
 
       {!summaryOnly && (
         <>
+          {/* If htsno is 10 digits, show the country selection */}
+          {htsno && htsno.replaceAll(".", "").length === 10 && (
+            <div className="w-full flex flex-col gap-2">
+              <div className="flex flex-col">
+                <SecondaryLabel
+                  value="Find Tariff By Country"
+                  color={Color.WHITE}
+                />
+                <TertiaryText
+                  value="Select countries from the dropdown below to open Flexports Tariff Simulator for each country"
+                  color={Color.NEUTRAL_CONTENT}
+                />
+              </div>
+              <div className="flex gap-2 items-center w-full">
+                <div className="grow">
+                  <CountrySelection
+                    selectedCountries={selectedCountries}
+                    setSelectedCountries={setSelectedCountries}
+                  />
+                </div>
+                {selectedCountries.length > 0 && (
+                  <button
+                    className="btn btn-sm btn-primary btn-square"
+                    onClick={() => {
+                      selectedCountries.map((country) =>
+                        window.open(
+                          `https://tariffs.flexport.com/?entryDate=2025-07-20&country=${country.code}&value=10000&advanced=true&code=${htsno}`,
+                          "_blank"
+                        )
+                      );
+                    }}
+                  >
+                    <MagnifyingGlassIcon className="w-5 h-5" />
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
           {tariffElement && (
             <div className="w-full flex flex-col gap-4">
-              <SecondaryLabel value="Tariff Details" />
+              <SecondaryLabel value="Tariff Details" color={Color.WHITE} />
 
               <div className="grid grid-cols-2 gap-2">
                 <div className="flex flex-col gap-3 p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24">

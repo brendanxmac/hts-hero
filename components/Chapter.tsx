@@ -50,7 +50,9 @@ export const Chapter = ({ chapter }: Props) => {
             onClick={() => setShowNotes(!showNotes)}
           />
         </div>
-        <h2 className="text-2xl font-bold text-white">{description}</h2>
+        <h2 className="text-sm md:text-xl font-bold text-white">
+          {description}
+        </h2>
       </div>
 
       <div className="flex flex-col gap-2 bg-base-100">
