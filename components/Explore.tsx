@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { Elements } from "./Elements";
 import { Notes } from "./Notes";
@@ -18,6 +18,7 @@ import { SearchBar } from "./SearchBar";
 import { classNames } from "../utilities/style";
 import { Color } from "../enums/style";
 import { PrimaryLabel } from "./PrimaryLabel";
+import { SecondaryLabel } from "./SecondaryLabel";
 
 const ExploreTabs: Tab[] = [
   {
@@ -48,6 +49,7 @@ export const Explore = () => {
     []
   );
   const { htsElements, fetchElements, revision } = useHts();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const loadAllData = async () => {
@@ -94,6 +96,13 @@ export const Explore = () => {
     }
   }, [breadcrumbs]);
 
+  // Scroll to top when breadcrumbs change (navigation occurs)
+  useEffect(() => {
+    if (scrollContainerRef.current && breadcrumbs.length > 1) {
+      scrollContainerRef.current.scrollTo({ top: 0, behavior: "instant" });
+    }
+  }, [breadcrumbs]);
+
   useEffect(() => {
     if (fuse && searchValue.length > 0) {
       const timeoutId = setTimeout(() => {
@@ -121,16 +130,19 @@ export const Explore = () => {
           <LoadingIndicator text={loadingText} />
         </div>
       ) : (
-        <div className="w-full h-full grow flex flex-col gap-4 overflow-y-scroll">
+        <div
+          ref={scrollContainerRef}
+          className="w-full h-full grow flex flex-col gap-4 overflow-y-scroll"
+        >
           <div className="flex gap-4 items-center justify-between flex-col md:flex-row">
             <div className="w-full flex gap-4 items-center justify-between md:justify-normal">
               <div className="flex flex-col -space-y-1">
-                <div className="flex gap-2 items-end">
+                <div className="flex gap-2 items-start">
                   <h1 className="text-2xl md:text-3xl font-bold text-white">
                     HTS {revision?.name.split("-")[0]}
                   </h1>
                   <div className="mb-0.5">
-                    <PrimaryLabel
+                    <SecondaryLabel
                       value={`v${revision?.name.split("-")[1]}`}
                       color={Color.PRIMARY}
                     />
@@ -157,9 +169,9 @@ export const Explore = () => {
                 ))}
               </div>
             </div>
-            <div className="w-full md:max-w-[250px] lg:max-w-[350px]">
+            <div className="w-full md:max-w-[350px] lg:max-w-[400px]">
               <SearchBar
-                placeholder="Search by code or description"
+                placeholder="Search HTS code or description"
                 onSearch={(value) => {
                   if (value.length > 0) {
                     if (searchValue !== value) {

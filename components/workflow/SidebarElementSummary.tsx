@@ -1,8 +1,8 @@
 import { HtsElement } from "../../interfaces/hts";
-import { TertiaryText } from "../TertiaryText";
 import { Color } from "../../enums/style";
-import { SecondaryLabel } from "../SecondaryLabel";
 import { classNames } from "../../utilities/style";
+import { SecondaryText } from "../SecondaryText";
+import { TertiaryLabel } from "../TertiaryLabel";
 
 interface Props {
   isActive: boolean;
@@ -21,7 +21,7 @@ export const SidebarElementSummary = ({
   return (
     <div
       className={classNames(
-        "w-full flex justify-between items-center rounded-md bg-base-100 border-2 border-neutral-content/40 px-4 py-2 hover:bg-base-300 hover:scale-[1.02] transition-all duration-200 ease-in-out hover:cursor-pointer",
+        "w-full flex justify-between items-center rounded-md bg-base-100 border-2 border-neutral-content/40 px-4 py-2 hover:bg-base-300 hover:cursor-pointer",
         isActive && "bg-primary border border-primary hover:bg-primary"
       )}
       onClick={onClick}
@@ -29,7 +29,7 @@ export const SidebarElementSummary = ({
       <div className="w-full flex flex-col items-start justify-between gap-1">
         {htsno && (
           <div className="min-w-20 md:min-w-32">
-            <TertiaryText
+            <TertiaryLabel
               value={htsno}
               color={isActive ? Color.BLACK : Color.NEUTRAL_CONTENT}
             />
@@ -37,7 +37,7 @@ export const SidebarElementSummary = ({
         )}
 
         <div className="w-full flex items-center justify-between gap-2">
-          <SecondaryLabel
+          <SecondaryText
             value={description}
             color={isActive ? Color.BLACK : Color.WHITE}
           />
