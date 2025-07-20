@@ -232,7 +232,7 @@ export const ClassificationResultPage = () => {
         <div className="w-full flex flex-col gap-2">
           <div className="flex flex-col">
             <PrimaryLabel
-              value="Find Tariff By Country of Origin"
+              value="Find Tariff by Country of Origin"
               color={Color.WHITE}
             />
             <TertiaryText
