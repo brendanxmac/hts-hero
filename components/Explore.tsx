@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { Elements } from "./Elements";
 import { Notes } from "./Notes";
@@ -17,6 +17,7 @@ import { isHTSCode } from "../libs/hts";
 import { classNames } from "../utilities/style";
 import { Color } from "../enums/style";
 import { SecondaryLabel } from "./SecondaryLabel";
+import { notes, NoteType } from "../public/notes/notes";
 
 const ExploreTabs: Tab[] = [
   {
@@ -34,16 +35,39 @@ export const Explore = () => {
     isLoading: true,
     text: "Loading",
   });
+  const [searching, setSearching] = useState(false);
   const [searchValue, setSearchValue] = useState("");
-  const [activeTab, setActiveTab] = useState(ExploreTabs[1].value);
+  const [activeTab, setActiveTab] = useState(ExploreTabs[0].value);
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { sections, getSections } = useHtsSections();
-  const [fuse, setFuse] = useState<Fuse<HtsElement> | null>(null);
+  const [htsFuse, setHtsFuse] = useState<Fuse<HtsElement> | null>(null);
   const [searchResults, setSearchResults] = useState<FuseResult<HtsElement>[]>(
     []
   );
   const { htsElements, fetchElements, revision } = useHts();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isSearchingRef = useRef(false);
+
+  // Configure Fuse.js for notes searching
+  const notesFuse = useMemo(() => {
+    return new Fuse(notes, {
+      keys: ["title", "description"],
+      threshold: 0.3,
+      includeScore: true,
+      ignoreLocation: true,
+    });
+  }, []);
+
+  // Filter notes by search query
+  const filteredNotes = useMemo(() => {
+    if (!searchValue.trim() || activeTab !== ExploreTab.NOTES) {
+      return notes;
+    }
+
+    const searchResults = notesFuse.search(searchValue);
+    return searchResults.map((result) => result.item);
+  }, [searchValue, notesFuse, activeTab]);
 
   useEffect(() => {
     const loadAllData = async () => {
@@ -73,7 +97,7 @@ export const Explore = () => {
 
   useEffect(() => {
     if (htsElements.length > 0) {
-      setFuse(
+      setHtsFuse(
         new Fuse(htsElements, {
           keys: ["description", "htsno"],
           threshold: 0.4,
@@ -97,25 +121,109 @@ export const Explore = () => {
     }
   }, [breadcrumbs]);
 
+  const performHtsSearch = useCallback(
+    async (query: string) => {
+      if (!htsFuse || query.length === 0) {
+        setSearchResults([]);
+        setSearching(false);
+        return;
+      }
+
+      // If already searching, don't start another search
+      if (isSearchingRef.current) {
+        return;
+      }
+
+      isSearchingRef.current = true;
+      setSearching(true);
+
+      try {
+        // Use setTimeout to move the search to the next tick and prevent UI blocking
+        setTimeout(() => {
+          const searchString = isHTSCode(query)
+            ? query
+            : query.split(" ").length === 1
+              ? `'${query} `
+              : `'${query}`;
+
+          const results = htsFuse.search(searchString);
+          const topResults = results.slice(0, 30);
+          setSearchResults(topResults);
+          setSearching(false);
+          isSearchingRef.current = false;
+        }, 0);
+      } catch (error) {
+        console.error("Search error:", error);
+        setSearchResults([]);
+        setSearching(false);
+        isSearchingRef.current = false;
+      }
+    },
+    [htsFuse]
+  );
+
+  const debouncedSearch = useCallback(
+    (query: string) => {
+      // Clear existing timeout
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+
+      // Clear results immediately if query is empty
+      if (query.length === 0) {
+        setSearchResults([]);
+        setSearching(false);
+        return;
+      }
+
+      // Only perform HTS search if we're on the ELEMENTS tab
+      if (activeTab === ExploreTab.ELEMENTS) {
+        // Set loading state immediately for better UX
+        setSearching(true);
+
+        // Debounce the actual search
+        debounceTimeoutRef.current = setTimeout(() => {
+          performHtsSearch(query);
+        }, 300);
+      }
+    },
+    [performHtsSearch, activeTab]
+  );
+
   useEffect(() => {
-    if (fuse && searchValue.length > 0) {
-      const timeoutId = setTimeout(() => {
-        const searchString = isHTSCode(searchValue)
-          ? searchValue
-          : searchValue.split(" ").length === 1
-            ? `'${searchValue} `
-            : `'${searchValue}`;
+    debouncedSearch(searchValue);
 
-        const results = fuse.search(searchString);
-        const topResults = results.slice(0, 30);
-        setSearchResults(topResults);
-        setActiveTab(ExploreTab.SEARCH);
-        setLoading({ isLoading: false, text: "" });
-      }, 300);
+    // Cleanup function
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, [searchValue, debouncedSearch]);
 
-      return () => clearTimeout(timeoutId);
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setSearchValue(value);
+    },
+    []
+  );
+
+  const handleClearSearch = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSearchValue("");
+    setSearchResults([]);
+    setSearching(false);
+  }, []);
+
+  const getSearchPlaceholder = () => {
+    if (activeTab === ExploreTab.ELEMENTS) {
+      return "Search HTS code or description";
+    } else if (activeTab === ExploreTab.NOTES) {
+      return "Search notes...";
     }
-  }, [searchValue]);
+    return "Search...";
+  };
 
   return (
     <div className="w-full h-full p-4 flex flex-col gap-2">
@@ -143,58 +251,85 @@ export const Explore = () => {
                   </div>
                 </div>
               </div>
+
+              <div
+                role="tablist"
+                className="tabs tabs-boxed bg-primary/30 rounded-xl"
+              >
+                {ExploreTabs.map((tab) => (
+                  <a
+                    key={tab.value}
+                    role="tab"
+                    onClick={() => setActiveTab(tab.value)}
+                    className={classNames(
+                      "tab transition-all duration-200 ease-in text-white font-semibold",
+                      tab.value === activeTab && "tab-active"
+                    )}
+                  >
+                    {tab.label}
+                  </a>
+                ))}
+              </div>
             </div>
 
-            <div
-              role="tablist"
-              className="tabs tabs-boxed bg-primary/30 rounded-xl"
-            >
-              {ExploreTabs.map((tab) => (
-                <a
-                  key={tab.value}
-                  role="tab"
-                  onClick={() => setActiveTab(tab.value)}
-                  className={classNames(
-                    "tab transition-all duration-200 ease-in text-white font-semibold",
-                    tab.value === activeTab && "tab-active"
+            <div className="w-full md:max-w-[350px] lg:max-w-[400px]">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder={getSearchPlaceholder()}
+                  value={searchValue}
+                  onChange={handleSearchChange}
+                  className="input input-bordered input-md h-10 w-full focus:ring-0 focus:outline-none pr-8"
+                />
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
+                  {searchValue && !searching && (
+                    <button
+                      onClick={handleClearSearch}
+                      className="btn btn-link p-1 btn-sm text-xs hover:text-secondary no-underline"
+                      title="Clear search"
+                    >
+                      clear
+                    </button>
                   )}
-                >
-                  {tab.label}
-                </a>
-              ))}
+                  {searching && <LoadingIndicator spinnerOnly />}
+                </div>
+              </div>
             </div>
-            {/* <div className="w-full md:max-w-[350px] lg:max-w-[400px]">
-              <SearchBar
-                placeholder={getSearchPlaceholder()}
-                onSearch={(value) => {
-                  if (value.length > 0) {
-                    if (searchValue !== value) {
-                      setSearchValue(value);
-                      setLoading({
-                        isLoading: true,
-                        text: "Searching Elements",
-                      });
-                    }
-                    if (activeTab !== ExploreTab.SEARCH) {
-                      setActiveTab(ExploreTab.SEARCH);
-                    }
-                  }
-                }}
-              />
-            </div> */}
           </div>
+
           {activeTab === ExploreTab.ELEMENTS && (
-            <Elements sections={sections} />
+            <>
+              {searchValue ? (
+                <div className="flex flex-col gap-2">
+                  {searching ? (
+                    <div className="flex items-center justify-center py-8">
+                      <div className="flex items-center gap-2">
+                        <LoadingIndicator text="Searching..." />
+                      </div>
+                    </div>
+                  ) : (
+                    <SearchResults
+                      results={searchResults}
+                      setActiveTab={setActiveTab}
+                      setSearchResults={setSearchResults}
+                      setSearchValue={setSearchValue}
+                    />
+                  )}
+                </div>
+              ) : (
+                <Elements sections={sections} />
+              )}
+            </>
           )}
-          {activeTab === ExploreTab.NOTES && <Notes />}
-          {activeTab === ExploreTab.SEARCH && (
-            <SearchResults
-              results={searchResults}
-              searchString={searchValue}
-              setActiveTab={setActiveTab}
-              setSearchResults={setSearchResults}
-              setSearchValue={setSearchValue}
-            />
+          {activeTab === ExploreTab.NOTES && (
+            <>
+              <Notes filteredNotes={filteredNotes} />
+              {searchValue && filteredNotes.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  No notes found matching "{searchValue}"
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
