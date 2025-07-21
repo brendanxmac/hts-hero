@@ -319,7 +319,7 @@ export const ClassificationResultPage = () => {
                                 }
                               >
                                 <button
-                                  className="btn btn-link btn-xs text-xs p-0 hover:text-secondary hover:scale-110"
+                                  className="btn btn-link btn-xs text-xs p-0 hover:text-secondary"
                                   onClick={() => {
                                     const note =
                                       getGeneralNoteFromSpecialTariffSymbol(

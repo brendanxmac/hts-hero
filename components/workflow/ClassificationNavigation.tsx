@@ -79,7 +79,7 @@ export const ClassificationNavigation = ({
         <div className="z-10 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <button
-              className="btn btn-xs btn-primary gap-1 hover:scale-[1.02] transition-all duration-100 ease-in-out"
+              className="btn btn-xs btn-primary gap-1"
               onClick={() => {
                 setActiveTab(ClassifyTab.CLASSIFY);
                 setPage(ClassifyPage.CLASSIFICATIONS);

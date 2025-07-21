@@ -25,7 +25,7 @@ const ClassifierHero = () => {
         </div>
 
         <Link className="btn btn-wide btn-primary" href={"/about#pricing"}>
-          Try it Free!
+          Try it Now!
         </Link>
 
         {/* <TestimonialsAvatars priority={true} /> */}
