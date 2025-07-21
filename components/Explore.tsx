@@ -326,7 +326,7 @@ export const Explore = () => {
               <Notes filteredNotes={filteredNotes} />
               {searchValue && filteredNotes.length === 0 && (
                 <div className="text-center py-8 text-gray-500">
-                  No notes found matching "{searchValue}"
+                  No notes found matching &quot;{searchValue}&quot;
                 </div>
               )}
             </>
