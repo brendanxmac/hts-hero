@@ -14,10 +14,8 @@ import { Loader } from "../interfaces/ui";
 import { SearchResults } from "./SearchResults";
 import { useHts } from "../contexts/HtsContext";
 import { isHTSCode } from "../libs/hts";
-import { SearchBar } from "./SearchBar";
 import { classNames } from "../utilities/style";
 import { Color } from "../enums/style";
-import { PrimaryLabel } from "./PrimaryLabel";
 import { SecondaryLabel } from "./SecondaryLabel";
 
 const ExploreTabs: Tab[] = [
@@ -28,10 +26,6 @@ const ExploreTabs: Tab[] = [
   {
     label: "Notes",
     value: ExploreTab.NOTES,
-  },
-  {
-    label: "Search",
-    value: ExploreTab.SEARCH,
   },
 ];
 
@@ -149,29 +143,29 @@ export const Explore = () => {
                   </div>
                 </div>
               </div>
-
-              <div
-                role="tablist"
-                className="tabs tabs-boxed bg-primary/30 rounded-xl"
-              >
-                {ExploreTabs.map((tab) => (
-                  <a
-                    key={tab.value}
-                    role="tab"
-                    onClick={() => setActiveTab(tab.value)}
-                    className={classNames(
-                      "tab transition-all duration-200 ease-in text-white font-semibold",
-                      tab.value === activeTab && "tab-active"
-                    )}
-                  >
-                    {tab.label}
-                  </a>
-                ))}
-              </div>
             </div>
-            <div className="w-full md:max-w-[350px] lg:max-w-[400px]">
+
+            <div
+              role="tablist"
+              className="tabs tabs-boxed bg-primary/30 rounded-xl"
+            >
+              {ExploreTabs.map((tab) => (
+                <a
+                  key={tab.value}
+                  role="tab"
+                  onClick={() => setActiveTab(tab.value)}
+                  className={classNames(
+                    "tab transition-all duration-200 ease-in text-white font-semibold",
+                    tab.value === activeTab && "tab-active"
+                  )}
+                >
+                  {tab.label}
+                </a>
+              ))}
+            </div>
+            {/* <div className="w-full md:max-w-[350px] lg:max-w-[400px]">
               <SearchBar
-                placeholder="Search HTS code or description"
+                placeholder={getSearchPlaceholder()}
                 onSearch={(value) => {
                   if (value.length > 0) {
                     if (searchValue !== value) {
@@ -187,7 +181,7 @@ export const Explore = () => {
                   }
                 }}
               />
-            </div>
+            </div> */}
           </div>
           {activeTab === ExploreTab.ELEMENTS && (
             <Elements sections={sections} />

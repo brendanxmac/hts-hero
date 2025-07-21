@@ -14,7 +14,6 @@ import { useHts } from "../contexts/HtsContext";
 import { FuseResult } from "fuse.js";
 
 interface Props {
-  searchString: string;
   results: FuseResult<HtsElement>[];
   setActiveTab: (tab: ExploreTab) => void;
   setSearchResults: (results: FuseResult<HtsElement>[]) => void;
@@ -23,7 +22,6 @@ interface Props {
 
 export const SearchResults = ({
   results,
-  searchString,
   setActiveTab,
   setSearchResults,
   setSearchValue,
@@ -43,21 +41,6 @@ export const SearchResults = ({
 
   return (
     <div className="flex flex-col gap-4 pb-4">
-      <div className="w-full flex justify-between">
-        <p>
-          Results for <span className="font-bold">{`"${searchString}"`}</span>
-        </p>
-        <button
-          className="btn btn-sm btn-primary"
-          onClick={() => {
-            setSearchResults([]);
-            setSearchValue("");
-          }}
-        >
-          Clear Results
-        </button>
-      </div>
-
       {results.map((result, index) => {
         const { item: element } = result;
         const sectionAndChapter = getSectionAndChapterFromChapterNumber(
@@ -78,6 +61,10 @@ export const SearchResults = ({
             sectionAndChapter={sectionAndChapter}
             parents={parents}
             onClick={() => {
+              console.log("clicked");
+              // Clear search results and search query
+              setSearchResults([]);
+              setSearchValue("");
               setBreadcrumbs(breadcrumbs);
               setActiveTab(ExploreTab.ELEMENTS);
             }}

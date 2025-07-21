@@ -25,7 +25,7 @@ export interface SectionAndChapterDetails {
   section: {
     number: number;
     description: string;
-    notesPath: string;
+    filePath: string;
   };
   chapter: HtsSectionAndChapterBase;
 }
@@ -37,7 +37,7 @@ export interface HtsSection extends HtsSectionAndChapterBase {
 export interface HtsSectionAndChapterBase {
   number: number;
   description: string;
-  notesPath?: string;
+  filePath?: string;
   type: Navigatable.CHAPTER;
 }
 

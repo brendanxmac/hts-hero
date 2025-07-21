@@ -685,7 +685,7 @@ export const getSectionAndChapterFromChapterNumber = (
         section: {
           number: section.number,
           description: section.description,
-          notesPath: section.notesPath,
+          filePath: section.filePath,
         },
         chapter,
       };
