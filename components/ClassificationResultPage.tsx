@@ -42,6 +42,7 @@ import { XMarkIcon } from "@heroicons/react/16/solid";
 import { SupabaseBuckets } from "../constants/supabase";
 import { CountrySelection } from "./CountrySelection";
 import { Country } from "../constants/countries";
+import { format } from "date-fns";
 
 export const ClassificationResultPage = () => {
   const { user } = useUser();
@@ -240,30 +241,30 @@ export const ClassificationResultPage = () => {
               color={Color.NEUTRAL_CONTENT}
             />
           </div>
-          <div className="flex gap-2 items-center w-full">
+          <div className="flex gap-2 items-center w-full max-w-2xl">
             <div className="grow">
               <CountrySelection
                 selectedCountries={selectedCountries}
                 setSelectedCountries={setSelectedCountries}
               />
             </div>
-            {selectedCountries.length > 0 && (
-              <button
-                className="btn btn-primary btn-sm"
-                onClick={() => {
-                  const htsCode =
-                    classification.levels[levels.length - 1].selection?.htsno;
-                  selectedCountries.map((country) =>
-                    window.open(
-                      `https://tariffs.flexport.com/?entryDate=2025-07-20&country=${country.code}&value=10000&advanced=true&code=${htsCode}`,
-                      "_blank"
-                    )
-                  );
-                }}
-              >
-                Search
-              </button>
-            )}
+
+            <button
+              className="btn btn-primary btn-sm"
+              disabled={selectedCountries.length === 0}
+              onClick={() => {
+                const htsCode =
+                  classification.levels[levels.length - 1].selection?.htsno;
+                selectedCountries.map((country) =>
+                  window.open(
+                    `https://tariffs.flexport.com/?entryDate=${format(new Date(), "yyyy-MM-dd")}&country=${country.code}&value=10000&advanced=true&code=${htsCode}`,
+                    "_blank"
+                  )
+                );
+              }}
+            >
+              Search
+            </button>
           </div>
         </div>
 
@@ -318,7 +319,7 @@ export const ClassificationResultPage = () => {
                                 }
                               >
                                 <button
-                                  className="btn btn-link btn-xs text-xs p-0 hover:text-secondary hover:scale-110"
+                                  className="btn btn-link btn-xs text-xs p-0 hover:text-secondary"
                                   onClick={() => {
                                     const note =
                                       getGeneralNoteFromSpecialTariffSymbol(

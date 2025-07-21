@@ -19,7 +19,7 @@ interface Props {
 }
 
 export const Chapter = ({ chapter }: Props) => {
-  const { number, description, notesPath } = chapter;
+  const { number, description, filePath: notesPath } = chapter;
   const { htsElements } = useHts();
   const [showNotes, setShowNotes] = useState(false);
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();

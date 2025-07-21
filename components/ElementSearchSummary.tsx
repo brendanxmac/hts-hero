@@ -51,7 +51,7 @@ export const ElementSearchSummary = ({
     indent === "0" && classification && classification.levels[0];
 
   return (
-    <div className="flex flex-col gap-2 w-full bg-base-100 rounded-md border-2 border-base-content/40 hover:cursor-pointer hover:bg-neutral transition duration-100 ease-in-out scale-[0.99] hover:scale-[1] active:scale-[0.99]">
+    <div className="flex flex-col gap-2 w-full bg-base-100 rounded-md border-2 border-base-content/40 hover:cursor-pointer hover:bg-neutral">
       <div className="flex">
         {isHeading && (
           <div className="flex items-center justify-center">

@@ -95,12 +95,12 @@ export const CandidateElement = ({
   return (
     <div
       className={classNames(
-        "flex w-full rounded-md bg-base-100 p-4 gap-4 transition duration-100 ease-in-out scale-[0.99]",
+        "flex w-full rounded-md bg-base-100 p-4 gap-4",
         isLevelSelection && "shadow-[inset_0_0_0_4px_oklch(var(--p))]",
         !isLevelSelection &&
-          "hover:cursor-pointer hover:bg-base-300 border-2 border-neutral-content",
-        !isPressed && !isLevelSelection && "hover:scale-[1]",
-        isPressed && "scale-[0.99]"
+          "hover:cursor-pointer hover:bg-base-300 border-2 border-neutral-content"
+        // !isPressed && !isLevelSelection && "hover:scale-[1]",
+        // isPressed && "bg-primary/20"
       )}
       onMouseDown={() => setIsPressed(true)}
       onMouseUp={() => setIsPressed(false)}

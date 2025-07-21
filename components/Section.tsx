@@ -31,7 +31,7 @@ export const getChapterRange = (section: HtsSection) => {
 };
 
 export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
-  const { number, description, notesPath } = section;
+  const { number, description, filePath: notesPath } = section;
   const [showDetails, setShowDetails] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
   const disabled = section.number === 22;
