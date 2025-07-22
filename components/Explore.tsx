@@ -62,7 +62,7 @@ export const Explore = () => {
   // Filter notes by search query
   const filteredNotes = useMemo(() => {
     if (!searchValue.trim() || activeTab !== ExploreTab.NOTES) {
-      return notes;
+      return [];
     }
 
     const searchResults = notesFuse.search(searchValue);
@@ -320,14 +320,7 @@ export const Explore = () => {
             </>
           )}
           {activeTab === ExploreTab.NOTES && (
-            <>
-              <Notes filteredNotes={filteredNotes} />
-              {searchValue && filteredNotes.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
-                  No notes found matching &quot;{searchValue}&quot;
-                </div>
-              )}
-            </>
+            <Notes filteredNotes={filteredNotes} searchValue={searchValue} />
           )}
         </div>
       )}

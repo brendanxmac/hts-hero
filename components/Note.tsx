@@ -5,6 +5,8 @@ import { TertiaryText } from "./TertiaryText";
 import { Color } from "../enums/style";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { SupabaseBuckets } from "../constants/supabase";
+import { TertiaryLabel } from "./TertiaryLabel";
+import { classNames } from "../utilities/style";
 
 interface Props {
   note: NoteType;
@@ -16,20 +18,42 @@ export const Note = ({ note }: Props) => {
 
   return (
     <div
-      className="p-4 w-full flex flex-col rounded-md bg-base-100 border-2 border-base-content/40 hover:bg-neutral transition duration-100 ease-in-out cursor-pointer"
+      className={classNames(
+        "p-4 w-full flex flex-col rounded-md bg-base-100 border-2 border-base-content/40 hover:bg-neutral transition duration-100 ease-in-out cursor-pointer",
+        !filePath && "bg-base-300 pointer-events-none"
+      )}
       onClick={() => {
         setShow(!show);
       }}
     >
       <div className="flex flex-col sm:ml-4 gap-3">
-        {title === description ? (
-          <PrimaryLabel value={title} color={Color.WHITE} />
-        ) : (
-          <TertiaryText value={title} color={Color.WHITE} />
-        )}
+        <div className="flex justify-between">
+          {title === description ? (
+            <PrimaryLabel
+              value={title}
+              color={!filePath ? Color.NEUTRAL_CONTENT : Color.WHITE}
+            />
+          ) : (
+            <TertiaryText
+              value={title}
+              color={!filePath ? Color.NEUTRAL_CONTENT : Color.WHITE}
+            />
+          )}
+          {!note.filePath && (
+            <div className="bg-black px-3 py-1 rounded-md">
+              <TertiaryLabel
+                value="No Notes"
+                color={!filePath ? Color.NEUTRAL_CONTENT : Color.WHITE}
+              />
+            </div>
+          )}
+        </div>
         {title !== description && (
           <div>
-            <PrimaryLabel value={description} color={Color.WHITE} />
+            <PrimaryLabel
+              value={description}
+              color={!filePath ? Color.NEUTRAL_CONTENT : Color.WHITE}
+            />
 
             {specialTariffTreatmentCodes &&
               specialTariffTreatmentCodes.length > 0 && (
