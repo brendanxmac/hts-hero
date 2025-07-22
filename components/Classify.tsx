@@ -16,8 +16,8 @@ import { ClassificationResultPage } from "./ClassificationResultPage";
 import Modal from "./Modal";
 import ConversionPricing from "./ConversionPricing";
 import { useClassification } from "../contexts/ClassificationContext";
-import { useSearchParams } from "next/navigation";
 import { classNames } from "../utilities/style";
+import toast from "react-hot-toast";
 
 interface Props {
   page: ClassifyPage;
@@ -33,29 +33,48 @@ export const Classify = ({ page, setPage }: Props) => {
     text: "",
   });
   const { activeTab } = useClassifyTab();
-  const [classificationLevel, setClassificationLevel] = useState<
-    number | undefined
-  >(undefined);
   const { fetchElements, htsElements, isFetching, revision } = useHts();
   const { getSections, sections } = useHtsSections();
-  const { classification, setArticleDescription } = useClassification();
-  const [workflowStep, setWorkflowStep] = useState(
-    classification && classification.isComplete
-      ? WorkflowStep.RESULT
-      : WorkflowStep.DESCRIPTION
-  );
-  const searchParams = useSearchParams();
+  const { classification, setClassification, setClassificationId } =
+    useClassification();
+  const [classificationLevel, setClassificationLevel] = useState<
+    number | undefined
+  >(() => {
+    if (classification?.levels.length) {
+      return classification.levels.length - 1;
+    }
+    return undefined;
+  });
+
+  const [workflowStep, setWorkflowStep] = useState(() => {
+    if (classification?.isComplete) {
+      return WorkflowStep.RESULT;
+    }
+    if (classification?.levels.length) {
+      return WorkflowStep.CLASSIFICATION;
+    }
+    return WorkflowStep.DESCRIPTION;
+  });
 
   useEffect(() => {
-    const productDescription = searchParams.get("productDescription");
-    if (productDescription) {
-      setArticleDescription(productDescription);
-    }
+    return () => {
+      setClassification(null);
+      setClassificationId(null);
+    };
+  }, []);
 
+  useEffect(() => {
     const loadAllData = async () => {
       setLoading({ isLoading: true, text: "Fetching All Data" });
-      await Promise.all([fetchElements("latest"), getSections()]);
-      setLoading({ isLoading: false, text: "" });
+      try {
+        await Promise.all([fetchElements("latest"), getSections()]);
+        setLoading({ isLoading: false, text: "" });
+      } catch (error) {
+        toast.error("Failed to fetch data. Please try again.");
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading({ isLoading: false, text: "" });
+      }
     };
 
     if (!sections.length || !htsElements.length || !revision?.isLatest) {
@@ -97,9 +116,7 @@ export const Classify = ({ page, setPage }: Props) => {
       <div
         className={classNames(
           "h-full grow overflow-hidden",
-          workflowStep === WorkflowStep.DESCRIPTION &&
-            classification &&
-            !classification.articleDescription
+          workflowStep === WorkflowStep.DESCRIPTION && !classification
             ? "col-span-12"
             : "col-span-8"
         )}

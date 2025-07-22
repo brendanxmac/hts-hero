@@ -19,8 +19,7 @@ interface Props {
 
 export const ElementSummary = ({ element, onClick }: Props) => {
   const { htsno, description, indent } = element;
-  const { classification, updateLevel: updateProgressionLevel } =
-    useClassification();
+  const { classification, updateLevel } = useClassification();
 
   const isHeadingCandidate = Boolean(
     classification &&
@@ -31,8 +30,10 @@ export const ElementSummary = ({ element, onClick }: Props) => {
   );
 
   const isRecommended =
+    classification &&
     classification.levels[0]?.analysisElement?.uuid === element.uuid;
-  const recommendedReason = classification.levels[0]?.analysisReason;
+  const recommendedReason =
+    classification && classification.levels[0]?.analysisReason;
 
   const isHeading =
     indent === "0" && classification && classification.levels[0];
@@ -54,7 +55,7 @@ export const ElementSummary = ({ element, onClick }: Props) => {
                       newClassificationProgression[0].candidates.filter(
                         (candidate) => candidate.uuid !== element.uuid
                       );
-                    updateProgressionLevel(0, {
+                    updateLevel(0, {
                       candidates: newClassificationProgression[0].candidates,
                     });
                   }}
@@ -75,7 +76,7 @@ export const ElementSummary = ({ element, onClick }: Props) => {
                       element,
                     ];
 
-                    updateProgressionLevel(0, {
+                    updateLevel(0, {
                       candidates: newClassificationProgression[0].candidates,
                     });
                   }}

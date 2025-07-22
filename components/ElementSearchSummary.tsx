@@ -21,8 +21,7 @@ export const ElementSearchSummary = ({
   onClick,
 }: Props) => {
   const { htsno, description, indent } = element;
-  const { classification, updateLevel: updateProgressionLevel } =
-    useClassification();
+  const { classification, updateLevel } = useClassification();
 
   const isHeadingCandidate = Boolean(
     classification &&
@@ -67,7 +66,7 @@ export const ElementSearchSummary = ({
                       newClassificationProgression[0].candidates.filter(
                         (candidate) => candidate.uuid !== element.uuid
                       );
-                    updateProgressionLevel(0, {
+                    updateLevel(0, {
                       candidates: newClassificationProgression[0].candidates,
                     });
                   }}
@@ -88,7 +87,7 @@ export const ElementSearchSummary = ({
                       element,
                     ];
 
-                    updateProgressionLevel(0, {
+                    updateLevel(0, {
                       candidates: newClassificationProgression[0].candidates,
                     });
                   }}

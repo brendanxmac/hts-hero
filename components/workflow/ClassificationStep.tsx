@@ -24,6 +24,7 @@ import { SearchCrossRulings } from "../SearchCrossRulings";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import { TertiaryLabel } from "../TertiaryLabel";
+import toast from "react-hot-toast";
 
 export interface ClassificationStepProps {
   setWorkflowStep: (step: WorkflowStep) => void;
@@ -50,6 +51,7 @@ export const ClassificationStep = ({
     Boolean(levels[classificationLevel]?.notes)
   );
   const previousArticleDescriptionRef = useRef<string>(articleDescription);
+  const isMountedRef = useRef(true);
   const [htsSections, setHtsSections] = useState<HtsSection[]>([]);
   const [sectionCandidates, setSectionCandidates] = useState<
     CandidateSelection[]
@@ -71,184 +73,157 @@ export const ClassificationStep = ({
 
     let sections = htsSections;
 
-    if (sections.length === 0) {
-      const sectionsResponse = await getHtsSectionsAndChapters();
-      setHtsSections(sectionsResponse.sections);
-      sections = sectionsResponse.sections;
+    try {
+      if (sections.length === 0) {
+        const sectionsResponse = await getHtsSectionsAndChapters();
+        setHtsSections(sectionsResponse.sections);
+        sections = sectionsResponse.sections;
+      }
+
+      const bestSectionCandidates = await getBestDescriptionCandidates(
+        [],
+        articleDescription,
+        true,
+        1,
+        3,
+        sections.map((s) => s.description)
+      );
+
+      const candidates: CandidateSelection[] =
+        bestSectionCandidates.bestCandidates.map((candidateIndex) => ({
+          index: sections[candidateIndex].number,
+          // description: sections[sectionCandidate.index].description,
+          // logic: sectionCandidate.logic,
+        }));
+
+      setSectionCandidates(candidates);
+    } catch (err) {
+      console.error("Error getting sections", err);
+      toast.error("Failed to find suitable sections. Please try again.");
+    } finally {
+      setLoading({ isLoading: false, text: "" });
     }
-
-    const bestSectionCandidates = await getBestDescriptionCandidates(
-      [],
-      articleDescription,
-      true,
-      1,
-      3,
-      sections.map((s) => s.description)
-    );
-
-    const candidates: CandidateSelection[] =
-      bestSectionCandidates.bestCandidates.map((candidateIndex) => ({
-        index: sections[candidateIndex].number,
-        // description: sections[sectionCandidate.index].description,
-        // logic: sectionCandidate.logic,
-      }));
-
-    setSectionCandidates(candidates);
-    setLoading({ isLoading: false, text: "" });
   };
 
   // Get 2-3 Best Chapters
   const getChapters = async () => {
     setLoading({ isLoading: true, text: "Looking for Candidates" });
-    const candidateSections = htsSections.filter((section) => {
-      return sectionCandidates.some((candidate) => {
-        return candidate.index === section.number;
+
+    try {
+      const candidateSections = htsSections.filter((section) => {
+        return sectionCandidates.some((candidate) => {
+          return candidate.index === section.number;
+        });
       });
-    });
 
-    const candidatesForChapter: CandidateSelection[] = [];
+      const candidatesForChapter: CandidateSelection[] = [];
 
-    await Promise.all(
-      candidateSections.map(async (section) => {
-        const bestChapterCandidates = await getBestDescriptionCandidates(
-          [],
-          articleDescription,
-          true,
-          1,
-          3,
-          section.chapters.map((c) => c.description)
-        );
+      await Promise.all(
+        candidateSections.map(async (section) => {
+          const bestChapterCandidates = await getBestDescriptionCandidates(
+            [],
+            articleDescription,
+            true,
+            1,
+            3,
+            section.chapters.map((c) => c.description)
+          );
 
-        const candidates: CandidateSelection[] =
-          bestChapterCandidates.bestCandidates.map((candidateIndex) => ({
-            index: section.chapters[candidateIndex].number,
-            // description: section.chapters[chapterCandidate.index].description,
-            // logic: chapterCandidate.logic,
-          }));
+          const candidates: CandidateSelection[] =
+            bestChapterCandidates.bestCandidates.map((candidateIndex) => ({
+              index: section.chapters[candidateIndex].number,
+              // description: section.chapters[chapterCandidate.index].description,
+              // logic: chapterCandidate.logic,
+            }));
 
-        candidatesForChapter.push(...candidates);
-      })
-    );
+          candidatesForChapter.push(...candidates);
+        })
+      );
 
-    setChapterCandidates(candidatesForChapter);
-    setLoading({ isLoading: false, text: "" });
+      setChapterCandidates(candidatesForChapter);
+    } catch (err) {
+      console.error("Error getting chapters", err);
+      toast.error("Failed to find suitable chapters. Please try again.");
+    } finally {
+      setLoading({ isLoading: false, text: "" });
+    }
   };
 
   // Get up to 2 Best Headings Per Chapter
   const getHeadings = async () => {
     setLoading({ isLoading: true, text: "Looking for Candidates" });
     const candidatesForHeading: HtsElement[] = [];
-    await Promise.all(
-      chapterCandidates.map(async (chapter) => {
-        const chapterElements = getElementsInChapter(
-          htsElements,
-          chapter.index
-        );
 
-        const chapterElementsWithParentIndex = setIndexInArray(chapterElements);
-        const elementsAtLevel = elementsAtClassificationLevel(
-          chapterElementsWithParentIndex,
-          0
-        );
-        const bestCandidateHeadings = await getBestDescriptionCandidates(
-          elementsAtLevel,
-          articleDescription,
-          false,
-          1,
-          3,
-          elementsAtLevel.map((e) => e.description)
-        );
+    try {
+      await Promise.all(
+        chapterCandidates.map(async (chapter) => {
+          const chapterElements = getElementsInChapter(
+            htsElements,
+            chapter.index
+          );
 
-        // Handle Empty Case
-        if (bestCandidateHeadings.bestCandidates.length === 0) {
-          return;
-        }
+          const chapterElementsWithParentIndex =
+            setIndexInArray(chapterElements);
+          const elementsAtLevel = elementsAtClassificationLevel(
+            chapterElementsWithParentIndex,
+            0
+          );
+          const bestCandidateHeadings = await getBestDescriptionCandidates(
+            elementsAtLevel,
+            articleDescription,
+            false,
+            1,
+            3,
+            elementsAtLevel.map((e) => e.description)
+          );
 
-        // Handle Negative Index Case (sometimes chatGPT will do this)
-        if (bestCandidateHeadings.bestCandidates[0] < 0) {
-          return;
-        }
+          // Handle Empty Case
+          if (bestCandidateHeadings.bestCandidates.length === 0) {
+            return;
+          }
 
-        const candidates = bestCandidateHeadings.bestCandidates
-          .map((candidateIndex) => {
-            return elementsAtLevel[candidateIndex];
-          })
-          .map((candidate) => ({
-            ...candidate,
-          }));
+          // Handle Negative Index Case (sometimes chatGPT will do this)
+          if (bestCandidateHeadings.bestCandidates[0] < 0) {
+            return;
+          }
 
-        candidatesForHeading.push(...candidates);
-      })
-    );
+          const candidates = bestCandidateHeadings.bestCandidates
+            .map((candidateIndex) => {
+              return elementsAtLevel[candidateIndex];
+            })
+            .map((candidate) => ({
+              ...candidate,
+            }));
 
-    addLevel(candidatesForHeading);
+          candidatesForHeading.push(...candidates);
+        })
+      );
 
-    // DO not move this down, it will break the classification as the timing is critical
-    setLoading({ isLoading: false, text: "" });
+      // Check if component is still mounted before updating state
+      if (!isMountedRef.current) {
+        console.log("Component unmounted, skipping state update");
+        return;
+      }
+
+      addLevel(candidatesForHeading);
+    } catch (err) {
+      console.error("Error getting headings", err);
+      toast.error("Failed to find suitable headings. Please try again.");
+    } finally {
+      // DO not move this down, it will break the classification as the timing is critical
+      setLoading({ isLoading: false, text: "" });
+    }
   };
 
-  // const getBestCandidate = async () => {
-  //   const candidates = levels[classificationLevel].candidates;
+  useEffect(() => {
+    // Set mounted to true when component mounts
+    isMountedRef.current = true;
 
-  //   setLoading({
-  //     isLoading: true,
-  //     text: "Analyzing Candidates",
-  //   });
-
-  //   const simplifiedCandidates = candidates.map((e) => ({
-  //     code: e.htsno,
-  //     description: e.description,
-  //   }));
-
-  //   const progressionDescription = getProgressionDescriptionWithArrows(
-  //     levels,
-  //     classificationLevel
-  //   );
-
-  //   const {
-  //     index: suggestedCandidateIndex,
-  //     logic: suggestionReason,
-  //     questions: suggestionQuestions,
-  //   } = await getBestClassificationProgression(
-  //     simplifiedCandidates,
-  //     progressionDescription,
-  //     articleDescription
-  //   );
-
-  //   console.log(progressionDescription);
-  //   console.log(suggestedCandidateIndex);
-  //   console.log(suggestionReason);
-  //   console.log(suggestionQuestions);
-
-  //   const bestCandidate = candidates[suggestedCandidateIndex - 1];
-
-  //   // TODO: find a way to prevent this from happening
-  //   // specifically, when user leaves the page (goes back to classifications)
-  //   // this event below will trigger cause the component is still mounted and
-  //   // classification will be undefined cause we set it that way when use leaves page
-  //   // Ideas:
-  //   // - Don't set to undefined when user leaves page
-  //   // - Don't classifications should be its own page
-
-  //   setClassification((prev: Classification) => {
-  //     const newProgressionLevels = [...prev.levels];
-  //     newProgressionLevels[classificationLevel] = {
-  //       ...newProgressionLevels[classificationLevel],
-  //       analysisElement: bestCandidate,
-  //       analysisReason: suggestionReason,
-  //       analysisQuestions: suggestionQuestions,
-  //     };
-  //     return {
-  //       ...prev,
-  //       levels: newProgressionLevels,
-  //     };
-  //   });
-
-  //   setLoading({
-  //     isLoading: false,
-  //     text: "",
-  //   });
-  // };
+    // Cleanup function to mark as unmounted
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (previousArticleDescriptionRef.current !== articleDescription) {

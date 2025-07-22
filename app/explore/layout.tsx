@@ -1,7 +1,5 @@
 import { ReactNode } from "react";
-// import { redirect } from "next/navigation";
 import { createClient } from "@/app/api/supabase/server";
-// import config from "@/config";
 import UnauthenticatedHeader from "../../components/UnauthenticatedHeader";
 import { AuthenticatedHeader } from "../../components/AuthenticatedHeader";
 

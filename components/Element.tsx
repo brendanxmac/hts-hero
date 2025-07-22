@@ -125,7 +125,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
             <div className="w-full flex flex-col gap-2">
               <div className="flex flex-col">
                 <SecondaryLabel
-                  value="Find Tariff by Country of Origin"
+                  value="Find Full Tariff by Country of Origin"
                   color={Color.WHITE}
                 />
                 <TertiaryText
@@ -161,7 +161,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
           )}
           {tariffElement && (
             <div className="w-full flex flex-col gap-4">
-              <SecondaryLabel value="Tariff Details" color={Color.WHITE} />
+              <SecondaryLabel value="Base Tariff Details" color={Color.WHITE} />
 
               <div className="grid grid-cols-2 gap-2">
                 <div className="flex flex-col gap-3 p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24">

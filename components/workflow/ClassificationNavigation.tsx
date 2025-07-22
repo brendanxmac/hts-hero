@@ -13,6 +13,7 @@ import { ClassifyTabs } from "../../constants/classify";
 import { useRef, useEffect } from "react";
 import { TertiaryLabel } from "../TertiaryLabel";
 import { PrimaryLabel } from "../PrimaryLabel";
+import { SecondaryLabel } from "../SecondaryLabel";
 
 export interface ClassificationNavigationProps {
   setPage: (page: ClassifyPage) => void;
@@ -73,9 +74,9 @@ export const ClassificationNavigation = ({
   }, [workflowStep, classificationLevel]);
 
   return (
-    <div className="h-full flex flex-col overflow-y-scroll">
+    <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="flex flex-col p-4 gap-2">
+      <div className="flex flex-col p-4 gap-2 border-b border-base-content/10">
         <div className="z-10 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <button
@@ -114,17 +115,16 @@ export const ClassificationNavigation = ({
             </div>
           </div>
         </div>
-        {/* <h2 className="text-2xl text-neutral-50 font-bold">
-          Classification Summary
-        </h2> */}
       </div>
 
-      <div ref={containerRef} className="h-full flex flex-col gap-6 py-2 px-4">
+      <div
+        ref={containerRef}
+        className="h-full flex flex-col gap-6 py-2 px-4 overflow-y-auto"
+      >
         <div className="flex flex-col gap-3">
-          <PrimaryLabel value="Item" color={Color.WHITE} />
+          <SecondaryLabel value="Item" color={Color.WHITE} />
           <div ref={descriptionRef}>
             <TextNavigationStep
-              large
               title="Description"
               text={articleDescription}
               active={workflowStep === WorkflowStep.DESCRIPTION}
@@ -139,62 +139,43 @@ export const ClassificationNavigation = ({
               }}
             />
           </div>
-          {/* <TextNavigationStep
-            title="Item Analysis"
-            text={articleAnalysis}
-            active={workflowStep === WorkflowStep.ANALYSIS}
-            icon={
-              <ChartPieIcon
-                className={classNames(
-                  "w-5 h-5 m-1",
-                  workflowStep === WorkflowStep.ANALYSIS
-                    ? "text-white"
-                    : "text-content-neutral"
-                )}
-              />
-            }
-            showButton={Boolean(articleDescription)}
-            button={{
-              label: articleAnalysis.length === 0 ? "Add" : "Edit",
-              onClick: () => setWorkflowStep(WorkflowStep.ANALYSIS),
-            }}
-          /> */}
         </div>
 
         <div className="flex flex-col gap-3">
-          <PrimaryLabel value="Selections" color={Color.WHITE} />
+          <SecondaryLabel value="Your Selections" color={Color.WHITE} />
           <div className="flex flex-col gap-3">
-            {levels.map((level, index) => (
-              <div
-                key={index}
-                ref={(el) => {
-                  levelRefs.current[index] = el;
-                }}
-              >
-                <ElementsNavigationStep
-                  index={index}
-                  classificationProgression={level}
-                  active={
-                    workflowStep === WorkflowStep.CLASSIFICATION &&
-                    classificationLevel === index
-                  }
-                  onClick={() => {
-                    if (activeTab !== ClassifyTab.CLASSIFY) {
-                      setActiveTab(ClassifyTab.CLASSIFY);
-                    }
-
-                    setWorkflowStep(WorkflowStep.CLASSIFICATION);
-                    setClassificationLevel(index);
+            {levels &&
+              levels.map((level, index) => (
+                <div
+                  key={index}
+                  ref={(el) => {
+                    levelRefs.current[index] = el;
                   }}
-                />
-              </div>
-            ))}
+                >
+                  <ElementsNavigationStep
+                    index={index}
+                    classificationProgression={level}
+                    active={
+                      workflowStep === WorkflowStep.CLASSIFICATION &&
+                      classificationLevel === index
+                    }
+                    onClick={() => {
+                      if (activeTab !== ClassifyTab.CLASSIFY) {
+                        setActiveTab(ClassifyTab.CLASSIFY);
+                      }
+
+                      setWorkflowStep(WorkflowStep.CLASSIFICATION);
+                      setClassificationLevel(index);
+                    }}
+                  />
+                </div>
+              ))}
           </div>
         </div>
 
-        {classification.isComplete && (
+        {classification?.isComplete && (
           <div ref={resultRef} className="flex flex-col gap-3 pb-4">
-            <PrimaryLabel value="Result" color={Color.WHITE} />
+            <SecondaryLabel value="Result & Tariff" color={Color.WHITE} />
             <div
               className={classNames(
                 "flex flex-col gap-1 p-4 rounded-md border-2 border-neutral-content/40 hover:scale-[1.02] transition-all duration-200 ease-in-out hover:cursor-pointer hover:bg-base-300",
@@ -218,13 +199,13 @@ export const ClassificationNavigation = ({
               />
               <h2
                 className={classNames(
-                  "text-2xl md:text-3xl font-extrabold",
+                  "text-xl md:text-2xl font-extrabold",
                   workflowStep === WorkflowStep.RESULT
                     ? "text-black"
                     : "text-white"
                 )}
               >
-                {classification.levels[levels.length - 1].selection?.htsno}
+                {classification?.levels[levels.length - 1]?.selection?.htsno}
               </h2>
             </div>
           </div>

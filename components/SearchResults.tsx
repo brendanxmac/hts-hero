@@ -40,7 +40,7 @@ export const SearchResults = ({
   }
 
   return (
-    <div className="flex flex-col gap-4 pb-4">
+    <div className="flex flex-col gap-2 pb-4">
       {results.map((result, index) => {
         const { item: element } = result;
         const sectionAndChapter = getSectionAndChapterFromChapterNumber(

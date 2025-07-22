@@ -437,8 +437,6 @@ export const getBestDescriptionCandidates = async (
     });
 
   const bestCandidates = bestCandidatesResponse[0].message.content;
-  console.log("Best Candidates:");
-  console.log(bestCandidates);
 
   if (bestCandidates === null) {
     throw new Error(`Failed to get best description matches`);

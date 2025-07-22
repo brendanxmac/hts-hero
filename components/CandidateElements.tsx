@@ -1,7 +1,7 @@
 import { Classification } from "../interfaces/hts";
 import { Loader } from "../interfaces/ui";
 import { CandidateElement } from "./CandidateElement";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useClassification } from "../contexts/ClassificationContext";
 import { getProgressionDescriptionWithArrows } from "../libs/hts";
 import { getBestClassificationProgression } from "../libs/hts";
@@ -24,14 +24,23 @@ export const CandidateElements = ({
   const { levels } = classification;
   const { candidates } = levels[classificationLevel];
   const { articleDescription, articleAnalysis } = classification;
+  const isMountedRef = useRef(true);
 
   useEffect(() => {
+    // Set mounted to true when component mounts
+    isMountedRef.current = true;
+
     if (
       candidates.length > 0 &&
       !classification.levels[classificationLevel].analysisElement
     ) {
       getBestCandidate();
     }
+
+    // Cleanup function to mark as unmounted
+    return () => {
+      isMountedRef.current = false;
+    };
   }, []);
 
   const getBestCandidate = async () => {
@@ -55,28 +64,25 @@ export const CandidateElements = ({
       articleDescription + "\n" + articleAnalysis
     );
 
+    // Check if component is still mounted before updating state
+    if (!isMountedRef.current) {
+      console.log("Component unmounted, skipping state update");
+      return;
+    }
+
     const bestCandidate = candidates[suggestedCandidateIndex - 1];
 
-    // TODO: find a way to prevent this from happening
-    // specifically, when user leaves the page (goes back to classifications)
-    // this event below will trigger cause the component is still mounted and
-    // classification will be undefined cause we set it that way when use leaves page
-    // Ideas:
-    // - Don't set to undefined when user leaves page
-    // - Don't classifications should be its own page
+    const newProgressionLevels = [...classification.levels];
+    newProgressionLevels[classificationLevel] = {
+      ...newProgressionLevels[classificationLevel],
+      analysisElement: bestCandidate,
+      analysisReason: suggestionReason,
+      analysisQuestions: suggestionQuestions,
+    };
 
-    setClassification((prev: Classification) => {
-      const newProgressionLevels = [...prev.levels];
-      newProgressionLevels[classificationLevel] = {
-        ...newProgressionLevels[classificationLevel],
-        analysisElement: bestCandidate,
-        analysisReason: suggestionReason,
-        analysisQuestions: suggestionQuestions,
-      };
-      return {
-        ...prev,
-        levels: newProgressionLevels,
-      };
+    setClassification({
+      ...classification,
+      levels: newProgressionLevels,
     });
 
     setLoading({

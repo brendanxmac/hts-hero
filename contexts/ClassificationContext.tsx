@@ -50,23 +50,21 @@ export const ClassificationProvider = ({
   children: ReactNode;
 }) => {
   const [classificationId, setClassificationId] = useState<string | null>(null);
-  const [classification, setClassification] = useState<Classification>({
-    notes: "",
-    articleDescription: "",
-    articleAnalysis: "",
-    progressionDescription: "",
-    levels: [],
-    isComplete: false,
-  });
+  const [classification, setClassification] = useState<Classification>(null);
 
+  // This is causing classifications to get wiped out when navigating away from the page
   useEffect(() => {
-    if (!classification || !classificationId) return;
+    if (!classification || !classificationId) {
+      return;
+    }
 
     const timeoutId = setTimeout(() => {
       saveClassification();
     }, 500);
 
-    return () => clearTimeout(timeoutId);
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [classification]);
 
   const setArticleDescription = (description: string) => {

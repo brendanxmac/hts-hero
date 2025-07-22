@@ -1,5 +1,4 @@
 export enum NoteType {
-  ALL = "all",
   GENERAL = "general",
   SECTION = "section",
   CHAPTER = "chapter",
