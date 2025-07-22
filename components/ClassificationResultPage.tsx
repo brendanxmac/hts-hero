@@ -122,12 +122,12 @@ export const ClassificationResultPage = () => {
             value="Item Description"
             color={Color.NEUTRAL_CONTENT}
           />
-          <PrimaryText
+          <PrimaryLabel
             value={classification.articleDescription || ""}
             color={Color.WHITE}
           />
-        </div>
-        <div className="flex flex-col gap-2">
+        </div> */}
+        {/* <div className="flex flex-col gap-2">
           <TertiaryLabel
             value="Classification Selections"
             color={Color.NEUTRAL_CONTENT}
@@ -275,24 +275,24 @@ export const ClassificationResultPage = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <div className="flex flex-col p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24 gap-3">
+              <div className="flex flex-col p-3 bg-base-100 border border-base-content/10 rounded-md min-w-24 gap-3">
                 <TertiaryLabel
                   value={"General Rate"}
                   color={Color.NEUTRAL_CONTENT}
                 />
-                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white">
+                <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
                   {tariffElement.general || "-"}
                 </h2>
 
                 {getTemporaryTariffText(tariffElement, TariffType.GENERAL)}
               </div>
-              <div className="flex flex-col p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24 gap-3">
+              <div className="flex flex-col p-3 bg-base-100 border border-base-content/10 rounded-md min-w-24 gap-3">
                 <TertiaryLabel
                   value={"Special Rate"}
                   color={Color.NEUTRAL_CONTENT}
                 />
                 <div className="flex flex-col">
-                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white">
+                  <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
                     {getTextBeforeOpeningParenthesis(tariffElement.special) ||
                       "-"}
                   </h2>
@@ -344,21 +344,21 @@ export const ClassificationResultPage = () => {
                 {getTemporaryTariffText(tariffElement, TariffType.SPECIAL)}
               </div>
 
-              <div className="flex flex-col p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24 gap-3">
+              <div className="flex flex-col p-3 bg-base-100 border border-base-content/10 rounded-md min-w-24 gap-3">
                 <TertiaryLabel
                   value={"Other Rate"}
                   color={Color.NEUTRAL_CONTENT}
                 />
-                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white">
+                <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
                   {tariffElement.other || "-"}
                 </h2>
 
                 {getTemporaryTariffText(tariffElement, TariffType.OTHER)}
               </div>
 
-              <div className="flex flex-col p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24 gap-3">
+              <div className="flex flex-col p-3 bg-base-100 border border-base-content/10 rounded-md min-w-24 gap-3">
                 <TertiaryLabel value={`Units`} color={Color.NEUTRAL_CONTENT} />
-                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white">
+                <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
                   {tariffElement.units.join(", ") || "-"}
                 </h2>
               </div>

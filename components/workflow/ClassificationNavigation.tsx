@@ -13,6 +13,7 @@ import { ClassifyTabs } from "../../constants/classify";
 import { useRef, useEffect } from "react";
 import { TertiaryLabel } from "../TertiaryLabel";
 import { PrimaryLabel } from "../PrimaryLabel";
+import { SecondaryLabel } from "../SecondaryLabel";
 
 export interface ClassificationNavigationProps {
   setPage: (page: ClassifyPage) => void;
@@ -124,10 +125,9 @@ export const ClassificationNavigation = ({
         className="h-full flex flex-col gap-6 py-2 px-4 overflow-y-auto"
       >
         <div className="flex flex-col gap-3">
-          <PrimaryLabel value="Item" color={Color.WHITE} />
+          <SecondaryLabel value="Item" color={Color.WHITE} />
           <div ref={descriptionRef}>
             <TextNavigationStep
-              large
               title="Description"
               text={articleDescription}
               active={workflowStep === WorkflowStep.DESCRIPTION}
@@ -165,7 +165,7 @@ export const ClassificationNavigation = ({
         </div>
 
         <div className="flex flex-col gap-3">
-          <PrimaryLabel value="Selections" color={Color.WHITE} />
+          <SecondaryLabel value="Your Selections" color={Color.WHITE} />
           <div className="flex flex-col gap-3">
             {levels.map((level, index) => (
               <div
@@ -197,7 +197,7 @@ export const ClassificationNavigation = ({
 
         {classification.isComplete && (
           <div ref={resultRef} className="flex flex-col gap-3 pb-4">
-            <PrimaryLabel value="Result" color={Color.WHITE} />
+            <SecondaryLabel value="Result & Tariff" color={Color.WHITE} />
             <div
               className={classNames(
                 "flex flex-col gap-1 p-4 rounded-md border-2 border-neutral-content/40 hover:scale-[1.02] transition-all duration-200 ease-in-out hover:cursor-pointer hover:bg-base-300",
@@ -221,7 +221,7 @@ export const ClassificationNavigation = ({
               />
               <h2
                 className={classNames(
-                  "text-2xl md:text-3xl font-extrabold",
+                  "text-xl md:text-2xl font-extrabold",
                   workflowStep === WorkflowStep.RESULT
                     ? "text-black"
                     : "text-white"

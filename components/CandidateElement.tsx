@@ -35,6 +35,8 @@ import { PrimaryText } from "./PrimaryText";
 import { SecondaryText } from "./SecondaryText";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { SupabaseBuckets } from "../constants/supabase";
+import { TertiaryText } from "./TertiaryText";
+import { SecondaryLabel } from "./SecondaryLabel";
 
 interface Props {
   element: HtsElement;
@@ -261,9 +263,9 @@ export const CandidateElement = ({
             </div>
           </div>
           {isLevelSelection ? (
-            <PrimaryLabel value={description} color={Color.WHITE} />
+            <SecondaryLabel value={description} color={Color.WHITE} />
           ) : (
-            <PrimaryText value={description} color={Color.WHITE} />
+            <SecondaryText value={description} color={Color.WHITE} />
           )}
         </div>
 
@@ -275,10 +277,11 @@ export const CandidateElement = ({
             </div>
 
             <div className="flex flex-col gap-2 ml-1">
-              <SecondaryText color={Color.WHITE} value={recommendedReason} />
+              <TertiaryText color={Color.WHITE} value={recommendedReason} />
 
-              <p className="text-xs font-bold text-gray-400">
+              <p className="text-xs text-gray-400">
                 HTS Hero can make mistakes. Always exercise your own judgement
+                as the classifier.
               </p>
             </div>
 
