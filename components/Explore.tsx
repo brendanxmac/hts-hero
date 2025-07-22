@@ -17,7 +17,7 @@ import { isHTSCode } from "../libs/hts";
 import { classNames } from "../utilities/style";
 import { Color } from "../enums/style";
 import { SecondaryLabel } from "./SecondaryLabel";
-import { notes, NoteType } from "../public/notes/notes";
+import { notes } from "../public/notes/notes";
 
 const ExploreTabs: Tab[] = [
   {
@@ -226,7 +226,7 @@ export const Explore = () => {
   };
 
   return (
-    <div className="w-full h-full p-4 flex flex-col gap-2">
+    <div className="w-full h-full px-4 pt-4 flex flex-col gap-2">
       {isLoading ? (
         <div className="w-full h-full flex items-center justify-center">
           <LoadingIndicator text={loadingText} />
@@ -240,7 +240,7 @@ export const Explore = () => {
             <div className="w-full flex gap-4 items-center justify-between md:justify-normal">
               <div className="flex flex-col -space-y-1">
                 <div className="flex gap-2 items-start">
-                  <h1 className="text-2xl md:text-3xl font-bold text-white">
+                  <h1 className="shrink-0 text-2xl md:text-3xl font-bold text-white">
                     HTS {revision?.name.split("-")[0]}
                   </h1>
                   <div className="mb-0.5">
@@ -300,22 +300,20 @@ export const Explore = () => {
           {activeTab === ExploreTab.ELEMENTS && (
             <>
               {searchValue ? (
-                <div className="flex flex-col gap-2">
-                  {searching ? (
-                    <div className="flex items-center justify-center py-8">
-                      <div className="flex items-center gap-2">
-                        <LoadingIndicator text="Searching..." />
-                      </div>
+                searching ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="flex items-center gap-2">
+                      <LoadingIndicator text="Searching..." />
                     </div>
-                  ) : (
-                    <SearchResults
-                      results={searchResults}
-                      setActiveTab={setActiveTab}
-                      setSearchResults={setSearchResults}
-                      setSearchValue={setSearchValue}
-                    />
-                  )}
-                </div>
+                  </div>
+                ) : (
+                  <SearchResults
+                    results={searchResults}
+                    setActiveTab={setActiveTab}
+                    setSearchResults={setSearchResults}
+                    setSearchValue={setSearchValue}
+                  />
+                )
               ) : (
                 <Elements sections={sections} />
               )}

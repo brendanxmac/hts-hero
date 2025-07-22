@@ -73,9 +73,9 @@ export const ClassificationNavigation = ({
   }, [workflowStep, classificationLevel]);
 
   return (
-    <div className="h-full flex flex-col overflow-y-scroll">
+    <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="flex flex-col p-4 gap-2">
+      <div className="flex flex-col p-4 gap-2 border-b border-base-content/10">
         <div className="z-10 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <button
@@ -119,7 +119,10 @@ export const ClassificationNavigation = ({
         </h2> */}
       </div>
 
-      <div ref={containerRef} className="h-full flex flex-col gap-6 py-2 px-4">
+      <div
+        ref={containerRef}
+        className="h-full flex flex-col gap-6 py-2 px-4 overflow-y-auto"
+      >
         <div className="flex flex-col gap-3">
           <PrimaryLabel value="Item" color={Color.WHITE} />
           <div ref={descriptionRef}>

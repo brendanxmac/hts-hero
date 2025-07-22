@@ -45,7 +45,6 @@ export const Classifications = ({ page, setPage }: Props) => {
     isLoading: classificationsLoading,
     refreshClassifications,
   } = useClassifications();
-  const { setClassification } = useClassification();
   const { user, error: userError } = useUser();
 
   // Create searchable data for Fuse.js
@@ -217,14 +216,14 @@ export const Classifications = ({ page, setPage }: Props) => {
                 <button
                   className="btn btn-primary btn-sm gap-1"
                   onClick={() => {
-                    setClassification({
-                      articleDescription: "",
-                      articleAnalysis: "",
-                      progressionDescription: "",
-                      levels: [],
-                      isComplete: false,
-                      notes: "",
-                    });
+                    // setClassification({
+                    //   articleDescription: "",
+                    //   articleAnalysis: "",
+                    //   progressionDescription: "",
+                    //   levels: [],
+                    //   isComplete: false,
+                    //   notes: "",
+                    // });
                     setPage(ClassifyPage.CLASSIFY);
                   }}
                 >

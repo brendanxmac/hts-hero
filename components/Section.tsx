@@ -80,7 +80,7 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
 
           <ChevronUpIcon
             className={classNames(
-              "w-6 h-6 text-primary transition-transform duration-200 ease-in-out",
+              "shrink-0 w-6 h-6 text-primary transition-transform duration-200 ease-in-out",
               showDetails && "rotate-180"
             )}
           />

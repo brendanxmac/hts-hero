@@ -11,10 +11,6 @@ import { Sections } from "./Sections";
 import { Chapter } from "./Chapter";
 import { Element } from "./Element";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
-import { useEffect, useState } from "react";
-import { useHts } from "../contexts/HtsContext";
-import { Loader } from "../interfaces/ui";
-import { LoadingIndicator } from "./LoadingIndicator";
 
 interface ElementsProps {
   sections: HtsSection[];
@@ -31,11 +27,6 @@ export interface NavigatableElement {
 }
 
 export const Elements = ({ sections }: ElementsProps) => {
-  const [{ isLoading, text: loadingText }, setLoading] = useState<Loader>({
-    isLoading: false,
-    text: "",
-  });
-  const { htsElements } = useHts();
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const currentElement = breadcrumbs[breadcrumbs.length - 1];
 
@@ -44,17 +35,13 @@ export const Elements = ({ sections }: ElementsProps) => {
   }
 
   return (
-    <div className="h-full flex flex-col gap-4">
-      <div className="flex gap-2 items-center justify-between">
-        {breadcrumbs.length > 1 ? (
-          <Breadcrumbs
-            breadcrumbs={breadcrumbs}
-            setBreadcrumbs={setBreadcrumbs}
-          />
-        ) : (
-          <div className="w-full"></div>
-        )}
-      </div>
+    <div className="flex flex-col gap-4 pb-4">
+      {breadcrumbs.length > 1 && (
+        <Breadcrumbs
+          breadcrumbs={breadcrumbs}
+          setBreadcrumbs={setBreadcrumbs}
+        />
+      )}
 
       {currentElement.element.type === Navigatable.SECTIONS ? (
         <Sections

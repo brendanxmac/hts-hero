@@ -38,13 +38,26 @@ export const Classify = ({ page, setPage }: Props) => {
   >(undefined);
   const { fetchElements, htsElements, isFetching, revision } = useHts();
   const { getSections, sections } = useHtsSections();
-  const { classification, setArticleDescription } = useClassification();
+  const {
+    classification,
+    setArticleDescription,
+    setClassification,
+    setClassificationId,
+  } = useClassification();
   const [workflowStep, setWorkflowStep] = useState(
     classification && classification.isComplete
       ? WorkflowStep.RESULT
       : WorkflowStep.DESCRIPTION
   );
   const searchParams = useSearchParams();
+
+  useEffect(() => {
+    return () => {
+      console.log("unmounting");
+      setClassification(null);
+      setClassificationId(null);
+    };
+  }, []);
 
   useEffect(() => {
     const productDescription = searchParams.get("productDescription");
@@ -97,9 +110,7 @@ export const Classify = ({ page, setPage }: Props) => {
       <div
         className={classNames(
           "h-full grow overflow-hidden",
-          workflowStep === WorkflowStep.DESCRIPTION &&
-            classification &&
-            !classification.articleDescription
+          workflowStep === WorkflowStep.DESCRIPTION && !classification
             ? "col-span-12"
             : "col-span-8"
         )}
