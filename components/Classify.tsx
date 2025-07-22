@@ -16,8 +16,8 @@ import { ClassificationResultPage } from "./ClassificationResultPage";
 import Modal from "./Modal";
 import ConversionPricing from "./ConversionPricing";
 import { useClassification } from "../contexts/ClassificationContext";
-import { useSearchParams } from "next/navigation";
 import { classNames } from "../utilities/style";
+import toast from "react-hot-toast";
 
 interface Props {
   page: ClassifyPage;
@@ -35,12 +35,8 @@ export const Classify = ({ page, setPage }: Props) => {
   const { activeTab } = useClassifyTab();
   const { fetchElements, htsElements, isFetching, revision } = useHts();
   const { getSections, sections } = useHtsSections();
-  const {
-    classification,
-    setArticleDescription,
-    setClassification,
-    setClassificationId,
-  } = useClassification();
+  const { classification, setClassification, setClassificationId } =
+    useClassification();
   const [classificationLevel, setClassificationLevel] = useState<
     number | undefined
   >(() => {
@@ -59,7 +55,6 @@ export const Classify = ({ page, setPage }: Props) => {
     }
     return WorkflowStep.DESCRIPTION;
   });
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     return () => {
@@ -69,15 +64,17 @@ export const Classify = ({ page, setPage }: Props) => {
   }, []);
 
   useEffect(() => {
-    const productDescription = searchParams.get("productDescription");
-    if (productDescription) {
-      setArticleDescription(productDescription);
-    }
-
     const loadAllData = async () => {
       setLoading({ isLoading: true, text: "Fetching All Data" });
-      await Promise.all([fetchElements("latest"), getSections()]);
-      setLoading({ isLoading: false, text: "" });
+      try {
+        await Promise.all([fetchElements("latest"), getSections()]);
+        setLoading({ isLoading: false, text: "" });
+      } catch (error) {
+        toast.error("Failed to fetch data. Please try again.");
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading({ isLoading: false, text: "" });
+      }
     };
 
     if (!sections.length || !htsElements.length || !revision?.isLatest) {

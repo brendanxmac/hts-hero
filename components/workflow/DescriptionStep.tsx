@@ -12,6 +12,7 @@ import { isWithinPastNDays } from "../../utilities/time";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 import { ClassifyPage } from "../../enums/classify";
 import { ArrowLeftIcon } from "@heroicons/react/16/solid";
+import toast from "react-hot-toast";
 
 interface Props {
   setPage: (page: ClassifyPage) => void;
@@ -70,33 +71,43 @@ export const DescriptionStep = ({
           }}
           onSubmit={async () => {
             setLoading(true);
-            const userCreatedDate = user ? new Date(user.created_at) : null;
-            const isTrialUser = userCreatedDate
-              ? isWithinPastNDays(userCreatedDate, 14)
-              : false;
+            try {
+              const userCreatedDate = user ? new Date(user.created_at) : null;
+              const isTrialUser = userCreatedDate
+                ? isWithinPastNDays(userCreatedDate, 14)
+                : false;
 
-            const isPayingUser = user
-              ? await userHasActivePurchase(user.id)
-              : false;
+              const isPayingUser = user
+                ? await userHasActivePurchase(user.id)
+                : false;
 
-            if (isPayingUser || isTrialUser) {
-              if (localItemDescription !== classification?.articleDescription) {
-                await startNewClassification(localItemDescription);
-                // Track classification started event
-                trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
-                  item: localItemDescription,
-                  is_paying_user: isPayingUser,
-                  is_trial_user: isTrialUser,
-                });
+              if (isPayingUser || isTrialUser) {
+                if (
+                  localItemDescription !== classification?.articleDescription
+                ) {
+                  await startNewClassification(localItemDescription);
+                  // Track classification started event
+                  trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
+                    item: localItemDescription,
+                    is_paying_user: isPayingUser,
+                    is_trial_user: isTrialUser,
+                  });
+                }
+
+                setWorkflowStep(WorkflowStep.CLASSIFICATION);
+                setClassificationLevel(0);
+              } else {
+                setArticleDescription(localItemDescription);
+                setShowPricing(true);
               }
-
-              setWorkflowStep(WorkflowStep.CLASSIFICATION);
-              setClassificationLevel(0);
-            } else {
-              setArticleDescription(localItemDescription);
-              setShowPricing(true);
+            } catch (error) {
+              console.error(error);
+              toast.error(
+                "Something went wrong. Please try again or contact support."
+              );
+            } finally {
+              setLoading(false);
             }
-            setLoading(false);
           }}
           disabled={localItemDescription.length === 0}
           loading={loading}

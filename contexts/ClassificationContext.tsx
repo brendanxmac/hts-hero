@@ -54,21 +54,15 @@ export const ClassificationProvider = ({
 
   // This is causing classifications to get wiped out when navigating away from the page
   useEffect(() => {
-    console.log("Classification Changed");
     if (!classification || !classificationId) {
-      console.log("Something undefined");
-      console.log(`Classification ID: ${classificationId}`);
-      console.log(`Classification: ${classification}`);
       return;
     }
 
     const timeoutId = setTimeout(() => {
-      console.log("Saving Classification");
       saveClassification();
     }, 500);
 
     return () => {
-      console.log("Clearing Timeout");
       clearTimeout(timeoutId);
     };
   }, [classification]);
