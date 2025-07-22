@@ -33,9 +33,6 @@ export const Classify = ({ page, setPage }: Props) => {
     text: "",
   });
   const { activeTab } = useClassifyTab();
-  const [classificationLevel, setClassificationLevel] = useState<
-    number | undefined
-  >(undefined);
   const { fetchElements, htsElements, isFetching, revision } = useHts();
   const { getSections, sections } = useHtsSections();
   const {
@@ -44,16 +41,28 @@ export const Classify = ({ page, setPage }: Props) => {
     setClassification,
     setClassificationId,
   } = useClassification();
-  const [workflowStep, setWorkflowStep] = useState(
-    classification && classification.isComplete
-      ? WorkflowStep.RESULT
-      : WorkflowStep.DESCRIPTION
-  );
+  const [classificationLevel, setClassificationLevel] = useState<
+    number | undefined
+  >(() => {
+    if (classification?.levels.length) {
+      return classification.levels.length - 1;
+    }
+    return undefined;
+  });
+
+  const [workflowStep, setWorkflowStep] = useState(() => {
+    if (classification?.isComplete) {
+      return WorkflowStep.RESULT;
+    }
+    if (classification?.levels.length) {
+      return WorkflowStep.CLASSIFICATION;
+    }
+    return WorkflowStep.DESCRIPTION;
+  });
   const searchParams = useSearchParams();
 
   useEffect(() => {
     return () => {
-      console.log("unmounting");
       setClassification(null);
       setClassificationId(null);
     };
