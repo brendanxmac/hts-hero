@@ -34,9 +34,9 @@ export const Note = ({ note }: Props) => {
               color={!filePath ? Color.NEUTRAL_CONTENT : Color.WHITE}
             />
           ) : (
-            <TertiaryText
+            <TertiaryLabel
               value={title}
-              color={!filePath ? Color.NEUTRAL_CONTENT : Color.WHITE}
+              color={!filePath ? Color.NEUTRAL_CONTENT : Color.PRIMARY}
             />
           )}
           {!note.filePath && (

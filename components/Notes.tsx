@@ -43,7 +43,7 @@ export const Notes = ({ filteredNotes, searchValue }: NotesProps) => {
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 pb-4">
       {filteredNotes && filteredNotes.length === 0 && !searchValue && (
         <div
           role="tablist"

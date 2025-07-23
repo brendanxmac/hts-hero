@@ -32,6 +32,7 @@ import { CountrySelection } from "./CountrySelection";
 import { Country } from "../constants/countries";
 import { TertiaryText } from "./TertiaryText";
 import { format } from "date-fns";
+import { PrimaryLabel } from "./PrimaryLabel";
 
 interface Props {
   summaryOnly?: boolean;
@@ -72,7 +73,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
       return `${parentBreadcrumb.element.htsno} /`;
     }
 
-    return "Missing HTS Number";
+    return "-";
   };
 
   return (
@@ -83,7 +84,9 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
             {getBreadCrumbsForElement(element, sections, htsElements).map(
               (breadcrumb, i) => (
                 <span key={`breadcrumb-${i}`}>
-                  {breadcrumb.label && <b>{breadcrumb.label} </b>}
+                  {breadcrumb.label && (
+                    <b className="text-accent">{breadcrumb.label} </b>
+                  )}
                   <span
                     className={`${!breadcrumb.value ? "font-bold" : "text-white"}`}
                   >
@@ -114,7 +117,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
               }
             />
           </div>
-          <h2 className="text-2xl font-bold text-white">{description}</h2>
+          <PrimaryLabel value={description} color={Color.WHITE} />
         </div>
       </div>
 

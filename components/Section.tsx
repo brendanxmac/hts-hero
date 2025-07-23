@@ -40,11 +40,11 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
     <div
       className={classNames(
         !showDetails && "hover:bg-neutral",
-        "bg-base-100 border-2 border-base-content/40 w-full flex flex-col gap-6 py-6 px-4 rounded-md transition duration-100 ease-in-out",
-        disabled ? "pointer-events-none" : "hover:cursor-pointer"
+        "bg-base-100 border-2 border-base-content/40 w-full flex flex-col gap-6 py-6 px-4 rounded-md transition duration-100 ease-in-out"
+        // disabled ? "pointer-events-none" : "hover:cursor-pointer"
       )}
       onClick={(e) => {
-        if (disabled) return;
+        // if (disabled) return;
         e.preventDefault();
         e.stopPropagation();
         setShowDetails(!showDetails);
@@ -55,11 +55,11 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
           <div className="grow flex flex-col gap-3">
             <div className="w-full flex gap-4 items-center justify-between">
               <SecondaryLabel value={`Section ${number.toString()}`} />
-              {disabled && (
+              {/* {disabled && (
                 <div className="bg-accent px-3 py-1 rounded-md">
                   <TertiaryLabel value="Coming Soon!" color={Color.BLACK} />
                 </div>
-              )}
+              )} */}
               {notesPath && (
                 <ButtonWithIcon
                   icon={<DocumentTextIcon className="h-4 w-4" />}
@@ -72,7 +72,8 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
             <div className="flex flex-col items-start">
               <PrimaryLabel
                 value={description}
-                color={disabled ? Color.BASE_CONTENT : Color.WHITE}
+                // color={disabled ? Color.BASE_CONTENT : Color.WHITE}
+                color={Color.WHITE}
               />
               <TertiaryText value={getChapterRange(section)} />
             </div>
