@@ -41,14 +41,14 @@ export const ElementSummary = ({ element, onClick }: Props) => {
   return (
     <div className="flex flex-col gap-2 w-full bg-base-300 rounded-md border-2 border-base-content/20 hover:bg-black/50 cursor-pointer">
       <div className="flex">
-        {isHeading && (
+        {isHeading && element.chapter != 98 && element.chapter != 99 && (
           <div className="flex items-center justify-center">
             <div className="px-3">
               {isHeadingCandidate ? (
                 <SquareIconButton
                   icon={<XMarkIcon className="h-4 w-4" />}
                   onClick={() => {
-                    // TODO: make a function for removing an element from a single classificatino progression
+                    // TODO: make a function for removing an element from a single classification progression
                     const newClassificationProgression =
                       classification.levels.slice(0, 1);
                     newClassificationProgression[0].candidates =

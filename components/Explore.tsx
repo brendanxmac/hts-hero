@@ -214,7 +214,7 @@ export const Explore = () => {
     if (activeTab === ExploreTab.ELEMENTS) {
       return "Search HTS code or description";
     } else if (activeTab === ExploreTab.NOTES) {
-      return "Search notes...";
+      return "Search all notes...";
     }
     return "Search...";
   };
