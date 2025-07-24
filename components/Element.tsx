@@ -6,6 +6,7 @@ import {
   getTariffDetails,
   getTemporaryTariffText,
   getGeneralNoteFromSpecialTariffSymbol,
+  isFullHTSCode,
 } from "../libs/hts";
 import { ElementSummary } from "./ElementSummary";
 import {
@@ -105,17 +106,38 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
           <div className="w-full flex justify-between items-start gap-2">
             <SecondaryLabel value={getHtsnoLabel()} />
 
-            <ButtonWithIcon
-              icon={<DocumentTextIcon className="h-4 w-4" />}
-              label={`Chapter ${chapter} Notes`}
-              onClick={() =>
-                setShowPDF({
-                  title: `Chapter ${chapter} Notes`,
-                  bucket: SupabaseBuckets.NOTES,
-                  filePath: `/chapters/Chapter ${chapter}.pdf`,
-                })
-              }
-            />
+            <div className="flex gap-2">
+              <ButtonWithIcon
+                icon={<DocumentTextIcon className="h-4 w-4" />}
+                label={`Chapter ${chapter} Notes`}
+                onClick={() =>
+                  setShowPDF({
+                    title: `Chapter ${chapter} Notes`,
+                    bucket: SupabaseBuckets.NOTES,
+                    filePath: `/chapters/Chapter ${chapter}.pdf`,
+                  })
+                }
+              />
+              {htsno && (
+                <button
+                  className="btn btn-xs btn-primary"
+                  onClick={() => {
+                    const htsCode = isFullHTSCode(htsno)
+                      ? htsno.slice(0, -3)
+                      : htsno;
+                    window.open(
+                      `https://rulings.cbp.gov/search?term=${encodeURIComponent(
+                        htsCode
+                      )}`,
+                      "_blank"
+                    );
+                  }}
+                >
+                  <MagnifyingGlassIcon className="w-4 h-4" />
+                  Search CROSS
+                </button>
+              )}
+            </div>
           </div>
           <PrimaryLabel value={description} color={Color.WHITE} />
         </div>
@@ -167,11 +189,11 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
               <SecondaryLabel value="Base Tariff Details" color={Color.WHITE} />
 
               <div className="grid grid-cols-2 gap-2">
-                <div className="flex flex-col gap-3 p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24">
+                <div className="flex flex-col gap-3 p-3 bg-base-300 border border-base-content/10 rounded-md min-w-24">
                   <div>
                     <TertiaryLabel
                       value={"General Rate"}
-                      color={Color.PRIMARY}
+                      color={Color.NEUTRAL_CONTENT}
                     />
                     <SecondaryText
                       value={tariffElement.general || "-"}
@@ -181,8 +203,11 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                   {getTemporaryTariffText(tariffElement, TariffType.GENERAL)}
                 </div>
 
-                <div className="flex flex-col p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24 gap-3">
-                  <TertiaryLabel value={"Special Rate"} color={Color.PRIMARY} />
+                <div className="flex flex-col p-3 bg-base-300 border border-base-content/10 rounded-md min-w-24 gap-3">
+                  <TertiaryLabel
+                    value={"Special Rate"}
+                    color={Color.NEUTRAL_CONTENT}
+                  />
                   <div className="flex flex-col">
                     <SecondaryText
                       value={
@@ -241,9 +266,12 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                   {getTemporaryTariffText(tariffElement, TariffType.SPECIAL)}
                 </div>
 
-                <div className="flex flex-col gap-3 p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24">
+                <div className="flex flex-col gap-3 p-3 bg-base-300 border border-base-content/10 rounded-md min-w-24">
                   <div>
-                    <TertiaryLabel value={"Other Rate"} color={Color.PRIMARY} />
+                    <TertiaryLabel
+                      value={"Other Rate"}
+                      color={Color.NEUTRAL_CONTENT}
+                    />
                     <SecondaryText
                       value={tariffElement.other || "-"}
                       color={Color.WHITE}
@@ -252,8 +280,11 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                   {getTemporaryTariffText(tariffElement, TariffType.OTHER)}
                 </div>
 
-                <div className="flex flex-col gap-1 p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24">
-                  <TertiaryLabel value={`Units`} color={Color.PRIMARY} />
+                <div className="flex flex-col gap-1 p-3 bg-base-300 border border-base-content/10 rounded-md min-w-24">
+                  <TertiaryLabel
+                    value={`Units`}
+                    color={Color.NEUTRAL_CONTENT}
+                  />
                   <SecondaryText
                     value={tariffElement.units.join(", ") || "-"}
                     color={Color.WHITE}
