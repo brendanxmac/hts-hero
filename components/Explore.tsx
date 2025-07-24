@@ -53,8 +53,8 @@ export const Explore = () => {
   const notesFuse = useMemo(() => {
     return new Fuse(notes, {
       keys: ["title", "description"],
-      threshold: 0.3,
-      includeScore: true,
+      threshold: 0.1,
+      findAllMatches: true,
       ignoreLocation: true,
     });
   }, []);
@@ -100,7 +100,7 @@ export const Explore = () => {
       setHtsFuse(
         new Fuse(htsElements, {
           keys: ["description", "htsno"],
-          threshold: 0.4,
+          threshold: 0.1,
           findAllMatches: true,
           ignoreLocation: true,
         })
@@ -140,13 +140,7 @@ export const Explore = () => {
       try {
         // Use setTimeout to move the search to the next tick and prevent UI blocking
         setTimeout(() => {
-          const searchString = isHTSCode(query)
-            ? query
-            : query.split(" ").length === 1
-              ? `'${query} `
-              : `'${query}`;
-
-          const results = htsFuse.search(searchString);
+          const results = htsFuse.search(query.trim());
           const topResults = results.slice(0, 30);
           setSearchResults(topResults);
           setSearching(false);

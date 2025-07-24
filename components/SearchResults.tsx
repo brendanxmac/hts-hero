@@ -45,7 +45,8 @@ export const SearchResults = ({
         const { item: element } = result;
         const sectionAndChapter = getSectionAndChapterFromChapterNumber(
           sections,
-          Number(getChapterFromHtsElement(element, htsElements))
+          Number(element.chapter)
+          // Number(getChapterFromHtsElement(element, htsElements))
         );
         const parents = getHtsElementParents(element, htsElements);
         const breadcrumbs = generateBreadcrumbsForHtsElement(
