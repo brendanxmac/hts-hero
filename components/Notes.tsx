@@ -24,6 +24,10 @@ const NoteTabs: Tab[] = [
     label: "Chapter",
     value: NoteType.CHAPTER,
   },
+  {
+    label: "Subchapter",
+    value: NoteType.SUBCHAPTER,
+  },
 ];
 
 export const Notes = ({ filteredNotes, searchValue }: NotesProps) => {

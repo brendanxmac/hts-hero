@@ -43,6 +43,7 @@ import { SupabaseBuckets } from "../constants/supabase";
 import { CountrySelection } from "./CountrySelection";
 import { Country } from "../constants/countries";
 import { format } from "date-fns";
+import { SecondaryText } from "./SecondaryText";
 
 export const ClassificationResultPage = () => {
   const { user } = useUser();
@@ -268,100 +269,123 @@ export const ClassificationResultPage = () => {
           </div>
         </div>
 
-        {tariffElement && (
+        {(tariffElement || (element && element.additionalDuties)) && (
           <div className="w-full flex flex-col gap-4">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2">
               <PrimaryLabel value="Tariff Base Rates" color={Color.WHITE} />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <div className="flex flex-col p-3 bg-base-100 border border-base-content/10 rounded-md min-w-24 gap-3">
-                <TertiaryLabel
-                  value={"General Rate"}
-                  color={Color.NEUTRAL_CONTENT}
-                />
-                <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
-                  {tariffElement.general || "-"}
-                </h2>
+              {tariffElement && (
+                <>
+                  <div className="flex flex-col p-3 bg-base-100 border border-base-content/10 rounded-md min-w-24 gap-3">
+                    <TertiaryLabel
+                      value={"General Rate"}
+                      color={Color.NEUTRAL_CONTENT}
+                    />
+                    <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
+                      {tariffElement.general || "-"}
+                    </h2>
 
-                {getTemporaryTariffText(tariffElement, TariffType.GENERAL)}
-              </div>
-              <div className="flex flex-col p-3 bg-base-100 border border-base-content/10 rounded-md min-w-24 gap-3">
-                <TertiaryLabel
-                  value={"Special Rate"}
-                  color={Color.NEUTRAL_CONTENT}
-                />
-                <div className="flex flex-col">
-                  <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
-                    {getTextBeforeOpeningParenthesis(tariffElement.special) ||
-                      "-"}
-                  </h2>
-                  {getTextBeforeOpeningParenthesis(tariffElement.special) && (
-                    <span className="mt-2 text-xs italic text-white">
-                      If qualified based on the following acts/agreemnts:
-                    </span>
-                  )}
-                  {getStringBetweenParenthesis(tariffElement.special) && (
+                    {getTemporaryTariffText(tariffElement, TariffType.GENERAL)}
+                  </div>
+                  <div className="flex flex-col p-3 bg-base-100 border border-base-content/10 rounded-md min-w-24 gap-3">
+                    <TertiaryLabel
+                      value={"Special Rate"}
+                      color={Color.NEUTRAL_CONTENT}
+                    />
                     <div className="flex flex-col">
-                      <div className="flex flex-wrap gap-x-1">
-                        {getStringBetweenParenthesis(tariffElement.special)
-                          .split(",")
-                          .map((specialTariffSymbol, index) => {
-                            const note = getGeneralNoteFromSpecialTariffSymbol(
-                              specialTariffSymbol.trim()
-                            );
-                            return (
-                              <div
-                                key={`${specialTariffSymbol}-${index}`}
-                                className="tooltip tooltip-primary tooltip-bottom"
-                                data-tip={
-                                  note?.description || note?.title || null
-                                }
-                              >
-                                <button
-                                  className="btn btn-link btn-xs text-xs p-0 hover:text-secondary"
-                                  onClick={() => {
-                                    const note =
-                                      getGeneralNoteFromSpecialTariffSymbol(
-                                        specialTariffSymbol.trim()
-                                      );
-                                    setShowPDF({
-                                      title: note?.title || "",
-                                      bucket: SupabaseBuckets.NOTES,
-                                      filePath: note?.filePath || "",
-                                    });
-                                  }}
-                                >
-                                  {specialTariffSymbol}
-                                </button>
-                              </div>
-                            );
-                          })}
-                      </div>
+                      <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
+                        {getTextBeforeOpeningParenthesis(
+                          tariffElement.special
+                        ) || "-"}
+                      </h2>
+                      {getTextBeforeOpeningParenthesis(
+                        tariffElement.special
+                      ) && (
+                        <span className="mt-2 text-xs italic text-white">
+                          If qualified based on the following acts/agreemnts:
+                        </span>
+                      )}
+                      {getStringBetweenParenthesis(tariffElement.special) && (
+                        <div className="flex flex-col">
+                          <div className="flex flex-wrap gap-x-1">
+                            {getStringBetweenParenthesis(tariffElement.special)
+                              .split(",")
+                              .map((specialTariffSymbol, index) => {
+                                const note =
+                                  getGeneralNoteFromSpecialTariffSymbol(
+                                    specialTariffSymbol.trim()
+                                  );
+                                return (
+                                  <div
+                                    key={`${specialTariffSymbol}-${index}`}
+                                    className="tooltip tooltip-primary tooltip-bottom"
+                                    data-tip={
+                                      note?.description || note?.title || null
+                                    }
+                                  >
+                                    <button
+                                      className="btn btn-link btn-xs text-xs p-0 hover:text-secondary"
+                                      onClick={() => {
+                                        const note =
+                                          getGeneralNoteFromSpecialTariffSymbol(
+                                            specialTariffSymbol.trim()
+                                          );
+                                        setShowPDF({
+                                          title: note?.title || "",
+                                          bucket: SupabaseBuckets.NOTES,
+                                          filePath: note?.filePath || "",
+                                        });
+                                      }}
+                                    >
+                                      {specialTariffSymbol}
+                                    </button>
+                                  </div>
+                                );
+                              })}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  )}
+                    {getTemporaryTariffText(tariffElement, TariffType.SPECIAL)}
+                  </div>
+
+                  <div className="flex flex-col p-3 bg-base-100 border border-base-content/10 rounded-md min-w-24 gap-3">
+                    <TertiaryLabel
+                      value={"Other Rate"}
+                      color={Color.NEUTRAL_CONTENT}
+                    />
+                    <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
+                      {tariffElement.other || "-"}
+                    </h2>
+
+                    {getTemporaryTariffText(tariffElement, TariffType.OTHER)}
+                  </div>
+
+                  <div className="flex flex-col p-3 bg-base-100 border border-base-content/10 rounded-md min-w-24 gap-3">
+                    <TertiaryLabel
+                      value={`Units`}
+                      color={Color.NEUTRAL_CONTENT}
+                    />
+                    <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
+                      {tariffElement.units.join(", ") || "-"}
+                    </h2>
+                  </div>
+                </>
+              )}
+              {element && element.additionalDuties && (
+                <div className="flex flex-col gap-1 p-3 bg-base-300 border border-base-content/10 rounded-md min-w-24">
+                  <TertiaryLabel
+                    value={`Additional Duties`}
+                    color={Color.NEUTRAL_CONTENT}
+                  />
+                  <SecondaryText
+                    value={element.additionalDuties || "-"}
+                    color={Color.WHITE}
+                  />
                 </div>
-                {getTemporaryTariffText(tariffElement, TariffType.SPECIAL)}
-              </div>
-
-              <div className="flex flex-col p-3 bg-base-100 border border-base-content/10 rounded-md min-w-24 gap-3">
-                <TertiaryLabel
-                  value={"Other Rate"}
-                  color={Color.NEUTRAL_CONTENT}
-                />
-                <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
-                  {tariffElement.other || "-"}
-                </h2>
-
-                {getTemporaryTariffText(tariffElement, TariffType.OTHER)}
-              </div>
-
-              <div className="flex flex-col p-3 bg-base-100 border border-base-content/10 rounded-md min-w-24 gap-3">
-                <TertiaryLabel value={`Units`} color={Color.NEUTRAL_CONTENT} />
-                <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
-                  {tariffElement.units.join(", ") || "-"}
-                </h2>
-              </div>
+              )}
             </div>
           </div>
         )}
