@@ -31,9 +31,7 @@ import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
 import { userHasActivePurchase } from "../libs/supabase/purchase";
 import { isWithinPastNDays } from "../utilities/time";
 import { useUser } from "../contexts/UserContext";
-import { PrimaryText } from "./PrimaryText";
 import { SecondaryText } from "./SecondaryText";
-import { PrimaryLabel } from "./PrimaryLabel";
 import { SupabaseBuckets } from "../constants/supabase";
 import { TertiaryText } from "./TertiaryText";
 import { SecondaryLabel } from "./SecondaryLabel";
@@ -53,7 +51,6 @@ export const CandidateElement = ({
 }: Props) => {
   const { user } = useUser();
   const { htsno, chapter, description, indent } = element;
-  const [isPressed, setIsPressed] = useState(false);
   const { clearBreadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { setActiveTab } = useClassifyTab();
   const { sections } = useHtsSections();
@@ -104,9 +101,6 @@ export const CandidateElement = ({
         // !isPressed && !isLevelSelection && "hover:scale-[1]",
         // isPressed && "bg-primary/20"
       )}
-      onMouseDown={() => setIsPressed(true)}
-      onMouseUp={() => setIsPressed(false)}
-      onMouseLeave={() => setIsPressed(false)}
       onClick={() => {
         if (isLevelSelection) {
           return;

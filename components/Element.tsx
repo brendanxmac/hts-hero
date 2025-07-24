@@ -6,6 +6,7 @@ import {
   getTariffDetails,
   getTemporaryTariffText,
   getGeneralNoteFromSpecialTariffSymbol,
+  getFootnotesForTariffType,
 } from "../libs/hts";
 import { ElementSummary } from "./ElementSummary";
 import {
@@ -33,6 +34,7 @@ import { Country } from "../constants/countries";
 import { TertiaryText } from "./TertiaryText";
 import { format } from "date-fns";
 import { PrimaryLabel } from "./PrimaryLabel";
+import { HtsLinkedText } from "./HtsLinkedText";
 
 interface Props {
   summaryOnly?: boolean;
@@ -178,7 +180,20 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                       color={Color.WHITE}
                     />
                   </div>
-                  {getTemporaryTariffText(tariffElement, TariffType.GENERAL)}
+                  {/* {getTemporaryTariffText(tariffElement, TariffType.GENERAL)} */}
+                  {tariffElement.footnotes.length > 0 && (
+                    <HtsLinkedText
+                      id={`${htsno}-general`}
+                      text={getFootnotesForTariffType(
+                        tariffElement,
+                        TariffType.GENERAL
+                      )
+                        .map((footnote) =>
+                          footnote.value.trim().replace(/\.*$/g, "")
+                        )
+                        .join(", ")}
+                    />
+                  )}
                 </div>
 
                 <div className="flex flex-col p-3 bg-primary/20 border border-base-content/10 rounded-md min-w-24 gap-3">

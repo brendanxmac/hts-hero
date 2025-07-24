@@ -28,12 +28,83 @@ import apiClient from "@/libs/api";
 import { HtsLevel, TariffType } from "../enums/hts";
 import { NavigatableElement } from "../components/Elements";
 import { generateClassificationReport } from "./classification";
-import { SecondaryText } from "../components/SecondaryText";
 import { TertiaryLabel } from "../components/TertiaryLabel";
 import { Color } from "../enums/style";
 import { UserProfile } from "./supabase/user";
 import { notes } from "../public/notes/notes";
 import { inflate } from "pako";
+import { SecondaryText } from "../components/SecondaryText";
+
+export const generateHtsLinkedText = (
+  id: string,
+  text: string,
+  onHtsCodeClick: (htsCode: string) => void
+): JSX.Element => {
+  // Regex to match HTS codes in various formats
+  // Matches: 4 digits, 6 digits (with or without dots), 8 digits (with or without dots), 10 digits (with or without dots)
+  const htsCodeRegex = /\b(\d{4}(?:\.?\d{2})?(?:\.?\d{2})?(?:\.?\d{2})?)\b/g;
+
+  const parts: (string | JSX.Element)[] = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = htsCodeRegex.exec(text)) !== null) {
+    const fullMatch = match[0];
+    const htsCode = match[1];
+
+    // Add text before the match
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+
+    // Normalize the HTS code to include periods
+    const normalizedHtsCode = normalizeHtsCode(htsCode);
+
+    // Add the clickable button
+    parts.push(
+      <button
+        key={`hts-${match.index}`}
+        className="btn btn-link p-0 btn-sm hover:text-secondary no-underline"
+        onClick={() => onHtsCodeClick(normalizedHtsCode)}
+      >
+        {fullMatch}
+      </button>
+    );
+
+    lastIndex = match.index + fullMatch.length;
+  }
+
+  // Add remaining text after the last match
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return (
+    <p key={`hts-text-${id}`} className="whitespace-pre-wrap text-white">
+      {parts}
+    </p>
+  );
+};
+
+// Helper function to normalize HTS codes to include periods
+const normalizeHtsCode = (htsCode: string): string => {
+  // Remove any existing periods and get just the digits
+  const digits = htsCode.replace(/\./g, "");
+
+  // Add periods based on length
+  if (digits.length === 4) {
+    return digits;
+  } else if (digits.length === 6) {
+    return `${digits.slice(0, 4)}.${digits.slice(4)}`;
+  } else if (digits.length === 8) {
+    return `${digits.slice(0, 4)}.${digits.slice(4, 6)}.${digits.slice(6)}`;
+  } else if (digits.length === 10) {
+    return `${digits.slice(0, 4)}.${digits.slice(4, 6)}.${digits.slice(6, 8)}.${digits.slice(8)}`;
+  }
+
+  // Return original if it doesn't match expected patterns
+  return htsCode;
+};
 
 export const downloadClassificationReport = async (
   classification: Classification,
@@ -677,7 +748,7 @@ export const getSectionAndChapterFromChapterNumber = (
   }
 
   for (const section of sections) {
-    const chapter = section.chapters.find((ch) => ch.number === chapterNumber);
+    const chapter = section.chapters.find((ch) => ch.number == chapterNumber);
     if (chapter) {
       return {
         section: {
@@ -687,6 +758,9 @@ export const getSectionAndChapterFromChapterNumber = (
         },
         chapter,
       };
+    }
+    if (!chapter) {
+      console.log(chapterNumber);
     }
   }
   return null; // Not found
@@ -886,4 +960,24 @@ export const getIndexOfLastElementBeforeIndentLevel = (
   }
 
   return htsElementsChunk.length;
+};
+
+// Test function to demonstrate generateHtsLinkedText usage
+export const testGenerateHtsLinkedText = () => {
+  const examples = [
+    "Except for products described in headings 9903.01.02, 9903.01.03, 9903.01.04 and 9903.01.05 articles the product of Mexico, as provided for in U.S. note 2(a) to this subchapter",
+    "See 9903.88.15",
+    "Other parts of airplanes or helicopters (provided for [described]in statistical reporting number 8803.30.0030), the foregoing not described [provided for]in subheading 9903.89.61",
+  ];
+
+  const handleHtsCodeClick = (htsCode: string) => {
+    console.log("Clicked HTS code:", htsCode);
+  };
+
+  return examples.map((example, index) => (
+    <div key={index} className="mb-4">
+      <h3>Example {index + 1}:</h3>
+      {generateHtsLinkedText(index, example, handleHtsCodeClick)}
+    </div>
+  ));
 };

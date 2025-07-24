@@ -43,10 +43,17 @@ export const SearchResults = ({
     <div className="flex flex-col gap-2 pb-4">
       {results.map((result, index) => {
         const { item: element } = result;
+        if (!element.chapter) {
+          console.log(element);
+        }
         const sectionAndChapter = getSectionAndChapterFromChapterNumber(
           sections,
-          Number(getChapterFromHtsElement(element, htsElements))
+          Number(element.chapter)
         );
+        if (!sectionAndChapter) {
+          console.log(sections);
+          console.log(element);
+        }
         const parents = getHtsElementParents(element, htsElements);
         const breadcrumbs = generateBreadcrumbsForHtsElement(
           sections,
