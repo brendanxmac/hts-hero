@@ -1,10 +1,12 @@
 export enum NoteType {
+  ANY = "any",
   GENERAL = "general",
   SECTION = "section",
   CHAPTER = "chapter",
+  SUBCHAPTER = "subchapter",
 }
 
-export interface Note {
+export interface NoteI {
   title: string;
   description: string;
   filePath: string;
@@ -12,7 +14,7 @@ export interface Note {
   type: NoteType;
 }
 
-export const notes: Note[] = [
+export const notes: NoteI[] = [
   {
     title: "General Rules of Interpretation",
     description: "General Rules of Interpretation",
@@ -1138,10 +1140,354 @@ export const notes: Note[] = [
     type: NoteType.CHAPTER,
   },
   {
+    title: "Chapter 98 - Subchapter 1",
+    description:
+      "Articles exported and returned, not advanced or improved in condition; animals exported and returned",
+    filePath: "/chapters/Chapter 98-1.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 98 - Subchapter 2",
+    description: "Articles exported and returned, advanced or improved abroad",
+    filePath: "/chapters/Chapter 98-2.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 98 - Subchapter 3",
+    description: "Substantial containers or holders",
+    filePath: "/chapters/Chapter 98-3.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 98 - Subchapter 4",
+    description: "Personal exemptions extended to residents and nonresidents",
+    filePath: "/chapters/Chapter 98-4.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 98 - Subchapter 5",
+    description:
+      "Personal exemptions extended to United States personnel and evacuees",
+    filePath: "/chapters/Chapter 98-5.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 98 - Subchapter 6",
+    description:
+      "Personal exemptions extended to distinguished visitors and top personnel of foreign governments or international organizations",
+    filePath: "/chapters/Chapter 98-6.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 98 - Subchapter 7",
+    description: "Other personal exemptions",
+    filePath: "/chapters/Chapter 98-7.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 98 - Subchapter 8",
+    description: "Importations of the United States government",
+    filePath: "/chapters/Chapter 98-8.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 98 - Subchapter 9",
+    description:
+      "Importations of foreign governments and international organizations",
+    filePath: "/chapters/Chapter 98-9.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 98 - Subchapter 10",
+    description:
+      "Importations of religious, educational, scientific and other institutions",
+    filePath: "/chapters/Chapter 98-10.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 98 - Subchapter 11",
+    description: "Samples for soliciting orders",
+    filePath: "/chapters/Chapter 98-11.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 98 - Subchapter 12",
+    description:
+      "Articles admitted free of duty under bond for permanent exhibition",
+    filePath: "/chapters/Chapter 98-12.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 98 - Subchapter 13",
+    description:
+      "Articles admitted temporarily free of duty under bond for temporary exhibition",
+    filePath: "/chapters/Chapter 98-13.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 98 - Subchapter 14",
+    description: "Tea admitted free under bond",
+    filePath: "/chapters/Chapter 98-14.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 98 - Subchapter 15",
+    description: "Products of American fisheries",
+    filePath: "/chapters/Chapter 98-15.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 98 - Subchapter 16",
+    description: "Noncommercial importations of limited value",
+    filePath: "/chapters/Chapter 98-16.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 98 - Subchapter 17",
+    description: "Other special classification provisions",
+    filePath: "/chapters/Chapter 98-17.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 98 - Subchapter 18",
+    description: "Vessel parts and repairs",
+    filePath: "/chapters/Chapter 98-18.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 98 - Subchapter 19",
+    description:
+      "Textile and apparel goods eligible for special tariff benefits under the Africa Growth and Opportunity Act",
+    filePath: "/chapters/Chapter 98-19.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 98 - Subchapter 20",
+    description:
+      "Goods eligible for special tariff benefits under the United States-Caribbean Basin Trade Partnership Act",
+    filePath: "/chapters/Chapter 98-20.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 98 - Subchapter 21",
+    description: "[Deleted]",
+    filePath: "/chapters/Chapter 98-21.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 98 - Subchapter 22",
+    description:
+      "Provisions established pursuant to the United States-Israel Free Trade Agreement",
+    filePath: "/chapters/Chapter 98-22.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 98 - Subchapter 23",
+    description:
+      "Provisions established pursuant to the United States-Mexico-Canada Agreement",
+    filePath: "/chapters/Chapter 98-23.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
     title: "Chapter 99",
     description:
       "Temporary legislation; temporary modifications proclaimed pursuant to trade agreements legislation; additional import restrictions proclaimed pursuant to section 22 of the Agricultural Adjustment Act, as amended",
     filePath: "/chapters/Chapter 99.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.CHAPTER,
+  },
+  {
+    title: "Chapter 99 - Subchapter 1",
+    description: "Temporary legislation providing for additional duties",
+    filePath: "/chapters/Chapter 99-1.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 99 - Subchapter 2",
+    description: "Temporary reductions in rates of duty",
+    filePath: "/chapters/Chapter 99-2.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 99 - Subchapter 3",
+    description:
+      "Temporary modifications established pursuant to trade legislation",
+    filePath: "/chapters/Chapter 99-3.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 99 - Subchapter 4",
+    description:
+      "Safeguard measures pursuant to the agreemnt on agriculture and additional import restrictions established pursuant to section 22 of the agricultural adjustment act, as amdended",
+    filePath: "/chapters/Chapter 99-4.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 99 - Subchapter 5",
+    description: "[Deleted]",
+    filePath: "/chapters/Chapter 99-5.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 99 - Subchapter 6",
+    description: "[Deleted]",
+    filePath: "/chapters/Chapter 99-6.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 99 - Subchapter 7",
+    description: "[Deleted]",
+    filePath: "/chapters/Chapter 99-7.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 99 - Subchapter 8",
+    description:
+      "Temporary modifications established pursuant to the agreement with Israel concerning certain aspects of trade in agricultural products",
+    filePath: "/chapters/Chapter 99-8.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 99 - Subchapter 9",
+    description: "[Deleted]",
+    filePath: "/chapters/Chapter 99-9.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 99 - Subchapter 10",
+    description: "[Deleted]",
+    filePath: "/chapters/Chapter 99-10.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 99 - Subchapter 11",
+    description: "[Deleted]",
+    filePath: "/chapters/Chapter 99-11.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 99 - Subchapter 12",
+    description:
+      "Modifications established pursuant to the United States-Morocco Free Trade Agreement",
+    filePath: "/chapters/Chapter 99-12.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 99 - Subchapter 13",
+    description:
+      "Modifications established pursuant to the United States-Australia Free Trade Agreement",
+    filePath: "/chapters/Chapter 99-13.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 99 - Subchapter 14",
+    description: "[Deleted with Compiler's Note]",
+    filePath: "/chapters/Chapter 99-14.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 99 - Subchapter 15",
+    description:
+      "Modifications established pursuant to the Dominican Republic-Central America-United States Free Trade Agreement",
+    filePath: "/chapters/Chapter 99-15.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 99 - Subchapter 16",
+    description:
+      "[Deleted] Modifications established pursuant to the United States-Oman Free Trade Agreement",
+    filePath: "/chapters/Chapter 99-16.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 99 - Subchapter 17",
+    description:
+      "Modifications established pursuant to the United States-Peru Trade Promotion Agreement",
+    filePath: "/chapters/Chapter 99-17.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 99 - Subchapter 18",
+    description:
+      "Modifications established pursuant to the United States-Colombia Trade Promotion Agreement",
+    filePath: "/chapters/Chapter 99-18.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 99 - Subchapter 19",
+    description:
+      "Modifications established pursuant to the United States-Panama Trade Promotion Agreement",
+    filePath: "/chapters/Chapter 99-19.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 99 - Subchapter 20",
+    description:
+      "Modifications established pursuant to the United States-Korea Trade Promotion Agreement",
+    filePath: "/chapters/Chapter 99-20.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.CHAPTER,
+  },
+  {
+    title: "Chapter 99 - Subchapter 21",
+    description: "Trade agreement between the United States and Japan",
+    filePath: "/chapters/Chapter 99-21.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 99 - Subchapter 22",
+    description: "United States-Mexico-Canada Free Trade Agreement",
+    filePath: "/chapters/Chapter 99-22.pdf",
+    specialTariffTreatmentCodes: [],
+    type: NoteType.SUBCHAPTER,
+  },
+  {
+    title: "Chapter 99 - SSRN",
+    description: "Special statistical reporting numbers",
+    filePath: "/chapters/Chapter 99-SSRN.pdf",
     specialTariffTreatmentCodes: [],
     type: NoteType.CHAPTER,
   },

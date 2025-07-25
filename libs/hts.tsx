@@ -11,7 +11,7 @@ import {
   BestHeadingEvaluationResponse,
   SimplifiedHtsElement,
   Eval,
-  Note,
+  UINote,
   BestProgressionResponse,
   BestChaptersResponse,
   Navigatable,
@@ -339,14 +339,14 @@ export const getHtsLevel = (htsCode: string): HtsLevel => {
 
 export const fetchTopLevelSectionNotes = async (
   section: number
-): Promise<Note[]> => {
+): Promise<UINote[]> => {
   return await apiClient.post("/supabase/get-section-notes", {
     section,
   });
 };
 
 export const determineExclusionarySectionNotes = async (
-  notes: Note[],
+  notes: UINote[],
   productDescription: string
 ): Promise<Eval[]> => {
   // Query ChatGPT to filter to relevant notes

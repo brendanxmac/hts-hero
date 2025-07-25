@@ -40,7 +40,7 @@ export const ChapterSummary = ({
           <div className="shrink-0">
             <TertiaryLabel
               value={`Chapter ${number.toString()}`}
-              color={Color.BASE_CONTENT}
+              color={Color.PRIMARY}
             />
           </div>
           <SecondaryText value={description} color={Color.WHITE} />

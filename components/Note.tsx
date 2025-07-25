@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Note as NoteType } from "../public/notes/notes";
+import { NoteI as NoteType } from "../public/notes/notes";
 import PDF from "./PDF";
 import { TertiaryText } from "./TertiaryText";
 import { Color } from "../enums/style";
@@ -34,9 +34,9 @@ export const Note = ({ note }: Props) => {
               color={!filePath ? Color.NEUTRAL_CONTENT : Color.WHITE}
             />
           ) : (
-            <TertiaryText
+            <TertiaryLabel
               value={title}
-              color={!filePath ? Color.NEUTRAL_CONTENT : Color.WHITE}
+              color={!filePath ? Color.NEUTRAL_CONTENT : Color.PRIMARY}
             />
           )}
           {!note.filePath && (

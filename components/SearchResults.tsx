@@ -4,7 +4,6 @@ import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { ExploreTab } from "../enums/explore";
 import { HtsElement } from "../interfaces/hts";
 import {
-  getChapterFromHtsElement,
   getHtsElementParents,
   getSectionAndChapterFromChapterNumber,
 } from "../libs/hts";
@@ -45,7 +44,8 @@ export const SearchResults = ({
         const { item: element } = result;
         const sectionAndChapter = getSectionAndChapterFromChapterNumber(
           sections,
-          Number(getChapterFromHtsElement(element, htsElements))
+          Number(element.chapter)
+          // Number(getChapterFromHtsElement(element, htsElements))
         );
         const parents = getHtsElementParents(element, htsElements);
         const breadcrumbs = generateBreadcrumbsForHtsElement(

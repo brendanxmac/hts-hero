@@ -1,13 +1,10 @@
-import { NavigatableElementType } from "../components/Elements";
-import { HtsLevel } from "../enums/hts";
-
 export interface Eval {
   index: number;
   content: string;
   reasoning: string;
 }
 
-export interface Note {
+export interface UINote {
   path: string;
   content: string;
   type: string;

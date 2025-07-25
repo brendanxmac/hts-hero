@@ -11,12 +11,12 @@ import { TertiaryText } from "./TertiaryText";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { Color } from "../enums/style";
 import { ButtonWithIcon } from "./ButtonWithIcon";
-import { TertiaryLabel } from "./TertiaryLabel";
 import { SupabaseBuckets } from "../constants/supabase";
 interface Props {
   section: HtsSection;
   breadcrumbs: NavigatableElement[];
   setBreadcrumbs: (breadcrumbs: NavigatableElement[]) => void;
+  allExpanded?: boolean;
 }
 
 export const getChapterRange = (section: HtsSection) => {
@@ -30,36 +30,47 @@ export const getChapterRange = (section: HtsSection) => {
   return `Chapters ${firstChapter.number}-${lastChapter.number}`;
 };
 
-export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
+export const Section = ({
+  section,
+  breadcrumbs,
+  setBreadcrumbs,
+  allExpanded,
+}: Props) => {
   const { number, description, filePath: notesPath } = section;
-  const [showDetails, setShowDetails] = useState(false);
+  const [showDetails, setShowDetails] = useState(true);
   const [showNotes, setShowNotes] = useState(false);
-  const disabled = section.number === 22;
+  const [manualOverride, setManualOverride] = useState<boolean | null>(null);
+
+  // Use manual override if set, otherwise use allExpanded prop, otherwise use local state
+  const isExpanded =
+    manualOverride !== null
+      ? manualOverride
+      : allExpanded !== undefined
+        ? allExpanded
+        : showDetails;
 
   return (
     <div
       className={classNames(
-        !showDetails && "hover:bg-neutral",
-        "bg-base-100 border-2 border-base-content/40 w-full flex flex-col gap-6 py-6 px-4 rounded-md transition duration-100 ease-in-out",
-        disabled ? "pointer-events-none" : "hover:cursor-pointer"
+        !isExpanded && "hover:bg-neutral",
+        "bg-base-100 border-2 border-base-content/40 w-full flex flex-col gap-6 py-6 px-4 rounded-md transition duration-100 ease-in-out"
       )}
       onClick={(e) => {
-        if (disabled) return;
         e.preventDefault();
         e.stopPropagation();
-        setShowDetails(!showDetails);
+        const newExpanded = !isExpanded;
+        setManualOverride(newExpanded);
+        setShowDetails(newExpanded);
       }}
     >
       <div className={"flex flex-col gap-4"}>
         <div className="flex gap-4">
           <div className="grow flex flex-col gap-3">
             <div className="w-full flex gap-4 items-center justify-between">
-              <SecondaryLabel value={`Section ${number.toString()}`} />
-              {disabled && (
-                <div className="bg-accent px-3 py-1 rounded-md">
-                  <TertiaryLabel value="Coming Soon!" color={Color.BLACK} />
-                </div>
-              )}
+              <SecondaryLabel
+                value={`Section ${number.toString()}`}
+                color={Color.PRIMARY}
+              />
               {notesPath && (
                 <ButtonWithIcon
                   icon={<DocumentTextIcon className="h-4 w-4" />}
@@ -72,7 +83,8 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
             <div className="flex flex-col items-start">
               <PrimaryLabel
                 value={description}
-                color={disabled ? Color.BASE_CONTENT : Color.WHITE}
+                // color={disabled ? Color.BASE_CONTENT : Color.WHITE}
+                color={Color.WHITE}
               />
               <TertiaryText value={getChapterRange(section)} />
             </div>
@@ -81,11 +93,11 @@ export const Section = ({ section, breadcrumbs, setBreadcrumbs }: Props) => {
           <ChevronUpIcon
             className={classNames(
               "shrink-0 w-6 h-6 text-primary transition-transform duration-200 ease-in-out",
-              showDetails && "rotate-180"
+              isExpanded && "rotate-180"
             )}
           />
         </div>
-        {showDetails && (
+        {isExpanded && (
           <div className="flex flex-col gap-2">
             {section.chapters.map((chapter) => {
               return (

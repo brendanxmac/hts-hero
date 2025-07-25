@@ -2,13 +2,13 @@ import { NextResponse, NextRequest } from "next/server";
 import OpenAI from "openai";
 import { OpenAIModel } from "../../../../libs/openai";
 import { createClient } from "../../supabase/server";
-import { Note } from "../../../../interfaces/hts";
+import { UINote } from "../../../../interfaces/hts";
 
 export const dynamic = "force-dynamic";
 
 interface GetExclusionaryNotesDto {
   productDescription: string;
-  notes: Note[];
+  notes: UINote[];
 }
 
 export async function POST(req: NextRequest) {

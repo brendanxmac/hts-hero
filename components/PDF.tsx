@@ -44,7 +44,7 @@ export default function PDF({
 
   // Fetch PDF from Supabase storage when component mounts or file changes
   useEffect(() => {
-    const fetchPDFFromStorage = async () => {
+    const fetchPdfFromStorage = async () => {
       if (!filePath) return;
 
       setLoading(true);
@@ -77,7 +77,7 @@ export default function PDF({
     };
 
     if (isOpen) {
-      fetchPDFFromStorage();
+      fetchPdfFromStorage();
     }
   }, [filePath, isOpen, bucket]);
 
@@ -105,6 +105,22 @@ export default function PDF({
     numPages: nextNumPages,
   }: PDFDocumentProxy): Promise<void> {
     setNumPages(nextNumPages);
+
+    // Auto-download and close if PDF is over 100 pages
+    if (nextNumPages > 100) {
+      // Create a temporary link element to trigger download
+      const link = document.createElement("a");
+      link.href = pdfUrl || filePath;
+      link.download = filePath.split("/").pop() || "document.pdf";
+      link.target = "_blank";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Close the PDF viewer
+      setIsOpen(false);
+      return;
+    }
 
     // Get the first page to determine PDF dimensions
     if (pdfUrl) {

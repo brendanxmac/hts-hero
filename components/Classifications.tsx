@@ -10,12 +10,8 @@ import { useHts } from "../contexts/HtsContext";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { TertiaryText } from "./TertiaryText";
-import {
-  ArrowPathIcon,
-  PlusIcon,
-  MagnifyingGlassIcon,
-} from "@heroicons/react/16/solid";
-import { useClassification } from "../contexts/ClassificationContext";
+import { ArrowPathIcon, PlusIcon } from "@heroicons/react/16/solid";
+import { FunnelIcon } from "@heroicons/react/24/solid";
 import Fuse, { IFuseOptions } from "fuse.js";
 import { LoadingIndicator } from "./LoadingIndicator";
 
@@ -72,12 +68,8 @@ export const Classifications = ({ page, setPage }: Props) => {
 
   // Configure Fuse.js options
   const fuseOptions: IFuseOptions<SearchableClassification> = {
-    keys: [
-      { name: "articleDescription", weight: 0.4 },
-      { name: "htsCodes", weight: 0.4 },
-    ],
-    threshold: 0.4, // Lower threshold = more strict matching
-    includeMatches: true,
+    keys: ["articleDescription", "htsCodes"],
+    threshold: 0.1, // Lower threshold = more strict matching
     findAllMatches: true,
     ignoreLocation: true,
   };
@@ -170,78 +162,61 @@ export const Classifications = ({ page, setPage }: Props) => {
 
   return (
     <div className="h-full w-full max-w-5xl mx-auto pt-2 lg:pt-8 px-4 flex flex-col gap-4">
-      {/* <div className="flex flex-col gap-2">
-        <h1 className="text-4xl text-neutral-50 font-bold">
-          {getUserNameMessage()}
-        </h1>
-        <SecondaryText
-          value="Review your classifications or start a new one now."
-          color={Color.NEUTRAL_CONTENT}
-        />
-      </div> */}
       <div className="flex flex-col h-full">
         <div className="flex flex-col gap-4 py-2">
           {/* Header Row */}
-          <div className="flex justify-between items-start">
+          <div className="w-full flex flex-col md:flex-row gap-4 justify-between items-start">
             <div className="flex flex-col">
               <h1 className="text-2xl md:text-3xl xl:text-4xl text-neutral-50 font-bold">
                 {getUserNameMessage()}
               </h1>
               <SecondaryText
-                value="Review your classifications or start a new one now."
+                value="Here you can review your classifications or start a new one now."
                 color={Color.NEUTRAL_CONTENT}
               />
+            </div>
+            {/* Action Buttons */}
+            <div className="flex gap-2 w-full md:w-auto">
+              <button
+                className="btn btn-primary btn-sm grow md:grow-0"
+                onClick={() => {
+                  setPage(ClassifyPage.CLASSIFY);
+                }}
+              >
+                <PlusIcon className="h-5 w-5" />
+                New Classification
+              </button>
+              <button
+                className="btn btn-primary btn-square btn-sm"
+                onClick={handleRefreshClassifications}
+              >
+                {loader.isLoading || classificationsLoading ? (
+                  <span className={`loading loading-spinner loading-sm`}></span>
+                ) : (
+                  <ArrowPathIcon className="h-5 w-5" />
+                )}
+              </button>
             </div>
           </div>
 
           {/* Search and Actions Row */}
           {classifications && classifications.length > 0 && (
-            <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-end justify-between">
-              {/* Search Bar */}
-              <div className="flex-1 relative max-w-md">
+            <div className="flex flex-col md:flex-row gap-3 items-start md:items-end justify-between">
+              <h2 className="text-xl md:text-2xl text-neutral-50 font-bold">
+                Your Classifications
+              </h2>
+              {/* Filter Bar */}
+              <div className="flex-1 relative md:max-w-md w-full">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <MagnifyingGlassIcon className="h-5 w-5 text-neutral-400" />
+                  <FunnelIcon className="h-5 w-5 text-neutral-400" />
                 </div>
                 <input
                   type="text"
-                  placeholder="Search by description or HTS code..."
+                  placeholder="Filter by description or code..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-1 bg-base-100 border-2 border-base-content/20 rounded-lg text-neutral-200 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-2">
-                <button
-                  className="btn btn-primary btn-sm gap-1"
-                  onClick={() => {
-                    // setClassification({
-                    //   articleDescription: "",
-                    //   articleAnalysis: "",
-                    //   progressionDescription: "",
-                    //   levels: [],
-                    //   isComplete: false,
-                    //   notes: "",
-                    // });
-                    setPage(ClassifyPage.CLASSIFY);
-                  }}
-                >
-                  <PlusIcon className="h-5 w-5" />
-                  New
-                </button>
-                <button
-                  className="btn btn-primary btn-sm btn-square"
-                  onClick={handleRefreshClassifications}
-                >
-                  {loader.isLoading || classificationsLoading ? (
-                    <span
-                      className={`loading loading-spinner loading-sm`}
-                    ></span>
-                  ) : (
-                    <ArrowPathIcon className="h-5 w-5" />
-                  )}
-                </button>
               </div>
             </div>
           )}
