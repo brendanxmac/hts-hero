@@ -1,4 +1,3 @@
-import { Classification } from "../interfaces/hts";
 import { Loader } from "../interfaces/ui";
 import { CandidateElement } from "./CandidateElement";
 import { useEffect, useRef } from "react";
