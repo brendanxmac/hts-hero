@@ -4,7 +4,6 @@ import {
   Classification,
   ClassificationRecord,
 } from "../../../../interfaces/hts";
-import { getHtsData } from "../../../../libs/hts";
 import { getHtsRevisionRecord } from "../../../../libs/supabase/hts-revision";
 
 export const dynamic = "force-dynamic";

@@ -4,8 +4,6 @@ import { HtsSection } from "../interfaces/hts";
 import { Section } from "./Section";
 import { NavigatableElement } from "./Elements";
 import { useState } from "react";
-import { ButtonWithIcon } from "./ButtonWithIcon";
-import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/16/solid";
 
 interface SectionsProps {
   sections: HtsSection[];

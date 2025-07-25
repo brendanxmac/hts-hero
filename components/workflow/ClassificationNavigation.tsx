@@ -12,7 +12,6 @@ import { ClassifyPage, ClassifyTab } from "../../enums/classify";
 import { ClassifyTabs } from "../../constants/classify";
 import { useRef, useEffect } from "react";
 import { TertiaryLabel } from "../TertiaryLabel";
-import { PrimaryLabel } from "../PrimaryLabel";
 import { SecondaryLabel } from "../SecondaryLabel";
 
 export interface ClassificationNavigationProps {

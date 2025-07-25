@@ -13,7 +13,6 @@ import Fuse, { FuseResult } from "fuse.js";
 import { Loader } from "../interfaces/ui";
 import { SearchResults } from "./SearchResults";
 import { useHts } from "../contexts/HtsContext";
-import { isHTSCode } from "../libs/hts";
 import { classNames } from "../utilities/style";
 import { Color } from "../enums/style";
 import { SecondaryLabel } from "./SecondaryLabel";

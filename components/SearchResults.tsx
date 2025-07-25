@@ -4,7 +4,6 @@ import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { ExploreTab } from "../enums/explore";
 import { HtsElement } from "../interfaces/hts";
 import {
-  getChapterFromHtsElement,
   getHtsElementParents,
   getSectionAndChapterFromChapterNumber,
 } from "../libs/hts";
