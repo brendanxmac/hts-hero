@@ -304,14 +304,16 @@ export const ClassificationStep = ({
             />
 
             <div className="flex gap-2 justify-between">
-              <button
-                className="grow btn btn-xs btn-primary"
-                onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
-                disabled={loading.isLoading}
-              >
-                <MagnifyingGlassIcon className="w-4 h-4" />
-                Find Headings
-              </button>
+              {classificationLevel === 0 && (
+                <button
+                  className="grow btn btn-xs btn-primary"
+                  onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
+                  disabled={loading.isLoading}
+                >
+                  <MagnifyingGlassIcon className="w-4 h-4" />
+                  Find Headings
+                </button>
+              )}
               <button
                 className="grow btn btn-xs btn-primary"
                 onClick={() => {

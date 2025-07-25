@@ -20,9 +20,6 @@ const proPlan: PricingPlanI = {
     {
       name: "Enhanced HTS Explorer",
     },
-    {
-      name: "Built-in PDF Viewer",
-    },
   ],
 };
 
