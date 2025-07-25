@@ -33,7 +33,6 @@ import { CountrySelection } from "./CountrySelection";
 import { Country } from "../constants/countries";
 import { TertiaryText } from "./TertiaryText";
 import { format } from "date-fns";
-import { PrimaryLabel } from "./PrimaryLabel";
 
 interface Props {
   summaryOnly?: boolean;
@@ -41,9 +40,6 @@ interface Props {
 }
 
 export const Element = ({ element, summaryOnly = false }: Props) => {
-  console.log("element", element);
-  console.log("Additional Duties", element.additionalDuties);
-
   const { description, chapter, htsno } = element;
   const [children, setChildren] = useState<HtsElement[]>([]);
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
@@ -80,10 +76,6 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
     return "-";
   };
 
-  useEffect(() => {
-    console.log("tariffElement", tariffElement);
-  }, [tariffElement]);
-
   return (
     <div className="card bg-base-100 p-4 rounded-xl border border-base-content/10 w-full flex flex-col items-start justify-between gap-8 pt-2 sm:pt-6">
       <div className="w-full flex flex-col gap-4">
@@ -116,13 +108,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
 
         <div className="flex flex-col gap-3">
           <div className="w-full flex justify-between items-start gap-2">
-            {htsno ? (
-              <SecondaryLabel value={getHtsnoLabel()} color={Color.ACCENT} />
-            ) : (
-              <h1 className="text-lg md:text-4xl text-white font-bold">
-                {description}
-              </h1>
-            )}
+            <SecondaryLabel value={getHtsnoLabel()} color={Color.ACCENT} />
 
             <div className="flex gap-2">
               <ButtonWithIcon
@@ -136,7 +122,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                   })
                 }
               />
-              {(chapter === 98 || chapter === 99) && (
+              {(chapter == 98 || chapter == 99) && (
                 <ButtonWithIcon
                   icon={<DocumentTextIcon className="h-4 w-4" />}
                   label={`Subchapter ${htsno.slice(2, 4).replace(/^0+/, "")} Notes`}
@@ -170,11 +156,10 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
               )}
             </div>
           </div>
-          {htsno && (
-            <h1 className="text-lg md:text-4xl text-white font-bold">
-              {description}
-            </h1>
-          )}
+
+          <h1 className="text-lg md:text-3xl text-white font-bold">
+            {description}
+          </h1>
         </div>
       </div>
 
