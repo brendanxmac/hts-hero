@@ -52,7 +52,7 @@ export const ElementSearchSummary = ({
   return (
     <div className="flex flex-col gap-2 w-full bg-base-100 rounded-md border-2 border-base-content/40 hover:cursor-pointer hover:bg-neutral">
       <div className="flex">
-        {isHeading && (
+        {isHeading && element.chapter != 98 && element.chapter != 99 && (
           <div className="flex items-center justify-center">
             <div className="px-3">
               {isHeadingCandidate ? (
