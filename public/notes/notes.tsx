@@ -1,11 +1,12 @@
 export enum NoteType {
+  ANY = "any",
   GENERAL = "general",
   SECTION = "section",
   CHAPTER = "chapter",
   SUBCHAPTER = "subchapter",
 }
 
-export interface Note {
+export interface NoteI {
   title: string;
   description: string;
   filePath: string;
@@ -13,7 +14,7 @@ export interface Note {
   type: NoteType;
 }
 
-export const notes: Note[] = [
+export const notes: NoteI[] = [
   {
     title: "General Rules of Interpretation",
     description: "General Rules of Interpretation",
@@ -1308,7 +1309,7 @@ export const notes: Note[] = [
       "Provisions established pursuant to the United States-Mexico-Canada Agreement",
     filePath: "/chapters/Chapter 98-23.pdf",
     specialTariffTreatmentCodes: [],
-    type: NoteType.CHAPTER,
+    type: NoteType.SUBCHAPTER,
   },
   {
     title: "Chapter 99",
@@ -1488,6 +1489,6 @@ export const notes: Note[] = [
     description: "Special statistical reporting numbers",
     filePath: "/chapters/Chapter 99-SSRN.pdf",
     specialTariffTreatmentCodes: [],
-    type: NoteType.SUBCHAPTER,
+    type: NoteType.CHAPTER,
   },
 ];

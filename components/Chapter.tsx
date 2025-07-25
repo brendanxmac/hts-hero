@@ -1,5 +1,5 @@
 import { HtsElement, HtsSectionAndChapterBase } from "../interfaces/hts";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import {
   getDirectChildrenElements,
   getElementsAtIndentLevel,
@@ -14,7 +14,7 @@ import { SecondaryLabel } from "./SecondaryLabel";
 import { useHts } from "../contexts/HtsContext";
 import { SupabaseBuckets } from "../constants/supabase";
 import Fuse, { IFuseOptions } from "fuse.js";
-import { Note, notes, NoteType } from "../public/notes/notes";
+import { NoteI, notes, NoteType } from "../public/notes/notes";
 import toast from "react-hot-toast";
 
 interface Props {
@@ -24,7 +24,7 @@ interface Props {
 export const Chapter = ({ chapter }: Props) => {
   const { number, description } = chapter;
   const { htsElements } = useHts();
-  const [showNote, setShowNote] = useState<Note | null>(null);
+  const [showNote, setShowNote] = useState<NoteI | null>(null);
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const chapterElements = getElementsInChapter(htsElements, number);
   const elementsAtIndentLevel = chapterElements
@@ -63,49 +63,218 @@ export const Chapter = ({ chapter }: Props) => {
     return results.map((result) => result.item);
   }, [elementsWithChildrenAdded, searchQuery]);
 
+  // Notes dropdown state
+  const [isNotesDropdownOpen, setIsNotesDropdownOpen] = useState(false);
+  const [highlightedNoteIndex, setHighlightedNoteIndex] = useState(-1);
+  const [isKeyboardNavigation, setIsKeyboardNavigation] = useState(false);
+  const notesDropdownRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // Get all notes for the current chapter
+  const chapterNotes = useMemo(() => {
+    return notes.filter(
+      (note) =>
+        note.title.includes(`Chapter ${chapter.number}`) &&
+        (note.type === NoteType.CHAPTER || note.type === NoteType.SUBCHAPTER)
+    );
+  }, [chapter.number]);
+
+  // Scroll highlighted option into view (only for keyboard navigation)
+  useEffect(() => {
+    if (
+      highlightedNoteIndex >= 0 &&
+      isKeyboardNavigation &&
+      scrollContainerRef.current
+    ) {
+      const container = scrollContainerRef.current;
+      const highlightedElement = container.children[
+        highlightedNoteIndex
+      ] as HTMLElement;
+
+      if (highlightedElement) {
+        const containerRect = container.getBoundingClientRect();
+        const elementRect = highlightedElement.getBoundingClientRect();
+        const padding = 4;
+
+        if (elementRect.top < containerRect.top + padding) {
+          const scrollAmount = containerRect.top - elementRect.top + padding;
+          container.scrollTop -= scrollAmount;
+        } else if (elementRect.bottom > containerRect.bottom - padding) {
+          const scrollAmount =
+            elementRect.bottom - containerRect.bottom + padding;
+          container.scrollTop += scrollAmount;
+        }
+      }
+    }
+  }, [highlightedNoteIndex, isKeyboardNavigation]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        notesDropdownRef.current &&
+        !notesDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsNotesDropdownOpen(false);
+        setHighlightedNoteIndex(-1);
+        setIsKeyboardNavigation(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleNoteSelect = (note: NoteI) => {
+    setShowNote(note);
+    setIsNotesDropdownOpen(false);
+    setHighlightedNoteIndex(-1);
+    setIsKeyboardNavigation(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!isNotesDropdownOpen) return;
+
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        setIsKeyboardNavigation(true);
+        setHighlightedNoteIndex((prev) =>
+          prev < chapterNotes.length - 1 ? prev + 1 : 0
+        );
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        setIsKeyboardNavigation(true);
+        setHighlightedNoteIndex((prev) =>
+          prev > 0 ? prev - 1 : chapterNotes.length - 1
+        );
+        break;
+      case "Enter":
+        e.preventDefault();
+        if (highlightedNoteIndex >= 0 && chapterNotes[highlightedNoteIndex]) {
+          handleNoteSelect(chapterNotes[highlightedNoteIndex]);
+        }
+        break;
+      case "Escape":
+        setIsNotesDropdownOpen(false);
+        setHighlightedNoteIndex(-1);
+        setIsKeyboardNavigation(false);
+        break;
+    }
+  };
+
   return (
     <div className="card flex flex-col w-full gap-4 md:gap-2 rounded-xl bg-base-100 border border-base-content/10 p-4 pt-2 sm:pt-6 transition duration-100 ease-in-out">
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-3">
           <SecondaryLabel value={`Chapter ${number.toString()}`} />
-          <ButtonWithIcon
-            icon={<DocumentTextIcon className="h-4 w-4" />}
-            label={`Chapter ${number.toString()} Notes`}
-            onClick={() => {
-              const note = notes.find(
-                (note) => note.title === `Chapter ${number.toString()}`
-              );
-              if (note) {
-                setShowNote(note);
-              } else {
-                toast.error("No notes found for this chapter");
-              }
-            }}
-          />
+          <div className="w-full flex gap-4 justify-end">
+            {chapter.number === 98 || chapter.number === 99 ? (
+              <div
+                className="w-full min-w-sm max-w-sm relative"
+                ref={notesDropdownRef}
+              >
+                <div
+                  className="px-3 py-1 border-2 border-base-content/10 rounded-lg cursor-pointer bg-base-100 flex gap-3 items-center justify-between hover:bg-primary/20 transition-colors min-h-10"
+                  onClick={() => setIsNotesDropdownOpen(!isNotesDropdownOpen)}
+                >
+                  <div className="flex-1 flex items-center">
+                    <span className="text-sm">Select Note to View</span>
+                  </div>
+                  <svg
+                    className={`w-4 h-4 transition-transform text-base-content/70 ${isNotesDropdownOpen ? "" : "rotate-180"}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+
+                {isNotesDropdownOpen && (
+                  <div className="absolute z-10 w-full mt-1 bg-base-100 border border-base-300 rounded-lg shadow-xl max-h-64 overflow-hidden">
+                    <div
+                      className="max-h-60 overflow-y-auto pb-1"
+                      ref={scrollContainerRef}
+                    >
+                      {chapterNotes.length > 0 ? (
+                        chapterNotes.map((note: NoteI, index: number) => (
+                          <div
+                            key={index}
+                            className={`px-3 py-2 cursor-pointer flex items-center justify-between ${
+                              index === highlightedNoteIndex
+                                ? "bg-primary text-primary-content"
+                                : "hover:bg-base-200"
+                            }`}
+                            onClick={() => handleNoteSelect(note)}
+                            onMouseEnter={() => {
+                              setIsKeyboardNavigation(false);
+                              setHighlightedNoteIndex(index);
+                            }}
+                          >
+                            <div className="flex flex-col">
+                              <div className="flex gap-2 items-center">
+                                <DocumentTextIcon className="shrink-0 h-4 w-4 text-base-content/40" />
+                                <span
+                                  className={
+                                    index === highlightedNoteIndex
+                                      ? "text-white font-medium"
+                                      : "text-base-content font-medium"
+                                  }
+                                >
+                                  {note.title.includes("Subchapter")
+                                    ? note.title.split(" - ")[1]
+                                    : note.title}
+                                </span>
+                              </div>
+                              <span
+                                className={
+                                  index === highlightedNoteIndex
+                                    ? "text-white/80 text-sm"
+                                    : "text-base-content/60 text-sm"
+                                }
+                              >
+                                {note.description}
+                              </span>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="px-3 py-2 text-base-content/60">
+                          No notes foundf
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <ButtonWithIcon
+                icon={<DocumentTextIcon className="h-4 w-4" />}
+                label={`Chapter ${number.toString()} Notes`}
+                onClick={() => {
+                  const note = notes.find(
+                    (note) => note.title === `Chapter ${number.toString()}`
+                  );
+                  if (note) {
+                    setShowNote(note);
+                  } else {
+                    toast.error("No notes found for this chapter");
+                  }
+                }}
+              />
+            )}
+          </div>
         </div>
         <h2 className="text-xl md:text-3xl font-bold text-white">
           {description}
         </h2>
-        {(chapter.number === 98 || chapter.number === 99) && (
-          <div className="flex flex-wrap gap-2">
-            {/* Get all the subchapters for the given chapter */}
-            {notes
-              .filter(
-                (note) =>
-                  note.title.includes(`Chapter ${chapter.number}`) &&
-                  note.type === NoteType.SUBCHAPTER
-              )
-              .map((note) => (
-                <ButtonWithIcon
-                  key={note.title}
-                  onClick={() => setShowNote(note)}
-                  icon={<DocumentTextIcon className="h-4 w-4" />}
-                  label={`${note.title.split(" - ")[1]} Notes`}
-                />
-              ))}
-            {/* Generate a button for each subchapter that will show that PDF */}
-          </div>
-        )}
       </div>
 
       <div className="flex flex-col gap-2 bg-base-100">

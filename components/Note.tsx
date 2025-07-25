@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Note as NoteType } from "../public/notes/notes";
+import { NoteI as NoteType } from "../public/notes/notes";
 import PDF from "./PDF";
 import { TertiaryText } from "./TertiaryText";
 import { Color } from "../enums/style";

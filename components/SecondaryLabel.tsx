@@ -10,6 +10,8 @@ export const SecondaryLabel = ({
   color = Color.NEUTRAL_CONTENT,
 }: Props) => {
   return (
-    <h3 className={`text-${color} text-sm md:text-base font-bold`}>{value}</h3>
+    <h3 className={`shrink-0 text-${color} text-sm md:text-base font-bold`}>
+      {value}
+    </h3>
   );
 };
