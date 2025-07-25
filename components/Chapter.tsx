@@ -288,7 +288,7 @@ export const Chapter = ({ chapter }: Props) => {
             )}
           </div>
         </div>
-        <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-white">
+        <h2 className="text-xl md:text-3xl font-bold text-white">
           {description}
         </h2>
       </div>

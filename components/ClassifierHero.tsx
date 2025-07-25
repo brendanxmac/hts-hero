@@ -24,7 +24,7 @@ const ClassifierHero = () => {
           </p>
         </div>
 
-        <Link className="btn btn-wide btn-primary" href={"/about#pricing"}>
+        <Link className="btn btn-wide btn-primary" href="/signin">
           Try it Now!
         </Link>
 
