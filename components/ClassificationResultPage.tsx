@@ -233,10 +233,7 @@ export const ClassificationResultPage = () => {
 
         <div className="w-full flex flex-col gap-2">
           <div className="flex flex-col">
-            <PrimaryLabel
-              value="Find Tariff by Country of Origin"
-              color={Color.WHITE}
-            />
+            <PrimaryLabel value="Tariff Simulator" color={Color.WHITE} />
             <TertiaryText
               value="Select countries then click seach to launch Flexports Tariff Simulator"
               color={Color.NEUTRAL_CONTENT}

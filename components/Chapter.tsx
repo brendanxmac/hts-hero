@@ -16,6 +16,8 @@ import { SupabaseBuckets } from "../constants/supabase";
 import Fuse, { IFuseOptions } from "fuse.js";
 import { NoteI, notes, NoteType } from "../public/notes/notes";
 import toast from "react-hot-toast";
+import { Color } from "../enums/style";
+import { useHtsSections } from "../contexts/HtsSectionsContext";
 
 interface Props {
   chapter: HtsSectionAndChapterBase;
@@ -24,8 +26,17 @@ interface Props {
 export const Chapter = ({ chapter }: Props) => {
   const { number, description } = chapter;
   const { htsElements } = useHts();
+  const { sections } = useHtsSections();
   const [showNote, setShowNote] = useState<NoteI | null>(null);
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
+
+  // Find the section that contains this chapter
+  const parentSection = useMemo(() => {
+    return sections.find((section) =>
+      section.chapters.some((ch) => ch.number === chapter.number)
+    );
+  }, [sections, chapter.number]);
+
   const chapterElements = getElementsInChapter(htsElements, number);
   const elementsAtIndentLevel = chapterElements
     ? getElementsAtIndentLevel(chapterElements, 0)
@@ -132,43 +143,60 @@ export const Chapter = ({ chapter }: Props) => {
     setIsKeyboardNavigation(false);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (!isNotesDropdownOpen) return;
+  // const handleKeyDown = (e: React.KeyboardEvent) => {
+  //   if (!isNotesDropdownOpen) return;
 
-    switch (e.key) {
-      case "ArrowDown":
-        e.preventDefault();
-        setIsKeyboardNavigation(true);
-        setHighlightedNoteIndex((prev) =>
-          prev < chapterNotes.length - 1 ? prev + 1 : 0
-        );
-        break;
-      case "ArrowUp":
-        e.preventDefault();
-        setIsKeyboardNavigation(true);
-        setHighlightedNoteIndex((prev) =>
-          prev > 0 ? prev - 1 : chapterNotes.length - 1
-        );
-        break;
-      case "Enter":
-        e.preventDefault();
-        if (highlightedNoteIndex >= 0 && chapterNotes[highlightedNoteIndex]) {
-          handleNoteSelect(chapterNotes[highlightedNoteIndex]);
-        }
-        break;
-      case "Escape":
-        setIsNotesDropdownOpen(false);
-        setHighlightedNoteIndex(-1);
-        setIsKeyboardNavigation(false);
-        break;
-    }
-  };
+  //   switch (e.key) {
+  //     case "ArrowDown":
+  //       e.preventDefault();
+  //       setIsKeyboardNavigation(true);
+  //       setHighlightedNoteIndex((prev) =>
+  //         prev < chapterNotes.length - 1 ? prev + 1 : 0
+  //       );
+  //       break;
+  //     case "ArrowUp":
+  //       e.preventDefault();
+  //       setIsKeyboardNavigation(true);
+  //       setHighlightedNoteIndex((prev) =>
+  //         prev > 0 ? prev - 1 : chapterNotes.length - 1
+  //       );
+  //       break;
+  //     case "Enter":
+  //       e.preventDefault();
+  //       if (highlightedNoteIndex >= 0 && chapterNotes[highlightedNoteIndex]) {
+  //         handleNoteSelect(chapterNotes[highlightedNoteIndex]);
+  //       }
+  //       break;
+  //     case "Escape":
+  //       setIsNotesDropdownOpen(false);
+  //       setHighlightedNoteIndex(-1);
+  //       setIsKeyboardNavigation(false);
+  //       break;
+  //   }
+  // };
 
   return (
-    <div className="card flex flex-col w-full gap-4 md:gap-2 rounded-xl bg-base-100 border border-base-content/10 p-4 pt-2 sm:pt-6 transition duration-100 ease-in-out">
-      <div className="flex flex-col gap-3">
+    <div className="card flex flex-col w-full gap-4 md:gap-4 rounded-xl bg-base-100 border border-base-content/10 p-4 pt-2 sm:pt-6 transition duration-100 ease-in-out">
+      <div className="flex flex-col gap-3 text-sm">
+        <div className="flex flex-col gap-2 text-xs">
+          {parentSection && (
+            <div key={`breadcrumb-${chapter.number}`}>
+              <b className="text-accent">Section {parentSection.number}: </b>
+              <span className="text-white">{parentSection.description}</span>
+              <span className="text-white mx-2">›</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="w-full h-[1px] bg-base-content/10" />
+
+      <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between gap-3">
-          <SecondaryLabel value={`Chapter ${number.toString()}`} />
+          <SecondaryLabel
+            value={`Chapter ${number.toString()}`}
+            color={Color.ACCENT}
+          />
           <div className="w-full flex gap-4 justify-end">
             {chapter.number === 98 || chapter.number === 99 ? (
               <div
@@ -209,7 +237,7 @@ export const Chapter = ({ chapter }: Props) => {
                             key={index}
                             className={`px-3 py-2 cursor-pointer flex items-center justify-between ${
                               index === highlightedNoteIndex
-                                ? "bg-primary text-primary-content"
+                                ? "bg-base-300 text-primary-content"
                                 : "hover:bg-base-200"
                             }`}
                             onClick={() => handleNoteSelect(note)}
@@ -220,26 +248,14 @@ export const Chapter = ({ chapter }: Props) => {
                           >
                             <div className="flex flex-col">
                               <div className="flex gap-2 items-center">
-                                <DocumentTextIcon className="shrink-0 h-4 w-4 text-base-content/40" />
-                                <span
-                                  className={
-                                    index === highlightedNoteIndex
-                                      ? "text-white font-medium"
-                                      : "text-base-content font-medium"
-                                  }
-                                >
+                                <DocumentTextIcon className="shrink-0 h-4 w-4 text-primary" />
+                                <span className={"text-primary font-medium"}>
                                   {note.title.includes("Subchapter")
                                     ? note.title.split(" - ")[1]
                                     : note.title}
                                 </span>
                               </div>
-                              <span
-                                className={
-                                  index === highlightedNoteIndex
-                                    ? "text-white/80 text-sm"
-                                    : "text-base-content/60 text-sm"
-                                }
-                              >
+                              <span className={"text-white/80 text-sm"}>
                                 {note.description}
                               </span>
                             </div>
@@ -272,7 +288,7 @@ export const Chapter = ({ chapter }: Props) => {
             )}
           </div>
         </div>
-        <h2 className="text-xl md:text-3xl font-bold text-white">
+        <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-white">
           {description}
         </h2>
       </div>
@@ -290,7 +306,7 @@ export const Chapter = ({ chapter }: Props) => {
               placeholder="Filter by description or code"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-1 bg-base-100 border-2 border-base-content/20 rounded-lg text-neutral-200 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full pl-10 pr-4 py-1 text-sm bg-base-100 border-2 border-base-content/20 rounded-lg text-neutral-200 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
             {searchQuery && (
               <div className="absolute inset-y-0 right-0 flex items-center pr-3">

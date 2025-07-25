@@ -74,7 +74,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
     const parentBreadcrumb = breadcrumbs[breadcrumbs.length - 2];
 
     if (parentBreadcrumb.element.type === Navigatable.ELEMENT) {
-      return `${parentBreadcrumb.element.htsno} /`;
+      return `›`;
     }
 
     return "-";
@@ -85,23 +85,28 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
   }, [tariffElement]);
 
   return (
-    <div className="card bg-base-100 p-4 rounded-xl border border-base-content/10 w-full flex flex-col items-start justify-between gap-8 pt-2 sm:pt-4">
+    <div className="card bg-base-100 p-4 rounded-xl border border-base-content/10 w-full flex flex-col items-start justify-between gap-8 pt-2 sm:pt-6">
       <div className="w-full flex flex-col gap-4">
-        <div className="flex flex-col gap-3 breadcrumbs text-sm py-0 overflow-hidden">
-          <div className="text-xs">
+        <div className="flex flex-col gap-3 text-sm">
+          <div className="flex flex-col gap-2 text-xs">
             {getBreadCrumbsForElement(element, sections, htsElements).map(
               (breadcrumb, i) => (
-                <span key={`breadcrumb-${i}`}>
+                <div
+                  key={`breadcrumb-${i}`}
+                  style={{
+                    marginLeft: !breadcrumb.label && i > 0 ? `1rem` : "0",
+                  }}
+                >
                   {breadcrumb.label && (
                     <b className="text-accent">{breadcrumb.label} </b>
                   )}
                   <span
-                    className={`${!breadcrumb.value ? "font-bold" : "text-white"}`}
+                    className={`${!breadcrumb.label ? "font-bold italic" : "text-white"}`}
                   >
                     {breadcrumb.value}
                   </span>
                   <span className="text-white mx-2">›</span>
-                </span>
+                </div>
               )
             )}
           </div>
@@ -111,7 +116,13 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
 
         <div className="flex flex-col gap-3">
           <div className="w-full flex justify-between items-start gap-2">
-            <SecondaryLabel value={getHtsnoLabel()} />
+            {htsno ? (
+              <SecondaryLabel value={getHtsnoLabel()} color={Color.ACCENT} />
+            ) : (
+              <h1 className="text-lg md:text-4xl text-white font-bold">
+                {description}
+              </h1>
+            )}
 
             <div className="flex gap-2">
               <ButtonWithIcon
@@ -159,7 +170,11 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
               )}
             </div>
           </div>
-          <PrimaryLabel value={description} color={Color.WHITE} />
+          {htsno && (
+            <h1 className="text-lg md:text-4xl text-white font-bold">
+              {description}
+            </h1>
+          )}
         </div>
       </div>
 
@@ -169,10 +184,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
           {htsno && htsno.replaceAll(".", "").length === 10 && (
             <div className="w-full flex flex-col gap-2">
               <div className="flex flex-col">
-                <SecondaryLabel
-                  value="Find Full Tariff by Country of Origin"
-                  color={Color.WHITE}
-                />
+                <SecondaryLabel value="Tariff Simulator" color={Color.WHITE} />
                 <TertiaryText
                   value="Select countries then click seach to launch Flexports Tariff Simulator"
                   color={Color.NEUTRAL_CONTENT}
@@ -204,6 +216,38 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
               </div>
             </div>
           )}
+
+          {children.length > 0 && (
+            <div className="w-full flex flex-col gap-2">
+              <SecondaryLabel
+                value="Options for Next Level"
+                color={Color.NEUTRAL_CONTENT}
+              />
+              <div className="flex flex-col gap-2">
+                {children.map((child, i) => {
+                  return (
+                    <ElementSummary
+                      key={`${i}-${child.htsno}`}
+                      element={child}
+                      onClick={() => {
+                        setBreadcrumbs([
+                          ...breadcrumbs,
+                          {
+                            title: `${child.htsno || child.description.split(" ").slice(0, 2).join(" ") + "..."}`,
+                            element: {
+                              ...child,
+                              chapter,
+                            },
+                          },
+                        ]);
+                      }}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {(tariffElement || element.additionalDuties) && (
             <div className="w-full flex flex-col gap-4">
               <SecondaryLabel value="Base Tariff Details" color={Color.WHITE} />
@@ -336,34 +380,6 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                     />
                   </div>
                 )}
-              </div>
-            </div>
-          )}
-
-          {children.length > 0 && (
-            <div className="w-full flex flex-col gap-4">
-              <SecondaryLabel value="Next Level" />
-              <div className="flex flex-col gap-2">
-                {children.map((child, i) => {
-                  return (
-                    <ElementSummary
-                      key={`${i}-${child.htsno}`}
-                      element={child}
-                      onClick={() => {
-                        setBreadcrumbs([
-                          ...breadcrumbs,
-                          {
-                            title: `${child.htsno || child.description.split(" ").slice(0, 2).join(" ") + "..."}`,
-                            element: {
-                              ...child,
-                              chapter,
-                            },
-                          },
-                        ]);
-                      }}
-                    />
-                  );
-                })}
               </div>
             </div>
           )}

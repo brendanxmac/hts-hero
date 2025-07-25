@@ -95,7 +95,7 @@ export const ElementSummary = ({ element, onClick }: Props) => {
           <div className="w-full flex flex-col items-start justify-between gap-1 px-4 py-2">
             {htsno && (
               <div className="min-w-20 md:min-w-32">
-                <TertiaryLabel value={htsno} color={Color.PRIMARY} />
+                <TertiaryLabel value={htsno} color={Color.ACCENT} />
               </div>
             )}
 

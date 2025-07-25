@@ -32,7 +32,7 @@ export const Breadcrumbs = ({
             return (
               <li key={`breadcrumb-${i}`}>
                 {i === breadcrumbs.length - 1 ? (
-                  <span className="btn btn-xs btn-link text-secondary">
+                  <span className="btn btn-xs btn-link text-primary no-underline hover:no-underline">
                     {breadcrumb.title}
                   </span>
                 ) : (
