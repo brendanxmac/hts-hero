@@ -33,6 +33,11 @@ import { CountrySelection } from "./CountrySelection";
 import { Country } from "../constants/countries";
 import { TertiaryText } from "./TertiaryText";
 import { format } from "date-fns";
+import {
+  getTariffsForCode,
+  getTariffsForCountry,
+} from "../public/tariffs/tariffs";
+import { PrimaryLabel } from "./PrimaryLabel";
 
 interface Props {
   summaryOnly?: boolean;
@@ -199,6 +204,78 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                   Search
                 </button>
               </div>
+
+              {getTariffsForCode(htsno).map((tariff) => (
+                <div key={tariff.code} className="text-white font-bold">
+                  <span>[H]</span>
+                  <span className="text-secondary"> {tariff.code} </span>
+                  <span> {tariff.name} </span>
+                </div>
+              ))}
+
+              {isFullHTSCode(htsno) && (
+                <div className="grid grid-cols-2 gap-2">
+                  {selectedCountries.map((country) => (
+                    <div
+                      key={country.code}
+                      className="flex flex-col p-3 border-2 border-base-content/50 bg-base-300 rounded-md gap-4"
+                    >
+                      <PrimaryLabel value={country.name} color={Color.WHITE} />
+                      {getTariffsForCountry(country.code).map((tariff) => (
+                        <div className="flex flex-col">
+                          <div
+                            key={tariff.code}
+                            className="text-white font-bold flex gap-2"
+                          >
+                            <span className="text-secondary">
+                              {" "}
+                              {tariff.code}{" "}
+                            </span>
+                            <span>|</span>
+                            <span className="font-normal">{tariff.name}</span>
+                          </div>
+
+                          {/* <div className="flex gap-2 ml-4">
+                            <p>General: {tariff.general}</p>
+                            <p>Special: {tariff.special}</p>
+                            <p>Other: {tariff.other}</p>
+                          </div> */}
+
+                          {tariff.exceptions?.length > 0 &&
+                            tariff.exceptions
+                              .filter(
+                                (tariff) =>
+                                  tariff.inclusions?.countries?.includes(
+                                    country.code
+                                  ) || tariff.inclusions?.codes?.includes(htsno)
+                              )
+                              .map((exceptionTariff) => (
+                                <div
+                                  key={exceptionTariff.code}
+                                  className="flex flex-col gap-2 ml-4"
+                                >
+                                  {/* <SecondaryLabel
+                                    value="Exemptions"
+                                    color={Color.NEUTRAL_CONTENT}
+                                  /> */}
+                                  <div className="flex gap-2 text-white">
+                                    <span className="text-accent font-bold">
+                                      {exceptionTariff.code}
+                                    </span>
+                                    <span>|</span>
+                                    <span className="font-normal">
+                                      {" "}
+                                      {exceptionTariff.name}
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
