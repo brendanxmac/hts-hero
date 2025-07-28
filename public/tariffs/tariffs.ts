@@ -1,3 +1,6 @@
+// TODO: Add "note: string" to tariff so that we can show users where to find the
+// note that outlines the specifics of the 99
+
 export interface Tariff {
   code: string;
   description: string;
@@ -55,6 +58,9 @@ export const getTariffsForCode = (htsCode: string) => {
 };
 
 export const tariffs: Tariff[] = [
+  // ===========================
+  // WORLDWIDE RECIPROCAL TARIFF
+  // ===========================
   {
     code: "9903.01.25",
     description:
@@ -1200,7 +1206,7 @@ export const tariffs: Tariff[] = [
         other: 0,
       },
       {
-        code: "9903.01.33",
+        code: "9903.01.33", // FIXME: raise to top level
         description:
           "Articles of iron or steel, derivative articles of iron or steel, articles of aluminum, derivative articles of aluminum, passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks and parts of passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks, of any country, as provided in subdivision (v)(vi) through (v)(xi) of note 2 to this subchapter",
         name: "Iron / Steel / Aluminum, Passenger Vehicles, & Light Trucks",
@@ -1246,6 +1252,9 @@ export const tariffs: Tariff[] = [
     //   ],
     // },
   },
+  // ========================
+  // COUNTRY SPECIFIC TARIFFS
+  // ========================
   {
     code: "9903.01.24",
     description:
@@ -1290,6 +1299,88 @@ export const tariffs: Tariff[] = [
       // having these apply on top and then certain 98's not having this apply
     ],
   },
+  {
+    code: "9903.01.01",
+    description:
+      "Except for products described in headings 9903.01.02, 9903.01.03, 9903.01.04 and 9903.01.05 articles the product of Mexico, as provided for in U.S. note 2(a) to this subchapter",
+    name: "Mexico 25% IEEPA",
+    general: 25,
+    special: 25,
+    other: 0,
+    inclusions: {
+      countries: ["MX"],
+    },
+    exceptions: [], // TODO:
+  },
+  {
+    code: "9903.01.10",
+    description:
+      "Except for products described in headings 9903.01.11, 9903.01.12, 9903.01.13, 9903.01.14 or 9903.01.15, articles the product of Canada, as provided for in U.S. note 2(j) to this subchapter",
+    name: "Canada 25% IEEPA",
+    general: 25,
+    special: 25,
+    other: 0,
+    inclusions: {
+      countries: ["CA"],
+    },
+    exceptions: [], // TODO:
+  },
+  // ========================
+  // PRODUCT SPECIFIC TARIFFS
+  // ========================
+  // Automobiles (Section 232)
+  {
+    code: "9903.94.01",
+    description:
+      "Except for 9903.94.02, 9903.94.03, 9903.94.04 and 9903.94.31, effective with respect to entries on or after April 3, 2025, passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks, as specified in note 33 to this subchapter, as provided for in subdivision (b) of U.S. note 33 to this subchapter.",
+    name: "Automobiles (Section 232)",
+    general: 25,
+    special: 25,
+    other: 25,
+    exceptions: [
+      {
+        code: "9903.94.02",
+        description:
+          "Effective with respect to entries on or after April 3, 2025, articles as provided for in subdivision (c) of U.S. note 33 to this subchapter.",
+        name: "????",
+        general: null,
+        special: null,
+        other: null,
+      },
+      {
+        code: "9903.94.03",
+        description:
+          "Effective with respect to entries on or after April 3, 2025, certain passenger vehicles and light trucks, as provided for in subdivision (d) of U.S. note 33 to this subchapter.",
+        name: "??????",
+        // TODO: need slider,
+        general: 25, // on the % of the non U.S. content
+        special: 25, // on the % of the non U.S. content
+        other: null,
+      },
+      {
+        code: "9903.94.04",
+        description:
+          "Effective with respect to entries on or after April 3, 2025, certain passenger vehicles and light trucks, as provided for in subdivision (e) of U.S. note 33 to this subchapter.",
+        name: "??????",
+        general: 0,
+        special: 0,
+        other: 0,
+      },
+      {
+        code: "9903.94.31",
+        description:
+          "Effective with respect to entries on or after [ ], passenger vehicles that are products of the United Kingdom as specified in subdivision (i) of U.S. note 33 to this subchapter, when entered under the terms of subdivision (i) of U.S. note 33 to this subchapter. [Compilers note: This heading is effective on or after June 30, 2025. For more information, see 90 Fed. Reg. 27851.]",
+        name: "??????",
+        general: 7.5,
+        special: null,
+        other: null,
+      },
+    ],
+    inclusions: {
+      codes: [], // TODO: subdivision (b) of U.S. note 33
+    },
+  },
+  // Auto Parts (Section 232)
   {
     code: "9903.94.05",
     description:
@@ -1456,6 +1547,428 @@ export const tariffs: Tariff[] = [
         "9029.20.4080",
         "9401.20.00",
       ],
+    },
+  },
+  // Aluminum (Section 232) // TODO:
+  {
+    code: "9903.85.02",
+    description:
+      "Except as provided in headings 9903.85.67 or 9903.85.69, products of aluminum provided for in the tariff headings or subheadings enumerated in subdivision (g) of note 19 to this subchapter.",
+    name: "Aluminum Products (Section 232)",
+    general: 50,
+    special: 50,
+    other: 50,
+    // at least 1 exclusion --> 9903.01.33
+    exceptions: [
+      {
+        code: "9903.85.67", // FIXME: raise to top level
+        description:
+          "Aluminum articles that are the product of Russia, or where any amount of primary aluminum used in the manufacture of the aluminum articles is smelted in Russia, or where the aluminum articles are cast in Russia, the foregoing under the terms of note 19(a)(vii)(A) to this subchapter, or note 19(m)(A) to this subchapter, as applicable per the date of entry for consumption or withdrawal from warehouse for consumption, except any exclusions that may be determined and announced by the Department of Commerce",
+        name: "Smelted or Casted in Russia????????",
+        general: 200,
+        special: 200, // todo: there are some agreements for this one... look into that
+        other: 200,
+      },
+      {
+        code: "9903.85.69", // FIXME: raise to top level
+        description:
+          "Except for goods provided for in heading 9903.85.67, aluminum articles that are the product of Russia, or where any amount of primary aluminum used in the manufacture of the aluminum articles is smelted in Russia, or where the aluminum articles are cast in Russia, the foregoing under the terms of note 19(a)(vii)(A) to this subchapter, or note 19(m)(A) to this subchapter, as applicable per the date of entry for consumption or withdrawal from warehouse for consumption, admitted into a U.S. foreign trade zone under 'privileged foreign status' as defined in 19 CFR 146.41, prior to 12:01 a.m. eastern standard time on April 10, 2023, except any exclusions that may be determined and announced by the Department of Commerce",
+        name: "??????",
+        general: 200,
+        special: 200, // todo: there are some agreements for this one... look into that
+        other: 200,
+      },
+    ],
+    inclusions: {
+      codes: [], // TODO:
+    },
+  },
+  // Products of Aluminum of UK in 19 subdivision (o)
+  {
+    code: "9903.85.12",
+    description:
+      "Except as provided in headings 9903.85.67 or 9903.85.69, products of aluminum of the United Kingdom provided for in the tariff headings or subheadings enumerated in subdivision (o) of note 19 to this subchapter",
+    name: "???????",
+    general: 25,
+    special: 25,
+    other: 25,
+    inclusions: {
+      countries: ["GB"],
+      codes: [], // TODO: subdivision (o) of note 19
+    },
+    exceptions: [
+      { code: "9903.85.67", description: "", name: "" }, // FIXME: duplicate
+      { code: "9903.85.69", description: "", name: "" }, // FIXME: duplicate
+    ],
+  },
+  // Derivative products of aluminum of the UK from 19 subdivisions (q)
+  {
+    code: "9903.85.13",
+    description:
+      "Except as provided in headings 9903.85.68 or 9903.85.70, derivative aluminum products of the United Kingdom provided for in the tariff headings or subheadings enumerated in subdivision (q) of note 19 to this subchapter",
+    name: "???????",
+    general: 25,
+    special: 25,
+    other: 25,
+    inclusions: {
+      countries: ["GB"],
+      codes: [], // TODO: 19 subdivisions (q)
+    },
+  },
+
+  // =========================
+  // Derivative Aluminum (232)
+  // =========================
+  {
+    code: "9903.85.07",
+    description:
+      "Except as provided in headings 9903.85.09, 9903.85.68 or 9903.85.70, derivative aluminum products, provided for in the tariff provisions enumerated in subdivision (j) of note 19 to this subchapter.",
+    name: "??",
+    general: 50,
+    special: 50,
+    other: 50,
+    exceptions: [
+      {
+        code: "9903.85.09", // FIXME: bring to top level
+        description:
+          "Except as provided in heading 9903.85.68 or 9903.85.70, derivative aluminum products provided for in the tariff headings and subheadings enumerated in subdivisions (j), (k), (r) or (s) of note 19 to this subchapter, where the derivative aluminum products were processed in another country from aluminum articles that were smelted and cast in the United States.",
+        name: "Processeed in Another Country but Smelted or Cast in the U.S.",
+        inclusions: {
+          codes: [], // TODO: subdivisions (j), (k), (r) or (s) of note 19
+        },
+        general: null,
+        special: null,
+        other: null,
+      },
+      {
+        code: "9903.85.68", // FIXME: bring to top level
+        description:
+          "Derivative aluminum articles that are products of Russia, or where any amount of primary aluminum used in the manufacture of the derivative articles is smelted in Russia, or where the derivative aluminum articles are cast in Russia, when such derivative articles are provided for in the headings or subheadings enumerated in note 19(a)(iii) to this subchapter, or notes 19(i), 19(j) or 19(k) to this subchapter, as applicable per the date of entry for consumption or withdrawal from warehouse for consumption, except any exclusions that may be determined and announced by the Department of Commerce",
+        name: "??",
+        general: 200,
+        special: 200,
+        other: 200,
+        inclusions: {
+          countries: ["RU"],
+        },
+      },
+      {
+        code: "9903.85.70", // FIXME: bring to top level
+        description:
+          "Except for goods provided for in heading 9903.85.68, derivative aluminum articles that are products of Russia, or where any amount of primary aluminum used in the manufacture of the derivative aluminum articles is smelted in Russia, or where the derivative aluminum articles are cast in Russia, when such derivative articles are provided for in the headings or subheadings enumerated in note 19(a)(iii) to this subchapter, or notes 19(i), 19(j) or 19(k) to this subchapter, as applicable per the date of entry for consumption or withdrawal from warehouse for consumption, admitted into a U.S. foreign trade zone under 'privileged foreign status' as defined in 19 CFR 146.41, prior to 12:01 a.m. eastern standard time on April 10, 2023, except any exclusions that may be determined and announced by the Department of Commerce",
+        name: "??",
+        general: 200,
+        special: 200,
+        other: 200,
+        inclusions: {
+          countries: ["RU"],
+        },
+      },
+    ],
+  },
+  // Derivative Aluminum from 19(k) (232)
+  {
+    code: "9903.85.08",
+    description:
+      "Except as provided in heading 9903.85.09, 9903.85.68 or 9903.85.70, derivative aluminum products, provided for in the tariff provisions enumerated in subdivision (k) of note 19 to this subchapter.",
+    name: "???????",
+    general: 50,
+    special: 50,
+    other: 50,
+    exceptions: [
+      {
+        code: "9903.85.09",
+        description:
+          "Except as provided in heading 9903.85.68 or 9903.85.70, derivative aluminum products provided for in the tariff headings and subheadings enumerated in subdivisions (j), (k), (r) or (s) of note 19 to this subchapter, where the derivative aluminum products were processed in another country from aluminum articles that were smelted and cast in the United States.",
+        name: "Processed in Another Country but Smelted or Cast in the U.S.",
+        general: null,
+        special: null,
+        other: null,
+        exceptions: [
+          { code: "9903.85.68", description: "", name: "" }, // already exists below, tldr, unless country is Russia
+          { code: "9903.85.70", description: "", name: "" }, // already exists below, tldr, unless country is Russia
+        ],
+        inclusions: {
+          codes: [], // TODO: subdivisions (j), (k), (r) or (s) of note 19
+        },
+      },
+      {
+        code: "9903.85.68",
+        description:
+          "Derivative aluminum articles that are products of Russia, or where any amount of primary aluminum used in the manufacture of the derivative articles is smelted in Russia, or where the derivative aluminum articles are cast in Russia, when such derivative articles are provided for in the headings or subheadings enumerated in note 19(a)(iii) to this subchapter, or notes 19(i), 19(j) or 19(k) to this subchapter, as applicable per the date of entry for consumption or withdrawal from warehouse for consumption, except any exclusions that may be determined and announced by the Department of Commerce",
+        name: "???",
+        general: 200,
+        special: 200,
+        other: 200,
+        inclusions: {
+          countries: ["RU"],
+          codes: [], // TODO: note 19(a)(iii) to this subchapter, or notes 19(i), 19(j) or 19(k)
+        },
+      },
+      {
+        code: "9903.85.70",
+        description:
+          "Except for goods provided for in heading 9903.85.68, derivative aluminum articles that are products of Russia, or where any amount of primary aluminum used in the manufacture of the derivative aluminum articles is smelted in Russia, or where the derivative aluminum articles are cast in Russia, when such derivative articles are provided for in the headings or subheadings enumerated in note 19(a)(iii) to this subchapter, or notes 19(i), 19(j) or 19(k) to this subchapter, as applicable per the date of entry for consumption or withdrawal from warehouse for consumption, admitted into a U.S. foreign trade zone under 'privileged foreign status' as defined in 19 CFR 146.41, prior to 12:01 a.m. eastern standard time on April 10, 2023, except any exclusions that may be determined and announced by the Department of Commerce",
+        name: "???",
+        general: 200,
+        special: 200,
+        other: 200,
+        inclusions: {
+          countries: ["RU"],
+        },
+      },
+    ],
+    inclusions: {
+      codes: [], // TODO: subdivision (k) of note 19
+    },
+  },
+  // Derivative Aluminum of the UK from 19 subdivisions (r)
+  {
+    code: "9903.85.14",
+    description: "",
+    name: "",
+    general: 25,
+    special: 25,
+    other: 25,
+    inclusions: {
+      countries: ["GB"],
+      codes: [], // TODO: 19 subdivisions (r)
+    },
+  },
+  // Derivative Aluminum from 19 subdivisions (j), (k), (r) or (s)
+  {
+    code: "9903.85.15",
+    description:
+      "Except as provided in heading 9903.85.09, 9903.85.68 or 9903.85.70, derivative aluminum products, provided for in the tariff provisions enumerated in subdivision (s) of note 19 to this subchapter",
+    name: "??",
+    // TODO: need slider
+    general: 25, // the content of the aluminum
+    special: 25, // the content of the aluminum
+    other: 25, // the content of the aluminum
+    exceptions: [
+      {
+        code: "9903.85.09", // FIXME: DUPLICATE
+        description:
+          "Except as provided in heading 9903.85.68 or 9903.85.70, derivative aluminum products provided for in the tariff headings and subheadings enumerated in subdivisions (j), (k), (r) or (s) of note 19 to this subchapter, where the derivative aluminum products were processed in another country from aluminum articles that were smelted and cast in the United States.",
+        name: "Processed in Another Country but Smelted or Cast in the U.S.",
+        general: null,
+        special: null,
+        other: null,
+        inclusions: {
+          codes: [], // TODO: subdivisions (j), (k), (r) or (s) of note 19
+        },
+      },
+      { code: "9903.85.68", description: "", name: "" }, // FIXME: duplicate
+      { code: "9903.85.70", description: "", name: "" }, // FIXME: duplicate
+    ],
+    inclusions: {
+      codes: [], // TODO: subdivision (s) of note 19
+    },
+  },
+  // Derivative Aluminum from 19 subdivisions (i)
+  {
+    code: "9903.85.04",
+    description:
+      "Except as provided in headings 9903.85.68 or 9903.85.70, derivative aluminum products provided for in the tariff headings or subheadings enumerated in subdivision (i) of note 19 to this subchapter.",
+    name: "??",
+    // TODO: need slider
+    general: 50,
+    special: 50,
+    other: 50,
+    exceptions: [
+      { code: "9903.85.68", description: "", name: "" }, // FIXME: duplicate
+      { code: "9903.85.70", description: "", name: "" }, // FIXME: duplicate
+    ],
+    inclusions: {
+      codes: [], // TODO: subdivision (i) of note 19
+    },
+  },
+  // ==================
+  // Steel (Section 232) // TODO:
+  // ==================
+  // Admitted to US foreign trade zone under 'privileged foreign status' as defined in 19 CFR 146.41, prior to 12:01 a.m. eastern standard time on April 10, 2023
+  {
+    code: "9903.81.88",
+    description:
+      "Products of iron or steel provided for in the tariff headings or subheadings enumerated in subdivision (j) of note 16 to this subchapter, admitted to a U.S. foreign trade zone under ‘‘privileged foreign status’’ as defined by 19 CFR 146.41, prior to 12:01 a.m. eastern daylight time on June 4, 2025.",
+    name: "",
+    general: 50,
+    special: 50,
+    other: 50,
+    inclusions: {
+      codes: [], // TODO: 16(j)
+    },
+  },
+  // 16 (l) (m)
+  {
+    code: "9903.81.93",
+    description:
+      "Except as provided in headings 9903.81.91 or 9903.81.92, derivative products of iron or steel, as specified in subdivisions (l) and (m) of note 16 to this subchapter, admitted to a U.S. foreign trade zone under ‘‘privileged foreign status’’ as defined by 19 CFR 146.41, prior to 12:01 a.m. eastern daylight time on June 4, 2025.",
+    name: "???????",
+    general: 50,
+    special: 50,
+    other: 50,
+    // TODO: Subject to classifer knowlege around admission
+    // to a US foreign trade zone under privlidge status
+    inclusions: {
+      codes: [], // TODO: 16(l) and (m)
+    },
+    exceptions: [
+      { code: "9903.81.91", description: "", name: "" }, // FIXME: duplicate ?
+      { code: "9903.81.92", description: "", name: "" }, // FIXME: duplicate ?
+    ],
+  },
+  // 16 (q) UK
+  {
+    code: "9903.81.95",
+    description:
+      "Products of iron or steel of the United Kingdom provided for in the tariff headings or subheadings enumerated in subdivision (q) of note 16 to this subchapter, admitted to a U.S. foreign trade zone under “privileged foreign status” as defined by 19 CFR 146.41, prior to 12:01 a.m. eastern daylight time on June 4, 2025",
+    name: "???????",
+    general: 25,
+    special: 25,
+    other: 25,
+    // TODO: Subject to classifer knowlege around admission
+    // to a US foreign trade zone under privlidge status
+    inclusions: {
+      countries: ["GB"],
+      codes: [], // TODO: 16(l) and (m)
+    },
+  },
+  // 16 (s) (t) UK
+  {
+    code: "9903.81.99",
+    description:
+      "Except as provided in headings 9903.81.98 or 9903.81.92, derivative products of iron or steel of the United Kingdom, as specified in subdivisions (s) and (t) of note 16 to this subchapter, admitted to a U.S.foreign trade zone under ‘‘privileged foreign status’’ as defined by 19 CFR 146.41, prior to 12:01 a.m. eastern daylight time on June 4, 2025",
+    name: "???????",
+    general: 25,
+    special: 25,
+    other: 25,
+    // TODO: Subject to classifer knowlege around admission
+    // to a US foreign trade zone under privlidge status
+    inclusions: {
+      countries: ["GB"],
+      codes: [], // TODO: 16(l) and (m)
+    },
+  },
+  {
+    code: "9903.81.87",
+    description:
+      "Except for derivative iron or steel products described in headings 9903.81.89, 9903.81.90 or 9903.81.91, products of iron or steel provided for in the tariff headings or subheadings enumerated in subdivision (j) of note 16 to this subchapter.",
+    name: "Iron / Steel Products (Section 232)",
+    general: 50,
+    special: 50,
+    other: 50,
+    exceptions: [
+      // FIXME: should the derivatives be floating on their own and not nested? How can we fetch...?
+      {
+        code: "9903.81.89", // FIXME: bring to top level
+        description:
+          "Derivative iron or steel products provided for in the tariff provisions enumerated in subdivision (l) of note 16 to this subchapter.",
+        name: "?????????",
+        general: 50,
+        special: 50,
+        other: 50,
+      },
+      {
+        code: "9903.81.90", // FIXME: bring to top level
+        description:
+          "Except as provided in heading 9903.81.92, derivative iron or steel products provided for in the tariff subheadings enumerated in subdivision (m) of note 16 to this subchapter.",
+        name: "?????????",
+        general: 50,
+        special: 50,
+        other: 50,
+      },
+      {
+        code: "9903.81.91", // FIXME: bring to top level
+        description:
+          "Except as provided in heading 9903.81.92, derivative iron or steel products provided for in the tariff subheadings enumerated in subdivision (n) of note 16 to this subchapter.",
+        name: "asdfsa",
+        // TODO: NEED SLIDER -- this ones about the value of the steel content
+        general: 50,
+        special: 50,
+        other: 50,
+      },
+    ],
+    inclusions: { codes: [] }, // TODO:
+  },
+  // Steel products processed in another country, but smelted or cast in the U.S.
+  {
+    code: "9903.81.92",
+    description:
+      "Derivative iron or steel products provided for in the tariff subheadings enumerated in subdivision subdivisions (m), (n), (t) or (u) of note 16 to this subchapter, where the derivative iron or steel product was processed in another country from steel articles that were melted and poured in the United States.",
+    name: "?????????",
+    general: 0,
+    special: 0,
+    other: 0,
+    inclusions: {
+      codes: [], // TODO: subdivisions (m), (n), (t) or (u) of note 16
+    },
+  },
+  // UK Steel note 16 (t)
+  {
+    code: "9903.81.97",
+    description:
+      "Except as provided in heading 9903.81.92, derivative iron or steel products of the United Kingdom provided for in the tariff subheadings enumerated in subdivision (t) of note 16 to this subchapter",
+    name: "",
+    general: 25,
+    special: 25,
+    other: 25,
+    inclusions: {
+      countries: ["GB"],
+      codes: [], // TODO: subdivision (t) of note 16
+    },
+  },
+  // UK Steel note 16 (u)
+  {
+    code: "9903.81.98",
+    description:
+      "Except as provided in heading 9903.81.92, derivative iron or steel products of the United Kingdom provided for in the tariff subheadings enumerated in subdivision (u) of note 16 to this subchapter",
+    name: "",
+    general: 25,
+    special: 25,
+    other: 25,
+    inclusions: {
+      countries: ["GB"],
+      codes: [], // TODO: subdivision (u) of note 16
+    },
+  },
+  // UK Steel 19 (q)
+  {
+    code: "9903.81.94",
+    description:
+      "Except for derivative iron or steel products described in headings 9903.81.96, 9903.81.97 or 9903.81.98, products of iron or steel of the United Kingdom provided for in the tariff headings or subheadings enumerated in subdivision (q) of note 16 to this subchapter",
+    name: "",
+    general: 25,
+    special: 25,
+    other: 25,
+    inclusions: {
+      countries: ["GB"],
+      codes: [], // TODO: subdivision (q) of note 16
+    },
+  },
+  // UK Steel Products List
+  {
+    code: "9903.81.96",
+    description:
+      "Derivative iron or steel products of the United Kingdom provided for in the tariff subheadings enumerated in subdivision (s) of note 16 to this subchapter",
+    name: "????????",
+    general: 25,
+    special: 25,
+    other: 25,
+    inclusions: {
+      countries: ["GB"],
+      // TODO: this should have a slider to indicate the amount of steel / iron
+      // FIXME: this list is tricky cause it does not list out the full HTS codes, but descriptions
+      codes: [
+        "7317.00.30",
+        "7317.00.55.03",
+        "7317.00.55.05",
+        "7317.00.55.07",
+        "7317.00.55.60",
+        "7317.00.55.80",
+        "7317.00.65.60",
+        "8708.29.21",
+      ], // TODO:
     },
   },
 ];
