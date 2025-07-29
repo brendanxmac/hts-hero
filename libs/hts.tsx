@@ -114,6 +114,12 @@ export const getBreadCrumbsForElement = (
   ];
 };
 
+export const getHtsCodesFromString = (text: string): string[] => {
+  const htsCodeRegex = /\b(\d{4}(?:\.?\d{2})?(?:\.?\d{2})?(?:\.?\d{2})?)\b/g;
+  const matches = text.match(htsCodeRegex);
+  return matches ? matches : [];
+};
+
 // Filters from the overall set of elements -- room for imporvement
 export const getElementsInChapter = (elements: HtsElement[], chapter: number) =>
   elements.filter((e) => e.chapter == chapter);
@@ -729,6 +735,16 @@ export const getFootnotesForTariffType = (
 };
 
 export const getTemporaryTariffText = (
+  element: HtsElement,
+  tariffType: TariffType
+) => {
+  const footnotes = getFootnotesForTariffType(element, tariffType);
+  return footnotes.map((footnote) =>
+    footnote.value.trim().replace(/\.*$/g, "")
+  );
+};
+
+export const getTemporaryTariffTextElement = (
   element: HtsElement,
   tariffType: TariffType
 ): JSX.Element | null => {

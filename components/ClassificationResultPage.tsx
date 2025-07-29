@@ -11,7 +11,7 @@ import {
   getHtsElementParents,
   getSectionAndChapterFromChapterNumber,
   getTariffDetails,
-  getTemporaryTariffText,
+  getTemporaryTariffTextElement,
 } from "../libs/hts";
 import {
   getTextBeforeOpeningParenthesis,
@@ -284,7 +284,10 @@ export const ClassificationResultPage = () => {
                       {tariffElement.general || "-"}
                     </h2>
 
-                    {getTemporaryTariffText(tariffElement, TariffType.GENERAL)}
+                    {getTemporaryTariffTextElement(
+                      tariffElement,
+                      TariffType.GENERAL
+                    )}
                   </div>
                   <div className="flex flex-col p-3 bg-base-100 border border-base-content/10 rounded-md min-w-24 gap-3">
                     <TertiaryLabel
@@ -345,7 +348,10 @@ export const ClassificationResultPage = () => {
                         </div>
                       )}
                     </div>
-                    {getTemporaryTariffText(tariffElement, TariffType.SPECIAL)}
+                    {getTemporaryTariffTextElement(
+                      tariffElement,
+                      TariffType.SPECIAL
+                    )}
                   </div>
 
                   <div className="flex flex-col p-3 bg-base-100 border border-base-content/10 rounded-md min-w-24 gap-3">
@@ -357,7 +363,10 @@ export const ClassificationResultPage = () => {
                       {tariffElement.other || "-"}
                     </h2>
 
-                    {getTemporaryTariffText(tariffElement, TariffType.OTHER)}
+                    {getTemporaryTariffTextElement(
+                      tariffElement,
+                      TariffType.OTHER
+                    )}
                   </div>
 
                   <div className="flex flex-col p-3 bg-base-100 border border-base-content/10 rounded-md min-w-24 gap-3">

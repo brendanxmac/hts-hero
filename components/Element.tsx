@@ -4,9 +4,11 @@ import {
   getDirectChildrenElements,
   getBreadCrumbsForElement,
   getTariffDetails,
-  getTemporaryTariffText,
+  getTemporaryTariffTextElement,
   getGeneralNoteFromSpecialTariffSymbol,
   isFullHTSCode,
+  isHTSCode,
+  getTemporaryTariffText,
 } from "../libs/hts";
 import { ElementSummary } from "./ElementSummary";
 import {
@@ -34,8 +36,8 @@ import { Country } from "../constants/countries";
 import { TertiaryText } from "./TertiaryText";
 import { format } from "date-fns";
 import {
-  getTariffsForCode,
-  getTariffsForCountry,
+  getTariffsByCode,
+  getTariffsForCountryAndCode,
 } from "../public/tariffs/tariffs";
 import { PrimaryLabel } from "./PrimaryLabel";
 
@@ -205,71 +207,75 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                 </button>
               </div>
 
-              {getTariffsForCode(htsno).map((tariff) => (
-                <div key={tariff.code} className="text-white font-bold">
-                  <span>[H]</span>
-                  <span className="text-secondary"> {tariff.code} </span>
-                  <span> {tariff.name} </span>
-                </div>
-              ))}
-
               {isFullHTSCode(htsno) && (
                 <div className="grid grid-cols-2 gap-2">
                   {selectedCountries.map((country) => (
                     <div
-                      key={country.code}
+                      key={`${country.code}-${htsno}`}
                       className="flex flex-col p-3 border-2 border-base-content/50 bg-base-300 rounded-md gap-4"
                     >
                       <PrimaryLabel value={country.name} color={Color.WHITE} />
-                      {getTariffsForCountry(country.code).map((tariff) => (
-                        <div className="flex flex-col">
+
+                      {getTariffsForCountryAndCode(
+                        country.code,
+                        htsno,
+                        getTemporaryTariffText(element, TariffType.GENERAL)[0]
+                      ).map((tariff) => (
+                        <div className="w-full flex flex-col gap-4">
                           <div
                             key={tariff.code}
-                            className="text-white font-bold flex gap-2"
+                            className="w-full text-white font-bold flex gap-2 justify-between items-center"
                           >
-                            <span className="text-secondary">
-                              {" "}
-                              {tariff.code}{" "}
-                            </span>
-                            <span>|</span>
-                            <span className="font-normal">{tariff.name}</span>
+                            <div>
+                              <span className="text-secondary">
+                                {" "}
+                                {tariff.code}{" "}
+                              </span>
+                              <span> - </span>
+                              <span className="font-normal">{tariff.name}</span>
+                            </div>
+                            <p className="shrink-0 text-2xl lg:text-3xl text-secondary">
+                              {tariff.general}%
+                            </p>
                           </div>
 
                           {/* <div className="flex gap-2 ml-4">
-                            <p>General: {tariff.general}</p>
-                            <p>Special: {tariff.special}</p>
-                            <p>Other: {tariff.other}</p>
-                          </div> */}
+                              <p>G: {tariff.general}</p>
+                              <p>S: {tariff.special}</p>
+                              <p>O: {tariff.other}</p>
+                            </div> */}
 
                           {tariff.exceptions?.length > 0 &&
-                            tariff.exceptions
-                              .filter(
-                                (tariff) =>
-                                  tariff.inclusions?.countries?.includes(
-                                    country.code
-                                  ) || tariff.inclusions?.codes?.includes(htsno)
-                              )
-                              .map((exceptionTariff) => (
-                                <div
-                                  key={exceptionTariff.code}
-                                  className="flex flex-col gap-2 ml-4"
-                                >
-                                  {/* <SecondaryLabel
-                                    value="Exemptions"
-                                    color={Color.NEUTRAL_CONTENT}
-                                  /> */}
-                                  <div className="flex gap-2 text-white">
-                                    <span className="text-accent font-bold">
-                                      {exceptionTariff.code}
-                                    </span>
-                                    <span>|</span>
-                                    <span className="font-normal">
-                                      {" "}
-                                      {exceptionTariff.name}
-                                    </span>
+                            getTariffsByCode(tariff.exceptions).map(
+                              (exceptionTariff) =>
+                                // If there's an exception without a matching tariff record
+                                // we will get null / undefined here, so we need to check for that
+                                exceptionTariff?.inclusions?.codes?.includes(
+                                  htsno
+                                ) ||
+                                (exceptionTariff?.inclusions?.countries?.includes(
+                                  country.code
+                                ) && (
+                                  <div
+                                    key={exceptionTariff.code}
+                                    className="flex ml-4 justify-between items-center"
+                                  >
+                                    <div className="flex gap-2 text-white">
+                                      <span className="text-accent font-bold">
+                                        {exceptionTariff.code}
+                                      </span>
+                                      <span>-</span>
+                                      <span className="font-normal">
+                                        {" "}
+                                        {exceptionTariff.name}
+                                      </span>
+                                    </div>
+                                    <p className="shrink-0 text-lg lg:text-xl text-accent font-bold">
+                                      {exceptionTariff.general}%
+                                    </p>
                                   </div>
-                                </div>
-                              ))}
+                                ))
+                            )}
                         </div>
                       ))}
                     </div>
@@ -328,7 +334,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                           color={Color.WHITE}
                         />
                       </div>
-                      {getTemporaryTariffText(
+                      {getTemporaryTariffTextElement(
                         tariffElement,
                         TariffType.GENERAL
                       )}
@@ -398,7 +404,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                           </div>
                         </div>
                       )}
-                      {getTemporaryTariffText(
+                      {getTemporaryTariffTextElement(
                         tariffElement,
                         TariffType.SPECIAL
                       )}
@@ -415,7 +421,10 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                           color={Color.WHITE}
                         />
                       </div>
-                      {getTemporaryTariffText(tariffElement, TariffType.OTHER)}
+                      {getTemporaryTariffTextElement(
+                        tariffElement,
+                        TariffType.OTHER
+                      )}
                     </div>
 
                     <div className="flex flex-col gap-1 p-3 bg-base-300 border border-base-content/10 rounded-md min-w-24">

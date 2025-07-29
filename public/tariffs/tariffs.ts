@@ -1,3 +1,5 @@
+import { getHtsCodesFromString } from "../../libs/hts";
+
 export interface Tariff {
   code: string;
   description: string;
@@ -20,10 +22,56 @@ export interface Tariff {
   requiresReview?: boolean;
 }
 
+export const getTariffsByCode = (codes: string[]) =>
+  codes.map((c) => Tariffs.find((t) => t.code === c));
+
+export const getTariffsForCountryAndCode = (
+  countryCode: string,
+  htsCode: string,
+  elementTariffString?: string
+) => {
+  console.log("elementTariffString", elementTariffString);
+  // Get tariffs from elements tariff string (if any)
+  let elementTariffs: Tariff[] = [];
+
+  if (elementTariffString) {
+    const elementTariffCodes = getHtsCodesFromString(elementTariffString);
+    console.log("elementTariffCodes", elementTariffCodes);
+    elementTariffs = getTariffsByCode(elementTariffCodes);
+  }
+
+  console.log(elementTariffs);
+
+  // Get tariffs for country and code
+  const countryTariffs = getTariffsForCountry(countryCode);
+  const codeTariffs = getTariffsForCode(htsCode);
+
+  console.log("countryTariffs", countryTariffs);
+  console.log("codeTariffs", codeTariffs);
+
+  // Combine all tariffs
+  const tariffs = [...elementTariffs, ...countryTariffs, ...codeTariffs].filter(
+    (tariff) => tariff !== undefined
+  );
+
+  // Get all exception codes from all tariffs in the list
+  const allExceptionCodes = new Set<string>();
+  tariffs.forEach((tariff) => {
+    if (tariff.exceptions) {
+      tariff.exceptions.forEach((exceptionCode) => {
+        allExceptionCodes.add(exceptionCode);
+      });
+    }
+  });
+
+  // Filter out tariffs whose codes are in the exceptions list
+  return tariffs.filter((tariff) => !allExceptionCodes.has(tariff?.code));
+};
+
 export const getTariffsForCountry = (countryCode: string) => {
   let countryTariffs: Tariff[] = [];
 
-  tariffs.forEach((tariff) => {
+  Tariffs.forEach((tariff) => {
     if (
       (tariff.inclusions?.countries?.includes(countryCode) ||
         tariff.inclusions?.countries?.includes("*")) &&
@@ -39,7 +87,7 @@ export const getTariffsForCountry = (countryCode: string) => {
 export const getTariffsForCode = (htsCode: string) => {
   let codeTariffs: Tariff[] = [];
 
-  tariffs.forEach((tariff) => {
+  Tariffs.forEach((tariff) => {
     if (tariff.inclusions?.codes?.includes(htsCode)) {
       codeTariffs.push(tariff);
     }
@@ -58,7 +106,7 @@ export const getTariffsForCode = (htsCode: string) => {
 // Does not currently consider the % of the product being foreign
 // Does not currently consider the % of US originating
 
-export const tariffs: Tariff[] = [
+export const Tariffs: Tariff[] = [
   // ===========================
   // WORLDWIDE RECIPROCAL TARIFF
   // ===========================
@@ -66,7 +114,7 @@ export const tariffs: Tariff[] = [
     code: "9903.01.25",
     description:
       "Articles the product of any country, except for products described in headings 9903.01.26–9903.01.33, except as provided for in heading 9903.01.34, and except as provided for in heading 9903.96.01, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
-    name: "Worldwide Reciprocal",
+    name: "Worldwide Reciprocal 10% (IEEPA)",
     general: 10,
     special: 10,
     other: 0,
@@ -1881,7 +1929,7 @@ export const tariffs: Tariff[] = [
     code: "9903.01.24",
     description:
       "Except for products described in headings 9903.01.21, 9903.01.22, 9903.01.23, or U.S. note 2(w) to this subchapter articles the product of China and Hong Kong, as provided for in U.S. note 2(u) to this subchapter",
-    name: "China & Hong Kong 20% IEEPA",
+    name: "China & Hong Kong 20% (IEEPA)",
     general: 20,
     special: 20,
     other: 0,
@@ -5192,5 +5240,43 @@ export const tariffs: Tariff[] = [
         // and there's no 7317 or 7317.00 heading / subheading that we'd submatch on currently
       ],
     },
+  },
+  {
+    code: "9903.88.15",
+    description:
+      "Except as provided in headings 9903.88.39, 9903.88.42, 9903.88.44, 9903.88.47, 9903.88.49, 9903.88.51, 9903.88.53, 9903.88.55, 9903.88.57, 9903.88.65, 9903.88.66, 9903.88.67, 9903.88.68, or 9903.88.69, articles the product of China, as provided for in U.S. note 20(r) to this subchapter and as provided for in the subheadings enumerated in U.S. note 20(s)",
+    name: "Articles the product of China from 20 (r) and (s) (Section 232)",
+    general: 7.5,
+    special: 0,
+    other: 0,
+    exceptions: [
+      // FIXME: none of these exist yet
+      "9903.88.39",
+      "9903.88.42",
+      "9903.88.44",
+      "9903.88.47",
+      "9903.88.49",
+      "9903.88.51",
+      "9903.88.53",
+      "9903.88.55",
+      "9903.88.57",
+      "9903.88.65",
+      "9903.88.66",
+      "9903.88.67",
+      "9903.88.68",
+      "9903.88.69",
+    ],
+    // inclusions: {
+    //   countries: ["CN"],
+    // },
+    // FIXME: If we do not add the exceptions here, then we might add tariff incorrectly
+    // meaning there might be a valid exclusion but we don't apply it...
+
+    // FIXME: I think we can keep this without inclusions since we find it directly based on the HTS Element..
+
+    // Inclusions left out on purpose since this code is added to elements
+    // and finding the comprehensive list would be a lot of work for the same outcome
+    // where we can just pass the element tariff string to a tariff finding function to find
+    // this since we will always have it from the HTS element (as far as I understand)
   },
 ];
