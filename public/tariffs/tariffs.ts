@@ -48,6 +48,16 @@ export const getTariffsForCode = (htsCode: string) => {
   return codeTariffs;
 };
 
+// NOTES:
+// 9903.01.43-76 are all suspended, but would take over this flat 10% if reinstated
+// Does not consider Countervailing or Antidumping currently
+// Does not consider any of the 98 exceptions for 01.25, 01.24, 01.01, 01.10
+// If inclusions only has countries and not codes, tariff applies to all codes,
+//  unless specified in exceptions list
+// Does not currently consider the kg's of the steel or aluminum
+// Does not currently consider the % of the product being foreign
+// Does not currently consider the % of US originating
+
 export const tariffs: Tariff[] = [
   // ===========================
   // WORLDWIDE RECIPROCAL TARIFF
@@ -62,6 +72,7 @@ export const tariffs: Tariff[] = [
     other: 0,
     inclusions: {
       countries: ["*"],
+      // When a tariff applies to all countries we just do *
     },
     exceptions: [
       "9903.01.26",
@@ -85,7 +96,7 @@ export const tariffs: Tariff[] = [
       "9903.81.92", // \/
       "9903.81.93", // \/
       "9903.85.02", // ---> All of thses are within 9903.01.33 TODO: should we join or..? not common enough to create edge case?
-      "9903.85.04", // ^
+      "9903.85.04", // ^ --> steel, aluminum, derivatives, autos, auto parts, civil aircraft.. maybe others?
       "9903.85.07", // ^
       "9903.85.08", // ^
       "9903.85.09", // ^
@@ -100,7 +111,7 @@ export const tariffs: Tariff[] = [
     code: "9903.01.26",
     description:
       "Articles the product of Canada, as provided for in subdivision (v)(iv) of U.S. note 2 to this subchapter",
-    name: "Canada Exception",
+    name: "Canada Reciprocal Exception",
     inclusions: {
       countries: ["CA"],
     },
@@ -112,7 +123,7 @@ export const tariffs: Tariff[] = [
     code: "9903.01.27",
     description:
       "Articles the product of Mexico, as provided for in subdivision (v)(v) of U.S. note 2 to this subchapter",
-    name: "Mexico Exception",
+    name: "Mexico Reciprocal Exception",
     inclusions: {
       countries: ["MX"],
     },
@@ -131,7 +142,7 @@ export const tariffs: Tariff[] = [
     general: 0,
     special: 0,
     other: 0,
-    requiresReview: true, // Could just add date, but keeping it simple for now...
+    requiresReview: true, // Could just add date(s), but keeping it simple for now...
   },
   {
     code: "9903.01.29",
@@ -152,11 +163,14 @@ export const tariffs: Tariff[] = [
     name: "Donations",
     inclusions: {
       countries: ["*"],
+      // *, meaning all, is used here because this applies to every single country,
+      // including china and other countries with additional IEEPA tariffs like
+      // northern and southern border protection tariffs on CA & MX.
     },
     general: 0,
     special: 0,
     other: 0,
-    requiresReview: true,
+    requiresReview: true, // TODO: could add toggle for "isDonation"
   },
   {
     code: "9903.01.31",
@@ -169,7 +183,9 @@ export const tariffs: Tariff[] = [
     general: 0,
     special: 0,
     other: 0,
-    requiresReview: true, // maybe could get clever here, but leaving it for now and let user flip switch
+    // maybe could get clever here and do "is information material", but leaving it for now and let user flip switch
+    // Maybe could also start compiling a list of headings / subheading that would qualify which would enable partial automatic
+    requiresReview: true,
   },
   {
     code: "9903.01.32",
@@ -177,6 +193,7 @@ export const tariffs: Tariff[] = [
       "Articles the product of any country, classified in the subheadings enumerated in subdivision (v)(iii) of U.S. note 2 to this subchapter",
     name: "Qualifying Subheadings",
     inclusions: {
+      countries: ["*"],
       codes: [
         "0508.00.00",
         "2504.10.50",
@@ -1237,8 +1254,9 @@ export const tariffs: Tariff[] = [
     code: "9903.01.33",
     description:
       "Articles of iron or steel, derivative articles of iron or steel, articles of aluminum, derivative articles of aluminum, passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks and parts of passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks, of any country, as provided in subdivision (v)(vi) through (v)(xi) of note 2 to this subchapter",
-    name: "Iron / Steel / Aluminum, Passenger Vehicles, & Light Trucks",
+    name: "Composite Exception: Iron / Steel / Aluminum, Passenger Vehicles, & Light Trucks",
     inclusions: {
+      countries: ["*"],
       tariffs: [
         // todo: what to do about this being an edge case? tariff that includes tariffs itself as a mere container?
         "9903.81.87",
@@ -1272,10 +1290,13 @@ export const tariffs: Tariff[] = [
     general: 0,
     special: 0,
     other: 0,
+    inclusions: {
+      countries: ["*"],
+    },
     requiresReview: true,
   },
   {
-    code: "9903.96.01",
+    code: "9903.96.01", // lookup why this one gets applied in many places and where that comes from in ths HTS
     description:
       "Effective with respect to entries on or after [ ], articles of civil aircraft (all aircraft other than military aircraft); their engines, parts, and components; their other parts, components, and subassemblies; and ground flight simulators and their parts and components of the United Kingdom, classified in the subheadings enumerated in subdivision (a) of U.S. note 35 to this subchapter. [Compilers note: This heading is effective on or after June 30, 2025. For more information, see 90 Fed. Reg. 27851.]",
     name: "U.K. Civil Aircraft, Engines, Parts, Components, & Subassemblies",
@@ -1853,7 +1874,6 @@ export const tariffs: Tariff[] = [
       ],
     },
   },
-  // 9903.01.43-76 are all suspended, but would take over this flat 10% if reinstated
   // ========================
   // COUNTRY SPECIFIC TARIFFS
   // ========================
@@ -1883,7 +1903,10 @@ export const tariffs: Tariff[] = [
     general: 0,
     special: 0,
     other: 0,
-    requiresReview: true,
+    inclusions: {
+      countries: ["CN", "HK"],
+    },
+    requiresReview: true, // TODO: again, consider isDonation toggle for this one just like the donations one for all countries..
   },
   {
     code: "9903.01.22",
@@ -1893,7 +1916,10 @@ export const tariffs: Tariff[] = [
     general: 0,
     special: 0,
     other: 0,
-    requiresReview: true,
+    inclusions: {
+      countries: ["CN", "HK"],
+    },
+    requiresReview: true, // TODO: again, consider a toggle or starting a list for informationMaterials
   },
   {
     code: "9903.01.23",
@@ -1904,6 +1930,9 @@ export const tariffs: Tariff[] = [
     general: 0,
     special: 0,
     other: 0,
+    inclusions: {
+      countries: ["CN", "HK"],
+    },
     exceptions: ["9903.01.21", "9903.01.22"],
     requiresReview: true,
   },
@@ -1917,12 +1946,9 @@ export const tariffs: Tariff[] = [
     other: 0,
     inclusions: {
       countries: ["MX"],
-      // Applies to ALL codes unless in exceptions list.
-      // We leave codes empty on purpose to indicated that it's just country that matters.
-      // And that everything from that country unless exception is to be tariffed this way.
     },
     exceptions: [
-      // TODO: Didnt include the bits from 98 in 2a...
+      // Does not include the bits from 98 in 2a...
       "9903.01.02",
       "9903.01.03",
       "9903.01.04",
@@ -1939,12 +1965,9 @@ export const tariffs: Tariff[] = [
     other: 0,
     inclusions: {
       countries: ["CA"],
-      // Applies to ALL codes unless in exceptions list.
-      // We leave codes empty on purpose to indicated that it's just country that matters.
-      // And that everything from that country unless exception is to be tariffed this way.
     },
     exceptions: [
-      // TODO: Didnt include the bits from 98 in 2j
+      // Does not include the bits from 98 in 2j
       "9903.01.11",
       "9903.01.12",
       "9903.01.13",
@@ -1964,9 +1987,9 @@ export const tariffs: Tariff[] = [
     general: 25,
     special: 25,
     other: 25,
-    exceptions: ["9903.94.02", "9903.94.03", "9903.94.04", "9903.94.31"],
     inclusions: {
       codes: [
+        // 2(b)
         "8703.22.01",
         "8703.23.01",
         "8703.24.01",
@@ -1986,6 +2009,7 @@ export const tariffs: Tariff[] = [
         "8704.60.00",
       ],
     },
+    exceptions: ["9903.94.02", "9903.94.03", "9903.94.04", "9903.94.31"],
   },
   {
     code: "9903.94.02",
@@ -1995,6 +2019,28 @@ export const tariffs: Tariff[] = [
     general: 0,
     special: 0,
     other: 0,
+    inclusions: {
+      codes: [
+        // 2(b)
+        "8703.22.01",
+        "8703.23.01",
+        "8703.24.01",
+        "8703.31.01",
+        "8703.32.01",
+        "8703.33.01",
+        "8703.40.00",
+        "8703.50.00",
+        "8703.60.00",
+        "8703.70.00",
+        "8703.80.00",
+        "8703.90.01",
+        "8704.21.01",
+        "8704.31.01",
+        "8704.41.00",
+        "8704.51.00",
+        "8704.60.00",
+      ],
+    },
     requiresReview: true, // again, this could just be a date within inclusions...
   },
   {
@@ -2007,6 +2053,26 @@ export const tariffs: Tariff[] = [
     special: 25, // on the % of the non U.S. content
     other: 0,
     inclusions: {
+      codes: [
+        // 2(b)
+        "8703.22.01",
+        "8703.23.01",
+        "8703.24.01",
+        "8703.31.01",
+        "8703.32.01",
+        "8703.33.01",
+        "8703.40.00",
+        "8703.50.00",
+        "8703.60.00",
+        "8703.70.00",
+        "8703.80.00",
+        "8703.90.01",
+        "8704.21.01",
+        "8704.31.01",
+        "8704.41.00",
+        "8704.51.00",
+        "8704.60.00",
+      ],
       // TODO: consider adding a field here like "percent" and a title like "non u.s. content"
       // This would need to get reviewed by secretary of commerce for approval regardless...
     },
@@ -2020,6 +2086,28 @@ export const tariffs: Tariff[] = [
     general: 0,
     special: 0,
     other: 0,
+    inclusions: {
+      codes: [
+        // 2(b)
+        "8703.22.01",
+        "8703.23.01",
+        "8703.24.01",
+        "8703.31.01",
+        "8703.32.01",
+        "8703.33.01",
+        "8703.40.00",
+        "8703.50.00",
+        "8703.60.00",
+        "8703.70.00",
+        "8703.80.00",
+        "8703.90.01",
+        "8704.21.01",
+        "8704.31.01",
+        "8704.41.00",
+        "8704.51.00",
+        "8704.60.00",
+      ],
+    },
     requiresReview: true,
   },
   {
@@ -2033,6 +2121,7 @@ export const tariffs: Tariff[] = [
     inclusions: {
       countries: ["GB"],
       codes: [
+        // 33(i)
         "8703.22.01",
         "8703.32.01",
         "8703.60.00",
@@ -2062,9 +2151,9 @@ export const tariffs: Tariff[] = [
     general: 25,
     special: 25,
     other: 25,
-    exceptions: ["9903.94.06", "9903.94.32"],
     inclusions: {
       codes: [
+        // 33(g)
         "4009.12.0020",
         "4009.22.0020",
         "4009.32.0020",
@@ -2197,6 +2286,7 @@ export const tariffs: Tariff[] = [
         "9401.20.00",
       ],
     },
+    exceptions: ["9903.94.06", "9903.94.32"],
   },
   {
     // https://www.federalregister.gov/d/2025-09066/p-18
@@ -2209,7 +2299,142 @@ export const tariffs: Tariff[] = [
     general: 0,
     special: 0,
     other: 0,
-    requiresReview: true,
+    inclusions: {
+      codes: [
+        // 33(h) which is 33(g) -- same list
+        "4009.12.0020",
+        "4009.22.0020",
+        "4009.32.0020",
+        "4009.42.0020",
+        "4011.10.10",
+        "4011.10.50",
+        "4011.20.10",
+        "4012.19.40",
+        "4012.19.80",
+        "4012.20.60",
+        "4013.10.0010",
+        "4013.10.0020",
+        "4016.99.6010",
+        "7007.21.51",
+        "7009.10.00",
+        "7320.10",
+        "7320.20.10",
+        "8301.20.00",
+        "8302.10.30",
+        "8302.30",
+        "8407.31.00",
+        "8407.32",
+        "8407.33",
+        "8407.34",
+        "8408.20.20",
+        "8409.91.1040",
+        "8409.99.1040",
+        "8413.30.10",
+        "8413.30.90",
+        "8413.91.10",
+        "8413.91.9010",
+        "8414.30.8030",
+        "8414.59.30",
+        "8414.59.6540",
+        "8414.80.05",
+        "8415.20.00",
+        "8421.23.00",
+        "8421.32.00",
+        "8425.49.00",
+        "8426.91.00",
+        "8431.10.0090",
+        "8471",
+        "8482.10.10",
+        "8482.10.5044",
+        "8482.10.5048",
+        "8482.20.0020",
+        "8482.20.0030",
+        "8482.20.0040",
+        "8482.20.0061",
+        "8482.20.0070",
+        "8482.20.0081",
+        "8482.40.00",
+        "8482.50.00",
+        "8483.10.1030",
+        "8483.10.30",
+        "8501.32",
+        "8501.33",
+        "8501.34",
+        "8501.40",
+        "8501.51",
+        "8501.52",
+        "8507.10",
+        "8507.60",
+        "8507.90.40",
+        "8507.90.80",
+        "8511.10.0000",
+        "8511.20.00",
+        "8511.30.0040",
+        "8511.30.0080",
+        "8511.40.00",
+        "8511.50.00",
+        "8511.80.20",
+        "8511.80.60",
+        "8511.90.6020",
+        "8511.90.6040",
+        "8512.20.20",
+        "8512.20.40",
+        "8512.30.00",
+        "8512.40.20",
+        "8512.40.40",
+        "8512.90.20",
+        "8512.90.60",
+        "8512.90.70",
+        "8519.81.20",
+        "8525.60.1010",
+        "8527.21",
+        "8527.29",
+        "8536.41.0005",
+        "8537.10",
+        "8537.20",
+        "8539.10.0010",
+        "8539.10.0050",
+        "8544.30.00",
+        "8706.00.03",
+        "8706.00.05",
+        "8706.00.15",
+        "8706.00.25",
+        "8707",
+        "8707.10.0020",
+        "8707.10.0040",
+        "8707.90.5020",
+        "8707.90.5040",
+        "8707.90.5060",
+        "8707.90.5080",
+        "8708.10.30",
+        "8708.10.60",
+        "8708.21.00",
+        "8708.22",
+        "8708.29",
+        "8708.30",
+        "8708.40.11",
+        "8708.40.70",
+        "8708.40.75",
+        "8708.50",
+        "8708.70",
+        "8708.80",
+        "8708.91",
+        "8708.93.60",
+        "8708.93.75",
+        "8708.94",
+        "8708.95",
+        "8708.99.53",
+        "8708.99.55",
+        "8708.99.58",
+        "8708.99.68",
+        "8716.90.50",
+        "9015.10",
+        "9029.10",
+        "9029.20.4080",
+        "9401.20.00",
+      ],
+    },
+    requiresReview: true, // the review here would be: "is this USMCA qualified or is the part not actually for passenger vehicles or light trucks?"
   },
   {
     code: "9903.94.32",
@@ -2219,6 +2444,7 @@ export const tariffs: Tariff[] = [
     inclusions: {
       countries: ["GB"],
       codes: [
+        // 33(j)
         "4009.12.0020",
         "4009.22.0020",
         "4009.32.0020",
@@ -2501,8 +2727,6 @@ export const tariffs: Tariff[] = [
     general: 50,
     special: 50,
     other: 50,
-    // at least 1 exclusion --> 9903.01.33
-    exceptions: ["9903.85.67", "9903.85.69"],
     inclusions: {
       codes: [
         // TODO: ensure that code checks for heading and BEYOND
@@ -2517,6 +2741,8 @@ export const tariffs: Tariff[] = [
         "7616.99.51",
       ],
     },
+    // at least 1 exclusion --> 9903.01.33 // TODO: come back to this for stacking / exclusions
+    exceptions: ["9903.85.67", "9903.85.69"],
   },
   {
     code: "9903.85.67",
@@ -2528,6 +2754,26 @@ export const tariffs: Tariff[] = [
     other: 200,
     inclusions: {
       countries: ["RU"],
+      codes: [
+        // 19(b) from 19(a)(vii)(A)
+        "7601",
+        "7604",
+        "7605",
+        "7606",
+        "7607",
+        "7608",
+        "7609",
+        "7616.99.51",
+        // 19(g) from 19(m)(A) which is same as 19(b)
+        // "7601",
+        // "7604",
+        // "7605",
+        // "7606",
+        // "7607",
+        // "7608",
+        // "7609",
+        // "7616.99.51"
+      ],
     },
   },
   {
@@ -2540,7 +2786,26 @@ export const tariffs: Tariff[] = [
     other: 200,
     inclusions: {
       countries: ["RU"],
-      //   TODO: no codes directly listed, NEED to review this to add codes probably... read the note more deeply
+      codes: [
+        // 19(b) from 19(a)(vii)(A)
+        "7601",
+        "7604",
+        "7605",
+        "7606",
+        "7607",
+        "7608",
+        "7609",
+        "7616.99.51",
+        // 19(g) from 19(m)(A) which is same as 19(b)
+        // "7601",
+        // "7604",
+        // "7605",
+        // "7606",
+        // "7607",
+        // "7608",
+        // "7609",
+        // "7616.99.51"
+      ],
     },
   },
   // Products of Aluminum of UK in 19 subdivision (o)
@@ -2555,6 +2820,7 @@ export const tariffs: Tariff[] = [
     inclusions: {
       countries: ["GB"],
       codes: [
+        // 19(o) -- same as 19(b)?
         "7601",
         "7604",
         "7605",
@@ -2582,11 +2848,12 @@ export const tariffs: Tariff[] = [
     inclusions: {
       countries: ["GB"],
       codes: [
+        // 19(q)
         "7614.10.50",
         "7614.90.20",
         "7614.90.40",
         "7614.90.50",
-        "8708.10.30", // ? question here on the 8701 and 8705 headings
+        "8708.10.30",
         "8708.29.21",
       ],
     },
@@ -2602,6 +2869,7 @@ export const tariffs: Tariff[] = [
     other: 50,
     inclusions: {
       codes: [
+        // 19(j)
         "7610.10.00",
         "7610.90.00",
         "7612.90.10",
@@ -2637,7 +2905,7 @@ export const tariffs: Tariff[] = [
     inclusions: {
       countries: ["RU"],
       codes: [
-        // a(iii) -- FIXME: same as i
+        // 19 a(iii) -- same as 19(i)
         "7614.10.50",
         "7614.90.20",
         "7614.90.40",
@@ -2645,12 +2913,12 @@ export const tariffs: Tariff[] = [
         "8708.10.30",
         "8708.29.21",
         // i
-        "7614.10.50",
-        "7614.90.20",
-        "7614.90.40",
-        "7614.90.50",
-        "8708.10.30", // ? question here on the 8701 and 8705 headings
-        "8708.29.21",
+        // "7614.10.50",
+        // "7614.90.20",
+        // "7614.90.40",
+        // "7614.90.50",
+        // "8708.10.30",
+        // "8708.29.21",
         // J
         "7610.10.00",
         "7610.90.00",
@@ -2791,9 +3059,9 @@ export const tariffs: Tariff[] = [
     general: 50,
     special: 50,
     other: 50,
-    exceptions: ["9903.85.09", "9903.85.68", "9903.85.70"],
     inclusions: {
       codes: [
+        // 19(k)
         "2203.00.00",
         "6603.90.8100",
         "8302.10.3000",
@@ -2901,6 +3169,7 @@ export const tariffs: Tariff[] = [
         "9603.90.8050",
       ],
     },
+    exceptions: ["9903.85.09", "9903.85.68", "9903.85.70"],
   },
   {
     code: "9903.85.68",
@@ -2914,20 +3183,20 @@ export const tariffs: Tariff[] = [
       countries: ["RU"],
       // Some way to add where any amount of primary aluminum was to manufac deriv articles is smelted or cast in russia
       codes: [
-        // a(iii) -- FIXME: same as i
+        // a(iii) -- same as i
         "7614.10.50",
         "7614.90.20",
         "7614.90.40",
         "7614.90.50",
         "8708.10.30",
         "8708.29.21",
-        // i
-        "7614.10.50",
-        "7614.90.20",
-        "7614.90.40",
-        "7614.90.50",
-        "8708.10.30", // ? question here on the 8701 and 8705 headings
-        "8708.29.21",
+        // i ^^ duplicate
+        // "7614.10.50",
+        // "7614.90.20",
+        // "7614.90.40",
+        // "7614.90.50",
+        // "8708.10.30",
+        // "8708.29.21",
         // J
         "7610.10.00",
         "7610.90.00",
@@ -3071,6 +3340,7 @@ export const tariffs: Tariff[] = [
     inclusions: {
       countries: ["GB"],
       codes: [
+        // 19(r)
         "7610.10.00",
         "7610.90.00",
         "7612.90.10",
@@ -3093,7 +3363,7 @@ export const tariffs: Tariff[] = [
         "7616.99.5190",
       ],
     },
-    exceptions: ["9903.96.01"],
+    exceptions: ["9903.85.09", "9903.85.68", "9903.85.70", "9903.96.01"],
   },
   // Derivative Aluminum from 19 subdivisions (j), (k), (r) or (s)
   {
@@ -3107,6 +3377,7 @@ export const tariffs: Tariff[] = [
     other: 25, // the content of the aluminum
     inclusions: {
       codes: [
+        // 19(s)
         "2203.00.00",
         "6603.90.8100",
         "8302.10.3000",
@@ -3218,7 +3489,6 @@ export const tariffs: Tariff[] = [
   },
   {
     code: "9903.85.09",
-    // TODO: does this apply to all countries?
     description:
       "Except as provided in heading 9903.85.68 or 9903.85.70, derivative aluminum products provided for in the tariff headings and subheadings enumerated in subdivisions (j), (k), (r) or (s) of note 19 to this subchapter, where the derivative aluminum products were processed in another country from aluminum articles that were smelted and cast in the United States.",
     name: "Processed in Another Country but Smelted or Cast in the U.S.",
@@ -3226,7 +3496,6 @@ export const tariffs: Tariff[] = [
     special: 0,
     other: 0,
     inclusions: {
-      // TODO: subdivisions (j), (k), (r) or (s) of note 19
       codes: [
         // j
         "7610.10.00",
@@ -3484,7 +3753,7 @@ export const tariffs: Tariff[] = [
         "9603.90.8050",
       ],
     },
-    exceptions: ["9903.85.68", "9903.85.70"],
+    exceptions: ["9903.85.68", "9903.85.70"], // TODO: why not 9903.96.01 here?? see notes
     requiresReview: true,
   },
   // Derivative Aluminum from 19 subdivisions (i)
@@ -3492,14 +3761,14 @@ export const tariffs: Tariff[] = [
     code: "9903.85.04",
     description:
       "Except as provided in headings 9903.85.68 or 9903.85.70, derivative aluminum products provided for in the tariff headings or subheadings enumerated in subdivision (i) of note 19 to this subchapter.",
-    name: "??",
+    name: "?????????",
     // TODO: need slider
     general: 50,
     special: 50,
     other: 50,
-    exceptions: ["9903.85.68", "9903.85.70"],
     inclusions: {
       codes: [
+        // 19(i)
         "7614.10.50",
         "7614.90.20",
         "7614.90.40",
@@ -3508,6 +3777,7 @@ export const tariffs: Tariff[] = [
         "8708.29.21",
       ],
     },
+    exceptions: ["9903.85.68", "9903.85.70"],
   },
   // ==================
   // Steel (Section 232)
@@ -3516,14 +3786,19 @@ export const tariffs: Tariff[] = [
   {
     code: "9903.81.88",
     description:
-      "Products of iron or steel provided for in the tariff headings or subheadings enumerated in subdivision (j) of note 16 to this subchapter, admitted to a U.S. foreign trade zone under ‘‘privileged foreign status’’ as defined by 19 CFR 146.41, prior to 12:01 a.m. eastern daylight time on June 4, 2025.",
+      "Products of iron or steel provided for in the tariff headings or subheadings enumerated in subdivision (j) of note 16 to this subchapter, admitted to a U.S. foreign trade zone under 'privileged foreign status' as defined by 19 CFR 146.41, prior to 12:01 a.m. eastern daylight time on June 4, 2025.",
     name: "",
     // TODO: need way to input kgs for weight of the steel..
     general: 50,
     special: 50,
     other: 50,
+    exclusions: {
+      // 16(j)
+      codes: ["7216.61.00", "7216.69.00", "7216.91.00"],
+    },
     inclusions: {
       codes: [
+        // 16(j)
         "7208",
         "7209",
         "7210",
@@ -3536,7 +3811,7 @@ export const tariffs: Tariff[] = [
         "7215",
         "7227",
         "7228",
-        "7216", // FIXME: except for: "7216.61.00", "7216.69.00" or "7216.91.00"
+        "7216",
         "7217",
         "7229",
         "7301.10.00",
@@ -3568,8 +3843,8 @@ export const tariffs: Tariff[] = [
     general: 50,
     special: 50,
     other: 50,
-    // TODO: Subject to classifer knowlege around admission
-    // to a US foreign trade zone under privlidge status
+    exceptions: ["9903.81.91", "9903.81.92"],
+    requiresReview: true, // due to 'privilege foreign status' check
     inclusions: {
       codes: [
         // l
@@ -3739,8 +4014,6 @@ export const tariffs: Tariff[] = [
         "7326.90.86",
       ],
     },
-    exceptions: ["9903.81.91", "9903.81.92"],
-    requiresReview: true, // due to 'privilege foreign status' check
   },
   // 16 (q) UK
   {
@@ -3751,8 +4024,10 @@ export const tariffs: Tariff[] = [
     general: 25,
     special: 25,
     other: 25,
-    // TODO: Subject to classifer knowlege around admission
-    // to a US foreign trade zone under privlidge status
+    requiresReview: true, // due to 'privilege foreign status' check
+    exclusions: {
+      codes: ["7216.61.00", "7216.69.00", "7216.91.00"],
+    },
     inclusions: {
       countries: ["GB"],
       codes: [
@@ -3769,7 +4044,7 @@ export const tariffs: Tariff[] = [
         "7215",
         "7227",
         "7228",
-        "7216", // FIXME: except for: "7216.61.00", "7216.69.00" or "7216.91.00"
+        "7216",
         "7217",
         "7229",
         "7301.10.00",
@@ -3789,19 +4064,18 @@ export const tariffs: Tariff[] = [
         "7223",
       ],
     },
-    requiresReview: true, // due to 'privilege foreign status' check
   },
   // 16 (s) (t) UK
   {
     code: "9903.81.99",
     description:
-      "Except as provided in headings 9903.81.98 or 9903.81.92, derivative products of iron or steel of the United Kingdom, as specified in subdivisions (s) and (t) of note 16 to this subchapter, admitted to a U.S.foreign trade zone under ‘‘privileged foreign status’’ as defined by 19 CFR 146.41, prior to 12:01 a.m. eastern daylight time on June 4, 2025",
+      "Except as provided in headings 9903.81.98 or 9903.81.92, derivative products of iron or steel of the United Kingdom, as specified in subdivisions (s) and (t) of note 16 to this subchapter, admitted to a U.S.foreign trade zone under 'privileged foreign status' as defined by 19 CFR 146.41, prior to 12:01 a.m. eastern daylight time on June 4, 2025",
     name: "Derivative Iron / Steel Products of the UK from 16 (s) and (t) (Section 232)",
     general: 25,
     special: 25,
     other: 25,
-    // TODO: Subject to classifer knowlege around admission
-    // to a US foreign trade zone under privlidge status
+    exceptions: ["9903.81.98", "9903.81.92"],
+    requiresReview: true, // due to 'privilege foreign status' check
     inclusions: {
       countries: ["GB"],
       codes: [
@@ -3972,7 +4246,6 @@ export const tariffs: Tariff[] = [
         "7326.90.86",
       ],
     },
-    exceptions: ["9903.81.98", "9903.81.92"],
   },
   {
     code: "9903.81.87",
@@ -3983,8 +4256,13 @@ export const tariffs: Tariff[] = [
     special: 50,
     other: 50,
     exceptions: ["9903.81.89", "9903.81.90", "9903.81.91"],
+    exclusions: {
+      // 16(j)
+      codes: ["7216.61.00", "7216.69.00", "7216.91.00"],
+    },
     inclusions: {
       codes: [
+        // 16(j)
         "7208",
         "7209",
         "7210",
@@ -3997,7 +4275,7 @@ export const tariffs: Tariff[] = [
         "7215",
         "7227",
         "7228",
-        "7216", // FIXME: except for: "7216.61.00", "7216.69.00" or "7216.91.00"
+        "7216",
         "7217",
         "7229",
         "7301.10.00",
@@ -4029,6 +4307,7 @@ export const tariffs: Tariff[] = [
     other: 50,
     inclusions: {
       codes: [
+        // 16(l)
         "7317.00.30",
         "7317.00.55.03",
         "7317.00.55.05",
@@ -4049,6 +4328,7 @@ export const tariffs: Tariff[] = [
     general: 50,
     special: 50,
     other: 50,
+    exceptions: ["9903.81.92"],
     inclusions: {
       codes: [
         // m
@@ -4208,7 +4488,6 @@ export const tariffs: Tariff[] = [
         "7326.90.86",
       ],
     },
-    exceptions: ["9903.81.92"],
   },
   {
     code: "9903.81.91",
@@ -4219,9 +4498,10 @@ export const tariffs: Tariff[] = [
     general: 50,
     special: 50,
     other: 50,
+    exceptions: ["9903.81.92"],
     inclusions: {
       codes: [
-        // n(a)
+        // 16(n)(a)
         "8431.31.00",
         "8431.42.00",
         "8431.49.10",
@@ -4234,7 +4514,7 @@ export const tariffs: Tariff[] = [
         "9405.99.40",
         "9406.20.00",
         "9406.90.01",
-        // n(b)
+        // 16(n)(b)
         "8418.10.00",
         "8418.30.00",
         "8418.40.00",
@@ -4248,7 +4528,6 @@ export const tariffs: Tariff[] = [
         "9403.99.9020",
       ],
     },
-    exceptions: ["9903.81.92"],
   },
   // Steel products processed in another country, but smelted or cast in the U.S.
   {
@@ -4259,6 +4538,7 @@ export const tariffs: Tariff[] = [
     general: 0,
     special: 0,
     other: 0,
+    requiresReview: true, // need to determine melted and poured in the U.S.
     inclusions: {
       codes: [
         // m
@@ -4633,6 +4913,7 @@ export const tariffs: Tariff[] = [
     general: 25,
     special: 25,
     other: 25,
+    exceptions: ["9903.81.92", "9903.96.01"], // TODO: why 9903.96.01 here?? see notes
     inclusions: {
       countries: ["GB"],
       codes: [
@@ -4792,7 +5073,6 @@ export const tariffs: Tariff[] = [
         "7326.90.86",
       ],
     },
-    exceptions: ["9903.81.92", "9903.96.01"],
   },
   // UK Steel note 16 (u)
   {
@@ -4803,9 +5083,11 @@ export const tariffs: Tariff[] = [
     general: 25,
     special: 25,
     other: 25,
+    exceptions: ["9903.81.92", "9903.96.01"], // TODO: why 9903.96.01 here?? see notes
     inclusions: {
       countries: ["GB"],
       codes: [
+        // 16(u)(1)
         "8431.31.00",
         "8431.42.00",
         "8431.49.10",
@@ -4818,7 +5100,7 @@ export const tariffs: Tariff[] = [
         "9405.99.40",
         "9406.20.00",
         "9406.90.01",
-        // u (2)
+        // 16(u)(2)
         "8418.10.00",
         "8418.30.00",
         "8418.40.00",
@@ -4832,7 +5114,6 @@ export const tariffs: Tariff[] = [
         "9403.99.9020",
       ],
     },
-    exceptions: ["9903.81.92", "9903.96.01"],
   },
   // UK Steel 19 (q)
   {
@@ -4843,9 +5124,14 @@ export const tariffs: Tariff[] = [
     general: 25,
     special: 25,
     other: 25,
+    exceptions: ["9903.81.96", "9903.81.97", "9903.81.98", "9903.96.01"],
+    exclusions: {
+      codes: ["7216.61.00", "7216.69.00", "7216.91.00"],
+    },
     inclusions: {
       countries: ["GB"],
       codes: [
+        // 16(q)
         "7208",
         "7209",
         "7210",
@@ -4858,7 +5144,7 @@ export const tariffs: Tariff[] = [
         "7215",
         "7227",
         "7228",
-        "7216", // FIXME: except for: "7216.61.00", "7216.69.00" or "7216.91.00"
+        "7216",
         "7217",
         "7229",
         "7301.10.00",
@@ -4878,7 +5164,6 @@ export const tariffs: Tariff[] = [
         "7223",
       ],
     },
-    exceptions: ["9903.81.96", "9903.81.97", "9903.81.98", "9903.96.01"],
   },
   // UK Steel Products List
   {
@@ -4889,11 +5174,12 @@ export const tariffs: Tariff[] = [
     general: 25,
     special: 25,
     other: 25,
+    exceptions: ["9903.96.01"], // TODO: why 9903.96.01 here?? see notes
     inclusions: {
       countries: ["GB"],
-      // TODO: this should have a slider to indicate the amount of steel / iron
-      // FIXME: this list is tricky cause it does not list out the full HTS codes, but descriptions
+      // TODO: this should have a slider to indicate the amount (kg or %?) of steel / iron
       codes: [
+        // 16(s)
         "7317.00.30",
         "7317.00.55.03",
         "7317.00.55.05",
@@ -4902,8 +5188,9 @@ export const tariffs: Tariff[] = [
         "7317.00.55.80",
         "7317.00.65.60",
         "8708.29.21",
-      ], // TODO:
+        // says "not: 7317.00.55 and 7317.00.65 but don't need to add explcitly since we direct match
+        // and there's no 7317 or 7317.00 heading / subheading that we'd submatch on currently
+      ],
     },
-    exceptions: ["9903.96.01"],
   },
 ];
