@@ -321,6 +321,7 @@ export const Chapter = ({ chapter }: Props) => {
           </div>
         </div>
         <div className="flex flex-col gap-2">
+          <p>Elements: {filteredElements.length}</p>
           {filteredElements.map((element, i) => {
             return (
               <ElementSummary
