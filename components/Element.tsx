@@ -37,9 +37,11 @@ import { TertiaryText } from "./TertiaryText";
 import { format } from "date-fns";
 import {
   getTariffsByCode,
-  getTariffsForCountryAndCode,
+  getNonExceptionTariffs,
+  TariffsList,
 } from "../public/tariffs/tariffs";
 import { PrimaryLabel } from "./PrimaryLabel";
+import { Tariffs } from "./Tariffs";
 
 interface Props {
   summaryOnly?: boolean;
@@ -208,79 +210,11 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
               </div>
 
               {isFullHTSCode(htsno) && (
-                <div className="grid grid-cols-2 gap-2">
-                  {selectedCountries.map((country) => (
-                    <div
-                      key={`${country.code}-${htsno}`}
-                      className="flex flex-col p-3 border-2 border-base-content/50 bg-base-300 rounded-md gap-4"
-                    >
-                      <PrimaryLabel value={country.name} color={Color.WHITE} />
-
-                      {getTariffsForCountryAndCode(
-                        country.code,
-                        htsno,
-                        getTemporaryTariffText(element, TariffType.GENERAL)[0]
-                      ).map((tariff) => (
-                        <div className="w-full flex flex-col gap-4">
-                          <div
-                            key={tariff.code}
-                            className="w-full text-white font-bold flex gap-2 justify-between items-center"
-                          >
-                            <div>
-                              <span className="text-secondary">
-                                {" "}
-                                {tariff.code}{" "}
-                              </span>
-                              <span> - </span>
-                              <span className="font-normal">{tariff.name}</span>
-                            </div>
-                            <p className="shrink-0 text-2xl lg:text-3xl text-secondary">
-                              {tariff.general}%
-                            </p>
-                          </div>
-
-                          {/* <div className="flex gap-2 ml-4">
-                              <p>G: {tariff.general}</p>
-                              <p>S: {tariff.special}</p>
-                              <p>O: {tariff.other}</p>
-                            </div> */}
-
-                          {tariff.exceptions?.length > 0 &&
-                            getTariffsByCode(tariff.exceptions).map(
-                              (exceptionTariff) =>
-                                // If there's an exception without a matching tariff record
-                                // we will get null / undefined here, so we need to check for that
-                                exceptionTariff?.inclusions?.codes?.includes(
-                                  htsno
-                                ) ||
-                                (exceptionTariff?.inclusions?.countries?.includes(
-                                  country.code
-                                ) && (
-                                  <div
-                                    key={exceptionTariff.code}
-                                    className="flex ml-4 justify-between items-center"
-                                  >
-                                    <div className="flex gap-2 text-white">
-                                      <span className="text-accent font-bold">
-                                        {exceptionTariff.code}
-                                      </span>
-                                      <span>-</span>
-                                      <span className="font-normal">
-                                        {" "}
-                                        {exceptionTariff.name}
-                                      </span>
-                                    </div>
-                                    <p className="shrink-0 text-lg lg:text-xl text-accent font-bold">
-                                      {exceptionTariff.general}%
-                                    </p>
-                                  </div>
-                                ))
-                            )}
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                </div>
+                <Tariffs
+                  countries={selectedCountries}
+                  htsCode={htsno}
+                  setSelectedCountries={setSelectedCountries}
+                />
               )}
             </div>
           )}

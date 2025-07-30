@@ -153,7 +153,7 @@ export const CountrySelection = ({
           {selectedCountries.length > 0 ? (
             selectedCountries.map((country) => (
               <div
-                key={country.name}
+                key={`country-selection-option-${country.name}`}
                 className="flex items-center gap-1 bg-primary/10 border border-primary/20 rounded-md px-2 py-1 text-xs"
               >
                 <span>{country.flag}</span>

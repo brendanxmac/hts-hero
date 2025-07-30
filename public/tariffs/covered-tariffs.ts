@@ -1,6 +1,6 @@
-import { Tariff } from "./tariffs";
+import { TariffI } from "./tariffs";
 
-const coveredTariffs: Tariff[] = [
+const coveredTariffs: TariffI[] = [
   //  THIS MAYBE ALREADY ACCOUNTED FOR IN HTS DIRECTLY....
   {
     code: "9903.88.15",
