@@ -1,15 +1,17 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import { Country } from "../constants/countries";
 import {
-  getApplicableInclusions,
   getTariffs,
-  getTariffsByCode,
+  TariffColumn,
   TariffI,
+  tariffIsActive,
 } from "../public/tariffs/tariffs";
 import { classNames } from "../utilities/style";
 import { PrimaryText } from "./PrimaryText";
 import { Color } from "../enums/style";
 import { PrimaryLabel } from "./PrimaryLabel";
+import { TertiaryLabel } from "./TertiaryLabel";
+import { TertiaryText } from "./TertiaryText";
 
 interface Props {
   country: Country;
@@ -29,26 +31,9 @@ export const Tariff = ({
   countries,
   setSelectedCountries,
 }: Props) => {
-  const tariffIsActive = (tariff: TariffI) => {
-    if (tariff.requiresReview) return false;
-    if (!tariff.exceptions) return true;
-
-    const exceptions = getTariffsByCode(tariff.exceptions);
-
-    const applicableExceptions = exceptions.flatMap((t) =>
-      getApplicableInclusions(t, country.code, htsCode)
-    );
-
-    const noReviewNeeded = applicableExceptions.filter(
-      (e) => !e.requiresReview
-    );
-
-    return noReviewNeeded.length === 0;
-  };
-
   const applicableTariffs = getTariffs(country.code, htsCode).map((t) => ({
     ...t,
-    isActive: tariffIsActive(t),
+    isActive: tariffIsActive(t, country.code, htsCode),
   }));
 
   // Create a set to add exception tariffs to
@@ -73,12 +58,6 @@ export const Tariff = ({
     (t) => !exceptionTariffs.has(t.code)
   );
 
-  enum TariffColumn {
-    GENERAL = "general",
-    SPECIAL = "special",
-    OTHER = "other",
-  }
-
   const getRate = (column: TariffColumn) => {
     let rate = 0;
     tariffs.forEach((tariff) => {
@@ -97,6 +76,70 @@ export const Tariff = ({
 
   const [tariffs, setTariffs] = useState<TariffUI[]>(cleanedUpTariffs);
   const [showInactive, setShowInactive] = useState<boolean>(true);
+
+  const toggleTariff = (tariff: TariffUI) => {
+    setTariffs(
+      tariffs.map((t) => {
+        if (t.code === tariff.code) {
+          const newIsActive = !t.isActive;
+
+          // If the tariff is being turned ON, turn off all exceptions
+          if (newIsActive && t.exceptionTariffs?.length) {
+            const updatedExceptionTariffs = t.exceptionTariffs.map((et) => ({
+              ...et,
+              isActive: false,
+            }));
+
+            return {
+              ...t,
+              isActive: newIsActive,
+              exceptionTariffs: updatedExceptionTariffs,
+            };
+          }
+
+          // If the tariff is being turned OFF, just toggle the tariff itself
+          return {
+            ...t,
+            isActive: newIsActive,
+          };
+        }
+        return t;
+      })
+    );
+  };
+
+  const toggleExceptionTariff = (exceptionTariff: TariffUI) => {
+    setTariffs(
+      tariffs.map((t) => {
+        // Check if this tariff contains the clicked exception
+        const hasClickedException = t.exceptionTariffs?.some(
+          (et) => et.code === exceptionTariff.code
+        );
+
+        if (hasClickedException) {
+          // First, update the exception tariffs
+          const updatedExceptionTariffs = t.exceptionTariffs?.map((et) =>
+            et.code === exceptionTariff.code
+              ? { ...et, isActive: !et.isActive }
+              : et
+          );
+
+          // Check if any exceptions are active after the toggle
+          const hasActiveExceptions = updatedExceptionTariffs?.some(
+            (et) => et.isActive
+          );
+
+          return {
+            ...t,
+            isActive: !hasActiveExceptions, // Parent is active only if no exceptions are active
+            exceptionTariffs: updatedExceptionTariffs,
+          };
+        }
+
+        return t;
+      })
+    );
+  };
 
   console.log(tariffs);
 
@@ -173,24 +216,62 @@ export const Tariff = ({
               </svg>
             )}
           </button>
+          <button
+            className="rounded-md p-1 bg-primary/30 text-white hover:text-primary transition-colors"
+            onClick={() => {
+              setTariffs(cleanedUpTariffs);
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="size-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+              />
+            </svg>
+          </button>
         </div>
       </div>
-      {/* Only show each tariff if inactive tariffs if showInactive is true and isActive is true */}
       {tariffs.map((tariff) => (
         <div className="w-full flex flex-col gap-4">
           <div
             key={tariff.code}
             className="w-full text-white font-bold flex gap-2 justify-between items-center"
           >
-            <div className="flex flex-col gap-1">
-              <p className="text-primary"> {tariff.code} </p>
-              <PrimaryText value={tariff.name} color={Color.WHITE} />
+            <div className="flex gap-2 items-start">
+              {tariff.requiresReview && (
+                <input
+                  type="checkbox"
+                  checked={tariff.isActive}
+                  className="checkbox checkbox-primary checkbox-sm"
+                  onClick={() => toggleTariff(tariff)}
+                />
+              )}
+              <div className="flex flex-col gap-1">
+                <div className="flex gap-2">
+                  <TertiaryLabel
+                    value={tariff.code}
+                    color={Color.NEUTRAL_CONTENT}
+                  />
+                  {tariff.requiresReview && (
+                    <TertiaryText value={"[Needs Review]"} />
+                  )}
+                </div>
+                <PrimaryText value={tariff.name} color={Color.WHITE} />
+              </div>
             </div>
             <p
               className={classNames(
                 "shrink-0 min-w-32 text-right text-2xl lg:text-3xl",
                 tariff.isActive
-                  ? "text-secondary"
+                  ? "text-primary"
                   : "line-through text-neutral-content"
               )}
             >
@@ -206,19 +287,36 @@ export const Tariff = ({
                     key={exceptionTariff.code}
                     className="flex ml-6 justify-between items-center"
                   >
-                    <div className="flex flex-col text-white">
-                      <p className="text-primary font-bold">
-                        {exceptionTariff.code}
-                      </p>
-                      <PrimaryLabel
-                        value={exceptionTariff.name}
-                        color={Color.WHITE}
-                      />
+                    <div className="flex gap-2 items-center">
+                      <div className="form-control">
+                        <input
+                          type="checkbox"
+                          checked={exceptionTariff.isActive}
+                          className="checkbox checkbox-primary checkbox-sm"
+                          onClick={() => toggleExceptionTariff(exceptionTariff)}
+                        />
+                      </div>
+                      <div className="flex flex-col text-white">
+                        <div className="flex gap-2 items-center">
+                          <TertiaryLabel
+                            value={exceptionTariff.code}
+                            color={Color.NEUTRAL_CONTENT}
+                          />
+                          {exceptionTariff.requiresReview && (
+                            <TertiaryText value={"[Needs Review]"} />
+                          )}
+                        </div>
+
+                        <PrimaryLabel
+                          value={exceptionTariff.name}
+                          color={Color.WHITE}
+                        />
+                      </div>
                     </div>
                     <p
                       className={classNames(
                         "shrink-0 min-w-32 text-right text-2xl lg:text-3xl font-bold",
-                        exceptionTariff.isActive && "text-secondary"
+                        exceptionTariff.isActive && "text-primary"
                       )}
                     >
                       {exceptionTariff.general}%
@@ -232,7 +330,7 @@ export const Tariff = ({
       <hr className="border-base-content/50" />
       <div className="w-full flex justify-between items-center gap-2">
         <h2 className="text-white text-2xl font-bold">Total Rate</h2>
-        <p className="text-white text-5xl font-bold">
+        <p className="text-5xl font-bold text-primary transition duration-100">
           {getRate(TariffColumn.GENERAL)}%
         </p>
       </div>

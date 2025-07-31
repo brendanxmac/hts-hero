@@ -20,6 +20,31 @@ export interface TariffI {
   requiresReview?: boolean;
 }
 
+export enum TariffColumn {
+  GENERAL = "general",
+  SPECIAL = "special",
+  OTHER = "other",
+}
+
+export const tariffIsActive = (
+  tariff: TariffI,
+  countryCode: string,
+  htsCode: string
+) => {
+  if (tariff.requiresReview) return false;
+  if (!tariff.exceptions) return true;
+
+  const exceptions = getTariffsByCode(tariff.exceptions);
+
+  const applicableExceptions = exceptions.flatMap((t) =>
+    getApplicableInclusions(t, countryCode, htsCode)
+  );
+
+  const noReviewNeeded = applicableExceptions.filter((e) => !e.requiresReview);
+
+  return noReviewNeeded.length === 0;
+};
+
 export const getTariffsByCode = (codes: string[]) =>
   codes.map((c) => TariffsList.find((t) => t.code === c));
 
@@ -137,27 +162,29 @@ export const TariffsList: TariffI[] = [
       "9903.01.30",
       "9903.01.31",
       "9903.01.32",
-      "9903.01.33",
       // TODO: If the article is >20% US originating, then 01.25 only applies to
       // the % of non-U.S originating. If <20% then the full thing hit with 01.25
       // Need slider for this one to set the % of US originating (IF 01.25 applies)
       "9903.01.34",
-      "9903.96.01",
-      "9903.81.87", // \/
-      "9903.81.88", // \/
-      "9903.81.89", // \/
-      "9903.81.90", // \/
-      "9903.81.91", // \/
-      "9903.81.92", // \/
-      "9903.81.93", // \/
-      "9903.85.02", // ---> All of thses are within 9903.01.33 TODO: should we join or..? not common enough to create edge case?
-      "9903.85.04", // ^ --> steel, aluminum, derivatives, autos, auto parts, civil aircraft.. maybe others?
-      "9903.85.07", // ^
-      "9903.85.08", // ^
-      "9903.85.09", // ^
-      "9903.94.01", // ^
-      "9903.94.03", // ^
-      "9903.94.05", // ^
+      "9903.01.33",
+      // FIXME: I uncommented all of these for now... in case they exist on their own
+      // and so that they're not nested beneath 9903.01.33
+      // "9903.96.01",
+      // "9903.81.87", // \/
+      // "9903.81.88", // \/
+      // "9903.81.89", // \/
+      // "9903.81.90", // \/
+      // "9903.81.91", // \/
+      // "9903.81.92", // \/
+      // "9903.81.93", // \/
+      // "9903.85.02", // ---> All of thses are within 9903.01.33 TODO: should we join or..? not common enough to create edge case?
+      // "9903.85.04", // ^ --> steel, aluminum, derivatives, autos, auto parts, civil aircraft.. maybe others?
+      // "9903.85.07", // ^
+      // "9903.85.08", // ^
+      // "9903.85.09", // ^
+      // "9903.94.01", // ^
+      // "9903.94.03", // ^
+      // "9903.94.05", // ^
       // xii of this note is suspended -- it covered addition tariffs on a per country basis
       // comes back to this on August 1st to review, or once the next HTS revision is live
     ],
@@ -215,7 +242,7 @@ export const TariffsList: TariffI[] = [
     code: "9903.01.30",
     description:
       "Articles that are donations, by persons subject to the jurisdiction of the United States, such as food, clothing, and medicine, intended to be used to relieve human suffering, as provided for in subdivision (v)(ii) of U.S. note 2 to this subchapter",
-    name: "Donations",
+    name: "Donation",
     inclusions: {
       countries: ["*"],
       // *, meaning all, is used here because this applies to every single country,
@@ -231,7 +258,7 @@ export const TariffsList: TariffI[] = [
     code: "9903.01.31",
     description:
       "Articles that are informational materials, including but not limited to, publications, films, posters, phonograph records, photographs, microfilms, microfiche, tapes, compact disks, CD ROMs, artworks, and news wire feeds",
-    name: "Informational Materials & Artworks",
+    name: "Informational Materials / Artwork",
     inclusions: {
       countries: ["*"],
     },
@@ -246,7 +273,7 @@ export const TariffsList: TariffI[] = [
     code: "9903.01.32",
     description:
       "Articles the product of any country, classified in the subheadings enumerated in subdivision (v)(iii) of U.S. note 2 to this subchapter",
-    name: "Qualifying Subheadings",
+    name: "Excluded Subheadings",
     inclusions: {
       countries: ["*"],
       codes: [
@@ -1309,7 +1336,7 @@ export const TariffsList: TariffI[] = [
     code: "9903.01.33",
     description:
       "Articles of iron or steel, derivative articles of iron or steel, articles of aluminum, derivative articles of aluminum, passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks and parts of passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks, of any country, as provided in subdivision (v)(vi) through (v)(xi) of note 2 to this subchapter",
-    name: "Composite Exception: Iron / Steel / Aluminum, Passenger Vehicles, & Light Trucks",
+    name: "232 Group Exception: Iron / Steel / Aluminum, Passenger Vehicles, or Light Trucks",
     inclusions: {
       countries: ["*"],
       tariffs: [
