@@ -35,12 +35,6 @@ import { CountrySelection } from "./CountrySelection";
 import { Country } from "../constants/countries";
 import { TertiaryText } from "./TertiaryText";
 import { format } from "date-fns";
-import {
-  getTariffsByCode,
-  getNonExceptionTariffs,
-  TariffsList,
-} from "../public/tariffs/tariffs";
-import { PrimaryLabel } from "./PrimaryLabel";
 import { Tariffs } from "./Tariffs";
 
 interface Props {
