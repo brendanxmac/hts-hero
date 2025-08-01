@@ -137,7 +137,7 @@ const getPricingHeadline = (customerType: AboutPage) => {
       </h2>
       <div className="flex flex-col justify-center items-center">
         <p className="text-xl font-bold text-primary">
-          50% Off Your First 2 Months!
+          25% Off Your First Month!
         </p>
         <div className="flex items-center gap-1">
           <svg
@@ -156,7 +156,7 @@ const getPricingHeadline = (customerType: AboutPage) => {
           </svg>
 
           <p className="text-sm text-secondary font-semibold">
-            Offer valid until <span className="underline">August 1st</span>
+            Offer valid until <span className="underline">September 1st</span>
           </p>
         </div>
       </div>

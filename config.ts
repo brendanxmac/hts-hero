@@ -6,7 +6,7 @@ const proPlan: PricingPlanI = {
   name: PricingPlan.PRO,
   description: "The Classification Assistant for Customs Brokers",
   mode: StripePaymentMode.SUBSCRIPTION,
-  price: 40,
+  price: 60,
   priceAnchor: 80,
   isFeatured: true,
   features: [
@@ -20,6 +20,7 @@ const proPlan: PricingPlanI = {
     {
       name: "Enhanced HTS Explorer",
     },
+    { name: "[Coming Soon] Automatic Tariff Calculations" },
   ],
 };
 
