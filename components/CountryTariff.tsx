@@ -32,26 +32,53 @@ export const CountryTariff = ({
     isActive: tariffIsActive(t, country.code, htsCode),
   }));
 
-  // Create a set to add exception tariffs to
-  const exceptionTariffs = new Set<string>();
-  // go through the list and setup the relationships between the tariffs
-  // for any identified exception add to the set as well
-  const enrichedTariffs: TariffUI[] = applicableTariffs.map((tariff) => ({
-    ...tariff,
-    exceptionTariffs: tariff.exceptions
-      ? applicableTariffs.filter((t) => {
-          if (tariff.exceptions?.includes(t.code)) {
-            exceptionTariffs.add(t.code);
-            return true;
-          }
-          return false;
-        })
-      : [],
-  }));
+  // Recursive function to build the complete exception hierarchy
+  const buildTariffHierarchy = (
+    tariff: TariffI & { isActive: boolean },
+    allTariffs: (TariffI & { isActive: boolean })[]
+  ): TariffUI => {
+    const exceptionTariffs = tariff.exceptions
+      ? allTariffs
+          .filter((t) => tariff.exceptions?.includes(t.code))
+          .map((exceptionTariff) =>
+            buildTariffHierarchy(exceptionTariff, allTariffs)
+          )
+      : [];
 
-  // If a given tariff is within exceptionTariffs, remove it from enrichedTariffs
-  const cleanedUpTariffs = enrichedTariffs.filter(
-    (t) => !exceptionTariffs.has(t.code)
+    return {
+      ...tariff,
+      exceptionTariffs,
+    };
+  };
+
+  // Create a set to track all exception tariff codes (at any level)
+  const allExceptionTariffCodes = new Set<string>();
+
+  // Helper function to collect all exception codes recursively
+  const collectExceptionCodes = (tariff: TariffI) => {
+    if (tariff.exceptions) {
+      tariff.exceptions.forEach((code) => {
+        allExceptionTariffCodes.add(code);
+        // Find the exception tariff and recursively collect its exceptions
+        const exceptionTariff = applicableTariffs.find((t) => t.code === code);
+        if (exceptionTariff) {
+          collectExceptionCodes(exceptionTariff);
+        }
+      });
+    }
+  };
+
+  // Collect all exception codes from all tariffs
+  applicableTariffs.forEach(collectExceptionCodes);
+
+  // Build the complete hierarchy for each tariff
+  const tariffsWithExceptions: TariffUI[] = applicableTariffs.map((tariff) =>
+    buildTariffHierarchy(tariff, applicableTariffs)
+  );
+
+  // Remove tariffs that are exceptions at any level
+  const cleanedUpTariffs = tariffsWithExceptions.filter(
+    (t) => !allExceptionTariffCodes.has(t.code)
   );
 
   const getRate = (column: TariffColumn) => {

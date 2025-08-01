@@ -2841,7 +2841,7 @@ export const TariffsList: TariffI[] = [
     // at least 1 exclusion --> 9903.01.33 // TODO: come back to this for stacking / exclusions
     // FIXME: should remove .69 now that it is exception of 67.. but
     // since we don't yet have NESTED exceptions, this won't work for now
-    exceptions: ["9903.85.67", "9903.85.69"],
+    exceptions: ["9903.85.67"],
   },
   {
     code: "9903.85.67",
