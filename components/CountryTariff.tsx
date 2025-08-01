@@ -81,18 +81,29 @@ export const CountryTariff = ({
     (t) => !allExceptionTariffCodes.has(t.code)
   );
 
+  // Recursive helper function to calculate rate from a tariff and all its exceptions
+  const calculateTariffRate = (
+    tariff: TariffUI,
+    column: TariffColumn
+  ): number => {
+    let rate = 0;
+
+    if (tariff.isActive) {
+      rate += tariff[column];
+    } else if (tariff.exceptionTariffs?.length) {
+      // If this tariff is not active, check all its exception tariffs recursively
+      tariff.exceptionTariffs.forEach((exceptionTariff) => {
+        rate += calculateTariffRate(exceptionTariff, column);
+      });
+    }
+
+    return rate;
+  };
+
   const getRate = (column: TariffColumn) => {
     let rate = 0;
     tariffs.forEach((tariff) => {
-      if (tariff.isActive) {
-        rate += tariff[column];
-      } else if (tariff.exceptionTariffs?.length) {
-        tariff.exceptionTariffs.forEach((et) => {
-          if (et.isActive) {
-            rate += et[column];
-          }
-        });
-      }
+      rate += calculateTariffRate(tariff, column);
     });
     return rate;
   };
