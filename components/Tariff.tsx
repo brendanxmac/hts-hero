@@ -2,6 +2,7 @@ import { Color } from "../enums/style";
 import { TariffI } from "../public/tariffs/tariffs";
 import { classNames } from "../utilities/style";
 import { PrimaryText } from "./PrimaryText";
+import { SecondaryText } from "./SecondaryText";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { TertiaryText } from "./TertiaryText";
 
@@ -191,11 +192,11 @@ export const Tariff = ({
   const marginClass = marginClasses[exceptionLevel] || "";
 
   return (
-    <div className="w-full flex flex-col gap-4">
+    <div className="w-full flex flex-col gap-2">
       <div
         key={`${tariff.code}-${exceptionLevel}`}
         className={classNames(
-          "text-white font-bold flex gap-2 justify-between items-center",
+          "text-white font-bold flex gap-2 justify-between items-end border-b border-base-content/50",
           marginClass
         )}
       >
@@ -222,12 +223,12 @@ export const Tariff = ({
                 <TertiaryText value={"[Needs Review]"} />
               )}
             </div>
-            <PrimaryText value={tariff.name} color={Color.WHITE} />
+            <SecondaryText value={tariff.name} color={Color.WHITE} />
           </div>
         </div>
         <p
           className={classNames(
-            "shrink-0 min-w-32 text-right text-2xl lg:text-3xl",
+            "shrink-0 min-w-32 text-right text-xl",
             tariff.isActive
               ? "text-primary"
               : "line-through text-neutral-content"
@@ -240,7 +241,9 @@ export const Tariff = ({
       {tariff.exceptionTariffs?.length > 0 &&
         tariff.exceptionTariffs.map(
           (exceptionTariff) =>
-            (exceptionTariff.isActive || showInactive) && (
+            (exceptionTariff.isActive ||
+              hasActiveExceptions(exceptionTariff) ||
+              showInactive) && (
               <Tariff
                 key={exceptionTariff.code}
                 exceptionLevel={exceptionLevel + 1}

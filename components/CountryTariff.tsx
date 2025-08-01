@@ -114,7 +114,7 @@ export const CountryTariff = ({
   console.log(tariffs);
 
   return (
-    <div className="flex flex-col p-4 border-2 border-base-content/50 bg-base-300 rounded-md gap-8">
+    <div className="flex flex-col p-8 border-2 border-base-content/50 bg-base-300 rounded-md gap-6">
       <div className="w-full flex justify-between items-center">
         <div className="flex gap-3 items-center">
           <h2 className="text-white text-3xl font-bold">{country.flag}</h2>
@@ -209,20 +209,22 @@ export const CountryTariff = ({
           </button>
         </div>
       </div>
-      {tariffs.map((tariff) => (
-        <Tariff
-          key={tariff.code}
-          showInactive={showInactive}
-          tariff={tariff}
-          tariffs={tariffs}
-          setTariffs={setTariffs}
-        />
-      ))}
 
-      <hr className="border-base-content/50" />
-      <div className="w-full flex justify-between items-center gap-2">
-        <h2 className="text-white text-2xl font-bold">Total Rate</h2>
-        <p className="text-5xl font-bold text-primary transition duration-100">
+      <div className="flex flex-col gap-4 border-b-4 border-base-content">
+        {tariffs.map((tariff) => (
+          <Tariff
+            key={tariff.code}
+            showInactive={showInactive}
+            tariff={tariff}
+            tariffs={tariffs}
+            setTariffs={setTariffs}
+          />
+        ))}
+      </div>
+
+      <div className="-mt-2 w-full flex justify-between items-center gap-2">
+        <h2 className="text-white font-bold">Total</h2>
+        <p className="text-xl font-bold text-secondary transition duration-100">
           {getRate(TariffColumn.GENERAL)}%
         </p>
       </div>
