@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import { Country } from "../constants/countries";
-import { Tariff } from "./Tariff";
+import { CountryTariff } from "./CountryTariff";
 
 interface Props {
   countries: Country[];
@@ -14,9 +14,9 @@ export const Tariffs = ({
   setSelectedCountries,
 }: Props) => {
   return (
-    <div className="grid grid-cols-2 gap-2">
+    <div className="grid grid-cols-1 gap-2">
       {countries.map((country, i) => (
-        <Tariff
+        <CountryTariff
           key={`tariff-${country.code}-${i}`}
           country={country}
           htsCode={htsCode}

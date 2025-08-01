@@ -36,8 +36,8 @@ export const tariffIsActive = (
 
   const exceptions = getTariffsByCode(tariff.exceptions);
 
-  const applicableExceptions = exceptions.flatMap((t) =>
-    getApplicableInclusions(t, countryCode, htsCode)
+  const applicableExceptions = exceptions.filter((t) =>
+    tariffIsApplicable(t, countryCode, htsCode)
   );
 
   const noReviewNeeded = applicableExceptions.filter((e) => !e.requiresReview);
@@ -48,24 +48,22 @@ export const tariffIsActive = (
 export const getTariffsByCode = (codes: string[]) =>
   codes.map((c) => TariffsList.find((t) => t.code === c));
 
-export const getApplicableInclusions = (
+export const tariffIsApplicable = (
   tariff: TariffI,
   countryCode: string,
   htsCode: string
-) => {
-  if (!tariff?.inclusions) return [];
-
-  let applicableInclusions: TariffI[] = [];
+): boolean => {
+  if (!tariff?.inclusions) return false;
 
   const { countries, codes, tariffs } = tariff.inclusions;
   const codesSpecified = codes !== undefined && codes.length > 0;
   const countriesSpecified = countries !== undefined && countries.length > 0;
   const includesTariffs = tariffs !== undefined && tariffs.length > 0;
-  const applicableTariffs =
-    tariffs &&
-    getTariffsByCode(tariffs).filter(
-      (t) => getApplicableInclusions(t, countryCode, htsCode).length > 0
-    );
+  const applicableTariffs = tariffs
+    ? getTariffsByCode(tariffs).filter((t) =>
+        tariffIsApplicable(t, countryCode, htsCode)
+      )
+    : [];
   const hasApplicableTariffs =
     applicableTariffs && applicableTariffs.length > 0;
   const includesCountry =
@@ -80,22 +78,39 @@ export const getApplicableInclusions = (
 
   const includesCountryAndCode = includesCountry && includesCode;
 
-  if (
-    // NOTE: this assumes we'll never have tariffs alongside codes and
+  if (tariff.exclusions) {
+    const { countries, codes } = tariff.exclusions;
+
+    if (countries && countries.length > 0) {
+      if (countries.includes(countryCode)) {
+        return false;
+      }
+    }
+
+    if (codes && codes.length > 0) {
+      // Important: this checks if any exclusion code is included WITHIN the HTS Code to ensure
+      // that we're not directly matching but matching against any substring of an HTS code
+      // in case the exclusion is against and entire heading or subheading, and beyond
+      if (codes.some((code) => htsCode.includes(code))) {
+        return false;
+      }
+    }
+
+    // currently we have no exclusions that are tariffs, so we don't need to check that
+  }
+
+  // NOTE: this assumes we'll never have tariffs alongside codes, which we don't, for now
+  return (
     (includesTariffs && hasApplicableTariffs) ||
     (includesCountry && !codesSpecified && !includesTariffs) ||
     (includesCode && !countriesSpecified && !includesTariffs) ||
     (includesCountryAndCode && !includesTariffs)
-  ) {
-    applicableInclusions.push(tariff);
-  }
-
-  return applicableInclusions;
+  );
 };
 
 export const getTariffs = (countryCode: string, htsCode: string) => {
-  return TariffsList.flatMap((tariff) =>
-    getApplicableInclusions(tariff, countryCode, htsCode)
+  return TariffsList.filter((tariff) =>
+    tariffIsApplicable(tariff, countryCode, htsCode)
   );
 };
 
@@ -2824,16 +2839,19 @@ export const TariffsList: TariffI[] = [
       ],
     },
     // at least 1 exclusion --> 9903.01.33 // TODO: come back to this for stacking / exclusions
+    // FIXME: should remove .69 now that it is exception of 67.. but
+    // since we don't yet have NESTED exceptions, this won't work for now
     exceptions: ["9903.85.67", "9903.85.69"],
   },
   {
     code: "9903.85.67",
     description:
       "Aluminum articles that are the product of Russia, or where any amount of primary aluminum used in the manufacture of the aluminum articles is smelted in Russia, or where the aluminum articles are cast in Russia, the foregoing under the terms of note 19(a)(vii)(A) to this subchapter, or note 19(m)(A) to this subchapter, as applicable per the date of entry for consumption or withdrawal from warehouse for consumption, except any exclusions that may be determined and announced by the Department of Commerce",
-    name: "Smelted or Casted in Russia????????",
+    name: "Aluminum Smelted or Casted in Russia (Section 232)",
     general: 200,
     special: 200, // todo: there are some agreements for this one... look into that
     other: 200,
+    exceptions: ["9903.85.69"],
     inclusions: {
       countries: ["RU"],
       codes: [
@@ -2862,10 +2880,11 @@ export const TariffsList: TariffI[] = [
     code: "9903.85.69",
     description:
       "Except for goods provided for in heading 9903.85.67, aluminum articles that are the product of Russia, or where any amount of primary aluminum used in the manufacture of the aluminum articles is smelted in Russia, or where the aluminum articles are cast in Russia, the foregoing under the terms of note 19(a)(vii)(A) to this subchapter, or note 19(m)(A) to this subchapter, as applicable per the date of entry for consumption or withdrawal from warehouse for consumption, admitted into a U.S. foreign trade zone under 'privileged foreign status' as defined in 19 CFR 146.41, prior to 12:01 a.m. eastern standard time on April 10, 2023, except any exclusions that may be determined and announced by the Department of Commerce",
-    name: "Aluminum of the Russia (Section 232)",
+    name: "Aluminum Smelted or Casted in Russia admitted to U.S. FTZ under PFS prior to June 4, 2025 (Section 232)",
     general: 200,
     special: 200, // todo: there are some agreements for this one... look into that
     other: 200,
+    requiresReview: true,
     inclusions: {
       countries: ["RU"],
       codes: [
@@ -3131,6 +3150,7 @@ export const TariffsList: TariffI[] = [
       ],
     },
     exceptions: ["9903.85.68"],
+    requiresReview: true,
   },
   // Derivative Aluminum from 19(k) (232)
   {
@@ -3876,6 +3896,7 @@ export const TariffsList: TariffI[] = [
     other: 50,
     exclusions: {
       // 16(j)
+      countries: ["GB"],
       codes: ["7216.61.00", "7216.69.00", "7216.91.00"],
     },
     inclusions: {
@@ -3914,14 +3935,14 @@ export const TariffsList: TariffI[] = [
         "7223",
       ],
     },
-    requiresReview: true, // due to 'privilege foreign status' check
+    requiresReview: true, // due to 'foreign trade zone and privilege foreign status' check
   },
   // 16 (l) (m)
   {
     code: "9903.81.93",
     description:
       "Except as provided in headings 9903.81.91 or 9903.81.92, derivative products of iron or steel, as specified in subdivisions (l) and (m) of note 16 to this subchapter, admitted to a U.S. foreign trade zone under 'privileged foreign status' as defined by 19 CFR 146.41, prior to 12:01 a.m. eastern daylight time on June 4, 2025.",
-    name: "Derivative Iron / Steel Products from 16 (l) and (m) (Section 232)",
+    name: "Derivative Iron / Steel Products admitted to U.S. FTZ under PFS prior to June 4, 2025 (Section 232)",
     general: 50,
     special: 50,
     other: 50,
@@ -4102,7 +4123,7 @@ export const TariffsList: TariffI[] = [
     code: "9903.81.95",
     description:
       "Products of iron or steel of the United Kingdom provided for in the tariff headings or subheadings enumerated in subdivision (q) of note 16 to this subchapter, admitted to a U.S. foreign trade zone under “privileged foreign status” as defined by 19 CFR 146.41, prior to 12:01 a.m. eastern daylight time on June 4, 2025",
-    name: "Iron / Steel Products of the UK from 16 (q) (Section 232)",
+    name: "Iron / Steel Products of the UK admitted to U.S. FTZ under PFS prior to June 4, 2025 (Section 232)",
     general: 25,
     special: 25,
     other: 25,
@@ -4337,9 +4358,10 @@ export const TariffsList: TariffI[] = [
     general: 50,
     special: 50,
     other: 50,
-    exceptions: ["9903.81.89", "9903.81.90", "9903.81.91"],
+    exceptions: ["9903.81.89", "9903.81.90", "9903.81.91", "9903.81.88"],
     exclusions: {
       // 16(j)
+      countries: ["GB"],
       codes: ["7216.61.00", "7216.69.00", "7216.91.00"],
     },
     inclusions: {
@@ -5206,7 +5228,13 @@ export const TariffsList: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
-    exceptions: ["9903.81.96", "9903.81.97", "9903.81.98", "9903.96.01"],
+    exceptions: [
+      "9903.81.95", // FTZ based entry, nesting for clarity
+      "9903.81.96",
+      "9903.81.97",
+      "9903.81.98",
+      "9903.96.01",
+    ],
     exclusions: {
       codes: ["7216.61.00", "7216.69.00", "7216.91.00"],
     },
