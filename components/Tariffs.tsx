@@ -14,7 +14,7 @@ export const Tariffs = ({
   setSelectedCountries,
 }: Props) => {
   return (
-    <div className="grid grid-cols-1 gap-2">
+    <div className="grid grid-cols-2 gap-2">
       {countries.map((country, i) => (
         <CountryTariff
           key={`tariff-${country.code}-${i}`}

@@ -1,7 +1,7 @@
+import { useState } from "react";
 import { Color } from "../enums/style";
 import { TariffI } from "../public/tariffs/tariffs";
 import { classNames } from "../utilities/style";
-import { PrimaryText } from "./PrimaryText";
 import { SecondaryText } from "./SecondaryText";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { TertiaryText } from "./TertiaryText";
@@ -26,6 +26,7 @@ export const Tariff = ({
   tariffs,
   setTariffs,
 }: Props) => {
+  // TODO: get column by using country and checking if in Other or Special
   // Recursive helper function to find and update a tariff by code
   const updateTariffRecursively = (
     tariffList: TariffUI[],
@@ -191,6 +192,10 @@ export const Tariff = ({
 
   const marginClass = marginClasses[exceptionLevel] || "";
 
+  const [percentage, setPercentage] = useState(
+    tariff.requiresPercentage ? 80 : null
+  );
+
   return (
     <div className="w-full flex flex-col gap-2">
       <div
@@ -224,14 +229,30 @@ export const Tariff = ({
               )}
             </div>
             <SecondaryText value={tariff.name} color={Color.WHITE} />
+            {tariff.isActive && tariff.requiresPercentage && (
+              <div className="flex gap-2 items-center">
+                <input
+                  type="range"
+                  min={0}
+                  max="100"
+                  value={percentage}
+                  className="range range-primary range-sm m-2 p-1"
+                  onChange={(e) => {
+                    setPercentage(Number(e.target.value));
+                  }}
+                />
+                <TertiaryLabel
+                  value={`${percentage}%`}
+                  color={Color.NEUTRAL_CONTENT}
+                />
+              </div>
+            )}
           </div>
         </div>
         <p
           className={classNames(
             "shrink-0 min-w-32 text-right text-xl",
-            tariff.isActive
-              ? "text-primary"
-              : "line-through text-neutral-content"
+            tariff.isActive ? "text-white" : "line-through text-neutral-content"
           )}
         >
           {tariff.general}%

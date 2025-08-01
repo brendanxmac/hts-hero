@@ -110,7 +110,6 @@ export const CountryTariff = ({
 
   const [tariffs, setTariffs] = useState<TariffUI[]>(cleanedUpTariffs);
   const [showInactive, setShowInactive] = useState<boolean>(true);
-
   console.log(tariffs);
 
   return (
@@ -210,7 +209,7 @@ export const CountryTariff = ({
         </div>
       </div>
 
-      <div className="flex flex-col gap-4 border-b-4 border-base-content">
+      <div className="flex flex-col gap-4 border-b-2 border-white">
         {tariffs.map((tariff) => (
           <Tariff
             key={tariff.code}
@@ -222,9 +221,9 @@ export const CountryTariff = ({
         ))}
       </div>
 
-      <div className="-mt-2 w-full flex justify-between items-center gap-2">
-        <h2 className="text-white font-bold">Total</h2>
-        <p className="text-xl font-bold text-secondary transition duration-100">
+      <div className="-mt-2 w-full flex justify-between items-end gap-2">
+        <h2 className="text-white font-bold">Total:</h2>
+        <p className="text-xl font-bold text-primary transition duration-100">
           {getRate(TariffColumn.GENERAL)}%
         </p>
       </div>
