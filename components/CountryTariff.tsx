@@ -2,23 +2,20 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { Country } from "../constants/countries";
 import {
   getTariffs,
+  Metal,
   TariffColumn,
   TariffI,
   tariffIsActive,
 } from "../public/tariffs/tariffs";
-import { classNames } from "../utilities/style";
-import { PrimaryText } from "./PrimaryText";
-import { Color } from "../enums/style";
-import { PrimaryLabel } from "./PrimaryLabel";
-import { TertiaryLabel } from "./TertiaryLabel";
-import { TertiaryText } from "./TertiaryText";
 import { Tariff, TariffUI } from "./Tariff";
+import { ContentRequirementI } from "./Element";
 
 interface Props {
   country: Country;
   htsCode: string;
   countries: Country[];
   setSelectedCountries: Dispatch<SetStateAction<Country[]>>;
+  contentRequirements: ContentRequirementI<Metal>[];
 }
 
 export const CountryTariff = ({
@@ -26,16 +23,18 @@ export const CountryTariff = ({
   htsCode,
   countries,
   setSelectedCountries,
+  contentRequirements,
 }: Props) => {
   const applicableTariffs = getTariffs(country.code, htsCode).map((t) => ({
     ...t,
     isActive: tariffIsActive(t, country.code, htsCode),
   }));
 
+  // TODO: NEED TO INCLIDE THE ONES TO IGNORE HERE AS WELL....
   // Recursive function to build the complete exception hierarchy
   const buildTariffHierarchy = (
-    tariff: TariffI & { isActive: boolean },
-    allTariffs: (TariffI & { isActive: boolean })[]
+    tariff: TariffUI,
+    allTariffs: TariffUI[]
   ): TariffUI => {
     const exceptionTariffs = tariff.exceptions
       ? allTariffs
@@ -55,21 +54,24 @@ export const CountryTariff = ({
   const allExceptionTariffCodes = new Set<string>();
 
   // Helper function to collect all exception codes recursively
-  const collectExceptionCodes = (tariff: TariffI) => {
+  const collectExceptionCodes = (
+    tariff: TariffI,
+    exceptionCodes: Set<string>
+  ) => {
     if (tariff.exceptions) {
       tariff.exceptions.forEach((code) => {
-        allExceptionTariffCodes.add(code);
+        exceptionCodes.add(code);
         // Find the exception tariff and recursively collect its exceptions
         const exceptionTariff = applicableTariffs.find((t) => t.code === code);
         if (exceptionTariff) {
-          collectExceptionCodes(exceptionTariff);
+          collectExceptionCodes(exceptionTariff, exceptionCodes);
         }
       });
     }
   };
 
   // Collect all exception codes from all tariffs
-  applicableTariffs.forEach(collectExceptionCodes);
+  // applicableTariffs.forEach(collectExceptionCodes);
 
   // Build the complete hierarchy for each tariff
   const tariffsWithExceptions: TariffUI[] = applicableTariffs.map((tariff) =>
@@ -80,6 +82,76 @@ export const CountryTariff = ({
   const cleanedUpTariffs = tariffsWithExceptions.filter(
     (t) => !allExceptionTariffCodes.has(t.code)
   );
+
+  const getTariffSets = () => {
+    console.log("============================");
+    console.log("============================");
+    console.log("============================");
+    console.log("============================");
+    console.log("============================");
+    console.log("Getting Tariff Sets");
+    const tariffsToIgnore = applicableTariffs
+      .filter((t) => t.contentRequirement)
+      .map((t) => t.code);
+
+    console.log("Tariffs to ignore:", tariffsToIgnore);
+    let exceptionTariffs = new Set<string>();
+    let baseSet: TariffUI[] =
+      contentRequirements.length > 0
+        ? applicableTariffs.filter((t) => !t.contentRequirement)
+        : applicableTariffs;
+    baseSet.forEach((t) => {
+      collectExceptionCodes(t, exceptionTariffs);
+    });
+    console.log("BASE SET ECs:");
+    exceptionTariffs.forEach((code) => {
+      console.log(code);
+    });
+    baseSet = baseSet.map((t) => buildTariffHierarchy(t, baseSet));
+    baseSet = baseSet.filter((t) => !exceptionTariffs.has(t.code));
+    baseSet = baseSet.map((t) => ({
+      ...t,
+      exceptionTariffs: t.exceptionTariffs?.map((et) => {
+        console.log("ET", et.code);
+        if (et.code === "9903.01.33") {
+          console.log("IS ACTIBVEEEEEEE");
+          console.log(et);
+          console.log(
+            tariffIsActive(et, country.code, htsCode, tariffsToIgnore)
+          );
+        }
+        return {
+          ...et,
+          isActive: tariffIsActive(et, country.code, htsCode, tariffsToIgnore),
+        };
+      }),
+      isActive: tariffIsActive(t, country.code, htsCode, tariffsToIgnore),
+    }));
+    exceptionTariffs.clear();
+    const otherSets = [];
+
+    for (const contentRequirement of contentRequirements) {
+      let tariffSet = applicableTariffs.filter(
+        (t) =>
+          !t.contentRequirement ||
+          t.contentRequirement === contentRequirement.name
+      );
+      tariffSet.forEach((t) => {
+        collectExceptionCodes(t, exceptionTariffs);
+      });
+      tariffSet = tariffSet.map((t) => buildTariffHierarchy(t, tariffSet));
+      tariffSet = tariffSet.filter((t) => !exceptionTariffs.has(t.code));
+      exceptionTariffs.clear();
+      otherSets.push(tariffSet);
+    }
+
+    console.log("Tariff Sets", [baseSet, ...otherSets]);
+
+    return [baseSet, ...otherSets];
+  };
+
+  const [tariffSets, setTariffSets] =
+    useState<Array<TariffUI[]>>(getTariffSets());
 
   // Recursive helper function to calculate rate from a tariff and all its exceptions
   const calculateTariffRate = (
@@ -110,7 +182,6 @@ export const CountryTariff = ({
 
   const [tariffs, setTariffs] = useState<TariffUI[]>(cleanedUpTariffs);
   const [showInactive, setShowInactive] = useState<boolean>(true);
-  console.log(tariffs);
 
   return (
     <div className="flex flex-col p-8 border-2 border-base-content/50 bg-base-300 rounded-md gap-6">
@@ -209,7 +280,23 @@ export const CountryTariff = ({
         </div>
       </div>
 
-      <div className="flex flex-col gap-4 border-b-2 border-white">
+      <div className="grid grid-cols-2 gap-4">
+        {tariffSets.map((tariffSet, i) => (
+          <div key={i}>
+            {tariffSet.map((tariff) => (
+              <Tariff
+                key={tariff.code}
+                showInactive={showInactive}
+                tariff={tariff}
+                tariffs={tariffs}
+                setTariffs={setTariffs}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+
+      {/* <div className="flex flex-col gap-4 border-b-2 border-white">
         {tariffs.map((tariff) => (
           <Tariff
             key={tariff.code}
@@ -219,7 +306,7 @@ export const CountryTariff = ({
             setTariffs={setTariffs}
           />
         ))}
-      </div>
+      </div> */}
 
       <div className="-mt-2 w-full flex justify-between items-end gap-2">
         <h2 className="text-white font-bold">Total:</h2>

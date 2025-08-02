@@ -1,4 +1,4 @@
-import { TariffI } from "./tariffs";
+import { Metal, TariffI } from "./tariffs";
 
 // Aluminum (Section 232)
 export const aluminumTariffs: TariffI[] = [
@@ -10,13 +10,13 @@ export const aluminumTariffs: TariffI[] = [
     general: 50,
     special: 50,
     other: 50,
+    exceptions: ["9903.85.67", "9903.85.12"],
+    contentRequirement: "Aluminum",
     exclusions: {
       countries: ["GB"],
     },
     inclusions: {
       codes: [
-        // TODO: ensure that code checks for heading and BEYOND
-        // such that any code that starts with _____ gets identified
         "7601",
         "7604",
         "7605",
@@ -27,10 +27,6 @@ export const aluminumTariffs: TariffI[] = [
         "7616.99.51",
       ],
     },
-    // at least 1 exclusion --> 9903.01.33 // TODO: come back to this for stacking / exclusions
-    // FIXME: should remove .69 now that it is exception of 67.. but
-    // since we don't yet have NESTED exceptions, this won't work for now
-    exceptions: ["9903.85.67", "9903.85.12"],
   },
   {
     code: "9903.85.67",
@@ -40,6 +36,7 @@ export const aluminumTariffs: TariffI[] = [
     general: 200,
     special: 200, // todo: there are some agreements for this one... look into that
     other: 200,
+    contentRequirement: "Aluminum",
     exceptions: ["9903.85.69"],
     inclusions: {
       countries: ["RU"],
@@ -74,6 +71,7 @@ export const aluminumTariffs: TariffI[] = [
     special: 200, // todo: there are some agreements for this one... look into that
     other: 200,
     requiresReview: true,
+    contentRequirement: "Aluminum",
     inclusions: {
       countries: ["RU"],
       codes: [
@@ -107,6 +105,8 @@ export const aluminumTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
+    contentRequirement: "Aluminum",
+    exceptions: ["9903.85.67", "9903.85.69", "9903.96.01"],
     inclusions: {
       countries: ["GB"],
       codes: [
@@ -121,7 +121,6 @@ export const aluminumTariffs: TariffI[] = [
         "7616.99.51",
       ],
     },
-    exceptions: ["9903.85.67", "9903.85.69", "9903.96.01"],
   },
   // =========================
   // Derivative Aluminum (232)
@@ -135,6 +134,8 @@ export const aluminumTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
+    contentRequirement: "Aluminum",
+    exceptions: ["9903.85.68", "9903.85.70", "9903.96.01"],
     inclusions: {
       countries: ["GB"],
       codes: [
@@ -147,7 +148,6 @@ export const aluminumTariffs: TariffI[] = [
         "8708.29.21",
       ],
     },
-    exceptions: ["9903.85.68", "9903.85.70", "9903.96.01"],
   },
   {
     code: "9903.85.07",
@@ -157,6 +157,16 @@ export const aluminumTariffs: TariffI[] = [
     general: 50,
     special: 50,
     other: 50,
+    contentRequirement: "Aluminum",
+    exceptions: [
+      "9903.85.09",
+      "9903.85.68",
+      "9903.85.70",
+      // UK Aluminum Derivatitves (13,14,15)
+      "9903.85.13",
+      "9903.85.14",
+      "9903.85.15",
+    ],
     inclusions: {
       codes: [
         // 19(j)
@@ -182,15 +192,6 @@ export const aluminumTariffs: TariffI[] = [
         "7616.99.5190",
       ],
     },
-    exceptions: [
-      "9903.85.09",
-      "9903.85.68",
-      "9903.85.70",
-      // UK Aluminum Derivatitves (13,14,15)
-      "9903.85.13",
-      "9903.85.14",
-      "9903.85.15",
-    ],
   },
   {
     code: "9903.85.70",
@@ -200,6 +201,9 @@ export const aluminumTariffs: TariffI[] = [
     general: 200,
     special: 200,
     other: 200,
+    requiresReview: true,
+    contentRequirement: "Aluminum",
+    exceptions: ["9903.85.68"],
     inclusions: {
       countries: ["RU"],
       codes: [
@@ -346,8 +350,6 @@ export const aluminumTariffs: TariffI[] = [
         "9603.90.8050",
       ],
     },
-    exceptions: ["9903.85.68"],
-    requiresReview: true,
   },
   // Derivative Aluminum from 19(k) (232)
   {
@@ -358,6 +360,16 @@ export const aluminumTariffs: TariffI[] = [
     general: 50,
     special: 50,
     other: 50,
+    contentRequirement: "Aluminum",
+    exceptions: [
+      "9903.85.09",
+      "9903.85.68",
+      "9903.85.70",
+      // UK Aluminum Derivatitves (13,14,15)
+      "9903.85.13",
+      "9903.85.14",
+      "9903.85.15",
+    ],
     inclusions: {
       codes: [
         // 19(k)
@@ -468,15 +480,6 @@ export const aluminumTariffs: TariffI[] = [
         "9603.90.8050",
       ],
     },
-    exceptions: [
-      "9903.85.09",
-      "9903.85.68",
-      "9903.85.70",
-      // UK Aluminum Derivatitves (13,14,15)
-      "9903.85.13",
-      "9903.85.14",
-      "9903.85.15",
-    ],
   },
   {
     code: "9903.85.68",
@@ -486,6 +489,8 @@ export const aluminumTariffs: TariffI[] = [
     general: 200,
     special: 200,
     other: 200,
+    requiresReview: true,
+    contentRequirement: "Aluminum",
     inclusions: {
       countries: ["RU"],
       // Some way to add where any amount of primary aluminum was to manufac deriv articles is smelted or cast in russia
@@ -633,7 +638,6 @@ export const aluminumTariffs: TariffI[] = [
         "9603.90.8050",
       ],
     },
-    requiresReview: true,
   },
   // Derivative Aluminum of the UK from 19 subdivisions (r)
   {
@@ -644,6 +648,8 @@ export const aluminumTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
+    contentRequirement: "Aluminum",
+    exceptions: ["9903.85.09", "9903.85.68", "9903.85.70", "9903.96.01"],
     inclusions: {
       countries: ["GB"],
       codes: [
@@ -670,7 +676,6 @@ export const aluminumTariffs: TariffI[] = [
         "7616.99.5190",
       ],
     },
-    exceptions: ["9903.85.09", "9903.85.68", "9903.85.70", "9903.96.01"],
   },
   // Derivative Aluminum from 19 subdivisions (j), (k), (r) or (s)
   {
@@ -678,10 +683,11 @@ export const aluminumTariffs: TariffI[] = [
     description:
       "Except as provided in heading 9903.85.09, 9903.85.68 or 9903.85.70, derivative aluminum products, provided for in the tariff provisions enumerated in subdivision (s) of note 19 to this subchapter",
     name: "Derivative Aluminum Products of the UK from 19(s) (Section 232)",
-    // TODO: need slider
-    general: 25, // the content of the aluminum
-    special: 25, // the content of the aluminum
-    other: 25, // the content of the aluminum
+    general: 25,
+    special: 25,
+    other: 25,
+    contentRequirement: "Aluminum",
+    exceptions: ["9903.85.09", "9903.85.68", "9903.85.70", "9903.96.01"],
     inclusions: {
       countries: ["GB"],
       codes: [
@@ -793,9 +799,11 @@ export const aluminumTariffs: TariffI[] = [
         "9603.90.8050",
       ],
     },
-    exceptions: ["9903.85.09", "9903.85.68", "9903.85.70", "9903.96.01"],
   },
   {
+    // FIXME: come back to this one and figure out how to apply it
+    // FIXME: come back to this one and figure out how to apply it
+    // FIXME: come back to this one and figure out how to apply it
     code: "9903.85.09",
     description:
       "Except as provided in heading 9903.85.68 or 9903.85.70, derivative aluminum products provided for in the tariff headings and subheadings enumerated in subdivisions (j), (k), (r) or (s) of note 19 to this subchapter, where the derivative aluminum products were processed in another country from aluminum articles that were smelted and cast in the United States.",
@@ -1070,13 +1078,18 @@ export const aluminumTariffs: TariffI[] = [
     description:
       "Except as provided in headings 9903.85.68 or 9903.85.70, derivative aluminum products provided for in the tariff headings or subheadings enumerated in subdivision (i) of note 19 to this subchapter.",
     name: "Aluminum Derivatives from Note 19(i)",
-    // TODO: need slider
     general: 50,
     special: 50,
     other: 50,
-    // exclusions: {
-    //   countries: ["GB"],
-    // },
+    contentRequirement: "Aluminum",
+    exceptions: [
+      "9903.85.68",
+      "9903.85.70",
+      // UK Aluminum Derivatitves (13,14,15)s
+      "9903.85.13",
+      "9903.85.14",
+      "9903.85.15",
+    ],
     inclusions: {
       codes: [
         // 19(i)
@@ -1088,13 +1101,5 @@ export const aluminumTariffs: TariffI[] = [
         "8708.29.21",
       ],
     },
-    exceptions: [
-      "9903.85.68",
-      "9903.85.70",
-      // UK Aluminum Derivatitves (13,14,15)
-      "9903.85.13",
-      "9903.85.14",
-      "9903.85.15",
-    ],
   },
 ];

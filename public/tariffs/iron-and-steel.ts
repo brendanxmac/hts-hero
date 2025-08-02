@@ -1,4 +1,4 @@
-import { TariffI } from "./tariffs";
+import { Metal, TariffI } from "./tariffs";
 
 // ==================
 // Steel (Section 232)
@@ -13,7 +13,8 @@ export const ironAndSteelTariffs: TariffI[] = [
     general: 50,
     special: 50,
     other: 50,
-    requiresPercentage: true,
+    contentRequirement: "Steel",
+    requiresReview: true, // due to 'foreign trade zone and privilege foreign status' check
     exclusions: {
       // 16(j)
       countries: ["GB"],
@@ -55,7 +56,6 @@ export const ironAndSteelTariffs: TariffI[] = [
         "7223",
       ],
     },
-    requiresReview: true, // due to 'foreign trade zone and privilege foreign status' check
   },
   // 16 (l) (m)
   {
@@ -66,8 +66,9 @@ export const ironAndSteelTariffs: TariffI[] = [
     general: 50,
     special: 50,
     other: 50,
-    exceptions: ["9903.81.91", "9903.81.92"],
+    contentRequirement: "Steel",
     requiresReview: true, // due to 'privilege foreign status' check
+    exceptions: ["9903.81.91", "9903.81.92"],
     inclusions: {
       codes: [
         // l
@@ -247,6 +248,7 @@ export const ironAndSteelTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
+    contentRequirement: "Steel",
     requiresReview: true, // due to 'privilege foreign status' check
     exclusions: {
       codes: ["7216.61.00", "7216.69.00", "7216.91.00"],
@@ -297,8 +299,9 @@ export const ironAndSteelTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
-    exceptions: ["9903.81.98", "9903.81.92"],
+    contentRequirement: "Steel",
     requiresReview: true, // due to 'privilege foreign status' check
+    exceptions: ["9903.81.98", "9903.81.92"],
     inclusions: {
       countries: ["GB"],
       codes: [
@@ -478,7 +481,7 @@ export const ironAndSteelTariffs: TariffI[] = [
     general: 50,
     special: 50,
     other: 50,
-    requiresPercentage: true,
+    contentRequirement: "Steel",
     exceptions: ["9903.81.89", "9903.81.90", "9903.81.91", "9903.81.88"],
     exclusions: {
       // 16(j)
@@ -530,6 +533,7 @@ export const ironAndSteelTariffs: TariffI[] = [
     general: 50,
     special: 50,
     other: 50,
+    contentRequirement: "Steel",
     inclusions: {
       codes: [
         // 16(l)
@@ -553,6 +557,7 @@ export const ironAndSteelTariffs: TariffI[] = [
     general: 50,
     special: 50,
     other: 50,
+    contentRequirement: "Steel",
     exceptions: ["9903.81.92"],
     inclusions: {
       codes: [
@@ -719,10 +724,10 @@ export const ironAndSteelTariffs: TariffI[] = [
     description:
       "Except as provided in heading 9903.81.92, derivative iron or steel products provided for in the tariff subheadings enumerated in subdivision (n) of note 16 to this subchapter.",
     name: "Derivative Iron / Steel Products from 16 (n) (Section 232)",
-    // TODO: NEED SLIDER -- this ones about the value of the steel content
     general: 50,
     special: 50,
     other: 50,
+    contentRequirement: "Steel",
     exceptions: ["9903.81.92"],
     inclusions: {
       codes: [
@@ -759,7 +764,7 @@ export const ironAndSteelTariffs: TariffI[] = [
     code: "9903.81.92",
     description:
       "Derivative iron or steel products provided for in the tariff subheadings enumerated in subdivision subdivisions (m), (n), (t) or (u) of note 16 to this subchapter, where the derivative iron or steel product was processed in another country from steel articles that were melted and poured in the United States.",
-    name: "Derivative Iron / Steel Products from 16 (m), (n), (t) or (u) (Section 232)",
+    name: "Derivative Iron / Steel Products Smelted or Casted in the U.S. (Section 232)",
     general: 0,
     special: 0,
     other: 0,
@@ -1138,6 +1143,7 @@ export const ironAndSteelTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
+    contentRequirement: "Steel",
     exceptions: ["9903.81.92", "9903.96.01"], // TODO: why 9903.96.01 here?? see notes
     inclusions: {
       countries: ["GB"],
@@ -1308,6 +1314,7 @@ export const ironAndSteelTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
+    contentRequirement: "Steel",
     exceptions: ["9903.81.92", "9903.96.01"], // TODO: why 9903.96.01 here?? see notes
     inclusions: {
       countries: ["GB"],
@@ -1349,6 +1356,7 @@ export const ironAndSteelTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
+    contentRequirement: "Steel",
     exceptions: [
       "9903.81.95", // FTZ based entry, nesting for clarity
       "9903.81.96",
@@ -1405,10 +1413,10 @@ export const ironAndSteelTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
+    contentRequirement: "Steel",
     exceptions: ["9903.96.01"], // TODO: why 9903.96.01 here?? see notes
     inclusions: {
       countries: ["GB"],
-      // TODO: this should have a slider to indicate the amount (kg or %?) of steel / iron
       codes: [
         // 16(s)
         "7317.00.30",

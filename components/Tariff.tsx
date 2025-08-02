@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Color } from "../enums/style";
 import { TariffI } from "../public/tariffs/tariffs";
 import { classNames } from "../utilities/style";
@@ -192,10 +191,6 @@ export const Tariff = ({
 
   const marginClass = marginClasses[exceptionLevel] || "";
 
-  const [percentage, setPercentage] = useState(
-    tariff.requiresPercentage ? 80 : null
-  );
-
   return (
     <div className="w-full flex flex-col gap-2">
       <div
@@ -229,7 +224,7 @@ export const Tariff = ({
               )}
             </div>
             <SecondaryText value={tariff.name} color={Color.WHITE} />
-            {tariff.isActive && tariff.requiresPercentage && (
+            {/* {tariff.isActive && (
               <div className="flex gap-2 items-center">
                 <input
                   type="range"
@@ -246,7 +241,7 @@ export const Tariff = ({
                   color={Color.NEUTRAL_CONTENT}
                 />
               </div>
-            )}
+            )} */}
           </div>
         </div>
         <p

@@ -7,8 +7,6 @@ import {
   getTemporaryTariffTextElement,
   getGeneralNoteFromSpecialTariffSymbol,
   isFullHTSCode,
-  isHTSCode,
-  getTemporaryTariffText,
 } from "../libs/hts";
 import { ElementSummary } from "./ElementSummary";
 import {
@@ -36,10 +34,21 @@ import { Country } from "../constants/countries";
 import { TertiaryText } from "./TertiaryText";
 import { format } from "date-fns";
 import { Tariffs } from "./Tariffs";
+import {
+  Metal,
+  tariffIsApplicableToCode,
+  TariffsList,
+} from "../public/tariffs/tariffs";
+import { PrimaryLabel } from "./PrimaryLabel";
 
 interface Props {
   summaryOnly?: boolean;
   element: HtsElement;
+}
+
+export interface ContentRequirementI<T> {
+  name: T;
+  value: number;
 }
 
 export const Element = ({ element, summaryOnly = false }: Props) => {
@@ -50,6 +59,25 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
   const { htsElements } = useHts();
   const { sections } = useHtsSections();
   const [selectedCountries, setSelectedCountries] = useState<Country[]>([]);
+  const contentRequirements = Array.from(
+    TariffsList.filter((t) => tariffIsApplicableToCode(t, htsno)).reduce(
+      (acc, t) => {
+        if (t.contentRequirement) {
+          acc.add(t.contentRequirement);
+        }
+        return acc;
+      },
+      new Set<Metal>()
+    )
+  );
+  const [contentPercentages, setContentPercentages] = useState<
+    ContentRequirementI<Metal>[]
+  >(
+    contentRequirements.map((contentRequirement) => ({
+      name: contentRequirement,
+      value: 80,
+    }))
+  );
 
   useEffect(() => {
     const elementChildren = getDirectChildrenElements(element, htsElements);
@@ -170,44 +198,104 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
         <>
           {/* If htsno is 10 digits, show the country selection */}
           {htsno && htsno.replaceAll(".", "").length === 10 && (
-            <div className="w-full flex flex-col gap-2">
+            <div className="w-full flex flex-col gap-4">
               <div className="flex flex-col">
-                <SecondaryLabel value="Tariff Simulator" color={Color.WHITE} />
+                <PrimaryLabel value="Tariff Simulator" color={Color.WHITE} />
                 <TertiaryText
-                  value="Select countries then click seach to launch Flexports Tariff Simulator"
+                  value="Select countries to simulate potential tariff scenarios"
                   color={Color.NEUTRAL_CONTENT}
                 />
               </div>
-              <div className="flex gap-2 items-center w-full max-w-2xl">
-                <div className="grow">
-                  <CountrySelection
-                    selectedCountries={selectedCountries}
-                    setSelectedCountries={setSelectedCountries}
+              {/* Go get all the content requirements based on the applicable tariffs */}
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-1">
+                  <SecondaryLabel
+                    value={`Country of Origin Selection`}
+                    color={Color.WHITE}
                   />
-                </div>
+                  <TertiaryText
+                    value="Which countries of origin could this item come from?"
+                    color={Color.NEUTRAL_CONTENT}
+                  />
+                  <div className="flex gap-2 items-center w-full max-w-2xl">
+                    <div className="grow">
+                      <CountrySelection
+                        selectedCountries={selectedCountries}
+                        setSelectedCountries={setSelectedCountries}
+                      />
+                    </div>
 
-                <button
-                  className="btn btn-sm btn-primary"
-                  disabled={selectedCountries.length === 0}
-                  onClick={() => {
-                    selectedCountries.map((country) =>
-                      window.open(
-                        `https://tariffs.flexport.com/?entryDate=${format(new Date(), "yyyy-MM-dd")}&country=${country.code}&value=10000&advanced=true&code=${htsno}`,
-                        "_blank"
-                      )
-                    );
-                  }}
-                >
-                  <MagnifyingGlassIcon className="w-4 h-4" />
-                  Search
-                </button>
+                    <button
+                      className="btn btn-sm btn-primary"
+                      disabled={selectedCountries.length === 0}
+                      onClick={() => {
+                        selectedCountries.map((country) =>
+                          window.open(
+                            `https://tariffs.flexport.com/?entryDate=${format(new Date(), "yyyy-MM-dd")}&country=${country.code}&value=10000&advanced=true&code=${htsno}`,
+                            "_blank"
+                          )
+                        );
+                      }}
+                    >
+                      <MagnifyingGlassIcon className="w-4 h-4" />
+                      Search
+                    </button>
+                  </div>
+                </div>
+                {contentRequirements.map((contentRequirement) => (
+                  <div
+                    key={`${contentRequirement}-content-requirement`}
+                    className="w-full max-w-md flex flex-col gap-1"
+                  >
+                    <SecondaryLabel
+                      value={`${contentRequirement} Value Percentage`}
+                      color={Color.WHITE}
+                    />
+                    <TertiaryText
+                      value={`What is the % of ${contentRequirement} value in this article?`}
+                      color={Color.NEUTRAL_CONTENT}
+                    />
+                    <div className="flex gap-2 items-center">
+                      <input
+                        type="range"
+                        min={0}
+                        max="100"
+                        value={
+                          contentPercentages?.find(
+                            (c) => c.name === contentRequirement
+                          )?.value || 0
+                        }
+                        className="range range-primary range-sm p-1"
+                        onChange={(e) => {
+                          setContentPercentages((prev) =>
+                            prev.map((c) =>
+                              c.name === contentRequirement
+                                ? { ...c, value: parseInt(e.target.value) }
+                                : c
+                            )
+                          );
+                        }}
+                      />
+                      <TertiaryLabel
+                        value={`${
+                          contentPercentages?.find(
+                            (c) => c.name === contentRequirement
+                          )?.value || 0
+                        }%`}
+                        color={Color.NEUTRAL_CONTENT}
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
 
+              {/* TODO: I think we can remove this check cause we already do similar above? */}
               {isFullHTSCode(htsno) && (
                 <Tariffs
                   countries={selectedCountries}
                   htsCode={htsno}
                   setSelectedCountries={setSelectedCountries}
+                  contentRequirements={contentPercentages}
                 />
               )}
             </div>
