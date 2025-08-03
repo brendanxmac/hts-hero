@@ -64,10 +64,12 @@ export const tariffIsActive = (
   const exceptionTariffs = noExceptions
     ? []
     : getTariffsByCode(tariff.exceptions);
-  console.log("TARIFF INCLUSIONS:", tariff.inclusions?.tariffs);
+  console.log("Exception Tariffs", tariff.code, exceptionTariffs);
+  console.log("TARIFF INCLUSIONS:", tariff.code, tariff.inclusions?.tariffs);
   const inclusionTariffs = noTariffInclusions
     ? []
     : getTariffsByCode(tariff.inclusions.tariffs);
+  console.log("Inclusion Tariffs", tariff.code, inclusionTariffs);
 
   const exceptions = [...exceptionTariffs, ...inclusionTariffs];
 
@@ -92,7 +94,7 @@ export const tariffIsActive = (
 };
 
 export const getTariffsByCode = (codes: string[]) =>
-  codes.map((c) => TariffsList.find((t) => t.code === c));
+  codes.map((c) => TariffsList.find((t) => t.code === c)).filter(Boolean);
 
 export const tariffIsApplicableToCode = (
   tariff: TariffI,
@@ -145,6 +147,10 @@ export const tariffIsApplicable = (
   htsCode: string,
   tariffCodesToIgnore?: string[]
 ): boolean => {
+  // For some reason tariff.code is undefined here...
+  // why is the linter not catching these issues?
+  // you'd think that the call site wouldn't be able to pass in a tariff without a code
+  // but it is somehow happening, even without any !'s
   if (tariffCodesToIgnore?.includes(tariff.code)) return false;
   if (!tariff?.inclusions) return false;
 

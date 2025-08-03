@@ -23,7 +23,7 @@ export const chinaTariffs: TariffI[] = [
     code: "9903.01.21",
     description:
       "Articles the product of China and Hong Kong that are donations, by persons subject to the jurisdiction of the United States, of articles, such as food, clothing, and medicine, intended to be used to relieve human suffering, as provided for in U.S. note 2(t) to this subchapter",
-    name: "Donations",
+    name: "Donation Exception",
     general: 0,
     special: 0,
     other: 0,

@@ -9,6 +9,7 @@ import {
 } from "../public/tariffs/tariffs";
 import { Tariff, TariffUI } from "./Tariff";
 import { ContentRequirementI } from "./Element";
+import { classNames } from "../utilities/style";
 
 interface Props {
   country: Country;
@@ -172,9 +173,9 @@ export const CountryTariff = ({
     return rate;
   };
 
-  const getRate = (column: TariffColumn) => {
+  const getRate = (column: TariffColumn, tariffSet: TariffUI[]) => {
     let rate = 0;
-    tariffs.forEach((tariff) => {
+    tariffSet.forEach((tariff) => {
       rate += calculateTariffRate(tariff, column);
     });
     return rate;
@@ -280,9 +281,13 @@ export const CountryTariff = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div
+        className={classNames(
+          tariffSets.length > 1 ? "grid grid-cols-2 gap-4" : "flex flex-col"
+        )}
+      >
         {tariffSets.map((tariffSet, i) => (
-          <div key={i}>
+          <div key={i} className="flex flex-col gap-4">
             {tariffSet.map((tariff) => (
               <Tariff
                 key={tariff.code}
@@ -292,6 +297,12 @@ export const CountryTariff = ({
                 setTariffs={setTariffs}
               />
             ))}
+            <div className="-mt-2 w-full flex justify-between items-end gap-2">
+              <h2 className="text-white font-bold">Total:</h2>
+              <p className="text-xl font-bold text-primary transition duration-100">
+                {getRate(TariffColumn.GENERAL, tariffSet)}%
+              </p>
+            </div>
           </div>
         ))}
       </div>
@@ -307,13 +318,6 @@ export const CountryTariff = ({
           />
         ))}
       </div> */}
-
-      <div className="-mt-2 w-full flex justify-between items-end gap-2">
-        <h2 className="text-white font-bold">Total:</h2>
-        <p className="text-xl font-bold text-primary transition duration-100">
-          {getRate(TariffColumn.GENERAL)}%
-        </p>
-      </div>
     </div>
   );
 };
