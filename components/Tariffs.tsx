@@ -3,17 +3,18 @@ import { Country } from "../constants/countries";
 import { CountryTariff } from "./CountryTariff";
 import { ContentRequirementI } from "./Element";
 import { Metal } from "../public/tariffs/tariffs";
+import { HtsElement } from "../interfaces/hts";
 
 interface Props {
   countries: Country[];
-  htsCode: string;
+  htsElement: HtsElement;
   setSelectedCountries: Dispatch<SetStateAction<Country[]>>;
   contentRequirements: ContentRequirementI<Metal>[];
 }
 
 export const Tariffs = ({
   countries,
-  htsCode,
+  htsElement,
   setSelectedCountries,
   contentRequirements,
 }: Props) => {
@@ -23,7 +24,7 @@ export const Tariffs = ({
         <CountryTariff
           key={`tariff-${country.code}-${i}`}
           country={country}
-          htsCode={htsCode}
+          htsElement={htsElement}
           countries={countries}
           setSelectedCountries={setSelectedCountries}
           contentRequirements={contentRequirements}

@@ -16,7 +16,7 @@ export enum HtsLevel {
   MISCELLANEOUS = "Miscellaneous",
 }
 
-export enum TariffType {
+export enum TariffColumn {
   GENERAL = "general",
   SPECIAL = "special",
   OTHER = "other",

@@ -6,6 +6,7 @@ import { mexicoTariffs } from "./mexico";
 import { reciprocalTariffs } from "./reciprocal";
 import { exceptionTariffs } from "./exception";
 import { ironAndSteelTariffs } from "./iron-and-steel";
+import { HtsElement } from "../../interfaces/hts";
 
 export type Metal = "Aluminum" | "Steel" | "Copper";
 
@@ -46,6 +47,14 @@ export enum TariffColumn {
   SPECIAL = "special",
   OTHER = "other",
 }
+
+// TODO: would need to get lists of all countries that qualify for all agreements
+// then would need to map that to the country selected -- would also rely on
+// the classifier to select whether or not the item qualifies
+export const getTariffColumn = (
+  htsElement: HtsElement,
+  countryCode: string
+) => {};
 
 // TODO: triple check this to ensure that we're doing the right checks
 //  especially when it comes to handling inclusions that are tariffs...

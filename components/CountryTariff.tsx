@@ -10,10 +10,13 @@ import {
 import { Tariff, TariffUI } from "./Tariff";
 import { ContentRequirementI } from "./Element";
 import { classNames } from "../utilities/style";
+import { HtsElement } from "../interfaces/hts";
+import { getBaseTariffs } from "../libs/hts";
+import { BaseTariff } from "./BaseTariff";
 
 interface Props {
   country: Country;
-  htsCode: string;
+  htsElement: HtsElement;
   countries: Country[];
   setSelectedCountries: Dispatch<SetStateAction<Country[]>>;
   contentRequirements: ContentRequirementI<Metal>[];
@@ -21,11 +24,21 @@ interface Props {
 
 export const CountryTariff = ({
   country,
-  htsCode,
+  htsElement,
   countries,
   setSelectedCountries,
   contentRequirements,
 }: Props) => {
+  const htsCode = htsElement.htsno;
+
+  const generalBaseTariffs = getBaseTariffs(htsElement.general);
+  const specialBaseTariffs = getBaseTariffs(htsElement.special);
+  const otherBaseTariffs = getBaseTariffs(htsElement.other);
+
+  console.log("generalBaseTariffs", generalBaseTariffs);
+  console.log("specialBaseTariffs", specialBaseTariffs);
+  console.log("otherBaseTariffs", otherBaseTariffs);
+  // const tariffColumn = getTariffColumn(htsElement, country.code);
   const applicableTariffs = getTariffs(country.code, htsCode).map((t) => ({
     ...t,
     isActive: tariffIsActive(t, country.code, htsCode),
@@ -84,7 +97,7 @@ export const CountryTariff = ({
     (t) => !allExceptionTariffCodes.has(t.code)
   );
 
-  const getTariffSets = () => {
+  const getTariffSets = (baseRates?: TariffUI[]): Array<TariffUI[]> => {
     console.log("============================");
     console.log("============================");
     console.log("============================");
@@ -288,6 +301,15 @@ export const CountryTariff = ({
       >
         {tariffSets.map((tariffSet, i) => (
           <div key={i} className="flex flex-col gap-4">
+            {generalBaseTariffs.length > 0 &&
+              generalBaseTariffs.map((t, i) => (
+                <BaseTariff
+                  key={`${htsElement.htsno}-${t.raw}-${i}`}
+                  index={i}
+                  htsElement={htsElement}
+                  tariff={t}
+                />
+              ))}
             {tariffSet.map((tariff) => (
               <Tariff
                 key={tariff.code}

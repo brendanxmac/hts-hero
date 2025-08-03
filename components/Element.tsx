@@ -3,10 +3,11 @@ import { useEffect, useState } from "react";
 import {
   getDirectChildrenElements,
   getBreadCrumbsForElement,
-  getTariffDetails,
+  getTariffElement,
   getTemporaryTariffTextElement,
   getGeneralNoteFromSpecialTariffSymbol,
   isFullHTSCode,
+  getBaseTariffs,
 } from "../libs/hts";
 import { ElementSummary } from "./ElementSummary";
 import {
@@ -22,7 +23,7 @@ import { TertiaryLabel } from "./TertiaryLabel";
 import { SecondaryText } from "./SecondaryText";
 import { useHts } from "../contexts/HtsContext";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
-import { TariffType } from "../enums/hts";
+import { TariffColumn } from "../enums/hts";
 import {
   getStringBetweenParenthesis,
   getTextBeforeOpeningParenthesis,
@@ -85,11 +86,11 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
   }, [element]);
 
   const [tariffElement, setTariffElement] = useState<HtsElement | null>(
-    getTariffDetails(element, htsElements, breadcrumbs)
+    getTariffElement(element, htsElements, breadcrumbs)
   );
 
   useEffect(() => {
-    setTariffElement(getTariffDetails(element, htsElements, breadcrumbs));
+    setTariffElement(getTariffElement(element, htsElements, breadcrumbs));
   }, [breadcrumbs]);
 
   const getHtsnoLabel = () => {
@@ -293,7 +294,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
               {isFullHTSCode(htsno) && (
                 <Tariffs
                   countries={selectedCountries}
-                  htsCode={htsno}
+                  htsElement={element}
                   setSelectedCountries={setSelectedCountries}
                   contentRequirements={contentPercentages}
                 />
@@ -352,7 +353,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                       </div>
                       {getTemporaryTariffTextElement(
                         tariffElement,
-                        TariffType.GENERAL
+                        TariffColumn.GENERAL
                       )}
                     </div>
 
@@ -422,7 +423,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                       )}
                       {getTemporaryTariffTextElement(
                         tariffElement,
-                        TariffType.SPECIAL
+                        TariffColumn.SPECIAL
                       )}
                     </div>
 
@@ -439,7 +440,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                       </div>
                       {getTemporaryTariffTextElement(
                         tariffElement,
-                        TariffType.OTHER
+                        TariffColumn.OTHER
                       )}
                     </div>
 

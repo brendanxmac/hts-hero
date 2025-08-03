@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useClassification } from "../contexts/ClassificationContext";
 import { useHts } from "../contexts/HtsContext";
-import { TariffType } from "../enums/hts";
+import { TariffColumn } from "../enums/hts";
 import { Color } from "../enums/style";
 import {
   downloadClassificationReport,
@@ -10,7 +10,7 @@ import {
   getGeneralNoteFromSpecialTariffSymbol,
   getHtsElementParents,
   getSectionAndChapterFromChapterNumber,
-  getTariffDetails,
+  getTariffElement,
   getTemporaryTariffTextElement,
 } from "../libs/hts";
 import {
@@ -50,7 +50,7 @@ export const ClassificationResultPage = () => {
   const { classification, setClassification } = useClassification();
   const { htsElements } = useHts();
   const { levels } = classification;
-  const tariffElement = getTariffDetails(
+  const tariffElement = getTariffElement(
     classification.levels[levels.length - 1].selection,
     htsElements
   );
@@ -286,7 +286,7 @@ export const ClassificationResultPage = () => {
 
                     {getTemporaryTariffTextElement(
                       tariffElement,
-                      TariffType.GENERAL
+                      TariffColumn.GENERAL
                     )}
                   </div>
                   <div className="flex flex-col p-3 bg-base-100 border border-base-content/10 rounded-md min-w-24 gap-3">
@@ -350,7 +350,7 @@ export const ClassificationResultPage = () => {
                     </div>
                     {getTemporaryTariffTextElement(
                       tariffElement,
-                      TariffType.SPECIAL
+                      TariffColumn.SPECIAL
                     )}
                   </div>
 
@@ -365,7 +365,7 @@ export const ClassificationResultPage = () => {
 
                     {getTemporaryTariffTextElement(
                       tariffElement,
-                      TariffType.OTHER
+                      TariffColumn.OTHER
                     )}
                   </div>
 
