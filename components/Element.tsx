@@ -7,7 +7,6 @@ import {
   getTemporaryTariffTextElement,
   getGeneralNoteFromSpecialTariffSymbol,
   isFullHTSCode,
-  getBaseTariffs,
 } from "../libs/hts";
 import { ElementSummary } from "./ElementSummary";
 import {

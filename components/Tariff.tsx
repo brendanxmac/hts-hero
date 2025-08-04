@@ -215,33 +215,12 @@ export const Tariff = ({
           )}
           <div className="flex flex-col gap-1">
             <div className="flex gap-2">
-              <TertiaryLabel
-                value={tariff.code}
-                color={Color.NEUTRAL_CONTENT}
-              />
+              <TertiaryLabel value={tariff.code} color={Color.ACCENT} />
               {tariff.requiresReview && (
                 <TertiaryText value={"[Needs Review]"} />
               )}
             </div>
             <SecondaryText value={tariff.name} color={Color.WHITE} />
-            {/* {tariff.isActive && (
-              <div className="flex gap-2 items-center">
-                <input
-                  type="range"
-                  min={0}
-                  max="100"
-                  value={percentage}
-                  className="range range-primary range-sm m-2 p-1"
-                  onChange={(e) => {
-                    setPercentage(Number(e.target.value));
-                  }}
-                />
-                <TertiaryLabel
-                  value={`${percentage}%`}
-                  color={Color.NEUTRAL_CONTENT}
-                />
-              </div>
-            )} */}
           </div>
         </div>
         <p

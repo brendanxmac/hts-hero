@@ -12,7 +12,6 @@ import { ContentRequirementI } from "./Element";
 import { classNames } from "../utilities/style";
 import { HtsElement } from "../interfaces/hts";
 import {
-  BaseTariffI,
   getBaseTariffs,
   getGeneralNoteFromSpecialTariffSymbol,
 } from "../libs/hts";
@@ -38,7 +37,6 @@ export const CountryTariff = ({
   setSelectedCountries,
   contentRequirements,
 }: Props) => {
-  const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
   const htsCode = htsElement.htsno;
   const applicableTariffs = getTariffs(country.code, htsCode).map((t) => ({
     ...t,
@@ -165,15 +163,6 @@ export const CountryTariff = ({
     return [baseSet, ...otherSets];
   };
 
-  const [tariffSets, setTariffSets] =
-    useState<Array<TariffUI[]>>(getTariffSets());
-
-  const [tariffColumn, setTariffColumn] = useState<TariffColumn>(
-    otherColumnCountryCodes.includes(country.code)
-      ? TariffColumn.OTHER
-      : TariffColumn.GENERAL
-  );
-
   const getBaseTariffsForColumn = (column: TariffColumn) => {
     if (column === TariffColumn.GENERAL) {
       return getBaseTariffs(htsElement.general);
@@ -211,8 +200,17 @@ export const CountryTariff = ({
     return rate;
   };
 
+  const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
+  const [tariffSets, setTariffSets] =
+    useState<Array<TariffUI[]>>(getTariffSets());
+  const [tariffColumn, setTariffColumn] = useState<TariffColumn>(
+    otherColumnCountryCodes.includes(country.code)
+      ? TariffColumn.OTHER
+      : TariffColumn.GENERAL
+  );
   const [tariffs, setTariffs] = useState<TariffUI[]>(cleanedUpTariffs);
   const [showInactive, setShowInactive] = useState<boolean>(true);
+  const isOtherColumnCountry = otherColumnCountryCodes.includes(country.code);
 
   return (
     <div className="flex flex-col p-8 border-2 border-base-content/50 bg-base-300 rounded-md gap-6">
@@ -311,13 +309,14 @@ export const CountryTariff = ({
         </div>
       </div>
 
-      {/* Ability to select between general, special, and other */}
+      {/* Tariff Column Selection */}
       <div className="flex gap-8">
         {/* General */}
         <div className="flex flex-col gap-2">
           <div className="cursor-pointer flex gap-2 p-0">
             <input
               type="checkbox"
+              disabled={isOtherColumnCountry}
               checked={tariffColumn === TariffColumn.GENERAL}
               className="checkbox checkbox-primary"
               onChange={() => {
@@ -331,10 +330,11 @@ export const CountryTariff = ({
         </div>
 
         {/* Special */}
-        <div className="flex flex-col max-w-xs">
+        <div className="flex flex-col max-w-sm">
           <div className="cursor-pointer flex gap-2 p-0">
             <input
               type="checkbox"
+              disabled={isOtherColumnCountry}
               checked={tariffColumn === TariffColumn.SPECIAL}
               className="checkbox checkbox-primary"
               onChange={() => {
@@ -387,6 +387,7 @@ export const CountryTariff = ({
           <div className="cursor-pointer flex gap-2 p-0">
             <input
               type="checkbox"
+              disabled={!isOtherColumnCountry}
               checked={tariffColumn === TariffColumn.OTHER}
               className="checkbox checkbox-primary"
               onChange={() => {
@@ -397,12 +398,26 @@ export const CountryTariff = ({
             />
             <span className="label-text font-bold text-lg">Other Rate</span>
           </div>
-          <div className="flex flex-wrap text-sm">
+          <div className="flex flex-wrap text-sm gap-1">
             (
             {countries
               .filter((c) => otherColumnCountryCodes.includes(c.code))
-              .map((country) => country.name)
-              .join(", ")}
+              .map((otherColumnCountry, index) => (
+                <span
+                  key={index}
+                  className={classNames(
+                    country.code === otherColumnCountry.code &&
+                      "font-bold text-white"
+                  )}
+                >
+                  {otherColumnCountry.name}
+                  {index <
+                    countries.filter((c) =>
+                      otherColumnCountryCodes.includes(c.code)
+                    ).length -
+                      1 && ", "}
+                </span>
+              ))}
             )
           </div>
         </div>
@@ -414,9 +429,44 @@ export const CountryTariff = ({
         )}
       >
         {tariffSets.map((tariffSet, i) => (
-          <div key={i} className="flex flex-col gap-4">
-            {getBaseTariffsForColumn(tariffColumn).length > 0 &&
-              getBaseTariffsForColumn(tariffColumn).map((t, i) => (
+          <div key={`tariff-set-${i}`} className="flex flex-col gap-4">
+            {getBaseTariffsForColumn(tariffColumn).parsingFailures.length >
+              0 && (
+              <div className="flex flex-col gap-2 p-4 border-2 border-red-500 rounded-md">
+                <h2 className="text-white font-bold">
+                  {`Error Parsing ${htsElement.htsno}'s Base Tariff(s):`}
+                </h2>
+                <ul className="flex flex-col gap-2 list-disc list-outside">
+                  {getBaseTariffsForColumn(tariffColumn).parsingFailures.map(
+                    (t, i) => (
+                      <li
+                        key={`${htsElement.htsno}-${t}-${i}`}
+                        className="ml-6 text-red-500 font-bold text-lg"
+                      >
+                        {t}
+                      </li>
+                    )
+                  )}
+                </ul>
+
+                <p className="text-base-content">
+                  Please send{" "}
+                  <a
+                    href="mailto:support@htshero.com"
+                    className="text-primary font-bold"
+                  >
+                    support
+                  </a>{" "}
+                  a screenshot of this error.
+                </p>
+                <p className="text-base-content">
+                  All tariffs are still presented so you can manually add them
+                  them while we work on the fix
+                </p>
+              </div>
+            )}
+            {getBaseTariffsForColumn(tariffColumn).tariffs.length > 0 &&
+              getBaseTariffsForColumn(tariffColumn).tariffs.map((t, i) => (
                 <BaseTariff
                   key={`${htsElement.htsno}-${t.raw}-${i}`}
                   index={i}

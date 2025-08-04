@@ -753,28 +753,39 @@ export interface BaseTariffI {
   raw: string;
 }
 
-export function getBaseTariffs(input: string): BaseTariffI[] {
+export function getBaseTariffs(input: string): {
+  tariffs: BaseTariffI[];
+  parsingFailures: string[];
+} {
   const parts = input.split(/\s+\+\s+/);
-  const result: BaseTariffI[] = [];
+  const tariffs: BaseTariffI[] = [];
+  const parsingFailures: string[] = [];
+
+  // TODO: consider adding "errors" in the return object so that
+  // we can take that raw tariff rate and return it to the user
+  // and at least show it in plain text for now, to prevent any
+  // really big issues or MISSING data at the very least
 
   for (const part of parts) {
     const trimmed = part.trim();
     const raw = trimmed;
 
     if (!trimmed) {
-      return [];
+      return { tariffs: [], parsingFailures: [] };
     }
 
     // % percent
     const percentMatch = trimmed.match(/^(\d+(\.\d+)?)\s*%$/);
     if (percentMatch) {
-      result.push({
+      tariffs.push({
         value: Math.round(parseFloat(percentMatch[1]) * 10000) / 10000,
         type: "percent",
         raw,
       });
       continue;
     }
+
+    // Free (BH,CL,JO,KR,MA,OM,P,PE,SG) 7.3¢/kg + 0.9% (PA) See 9822.04.25 (AU) See 9823.05.01-9823.05.06 (S+) See 9918.04.60, 9918.04.61 (CO)
 
     // Amounts with $, ¢, unit and optional "on <stuff>"
     // Handle both patterns: "$1.035/kg" and "37.2¢/kg"
@@ -797,7 +808,7 @@ export function getBaseTariffs(input: string): BaseTariffI[] {
         resultObj.details = `on ${unit2.trim()}`;
       }
 
-      result.push(resultObj);
+      tariffs.push(resultObj);
       continue;
     }
 
@@ -821,15 +832,15 @@ export function getBaseTariffs(input: string): BaseTariffI[] {
         resultObj.details = `on ${unit2.trim()}`;
       }
 
-      result.push(resultObj);
+      tariffs.push(resultObj);
       continue;
     }
 
     console.error(`Unable to parse duty string: "${raw}" from "${input}"`);
-    return [];
+    parsingFailures.push(raw);
   }
 
-  return result;
+  return { tariffs, parsingFailures };
 }
 
 export const getTemporaryTariffTextElement = (
