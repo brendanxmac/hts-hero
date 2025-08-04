@@ -293,7 +293,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
               {/* TODO: I think we can remove this check cause we already do similar above? */}
               {isFullHTSCode(htsno) && (
                 <Tariffs
-                  countries={selectedCountries}
+                  selectedCountries={selectedCountries}
                   htsElement={element}
                   setSelectedCountries={setSelectedCountries}
                   contentRequirements={contentPercentages}

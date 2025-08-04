@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useState } from "react";
-import { Country } from "../constants/countries";
+import { countries, Country } from "../constants/countries";
 import {
   getTariffs,
   Metal,
@@ -11,13 +11,22 @@ import { Tariff, TariffUI } from "./Tariff";
 import { ContentRequirementI } from "./Element";
 import { classNames } from "../utilities/style";
 import { HtsElement } from "../interfaces/hts";
-import { getBaseTariffs } from "../libs/hts";
+import {
+  BaseTariffI,
+  getBaseTariffs,
+  getGeneralNoteFromSpecialTariffSymbol,
+} from "../libs/hts";
 import { BaseTariff } from "./BaseTariff";
+import { SupabaseBuckets } from "../constants/supabase";
+import { getStringBetweenParenthesis } from "../utilities/hts";
+import { PDFProps } from "../interfaces/ui";
+import PDF from "./PDF";
+import { otherColumnCountryCodes } from "../public/tariffs/tariff-columns";
 
 interface Props {
   country: Country;
   htsElement: HtsElement;
-  countries: Country[];
+  selectedCountries: Country[];
   setSelectedCountries: Dispatch<SetStateAction<Country[]>>;
   contentRequirements: ContentRequirementI<Metal>[];
 }
@@ -25,20 +34,12 @@ interface Props {
 export const CountryTariff = ({
   country,
   htsElement,
-  countries,
+  selectedCountries,
   setSelectedCountries,
   contentRequirements,
 }: Props) => {
+  const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
   const htsCode = htsElement.htsno;
-
-  const generalBaseTariffs = getBaseTariffs(htsElement.general);
-  const specialBaseTariffs = getBaseTariffs(htsElement.special);
-  const otherBaseTariffs = getBaseTariffs(htsElement.other);
-
-  console.log("generalBaseTariffs", generalBaseTariffs);
-  console.log("specialBaseTariffs", specialBaseTariffs);
-  console.log("otherBaseTariffs", otherBaseTariffs);
-  // const tariffColumn = getTariffColumn(htsElement, country.code);
   const applicableTariffs = getTariffs(country.code, htsCode).map((t) => ({
     ...t,
     isActive: tariffIsActive(t, country.code, htsCode),
@@ -167,6 +168,22 @@ export const CountryTariff = ({
   const [tariffSets, setTariffSets] =
     useState<Array<TariffUI[]>>(getTariffSets());
 
+  const [tariffColumn, setTariffColumn] = useState<TariffColumn>(
+    otherColumnCountryCodes.includes(country.code)
+      ? TariffColumn.OTHER
+      : TariffColumn.GENERAL
+  );
+
+  const getBaseTariffsForColumn = (column: TariffColumn) => {
+    if (column === TariffColumn.GENERAL) {
+      return getBaseTariffs(htsElement.general);
+    } else if (column === TariffColumn.SPECIAL) {
+      return getBaseTariffs(htsElement.special);
+    } else if (column === TariffColumn.OTHER) {
+      return getBaseTariffs(htsElement.other);
+    }
+  };
+
   // Recursive helper function to calculate rate from a tariff and all its exceptions
   const calculateTariffRate = (
     tariff: TariffUI,
@@ -209,7 +226,7 @@ export const CountryTariff = ({
             className="rounded-md p-1 bg-primary/30 text-white hover:text-primary transition-colors"
             onClick={() =>
               setSelectedCountries(
-                countries.filter((c) => c.code !== country.code)
+                selectedCountries.filter((c) => c.code !== country.code)
               )
             }
           >
@@ -294,6 +311,103 @@ export const CountryTariff = ({
         </div>
       </div>
 
+      {/* Ability to select between general, special, and other */}
+      <div className="flex gap-8">
+        {/* General */}
+        <div className="flex flex-col gap-2">
+          <div className="cursor-pointer flex gap-2 p-0">
+            <input
+              type="checkbox"
+              checked={tariffColumn === TariffColumn.GENERAL}
+              className="checkbox checkbox-primary"
+              onChange={() => {
+                if (tariffColumn !== TariffColumn.GENERAL) {
+                  setTariffColumn(TariffColumn.GENERAL);
+                }
+              }}
+            />
+            <span className="label-text font-bold text-lg">General Rate</span>
+          </div>
+        </div>
+
+        {/* Special */}
+        <div className="flex flex-col max-w-xs">
+          <div className="cursor-pointer flex gap-2 p-0">
+            <input
+              type="checkbox"
+              checked={tariffColumn === TariffColumn.SPECIAL}
+              className="checkbox checkbox-primary"
+              onChange={() => {
+                if (tariffColumn !== TariffColumn.SPECIAL) {
+                  setTariffColumn(TariffColumn.SPECIAL);
+                }
+              }}
+            />
+            <span className="label-text font-bold text-lg">Special Rate</span>
+          </div>
+          {getStringBetweenParenthesis(htsElement.special) && (
+            <div className="flex flex-col">
+              <div className="flex flex-wrap gap-x-1">
+                {getStringBetweenParenthesis(htsElement.special)
+                  .split(",")
+                  .map((specialTariffSymbol, index) => {
+                    const note = getGeneralNoteFromSpecialTariffSymbol(
+                      specialTariffSymbol.trim()
+                    );
+                    return (
+                      <div
+                        key={`${specialTariffSymbol}-${index}`}
+                        className="tooltip tooltip-primary tooltip-bottom"
+                        data-tip={note?.description || note?.title || null}
+                      >
+                        <button
+                          className="btn btn-link btn-xs text-xs p-0 hover:text-secondary"
+                          onClick={() => {
+                            const note = getGeneralNoteFromSpecialTariffSymbol(
+                              specialTariffSymbol.trim()
+                            );
+                            setShowPDF({
+                              title: note?.title || "",
+                              bucket: SupabaseBuckets.NOTES,
+                              filePath: note?.filePath || "",
+                            });
+                          }}
+                        >
+                          {specialTariffSymbol}
+                        </button>
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+          )}
+        </div>
+        {/* Other */}
+        <div className="flex flex-col gap-1">
+          <div className="cursor-pointer flex gap-2 p-0">
+            <input
+              type="checkbox"
+              checked={tariffColumn === TariffColumn.OTHER}
+              className="checkbox checkbox-primary"
+              onChange={() => {
+                if (tariffColumn !== TariffColumn.OTHER) {
+                  setTariffColumn(TariffColumn.OTHER);
+                }
+              }}
+            />
+            <span className="label-text font-bold text-lg">Other Rate</span>
+          </div>
+          <div className="flex flex-wrap text-sm">
+            (
+            {countries
+              .filter((c) => otherColumnCountryCodes.includes(c.code))
+              .map((country) => country.name)
+              .join(", ")}
+            )
+          </div>
+        </div>
+      </div>
+
       <div
         className={classNames(
           tariffSets.length > 1 ? "grid grid-cols-2 gap-4" : "flex flex-col"
@@ -301,8 +415,8 @@ export const CountryTariff = ({
       >
         {tariffSets.map((tariffSet, i) => (
           <div key={i} className="flex flex-col gap-4">
-            {generalBaseTariffs.length > 0 &&
-              generalBaseTariffs.map((t, i) => (
+            {getBaseTariffsForColumn(tariffColumn).length > 0 &&
+              getBaseTariffsForColumn(tariffColumn).map((t, i) => (
                 <BaseTariff
                   key={`${htsElement.htsno}-${t.raw}-${i}`}
                   index={i}
@@ -340,6 +454,19 @@ export const CountryTariff = ({
           />
         ))}
       </div> */}
+      {showPDF && (
+        <PDF
+          title={showPDF.title}
+          bucket={showPDF.bucket}
+          filePath={showPDF.filePath}
+          isOpen={showPDF !== null}
+          setIsOpen={(isOpen) => {
+            if (!isOpen) {
+              setShowPDF(null);
+            }
+          }}
+        />
+      )}
     </div>
   );
 };
