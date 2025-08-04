@@ -34,7 +34,6 @@ import { Color } from "../enums/style";
 import { UserProfile } from "./supabase/user";
 import { notes } from "../public/notes/notes";
 import { inflate } from "pako";
-import { TariffI } from "../public/tariffs/tariffs";
 
 export const downloadClassificationReport = async (
   classification: Classification,

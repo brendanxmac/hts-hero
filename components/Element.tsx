@@ -199,48 +199,50 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
           {/* If htsno is 10 digits, show the country selection */}
           {htsno && htsno.replaceAll(".", "").length === 10 && (
             <div className="w-full flex flex-col gap-4">
-              <div className="flex flex-col">
-                <PrimaryLabel value="Tariff Simulator" color={Color.WHITE} />
-                <TertiaryText
-                  value="Select countries to simulate potential tariff scenarios"
-                  color={Color.NEUTRAL_CONTENT}
-                />
+              <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-1">
+                  <PrimaryLabel value="Tariff(s)" color={Color.ACCENT} />
+                  <TertiaryText
+                    value="Select countries to simulate potential tariff scenarios"
+                    color={Color.NEUTRAL_CONTENT}
+                  />
+                </div>
+                <div className="flex gap-2 items-center w-full max-w-2xl">
+                  <div className="grow">
+                    <CountrySelection
+                      selectedCountries={selectedCountries}
+                      setSelectedCountries={setSelectedCountries}
+                    />
+                  </div>
+
+                  <button
+                    className="btn btn-sm btn-primary"
+                    disabled={selectedCountries.length === 0}
+                    onClick={() => {
+                      selectedCountries.map((country) =>
+                        window.open(
+                          `https://tariffs.flexport.com/?entryDate=${format(new Date(), "yyyy-MM-dd")}&country=${country.code}&value=10000&advanced=true&code=${htsno}`,
+                          "_blank"
+                        )
+                      );
+                    }}
+                  >
+                    <MagnifyingGlassIcon className="w-4 h-4" />
+                    Search
+                  </button>
+                </div>
               </div>
               {/* Go get all the content requirements based on the applicable tariffs */}
               <div className="flex flex-col gap-4">
                 <div className="flex flex-col gap-1">
-                  <SecondaryLabel
+                  {/* <SecondaryLabel
                     value={`Country of Origin Selection`}
                     color={Color.WHITE}
                   />
                   <TertiaryText
                     value="Which countries of origin could this item come from?"
                     color={Color.NEUTRAL_CONTENT}
-                  />
-                  <div className="flex gap-2 items-center w-full max-w-2xl">
-                    <div className="grow">
-                      <CountrySelection
-                        selectedCountries={selectedCountries}
-                        setSelectedCountries={setSelectedCountries}
-                      />
-                    </div>
-
-                    <button
-                      className="btn btn-sm btn-primary"
-                      disabled={selectedCountries.length === 0}
-                      onClick={() => {
-                        selectedCountries.map((country) =>
-                          window.open(
-                            `https://tariffs.flexport.com/?entryDate=${format(new Date(), "yyyy-MM-dd")}&country=${country.code}&value=10000&advanced=true&code=${htsno}`,
-                            "_blank"
-                          )
-                        );
-                      }}
-                    >
-                      <MagnifyingGlassIcon className="w-4 h-4" />
-                      Search
-                    </button>
-                  </div>
+                  /> */}
                 </div>
                 {contentRequirements.map((contentRequirement) => (
                   <div
@@ -332,7 +334,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
             </div>
           )}
 
-          {(tariffElement || element.additionalDuties) && (
+          {/* {(tariffElement || element.additionalDuties) && (
             <div className="w-full flex flex-col gap-4">
               <SecondaryLabel value="Base Tariff Details" color={Color.WHITE} />
 
@@ -469,7 +471,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                 )}
               </div>
             </div>
-          )}
+          )} */}
         </>
       )}
       {showPDF && (

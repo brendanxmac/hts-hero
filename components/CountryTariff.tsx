@@ -222,30 +222,6 @@ export const CountryTariff = ({
         <div className="flex gap-2">
           <button
             className="rounded-md p-1 bg-primary/30 text-white hover:text-primary transition-colors"
-            onClick={() =>
-              setSelectedCountries(
-                selectedCountries.filter((c) => c.code !== country.code)
-              )
-            }
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M18 6L6 18M6 6L18 18"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-          <button
-            className="rounded-md p-1 bg-primary/30 text-white hover:text-primary transition-colors"
             onClick={() => setShowInactive(!showInactive)}
           >
             {showInactive ? (
@@ -303,6 +279,30 @@ export const CountryTariff = ({
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+              />
+            </svg>
+          </button>
+          <button
+            className="rounded-md p-1 bg-primary/30 text-white hover:text-primary transition-colors"
+            onClick={() =>
+              setSelectedCountries(
+                selectedCountries.filter((c) => c.code !== country.code)
+              )
+            }
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M18 6L6 18M6 6L18 18"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
             </svg>
           </button>
@@ -430,6 +430,30 @@ export const CountryTariff = ({
       >
         {tariffSets.map((tariffSet, i) => (
           <div key={`tariff-set-${i}`} className="flex flex-col gap-4">
+            {getBaseTariffsForColumn(tariffColumn).tariffs.length > 0 &&
+              getBaseTariffsForColumn(tariffColumn).tariffs.map((t, i) => (
+                <BaseTariff
+                  key={`${htsElement.htsno}-${t.raw}-${i}`}
+                  index={i}
+                  htsElement={htsElement}
+                  tariff={t}
+                />
+              ))}
+            {tariffSet.map((tariff) => (
+              <Tariff
+                key={tariff.code}
+                showInactive={showInactive}
+                tariff={tariff}
+                tariffs={tariffs}
+                setTariffs={setTariffs}
+              />
+            ))}
+            <div className="-mt-2 w-full flex justify-between items-end gap-2">
+              <h2 className="text-white font-bold">Total:</h2>
+              <p className="text-xl font-bold text-primary transition duration-100">
+                {getRate(TariffColumn.GENERAL, tariffSet)}%
+              </p>
+            </div>
             {getBaseTariffsForColumn(tariffColumn).parsingFailures.length >
               0 && (
               <div className="flex flex-col gap-2 p-4 border-2 border-red-500 rounded-md">
@@ -465,45 +489,10 @@ export const CountryTariff = ({
                 </p>
               </div>
             )}
-            {getBaseTariffsForColumn(tariffColumn).tariffs.length > 0 &&
-              getBaseTariffsForColumn(tariffColumn).tariffs.map((t, i) => (
-                <BaseTariff
-                  key={`${htsElement.htsno}-${t.raw}-${i}`}
-                  index={i}
-                  htsElement={htsElement}
-                  tariff={t}
-                />
-              ))}
-            {tariffSet.map((tariff) => (
-              <Tariff
-                key={tariff.code}
-                showInactive={showInactive}
-                tariff={tariff}
-                tariffs={tariffs}
-                setTariffs={setTariffs}
-              />
-            ))}
-            <div className="-mt-2 w-full flex justify-between items-end gap-2">
-              <h2 className="text-white font-bold">Total:</h2>
-              <p className="text-xl font-bold text-primary transition duration-100">
-                {getRate(TariffColumn.GENERAL, tariffSet)}%
-              </p>
-            </div>
           </div>
         ))}
       </div>
 
-      {/* <div className="flex flex-col gap-4 border-b-2 border-white">
-        {tariffs.map((tariff) => (
-          <Tariff
-            key={tariff.code}
-            showInactive={showInactive}
-            tariff={tariff}
-            tariffs={tariffs}
-            setTariffs={setTariffs}
-          />
-        ))}
-      </div> */}
       {showPDF && (
         <PDF
           title={showPDF.title}
