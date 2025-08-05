@@ -1177,6 +1177,7 @@ export const exceptionTariffs: TariffI[] = [
       countries: ["*"],
     },
     requiresReview: true,
+    // TODO: add contentRequirement here so that we can only apply the other tariffs on the non-US content if over 20%
   },
   {
     code: "9903.96.01", // lookup why this one gets applied in many places and where that comes from in ths HTS

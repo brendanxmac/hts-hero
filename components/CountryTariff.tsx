@@ -12,6 +12,7 @@ import { ContentRequirementI } from "./Element";
 import { classNames } from "../utilities/style";
 import { HtsElement } from "../interfaces/hts";
 import {
+  BaseTariffI,
   getBaseTariffs,
   getGeneralNoteFromSpecialTariffSymbol,
 } from "../libs/hts";
@@ -192,12 +193,32 @@ export const CountryTariff = ({
     return rate;
   };
 
-  const getRate = (column: TariffColumn, tariffSet: TariffUI[]) => {
+  const getAdValoremRate = (
+    column: TariffColumn,
+    tariffSet: TariffUI[],
+    baseTariffs: BaseTariffI[]
+  ) => {
     let rate = 0;
     tariffSet.forEach((tariff) => {
       rate += calculateTariffRate(tariff, column);
     });
+
+    if (baseTariffs && baseTariffs.length > 0) {
+      baseTariffs
+        .filter((tariff) => tariff.type === "percent")
+        .forEach((t) => {
+          rate += t.value;
+        });
+    }
+
     return rate;
+  };
+
+  const getAmountRates = (baseTariffs: BaseTariffI[]) => {
+    return baseTariffs
+      .filter((t) => t.type === "amount")
+      .map((t) => t.raw)
+      .join(" + ");
   };
 
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
@@ -444,15 +465,35 @@ export const CountryTariff = ({
                 key={tariff.code}
                 showInactive={showInactive}
                 tariff={tariff}
-                tariffs={tariffs}
-                setTariffs={setTariffs}
+                setIndex={i}
+                tariffSets={tariffSets}
+                setTariffSets={setTariffSets}
               />
             ))}
             <div className="-mt-2 w-full flex justify-between items-end gap-2">
               <h2 className="text-white font-bold">Total:</h2>
-              <p className="text-xl font-bold text-primary transition duration-100">
-                {getRate(TariffColumn.GENERAL, tariffSet)}%
-              </p>
+              <div className="flex gap-2">
+                {getBaseTariffsForColumn(tariffColumn).tariffs.length > 0 && (
+                  <div className="flex gap-2">
+                    <p className="text-xl font-bold text-primary transition duration-100">
+                      {getAmountRates(
+                        getBaseTariffsForColumn(tariffColumn).tariffs
+                      )}
+                    </p>
+                    <p className="text-xl font-bold text-primary transition duration-100">
+                      +
+                    </p>
+                  </div>
+                )}
+                <p className="text-xl font-bold text-primary transition duration-100">
+                  {getAdValoremRate(
+                    tariffColumn,
+                    tariffSet,
+                    getBaseTariffsForColumn(tariffColumn).tariffs
+                  )}
+                  %
+                </p>
+              </div>
             </div>
             {getBaseTariffsForColumn(tariffColumn).parsingFailures.length >
               0 && (

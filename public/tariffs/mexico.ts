@@ -19,7 +19,7 @@ export const mexicoTariffs: TariffI[] = [
       "9903.01.04",
       // FIXME: turning this on causes infinite loop
       // cause they reference eachother as exceptions
-      // "9903.01.05",
+      "9903.01.05",
       // Aluminum
       "9903.85.02",
       "9903.85.04",
@@ -84,7 +84,7 @@ export const mexicoTariffs: TariffI[] = [
     general: 10,
     special: 0,
     other: 0,
-    exceptions: ["9903.01.01", "9903.01.02", "9903.01.03", "9903.01.04"],
+    // exceptions: ["9903.01.01", "9903.01.02", "9903.01.03", "9903.01.04"],
     requiresReview: true,
     inclusions: {
       countries: ["MX"],
