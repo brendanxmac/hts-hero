@@ -56,6 +56,23 @@ export const getTariffColumn = (
   countryCode: string
 ) => {};
 
+export const findExceptions = (
+  tariff: TariffI,
+  countryCode: string,
+  htsCode: string
+): TariffI[] => {
+  if (tariff.exceptions && tariff.exceptions.length > 0) {
+    const exceptionTariffs = getTariffsByCode(tariff.exceptions);
+    const childrenExceptions = exceptionTariffs.flatMap((exception) =>
+      findExceptions(exception, htsCode, countryCode)
+    );
+    return [...exceptionTariffs, ...childrenExceptions].filter((t) =>
+      tariffIsApplicable(t, countryCode, htsCode)
+    );
+  }
+  return [];
+};
+
 // TODO: triple check this to ensure that we're doing the right checks
 //  especially when it comes to handling inclusions that are tariffs...
 //  That should probably be its own function anyways... somehow
