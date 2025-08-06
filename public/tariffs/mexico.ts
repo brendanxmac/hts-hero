@@ -84,8 +84,8 @@ export const mexicoTariffs: TariffI[] = [
     general: 10,
     special: 0,
     other: 0,
-    // exceptions: ["9903.01.01", "9903.01.02", "9903.01.03", "9903.01.04"],
     requiresReview: true,
+    exceptions: ["9903.01.02", "9903.01.03", "9903.01.04"],
     inclusions: {
       countries: ["MX"],
     },

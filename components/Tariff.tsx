@@ -153,42 +153,58 @@ export const Tariff = ({
   };
 
   const toggleExceptionTariff = (exceptionTariff: TariffUI) => {
-    // Find the parent tariff that contains this exception within the current set
-    const { parent, path } = findParentTariff(
-      tariffSets[setIndex],
-      exceptionTariff.code
-    );
+    // Find ALL tariffs with the same code across all tariff sets and toggle them
+    const updatedTariffSets = tariffSets.map((set) => {
+      // First, update all tariffs with the same code
+      let updatedSet = updateTariffRecursively(
+        set,
+        exceptionTariff.code,
+        (tariff) => {
+          return { ...tariff, isActive: !tariff.isActive };
+        }
+      );
 
-    if (!parent) {
-      return; // Should not happen, but safety check
-    }
+      // Then, find all parent tariffs that contain this exception and update them
+      const allParents: TariffUI[] = [];
+      const findParentsRecursively = (
+        tariffList: TariffUI[],
+        parent: TariffUI | null = null
+      ) => {
+        for (const t of tariffList) {
+          if (
+            t.exceptionTariffs?.some((et) => et.code === exceptionTariff.code)
+          ) {
+            allParents.push(t);
+          }
+          if (t.exceptionTariffs?.length) {
+            findParentsRecursively(t.exceptionTariffs, t);
+          }
+        }
+      };
 
-    const updatedTariffSets = tariffSets.map((set, index) => {
-      if (index === setIndex) {
-        return updateTariffRecursively(set, parent.code, (parentTariff) => {
-          // Update the specific exception tariff
-          const updatedExceptionTariffs = parentTariff.exceptionTariffs?.map(
-            (et) => {
-              if (et.code === exceptionTariff.code) {
-                return { ...et, isActive: !et.isActive };
-              }
-              return et;
-            }
-          );
+      findParentsRecursively(updatedSet);
 
-          // Check if any exceptions are active after the toggle
-          const hasActiveExceptionsAfterToggle = updatedExceptionTariffs?.some(
-            (et) => et.isActive || hasActiveExceptions(et)
-          );
+      // Update each parent tariff
+      for (const parent of allParents) {
+        updatedSet = updateTariffRecursively(
+          updatedSet,
+          parent.code,
+          (parentTariff) => {
+            // Check if any exceptions are active after the toggle
+            const hasActiveExceptionsAfterToggle =
+              parentTariff.exceptionTariffs?.some(
+                (et) => et.isActive || hasActiveExceptions(et)
+              );
 
-          return {
-            ...parentTariff,
-            isActive: !hasActiveExceptionsAfterToggle, // Parent is active only if no exceptions are active
-            exceptionTariffs: updatedExceptionTariffs,
-          };
-        });
+            return {
+              ...parentTariff,
+              isActive: !hasActiveExceptionsAfterToggle, // Parent is active only if no exceptions are active
+            };
+          }
+        );
       }
-      return set;
+
+      return updatedSet;
     });
 
     setTariffSets(updatedTariffSets);

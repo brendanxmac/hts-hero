@@ -15,6 +15,7 @@ import {
   BaseTariffI,
   getBaseTariffs,
   getGeneralNoteFromSpecialTariffSymbol,
+  splitOnClosingParen,
 } from "../libs/hts";
 import { BaseTariff } from "./BaseTariff";
 import { SupabaseBuckets } from "../constants/supabase";
@@ -22,6 +23,7 @@ import { getStringBetweenParenthesis } from "../utilities/hts";
 import { PDFProps } from "../interfaces/ui";
 import PDF from "./PDF";
 import { otherColumnCountryCodes } from "../public/tariffs/tariff-columns";
+import { SpecialPrograms } from "./SpecialPrograms";
 
 interface Props {
   country: Country;
@@ -164,14 +166,23 @@ export const CountryTariff = ({
     return [baseSet, ...otherSets];
   };
 
-  const getBaseTariffsForColumn = (column: TariffColumn) => {
+  const getTariffForColumn = (column: TariffColumn, htsElement: HtsElement) => {
     if (column === TariffColumn.GENERAL) {
-      return getBaseTariffs(htsElement.general);
+      return htsElement.general;
     } else if (column === TariffColumn.SPECIAL) {
-      return getBaseTariffs(htsElement.special);
+      return htsElement.special;
     } else if (column === TariffColumn.OTHER) {
-      return getBaseTariffs(htsElement.other);
+      return htsElement.other;
     }
+  };
+
+  const getBaseTariffsForColumn = (column: TariffColumn) => {
+    const tariffString = getTariffForColumn(column, htsElement);
+    // only needed if string has countries specified, which USITC writes within parenthesis ()
+    // if not parenthesis then the function just returns the tariff as an element in array
+    const tariffParts = splitOnClosingParen(tariffString);
+
+    return tariffParts.map((part) => getBaseTariffs(part));
   };
 
   // Recursive helper function to calculate rate from a tariff and all its exceptions
@@ -221,7 +232,6 @@ export const CountryTariff = ({
       .join(" + ");
   };
 
-  const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
   const [tariffSets, setTariffSets] =
     useState<Array<TariffUI[]>>(getTariffSets());
   const [tariffColumn, setTariffColumn] = useState<TariffColumn>(
@@ -232,6 +242,8 @@ export const CountryTariff = ({
   const [tariffs, setTariffs] = useState<TariffUI[]>(cleanedUpTariffs);
   const [showInactive, setShowInactive] = useState<boolean>(true);
   const isOtherColumnCountry = otherColumnCountryCodes.includes(country.code);
+  const columnTariffs = getBaseTariffsForColumn(tariffColumn);
+  const columnHasTariffs = columnTariffs.some((t) => t.tariffs.length > 0);
 
   return (
     <div className="flex flex-col p-8 border-2 border-base-content/50 bg-base-300 rounded-md gap-6">
@@ -369,36 +381,13 @@ export const CountryTariff = ({
           {getStringBetweenParenthesis(htsElement.special) && (
             <div className="flex flex-col">
               <div className="flex flex-wrap gap-x-1">
-                {getStringBetweenParenthesis(htsElement.special)
-                  .split(",")
-                  .map((specialTariffSymbol, index) => {
-                    const note = getGeneralNoteFromSpecialTariffSymbol(
-                      specialTariffSymbol.trim()
-                    );
-                    return (
-                      <div
-                        key={`${specialTariffSymbol}-${index}`}
-                        className="tooltip tooltip-primary tooltip-bottom"
-                        data-tip={note?.description || note?.title || null}
-                      >
-                        <button
-                          className="btn btn-link btn-xs text-xs p-0 hover:text-secondary"
-                          onClick={() => {
-                            const note = getGeneralNoteFromSpecialTariffSymbol(
-                              specialTariffSymbol.trim()
-                            );
-                            setShowPDF({
-                              title: note?.title || "",
-                              bucket: SupabaseBuckets.NOTES,
-                              filePath: note?.filePath || "",
-                            });
-                          }}
-                        >
-                          {specialTariffSymbol}
-                        </button>
-                      </div>
-                    );
-                  })}
+                {getStringBetweenParenthesis(htsElement.special) && (
+                  <SpecialPrograms
+                    programs={getStringBetweenParenthesis(htsElement.special)
+                      .split(",")
+                      .map((p) => p.trim())}
+                  />
+                )}
               </div>
             </div>
           )}
@@ -451,15 +440,17 @@ export const CountryTariff = ({
       >
         {tariffSets.map((tariffSet, i) => (
           <div key={`tariff-set-${i}`} className="flex flex-col gap-4">
-            {getBaseTariffsForColumn(tariffColumn).tariffs.length > 0 &&
-              getBaseTariffsForColumn(tariffColumn).tariffs.map((t, i) => (
-                <BaseTariff
-                  key={`${htsElement.htsno}-${t.raw}-${i}`}
-                  index={i}
-                  htsElement={htsElement}
-                  tariff={t}
-                />
-              ))}
+            {columnHasTariffs &&
+              columnTariffs
+                .flatMap((t) => t.tariffs)
+                .map((t, i) => (
+                  <BaseTariff
+                    key={`${htsElement.htsno}-${t.raw}-${i}`}
+                    index={i}
+                    htsElement={htsElement}
+                    tariff={t}
+                  />
+                ))}
             {tariffSet.map((tariff) => (
               <Tariff
                 key={tariff.code}
@@ -473,12 +464,12 @@ export const CountryTariff = ({
             <div className="-mt-2 w-full flex justify-between items-end gap-2">
               <h2 className="text-white font-bold">Total:</h2>
               <div className="flex gap-2">
-                {getBaseTariffsForColumn(tariffColumn).tariffs.length > 0 && (
+                {columnTariffs
+                  .flatMap((t) => t.tariffs)
+                  .filter((t) => t.type === "amount").length > 0 && (
                   <div className="flex gap-2">
                     <p className="text-xl font-bold text-primary transition duration-100">
-                      {getAmountRates(
-                        getBaseTariffsForColumn(tariffColumn).tariffs
-                      )}
+                      {getAmountRates(columnTariffs.flatMap((t) => t.tariffs))}
                     </p>
                     <p className="text-xl font-bold text-primary transition duration-100">
                       +
@@ -489,29 +480,28 @@ export const CountryTariff = ({
                   {getAdValoremRate(
                     tariffColumn,
                     tariffSet,
-                    getBaseTariffsForColumn(tariffColumn).tariffs
+                    columnTariffs.flatMap((t) => t.tariffs)
                   )}
                   %
                 </p>
               </div>
             </div>
-            {getBaseTariffsForColumn(tariffColumn).parsingFailures.length >
-              0 && (
+            {columnTariffs.flatMap((t) => t.parsingFailures).length > 0 && (
               <div className="flex flex-col gap-2 p-4 border-2 border-red-500 rounded-md">
                 <h2 className="text-white font-bold">
                   {`Error Parsing ${htsElement.htsno}'s Base Tariff(s):`}
                 </h2>
                 <ul className="flex flex-col gap-2 list-disc list-outside">
-                  {getBaseTariffsForColumn(tariffColumn).parsingFailures.map(
-                    (t, i) => (
+                  {columnTariffs
+                    .flatMap((t) => t.parsingFailures)
+                    .map((t, i) => (
                       <li
                         key={`${htsElement.htsno}-${t}-${i}`}
                         className="ml-6 text-red-500 font-bold text-lg"
                       >
                         {t}
                       </li>
-                    )
-                  )}
+                    ))}
                 </ul>
 
                 <p className="text-base-content">
@@ -533,20 +523,6 @@ export const CountryTariff = ({
           </div>
         ))}
       </div>
-
-      {showPDF && (
-        <PDF
-          title={showPDF.title}
-          bucket={showPDF.bucket}
-          filePath={showPDF.filePath}
-          isOpen={showPDF !== null}
-          setIsOpen={(isOpen) => {
-            if (!isOpen) {
-              setShowPDF(null);
-            }
-          }}
-        />
-      )}
     </div>
   );
 };

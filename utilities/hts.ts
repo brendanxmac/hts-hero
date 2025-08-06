@@ -1,14 +1,14 @@
 // Regex that gets whatever is inside the parentheses of special text, if exists
-export const getStringBetweenParenthesis = (special: string) => {
+export const getStringBetweenParenthesis = (str: string) => {
   const regex = /\(([^)]+)\)/;
-  const match = special.match(regex);
+  const match = str.match(regex);
   // We also add a space after each comma
   return match ? match[1].replace(/,/g, ", ") : null;
 };
 
 // Regex that gets the prefix of the special text
-export const getTextBeforeOpeningParenthesis = (special: string) => {
+export const getStringBeforeOpeningParenthesis = (str: string) => {
   const regex = /^[^(]+/;
-  const match = special.match(regex);
-  return match ? match[0].trim() : special;
+  const match = str.match(regex);
+  return match ? match[0].trim() : str;
 };

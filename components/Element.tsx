@@ -19,14 +19,8 @@ import { Color } from "../enums/style";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { ButtonWithIcon } from "./ButtonWithIcon";
 import { TertiaryLabel } from "./TertiaryLabel";
-import { SecondaryText } from "./SecondaryText";
 import { useHts } from "../contexts/HtsContext";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
-import { TariffColumn } from "../enums/hts";
-import {
-  getStringBetweenParenthesis,
-  getTextBeforeOpeningParenthesis,
-} from "../utilities/hts";
 import { PDFProps } from "../interfaces/ui";
 import { SupabaseBuckets } from "../constants/supabase";
 import { CountrySelection } from "./CountrySelection";
@@ -58,7 +52,9 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { htsElements } = useHts();
   const { sections } = useHtsSections();
-  const [selectedCountries, setSelectedCountries] = useState<Country[]>([]);
+  const [selectedCountries, setSelectedCountries] = useState<Country[]>([
+    { flag: "🇨🇳", name: "China", code: "CN" },
+  ]);
   const contentRequirements = Array.from(
     TariffsList.filter((t) => tariffIsApplicableToCode(t, htsno)).reduce(
       (acc, t) => {

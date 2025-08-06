@@ -34,6 +34,10 @@ import { Color } from "../enums/style";
 import { UserProfile } from "./supabase/user";
 import { notes } from "../public/notes/notes";
 import { inflate } from "pako";
+import {
+  getStringBeforeOpeningParenthesis,
+  getStringBetweenParenthesis,
+} from "../utilities/hts";
 
 export const downloadClassificationReport = async (
   classification: Classification,
@@ -745,32 +749,69 @@ export const getTemporaryTariffText = (
 };
 
 export interface BaseTariffI {
-  value: number;
+  value: number | null;
   type: "percent" | "amount";
   unit?: string;
   details?: string;
   raw: string;
+  programs?: string[];
 }
 
-export function getBaseTariffs(input: string): {
+export interface ParsedTariff {
   tariffs: BaseTariffI[];
   parsingFailures: string[];
-} {
-  const parts = input.split(/\s+\+\s+/);
+}
+
+export const splitOnClosingParen = (input: string): string[] => {
+  const parts = input.split(/(?<=\))/g); // Split *after* each closing parenthesis ")"
+  return parts.map((part) => part.trim()).filter(Boolean); // Trim whitespace and remove empty strings
+};
+
+// TODO: consider filtering out any agreements that might not apply in this case given `country` param
+//  Item for the future to clean this up properly once we have lists of countries mapped to programs
+export function getBaseTariffs(input: string): ParsedTariff {
   const tariffs: BaseTariffI[] = [];
   const parsingFailures: string[] = [];
 
-  // TODO: consider adding "errors" in the return object so that
-  // we can take that raw tariff rate and return it to the user
-  // and at least show it in plain text for now, to prevent any
-  // really big issues or MISSING data at the very least
+  const programsString = getStringBetweenParenthesis(input);
+
+  const programs =
+    (programsString && programsString.split(",").map((p) => p.trim())) || [];
+  const cleaned = getStringBeforeOpeningParenthesis(input);
+  const parts = cleaned.split(/\s+\+\s+/);
 
   for (const part of parts) {
     const trimmed = part.trim();
-    const raw = trimmed;
+    console.log("trimmed", trimmed);
+    console.log(trimmed.toLowerCase().match(/^see(?:\s*\(.*\))?$/i));
 
     if (!trimmed) {
       return { tariffs: [], parsingFailures: [] };
+    }
+
+    // Check for "free" case-insensitively, with or without parentheses
+    const freeMatch = trimmed.toLowerCase().match(/free/i);
+    if (freeMatch) {
+      tariffs.push({
+        value: 0,
+        type: "percent",
+        raw: trimmed,
+        programs,
+      });
+      continue;
+    }
+
+    // Check for "see" case-insensitively, with or without parentheses
+    const seeMatch = trimmed.toLowerCase().match(/see/i);
+    if (seeMatch) {
+      tariffs.push({
+        value: null,
+        type: "percent",
+        raw: trimmed,
+        programs,
+        details: trimmed,
+      });
+      continue;
     }
 
     // % percent
@@ -779,12 +820,11 @@ export function getBaseTariffs(input: string): {
       tariffs.push({
         value: Math.round(parseFloat(percentMatch[1]) * 10000) / 10000,
         type: "percent",
-        raw,
+        raw: trimmed,
+        programs,
       });
       continue;
     }
-
-    // Free (BH,CL,JO,KR,MA,OM,P,PE,SG) 7.3¢/kg + 0.9% (PA) See 9822.04.25 (AU) See 9823.05.01-9823.05.06 (S+) See 9918.04.60, 9918.04.61 (CO)
 
     // Amounts with $, ¢, unit and optional "on <stuff>"
     // Handle both patterns: "$1.035/kg" and "37.2¢/kg"
@@ -800,7 +840,8 @@ export function getBaseTariffs(input: string): {
         value: Math.round(valueInDollars * 10000) / 10000,
         type: "amount",
         unit: unit1?.trim(),
-        raw,
+        raw: trimmed,
+        programs,
       };
 
       if (unit2) {
@@ -824,7 +865,7 @@ export function getBaseTariffs(input: string): {
         value: Math.round(valueInDollars * 10000) / 10000,
         type: "amount",
         unit: unit1?.trim(),
-        raw,
+        raw: trimmed,
       };
 
       if (unit2) {
@@ -835,8 +876,8 @@ export function getBaseTariffs(input: string): {
       continue;
     }
 
-    console.error(`Unable to parse duty string: "${raw}" from "${input}"`);
-    parsingFailures.push(raw);
+    console.error(`Unable to parse duty string: "${trimmed}" from "${input}"`);
+    parsingFailures.push(trimmed);
   }
 
   return { tariffs, parsingFailures };

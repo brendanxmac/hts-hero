@@ -14,7 +14,7 @@ import {
   getTemporaryTariffTextElement,
 } from "../libs/hts";
 import {
-  getTextBeforeOpeningParenthesis,
+  getStringBeforeOpeningParenthesis,
   getStringBetweenParenthesis,
 } from "../utilities/hts";
 import { PrimaryLabel } from "./PrimaryLabel";
@@ -296,11 +296,11 @@ export const ClassificationResultPage = () => {
                     />
                     <div className="flex flex-col">
                       <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
-                        {getTextBeforeOpeningParenthesis(
+                        {getStringBeforeOpeningParenthesis(
                           tariffElement.special
                         ) || "-"}
                       </h2>
-                      {getTextBeforeOpeningParenthesis(
+                      {getStringBeforeOpeningParenthesis(
                         tariffElement.special
                       ) && (
                         <span className="mt-2 text-xs italic text-white">
