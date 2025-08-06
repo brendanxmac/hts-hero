@@ -11,17 +11,9 @@ import { Tariff, TariffUI } from "./Tariff";
 import { ContentRequirementI } from "./Element";
 import { classNames } from "../utilities/style";
 import { HtsElement } from "../interfaces/hts";
-import {
-  BaseTariffI,
-  getBaseTariffs,
-  getGeneralNoteFromSpecialTariffSymbol,
-  splitOnClosingParen,
-} from "../libs/hts";
+import { BaseTariffI, getBaseTariffs, splitOnClosingParen } from "../libs/hts";
 import { BaseTariff } from "./BaseTariff";
-import { SupabaseBuckets } from "../constants/supabase";
 import { getStringBetweenParenthesis } from "../utilities/hts";
-import { PDFProps } from "../interfaces/ui";
-import PDF from "./PDF";
 import { otherColumnCountryCodes } from "../public/tariffs/tariff-columns";
 import { SpecialPrograms } from "./SpecialPrograms";
 
@@ -45,6 +37,8 @@ export const CountryTariff = ({
     ...t,
     isActive: tariffIsActive(t, country.code, htsCode),
   }));
+
+  console.log("APPLICABLE TARIFFS", applicableTariffs);
 
   // TODO: NEED TO INCLIDE THE ONES TO IGNORE HERE AS WELL....
   // Recursive function to build the complete exception hierarchy
@@ -99,18 +93,11 @@ export const CountryTariff = ({
     (t) => !allExceptionTariffCodes.has(t.code)
   );
 
-  const getTariffSets = (baseRates?: TariffUI[]): Array<TariffUI[]> => {
-    console.log("============================");
-    console.log("============================");
-    console.log("============================");
-    console.log("============================");
-    console.log("============================");
-    console.log("Getting Tariff Sets");
+  const getTariffSets = (): Array<TariffUI[]> => {
     const tariffsToIgnore = applicableTariffs
       .filter((t) => t.contentRequirement)
       .map((t) => t.code);
 
-    console.log("Tariffs to ignore:", tariffsToIgnore);
     let exceptionTariffs = new Set<string>();
     let baseSet: TariffUI[] =
       contentRequirements.length > 0
@@ -119,23 +106,12 @@ export const CountryTariff = ({
     baseSet.forEach((t) => {
       collectExceptionCodes(t, exceptionTariffs);
     });
-    console.log("BASE SET ECs:");
-    exceptionTariffs.forEach((code) => {
-      console.log(code);
-    });
+
     baseSet = baseSet.map((t) => buildTariffHierarchy(t, baseSet));
     baseSet = baseSet.filter((t) => !exceptionTariffs.has(t.code));
     baseSet = baseSet.map((t) => ({
       ...t,
       exceptionTariffs: t.exceptionTariffs?.map((et) => {
-        console.log("ET", et.code);
-        if (et.code === "9903.01.33") {
-          console.log("IS ACTIBVEEEEEEE");
-          console.log(et);
-          console.log(
-            tariffIsActive(et, country.code, htsCode, tariffsToIgnore)
-          );
-        }
         return {
           ...et,
           isActive: tariffIsActive(et, country.code, htsCode, tariffsToIgnore),

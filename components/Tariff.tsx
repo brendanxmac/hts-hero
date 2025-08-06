@@ -289,3 +289,28 @@ export const Tariff = ({
     </div>
   );
 };
+
+// {
+//   tariff.exceptions?.length > 0 &&
+//     tariff.exceptions
+//       .map((e) => {
+//         return tariffSets[setIndex].find((t) => t.code === e);
+//       })
+//       .filter(Boolean)
+//       .map(
+//         (exceptionTariff) =>
+//           (exceptionTariff.isActive ||
+//             hasActiveExceptions(exceptionTariff) ||
+//             showInactive) && (
+//             <Tariff
+//               key={exceptionTariff.code}
+//               exceptionLevel={exceptionLevel + 1}
+//               setIndex={setIndex}
+//               showInactive={showInactive}
+//               tariff={exceptionTariff}
+//               tariffSets={tariffSets}
+//               setTariffSets={setTariffSets}
+//             />
+//           )
+//       );
+// }

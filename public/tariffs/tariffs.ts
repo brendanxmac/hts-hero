@@ -90,21 +90,15 @@ export const tariffIsActive = (
   const exceptionTariffs = noExceptions
     ? []
     : getTariffsByCode(tariff.exceptions);
-  console.log("Exception Tariffs", tariff.code, exceptionTariffs);
-  console.log("TARIFF INCLUSIONS:", tariff.code, tariff.inclusions?.tariffs);
+
   const inclusionTariffs = noTariffInclusions
     ? []
     : getTariffsByCode(tariff.inclusions.tariffs);
-  console.log("Inclusion Tariffs", tariff.code, inclusionTariffs);
 
   const exceptions = [...exceptionTariffs, ...inclusionTariffs];
-
   const applicableExceptions = exceptions.filter((t) =>
     tariffIsApplicable(t, countryCode, htsCode, tariffCodesToIgnore)
   );
-
-  console.log("Tariff:", tariff.code);
-  console.log("Applicable Exceptions:", applicableExceptions);
 
   if (
     noExceptions &&
@@ -184,18 +178,6 @@ export const tariffIsApplicable = (
   const codesSpecified = codes !== undefined && codes.length > 0;
   const countriesSpecified = countries !== undefined && countries.length > 0;
   const includesTariffs = tariffs !== undefined && tariffs.length > 0;
-
-  if (tariff.code === "9903.01.33") {
-    const blah =
-      tariffs &&
-      getTariffsByCode(
-        tariffs.filter((t) => !tariffCodesToIgnore?.includes(t))
-      ).filter((t) =>
-        tariffIsApplicable(t, countryCode, htsCode, tariffCodesToIgnore)
-      );
-    console.log("BLAH", tariff.code);
-    console.log(blah);
-  }
   const applicableTariffs = tariffs
     ? getTariffsByCode(
         tariffs.filter((t) => !tariffCodesToIgnore?.includes(t))
@@ -205,9 +187,6 @@ export const tariffIsApplicable = (
     : [];
   const hasApplicableTariffs =
     applicableTariffs && applicableTariffs.length > 0;
-  if (tariff.code === "9903.01.33") {
-    console.log(`HAS APPLICABLE TARIFFS: ${hasApplicableTariffs}`);
-  }
   const includesCountry =
     countries?.includes(countryCode) || countries?.includes("*");
 

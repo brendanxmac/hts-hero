@@ -782,8 +782,6 @@ export function getBaseTariffs(input: string): ParsedTariff {
 
   for (const part of parts) {
     const trimmed = part.trim();
-    console.log("trimmed", trimmed);
-    console.log(trimmed.toLowerCase().match(/^see(?:\s*\(.*\))?$/i));
 
     if (!trimmed) {
       return { tariffs: [], parsingFailures: [] };
