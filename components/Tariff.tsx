@@ -279,19 +279,8 @@ export const Tariff = ({
 
       {tariff.exceptions?.length > 0 &&
         tariff.exceptions
-          .map((e) => {
-            // console.log("tariffSets", tariffSets);
-            // console.log("setIndex", setIndex);
-            console.log("Tariff Set: ", tariffSets[setIndex]);
-            console.log("exception", e);
-            // console.log(
-            //   "EXCEPTION",
-            //   tariffSets[setIndex].find((t) => t.code === e)
-            // );
-            return tariffSets[setIndex].tariffs.find((t) => t.code === e);
-          })
+          .map((e) => tariffSets[setIndex].tariffs.find((t) => t.code === e))
           .filter(Boolean)
-          .filter((t) => !renderedCodes.has(t.code))
           .map(
             (exceptionTariff) =>
               (exceptionTariff.isActive ||
