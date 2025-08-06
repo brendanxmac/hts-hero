@@ -10,7 +10,7 @@ export const aluminumTariffs: TariffI[] = [
     general: 50,
     special: 50,
     other: 50,
-    exceptions: ["9903.85.67", "9903.85.12"],
+    exceptions: ["9903.85.67", "9903.85.69"],
     contentRequirement: "Aluminum",
     exclusions: {
       countries: ["GB"],

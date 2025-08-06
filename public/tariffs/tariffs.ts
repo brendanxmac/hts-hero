@@ -7,6 +7,7 @@ import { reciprocalTariffs } from "./reciprocal";
 import { exceptionTariffs } from "./exception";
 import { ironAndSteelTariffs } from "./iron-and-steel";
 import { HtsElement } from "../../interfaces/hts";
+import { UITariff } from "../../components/Tariff";
 
 export type Metal = "Aluminum" | "Steel" | "Copper";
 
@@ -73,27 +74,65 @@ export const findExceptions = (
   return [];
 };
 
+export const hasActiveDescendants = (
+  tariff: UITariff,
+  tariffs: UITariff[],
+  visited: Set<string> = new Set()
+): boolean => {
+  // Prevent infinite loops by tracking visited tariffs
+  if (visited.has(tariff.code)) {
+    return false;
+  }
+
+  visited.add(tariff.code);
+
+  return (
+    tariff.exceptions?.some((e) =>
+      tariffs.some(
+        (t) =>
+          (t.code === e && t.isActive) ||
+          hasActiveDescendants(t, tariffs, visited)
+      )
+    ) ?? false
+  );
+};
+
+export const applicableTariffIsActive = (
+  tariff: UITariff,
+  tariffs: UITariff[],
+  countryCode: string,
+  htsCode: string
+) => {
+  const atLeastOneActiveDescendant = hasActiveDescendants(tariff, tariffs);
+  const isActiveItself = tariffIsActive(tariff, tariffs, countryCode, htsCode);
+
+  return atLeastOneActiveDescendant || isActiveItself;
+};
+
 // TODO: triple check this to ensure that we're doing the right checks
 //  especially when it comes to handling inclusions that are tariffs...
 //  That should probably be its own function anyways... somehow
 export const tariffIsActive = (
-  tariff: TariffI,
+  tariff: UITariff,
+  tariffs: UITariff[],
   countryCode: string,
   htsCode: string,
   tariffCodesToIgnore?: string[]
 ) => {
   if (tariff.requiresReview) return false;
+
   const noExceptions = !tariff.exceptions;
   const noTariffInclusions = !tariff.inclusions || !tariff.inclusions.tariffs;
+
   if (noExceptions && noTariffInclusions) return true;
 
   const exceptionTariffs = noExceptions
     ? []
-    : getTariffsByCode(tariff.exceptions);
+    : tariffs.filter((t) => tariff.exceptions?.includes(t.code));
 
   const inclusionTariffs = noTariffInclusions
     ? []
-    : getTariffsByCode(tariff.inclusions.tariffs);
+    : tariffs.filter((t) => tariff.inclusions?.tariffs?.includes(t.code));
 
   const exceptions = [...exceptionTariffs, ...inclusionTariffs];
   const applicableExceptions = exceptions.filter((t) =>
@@ -102,8 +141,8 @@ export const tariffIsActive = (
 
   if (
     noExceptions &&
-    !noTariffInclusions &&
-    applicableExceptions.length === 0
+    !noTariffInclusions && // has inclusions
+    applicableExceptions.length === 0 // but those inclusions do not apply
   ) {
     return false;
   }

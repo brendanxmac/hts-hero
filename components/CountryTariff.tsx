@@ -1,13 +1,13 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import { countries, Country } from "../constants/countries";
 import {
+  applicableTariffIsActive,
   getTariffs,
   Metal,
   TariffColumn,
-  TariffI,
   tariffIsActive,
 } from "../public/tariffs/tariffs";
-import { Tariff, TariffUI } from "./Tariff";
+import { Tariff, UITariff } from "./Tariff";
 import { ContentRequirementI } from "./Element";
 import { classNames } from "../utilities/style";
 import { HtsElement } from "../interfaces/hts";
@@ -33,26 +33,37 @@ export const CountryTariff = ({
   contentRequirements,
 }: Props) => {
   const htsCode = htsElement.htsno;
-  const applicableTariffs = getTariffs(country.code, htsCode).map((t) => ({
+  const applicableTariffs = getTariffs(country.code, htsCode);
+  const lol = applicableTariffs.map((t) => ({
     ...t,
-    isActive: tariffIsActive(t, country.code, htsCode),
+    exceptions: t.exceptions?.filter((e) =>
+      applicableTariffs.some((t) => t.code === e)
+    ),
+    isActive: false,
+  }));
+  const applicableUITariffs: UITariff[] = lol.map((t) => ({
+    ...t,
+    isActive: applicableTariffIsActive(t, lol, country.code, htsCode),
   }));
 
-  console.log("APPLICABLE TARIFFS", applicableTariffs);
+  console.log("APPLICABLE UI TARIFFS", applicableUITariffs);
 
-  // TODO: NEED TO INCLIDE THE ONES TO IGNORE HERE AS WELL....
-  // Recursive function to build the complete exception hierarchy
-  const buildTariffHierarchy = (
-    tariff: TariffUI,
-    allTariffs: TariffUI[]
-  ): TariffUI => {
-    const exceptionTariffs = tariff.exceptions
-      ? allTariffs
-          .filter((t) => tariff.exceptions?.includes(t.code))
-          .map((exceptionTariff) =>
-            buildTariffHierarchy(exceptionTariff, allTariffs)
-          )
-      : [];
+  const getExceptionTariffsForTariff = (
+    tariff: UITariff,
+    tariffSet: UITariff[]
+  ): UITariff => {
+    const tariffHasExceptions =
+      tariff.exceptions && tariff.exceptions.length > 0;
+
+    if (!tariffHasExceptions) {
+      return tariff;
+    }
+
+    const exceptionTariffs = tariffSet
+      .filter((t) => tariff.exceptions.includes(t.code))
+      .map((exceptionTariff) =>
+        getExceptionTariffsForTariff(exceptionTariff, tariffSet)
+      );
 
     return {
       ...tariff,
@@ -65,14 +76,16 @@ export const CountryTariff = ({
 
   // Helper function to collect all exception codes recursively
   const collectExceptionCodes = (
-    tariff: TariffI,
+    tariff: UITariff,
     exceptionCodes: Set<string>
   ) => {
     if (tariff.exceptions) {
       tariff.exceptions.forEach((code) => {
         exceptionCodes.add(code);
         // Find the exception tariff and recursively collect its exceptions
-        const exceptionTariff = applicableTariffs.find((t) => t.code === code);
+        const exceptionTariff = applicableUITariffs.find(
+          (t) => t.code === code
+        );
         if (exceptionTariff) {
           collectExceptionCodes(exceptionTariff, exceptionCodes);
         }
@@ -84,8 +97,8 @@ export const CountryTariff = ({
   // applicableTariffs.forEach(collectExceptionCodes);
 
   // Build the complete hierarchy for each tariff
-  const tariffsWithExceptions: TariffUI[] = applicableTariffs.map((tariff) =>
-    buildTariffHierarchy(tariff, applicableTariffs)
+  const tariffsWithExceptions: UITariff[] = applicableUITariffs.map((tariff) =>
+    getExceptionTariffsForTariff(tariff, applicableUITariffs)
   );
 
   // Remove tariffs that are exceptions at any level
@@ -93,37 +106,72 @@ export const CountryTariff = ({
     (t) => !allExceptionTariffCodes.has(t.code)
   );
 
-  const getTariffSets = (): Array<TariffUI[]> => {
-    const tariffsToIgnore = applicableTariffs
-      .filter((t) => t.contentRequirement)
-      .map((t) => t.code);
+  const getTariffSets = (): Array<UITariff[]> => {
+    let contentRequirementExceptionTariffs = new Set<string>();
+    const contentRequirementTariffs = applicableUITariffs.filter(
+      (t) => t.contentRequirement
+    );
+    contentRequirementTariffs.forEach((t) => {
+      collectExceptionCodes(t, contentRequirementExceptionTariffs);
+    });
+    const contentRequirementTariffCodes = contentRequirementTariffs.map(
+      (t) => t.code
+    );
 
     let exceptionTariffs = new Set<string>();
-    let baseSet: TariffUI[] =
-      contentRequirements.length > 0
-        ? applicableTariffs.filter((t) => !t.contentRequirement)
-        : applicableTariffs;
+    // ????? Use to pass contentRequirements.length > 0 check here and use applicableUITariffs if not
+    let baseSet: UITariff[] = applicableUITariffs.filter(
+      (t) => !t.contentRequirement
+    );
+
+    // Recursively get all the exceptions for all applicables minus content requirement ones
     baseSet.forEach((t) => {
       collectExceptionCodes(t, exceptionTariffs);
     });
 
-    baseSet = baseSet.map((t) => buildTariffHierarchy(t, baseSet));
+    // Are there any in contentRequirementExceptionTariffs that do NOT exist in exceptionTariffs?
+    const exceptionsOnlyForContentRequirementTariffs = Array.from(
+      contentRequirementExceptionTariffs
+    ).filter((t) => !exceptionTariffs.has(t));
+
+    baseSet = baseSet.filter(
+      (t) => !exceptionsOnlyForContentRequirementTariffs.includes(t.code)
+    );
+
+    // Build the hierarchy for the base set, prior to removing all the ones that are exceptions
+    baseSet = baseSet.map((t) => getExceptionTariffsForTariff(t, baseSet));
+
+    // Keep the ones NOT in the exception set -- e.g. "top level"
     baseSet = baseSet.filter((t) => !exceptionTariffs.has(t.code));
+
+    // With this new set, which has the structure built, determine which ones should be active
     baseSet = baseSet.map((t) => ({
       ...t,
       exceptionTariffs: t.exceptionTariffs?.map((et) => {
         return {
           ...et,
-          isActive: tariffIsActive(et, country.code, htsCode, tariffsToIgnore),
+          isActive: tariffIsActive(
+            et,
+            applicableUITariffs,
+            country.code,
+            htsCode,
+            contentRequirementTariffCodes
+          ),
         };
       }),
-      isActive: tariffIsActive(t, country.code, htsCode, tariffsToIgnore),
+      isActive: tariffIsActive(
+        t,
+        applicableUITariffs,
+        country.code,
+        htsCode,
+        contentRequirementTariffCodes
+      ),
     }));
     exceptionTariffs.clear();
     const otherSets = [];
 
     for (const contentRequirement of contentRequirements) {
-      let tariffSet = applicableTariffs.filter(
+      let tariffSet = applicableUITariffs.filter(
         (t) =>
           !t.contentRequirement ||
           t.contentRequirement === contentRequirement.name
@@ -131,7 +179,9 @@ export const CountryTariff = ({
       tariffSet.forEach((t) => {
         collectExceptionCodes(t, exceptionTariffs);
       });
-      tariffSet = tariffSet.map((t) => buildTariffHierarchy(t, tariffSet));
+      tariffSet = tariffSet.map((t) =>
+        getExceptionTariffsForTariff(t, tariffSet)
+      );
       tariffSet = tariffSet.filter((t) => !exceptionTariffs.has(t.code));
       exceptionTariffs.clear();
       otherSets.push(tariffSet);
@@ -163,7 +213,7 @@ export const CountryTariff = ({
 
   // Recursive helper function to calculate rate from a tariff and all its exceptions
   const calculateTariffRate = (
-    tariff: TariffUI,
+    tariff: UITariff,
     column: TariffColumn
   ): number => {
     let rate = 0;
@@ -182,7 +232,7 @@ export const CountryTariff = ({
 
   const getAdValoremRate = (
     column: TariffColumn,
-    tariffSet: TariffUI[],
+    tariffSet: UITariff[],
     baseTariffs: BaseTariffI[]
   ) => {
     let rate = 0;
@@ -209,13 +259,13 @@ export const CountryTariff = ({
   };
 
   const [tariffSets, setTariffSets] =
-    useState<Array<TariffUI[]>>(getTariffSets());
+    useState<Array<UITariff[]>>(getTariffSets());
   const [tariffColumn, setTariffColumn] = useState<TariffColumn>(
     otherColumnCountryCodes.includes(country.code)
       ? TariffColumn.OTHER
       : TariffColumn.GENERAL
   );
-  const [tariffs, setTariffs] = useState<TariffUI[]>(cleanedUpTariffs);
+  const [tariffs, setTariffs] = useState<UITariff[]>(cleanedUpTariffs);
   const [showInactive, setShowInactive] = useState<boolean>(true);
   const isOtherColumnCountry = otherColumnCountryCodes.includes(country.code);
   const columnTariffs = getBaseTariffsForColumn(tariffColumn);

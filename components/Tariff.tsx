@@ -5,18 +5,19 @@ import { SecondaryText } from "./SecondaryText";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { TertiaryText } from "./TertiaryText";
 
-export interface TariffUI extends TariffI {
-  exceptionTariffs?: TariffUI[];
+export interface UITariff extends TariffI {
+  exceptionTariffs?: UITariff[];
   isActive: boolean;
 }
 
 interface Props {
   showInactive: boolean;
   exceptionLevel?: number;
-  tariff: TariffUI;
+  tariff: UITariff;
   setIndex: number;
-  tariffSets: Array<TariffUI[]>;
-  setTariffSets: (tariffs: Array<TariffUI[]>) => void;
+  tariffSets: Array<UITariff[]>;
+  setTariffSets: (tariffs: Array<UITariff[]>) => void;
+  renderedCodes?: Set<string>;
 }
 
 export const Tariff = ({
@@ -26,14 +27,21 @@ export const Tariff = ({
   setIndex,
   tariffSets,
   setTariffSets,
+  renderedCodes = new Set(),
 }: Props) => {
+  if (renderedCodes.has(tariff.code)) {
+    return null;
+  }
+
+  renderedCodes.add(tariff.code);
+
   // TODO: get column by using country and checking if in Other or Special
   // Recursive helper function to find and update a tariff by code
   const updateTariffRecursively = (
-    tariffList: TariffUI[],
+    tariffList: UITariff[],
     targetCode: string,
-    updateFn: (tariff: TariffUI) => TariffUI
-  ): TariffUI[] => {
+    updateFn: (tariff: UITariff) => UITariff
+  ): UITariff[] => {
     return tariffList.map((t) => {
       if (t.code === targetCode) {
         return updateFn(t);
@@ -57,9 +65,9 @@ export const Tariff = ({
 
   // Recursive helper function to find a tariff by code
   const findTariffRecursively = (
-    tariffList: TariffUI[],
+    tariffList: UITariff[],
     targetCode: string
-  ): TariffUI | null => {
+  ): UITariff | null => {
     for (const t of tariffList) {
       if (t.code === targetCode) {
         return t;
@@ -76,10 +84,10 @@ export const Tariff = ({
 
   // Recursive helper function to find the parent tariff of a given exception
   const findParentTariff = (
-    tariffList: TariffUI[],
+    tariffList: UITariff[],
     exceptionCode: string,
-    parent: TariffUI | null = null
-  ): { parent: TariffUI | null; path: TariffUI[] } => {
+    parent: UITariff | null = null
+  ): { parent: UITariff | null; path: UITariff[] } => {
     for (const t of tariffList) {
       if (t.exceptionTariffs?.some((et) => et.code === exceptionCode)) {
         return { parent: t, path: parent ? [parent, t] : [t] };
@@ -100,7 +108,7 @@ export const Tariff = ({
   };
 
   // Recursive helper function to turn off all exceptions of a tariff
-  const turnOffAllExceptions = (tariff: TariffUI): TariffUI => {
+  const turnOffAllExceptions = (tariff: UITariff): UITariff => {
     if (!tariff.exceptionTariffs?.length) {
       return tariff;
     }
@@ -115,7 +123,7 @@ export const Tariff = ({
   };
 
   // Recursive helper function to check if any exceptions are active
-  const hasActiveExceptions = (tariff: TariffUI): boolean => {
+  const hasActiveExceptions = (tariff: UITariff): boolean => {
     if (!tariff.exceptionTariffs?.length) {
       return false;
     }
@@ -125,7 +133,7 @@ export const Tariff = ({
     );
   };
 
-  const toggleTariff = (tariff: TariffUI) => {
+  const toggleTariff = (tariff: UITariff) => {
     const updatedTariffSets = tariffSets.map((set, index) => {
       if (index === setIndex) {
         return updateTariffRecursively(set, tariff.code, (t) => {
@@ -152,7 +160,7 @@ export const Tariff = ({
     setTariffSets(updatedTariffSets);
   };
 
-  const toggleExceptionTariff = (exceptionTariff: TariffUI) => {
+  const toggleExceptionTariff = (exceptionTariff: UITariff) => {
     // Find ALL tariffs with the same code across all tariff sets and toggle them
     const updatedTariffSets = tariffSets.map((set) => {
       // First, update all tariffs with the same code
@@ -165,10 +173,10 @@ export const Tariff = ({
       );
 
       // Then, find all parent tariffs that contain this exception and update them
-      const allParents: TariffUI[] = [];
+      const allParents: UITariff[] = [];
       const findParentsRecursively = (
-        tariffList: TariffUI[],
-        parent: TariffUI | null = null
+        tariffList: UITariff[],
+        parent: UITariff | null = null
       ) => {
         for (const t of tariffList) {
           if (
@@ -283,6 +291,7 @@ export const Tariff = ({
                 tariff={exceptionTariff}
                 tariffSets={tariffSets}
                 setTariffSets={setTariffSets}
+                renderedCodes={renderedCodes}
               />
             )
         )}
