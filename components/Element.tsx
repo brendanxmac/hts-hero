@@ -3,9 +3,6 @@ import { useEffect, useState } from "react";
 import {
   getDirectChildrenElements,
   getBreadCrumbsForElement,
-  getTariffElement,
-  getTemporaryTariffTextElement,
-  getGeneralNoteFromSpecialTariffSymbol,
   isFullHTSCode,
 } from "../libs/hts";
 import { ElementSummary } from "./ElementSummary";
@@ -29,11 +26,11 @@ import { TertiaryText } from "./TertiaryText";
 import { format } from "date-fns";
 import { Tariffs } from "./Tariffs";
 import {
-  Metal,
   tariffIsApplicableToCode,
   TariffsList,
 } from "../public/tariffs/tariffs";
 import { PrimaryLabel } from "./PrimaryLabel";
+import { Metal } from "../enums/tariff";
 
 interface Props {
   summaryOnly?: boolean;
@@ -80,14 +77,6 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
     const elementChildren = getDirectChildrenElements(element, htsElements);
     setChildren(elementChildren);
   }, [element]);
-
-  const [tariffElement, setTariffElement] = useState<HtsElement | null>(
-    getTariffElement(element, htsElements, breadcrumbs)
-  );
-
-  useEffect(() => {
-    setTariffElement(getTariffElement(element, htsElements, breadcrumbs));
-  }, [breadcrumbs]);
 
   const getHtsnoLabel = () => {
     if (htsno) {

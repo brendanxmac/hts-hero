@@ -1,4 +1,4 @@
-import { TariffI } from "./tariffs";
+import { TariffI } from "../../interfaces/tariffs";
 
 export const automobileTariffs: TariffI[] = [
   // Automobiles (Section 232)

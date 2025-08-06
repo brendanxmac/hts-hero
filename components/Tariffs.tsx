@@ -2,8 +2,8 @@ import { Dispatch, SetStateAction } from "react";
 import { Country } from "../constants/countries";
 import { CountryTariff } from "./CountryTariff";
 import { ContentRequirementI } from "./Element";
-import { Metal } from "../public/tariffs/tariffs";
 import { HtsElement } from "../interfaces/hts";
+import { Metal } from "../enums/tariff";
 
 interface Props {
   selectedCountries: Country[];

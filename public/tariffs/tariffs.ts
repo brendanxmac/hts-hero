@@ -7,55 +7,15 @@ import { reciprocalTariffs } from "./reciprocal";
 import { exceptionTariffs } from "./exception";
 import { ironAndSteelTariffs } from "./iron-and-steel";
 import { HtsElement } from "../../interfaces/hts";
-import { UITariff } from "../../components/Tariff";
-
-export type Metal = "Aluminum" | "Steel" | "Copper";
-
-export enum TariffCategory {
-  SECTION_232 = "Section 232",
-  SECTION_301 = "Section 301",
-  IEEPA = "IEEPA",
-}
-
-export type ContentRequirement = Metal;
-
-export interface TariffI {
-  code: string;
-  description: string;
-  name: string;
-  exceptions?: string[];
-  inclusions?: {
-    tariffs?: string[];
-    codes?: string[];
-    countries?: string[];
-  };
-  exclusions?: {
-    tariffs?: string[];
-    codes?: string[];
-    countries?: string[];
-  };
-  general?: number;
-  special?: number;
-  other?: number;
-  unit?: string;
-  requiresReview?: boolean;
-  contentRequirement?: ContentRequirement;
-  category?: TariffCategory; // TODO: implement this
-}
-
-export enum TariffColumn {
-  GENERAL = "general",
-  SPECIAL = "special",
-  OTHER = "other",
-}
-
-// TODO: would need to get lists of all countries that qualify for all agreements
-// then would need to map that to the country selected -- would also rely on
-// the classifier to select whether or not the item qualifies
-export const getTariffColumn = (
-  htsElement: HtsElement,
-  countryCode: string
-) => {};
+import {
+  BaseTariffI,
+  getBaseTariffs,
+  splitOnClosingParen,
+} from "../../libs/hts";
+import { ContentRequirementI } from "../../components/Element";
+import { Metal } from "../../enums/tariff";
+import { TariffI, UITariff, TariffSet } from "../../interfaces/tariffs";
+import { TariffColumn } from "../../enums/tariff";
 
 export const findExceptions = (
   tariff: TariffI,
@@ -97,14 +57,160 @@ export const hasActiveDescendants = (
   );
 };
 
+// Helper function to collect all exception codes recursively
+export const collectExceptionCodes = (
+  tariff: TariffI,
+  tariffs: TariffI[],
+  exceptionCodes: Set<string>
+) => {
+  if (tariff.exceptions) {
+    tariff.exceptions.forEach((code) => {
+      exceptionCodes.add(code);
+      // Find the exception tariff and recursively collect its exceptions
+      const exceptionTariff = tariffs.find((t) => t.code === code);
+      if (exceptionTariff) {
+        collectExceptionCodes(exceptionTariff, tariffs, exceptionCodes);
+      }
+    });
+  }
+};
+
+export const getContentRequirementTariffSets = (
+  tariffs: TariffI[],
+  contentRequirements: ContentRequirementI<Metal>[]
+): TariffSet[] => {
+  const sets: TariffSet[] = [];
+
+  for (const contentRequirement of contentRequirements) {
+    const exceptionCodes = new Set<string>();
+    let tariffSet = tariffs.filter(
+      (t) =>
+        !t.contentRequirement ||
+        t.contentRequirement === contentRequirement.name
+    );
+
+    tariffSet.forEach((t) => {
+      collectExceptionCodes(t, tariffs, exceptionCodes);
+    });
+
+    const tariffSetWithIsActive = tariffSet.map((t) => ({
+      ...t,
+      isActive: tariffIsActive(t, tariffs),
+    }));
+
+    sets.push({
+      exceptionCodes,
+      tariffs: tariffSetWithIsActive,
+    });
+  }
+
+  return sets;
+};
+
+export const getAdValoremRate = (
+  column: TariffColumn,
+  tariffSet: UITariff[],
+  baseTariffs: BaseTariffI[]
+) => {
+  let rate = 0;
+  tariffSet.forEach((tariff) => {
+    if (tariff.isActive) {
+      rate += tariff[column];
+    }
+  });
+
+  if (baseTariffs && baseTariffs.length > 0) {
+    baseTariffs
+      .filter((tariff) => tariff.type === "percent")
+      .forEach((t) => {
+        rate += t.value;
+      });
+  }
+
+  return rate;
+};
+
+export const getAmountRates = (baseTariffs: BaseTariffI[]) => {
+  return baseTariffs
+    .filter((t) => t.type === "amount")
+    .map((t) => t.raw)
+    .join(" + ");
+};
+
+export const getBaseTariffsForColumn = (
+  htsElement: HtsElement,
+  column: TariffColumn
+) => {
+  const tariffString = getTariffForColumn(column, htsElement);
+  // only needed if string has countries specified, which USITC writes within parenthesis ()
+  // if not parenthesis then the function just returns the tariff as an element in array
+  const tariffParts = splitOnClosingParen(tariffString);
+
+  return tariffParts.map((part) => getBaseTariffs(part));
+};
+
+export const getTariffForColumn = (
+  column: TariffColumn,
+  htsElement: HtsElement
+) => {
+  if (column === TariffColumn.GENERAL) {
+    return htsElement.general;
+  } else if (column === TariffColumn.SPECIAL) {
+    return htsElement.special;
+  } else if (column === TariffColumn.OTHER) {
+    return htsElement.other;
+  }
+};
+
+export const isAncestorTariff = (
+  possibleAncestor: UITariff,
+  tariff: UITariff,
+  allTariffs: UITariff[]
+): boolean => {
+  const hasExceptions =
+    possibleAncestor.exceptions && possibleAncestor.exceptions.length > 0;
+
+  if (hasExceptions) {
+    const exceptions = allTariffs.filter((t) =>
+      possibleAncestor.exceptions.includes(t.code)
+    );
+
+    return (
+      exceptions.some((e) => e.code === tariff.code) ||
+      exceptions.some((e) => isAncestorTariff(tariff, e, allTariffs))
+    );
+  } else {
+    return false;
+  }
+};
+
+export const isDescendantTariff = (
+  possibleDescendant: UITariff,
+  tariff: UITariff,
+  allTariffs: UITariff[]
+): boolean => {
+  const tariffHasExceptions = tariff.exceptions && tariff.exceptions.length > 0;
+
+  if (tariffHasExceptions) {
+    const exceptions = allTariffs.filter((t) =>
+      tariff.exceptions.includes(t.code)
+    );
+
+    return (
+      exceptions.some((e) => e.code === possibleDescendant.code) ||
+      exceptions.some((e) => isDescendantTariff(tariff, e, allTariffs))
+    );
+  } else {
+    return false;
+  }
+};
+
 export const applicableTariffIsActive = (
   tariff: UITariff,
-  tariffs: UITariff[],
-  countryCode: string,
-  htsCode: string
+  tariffs: UITariff[]
 ) => {
   const atLeastOneActiveDescendant = hasActiveDescendants(tariff, tariffs);
-  const isActiveItself = tariffIsActive(tariff, tariffs, countryCode, htsCode);
+  const isActiveItself = tariffIsActive(tariff, tariffs);
 
   return atLeastOneActiveDescendant || isActiveItself;
 };
@@ -113,10 +219,8 @@ export const applicableTariffIsActive = (
 //  especially when it comes to handling inclusions that are tariffs...
 //  That should probably be its own function anyways... somehow
 export const tariffIsActive = (
-  tariff: UITariff,
-  tariffs: UITariff[],
-  countryCode: string,
-  htsCode: string,
+  tariff: TariffI,
+  applicableTariffs: TariffI[],
   tariffCodesToIgnore?: string[]
 ) => {
   if (tariff.requiresReview) return false;
@@ -128,26 +232,28 @@ export const tariffIsActive = (
 
   const exceptionTariffs = noExceptions
     ? []
-    : tariffs.filter((t) => tariff.exceptions?.includes(t.code));
+    : applicableTariffs.filter((t) => tariff.exceptions?.includes(t.code));
 
   const inclusionTariffs = noTariffInclusions
     ? []
-    : tariffs.filter((t) => tariff.inclusions?.tariffs?.includes(t.code));
+    : applicableTariffs.filter((t) =>
+        tariff.inclusions?.tariffs?.includes(t.code)
+      );
 
   const exceptions = [...exceptionTariffs, ...inclusionTariffs];
-  const applicableExceptions = exceptions.filter((t) =>
-    tariffIsApplicable(t, countryCode, htsCode, tariffCodesToIgnore)
-  );
+  // const applicableExceptions = exceptions.filter((t) =>
+  //   tariffIsApplicable(t, countryCode, htsCode, tariffCodesToIgnore)
+  // );
 
   if (
     noExceptions &&
     !noTariffInclusions && // has inclusions
-    applicableExceptions.length === 0 // but those inclusions do not apply
+    exceptions.length === 0 // but those inclusions do not apply
   ) {
     return false;
   }
 
-  const noReviewNeeded = applicableExceptions.filter((e) => !e.requiresReview);
+  const noReviewNeeded = exceptions.filter((e) => !e.requiresReview);
 
   return noReviewNeeded.length === 0;
 };

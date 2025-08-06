@@ -15,9 +15,3 @@ export enum HtsLevel {
   PREQUALIFIER = "Prequalifier",
   MISCELLANEOUS = "Miscellaneous",
 }
-
-export enum TariffColumn {
-  GENERAL = "general",
-  SPECIAL = "special",
-  OTHER = "other",
-}

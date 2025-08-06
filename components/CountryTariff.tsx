@@ -1,21 +1,24 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import { countries, Country } from "../constants/countries";
 import {
-  applicableTariffIsActive,
+  collectExceptionCodes,
+  getAdValoremRate,
+  getAmountRates,
+  getBaseTariffsForColumn,
+  getContentRequirementTariffSets,
   getTariffs,
-  Metal,
-  TariffColumn,
-  TariffI,
+  tariffIsActive,
 } from "../public/tariffs/tariffs";
-import { Tariff, UITariff } from "./Tariff";
+import { Tariff } from "./Tariff";
 import { ContentRequirementI } from "./Element";
 import { classNames } from "../utilities/style";
 import { HtsElement } from "../interfaces/hts";
-import { BaseTariffI, getBaseTariffs, splitOnClosingParen } from "../libs/hts";
 import { BaseTariff } from "./BaseTariff";
 import { getStringBetweenParenthesis } from "../utilities/hts";
 import { otherColumnCountryCodes } from "../public/tariffs/tariff-columns";
 import { SpecialPrograms } from "./SpecialPrograms";
+import { Metal, TariffColumn } from "../enums/tariff";
+import { TariffI, TariffSet } from "../interfaces/tariffs";
 
 interface Props {
   country: Country;
@@ -23,11 +26,6 @@ interface Props {
   selectedCountries: Country[];
   setSelectedCountries: Dispatch<SetStateAction<Country[]>>;
   contentRequirements: ContentRequirementI<Metal>[];
-}
-
-export interface TariffSet {
-  exceptionCodes: Set<string>;
-  tariffs: UITariff[];
 }
 
 export const CountryTariff = ({
@@ -39,84 +37,17 @@ export const CountryTariff = ({
 }: Props) => {
   const htsCode = htsElement.htsno;
   const applicableTariffs = getTariffs(country.code, htsCode);
-  const lol = applicableTariffs.map((t) => ({
+  const applicableUITariffs: TariffI[] = applicableTariffs.map((t) => ({
     ...t,
     exceptions: t.exceptions?.filter((e) =>
       applicableTariffs.some((t) => t.code === e)
     ),
-    isActive: false,
   }));
-  const applicableUITariffs: UITariff[] = lol.map((t) => ({
-    ...t,
-    isActive: applicableTariffIsActive(t, lol, country.code, htsCode),
-  }));
-
-  // const baseExceptionCodes = new Set<string>();
-  // const baseTariffSet = getBaseTariffSet(applicableUITariffs);
-
-  // const sets = [...getBaseSet(), getContentExceptionSets()]
 
   console.log("APPLICABLE UI TARIFFS", applicableUITariffs);
 
-  // const getExceptionTariffsForTariff = (
-  //   tariff: UITariff,
-  //   tariffSet: UITariff[]
-  // ): UITariff => {
-  //   const tariffHasExceptions =
-  //     tariff.exceptions && tariff.exceptions.length > 0;
-
-  //   if (!tariffHasExceptions) {
-  //     return tariff;
-  //   }
-
-  //   const exceptionTariffs = tariffSet
-  //     .filter((t) => tariff.exceptions.includes(t.code))
-  //     .map((exceptionTariff) =>
-  //       getExceptionTariffsForTariff(exceptionTariff, tariffSet)
-  //     );
-
-  //   return {
-  //     ...tariff,
-  //     exceptionTariffs,
-  //   };
-  // };
-
-  // Create a set to track all exception tariff codes (at any level)
-  const allExceptionTariffCodes = new Set<string>();
-
-  // Helper function to collect all exception codes recursively
-  const collectExceptionCodes = (
-    tariff: UITariff,
-    tariffs: UITariff[],
-    exceptionCodes: Set<string>
-  ) => {
-    if (tariff.exceptions) {
-      tariff.exceptions.forEach((code) => {
-        exceptionCodes.add(code);
-        // Find the exception tariff and recursively collect its exceptions
-        const exceptionTariff = tariffs.find((t) => t.code === code);
-        if (exceptionTariff) {
-          collectExceptionCodes(exceptionTariff, tariffs, exceptionCodes);
-        }
-      });
-    }
-  };
-
-  // Collect all exception codes from all tariffs
-  // applicableTariffs.forEach(collectExceptionCodes);
-
-  // Build the complete hierarchy for each tariff
-  // const tariffsWithExceptions: UITariff[] = applicableUITariffs.map((tariff) =>
-  //   getExceptionTariffsForTariff(tariff, applicableUITariffs)
-  // );
-
-  // Remove tariffs that are exceptions at any level
-  const cleanedUpTariffs = applicableUITariffs.filter(
-    (t) => !allExceptionTariffCodes.has(t.code)
-  );
-
-  const getBaseTariffSet = (tariffs: UITariff[]): TariffSet => {
-    let contentRequirementCodes = new Set<string>();
+  const getBaseTariffSet = (tariffs: TariffI[]): TariffSet => {
+    const contentRequirementCodes = new Set<string>();
     const contentRequirementTariffs = tariffs.filter(
       (t) => t.contentRequirement
     );
@@ -124,7 +55,7 @@ export const CountryTariff = ({
       collectExceptionCodes(t, tariffs, contentRequirementCodes);
     });
 
-    let exceptionCodes = new Set<string>();
+    const exceptionCodes = new Set<string>();
     // ????? Use to pass contentRequirements.length > 0 check here and use tariffs if not
     const baseSet = tariffs.filter((t) => !t.contentRequirement);
 
@@ -142,103 +73,18 @@ export const CountryTariff = ({
       (t) => !exceptionsThatOnlyContentRequirementsHave.includes(t.code)
     );
 
+    // Set isActive here now that we have the full picture
+    const baseSetWithIsActive = baseSetWithoutContentRequirementTariffs.map(
+      (t) => ({
+        ...t,
+        isActive: tariffIsActive(t, baseSetWithoutContentRequirementTariffs),
+      })
+    );
+
     return {
       exceptionCodes: exceptionCodes,
-      tariffs: baseSetWithoutContentRequirementTariffs,
+      tariffs: baseSetWithIsActive,
     };
-  };
-
-  const getContentRequirementTariffSets = (
-    tariffs: UITariff[],
-    contentRequirements: ContentRequirementI<Metal>[]
-  ): TariffSet[] => {
-    const sets: TariffSet[] = [];
-
-    for (const contentRequirement of contentRequirements) {
-      const exceptionCodes = new Set<string>();
-      let tariffSet = tariffs.filter(
-        (t) =>
-          !t.contentRequirement ||
-          t.contentRequirement === contentRequirement.name
-      );
-
-      tariffSet.forEach((t) => {
-        collectExceptionCodes(t, tariffs, exceptionCodes);
-      });
-
-      sets.push({
-        exceptionCodes,
-        tariffs: tariffSet,
-      });
-    }
-
-    return sets;
-  };
-
-  const getTariffForColumn = (column: TariffColumn, htsElement: HtsElement) => {
-    if (column === TariffColumn.GENERAL) {
-      return htsElement.general;
-    } else if (column === TariffColumn.SPECIAL) {
-      return htsElement.special;
-    } else if (column === TariffColumn.OTHER) {
-      return htsElement.other;
-    }
-  };
-
-  const getBaseTariffsForColumn = (column: TariffColumn) => {
-    const tariffString = getTariffForColumn(column, htsElement);
-    // only needed if string has countries specified, which USITC writes within parenthesis ()
-    // if not parenthesis then the function just returns the tariff as an element in array
-    const tariffParts = splitOnClosingParen(tariffString);
-
-    return tariffParts.map((part) => getBaseTariffs(part));
-  };
-
-  // Recursive helper function to calculate rate from a tariff and all its exceptions
-  // const calculateTariffRate = (
-  //   tariff: UITariff,
-  //   column: TariffColumn
-  // ): number => {
-  //   let rate = 0;
-
-  //   if (tariff.isActive) {
-  //     rate += tariff[column];
-  //   } else if (tariff.exceptionTariffs?.length) {
-  //     // If this tariff is not active, check all its exception tariffs recursively
-  //     tariff.exceptionTariffs.forEach((exceptionTariff) => {
-  //       rate += calculateTariffRate(exceptionTariff, column);
-  //     });
-  //   }
-
-  //   return rate;
-  // };
-
-  // const getAdValoremRate = (
-  //   column: TariffColumn,
-  //   tariffSet: UITariff[],
-  //   baseTariffs: BaseTariffI[]
-  // ) => {
-  //   let rate = 0;
-  //   tariffSet.forEach((tariff) => {
-  //     rate += calculateTariffRate(tariff, column);
-  //   });
-
-  //   if (baseTariffs && baseTariffs.length > 0) {
-  //     baseTariffs
-  //       .filter((tariff) => tariff.type === "percent")
-  //       .forEach((t) => {
-  //         rate += t.value;
-  //       });
-  //   }
-
-  //   return rate;
-  // };
-
-  const getAmountRates = (baseTariffs: BaseTariffI[]) => {
-    return baseTariffs
-      .filter((t) => t.type === "amount")
-      .map((t) => t.raw)
-      .join(" + ");
   };
 
   const [tariffSets, setTariffSets] = useState<TariffSet[]>([
@@ -253,10 +99,9 @@ export const CountryTariff = ({
       ? TariffColumn.OTHER
       : TariffColumn.GENERAL
   );
-  const [tariffs, setTariffs] = useState<UITariff[]>(cleanedUpTariffs);
   const [showInactive, setShowInactive] = useState<boolean>(true);
   const isOtherColumnCountry = otherColumnCountryCodes.includes(country.code);
-  const columnTariffs = getBaseTariffsForColumn(tariffColumn);
+  const columnTariffs = getBaseTariffsForColumn(htsElement, tariffColumn);
   const columnHasTariffs = columnTariffs.some((t) => t.tariffs.length > 0);
 
   return (
@@ -311,7 +156,13 @@ export const CountryTariff = ({
           <button
             className="rounded-md p-1 bg-primary/30 text-white hover:text-primary transition-colors"
             onClick={() => {
-              setTariffs(cleanedUpTariffs);
+              setTariffSets([
+                getBaseTariffSet(applicableUITariffs),
+                ...getContentRequirementTariffSets(
+                  applicableUITariffs,
+                  contentRequirements
+                ),
+              ]);
             }}
           >
             <svg
@@ -453,7 +304,11 @@ export const CountryTariff = ({
         )}
       >
         {tariffSets.map((tariffSet, i) => (
-          <div key={`tariff-set-${i}`} className="flex flex-col gap-4">
+          <div
+            key={`tariff-set-${i}`}
+            className="flex flex-col gap-4 border-2 p-4 rounded-md border-base-content/50"
+          >
+            {/* TODO: add a title for the set here */}
             {columnHasTariffs &&
               columnTariffs
                 .flatMap((t) => t.tariffs)
@@ -492,14 +347,14 @@ export const CountryTariff = ({
                     </p>
                   </div>
                 )}
-                {/* <p className="text-xl font-bold text-primary transition duration-100">
+                <p className="text-xl font-bold text-primary transition duration-100">
                   {getAdValoremRate(
                     tariffColumn,
-                    tariffSet,
+                    tariffSet.tariffs,
                     columnTariffs.flatMap((t) => t.tariffs)
                   )}
                   %
-                </p> */}
+                </p>
               </div>
             </div>
             {columnTariffs.flatMap((t) => t.parsingFailures).length > 0 && (

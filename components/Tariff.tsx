@@ -1,14 +1,15 @@
 import { Color } from "../enums/style";
-import { TariffI } from "../public/tariffs/tariffs";
+import { UITariff, TariffSet } from "../interfaces/tariffs";
+import {
+  isAncestorTariff,
+  isDescendantTariff,
+  tariffIsActive,
+} from "../public/tariffs/tariffs";
 import { classNames } from "../utilities/style";
-import { TariffSet } from "./CountryTariff";
+
 import { SecondaryText } from "./SecondaryText";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { TertiaryText } from "./TertiaryText";
-
-export interface UITariff extends TariffI {
-  isActive: boolean;
-}
 
 interface Props {
   showInactive: boolean;
@@ -35,188 +36,35 @@ export const Tariff = ({
 
   renderedCodes.add(tariff.code);
 
-  // TODO: get column by using country and checking if in Other or Special
-  // Recursive helper function to find and update a tariff by code
-  // const updateTariffRecursively = (
-  //   tariffList: UITariff[],
-  //   targetCode: string,
-  //   updateFn: (tariff: UITariff) => UITariff
-  // ): UITariff[] => {
-  //   return tariffList.map((t) => {
-  //     if (t.code === targetCode) {
-  //       return updateFn(t);
-  //     }
+  const toggleTariff = (tariff: UITariff) => {
+    const set = tariffSets[setIndex];
+    const toggledValue = !tariff.isActive;
 
-  //     // Recursively update exception tariffs
-  //     if (t.exceptionTariffs?.length) {
-  //       return {
-  //         ...t,
-  //         exceptionTariffs: updateTariffRecursively(
-  //           t.exceptionTariffs,
-  //           targetCode,
-  //           updateFn
-  //         ),
-  //       };
-  //     }
+    for (const t of set.tariffs) {
+      if (t.code === tariff.code) {
+        t.isActive = toggledValue;
+        continue;
+      }
 
-  //     return t;
-  //   });
-  // };
-
-  // Recursive helper function to find a tariff by code
-  // const findTariffRecursively = (
-  //   tariffList: UITariff[],
-  //   targetCode: string
-  // ): UITariff | null => {
-  //   for (const t of tariffList) {
-  //     if (t.code === targetCode) {
-  //       return t;
-  //     }
-
-  //     if (t.exceptionTariffs?.length) {
-  //       const found = findTariffRecursively(t.exceptionTariffs, targetCode);
-  //       if (found) return found;
-  //     }
-  //   }
-
-  //   return null;
-  // };
-
-  // Recursive helper function to find the parent tariff of a given exception
-  // const findParentTariff = (
-  //   tariffList: UITariff[],
-  //   exceptionCode: string,
-  //   parent: UITariff | null = null
-  // ): { parent: UITariff | null; path: UITariff[] } => {
-  //   for (const t of tariffList) {
-  //     if (t.exceptionTariffs?.some((et) => et.code === exceptionCode)) {
-  //       return { parent: t, path: parent ? [parent, t] : [t] };
-  //     }
-
-  //     if (t.exceptionTariffs?.length) {
-  //       const result = findParentTariff(t.exceptionTariffs, exceptionCode, t);
-  //       if (result.parent) {
-  //         return {
-  //           parent: result.parent,
-  //           path: parent ? [parent, ...result.path] : result.path,
-  //         };
-  //       }
-  //     }
-  //   }
-
-  //   return { parent: null, path: [] };
-  // };
-
-  // Recursive helper function to turn off all exceptions of a tariff
-  // const turnOffAllExceptions = (tariff: UITariff): UITariff => {
-  //   if (!tariff.exceptionTariffs?.length) {
-  //     return tariff;
-  //   }
-
-  //   return {
-  //     ...tariff,
-  //     exceptionTariffs: tariff.exceptionTariffs.map((et) => ({
-  //       ...turnOffAllExceptions(et),
-  //       isActive: false,
-  //     })),
-  //   };
-  // };
-
-  // Recursive helper function to check if any exceptions are active
-  const hasActiveExceptions = (tariff: UITariff): boolean => {
-    if (!tariff.exceptions?.length) {
-      return false;
+      if (
+        isAncestorTariff(t, tariff, set.tariffs) ||
+        isDescendantTariff(t, tariff, set.tariffs)
+      ) {
+        if (toggledValue) {
+          t.isActive = false;
+          continue;
+        } else if (!t.requiresReview) {
+          t.isActive = tariffIsActive(t, set.tariffs);
+        }
+      }
     }
 
-    return tariff.exceptions.some((e) =>
-      tariffSets[setIndex].tariffs.some((t) => t.code === e && t.isActive)
-    );
+    // call setTariffSets and update the given set within it while keeping all other sets the same
+    const updatedTariffSets = [...tariffSets];
+    updatedTariffSets[setIndex] = set;
+
+    setTariffSets(updatedTariffSets);
   };
-
-  // const toggleTariff = (tariff: UITariff) => {
-  //   const updatedTariffSets = tariffSets.map((set, index) => {
-  //     if (index === setIndex) {
-  //       return updateTariffRecursively(set, tariff.code, (t) => {
-  //         const newIsActive = !t.isActive;
-
-  //         // If the tariff is being turned ON, turn off all exceptions recursively
-  //         if (newIsActive) {
-  //           return {
-  //             ...turnOffAllExceptions(t),
-  //             isActive: newIsActive,
-  //           };
-  //         }
-
-  //         // If the tariff is being turned OFF, just toggle the tariff itself
-  //         return {
-  //           ...t,
-  //           isActive: newIsActive,
-  //         };
-  //       });
-  //     }
-  //     return set;
-  //   });
-
-  //   setTariffSets(updatedTariffSets);
-  // };
-
-  // const toggleExceptionTariff = (exceptionTariff: UITariff) => {
-  //   // Find ALL tariffs with the same code across all tariff sets and toggle them
-  //   const updatedTariffSets = tariffSets.map((set) => {
-  //     // First, update all tariffs with the same code
-  //     let updatedSet = updateTariffRecursively(
-  //       set,
-  //       exceptionTariff.code,
-  //       (tariff) => {
-  //         return { ...tariff, isActive: !tariff.isActive };
-  //       }
-  //     );
-
-  //     // Then, find all parent tariffs that contain this exception and update them
-  //     const allParents: UITariff[] = [];
-  //     const findParentsRecursively = (
-  //       tariffList: UITariff[],
-  //       parent: UITariff | null = null
-  //     ) => {
-  //       for (const t of tariffList) {
-  //         if (
-  //           t.exceptionTariffs?.some((et) => et.code === exceptionTariff.code)
-  //         ) {
-  //           allParents.push(t);
-  //         }
-  //         if (t.exceptionTariffs?.length) {
-  //           findParentsRecursively(t.exceptionTariffs, t);
-  //         }
-  //       }
-  //     };
-
-  //     findParentsRecursively(updatedSet);
-
-  //     // Update each parent tariff
-  //     for (const parent of allParents) {
-  //       updatedSet = updateTariffRecursively(
-  //         updatedSet,
-  //         parent.code,
-  //         (parentTariff) => {
-  //           // Check if any exceptions are active after the toggle
-  //           const hasActiveExceptionsAfterToggle =
-  //             parentTariff.exceptionTariffs?.some(
-  //               (et) => et.isActive || hasActiveExceptions(et)
-  //             );
-
-  //           return {
-  //             ...parentTariff,
-  //             isActive: !hasActiveExceptionsAfterToggle, // Parent is active only if no exceptions are active
-  //           };
-  //         }
-  //       );
-  //     }
-
-  //     return updatedSet;
-  //   });
-
-  //   setTariffSets(updatedTariffSets);
-  // };
 
   // Map exception levels to Tailwind margin classes
   const marginClasses: Record<number, string> = {
@@ -240,16 +88,16 @@ export const Tariff = ({
         )}
       >
         <div className="flex gap-2 items-start">
-          {exceptionLevel > 0 && (
+          {exceptionLevel > 0 && tariff.requiresReview && (
             <input
               type="checkbox"
               checked={tariff.isActive}
               className="checkbox checkbox-primary checkbox-sm"
-              // onChange={() =>
-              // exceptionLevel > 0
-              //   ? toggleExceptionTariff(tariff)
-              //   : toggleTariff(tariff)
-              // }
+              onChange={() => {
+                if (exceptionLevel > 0) {
+                  toggleTariff(tariff);
+                }
+              }}
             />
           )}
           <div className="flex flex-col gap-1">
@@ -283,9 +131,7 @@ export const Tariff = ({
           .filter(Boolean)
           .map(
             (exceptionTariff) =>
-              (exceptionTariff.isActive ||
-                hasActiveExceptions(exceptionTariff) ||
-                showInactive) && (
+              (exceptionTariff.isActive || showInactive) && (
                 <Tariff
                   key={exceptionTariff.code}
                   exceptionLevel={exceptionLevel + 1}

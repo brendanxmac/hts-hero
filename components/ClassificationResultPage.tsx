@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useClassification } from "../contexts/ClassificationContext";
 import { useHts } from "../contexts/HtsContext";
-import { TariffColumn } from "../enums/hts";
+import { TariffColumn } from "../enums/tariff";
 import { Color } from "../enums/style";
 import {
   downloadClassificationReport,

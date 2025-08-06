@@ -1,4 +1,4 @@
-import { Metal, TariffI } from "./tariffs";
+import { TariffI } from "../../interfaces/tariffs";
 
 // Aluminum (Section 232)
 export const aluminumTariffs: TariffI[] = [

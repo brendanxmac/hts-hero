@@ -25,7 +25,8 @@ import {
 } from "../utilities/data";
 import { OpenAIModel } from "./openai";
 import apiClient from "@/libs/api";
-import { HtsLevel, TariffColumn } from "../enums/hts";
+import { HtsLevel } from "../enums/hts";
+import { TariffColumn } from "../enums/tariff";
 import { NavigatableElement } from "../components/Elements";
 import { generateClassificationReport } from "./classification";
 import { SecondaryText } from "../components/SecondaryText";

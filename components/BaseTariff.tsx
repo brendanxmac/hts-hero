@@ -34,7 +34,7 @@ export const BaseTariff = ({ index, htsElement, tariff }: Props) => {
         <div className="flex flex-col gap-2 items-start">
           <TertiaryLabel value={htsElement.htsno} />
 
-          <div className="flex gap-2">
+          <div className="flex flex-col">
             <SecondaryText value={primaryText} color={Color.WHITE} />
             {tariff.programs && tariff.programs.length > 0 && (
               <SpecialPrograms programs={tariff.programs} />

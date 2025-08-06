@@ -1,7 +1,8 @@
-import { Metal, TariffI } from "./tariffs";
-
 // ==================
 // Steel (Section 232)
+
+import { TariffI } from "../../interfaces/tariffs";
+
 // ==================
 export const ironAndSteelTariffs: TariffI[] = [
   {
