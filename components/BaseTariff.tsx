@@ -23,6 +23,7 @@ export const BaseTariff = ({ index, htsElement, tariff }: Props) => {
   // FIXME: at some point, filter out the country based "See" ones so that they don't cause noise here
   const reviewText = tariff.value === null ? "Needs Review" : "";
   const valueText = tariff.type === "percent" ? `${tariff.value}%` : tariff.raw;
+
   return (
     <div className="w-full flex flex-col gap-2">
       <div
@@ -34,7 +35,7 @@ export const BaseTariff = ({ index, htsElement, tariff }: Props) => {
         <div className="flex flex-col gap-2 items-start">
           <TertiaryLabel value={htsElement.htsno} />
 
-          <div className="flex flex-col">
+          <div className="flex gap-2">
             <SecondaryText value={primaryText} color={Color.WHITE} />
             {tariff.programs && tariff.programs.length > 0 && (
               <SpecialPrograms programs={tariff.programs} />

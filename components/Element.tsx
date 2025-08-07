@@ -4,6 +4,7 @@ import {
   getDirectChildrenElements,
   getBreadCrumbsForElement,
   isFullHTSCode,
+  getTariffElement,
 } from "../libs/hts";
 import { ElementSummary } from "./ElementSummary";
 import {
@@ -43,6 +44,8 @@ export interface ContentRequirementI<T> {
 }
 
 export const Element = ({ element, summaryOnly = false }: Props) => {
+  console.log("element");
+  console.log(element);
   const { description, chapter, htsno } = element;
   const [children, setChildren] = useState<HtsElement[]>([]);
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
@@ -282,6 +285,11 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                 <Tariffs
                   selectedCountries={selectedCountries}
                   htsElement={element}
+                  tariffElement={getTariffElement(
+                    element,
+                    htsElements,
+                    breadcrumbs
+                  )}
                   setSelectedCountries={setSelectedCountries}
                   contentRequirements={contentPercentages}
                 />

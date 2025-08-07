@@ -1,10 +1,10 @@
-import { Dispatch, SetStateAction, useState } from "react";
-import { countries, Country } from "../constants/countries";
+import { Dispatch, SetStateAction, useEffect, useState, useRef } from "react";
+import { Country } from "../constants/countries";
 import {
   collectExceptionCodes,
   getAdValoremRate,
   getAmountRates,
-  getBaseTariffsForColumn,
+  getBaseTariffsForColumn as getTariffsForColumn,
   getContentRequirementTariffSets,
   getTariffs,
   tariffIsActive,
@@ -14,15 +14,20 @@ import { ContentRequirementI } from "./Element";
 import { classNames } from "../utilities/style";
 import { HtsElement } from "../interfaces/hts";
 import { BaseTariff } from "./BaseTariff";
-import { getStringBetweenParenthesis } from "../utilities/hts";
 import { otherColumnCountryCodes } from "../public/tariffs/tariff-columns";
-import { SpecialPrograms } from "./SpecialPrograms";
 import { Metal, TariffColumn } from "../enums/tariff";
 import { TariffI, TariffSet } from "../interfaces/tariffs";
+import { PrimaryLabel } from "./PrimaryLabel";
+import { TertiaryLabel } from "./TertiaryLabel";
+import { Color } from "../enums/style";
+import { SecondaryText } from "./SecondaryText";
+import { TertiaryText } from "./TertiaryText";
+import { TradePrograms, TradeProgramStatus } from "../public/trade-programs";
 
 interface Props {
   country: Country;
   htsElement: HtsElement;
+  tariffElement: HtsElement;
   selectedCountries: Country[];
   setSelectedCountries: Dispatch<SetStateAction<Country[]>>;
   contentRequirements: ContentRequirementI<Metal>[];
@@ -31,6 +36,7 @@ interface Props {
 export const CountryTariff = ({
   country,
   htsElement,
+  tariffElement,
   selectedCountries,
   setSelectedCountries,
   contentRequirements,
@@ -44,9 +50,7 @@ export const CountryTariff = ({
     ),
   }));
 
-  console.log("APPLICABLE UI TARIFFS", applicableUITariffs);
-
-  const getBaseTariffSet = (tariffs: TariffI[]): TariffSet => {
+  const getRegularTariffSet = (tariffs: TariffI[]): TariffSet => {
     const contentRequirementCodes = new Set<string>();
     const contentRequirementTariffs = tariffs.filter(
       (t) => t.contentRequirement
@@ -57,10 +61,10 @@ export const CountryTariff = ({
 
     const exceptionCodes = new Set<string>();
     // ????? Use to pass contentRequirements.length > 0 check here and use tariffs if not
-    const baseSet = tariffs.filter((t) => !t.contentRequirement);
+    const regularSet = tariffs.filter((t) => !t.contentRequirement);
 
     // Recursively get all the exceptions for all applicables minus content requirement ones
-    baseSet.forEach((t) => {
+    regularSet.forEach((t) => {
       collectExceptionCodes(t, tariffs, exceptionCodes);
     });
 
@@ -69,26 +73,25 @@ export const CountryTariff = ({
       contentRequirementCodes
     ).filter((t) => !exceptionCodes.has(t));
 
-    const baseSetWithoutContentRequirementTariffs = baseSet.filter(
+    const regularSetWithoutContentRequirementTariffs = regularSet.filter(
       (t) => !exceptionsThatOnlyContentRequirementsHave.includes(t.code)
     );
 
     // Set isActive here now that we have the full picture
-    const baseSetWithIsActive = baseSetWithoutContentRequirementTariffs.map(
-      (t) => ({
+    const regularSetWithIsActive =
+      regularSetWithoutContentRequirementTariffs.map((t) => ({
         ...t,
-        isActive: tariffIsActive(t, baseSetWithoutContentRequirementTariffs),
-      })
-    );
+        isActive: tariffIsActive(t, regularSetWithoutContentRequirementTariffs),
+      }));
 
     return {
       exceptionCodes: exceptionCodes,
-      tariffs: baseSetWithIsActive,
+      tariffs: regularSetWithIsActive,
     };
   };
 
   const [tariffSets, setTariffSets] = useState<TariffSet[]>([
-    getBaseTariffSet(applicableUITariffs),
+    getRegularTariffSet(applicableUITariffs),
     ...getContentRequirementTariffSets(
       applicableUITariffs,
       contentRequirements
@@ -100,9 +103,64 @@ export const CountryTariff = ({
       : TariffColumn.GENERAL
   );
   const [showInactive, setShowInactive] = useState<boolean>(true);
+  const [isSpecialProgramOpen, setIsSpecialProgramOpen] =
+    useState<boolean>(false);
+  const [selectedSpecialProgram, setSelectedSpecialProgram] = useState<any>({
+    symbol: "none",
+    name: "None",
+    description: "No special program",
+  });
+  const specialProgramDropdownRef = useRef<HTMLDivElement>(null);
   const isOtherColumnCountry = otherColumnCountryCodes.includes(country.code);
-  const columnTariffs = getBaseTariffsForColumn(htsElement, tariffColumn);
+  const columnTariffs = getTariffsForColumn(tariffElement, tariffColumn);
+  console.log("Column Tariffs");
+  console.log(columnTariffs);
   const columnHasTariffs = columnTariffs.some((t) => t.tariffs.length > 0);
+  const specialTariffProgramSymbols = getTariffsForColumn(
+    tariffElement,
+    TariffColumn.SPECIAL
+  ).reduce((acc, t) => {
+    // Add all programs into acc, IF not already in it
+    t.tariffs.forEach((t) => {
+      t.programs.forEach((p) => {
+        if (!acc.includes(p)) {
+          acc.push(p);
+        }
+      });
+    });
+    return acc;
+  }, []);
+  const specialTariffPrograms = specialTariffProgramSymbols
+    .map((p) => TradePrograms.find((t) => t.symbol === p))
+    .filter(
+      (p) =>
+        p.status === TradeProgramStatus.ACTIVE &&
+        (p.qualifyingCountries?.includes(country.code) ||
+          (!p.qualifyingCountries && p.requiresReview))
+    );
+
+  useEffect(() => {
+    if (selectedSpecialProgram && selectedSpecialProgram.symbol === "none") {
+      setTariffColumn(TariffColumn.GENERAL);
+    } else {
+      setTariffColumn(TariffColumn.SPECIAL);
+    }
+  }, [selectedSpecialProgram]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        specialProgramDropdownRef.current &&
+        !specialProgramDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsSpecialProgramOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <div className="flex flex-col p-8 border-2 border-base-content/50 bg-base-300 rounded-md gap-6">
@@ -157,12 +215,18 @@ export const CountryTariff = ({
             className="rounded-md p-1 bg-primary/30 text-white hover:text-primary transition-colors"
             onClick={() => {
               setTariffSets([
-                getBaseTariffSet(applicableUITariffs),
+                getRegularTariffSet(applicableUITariffs),
                 ...getContentRequirementTariffSets(
                   applicableUITariffs,
                   contentRequirements
                 ),
               ]);
+              setSelectedSpecialProgram({
+                symbol: "none",
+                name: "None",
+                description: "No special program",
+              });
+              setTariffColumn(TariffColumn.GENERAL);
             }}
           >
             <svg
@@ -207,9 +271,121 @@ export const CountryTariff = ({
         </div>
       </div>
 
+      {/* Create an input that allows the user to select from a special tariff program and make sure "none" is always an option */}
+      {!isOtherColumnCountry && (
+        <div className="flex flex-col gap-2">
+          <label className="text-white font-bold text-lg">
+            Special Tariff Program
+          </label>
+          <div className="relative" ref={specialProgramDropdownRef}>
+            <div
+              className="w-full px-3 py-1 border-2 border-base-content/10 rounded-lg cursor-pointer bg-base-300 flex gap-3 items-center justify-between hover:bg-primary/20 transition-colors min-h-10"
+              onClick={() => setIsSpecialProgramOpen(!isSpecialProgramOpen)}
+            >
+              <div className="flex-1 flex items-center">
+                {selectedSpecialProgram ? (
+                  <p className="text-white font-semibold">
+                    {selectedSpecialProgram.name}
+                    {selectedSpecialProgram.symbol &&
+                      selectedSpecialProgram.symbol !== "none" && (
+                        <span className="text-accent">
+                          {" "}
+                          ({selectedSpecialProgram.symbol})
+                        </span>
+                      )}
+                  </p>
+                ) : (
+                  <span className="text-sm">Select Special Tariff Program</span>
+                )}
+              </div>
+              <svg
+                className={`w-4 h-4 transition-transform text-base-content/70 ${isSpecialProgramOpen ? "" : "rotate-180"}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+
+            {isSpecialProgramOpen && (
+              <div className="absolute z-10 w-full mt-1 bg-base-100 border border-base-300 rounded-lg shadow-xl max-h-60 overflow-hidden">
+                <div className="max-h-48 overflow-y-auto">
+                  {[
+                    {
+                      symbol: "none",
+                      name: "None",
+                      description: "No special program",
+                    },
+                    ...specialTariffPrograms,
+                  ].map((program, index) => (
+                    <div
+                      key={index}
+                      className={`px-3 py-2 cursor-pointer flex items-center justify-between ${
+                        selectedSpecialProgram?.symbol === program.symbol
+                          ? "bg-primary/10 border-l-2 border-primary"
+                          : "hover:bg-primary/20"
+                      }`}
+                      onClick={() => {
+                        setSelectedSpecialProgram(
+                          program.symbol === "none"
+                            ? {
+                                symbol: "none",
+                                name: "None",
+                                description: "No special program",
+                              }
+                            : program
+                        );
+                        setIsSpecialProgramOpen(false);
+                      }}
+                    >
+                      <div className="flex flex-col">
+                        <span className="text-base-content font-medium">
+                          {program.name}
+                          {program.symbol && program.symbol !== "none" && (
+                            <span className="text-base-content/60">
+                              {" "}
+                              ({program.symbol})
+                            </span>
+                          )}
+                        </span>
+                        {"description" in program && program.description && (
+                          <span className="text-sm text-base-content/60">
+                            {program.description}
+                          </span>
+                        )}
+                      </div>
+                      {selectedSpecialProgram?.symbol === program.symbol && (
+                        <svg
+                          className="w-4 h-4 text-primary"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Tariff Column Selection */}
-      <div className="flex gap-8">
-        {/* General */}
+      {/* <div className="flex gap-8">
         <div className="flex flex-col gap-2">
           <div className="cursor-pointer flex gap-2 p-0">
             <input
@@ -227,7 +403,6 @@ export const CountryTariff = ({
           </div>
         </div>
 
-        {/* Special */}
         <div className="flex flex-col max-w-sm">
           <div className="cursor-pointer flex gap-2 p-0">
             <input
@@ -243,12 +418,12 @@ export const CountryTariff = ({
             />
             <span className="label-text font-bold text-lg">Special Rate</span>
           </div>
-          {getStringBetweenParenthesis(htsElement.special) && (
+          {getStringBetweenParenthesis(tariffElement.special) && (
             <div className="flex flex-col">
               <div className="flex flex-wrap gap-x-1">
-                {getStringBetweenParenthesis(htsElement.special) && (
+                {getStringBetweenParenthesis(tariffElement.special) && (
                   <SpecialPrograms
-                    programs={getStringBetweenParenthesis(htsElement.special)
+                    programs={getStringBetweenParenthesis(tariffElement.special)
                       .split(",")
                       .map((p) => p.trim())}
                   />
@@ -257,7 +432,7 @@ export const CountryTariff = ({
             </div>
           )}
         </div>
-        {/* Other */}
+
         <div className="flex flex-col gap-1">
           <div className="cursor-pointer flex gap-2 p-0">
             <input
@@ -296,7 +471,7 @@ export const CountryTariff = ({
             )
           </div>
         </div>
-      </div>
+      </div> */}
 
       <div
         className={classNames(
@@ -306,17 +481,30 @@ export const CountryTariff = ({
         {tariffSets.map((tariffSet, i) => (
           <div
             key={`tariff-set-${i}`}
-            className="flex flex-col gap-4 border-2 p-4 rounded-md border-base-content/50"
+            className="flex flex-col gap-4 border-2 p-4 rounded-md border-base-content/20"
           >
             {/* TODO: add a title for the set here */}
             {columnHasTariffs &&
               columnTariffs
+                .filter((t) => {
+                  console.log(t);
+                  if (
+                    selectedSpecialProgram &&
+                    selectedSpecialProgram.symbol !== "none"
+                  ) {
+                    console.log(`====== Is selected speical program ======`);
+                    return t.tariffs.some((t) =>
+                      t.programs.includes(selectedSpecialProgram.symbol)
+                    );
+                  }
+                  return true;
+                })
                 .flatMap((t) => t.tariffs)
                 .map((t, i) => (
                   <BaseTariff
                     key={`${htsElement.htsno}-${t.raw}-${i}`}
                     index={i}
-                    htsElement={htsElement}
+                    htsElement={tariffElement}
                     tariff={t}
                   />
                 ))}
@@ -360,14 +548,14 @@ export const CountryTariff = ({
             {columnTariffs.flatMap((t) => t.parsingFailures).length > 0 && (
               <div className="flex flex-col gap-2 p-4 border-2 border-red-500 rounded-md">
                 <h2 className="text-white font-bold">
-                  {`Error Parsing ${htsElement.htsno}'s Base Tariff(s):`}
+                  {`Error Parsing ${tariffElement.htsno}'s Base Tariff(s):`}
                 </h2>
                 <ul className="flex flex-col gap-2 list-disc list-outside">
                   {columnTariffs
                     .flatMap((t) => t.parsingFailures)
                     .map((t, i) => (
                       <li
-                        key={`${htsElement.htsno}-${t}-${i}`}
+                        key={`${tariffElement.htsno}-${t}-${i}`}
                         className="ml-6 text-red-500 font-bold text-lg"
                       >
                         {t}
@@ -393,6 +581,31 @@ export const CountryTariff = ({
             )}
           </div>
         ))}
+      </div>
+
+      {/* Footnotes */}
+      <div className="flex flex-col gap-2 border-2 border-base-content/20 rounded-md p-4">
+        <PrimaryLabel value="Tariff Footnotes" color={Color.WHITE} />
+        {(tariffElement.footnotes.length > 0 ||
+          htsElement.footnotes.length > 0) && (
+          <div className="flex flex-col gap-2 ml-5">
+            {[...tariffElement.footnotes, ...htsElement.footnotes].map(
+              (footnote, i) => (
+                <div key={`${tariffElement.htsno}-${footnote}-${i}`}>
+                  <SecondaryText value={footnote.value} color={Color.WHITE} />
+                  <div className="flex gap-2 items-center ml-4">
+                    <TertiaryText value="Applies to:" />
+                    {footnote.columns.map((column, i) => (
+                      <div key={`${tariffElement.htsno}-${column}-${i}`}>
+                        <TertiaryLabel value={column} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

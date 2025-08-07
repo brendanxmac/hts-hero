@@ -8,6 +8,7 @@ import { Metal } from "../enums/tariff";
 interface Props {
   selectedCountries: Country[];
   htsElement: HtsElement;
+  tariffElement: HtsElement;
   setSelectedCountries: Dispatch<SetStateAction<Country[]>>;
   contentRequirements: ContentRequirementI<Metal>[];
 }
@@ -15,6 +16,7 @@ interface Props {
 export const Tariffs = ({
   selectedCountries,
   htsElement,
+  tariffElement,
   setSelectedCountries,
   contentRequirements,
 }: Props) => {
@@ -25,6 +27,7 @@ export const Tariffs = ({
           key={`tariff-${country.code}-${i}`}
           country={country}
           htsElement={htsElement}
+          tariffElement={tariffElement}
           selectedCountries={selectedCountries}
           setSelectedCountries={setSelectedCountries}
           contentRequirements={contentRequirements}

@@ -4,6 +4,57 @@ export interface Country {
   code: string;
 }
 
+// AGOA
+// Angola - "AO"
+// Benin - "BJ"
+// Mauritania - "MR"
+// Botswana - "BW"
+// Mauritius - "MU"
+// Mozambique - "MZ"
+// Namibia - "NA"
+// Cape Verde - "CV"
+// Nigeria - "NG"
+// Chad - "TD"
+// Rwanda - "RW"
+// Union of the Comoros - "KM"
+// Sao Tome and Principe - "ST"
+// Congo - "CG"
+// Senegal - "SN"
+// Côte d’Ivoire - "CI"
+// Sierra Leone - "SL"
+// Djibouti - "DJ"
+// South Africa - "ZA"
+// Eswatini - "SZ"
+// The Gambia - "GM"
+// Tanzania - "TZ"
+// Ghana - "GH"
+// Togo - "TG"
+// Guinea-Bissau - "GW"
+// Kenya - "KE"
+// Zambia - "ZM"
+// Kingdom of Lesotho - "LS"
+// Liberia - "LR"
+// Madagascar - "MG"
+// Malawi - "MW"
+
+// CBTPA
+// Barbados - "BB",
+// Belize - "BZ",
+// Curaçao - "CW",
+// Guyana - "GY",
+// Haiti - "HT",
+// Jamaica - "JM",
+// Saint Lucia - "LC",
+// Trinidad and Tobago - "TT",
+
+// DR-CAFTA
+// Costa Rica - "CR",
+// Dominican Republic - "DO",
+// El Salvador - "SV",
+// Guatemala - "GT",
+// Honduras - "HN",
+// Nicaragua - "NI",
+
 export const countries: Country[] = [
   { flag: "🇦🇫", name: "Afghanistan", code: "AF" },
   { flag: "🇦🇱", name: "Albania", code: "AL" },
@@ -13,6 +64,7 @@ export const countries: Country[] = [
   { flag: "🇦🇬", name: "Antigua and Barbuda", code: "AG" },
   { flag: "🇦🇷", name: "Argentina", code: "AR" },
   { flag: "🇦🇲", name: "Armenia", code: "AM" },
+  { flag: "🇦🇼", name: "Aruba", code: "AW" },
   { flag: "🇦🇺", name: "Australia", code: "AU" },
   { flag: "🇦🇹", name: "Austria", code: "AT" },
   { flag: "🇦🇿", name: "Azerbaijan", code: "AZ" },
@@ -29,6 +81,7 @@ export const countries: Country[] = [
   { flag: "🇧🇦", name: "Bosnia and Herzegovina", code: "BA" },
   { flag: "🇧🇼", name: "Botswana", code: "BW" },
   { flag: "🇧🇷", name: "Brazil", code: "BR" },
+  { flag: "🇻🇬", name: "British Virgin Islands", code: "VG" },
   { flag: "🇧🇳", name: "Brunei", code: "BN" },
   { flag: "🇧🇬", name: "Bulgaria", code: "BG" },
   { flag: "🇧🇫", name: "Burkina Faso", code: "BF" },
@@ -47,6 +100,7 @@ export const countries: Country[] = [
   { flag: "🇨🇷", name: "Costa Rica", code: "CR" },
   { flag: "🇭🇷", name: "Croatia", code: "HR" },
   { flag: "🇨🇺", name: "Cuba", code: "CU" },
+  { flag: "🇨🇼", name: "Curaçao", code: "CW" },
   { flag: "🇨🇾", name: "Cyprus", code: "CY" },
   { flag: "🇨🇿", name: "Czech Republic", code: "CZ" },
   { flag: "🇨🇮", name: "Côte d'Ivoire", code: "CI" },
@@ -119,6 +173,7 @@ export const countries: Country[] = [
   { flag: "🇲🇨", name: "Monaco", code: "MC" },
   { flag: "🇲🇳", name: "Mongolia", code: "MN" },
   { flag: "🇲🇪", name: "Montenegro", code: "ME" },
+  { flag: "🇲🇸", name: "Montserrat", code: "MS" },
   { flag: "🇲🇦", name: "Morocco", code: "MA" },
   { flag: "🇲🇿", name: "Mozambique", code: "MZ" },
   { flag: "🇲🇲", name: "Myanmar", code: "MM" },
