@@ -141,7 +141,11 @@ export const CountryTariff = ({
 
   useEffect(() => {
     if (selectedSpecialProgram && selectedSpecialProgram.symbol === "none") {
-      setTariffColumn(TariffColumn.GENERAL);
+      if (isOtherColumnCountry) {
+        setTariffColumn(TariffColumn.OTHER);
+      } else {
+        setTariffColumn(TariffColumn.GENERAL);
+      }
     } else {
       setTariffColumn(TariffColumn.SPECIAL);
     }
