@@ -11,7 +11,7 @@ export const reciprocalTariffs: TariffI[] = [
     name: "Worldwide Reciprocal 10% (IEEPA)",
     general: 10,
     special: 10,
-    other: 0,
+    other: 10,
     inclusions: {
       countries: ["*"],
       // When a tariff applies to all countries we just do *

@@ -397,7 +397,6 @@ export const CountryTariff = ({
               value={`${tariffSet.name} Tariffs`}
               color={Color.ACCENT}
             />
-            {/* TODO: add a title for the set here */}
             {columnHasTariffs &&
               columnTariffs
                 .filter((t) => {
@@ -406,7 +405,7 @@ export const CountryTariff = ({
                     selectedSpecialProgram.symbol !== "none"
                   ) {
                     return t.tariffs.some((t) =>
-                      t.programs.includes(selectedSpecialProgram.symbol)
+                      t.programs?.includes(selectedSpecialProgram.symbol)
                     );
                   }
                   return true;
@@ -430,6 +429,7 @@ export const CountryTariff = ({
                   setIndex={i}
                   tariffSets={tariffSets}
                   setTariffSets={setTariffSets}
+                  column={tariffColumn}
                 />
               ))}
             <div className="-mt-2 w-full flex justify-between items-end gap-2">

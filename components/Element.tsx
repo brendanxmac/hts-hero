@@ -175,7 +175,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
             </div>
           </div>
 
-          <h1 className="text-lg md:text-3xl text-white font-bold">
+          <h1 className="text-lg md:text-3xl lg:text-4xl text-white font-bold">
             {description}
           </h1>
         </div>
@@ -188,7 +188,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
             <div className="w-full flex flex-col gap-4">
               <div className="flex flex-col gap-2">
                 <div className="flex flex-col gap-1">
-                  <PrimaryLabel value="Tariff(s)" color={Color.ACCENT} />
+                  <PrimaryLabel value="Tariffs" color={Color.WHITE} />
                   <TertiaryText
                     value="Select countries to simulate potential tariff scenarios"
                     color={Color.NEUTRAL_CONTENT}

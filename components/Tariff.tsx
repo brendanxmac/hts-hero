@@ -10,6 +10,7 @@ import { classNames } from "../utilities/style";
 import { SecondaryText } from "./SecondaryText";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { TertiaryText } from "./TertiaryText";
+import { TariffColumn } from "../enums/tariff";
 
 interface Props {
   showInactive: boolean;
@@ -19,6 +20,7 @@ interface Props {
   tariffSets: TariffSet[];
   setTariffSets: (tariffs: TariffSet[]) => void;
   renderedCodes?: Set<string>;
+  column: TariffColumn;
 }
 
 export const Tariff = ({
@@ -29,6 +31,7 @@ export const Tariff = ({
   tariffSets,
   setTariffSets,
   renderedCodes = new Set(),
+  column,
 }: Props) => {
   if (renderedCodes.has(tariff.code)) {
     return null;
@@ -53,8 +56,8 @@ export const Tariff = ({
         if (toggledValue) {
           const isNullTariff =
             tariff.general === null &&
-            tariff.general === null &&
-            tariff.special === null;
+            tariff.special === null &&
+            tariff.other === null;
 
           // For certain special tariffs that need review and have null for their %'s
           // we do not want to toggle parents or descendants because they don't actually
@@ -130,12 +133,12 @@ export const Tariff = ({
             "shrink-0 min-w-32 text-right text-xl",
             tariff.isActive
               ? "text-white font-bold"
-              : tariff.general === null
+              : tariff[column] === null
                 ? "text-neutral-content"
                 : "line-through text-neutral-content"
           )}
         >
-          {tariff.general === null ? "Needs Review" : `${tariff.general}%`}
+          {tariff[column] === null ? "Needs Review" : `${tariff[column]}%`}
         </p>
       </div>
 
@@ -155,6 +158,7 @@ export const Tariff = ({
                   tariffSets={tariffSets}
                   setTariffSets={setTariffSets}
                   renderedCodes={renderedCodes}
+                  column={column}
                 />
               )
           )}
