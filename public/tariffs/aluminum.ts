@@ -11,7 +11,7 @@ export const aluminumTariffs: TariffI[] = [
     special: 50,
     other: 50,
     exceptions: ["9903.85.67", "9903.85.69"],
-    contentRequirement: "Aluminum",
+    contentRequirement: { content: "Aluminum" },
     exclusions: {
       countries: ["GB"],
     },
@@ -36,7 +36,7 @@ export const aluminumTariffs: TariffI[] = [
     general: 200,
     special: 200, // todo: there are some agreements for this one... look into that
     other: 200,
-    contentRequirement: "Aluminum",
+    contentRequirement: { content: "Aluminum" },
     exceptions: ["9903.85.69"],
     inclusions: {
       countries: ["RU"],
@@ -71,7 +71,7 @@ export const aluminumTariffs: TariffI[] = [
     special: 200, // todo: there are some agreements for this one... look into that
     other: 200,
     requiresReview: true,
-    contentRequirement: "Aluminum",
+    contentRequirement: { content: "Aluminum" },
     inclusions: {
       countries: ["RU"],
       codes: [
@@ -105,7 +105,7 @@ export const aluminumTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
-    contentRequirement: "Aluminum",
+    contentRequirement: { content: "Aluminum" },
     exceptions: ["9903.85.67", "9903.85.69", "9903.96.01"],
     inclusions: {
       countries: ["GB"],
@@ -134,7 +134,7 @@ export const aluminumTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
-    contentRequirement: "Aluminum",
+    contentRequirement: { content: "Aluminum" },
     exceptions: ["9903.85.68", "9903.85.70", "9903.96.01"],
     inclusions: {
       countries: ["GB"],
@@ -157,7 +157,7 @@ export const aluminumTariffs: TariffI[] = [
     general: 50,
     special: 50,
     other: 50,
-    contentRequirement: "Aluminum",
+    contentRequirement: { content: "Aluminum" },
     exceptions: [
       "9903.85.09",
       "9903.85.68",
@@ -202,7 +202,7 @@ export const aluminumTariffs: TariffI[] = [
     special: 200,
     other: 200,
     requiresReview: true,
-    contentRequirement: "Aluminum",
+    contentRequirement: { content: "Aluminum" },
     exceptions: ["9903.85.68"],
     inclusions: {
       countries: ["RU"],
@@ -360,7 +360,7 @@ export const aluminumTariffs: TariffI[] = [
     general: 50,
     special: 50,
     other: 50,
-    contentRequirement: "Aluminum",
+    contentRequirement: { content: "Aluminum" },
     exceptions: [
       "9903.85.09",
       "9903.85.68",
@@ -490,7 +490,7 @@ export const aluminumTariffs: TariffI[] = [
     special: 200,
     other: 200,
     requiresReview: true,
-    contentRequirement: "Aluminum",
+    contentRequirement: { content: "Aluminum" },
     inclusions: {
       countries: ["RU"],
       // Some way to add where any amount of primary aluminum was to manufac deriv articles is smelted or cast in russia
@@ -648,7 +648,7 @@ export const aluminumTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
-    contentRequirement: "Aluminum",
+    contentRequirement: { content: "Aluminum" },
     exceptions: ["9903.85.09", "9903.85.68", "9903.85.70", "9903.96.01"],
     inclusions: {
       countries: ["GB"],
@@ -686,7 +686,7 @@ export const aluminumTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
-    contentRequirement: "Aluminum",
+    contentRequirement: { content: "Aluminum" },
     exceptions: ["9903.85.09", "9903.85.68", "9903.85.70", "9903.96.01"],
     inclusions: {
       countries: ["GB"],
@@ -1081,7 +1081,7 @@ export const aluminumTariffs: TariffI[] = [
     general: 50,
     special: 50,
     other: 50,
-    contentRequirement: "Aluminum",
+    contentRequirement: { content: "Aluminum" },
     exceptions: [
       "9903.85.68",
       "9903.85.70",

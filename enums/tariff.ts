@@ -1,4 +1,5 @@
 export type Metal = "Aluminum" | "Steel" | "Copper";
+export type UsContent = "U.S. Content";
 
 export enum TariffCategory {
   SECTION_232 = "Section 232",
@@ -6,7 +7,13 @@ export enum TariffCategory {
   IEEPA = "IEEPA",
 }
 
-export type ContentRequirement = Metal;
+export type ContentRequirements = Metal | UsContent;
+
+export interface ContentRequirement {
+  content: ContentRequirements;
+  minimumPercent?: number;
+  maximumPercent?: number;
+}
 
 export enum TariffColumn {
   GENERAL = "general",

@@ -51,8 +51,20 @@ export const Tariff = ({
         isDescendantTariff(t, tariff, set.tariffs)
       ) {
         if (toggledValue) {
-          t.isActive = false;
-          continue;
+          const isNullTariff =
+            tariff.general === null &&
+            tariff.general === null &&
+            tariff.special === null;
+
+          // For certain special tariffs that need review and have null for their %'s
+          // we do not want to toggle parents or descendants because they don't actually
+          // turn anything on or off, just alter the VALUE of what's tariffs (e.g. NON US Content)
+          if (tariff.requiresReview && isNullTariff) {
+            continue;
+          } else {
+            t.isActive = false;
+            continue;
+          }
         } else if (!t.requiresReview) {
           t.isActive = tariffIsActive(t, set.tariffs);
         }
@@ -118,10 +130,12 @@ export const Tariff = ({
             "shrink-0 min-w-32 text-right text-xl",
             tariff.isActive
               ? "text-white font-bold"
-              : "line-through text-neutral-content"
+              : tariff.general === null
+                ? "text-neutral-content"
+                : "line-through text-neutral-content"
           )}
         >
-          {tariff.general}%
+          {tariff.general === null ? "Needs Review" : `${tariff.general}%`}
         </p>
       </div>
 

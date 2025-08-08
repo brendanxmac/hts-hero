@@ -1167,17 +1167,18 @@ export const exceptionTariffs: TariffI[] = [
     code: "9903.01.34",
     description:
       "The U.S. content of articles the product of any country, in which the U.S. content of the article provides at least 20 percent of the Customs value of the imported article, as provided for in subdivision (v)(xii) of U.S. note 2 to this subchapter",
-    name: "U.S. Content over 20%",
-    // FIXME: NOTE: content that's NOT US based still get's hit with this...
-    //  TODO: maybe add % slider for this?? -- same w/ Aluminum and Steel..?
-    general: 0,
-    special: 0,
-    other: 0,
+    name: "If U.S. Content > 20%, Only Non U.S. Content has Duty Applied",
+    general: null,
+    special: null,
+    other: null,
     inclusions: {
       countries: ["*"],
     },
     requiresReview: true,
-    // TODO: add contentRequirement here so that we can only apply the other tariffs on the non-US content if over 20%
+    // contentRequirement: {
+    //   content: "U.S. Content",
+    //   minimumPercent: 20,
+    // },
   },
   {
     code: "9903.96.01", // lookup why this one gets applied in many places and where that comes from in ths HTS

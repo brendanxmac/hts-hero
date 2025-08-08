@@ -13,7 +13,7 @@ import {
   splitOnClosingParen,
 } from "../../libs/hts";
 import { ContentRequirementI } from "../../components/Element";
-import { Metal } from "../../enums/tariff";
+import { ContentRequirements } from "../../enums/tariff";
 import { TariffI, UITariff, TariffSet } from "../../interfaces/tariffs";
 import { TariffColumn } from "../../enums/tariff";
 
@@ -117,7 +117,7 @@ export const getStandardTariffSet = (tariffs: TariffI[]): TariffSet => {
 
 export const getContentRequirementTariffSets = (
   tariffs: TariffI[],
-  contentRequirements: ContentRequirementI<Metal>[]
+  contentRequirements: ContentRequirementI<ContentRequirements>[]
 ): TariffSet[] => {
   const sets: TariffSet[] = [];
 
@@ -126,7 +126,7 @@ export const getContentRequirementTariffSets = (
     let tariffSet = tariffs.filter(
       (t) =>
         !t.contentRequirement ||
-        t.contentRequirement === contentRequirement.name
+        t.contentRequirement.content === contentRequirement.name
     );
 
     tariffSet.forEach((t) => {

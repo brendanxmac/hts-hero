@@ -31,7 +31,7 @@ import {
   TariffsList,
 } from "../public/tariffs/tariffs";
 import { PrimaryLabel } from "./PrimaryLabel";
-import { Metal } from "../enums/tariff";
+import { ContentRequirements, Metal } from "../enums/tariff";
 
 interface Props {
   summaryOnly?: boolean;
@@ -54,25 +54,25 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
     { flag: "🇲🇽", name: "Mexico", code: "MX" },
     { flag: "🇨🇳", name: "China", code: "CN" },
   ]);
-  const contentRequirements = Array.from(
+
+  const codeBasedContentRequirements = Array.from(
     TariffsList.filter((t) => tariffIsApplicableToCode(t, htsno)).reduce(
       (acc, t) => {
         if (t.contentRequirement) {
-          acc.add(t.contentRequirement);
+          acc.add(t.contentRequirement.content);
         }
         return acc;
       },
-      new Set<Metal>()
+      new Set<ContentRequirements>()
     )
   );
-  const [contentPercentages, setContentPercentages] = useState<
-    ContentRequirementI<Metal>[]
-  >(
-    contentRequirements.map((contentRequirement) => ({
-      name: contentRequirement,
-      value: 80,
-    }))
-  );
+  const [CodeBasedContentPercentages, setCodeBasedContentPercentages] =
+    useState<ContentRequirementI<ContentRequirements>[]>(
+      codeBasedContentRequirements.map((contentRequirement) => ({
+        name: contentRequirement,
+        value: 80,
+      }))
+    );
 
   useEffect(() => {
     const elementChildren = getDirectChildrenElements(element, htsElements);
@@ -231,7 +231,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                     color={Color.NEUTRAL_CONTENT}
                   /> */}
                 </div>
-                {contentRequirements.map((contentRequirement) => (
+                {codeBasedContentRequirements.map((contentRequirement) => (
                   <div
                     key={`${contentRequirement}-content-requirement`}
                     className="w-full max-w-md flex flex-col gap-1"
@@ -250,13 +250,13 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                         min={0}
                         max="100"
                         value={
-                          contentPercentages?.find(
+                          CodeBasedContentPercentages?.find(
                             (c) => c.name === contentRequirement
                           )?.value || 0
                         }
                         className="range range-primary range-sm p-1"
                         onChange={(e) => {
-                          setContentPercentages((prev) =>
+                          setCodeBasedContentPercentages((prev) =>
                             prev.map((c) =>
                               c.name === contentRequirement
                                 ? { ...c, value: parseInt(e.target.value) }
@@ -267,7 +267,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                       />
                       <TertiaryLabel
                         value={`${
-                          contentPercentages?.find(
+                          CodeBasedContentPercentages?.find(
                             (c) => c.name === contentRequirement
                           )?.value || 0
                         }%`}
@@ -289,7 +289,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                     breadcrumbs
                   )}
                   setSelectedCountries={setSelectedCountries}
-                  contentRequirements={contentPercentages}
+                  contentRequirements={CodeBasedContentPercentages}
                 />
               )}
             </div>

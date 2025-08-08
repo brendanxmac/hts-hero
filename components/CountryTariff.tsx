@@ -14,7 +14,7 @@ import { classNames } from "../utilities/style";
 import { Footnote, HtsElement } from "../interfaces/hts";
 import { BaseTariff } from "./BaseTariff";
 import { otherColumnCountryCodes } from "../public/tariffs/tariff-columns";
-import { Metal, TariffColumn } from "../enums/tariff";
+import { ContentRequirements, TariffColumn } from "../enums/tariff";
 import { TariffI, TariffSet } from "../interfaces/tariffs";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { Color } from "../enums/style";
@@ -28,7 +28,7 @@ interface Props {
   tariffElement: HtsElement;
   selectedCountries: Country[];
   setSelectedCountries: Dispatch<SetStateAction<Country[]>>;
-  contentRequirements: ContentRequirementI<Metal>[];
+  contentRequirements: ContentRequirementI<ContentRequirements>[];
 }
 
 export const CountryTariff = ({
@@ -48,13 +48,7 @@ export const CountryTariff = ({
     ),
   }));
 
-  const [tariffSets, setTariffSets] = useState<TariffSet[]>([
-    getStandardTariffSet(applicableUITariffs),
-    ...getContentRequirementTariffSets(
-      applicableUITariffs,
-      contentRequirements
-    ),
-  ]);
+  const [tariffSets, setTariffSets] = useState<TariffSet[]>([]);
   const [tariffColumn, setTariffColumn] = useState<TariffColumn>(
     otherColumnCountryCodes.includes(country.code)
       ? TariffColumn.OTHER
@@ -112,6 +106,31 @@ export const CountryTariff = ({
     }
     return acc;
   }, []);
+
+  useEffect(() => {
+    const contentRequirementAt100 = contentRequirements.find(
+      (r) => r.value === 100
+    );
+    const contentRequirementsNotAt0 = contentRequirements.filter(
+      (r) => r.value > 0
+    );
+
+    if (contentRequirementAt100) {
+      setTariffSets(
+        getContentRequirementTariffSets(applicableUITariffs, [
+          contentRequirementAt100,
+        ])
+      );
+    } else {
+      setTariffSets([
+        getStandardTariffSet(applicableUITariffs),
+        ...getContentRequirementTariffSets(
+          applicableUITariffs,
+          contentRequirementsNotAt0
+        ),
+      ]);
+    }
+  }, [contentRequirements]);
 
   useEffect(() => {
     if (selectedSpecialProgram && selectedSpecialProgram.symbol === "none") {

@@ -3,14 +3,14 @@ import { Country } from "../constants/countries";
 import { CountryTariff } from "./CountryTariff";
 import { ContentRequirementI } from "./Element";
 import { HtsElement } from "../interfaces/hts";
-import { Metal } from "../enums/tariff";
+import { ContentRequirements } from "../enums/tariff";
 
 interface Props {
   selectedCountries: Country[];
   htsElement: HtsElement;
   tariffElement: HtsElement;
   setSelectedCountries: Dispatch<SetStateAction<Country[]>>;
-  contentRequirements: ContentRequirementI<Metal>[];
+  contentRequirements: ContentRequirementI<ContentRequirements>[];
 }
 
 export const Tariffs = ({
