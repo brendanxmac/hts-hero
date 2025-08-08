@@ -29,6 +29,7 @@ export interface UITariff extends TariffI {
 }
 
 export interface TariffSet {
+  name: string;
   exceptionCodes: Set<string>;
   tariffs: UITariff[];
 }

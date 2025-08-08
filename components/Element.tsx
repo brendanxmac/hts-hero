@@ -44,8 +44,6 @@ export interface ContentRequirementI<T> {
 }
 
 export const Element = ({ element, summaryOnly = false }: Props) => {
-  console.log("element");
-  console.log(element);
   const { description, chapter, htsno } = element;
   const [children, setChildren] = useState<HtsElement[]>([]);
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);

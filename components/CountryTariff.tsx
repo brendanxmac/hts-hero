@@ -1,24 +1,22 @@
 import { Dispatch, SetStateAction, useEffect, useState, useRef } from "react";
 import { Country } from "../constants/countries";
 import {
-  collectExceptionCodes,
   getAdValoremRate,
   getAmountRates,
   getBaseTariffsForColumn as getTariffsForColumn,
   getContentRequirementTariffSets,
   getTariffs,
-  tariffIsActive,
+  getStandardTariffSet,
 } from "../public/tariffs/tariffs";
 import { Tariff } from "./Tariff";
 import { ContentRequirementI } from "./Element";
 import { classNames } from "../utilities/style";
-import { HtsElement } from "../interfaces/hts";
+import { Footnote, HtsElement } from "../interfaces/hts";
 import { BaseTariff } from "./BaseTariff";
 import { otherColumnCountryCodes } from "../public/tariffs/tariff-columns";
 import { Metal, TariffColumn } from "../enums/tariff";
 import { TariffI, TariffSet } from "../interfaces/tariffs";
 import { PrimaryLabel } from "./PrimaryLabel";
-import { TertiaryLabel } from "./TertiaryLabel";
 import { Color } from "../enums/style";
 import { SecondaryText } from "./SecondaryText";
 import { TertiaryText } from "./TertiaryText";
@@ -50,48 +48,8 @@ export const CountryTariff = ({
     ),
   }));
 
-  const getRegularTariffSet = (tariffs: TariffI[]): TariffSet => {
-    const contentRequirementCodes = new Set<string>();
-    const contentRequirementTariffs = tariffs.filter(
-      (t) => t.contentRequirement
-    );
-    contentRequirementTariffs.forEach((t) => {
-      collectExceptionCodes(t, tariffs, contentRequirementCodes);
-    });
-
-    const exceptionCodes = new Set<string>();
-    // ????? Use to pass contentRequirements.length > 0 check here and use tariffs if not
-    const regularSet = tariffs.filter((t) => !t.contentRequirement);
-
-    // Recursively get all the exceptions for all applicables minus content requirement ones
-    regularSet.forEach((t) => {
-      collectExceptionCodes(t, tariffs, exceptionCodes);
-    });
-
-    // Are there any in contentRequirementExceptionTariffs that do NOT exist in exceptionTariffs?
-    const exceptionsThatOnlyContentRequirementsHave = Array.from(
-      contentRequirementCodes
-    ).filter((t) => !exceptionCodes.has(t));
-
-    const regularSetWithoutContentRequirementTariffs = regularSet.filter(
-      (t) => !exceptionsThatOnlyContentRequirementsHave.includes(t.code)
-    );
-
-    // Set isActive here now that we have the full picture
-    const regularSetWithIsActive =
-      regularSetWithoutContentRequirementTariffs.map((t) => ({
-        ...t,
-        isActive: tariffIsActive(t, regularSetWithoutContentRequirementTariffs),
-      }));
-
-    return {
-      exceptionCodes: exceptionCodes,
-      tariffs: regularSetWithIsActive,
-    };
-  };
-
   const [tariffSets, setTariffSets] = useState<TariffSet[]>([
-    getRegularTariffSet(applicableUITariffs),
+    getStandardTariffSet(applicableUITariffs),
     ...getContentRequirementTariffSets(
       applicableUITariffs,
       contentRequirements
@@ -113,14 +71,11 @@ export const CountryTariff = ({
   const specialProgramDropdownRef = useRef<HTMLDivElement>(null);
   const isOtherColumnCountry = otherColumnCountryCodes.includes(country.code);
   const columnTariffs = getTariffsForColumn(tariffElement, tariffColumn);
-  console.log("Column Tariffs");
-  console.log(columnTariffs);
   const columnHasTariffs = columnTariffs.some((t) => t.tariffs.length > 0);
   const specialTariffProgramSymbols = getTariffsForColumn(
     tariffElement,
     TariffColumn.SPECIAL
   ).reduce((acc, t) => {
-    // Add all programs into acc, IF not already in it
     t.tariffs.forEach((t) => {
       t.programs.forEach((p) => {
         if (!acc.includes(p)) {
@@ -138,6 +93,25 @@ export const CountryTariff = ({
         (p.qualifyingCountries?.includes(country.code) ||
           (!p.qualifyingCountries && p.requiresReview))
     );
+  const footnotesForColumn: Footnote[] = [
+    ...tariffElement.footnotes,
+    ...htsElement.footnotes,
+  ].reduce((acc, footnote) => {
+    if (
+      footnote.columns.includes(tariffColumn) ||
+      footnote.columns.some(
+        (c) =>
+          c !== TariffColumn.GENERAL &&
+          c !== TariffColumn.SPECIAL &&
+          c !== TariffColumn.OTHER
+      )
+    ) {
+      if (!acc.some((f) => f.value === footnote.value)) {
+        acc.push(footnote);
+      }
+    }
+    return acc;
+  }, []);
 
   useEffect(() => {
     if (selectedSpecialProgram && selectedSpecialProgram.symbol === "none") {
@@ -168,6 +142,7 @@ export const CountryTariff = ({
 
   return (
     <div className="flex flex-col p-8 border-2 border-base-content/50 bg-base-300 rounded-md gap-6">
+      {/* Header with Buttons */}
       <div className="w-full flex justify-between items-center">
         <div className="flex gap-3 items-center">
           <h2 className="text-white text-3xl font-bold">{country.flag}</h2>
@@ -219,7 +194,7 @@ export const CountryTariff = ({
             className="rounded-md p-1 bg-primary/30 text-white hover:text-primary transition-colors"
             onClick={() => {
               setTariffSets([
-                getRegularTariffSet(applicableUITariffs),
+                getStandardTariffSet(applicableUITariffs),
                 ...getContentRequirementTariffSets(
                   applicableUITariffs,
                   contentRequirements
@@ -275,7 +250,7 @@ export const CountryTariff = ({
         </div>
       </div>
 
-      {/* Create an input that allows the user to select from a special tariff program and make sure "none" is always an option */}
+      {/* Special Tariff Program Selection */}
       {!isOtherColumnCountry && (
         <div className="flex flex-col gap-2">
           <label className="text-white font-bold text-lg">
@@ -388,95 +363,7 @@ export const CountryTariff = ({
         </div>
       )}
 
-      {/* Tariff Column Selection */}
-      {/* <div className="flex gap-8">
-        <div className="flex flex-col gap-2">
-          <div className="cursor-pointer flex gap-2 p-0">
-            <input
-              type="checkbox"
-              disabled={isOtherColumnCountry}
-              checked={tariffColumn === TariffColumn.GENERAL}
-              className="checkbox checkbox-primary"
-              onChange={() => {
-                if (tariffColumn !== TariffColumn.GENERAL) {
-                  setTariffColumn(TariffColumn.GENERAL);
-                }
-              }}
-            />
-            <span className="label-text font-bold text-lg">General Rate</span>
-          </div>
-        </div>
-
-        <div className="flex flex-col max-w-sm">
-          <div className="cursor-pointer flex gap-2 p-0">
-            <input
-              type="checkbox"
-              disabled={isOtherColumnCountry}
-              checked={tariffColumn === TariffColumn.SPECIAL}
-              className="checkbox checkbox-primary"
-              onChange={() => {
-                if (tariffColumn !== TariffColumn.SPECIAL) {
-                  setTariffColumn(TariffColumn.SPECIAL);
-                }
-              }}
-            />
-            <span className="label-text font-bold text-lg">Special Rate</span>
-          </div>
-          {getStringBetweenParenthesis(tariffElement.special) && (
-            <div className="flex flex-col">
-              <div className="flex flex-wrap gap-x-1">
-                {getStringBetweenParenthesis(tariffElement.special) && (
-                  <SpecialPrograms
-                    programs={getStringBetweenParenthesis(tariffElement.special)
-                      .split(",")
-                      .map((p) => p.trim())}
-                  />
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <div className="cursor-pointer flex gap-2 p-0">
-            <input
-              type="checkbox"
-              disabled={!isOtherColumnCountry}
-              checked={tariffColumn === TariffColumn.OTHER}
-              className="checkbox checkbox-primary"
-              onChange={() => {
-                if (tariffColumn !== TariffColumn.OTHER) {
-                  setTariffColumn(TariffColumn.OTHER);
-                }
-              }}
-            />
-            <span className="label-text font-bold text-lg">Other Rate</span>
-          </div>
-          <div className="flex flex-wrap text-sm gap-1">
-            (
-            {countries
-              .filter((c) => otherColumnCountryCodes.includes(c.code))
-              .map((otherColumnCountry, index) => (
-                <span
-                  key={index}
-                  className={classNames(
-                    country.code === otherColumnCountry.code &&
-                      "font-bold text-white"
-                  )}
-                >
-                  {otherColumnCountry.name}
-                  {index <
-                    countries.filter((c) =>
-                      otherColumnCountryCodes.includes(c.code)
-                    ).length -
-                      1 && ", "}
-                </span>
-              ))}
-            )
-          </div>
-        </div>
-      </div> */}
-
+      {/* Tariff Sets */}
       <div
         className={classNames(
           tariffSets.length > 1 ? "grid grid-cols-2 gap-4" : "flex flex-col"
@@ -487,16 +374,18 @@ export const CountryTariff = ({
             key={`tariff-set-${i}`}
             className="flex flex-col gap-4 border-2 p-4 rounded-md border-base-content/20"
           >
+            <PrimaryLabel
+              value={`${tariffSet.name} Tariffs`}
+              color={Color.ACCENT}
+            />
             {/* TODO: add a title for the set here */}
             {columnHasTariffs &&
               columnTariffs
                 .filter((t) => {
-                  console.log(t);
                   if (
                     selectedSpecialProgram &&
                     selectedSpecialProgram.symbol !== "none"
                   ) {
-                    console.log(`====== Is selected speical program ======`);
                     return t.tariffs.some((t) =>
                       t.programs.includes(selectedSpecialProgram.symbol)
                     );
@@ -588,29 +477,24 @@ export const CountryTariff = ({
       </div>
 
       {/* Footnotes */}
-      <div className="flex flex-col gap-2 border-2 border-base-content/20 rounded-md p-4">
-        <PrimaryLabel value="Tariff Footnotes" color={Color.WHITE} />
-        {(tariffElement.footnotes.length > 0 ||
-          htsElement.footnotes.length > 0) && (
-          <div className="flex flex-col gap-2 ml-5">
-            {[...tariffElement.footnotes, ...htsElement.footnotes].map(
-              (footnote, i) => (
-                <div key={`${tariffElement.htsno}-${footnote}-${i}`}>
-                  <SecondaryText value={footnote.value} color={Color.WHITE} />
-                  <div className="flex gap-2 items-center ml-4">
-                    <TertiaryText value="Applies to:" />
-                    {footnote.columns.map((column, i) => (
-                      <div key={`${tariffElement.htsno}-${column}-${i}`}>
-                        <TertiaryLabel value={column} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )
-            )}
-          </div>
-        )}
-      </div>
+      {footnotesForColumn.length > 0 && (
+        <div className="flex flex-col gap-2 border-2 border-base-content/20 rounded-md p-4">
+          <PrimaryLabel value="Footnotes" color={Color.WHITE} />
+          <ul className="flex flex-col gap-2 ml-5">
+            {footnotesForColumn.map((footnote: Footnote, i) => (
+              <li
+                key={`${tariffElement.htsno}-${footnote}-${i}`}
+                className="list-disc list-outside"
+              >
+                <SecondaryText value={footnote.value} color={Color.WHITE} />
+                <TertiaryText
+                  value={`Applies to: ${footnote.columns.join(", ")} column(s)`}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };

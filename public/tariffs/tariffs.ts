@@ -75,6 +75,46 @@ export const collectExceptionCodes = (
   }
 };
 
+export const getStandardTariffSet = (tariffs: TariffI[]): TariffSet => {
+  const contentRequirementCodes = new Set<string>();
+  const contentRequirementTariffs = tariffs.filter((t) => t.contentRequirement);
+  contentRequirementTariffs.forEach((t) => {
+    collectExceptionCodes(t, tariffs, contentRequirementCodes);
+  });
+
+  const exceptionCodes = new Set<string>();
+  // ????? Use to pass contentRequirements.length > 0 check here and use tariffs if not
+  const regularSet = tariffs.filter((t) => !t.contentRequirement);
+
+  // Recursively get all the exceptions for all applicables minus content requirement ones
+  regularSet.forEach((t) => {
+    collectExceptionCodes(t, tariffs, exceptionCodes);
+  });
+
+  // Are there any in contentRequirementExceptionTariffs that do NOT exist in exceptionTariffs?
+  const exceptionsThatOnlyContentRequirementsHave = Array.from(
+    contentRequirementCodes
+  ).filter((t) => !exceptionCodes.has(t));
+
+  const regularSetWithoutContentRequirementTariffs = regularSet.filter(
+    (t) => !exceptionsThatOnlyContentRequirementsHave.includes(t.code)
+  );
+
+  // Set isActive here now that we have the full picture
+  const regularSetWithIsActive = regularSetWithoutContentRequirementTariffs.map(
+    (t) => ({
+      ...t,
+      isActive: tariffIsActive(t, regularSetWithoutContentRequirementTariffs),
+    })
+  );
+
+  return {
+    name: "Article",
+    exceptionCodes: exceptionCodes,
+    tariffs: regularSetWithIsActive,
+  };
+};
+
 export const getContentRequirementTariffSets = (
   tariffs: TariffI[],
   contentRequirements: ContentRequirementI<Metal>[]
@@ -99,6 +139,7 @@ export const getContentRequirementTariffSets = (
     }));
 
     sets.push({
+      name: `${contentRequirement.name} Content`,
       exceptionCodes,
       tariffs: tariffSetWithIsActive,
     });
