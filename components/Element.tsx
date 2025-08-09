@@ -33,7 +33,7 @@ import {
   TariffsList,
 } from "../public/tariffs/tariffs";
 import { PrimaryLabel } from "./PrimaryLabel";
-import { ContentRequirements, Metal, TariffColumn } from "../enums/tariff";
+import { ContentRequirements, TariffColumn } from "../enums/tariff";
 import {
   getStringBeforeOpeningParenthesis,
   getStringBetweenParenthesis,

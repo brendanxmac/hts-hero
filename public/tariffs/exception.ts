@@ -1108,7 +1108,7 @@ export const exceptionTariffs: TariffI[] = [
     // },
   },
   {
-    code: "9903.96.01", // lookup why this one gets applied in many places and where that comes from in ths HTS
+    code: "9903.96.01",
     description:
       "Effective with respect to entries on or after [ ], articles of civil aircraft (all aircraft other than military aircraft); their engines, parts, and components; their other parts, components, and subassemblies; and ground flight simulators and their parts and components of the United Kingdom, classified in the subheadings enumerated in subdivision (a) of U.S. note 35 to this subchapter. [Compilers note: This heading is effective on or after June 30, 2025. For more information, see 90 Fed. Reg. 27851.]",
     name: "U.K. Civil Aircraft, Engines, Parts, Components, & Subassemblies",

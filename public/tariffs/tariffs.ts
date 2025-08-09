@@ -16,6 +16,8 @@ import { ContentRequirementI } from "../../components/Element";
 import { ContentRequirements } from "../../enums/tariff";
 import { TariffI, UITariff, TariffSet } from "../../interfaces/tariffs";
 import { TariffColumn } from "../../enums/tariff";
+import { brazilTariffs } from "./brazil";
+import { copperTariffs } from "./copper";
 
 export const findExceptions = (
   tariff: TariffI,
@@ -473,4 +475,6 @@ export const TariffsList: TariffI[] = [
   ...exceptionTariffs,
   ...ironAndSteelTariffs,
   ...mexicoTariffs,
+  ...brazilTariffs,
+  ...copperTariffs,
 ];

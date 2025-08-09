@@ -1472,7 +1472,7 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.96.01",
       // Auto Parts
       "9903.94.05",
-    ], // TODO: why 9903.96.01 here?? see notes
+    ],
     inclusions: {
       countries: ["GB"],
       codes: [
