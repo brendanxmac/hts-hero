@@ -5,9 +5,9 @@ export const canadaTariffs: TariffI[] = [
     code: "9903.01.10",
     description:
       "Except for products described in headings 9903.01.11, 9903.01.12, 9903.01.13, 9903.01.14 or 9903.01.15, articles the product of Canada, as provided for in U.S. note 2(j) to this subchapter",
-    name: "Canada 25% IEEPA",
-    general: 25,
-    special: 25,
+    name: "Canada 35% IEEPA",
+    general: 35,
+    special: 35,
     other: 0,
     inclusions: {
       countries: ["CA"],
@@ -108,6 +108,22 @@ export const canadaTariffs: TariffI[] = [
     name: "Potash of Canada",
     exceptions: ["9903.01.11", "9903.01.12", "9903.01.14"],
     general: 10,
+    special: 0,
+    other: 0,
+    requiresReview: true,
+    inclusions: {
+      countries: ["CA"],
+    },
+  },
+  {
+    // TODO: This one is purely additive, and does not apply to goods from 1.11,12,14
+    // FIXME: Doesn't apply when USMCA does -- need to figure this one out
+    code: "9903.01.16",
+    description:
+      "Except for products described in 9903.01.11, 9903.01.12, and 9903.01.14, articles the product of Canada as provided for in subdivision (m) to note 2 to this subchapter and determined by CBP to have been transshipped to evade applicable duties",
+    name: "Transshipped through Canada to Evade Duties",
+    exceptions: ["9903.01.11", "9903.01.12", "9903.01.14"],
+    general: 40,
     special: 0,
     other: 0,
     requiresReview: true,

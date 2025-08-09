@@ -10,7 +10,7 @@ export const aluminumTariffs: TariffI[] = [
     general: 50,
     special: 50,
     other: 50,
-    exceptions: ["9903.85.67", "9903.85.69"],
+    exceptions: ["9903.85.67", "9903.85.69", "9903.94.05"],
     contentRequirement: { content: "Aluminum" },
     exclusions: {
       countries: ["GB"],
@@ -106,7 +106,13 @@ export const aluminumTariffs: TariffI[] = [
     special: 25,
     other: 25,
     contentRequirement: { content: "Aluminum" },
-    exceptions: ["9903.85.67", "9903.85.69", "9903.96.01"],
+    exceptions: [
+      "9903.85.67",
+      "9903.85.69",
+      // Civil Aircraft Articles from UK
+      "9903.96.01",
+      "9903.94.05",
+    ],
     inclusions: {
       countries: ["GB"],
       codes: [
@@ -135,7 +141,13 @@ export const aluminumTariffs: TariffI[] = [
     special: 25,
     other: 25,
     contentRequirement: { content: "Aluminum" },
-    exceptions: ["9903.85.68", "9903.85.70", "9903.96.01"],
+    exceptions: [
+      "9903.85.68",
+      "9903.85.70",
+      // Civil Aircraft Articles from UK
+      "9903.96.01",
+      "9903.94.05",
+    ],
     inclusions: {
       countries: ["GB"],
       codes: [
@@ -166,6 +178,7 @@ export const aluminumTariffs: TariffI[] = [
       "9903.85.13",
       "9903.85.14",
       "9903.85.15",
+      "9903.94.05",
     ],
     inclusions: {
       codes: [
@@ -369,6 +382,8 @@ export const aluminumTariffs: TariffI[] = [
       "9903.85.13",
       "9903.85.14",
       "9903.85.15",
+      // Auto Parts
+      "9903.94.05",
     ],
     inclusions: {
       codes: [
@@ -649,7 +664,15 @@ export const aluminumTariffs: TariffI[] = [
     special: 25,
     other: 25,
     contentRequirement: { content: "Aluminum" },
-    exceptions: ["9903.85.09", "9903.85.68", "9903.85.70", "9903.96.01"],
+    exceptions: [
+      "9903.85.09",
+      "9903.85.68",
+      "9903.85.70",
+      // Civil Aircraft Articles from UK
+      "9903.96.01",
+      // Auto Parts
+      "9903.94.05",
+    ],
     inclusions: {
       countries: ["GB"],
       codes: [
@@ -687,7 +710,15 @@ export const aluminumTariffs: TariffI[] = [
     special: 25,
     other: 25,
     contentRequirement: { content: "Aluminum" },
-    exceptions: ["9903.85.09", "9903.85.68", "9903.85.70", "9903.96.01"],
+    exceptions: [
+      "9903.85.09",
+      "9903.85.68",
+      "9903.85.70",
+      // Civil Aircraft Articles from UK
+      "9903.96.01",
+      // Auto Parts
+      "9903.94.05",
+    ],
     inclusions: {
       countries: ["GB"],
       codes: [
@@ -811,6 +842,8 @@ export const aluminumTariffs: TariffI[] = [
     general: 0,
     special: 0,
     other: 0,
+    exceptions: ["9903.85.68", "9903.85.70"],
+    requiresReview: true,
     inclusions: {
       codes: [
         // j
@@ -1069,8 +1102,6 @@ export const aluminumTariffs: TariffI[] = [
         "9603.90.8050",
       ],
     },
-    exceptions: ["9903.85.68", "9903.85.70"], // TODO: why not 9903.96.01 here?? see notes
-    requiresReview: true,
   },
   // Derivative Aluminum from 19 subdivisions (i)
   {
@@ -1089,6 +1120,8 @@ export const aluminumTariffs: TariffI[] = [
       "9903.85.13",
       "9903.85.14",
       "9903.85.15",
+      // Auto Parts
+      "9903.94.05",
     ],
     inclusions: {
       codes: [

@@ -170,10 +170,11 @@ export const automobileTariffs: TariffI[] = [
     code: "9903.94.05",
     description:
       "Except for 9903.94.06 and 9903.94.32, effective with respect to entries on or after May 3, 2025, automobile parts, as provided for in subdivision (g) of U.S. note 33 to this subchapter",
-    name: "Section 232 Auto Parts",
+    name: "Auto Parts",
     general: 25,
     special: 25,
     other: 25,
+    exceptions: ["9903.94.06", "9903.94.32"],
     inclusions: {
       codes: [
         // 33(g)
@@ -309,7 +310,6 @@ export const automobileTariffs: TariffI[] = [
         "9401.20.00",
       ],
     },
-    exceptions: ["9903.94.06", "9903.94.32"],
   },
   {
     // https://www.federalregister.gov/d/2025-09066/p-18

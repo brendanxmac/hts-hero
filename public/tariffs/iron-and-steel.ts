@@ -14,8 +14,12 @@ export const ironAndSteelTariffs: TariffI[] = [
     general: 50,
     special: 50,
     other: 50,
-    contentRequirement: "Steel",
+    contentRequirement: { content: "Steel" },
     requiresReview: true, // due to 'foreign trade zone and privilege foreign status' check
+    exceptions: [
+      // Auto Parts
+      "9903.94.05",
+    ],
     exclusions: {
       // 16(j)
       countries: ["GB"],
@@ -67,9 +71,14 @@ export const ironAndSteelTariffs: TariffI[] = [
     general: 50,
     special: 50,
     other: 50,
-    contentRequirement: "Steel",
+    contentRequirement: { content: "Steel" },
     requiresReview: true, // due to 'privilege foreign status' check
-    exceptions: ["9903.81.91", "9903.81.92"],
+    exceptions: [
+      "9903.81.91",
+      "9903.81.92",
+      // Auto Parts
+      "9903.94.05",
+    ],
     inclusions: {
       codes: [
         // l
@@ -249,8 +258,12 @@ export const ironAndSteelTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
-    contentRequirement: "Steel",
+    contentRequirement: { content: "Steel" },
     requiresReview: true, // due to 'privilege foreign status' check
+    exceptions: [
+      // Auto Parts
+      "9903.94.05",
+    ],
     exclusions: {
       codes: ["7216.61.00", "7216.69.00", "7216.91.00"],
     },
@@ -300,9 +313,14 @@ export const ironAndSteelTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
-    contentRequirement: "Steel",
+    contentRequirement: { content: "Steel" },
     requiresReview: true, // due to 'privilege foreign status' check
-    exceptions: ["9903.81.98", "9903.81.92"],
+    exceptions: [
+      "9903.81.98",
+      "9903.81.92",
+      // Auto Parts
+      "9903.94.05",
+    ],
     inclusions: {
       countries: ["GB"],
       codes: [
@@ -482,8 +500,15 @@ export const ironAndSteelTariffs: TariffI[] = [
     general: 50,
     special: 50,
     other: 50,
-    contentRequirement: "Steel",
-    exceptions: ["9903.81.89", "9903.81.90", "9903.81.91", "9903.81.88"],
+    contentRequirement: { content: "Steel" },
+    exceptions: [
+      "9903.81.89",
+      "9903.81.90",
+      "9903.81.91",
+      "9903.81.88",
+      // Auto Parts
+      "9903.94.05",
+    ],
     exclusions: {
       // 16(j)
       countries: ["GB"],
@@ -534,7 +559,11 @@ export const ironAndSteelTariffs: TariffI[] = [
     general: 50,
     special: 50,
     other: 50,
-    contentRequirement: "Steel",
+    contentRequirement: { content: "Steel" },
+    exceptions: [
+      // Auto Parts
+      "9903.94.05",
+    ],
     inclusions: {
       codes: [
         // 16(l)
@@ -558,8 +587,12 @@ export const ironAndSteelTariffs: TariffI[] = [
     general: 50,
     special: 50,
     other: 50,
-    contentRequirement: "Steel",
-    exceptions: ["9903.81.92"],
+    contentRequirement: { content: "Steel" },
+    exceptions: [
+      "9903.81.92",
+      // Auto Parts
+      "9903.94.05",
+    ],
     inclusions: {
       codes: [
         // m
@@ -728,8 +761,12 @@ export const ironAndSteelTariffs: TariffI[] = [
     general: 50,
     special: 50,
     other: 50,
-    contentRequirement: "Steel",
-    exceptions: ["9903.81.92"],
+    contentRequirement: { content: "Steel" },
+    exceptions: [
+      "9903.81.92",
+      // Auto Parts
+      "9903.94.05",
+    ],
     inclusions: {
       codes: [
         // 16(n)(a)
@@ -1144,8 +1181,14 @@ export const ironAndSteelTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
-    contentRequirement: "Steel",
-    exceptions: ["9903.81.92", "9903.96.01"], // TODO: why 9903.96.01 here?? see notes
+    contentRequirement: { content: "Steel" },
+    exceptions: [
+      "9903.81.92",
+      // Civil Aircraft Articles from UK
+      "9903.96.01",
+      // Auto Parts
+      "9903.94.05",
+    ],
     inclusions: {
       countries: ["GB"],
       codes: [
@@ -1315,8 +1358,14 @@ export const ironAndSteelTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
-    contentRequirement: "Steel",
-    exceptions: ["9903.81.92", "9903.96.01"], // TODO: why 9903.96.01 here?? see notes
+    contentRequirement: { content: "Steel" },
+    exceptions: [
+      "9903.81.92",
+      // Civil Aircraft Articles from UK
+      "9903.96.01",
+      // Auto Parts
+      "9903.94.05",
+    ],
     inclusions: {
       countries: ["GB"],
       codes: [
@@ -1357,13 +1406,16 @@ export const ironAndSteelTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
-    contentRequirement: "Steel",
+    contentRequirement: { content: "Steel" },
     exceptions: [
       "9903.81.95", // FTZ based entry, nesting for clarity
       "9903.81.96",
       "9903.81.97",
       "9903.81.98",
+      // Civil Aircraft Articles from UK
       "9903.96.01",
+      // Auto Parts
+      "9903.94.05",
     ],
     exclusions: {
       codes: ["7216.61.00", "7216.69.00", "7216.91.00"],
@@ -1414,8 +1466,13 @@ export const ironAndSteelTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
-    contentRequirement: "Steel",
-    exceptions: ["9903.96.01"], // TODO: why 9903.96.01 here?? see notes
+    contentRequirement: { content: "Steel" },
+    exceptions: [
+      // Civil Aircraft Articles from UK
+      "9903.96.01",
+      // Auto Parts
+      "9903.94.05",
+    ], // TODO: why 9903.96.01 here?? see notes
     inclusions: {
       countries: ["GB"],
       codes: [

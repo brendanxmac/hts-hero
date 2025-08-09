@@ -1048,8 +1048,8 @@ export const exceptionTariffs: TariffI[] = [
     // What I should do is... get that list and replace it wherever this one is called from...
     code: "9903.01.33",
     description:
-      "Articles of iron or steel, derivative articles of iron or steel, articles of aluminum, derivative articles of aluminum, passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks and parts of passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks, of any country, as provided in subdivision (v)(vi) through (v)(xi) of note 2 to this subchapter",
-    name: "232 Group Exception: Iron / Steel / Aluminum, Passenger Vehicles, or Light Trucks",
+      "Articles of iron or steel, derivative articles of iron or steel, articles of aluminum, derivative articles of aluminum, passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks and parts of passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks, semi-finished copper and intensive copper derivative products, of any country, as provided in subdivision (v)(vi) through (v)(xii) of note 2 to this subchapter",
+    name: "232 Group Exception: Iron & Steel / Aluminum / Copper, Autos, and Auto Parts",
     inclusions: {
       countries: ["*"],
       tariffs: [
@@ -1082,6 +1082,8 @@ export const exceptionTariffs: TariffI[] = [
         "9903.85.13",
         "9903.85.14",
         "9903.85.15",
+        // Semi-finished Copper & Intensive Copper Derivatives
+        "9903.78.01",
       ],
     },
     general: 0,
@@ -1091,7 +1093,7 @@ export const exceptionTariffs: TariffI[] = [
   {
     code: "9903.01.34",
     description:
-      "The U.S. content of articles the product of any country, in which the U.S. content of the article provides at least 20 percent of the Customs value of the imported article, as provided for in subdivision (v)(xii) of U.S. note 2 to this subchapter",
+      "The U.S. content of articles the product of any country, in which the U.S. content of the article provides at least 20 percent of the Customs value of the imported article, as provided for in subdivision (v)(xiii) of U.S. note 2 to this subchapter",
     name: "If U.S. Content > 20%, Only Non U.S. Content has Duty Applied",
     general: null,
     special: null,

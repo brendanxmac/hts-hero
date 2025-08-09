@@ -103,15 +103,15 @@ export const Tariff = ({
         )}
       >
         <div className="flex gap-2 items-start">
-          {exceptionLevel > 0 && tariff.requiresReview && (
+          {tariff.requiresReview && (
             <input
               type="checkbox"
               checked={tariff.isActive}
               className="checkbox checkbox-primary checkbox-sm"
               onChange={() => {
-                if (exceptionLevel > 0) {
-                  toggleTariff(tariff);
-                }
+                // if (exceptionLevel > 0) {
+                toggleTariff(tariff);
+                // }
               }}
             />
           )}
