@@ -72,7 +72,7 @@ export const CountryTariff = ({
     TariffColumn.SPECIAL
   ).reduce((acc, t) => {
     t.tariffs.forEach((t) => {
-      t.programs.forEach((p) => {
+      t.programs?.forEach((p) => {
         if (!acc.includes(p)) {
           acc.push(p);
         }
