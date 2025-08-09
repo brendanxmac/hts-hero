@@ -5,6 +5,8 @@ import {
   getBreadCrumbsForElement,
   isFullHTSCode,
   getTariffElement,
+  getGeneralNoteFromSpecialTariffSymbol,
+  getTemporaryTariffTextElement,
 } from "../libs/hts";
 import { ElementSummary } from "./ElementSummary";
 import {
@@ -31,7 +33,12 @@ import {
   TariffsList,
 } from "../public/tariffs/tariffs";
 import { PrimaryLabel } from "./PrimaryLabel";
-import { ContentRequirements, Metal } from "../enums/tariff";
+import { ContentRequirements, Metal, TariffColumn } from "../enums/tariff";
+import {
+  getStringBeforeOpeningParenthesis,
+  getStringBetweenParenthesis,
+} from "../utilities/hts";
+import { SecondaryText } from "./SecondaryText";
 
 interface Props {
   summaryOnly?: boolean;
@@ -93,6 +100,19 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
 
     return "-";
   };
+
+  // FIXME: what if the element only has additionalDuties? Shoul this be considered here?
+  const elementHasTariffDetails =
+    element.general ||
+    element.special ||
+    element.other ||
+    element.additionalDuties;
+
+  const shouldShowBaseTariffDetails =
+    (!isFullHTSCode(htsno) && elementHasTariffDetails) ||
+    (isFullHTSCode(htsno) && selectedCountries.length === 0);
+
+  const tariffElement = getTariffElement(element, htsElements, breadcrumbs);
 
   return (
     <div className="card bg-base-100 p-4 rounded-xl border border-base-content/10 w-full flex flex-col items-start justify-between gap-8 pt-2 sm:pt-6">
@@ -220,66 +240,58 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                 </div>
               </div>
               {/* Go get all the content requirements based on the applicable tariffs */}
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-1">
-                  {/* <SecondaryLabel
-                    value={`Country of Origin Selection`}
-                    color={Color.WHITE}
-                  />
-                  <TertiaryText
-                    value="Which countries of origin could this item come from?"
-                    color={Color.NEUTRAL_CONTENT}
-                  /> */}
-                </div>
-                {codeBasedContentRequirements.map((contentRequirement) => (
-                  <div
-                    key={`${contentRequirement}-content-requirement`}
-                    className="w-full max-w-md flex flex-col gap-1"
-                  >
-                    <SecondaryLabel
-                      value={`${contentRequirement} Value Percentage`}
-                      color={Color.WHITE}
-                    />
-                    <TertiaryText
-                      value={`What is the % of ${contentRequirement} value in this article?`}
-                      color={Color.NEUTRAL_CONTENT}
-                    />
-                    <div className="flex gap-2 items-center">
-                      <input
-                        type="range"
-                        min={0}
-                        max="100"
-                        value={
-                          CodeBasedContentPercentages?.find(
-                            (c) => c.name === contentRequirement
-                          )?.value || 0
-                        }
-                        className="range range-primary range-sm p-1"
-                        onChange={(e) => {
-                          setCodeBasedContentPercentages((prev) =>
-                            prev.map((c) =>
-                              c.name === contentRequirement
-                                ? { ...c, value: parseInt(e.target.value) }
-                                : c
-                            )
-                          );
-                        }}
+              {codeBasedContentRequirements.length > 0 && (
+                <div className="flex flex-col gap-4">
+                  {codeBasedContentRequirements.map((contentRequirement) => (
+                    <div
+                      key={`${contentRequirement}-content-requirement`}
+                      className="w-full max-w-md flex flex-col gap-1"
+                    >
+                      <SecondaryLabel
+                        value={`${contentRequirement} Value Percentage`}
+                        color={Color.WHITE}
                       />
-                      <TertiaryLabel
-                        value={`${
-                          CodeBasedContentPercentages?.find(
-                            (c) => c.name === contentRequirement
-                          )?.value || 0
-                        }%`}
+                      <TertiaryText
+                        value={`What is the % of ${contentRequirement} value in this article?`}
                         color={Color.NEUTRAL_CONTENT}
                       />
+                      <div className="flex gap-2 items-center">
+                        <input
+                          type="range"
+                          min={0}
+                          max="100"
+                          value={
+                            CodeBasedContentPercentages?.find(
+                              (c) => c.name === contentRequirement
+                            )?.value || 0
+                          }
+                          className="range range-primary range-sm p-1"
+                          onChange={(e) => {
+                            setCodeBasedContentPercentages((prev) =>
+                              prev.map((c) =>
+                                c.name === contentRequirement
+                                  ? { ...c, value: parseInt(e.target.value) }
+                                  : c
+                              )
+                            );
+                          }}
+                        />
+                        <TertiaryLabel
+                          value={`${
+                            CodeBasedContentPercentages?.find(
+                              (c) => c.name === contentRequirement
+                            )?.value || 0
+                          }%`}
+                          color={Color.NEUTRAL_CONTENT}
+                        />
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
 
               {/* TODO: I think we can remove this check cause we already do similar above? */}
-              {isFullHTSCode(htsno) && (
+              {isFullHTSCode(htsno) && selectedCountries.length > 0 && (
                 <Tariffs
                   selectedCountries={selectedCountries}
                   htsElement={element}
@@ -299,7 +311,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
             <div className="w-full flex flex-col gap-2">
               <SecondaryLabel
                 value="Options for Next Level"
-                color={Color.NEUTRAL_CONTENT}
+                color={Color.WHITE}
               />
               <div className="flex flex-col gap-2">
                 {children.map((child, i) => {
@@ -326,144 +338,144 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
             </div>
           )}
 
-          {/* {(tariffElement || element.additionalDuties) && (
+          {shouldShowBaseTariffDetails && (
             <div className="w-full flex flex-col gap-4">
               <SecondaryLabel value="Base Tariff Details" color={Color.WHITE} />
 
               <div className="grid grid-cols-2 gap-2">
-                {tariffElement && (
-                  <>
-                    <div className="flex flex-col gap-3 p-3 bg-base-300 border border-base-content/10 rounded-md min-w-24">
-                      <div>
-                        <TertiaryLabel
-                          value={"General Rate"}
-                          color={Color.NEUTRAL_CONTENT}
-                        />
-                        <SecondaryText
-                          value={tariffElement.general || "-"}
-                          color={Color.WHITE}
-                        />
-                      </div>
-                      {getTemporaryTariffTextElement(
-                        tariffElement,
-                        TariffColumn.GENERAL
-                      )}
-                    </div>
-
-                    <div className="flex flex-col p-3 bg-base-300 border border-base-content/10 rounded-md min-w-24 gap-3">
+                <>
+                  <div className="flex flex-col gap-3 p-3 bg-base-300 border border-base-content/10 rounded-md min-w-24">
+                    <div>
                       <TertiaryLabel
-                        value={"Special Rate"}
-                        color={Color.NEUTRAL_CONTENT}
-                      />
-                      <div className="flex flex-col">
-                        <SecondaryText
-                          value={
-                            getTextBeforeOpeningParenthesis(
-                              tariffElement.special
-                            ) || "-"
-                          }
-                          color={Color.WHITE}
-                        />
-                        {getStringBetweenParenthesis(tariffElement.special) &&
-                          getTextBeforeOpeningParenthesis(
-                            tariffElement.special
-                          ) && (
-                            <span className="text-xs italic text-white">
-                              If qualified based on the acts/agreemnts below
-                            </span>
-                          )}
-                      </div>
-
-                      {getStringBetweenParenthesis(tariffElement.special) && (
-                        <div className="flex flex-col">
-                          <div className="flex flex-wrap gap-x-1">
-                            {getStringBetweenParenthesis(tariffElement.special)
-                              .split(",")
-                              .map((specialTariffSymbol, index) => {
-                                const note =
-                                  getGeneralNoteFromSpecialTariffSymbol(
-                                    specialTariffSymbol.trim()
-                                  );
-                                return (
-                                  <div
-                                    key={`${specialTariffSymbol}-${index}`}
-                                    className="tooltip tooltip-primary tooltip-bottom"
-                                    data-tip={
-                                      note?.description || note?.title || null
-                                    }
-                                  >
-                                    <button
-                                      className="btn btn-link btn-xs text-xs p-0 hover:text-secondary"
-                                      onClick={() => {
-                                        const note =
-                                          getGeneralNoteFromSpecialTariffSymbol(
-                                            specialTariffSymbol.trim()
-                                          );
-                                        setShowPDF({
-                                          title: note?.title || "",
-                                          bucket: SupabaseBuckets.NOTES,
-                                          filePath: note?.filePath || "",
-                                        });
-                                      }}
-                                    >
-                                      {specialTariffSymbol}
-                                    </button>
-                                  </div>
-                                );
-                              })}
-                          </div>
-                        </div>
-                      )}
-                      {getTemporaryTariffTextElement(
-                        tariffElement,
-                        TariffColumn.SPECIAL
-                      )}
-                    </div>
-
-                    <div className="flex flex-col gap-3 p-3 bg-base-300 border border-base-content/10 rounded-md min-w-24">
-                      <div>
-                        <TertiaryLabel
-                          value={"Other Rate"}
-                          color={Color.NEUTRAL_CONTENT}
-                        />
-                        <SecondaryText
-                          value={tariffElement.other || "-"}
-                          color={Color.WHITE}
-                        />
-                      </div>
-                      {getTemporaryTariffTextElement(
-                        tariffElement,
-                        TariffColumn.OTHER
-                      )}
-                    </div>
-
-                    <div className="flex flex-col gap-1 p-3 bg-base-300 border border-base-content/10 rounded-md min-w-24">
-                      <TertiaryLabel
-                        value={`Units`}
+                        value={"General Rate"}
                         color={Color.NEUTRAL_CONTENT}
                       />
                       <SecondaryText
-                        value={tariffElement.units.join(", ") || "-"}
+                        value={tariffElement.general || "-"}
                         color={Color.WHITE}
                       />
                     </div>
-                  </>
-                )}
-                {element.additionalDuties && (
+                    {getTemporaryTariffTextElement(
+                      tariffElement,
+                      TariffColumn.GENERAL
+                    )}
+                  </div>
+
+                  <div className="flex flex-col p-3 bg-base-300 border border-base-content/10 rounded-md min-w-24 gap-3">
+                    <TertiaryLabel
+                      value={"Special Rate"}
+                      color={Color.NEUTRAL_CONTENT}
+                    />
+                    <div className="flex flex-col">
+                      <SecondaryText
+                        value={
+                          getStringBeforeOpeningParenthesis(
+                            tariffElement.special
+                          ) || "-"
+                        }
+                        color={Color.WHITE}
+                      />
+                      {getStringBetweenParenthesis(tariffElement.special) &&
+                        getStringBeforeOpeningParenthesis(
+                          tariffElement.special
+                        ) && (
+                          <span className="text-xs italic text-white">
+                            If qualified based on the acts/agreemnts below
+                          </span>
+                        )}
+                    </div>
+
+                    {getStringBetweenParenthesis(tariffElement.special) && (
+                      <div className="flex flex-col">
+                        <div className="flex flex-wrap gap-x-1">
+                          {getStringBetweenParenthesis(tariffElement.special)
+                            .split(",")
+                            .map((specialTariffSymbol, index) => {
+                              const note =
+                                getGeneralNoteFromSpecialTariffSymbol(
+                                  specialTariffSymbol.trim()
+                                );
+                              return (
+                                <div
+                                  key={`${specialTariffSymbol}-${index}`}
+                                  className="tooltip tooltip-primary tooltip-bottom"
+                                  data-tip={
+                                    note?.description || note?.title || null
+                                  }
+                                >
+                                  <button
+                                    className="btn btn-link btn-xs text-xs p-0 hover:text-secondary"
+                                    onClick={() => {
+                                      const note =
+                                        getGeneralNoteFromSpecialTariffSymbol(
+                                          specialTariffSymbol.trim()
+                                        );
+                                      setShowPDF({
+                                        title: note?.title || "",
+                                        bucket: SupabaseBuckets.NOTES,
+                                        filePath: note?.filePath || "",
+                                      });
+                                    }}
+                                  >
+                                    {specialTariffSymbol}
+                                  </button>
+                                </div>
+                              );
+                            })}
+                        </div>
+                      </div>
+                    )}
+                    {getTemporaryTariffTextElement(
+                      tariffElement,
+                      TariffColumn.SPECIAL
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-3 p-3 bg-base-300 border border-base-content/10 rounded-md min-w-24">
+                    <div>
+                      <TertiaryLabel
+                        value={"Other Rate"}
+                        color={Color.NEUTRAL_CONTENT}
+                      />
+                      <SecondaryText
+                        value={tariffElement.other || "-"}
+                        color={Color.WHITE}
+                      />
+                    </div>
+                    {getTemporaryTariffTextElement(
+                      tariffElement,
+                      TariffColumn.OTHER
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-1 p-3 bg-base-300 border border-base-content/10 rounded-md min-w-24">
+                    <TertiaryLabel
+                      value={`Units`}
+                      color={Color.NEUTRAL_CONTENT}
+                    />
+                    <SecondaryText
+                      value={tariffElement.units.join(", ") || "-"}
+                      color={Color.WHITE}
+                    />
+                  </div>
+                </>
+
+                {/* FIXME: I think there are cases where additional duties come from outside the element */}
+                {tariffElement.additionalDuties && (
                   <div className="flex flex-col gap-1 p-3 bg-base-300 border border-base-content/10 rounded-md min-w-24">
                     <TertiaryLabel
                       value={`Additional Duties`}
                       color={Color.NEUTRAL_CONTENT}
                     />
                     <SecondaryText
-                      value={element.additionalDuties || "-"}
+                      value={tariffElement.additionalDuties || "-"}
                       color={Color.WHITE}
                     />
                   </div>
                 )}
               </div>
             </div>
-          )} */}
+          )}
         </>
       )}
       {showPDF && (

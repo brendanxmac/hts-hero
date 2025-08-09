@@ -21,6 +21,7 @@ import { Color } from "../enums/style";
 import { SecondaryText } from "./SecondaryText";
 import { TertiaryText } from "./TertiaryText";
 import { TradePrograms, TradeProgramStatus } from "../public/trade-programs";
+import { SecondaryLabel } from "./SecondaryLabel";
 
 interface Props {
   country: Country;
@@ -272,10 +273,17 @@ export const CountryTariff = ({
       {/* Special Tariff Program Selection */}
       {!isOtherColumnCountry && (
         <div className="flex flex-col gap-2">
-          <label className="text-white font-bold text-lg">
-            Special Tariff Program
-          </label>
-          <div className="relative" ref={specialProgramDropdownRef}>
+          <div className="flex flex-col gap-1">
+            <SecondaryLabel
+              value="Special Tariff Program"
+              color={Color.WHITE}
+            />
+            <TertiaryText value="Select from special tariff programs that might apply" />
+          </div>
+          <div
+            className="relative w-full max-w-md"
+            ref={specialProgramDropdownRef}
+          >
             <div
               className="w-full px-3 py-1 border-2 border-base-content/10 rounded-lg cursor-pointer bg-base-300 flex gap-3 items-center justify-between hover:bg-primary/20 transition-colors min-h-10"
               onClick={() => setIsSpecialProgramOpen(!isSpecialProgramOpen)}
@@ -395,7 +403,7 @@ export const CountryTariff = ({
           >
             <PrimaryLabel
               value={`${tariffSet.name} Tariffs`}
-              color={Color.ACCENT}
+              color={Color.WHITE}
             />
             {columnHasTariffs &&
               columnTariffs
