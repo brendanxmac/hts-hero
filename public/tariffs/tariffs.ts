@@ -88,7 +88,8 @@ export const collectExceptionCodes = (
 
 export const getStandardTariffSet = (
   tariffs: TariffI[],
-  ignoreCodes: string[] = []
+  ignoreCodes: string[] = [],
+  contentRequirements: ContentRequirementI<ContentRequirements>[]
 ): TariffSet => {
   const contentRequirementCodes = new Set<string>();
   const contentRequirementTariffs = tariffs.filter((t) => t.contentRequirement);
@@ -123,7 +124,7 @@ export const getStandardTariffSet = (
   );
 
   return {
-    name: "Article",
+    name: contentRequirements.length > 0 ? "Article" : "",
     exceptionCodes: exceptionCodes,
     tariffs: regularSetWithIsActive,
   };

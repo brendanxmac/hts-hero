@@ -175,26 +175,30 @@ export const CountryTariff = ({
       );
       // if (contentRequirementSets.length > 0) {
       setTariffSets([
-        getStandardTariffSet(applicableUITariffs, [
-          // Iron or Steel
-          "9903.81.87",
-          "9903.81.88",
-          // Iron or Steel Derivatives
-          "9903.81.89",
-          "9903.81.90",
-          "9903.81.91",
-          "9903.81.92",
-          "9903.81.93",
-          // Aluminum
-          "9903.85.02",
-          // Aluminum Derivatives
-          "9903.85.04",
-          "9903.85.07",
-          "9903.85.08",
-          "9903.85.09",
-          // Copper
-          "9903.78.01",
-        ]),
+        getStandardTariffSet(
+          applicableUITariffs,
+          [
+            // Iron or Steel
+            "9903.81.87",
+            "9903.81.88",
+            // Iron or Steel Derivatives
+            "9903.81.89",
+            "9903.81.90",
+            "9903.81.91",
+            "9903.81.92",
+            "9903.81.93",
+            // Aluminum
+            "9903.85.02",
+            // Aluminum Derivatives
+            "9903.85.04",
+            "9903.85.07",
+            "9903.85.08",
+            "9903.85.09",
+            // Copper
+            "9903.78.01",
+          ],
+          contentRequirements
+        ),
         ...contentRequirementSets,
       ]);
       // } else {
@@ -224,26 +228,30 @@ export const CountryTariff = ({
       );
       // if (contentRequirementSets.length > 0) {
       setTariffSets([
-        getStandardTariffSet(applicableUITariffs, [
-          // Iron or Steel
-          "9903.81.87",
-          "9903.81.88",
-          // Iron or Steel Derivatives
-          "9903.81.89",
-          "9903.81.90",
-          "9903.81.91",
-          "9903.81.92",
-          "9903.81.93",
-          // Aluminum
-          "9903.85.02",
-          // Aluminum Derivatives
-          "9903.85.04",
-          "9903.85.07",
-          "9903.85.08",
-          "9903.85.09",
-          // Copper
-          "9903.78.01",
-        ]),
+        getStandardTariffSet(
+          applicableUITariffs,
+          [
+            // Iron or Steel
+            "9903.81.87",
+            "9903.81.88",
+            // Iron or Steel Derivatives
+            "9903.81.89",
+            "9903.81.90",
+            "9903.81.91",
+            "9903.81.92",
+            "9903.81.93",
+            // Aluminum
+            "9903.85.02",
+            // Aluminum Derivatives
+            "9903.85.04",
+            "9903.85.07",
+            "9903.85.08",
+            "9903.85.09",
+            // Copper
+            "9903.78.01",
+          ],
+          contentRequirements
+        ),
         ...contentRequirementSets,
       ]);
       // } else {
@@ -298,7 +306,11 @@ export const CountryTariff = ({
             className="btn btn-sm btn-primary"
             onClick={() => {
               setTariffSets([
-                getStandardTariffSet(applicableUITariffs),
+                getStandardTariffSet(
+                  applicableUITariffs,
+                  [],
+                  contentRequirements
+                ),
                 ...getContentRequirementTariffSets(
                   applicableUITariffs,
                   contentRequirements
