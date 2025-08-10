@@ -123,13 +123,37 @@ export const CountryTariff = ({
         ])
       );
     } else {
+      const contentRequirementSets = getContentRequirementTariffSets(
+        applicableUITariffs,
+        contentRequirementsNotAt0
+      );
+      // if (contentRequirementSets.length > 0) {
       setTariffSets([
-        getStandardTariffSet(applicableUITariffs),
-        ...getContentRequirementTariffSets(
-          applicableUITariffs,
-          contentRequirementsNotAt0
-        ),
+        getStandardTariffSet(applicableUITariffs, [
+          // Iron or Steel
+          "9903.81.87",
+          "9903.81.88",
+          // Iron or Steel Derivatives
+          "9903.81.89",
+          "9903.81.90",
+          "9903.81.91",
+          "9903.81.92",
+          "9903.81.93",
+          // Aluminum
+          "9903.85.02",
+          // Aluminum Derivatives
+          "9903.85.04",
+          "9903.85.07",
+          "9903.85.08",
+          "9903.85.09",
+          // Copper
+          "9903.78.01",
+        ]),
+        ...contentRequirementSets,
       ]);
+      // } else {
+      // setTariffSets([getStandardTariffSet(applicableUITariffs)]);
+      // }
     }
   }, [contentRequirements]);
 
@@ -271,11 +295,11 @@ export const CountryTariff = ({
       </div>
 
       {/* Special Tariff Program Selection */}
-      {!isOtherColumnCountry && (
+      {!isOtherColumnCountry && specialTariffPrograms.length > 0 && (
         <div className="flex flex-col gap-2">
           <div className="flex flex-col gap-1">
             <SecondaryLabel
-              value="Special Tariff Program"
+              value="Potential Special Tariff Program(s)"
               color={Color.WHITE}
             />
             <TertiaryText value="Select from special tariff programs that might apply" />
@@ -402,7 +426,7 @@ export const CountryTariff = ({
             className="flex flex-col gap-4 border-2 p-4 rounded-md border-base-content/20"
           >
             <PrimaryLabel
-              value={`${tariffSet.name} Tariffs`}
+              value={`${tariffSet.name} Tariff`}
               color={Color.WHITE}
             />
             {columnHasTariffs &&
@@ -505,8 +529,8 @@ export const CountryTariff = ({
 
       {/* Footnotes */}
       {footnotesForColumn.length > 0 && (
-        <div className="flex flex-col gap-2 border-2 border-base-content/20 rounded-md p-4">
-          <PrimaryLabel value="Footnotes" color={Color.WHITE} />
+        <div className="flex flex-col gap-2">
+          <SecondaryLabel value="Footnotes" />
           <ul className="flex flex-col gap-2 ml-5">
             {footnotesForColumn.map((footnote: Footnote, i) => (
               <li

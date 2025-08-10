@@ -914,7 +914,12 @@ export const getTariffElement = (
   elements: HtsElement[],
   breadcrumbs?: NavigatableElement[]
 ) => {
-  if (element.general || element.special || element.other) {
+  if (
+    element.general ||
+    element.special ||
+    element.other ||
+    element.additionalDuties
+  ) {
     return element;
   }
 

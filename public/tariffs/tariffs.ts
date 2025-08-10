@@ -63,21 +63,32 @@ export const hasActiveDescendants = (
 export const collectExceptionCodes = (
   tariff: TariffI,
   tariffs: TariffI[],
-  exceptionCodes: Set<string>
+  exceptionCodes: Set<string>,
+  ignoreCodes?: string[]
 ) => {
   if (tariff.exceptions) {
     tariff.exceptions.forEach((code) => {
+      if (ignoreCodes?.includes(code)) return;
+
       exceptionCodes.add(code);
       // Find the exception tariff and recursively collect its exceptions
       const exceptionTariff = tariffs.find((t) => t.code === code);
       if (exceptionTariff) {
-        collectExceptionCodes(exceptionTariff, tariffs, exceptionCodes);
+        collectExceptionCodes(
+          exceptionTariff,
+          tariffs,
+          exceptionCodes,
+          ignoreCodes
+        );
       }
     });
   }
 };
 
-export const getStandardTariffSet = (tariffs: TariffI[]): TariffSet => {
+export const getStandardTariffSet = (
+  tariffs: TariffI[],
+  ignoreCodes: string[] = []
+): TariffSet => {
   const contentRequirementCodes = new Set<string>();
   const contentRequirementTariffs = tariffs.filter((t) => t.contentRequirement);
   contentRequirementTariffs.forEach((t) => {
@@ -90,7 +101,7 @@ export const getStandardTariffSet = (tariffs: TariffI[]): TariffSet => {
 
   // Recursively get all the exceptions for all applicables minus content requirement ones
   regularSet.forEach((t) => {
-    collectExceptionCodes(t, tariffs, exceptionCodes);
+    collectExceptionCodes(t, tariffs, exceptionCodes, ignoreCodes);
   });
 
   // Are there any in contentRequirementExceptionTariffs that do NOT exist in exceptionTariffs?
@@ -284,9 +295,6 @@ export const tariffIsActive = (
       );
 
   const exceptions = [...exceptionTariffs, ...inclusionTariffs];
-  // const applicableExceptions = exceptions.filter((t) =>
-  //   tariffIsApplicable(t, countryCode, htsCode, tariffCodesToIgnore)
-  // );
 
   if (
     noExceptions &&
@@ -298,8 +306,24 @@ export const tariffIsActive = (
 
   const noReviewNeeded = exceptions.filter((e) => !e.requiresReview);
 
-  return noReviewNeeded.length === 0;
+  // I think here is where we need to check that even if there's a tariff that
+  // does not require review, if it's not active itself, all good...
+  const hasExceptionTariffWithNoReviewNeededThatIsActive = noReviewNeeded.some(
+    (t) => tariffIsActive(t, applicableTariffs)
+  );
+
+  const hasInclusionTariffWithNoReviewNeededThatIsActive =
+    inclusionTariffs.some((t) => tariffIsActive(t, applicableTariffs));
+
+  return (
+    noReviewNeeded.length === 0 ||
+    !hasExceptionTariffWithNoReviewNeededThatIsActive ||
+    hasInclusionTariffWithNoReviewNeededThatIsActive
+  );
 };
+
+export const getTariffByCode = (code: string) =>
+  TariffsList.find((t) => t.code === code);
 
 export const getTariffsByCode = (codes: string[]) =>
   codes.map((c) => TariffsList.find((t) => t.code === c)).filter(Boolean);
@@ -365,16 +389,6 @@ export const tariffIsApplicable = (
   const { countries, codes, tariffs } = tariff.inclusions;
   const codesSpecified = codes !== undefined && codes.length > 0;
   const countriesSpecified = countries !== undefined && countries.length > 0;
-  const includesTariffs = tariffs !== undefined && tariffs.length > 0;
-  const applicableTariffs = tariffs
-    ? getTariffsByCode(
-        tariffs.filter((t) => !tariffCodesToIgnore?.includes(t))
-      ).filter((t) =>
-        tariffIsApplicable(t, countryCode, htsCode, tariffCodesToIgnore)
-      )
-    : [];
-  const hasApplicableTariffs =
-    applicableTariffs && applicableTariffs.length > 0;
   const includesCountry =
     countries?.includes(countryCode) || countries?.includes("*");
 
@@ -385,7 +399,22 @@ export const tariffIsApplicable = (
     .some(Boolean);
   // TODO: test that this will grab heading and subheadings properly for full codes...
 
+  if (!includesCode && !includesCountry) {
+    return false;
+  }
+
   const includesCountryAndCode = includesCountry && includesCode;
+
+  const includesTariffs = tariffs !== undefined && tariffs.length > 0;
+  const applicableTariffs = tariffs
+    ? getTariffsByCode(
+        tariffs.filter((t) => !tariffCodesToIgnore?.includes(t))
+      ).filter((t) =>
+        tariffIsApplicable(t, countryCode, htsCode, tariffCodesToIgnore)
+      )
+    : [];
+  const hasApplicableTariffs =
+    applicableTariffs && applicableTariffs.length > 0;
 
   if (tariff.exclusions) {
     const { countries, codes } = tariff.exclusions;

@@ -786,7 +786,7 @@ export const brazilTariffs: TariffI[] = [
     code: "9903.01.83",
     description:
       "Articles of iron or steel, derivative articles of iron or steel, articles of aluminum, derivative articles of aluminum, passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks and parts of passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks, and semi-finished copper and intensive copper derivative products, of Brazil, as provided in subdivision (x)(v) through (x)(xi) of note 2 to this subchapter",
-    name: "Articles of Iron / Steel, Aluminum, Copper, Auto / Auto Parts",
+    name: "Articles of Iron / Steel, Aluminum, Copper, Auto / Auto Parts from Brazil",
     general: 0,
     special: 0,
     other: 0,

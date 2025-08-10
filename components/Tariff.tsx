@@ -1,6 +1,8 @@
 import { Color } from "../enums/style";
 import { UITariff, TariffSet } from "../interfaces/tariffs";
 import {
+  getTariffByCode,
+  getTariffsByCode,
   isAncestorTariff,
   isDescendantTariff,
   tariffIsActive,
@@ -54,6 +56,7 @@ export const Tariff = ({
         isDescendantTariff(t, tariff, set.tariffs)
       ) {
         if (toggledValue) {
+          // TODO: I think this is missing additionalDuties?
           const isNullTariff =
             tariff.general === null &&
             tariff.special === null &&
@@ -92,6 +95,23 @@ export const Tariff = ({
   };
 
   const marginClass = marginClasses[exceptionLevel] || "";
+  const exceptions = getTariffsByCode(tariff.exceptions || []);
+  const exceptionsThatDontNeedReview = exceptions.filter(
+    (e) => !e.requiresReview
+  );
+  const applicableExceptionsThatDontNeedReview = getTariffsByCode(
+    Array.from(tariffSets[setIndex].exceptionCodes).filter((e) =>
+      exceptionsThatDontNeedReview.some((t) => t.code === e)
+    )
+  );
+
+  console.log("applicableExceptionsThatDontNeedReview");
+  console.log(applicableExceptionsThatDontNeedReview);
+
+  const hasExceptionTariffThatDoesNotNeedReviewThatIsActive =
+    applicableExceptionsThatDontNeedReview
+      .filter(Boolean)
+      .some((e) => tariffIsActive(e, tariffSets[setIndex].tariffs));
 
   return (
     <div className="w-full flex flex-col gap-2">
@@ -103,18 +123,21 @@ export const Tariff = ({
         )}
       >
         <div className="flex gap-2 items-start">
-          {tariff.requiresReview && (
-            <input
-              type="checkbox"
-              checked={tariff.isActive}
-              className="checkbox checkbox-primary checkbox-sm"
-              onChange={() => {
-                // if (exceptionLevel > 0) {
+          <input
+            type="checkbox"
+            checked={tariff.isActive}
+            disabled={
+              !tariff.requiresReview ||
+              hasExceptionTariffThatDoesNotNeedReviewThatIsActive
+            }
+            className="checkbox checkbox-primary checkbox-sm"
+            onChange={() => {
+              if (tariff.requiresReview) {
                 toggleTariff(tariff);
-                // }
-              }}
-            />
-          )}
+              }
+            }}
+          />
+
           <div className="flex flex-col gap-1">
             <div className="flex gap-2">
               <TertiaryLabel

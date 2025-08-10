@@ -112,7 +112,8 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
     (!isFullHTSCode(htsno) && elementHasTariffDetails) ||
     (isFullHTSCode(htsno) && selectedCountries.length === 0);
 
-  const tariffElement = getTariffElement(element, htsElements, breadcrumbs);
+  const tariffElement =
+    getTariffElement(element, htsElements, breadcrumbs) || element;
 
   return (
     <div className="card bg-base-100 p-4 rounded-xl border border-base-content/10 w-full flex flex-col items-start justify-between gap-8 pt-2 sm:pt-6">
