@@ -18,6 +18,7 @@ import { TariffI, UITariff, TariffSet } from "../../interfaces/tariffs";
 import { TariffColumn } from "../../enums/tariff";
 import { brazilTariffs } from "./brazil";
 import { copperTariffs } from "./copper";
+import { EuropeanUnionCountries } from "../../constants/countries";
 
 export const findExceptions = (
   tariff: TariffI,
@@ -184,7 +185,72 @@ export const getAdValoremRate = (
   return rate;
 };
 
+export const getEUCountryTotalBaseRate = (
+  baseTariffs: BaseTariffI[],
+  customsValue: number,
+  units?: number
+) => {
+  const amountRates = getAmountRates(baseTariffs);
+  const adValoremEquivalentAmountRate = amountRates
+    .map(
+      (dollarAmount) =>
+        (units
+          ? (dollarAmount * units) / customsValue
+          : dollarAmount / customsValue) * 100
+    )
+    .reduce((acc, t) => acc + t, 0);
+
+  const adValoremRate = baseTariffs.reduce((acc, t) => {
+    if (t.type === "percent") {
+      return acc + t.value;
+    }
+    return acc;
+  }, 0);
+
+  return adValoremEquivalentAmountRate + adValoremRate;
+};
+
+// export const getRate = (
+//   baseTariffs: BaseTariffI[],
+//   tariffs: UITariff[],
+//   column: TariffColumn,
+//   country: string,
+//   isContentRequirementSet: boolean
+// ) => {
+//   const isEUCountry = EuropeanUnionCountries.includes(country);
+
+//   if (isEUCountry && !isContentRequirementSet) {
+//     const amountRates = getAmountRates(baseTariffs);
+//     const adValoremEquivalentAmountRate = amountRates
+//       .map((t) => (t / 1000) * 100)
+//       .reduce((acc, t) => acc + t, 0);
+//     const adValoremRate = baseTariffs.reduce((acc, t) => {
+//       if (t.type === "percent") {
+//         return acc + t.value;
+//       }
+//       return acc;
+//     }, 0);
+
+//     const totalBaseAdValoremEquivalentRate =
+//       adValoremEquivalentAmountRate + adValoremRate;
+
+//     if (totalBaseAdValoremEquivalentRate < 15) {
+//       return 15;
+//     } else {
+//       return 0;
+//     }
+//   } else {
+//     // Get the amount rate(s) and do a + with that and the ad valorem rate
+//   }
+
+//   // TODO: consider how to get amount rates from additional tariffs
+// };
+
 export const getAmountRates = (baseTariffs: BaseTariffI[]) => {
+  return baseTariffs.filter((t) => t.type === "amount").map((t) => t.value);
+};
+
+export const getAmountRatesString = (baseTariffs: BaseTariffI[]) => {
   return baseTariffs
     .filter((t) => t.type === "amount")
     .map((t) => t.raw)

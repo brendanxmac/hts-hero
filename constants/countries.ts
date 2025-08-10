@@ -56,33 +56,35 @@ export interface Country {
 // Nicaragua - "NI",
 
 // Countries in the EU
-// Austria - "AT",
-// Belgium - "BE",
-// Bulgaria - "BG",
-// Croatia - "HR",
-// Republic of Cyprus - "CY",
-// Czechia - "CZ",
-// Denmark - "DK",
-// Estonia - "EE",
-// Finland - "FI",
-// France - "FR",
-// Germany - "DE",
-// Greece - "GR",
-// Hungary - "HU",
-// Ireland - "IE",
-// Italy - "IT",
-// Latvia - "LV",
-// Lithuania - "LT",
-// Luxembourg - "LU",
-// Malta - "MT",
-// Netherlands - "NL",
-// Poland - "PL",
-// Portugal - "PT",
-// Romania - "RO",
-// Slovakia - "SK",
-// Slovenia - "SI",
-// Spain - "ES",
-// Sweden - "SE",
+export const EuropeanUnionCountries = [
+  "AT", // Austria
+  "BE", // Belgium
+  "BG", // Bulgaria
+  "HR", // Croatia
+  "CY", // Republic
+  "CZ", // Czechia
+  "DK", // Denmark
+  "EE", // Estonia
+  "FI", // Finland
+  "FR", // France
+  "DE", // Germany
+  "GR", // Greece
+  "HU", // Hungary
+  "IE", // Ireland
+  "IT", // Italy
+  "LV", // Latvia
+  "LT", // Lithuania
+  "LU", // Luxembourg
+  "MT", // Malta
+  "NL", // Netherlands
+  "PL", // Poland
+  "PT", // Portugal
+  "RO", // Romania
+  "SK", // Slovakia
+  "SI", // Slovenia
+  "ES", // Spain
+  "SE", // Sweden
+];
 
 export const countries: Country[] = [
   { flag: "🇦🇫", name: "Afghanistan", code: "AF" },

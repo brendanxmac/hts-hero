@@ -18,8 +18,8 @@ export const BaseTariff = ({ index, htsElement, tariff }: Props) => {
     tariff.value === null && tariff.details
       ? tariff.details
       : tariff.type === "percent"
-        ? `Ad Valorem Duty`
-        : `Quantity Duty`;
+        ? `Ad Valorem`
+        : `Quantity`;
   // FIXME: at some point, filter out the country based "See" ones so that they don't cause noise here
   const reviewText = tariff.value === null ? "Needs Review" : "";
   const valueText = tariff.type === "percent" ? `${tariff.value}%` : tariff.raw;
@@ -41,7 +41,10 @@ export const BaseTariff = ({ index, htsElement, tariff }: Props) => {
               className="checkbox checkbox-primary checkbox-sm"
             />
             <TertiaryLabel value={htsElement.htsno} />
-            <SecondaryText value={primaryText} color={Color.WHITE} />
+            <SecondaryText
+              value={`General Duty: ${primaryText}`}
+              color={Color.WHITE}
+            />
           </div>
 
           <div className="flex gap-2">

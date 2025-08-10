@@ -58,8 +58,9 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
   const { htsElements } = useHts();
   const { sections } = useHtsSections();
   const [selectedCountries, setSelectedCountries] = useState<Country[]>([
-    { flag: "🇲🇽", name: "Mexico", code: "MX" },
-    { flag: "🇨🇳", name: "China", code: "CN" },
+    // { flag: "🇲🇽", name: "Mexico", code: "MX" },
+    // { flag: "🇨🇳", name: "China", code: "CN" },
+    { flag: "🇸🇪", name: "Sweden", code: "SE" },
   ]);
 
   const codeBasedContentRequirements = Array.from(
