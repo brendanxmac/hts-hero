@@ -33,10 +33,18 @@ export const BaseTariff = ({ index, htsElement, tariff }: Props) => {
         )}
       >
         <div className="flex flex-col gap-2 items-start">
-          <TertiaryLabel value={htsElement.htsno} />
+          <div className="flex gap-2 items-center">
+            <input
+              type="checkbox"
+              checked
+              disabled
+              className="checkbox checkbox-primary checkbox-sm"
+            />
+            <TertiaryLabel value={htsElement.htsno} />
+            <SecondaryText value={primaryText} color={Color.WHITE} />
+          </div>
 
           <div className="flex gap-2">
-            <SecondaryText value={primaryText} color={Color.WHITE} />
             {tariff.programs && tariff.programs.length > 0 && (
               <SpecialPrograms programs={tariff.programs} />
             )}

@@ -105,9 +105,6 @@ export const Tariff = ({
     )
   );
 
-  console.log("applicableExceptionsThatDontNeedReview");
-  console.log(applicableExceptionsThatDontNeedReview);
-
   const hasExceptionTariffThatDoesNotNeedReviewThatIsActive =
     applicableExceptionsThatDontNeedReview
       .filter(Boolean)
@@ -122,7 +119,7 @@ export const Tariff = ({
           marginClass
         )}
       >
-        <div className="flex gap-2 items-start">
+        <div className="flex gap-2 items-center">
           <input
             type="checkbox"
             checked={tariff.isActive}
@@ -138,17 +135,22 @@ export const Tariff = ({
             }}
           />
 
-          <div className="flex flex-col gap-1">
-            <div className="flex gap-2">
+          <div className="flex flex-col gap-1 py-1">
+            <div className="flex gap-2 items-center">
+              {/* {tariff.requiresReview && (
+                <div
+                  className="tooltip rounded-md bg-primary px-1.5 py-0.5"
+                  data-tip="Needs Review"
+                >
+                  <p className="text-xs font-bold">R</p>
+                </div>
+              )} */}
               <TertiaryLabel
                 value={tariff.code}
                 color={Color.NEUTRAL_CONTENT}
               />
-              {tariff.requiresReview && (
-                <TertiaryText value={"[Needs Review]"} />
-              )}
+              <SecondaryText value={tariff.name} color={Color.WHITE} />
             </div>
-            <SecondaryText value={tariff.name} color={Color.WHITE} />
           </div>
         </div>
         <p
