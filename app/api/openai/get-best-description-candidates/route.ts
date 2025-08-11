@@ -115,9 +115,6 @@ export async function POST(req: NextRequest) {
       ],
     });
 
-    console.log("GPT Response:");
-    console.log(gptResponse.usage);
-
     //     ${
     //   isTestEnv
     //     ? ""

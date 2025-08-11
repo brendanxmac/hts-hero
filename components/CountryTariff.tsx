@@ -106,6 +106,7 @@ export const CountryTariff = ({
   }, []);
   const specialTariffPrograms = specialTariffProgramSymbols
     .map((p) => TradePrograms.find((t) => t.symbol === p))
+    .filter(Boolean)
     .filter(
       (p) =>
         p.status === TradeProgramStatus.ACTIVE &&
