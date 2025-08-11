@@ -100,9 +100,6 @@ export async function POST(req: NextRequest) {
       ],
     });
 
-    console.log("GPT Response:");
-    console.log(gptResponse.usage);
-
     return NextResponse.json(gptResponse.choices);
   } catch (e) {
     console.error(e);

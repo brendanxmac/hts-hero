@@ -147,6 +147,11 @@ const tariffFAQs = [
     details:
       "Not currently. We are considering adding support for this in the future.",
   },
+  {
+    topic: "Do you support applying Chapter 98 Exclusions?",
+    details:
+      "Not currently, however you can easily open all notes and elements for chapter 98 to see if any exclusions apply. We are considering adding support for this in the future.",
+  },
 ];
 
 const TariffFAQ = ({ topic, details }: { topic: string; details: string }) => {
