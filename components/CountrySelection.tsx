@@ -146,25 +146,27 @@ export const CountrySelection = ({
   return (
     <div className="relative" ref={dropdownRef}>
       <div
-        className="w-full px-3 py-1 border-2 border-base-content/10 rounded-lg cursor-pointer bg-base-300 flex gap-3 items-center justify-between hover:bg-primary/20 transition-colors min-h-10"
+        className="w-full p-1 pr-2 border border-base-content/50 rounded-lg cursor-pointer bg-base-300 flex gap-3 items-center justify-between hover:bg-primary/20 transition-colors min-h-10"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <div className="flex-1 flex flex-wrap gap-1 items-center">
+        <div className="flex-1 flex flex-wrap gap-2 items-center">
           {selectedCountries.length > 0 ? (
             selectedCountries.map((country) => (
               <div
-                key={country.name}
-                className="flex items-center gap-1 bg-primary/10 border border-primary/20 rounded-md px-2 py-1 text-xs"
+                key={`country-selection-option-${country.name}`}
+                className="flex items-center gap-1 bg-primary/20 border border-primary/20 rounded-md px-2 py-1"
               >
-                <span>{country.flag}</span>
-                <span className="text-primary font-medium">{country.name}</span>
+                <div className="flex gap-2 items-center">
+                  <p className="text-xl">{country.flag}</p>
+                  <p className="text-white font-semibold">{country.name}</p>
+                </div>
                 <button
                   onClick={(e) => handleRemoveCountry(country, e)}
                   className="ml-1 p-0.5 hover:bg-primary/20 rounded transition-colors"
                   title={`Remove ${country.name}`}
                 >
                   <svg
-                    className="w-3 h-3 text-primary"
+                    className="w-3 h-3 text-white"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -180,14 +182,14 @@ export const CountrySelection = ({
               </div>
             ))
           ) : (
-            <span className="text-sm">Select Countries of Origin</span>
+            <span className="text-sm ml-2">Select Countries of Origin</span>
           )}
         </div>
         <div className="flex items-center gap-1">
           {selectedCountries.length > 0 ? (
             <button
               onClick={handleClearAll}
-              className="btn btn-link p-1 btn-sm text-xs hover:text-secondary no-underline"
+              className="btn btn-link p-1 btn-sm hover:text-secondary no-underline"
               title="Clear all selections"
             >
               clear

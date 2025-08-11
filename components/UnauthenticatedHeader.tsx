@@ -119,19 +119,21 @@ const UnauthenticatedHeader = () => {
         <div className="hidden sm:flex items-center gap-2">
           {/* Your links on large screens */}
           <div className="hidden sm:flex sm:justify-center sm:gap-4 sm:items-center">
-            <button
-              className="btn btn-sm"
-              onClick={() => setShowTutorial(true)}
-              data-tooltip-id="tooltip"
-            >
-              <PlayIcon className="w-5 h-5" />
-              Tutorial
-            </button>
+            {tutorial && (
+              <button
+                className="btn btn-sm"
+                onClick={() => setShowTutorial(true)}
+                data-tooltip-id="tooltip"
+              >
+                <PlayIcon className="w-5 h-5" />
+                Tutorial
+              </button>
+            )}
             {links.map((link) => (
               <Link
                 href={link.href}
                 key={link.href}
-                className="btn btn-secondary btn-sm font-semibold link link-hover"
+                className="btn btn-primary btn-sm font-semibold link link-hover"
               >
                 {link.label}
               </Link>

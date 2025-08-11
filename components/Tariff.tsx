@@ -1,75 +1,190 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { ClassificationProgression } from "../interfaces/hts";
-import { Cell } from "./Cell";
-import { PrimaryText } from "./PrimaryText";
-import { SectionLabel } from "./SectionLabel";
-import { findFirstElementInProgressionWithTariff } from "../libs/hts";
-import { LoadingIndicator } from "./LoadingIndicator";
-import { TariffDetails } from "./TariffDetails";
-import { TariffSummary } from "./TariffSummary";
-import { Tariff } from "../classes/tariff";
+import { Color } from "../enums/style";
+import { UITariff, TariffSet } from "../interfaces/tariffs";
+import {
+  getTariffsByCode,
+  isAncestorTariff,
+  isDescendantTariff,
+  tariffIsActive,
+} from "../tariffs/tariffs";
+import { classNames } from "../utilities/style";
+
+import { SecondaryText } from "./SecondaryText";
+import { TertiaryLabel } from "./TertiaryLabel";
+import { TariffColumn } from "../enums/tariff";
 
 interface Props {
-  classificationProgression: ClassificationProgression[];
-  setUpdateScrollHeight: Dispatch<SetStateAction<number>>;
+  showInactive: boolean;
+  exceptionLevel?: number;
+  tariff: UITariff;
+  setIndex: number;
+  tariffSets: TariffSet[];
+  setTariffSets: (tariffs: TariffSet[]) => void;
+  renderedCodes?: Set<string>;
+  column: TariffColumn;
 }
 
-export const TariffSection = ({
-  classificationProgression,
-  setUpdateScrollHeight,
+export const Tariff = ({
+  exceptionLevel = 0,
+  showInactive,
+  tariff,
+  setIndex,
+  tariffSets,
+  setTariffSets,
+  renderedCodes = new Set(),
+  column,
 }: Props) => {
-  const [loading, setLoading] = useState(false);
-  const [showDetails, setShowDetails] = useState(false);
-  const [tariff, setTariff] = useState<Tariff | undefined>(undefined);
+  if (renderedCodes.has(tariff.code)) {
+    return null;
+  }
 
-  const getTariff = async () => {
-    const tariff = await Tariff.create(classificationProgression);
-    setTariff(tariff);
-    setLoading(false);
+  renderedCodes.add(tariff.code);
+
+  const toggleTariff = (tariff: UITariff) => {
+    const set = tariffSets[setIndex];
+    const toggledValue = !tariff.isActive;
+
+    for (const t of set.tariffs) {
+      if (t.code === tariff.code) {
+        t.isActive = toggledValue;
+        continue;
+      }
+
+      if (
+        isAncestorTariff(t, tariff, set.tariffs) ||
+        isDescendantTariff(t, tariff, set.tariffs)
+      ) {
+        if (toggledValue) {
+          // TODO: I think this is missing additionalDuties?
+          const isNullTariff =
+            tariff.general === null &&
+            tariff.special === null &&
+            tariff.other === null;
+
+          // For certain special tariffs that need review and have null for their %'s
+          // we do not want to toggle parents or descendants because they don't actually
+          // turn anything on or off, just alter the VALUE of what's tariffs (e.g. NON US Content)
+          if (tariff.requiresReview && isNullTariff) {
+            continue;
+          } else {
+            t.isActive = false;
+            continue;
+          }
+        } else if (!t.requiresReview) {
+          t.isActive = tariffIsActive(t, set.tariffs);
+        }
+      }
+    }
+
+    // call setTariffSets and update the given set within it while keeping all other sets the same
+    const updatedTariffSets = [...tariffSets];
+    updatedTariffSets[setIndex] = set;
+
+    setTariffSets(updatedTariffSets);
   };
 
-  useEffect(() => {
-    setLoading(true);
-    getTariff();
-  }, []);
+  // Map exception levels to Tailwind margin classes
+  const marginClasses: Record<number, string> = {
+    0: "",
+    1: "ml-6",
+    2: "ml-12",
+    3: "ml-18",
+    4: "ml-24",
+    5: "ml-30",
+  };
 
-  useEffect(() => {
-    setUpdateScrollHeight(Math.random());
-  }, [tariff, showDetails]);
+  const marginClass = marginClasses[exceptionLevel] || "";
+  const exceptions = getTariffsByCode(tariff.exceptions || []);
+  const exceptionsThatDontNeedReview = exceptions.filter(
+    (e) => !e.requiresReview
+  );
+  const applicableExceptionsThatDontNeedReview = getTariffsByCode(
+    Array.from(tariffSets[setIndex].exceptionCodes).filter((e) =>
+      exceptionsThatDontNeedReview.some((t) => t.code === e)
+    )
+  );
+
+  const hasExceptionTariffThatDoesNotNeedReviewThatIsActive =
+    applicableExceptionsThatDontNeedReview
+      .filter(Boolean)
+      .some((e) => tariffIsActive(e, tariffSets[setIndex].tariffs));
 
   return (
-    <div className="col-span-full flex flex-col gap-5">
-      <SectionLabel value="Tariff (China to USA)" />
-
-      <Cell>
-        <div className="flex flex-col gap-3">
-          <TariffSummary
-            tariff={tariff}
-            showDetails={showDetails}
-            setShowDetails={setShowDetails}
+    <div className="w-full flex flex-col gap-2">
+      <div
+        key={`${tariff.code}-${exceptionLevel}`}
+        className={classNames(
+          "text-white flex gap-2 justify-between items-end border-b border-base-content/50",
+          marginClass
+        )}
+      >
+        <div className="flex gap-2 items-center">
+          <input
+            type="checkbox"
+            checked={tariff.isActive}
+            disabled={
+              !tariff.requiresReview ||
+              hasExceptionTariffThatDoesNotNeedReviewThatIsActive
+            }
+            className="checkbox checkbox-primary checkbox-sm"
+            onChange={() => {
+              if (tariff.requiresReview) {
+                toggleTariff(tariff);
+              }
+            }}
           />
 
-          {tariff && !loading && (
-            <>
-              <PrimaryText value={tariff.getTotal()} />
-              {tariff.temporaryAdjustments.length && showDetails ? (
-                <TariffDetails
-                  htsElement={findFirstElementInProgressionWithTariff(
-                    classificationProgression
-                  )}
-                  temporaryTariffs={tariff.temporaryAdjustments}
-                />
-              ) : undefined}
-            </>
-          )}
-
-          {loading && (
-            <div className="my-3 min-w-full max-w-3xl col-span-full">
-              <LoadingIndicator />
+          <div className="flex flex-col gap-1 py-1">
+            <div className="flex gap-2 items-center">
+              {/* {tariff.requiresReview && (
+                <div
+                  className="tooltip rounded-md bg-primary px-1.5 py-0.5"
+                  data-tip="Needs Review"
+                >
+                  <p className="text-xs font-bold">R</p>
+                </div>
+              )} */}
+              <TertiaryLabel
+                value={tariff.code}
+                color={Color.NEUTRAL_CONTENT}
+              />
+              <SecondaryText value={tariff.name} color={Color.WHITE} />
             </div>
-          )}
+          </div>
         </div>
-      </Cell>
+        <p
+          className={classNames(
+            "shrink-0 min-w-32 text-right text-xl",
+            tariff.isActive
+              ? "text-white font-bold"
+              : tariff[column] === null
+                ? "text-neutral-content"
+                : "line-through text-neutral-content"
+          )}
+        >
+          {tariff[column] === null ? "Needs Review" : `${tariff[column]}%`}
+        </p>
+      </div>
+
+      {tariff.exceptions?.length > 0 &&
+        tariff.exceptions
+          .map((e) => tariffSets[setIndex].tariffs.find((t) => t.code === e))
+          .filter(Boolean)
+          .map(
+            (exceptionTariff) =>
+              (exceptionTariff.isActive || showInactive) && (
+                <Tariff
+                  key={exceptionTariff.code}
+                  exceptionLevel={exceptionLevel + 1}
+                  setIndex={setIndex}
+                  showInactive={showInactive}
+                  tariff={exceptionTariff}
+                  tariffSets={tariffSets}
+                  setTariffSets={setTariffSets}
+                  renderedCodes={renderedCodes}
+                  column={column}
+                />
+              )
+          )}
     </div>
   );
 };

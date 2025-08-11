@@ -25,7 +25,8 @@ import {
 } from "../utilities/data";
 import { OpenAIModel } from "./openai";
 import apiClient from "@/libs/api";
-import { HtsLevel, TariffType } from "../enums/hts";
+import { HtsLevel } from "../enums/hts";
+import { TariffColumn } from "../enums/tariff";
 import { NavigatableElement } from "../components/Elements";
 import { generateClassificationReport } from "./classification";
 import { SecondaryText } from "../components/SecondaryText";
@@ -34,6 +35,10 @@ import { Color } from "../enums/style";
 import { UserProfile } from "./supabase/user";
 import { notes } from "../public/notes/notes";
 import { inflate } from "pako";
+import {
+  getStringBeforeOpeningParenthesis,
+  getStringBetweenParenthesis,
+} from "../utilities/hts";
 
 export const downloadClassificationReport = async (
   classification: Classification,
@@ -112,6 +117,12 @@ export const getBreadCrumbsForElement = (
       value: parent.description,
     })),
   ];
+};
+
+export const getHtsCodesFromString = (text: string): string[] => {
+  const htsCodeRegex = /\b(\d{4}(?:\.?\d{2})?(?:\.?\d{2})?(?:\.?\d{2})?)\b/g;
+  const matches = text.match(htsCodeRegex);
+  return matches ? matches : [];
 };
 
 // Filters from the overall set of elements -- room for imporvement
@@ -721,7 +732,7 @@ export const getGeneralNoteFromSpecialTariffSymbol = (
 
 export const getFootnotesForTariffType = (
   element: HtsElement,
-  tariffType: TariffType
+  tariffType: TariffColumn
 ) => {
   return element.footnotes?.filter((footnote) =>
     footnote.columns.includes(tariffType)
@@ -730,9 +741,152 @@ export const getFootnotesForTariffType = (
 
 export const getTemporaryTariffText = (
   element: HtsElement,
-  tariffType: TariffType
-): JSX.Element | null => {
+  tariffType: TariffColumn
+) => {
   const footnotes = getFootnotesForTariffType(element, tariffType);
+  return footnotes.map((footnote) =>
+    footnote.value.trim().replace(/\.*$/g, "")
+  );
+};
+
+export interface BaseTariffI {
+  value: number | null;
+  type: "percent" | "amount";
+  unit?: string;
+  details?: string;
+  raw: string;
+  programs?: string[];
+}
+
+export interface ParsedTariff {
+  tariffs: BaseTariffI[];
+  parsingFailures: string[];
+}
+
+export const splitOnClosingParen = (input: string): string[] => {
+  const parts = input.split(/(?<=\))/g); // Split *after* each closing parenthesis ")"
+  return parts.map((part) => part.trim()).filter(Boolean); // Trim whitespace and remove empty strings
+};
+
+// TODO: consider filtering out any agreements that might not apply in this case given `country` param
+//  Item for the future to clean this up properly once we have lists of countries mapped to programs
+export function getBaseTariffs(input: string): ParsedTariff {
+  const tariffs: BaseTariffI[] = [];
+  const parsingFailures: string[] = [];
+
+  const programsString = getStringBetweenParenthesis(input);
+
+  const programs =
+    (programsString && programsString.split(",").map((p) => p.trim())) || [];
+  const cleaned = getStringBeforeOpeningParenthesis(input);
+  const parts = cleaned.split(/\s+\+\s+/);
+
+  for (const part of parts) {
+    const trimmed = part.trim();
+
+    if (!trimmed) {
+      return { tariffs: [], parsingFailures: [] };
+    }
+
+    // Check for "free" case-insensitively, with or without parentheses
+    const freeMatch = trimmed.toLowerCase().match(/free/i);
+    if (freeMatch) {
+      tariffs.push({
+        value: 0,
+        type: "percent",
+        raw: trimmed,
+        programs,
+      });
+      continue;
+    }
+
+    // Check for "see" case-insensitively, with or without parentheses
+    const seeMatch = trimmed.toLowerCase().match(/see/i);
+    if (seeMatch) {
+      tariffs.push({
+        value: null,
+        type: "percent",
+        raw: trimmed,
+        programs,
+        details: trimmed,
+      });
+      continue;
+    }
+
+    // % percent
+    const percentMatch = trimmed.match(/^(\d+(\.\d+)?)\s*%$/);
+    if (percentMatch) {
+      tariffs.push({
+        value: Math.round(parseFloat(percentMatch[1]) * 10000) / 10000,
+        type: "percent",
+        raw: trimmed,
+        programs,
+      });
+      continue;
+    }
+
+    // Amounts with $, ¢, unit and optional "on <stuff>"
+    // Handle both patterns: "$1.035/kg" and "37.2¢/kg"
+    const amountMatch = trimmed.match(
+      /^([$¢])\s*(\d+(?:\.\d+)?)(?:\s*\/\s*|\s+)?([a-zA-Z]+)?(?:\s+on\s+(.+))?$/
+    );
+    if (amountMatch) {
+      const [, symbol, valueStr, unit1, unit2] = amountMatch;
+      const value = parseFloat(valueStr);
+      const valueInDollars = symbol === "¢" ? value / 100 : value;
+
+      const resultObj: BaseTariffI = {
+        value: Math.round(valueInDollars * 10000) / 10000,
+        type: "amount",
+        unit: unit1?.trim(),
+        raw: trimmed,
+        programs,
+      };
+
+      if (unit2) {
+        resultObj.details = `on ${unit2.trim()}`;
+      }
+
+      tariffs.push(resultObj);
+      continue;
+    }
+
+    // Handle cents symbol after the number: "37.2¢/kg"
+    const centsAfterMatch = trimmed.match(
+      /^(\d+(?:\.\d+)?)\s*¢(?:\s*\/\s*|\s+)?([a-zA-Z]+)?(?:\s+on\s+(.+))?$/
+    );
+    if (centsAfterMatch) {
+      const [, valueStr, unit1, unit2] = centsAfterMatch;
+      const value = parseFloat(valueStr);
+      const valueInDollars = value / 100; // Convert cents to dollars
+
+      const resultObj: BaseTariffI = {
+        value: Math.round(valueInDollars * 10000) / 10000,
+        type: "amount",
+        unit: unit1?.trim(),
+        raw: trimmed,
+      };
+
+      if (unit2) {
+        resultObj.details = `on ${unit2.trim()}`;
+      }
+
+      tariffs.push(resultObj);
+      continue;
+    }
+
+    console.error(`Unable to parse duty string: "${trimmed}" from "${input}"`);
+    parsingFailures.push(trimmed);
+  }
+
+  return { tariffs, parsingFailures };
+}
+
+export const getTemporaryTariffTextElement = (
+  element: HtsElement,
+  tariffColumn: TariffColumn
+): JSX.Element | null => {
+  const footnotes = getFootnotesForTariffType(element, tariffColumn);
 
   if (!footnotes.length) {
     return null;
@@ -745,7 +899,7 @@ export const getTemporaryTariffText = (
         color={Color.NEUTRAL_CONTENT}
       />
       <SecondaryText
-        key={`${tariffType}-tariff-footnotes`}
+        key={`${tariffColumn}-tariff-footnotes`}
         value={footnotes
           .map((footnote) => footnote.value.trim().replace(/\.*$/g, ""))
           .join(", ")}
@@ -755,12 +909,17 @@ export const getTemporaryTariffText = (
   );
 };
 
-export const getTariffDetails = (
+export const getTariffElement = (
   element: HtsElement,
   elements: HtsElement[],
   breadcrumbs?: NavigatableElement[]
 ) => {
-  if (element.general || element.special || element.other) {
+  if (
+    element.general ||
+    element.special ||
+    element.other ||
+    element.additionalDuties
+  ) {
     return element;
   }
 

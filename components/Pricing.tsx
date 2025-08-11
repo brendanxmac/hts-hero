@@ -94,41 +94,6 @@ const getPricingPlans = (customerType: AboutPage) => {
 };
 
 const getPricingHeadline = (customerType: AboutPage) => {
-  if (customerType === AboutPage.IMPORTER) {
-    return (
-      <div className="flex flex-col gap-8">
-        <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-6xl max-w-4xl mx-auto tracking-relaxed">
-          Fast & Affordable HTS <br />
-          Codes for Busy Importers
-        </h2>
-        <div className="flex flex-col justify-center items-center">
-          <p className="text-xl font-bold text-primary">
-            Launch Deal: 50% off all plans!
-          </p>
-          <div className="flex items-center gap-1">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              className="size-5 animate-pulse text-secondary"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-              />
-            </svg>
-
-            <p className="text-sm text-secondary font-semibold">
-              Offer valid until <span className="underline">August 1st</span>
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
   return (
     <div className="flex flex-col gap-8">
       <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-6xl max-w-4xl mx-auto tracking-relaxed">

@@ -106,8 +106,7 @@ const ConversionPricing = () => {
         <h1 className="text-white text-3xl md:text-4xl font-extrabold text-center">
           {/* The <span className="text-primary">Classification Assistant</span>
           <br /> for Customs Brokers */}
-          Upgrade to <span className="text-primary">Pro</span> to Access
-          Classify
+          Go <span className="text-primary">Pro</span> to Access Classify
         </h1>
 
         <div className="flex flex-col justify-center items-center py-6">

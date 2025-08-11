@@ -61,7 +61,6 @@ export const SearchResults = ({
             sectionAndChapter={sectionAndChapter}
             parents={parents}
             onClick={() => {
-              console.log("clicked");
               // Clear search results and search query
               setSearchResults([]);
               setSearchValue("");
