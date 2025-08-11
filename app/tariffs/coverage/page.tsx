@@ -225,7 +225,7 @@ export default function Home() {
                 </h3>
                 <p className="text-base-content/70 text-sm">
                   If you have noticed there might be something wrong with the
-                  tool, don't hesitate to{" "}
+                  tool, don&apos;t hesitate to{" "}
                   <Link
                     href="mailto:support@htshero.com"
                     className="text-primary"

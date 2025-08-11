@@ -26,7 +26,6 @@ import { SupabaseBuckets } from "../constants/supabase";
 import { CountrySelection } from "./CountrySelection";
 import { Country } from "../constants/countries";
 import { TertiaryText } from "./TertiaryText";
-import { format } from "date-fns";
 import { Tariffs } from "./Tariffs";
 import {
   tariffIsApplicableToCode,

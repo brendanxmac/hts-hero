@@ -112,25 +112,25 @@ export const CountryTariff = ({
         (p.qualifyingCountries?.includes(country.code) ||
           (!p.qualifyingCountries && p.requiresReview))
     );
-  const footnotesForColumn: Footnote[] = [
-    ...tariffElement.footnotes,
-    ...htsElement.footnotes,
-  ].reduce((acc, footnote) => {
-    if (
-      footnote.columns.includes(tariffColumn) ||
-      footnote.columns.some(
-        (c) =>
-          c !== TariffColumn.GENERAL &&
-          c !== TariffColumn.SPECIAL &&
-          c !== TariffColumn.OTHER
-      )
-    ) {
-      if (!acc.some((f) => f.value === footnote.value)) {
-        acc.push(footnote);
-      }
-    }
-    return acc;
-  }, []);
+  // const footnotesForColumn: Footnote[] = [
+  //   ...tariffElement.footnotes,
+  //   ...htsElement.footnotes,
+  // ].reduce((acc, footnote) => {
+  //   if (
+  //     footnote.columns.includes(tariffColumn) ||
+  //     footnote.columns.some(
+  //       (c) =>
+  //         c !== TariffColumn.GENERAL &&
+  //         c !== TariffColumn.SPECIAL &&
+  //         c !== TariffColumn.OTHER
+  //     )
+  //   ) {
+  //     if (!acc.some((f) => f.value === footnote.value)) {
+  //       acc.push(footnote);
+  //     }
+  //   }
+  //   return acc;
+  // }, []);
 
   useEffect(() => {
     setApplicableTariffs(
@@ -577,17 +577,17 @@ export const CountryTariff = ({
                   .flatMap((t) => t.tariffs)
                   .filter((t) => t.type === "amount").length > 0 && (
                   <div className="flex gap-2">
-                    <p className="text-xl md:text-4xl font-bold text-primary transition duration-100">
+                    <p className="text-xl font-bold text-primary transition duration-100">
                       {getAmountRatesString(
                         columnTariffs.flatMap((t) => t.tariffs)
                       )}
                     </p>
-                    <p className="text-xl md:text-4xl font-bold text-primary transition duration-100">
+                    <p className="text-xl font-bold text-primary transition duration-100">
                       +
                     </p>
                   </div>
                 )}
-                <p className="text-xl md:text-4xl font-bold text-primary transition duration-100">
+                <p className="text-xl font-bold text-primary transition duration-100">
                   {getAdValoremRate(
                     tariffColumn,
                     tariffSet.tariffs,

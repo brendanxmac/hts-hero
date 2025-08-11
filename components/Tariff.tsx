@@ -1,7 +1,6 @@
 import { Color } from "../enums/style";
 import { UITariff, TariffSet } from "../interfaces/tariffs";
 import {
-  getTariffByCode,
   getTariffsByCode,
   isAncestorTariff,
   isDescendantTariff,
@@ -11,7 +10,6 @@ import { classNames } from "../utilities/style";
 
 import { SecondaryText } from "./SecondaryText";
 import { TertiaryLabel } from "./TertiaryLabel";
-import { TertiaryText } from "./TertiaryText";
 import { TariffColumn } from "../enums/tariff";
 
 interface Props {
