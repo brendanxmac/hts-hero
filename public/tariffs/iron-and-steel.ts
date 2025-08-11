@@ -806,6 +806,7 @@ export const ironAndSteelTariffs: TariffI[] = [
     general: 0,
     special: 0,
     other: 0,
+    // TODO: This one might need the steel contentRequirement
     requiresReview: true, // need to determine melted and poured in the U.S.
     inclusions: {
       codes: [

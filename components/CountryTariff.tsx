@@ -221,7 +221,7 @@ export const CountryTariff = ({
         </div>
         <div className="flex gap-2">
           <button
-            className="btn btn-xs btn-primary rounded-md"
+            className="btn btn-xs btn-primary"
             onClick={() => setShowInactive(!showInactive)}
           >
             {showInactive ? "Hide Inactive Tariffs" : "Show All Tariffs"}

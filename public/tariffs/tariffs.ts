@@ -164,6 +164,12 @@ export const getContentRequirementTariffSets = (
         t.contentRequirement.content === contentRequirement.name
     );
 
+    if (contentRequirement.name === "Copper") {
+      // 9903.78.02 is unique in that it's the only 232 metals tariff that mentions
+      // the non metal contents of the article, in this case, copper
+      tariffSet = tariffSet.filter((t) => t.code !== "9903.78.02");
+    }
+
     tariffSet.forEach((t) => {
       collectExceptionCodes(t, tariffs, exceptionCodes);
     });

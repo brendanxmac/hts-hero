@@ -59,9 +59,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
   const { htsElements } = useHts();
   const { sections } = useHtsSections();
   const [selectedCountries, setSelectedCountries] = useState<Country[]>([
-    // { flag: "🇲🇽", name: "Mexico", code: "MX" },
-    // { flag: "🇨🇳", name: "China", code: "CN" },
-    // { flag: "🇸🇪", name: "Sweden", code: "SE" },
+    { flag: "🇨🇳", name: "China", code: "CN" },
   ]);
 
   const codeBasedContentRequirements = Array.from(
@@ -75,7 +73,8 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
       new Set<ContentRequirements>()
     )
   );
-  const [CodeBasedContentPercentages, setCodeBasedContentPercentages] =
+
+  const [codeBasedContentPercentages, setCodeBasedContentPercentages] =
     useState<ContentRequirementI<ContentRequirements>[]>(
       codeBasedContentRequirements.map((contentRequirement) => ({
         name: contentRequirement,
@@ -275,7 +274,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                           min={0}
                           max="100"
                           value={
-                            CodeBasedContentPercentages?.find(
+                            codeBasedContentPercentages?.find(
                               (c) => c.name === contentRequirement
                             )?.value || 0
                           }
@@ -292,7 +291,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                         />
                         <TertiaryLabel
                           value={`${
-                            CodeBasedContentPercentages?.find(
+                            codeBasedContentPercentages?.find(
                               (c) => c.name === contentRequirement
                             )?.value || 0
                           }%`}
@@ -315,7 +314,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                     breadcrumbs
                   )}
                   setSelectedCountries={setSelectedCountries}
-                  contentRequirements={CodeBasedContentPercentages}
+                  contentRequirements={codeBasedContentPercentages}
                 />
               )}
             </div>

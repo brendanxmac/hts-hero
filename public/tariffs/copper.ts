@@ -9,6 +9,7 @@ export const copperTariffs: TariffI[] = [
     general: 50,
     special: 50,
     other: 50,
+    contentRequirement: { content: "Copper" },
     exceptions: ["9903.94.05"],
     inclusions: {
       countries: ["*"],
