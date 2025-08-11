@@ -9924,6 +9924,7 @@ export const chinaTariffs: TariffI[] = [
     special: 0,
     other: 0,
     inclusions: {
+      countries: ["CN"],
       codes: [
         // 20(vvv)(i)
         "8483.50.90.40",

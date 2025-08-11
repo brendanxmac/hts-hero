@@ -5,7 +5,7 @@ export const brazilTariffs: TariffI[] = [
     code: "9903.01.77",
     description:
       "Except for products described in headings 9903.01.78-9903.01.83, articles the product of Brazil that are entered for consumption, or withdrawn from warehouse for consumption, after 12:01 a.m. eastern daylight time 7 days after the date of the executive order, excluding the day the executive order is signed, as provided for in subdivision (x) of U.S. note 2 to this subchapter",
-    name: "Brazil 40%",
+    name: "Brazil 40% IEEPA",
     general: 40,
     special: 40,
     other: 0,

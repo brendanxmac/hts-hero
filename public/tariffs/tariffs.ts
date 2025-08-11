@@ -18,7 +18,27 @@ import { TariffI, UITariff, TariffSet } from "../../interfaces/tariffs";
 import { TariffColumn } from "../../enums/tariff";
 import { brazilTariffs } from "./brazil";
 import { copperTariffs } from "./copper";
-import { EuropeanUnionCountries } from "../../constants/countries";
+
+export const section232MetalTariffs = [
+  // Iron or Steel
+  "9903.81.87",
+  "9903.81.88",
+  // Iron or Steel Derivatives
+  "9903.81.89",
+  "9903.81.90",
+  "9903.81.91",
+  "9903.81.92",
+  "9903.81.93",
+  // Aluminum
+  "9903.85.02",
+  // Aluminum Derivatives
+  "9903.85.04",
+  "9903.85.07",
+  "9903.85.08",
+  "9903.85.09",
+  // Copper
+  "9903.78.01",
+];
 
 export const findExceptions = (
   tariff: TariffI,

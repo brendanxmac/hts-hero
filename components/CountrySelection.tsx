@@ -146,7 +146,7 @@ export const CountrySelection = ({
   return (
     <div className="relative" ref={dropdownRef}>
       <div
-        className="w-full px-3 py-1 border-2 border-base-content/10 rounded-lg cursor-pointer bg-base-300 flex gap-3 items-center justify-between hover:bg-primary/20 transition-colors min-h-10"
+        className="w-full px-1 py-1 border-2 border-base-content/50 rounded-lg cursor-pointer bg-base-300 flex gap-3 items-center justify-between hover:bg-primary/20 transition-colors min-h-10"
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="flex-1 flex flex-wrap gap-2 items-center">

@@ -39,6 +39,7 @@ import {
   getStringBetweenParenthesis,
 } from "../utilities/hts";
 import { SecondaryText } from "./SecondaryText";
+import Link from "next/link";
 
 interface Props {
   summaryOnly?: boolean;
@@ -60,7 +61,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
   const [selectedCountries, setSelectedCountries] = useState<Country[]>([
     // { flag: "🇲🇽", name: "Mexico", code: "MX" },
     // { flag: "🇨🇳", name: "China", code: "CN" },
-    { flag: "🇸🇪", name: "Sweden", code: "SE" },
+    // { flag: "🇸🇪", name: "Sweden", code: "SE" },
   ]);
 
   const codeBasedContentRequirements = Array.from(
@@ -210,7 +211,14 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
             <div className="w-full flex flex-col gap-4">
               <div className="flex flex-col gap-2">
                 <div className="flex flex-col gap-1">
-                  <PrimaryLabel value="Tariffs" color={Color.WHITE} />
+                  <div className="flex gap-2 items-center">
+                    <PrimaryLabel value="Tariff Explorer" color={Color.WHITE} />
+                    <div className="bg-accent rounded-full">
+                      <p className="text-neutral px-2 py-0.5 font-semibold text-xs">
+                        Beta
+                      </p>
+                    </div>
+                  </div>
                   <TertiaryText
                     value="Select countries to simulate potential tariff scenarios"
                     color={Color.NEUTRAL_CONTENT}
@@ -224,7 +232,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                     />
                   </div>
 
-                  <button
+                  {/* <button
                     className="btn btn-sm btn-primary"
                     disabled={selectedCountries.length === 0}
                     onClick={() => {
@@ -238,7 +246,38 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                   >
                     <MagnifyingGlassIcon className="w-4 h-4" />
                     Search
-                  </button>
+                  </button> */}
+                </div>
+                <div className="flex flex-col">
+                  <p>
+                    <sup>
+                      Note: We can make mistakes and do not guarantee complete
+                      nor correct calculations, especially while in beta.
+                    </sup>
+                  </p>
+                  <p>
+                    <sup>
+                      Please{" "}
+                      <a
+                        href="mailto:support@htshero.com"
+                        className="text-primary"
+                      >
+                        notify us
+                      </a>{" "}
+                      about any issues and we will quickly correct them so
+                      everyone can benefit.
+                    </sup>
+                  </p>
+                  <p>
+                    <sup>
+                      To see a full list of what we currently include in our
+                      calculations, please{" "}
+                      <Link href="/tariffs/coverage" className="text-primary">
+                        click here
+                      </Link>
+                      .
+                    </sup>
+                  </p>
                 </div>
               </div>
               {/* Go get all the content requirements based on the applicable tariffs */}
