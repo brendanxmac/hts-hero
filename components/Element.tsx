@@ -208,7 +208,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
           {/* If htsno is 10 digits, show the country selection */}
           {htsno && htsno.replaceAll(".", "").length === 10 && (
             <div className="w-full flex flex-col gap-4">
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-6">
                 <div className="flex flex-col gap-1">
                   <div className="flex gap-2 items-center">
                     <PrimaryLabel value="Tariff Explorer" color={Color.WHITE} />
@@ -219,103 +219,121 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                     </div>
                   </div>
                   <TertiaryText
-                    value="Select countries to simulate potential tariff scenarios"
+                    value="This experimental tool allows you to easily explore and compare potential tariff values for any number of countries."
                     color={Color.NEUTRAL_CONTENT}
                   />
                 </div>
-                <div className="flex gap-2 items-center w-full max-w-2xl">
+                <div className="flex gap-6 w-full flex-col lg:grid grid-cols-2">
                   <div className="grow">
-                    <CountrySelection
-                      selectedCountries={selectedCountries}
-                      setSelectedCountries={setSelectedCountries}
-                    />
-                  </div>
-                </div>
-                <p>
-                  <sup>
-                    Note: We can make mistakes and do not guarantee complete nor
-                    correct calculations, especially while in beta. If you see
-                    any issues please{" "}
-                    <a
-                      href="mailto:support@htshero.com"
-                      className="text-primary"
-                    >
-                      notify us
-                    </a>{" "}
-                    and we will quickly correct them so everyone can benefit. To
-                    see a full list of what we currently include in our
-                    calculations, please{" "}
-                    <Link href="/tariffs/coverage" className="text-primary">
-                      click here
-                    </Link>
-                    .
-                  </sup>
-                </p>
-              </div>
-              {/* Go get all the content requirements based on the applicable tariffs */}
-              {codeBasedContentRequirements.length > 0 && (
-                <div className="flex flex-col gap-4">
-                  {codeBasedContentRequirements.map((contentRequirement) => (
-                    <div
-                      key={`${contentRequirement}-content-requirement`}
-                      className="w-full max-w-md flex flex-col gap-1"
-                    >
+                    <div className="flex flex-col gap-1">
                       <SecondaryLabel
-                        value={`${contentRequirement} Value Percentage`}
+                        value="Country Selection"
                         color={Color.WHITE}
                       />
                       <TertiaryText
-                        value={`What is the % of ${contentRequirement} value in this article?`}
+                        value={`Select the countries you want to see tariff simulations for`}
                         color={Color.NEUTRAL_CONTENT}
                       />
-                      <div className="flex gap-2 items-center">
-                        <input
-                          type="range"
-                          min={0}
-                          max="100"
-                          value={
-                            codeBasedContentPercentages?.find(
-                              (c) => c.name === contentRequirement
-                            )?.value || 0
-                          }
-                          className="range range-primary range-sm p-1"
-                          onChange={(e) => {
-                            setCodeBasedContentPercentages((prev) =>
-                              prev.map((c) =>
-                                c.name === contentRequirement
-                                  ? { ...c, value: parseInt(e.target.value) }
-                                  : c
-                              )
-                            );
-                          }}
-                        />
-                        <TertiaryLabel
-                          value={`${
-                            codeBasedContentPercentages?.find(
-                              (c) => c.name === contentRequirement
-                            )?.value || 0
-                          }%`}
-                          color={Color.NEUTRAL_CONTENT}
-                        />
-                      </div>
+                      <CountrySelection
+                        selectedCountries={selectedCountries}
+                        setSelectedCountries={setSelectedCountries}
+                      />
                     </div>
-                  ))}
+                  </div>
+                  {/* Show inputs for any content requirements based */}
+                  {codeBasedContentRequirements.length > 0 && (
+                    <div className="grow w-full flex flex-col gap-4">
+                      {codeBasedContentRequirements.map(
+                        (contentRequirement) => (
+                          <div
+                            key={`${contentRequirement}-content-requirement`}
+                            className="w-full flex flex-col gap-1"
+                          >
+                            <SecondaryLabel
+                              value={`${contentRequirement} Value Percentage`}
+                              color={Color.WHITE}
+                            />
+                            <TertiaryText
+                              value={`Select the percetnage of the articles value that is ${contentRequirement}?`}
+                              color={Color.NEUTRAL_CONTENT}
+                            />
+                            <div className="flex gap-2 items-center mt-3">
+                              <input
+                                type="range"
+                                min={0}
+                                max="100"
+                                value={
+                                  codeBasedContentPercentages?.find(
+                                    (c) => c.name === contentRequirement
+                                  )?.value || 0
+                                }
+                                className="range range-primary p-1"
+                                onChange={(e) => {
+                                  setCodeBasedContentPercentages((prev) =>
+                                    prev.map((c) =>
+                                      c.name === contentRequirement
+                                        ? {
+                                            ...c,
+                                            value: parseInt(e.target.value),
+                                          }
+                                        : c
+                                    )
+                                  );
+                                }}
+                              />
+                              <TertiaryLabel
+                                value={`${
+                                  codeBasedContentPercentages?.find(
+                                    (c) => c.name === contentRequirement
+                                  )?.value || 0
+                                }%`}
+                                color={Color.NEUTRAL_CONTENT}
+                              />
+                            </div>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
 
               {/* TODO: I think we can remove this check cause we already do similar above? */}
               {isFullHTSCode(htsno) && selectedCountries.length > 0 && (
-                <Tariffs
-                  selectedCountries={selectedCountries}
-                  htsElement={element}
-                  tariffElement={getTariffElement(
-                    element,
-                    htsElements,
-                    breadcrumbs
-                  )}
-                  setSelectedCountries={setSelectedCountries}
-                  contentRequirements={codeBasedContentPercentages}
-                />
+                <div className="flex flex-col gap-4">
+                  {/* <PrimaryLabel value="Tariffs" color={Color.WHITE} /> */}
+                  <Tariffs
+                    selectedCountries={selectedCountries}
+                    htsElement={element}
+                    tariffElement={getTariffElement(
+                      element,
+                      htsElements,
+                      breadcrumbs
+                    )}
+                    setSelectedCountries={setSelectedCountries}
+                    contentRequirements={codeBasedContentPercentages}
+                  />
+                  <p>
+                    <sup>
+                      Note: We can make mistakes and do not guarantee complete
+                      nor correct calculations, especially while in beta. If you
+                      see any issues please{" "}
+                      <a
+                        href="mailto:support@htshero.com"
+                        className="text-primary"
+                      >
+                        notify us
+                      </a>{" "}
+                      and we will quickly correct them so everyone can benefit.
+                      To see a full list of what we currently include in our
+                      calculations, please{" "}
+                      <Link href="/tariffs/coverage" className="text-primary">
+                        click here
+                      </Link>
+                      .
+                    </sup>
+                  </p>
+                </div>
               )}
             </div>
           )}
