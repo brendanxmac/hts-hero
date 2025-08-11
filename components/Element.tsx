@@ -27,10 +27,7 @@ import { CountrySelection } from "./CountrySelection";
 import { Country } from "../constants/countries";
 import { TertiaryText } from "./TertiaryText";
 import { Tariffs } from "./Tariffs";
-import {
-  tariffIsApplicableToCode,
-  TariffsList,
-} from "../public/tariffs/tariffs";
+import { tariffIsApplicableToCode, TariffsList } from "../tariffs/tariffs";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { ContentRequirements, TariffColumn } from "../enums/tariff";
 import {
@@ -129,10 +126,10 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                   }}
                 >
                   {breadcrumb.label && (
-                    <b className="text-accent">{breadcrumb.label} </b>
+                    <b className="text-white">{breadcrumb.label} </b>
                   )}
                   <span
-                    className={`${!breadcrumb.label ? "font-bold italic" : "text-white"}`}
+                    className={`${!breadcrumb.label ? "font-bold italic" : "text-base-content"}`}
                   >
                     {breadcrumb.value}
                   </span>
@@ -211,8 +208,8 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                 <div className="flex flex-col gap-1">
                   <div className="flex gap-2 items-center">
                     <PrimaryLabel value="Tariff Explorer" color={Color.WHITE} />
-                    <div className="bg-accent rounded-full">
-                      <p className="text-neutral px-2 py-0.5 font-semibold text-xs">
+                    <div className="bg-secondary rounded-full">
+                      <p className="text-base-100 px-2 py-0.5 font-semibold text-xs">
                         Beta
                       </p>
                     </div>
@@ -380,10 +377,9 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                         value={"General Rate"}
                         color={Color.NEUTRAL_CONTENT}
                       />
-                      <SecondaryText
-                        value={tariffElement.general || "-"}
-                        color={Color.WHITE}
-                      />
+                      <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
+                        {tariffElement.general || "-"}
+                      </h2>
                     </div>
                     {getTemporaryTariffTextElement(
                       tariffElement,
@@ -397,14 +393,11 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                       color={Color.NEUTRAL_CONTENT}
                     />
                     <div className="flex flex-col">
-                      <SecondaryText
-                        value={
-                          getStringBeforeOpeningParenthesis(
-                            tariffElement.special
-                          ) || "-"
-                        }
-                        color={Color.WHITE}
-                      />
+                      <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
+                        {getStringBeforeOpeningParenthesis(
+                          tariffElement.special
+                        ) || "-"}
+                      </h2>
                       {getStringBetweenParenthesis(tariffElement.special) &&
                         getStringBeforeOpeningParenthesis(
                           tariffElement.special
@@ -467,10 +460,9 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                         value={"Other Rate"}
                         color={Color.NEUTRAL_CONTENT}
                       />
-                      <SecondaryText
-                        value={tariffElement.other || "-"}
-                        color={Color.WHITE}
-                      />
+                      <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
+                        {tariffElement.other || "-"}
+                      </h2>
                     </div>
                     {getTemporaryTariffTextElement(
                       tariffElement,
@@ -483,10 +475,9 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                       value={`Units`}
                       color={Color.NEUTRAL_CONTENT}
                     />
-                    <SecondaryText
-                      value={tariffElement.units.join(", ") || "-"}
-                      color={Color.WHITE}
-                    />
+                    <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
+                      {tariffElement.units.join(", ") || "-"}
+                    </h2>
                   </div>
                 </>
 
@@ -497,10 +488,9 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                       value={`Additional Duties`}
                       color={Color.NEUTRAL_CONTENT}
                     />
-                    <SecondaryText
-                      value={tariffElement.additionalDuties || "-"}
-                      color={Color.WHITE}
-                    />
+                    <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
+                      {tariffElement.additionalDuties || "-"}
+                    </h2>
                   </div>
                 )}
               </div>

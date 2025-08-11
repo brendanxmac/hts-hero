@@ -6,16 +6,12 @@ import { mexicoTariffs } from "./mexico";
 import { reciprocalTariffs } from "./reciprocal";
 import { exceptionTariffs } from "./exception";
 import { ironAndSteelTariffs } from "./iron-and-steel";
-import { HtsElement } from "../../interfaces/hts";
-import {
-  BaseTariffI,
-  getBaseTariffs,
-  splitOnClosingParen,
-} from "../../libs/hts";
-import { ContentRequirementI } from "../../components/Element";
-import { ContentRequirements } from "../../enums/tariff";
-import { TariffI, UITariff, TariffSet } from "../../interfaces/tariffs";
-import { TariffColumn } from "../../enums/tariff";
+import { HtsElement } from "../interfaces/hts";
+import { BaseTariffI, getBaseTariffs, splitOnClosingParen } from "../libs/hts";
+import { ContentRequirementI } from "../components/Element";
+import { ContentRequirements } from "../enums/tariff";
+import { TariffI, UITariff, TariffSet } from "../interfaces/tariffs";
+import { TariffColumn } from "../enums/tariff";
 import { brazilTariffs } from "./brazil";
 import { copperTariffs } from "./copper";
 

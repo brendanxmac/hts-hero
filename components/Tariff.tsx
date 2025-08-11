@@ -5,7 +5,7 @@ import {
   isAncestorTariff,
   isDescendantTariff,
   tariffIsActive,
-} from "../public/tariffs/tariffs";
+} from "../tariffs/tariffs";
 import { classNames } from "../utilities/style";
 
 import { SecondaryText } from "./SecondaryText";

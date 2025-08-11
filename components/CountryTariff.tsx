@@ -1,22 +1,10 @@
 import { Dispatch, SetStateAction, useEffect, useState, useRef } from "react";
 import { Country, EuropeanUnionCountries } from "../constants/countries";
-import {
-  getAdValoremRate,
-  getAmountRates,
-  getBaseTariffsForColumn as getTariffsForColumn,
-  getContentRequirementTariffSets,
-  getTariffs,
-  getStandardTariffSet,
-  getEUCountryTotalBaseRate,
-  getAmountRatesString,
-  section232MetalTariffs,
-} from "../public/tariffs/tariffs";
 import { Tariff } from "./Tariff";
 import { ContentRequirementI } from "./Element";
 import { classNames } from "../utilities/style";
-import { Footnote, HtsElement } from "../interfaces/hts";
+import { HtsElement } from "../interfaces/hts";
 import { BaseTariff } from "./BaseTariff";
-import { otherColumnCountryCodes } from "../public/tariffs/tariff-columns";
 import { ContentRequirements, TariffColumn } from "../enums/tariff";
 import { TariffI, TariffSet } from "../interfaces/tariffs";
 import { PrimaryLabel } from "./PrimaryLabel";
@@ -24,6 +12,18 @@ import { Color } from "../enums/style";
 import { TertiaryText } from "./TertiaryText";
 import { TradePrograms, TradeProgramStatus } from "../public/trade-programs";
 import { SecondaryLabel } from "./SecondaryLabel";
+import { otherColumnCountryCodes } from "../tariffs/tariff-columns";
+import {
+  getTariffs,
+  getEUCountryTotalBaseRate,
+  getContentRequirementTariffSets,
+  getStandardTariffSet,
+  section232MetalTariffs,
+  getAmountRates,
+  getAmountRatesString,
+  getAdValoremRate,
+  getBaseTariffsForColumn,
+} from "../tariffs/tariffs";
 
 interface Props {
   country: Country;
@@ -51,7 +51,7 @@ export const CountryTariff = ({
       ? TariffColumn.OTHER
       : TariffColumn.GENERAL
   );
-  const columnTariffs = getTariffsForColumn(tariffElement, tariffColumn);
+  const columnTariffs = getBaseTariffsForColumn(tariffElement, tariffColumn);
   const columnHasTariffs = columnTariffs.some((t) => t.tariffs.length > 0);
   const [applicableTariffs, setApplicableTariffs] = useState<TariffI[]>(
     getTariffs(country.code, htsCode).filter((t) => {
@@ -91,7 +91,7 @@ export const CountryTariff = ({
   });
   const specialProgramDropdownRef = useRef<HTMLDivElement>(null);
   const isOtherColumnCountry = otherColumnCountryCodes.includes(country.code);
-  const specialTariffProgramSymbols = getTariffsForColumn(
+  const specialTariffProgramSymbols = getBaseTariffsForColumn(
     tariffElement,
     TariffColumn.SPECIAL
   ).reduce((acc, t) => {
@@ -577,17 +577,17 @@ export const CountryTariff = ({
                   .flatMap((t) => t.tariffs)
                   .filter((t) => t.type === "amount").length > 0 && (
                   <div className="flex gap-2">
-                    <p className="text-xl font-bold text-primary transition duration-100">
+                    <p className="text-2xl font-bold text-primary transition duration-100">
                       {getAmountRatesString(
                         columnTariffs.flatMap((t) => t.tariffs)
                       )}
                     </p>
-                    <p className="text-xl font-bold text-primary transition duration-100">
+                    <p className="text-2xl font-bold text-primary transition duration-100">
                       +
                     </p>
                   </div>
                 )}
-                <p className="text-xl font-bold text-primary transition duration-100">
+                <p className="text-2xl font-bold text-primary transition duration-100">
                   {getAdValoremRate(
                     tariffColumn,
                     tariffSet.tariffs,

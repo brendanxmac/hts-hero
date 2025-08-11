@@ -6,12 +6,13 @@ const proPlan: PricingPlanI = {
   name: PricingPlan.PRO,
   description: "The Classification Assistant for Customs Brokers",
   mode: StripePaymentMode.SUBSCRIPTION,
-  price: 40,
+  price: 60,
   priceAnchor: 80,
   isFeatured: true,
   features: [
     { name: "Finds Headings" },
     { name: "Analyzes Candidates" },
+    { name: "Calculates Tariffs" },
     { name: "Generates Reports" },
     { name: "Fetches Notes" },
     {

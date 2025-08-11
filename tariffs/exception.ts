@@ -1,4 +1,4 @@
-import { TariffI } from "../../interfaces/tariffs";
+import { TariffI } from "../interfaces/tariffs";
 
 export const exceptionTariffs: TariffI[] = [
   {

@@ -106,13 +106,12 @@ const ConversionPricing = () => {
         <h1 className="text-white text-3xl md:text-4xl font-extrabold text-center">
           {/* The <span className="text-primary">Classification Assistant</span>
           <br /> for Customs Brokers */}
-          Upgrade to <span className="text-primary">Pro</span> to Access
-          Classify
+          Go <span className="text-primary">Pro</span> to Access Classify
         </h1>
 
         <div className="flex flex-col justify-center items-center py-6">
           <p className="text-xl font-bold text-primary">
-            50% Off Your First 2 Months!
+            25% Off Your First Month!
           </p>
           <div className="flex items-center gap-1">
             <svg
@@ -131,7 +130,7 @@ const ConversionPricing = () => {
             </svg>
 
             <p className="text-sm text-secondary font-semibold">
-              Offer valid until <span className="underline">August 1st</span>
+              Offer valid until <span className="underline">September 1st</span>
             </p>
           </div>
         </div>
