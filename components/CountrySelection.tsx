@@ -146,7 +146,7 @@ export const CountrySelection = ({
   return (
     <div className="relative" ref={dropdownRef}>
       <div
-        className="w-full px-1 py-1 border-2 border-base-content/50 rounded-lg cursor-pointer bg-base-300 flex gap-3 items-center justify-between hover:bg-primary/20 transition-colors min-h-10"
+        className="w-full p-1 pr-2 border border-base-content/50 rounded-lg cursor-pointer bg-base-300 flex gap-3 items-center justify-between hover:bg-primary/20 transition-colors min-h-10"
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="flex-1 flex flex-wrap gap-2 items-center">
@@ -182,7 +182,7 @@ export const CountrySelection = ({
               </div>
             ))
           ) : (
-            <span className="text-sm">Select Countries of Origin</span>
+            <span className="text-sm ml-2">Select Countries of Origin</span>
           )}
         </div>
         <div className="flex items-center gap-1">

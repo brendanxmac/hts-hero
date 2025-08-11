@@ -231,54 +231,27 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                       setSelectedCountries={setSelectedCountries}
                     />
                   </div>
-
-                  {/* <button
-                    className="btn btn-sm btn-primary"
-                    disabled={selectedCountries.length === 0}
-                    onClick={() => {
-                      selectedCountries.map((country) =>
-                        window.open(
-                          `https://tariffs.flexport.com/?entryDate=${format(new Date(), "yyyy-MM-dd")}&country=${country.code}&value=10000&advanced=true&code=${htsno}`,
-                          "_blank"
-                        )
-                      );
-                    }}
-                  >
-                    <MagnifyingGlassIcon className="w-4 h-4" />
-                    Search
-                  </button> */}
                 </div>
-                <div className="flex flex-col">
-                  <p>
-                    <sup>
-                      Note: We can make mistakes and do not guarantee complete
-                      nor correct calculations, especially while in beta.
-                    </sup>
-                  </p>
-                  <p>
-                    <sup>
-                      Please{" "}
-                      <a
-                        href="mailto:support@htshero.com"
-                        className="text-primary"
-                      >
-                        notify us
-                      </a>{" "}
-                      about any issues and we will quickly correct them so
-                      everyone can benefit.
-                    </sup>
-                  </p>
-                  <p>
-                    <sup>
-                      To see a full list of what we currently include in our
-                      calculations, please{" "}
-                      <Link href="/tariffs/coverage" className="text-primary">
-                        click here
-                      </Link>
-                      .
-                    </sup>
-                  </p>
-                </div>
+                <p>
+                  <sup>
+                    Note: We can make mistakes and do not guarantee complete nor
+                    correct calculations, especially while in beta. If you see
+                    any issues please{" "}
+                    <a
+                      href="mailto:support@htshero.com"
+                      className="text-primary"
+                    >
+                      notify us
+                    </a>{" "}
+                    and we will quickly correct them so everyone can benefit. To
+                    see a full list of what we currently include in our
+                    calculations, please{" "}
+                    <Link href="/tariffs/coverage" className="text-primary">
+                      click here
+                    </Link>
+                    .
+                  </sup>
+                </p>
               </div>
               {/* Go get all the content requirements based on the applicable tariffs */}
               {codeBasedContentRequirements.length > 0 && (
