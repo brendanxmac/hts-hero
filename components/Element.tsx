@@ -116,7 +116,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
     getTariffElement(element, htsElements, breadcrumbs) || element;
 
   return (
-    <div className="card bg-base-100 p-4 rounded-xl border border-base-content/10 w-full flex flex-col items-start justify-between gap-8 pt-2 sm:pt-6">
+    <div className="card bg-base-100 p-4 rounded-xl border border-base-content/10 w-full flex flex-col items-start justify-between gap-8 lg:gap-12 pt-2 sm:pt-6">
       <div className="w-full flex flex-col gap-4">
         <div className="flex flex-col gap-3 text-sm">
           <div className="flex flex-col gap-2 text-xs">
@@ -218,7 +218,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                     </div>
                   </div>
                   <TertiaryText
-                    value="This experimental tool allows you to easily explore and compare potential tariff values for any number of countries."
+                    value="Easily explore and compare potential tariff values for any number of countries."
                     color={Color.NEUTRAL_CONTENT}
                   />
                 </div>
