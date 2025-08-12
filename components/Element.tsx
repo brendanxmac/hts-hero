@@ -11,6 +11,7 @@ import {
 import { ElementSummary } from "./ElementSummary";
 import {
   DocumentTextIcon,
+  InformationCircleIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/16/solid";
 import PDF from "./PDF";
@@ -204,15 +205,26 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
           {/* If htsno is 10 digits, show the country selection */}
           {htsno && htsno.replaceAll(".", "").length === 10 && (
             <div className="w-full flex flex-col gap-4">
-              <div className="flex flex-col gap-6">
-                <div className="flex flex-col gap-1">
-                  <div className="flex gap-2 items-center">
-                    <PrimaryLabel value="Tariff Explorer" color={Color.WHITE} />
-                    <div className="bg-secondary rounded-full">
-                      <p className="text-base-100 px-2 py-0.5 font-semibold text-xs">
-                        Beta
-                      </p>
+              <div className="flex flex-col gap-4">
+                <div className="w-fit flex flex-col gap-1">
+                  <div className="flex gap-2 items-end justify-between">
+                    <div className="flex gap-2 items-center">
+                      <PrimaryLabel
+                        value="Tariff Explorer"
+                        color={Color.WHITE}
+                      />
+                      <div className="bg-secondary rounded-full">
+                        <p className="text-base-100 px-2 py-0.5 font-semibold text-xs">
+                          Beta
+                        </p>
+                      </div>
                     </div>
+                    <Link
+                      href="/tariffs/coverage"
+                      className="btn btn-primary btn-xs btn-link"
+                    >
+                      Learn More
+                    </Link>
                   </div>
                   <TertiaryText
                     value="Easily explore and compare potential tariff values for any number of countries."
@@ -321,12 +333,6 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                         notify us
                       </a>{" "}
                       and we will quickly correct them so everyone can benefit.
-                      To see a full list of what we currently include in our
-                      calculations, please{" "}
-                      <Link href="/tariffs/coverage" className="text-primary">
-                        click here
-                      </Link>
-                      .
                     </sup>
                   </p>
                 </div>

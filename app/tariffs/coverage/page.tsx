@@ -1,9 +1,6 @@
 import config from "@/config";
 import { getSEOTags } from "../../../libs/seo";
-import {
-  TariffCoverageI,
-  TariffSection,
-} from "../../../components/TariffCoverage";
+import { BulletPoint, FeatureStatus } from "../../../components/TariffCoverage";
 import { TariffCoverageSection } from "../../../components/TariffCoverageSection";
 import Link from "next/link";
 import Footer from "../../../components/Footer";
@@ -13,88 +10,122 @@ export const metadata = getSEOTags({
   canonicalUrlRelative: "/tariffs/coverage",
 });
 
-const tariffsCovered: TariffCoverageI[] = [
+const tariffsSupported: BulletPoint[] = [
   {
-    name: "Brazil 40% Retaliatory",
+    title: "Brazil 40% Retaliatory",
   },
   {
-    name: "Country Specific Reciprocals",
-    details: "Updated as any further adjustments are published",
+    title: "Country Specific Reciprocals",
+    description: "Updated as any further adjustments are published",
   },
   {
-    name: "European Union Reciprocal (0% or 15%)",
-    details: "Uses Ad Valorem Equivalent (AVE) to determine if 0% or 15%",
+    title: "European Union Reciprocal (0% or 15%)",
   },
   {
-    name: "Worldwide 10% Reciprocal",
+    title: "Worldwide 10% Reciprocal",
   },
   {
-    name: "Copper",
+    title: "Copper",
   },
   {
-    name: "Copper Derivatives",
+    title: "Copper Derivatives",
   },
   {
-    name: "Iron / Steel",
+    title: "Iron / Steel",
   },
   {
-    name: "Iron / Steel Derivatives",
+    title: "Iron / Steel Derivatives",
   },
   {
-    name: "Aluminum",
+    title: "Aluminum",
   },
   {
-    name: "Aluminum Derivatives",
+    title: "Aluminum Derivatives",
   },
   {
-    name: "Automobiles",
+    title: "Automobiles",
   },
   {
-    name: "Auto Parts",
+    title: "Auto Parts",
   },
   {
-    name: "Northern Border Security",
-    details: "Canada 35%",
+    title: "Northern Border Security",
+    description: "Canada 35%",
   },
   {
-    name: "Southern Border Security",
-    details: "Mexico 25%",
+    title: "Southern Border Security",
+    description: "Mexico 25%",
   },
   {
-    name: "China & Hong Kong 20% IEEPA",
+    title: "China & Hong Kong 20% IEEPA",
   },
   {
-    name: "Articles of China",
-    details: "Ch.99, Subsection 3, Notes 20 (a) and (b)",
+    title: "Articles of China",
+    description: "Ch.99, Subsection 3, Notes 20 (a) and (b)",
   },
   {
-    name: "Articles of China",
-    details: "Ch.99, Subsection 3, Notes 20 (e) and (f)",
+    title: "Articles of China",
+    description: "Ch.99, Subsection 3, Notes 20 (e) and (f)",
   },
   {
-    name: "Articles of China",
-    details: "Ch.99, Subsection 3, Notes 20 (r) and (s)",
+    title: "Articles of China",
+    description: "Ch.99, Subsection 3, Notes 20 (r) and (s)",
   },
   {
-    name: "Articles of China Entered After September 27, 2024",
-    details: "Ch.99, Subsection 3, Notes 31 (b)",
+    title: "Articles of China Entered After September 27, 2024",
+    description: "Ch.99, Subsection 3, Notes 31 (b)",
   },
   {
-    name: "Articles of China Entered Between June 15, 2024 and August 31, 2025",
-    details: "Ch.99, Subsection 3, Notes 20 (vvv)",
+    title:
+      "Articles of China Entered Between June 15, 2024 and August 31, 2025",
+    description: "Ch.99, Subsection 3, Notes 20 (vvv)",
   },
 ];
 
-const tariffsComingSoon: TariffCoverageI[] = [
+const capabilitiesSupported: BulletPoint[] = [
   {
-    name: "Specify Country of Smelt / Cast for Section 232 Metals",
+    title: "See rates for multiple countries at the same time",
   },
   {
-    name: "India Retaliatory Based on Russia Oil",
+    title: "Automatically applies stacking rules",
   },
   {
-    name: "Japan 15% Reciprocal Cap [If Officially Published]",
-    details: "Apply the same deal to Japan that the EU got for reciprocal",
+    title: "Apply Free Trade Agreements (FTAs)",
+  },
+  {
+    title: "Apply Potential Exclusions",
+  },
+  {
+    title: "Separate lines for Section 232 Metals",
+    description: "To properly account for the metal and non-metal contents",
+  },
+  {
+    title: "Shows which tariffs rely on eachother",
+    description: "By nesting them within one another",
+  },
+  {
+    title: "Updates live as you make changes",
+    description: "Toggles dependent tariffs on and off as you make changes",
+  },
+  {
+    title: "Applies the right EU Reciprocal Tariff",
+    description: "Uses Ad Valorem Equivalent to determine if 0% or 15%",
+  },
+];
+
+const tariffsComingSoon: BulletPoint[] = [
+  {
+    title: "India Retaliatory Based on Russia Oil",
+  },
+  {
+    title: "Japan 15% Reciprocal Cap [If Officially Published]",
+    description: "Apply the same deal to Japan that the EU got for reciprocal",
+  },
+];
+
+const capabilitiesComingSoon: BulletPoint[] = [
+  {
+    title: "Specify Country of Smelt / Cast for Section 232 Metals",
   },
 ];
 
@@ -156,9 +187,9 @@ const tariffFAQs = [
 
 const TariffFAQ = ({ topic, details }: { topic: string; details: string }) => {
   return (
-    <div>
-      <h3 className="font-medium text-base-content mb-2">{topic}</h3>
-      <p className="text-base-content/70 text-sm">{details}</p>
+    <div className="flex flex-col">
+      <h3 className="font-medium text-base-content text-xl">{topic}</h3>
+      <p className="text-base-content/70">{details}</p>
     </div>
   );
 };
@@ -170,7 +201,7 @@ export default function Home() {
         {/* Header Section */}
         <div className="w-full max-w-5xl mx-auto px-6 pt-10">
           <h1 className="text-3xl lg:text-4xl font-bold text-base-content mb-2">
-            Our Tariff Coverage
+            Tariff Coverage & Capabilities
           </h1>
           <p className="text-sm lg:text-lg text-base-content/70 max-w-5xl">
             See which tariffs are currently covered by our system and which ones
@@ -183,18 +214,20 @@ export default function Home() {
           <div className="grid gap-8">
             {/* Currently Covered Tariffs */}
             <TariffCoverageSection
-              name="Currently Covered"
-              description="Tariffs that are currently supported by our system."
-              type={TariffSection.COVERED}
-              tariffs={tariffsCovered}
+              name="Currently Supported"
+              description="Tariffs & capabilities that are currently supported by our system."
+              type={FeatureStatus.COVERED}
+              tariffs={tariffsSupported}
+              capabilities={capabilitiesSupported}
             />
 
             {/* Coming Soon Tariffs */}
             <TariffCoverageSection
               name="Coming Soon"
-              description="Tariffs in development that will be available soon."
-              type={TariffSection.COMING_SOON}
+              description="Tariffs & capabilities in development that will be available soon."
+              type={FeatureStatus.COMING_SOON}
               tariffs={tariffsComingSoon}
+              capabilities={capabilitiesComingSoon}
             />
           </div>
         </div>
@@ -202,18 +235,18 @@ export default function Home() {
         {/* FAQ Section */}
         <div className="max-w-5xl mx-auto p-6">
           <div className="bg-base-100 rounded-2xl border-2 border-neutral-content/50 p-8">
-            <h2 className="text-2xl font-semibold text-base-content mb-4">
+            <h2 className="text-xl md:text-3xl font-semibold text-base-content mb-8">
               Frequently Asked Questions
             </h2>
-            <div className="grid gap-6">
+            <div className="grid gap-8">
               {tariffFAQs.map((faq) => (
                 <TariffFAQ key={faq.topic} {...faq} />
               ))}
               <div>
-                <h3 className="font-medium text-base-content mb-2">
+                <h3 className="font-medium text-base-content mb-2 text-xl">
                   What if I see something missing?
                 </h3>
-                <p className="text-base-content/70 text-sm">
+                <p className="text-base-content/70">
                   Need a specific tariff covered or noticed one that missing?{" "}
                   <Link
                     href="mailto:support@htshero.com"
@@ -225,10 +258,10 @@ export default function Home() {
                 </p>
               </div>
               <div>
-                <h3 className="font-medium text-base-content mb-2">
+                <h3 className="font-medium text-base-content mb-2 text-xl">
                   What if I see something wrong?
                 </h3>
-                <p className="text-base-content/70 text-sm">
+                <p className="text-base-content/70">
                   If you have noticed there might be something wrong with the
                   tool, don&apos;t hesitate to{" "}
                   <Link
