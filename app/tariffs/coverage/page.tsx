@@ -138,45 +138,45 @@ const tariffFAQs = [
   {
     topic: "Do you support comparing rates for different countries?",
     details:
-      "Yes. You can select any # of countries and see how the rates stack up between them for a given 10-digit HTS code",
+      "Yes, you can select any # of countries and see how the rates stack up between them for a given 10-digit HTS code",
   },
   {
     topic: "Do you include tariff stacking?",
     details:
-      "Absolutely. We do our best to ensure that the most up to date stacking rules are applied in all cases",
+      "Absolutely, we do our best to ensure that the most up to date stacking rules are applied in all cases",
   },
   {
     topic: "Do you include Free Trade Agreements?",
     details:
-      "Yes. For any given country you can see if there are FTA's that might be applicable and see how duty is impacted when applied",
+      "Yes, for any given country you can see if there are FTA's that might be applicable and see how duty is impacted when applied",
   },
   {
     topic: "Do you include exceptions?",
     details:
-      "Yes. For any given code & country combination you can see if there are any exceptions that might be applicable and toggle them on if you think they're applicable to see how they impact duty.",
+      "Yes, for any given code & country combination you can see if there are any exceptions that might be applicable and toggle them on if you think they're applicable to see how they impact duty.",
   },
   {
     topic:
       "Do you identify section 232 metals and apply tariffs to the base article and metal content separately?",
     details:
-      "Yes. If the HTS code you are looking at falls under the inclusions for a 232 metal, we create a separate tariff line item just for the metal content and update the tariffs that apply for the base article (if applicable). One current limitation we have is not allowing the addition of 232 metal tariffs to an item that has not been directly marked. For example a piece of furniture that has steel, aluminum, and copper but isn't marked as such in the HTS cannot currently be separated out into the different line items based on the different metal contents.",
+      "Yes, if the HTS code you are looking at falls under the inclusions for a 232 metal, we create a separate tariff line item just for the metal content and update the tariffs that apply for the base article (if applicable). One current limitation we have is not allowing the addition of 232 metal tariffs to an item that has not been directly marked. For example a piece of furniture that has steel, aluminum, and copper but isn't marked as such in the HTS cannot currently be separated out into the different line items based on the different metal contents.",
   },
   {
     topic:
       "Do you support providing a country or smelt or cast for section 232 metals?",
     details:
-      "Not currently, however we are working on adding that in right now.",
+      "Not currently, however we are currently working on adding this in.",
   },
   {
     topic: "Do you support Anti-Dumping or Countervailing Duties?",
     details:
-      "Not currently. We are considering adding support for these in the future. For now you are best of talking to a licensed customs broker to see if these might apply.",
+      "Not currently, however we are considering adding support for these in the future. For now you are best of talking to a licensed customs broker to see if these might apply.",
   },
   {
     topic:
       "Do you support providing a customs value to see total landed costs?",
     details:
-      "Not currently. We are considering adding support for this in the future.",
+      "Not currently, however we are considering adding support for this in the future.",
   },
   {
     topic: "Do you support applying Chapter 98 Exclusions?",
@@ -233,49 +233,48 @@ export default function Home() {
         </div>
 
         {/* FAQ Section */}
-        <div className="max-w-5xl mx-auto p-6">
-          <div className="bg-base-100 rounded-2xl border-2 border-neutral-content/50 p-8">
-            <h2 className="text-xl md:text-3xl font-semibold text-base-content mb-8">
-              Frequently Asked Questions
-            </h2>
-            <div className="grid gap-8">
-              {tariffFAQs.map((faq) => (
-                <TariffFAQ key={faq.topic} {...faq} />
-              ))}
-              <div>
-                <h3 className="font-medium text-base-content mb-2 text-xl">
-                  What if I see something missing?
-                </h3>
-                <p className="text-base-content/70">
-                  Need a specific tariff covered or noticed one that missing?{" "}
-                  <Link
-                    href="mailto:support@htshero.com"
-                    className="text-primary"
-                  >
-                    Contact our team
-                  </Link>{" "}
-                  to request a quick patch.
-                </p>
-              </div>
-              <div>
-                <h3 className="font-medium text-base-content mb-2 text-xl">
-                  What if I see something wrong?
-                </h3>
-                <p className="text-base-content/70">
-                  If you have noticed there might be something wrong with the
-                  tool, don&apos;t hesitate to{" "}
-                  <Link
-                    href="mailto:support@htshero.com"
-                    className="text-primary"
-                  >
-                    contact our team
-                  </Link>{" "}
-                  to request a fix.
-                </p>
-              </div>
+        <div className="max-w-5xl mx-auto p-6 my-6">
+          <h2 className="text-xl md:text-3xl font-semibold text-base-content mb-8">
+            Frequently Asked Questions
+          </h2>
+          <div className="grid gap-8">
+            {tariffFAQs.map((faq) => (
+              <TariffFAQ key={faq.topic} {...faq} />
+            ))}
+            <div>
+              <h3 className="font-medium text-base-content mb-2 text-xl">
+                What if I see something missing?
+              </h3>
+              <p className="text-base-content/70">
+                Need a specific tariff covered or noticed one that missing?{" "}
+                <Link
+                  href="mailto:support@htshero.com"
+                  className="text-primary"
+                >
+                  Contact our team
+                </Link>{" "}
+                to request a quick patch.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-medium text-base-content mb-2 text-xl">
+                What if I see something wrong?
+              </h3>
+              <p className="text-base-content/70">
+                If you have noticed there might be something wrong with the
+                tool, don&apos;t hesitate to{" "}
+                <Link
+                  href="mailto:support@htshero.com"
+                  className="text-primary"
+                >
+                  contact our team
+                </Link>{" "}
+                to request a fix.
+              </p>
             </div>
           </div>
         </div>
+
         <Footer />
       </div>
     </main>

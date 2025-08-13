@@ -40,11 +40,13 @@ export const BaseTariff = ({ index, htsElement, tariff }: Props) => {
               disabled
               className="checkbox checkbox-primary checkbox-sm"
             />
-            <TertiaryLabel value={htsElement.htsno} />
-            <SecondaryText
-              value={`General Duty: ${primaryText}`}
-              color={Color.WHITE}
-            />
+            <div className="flex flex-col gap-1">
+              <TertiaryLabel value={htsElement.htsno} />
+              <SecondaryText
+                value={`General Duty: ${primaryText}`}
+                color={Color.WHITE}
+              />
+            </div>
           </div>
 
           <div className="flex gap-2">

@@ -134,15 +134,7 @@ export const Tariff = ({
           />
 
           <div className="flex flex-col gap-1 py-1">
-            <div className="flex gap-2 items-center">
-              {/* {tariff.requiresReview && (
-                <div
-                  className="tooltip rounded-md bg-primary px-1.5 py-0.5"
-                  data-tip="Needs Review"
-                >
-                  <p className="text-xs font-bold">R</p>
-                </div>
-              )} */}
+            <div className="flex flex-col gap-2">
               <TertiaryLabel
                 value={tariff.code}
                 color={Color.NEUTRAL_CONTENT}

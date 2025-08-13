@@ -236,7 +236,7 @@ export const countries: Country[] = [
   { flag: "🇷🇼", name: "Rwanda", code: "RW" },
   { flag: "🇰🇳", name: "Saint Kitts and Nevis", code: "KN" },
   { flag: "🇱🇨", name: "Saint Lucia", code: "LC" },
-  { flag: "🇻🇨", name: "Saint Vincent and the Grenadines", code: "VC" },
+  { flag: "🇻🇨", name: "Saint Vincent & Grenadines", code: "VC" },
   { flag: "🇼🇸", name: "Samoa", code: "WS" },
   { flag: "🇸🇲", name: "San Marino", code: "SM" },
   { flag: "🇸🇹", name: "Sao Tome and Principe", code: "ST" },

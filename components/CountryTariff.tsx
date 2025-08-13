@@ -519,11 +519,7 @@ export const CountryTariff = ({
         )}
 
       {/* Tariff Sets */}
-      <div
-        className={classNames(
-          tariffSets.length > 1 ? "grid grid-cols-2 gap-4" : "flex flex-col"
-        )}
-      >
+      <div className={"w-full flex flex-col gap-2"}>
         {tariffSets.map((tariffSet, i) => (
           <div
             key={`tariff-set-${i}`}

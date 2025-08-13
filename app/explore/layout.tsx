@@ -17,7 +17,7 @@ export default async function LayoutPrivate({
   } = await supabase.auth.getUser();
 
   return (
-    <div className="flex flex-col max-h-svh">
+    <div className="flex flex-col max-h-svh bg-base-300 overflow-hidden">
       {user ? <AuthenticatedHeader /> : <UnauthenticatedHeader />}
       {children}
     </div>

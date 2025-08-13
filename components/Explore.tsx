@@ -219,7 +219,7 @@ export const Explore = () => {
   };
 
   return (
-    <div className="w-full h-full px-4 pt-4 flex flex-col gap-2">
+    <div className="w-full h-full p-4 flex flex-col gap-2">
       {isLoading ? (
         <div className="w-full h-full flex items-center justify-center">
           <LoadingIndicator text={loadingText} />

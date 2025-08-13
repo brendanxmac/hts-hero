@@ -11,7 +11,6 @@ import {
 import { ElementSummary } from "./ElementSummary";
 import {
   DocumentTextIcon,
-  InformationCircleIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/16/solid";
 import PDF from "./PDF";
@@ -25,7 +24,7 @@ import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { PDFProps } from "../interfaces/ui";
 import { SupabaseBuckets } from "../constants/supabase";
 import { CountrySelection } from "./CountrySelection";
-import { Country } from "../constants/countries";
+import { countries, Country } from "../constants/countries";
 import { TertiaryText } from "./TertiaryText";
 import { Tariffs } from "./Tariffs";
 import { tariffIsApplicableToCode, TariffsList } from "../tariffs/tariffs";
@@ -35,7 +34,6 @@ import {
   getStringBeforeOpeningParenthesis,
   getStringBetweenParenthesis,
 } from "../utilities/hts";
-import { SecondaryText } from "./SecondaryText";
 import Link from "next/link";
 
 interface Props {
@@ -55,9 +53,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { htsElements } = useHts();
   const { sections } = useHtsSections();
-  const [selectedCountries, setSelectedCountries] = useState<Country[]>([
-    { flag: "🇨🇳", name: "China", code: "CN" },
-  ]);
+  const [selectedCountries, setSelectedCountries] = useState<Country[]>([]);
 
   const codeBasedContentRequirements = Array.from(
     TariffsList.filter((t) => tariffIsApplicableToCode(t, htsno)).reduce(
