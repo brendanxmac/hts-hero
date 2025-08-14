@@ -317,9 +317,7 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
                       <td>
                         <div className="flex gap-2">
                           {c.amountRate ? (
-                            <p className="text-white text-lg font-bold">
-                              {c.amountRate}
-                            </p>
+                            <p className="text-white">{c.amountRate} +</p>
                           ) : null}
                           {<p className="text-white">{c.generalRate}%</p>}
                         </div>
