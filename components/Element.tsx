@@ -24,11 +24,10 @@ import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { PDFProps } from "../interfaces/ui";
 import { SupabaseBuckets } from "../constants/supabase";
 import { CountrySelection } from "./CountrySelection";
-import { countries, Country } from "../constants/countries";
+import { Country } from "../constants/countries";
 import { TertiaryText } from "./TertiaryText";
 import { Tariffs } from "./Tariffs";
 import { tariffIsApplicableToCode, TariffsList } from "../tariffs/tariffs";
-import { PrimaryLabel } from "./PrimaryLabel";
 import { ContentRequirements, TariffColumn } from "../enums/tariff";
 import {
   getStringBeforeOpeningParenthesis,
@@ -113,7 +112,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
     <div className="card bg-base-100 p-4 rounded-xl border border-base-content/10 w-full flex flex-col items-start justify-between gap-8 lg:gap-12 pt-2 sm:pt-6">
       <div className="w-full flex flex-col gap-4">
         <div className="flex flex-col gap-3 text-sm">
-          <div className="flex flex-col gap-2 text-xs">
+          <div className="flex flex-wrap text-xs gap-y-2">
             {getBreadCrumbsForElement(element, sections, htsElements).map(
               (breadcrumb, i) => (
                 <div
@@ -137,9 +136,9 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
           </div>
         </div>
 
-        <div className="w-full h-[1px] bg-base-content/10" />
+        {/* <div className="w-full h-[1px] bg-base-content/10" /> */}
 
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-1">
           <div className="w-full flex justify-between items-start gap-2">
             <SecondaryLabel value={getHtsnoLabel()} color={Color.ACCENT} />
 
@@ -205,10 +204,9 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                 <div className="w-fit flex flex-col gap-1">
                   <div className="flex gap-2 items-end justify-between">
                     <div className="flex gap-2 items-center">
-                      <PrimaryLabel
-                        value="Tariff Explorer"
-                        color={Color.WHITE}
-                      />
+                      <h2 className="text-lg md:text-2xl text-white font-bold">
+                        Tariff Explorer
+                      </h2>
                       <div className="bg-secondary rounded-full">
                         <p className="text-base-100 px-2 py-0.5 font-semibold text-xs">
                           Beta
@@ -258,7 +256,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                               color={Color.WHITE}
                             />
                             <TertiaryText
-                              value={`Select the percetnage of the articles value that is ${contentRequirement}?`}
+                              value={`Select the percentage of the articles value that is ${contentRequirement}?`}
                               color={Color.NEUTRAL_CONTENT}
                             />
                             <div className="flex gap-2 items-center mt-3">
@@ -303,7 +301,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
               </div>
 
               {/* TODO: I think we can remove this check cause we already do similar above? */}
-              {isFullHTSCode(htsno) && selectedCountries.length > 0 && (
+              {isFullHTSCode(htsno) && (
                 <div className="flex flex-col gap-4">
                   {/* <PrimaryLabel value="Tariffs" color={Color.WHITE} /> */}
                   <Tariffs
@@ -317,18 +315,17 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                     setSelectedCountries={setSelectedCountries}
                     contentRequirements={codeBasedContentPercentages}
                   />
-                  <p>
+                  <p className="text-sm text-base-content/80">
                     <sup>
-                      Note: We can make mistakes and do not guarantee complete
-                      nor correct calculations, especially while in beta. If you
-                      see any issues please{" "}
+                      We can make mistakes and do not guarantee complete nor
+                      correct calculations. If you see any issues please{" "}
                       <a
                         href="mailto:support@htshero.com"
                         className="text-primary"
                       >
                         notify us
                       </a>{" "}
-                      and we will quickly correct them so everyone can benefit.
+                      and we will quickly correct them for everyone's benefit.
                     </sup>
                   </p>
                 </div>

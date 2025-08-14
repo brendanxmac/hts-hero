@@ -154,11 +154,13 @@ export const CountrySelection = ({
             selectedCountries.map((country) => (
               <div
                 key={`country-selection-option-${country.name}`}
-                className="flex items-center gap-1 bg-primary/20 border border-primary/20 rounded-md px-2 py-1"
+                className="flex items-center gap-1 bg-primary/20 border border-primary/20 rounded-md px-1 py-0"
               >
                 <div className="flex gap-2 items-center">
-                  <p className="text-xl">{country.flag}</p>
-                  <p className="text-white font-semibold">{country.name}</p>
+                  <p className="text-lg">{country.flag}</p>
+                  <p className="text-sm text-white font-semibold">
+                    {country.name}
+                  </p>
                 </div>
                 <button
                   onClick={(e) => handleRemoveCountry(country, e)}

@@ -125,7 +125,7 @@ export const Tariff = ({
               !tariff.requiresReview ||
               hasExceptionTariffThatDoesNotNeedReviewThatIsActive
             }
-            className="checkbox checkbox-primary checkbox-sm"
+            className="checkbox checkbox-primary checkbox-xs"
             onChange={() => {
               if (tariff.requiresReview) {
                 toggleTariff(tariff);
@@ -133,8 +133,8 @@ export const Tariff = ({
             }}
           />
 
-          <div className="flex flex-col gap-1 py-1">
-            <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1 py-0.5">
+            <div className="flex gap-2 items-center">
               <TertiaryLabel
                 value={tariff.code}
                 color={Color.NEUTRAL_CONTENT}

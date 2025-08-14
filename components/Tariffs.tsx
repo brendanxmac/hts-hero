@@ -120,17 +120,18 @@ export const Tariffs = ({
   return (
     <div className="flex flex-col gap-6">
       <div className="grid grid-cols-1 gap-2">
-        {selectedCountries.map((country, i) => (
-          <CountryTariff
-            key={`tariff-${country.code}-${i}`}
-            country={country}
-            htsElement={htsElement}
-            tariffElement={tariffElement}
-            selectedCountries={selectedCountries}
-            setSelectedCountries={setSelectedCountries}
-            contentRequirements={contentRequirements}
-          />
-        ))}
+        {selectedCountries.length > 0 &&
+          selectedCountries.map((country, i) => (
+            <CountryTariff
+              key={`tariff-${country.code}-${i}`}
+              country={country}
+              htsElement={htsElement}
+              tariffElement={tariffElement}
+              selectedCountries={selectedCountries}
+              setSelectedCountries={setSelectedCountries}
+              contentRequirements={contentRequirements}
+            />
+          ))}
       </div>
       {showSorted && sortedCountries.length > 0 && (
         <div className="w-full flex flex-col justify-start items-start gap-x-4">

@@ -213,12 +213,12 @@ export const CountryTariff = ({
   }, []);
 
   return (
-    <div className="flex flex-col p-8 border-2 border-base-content/50 bg-base-300 rounded-md gap-6">
+    <div className="flex flex-col p-3 border-2 border-base-content/50 bg-base-300 rounded-md gap-4">
       {/* Header with Buttons */}
       <div className="w-full flex justify-between items-center">
         <div className="flex gap-3 items-center">
-          <h2 className="text-white text-3xl font-bold">{country.flag}</h2>
-          <h2 className="text-white text-2xl font-bold">{country.name}</h2>
+          <h2 className="text-white text-2xl font-bold">{country.flag}</h2>
+          <h2 className="text-white text-xl font-bold">{country.name}</h2>
         </div>
         <div className="flex gap-2">
           <button
@@ -286,7 +286,7 @@ export const CountryTariff = ({
               value="Potential Special Tariff Programs"
               color={Color.WHITE}
             />
-            <TertiaryText value="Select a special tariff program to see how it effects duty" />
+            {/* <TertiaryText value="Select a special tariff program to see how it effects duty" /> */}
           </div>
           <div
             className="relative w-full max-w-lg"
@@ -362,14 +362,14 @@ export const CountryTariff = ({
                         <span className="text-base-content font-medium">
                           {program.name}
                           {program.symbol && program.symbol !== "none" && (
-                            <span className="text-base-content/60">
+                            <span className="text-base-content">
                               {" "}
                               ({program.symbol})
                             </span>
                           )}
                         </span>
                         {"description" in program && program.description && (
-                          <span className="text-sm text-base-content/60">
+                          <span className="text-sm text-base-content">
                             {program.description}
                           </span>
                         )}
@@ -519,13 +519,13 @@ export const CountryTariff = ({
         )}
 
       {/* Tariff Sets */}
-      <div className={"w-full flex flex-col gap-2"}>
+      <div className={"w-full flex flex-col gap-4"}>
         {tariffSets.map((tariffSet, i) => (
           <div
             key={`tariff-set-${i}`}
-            className="flex flex-col gap-4 border-2 p-4 rounded-md border-base-content/20"
+            className="flex flex-col gap-4 rounded-md border-base-content/20"
           >
-            <PrimaryLabel
+            <SecondaryLabel
               value={`${tariffSet.name} Tariff`}
               color={Color.WHITE}
             />
@@ -567,24 +567,24 @@ export const CountryTariff = ({
                   />
                 ))}
             </div>
-            <div className="-mt-2 w-full flex justify-between items-end gap-2">
+            <div className="-mt-3 w-full flex justify-between items-end gap-2">
               <h2 className="text-white font-bold">Total:</h2>
               <div className="flex gap-2">
                 {columnTariffs
                   .flatMap((t) => t.tariffs)
                   .filter((t) => t.type === "amount").length > 0 && (
                   <div className="flex gap-2">
-                    <p className="text-2xl font-bold text-primary transition duration-100">
+                    <p className="text-xl font-bold text-primary transition duration-100">
                       {getAmountRatesString(
                         columnTariffs.flatMap((t) => t.tariffs)
                       )}
                     </p>
-                    <p className="text-2xl font-bold text-primary transition duration-100">
+                    <p className="text-xl font-bold text-primary transition duration-100">
                       +
                     </p>
                   </div>
                 )}
-                <p className="text-2xl font-bold text-primary transition duration-100">
+                <p className="text-xl font-bold text-primary transition duration-100">
                   {getAdValoremRate(
                     tariffColumn,
                     tariffSet.tariffs,
