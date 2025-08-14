@@ -12,7 +12,7 @@ import { Color } from "../enums/style";
 import { TertiaryText } from "./TertiaryText";
 import { TradePrograms, TradeProgramStatus } from "../public/trade-programs";
 import { SecondaryLabel } from "./SecondaryLabel";
-import { otherColumnCountryCodes } from "../tariffs/tariff-columns";
+import { Column2CountryCodes } from "../tariffs/tariff-columns";
 import {
   getTariffs,
   getEUCountryTotalBaseRate,
@@ -47,7 +47,7 @@ export const CountryTariff = ({
   const [units, setUnits] = useState<number>(1);
   const [customsValue, setCustomsValue] = useState<number>(1000);
   const [tariffColumn, setTariffColumn] = useState<TariffColumn>(
-    otherColumnCountryCodes.includes(country.code)
+    Column2CountryCodes.includes(country.code)
       ? TariffColumn.OTHER
       : TariffColumn.GENERAL
   );
@@ -90,7 +90,7 @@ export const CountryTariff = ({
     description: "No special program",
   });
   const specialProgramDropdownRef = useRef<HTMLDivElement>(null);
-  const isOtherColumnCountry = otherColumnCountryCodes.includes(country.code);
+  const isOtherColumnCountry = Column2CountryCodes.includes(country.code);
   const specialTariffProgramSymbols = getBaseTariffsForColumn(
     tariffElement,
     TariffColumn.SPECIAL

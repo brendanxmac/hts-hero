@@ -1,2 +1,2 @@
 // Belarus, North Korea, Cuba, Russia
-export const otherColumnCountryCodes = ["BY", "KP", "CU", "RU"];
+export const Column2CountryCodes = ["BY", "KP", "CU", "RU"];

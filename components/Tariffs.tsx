@@ -16,7 +16,7 @@ import {
   section232MetalTariffs,
 } from "../tariffs/tariffs";
 import { TariffI } from "../interfaces/tariffs";
-import { otherColumnCountryCodes } from "../tariffs/tariff-columns";
+import { Column2CountryCodes } from "../tariffs/tariff-columns";
 
 interface Props {
   selectedCountries: Country[];
@@ -39,8 +39,8 @@ export const Tariffs = ({
   contentRequirements,
 }: Props) => {
   const countriesWithTariffs: TariffWithRates[] = countries.map((country) => {
-    const isOtherColumnCountry = otherColumnCountryCodes.includes(country.code);
-    const column = isOtherColumnCountry
+    const isColumn2ColumnCountry = Column2CountryCodes.includes(country.code);
+    const column = isColumn2ColumnCountry
       ? TariffColumn.OTHER
       : TariffColumn.GENERAL;
     const isEUCountry = EuropeanUnionCountries.includes(country.code);
@@ -134,23 +134,39 @@ export const Tariffs = ({
           ))}
       </div>
       {showSorted && sortedCountries.length > 0 && (
-        <div className="w-full flex flex-col justify-start items-start gap-x-4">
-          {sortedCountries.map((c) => (
-            <div className="w-full flex justify-between items-center border-b border-base-content/40">
-              <div className="flex gap-3 items-center">
-                <h2 className="text-white">{c.flag}</h2>
-                <h2 className="text-white">{c.name}</h2>
-              </div>
-              <div className="flex gap-2">
-                {c.amountRate ? (
-                  <p className="text-white text-lg font-bold">{c.amountRate}</p>
-                ) : null}
-                {c.generalRate && (
-                  <p className="text-white">{c.generalRate}%</p>
-                )}
-              </div>
-            </div>
-          ))}
+        <div className="w-full flex flex-col justify-start items-start gap-x-4 overflow-x-auto">
+          <table className="table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Country</th>
+                <th>Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedCountries.map((c, i) => (
+                <tr className="w-full border-b border-base-content/40">
+                  <th>{i + 1}</th>
+                  <td>
+                    <div className="flex gap-3 items-center">
+                      <h2 className="text-white">{c.flag}</h2>
+                      <h2 className="text-white">{c.name}</h2>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="flex gap-2">
+                      {c.amountRate ? (
+                        <p className="text-white text-lg font-bold">
+                          {c.amountRate}
+                        </p>
+                      ) : null}
+                      {<p className="text-white">{c.generalRate}%</p>}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>
