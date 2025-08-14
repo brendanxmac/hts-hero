@@ -6,6 +6,7 @@ import { PrimaryLabel } from "./PrimaryLabel";
 import { SecondaryText } from "./SecondaryText";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { SpecialPrograms } from "./SpecialPrograms";
+import { TertiaryText } from "./TertiaryText";
 
 interface Props {
   index: number;
@@ -29,7 +30,7 @@ export const BaseTariff = ({ index, htsElement, tariff }: Props) => {
       <div
         key={`${htsElement.htsno}-${tariff.raw}-${index}`}
         className={classNames(
-          "text-white flex gap-2 justify-between items-end border-b border-base-content/50"
+          "text-white flex gap-2 justify-between items-end border-b border-base-content/20"
         )}
       >
         <div className="flex flex-col gap-2 items-start">
@@ -42,7 +43,7 @@ export const BaseTariff = ({ index, htsElement, tariff }: Props) => {
             />
             <div className="flex gap-2 items-center">
               <TertiaryLabel value={htsElement.htsno} />
-              <SecondaryText
+              <TertiaryText
                 value={`General Duty: ${primaryText}`}
                 color={Color.WHITE}
               />
@@ -58,7 +59,7 @@ export const BaseTariff = ({ index, htsElement, tariff }: Props) => {
         {reviewText ? (
           <TertiaryLabel value={reviewText} />
         ) : (
-          <PrimaryLabel
+          <TertiaryText
             value={valueText}
             // TODO: might need to make this dynamic based on if it applies due to certain cases?
             color={Color.WHITE}

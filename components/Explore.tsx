@@ -150,7 +150,7 @@ export const Explore = () => {
         setTimeout(() => {
           const results = htsFuse.search(query.trim());
           const searchParamExactHtsCodeMatch = results.find(
-            (r) => r.item.htsno === query.trim() && searchParams.get("code")
+            (r) => r.item.htsno === query.trim() && !searchParams.get("search")
           );
 
           if (searchParamExactHtsCodeMatch) {

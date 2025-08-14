@@ -54,26 +54,6 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
   const { sections } = useHtsSections();
   const [selectedCountries, setSelectedCountries] = useState<Country[]>([]);
 
-  const codeBasedContentRequirements = Array.from(
-    TariffsList.filter((t) => tariffIsApplicableToCode(t, htsno)).reduce(
-      (acc, t) => {
-        if (t.contentRequirement) {
-          acc.add(t.contentRequirement.content);
-        }
-        return acc;
-      },
-      new Set<ContentRequirements>()
-    )
-  );
-
-  const [codeBasedContentPercentages, setCodeBasedContentPercentages] =
-    useState<ContentRequirementI<ContentRequirements>[]>(
-      codeBasedContentRequirements.map((contentRequirement) => ({
-        name: contentRequirement,
-        value: 80,
-      }))
-    );
-
   useEffect(() => {
     const elementChildren = getDirectChildrenElements(element, htsElements);
     setChildren(elementChildren);
@@ -109,7 +89,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
     getTariffElement(element, htsElements, breadcrumbs) || element;
 
   return (
-    <div className="card bg-base-100 p-4 rounded-xl border border-base-content/10 w-full flex flex-col items-start justify-between gap-8 lg:gap-12 pt-2 sm:pt-6">
+    <div className="card bg-base-100 p-4 rounded-xl border border-base-content/10 w-full flex flex-col items-start justify-between gap-6 pt-2 sm:pt-6">
       <div className="w-full flex flex-col gap-4">
         <div className="flex flex-col gap-3 text-sm">
           <div className="flex flex-wrap text-xs gap-y-2">
@@ -197,142 +177,6 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
 
       {!summaryOnly && (
         <>
-          {/* If htsno is 10 digits, show the country selection */}
-          {htsno && htsno.replaceAll(".", "").length === 10 && (
-            <div className="w-full flex flex-col gap-4">
-              <div className="flex flex-col gap-4">
-                <div className="w-fit flex flex-col gap-1">
-                  <div className="flex gap-2 items-end justify-between">
-                    <div className="flex gap-2 items-center">
-                      <h2 className="text-lg md:text-2xl text-white font-bold">
-                        Tariff Explorer
-                      </h2>
-                      <div className="bg-secondary rounded-full">
-                        <p className="text-base-100 px-2 py-0.5 font-semibold text-xs">
-                          Beta
-                        </p>
-                      </div>
-                    </div>
-                    <Link
-                      href="/tariffs/coverage"
-                      className="btn btn-primary btn-xs btn-link"
-                    >
-                      Learn More
-                    </Link>
-                  </div>
-                  <TertiaryText
-                    value="Easily explore and compare potential tariff values for any number of countries."
-                    color={Color.NEUTRAL_CONTENT}
-                  />
-                </div>
-                <div className="flex gap-6 w-full flex-col lg:grid grid-cols-2">
-                  <div className="grow">
-                    <div className="flex flex-col gap-1">
-                      <SecondaryLabel
-                        value="Country Selection"
-                        color={Color.WHITE}
-                      />
-                      <TertiaryText
-                        value={`Select the countries you want to see tariff simulations for`}
-                        color={Color.NEUTRAL_CONTENT}
-                      />
-                      <CountrySelection
-                        selectedCountries={selectedCountries}
-                        setSelectedCountries={setSelectedCountries}
-                      />
-                    </div>
-                  </div>
-                  {/* Show inputs for any content requirements based */}
-                  {codeBasedContentRequirements.length > 0 && (
-                    <div className="grow w-full flex flex-col gap-4">
-                      {codeBasedContentRequirements.map(
-                        (contentRequirement) => (
-                          <div
-                            key={`${contentRequirement}-content-requirement`}
-                            className="w-full flex flex-col gap-1"
-                          >
-                            <SecondaryLabel
-                              value={`${contentRequirement} Value Percentage`}
-                              color={Color.WHITE}
-                            />
-                            <TertiaryText
-                              value={`Select the percentage of the articles value that is ${contentRequirement}?`}
-                              color={Color.NEUTRAL_CONTENT}
-                            />
-                            <div className="flex gap-2 items-center mt-3">
-                              <input
-                                type="range"
-                                min={0}
-                                max="100"
-                                value={
-                                  codeBasedContentPercentages?.find(
-                                    (c) => c.name === contentRequirement
-                                  )?.value || 0
-                                }
-                                className="range range-primary p-1"
-                                onChange={(e) => {
-                                  setCodeBasedContentPercentages((prev) =>
-                                    prev.map((c) =>
-                                      c.name === contentRequirement
-                                        ? {
-                                            ...c,
-                                            value: parseInt(e.target.value),
-                                          }
-                                        : c
-                                    )
-                                  );
-                                }}
-                              />
-                              <TertiaryLabel
-                                value={`${
-                                  codeBasedContentPercentages?.find(
-                                    (c) => c.name === contentRequirement
-                                  )?.value || 0
-                                }%`}
-                                color={Color.NEUTRAL_CONTENT}
-                              />
-                            </div>
-                          </div>
-                        )
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* TODO: I think we can remove this check cause we already do similar above? */}
-              {isFullHTSCode(htsno) && (
-                <div className="flex flex-col gap-4">
-                  {/* <PrimaryLabel value="Tariffs" color={Color.WHITE} /> */}
-                  <Tariffs
-                    selectedCountries={selectedCountries}
-                    htsElement={element}
-                    tariffElement={getTariffElement(
-                      element,
-                      htsElements,
-                      breadcrumbs
-                    )}
-                    setSelectedCountries={setSelectedCountries}
-                    contentRequirements={codeBasedContentPercentages}
-                  />
-                  <p className="text-sm text-base-content/80">
-                    <sup>
-                      We can make mistakes and do not guarantee complete nor
-                      correct calculations. If you see any issues please{" "}
-                      <a
-                        href="mailto:support@htshero.com"
-                        className="text-primary"
-                      >
-                        notify us
-                      </a>{" "}
-                      and we will quickly correct them for everyone's benefit.
-                    </sup>
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
-
           {children.length > 0 && (
             <div className="w-full flex flex-col gap-2">
               <SecondaryLabel
@@ -364,7 +208,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
             </div>
           )}
 
-          {shouldShowBaseTariffDetails && (
+          {shouldShowBaseTariffDetails && !isFullHTSCode(htsno) && (
             <div className="w-full flex flex-col gap-4">
               <SecondaryLabel value="Base Tariff Details" color={Color.WHITE} />
 
@@ -376,7 +220,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                         value={"General Rate"}
                         color={Color.NEUTRAL_CONTENT}
                       />
-                      <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
+                      <h2 className="font-bold text-white">
                         {tariffElement.general || "-"}
                       </h2>
                     </div>
@@ -392,7 +236,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                       color={Color.NEUTRAL_CONTENT}
                     />
                     <div className="flex flex-col">
-                      <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
+                      <h2 className="font-bold text-white">
                         {getStringBeforeOpeningParenthesis(
                           tariffElement.special
                         ) || "-"}
@@ -459,7 +303,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                         value={"Other Rate"}
                         color={Color.NEUTRAL_CONTENT}
                       />
-                      <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
+                      <h2 className="font-bold text-white">
                         {tariffElement.other || "-"}
                       </h2>
                     </div>
@@ -474,7 +318,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                       value={`Units`}
                       color={Color.NEUTRAL_CONTENT}
                     />
-                    <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
+                    <h2 className="font-bold text-white">
                       {tariffElement.units.join(", ") || "-"}
                     </h2>
                   </div>
@@ -493,6 +337,61 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                   </div>
                 )}
               </div>
+            </div>
+          )}
+          {/* If htsno is 10 digits, show the country selection */}
+          {htsno && htsno.replaceAll(".", "").length === 10 && (
+            <div className="w-full flex flex-col gap-4">
+              <div className="flex flex-col gap-4">
+                {/* <div className="flex gap-6 w-full flex-col lg:grid grid-cols-2"> */}
+                {/* <div className="grow">
+                    <div className="flex flex-col gap-1">
+                      <SecondaryLabel
+                        value="Country Selection"
+                        color={Color.WHITE}
+                      />
+                      <TertiaryText
+                        value={`Select the countries you want to see tariff simulations for`}
+                        color={Color.NEUTRAL_CONTENT}
+                      />
+                      <CountrySelection
+                        selectedCountries={selectedCountries}
+                        setSelectedCountries={setSelectedCountries}
+                      />
+                    </div>
+                  </div> */}
+                {/* </div> */}
+              </div>
+
+              {/* TODO: I think we can remove this check cause we already do similar above? */}
+              {isFullHTSCode(htsno) && (
+                <div className="flex flex-col gap-4">
+                  {/* <PrimaryLabel value="Tariffs" color={Color.WHITE} /> */}
+                  <Tariffs
+                    selectedCountries={selectedCountries}
+                    htsElement={element}
+                    tariffElement={getTariffElement(
+                      element,
+                      htsElements,
+                      breadcrumbs
+                    )}
+                    setSelectedCountries={setSelectedCountries}
+                  />
+                  <p className="text-sm text-base-content/80">
+                    <sup>
+                      We can make mistakes and do not guarantee complete nor
+                      correct calculations. If you see any issues please{" "}
+                      <a
+                        href="mailto:support@htshero.com"
+                        className="text-primary"
+                      >
+                        notify us
+                      </a>{" "}
+                      and we will quickly correct them for everyone's benefit.
+                    </sup>
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </>

@@ -11,6 +11,7 @@ import { classNames } from "../utilities/style";
 import { SecondaryText } from "./SecondaryText";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { TariffColumn } from "../enums/tariff";
+import { TertiaryText } from "./TertiaryText";
 
 interface Props {
   showInactive: boolean;
@@ -113,7 +114,7 @@ export const Tariff = ({
       <div
         key={`${tariff.code}-${exceptionLevel}`}
         className={classNames(
-          "text-white flex gap-2 justify-between items-end border-b border-base-content/50",
+          "text-white flex gap-2 justify-between items-end border-b border-base-content/20",
           marginClass
         )}
       >
@@ -139,13 +140,13 @@ export const Tariff = ({
                 value={tariff.code}
                 color={Color.NEUTRAL_CONTENT}
               />
-              <SecondaryText value={tariff.name} color={Color.WHITE} />
+              <TertiaryText value={tariff.name} color={Color.WHITE} />
             </div>
           </div>
         </div>
         <p
           className={classNames(
-            "shrink-0 min-w-32 text-right text-xl",
+            "shrink-0 min-w-32 text-right text-base",
             tariff.isActive
               ? "text-white font-bold"
               : tariff[column] === null
