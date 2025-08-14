@@ -342,56 +342,24 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
           {/* If htsno is 10 digits, show the country selection */}
           {htsno && htsno.replaceAll(".", "").length === 10 && (
             <div className="w-full flex flex-col gap-4">
-              <div className="flex flex-col gap-4">
-                {/* <div className="flex gap-6 w-full flex-col lg:grid grid-cols-2"> */}
-                {/* <div className="grow">
-                    <div className="flex flex-col gap-1">
-                      <SecondaryLabel
-                        value="Country Selection"
-                        color={Color.WHITE}
-                      />
-                      <TertiaryText
-                        value={`Select the countries you want to see tariff simulations for`}
-                        color={Color.NEUTRAL_CONTENT}
-                      />
-                      <CountrySelection
-                        selectedCountries={selectedCountries}
-                        setSelectedCountries={setSelectedCountries}
-                      />
-                    </div>
-                  </div> */}
-                {/* </div> */}
-              </div>
-
-              {/* TODO: I think we can remove this check cause we already do similar above? */}
-              {isFullHTSCode(htsno) && (
-                <div className="flex flex-col gap-4">
-                  {/* <PrimaryLabel value="Tariffs" color={Color.WHITE} /> */}
-                  <Tariffs
-                    selectedCountries={selectedCountries}
-                    htsElement={element}
-                    tariffElement={getTariffElement(
-                      element,
-                      htsElements,
-                      breadcrumbs
-                    )}
-                    setSelectedCountries={setSelectedCountries}
-                  />
-                  <p className="text-sm text-base-content/80">
-                    <sup>
-                      We can make mistakes and do not guarantee complete nor
-                      correct calculations. If you see any issues please{" "}
-                      <a
-                        href="mailto:support@htshero.com"
-                        className="text-primary"
-                      >
-                        notify us
-                      </a>{" "}
-                      and we will quickly correct them for everyone's benefit.
-                    </sup>
-                  </p>
-                </div>
-              )}
+              <Tariffs
+                htsElement={element}
+                tariffElement={getTariffElement(
+                  element,
+                  htsElements,
+                  breadcrumbs
+                )}
+              />
+              <p className="text-sm text-base-content/80">
+                <sup>
+                  We can make mistakes and do not guarantee complete nor correct
+                  calculations. If you see any issues please{" "}
+                  <a href="mailto:support@htshero.com" className="text-primary">
+                    notify us
+                  </a>{" "}
+                  and we will quickly correct them for everyone's benefit.
+                </sup>
+              </p>
             </div>
           )}
         </>

@@ -2,8 +2,6 @@ import { Color } from "../enums/style";
 import { HtsElement } from "../interfaces/hts";
 import { BaseTariffI } from "../libs/hts";
 import { classNames } from "../utilities/style";
-import { PrimaryLabel } from "./PrimaryLabel";
-import { SecondaryText } from "./SecondaryText";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { SpecialPrograms } from "./SpecialPrograms";
 import { TertiaryText } from "./TertiaryText";
@@ -59,7 +57,7 @@ export const BaseTariff = ({ index, htsElement, tariff }: Props) => {
         {reviewText ? (
           <TertiaryLabel value={reviewText} />
         ) : (
-          <TertiaryText
+          <TertiaryLabel
             value={valueText}
             // TODO: might need to make this dynamic based on if it applies due to certain cases?
             color={Color.WHITE}

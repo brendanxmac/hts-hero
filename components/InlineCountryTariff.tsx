@@ -28,8 +28,6 @@ interface Props {
   country: Country;
   htsElement: HtsElement;
   tariffElement: HtsElement;
-  selectedCountries: Country[];
-  setSelectedCountries: Dispatch<SetStateAction<Country[]>>;
   contentRequirements: ContentRequirementI<ContentRequirements>[];
 }
 
@@ -37,8 +35,6 @@ export const InlineCountryTariff = ({
   country,
   htsElement,
   tariffElement,
-  selectedCountries,
-  setSelectedCountries,
   contentRequirements,
 }: Props) => {
   const isEUCountry = EuropeanUnionCountries.includes(country.code);
@@ -80,7 +76,7 @@ export const InlineCountryTariff = ({
   }));
 
   const [tariffSets, setTariffSets] = useState<TariffSet[]>([]);
-  const [showInactive, setShowInactive] = useState<boolean>(false);
+  const [showInactive, setShowInactive] = useState<boolean>(true);
   const [isSpecialProgramOpen, setIsSpecialProgramOpen] =
     useState<boolean>(false);
   const [selectedSpecialProgram, setSelectedSpecialProgram] = useState<any>({
@@ -198,13 +194,12 @@ export const InlineCountryTariff = ({
       <div className="w-full flex justify-between items-center">
         {/* Special Tariff Program Selection */}
         {!isOtherColumnCountry && specialTariffPrograms.length > 0 && (
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-col gap-1">
+          <div className="w-full flex flex-col gap-2">
+            <div className="w-full flex flex-col gap-1">
               <TertiaryLabel
                 value="Potential Special Tariff Programs"
                 color={Color.WHITE}
               />
-              {/* <TertiaryText value="Select a special tariff program to see how it effects duty" /> */}
             </div>
             <div
               className="relative w-full max-w-lg"
@@ -317,7 +312,7 @@ export const InlineCountryTariff = ({
             </div>
           </div>
         )}
-        <div className="flex gap-2">
+        <div className="w-full flex gap-2 justify-end">
           <button
             className="btn btn-xs btn-primary"
             onClick={() => setShowInactive(!showInactive)}
@@ -524,17 +519,17 @@ export const InlineCountryTariff = ({
                   .flatMap((t) => t.tariffs)
                   .filter((t) => t.type === "amount").length > 0 && (
                   <div className="flex gap-2">
-                    <p className="text-xl font-bold text-primary transition duration-100">
+                    <p className="text-base font-bold text-primary transition duration-100">
                       {getAmountRatesString(
                         columnTariffs.flatMap((t) => t.tariffs)
                       )}
                     </p>
-                    <p className="text-xl font-bold text-primary transition duration-100">
+                    <p className="text-base font-bold text-primary transition duration-100">
                       +
                     </p>
                   </div>
                 )}
-                <p className="text-xl font-bold text-primary transition duration-100">
+                <p className="text-base font-bold text-primary transition duration-100">
                   {getAdValoremRate(
                     tariffColumn,
                     tariffSet.tariffs,

@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import {
   countries,
@@ -30,11 +30,8 @@ import { TertiaryLabel } from "./TertiaryLabel";
 import { TradePrograms, TradeProgramStatus } from "../public/trade-programs";
 
 interface Props {
-  selectedCountries: Country[];
   htsElement: HtsElement;
   tariffElement: HtsElement;
-  setSelectedCountries: Dispatch<SetStateAction<Country[]>>;
-  contentRequirements: ContentRequirementI<ContentRequirements>[];
 }
 
 interface TariffWithRates extends Country {
@@ -42,12 +39,7 @@ interface TariffWithRates extends Country {
   generalRate: number;
 }
 
-export const Tariffs = ({
-  selectedCountries,
-  htsElement,
-  tariffElement,
-  setSelectedCountries,
-}: Props) => {
+export const Tariffs = ({ htsElement, tariffElement }: Props) => {
   const codeBasedContentRequirements = Array.from(
     TariffsList.filter((t) =>
       tariffIsApplicableToCode(t, htsElement.htsno)
@@ -191,13 +183,26 @@ export const Tariffs = ({
         {/* Search Input */}
         <div className="w-full flex flex-col gap-2">
           <div className="w-full lg:ml-auto lg:max-w-xs flex flex-col gap-2">
-            <input
-              type="text"
-              placeholder="Filter countries by name..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="input input-bordered input-md h-10 w-full focus:ring-0 focus:outline-none pr-8"
-            />
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Filter countries by name..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="input input-bordered input-md h-10 w-full focus:ring-0 focus:outline-none pr-10"
+              />
+              <div className="absolute inset-y-0 right-0 flex items-center pr-2">
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm("")}
+                    className="btn btn-link p-1 btn-xs hover:text-secondary no-underline"
+                    title="Clear filter"
+                  >
+                    clear
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -299,7 +304,7 @@ export const Tariffs = ({
                         "w-full cursor-pointer transition-colors hover:bg-base-content/10",
                         !isExpanded &&
                           "not-last:border-b border-base-content/40",
-                        isExpanded && "bg-base-300 hover:bg-base-300/50"
+                        isExpanded && "bg-primary/70 hover:bg-primary"
                       )}
                       onClick={() => toggleRow(c.code)}
                     >
@@ -346,8 +351,6 @@ export const Tariffs = ({
                             country={c}
                             htsElement={htsElement}
                             tariffElement={tariffElement}
-                            selectedCountries={selectedCountries}
-                            setSelectedCountries={setSelectedCountries}
                             contentRequirements={codeBasedContentPercentages}
                           />
                         </td>
