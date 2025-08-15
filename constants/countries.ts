@@ -86,7 +86,7 @@ export const EuropeanUnionCountries = [
   "SE", // Sweden
 ];
 
-export const countries: Country[] = [
+export const Countries: Country[] = [
   { flag: "🇦🇫", name: "Afghanistan", code: "AF" },
   { flag: "🇦🇱", name: "Albania", code: "AL" },
   { flag: "🇩🇿", name: "Algeria", code: "DZ" },

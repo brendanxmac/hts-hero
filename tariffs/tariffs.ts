@@ -7,15 +7,34 @@ import { reciprocalTariffs } from "./reciprocal";
 import { exceptionTariffs } from "./exception";
 import { ironAndSteelTariffs } from "./iron-and-steel";
 import { HtsElement } from "../interfaces/hts";
-import { BaseTariffI, getBaseTariffs, splitOnClosingParen } from "../libs/hts";
+import {
+  BaseTariffI,
+  getBaseTariffs,
+  ParsedBaseTariff,
+  splitOnClosingParen,
+} from "../libs/hts";
 import { ContentRequirementI } from "../components/Element";
 import { ContentRequirements } from "../enums/tariff";
 import { TariffI, UITariff, TariffSet } from "../interfaces/tariffs";
 import { TariffColumn } from "../enums/tariff";
 import { brazilTariffs } from "./brazil";
 import { copperTariffs } from "./copper";
+import { Country, EuropeanUnionCountries } from "../constants/countries";
+import {
+  TradeProgram,
+  TradePrograms,
+  TradeProgramStatus,
+} from "../public/trade-programs";
+import { Column2CountryCodes } from "./tariff-columns";
 
-export const section232MetalTariffs = [
+export interface CountryWithTariffs extends Country {
+  selectedTradeProgram: TradeProgram | null;
+  baseTariffs: ParsedBaseTariff[];
+  tariffSets: TariffSet[];
+  specialTradePrograms: TradeProgram[];
+}
+
+export const Section232MetalTariffs = [
   // Iron or Steel
   "9903.81.87",
   "9903.81.88",
@@ -102,7 +121,213 @@ export const collectExceptionCodes = (
   }
 };
 
-export const getStandardTariffSet = (
+export const addTariffsToCountries = (
+  countries: Country[],
+  htsElement: HtsElement,
+  tariffElement: HtsElement,
+  contentRequirements: ContentRequirementI<ContentRequirements>[]
+) =>
+  countries.map((country) =>
+    addTariffsToCountry(country, htsElement, tariffElement, contentRequirements)
+  );
+
+export const addTariffsToCountry = (
+  country: Country,
+  htsElement: HtsElement,
+  tariffElement: HtsElement,
+  contentRequirements: ContentRequirementI<ContentRequirements>[],
+  tradeProgram?: TradeProgram
+): CountryWithTariffs => {
+  const isColumn2Country = Column2CountryCodes.includes(country.code);
+  const tariffColumn =
+    (tradeProgram && TariffColumn.SPECIAL) ||
+    (isColumn2Country ? TariffColumn.OTHER : TariffColumn.GENERAL);
+  const baseTariffsForColumn = getBaseTariffsForColumn(
+    tariffElement,
+    tariffColumn
+  );
+
+  let applicableTariffs = getTariffs(country.code, htsElement.htsno);
+  applicableTariffs = filterCountryTariffsForEuException(
+    applicableTariffs,
+    country,
+    baseTariffsForColumn
+  );
+  applicableTariffs = applicableTariffs.map((t) => ({
+    ...t,
+    exceptions: t.exceptions?.filter((e) =>
+      applicableTariffs.some((t) => t.code === e)
+    ),
+  }));
+
+  const tariffSets = getTariffSets(applicableTariffs, contentRequirements);
+
+  const specialTradePrograms = getSpecialTradePrograms(country, htsElement);
+
+  return {
+    ...country,
+    selectedTradeProgram: tradeProgram,
+    baseTariffs: baseTariffsForColumn,
+    tariffSets,
+    specialTradePrograms,
+  };
+};
+
+export const getTotalPercentTariffsSum = (
+  tariffSet: TariffSet,
+  baseTariffs: ParsedBaseTariff[]
+) => {
+  return (
+    getAssociatedTariffsSum(tariffSet) + getBasePercentTariffsSum(baseTariffs)
+  );
+};
+
+export const getAssociatedTariffsSum = (tariffSet: TariffSet) => {
+  if (tariffSet && tariffSet.tariffs && tariffSet.tariffs.length > 0) {
+    return tariffSet.tariffs
+      .filter((t) => t.isActive)
+      .reduce((acc, t) => acc + t.general, 0);
+  }
+
+  return 0;
+};
+
+export const getBasePercentTariffs = (baseTariffs: ParsedBaseTariff[]) => {
+  return baseTariffs
+    .flatMap((t) => t.tariffs)
+    .filter((t) => t.type === "percent");
+};
+
+export const getBasePercentTariffsText = (baseTariffs: ParsedBaseTariff[]) => {
+  const basePercentTariffs = getBasePercentTariffs(baseTariffs);
+  return basePercentTariffs.map((t) => t.raw);
+};
+
+export const getBasePercentTariffsSum = (baseTariffs: ParsedBaseTariff[]) => {
+  const basePercentTariffs = getBasePercentTariffs(baseTariffs);
+  return basePercentTariffs.reduce((acc, t) => acc + t.value, 0);
+};
+
+export const getBaseAmountTariffs = (baseTariffs: ParsedBaseTariff[]) => {
+  return baseTariffs
+    .flatMap((t) => t.tariffs)
+    .filter((t) => t.type === "amount");
+};
+
+export const getBaseAmountTariffsText = (baseTariffs: ParsedBaseTariff[]) => {
+  const baseAmountTariffs = getBaseAmountTariffs(baseTariffs);
+
+  return baseAmountTariffs.map((t) => t.raw);
+};
+
+export const getBaseAmountTariffsSum = (baseTariffs: ParsedBaseTariff[]) => {
+  const baseAmountTariffs = getBaseAmountTariffs(baseTariffs);
+  return baseAmountTariffs.reduce((acc, t) => acc + t.value, 0);
+};
+
+export const filterCountryTariffsForEuException = (
+  tariffs: TariffI[],
+  country: Country,
+  baseTariffsForColumn: ParsedBaseTariff[],
+  customsValue?: number,
+  units?: number
+) => {
+  const isEUCountry = EuropeanUnionCountries.includes(country.code);
+  const totalBaseRate = getEUCountryTotalBaseRate(
+    baseTariffsForColumn.flatMap((t) => t.tariffs),
+    customsValue ?? 1000,
+    units ?? 10
+  );
+
+  return tariffs.filter((t) => {
+    if (isEUCountry) {
+      if (totalBaseRate >= 15) {
+        return t.code !== "9903.02.20";
+      } else {
+        return t.code !== "9903.02.19";
+      }
+    }
+
+    return true;
+  });
+};
+
+export const getSpecialTradeProgramSymbols = (htsElement: HtsElement) => {
+  const specialTradeProgramSymbols: string[] = [];
+  const specialColumnTariffs = getBaseTariffsForColumn(
+    htsElement,
+    TariffColumn.SPECIAL
+  );
+
+  if (specialColumnTariffs.length > 0) {
+    const specialTariffs = specialColumnTariffs.flatMap((t) => t.tariffs);
+    const specialTariffProgramSymbols = specialTariffs.flatMap(
+      (t) => t.programs
+    );
+
+    for (const symbol of specialTariffProgramSymbols) {
+      if (!specialTradeProgramSymbols.includes(symbol)) {
+        specialTradeProgramSymbols.push(symbol);
+      }
+    }
+  }
+
+  return specialTradeProgramSymbols;
+};
+
+export const getSpecialTradePrograms = (
+  country: Country,
+  tariffElement: HtsElement
+) => {
+  const specialTradePrograms: TradeProgram[] = [];
+  const specialTradeProgramSymbols =
+    getSpecialTradeProgramSymbols(tariffElement);
+
+  if (specialTradeProgramSymbols.length > 0) {
+    const tradePrograms = specialTradeProgramSymbols
+      .map((p) => TradePrograms.find((t) => t.symbol === p))
+      .filter(Boolean);
+
+    for (const program of tradePrograms) {
+      if (
+        program.status === TradeProgramStatus.ACTIVE &&
+        (program.qualifyingCountries?.includes(country.code) ||
+          (!program.qualifyingCountries && program.requiresReview))
+      ) {
+        specialTradePrograms.push(program);
+      }
+    }
+  }
+
+  return specialTradePrograms;
+};
+
+export const getTariffSets = (
+  tariffs: TariffI[],
+  contentRequirements: ContentRequirementI<ContentRequirements>[]
+): TariffSet[] => {
+  const contentRequirementAt100 = contentRequirements.find(
+    (r) => r.value === 100
+  );
+  const contentRequirementsNotAt0 = contentRequirements.filter(
+    (r) => r.value > 0
+  );
+
+  if (contentRequirementAt100) {
+    return getContentRequirementTariffSets(tariffs, [contentRequirementAt100]);
+  } else {
+    const contentRequirementSets = getContentRequirementTariffSets(
+      tariffs,
+      contentRequirementsNotAt0
+    );
+    return [
+      getArticleTariffSet(tariffs, Section232MetalTariffs, contentRequirements),
+      ...contentRequirementSets,
+    ];
+  }
+};
+
+export const getArticleTariffSet = (
   tariffs: TariffI[],
   ignoreCodes: string[] = [],
   contentRequirements: ContentRequirementI<ContentRequirements>[]

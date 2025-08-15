@@ -1,34 +1,32 @@
 import { Dispatch, SetStateAction, useEffect, useState, useRef } from "react";
-import { Country, EuropeanUnionCountries } from "../constants/countries";
+import { EuropeanUnionCountries } from "../constants/countries";
 import { Tariff } from "./Tariff";
 import { ContentRequirementI } from "./Element";
 import { HtsElement } from "../interfaces/hts";
 import { BaseTariff } from "./BaseTariff";
 import { ContentRequirements, TariffColumn } from "../enums/tariff";
-import { TariffI, TariffSet } from "../interfaces/tariffs";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { Color } from "../enums/style";
-import { TradePrograms, TradeProgramStatus } from "../public/trade-programs";
-import { SecondaryLabel } from "./SecondaryLabel";
 import { Column2CountryCodes } from "../tariffs/tariff-columns";
 import {
-  getTariffs,
   getEUCountryTotalBaseRate,
-  getContentRequirementTariffSets,
-  getStandardTariffSet,
-  section232MetalTariffs,
   getAmountRates,
   getAmountRatesString,
   getAdValoremRate,
-  getBaseTariffsForColumn,
+  CountryWithTariffs,
+  addTariffsToCountry,
 } from "../tariffs/tariffs";
 import { TertiaryLabel } from "./TertiaryLabel";
+import { TradePrograms } from "../public/trade-programs";
 
 interface Props {
-  country: Country;
+  country: CountryWithTariffs;
   htsElement: HtsElement;
   tariffElement: HtsElement;
   contentRequirements: ContentRequirementI<ContentRequirements>[];
+  countryIndex: number;
+  countries: CountryWithTariffs[];
+  setCountries: Dispatch<SetStateAction<CountryWithTariffs[]>>;
 }
 
 export const InlineCountryTariff = ({
@@ -36,141 +34,121 @@ export const InlineCountryTariff = ({
   htsElement,
   tariffElement,
   contentRequirements,
+  countryIndex,
+  countries,
+  setCountries,
 }: Props) => {
-  const isEUCountry = EuropeanUnionCountries.includes(country.code);
   const htsCode = htsElement.htsno;
   const [units, setUnits] = useState<number>(1);
   const [customsValue, setCustomsValue] = useState<number>(1000);
+  const isEUCountry = EuropeanUnionCountries.includes(country.code);
   const [tariffColumn, setTariffColumn] = useState<TariffColumn>(
     Column2CountryCodes.includes(country.code)
       ? TariffColumn.OTHER
       : TariffColumn.GENERAL
   );
-  const columnTariffs = getBaseTariffsForColumn(tariffElement, tariffColumn);
-  const columnHasTariffs = columnTariffs.some((t) => t.tariffs.length > 0);
-  const [applicableTariffs, setApplicableTariffs] = useState<TariffI[]>(
-    getTariffs(country.code, htsCode).filter((t) => {
-      if (isEUCountry) {
-        const totalBaseRate = getEUCountryTotalBaseRate(
-          columnTariffs.flatMap((t) => t.tariffs),
-          customsValue,
-          units
-        );
-
-        if (totalBaseRate >= 15) {
-          return t.code !== "9903.02.20";
-        } else {
-          return t.code !== "9903.02.19";
-        }
-      }
-
-      return true;
-    })
-  );
-
-  const applicableUITariffs: TariffI[] = applicableTariffs.map((t) => ({
-    ...t,
-    exceptions: t.exceptions?.filter((e) =>
-      applicableTariffs.some((t) => t.code === e)
-    ),
-  }));
-
-  const [tariffSets, setTariffSets] = useState<TariffSet[]>([]);
   const [showInactive, setShowInactive] = useState<boolean>(true);
   const [isSpecialProgramOpen, setIsSpecialProgramOpen] =
     useState<boolean>(false);
-  const [selectedSpecialProgram, setSelectedSpecialProgram] = useState<any>({
-    symbol: "none",
-    name: "None",
-    description: "No special program",
-  });
+  const {
+    baseTariffs,
+    specialTradePrograms,
+    tariffSets,
+    selectedTradeProgram,
+  } = country;
+  const [selectedSpecialProgram, setSelectedSpecialProgram] = useState<any>(
+    selectedTradeProgram || {
+      symbol: "none",
+      name: "None",
+      description: "No special program",
+    }
+  );
   const specialProgramDropdownRef = useRef<HTMLDivElement>(null);
   const isOtherColumnCountry = Column2CountryCodes.includes(country.code);
-  const specialTariffProgramSymbols = getBaseTariffsForColumn(
-    tariffElement,
-    TariffColumn.SPECIAL
-  ).reduce((acc, t) => {
-    t.tariffs.forEach((t) => {
-      t.programs?.forEach((p) => {
-        if (!acc.includes(p)) {
-          acc.push(p);
-        }
-      });
-    });
-    return acc;
-  }, []);
-  const specialTariffPrograms = specialTariffProgramSymbols
-    .map((p) => TradePrograms.find((t) => t.symbol === p))
-    .filter(Boolean)
-    .filter(
-      (p) =>
-        p.status === TradeProgramStatus.ACTIVE &&
-        (p.qualifyingCountries?.includes(country.code) ||
-          (!p.qualifyingCountries && p.requiresReview))
-    );
 
-  useEffect(() => {
-    setApplicableTariffs(
-      getTariffs(country.code, htsCode).filter((t) => {
-        if (isEUCountry) {
-          const totalBaseRate = getEUCountryTotalBaseRate(
-            columnTariffs.flatMap((t) => t.tariffs),
-            customsValue,
-            units
-          );
+  //   useEffect(() => {
+  //     setApplicableTariffs(
+  //       getTariffs(country.code, htsCode).filter((t) => {
+  //         if (isEUCountry) {
+  //           const totalBaseRate = getEUCountryTotalBaseRate(
+  //             columnTariffs.flatMap((t) => t.tariffs),
+  //             customsValue,
+  //             units
+  //           );
 
-          if (totalBaseRate >= 15) {
-            return t.code !== "9903.02.20";
-          } else {
-            return t.code !== "9903.02.19";
-          }
-        }
+  //           if (totalBaseRate >= 15) {
+  //             return t.code !== "9903.02.20";
+  //           } else {
+  //             return t.code !== "9903.02.19";
+  //           }
+  //         }
 
-        return true;
-      })
-    );
-  }, [units, customsValue]);
+  //         return true;
+  //       })
+  //     );
+  //   }, [units, customsValue]);
 
-  useEffect(() => {
-    const contentRequirementAt100 = contentRequirements.find(
-      (r) => r.value === 100
-    );
-    const contentRequirementsNotAt0 = contentRequirements.filter(
-      (r) => r.value > 0
-    );
+  //   useEffect(() => {
+  //     const contentRequirementAt100 = contentRequirements.find(
+  //       (r) => r.value === 100
+  //     );
+  //     const contentRequirementsNotAt0 = contentRequirements.filter(
+  //       (r) => r.value > 0
+  //     );
 
-    if (contentRequirementAt100) {
-      setTariffSets(
-        getContentRequirementTariffSets(applicableUITariffs, [
-          contentRequirementAt100,
-        ])
-      );
-    } else {
-      const contentRequirementSets = getContentRequirementTariffSets(
-        applicableUITariffs,
-        contentRequirementsNotAt0
-      );
-      setTariffSets([
-        getStandardTariffSet(
-          applicableUITariffs,
-          section232MetalTariffs,
-          contentRequirements
-        ),
-        ...contentRequirementSets,
-      ]);
-    }
-  }, [applicableTariffs, contentRequirements]);
+  //     if (contentRequirementAt100) {
+  //       setTariffSets(
+  //         getContentRequirementTariffSets(applicableUITariffs, [
+  //           contentRequirementAt100,
+  //         ])
+  //       );
+  //     } else {
+  //       const contentRequirementSets = getContentRequirementTariffSets(
+  //         applicableUITariffs,
+  //         contentRequirementsNotAt0
+  //       );
+  //       setTariffSets([
+  //         getArticleTariffSet(
+  //           applicableUITariffs,
+  //           Section232MetalTariffs,
+  //           contentRequirements
+  //         ),
+  //         ...contentRequirementSets,
+  //       ]);
+  //     }
+  //   }, [applicableTariffs, contentRequirements]);
 
-  useEffect(() => {
+  //   TODO: this does not update properly now that we pass in the already
+  // calculted set based on column prior to this selection
+
+  const getTariffColumn = () => {
     if (selectedSpecialProgram && selectedSpecialProgram.symbol === "none") {
       if (isOtherColumnCountry) {
-        setTariffColumn(TariffColumn.OTHER);
+        return TariffColumn.OTHER;
       } else {
-        setTariffColumn(TariffColumn.GENERAL);
+        return TariffColumn.GENERAL;
       }
     } else {
-      setTariffColumn(TariffColumn.SPECIAL);
+      return TariffColumn.SPECIAL;
     }
+  };
+
+  useEffect(() => {
+    const tradeProgram = selectedSpecialProgram
+      ? TradePrograms.find((p) => p.symbol === selectedSpecialProgram.symbol)
+      : null;
+    const updatedCountries = [...countries];
+    updatedCountries[countryIndex] = addTariffsToCountry(
+      country,
+      htsElement,
+      tariffElement,
+      contentRequirements,
+      tradeProgram
+    );
+    setCountries(updatedCountries);
+
+    const newTariffColumn = getTariffColumn();
+    setTariffColumn(newTariffColumn);
   }, [selectedSpecialProgram]);
 
   // Close dropdown when clicking outside
@@ -193,7 +171,7 @@ export const InlineCountryTariff = ({
       {/* Header with Buttons */}
       <div className="w-full flex justify-between">
         {/* Special Tariff Program Selection */}
-        {!isOtherColumnCountry && specialTariffPrograms.length > 0 && (
+        {!isOtherColumnCountry && specialTradePrograms.length > 0 && (
           <div className="w-full flex flex-col gap-2">
             <div className="w-full flex flex-col gap-1">
               <TertiaryLabel
@@ -251,7 +229,7 @@ export const InlineCountryTariff = ({
                         name: "None",
                         description: "No special program",
                       },
-                      ...specialTariffPrograms,
+                      ...specialTradePrograms,
                     ].map((program, index) => (
                       <div
                         key={index}
@@ -321,25 +299,26 @@ export const InlineCountryTariff = ({
           </button>
           <button
             className="btn btn-xs btn-primary"
-            onClick={() => {
-              setTariffSets([
-                getStandardTariffSet(
-                  applicableUITariffs,
-                  [],
-                  contentRequirements
-                ),
-                ...getContentRequirementTariffSets(
-                  applicableUITariffs,
-                  contentRequirements
-                ),
-              ]);
-              setSelectedSpecialProgram({
-                symbol: "none",
-                name: "None",
-                description: "No special program",
-              });
-              setTariffColumn(TariffColumn.GENERAL);
-            }}
+            // TODO: implement this reset now with setCountries
+            // onClick={() => {
+            //   setTariffSets([
+            //     getArticleTariffSet(
+            //       applicableUITariffs,
+            //       [],
+            //       contentRequirements
+            //     ),
+            //     ...getContentRequirementTariffSets(
+            //       applicableUITariffs,
+            //       contentRequirements
+            //     ),
+            //   ]);
+            //   setSelectedSpecialProgram({
+            //     symbol: "none",
+            //     name: "None",
+            //     description: "No special program",
+            //   });
+            //   setTariffColumn(TariffColumn.GENERAL);
+            // }}
           >
             Reset
           </button>
@@ -347,14 +326,14 @@ export const InlineCountryTariff = ({
       </div>
 
       {isEUCountry &&
-        columnTariffs
+        baseTariffs
           .flatMap((t) => t.tariffs)
           .some((t) => t.type === "amount") && (
           <div className="flex flex-wrap gap-2">
-            {columnTariffs &&
-              columnTariffs.flatMap((t) => t.tariffs).length > 0 &&
+            {baseTariffs &&
+              baseTariffs.flatMap((t) => t.tariffs).length > 0 &&
               (htsElement.units.length > 0 || tariffElement.units.length > 0) &&
-              columnTariffs
+              baseTariffs
                 .flatMap((t) => t.tariffs)
                 .some((t) => t.type === "amount") && (
                 <div>
@@ -407,7 +386,7 @@ export const InlineCountryTariff = ({
               <div className="flex flex-col">
                 <PrimaryLabel
                   value={`${getEUCountryTotalBaseRate(
-                    columnTariffs.flatMap((t) => t.tariffs),
+                    baseTariffs.flatMap((t) => t.tariffs),
                     customsValue,
                     units
                   ).toFixed(3)}
@@ -423,11 +402,11 @@ export const InlineCountryTariff = ({
               </div>
             </div>
             <div className="flex flex-col items-end">
-              {columnTariffs
+              {baseTariffs
                 .flatMap((t) => t.tariffs)
                 .filter((t) => t.type === "amount").length > 0 && (
                 <div>
-                  {getAmountRates(columnTariffs.flatMap((t) => t.tariffs)).map(
+                  {getAmountRates(baseTariffs.flatMap((t) => t.tariffs)).map(
                     (t) => (
                       <div key={`${t}-${units}-${customsValue}`}>
                         <p>{`${t} * ${units || 1} / ${customsValue} * 100 = ${(
@@ -439,7 +418,7 @@ export const InlineCountryTariff = ({
                   )}
                 </div>
               )}
-              {columnTariffs
+              {baseTariffs
                 .flatMap((t) => t.tariffs)
                 .filter((t) => t.type === "percent")
                 .map((t) => (
@@ -455,7 +434,7 @@ export const InlineCountryTariff = ({
               <div className="flex w-full justify-end">
                 <p>
                   {getEUCountryTotalBaseRate(
-                    columnTariffs.flatMap((t) => t.tariffs),
+                    baseTariffs.flatMap((t) => t.tariffs),
                     customsValue,
                     units
                   ).toFixed(3)}
@@ -476,8 +455,9 @@ export const InlineCountryTariff = ({
             />
 
             <div className="flex flex-col gap-2">
-              {columnHasTariffs &&
-                columnTariffs
+              {baseTariffs &&
+                baseTariffs.length > 0 &&
+                baseTariffs
                   .filter((t) => {
                     if (
                       selectedSpecialProgram &&
@@ -507,7 +487,9 @@ export const InlineCountryTariff = ({
                     tariff={tariff}
                     setIndex={i}
                     tariffSets={tariffSets}
-                    setTariffSets={setTariffSets}
+                    countryIndex={countryIndex}
+                    setCountries={setCountries}
+                    countries={countries}
                     column={tariffColumn}
                   />
                 ))}
@@ -515,13 +497,13 @@ export const InlineCountryTariff = ({
             <div className="-mt-3 w-full flex justify-between items-end gap-2">
               <h2 className="text-white font-bold">Total:</h2>
               <div className="flex gap-2">
-                {columnTariffs
+                {baseTariffs
                   .flatMap((t) => t.tariffs)
                   .filter((t) => t.type === "amount").length > 0 && (
                   <div className="flex gap-2">
                     <p className="text-base font-bold text-primary transition duration-100">
                       {getAmountRatesString(
-                        columnTariffs.flatMap((t) => t.tariffs)
+                        baseTariffs.flatMap((t) => t.tariffs)
                       )}
                     </p>
                     <p className="text-base font-bold text-primary transition duration-100">
@@ -533,19 +515,19 @@ export const InlineCountryTariff = ({
                   {getAdValoremRate(
                     tariffColumn,
                     tariffSet.tariffs,
-                    columnTariffs.flatMap((t) => t.tariffs)
+                    baseTariffs.flatMap((t) => t.tariffs)
                   )}
                   %
                 </p>
               </div>
             </div>
-            {columnTariffs.flatMap((t) => t.parsingFailures).length > 0 && (
+            {baseTariffs.flatMap((t) => t.parsingFailures).length > 0 && (
               <div className="flex flex-col gap-2 p-4 border-2 border-red-500 rounded-md">
                 <h2 className="text-white font-bold">
                   {`Error Parsing ${tariffElement.htsno}'s Base Tariff(s):`}
                 </h2>
                 <ul className="flex flex-col gap-2 list-disc list-outside">
-                  {columnTariffs
+                  {baseTariffs
                     .flatMap((t) => t.parsingFailures)
                     .map((t, i) => (
                       <li

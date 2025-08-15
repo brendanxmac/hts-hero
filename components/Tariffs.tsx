@@ -1,24 +1,18 @@
 import { useState } from "react";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
-import {
-  countries,
-  Country,
-  EuropeanUnionCountries,
-} from "../constants/countries";
+import { Countries, Country } from "../constants/countries";
 import { ContentRequirementI } from "./Element";
 import { HtsElement } from "../interfaces/hts";
-import { ContentRequirements, TariffColumn } from "../enums/tariff";
+import { ContentRequirements } from "../enums/tariff";
 import {
-  getBaseTariffsForColumn,
-  getEUCountryTotalBaseRate,
-  getStandardTariffSet,
-  getTariffs,
-  section232MetalTariffs,
   tariffIsApplicableToCode,
   TariffsList,
+  getTotalPercentTariffsSum,
+  getBaseAmountTariffsSum,
+  CountryWithTariffs,
+  addTariffsToCountries,
+  getBasePercentTariffs,
 } from "../tariffs/tariffs";
-import { TariffI } from "../interfaces/tariffs";
-import { Column2CountryCodes } from "../tariffs/tariff-columns";
 import { Color } from "../enums/style";
 import { TertiaryText } from "./TertiaryText";
 import { classNames } from "../utilities/style";
@@ -26,17 +20,11 @@ import React from "react";
 import { InlineCountryTariff } from "./InlineCountryTariff";
 import { SecondaryLabel } from "./SecondaryLabel";
 import { TertiaryLabel } from "./TertiaryLabel";
-import { TradePrograms, TradeProgramStatus } from "../public/trade-programs";
 import { CountrySelection } from "./CountrySelection";
 
 interface Props {
   htsElement: HtsElement;
   tariffElement: HtsElement;
-}
-
-interface TariffWithRates extends Country {
-  amountRate: number;
-  generalRate: number;
 }
 
 export const Tariffs = ({ htsElement, tariffElement }: Props) => {
@@ -71,90 +59,33 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
     setExpandedRows(newExpandedRows);
   };
 
-  const countriesWithTariffs: TariffWithRates[] = countries.map((country) => {
-    const isColumn2ColumnCountry = Column2CountryCodes.includes(country.code);
-    const column = isColumn2ColumnCountry
-      ? TariffColumn.OTHER
-      : TariffColumn.GENERAL;
-    const isEUCountry = EuropeanUnionCountries.includes(country.code);
-    const columnTariffs = getBaseTariffsForColumn(tariffElement, column);
-    const applicableTariffs = getTariffs(country.code, htsElement.htsno).filter(
-      (t) => {
-        if (isEUCountry) {
-          const totalBaseRate = getEUCountryTotalBaseRate(
-            columnTariffs.flatMap((t) => t.tariffs),
-            1000,
-            10
-          );
-
-          if (totalBaseRate >= 15) {
-            return t.code !== "9903.02.20";
-          } else {
-            return t.code !== "9903.02.19";
-          }
-        }
-
-        return true;
-      }
-    );
-    const applicableUITariffs: TariffI[] = applicableTariffs.map((t) => ({
-      ...t,
-      exceptions: t.exceptions?.filter((e) =>
-        applicableTariffs.some((t) => t.code === e)
-      ),
-    }));
-    const generalTariffs = getStandardTariffSet(
-      applicableUITariffs,
-      section232MetalTariffs,
+  const [countries, setCountries] = useState<CountryWithTariffs[]>(
+    addTariffsToCountries(
+      Countries,
+      htsElement,
+      tariffElement,
       codeBasedContentPercentages
+    )
+  );
+
+  const sortedCountries = countries.sort((a, b) => {
+    const aTotalPercentTariffsSum = getTotalPercentTariffsSum(
+      a.tariffSets[0],
+      a.baseTariffs
+    );
+    const bTotalPercentTariffsSum = getTotalPercentTariffsSum(
+      b.tariffSets[0],
+      b.baseTariffs
     );
 
-    const baseAmountRate =
-      columnTariffs && columnTariffs.length > 0
-        ? columnTariffs
-            .flatMap((t) => t.tariffs)
-            .filter((t) => t.type === "amount")
-            .reduce((acc, t) => acc + t.value, 0)
-        : 0;
-
-    const baseAdValoremRate =
-      columnTariffs && columnTariffs.length > 0
-        ? columnTariffs
-            .flatMap((t) => t.tariffs)
-            .filter((t) => t.type === "percent")
-            .reduce((acc, t) => acc + t.value, 0)
-        : 0;
-
-    const generalAdValorem =
-      generalTariffs &&
-      generalTariffs.tariffs &&
-      generalTariffs.tariffs.length > 0
-        ? generalTariffs.tariffs
-            .filter((t) => t.isActive)
-            .reduce((acc, t) => acc + t.general, 0)
-        : 0;
-
-    return {
-      ...country,
-      amountRate: baseAmountRate,
-      generalRate: baseAdValoremRate + generalAdValorem,
-    };
-  });
-
-  const sortedCountries = countriesWithTariffs.sort((a, b) => {
-    if (a.amountRate === b.amountRate) {
-      return a.generalRate - b.generalRate;
-    }
-    return a.amountRate - b.amountRate;
+    return aTotalPercentTariffsSum - bTotalPercentTariffsSum;
   });
 
   // Filter countries based on search term
-  const filteredCountries = sortedCountries.filter(
-    (country) =>
-      selectedCountries.length > 0
-        ? selectedCountries.some((c) => c.code === country.code)
-        : true
-    // country.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCountries = sortedCountries.filter((country) =>
+    selectedCountries.length > 0
+      ? selectedCountries.some((c) => c.code === country.code)
+      : true
   );
 
   return (
@@ -185,31 +116,6 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
             color={Color.NEUTRAL_CONTENT}
           />
         </div>
-        {/* Search Input */}
-        {/* <div className="w-full flex flex-col gap-2">
-          <div className="w-full lg:ml-auto lg:max-w-xs flex flex-col gap-2">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Filter countries by name..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="input input-bordered input-md h-10 w-full focus:ring-0 focus:outline-none pr-10"
-              />
-              <div className="absolute inset-y-0 right-0 flex items-center pr-2">
-                {searchTerm && (
-                  <button
-                    onClick={() => setSearchTerm("")}
-                    className="btn btn-link p-1 btn-xs hover:text-secondary no-underline"
-                    title="Clear filter"
-                  >
-                    clear
-                  </button>
-                )}
-               </div>
-            </div>
-          </div>
-        </div> */}
       </div>
 
       {/* Show inputs for any content requirements based */}
@@ -267,87 +173,36 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
       )}
 
       {filteredCountries.length > 0 && (
-        <div className="w-full flex flex-col overflow-x-auto border border-base-content/40 rounded-lg">
+        <div className="w-full flex flex-col overflow-x-auto border-2 border-base-content/40 rounded-lg">
           <div className="w-full p-3">
             <CountrySelection
               selectedCountries={selectedCountries}
               setSelectedCountries={setSelectedCountries}
             />
           </div>
-          {/* <div className="w-full flex flex-col gap-2 p-3">
-            <div className="w-full md:max-w-xs flex flex-col gap-2">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Filter by country name..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="input input-bordered input-sm font-normal h-9 w-full focus:ring-0 focus:outline-none pr-10"
-                />
-                <div className="absolute inset-y-0 right-0 flex items-center pr-2">
-                  {searchTerm && (
-                    <button
-                      onClick={() => setSearchTerm("")}
-                      className="btn btn-link p-1 btn-xs hover:text-secondary no-underline"
-                      title="Clear filter"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="size-4"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M6 18 18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div> */}
 
           <table className="table">
             <thead>
               <tr>
                 <th></th>
                 <th className="w-full">Country of Origin</th>
-                <th className="min-w-48">Rate</th>
+                <th className="min-w-48">Rate(s)</th>
                 <th className="max-w-20">FTA(s)</th>
               </tr>
             </thead>
             <tbody>
-              {filteredCountries.map((c, i) => {
-                const isExpanded = expandedRows.has(c.code);
-                const specialTariffProgramSymbols = getBaseTariffsForColumn(
-                  tariffElement,
-                  TariffColumn.SPECIAL
-                ).reduce((acc, t) => {
-                  t.tariffs.forEach((t) => {
-                    t.programs?.forEach((p) => {
-                      if (!acc.includes(p)) {
-                        acc.push(p);
-                      }
-                    });
-                  });
-                  return acc;
-                }, []);
-                const specialTariffPrograms = specialTariffProgramSymbols
-                  .map((p) => TradePrograms.find((t) => t.symbol === p))
-                  .filter(Boolean)
-                  .filter(
-                    (p) =>
-                      p.status === TradeProgramStatus.ACTIVE &&
-                      (p.qualifyingCountries?.includes(c.code) ||
-                        (!p.qualifyingCountries && p.requiresReview))
-                  );
+              {filteredCountries.map((country, i) => {
+                const isExpanded = expandedRows.has(country.code);
+                const countryAmountRate = getBaseAmountTariffsSum(
+                  country.baseTariffs
+                );
+                const countryPercentTariffsSums = country.tariffSets.map(
+                  (tariffSet) =>
+                    getTotalPercentTariffsSum(tariffSet, country.baseTariffs)
+                );
+
                 return (
-                  <React.Fragment key={`${c.code}-${i}`}>
+                  <React.Fragment key={`${country.code}-${i}`}>
                     <tr
                       className={classNames(
                         "w-full cursor-pointer transition-colors hover:bg-base-content/10",
@@ -356,32 +211,44 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
                         isExpanded &&
                           "bg-base-300 hover:bg-primary/50 border-b-0"
                       )}
-                      onClick={() => toggleRow(c.code)}
+                      onClick={() => toggleRow(country.code)}
                     >
                       <td className="w-8">
                         <ChevronDownIcon
-                          className={`h-4 w-4 text-white transition-transform duration-200 ${
+                          className={`h-4 w-4 text-white transition-transform duration-100 ${
                             isExpanded ? "" : "-rotate-180"
                           }`}
                         />
                       </td>
                       <td>
                         <div className="flex gap-3 items-center">
-                          <h2 className="text-white">{c.flag}</h2>
-                          <h2 className="text-white">{c.name}</h2>
+                          <h2 className="text-white">{country.flag}</h2>
+                          <h2 className="text-white">{country.name}</h2>
                         </div>
                       </td>
                       <td>
                         <div className="flex gap-2">
-                          {c.amountRate ? (
-                            <p className="text-white">{c.amountRate} +</p>
-                          ) : null}
-                          {<p className="text-white">{c.generalRate}%</p>}
+                          {countryPercentTariffsSums.map((sum, i) => (
+                            <div
+                              key={`${country.code}-${i}-percent-sum-${i}`}
+                              className="flex gap-2"
+                            >
+                              {countryAmountRate ? (
+                                <p className="text-white">
+                                  {countryAmountRate} +
+                                </p>
+                              ) : null}
+                              {<p className="text-white">{sum}%</p>}
+                              {countryPercentTariffsSums.length !== i + 1
+                                ? "|"
+                                : null}
+                            </div>
+                          ))}
                         </div>
                       </td>
                       <td>
                         <p className="text-lg p-0">
-                          {specialTariffPrograms.length > 0 ? "✅" : "−"}
+                          {country.specialTradePrograms.length > 0 ? "✅" : "−"}
                         </p>
                       </td>
                     </tr>
@@ -395,11 +262,14 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
                       >
                         <td colSpan={4} className="p-4">
                           <InlineCountryTariff
-                            key={`tariff-${c.code}-${i}`}
-                            country={c}
+                            key={`tariff-${country.code}-${i}`}
+                            country={country}
                             htsElement={htsElement}
                             tariffElement={tariffElement}
                             contentRequirements={codeBasedContentPercentages}
+                            countryIndex={i}
+                            countries={filteredCountries}
+                            setCountries={setCountries}
                           />
                         </td>
                       </tr>
@@ -414,3 +284,33 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
     </div>
   );
 };
+
+{
+  /* Search Input */
+}
+{
+  /* <div className="w-full flex flex-col gap-2">
+          <div className="w-full lg:ml-auto lg:max-w-xs flex flex-col gap-2">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Filter countries by name..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="input input-bordered input-md h-10 w-full focus:ring-0 focus:outline-none pr-10"
+              />
+              <div className="absolute inset-y-0 right-0 flex items-center pr-2">
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm("")}
+                    className="btn btn-link p-1 btn-xs hover:text-secondary no-underline"
+                    title="Clear filter"
+                  >
+                    clear
+                  </button>
+                )}
+               </div>
+            </div>
+          </div>
+        </div> */
+}

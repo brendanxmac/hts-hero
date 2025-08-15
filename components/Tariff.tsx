@@ -1,14 +1,13 @@
 import { Color } from "../enums/style";
 import { UITariff, TariffSet } from "../interfaces/tariffs";
 import {
+  CountryWithTariffs,
   getTariffsByCode,
   isAncestorTariff,
   isDescendantTariff,
   tariffIsActive,
 } from "../tariffs/tariffs";
 import { classNames } from "../utilities/style";
-
-import { SecondaryText } from "./SecondaryText";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { TariffColumn } from "../enums/tariff";
 import { TertiaryText } from "./TertiaryText";
@@ -19,7 +18,10 @@ interface Props {
   tariff: UITariff;
   setIndex: number;
   tariffSets: TariffSet[];
-  setTariffSets: (tariffs: TariffSet[]) => void;
+  // setTariffSets: (tariffs: TariffSet[]) => void;
+  countryIndex: number;
+  countries: CountryWithTariffs[];
+  setCountries: (countries: CountryWithTariffs[]) => void;
   renderedCodes?: Set<string>;
   column: TariffColumn;
 }
@@ -30,7 +32,10 @@ export const Tariff = ({
   tariff,
   setIndex,
   tariffSets,
-  setTariffSets,
+  countryIndex,
+  countries,
+  setCountries,
+  // setTariffSets,
   renderedCodes = new Set(),
   column,
 }: Props) => {
@@ -80,7 +85,14 @@ export const Tariff = ({
     const updatedTariffSets = [...tariffSets];
     updatedTariffSets[setIndex] = set;
 
-    setTariffSets(updatedTariffSets);
+    const updatedCountries = [...countries];
+    updatedCountries[countryIndex] = {
+      ...countries[countryIndex],
+      tariffSets: updatedTariffSets,
+    };
+
+    // setTariffSets(updatedTariffSets);
+    setCountries(updatedCountries);
   };
 
   // Map exception levels to Tailwind margin classes
@@ -172,9 +184,12 @@ export const Tariff = ({
                   showInactive={showInactive}
                   tariff={exceptionTariff}
                   tariffSets={tariffSets}
-                  setTariffSets={setTariffSets}
+                  // setTariffSets={setTariffSets}
                   renderedCodes={renderedCodes}
                   column={column}
+                  countryIndex={countryIndex}
+                  countries={countries}
+                  setCountries={setCountries}
                 />
               )
           )}

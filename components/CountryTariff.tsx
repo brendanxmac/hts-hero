@@ -17,8 +17,8 @@ import {
   getTariffs,
   getEUCountryTotalBaseRate,
   getContentRequirementTariffSets,
-  getStandardTariffSet,
-  section232MetalTariffs,
+  getArticleTariffSet,
+  Section232MetalTariffs,
   getAmountRates,
   getAmountRatesString,
   getAdValoremRate,
@@ -175,9 +175,9 @@ export const CountryTariff = ({
         contentRequirementsNotAt0
       );
       setTariffSets([
-        getStandardTariffSet(
+        getArticleTariffSet(
           applicableUITariffs,
-          section232MetalTariffs,
+          Section232MetalTariffs,
           contentRequirements
         ),
         ...contentRequirementSets,
@@ -231,7 +231,7 @@ export const CountryTariff = ({
             className="btn btn-xs btn-primary"
             onClick={() => {
               setTariffSets([
-                getStandardTariffSet(
+                getArticleTariffSet(
                   applicableUITariffs,
                   [],
                   contentRequirements

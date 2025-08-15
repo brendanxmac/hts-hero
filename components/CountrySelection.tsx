@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { countries, Country } from "../constants/countries";
+import { Countries, Country } from "../constants/countries";
 
 interface Props {
   selectedCountries: Country[];
@@ -17,11 +17,9 @@ export const CountrySelection = ({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Filter countries based on search term
-  const filteredCountries = countries
-    .filter((country) =>
-      country.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .filter((country) => country.flag !== "🇺🇸");
+  const filteredCountries = Countries.filter((country) =>
+    country.name.toLowerCase().includes(searchTerm.toLowerCase())
+  ).filter((country) => country.flag !== "🇺🇸");
 
   // Reset highlighted index when search term changes
   useEffect(() => {
