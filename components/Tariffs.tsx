@@ -19,7 +19,6 @@ import {
 } from "../tariffs/tariffs";
 import { TariffI } from "../interfaces/tariffs";
 import { Column2CountryCodes } from "../tariffs/tariff-columns";
-import Link from "next/link";
 import { Color } from "../enums/style";
 import { TertiaryText } from "./TertiaryText";
 import { classNames } from "../utilities/style";
@@ -28,6 +27,7 @@ import { InlineCountryTariff } from "./InlineCountryTariff";
 import { SecondaryLabel } from "./SecondaryLabel";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { TradePrograms, TradeProgramStatus } from "../public/trade-programs";
+import { CountrySelection } from "./CountrySelection";
 
 interface Props {
   htsElement: HtsElement;
@@ -59,7 +59,7 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
       }))
     );
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
-  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCountries, setSelectedCountries] = useState<Country[]>([]);
 
   const toggleRow = (countryCode: string) => {
     const newExpandedRows = new Set(expandedRows);
@@ -149,8 +149,12 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
   });
 
   // Filter countries based on search term
-  const filteredCountries = sortedCountries.filter((country) =>
-    country.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCountries = sortedCountries.filter(
+    (country) =>
+      selectedCountries.length > 0
+        ? selectedCountries.some((c) => c.code === country.code)
+        : true
+    // country.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -168,12 +172,13 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
                 </p>
               </div>
             </div>
-            <Link
+            <a
               href="/tariffs/coverage"
+              target="_blank"
               className="btn btn-primary btn-xs btn-link"
             >
               Learn More
-            </Link>
+            </a>
           </div>
           <TertiaryText
             value="Explore and compare potential tariff values for any number of countries."
@@ -181,7 +186,7 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
           />
         </div>
         {/* Search Input */}
-        <div className="w-full flex flex-col gap-2">
+        {/* <div className="w-full flex flex-col gap-2">
           <div className="w-full lg:ml-auto lg:max-w-xs flex flex-col gap-2">
             <div className="relative">
               <input
@@ -201,10 +206,10 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
                     clear
                   </button>
                 )}
-              </div>
+               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Show inputs for any content requirements based */}
@@ -262,14 +267,58 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
       )}
 
       {filteredCountries.length > 0 && (
-        <div className="w-full flex flex-col overflow-x-auto border-2 border-base-content/40 rounded-lg">
+        <div className="w-full flex flex-col overflow-x-auto border border-base-content/40 rounded-lg">
+          <div className="w-full p-3">
+            <CountrySelection
+              selectedCountries={selectedCountries}
+              setSelectedCountries={setSelectedCountries}
+            />
+          </div>
+          {/* <div className="w-full flex flex-col gap-2 p-3">
+            <div className="w-full md:max-w-xs flex flex-col gap-2">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Filter by country name..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="input input-bordered input-sm font-normal h-9 w-full focus:ring-0 focus:outline-none pr-10"
+                />
+                <div className="absolute inset-y-0 right-0 flex items-center pr-2">
+                  {searchTerm && (
+                    <button
+                      onClick={() => setSearchTerm("")}
+                      className="btn btn-link p-1 btn-xs hover:text-secondary no-underline"
+                      title="Clear filter"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="size-4"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M6 18 18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div> */}
+
           <table className="table">
             <thead>
               <tr>
-                <th>Country of Origin</th>
-                <th>Rate</th>
-                <th>FTA's</th>
                 <th></th>
+                <th className="w-full">Country of Origin</th>
+                <th className="min-w-48">Rate</th>
+                <th className="max-w-20">FTA(s)</th>
               </tr>
             </thead>
             <tbody>
@@ -304,10 +353,18 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
                         "w-full cursor-pointer transition-colors hover:bg-base-content/10",
                         !isExpanded &&
                           "not-last:border-b border-base-content/40",
-                        isExpanded && "bg-primary/70 hover:bg-primary"
+                        isExpanded &&
+                          "bg-base-300 hover:bg-primary/50 border-b-0"
                       )}
                       onClick={() => toggleRow(c.code)}
                     >
+                      <td className="w-8">
+                        <ChevronDownIcon
+                          className={`h-4 w-4 text-white transition-transform duration-200 ${
+                            isExpanded ? "" : "-rotate-180"
+                          }`}
+                        />
+                      </td>
                       <td>
                         <div className="flex gap-3 items-center">
                           <h2 className="text-white">{c.flag}</h2>
@@ -326,13 +383,6 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
                         <p className="text-lg p-0">
                           {specialTariffPrograms.length > 0 ? "✅" : "−"}
                         </p>
-                      </td>
-                      <td className="w-8">
-                        <ChevronDownIcon
-                          className={`h-4 w-4 text-white transition-transform duration-200 ${
-                            isExpanded ? "" : "-rotate-180"
-                          }`}
-                        />
                       </td>
                     </tr>
                     {isExpanded && (

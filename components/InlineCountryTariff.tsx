@@ -191,7 +191,7 @@ export const InlineCountryTariff = ({
   return (
     <div className="flex flex-col gap-4">
       {/* Header with Buttons */}
-      <div className="w-full flex justify-between items-center">
+      <div className="w-full flex justify-between">
         {/* Special Tariff Program Selection */}
         {!isOtherColumnCountry && specialTariffPrograms.length > 0 && (
           <div className="w-full flex flex-col gap-2">
