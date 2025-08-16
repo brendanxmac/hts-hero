@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import { Countries, Country } from "../constants/countries";
 import { ContentRequirementI } from "./Element";
@@ -39,6 +39,17 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
     }, new Set<ContentRequirements>())
   );
 
+  // UI state - updates immediately for responsive slider
+  const [uiContentPercentages, setUiContentPercentages] = useState<
+    ContentRequirementI<ContentRequirements>[]
+  >(
+    codeBasedContentRequirements.map((contentRequirement) => ({
+      name: contentRequirement,
+      value: 80,
+    }))
+  );
+
+  // Calculation state - updates after debounce for expensive operations
   const [codeBasedContentPercentages, setCodeBasedContentPercentages] =
     useState<ContentRequirementI<ContentRequirements>[]>(
       codeBasedContentRequirements.map((contentRequirement) => ({
@@ -46,8 +57,42 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
         value: 80,
       }))
     );
+
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [selectedCountries, setSelectedCountries] = useState<Country[]>([]);
+
+  // Handler to reset all state when countries are cleared
+  const handleCountriesChange = (newSelectedCountries: Country[]) => {
+    setSelectedCountries(newSelectedCountries);
+
+    // If clearing all countries, reset expanded rows and regenerate clean countries
+    if (newSelectedCountries.length === 0) {
+      setExpandedRows(new Set());
+      // Regenerate clean countries data
+      const cleanCountries = addTariffsToCountries(
+        Countries,
+        htsElement,
+        tariffElement,
+        codeBasedContentPercentages
+      );
+      setCountries(cleanCountries);
+    } else {
+      // When individual countries are removed, clean up their expanded state
+      const newSelectedCountryCodes = new Set(
+        newSelectedCountries.map((c) => c.code)
+      );
+      setExpandedRows((prev) => {
+        const filteredExpanded = new Set<string>();
+        prev.forEach((code) => {
+          if (newSelectedCountryCodes.has(code)) {
+            filteredExpanded.add(code);
+          }
+        });
+        return filteredExpanded;
+      });
+    }
+  };
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const toggleRow = (countryCode: string) => {
     const newExpandedRows = new Set(expandedRows);
@@ -57,6 +102,28 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
       newExpandedRows.add(countryCode);
     }
     setExpandedRows(newExpandedRows);
+  };
+
+  const handleSliderChange = (
+    contentRequirement: ContentRequirements,
+    value: number
+  ) => {
+    // Update UI immediately for responsive feedback
+    setUiContentPercentages((prev) =>
+      prev.map((c) => (c.name === contentRequirement ? { ...c, value } : c))
+    );
+
+    // Clear existing timeout for expensive calculation
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    // Debounce the expensive recalculation (300ms as requested)
+    timeoutRef.current = setTimeout(() => {
+      setCodeBasedContentPercentages((prev) =>
+        prev.map((c) => (c.name === contentRequirement ? { ...c, value } : c))
+      );
+    }, 300);
   };
 
   const [countries, setCountries] = useState<CountryWithTariffs[]>(
@@ -109,7 +176,17 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
     useState<CountryWithTariffs[]>(countries);
 
   useEffect(() => {
-    console.log("sortBy:", sortBy);
+    // Recalculate countries when content percentages change
+    const updatedCountries = addTariffsToCountries(
+      Countries,
+      htsElement,
+      tariffElement,
+      codeBasedContentPercentages
+    );
+    setCountries(updatedCountries);
+  }, [codeBasedContentPercentages]);
+
+  useEffect(() => {
     if (sortBy) {
       setSortedCountries(
         sortCountries(sortBy).filter((country) =>
@@ -127,14 +204,16 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
         )
       );
     }
-  }, [sortBy]);
+  }, [sortBy, selectedCountries, countries]);
 
-  // Filter countries based on search term
-  // const filteredCountries = sortedCountries.filter((country) =>
-  //   selectedCountries.length > 0
-  //     ? selectedCountries.some((c) => c.code === country.code)
-  //     : true
-  // );
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="flex flex-col gap-2">
@@ -188,27 +267,19 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
                   min={0}
                   max="100"
                   value={
-                    codeBasedContentPercentages?.find(
+                    uiContentPercentages?.find(
                       (c) => c.name === contentRequirement
                     )?.value || 0
                   }
                   className="range range-primary range-sm p-1"
                   onChange={(e) => {
-                    setCodeBasedContentPercentages((prev) =>
-                      prev.map((c) =>
-                        c.name === contentRequirement
-                          ? {
-                              ...c,
-                              value: parseInt(e.target.value),
-                            }
-                          : c
-                      )
-                    );
+                    const value = parseInt(e.target.value);
+                    handleSliderChange(contentRequirement, value);
                   }}
                 />
                 <TertiaryLabel
                   value={`${
-                    codeBasedContentPercentages?.find(
+                    uiContentPercentages?.find(
                       (c) => c.name === contentRequirement
                     )?.value || 0
                   }%`}
@@ -225,7 +296,7 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
           <div className="w-full p-3">
             <CountrySelection
               selectedCountries={selectedCountries}
-              setSelectedCountries={setSelectedCountries}
+              setSelectedCountries={handleCountriesChange}
             />
           </div>
 
@@ -234,9 +305,9 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
               <tr>
                 <th></th>
                 <th className="w-full">Country of Origin</th>
-                <th className="min-w-48">
+                <th className="w-auto min-w-64">
                   <div className="flex gap-2 items-center">
-                    <h3>Rate(s)</h3>
+                    <h3>Rates</h3>
                     <button
                       className={classNames(
                         `btn btn-xs p-0.5`,
@@ -260,7 +331,7 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
                       <ChevronDownIcon
                         className={classNames(
                           "w-4 h-4",
-                          sortBy === TariffsTableSortOption.RATE_DESC &&
+                          sortBy === TariffsTableSortOption.RATE_ASC &&
                             "rotate-180"
                         )}
                       />
@@ -321,8 +392,18 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
                                 <p className="text-white">{countryAmounts} +</p>
                               ) : null}
                               {<p className="text-white">{sum}%</p>}
+                              {i > 0 &&
+                              codeBasedContentRequirements &&
+                              codeBasedContentRequirements.length > 0 &&
+                              uiContentPercentages[i - 1].name ? (
+                                <p className="text-white">
+                                  {uiContentPercentages[i - 1].name}
+                                </p>
+                              ) : (
+                                <p className="text-white">Base Rate</p>
+                              )}
                               {countryPercentTariffsSums.length !== i + 1
-                                ? "|"
+                                ? "+"
                                 : null}
                             </div>
                           ))}
@@ -348,7 +429,7 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
                             country={country}
                             htsElement={htsElement}
                             tariffElement={tariffElement}
-                            contentRequirements={codeBasedContentPercentages}
+                            contentRequirements={uiContentPercentages}
                             countryIndex={i}
                             countries={sortedCountries}
                             setCountries={setCountries}

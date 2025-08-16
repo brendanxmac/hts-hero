@@ -57,11 +57,13 @@ export const BaseTariff = ({ index, htsElement, tariff }: Props) => {
         {reviewText ? (
           <TertiaryLabel value={reviewText} />
         ) : (
-          <TertiaryLabel
-            value={valueText}
-            // TODO: might need to make this dynamic based on if it applies due to certain cases?
-            color={Color.WHITE}
-          />
+          <p
+            className={classNames(
+              "shrink-0 min-w-32 text-right text-base text-white font-bold"
+            )}
+          >
+            {valueText}
+          </p>
         )}
       </div>
     </div>
