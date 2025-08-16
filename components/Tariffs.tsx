@@ -388,20 +388,22 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
                               key={`${country.code}-${i}-percent-sum-${i}`}
                               className="flex gap-2"
                             >
-                              {countryAmounts && countryAmounts.length > 0 ? (
-                                <p className="text-white">{countryAmounts} +</p>
-                              ) : null}
-                              {<p className="text-white">{sum}%</p>}
-                              {i > 0 &&
-                              codeBasedContentRequirements &&
-                              codeBasedContentRequirements.length > 0 &&
-                              uiContentPercentages[i - 1].name ? (
-                                <p className="text-white">
-                                  {uiContentPercentages[i - 1].name}
-                                </p>
-                              ) : (
-                                <p className="text-white">Base Rate</p>
-                              )}
+                              <div className="flex gap-1">
+                                {countryAmounts && countryAmounts.length > 0 ? (
+                                  <p className="text-white">
+                                    {countryAmounts} +
+                                  </p>
+                                ) : null}
+                                {<p className="text-white">{sum}%</p>}
+                                {i > 0 &&
+                                  codeBasedContentRequirements &&
+                                  codeBasedContentRequirements.length > 0 &&
+                                  uiContentPercentages[i - 1].name && (
+                                    <p className="text-white">
+                                      for {uiContentPercentages[i - 1].name}
+                                    </p>
+                                  )}
+                              </div>
                               {countryPercentTariffsSums.length !== i + 1
                                 ? "+"
                                 : null}

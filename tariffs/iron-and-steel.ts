@@ -564,6 +564,7 @@ export const ironAndSteelTariffs: TariffI[] = [
     other: 50,
     contentRequirement: { content: "Steel" },
     exceptions: [
+      // TODO: should this be here? "9903.81.92",
       // Auto Parts
       "9903.94.05",
     ],
