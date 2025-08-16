@@ -8,7 +8,6 @@ import {
   tariffIsApplicableToCode,
   TariffsList,
   getTotalPercentTariffsSum,
-  getBaseAmountTariffsSum,
   CountryWithTariffs,
   addTariffsToCountries,
   getBaseAmountTariffsText,
@@ -126,14 +125,13 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
     }, 300);
   };
 
-  const [countries, setCountries] = useState<CountryWithTariffs[]>(
-    addTariffsToCountries(
-      Countries,
-      htsElement,
-      tariffElement,
-      codeBasedContentPercentages
-    )
-  );
+  const [countries, setCountries] = useState<CountryWithTariffs[]>([]);
+  // addTariffsToCountries(
+  //   Countries,
+  //   htsElement,
+  //   tariffElement,
+  //   codeBasedContentPercentages
+  // );
 
   enum TariffsTableSortOption {
     RATE_ASC = "rate-asc",
@@ -344,9 +342,9 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
             <tbody>
               {sortedCountries.map((country, i) => {
                 const isExpanded = expandedRows.has(country.code);
-                const countryAmountRate = getBaseAmountTariffsSum(
-                  country.baseTariffs
-                );
+                // const countryAmountRate = getBaseAmountTariffsSum(
+                //   country.baseTariffs
+                // );
                 const countryAmounts = getBaseAmountTariffsText(
                   country.baseTariffs
                 );

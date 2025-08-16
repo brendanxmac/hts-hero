@@ -52,6 +52,8 @@ export const Explore = () => {
   const [searchResults, setSearchResults] = useState<FuseResult<HtsElement>[]>(
     []
   );
+  const [completedDirectNavigation, setCompletedDirectNavigation] =
+    useState(false);
   const { htsElements, fetchElements, revision } = useHts();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -150,10 +152,10 @@ export const Explore = () => {
         setTimeout(() => {
           const results = htsFuse.search(query.trim());
           const searchParamExactHtsCodeMatch = results.find(
-            (r) => r.item.htsno === query.trim() && !searchParams.get("search")
+            (r) => r.item.htsno === query.trim() && searchParams.get("code")
           );
 
-          if (searchParamExactHtsCodeMatch) {
+          if (searchParamExactHtsCodeMatch && !completedDirectNavigation) {
             const matchedElement = searchParamExactHtsCodeMatch.item;
             const sectionAndChapter = getSectionAndChapterFromChapterNumber(
               sections,
@@ -170,6 +172,7 @@ export const Explore = () => {
             setActiveTab(ExploreTab.ELEMENTS);
             setSearchResults([]);
             setBreadcrumbs(breadcrumbs);
+            setCompletedDirectNavigation(true);
           } else {
             const topResults = results.slice(0, 30);
             setSearchResults(topResults);

@@ -1,4 +1,3 @@
-import { Color } from "../enums/style";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { FeatureOverview, BulletPoint, FeatureStatus } from "./TariffCoverage";
 

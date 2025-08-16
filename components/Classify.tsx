@@ -67,7 +67,9 @@ export const Classify = ({ page, setPage }: Props) => {
     const loadAllData = async () => {
       setLoading({ isLoading: true, text: "Fetching All Data" });
       try {
-        await Promise.all([fetchElements("latest"), getSections()]);
+        const revisionToLoad = revision ? revision.name : "latest";
+        console.log("revisionToLoad", revisionToLoad);
+        await Promise.all([fetchElements(revisionToLoad), getSections()]);
         setLoading({ isLoading: false, text: "" });
       } catch (error) {
         toast.error("Failed to fetch data. Please try again.");
@@ -77,7 +79,7 @@ export const Classify = ({ page, setPage }: Props) => {
       }
     };
 
-    if (!sections.length || !htsElements.length || !revision?.isLatest) {
+    if (!sections.length || !htsElements.length) {
       loadAllData();
     } else {
       setLoading({ isLoading: false, text: "" });

@@ -93,7 +93,7 @@ const getPricingPlans = (customerType: AboutPage) => {
   return [];
 };
 
-const getPricingHeadline = (customerType: AboutPage) => {
+const getPricingHeadline = () => {
   return (
     <div className="flex flex-col gap-8">
       <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-6xl max-w-4xl mx-auto tracking-relaxed">
@@ -135,7 +135,7 @@ const Pricing = ({ customerType }: PricingProps) => {
       <div className="py-16 px-8 max-w-7xl mx-auto">
         <div className="flex flex-col text-center w-full mb-12">
           {/* <p className="font-medium text-primary mb-8">Pricing</p> */}
-          {getPricingHeadline(customerType)}
+          {getPricingHeadline()}
         </div>
 
         <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8 text-white">

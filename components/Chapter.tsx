@@ -289,7 +289,9 @@ export const Chapter = ({ chapter }: Props) => {
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <p>Elements: {filteredElements.length}</p>
+          {chapter.number === 98 || chapter.number === 99 ? (
+            <p>Items: {filteredElements.length}</p>
+          ) : null}
           {filteredElements.map((element, i) => {
             return (
               <ElementSummary
