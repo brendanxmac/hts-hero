@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import { Countries, Country } from "../constants/countries";
 import { ContentRequirementI } from "./Element";
@@ -11,7 +11,7 @@ import {
   getBaseAmountTariffsSum,
   CountryWithTariffs,
   addTariffsToCountries,
-  getBasePercentTariffs,
+  getBaseAmountTariffsText,
 } from "../tariffs/tariffs";
 import { Color } from "../enums/style";
 import { TertiaryText } from "./TertiaryText";
@@ -68,25 +68,73 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
     )
   );
 
-  const sortedCountries = countries.sort((a, b) => {
-    const aTotalPercentTariffsSum = getTotalPercentTariffsSum(
-      a.tariffSets[0],
-      a.baseTariffs
-    );
-    const bTotalPercentTariffsSum = getTotalPercentTariffsSum(
-      b.tariffSets[0],
-      b.baseTariffs
-    );
+  enum TariffsTableSortOption {
+    RATE_ASC = "rate-asc",
+    RATE_DESC = "rate-desc",
+    FTA_ASC = "fta-asc",
+    FTA_DESC = "fta-desc",
+    COUNTRY_ASC = "country-asc",
+    COUNTRY_DESC = "country-desc",
+  }
 
-    return aTotalPercentTariffsSum - bTotalPercentTariffsSum;
-  });
+  const sortByRateAsc = () => {
+    return [...countries].sort((a, b) => {
+      return (
+        getTotalPercentTariffsSum(a.tariffSets[0], a.baseTariffs) -
+        getTotalPercentTariffsSum(b.tariffSets[0], b.baseTariffs)
+      );
+    });
+  };
+
+  const sortByRateDesc = () => {
+    return [...countries].sort((a, b) => {
+      return (
+        getTotalPercentTariffsSum(b.tariffSets[0], b.baseTariffs) -
+        getTotalPercentTariffsSum(a.tariffSets[0], a.baseTariffs)
+      );
+    });
+  };
+
+  const sortCountries = (sortBy: TariffsTableSortOption) => {
+    if (sortBy === TariffsTableSortOption.RATE_ASC) {
+      return sortByRateAsc();
+    }
+    if (sortBy === TariffsTableSortOption.RATE_DESC) {
+      return sortByRateDesc();
+    }
+  };
+
+  const [sortBy, setSortBy] = useState<TariffsTableSortOption | null>(null);
+  const [sortedCountries, setSortedCountries] =
+    useState<CountryWithTariffs[]>(countries);
+
+  useEffect(() => {
+    console.log("sortBy:", sortBy);
+    if (sortBy) {
+      setSortedCountries(
+        sortCountries(sortBy).filter((country) =>
+          selectedCountries.length > 0
+            ? selectedCountries.some((c) => c.code === country.code)
+            : true
+        )
+      );
+    } else {
+      setSortedCountries(
+        countries.filter((country) =>
+          selectedCountries.length > 0
+            ? selectedCountries.some((c) => c.code === country.code)
+            : true
+        )
+      );
+    }
+  }, [sortBy]);
 
   // Filter countries based on search term
-  const filteredCountries = sortedCountries.filter((country) =>
-    selectedCountries.length > 0
-      ? selectedCountries.some((c) => c.code === country.code)
-      : true
-  );
+  // const filteredCountries = sortedCountries.filter((country) =>
+  //   selectedCountries.length > 0
+  //     ? selectedCountries.some((c) => c.code === country.code)
+  //     : true
+  // );
 
   return (
     <div className="flex flex-col gap-2">
@@ -172,7 +220,7 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
         </div>
       )}
 
-      {filteredCountries.length > 0 && (
+      {sortedCountries.length > 0 && (
         <div className="w-full flex flex-col overflow-x-auto border-2 border-base-content/40 rounded-lg">
           <div className="w-full p-3">
             <CountrySelection
@@ -186,16 +234,52 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
               <tr>
                 <th></th>
                 <th className="w-full">Country of Origin</th>
-                <th className="min-w-48">Rate(s)</th>
+                <th className="min-w-48">
+                  <div className="flex gap-2 items-center">
+                    <h3>Rate(s)</h3>
+                    <button
+                      className={classNames(
+                        `btn btn-xs p-0.5`,
+                        (sortBy === TariffsTableSortOption.RATE_ASC ||
+                          sortBy === TariffsTableSortOption.RATE_DESC) &&
+                          "btn-primary",
+                        !sortBy && "btn-ghost"
+                      )}
+                      onClick={() => {
+                        if (!sortBy) {
+                          setSortBy(TariffsTableSortOption.RATE_ASC);
+                        }
+                        if (sortBy === TariffsTableSortOption.RATE_ASC) {
+                          setSortBy(TariffsTableSortOption.RATE_DESC);
+                        }
+                        if (sortBy === TariffsTableSortOption.RATE_DESC) {
+                          setSortBy(null);
+                        }
+                      }}
+                    >
+                      <ChevronDownIcon
+                        className={classNames(
+                          "w-4 h-4",
+                          sortBy === TariffsTableSortOption.RATE_DESC &&
+                            "rotate-180"
+                        )}
+                      />
+                    </button>
+                  </div>
+                </th>
                 <th className="max-w-20">FTA(s)</th>
               </tr>
             </thead>
             <tbody>
-              {filteredCountries.map((country, i) => {
+              {sortedCountries.map((country, i) => {
                 const isExpanded = expandedRows.has(country.code);
                 const countryAmountRate = getBaseAmountTariffsSum(
                   country.baseTariffs
                 );
+                const countryAmounts = getBaseAmountTariffsText(
+                  country.baseTariffs
+                );
+
                 const countryPercentTariffsSums = country.tariffSets.map(
                   (tariffSet) =>
                     getTotalPercentTariffsSum(tariffSet, country.baseTariffs)
@@ -233,10 +317,8 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
                               key={`${country.code}-${i}-percent-sum-${i}`}
                               className="flex gap-2"
                             >
-                              {countryAmountRate ? (
-                                <p className="text-white">
-                                  {countryAmountRate} +
-                                </p>
+                              {countryAmounts && countryAmounts.length > 0 ? (
+                                <p className="text-white">{countryAmounts} +</p>
                               ) : null}
                               {<p className="text-white">{sum}%</p>}
                               {countryPercentTariffsSums.length !== i + 1
@@ -268,7 +350,7 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
                             tariffElement={tariffElement}
                             contentRequirements={codeBasedContentPercentages}
                             countryIndex={i}
-                            countries={filteredCountries}
+                            countries={sortedCountries}
                             setCountries={setCountries}
                           />
                         </td>
@@ -284,33 +366,3 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
     </div>
   );
 };
-
-{
-  /* Search Input */
-}
-{
-  /* <div className="w-full flex flex-col gap-2">
-          <div className="w-full lg:ml-auto lg:max-w-xs flex flex-col gap-2">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Filter countries by name..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="input input-bordered input-md h-10 w-full focus:ring-0 focus:outline-none pr-10"
-              />
-              <div className="absolute inset-y-0 right-0 flex items-center pr-2">
-                {searchTerm && (
-                  <button
-                    onClick={() => setSearchTerm("")}
-                    className="btn btn-link p-1 btn-xs hover:text-secondary no-underline"
-                    title="Clear filter"
-                  >
-                    clear
-                  </button>
-                )}
-               </div>
-            </div>
-          </div>
-        </div> */
-}

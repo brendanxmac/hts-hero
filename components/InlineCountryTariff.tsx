@@ -38,10 +38,10 @@ export const InlineCountryTariff = ({
   countries,
   setCountries,
 }: Props) => {
-  const htsCode = htsElement.htsno;
   const [units, setUnits] = useState<number>(1);
   const [customsValue, setCustomsValue] = useState<number>(1000);
   const isEUCountry = EuropeanUnionCountries.includes(country.code);
+
   const [tariffColumn, setTariffColumn] = useState<TariffColumn>(
     Column2CountryCodes.includes(country.code)
       ? TariffColumn.OTHER
@@ -66,60 +66,19 @@ export const InlineCountryTariff = ({
   const specialProgramDropdownRef = useRef<HTMLDivElement>(null);
   const isOtherColumnCountry = Column2CountryCodes.includes(country.code);
 
-  //   useEffect(() => {
-  //     setApplicableTariffs(
-  //       getTariffs(country.code, htsCode).filter((t) => {
-  //         if (isEUCountry) {
-  //           const totalBaseRate = getEUCountryTotalBaseRate(
-  //             columnTariffs.flatMap((t) => t.tariffs),
-  //             customsValue,
-  //             units
-  //           );
-
-  //           if (totalBaseRate >= 15) {
-  //             return t.code !== "9903.02.20";
-  //           } else {
-  //             return t.code !== "9903.02.19";
-  //           }
-  //         }
-
-  //         return true;
-  //       })
-  //     );
-  //   }, [units, customsValue]);
-
-  //   useEffect(() => {
-  //     const contentRequirementAt100 = contentRequirements.find(
-  //       (r) => r.value === 100
-  //     );
-  //     const contentRequirementsNotAt0 = contentRequirements.filter(
-  //       (r) => r.value > 0
-  //     );
-
-  //     if (contentRequirementAt100) {
-  //       setTariffSets(
-  //         getContentRequirementTariffSets(applicableUITariffs, [
-  //           contentRequirementAt100,
-  //         ])
-  //       );
-  //     } else {
-  //       const contentRequirementSets = getContentRequirementTariffSets(
-  //         applicableUITariffs,
-  //         contentRequirementsNotAt0
-  //       );
-  //       setTariffSets([
-  //         getArticleTariffSet(
-  //           applicableUITariffs,
-  //           Section232MetalTariffs,
-  //           contentRequirements
-  //         ),
-  //         ...contentRequirementSets,
-  //       ]);
-  //     }
-  //   }, [applicableTariffs, contentRequirements]);
-
-  //   TODO: this does not update properly now that we pass in the already
-  // calculted set based on column prior to this selection
+  useEffect(() => {
+    const updatedCountries = [...countries];
+    updatedCountries[countryIndex] = addTariffsToCountry(
+      country,
+      htsElement,
+      tariffElement,
+      contentRequirements,
+      selectedTradeProgram,
+      units,
+      customsValue
+    );
+    setCountries(updatedCountries);
+  }, [units, customsValue]);
 
   const getTariffColumn = () => {
     if (selectedSpecialProgram && selectedSpecialProgram.symbol === "none") {
@@ -143,7 +102,9 @@ export const InlineCountryTariff = ({
       htsElement,
       tariffElement,
       contentRequirements,
-      tradeProgram
+      tradeProgram,
+      units,
+      customsValue
     );
     setCountries(updatedCountries);
 

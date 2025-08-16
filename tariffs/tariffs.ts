@@ -136,7 +136,9 @@ export const addTariffsToCountry = (
   htsElement: HtsElement,
   tariffElement: HtsElement,
   contentRequirements: ContentRequirementI<ContentRequirements>[],
-  tradeProgram?: TradeProgram
+  tradeProgram?: TradeProgram,
+  units?: number,
+  customsValue?: number
 ): CountryWithTariffs => {
   const isColumn2Country = Column2CountryCodes.includes(country.code);
   const tariffColumn =
@@ -151,7 +153,9 @@ export const addTariffsToCountry = (
   applicableTariffs = filterCountryTariffsForEuException(
     applicableTariffs,
     country,
-    baseTariffsForColumn
+    baseTariffsForColumn,
+    customsValue,
+    units
   );
   applicableTariffs = applicableTariffs.map((t) => ({
     ...t,
@@ -233,6 +237,11 @@ export const filterCountryTariffsForEuException = (
   units?: number
 ) => {
   const isEUCountry = EuropeanUnionCountries.includes(country.code);
+
+  if (!isEUCountry) {
+    return tariffs;
+  }
+
   const totalBaseRate = getEUCountryTotalBaseRate(
     baseTariffsForColumn.flatMap((t) => t.tariffs),
     customsValue ?? 1000,
@@ -458,42 +467,6 @@ export const getEUCountryTotalBaseRate = (
   return adValoremEquivalentAmountRate + adValoremRate;
 };
 
-// export const getRate = (
-//   baseTariffs: BaseTariffI[],
-//   tariffs: UITariff[],
-//   column: TariffColumn,
-//   country: string,
-//   isContentRequirementSet: boolean
-// ) => {
-//   const isEUCountry = EuropeanUnionCountries.includes(country);
-
-//   if (isEUCountry && !isContentRequirementSet) {
-//     const amountRates = getAmountRates(baseTariffs);
-//     const adValoremEquivalentAmountRate = amountRates
-//       .map((t) => (t / 1000) * 100)
-//       .reduce((acc, t) => acc + t, 0);
-//     const adValoremRate = baseTariffs.reduce((acc, t) => {
-//       if (t.type === "percent") {
-//         return acc + t.value;
-//       }
-//       return acc;
-//     }, 0);
-
-//     const totalBaseAdValoremEquivalentRate =
-//       adValoremEquivalentAmountRate + adValoremRate;
-
-//     if (totalBaseAdValoremEquivalentRate < 15) {
-//       return 15;
-//     } else {
-//       return 0;
-//     }
-//   } else {
-//     // Get the amount rate(s) and do a + with that and the ad valorem rate
-//   }
-
-//   // TODO: consider how to get amount rates from additional tariffs
-// };
-
 export const getAmountRates = (baseTariffs: BaseTariffI[]) => {
   return baseTariffs.filter((t) => t.type === "amount").map((t) => t.value);
 };
@@ -508,11 +481,18 @@ export const getAmountRatesString = (baseTariffs: BaseTariffI[]) => {
 export const getBaseTariffsForColumn = (
   htsElement: HtsElement,
   column: TariffColumn
+  // TODO: I think we need to pass country here
+  // in the case that column is special and countries are specified
+  // so that we can ONLY apply them if applicable to that country
 ) => {
   const tariffString = getTariffForColumn(column, htsElement);
   // only needed if string has countries specified, which USITC writes within parenthesis ()
   // if not parenthesis then the function just returns the tariff as an element in array
   const tariffParts = splitOnClosingParen(tariffString);
+
+  // if (column === TariffColumn.SPECIAL) {
+  //   console.log(tariffParts);
+  // }
 
   return tariffParts.map((part) => getBaseTariffs(part));
 };
