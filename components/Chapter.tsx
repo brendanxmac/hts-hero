@@ -143,38 +143,6 @@ export const Chapter = ({ chapter }: Props) => {
     setIsKeyboardNavigation(false);
   };
 
-  // const handleKeyDown = (e: React.KeyboardEvent) => {
-  //   if (!isNotesDropdownOpen) return;
-
-  //   switch (e.key) {
-  //     case "ArrowDown":
-  //       e.preventDefault();
-  //       setIsKeyboardNavigation(true);
-  //       setHighlightedNoteIndex((prev) =>
-  //         prev < chapterNotes.length - 1 ? prev + 1 : 0
-  //       );
-  //       break;
-  //     case "ArrowUp":
-  //       e.preventDefault();
-  //       setIsKeyboardNavigation(true);
-  //       setHighlightedNoteIndex((prev) =>
-  //         prev > 0 ? prev - 1 : chapterNotes.length - 1
-  //       );
-  //       break;
-  //     case "Enter":
-  //       e.preventDefault();
-  //       if (highlightedNoteIndex >= 0 && chapterNotes[highlightedNoteIndex]) {
-  //         handleNoteSelect(chapterNotes[highlightedNoteIndex]);
-  //       }
-  //       break;
-  //     case "Escape":
-  //       setIsNotesDropdownOpen(false);
-  //       setHighlightedNoteIndex(-1);
-  //       setIsKeyboardNavigation(false);
-  //       break;
-  //   }
-  // };
-
   return (
     <div className="card flex flex-col w-full gap-4 md:gap-4 rounded-xl bg-base-100 border border-base-content/10 p-4 pt-2 sm:pt-6 transition duration-100 ease-in-out">
       <div className="flex flex-col gap-3 text-sm">
@@ -321,7 +289,9 @@ export const Chapter = ({ chapter }: Props) => {
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <p>Elements: {filteredElements.length}</p>
+          {chapter.number === 98 || chapter.number === 99 ? (
+            <p>Items: {filteredElements.length}</p>
+          ) : null}
           {filteredElements.map((element, i) => {
             return (
               <ElementSummary

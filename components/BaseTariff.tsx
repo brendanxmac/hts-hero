@@ -2,10 +2,9 @@ import { Color } from "../enums/style";
 import { HtsElement } from "../interfaces/hts";
 import { BaseTariffI } from "../libs/hts";
 import { classNames } from "../utilities/style";
-import { PrimaryLabel } from "./PrimaryLabel";
-import { SecondaryText } from "./SecondaryText";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { SpecialPrograms } from "./SpecialPrograms";
+import { TertiaryText } from "./TertiaryText";
 
 interface Props {
   index: number;
@@ -29,7 +28,7 @@ export const BaseTariff = ({ index, htsElement, tariff }: Props) => {
       <div
         key={`${htsElement.htsno}-${tariff.raw}-${index}`}
         className={classNames(
-          "text-white flex gap-2 justify-between items-end border-b border-base-content/50"
+          "text-white flex gap-2 justify-between items-end border-b border-base-content/20"
         )}
       >
         <div className="flex flex-col gap-2 items-start">
@@ -38,13 +37,15 @@ export const BaseTariff = ({ index, htsElement, tariff }: Props) => {
               type="checkbox"
               checked
               disabled
-              className="checkbox checkbox-primary checkbox-sm"
+              className="checkbox checkbox-primary checkbox-xs"
             />
-            <TertiaryLabel value={htsElement.htsno} />
-            <SecondaryText
-              value={`General Duty: ${primaryText}`}
-              color={Color.WHITE}
-            />
+            <div className="flex gap-2 items-center">
+              <TertiaryLabel value={htsElement.htsno} />
+              <TertiaryText
+                value={`General Duty: ${primaryText}`}
+                color={Color.WHITE}
+              />
+            </div>
           </div>
 
           <div className="flex gap-2">
@@ -56,11 +57,13 @@ export const BaseTariff = ({ index, htsElement, tariff }: Props) => {
         {reviewText ? (
           <TertiaryLabel value={reviewText} />
         ) : (
-          <PrimaryLabel
-            value={valueText}
-            // TODO: might need to make this dynamic based on if it applies due to certain cases?
-            color={Color.WHITE}
-          />
+          <p
+            className={classNames(
+              "shrink-0 min-w-32 text-right text-base text-white font-bold"
+            )}
+          >
+            {valueText}
+          </p>
         )}
       </div>
     </div>

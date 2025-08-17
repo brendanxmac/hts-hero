@@ -1,5 +1,5 @@
 // ==================
-// Steel (Section 232)
+// Steel
 
 import { TariffI } from "../interfaces/tariffs";
 
@@ -67,7 +67,7 @@ export const ironAndSteelTariffs: TariffI[] = [
     code: "9903.81.93",
     description:
       "Except as provided in headings 9903.81.91 or 9903.81.92, derivative products of iron or steel, as specified in subdivisions (l) and (m) of note 16 to this subchapter, admitted to a U.S. foreign trade zone under 'privileged foreign status' as defined by 19 CFR 146.41, prior to 12:01 a.m. eastern daylight time on June 4, 2025.",
-    name: "Derivative Iron / Steel Products admitted to U.S. FTZ under PFS prior to June 4, 2025 (Section 232)",
+    name: "Derivative Iron / Steel Products admitted to U.S. FTZ under PFS prior to June 4, 2025",
     general: 50,
     special: 50,
     other: 50,
@@ -79,6 +79,9 @@ export const ironAndSteelTariffs: TariffI[] = [
       // Auto Parts
       "9903.94.05",
     ],
+    exclusions: {
+      countries: ["GB"],
+    },
     inclusions: {
       codes: [
         // l
@@ -254,7 +257,7 @@ export const ironAndSteelTariffs: TariffI[] = [
     code: "9903.81.95",
     description:
       "Products of iron or steel of the United Kingdom provided for in the tariff headings or subheadings enumerated in subdivision (q) of note 16 to this subchapter, admitted to a U.S. foreign trade zone under “privileged foreign status” as defined by 19 CFR 146.41, prior to 12:01 a.m. eastern daylight time on June 4, 2025",
-    name: "Iron / Steel Products of the UK admitted to U.S. FTZ under PFS prior to June 4, 2025 (Section 232)",
+    name: "Iron / Steel Products of the UK admitted to U.S. FTZ under PFS prior to June 4, 2025",
     general: 25,
     special: 25,
     other: 25,
@@ -309,7 +312,7 @@ export const ironAndSteelTariffs: TariffI[] = [
     code: "9903.81.99",
     description:
       "Except as provided in headings 9903.81.98 or 9903.81.92, derivative products of iron or steel of the United Kingdom, as specified in subdivisions (s) and (t) of note 16 to this subchapter, admitted to a U.S.foreign trade zone under 'privileged foreign status' as defined by 19 CFR 146.41, prior to 12:01 a.m. eastern daylight time on June 4, 2025",
-    name: "Derivative Iron / Steel Products of the UK from 16 (s) and (t) (Section 232)",
+    name: "Derivative Iron / Steel Products of the UK from 16 (s) and (t) Admitted to FTZ under PFS prior to June 4, 2025",
     general: 25,
     special: 25,
     other: 25,
@@ -496,7 +499,7 @@ export const ironAndSteelTariffs: TariffI[] = [
     code: "9903.81.87",
     description:
       "Except for derivative iron or steel products described in headings 9903.81.89, 9903.81.90 or 9903.81.91, products of iron or steel provided for in the tariff headings or subheadings enumerated in subdivision (j) of note 16 to this subchapter.",
-    name: "Iron / Steel Products (Section 232)",
+    name: "Iron / Steel Products",
     general: 50,
     special: 50,
     other: 50,
@@ -555,15 +558,19 @@ export const ironAndSteelTariffs: TariffI[] = [
     code: "9903.81.89",
     description:
       "Derivative iron or steel products provided for in the tariff provisions enumerated in subdivision (l) of note 16 to this subchapter.",
-    name: "Derivative Iron / Steel Products from 16 (l) (Section 232)",
+    name: "Derivative Iron / Steel Products from 16 (l)",
     general: 50,
     special: 50,
     other: 50,
     contentRequirement: { content: "Steel" },
     exceptions: [
+      // TODO: should this be here? "9903.81.92",
       // Auto Parts
       "9903.94.05",
     ],
+    exclusions: {
+      countries: ["GB"],
+    },
     inclusions: {
       codes: [
         // 16(l)
@@ -583,7 +590,7 @@ export const ironAndSteelTariffs: TariffI[] = [
     code: "9903.81.90",
     description:
       "Except as provided in heading 9903.81.92, derivative iron or steel products provided for in the tariff subheadings enumerated in subdivision (m) of note 16 to this subchapter.",
-    name: "Derivative Iron / Steel Products from 16 (m) (Section 232)",
+    name: "Derivative Iron / Steel Products from 16 (m)",
     general: 50,
     special: 50,
     other: 50,
@@ -593,6 +600,9 @@ export const ironAndSteelTariffs: TariffI[] = [
       // Auto Parts
       "9903.94.05",
     ],
+    exclusions: {
+      countries: ["GB"],
+    },
     inclusions: {
       codes: [
         // m
@@ -757,7 +767,7 @@ export const ironAndSteelTariffs: TariffI[] = [
     code: "9903.81.91",
     description:
       "Except as provided in heading 9903.81.92, derivative iron or steel products provided for in the tariff subheadings enumerated in subdivision (n) of note 16 to this subchapter.",
-    name: "Derivative Iron / Steel Products from 16 (n) (Section 232)",
+    name: "Derivative Iron / Steel Products from 16 (n)",
     general: 50,
     special: 50,
     other: 50,
@@ -767,6 +777,9 @@ export const ironAndSteelTariffs: TariffI[] = [
       // Auto Parts
       "9903.94.05",
     ],
+    exclusions: {
+      countries: ["GB"],
+    },
     inclusions: {
       codes: [
         // 16(n)(a)
@@ -802,7 +815,7 @@ export const ironAndSteelTariffs: TariffI[] = [
     code: "9903.81.92",
     description:
       "Derivative iron or steel products provided for in the tariff subheadings enumerated in subdivision subdivisions (m), (n), (t) or (u) of note 16 to this subchapter, where the derivative iron or steel product was processed in another country from steel articles that were melted and poured in the United States.",
-    name: "Derivative Iron / Steel Products Smelted or Casted in the U.S. (Section 232)",
+    name: "Derivative Iron / Steel Products Smelted or Casted in the U.S.",
     general: 0,
     special: 0,
     other: 0,
@@ -1178,7 +1191,7 @@ export const ironAndSteelTariffs: TariffI[] = [
     code: "9903.81.97",
     description:
       "Except as provided in heading 9903.81.92, derivative iron or steel products of the United Kingdom provided for in the tariff subheadings enumerated in subdivision (t) of note 16 to this subchapter",
-    name: "Derivative Iron / Steel Products of The United Kingdom from 16 (t) (Section 232)",
+    name: "Derivative Iron / Steel Products of The UK from 16 (t)",
     general: 25,
     special: 25,
     other: 25,
@@ -1355,7 +1368,7 @@ export const ironAndSteelTariffs: TariffI[] = [
     code: "9903.81.98",
     description:
       "Except as provided in heading 9903.81.92, derivative iron or steel products of the United Kingdom provided for in the tariff subheadings enumerated in subdivision (u) of note 16 to this subchapter",
-    name: "Derivative Iron / Steel Products of The United Kingdom from 16 (u) (Section 232)",
+    name: "Derivative Iron / Steel Products of The UK from 16 (u)",
     general: 25,
     special: 25,
     other: 25,
@@ -1403,7 +1416,7 @@ export const ironAndSteelTariffs: TariffI[] = [
     code: "9903.81.94",
     description:
       "Except for derivative iron or steel products described in headings 9903.81.96, 9903.81.97 or 9903.81.98, products of iron or steel of the United Kingdom provided for in the tariff headings or subheadings enumerated in subdivision (q) of note 16 to this subchapter",
-    name: "Derivative Iron / Steel Products of The United Kingdom from 16 (q) (Section 232)",
+    name: "Derivative Iron / Steel Products of The UK from 16 (q)",
     general: 25,
     special: 25,
     other: 25,
@@ -1463,7 +1476,7 @@ export const ironAndSteelTariffs: TariffI[] = [
     code: "9903.81.96",
     description:
       "Derivative iron or steel products of the United Kingdom provided for in the tariff subheadings enumerated in subdivision (s) of note 16 to this subchapter",
-    name: "Derivative Iron / Steel Products of The United Kingdom from 16 (s) (Section 232)",
+    name: "Derivative Iron / Steel Products of The UK from 16 (s)",
     general: 25,
     special: 25,
     other: 25,

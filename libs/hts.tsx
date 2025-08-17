@@ -758,7 +758,7 @@ export interface BaseTariffI {
   programs?: string[];
 }
 
-export interface ParsedTariff {
+export interface ParsedBaseTariff {
   tariffs: BaseTariffI[];
   parsingFailures: string[];
 }
@@ -770,7 +770,7 @@ export const splitOnClosingParen = (input: string): string[] => {
 
 // TODO: consider filtering out any agreements that might not apply in this case given `country` param
 //  Item for the future to clean this up properly once we have lists of countries mapped to programs
-export function getBaseTariffs(input: string): ParsedTariff {
+export function getBaseTariffs(input: string): ParsedBaseTariff {
   const tariffs: BaseTariffI[] = [];
   const parsingFailures: string[] = [];
 

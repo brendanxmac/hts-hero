@@ -1,30 +1,12 @@
 import { useEffect, useState, useRef } from "react";
 import { useClassification } from "../contexts/ClassificationContext";
-import { useHts } from "../contexts/HtsContext";
 import { Color } from "../enums/style";
-import {
-  downloadClassificationReport,
-  generateBreadcrumbsForHtsElement,
-  getChapterFromHtsElement,
-  getHtsElementParents,
-  getSectionAndChapterFromChapterNumber,
-} from "../libs/hts";
+import { downloadClassificationReport } from "../libs/hts";
 import { PrimaryLabel } from "./PrimaryLabel";
-import { SecondaryLabel } from "./SecondaryLabel";
 import { PDFProps } from "../interfaces/ui";
 import PDF from "./PDF";
 import { TertiaryText } from "./TertiaryText";
-import {
-  CheckCircleIcon,
-  MagnifyingGlassIcon,
-} from "@heroicons/react/16/solid";
 import { ArrowDownTrayIcon } from "@heroicons/react/16/solid";
-import { useHtsSections } from "../contexts/HtsSectionsContext";
-import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
-import { useClassifyTab } from "../contexts/ClassifyTabContext";
-import { ClassifyTab } from "../enums/classify";
-import { Square2StackIcon } from "@heroicons/react/24/outline";
-import { copyToClipboard } from "../utilities/data";
 import { useUser } from "../contexts/UserContext";
 import { fetchUser } from "../libs/supabase/user";
 import { LoadingIndicator } from "./LoadingIndicator";

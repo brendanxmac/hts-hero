@@ -1,16 +1,16 @@
 import { Color } from "../enums/style";
 import { UITariff, TariffSet } from "../interfaces/tariffs";
 import {
+  CountryWithTariffs,
   getTariffsByCode,
   isAncestorTariff,
   isDescendantTariff,
   tariffIsActive,
 } from "../tariffs/tariffs";
 import { classNames } from "../utilities/style";
-
-import { SecondaryText } from "./SecondaryText";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { TariffColumn } from "../enums/tariff";
+import { TertiaryText } from "./TertiaryText";
 
 interface Props {
   showInactive: boolean;
@@ -18,7 +18,10 @@ interface Props {
   tariff: UITariff;
   setIndex: number;
   tariffSets: TariffSet[];
-  setTariffSets: (tariffs: TariffSet[]) => void;
+  // setTariffSets: (tariffs: TariffSet[]) => void;
+  countryIndex: number;
+  countries: CountryWithTariffs[];
+  setCountries: (countries: CountryWithTariffs[]) => void;
   renderedCodes?: Set<string>;
   column: TariffColumn;
 }
@@ -29,7 +32,10 @@ export const Tariff = ({
   tariff,
   setIndex,
   tariffSets,
-  setTariffSets,
+  countryIndex,
+  countries,
+  setCountries,
+  // setTariffSets,
   renderedCodes = new Set(),
   column,
 }: Props) => {
@@ -79,7 +85,14 @@ export const Tariff = ({
     const updatedTariffSets = [...tariffSets];
     updatedTariffSets[setIndex] = set;
 
-    setTariffSets(updatedTariffSets);
+    const updatedCountries = [...countries];
+    updatedCountries[countryIndex] = {
+      ...countries[countryIndex],
+      tariffSets: updatedTariffSets,
+    };
+
+    // setTariffSets(updatedTariffSets);
+    setCountries(updatedCountries);
   };
 
   // Map exception levels to Tailwind margin classes
@@ -113,7 +126,7 @@ export const Tariff = ({
       <div
         key={`${tariff.code}-${exceptionLevel}`}
         className={classNames(
-          "text-white flex gap-2 justify-between items-end border-b border-base-content/50",
+          "text-white flex gap-2 justify-between items-end border-b border-base-content/20",
           marginClass
         )}
       >
@@ -125,7 +138,7 @@ export const Tariff = ({
               !tariff.requiresReview ||
               hasExceptionTariffThatDoesNotNeedReviewThatIsActive
             }
-            className="checkbox checkbox-primary checkbox-sm"
+            className="checkbox checkbox-primary checkbox-xs"
             onChange={() => {
               if (tariff.requiresReview) {
                 toggleTariff(tariff);
@@ -133,27 +146,19 @@ export const Tariff = ({
             }}
           />
 
-          <div className="flex flex-col gap-1 py-1">
+          <div className="flex flex-col gap-1 py-0.5">
             <div className="flex gap-2 items-center">
-              {/* {tariff.requiresReview && (
-                <div
-                  className="tooltip rounded-md bg-primary px-1.5 py-0.5"
-                  data-tip="Needs Review"
-                >
-                  <p className="text-xs font-bold">R</p>
-                </div>
-              )} */}
               <TertiaryLabel
                 value={tariff.code}
                 color={Color.NEUTRAL_CONTENT}
               />
-              <SecondaryText value={tariff.name} color={Color.WHITE} />
+              <TertiaryText value={tariff.name} color={Color.WHITE} />
             </div>
           </div>
         </div>
         <p
           className={classNames(
-            "shrink-0 min-w-32 text-right text-xl",
+            "shrink-0 min-w-32 text-right text-base",
             tariff.isActive
               ? "text-white font-bold"
               : tariff[column] === null
@@ -179,9 +184,12 @@ export const Tariff = ({
                   showInactive={showInactive}
                   tariff={exceptionTariff}
                   tariffSets={tariffSets}
-                  setTariffSets={setTariffSets}
+                  // setTariffSets={setTariffSets}
                   renderedCodes={renderedCodes}
                   column={column}
+                  countryIndex={countryIndex}
+                  countries={countries}
+                  setCountries={setCountries}
                 />
               )
           )}

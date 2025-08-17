@@ -17,6 +17,12 @@ import { classNames } from "../utilities/style";
 import { Color } from "../enums/style";
 import { SecondaryLabel } from "./SecondaryLabel";
 import { notes } from "../public/notes/notes";
+import { useSearchParams } from "next/navigation";
+import {
+  generateBreadcrumbsForHtsElement,
+  getHtsElementParents,
+  getSectionAndChapterFromChapterNumber,
+} from "../libs/hts";
 
 const ExploreTabs: Tab[] = [
   {
@@ -30,12 +36,15 @@ const ExploreTabs: Tab[] = [
 ];
 
 export const Explore = () => {
+  const searchParams = useSearchParams();
   const [{ isLoading, text: loadingText }, setLoading] = useState<Loader>({
     isLoading: true,
     text: "Loading",
   });
   const [searching, setSearching] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState(() => {
+    return searchParams.get("code") || searchParams.get("search") || "";
+  });
   const [activeTab, setActiveTab] = useState(ExploreTabs[0].value);
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { sections, getSections } = useHtsSections();
@@ -43,6 +52,8 @@ export const Explore = () => {
   const [searchResults, setSearchResults] = useState<FuseResult<HtsElement>[]>(
     []
   );
+  const [completedDirectNavigation, setCompletedDirectNavigation] =
+    useState(false);
   const { htsElements, fetchElements, revision } = useHts();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -140,8 +151,32 @@ export const Explore = () => {
         // Use setTimeout to move the search to the next tick and prevent UI blocking
         setTimeout(() => {
           const results = htsFuse.search(query.trim());
-          const topResults = results.slice(0, 30);
-          setSearchResults(topResults);
+          const searchParamExactHtsCodeMatch = results.find(
+            (r) => r.item.htsno === query.trim() && searchParams.get("code")
+          );
+
+          if (searchParamExactHtsCodeMatch && !completedDirectNavigation) {
+            const matchedElement = searchParamExactHtsCodeMatch.item;
+            const sectionAndChapter = getSectionAndChapterFromChapterNumber(
+              sections,
+              Number(matchedElement.chapter)
+              // Number(getChapterFromHtsElement(element, htsElements))
+            );
+            const parents = getHtsElementParents(matchedElement, htsElements);
+            const breadcrumbs = generateBreadcrumbsForHtsElement(
+              sections,
+              sectionAndChapter.chapter,
+              [...parents, matchedElement]
+            );
+            setSearchValue("");
+            setActiveTab(ExploreTab.ELEMENTS);
+            setSearchResults([]);
+            setBreadcrumbs(breadcrumbs);
+            setCompletedDirectNavigation(true);
+          } else {
+            const topResults = results.slice(0, 30);
+            setSearchResults(topResults);
+          }
           setSearching(false);
           isSearchingRef.current = false;
         }, 0);
@@ -219,7 +254,7 @@ export const Explore = () => {
   };
 
   return (
-    <div className="w-full h-full px-4 pt-4 flex flex-col gap-2">
+    <div className="w-full h-full p-4 flex flex-col gap-2">
       {isLoading ? (
         <div className="w-full h-full flex items-center justify-center">
           <LoadingIndicator text={loadingText} />

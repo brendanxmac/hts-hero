@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { countries, Country } from "../constants/countries";
+import { Countries, Country } from "../constants/countries";
 
 interface Props {
   selectedCountries: Country[];
@@ -17,11 +17,9 @@ export const CountrySelection = ({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Filter countries based on search term
-  const filteredCountries = countries
-    .filter((country) =>
-      country.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .filter((country) => country.flag !== "🇺🇸");
+  const filteredCountries = Countries.filter((country) =>
+    country.name.toLowerCase().includes(searchTerm.toLowerCase())
+  ).filter((country) => country.flag !== "🇺🇸");
 
   // Reset highlighted index when search term changes
   useEffect(() => {
@@ -146,7 +144,7 @@ export const CountrySelection = ({
   return (
     <div className="relative" ref={dropdownRef}>
       <div
-        className="w-full p-1 pr-2 border border-base-content/50 rounded-lg cursor-pointer bg-base-300 flex gap-3 items-center justify-between hover:bg-primary/20 transition-colors min-h-10"
+        className="w-full p-1 pr-2 border border-base-content/50 rounded-md cursor-pointer flex gap-3 items-center justify-between hover:bg-primary/20 transition-colors min-h-10"
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="flex-1 flex flex-wrap gap-2 items-center">
@@ -154,11 +152,13 @@ export const CountrySelection = ({
             selectedCountries.map((country) => (
               <div
                 key={`country-selection-option-${country.name}`}
-                className="flex items-center gap-1 bg-primary/20 border border-primary/20 rounded-md px-2 py-1"
+                className="flex items-center gap-1 bg-primary/20 border border-primary/20 rounded-md px-1 py-0"
               >
                 <div className="flex gap-2 items-center">
-                  <p className="text-xl">{country.flag}</p>
-                  <p className="text-white font-semibold">{country.name}</p>
+                  <p className="text-lg">{country.flag}</p>
+                  <p className="text-sm text-white font-semibold">
+                    {country.name}
+                  </p>
                 </div>
                 <button
                   onClick={(e) => handleRemoveCountry(country, e)}

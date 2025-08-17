@@ -116,15 +116,13 @@ export const canadaTariffs: TariffI[] = [
     },
   },
   {
-    // TODO: This one is purely additive, and does not apply to goods from 1.11,12,14
-    // FIXME: Doesn't apply when USMCA does -- need to figure this one out
     code: "9903.01.16",
     description:
       "Except for products described in 9903.01.11, 9903.01.12, and 9903.01.14, articles the product of Canada as provided for in subdivision (m) to note 2 to this subchapter and determined by CBP to have been transshipped to evade applicable duties",
     name: "Transshipped through Canada to Evade Duties",
     exceptions: ["9903.01.11", "9903.01.12", "9903.01.14"],
     general: 40,
-    special: 0,
+    special: 0, // TODO: if USCMA applies we consider the country "special" column at that point...? so here it's 0?
     other: 0,
     requiresReview: true,
     inclusions: {
