@@ -16,6 +16,7 @@ interface BreadcrumbsContextType {
   addBreadcrumb: (navigatableElement: NavigatableElementType) => void;
   removeBreadcrumb: (index: number) => void;
   clearBreadcrumbs: () => void;
+  resetBreadcrumbs: () => void;
 }
 
 const BreadcrumbsContext = createContext<BreadcrumbsContextType | undefined>(
@@ -65,6 +66,12 @@ export function BreadcrumbsProvider({ children }: BreadcrumbsProviderProps) {
     setBreadcrumbs((prev) => prev.slice(0, 1));
   };
 
+  const resetBreadcrumbs = () => {
+    console.log("Resetting breadcrumbs");
+    // Completely clear all breadcrumbs
+    setBreadcrumbs([]);
+  };
+
   return (
     <BreadcrumbsContext.Provider
       value={{
@@ -73,6 +80,7 @@ export function BreadcrumbsProvider({ children }: BreadcrumbsProviderProps) {
         addBreadcrumb,
         removeBreadcrumb,
         clearBreadcrumbs,
+        resetBreadcrumbs,
       }}
     >
       {children}

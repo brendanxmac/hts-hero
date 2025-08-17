@@ -9,7 +9,6 @@ import { DescriptionStep } from "./workflow/DescriptionStep";
 import { useClassifyTab } from "../contexts/ClassifyTabContext";
 import { ClassifyPage, ClassifyTab } from "../enums/classify";
 import { LoadingIndicator } from "./LoadingIndicator";
-import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { Loader } from "../interfaces/ui";
 import { useHts } from "../contexts/HtsContext";
 import { ClassificationResultPage } from "./ClassificationResultPage";
@@ -17,24 +16,17 @@ import Modal from "./Modal";
 import ConversionPricing from "./ConversionPricing";
 import { useClassification } from "../contexts/ClassificationContext";
 import { classNames } from "../utilities/style";
-import toast from "react-hot-toast";
 
 interface Props {
-  page: ClassifyPage;
   setPage: (page: ClassifyPage) => void;
 }
 
-export const Classify = ({ page, setPage }: Props) => {
+export const Classify = ({ setPage }: Props) => {
   const [fetchingOptionsOrSuggestions, setFetchingOptionsOrSuggestions] =
     useState(false);
   const [showPricing, setShowPricing] = useState(false);
-  const [loading, setLoading] = useState<Loader>({
-    isLoading: true,
-    text: "",
-  });
   const { activeTab } = useClassifyTab();
-  const { fetchElements, htsElements, isFetching, revision } = useHts();
-  const { getSections, sections } = useHtsSections();
+  const { isFetching } = useHts();
   const { classification, setClassification, setClassificationId } =
     useClassification();
   const [classificationLevel, setClassificationLevel] = useState<
@@ -56,34 +48,17 @@ export const Classify = ({ page, setPage }: Props) => {
     return WorkflowStep.DESCRIPTION;
   });
 
+  const [loading, setLoading] = useState<Loader>({
+    isLoading: isFetching,
+    text: "",
+  });
+
   useEffect(() => {
     return () => {
       setClassification(null);
       setClassificationId(null);
     };
   }, []);
-
-  useEffect(() => {
-    const loadAllData = async () => {
-      setLoading({ isLoading: true, text: "Fetching All Data" });
-      try {
-        const revisionToLoad = revision ? revision.name : "latest";
-        await Promise.all([fetchElements(revisionToLoad), getSections()]);
-        setLoading({ isLoading: false, text: "" });
-      } catch (error) {
-        toast.error("Failed to fetch data. Please try again.");
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading({ isLoading: false, text: "" });
-      }
-    };
-
-    if (!sections.length || !htsElements.length) {
-      loadAllData();
-    } else {
-      setLoading({ isLoading: false, text: "" });
-    }
-  }, [page]);
 
   if (loading.isLoading || isFetching) {
     return (
