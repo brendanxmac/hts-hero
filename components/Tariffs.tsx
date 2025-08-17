@@ -37,7 +37,6 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
       return acc;
     }, new Set<ContentRequirements>())
   );
-
   // UI state - updates immediately for responsive slider
   const [uiContentPercentages, setUiContentPercentages] = useState<
     ContentRequirementI<ContentRequirements>[]
@@ -47,7 +46,6 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
       value: 80,
     }))
   );
-
   // Calculation state - updates after debounce for expensive operations
   const [codeBasedContentPercentages, setCodeBasedContentPercentages] =
     useState<ContentRequirementI<ContentRequirements>[]>(
@@ -56,42 +54,8 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
         value: 80,
       }))
     );
-
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [selectedCountries, setSelectedCountries] = useState<Country[]>([]);
-
-  const handleCountrySelectionsChange = (selectedCountries: Country[]) => {
-    console.log("selectedCountries", selectedCountries);
-    setSelectedCountries(selectedCountries);
-
-    // If clearing all countries, reset expanded rows and regenerate clean countries
-    // if (selectedCountries.length === 0) {
-    // setExpandedRows(new Set());
-    // Regenerate clean countries data
-    // const cleanCountries = addTariffsToCountries(
-    //   Countries,
-    //   htsElement,
-    //   tariffElement,
-    //   codeBasedContentPercentages
-    // );
-    // setCountries(cleanCountries);
-    // } else {
-    // When individual countries are removed, clean up their expanded state
-    // const selectedCountryCodes = new Set(
-    // selectedCountries.map((c) => c.code)
-    // );
-    // setExpandedRows(selectedCountryCodes);
-    // setExpandedRows((prev) => {
-    //   const filteredExpanded = new Set<string>();
-    //   prev.forEach((code) => {
-    //     if (newSelectedCountryCodes.has(code)) {
-    //       filteredExpanded.add(code);
-    //     }
-    //   });
-    //   return filteredExpanded;
-    // });
-    // }
-  };
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const toggleRow = (countryCode: string) => {
@@ -290,7 +254,7 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
       <div className="w-full">
         <CountrySelection
           selectedCountries={selectedCountries}
-          setSelectedCountries={handleCountrySelectionsChange}
+          setSelectedCountries={setSelectedCountries}
         />
       </div>
 
