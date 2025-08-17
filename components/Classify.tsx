@@ -68,7 +68,6 @@ export const Classify = ({ page, setPage }: Props) => {
       setLoading({ isLoading: true, text: "Fetching All Data" });
       try {
         const revisionToLoad = revision ? revision.name : "latest";
-        console.log("revisionToLoad", revisionToLoad);
         await Promise.all([fetchElements(revisionToLoad), getSections()]);
         setLoading({ isLoading: false, text: "" });
       } catch (error) {
