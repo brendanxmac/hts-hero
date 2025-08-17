@@ -951,8 +951,6 @@ export const getTariffElement = (
     }
   }
 
-  throw new Error(`No tariff element found for element: ${element.htsno}`);
-
   return undefined;
 };
 

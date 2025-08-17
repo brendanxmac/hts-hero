@@ -60,47 +60,50 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [selectedCountries, setSelectedCountries] = useState<Country[]>([]);
 
-  // Handler to reset all state when countries are cleared
-  const handleCountriesChange = (newSelectedCountries: Country[]) => {
-    setSelectedCountries(newSelectedCountries);
+  const handleCountrySelectionsChange = (selectedCountries: Country[]) => {
+    console.log("selectedCountries", selectedCountries);
+    setSelectedCountries(selectedCountries);
 
     // If clearing all countries, reset expanded rows and regenerate clean countries
-    if (newSelectedCountries.length === 0) {
-      setExpandedRows(new Set());
-      // Regenerate clean countries data
-      const cleanCountries = addTariffsToCountries(
-        Countries,
-        htsElement,
-        tariffElement,
-        codeBasedContentPercentages
-      );
-      setCountries(cleanCountries);
-    } else {
-      // When individual countries are removed, clean up their expanded state
-      const newSelectedCountryCodes = new Set(
-        newSelectedCountries.map((c) => c.code)
-      );
-      setExpandedRows((prev) => {
-        const filteredExpanded = new Set<string>();
-        prev.forEach((code) => {
-          if (newSelectedCountryCodes.has(code)) {
-            filteredExpanded.add(code);
-          }
-        });
-        return filteredExpanded;
-      });
-    }
+    // if (selectedCountries.length === 0) {
+    // setExpandedRows(new Set());
+    // Regenerate clean countries data
+    // const cleanCountries = addTariffsToCountries(
+    //   Countries,
+    //   htsElement,
+    //   tariffElement,
+    //   codeBasedContentPercentages
+    // );
+    // setCountries(cleanCountries);
+    // } else {
+    // When individual countries are removed, clean up their expanded state
+    // const selectedCountryCodes = new Set(
+    // selectedCountries.map((c) => c.code)
+    // );
+    // setExpandedRows(selectedCountryCodes);
+    // setExpandedRows((prev) => {
+    //   const filteredExpanded = new Set<string>();
+    //   prev.forEach((code) => {
+    //     if (newSelectedCountryCodes.has(code)) {
+    //       filteredExpanded.add(code);
+    //     }
+    //   });
+    //   return filteredExpanded;
+    // });
+    // }
   };
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const toggleRow = (countryCode: string) => {
-    const newExpandedRows = new Set(expandedRows);
-    if (newExpandedRows.has(countryCode)) {
-      newExpandedRows.delete(countryCode);
+    const updatedRows = new Set(expandedRows);
+
+    if (updatedRows.has(countryCode)) {
+      updatedRows.delete(countryCode);
     } else {
-      newExpandedRows.add(countryCode);
+      updatedRows.add(countryCode);
     }
-    setExpandedRows(newExpandedRows);
+
+    setExpandedRows(updatedRows);
   };
 
   const handleSliderChange = (
@@ -126,12 +129,6 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
   };
 
   const [countries, setCountries] = useState<CountryWithTariffs[]>([]);
-  // addTariffsToCountries(
-  //   Countries,
-  //   htsElement,
-  //   tariffElement,
-  //   codeBasedContentPercentages
-  // );
 
   enum TariffsTableSortOption {
     RATE_ASC = "rate-asc",
@@ -194,6 +191,7 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
         )
       );
     } else {
+      // Only 2 countries here
       setSortedCountries(
         countries.filter((country) =>
           selectedCountries.length > 0
@@ -289,161 +287,153 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
         </div>
       )}
 
-      {sortedCountries.length > 0 && (
-        <div className="w-full flex flex-col overflow-x-auto border-2 border-base-content/40 rounded-lg">
-          <div className="w-full p-3">
-            <CountrySelection
-              selectedCountries={selectedCountries}
-              setSelectedCountries={handleCountriesChange}
-            />
-          </div>
+      <div className="w-full">
+        <CountrySelection
+          selectedCountries={selectedCountries}
+          setSelectedCountries={handleCountrySelectionsChange}
+        />
+      </div>
 
-          <table className="table">
-            <thead>
-              <tr>
-                <th></th>
-                <th className="w-full">Country of Origin</th>
-                <th className="w-auto min-w-64">
-                  <div className="flex gap-2 items-center">
-                    <h3>Rates</h3>
-                    <button
+      <div className="w-full flex flex-col overflow-x-auto border-2 border-base-content/40 rounded-lg">
+        <table className="table">
+          <thead>
+            <tr>
+              <th></th>
+              <th className="w-full">Country of Origin</th>
+              <th className="w-auto min-w-64">
+                <div className="flex gap-2 items-center">
+                  <h3>Rates</h3>
+                  <button
+                    className={classNames(
+                      `btn btn-xs p-0.5`,
+                      (sortBy === TariffsTableSortOption.RATE_ASC ||
+                        sortBy === TariffsTableSortOption.RATE_DESC) &&
+                        "btn-primary",
+                      !sortBy && "btn-ghost"
+                    )}
+                    onClick={() => {
+                      if (!sortBy) {
+                        setSortBy(TariffsTableSortOption.RATE_ASC);
+                      }
+                      if (sortBy === TariffsTableSortOption.RATE_ASC) {
+                        setSortBy(TariffsTableSortOption.RATE_DESC);
+                      }
+                      if (sortBy === TariffsTableSortOption.RATE_DESC) {
+                        setSortBy(null);
+                      }
+                    }}
+                  >
+                    <ChevronDownIcon
                       className={classNames(
-                        `btn btn-xs p-0.5`,
-                        (sortBy === TariffsTableSortOption.RATE_ASC ||
-                          sortBy === TariffsTableSortOption.RATE_DESC) &&
-                          "btn-primary",
-                        !sortBy && "btn-ghost"
+                        "w-4 h-4",
+                        sortBy === TariffsTableSortOption.RATE_ASC &&
+                          "rotate-180"
                       )}
-                      onClick={() => {
-                        if (!sortBy) {
-                          setSortBy(TariffsTableSortOption.RATE_ASC);
-                        }
-                        if (sortBy === TariffsTableSortOption.RATE_ASC) {
-                          setSortBy(TariffsTableSortOption.RATE_DESC);
-                        }
-                        if (sortBy === TariffsTableSortOption.RATE_DESC) {
-                          setSortBy(null);
-                        }
-                      }}
-                    >
+                    />
+                  </button>
+                </div>
+              </th>
+              <th className="max-w-20">FTA(s)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedCountries.map((country, i) => {
+              const isExpanded = expandedRows.has(country.code);
+              const countryAmounts = getBaseAmountTariffsText(
+                country.baseTariffs
+              );
+
+              const countryPercentTariffsSums = country.tariffSets.map(
+                (tariffSet) =>
+                  getTotalPercentTariffsSum(tariffSet, country.baseTariffs)
+              );
+
+              return (
+                <React.Fragment key={`${country.code}-${i}`}>
+                  <tr
+                    className={classNames(
+                      "w-full cursor-pointer transition-colors hover:bg-base-content/10",
+                      !isExpanded && "not-last:border-b border-base-content/40",
+                      isExpanded && "bg-base-300 hover:bg-primary/50 border-b-0"
+                    )}
+                    onClick={() => toggleRow(country.code)}
+                  >
+                    <td className="w-8">
                       <ChevronDownIcon
-                        className={classNames(
-                          "w-4 h-4",
-                          sortBy === TariffsTableSortOption.RATE_ASC &&
-                            "rotate-180"
-                        )}
+                        className={`h-4 w-4 text-white transition-transform duration-100 ${
+                          isExpanded ? "" : "-rotate-180"
+                        }`}
                       />
-                    </button>
-                  </div>
-                </th>
-                <th className="max-w-20">FTA(s)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedCountries.map((country, i) => {
-                const isExpanded = expandedRows.has(country.code);
-                // const countryAmountRate = getBaseAmountTariffsSum(
-                //   country.baseTariffs
-                // );
-                const countryAmounts = getBaseAmountTariffsText(
-                  country.baseTariffs
-                );
-
-                const countryPercentTariffsSums = country.tariffSets.map(
-                  (tariffSet) =>
-                    getTotalPercentTariffsSum(tariffSet, country.baseTariffs)
-                );
-
-                return (
-                  <React.Fragment key={`${country.code}-${i}`}>
+                    </td>
+                    <td>
+                      <div className="flex gap-3 items-center">
+                        <h2 className="text-white">{country.flag}</h2>
+                        <h2 className="text-white">{country.name}</h2>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="flex gap-2">
+                        {countryPercentTariffsSums.map((sum, i) => (
+                          <div
+                            key={`${country.code}-${i}-percent-sum-${i}`}
+                            className="flex gap-2"
+                          >
+                            <div className="flex gap-1">
+                              {countryAmounts && countryAmounts.length > 0 ? (
+                                <p className="text-white">{countryAmounts} +</p>
+                              ) : null}
+                              {<p className="text-white">{sum}%</p>}
+                              {i > 0 &&
+                                codeBasedContentRequirements &&
+                                codeBasedContentRequirements.length > 0 &&
+                                uiContentPercentages[i - 1].name && (
+                                  <p className="text-white">
+                                    for {uiContentPercentages[i - 1].name}
+                                  </p>
+                                )}
+                            </div>
+                            {countryPercentTariffsSums.length !== i + 1
+                              ? "+"
+                              : null}
+                          </div>
+                        ))}
+                      </div>
+                    </td>
+                    <td>
+                      <p className="text-lg p-0">
+                        {country.specialTradePrograms.length > 0 ? "✅" : "−"}
+                      </p>
+                    </td>
+                  </tr>
+                  {isExpanded && (
                     <tr
                       className={classNames(
-                        "w-full cursor-pointer transition-colors hover:bg-base-content/10",
-                        !isExpanded &&
-                          "not-last:border-b border-base-content/40",
-                        isExpanded &&
-                          "bg-base-300 hover:bg-primary/50 border-b-0"
+                        "w-full bg-base-300",
+                        isExpanded && "not-last:border-b border-base-content/40"
                       )}
-                      onClick={() => toggleRow(country.code)}
                     >
-                      <td className="w-8">
-                        <ChevronDownIcon
-                          className={`h-4 w-4 text-white transition-transform duration-100 ${
-                            isExpanded ? "" : "-rotate-180"
-                          }`}
+                      <td colSpan={4} className="p-4">
+                        <InlineCountryTariff
+                          key={`tariff-${country.code}-${i}`}
+                          country={country}
+                          htsElement={htsElement}
+                          tariffElement={tariffElement}
+                          contentRequirements={uiContentPercentages}
+                          countryIndex={countries.findIndex(
+                            (c) => c.code === country.code
+                          )}
+                          countries={countries}
+                          setCountries={setCountries}
                         />
                       </td>
-                      <td>
-                        <div className="flex gap-3 items-center">
-                          <h2 className="text-white">{country.flag}</h2>
-                          <h2 className="text-white">{country.name}</h2>
-                        </div>
-                      </td>
-                      <td>
-                        <div className="flex gap-2">
-                          {countryPercentTariffsSums.map((sum, i) => (
-                            <div
-                              key={`${country.code}-${i}-percent-sum-${i}`}
-                              className="flex gap-2"
-                            >
-                              <div className="flex gap-1">
-                                {countryAmounts && countryAmounts.length > 0 ? (
-                                  <p className="text-white">
-                                    {countryAmounts} +
-                                  </p>
-                                ) : null}
-                                {<p className="text-white">{sum}%</p>}
-                                {i > 0 &&
-                                  codeBasedContentRequirements &&
-                                  codeBasedContentRequirements.length > 0 &&
-                                  uiContentPercentages[i - 1].name && (
-                                    <p className="text-white">
-                                      for {uiContentPercentages[i - 1].name}
-                                    </p>
-                                  )}
-                              </div>
-                              {countryPercentTariffsSums.length !== i + 1
-                                ? "+"
-                                : null}
-                            </div>
-                          ))}
-                        </div>
-                      </td>
-                      <td>
-                        <p className="text-lg p-0">
-                          {country.specialTradePrograms.length > 0 ? "✅" : "−"}
-                        </p>
-                      </td>
                     </tr>
-                    {isExpanded && (
-                      <tr
-                        className={classNames(
-                          "w-full bg-base-300",
-                          isExpanded &&
-                            "not-last:border-b border-base-content/40"
-                        )}
-                      >
-                        <td colSpan={4} className="p-4">
-                          <InlineCountryTariff
-                            key={`tariff-${country.code}-${i}`}
-                            country={country}
-                            htsElement={htsElement}
-                            tariffElement={tariffElement}
-                            contentRequirements={uiContentPercentages}
-                            countryIndex={i}
-                            countries={sortedCountries}
-                            setCountries={setCountries}
-                          />
-                        </td>
-                      </tr>
-                    )}
-                  </React.Fragment>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

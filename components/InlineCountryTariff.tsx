@@ -132,125 +132,123 @@ export const InlineCountryTariff = ({
       {/* Header with Buttons */}
       <div className="w-full flex justify-between">
         {/* Special Tariff Program Selection */}
-        {!isOtherColumnCountry && specialTradePrograms.length > 0 && (
-          <div className="w-full flex flex-col gap-2">
-            <div className="w-full flex flex-col gap-1">
-              <TertiaryLabel
-                value="Potential Special Tariff Programs"
-                color={Color.WHITE}
-              />
-            </div>
-            <div
-              className="relative w-full max-w-lg"
-              ref={specialProgramDropdownRef}
-            >
-              <div
-                className="w-full px-3 py-1 border-2 border-base-content/10 rounded-lg cursor-pointer bg-base-300 flex gap-3 items-center justify-between hover:bg-primary/20 transition-colors min-h-10"
-                onClick={() => setIsSpecialProgramOpen(!isSpecialProgramOpen)}
-              >
-                <div className="flex-1 flex items-center">
-                  {selectedSpecialProgram ? (
-                    <p className="text-white font-semibold">
-                      {selectedSpecialProgram.name}
-                      {selectedSpecialProgram.symbol &&
-                        selectedSpecialProgram.symbol !== "none" && (
-                          <span className="text-accent">
-                            {" "}
-                            ({selectedSpecialProgram.symbol})
-                          </span>
-                        )}
-                    </p>
-                  ) : (
-                    <span className="text-sm">
-                      Select Special Tariff Program
-                    </span>
-                  )}
-                </div>
-                <svg
-                  className={`w-4 h-4 transition-transform text-base-content/70 ${isSpecialProgramOpen ? "" : "rotate-180"}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </div>
 
-              {isSpecialProgramOpen && (
-                <div className="absolute z-10 w-full mt-1 bg-base-100 border border-base-300 rounded-lg shadow-xl max-h-60 overflow-hidden">
-                  <div className="max-h-48 overflow-y-auto">
-                    {[
-                      {
-                        symbol: "none",
-                        name: "None",
-                        description: "No special program",
-                      },
-                      ...specialTradePrograms,
-                    ].map((program, index) => (
-                      <div
-                        key={index}
-                        className={`px-3 py-2 cursor-pointer flex items-center justify-between ${
-                          selectedSpecialProgram?.symbol === program.symbol
-                            ? "bg-primary/10 border-l-2 border-primary"
-                            : "hover:bg-primary/20"
-                        }`}
-                        onClick={() => {
-                          setSelectedSpecialProgram(
-                            program.symbol === "none"
-                              ? {
-                                  symbol: "none",
-                                  name: "None",
-                                  description: "No special program",
-                                }
-                              : program
-                          );
-                          setIsSpecialProgramOpen(false);
-                        }}
-                      >
-                        <div className="flex flex-col">
-                          <span className="text-base-content font-medium">
-                            {program.name}
-                            {program.symbol && program.symbol !== "none" && (
-                              <span className="text-base-content">
-                                {" "}
-                                ({program.symbol})
-                              </span>
-                            )}
-                          </span>
-                          {"description" in program && program.description && (
-                            <span className="text-sm text-base-content">
-                              {program.description}
+        <div className="w-full flex flex-col gap-2">
+          <div className="w-full flex flex-col gap-1">
+            <TertiaryLabel
+              value="Potential Special Tariff Programs"
+              color={Color.WHITE}
+            />
+          </div>
+          <div
+            className="relative w-full max-w-lg"
+            ref={specialProgramDropdownRef}
+          >
+            <div
+              className="w-full px-3 py-1 border-2 border-base-content/10 rounded-lg cursor-pointer bg-base-300 flex gap-3 items-center justify-between hover:bg-primary/20 transition-colors min-h-10"
+              onClick={() => setIsSpecialProgramOpen(!isSpecialProgramOpen)}
+            >
+              <div className="flex-1 flex items-center">
+                {selectedSpecialProgram ? (
+                  <p className="text-white font-semibold">
+                    {selectedSpecialProgram.name}
+                    {selectedSpecialProgram.symbol &&
+                      selectedSpecialProgram.symbol !== "none" && (
+                        <span className="text-accent">
+                          {" "}
+                          ({selectedSpecialProgram.symbol})
+                        </span>
+                      )}
+                  </p>
+                ) : (
+                  <span className="text-sm">Select Special Tariff Program</span>
+                )}
+              </div>
+              <svg
+                className={`w-4 h-4 transition-transform text-base-content/70 ${isSpecialProgramOpen ? "" : "rotate-180"}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+
+            {isSpecialProgramOpen && (
+              <div className="absolute z-10 w-full mt-1 bg-base-100 border border-base-300 rounded-lg shadow-xl max-h-60 overflow-hidden">
+                <div className="max-h-48 overflow-y-auto">
+                  {[
+                    {
+                      symbol: "none",
+                      name: "None",
+                      description: "No special program",
+                    },
+                    ...specialTradePrograms,
+                  ].map((program, index) => (
+                    <div
+                      key={index}
+                      className={`px-3 py-2 cursor-pointer flex items-center justify-between ${
+                        selectedSpecialProgram?.symbol === program.symbol
+                          ? "bg-primary/10 border-l-2 border-primary"
+                          : "hover:bg-primary/20"
+                      }`}
+                      onClick={() => {
+                        setSelectedSpecialProgram(
+                          program.symbol === "none"
+                            ? {
+                                symbol: "none",
+                                name: "None",
+                                description: "No special program",
+                              }
+                            : program
+                        );
+                        setIsSpecialProgramOpen(false);
+                      }}
+                    >
+                      <div className="flex flex-col">
+                        <span className="text-base-content font-medium">
+                          {program.name}
+                          {program.symbol && program.symbol !== "none" && (
+                            <span className="text-base-content">
+                              {" "}
+                              ({program.symbol})
                             </span>
                           )}
-                        </div>
-                        {selectedSpecialProgram?.symbol === program.symbol && (
-                          <svg
-                            className="w-4 h-4 text-primary"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M5 13l4 4L19 7"
-                            />
-                          </svg>
+                        </span>
+                        {"description" in program && program.description && (
+                          <span className="text-sm text-base-content">
+                            {program.description}
+                          </span>
                         )}
                       </div>
-                    ))}
-                  </div>
+                      {selectedSpecialProgram?.symbol === program.symbol && (
+                        <svg
+                          className="w-4 h-4 text-primary"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      )}
+                    </div>
+                  ))}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
-        )}
+        </div>
+
         <div className="w-full flex gap-2 justify-end">
           <button
             className="btn btn-xs btn-primary"
@@ -261,25 +259,7 @@ export const InlineCountryTariff = ({
           <button
             className="btn btn-xs btn-primary"
             // TODO: implement this reset now with setCountries
-            // onClick={() => {
-            //   setTariffSets([
-            //     getArticleTariffSet(
-            //       applicableUITariffs,
-            //       [],
-            //       contentRequirements
-            //     ),
-            //     ...getContentRequirementTariffSets(
-            //       applicableUITariffs,
-            //       contentRequirements
-            //     ),
-            //   ]);
-            //   setSelectedSpecialProgram({
-            //     symbol: "none",
-            //     name: "None",
-            //     description: "No special program",
-            //   });
-            //   setTariffColumn(TariffColumn.GENERAL);
-            // }}
+            onClick={() => {}}
           >
             Reset
           </button>
