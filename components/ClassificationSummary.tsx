@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useClassification } from "../contexts/ClassificationContext";
 import { useHts } from "../contexts/HtsContext";
 import { ClassifyPage } from "../enums/classify";
@@ -10,6 +11,7 @@ import { formatHumanReadableDate } from "../libs/date";
 import { PrimaryText } from "./PrimaryText";
 import { SecondaryLabel } from "./SecondaryLabel";
 import { TertiaryText } from "./TertiaryText";
+import { LoadingIndicator } from "./LoadingIndicator";
 
 interface Props {
   classificationRecord: ClassificationRecord;
@@ -39,24 +41,35 @@ export const ClassificationSummary = ({
   classificationRecord,
   setPage,
 }: Props) => {
+  const [isLoading, setIsLoading] = useState(false);
   const { setClassification, setClassificationId } = useClassification();
-  const { fetchElements } = useHts();
+  const { fetchElements, revision } = useHts();
   const classification = classificationRecord.classification;
 
   return (
     <div
-      className="bg-base-100 p-4 rounded-md cursor-pointer flex flex-col gap-2 border-2 border-base-content/30 hover:bg-base-300"
-      onClick={() => {
+      className="bg-base-100 p-4 rounded-md cursor-pointer flex flex-col gap-2 border-2 border-base-content/30 hover:bg-base-300 relative"
+      onClick={async () => {
         // Get the classifications revision and see if we need to use useHts to fetch the elements
-        const revision = classificationRecord.revision;
-        if (revision !== "latest") {
-          fetchElements(revision);
+        const classificationRevision = classificationRecord.revision;
+
+        if (classificationRevision !== revision) {
+          console.log(`Fetching ${classificationRevision} Revision`);
+          setIsLoading(true);
+          await fetchElements(classificationRevision);
+          setIsLoading(false);
         }
+
         setClassification(classification);
         setClassificationId(classificationRecord.id);
         setPage(ClassifyPage.CLASSIFY);
       }}
     >
+      {isLoading && (
+        <div className="absolute inset-0 bg-base-300/80 flex items-center justify-center rounded-md z-10">
+          <LoadingIndicator text="Loading..." />
+        </div>
+      )}
       <div className="flex justify-between">
         {getFinalClassificationElement(classification.levels) ? (
           <SecondaryLabel

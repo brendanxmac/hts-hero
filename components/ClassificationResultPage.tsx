@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useClassification } from "../contexts/ClassificationContext";
 import { Color } from "../enums/style";
 import { downloadClassificationReport } from "../libs/hts";
@@ -23,8 +23,6 @@ export const ClassificationResultPage = () => {
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showNotes, setShowNotes] = useState(Boolean(classification.notes));
-  const notesRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (copied) {
@@ -33,20 +31,6 @@ export const ClassificationResultPage = () => {
       }, 1500);
     }
   }, [copied]);
-
-  useEffect(() => {
-    if (showNotes && notesRef.current) {
-      // Add a small delay to ensure the DOM has updated
-      setTimeout(() => {
-        notesRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-        // Auto-focus the textarea after scrolling
-        textareaRef.current?.focus();
-      }, 100);
-    }
-  }, [showNotes]);
 
   return (
     <div className="h-full w-full max-w-6xl mx-auto flex flex-col">
@@ -96,11 +80,9 @@ export const ClassificationResultPage = () => {
           </div>
         </div>
 
-        <Element element={element} />
-
         {/* NOTES */}
         {showNotes && (
-          <div ref={notesRef} className="w-full flex flex-col gap-2">
+          <div className="w-full flex flex-col gap-2">
             <div className="flex flex-col">
               <div className="flex items-center justify-between gap-1">
                 <PrimaryLabel value="Final Notes" color={Color.WHITE} />
@@ -121,7 +103,6 @@ export const ClassificationResultPage = () => {
             </div>
 
             <textarea
-              ref={textareaRef}
               className="min-h-36 textarea textarea-bordered border-2 focus:outline-none text-white placeholder:text-white/20 placeholder:italic text-base w-full"
               placeholder="Add any final notes here. These notes will be included in your classification report."
               value={classification.notes || ""}
@@ -134,6 +115,8 @@ export const ClassificationResultPage = () => {
             />
           </div>
         )}
+
+        <Element element={element} />
       </div>
       {showPDF && (
         <PDF
