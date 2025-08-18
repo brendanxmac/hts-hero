@@ -61,13 +61,11 @@ export function BreadcrumbsProvider({ children }: BreadcrumbsProviderProps) {
   };
 
   const clearBreadcrumbs = () => {
-    console.log("Clearing breadcrumbs");
     // Clear breadcrumbs, but keep the first one
     setBreadcrumbs((prev) => prev.slice(0, 1));
   };
 
   const resetBreadcrumbs = () => {
-    console.log("Resetting breadcrumbs");
     // Completely clear all breadcrumbs
     setBreadcrumbs([]);
   };
