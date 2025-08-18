@@ -28,6 +28,8 @@ interface SearchableClassification {
 }
 
 export const Classifications = ({ page, setPage }: Props) => {
+  const [loadingNewClassification, setLoadingNewClassification] =
+    useState(false);
   const [loader, setLoader] = useState<Loader>({
     isLoading: true,
     text: "",
@@ -131,10 +133,6 @@ export const Classifications = ({ page, setPage }: Props) => {
     return `${message} 👋`;
   };
 
-  const handleRefreshClassifications = async () => {
-    await refreshClassifications();
-  };
-
   if (classificationsError || userError) {
     return (
       <div className="h-full w-full max-w-3xl mx-auto pt-12 flex flex-col gap-8">
@@ -179,47 +177,49 @@ export const Classifications = ({ page, setPage }: Props) => {
             <div className="flex gap-2 w-full md:w-auto">
               <button
                 className="btn btn-primary btn-sm grow md:grow-0"
-                onClick={() => {
+                onClick={async () => {
+                  setLoadingNewClassification(true);
+                  await fetchElements("latest");
                   setPage(ClassifyPage.CLASSIFY);
+                  setLoadingNewClassification(false);
                 }}
               >
-                <PlusIcon className="h-5 w-5" />
-                New Classification
-              </button>
-              <button
-                className="btn btn-primary btn-square btn-sm"
-                onClick={handleRefreshClassifications}
-              >
-                {loader.isLoading || classificationsLoading ? (
+                {loadingNewClassification ? (
                   <span className={`loading loading-spinner loading-sm`}></span>
                 ) : (
-                  <ArrowPathIcon className="h-5 w-5" />
+                  <PlusIcon className="h-5 w-5" />
                 )}
+                New Classification
               </button>
             </div>
           </div>
 
           {/* Search and Actions Row */}
-          {classifications && classifications.length > 0 && (
-            <div className="flex flex-col md:flex-row gap-3 items-start md:items-end justify-between">
+          <div className="flex flex-col md:flex-row gap-3 items-start md:items-end justify-between">
+            <div className="flex gap-2">
               <h2 className="text-xl md:text-2xl text-neutral-50 font-bold">
                 Your Classifications
               </h2>
-              {/* Filter Bar */}
-              <div className="flex-1 relative md:max-w-md w-full">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FunnelIcon className="h-5 w-5 text-neutral-400" />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Filter by description or code..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-1 bg-base-100 border-2 border-base-content/20 rounded-lg text-neutral-200 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                />
-              </div>
+              {loader.isLoading ||
+                (classificationsLoading && (
+                  <span className={`loading loading-spinner loading-sm`}></span>
+                ))}
             </div>
-          )}
+            {/* Filter Bar */}
+
+            <div className="flex-1 relative md:max-w-md w-full">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <FunnelIcon className="h-5 w-5 text-neutral-400" />
+              </div>
+              <input
+                type="text"
+                placeholder="Filter by description or code..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-1 bg-base-100 border-2 border-base-content/20 rounded-lg text-neutral-200 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              />
+            </div>
+          </div>
         </div>
         {filteredClassifications && filteredClassifications.length > 0 && (
           <div className="flex flex-col gap-2 pt-2 pb-6">

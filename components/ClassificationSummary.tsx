@@ -53,7 +53,7 @@ export const ClassificationSummary = ({
         // Get the classifications revision and see if we need to use useHts to fetch the elements
         const classificationRevision = classificationRecord.revision;
 
-        if (classificationRevision !== revision.name) {
+        if (classificationRevision !== revision) {
           console.log(`Fetching ${classificationRevision} Revision`);
           setIsLoading(true);
           await fetchElements(classificationRevision);

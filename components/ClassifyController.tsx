@@ -7,8 +7,6 @@ import { Classifications } from "./Classifications";
 import { ClassificationsProvider } from "../contexts/ClassificationsContext";
 import { ClassifyPage } from "../enums/classify";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
-import { useClassifyTab } from "../contexts/ClassifyTabContext";
-import { ClassifyTab } from "../enums/classify";
 
 export const ClassifyController = () => {
   const [page, setPage] = useState<ClassifyPage>(ClassifyPage.CLASSIFICATIONS);

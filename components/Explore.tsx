@@ -269,11 +269,11 @@ export const Explore = () => {
               <div className="flex flex-col -space-y-1">
                 <div className="flex gap-2 items-start">
                   <h1 className="shrink-0 text-2xl md:text-3xl font-bold text-white">
-                    HTS {revision?.name.split("-")[0]}
+                    HTS {revision?.split("-")[0]}
                   </h1>
                   <div className="mb-0.5">
                     <SecondaryLabel
-                      value={`v${revision?.name.split("-")[1]}`}
+                      value={`v${revision?.split("-")[1]}`}
                       color={Color.PRIMARY}
                     />
                   </div>
