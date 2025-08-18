@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import Modal from "./Modal";
 import { TutorialName, tutorials } from "../tutorials";
 
@@ -25,13 +24,13 @@ export const Tutorial = ({
 }: Props) => {
   const { name, element } = tutorial;
 
-  useEffect(() => {
-    const hasSeenTutorial = localStorage.getItem(`seen-tutorial-${name}`);
-    if (!hasSeenTutorial) {
-      setShowTutorial(true);
-      localStorage.setItem(`seen-tutorial-${name}`, "true");
-    }
-  }, []);
+  // useEffect(() => {
+  // const hasSeenTutorial = localStorage.getItem(`seen-tutorial-${name}`);
+  // if (!hasSeenTutorial) {
+  //   setShowTutorial(true);
+  //   localStorage.setItem(`seen-tutorial-${name}`, "true");
+  // }
+  // }, []);
 
   return (
     <Modal isOpen={showTutorial} setIsOpen={setShowTutorial}>
