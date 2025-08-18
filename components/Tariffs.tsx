@@ -263,7 +263,7 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
           <thead>
             <tr>
               <th></th>
-              <th className="w-full">Country of Origin</th>
+              <th>Country of Origin</th>
               <th className="w-auto min-w-64">
                 <div className="flex gap-2 items-center">
                   <h3>Rates</h3>
@@ -357,7 +357,7 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
                                 )}
                             </div>
                             {countryPercentTariffsSums.length !== i + 1
-                              ? "+"
+                              ? "|"
                               : null}
                           </div>
                         ))}
