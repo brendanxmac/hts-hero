@@ -148,6 +148,44 @@ export function isFullHTSCode(code: string) {
   return htsCodeRegex.test(code);
 }
 
+/**
+ * Validates if a given text is a valid 8 or 10 digit HTS code.
+ *
+ * Requirements:
+ * - Can only contain numbers and periods (".")
+ * - With periods removed, must be exactly 8 or 10 digits
+ * - First two digits must be between 01 and 97
+ *
+ * Valid examples: "0402.00.00", "04020000", "0402.00.50.00", "0402005000"
+ *
+ * @param text - The text to validate as an HTS code
+ * @returns boolean - True if the text is a valid 8 or 10 digit HTS code
+ */
+export const isValidTariffableHtsCode = (text: string): boolean => {
+  const trimmed = text.trim();
+
+  // Check if the string contains only numbers and periods
+  if (!/^[\d.]+$/.test(trimmed)) {
+    return false;
+  }
+
+  // Remove all periods and check the digit count
+  const digitsOnly = trimmed.replace(/\./g, "");
+
+  // Must be exactly 8 or 10 digits
+  if (digitsOnly.length !== 8 && digitsOnly.length !== 10) {
+    return false;
+  }
+
+  // Check that the first two digits are between 01 and 97
+  const firstTwoDigits = parseInt(digitsOnly.substring(0, 2), 10);
+  if (firstTwoDigits < 1 || firstTwoDigits > 97) {
+    return false;
+  }
+
+  return true;
+};
+
 export const getHtsElementDescriptions = (
   elements: HtsElement[] | HtsElementWithParentReference[]
 ) => {
