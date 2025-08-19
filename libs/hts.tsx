@@ -152,11 +152,12 @@ export function isFullHTSCode(code: string) {
  * Validates if a given text is a valid 8 or 10 digit HTS code.
  *
  * Requirements:
- * - Can only contain numbers and periods (".")
+ * - Must follow proper HTS code format with periods in correct positions
  * - With periods removed, must be exactly 8 or 10 digits
  * - First two digits must be between 01 and 97
  *
  * Valid examples: "0402.00.00", "04020000", "0402.00.50.00", "0402005000"
+ * Invalid examples: "6902.......2010", "0402..00.00", "0402.0.00"
  *
  * @param text - The text to validate as an HTS code
  * @returns boolean - True if the text is a valid 8 or 10 digit HTS code
@@ -183,7 +184,26 @@ export const isValidTariffableHtsCode = (text: string): boolean => {
     return false;
   }
 
-  return true;
+  // Validate proper HTS code format with periods in correct positions
+  // For 8-digit codes: XXXX.XX.XX or XXXXXXXX
+  // For 10-digit codes: XXXX.XX.XX.XX or XXXXXXXXXX
+  if (digitsOnly.length === 8) {
+    // Either no periods (pure numeric) or exactly in format XXXX.XX.XX
+    const validFormats = [
+      /^\d{8}$/, // Pure numeric: 12345678
+      /^\d{4}\.\d{2}\.\d{2}$/, // With periods: 1234.56.78
+    ];
+    return validFormats.some((regex) => regex.test(trimmed));
+  } else if (digitsOnly.length === 10) {
+    // Either no periods (pure numeric) or exactly in format XXXX.XX.XX.XX
+    const validFormats = [
+      /^\d{10}$/, // Pure numeric: 1234567890
+      /^\d{4}\.\d{2}\.\d{2}\.\d{2}$/, // With periods: 1234.56.78.90
+    ];
+    return validFormats.some((regex) => regex.test(trimmed));
+  }
+
+  return false;
 };
 
 export const getHtsElementDescriptions = (

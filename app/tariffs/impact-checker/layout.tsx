@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import UnauthenticatedHeader from "../../components/UnauthenticatedHeader";
+import UnauthenticatedHeader from "../../../components/UnauthenticatedHeader";
 
 export default async function Layout({ children }: { children: ReactNode }) {
   return (

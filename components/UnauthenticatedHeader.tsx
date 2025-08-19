@@ -88,10 +88,10 @@ const UnauthenticatedHeader = () => {
                 Classify
               </button>
             </Link>
-            <Link href="/tariffs">
+            <Link href="/tariffs/impact-checker">
               <button
                 className={`btn btn-link px-0 gap-0 ${
-                  pathname === "/tariffs"
+                  pathname === "/tariffs/impact-checker"
                     ? "text-primary underline"
                     : "text-base-content no-underline"
                 }`}
