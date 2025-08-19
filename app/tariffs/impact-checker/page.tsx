@@ -211,14 +211,16 @@ export default function Home() {
                     .filter((code) => code.length > 0);
 
                   const results = parsedCodes.map((code) => {
+                    const isValidTariffableCode =
+                      isValidTariffableHtsCode(code);
                     // Format the code with proper periods if it's valid
-                    const formattedCode = isValidTariffableHtsCode(code)
+                    const formattedCode = isValidTariffableCode
                       ? formatHtsCodeWithPeriods(code)
                       : code;
 
                     return {
                       code: formattedCode,
-                      isImpacted: isValidTariffableHtsCode(code)
+                      isImpacted: isValidTariffableCode
                         ? isEffectedByNewTariffs(code)
                         : null,
                     };
@@ -296,9 +298,13 @@ export default function Home() {
               <div className="flex flex-col gap-2 bg-base-100 bg-transparent">
                 <div className="flex flex-wrap gap-2 justify-between items-center">
                   <TertiaryLabel value="Results:" />
-                  <div className="flex gap-2">
-                    <p className="text-sm">✅ = Impacted</p>
-                    <p className="text-sm">❌ = Not Impacted</p>
+                  <div className="flex flex-wrap gap-2">
+                    <p className="shrink-0 text-sm">✅ = Impacted</p>
+                    <p className="shrink-0 text-sm">❌ = Not Impacted</p>
+                    <p className="text-sm">
+                      ⚠️ = Invalid Code (&lt; 8 digits, &gt; 10 digits, not a #,
+                      or in ch.01-97)
+                    </p>
                   </div>
                 </div>
 
@@ -339,7 +345,7 @@ export default function Home() {
                                   <td>{result.code}</td>
                                 )}
                                 {result.isImpacted === null ? (
-                                  <td>Invalid Code</td>
+                                  <td>⚠️</td>
                                 ) : htsCodeExists(result.code) ? (
                                   <td className="text-lg">
                                     {result.isImpacted ? "✅" : "❌"}
