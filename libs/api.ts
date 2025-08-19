@@ -19,7 +19,11 @@ apiClient.interceptors.response.use(
       // User not auth, ask to re login
       toast.error("Please Sign In");
       // Sends the user to the login page
-      redirect(config.auth.loginUrl);
+      if (typeof window !== "undefined") {
+        window.location.href = config.auth.loginUrl;
+      } else {
+        redirect(config.auth.loginUrl);
+      }
     } else if (error.response?.status === 403) {
       // User not authorized, must subscribe/purchase/pick a plan
       message = "Pick a plan to use this feature";

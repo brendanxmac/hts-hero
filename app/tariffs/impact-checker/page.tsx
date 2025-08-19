@@ -45,7 +45,7 @@ interface Result {
 
 export default function Home() {
   const { fetchElements, htsElements } = useHts();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [results, setResults] = useState<Result[]>([]);
   const [changeList, setChangeList] = useState<string[]>([]);
@@ -53,11 +53,11 @@ export default function Home() {
 
   useEffect(() => {
     const loadElements = async () => {
-      if (htsElements.length === 0) {
-        setLoading(true);
-        await fetchElements("latest");
-        setLoading(false);
-      }
+      // if (htsElements.length === 0) {
+      setLoading(true);
+      await fetchElements("latest");
+      setLoading(false);
+      // }
     };
 
     loadElements();
@@ -251,7 +251,7 @@ export default function Home() {
                   ))}
                   {listExamples.map((example) => (
                     <button
-                      key={`${example}-example`}
+                      key={`${example.name}-example`}
                       className="btn btn-xs btn-primary btn-link"
                       onClick={() => {
                         // Preserve the user's input format as-is
