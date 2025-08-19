@@ -303,7 +303,7 @@ export default function Home() {
                     <div className="flex flex-wrap gap-x-4">
                       <p className="shrink-0">✅ = Impacted</p>
                       <p className="shrink-0">❌ = Not Impacted</p>
-                      <p className="shrink-0">🧐 = Does Not Exist</p>
+                      <p className="shrink-0">🥶 = Does Not Exist</p>
                       <p className="">
                         ⚠️ = Unsupported (&lt; 8 digits, 9 digits, &gt; 10
                         digits, not a #, not in ch.01-97)
@@ -355,7 +355,7 @@ export default function Home() {
                                     {result.isImpacted ? "✅" : "❌"}
                                   </td>
                                 ) : (
-                                  <td className="text-xl">🧐</td>
+                                  <td className="text-xl">🥶</td>
                                 )}
                               </tr>
                             );
