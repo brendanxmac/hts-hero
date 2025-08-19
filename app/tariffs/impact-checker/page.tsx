@@ -211,14 +211,16 @@ export default function Home() {
                     .filter((code) => code.length > 0);
 
                   const results = parsedCodes.map((code) => {
+                    const isValidTariffableCode =
+                      isValidTariffableHtsCode(code);
                     // Format the code with proper periods if it's valid
-                    const formattedCode = isValidTariffableHtsCode(code)
+                    const formattedCode = isValidTariffableCode
                       ? formatHtsCodeWithPeriods(code)
                       : code;
 
                     return {
                       code: formattedCode,
-                      isImpacted: isValidTariffableHtsCode(code)
+                      isImpacted: isValidTariffableCode
                         ? isEffectedByNewTariffs(code)
                         : null,
                     };
@@ -294,11 +296,19 @@ export default function Home() {
           {results && results.length > 0 && (
             <div>
               <div className="flex flex-col gap-2 bg-base-100 bg-transparent">
-                <div className="flex flex-wrap gap-2 justify-between items-center">
+                <div className="flex flex-col gap-2 justify-between">
                   <TertiaryLabel value="Results:" />
-                  <div className="flex gap-2">
-                    <p className="text-sm">✅ = Impacted</p>
-                    <p className="text-sm">❌ = Not Impacted</p>
+                  <div className="flex flex-col gap-1 border-2 border-base-content/10 rounded-md p-2">
+                    <TertiaryLabel value="Legend:" />
+                    <div className="flex flex-wrap gap-x-4">
+                      <p className="shrink-0">✅ = Impacted</p>
+                      <p className="shrink-0">❌ = Not Impacted</p>
+                      <p className="shrink-0">🧐 = Does Not Exist</p>
+                      <p className="">
+                        ⚠️ = Unsupported (&lt; 8 digits, 9 digits, &gt; 10
+                        digits, not a #, not in ch.01-97)
+                      </p>
+                    </div>
                   </div>
                 </div>
 
@@ -339,13 +349,13 @@ export default function Home() {
                                   <td>{result.code}</td>
                                 )}
                                 {result.isImpacted === null ? (
-                                  <td>Invalid Code</td>
+                                  <td className="text-xl">⚠️</td>
                                 ) : htsCodeExists(result.code) ? (
-                                  <td className="text-lg">
+                                  <td className="text-xl">
                                     {result.isImpacted ? "✅" : "❌"}
                                   </td>
                                 ) : (
-                                  <td className="w-fit">HTS Code Not Found</td>
+                                  <td className="text-xl">🧐</td>
                                 )}
                               </tr>
                             );
