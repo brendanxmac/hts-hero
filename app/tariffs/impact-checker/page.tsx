@@ -45,7 +45,7 @@ interface Result {
 
 export default function Home() {
   const { fetchElements, htsElements } = useHts();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [inputValue, setInputValue] = useState("");
   const [results, setResults] = useState<Result[]>([]);
   const [changeList, setChangeList] = useState<string[]>([]);
