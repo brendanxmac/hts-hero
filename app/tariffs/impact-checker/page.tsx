@@ -70,9 +70,9 @@ export default function Home() {
     }
   }, []);
 
-  //   const htsCodeExists = (str: string) => {
-  //     return htsElements.some((element) => element.htsno === str);
-  //   };
+  const htsCodeExists = (str: string) => {
+    return htsElements.some((element) => element.htsno === str);
+  };
 
   // Helper function to format HTS codes with proper periods
   const formatHtsCodeWithPeriods = (code: string): string => {
@@ -312,8 +312,8 @@ export default function Home() {
                       <table className="table table-zebra table-pin-cols w-full">
                         <thead>
                           <tr>
-                            <th></th>
-                            <th className="w-full">HTS Code</th>
+                            <th className="w-4"></th>
+                            <th>HTS Code</th>
                             <th>Impacted</th>
                           </tr>
                         </thead>
@@ -340,10 +340,12 @@ export default function Home() {
                                 )}
                                 {result.isImpacted === null ? (
                                   <td>Invalid Code</td>
-                                ) : (
+                                ) : htsCodeExists(result.code) ? (
                                   <td className="text-lg">
                                     {result.isImpacted ? "✅" : "❌"}
                                   </td>
+                                ) : (
+                                  <td className="w-fit">HTS Code Not Found</td>
                                 )}
                               </tr>
                             );
