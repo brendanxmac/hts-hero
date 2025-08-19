@@ -148,6 +148,64 @@ export function isFullHTSCode(code: string) {
   return htsCodeRegex.test(code);
 }
 
+/**
+ * Validates if a given text is a valid 8 or 10 digit HTS code.
+ *
+ * Requirements:
+ * - Must follow proper HTS code format with periods in correct positions
+ * - With periods removed, must be exactly 8 or 10 digits
+ * - First two digits must be between 01 and 97
+ *
+ * Valid examples: "0402.00.00", "04020000", "0402.00.50.00", "0402005000"
+ * Invalid examples: "6902.......2010", "0402..00.00", "0402.0.00"
+ *
+ * @param text - The text to validate as an HTS code
+ * @returns boolean - True if the text is a valid 8 or 10 digit HTS code
+ */
+export const isValidTariffableHtsCode = (text: string): boolean => {
+  const trimmed = text.trim();
+
+  // Check if the string contains only numbers and periods
+  if (!/^[\d.]+$/.test(trimmed)) {
+    return false;
+  }
+
+  // Remove all periods and check the digit count
+  const digitsOnly = trimmed.replace(/\./g, "");
+
+  // Must be exactly 8 or 10 digits
+  if (digitsOnly.length !== 8 && digitsOnly.length !== 10) {
+    return false;
+  }
+
+  // Check that the first two digits are between 01 and 97
+  const firstTwoDigits = parseInt(digitsOnly.substring(0, 2), 10);
+  if (firstTwoDigits < 1 || firstTwoDigits > 97) {
+    return false;
+  }
+
+  // Validate proper HTS code format with periods in correct positions
+  // For 8-digit codes: XXXX.XX.XX or XXXXXXXX
+  // For 10-digit codes: XXXX.XX.XX.XX or XXXXXXXXXX
+  if (digitsOnly.length === 8) {
+    // Either no periods (pure numeric) or exactly in format XXXX.XX.XX
+    const validFormats = [
+      /^\d{8}$/, // Pure numeric: 12345678
+      /^\d{4}\.\d{2}\.\d{2}$/, // With periods: 1234.56.78
+    ];
+    return validFormats.some((regex) => regex.test(trimmed));
+  } else if (digitsOnly.length === 10) {
+    // Either no periods (pure numeric) or exactly in format XXXX.XX.XX.XX
+    const validFormats = [
+      /^\d{10}$/, // Pure numeric: 1234567890
+      /^\d{4}\.\d{2}\.\d{2}\.\d{2}$/, // With periods: 1234.56.78.90
+    ];
+    return validFormats.some((regex) => regex.test(trimmed));
+  }
+
+  return false;
+};
+
 export const getHtsElementDescriptions = (
   elements: HtsElement[] | HtsElementWithParentReference[]
 ) => {

@@ -12,6 +12,12 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/app", req.url));
   }
 
+  const isTariffPath = pathname === "/tariffs";
+
+  if (isTariffPath) {
+    return NextResponse.redirect(new URL("/tariffs/impact-checker", req.url));
+  }
+
   const isRedirectPath =
     pathname === "/blog" ||
     pathname === "/" ||
