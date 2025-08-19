@@ -323,7 +323,7 @@ export default function Home() {
                               (element) => element.htsno === result.code
                             );
                             return (
-                              <tr key={result.code}>
+                              <tr key={`${result.code}-${i}`}>
                                 <td>{i + 1}</td>
                                 {htsElementForCode ? (
                                   <td>
