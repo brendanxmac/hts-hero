@@ -43,7 +43,6 @@ export default function SimpleTextInput({
   }, [value]);
 
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>): void => {
-    console.log("input change", e.target.value);
     onChange && onChange(e.target.value);
   };
 
