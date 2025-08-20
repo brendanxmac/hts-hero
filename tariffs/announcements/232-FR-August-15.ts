@@ -1563,7 +1563,7 @@ const aluminumNoDuplicates = [
   "7614.10.10",
 ];
 
-export const august_15_FR_232_tariff_changes = [
+export const august_15_FR_232_impacted_codes_list = [
   ...ironAndSteelNoDuplicates,
   ...aluminumNoDuplicates,
 ];
