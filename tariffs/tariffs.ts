@@ -166,7 +166,7 @@ export const addTariffsToCountry = (
 
   const tariffSets = getTariffSets(applicableTariffs, contentRequirements);
 
-  const specialTradePrograms = getSpecialTradePrograms(country, htsElement);
+  const specialTradePrograms = getSpecialTradePrograms(country, tariffElement);
 
   return {
     ...country,
