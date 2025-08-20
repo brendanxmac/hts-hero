@@ -32,23 +32,47 @@ interface TariffImpactResult {
   error?: string;
 }
 
+const exampleList = [
+  "2602.00.00.40",
+  "9701.21.00.00",
+  "4408.90.01",
+  "4408.90.01.10",
+  "9701.21.00.00",
+  "2825.80.00.00",
+  "8544.49.20.00",
+  "9403.99.90.10",
+  "7614.10.10.00",
+  "7614.10.50.00",
+  "2106.90.99.98",
+];
+
+const commaSeparatedList = exampleList.join(", ");
+const newlineSeparatedList = [...exampleList]
+  .sort(() => Math.random() - 0.5)
+  .join("\n");
+const spaceSeparatedList = [...exampleList]
+  .sort(() => Math.random() - 0.5)
+  .join(" ");
+const mixedSeparatedList =
+  "2602.00.00.40, 9701.21.00.00\n4408.90.01, 4408.90.01.10\n97.01.21.00.00, 2825.80.00.00\n8544.49.20.00, 9403.99.90.10\n7614.10.10.00, 7614.10.50.00\n2106.90.99.98";
+
 const singleElementExamples = ["6902.20.10", "3808.94.10.00"];
 const listExamples: ListExample[] = [
   {
     name: "List with Commas",
-    list: "2602.00.00.40, 9701.21.00.00, 4408.90.01, 4408.90.01.10, 97.01.21.00.00, 2825.80.00.00, 8544.49.20.00, 9403.99.90.10, 7614.10.10.00, 7614.10.50.00, 2106.90.99.98",
+    list: commaSeparatedList,
   },
   {
     name: "List with Newlines",
-    list: "2602.00.00.40\n9701.21.00.00\n4408.90.01\n4408.90.01.10\n97.01.21.00.00\n2825.80.00.00\n8544.49.20.00\n9403.99.90.10\n7614.10.10.00\n7614.10.50.00\n2106.90.99.98",
+    list: newlineSeparatedList,
   },
   {
     name: "List with Spaces",
-    list: "2602.00.00.40 9701.21.00.00 4408.90.01 4408.90.01.10 97.01.21.00.00 2825.80.00.00 8544.49.20.00 9403.99.90.10 7614.10.10.00 7614.10.50.00 2106.90.99.98",
+    list: spaceSeparatedList,
   },
   {
     name: "List with Mixed Separators",
-    list: "2602.00.00.40, 9701.21.00.00\n4408.90.01, 4408.90.01.10\n97.01.21.00.00, 2825.80.00.00\n8544.49.20.00, 9403.99.90.10\n7614.10.10.00, 7614.10.50.00\n2106.90.99.98",
+    list: mixedSeparatedList,
   },
 ];
 
@@ -292,7 +316,9 @@ export default function Home() {
                 </div>
                 <div className="flex gap-2 items-center">
                   <div className="flex flex-wrap items-center">
-                    <p className="text-xs font-bold text-gray-500">Examples:</p>
+                    <p className="text-xs font-bold text-gray-500">
+                      See Examples:
+                    </p>
                     {singleElementExamples.map((example) => (
                       <button
                         key={`${example}-example`}
