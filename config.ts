@@ -15,13 +15,12 @@ const proPlan: PricingPlanI = {
     { name: "Calculates Tariffs" },
     { name: "Generates Reports" },
     { name: "Fetches Notes" },
+    { name: "Finds CROSS Rulings" },
     {
-      name: "Finds CROSS Rulings",
+      name: "Tariff Impact Checker",
+      details:
+        "Instantly see if any of your imports are affected by tariff changes",
     },
-    {
-      name: "Enhanced HTS Explorer",
-    },
-    { name: "[Coming Soon] Automatic Tariff Calculations" },
   ],
 };
 
