@@ -27,42 +27,25 @@ export default function SimpleTextInput({
   validationMessage,
   characterLimit,
 }: Props) {
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-
-  const adjustTextAreaHeight = (): void => {
-    const textarea = textareaRef.current;
-
-    if (textarea) {
-      textarea.style.height = "auto"; // Reset height to calculate new height
-      textarea.style.height = `${textarea.scrollHeight}px`;
-    }
-  };
-
-  useEffect(() => {
-    adjustTextAreaHeight();
-  }, [value]);
-
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>): void => {
     onChange && onChange(e.target.value);
   };
 
   return (
     <div
-      className="w-full flex flex-col gap-2 bg-base-100 border-2 border-base-content/20 rounded-md"
+      className={classNames(
+        "w-full flex flex-col gap-2 bg-base-100 border-2 border-base-content/20 rounded-md relative",
+        value.length > characterLimit ? "border-warning" : undefined
+      )}
       onClick={(e) => {
         e.stopPropagation();
         e.preventDefault();
       }}
     >
       {label && <TertiaryText value={label} />}
-      <div
-        className={
-          "w-full flex flex-col gap-2 rounded-md bg-base-100 px-4 py-3"
-        }
-      >
+      <div className={"w-full flex flex-col rounded-md bg-base-100 px-4 py-1"}>
         <div className="w-full flex gap-2 items-center">
           <textarea
-            ref={textareaRef}
             autoFocus
             placeholder={placeholder}
             value={value}
@@ -81,17 +64,19 @@ export default function SimpleTextInput({
             />
           )}
         </div>
+      </div>
 
-        <div className="flex gap-2 items-center">
+      {characterLimit && value.length > characterLimit && (
+        <div className="absolute bottom-2 left-2 flex gap-2 items-center bg-base-100/90 backdrop-blur-sm px-2 py-1 rounded-md border border-base-content/80">
           <p
             className={classNames(
-              "text-neutral-500 text-xs",
-              value.length > characterLimit ? "font-bold" : undefined
+              "text-white text-xs",
+              value.length >= characterLimit ? "font-bold" : undefined
             )}
           >
             <span
               className={
-                value.length > characterLimit ? "text-red-600" : undefined
+                value.length >= characterLimit ? "text-warning" : undefined
               }
             >
               {value.length}
@@ -100,12 +85,13 @@ export default function SimpleTextInput({
           </p>
 
           {value.length > characterLimit && (
-            <p className="text-xs text-red-500">
-              {validationMessage || "Input Limit Exceeded"}
+            <p className="text-xs font-bold text-warning">
+              {validationMessage ||
+                `Input limit exceeded, results limited to ${characterLimit} characters`}
             </p>
           )}
         </div>
-      </div>
+      )}
     </div>
   );
 }

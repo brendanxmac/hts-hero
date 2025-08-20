@@ -5,38 +5,26 @@ import { useHts } from "../../../contexts/HtsContext";
 import { validateTariffableHtsCode } from "../../../libs/hts";
 import SimpleTextInput from "../../../components/SimpleTextInput";
 import { LoadingIndicator } from "../../../components/LoadingIndicator";
-import { august_15_FR_232_tariff_changes } from "../../../tariffs/announcements/232-FR-August-15";
+import { august_15_FR_232_impacted_codes_list } from "../../../tariffs/announcements/232-FR-August-15";
 import Link from "next/link";
 import { TertiaryLabel } from "../../../components/TertiaryLabel";
 import { SecondaryText } from "../../../components/SecondaryText";
 import Modal from "../../../components/Modal";
 import { TariffImpactInputHelp } from "../../../components/TariffImpactInputHelp";
 import { TertiaryText } from "../../../components/TertiaryText";
+import { reciprocalTariffExclusionsList } from "../../../tariffs/exclusion-lists.ts/reciprocal-tariff-exlcusions";
 
 interface ListExample {
   name: string;
   list: string;
 }
 
-const singleElementExamples = ["6902.20.10", "3808.94.10.00"];
-const listExamples: ListExample[] = [
-  {
-    name: "Comma Separated List",
-    list: "6902.20.10, 3808.94.10.00, 1204.00.00, 0804.50.80.10",
-  },
-  {
-    name: "Newline Separated List",
-    list: "6902.20.10\n3808.94.10.00\n1204.00.00\n0804.50.80.10",
-  },
-  {
-    name: "Space Separated List",
-    list: "6902.20.10 3808.94.10.00 1204.00.00 0804.50.80.10",
-  },
-  {
-    name: "Mixed Separated List",
-    list: "6902.20.10, 3808.94.10.00\n1204.00.00, 0804.50.80.10",
-  },
-];
+interface TariffsUpdate {
+  name: string;
+  sourceName: string;
+  source: string;
+  codesImpacted: string[];
+}
 
 interface TariffImpactResult {
   code: string;
@@ -44,12 +32,53 @@ interface TariffImpactResult {
   error?: string;
 }
 
+const singleElementExamples = ["6902.20.10", "3808.94.10.00"];
+const listExamples: ListExample[] = [
+  {
+    name: "List with Commas",
+    list: "2602.00.00.40, 9701.21.00.00, 4408.90.01, 4408.90.01.10, 97.01.21.00.00, 2825.80.00.00, 8544.49.20.00, 9403.99.90.10, 7614.10.10.00, 7614.10.50.00, 2106.90.99.98",
+  },
+  {
+    name: "List with Newlines",
+    list: "2602.00.00.40\n9701.21.00.00\n4408.90.01\n4408.90.01.10\n97.01.21.00.00\n2825.80.00.00\n8544.49.20.00\n9403.99.90.10\n7614.10.10.00\n7614.10.50.00\n2106.90.99.98",
+  },
+  {
+    name: "List with Spaces",
+    list: "2602.00.00.40 9701.21.00.00 4408.90.01 4408.90.01.10 97.01.21.00.00 2825.80.00.00 8544.49.20.00 9403.99.90.10 7614.10.10.00 7614.10.50.00 2106.90.99.98",
+  },
+  {
+    name: "List with Mixed Separators",
+    list: "2602.00.00.40, 9701.21.00.00\n4408.90.01, 4408.90.01.10\n97.01.21.00.00, 2825.80.00.00\n8544.49.20.00, 9403.99.90.10\n7614.10.10.00, 7614.10.50.00\n2106.90.99.98",
+  },
+];
+
+const section232SteelAndAluminumChanges: TariffsUpdate = {
+  name: "Section 232 Steel and Aluminum Updates | Federal Register - August 15, 2025",
+  sourceName: "Federal Register",
+  source:
+    "https://www.federalregister.gov/public-inspection/2025-15819/adoption-and-procedures-of-the-section-232-steel-and-aluminum-tariff-inclusions-process",
+  codesImpacted: august_15_FR_232_impacted_codes_list,
+};
+
+const reciprocalTariffExclusions: TariffsUpdate = {
+  name: "Reciprocal Tariff Exclusions | USITC - 9903.01.32",
+  sourceName: "USITC - Chapter 99 Subchapter 3 Note 2(v)(iii) ",
+  source: "https://hts.usitc.gov/search?query=9903.01.32",
+  codesImpacted: reciprocalTariffExclusionsList,
+};
+
+const changeLists: TariffsUpdate[] = [
+  section232SteelAndAluminumChanges,
+  reciprocalTariffExclusions,
+];
+
 export default function Home() {
+  const CHARACTER_LIMIT = 650;
   const { fetchElements, htsElements } = useHts();
   const [loading, setLoading] = useState(true);
   const [inputValue, setInputValue] = useState("");
   const [results, setResults] = useState<TariffImpactResult[]>([]);
-  const [changeList, setChangeList] = useState<string[]>([]);
+  const [selectedChangeListIndex, setSelectedChangeListIndex] = useState(0);
   const [showHelpModal, setShowHelpModal] = useState(false);
 
   useEffect(() => {
@@ -67,9 +96,13 @@ export default function Home() {
   useEffect(() => {
     // Initialize with the first changeList when component mounts
     if (changeLists.length > 0) {
-      setChangeList(changeLists[0].list);
+      setSelectedChangeListIndex(0);
     }
   }, []);
+
+  useEffect(() => {
+    handleInputChange(inputValue);
+  }, [selectedChangeListIndex]);
 
   const htsCodeExists = (str: string) => {
     return htsElements.some((element) => element.htsno === str);
@@ -103,28 +136,11 @@ export default function Home() {
     const formattedCode = formatHtsCodeWithPeriods(htsCode);
 
     // Simple substring check - much more efficient
-    return changeList.some(
+    return changeLists[selectedChangeListIndex].codesImpacted.some(
       (change) =>
         formattedCode.includes(change) || change.includes(formattedCode)
     );
   };
-
-  interface TariffChange {
-    name: string;
-    sourceName: string;
-    source: string;
-    list: string[];
-  }
-
-  const section232SteelAndAluminumChanges: TariffChange = {
-    name: "Federal Register, Steel and Aluminum Changes (August 15, 2025)",
-    sourceName: "Federal Register",
-    source:
-      "https://www.federalregister.gov/public-inspection/2025-15819/adoption-and-procedures-of-the-section-232-steel-and-aluminum-tariff-inclusions-process",
-    list: august_15_FR_232_tariff_changes,
-  };
-
-  const changeLists: TariffChange[] = [section232SteelAndAluminumChanges];
 
   const getNotes = (result: TariffImpactResult) => {
     const { impacted, code, error } = result;
@@ -183,9 +199,14 @@ export default function Home() {
     // Preserve the user's input format as-is
     setInputValue(inputValue);
 
+    const characterLimitedInput =
+      inputValue.length >= CHARACTER_LIMIT
+        ? inputValue.slice(0, CHARACTER_LIMIT)
+        : inputValue;
+
     // Parse input by newlines or commas for processing
     const separators = /[\n, ]/;
-    const parsedCodes = inputValue
+    const parsedCodes = characterLimitedInput
       .trim()
       .split(separators)
       .map((code) => code.trim())
@@ -216,10 +237,10 @@ export default function Home() {
           <LoadingIndicator />
         </div>
       ) : (
-        <div className="w-full max-w-5xl mx-auto flex flex-col px-8 gap-8">
+        <div className="w-full max-w-5xl mx-auto flex flex-col px-8 gap-4">
           {/* Header */}
           <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
               <h1 className="text-2xl md:text-3xl font-bold text-gray-100">
                 Tariff Impact Checker
               </h1>
@@ -235,17 +256,17 @@ export default function Home() {
           {/* Inputs */}
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
-              <TertiaryLabel value="Select Tariff Announcement" />
+              <TertiaryLabel value="Select Tariff Announcement or List" />
               <select
-                className="select select-bordered border-2 w-full max-w-xl"
-                value={changeLists.findIndex((cl) => cl.list === changeList)}
+                className="select select-bordered border-2 w-full"
+                value={selectedChangeListIndex}
                 onChange={(e) => {
                   const selectedIndex = parseInt(e.target.value);
                   if (
                     selectedIndex >= 0 &&
                     selectedIndex < changeLists.length
                   ) {
-                    setChangeList(changeLists[selectedIndex].list);
+                    setSelectedChangeListIndex(selectedIndex);
                   }
                 }}
               >
@@ -258,49 +279,51 @@ export default function Home() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <div className="flex items-center">
-                <TertiaryLabel value="Enter HTS Codes" />
-                <button
-                  className="btn btn-circle btn-xs btn-primary ml-2 text-sm flex items-center justify-center"
-                  onClick={() => setShowHelpModal(true)}
-                  title="Help with HTS code formats"
-                >
-                  ?
-                </button>
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center">
+                  <TertiaryLabel value="Enter HTS Codes" />
+                  <button
+                    className="btn btn-circle btn-xs btn-primary ml-2 text-sm flex items-center justify-center"
+                    onClick={() => setShowHelpModal(true)}
+                    title="Help with HTS code formats"
+                  >
+                    ?
+                  </button>
+                </div>
+                <div className="flex gap-2 items-center">
+                  <div className="flex flex-wrap items-center">
+                    <p className="text-xs font-bold text-gray-500">Examples:</p>
+                    {singleElementExamples.map((example) => (
+                      <button
+                        key={`${example}-example`}
+                        className="btn btn-xs btn-primary btn-link"
+                        onClick={() => {
+                          handleInputChange(example);
+                        }}
+                      >
+                        {example}
+                      </button>
+                    ))}
+                    {listExamples.map((example) => (
+                      <button
+                        key={`${example.name}-example`}
+                        className="btn btn-xs btn-primary btn-link"
+                        onClick={() => {
+                          handleInputChange(example.list);
+                        }}
+                      >
+                        {example.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
               <SimpleTextInput
                 value={inputValue}
                 placeholder="3808.94.10.00, 0202.20.80.00, etc..."
-                characterLimit={5000}
+                characterLimit={CHARACTER_LIMIT}
                 onChange={handleInputChange}
               />
-              <div className="flex gap-2 items-center">
-                <div className="flex flex-wrap">
-                  <p className="text-sm text-gray-500">Examples:</p>
-                  {singleElementExamples.map((example) => (
-                    <button
-                      key={`${example}-example`}
-                      className="btn btn-xs btn-primary btn-link"
-                      onClick={() => {
-                        handleInputChange(example);
-                      }}
-                    >
-                      {example}
-                    </button>
-                  ))}
-                  {listExamples.map((example) => (
-                    <button
-                      key={`${example.name}-example`}
-                      className="btn btn-xs btn-primary btn-link"
-                      onClick={() => {
-                        handleInputChange(example.list);
-                      }}
-                    >
-                      {example.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
             </div>
           </div>
 
@@ -308,7 +331,7 @@ export default function Home() {
           {results && results.length > 0 && (
             <div>
               <div className="flex flex-col gap-2 bg-base-100 bg-transparent">
-                <TertiaryLabel value="Results:" />
+                <TertiaryLabel value="Results" />
                 <div
                   className={`border-2 border-base-content/20 rounded-md ${
                     results.length > 0 ? "p-0" : "p-4"
@@ -316,7 +339,7 @@ export default function Home() {
                 >
                   {results.length > 0 ? (
                     <div className="overflow-x-auto rounded-md">
-                      <table className="table table-zebra table-pin-cols w-full">
+                      <table className="table table-zebra table-sm table-pin-cols w-full">
                         <thead>
                           <tr>
                             <th className="w-4"></th>
@@ -334,7 +357,7 @@ export default function Home() {
                             const notes = getNotes(result);
 
                             return (
-                              <tr key={`${result.code}-${i}`}>
+                              <tr key={`${result.code}-${i}`} className="py-1">
                                 <td>{i + 1}</td>
                                 {htsElementForCode ? (
                                   <td className="truncate min-w-32 lg:min-w-64">
