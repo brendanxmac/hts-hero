@@ -2,16 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { useHts } from "../../../contexts/HtsContext";
-import { isValidTariffableHtsCode } from "../../../libs/hts";
+import { validateTariffableHtsCode } from "../../../libs/hts";
 import SimpleTextInput from "../../../components/SimpleTextInput";
 import { LoadingIndicator } from "../../../components/LoadingIndicator";
 import { august_15_FR_232_tariff_changes } from "../../../tariffs/announcements/232-FR-August-15";
 import Link from "next/link";
 import { TertiaryLabel } from "../../../components/TertiaryLabel";
 import { SecondaryText } from "../../../components/SecondaryText";
-import { Color } from "../../../enums/style";
 import Modal from "../../../components/Modal";
 import { TariffImpactInputHelp } from "../../../components/TariffImpactInputHelp";
+import { TertiaryText } from "../../../components/TertiaryText";
 
 interface ListExample {
   name: string;
@@ -38,16 +38,17 @@ const listExamples: ListExample[] = [
   },
 ];
 
-interface Result {
+interface TariffImpactResult {
   code: string;
-  isImpacted: boolean | null;
+  impacted: boolean | null;
+  error?: string;
 }
 
 export default function Home() {
   const { fetchElements, htsElements } = useHts();
   const [loading, setLoading] = useState(true);
   const [inputValue, setInputValue] = useState("");
-  const [results, setResults] = useState<Result[]>([]);
+  const [results, setResults] = useState<TariffImpactResult[]>([]);
   const [changeList, setChangeList] = useState<string[]>([]);
   const [showHelpModal, setShowHelpModal] = useState(false);
 
@@ -125,6 +126,89 @@ export default function Home() {
 
   const changeLists: TariffChange[] = [section232SteelAndAluminumChanges];
 
+  const getNotes = (result: TariffImpactResult) => {
+    const { impacted, code, error } = result;
+    const codeExists = htsCodeExists(code);
+
+    if (impacted === null) {
+      return (
+        <td>
+          <TertiaryText value={error || "Code Unsupported"} />
+        </td>
+      );
+    }
+
+    if (!codeExists) {
+      return (
+        <td>
+          <TertiaryText value="Code Does Not Exist" />
+        </td>
+      );
+    }
+
+    return <td>-</td>;
+  };
+
+  const getImpactIndicator = (result: TariffImpactResult) => {
+    const { impacted, code } = result;
+    const codeExists = htsCodeExists(code);
+
+    let indicator = "";
+    let tooltip = "";
+
+    if (impacted === null) {
+      indicator = "⚠️";
+      tooltip = "Code Issue";
+    } else if (codeExists) {
+      if (impacted) {
+        indicator = "✅";
+        tooltip = "Code is impacted";
+      } else {
+        indicator = "❌";
+        tooltip = "Code is not impacted";
+      }
+    } else {
+      indicator = "⚠️";
+      tooltip = "Code Issue";
+    }
+
+    return (
+      <td className="text-xl tooltip tooltip-left" data-tip={tooltip}>
+        {indicator}
+      </td>
+    );
+  };
+
+  const handleInputChange = (inputValue: string) => {
+    // Preserve the user's input format as-is
+    setInputValue(inputValue);
+
+    // Parse input by newlines or commas for processing
+    const separators = /[\n, ]/;
+    const parsedCodes = inputValue
+      .trim()
+      .split(separators)
+      .map((code) => code.trim())
+      .filter((code) => code.length > 0);
+
+    const results = parsedCodes.map((code) => {
+      const { valid: isValidTariffableCode, error } =
+        validateTariffableHtsCode(code);
+      // Format the code with proper periods if it's valid
+      const formattedCode = isValidTariffableCode
+        ? formatHtsCodeWithPeriods(code)
+        : code;
+
+      return {
+        code: formattedCode,
+        impacted: isValidTariffableCode ? isEffectedByNewTariffs(code) : null,
+        error,
+      };
+    });
+
+    setResults(results);
+  };
+
   return (
     <main className="w-full max-w-6xl mx-auto flex flex-col bg-base-300 py-6 overflow-y-auto">
       {loading ? (
@@ -146,18 +230,8 @@ export default function Home() {
                 />
               </div>
             </div>
-            {/* <div className="flex flex-col gap-2">
-              <TertiaryLabel value="How to use this tool:" />
-              <TertiaryText
-                value="1. Select the tariff change list you are interested in from
-                  the dropdown."
-              />
-              <TertiaryText
-                value="2. Enter the list of HTS codes you want to check against the
-                  selected tariff change list."
-              />
-            </div> */}
           </div>
+
           {/* Inputs */}
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
@@ -198,36 +272,7 @@ export default function Home() {
                 value={inputValue}
                 placeholder="3808.94.10.00, 0202.20.80.00, etc..."
                 characterLimit={5000}
-                onChange={(value) => {
-                  // Preserve the user's input format as-is
-                  setInputValue(value);
-
-                  // Parse input by newlines or commas for processing
-                  const separators = /[\n, ]/;
-                  const parsedCodes = value
-                    .trim()
-                    .split(separators)
-                    .map((code) => code.trim())
-                    .filter((code) => code.length > 0);
-
-                  const results = parsedCodes.map((code) => {
-                    const isValidTariffableCode =
-                      isValidTariffableHtsCode(code);
-                    // Format the code with proper periods if it's valid
-                    const formattedCode = isValidTariffableCode
-                      ? formatHtsCodeWithPeriods(code)
-                      : code;
-
-                    return {
-                      code: formattedCode,
-                      isImpacted: isValidTariffableCode
-                        ? isEffectedByNewTariffs(code)
-                        : null,
-                    };
-                  });
-
-                  setResults(results);
-                }}
+                onChange={handleInputChange}
               />
               <div className="flex gap-2 items-center">
                 <div className="flex flex-wrap">
@@ -237,15 +282,7 @@ export default function Home() {
                       key={`${example}-example`}
                       className="btn btn-xs btn-primary btn-link"
                       onClick={() => {
-                        const formattedExample =
-                          formatHtsCodeWithPeriods(example);
-                        setInputValue(formattedExample);
-                        setResults([
-                          {
-                            code: formattedExample,
-                            isImpacted: isEffectedByNewTariffs(example),
-                          },
-                        ]);
+                        handleInputChange(example);
                       }}
                     >
                       {example}
@@ -256,32 +293,7 @@ export default function Home() {
                       key={`${example.name}-example`}
                       className="btn btn-xs btn-primary btn-link"
                       onClick={() => {
-                        // Preserve the user's input format as-is
-                        setInputValue(example.list);
-
-                        // Parse input by newlines or commas for processing
-                        const separators = /[\n, ]/;
-                        const parsedCodes = example.list
-                          .trim()
-                          .split(separators)
-                          .map((code) => code.trim())
-                          .filter((code) => code.length > 0);
-
-                        const results = parsedCodes.map((code) => {
-                          // Format the code with proper periods if it's valid
-                          const formattedCode = isValidTariffableHtsCode(code)
-                            ? formatHtsCodeWithPeriods(code)
-                            : code;
-
-                          return {
-                            code: formattedCode,
-                            isImpacted: isValidTariffableHtsCode(code)
-                              ? isEffectedByNewTariffs(code)
-                              : null,
-                          };
-                        });
-
-                        setResults(results);
+                        handleInputChange(example.list);
                       }}
                     >
                       {example.name}
@@ -298,18 +310,18 @@ export default function Home() {
               <div className="flex flex-col gap-2 bg-base-100 bg-transparent">
                 <div className="flex flex-col gap-2 justify-between">
                   <TertiaryLabel value="Results:" />
-                  <div className="flex flex-col gap-1 border-2 border-base-content/10 rounded-md p-2">
+                  {/* <div className="flex flex-col gap-1 border-2 border-base-content/10 rounded-md p-2">
                     <TertiaryLabel value="Legend:" />
                     <div className="flex flex-wrap gap-x-4">
                       <p className="shrink-0">✅ = Impacted</p>
                       <p className="shrink-0">❌ = Not Impacted</p>
                       <p className="shrink-0">🥶 = Does Not Exist</p>
                       <p className="">
-                        ⚠️ = Unsupported (&lt; 8 digits, 9 digits, &gt; 10
-                        digits, not a #, not in ch.01-97)
+                        ⚠️ = Unsupported (Code must be 8 or 10 digits, a number,
+                        and within Chapters 1-97)
                       </p>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
 
                 <div
@@ -325,6 +337,7 @@ export default function Home() {
                             <th className="w-4"></th>
                             <th>HTS Code</th>
                             <th>Impacted</th>
+                            <th>Notes</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -332,11 +345,14 @@ export default function Home() {
                             const htsElementForCode = htsElements.find(
                               (element) => element.htsno === result.code
                             );
+                            const impactIndicator = getImpactIndicator(result);
+                            const notes = getNotes(result);
+
                             return (
                               <tr key={`${result.code}-${i}`}>
                                 <td>{i + 1}</td>
                                 {htsElementForCode ? (
-                                  <td>
+                                  <td className="truncate min-w-32 lg:min-w-64">
                                     <Link
                                       href={`/explore?code=${result.code}`}
                                       target="_blank"
@@ -346,17 +362,12 @@ export default function Home() {
                                     </Link>
                                   </td>
                                 ) : (
-                                  <td>{result.code}</td>
-                                )}
-                                {result.isImpacted === null ? (
-                                  <td className="text-xl">⚠️</td>
-                                ) : htsCodeExists(result.code) ? (
-                                  <td className="text-xl">
-                                    {result.isImpacted ? "✅" : "❌"}
+                                  <td className="truncate min-w-32 lg:min-w-64">
+                                    {result.code}
                                   </td>
-                                ) : (
-                                  <td className="text-xl">🥶</td>
                                 )}
+                                {impactIndicator}
+                                {notes}
                               </tr>
                             );
                           })}
