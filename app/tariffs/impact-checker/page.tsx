@@ -308,22 +308,7 @@ export default function Home() {
           {results && results.length > 0 && (
             <div>
               <div className="flex flex-col gap-2 bg-base-100 bg-transparent">
-                <div className="flex flex-col gap-2 justify-between">
-                  <TertiaryLabel value="Results:" />
-                  {/* <div className="flex flex-col gap-1 border-2 border-base-content/10 rounded-md p-2">
-                    <TertiaryLabel value="Legend:" />
-                    <div className="flex flex-wrap gap-x-4">
-                      <p className="shrink-0">✅ = Impacted</p>
-                      <p className="shrink-0">❌ = Not Impacted</p>
-                      <p className="shrink-0">🥶 = Does Not Exist</p>
-                      <p className="">
-                        ⚠️ = Unsupported (Code must be 8 or 10 digits, a number,
-                        and within Chapters 1-97)
-                      </p>
-                    </div>
-                  </div> */}
-                </div>
-
+                <TertiaryLabel value="Results:" />
                 <div
                   className={`border-2 border-base-content/20 rounded-md ${
                     results.length > 0 ? "p-0" : "p-4"
