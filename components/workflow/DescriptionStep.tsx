@@ -74,7 +74,7 @@ export const DescriptionStep = ({
             try {
               const userCreatedDate = user ? new Date(user.created_at) : null;
               const isTrialUser = userCreatedDate
-                ? isWithinPastNDays(userCreatedDate, 14)
+                ? isWithinPastNDays(userCreatedDate, 7)
                 : false;
 
               const isPayingUser = user
