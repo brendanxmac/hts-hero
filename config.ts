@@ -17,7 +17,7 @@ const proPlan: PricingPlanI = {
     { name: "Fetches Notes" },
     { name: "Finds CROSS Rulings" },
     {
-      name: "Tariff Impact Checker",
+      name: "Determines Tariff Update Impacts",
       details:
         "Instantly see if any of your imports are affected by tariff changes",
     },
