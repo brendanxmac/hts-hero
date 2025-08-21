@@ -15,15 +15,11 @@ const painPoints: PainPoint[] = [
     time: "15 min",
   },
   {
-    title: "Searching CROSS",
+    title: "Fetching Notes & Rulings",
     time: "10 min",
   },
   {
-    title: "Fetching Notes",
-    time: "10 min",
-  },
-  {
-    title: "Finding References",
+    title: "Calculating Duty & Finding Exemptions",
     time: "10 min",
   },
   {
@@ -31,7 +27,7 @@ const painPoints: PainPoint[] = [
     time: "15 min",
   },
   {
-    title: "Save, Share, Find, and Update Classifications",
+    title: "Saving, Sharing, Finding, and Updating",
     time: "?? min",
   },
 ];
@@ -39,26 +35,22 @@ const painPoints: PainPoint[] = [
 const pleasurePoints: PainPoint[] = [
   {
     title: "Finding Headings",
-    time: "2 min",
+    time: "0 min",
   },
   {
-    title: "Searching CROSS",
-    time: "2 min",
+    title: "Fetching Notes & Rulings",
+    time: "0 min",
   },
   {
-    title: "Fetching Notes",
-    time: "1 min",
-  },
-  {
-    title: "Finding References",
-    time: "5 min",
+    title: "Calculating Duty & Finding Exemptions",
+    time: "0 min",
   },
   {
     title: "Creating Reports",
     time: "0 min",
   },
   {
-    title: "Save, Share, Find, and Update Classifications",
+    title: "Saving, Sharing, Finding, and Updating",
     time: "0 min",
   },
 ];
@@ -68,7 +60,7 @@ const WithWithout = () => {
     <section className="bg-base-300">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-16 md:py-24">
         <h2 className="text-center font-black text-white text-4xl sm:text-5xl lg:text-6xl mb-6 sm:mb-8 md:mb-10 lg:mb-12">
-          <span className="text-primary">Supercharge</span> Your Classifications
+          Automate the Boring Bits
         </h2>
 
         <div className="flex flex-col lg:flex-row justify-center items-center lg:items-start gap-4 sm:gap-6 md:gap-8 lg:gap-12">
@@ -93,8 +85,6 @@ const WithWithout = () => {
               </div>
               <div className="flex flex-col items-center justify-center">
                 <h2 className="text-center text-white text-2xl sm:text-3xl lg:text-4xl font-bold">
-                  Classification
-                  <br />
                   <span className="text-red-400">Without</span> HTS Hero
                 </h2>
               </div>
@@ -153,8 +143,6 @@ const WithWithout = () => {
               </div>
               <div className="flex flex-col items-center justify-center">
                 <h2 className="text-center text-white text-2xl sm:text-3xl lg:text-4xl font-bold">
-                  Classification
-                  <br />
                   <span className="text-green-400">With</span> HTS Hero
                 </h2>
               </div>
@@ -182,7 +170,7 @@ const WithWithout = () => {
             <div className="mt-auto pt-2 sm:pt-3">
               <div className="text-center">
                 <p className="text-green-400 font-bold text-2xl sm:text-3xl md:text-4xl mb-1 sm:mb-2">
-                  ~10 Minutes
+                  Automated
                 </p>
               </div>
               <p className="text-center text-neutral-300 text-xs sm:text-sm md:text-lg mt-1 sm:mt-2 font-medium">
@@ -192,7 +180,7 @@ const WithWithout = () => {
           </div>
         </div>
 
-        <div className="flex items-center justify-center gap-1 w-full mt-8 sm:mt-10 md:mt-12 lg:mt-16 xl:mt-24 animate-pulse">
+        {/* <div className="flex items-center justify-center gap-1 w-full mt-8 sm:mt-10 md:mt-12 lg:mt-16 xl:mt-24 animate-pulse">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -229,7 +217,7 @@ const WithWithout = () => {
               d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"
             />
           </svg>
-        </div>
+        </div> */}
       </div>
     </section>
   );
