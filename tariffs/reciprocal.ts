@@ -1,5 +1,43 @@
 import { TariffI } from "../interfaces/tariffs";
 
+const recriprocalExceptions = [
+  // Donations
+  "9903.01.30",
+  // Information Materials
+  "9903.01.31",
+  // Excluded Subheading Articles
+  "9903.01.32",
+  // Catch all for 232's
+  "9903.01.33",
+  // U.S. Content > 20%
+  "9903.01.34",
+  // Transhipping Identified
+  "9903.02.01",
+  // Iron or Steel
+  "9903.81.87",
+  "9903.81.88",
+  // Iron or Steel Derivatives
+  "9903.81.89",
+  "9903.81.90",
+  "9903.81.91",
+  "9903.81.92",
+  "9903.81.93",
+  // Aluminum
+  "9903.85.02",
+  // Aluminum Derivatives
+  "9903.85.04",
+  "9903.85.07",
+  "9903.85.08",
+  "9903.85.09",
+  // Autos
+  "9903.94.01",
+  "9903.94.03",
+  // Auto Parts
+  "9903.94.05",
+  // Copper
+  "9903.78.01",
+];
+
 export const reciprocalTariffs: TariffI[] = [
   // ===========================
   // WORLDWIDE RECIPROCAL TARIFF
@@ -292,43 +330,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["AF"],
     },
@@ -341,43 +343,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 30,
     special: 30,
     other: 30,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["DZ"],
     },
@@ -390,43 +356,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["AO"],
     },
@@ -439,43 +369,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 20,
     special: 20,
     other: 20,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["BD"],
     },
@@ -488,43 +382,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["BO"],
     },
@@ -537,43 +395,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 30,
     special: 30,
     other: 30,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["BA"],
     },
@@ -586,43 +408,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["BW"],
     },
@@ -635,43 +421,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 10,
     special: 10,
     other: 10,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["BR"],
     },
@@ -684,43 +434,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["BN"],
     },
@@ -733,43 +447,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 19,
     special: 19,
     other: 19,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["KH"],
     },
@@ -782,43 +460,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["CM"],
     },
@@ -831,43 +473,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["TD"],
     },
@@ -880,43 +486,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["CR"],
     },
@@ -929,43 +499,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["CI"],
     },
@@ -978,43 +512,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["CD"],
     },
@@ -1027,43 +525,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["EC"],
     },
@@ -1076,43 +538,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["EC"],
     },
@@ -1126,43 +552,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 0,
     special: 0,
     other: 0,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: [
         "AT",
@@ -1204,43 +594,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 0,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: [
         "AT",
@@ -1281,43 +635,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 10,
     special: 10,
     other: 10,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["FK"],
     },
@@ -1330,43 +648,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["FJ"],
     },
@@ -1379,43 +661,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["GH"],
     },
@@ -1428,43 +674,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["GY"],
     },
@@ -1477,43 +687,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["IS"],
     },
@@ -1526,43 +700,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["IN"],
     },
@@ -1575,43 +713,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 19,
     special: 19,
     other: 19,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["ID"],
     },
@@ -1624,43 +726,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 35,
     special: 35,
     other: 35,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["IQ"],
     },
@@ -1673,43 +739,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["IL"],
     },
@@ -1722,43 +752,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["JP"],
     },
@@ -1771,43 +765,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["JO"],
     },
@@ -1820,43 +778,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["KZ"],
     },
@@ -1869,43 +791,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 40,
     special: 40,
     other: 40,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["LA"],
     },
@@ -1918,43 +804,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["LS"],
     },
@@ -1967,43 +817,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 30,
     special: 30,
     other: 30,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["LY"],
     },
@@ -2016,43 +830,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["LI"],
     },
@@ -2065,43 +843,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["MG"],
     },
@@ -2114,43 +856,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["MW"],
     },
@@ -2163,43 +869,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 19,
     special: 19,
     other: 19,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["MY"],
     },
@@ -2212,43 +882,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["MU"],
     },
@@ -2261,43 +895,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["MD"],
     },
@@ -2310,43 +908,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["MZ"],
     },
@@ -2359,43 +921,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 40,
     special: 40,
     other: 40,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["MM"],
     },
@@ -2408,43 +934,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["NA"],
     },
@@ -2457,43 +947,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["NR"],
     },
@@ -2506,43 +960,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["NZ"],
     },
@@ -2555,43 +973,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 18,
     special: 18,
     other: 18,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["NI"],
     },
@@ -2604,43 +986,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["NG"],
     },
@@ -2653,43 +999,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["MK"],
     },
@@ -2702,43 +1012,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["NO"],
     },
@@ -2751,43 +1025,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 19,
     special: 19,
     other: 19,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["PK"],
     },
@@ -2800,43 +1038,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["PG"],
     },
@@ -2849,43 +1051,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 19,
     special: 19,
     other: 19,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["PH"],
     },
@@ -2898,43 +1064,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 35,
     special: 35,
     other: 35,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["RS"],
     },
@@ -2947,43 +1077,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 30,
     special: 30,
     other: 30,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["ZA"],
     },
@@ -2996,43 +1090,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["KR"],
     },
@@ -3045,43 +1103,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 20,
     special: 20,
     other: 20,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["LK"],
     },
@@ -3094,43 +1116,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 39,
     special: 39,
     other: 39,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["CH"],
     },
@@ -3143,43 +1129,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 41,
     special: 41,
     other: 41,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["SY"],
     },
@@ -3192,43 +1142,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 20,
     special: 20,
     other: 20,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["TW"],
     },
@@ -3241,43 +1155,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 19,
     special: 19,
     other: 19,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["TH"],
     },
@@ -3290,43 +1168,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["TT"],
     },
@@ -3339,43 +1181,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["TN"],
     },
@@ -3388,43 +1194,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["TR"],
     },
@@ -3437,43 +1207,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["UG"],
     },
@@ -3486,43 +1220,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 10,
     special: 10,
     other: 10,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["GB"],
     },
@@ -3535,43 +1233,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["VU"],
     },
@@ -3584,43 +1246,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["VE"],
     },
@@ -3633,43 +1259,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 20,
     special: 20,
     other: 20,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["VN"],
     },
@@ -3682,43 +1272,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["ZM"],
     },
@@ -3731,43 +1285,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: [
-      // Donations
-      "9903.01.30",
-      // Information Materials
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // U.S. Content > 20%
-      "9903.01.34",
-      // Transhipping Identified
-      "9903.02.01",
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
-      // Autos
-      "9903.94.01",
-      "9903.94.03",
-      // Auto Parts
-      "9903.94.05",
-      // Copper
-      "9903.78.01",
-    ],
+    exceptions: recriprocalExceptions,
     inclusions: {
       countries: ["ZW"],
     },
