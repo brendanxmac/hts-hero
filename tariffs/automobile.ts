@@ -318,7 +318,7 @@ export const automobileTariffs: TariffI[] = [
       "Effective with respect to entries on or after May 3, 2025, articles provided for in subdivision (h) of U.S. note 33 to this subchapter.",
     //   TODO: Adding quick ability to see USCMA notes would be BIG differentiator
     // becausse for this one USCMA quaifications or being a part but not for passenger vehicles or light trucks is the big thing
-    name: "USCMA & Not Part for Passenger Vechiles or Light Trucks Exclusion",
+    name: "Exclusion: (1) USCMA Eligible other than automobile knock-down kits or parts compilations; (2) Not part for passenger vehicles or light trucks",
     general: 0,
     special: 0,
     other: 0,
