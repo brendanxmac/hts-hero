@@ -52,7 +52,7 @@ export const dummyTariffImpactResults: TariffCheckerDummyResult[] = [
 
 export const tariffImpactFeatures = [
   {
-    title: "Enter Codes",
+    title: "Enter HTS Codes",
     description:
       "Grab your codes from anywhere and paste them directly into the app.",
     styles: "md:col-span-2 bg-base-300 text-white",
@@ -66,7 +66,7 @@ export const tariffImpactFeatures = [
             <div className="absolute left-4 top-4 group-hover:hidden flex items-center ">
               <span className="w-[2px] h-5 bg-primary animate-pulse"></span>
             </div>
-            <div className="opacity-0 group-hover:opacity-100 duration-500 flex flex-wrap">
+            <div className="opacity-0 group-hover:opacity-100 duration-100 flex flex-wrap">
               <span className="text-lg font-medium">
                 2602.00.00.40, 9701.21.00.00, 4408.90.01.10, 9701.21.00.00,
                 2825.80.00.00, 8544.49.20.00, 9403.99.90.10, 7614.10.10.00
@@ -79,7 +79,7 @@ export const tariffImpactFeatures = [
     ),
   },
   {
-    title: "Get Results",
+    title: "See Impacts",
     description:
       "Instantly see which HTS Codes are affected by the tariff updates",
     styles: "md:col-span-2 bg-base-300 text-white",
@@ -117,15 +117,73 @@ export const tariffImpactFeatures = [
   },
 ];
 const FeaturesGrid = () => {
-  const [isVisible, setIsVisible] = useState(false);
+  const [completedCodes, setCompletedCodes] = useState<string[]>([]);
+  const [currentCodeIndex, setCurrentCodeIndex] = useState(0);
+  const [currentCharIndex, setCurrentCharIndex] = useState(0);
+  const [isTyping, setIsTyping] = useState(false);
+  const [showCursor, setShowCursor] = useState(true);
+  const [currentPartialCode, setCurrentPartialCode] = useState("");
+
+  const codes = [
+    "2602.00.00.40",
+    "9701.21.00.00",
+    "4408.90.01.10",
+    "2825.80.00.00",
+    "8544.49.20.00",
+  ];
 
   useEffect(() => {
-    // Start with empty state, then toggle every 3 seconds
-    const timer = setInterval(() => {
-      setIsVisible((prev) => !prev);
-    }, 3000);
+    // Start the typing cycle
+    const startTyping = () => {
+      setCompletedCodes([]);
+      setCurrentCodeIndex(0);
+      setCurrentCharIndex(0);
+      setCurrentPartialCode("");
+      setIsTyping(true);
+    };
 
-    return () => clearInterval(timer);
+    startTyping();
+
+    // Restart the entire cycle every 8 seconds
+    const cycleTimer = setInterval(startTyping, 8000);
+
+    return () => clearInterval(cycleTimer);
+  }, []);
+
+  useEffect(() => {
+    // Handle typing animation
+    if (!isTyping || currentCodeIndex >= codes.length) return;
+
+    const currentCode = codes[currentCodeIndex];
+
+    if (currentCharIndex < currentCode.length) {
+      // Type next character
+      const typeTimer = setTimeout(() => {
+        setCurrentPartialCode(currentCode.slice(0, currentCharIndex + 1));
+        setCurrentCharIndex((prev) => prev + 1);
+      }, 80); // Typing speed
+
+      return () => clearTimeout(typeTimer);
+    } else {
+      // Code is complete - add to completed codes and update table
+      const completeTimer = setTimeout(() => {
+        setCompletedCodes((prev) => [...prev, currentCode]);
+        setCurrentPartialCode("");
+        setCurrentCodeIndex((prev) => prev + 1);
+        setCurrentCharIndex(0);
+      }, 400);
+
+      return () => clearTimeout(completeTimer);
+    }
+  }, [currentCharIndex, currentCodeIndex, isTyping, codes]);
+
+  useEffect(() => {
+    // Cursor blinking
+    const cursorTimer = setInterval(() => {
+      setShowCursor((prev) => !prev);
+    }, 500);
+
+    return () => clearInterval(cursorTimer);
   }, []);
 
   return (
@@ -133,10 +191,8 @@ const FeaturesGrid = () => {
       <div className="flex flex-col max-w-7xl gap-4 sm:gap-8 px-4">
         <div className="flex flex-col gap-2 md:gap-8 text-center lg:text-left lg:flex-1 items-center">
           <h1 className="text-white font-extrabold text-3xl md:text-4xl lg:text-6xl tracking-tight md:-mb-4 max-w-4xl text-center mx-auto">
-            See If Tariff Updates Effect your Imports{" "}
-            <span className="bg-primary px-2 text-base-300 inline-block">
-              in seconds
-            </span>{" "}
+            <span className="text-primary">Instantly</span> Know When New
+            Tariffs Affect your Bottom Line{" "}
           </h1>
           <p className="text-sm md:text-lg text-neutral-300 leading-relaxed max-w-5xl mx-auto">
             {/* Save your bottom line and your sanity with copy & paste */}
@@ -172,39 +228,42 @@ const FeaturesGrid = () => {
                   {/* <p className="opacity-80">{feature.description}</p> */}
                 </div>
                 {index === 0 ? (
-                  // First feature - opacity-based transition
+                  // First feature - typing animation
                   <div className="overflow-hidden h-full flex items-stretch">
                     <div className="w-full translate-x-6 bg-base-200 rounded-t-box h-full p-6">
                       <p className="font-medium uppercase tracking-wide text-base-content/60 text-sm mb-3">
                         HTS Codes:
                       </p>
                       <div className="relative textarea py-4 h-full bg-base-100 border-base-content/10 text-base-content">
-                        {/* Empty state - cursor */}
-                        <div
-                          className={`absolute left-4 top-4 flex items-center transition-opacity duration-100 ${!isVisible ? "opacity-100" : "opacity-0"}`}
-                        >
-                          <span className="w-[2px] h-5 bg-primary animate-pulse"></span>
-                        </div>
-                        {/* Filled state - text content */}
-                        <div
-                          className={`transition-opacity duration-1000 flex flex-wrap ${isVisible ? "opacity-100" : "opacity-0"}`}
-                        >
-                          <span className="text-lg font-medium">
-                            2602.00.00.40,
-                            <br /> 9701.21.00.00,
-                            <br /> 4408.90.01.10,
-                            <br /> 9701.21.00.00,
-                            <br /> 2825.80.00.00,
-                            <br /> 8544.49.20.00,
-                            <br /> 9403.99.90.10,
-                            <br /> 7614.10.10.00
-                          </span>
+                        <div className="text-lg font-medium">
+                          {/* Show completed codes */}
+                          {completedCodes.map((code, i) => (
+                            <span key={i}>
+                              {code}
+                              {i < completedCodes.length - 1 && ", "}
+                              {i < completedCodes.length - 1 && <br />}
+                            </span>
+                          ))}
+
+                          {/* Show current partial code being typed */}
+                          {isTyping && currentCodeIndex < codes.length && (
+                            <>
+                              {completedCodes.length > 0 && ", "}
+                              {completedCodes.length > 0 && <br />}
+                              {currentPartialCode}
+                              <span
+                                className={`w-[2px] h-5 bg-primary inline-block ${showCursor ? "opacity-100" : "opacity-30"}`}
+                              >
+                                |
+                              </span>
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>
                   </div>
                 ) : index === 1 ? (
-                  // Second feature - opacity-based transition
+                  // Second feature - opacity-based transition with purple pulse
                   <div className="overflow-x-auto ml-5 rounded-md bg-base-100 overflow-hidden">
                     <table className="rounded-md table table-zebra table-lg table-pin-rows w-full">
                       <thead>
@@ -214,17 +273,26 @@ const FeaturesGrid = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {/* Always render all rows, but control opacity */}
-                        {dummyTariffImpactResults.map((result, i) => {
-                          const { htsCode, impacted, notes } = result;
+                        {/* Show rows only for completed codes */}
+                        {completedCodes.map((completedCode, i) => {
+                          // Find matching result for this completed code
+                          const result =
+                            dummyTariffImpactResults.find(
+                              (r) => r.htsCode === completedCode
+                            ) ||
+                            dummyTariffImpactResults[
+                              i % dummyTariffImpactResults.length
+                            ];
+                          const { htsCode, impacted } = result;
+
                           return (
                             <tr
-                              key={`${htsCode}-${i}`}
-                              className={`py-1 transition-opacity duration-1000 ${isVisible ? "opacity-100" : "opacity-0"}`}
+                              key={`${completedCode}-${i}`}
+                              className="py-1 animate-in fade-in duration-300"
                             >
                               <td className="truncate min-w-32 lg:min-w-64">
                                 <p className="link link-primary font-bold">
-                                  {htsCode}
+                                  {completedCode}
                                 </p>
                               </td>
                               <td className="text-2xl">
