@@ -8,6 +8,8 @@ import { classifierFaqList } from "@/constants/faq";
 import WithWithout, { Task } from "@/components/WithWithout";
 import Hero from "../../../components/Hero";
 import FeaturesGrid from "../../../components/FeaturesGrid";
+import Demo from "../../../components/Demo";
+import CTA from "../../../components/CTA";
 
 const withoutTariffImpact: Task[] = [
   {
@@ -54,10 +56,26 @@ export default function Home() {
         <AboutHeader />
       </Suspense>
       <main>
-        <Hero
-          standoutPlacement="start"
-          titleStandout="Instantly"
-          title="See If Tariff Updates Effect your Imports"
+        <FeaturesGrid />
+        <WithWithout
+          title="Copy, Paste, Clarity 😌"
+          subtitle="Lets you quickly take bottom-line saving action when updates happen"
+          // subtitle="No more delay, headaches, and error-prone manual labor"
+          withKeyPoint={{
+            title: "Instant Clarity",
+            detail: "No more guessing or waiting",
+          }}
+          withoutKeyPoint={{
+            title: "Confusion & Delay",
+            detail: "Manual, error-prone, time-consuming",
+          }}
+          withList={withTariffImpact}
+          withoutList={withoutTariffImpact}
+        />
+        <Demo
+          standoutPlacement="end"
+          titleStandout="before it's too late"
+          title="See if you're impacted"
           subtitle="So you can save your time, worry, and bottom line"
           ctaText="Try it Now!"
           ctaLink="/tariffs/impact-checker"
@@ -70,24 +88,9 @@ export default function Home() {
             altText: "Tariff Impacts",
           }}
         />
-        <FeaturesGrid />
-        <WithWithout
-          title="Copy, Paste, Clarity 😌"
-          // subtitle="So you can quickly take bottom-line saving action when updates happen"
-          subtitle="No more delay, headaches, and error-prone manual labor"
-          withKeyPoint={{
-            title: "Instant Clarity",
-            detail: "No more guessing or waiting",
-          }}
-          withoutKeyPoint={{
-            title: "Confusion & Delay",
-            detail: "Manual, error-prone, time-consuming",
-          }}
-          withList={withTariffImpact}
-          withoutList={withoutTariffImpact}
-        />
         {/* <Pricing customerType={AboutPage.CLASSIFIER} /> */}
-        <FAQ faqItems={classifierFaqList} />
+        {/* <CTA /> */}
+        {/* <FAQ faqItems={classifierFaqList} /> */}
       </main>
       <ClassifierFooter />
     </>

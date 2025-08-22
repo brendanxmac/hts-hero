@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
-import React from "react";
+import Link from "next/link";
+import React, { useState, useEffect } from "react";
 
 interface TariffCheckerDummyResult {
   htsCode: string;
@@ -7,7 +8,7 @@ interface TariffCheckerDummyResult {
   notes: string;
 }
 
-const dummyResults: TariffCheckerDummyResult[] = [
+export const dummyTariffImpactResults: TariffCheckerDummyResult[] = [
   {
     htsCode: "2602.00.00.40",
     impacted: true,
@@ -49,12 +50,12 @@ const dummyResults: TariffCheckerDummyResult[] = [
   },
 ];
 
-const features = [
+export const tariffImpactFeatures = [
   {
-    title: "Enter your Codes",
+    title: "Enter Codes",
     description:
       "Grab your codes from anywhere and paste them directly into the app.",
-    styles: "bg-base-300 text-white",
+    styles: "md:col-span-2 bg-base-300 text-white",
     demo: (
       <div className="overflow-hidden h-full flex items-stretch">
         <div className="w-full translate-x-6 bg-base-200 rounded-t-box h-full p-6">
@@ -78,7 +79,7 @@ const features = [
     ),
   },
   {
-    title: "See which ones are affected",
+    title: "Get Results",
     description:
       "Instantly see which HTS Codes are affected by the tariff updates",
     styles: "md:col-span-2 bg-base-300 text-white",
@@ -94,7 +95,7 @@ const features = [
             </tr>
           </thead>
           <tbody>
-            {dummyResults.map((result, i) => {
+            {dummyTariffImpactResults.map((result, i) => {
               const { htsCode, impacted, notes } = result;
               return (
                 <tr key={`${htsCode}-${i}`} className="py-1">
@@ -116,26 +117,128 @@ const features = [
   },
 ];
 const FeaturesGrid = () => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    // Start with empty state, then toggle every 3 seconds
+    const timer = setInterval(() => {
+      setIsVisible((prev) => !prev);
+    }, 3000);
+
+    return () => clearInterval(timer);
+  }, []);
+
   return (
-    <section className="flex justify-center items-center w-full bg-base-200 text-base-content px-6 py-20 lg:py-32">
-      <div className="flex flex-col max-w-[82rem] gap-16 md:gap-20 px-4">
-        <h2 className="font-black text-4xl md:text-5xl text-center">
+    <section className="flex justify-center items-center w-full bg-base-200 text-base-content px-6 py-10 lg:py-16">
+      <div className="flex flex-col max-w-7xl gap-4 sm:gap-8 px-4">
+        <div className="flex flex-col gap-2 md:gap-8 text-center lg:text-left lg:flex-1 items-center">
+          <h1 className="text-white font-extrabold text-3xl md:text-4xl lg:text-6xl tracking-tight md:-mb-4 max-w-4xl text-center mx-auto">
+            <span className="bg-primary px-2 text-base-300 transform -rotate-1 inline-block">
+              Instantly
+            </span>{" "}
+            See If Tariff Updates Effect your Imports{" "}
+          </h1>
+          <p className="text-sm md:text-lg text-neutral-300 leading-relaxed max-w-5xl mx-auto">
+            {/* Save your bottom line and your sanity with copy & paste */}
+            Without the delay, headaches, and error-prone manual labor
+          </p>
+
+          <div className="flex justify-center lg:justify-start">
+            <Link
+              className="btn btn-wide btn-primary"
+              href="/tariffs/impact-checker"
+            >
+              Try it Now!
+            </Link>
+          </div>
+
+          {/* <TestimonialsAvatars priority={true} /> */}
+        </div>
+        {/* <h2 className="font-black text-4xl md:text-5xl text-center">
           Copy, Paste, <span className="text-white">Clarity ✅</span>
-        </h2>
-        <div className="flex flex-col w-full h-fit gap-4 lg:gap-10 text-text-default max-w-[82rem]">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-10">
-            {features.map((feature) => (
+        </h2> */}
+        <div className="flex flex-col w-full h-fit gap-4 lg:gap-10 text-text-default max-w-7xl">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 lg:gap-10">
+            {tariffImpactFeatures.map((feature, index) => (
               <div
                 key={feature.title}
-                className={`${feature.styles} rounded-3xl flex flex-col gap-6 w-full h-[22rem] lg:h-[25rem] pt-6 overflow-hidden group border border-base-content/10`}
+                className={`${feature.styles} rounded-3xl flex flex-col gap-6 w-full h-[22rem] lg:h-[25rem] pt-6 overflow-hidden border border-base-content/10`}
               >
                 <div className="px-6 space-y-2">
                   <h3 className="font-bold text-xl lg:text-3xl tracking-tight">
                     {feature.title}
                   </h3>
-                  <p className="opacity-80">{feature.description}</p>
+                  {/* <p className="opacity-80">{feature.description}</p> */}
                 </div>
-                {feature.demo}
+                {index === 0 ? (
+                  // First feature - opacity-based transition
+                  <div className="overflow-hidden h-full flex items-stretch">
+                    <div className="w-full translate-x-6 bg-base-200 rounded-t-box h-full p-6">
+                      <p className="font-medium uppercase tracking-wide text-base-content/60 text-sm mb-3">
+                        HTS Codes:
+                      </p>
+                      <div className="relative textarea py-4 h-full bg-base-100 border-base-content/10 text-base-content">
+                        {/* Empty state - cursor */}
+                        <div
+                          className={`absolute left-4 top-4 flex items-center transition-opacity duration-100 ${!isVisible ? "opacity-100" : "opacity-0"}`}
+                        >
+                          <span className="w-[2px] h-5 bg-primary animate-pulse"></span>
+                        </div>
+                        {/* Filled state - text content */}
+                        <div
+                          className={`transition-opacity duration-1000 flex flex-wrap ${isVisible ? "opacity-100" : "opacity-0"}`}
+                        >
+                          <span className="text-lg font-medium">
+                            2602.00.00.40,
+                            <br /> 9701.21.00.00,
+                            <br /> 4408.90.01.10,
+                            <br /> 9701.21.00.00,
+                            <br /> 2825.80.00.00,
+                            <br /> 8544.49.20.00,
+                            <br /> 9403.99.90.10,
+                            <br /> 7614.10.10.00
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : index === 1 ? (
+                  // Second feature - opacity-based transition
+                  <div className="overflow-x-auto ml-5 rounded-md bg-base-100 overflow-hidden">
+                    <table className="rounded-md table table-zebra table-lg table-pin-rows w-full">
+                      <thead>
+                        <tr>
+                          <th>HTS Code</th>
+                          <th>Impacted</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {/* Always render all rows, but control opacity */}
+                        {dummyTariffImpactResults.map((result, i) => {
+                          const { htsCode, impacted, notes } = result;
+                          return (
+                            <tr
+                              key={`${htsCode}-${i}`}
+                              className={`py-1 transition-opacity duration-1000 ${isVisible ? "opacity-100" : "opacity-0"}`}
+                            >
+                              <td className="truncate min-w-32 lg:min-w-64">
+                                <p className="link link-primary font-bold">
+                                  {htsCode}
+                                </p>
+                              </td>
+                              <td className="text-2xl">
+                                {impacted ? "✅" : "❌"}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  // Other features remain unchanged
+                  feature.demo
+                )}
               </div>
             ))}
           </div>
