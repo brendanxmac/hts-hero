@@ -6,7 +6,8 @@ import ClassifierFooter from "@/components/ClassifierFooter";
 import { FAQ } from "@/components/FAQ";
 import { classifierFaqList } from "@/constants/faq";
 import WithWithout, { Task } from "@/components/WithWithout";
-import TariffImpactHero from "../../../components/TariffImpactHero";
+import Hero from "../../../components/Hero";
+import FeaturesGrid from "../../../components/FeaturesGrid";
 
 const withoutTariffImpact: Task[] = [
   {
@@ -53,9 +54,25 @@ export default function Home() {
         <AboutHeader />
       </Suspense>
       <main>
-        <TariffImpactHero />
+        <Hero
+          standoutPlacement="start"
+          titleStandout="Instantly"
+          title="See If Tariff Updates Effect your Imports"
+          subtitle="So you can save your time, worry, and bottom line"
+          ctaText="Try it Now!"
+          ctaLink="/tariffs/impact-checker"
+          media={{
+            title: "Tariff Impacts",
+            description: "Tariff Impacts Demo",
+            mediaType: "video",
+            mediaPath: "/tariff-impact-demo.mp4",
+            mediaFormat: "mp4",
+            altText: "Tariff Impacts",
+          }}
+        />
+        <FeaturesGrid />
         <WithWithout
-          title="Automate Your Tariff Impact Checks"
+          title="Copy, Paste, Clarity 😌"
           // subtitle="So you can quickly take bottom-line saving action when updates happen"
           subtitle="No more delay, headaches, and error-prone manual labor"
           withKeyPoint={{

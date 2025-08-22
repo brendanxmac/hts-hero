@@ -1,54 +1,91 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import Image from "next/image";
+import { FeatureI } from "../interfaces/ui";
 
-const Hero = () => {
-  const videoRef = useRef<HTMLVideoElement>(null);
+interface Props {
+  title: string;
+  titleStandout: string;
+  subtitle: string;
+  ctaText: string;
+  ctaLink: string;
+  media: FeatureI;
+  standoutPlacement: TextPlacement;
+}
 
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.playbackRate = 1.5;
+type TextPlacement = "start" | "end";
+
+const Hero = ({
+  title,
+  titleStandout,
+  standoutPlacement,
+  subtitle,
+  ctaText,
+  ctaLink,
+  media,
+}: Props) => {
+  const getHeadline = () => {
+    if (standoutPlacement === "start") {
+      return (
+        <h1 className="text-white font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-tight md:-mb-4">
+          <span className="bg-primary px-2 text-base-300 transform -rotate-1 inline-block">
+            {titleStandout}
+          </span>{" "}
+          {title}
+        </h1>
+      );
+    } else {
+      return (
+        <h1 className="text-white font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-tight md:-mb-4">
+          {title}{" "}
+          <span className="bg-primary px-2 text-base-300 transform -rotate-1 inline-block">
+            {titleStandout}
+          </span>
+        </h1>
+      );
     }
-  }, []);
+  };
 
   return (
-    <section className="bg-none max-w-7xl mx-auto bg-base-100 flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-20 px-8 py-8 lg:py-28">
-      <div className="flex flex-col gap-6 items-center justify-center text-center lg:text-left lg:items-start">
-        <h1 className="text-white font-extrabold text-4xl lg:text-6xl tracking-tight md:-mb-4">
-          {/* Find HTS Codes on your own,{" "}
-          <span className="text-primary">in Seconds</span> */}
-          {/* AI-Powered HTS Code Suggestions in Seconds */}
-          AI-Powered HTS Code Discovery
-          {/* Find any HTS Codes{" "} */}
-          {/* <span className="text-primary">in Seconds</span> */}
-        </h1>
-        <p className="text-sm sm:text-lg text-neutral-300 leading-relaxed">
-          {/* Verify Supplier Codes, Avoid Costly Mistakes, and Ship with Confidence */}
-          {/* Verify Supplier Codes, Prevent Costly Mistakes, and Ship with
-          Confidence  */}
-          Verify supplier codes, avoid costly mistakes, and ship with
-          confidence, before consulting your broker.
-          {/* Save hours of work, avoid fines or delays at customs, and verify codes
-          from suppliers. */}
-        </p>
+    <section className="bg-none max-w-7xl mx-auto bg-base-100 px-4 sm:px-6 md:px-8 lg:px-12 py-8 sm:py-16 md:py-24">
+      <div className="flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-16">
+        {/* Hero Text */}
+        <div className="flex flex-col gap-4 md:gap-8 text-center lg:text-left lg:flex-1">
+          {getHeadline()}
+          <p className="text-lg text-neutral-300 leading-relaxed">{subtitle}</p>
 
-        <Link className="btn btn-primary btn-wide" href={"/app"}>
-          Try it now!
-        </Link>
+          <div className="flex justify-center lg:justify-start">
+            <Link className="btn btn-wide btn-primary" href={ctaLink}>
+              {ctaText}
+            </Link>
+          </div>
 
-        {/* <TestimonialsAvatars priority={true} /> */}
-      </div>
-      <div className="lg:w-full flex justify-center">
-        <video
-          ref={videoRef}
-          className="rounded-2xl w-full sm:w-[34rem] border border-white/20"
-          autoPlay
-          muted
-          loop
-          playsInline
-          src="/demo.mp4"
-        ></video>
+          {/* <TestimonialsAvatars priority={true} /> */}
+        </div>
+
+        {/* Hero Video */}
+        <div className="flex justify-center sm:rounded-md overflow-hidden -mx-5 md:mx-0 lg:flex-1">
+          {media.mediaType === "video" ? (
+            <video
+              className="w-full border-2 border-neutral-content/20 rounded-md md:rounded-2xl"
+              autoPlay
+              muted
+              loop
+              playsInline
+              src={media.mediaPath}
+            ></video>
+          ) : (
+            <Image
+              className="rounded-lg border-2 border-neutral-content/20"
+              priority={true}
+              src={media.mediaPath}
+              alt={media.altText}
+              width={1000}
+              height={1000}
+            />
+          )}
+        </div>
       </div>
     </section>
   );

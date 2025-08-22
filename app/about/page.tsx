@@ -11,6 +11,7 @@ import { classifierFaqList } from "../../constants/faq";
 import { AboutPage } from "../../enums/classify";
 import FeaturesListicle from "../../components/FeaturesListicle";
 import WithWithout, { Task } from "../../components/WithWithout";
+import Hero from "../../components/Hero";
 
 const withoutClassify: Task[] = [
   {
@@ -65,7 +66,23 @@ export default function Home() {
         <AboutHeader />
       </Suspense>
       <main>
-        <ClassifierHero />
+        {/* <ClassifierHero /> */}
+        <Hero
+          title="Classify Anything in"
+          titleStandout="Minutes"
+          standoutPlacement="end"
+          subtitle="With the platform designed to make customs brokers unreasonably productive"
+          ctaText="Try it Now!"
+          ctaLink="/signin"
+          media={{
+            title: "Classify Demo",
+            description: "Classify Demo",
+            mediaType: "video",
+            mediaPath: "/hero-demo.mp4",
+            mediaFormat: "mp4",
+            altText: "Classify Anything",
+          }}
+        />
         <WithWithout
           title="Automate the Boring Bits"
           withoutKeyPoint={{
