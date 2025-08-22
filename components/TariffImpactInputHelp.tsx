@@ -3,10 +3,10 @@ export const TariffImpactInputHelp = () => (
     {/* Header */}
     <div className="text-center pb-4">
       <h2 className="text-2xl md:text-3xl text-white font-bold mb-2">
-        📋 How to Enter HTS Codes
+        📋 How to Enter HTS Codes into this Tool
       </h2>
       <p className="text-sm text-base-content/70">
-        Complete guide for entering single or multiple HTS codes
+        A quick guide on how to get the most out of this tool
       </p>
     </div>
 

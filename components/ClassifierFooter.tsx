@@ -34,8 +34,8 @@ const ClassifierFooter = () => {
             </Link>
 
             <p className="mt-3 text-sm text-base-content/80">
-              The Smarter Way to Classify
-              {/* {config.appDescription} */}
+              {/* The Intelligent Classification Assistant for Customs Brokers */}
+              {config.appDescription}
             </p>
             <p className="mt-3 text-sm text-base-content/60">
               Copyright © {new Date().getFullYear()} - All rights reserved
