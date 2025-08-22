@@ -45,11 +45,15 @@ export const createPurchase = async (
 export const userHasActivePurchase = async (userId: string) => {
   const supabase = createSupabaseClient();
 
+  // Add 2-day buffer to prevent lockouts during subscription renewal delays
+  const bufferDate = new Date();
+  bufferDate.setDate(bufferDate.getDate() - 2);
+
   const { data: purchases, error } = await supabase
     .from("purchases")
     .select("*")
     .eq("user_id", userId)
-    .gte("expires_at", new Date().toISOString());
+    .gte("expires_at", bufferDate.toISOString());
 
   if (error) {
     console.error("Failed to fetch active purchases:", error);
