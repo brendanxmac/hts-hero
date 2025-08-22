@@ -13,6 +13,7 @@ import Modal from "../../../components/Modal";
 import { TariffImpactInputHelp } from "../../../components/TariffImpactInputHelp";
 import { TertiaryText } from "../../../components/TertiaryText";
 import { reciprocalTariffExclusionsList } from "../../../tariffs/exclusion-lists.ts/reciprocal-tariff-exlcusions";
+import { useUser } from "../../../contexts/UserContext";
 
 interface ListExample {
   name: string;
@@ -99,11 +100,15 @@ const changeLists: TariffsUpdate[] = [
 export default function Home() {
   const CHARACTER_LIMIT = 650;
   const { fetchElements, htsElements } = useHts();
+  const { user, isLoading, refreshUser } = useUser();
   const [loading, setLoading] = useState(true);
   const [inputValue, setInputValue] = useState("");
   const [results, setResults] = useState<TariffImpactResult[]>([]);
   const [selectedChangeListIndex, setSelectedChangeListIndex] = useState(0);
   const [showHelpModal, setShowHelpModal] = useState(false);
+
+  console.log(user);
+  console.log(isLoading);
 
   useEffect(() => {
     const loadElements = async () => {

@@ -133,14 +133,15 @@ const FeaturesGrid = () => {
       <div className="flex flex-col max-w-7xl gap-4 sm:gap-8 px-4">
         <div className="flex flex-col gap-2 md:gap-8 text-center lg:text-left lg:flex-1 items-center">
           <h1 className="text-white font-extrabold text-3xl md:text-4xl lg:text-6xl tracking-tight md:-mb-4 max-w-4xl text-center mx-auto">
-            <span className="bg-primary px-2 text-base-300 transform -rotate-1 inline-block">
-              Instantly
-            </span>{" "}
             See If Tariff Updates Effect your Imports{" "}
+            <span className="bg-primary px-2 text-base-300 inline-block">
+              in seconds
+            </span>{" "}
           </h1>
           <p className="text-sm md:text-lg text-neutral-300 leading-relaxed max-w-5xl mx-auto">
             {/* Save your bottom line and your sanity with copy & paste */}
-            Without the delay, headaches, and error-prone manual labor
+            {/* Skip the delays, headaches, and error-prone manual labor */}
+            Be sure your bottom line is safe and quickly take action
           </p>
 
           <div className="flex justify-center lg:justify-start">

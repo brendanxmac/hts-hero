@@ -8,9 +8,9 @@ export async function middleware(req: NextRequest) {
   const { data } = await supabase.auth.getUser();
   const user = data.user;
 
-  if (user && pathname === "/") {
-    return NextResponse.redirect(new URL("/app", req.url));
-  }
+  // if (user && pathname === "/") {
+  //   return NextResponse.redirect(new URL("/app", req.url));
+  // }
 
   const isTariffPath = pathname === "/tariffs";
 
@@ -20,7 +20,6 @@ export async function middleware(req: NextRequest) {
 
   const isRedirectPath =
     pathname === "/blog" ||
-    pathname === "/" ||
     pathname.includes("/about/importer") ||
     pathname.includes("/about/partner") ||
     pathname.includes("/about/classifier");
