@@ -38,7 +38,7 @@ const WithWithout = ({
     <section className="bg-base-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-16 md:py-24">
         <div className="flex flex-col gap-4 mb-8 items-center">
-          <h2 className="text-center font-black text-white text-3xl sm:text-4xl lg:text-5xl">
+          <h2 className="text-center font-black text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
             {title}
           </h2>
           {subtitle && (

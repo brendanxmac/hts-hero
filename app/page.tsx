@@ -40,7 +40,7 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {/* Tariff Import Checker */}
           <Link
-            href={user ? "/tariffs/impact-checker" : "/tariffs/about"}
+            href={user ? "/tariffs/impact-checker" : "/about/tariffs"}
             className="group btn btn-lg h-auto py-6 px-4 bg-base-200 border-2 border-neutral-600 hover:border-primary hover:bg-primary/10 transition-all duration-300 transform hover:scale-105"
           >
             <div className="flex flex-col items-center gap-4">
