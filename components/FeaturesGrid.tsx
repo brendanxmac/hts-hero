@@ -121,7 +121,6 @@ const FeaturesGrid = () => {
   const [currentCodeIndex, setCurrentCodeIndex] = useState(0);
   const [currentCharIndex, setCurrentCharIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
-  const [showCursor, setShowCursor] = useState(true);
   const [currentPartialCode, setCurrentPartialCode] = useState("");
 
   const codes = [
@@ -171,20 +170,11 @@ const FeaturesGrid = () => {
         setCurrentPartialCode("");
         setCurrentCodeIndex((prev) => prev + 1);
         setCurrentCharIndex(0);
-      }, 400);
+      }, 100);
 
       return () => clearTimeout(completeTimer);
     }
   }, [currentCharIndex, currentCodeIndex, isTyping, codes]);
-
-  useEffect(() => {
-    // Cursor blinking
-    const cursorTimer = setInterval(() => {
-      setShowCursor((prev) => !prev);
-    }, 500);
-
-    return () => clearInterval(cursorTimer);
-  }, []);
 
   return (
     <section className="flex justify-center items-center w-full bg-base-200 text-base-content px-6 py-10 lg:py-16">
@@ -251,9 +241,7 @@ const FeaturesGrid = () => {
                               {completedCodes.length > 0 && ", "}
                               {completedCodes.length > 0 && <br />}
                               {currentPartialCode}
-                              <span
-                                className={`w-[2px] h-5 bg-primary inline-block ${showCursor ? "opacity-100" : "opacity-30"}`}
-                              >
+                              <span className={`w-[1px] h-5 text-primary`}>
                                 |
                               </span>
                             </>
@@ -265,7 +253,7 @@ const FeaturesGrid = () => {
                 ) : index === 1 ? (
                   // Second feature - opacity-based transition with purple pulse
                   <div className="overflow-x-auto ml-5 rounded-md bg-base-100 overflow-hidden">
-                    <table className="rounded-md table table-zebra table-lg table-pin-rows w-full">
+                    <table className="rounded-md table table-zebra table-pin-rows w-full">
                       <thead>
                         <tr>
                           <th>HTS Code</th>
@@ -288,7 +276,7 @@ const FeaturesGrid = () => {
                           return (
                             <tr
                               key={`${completedCode}-${i}`}
-                              className="py-1 animate-in fade-in duration-300"
+                              className="py-1 duration-100"
                             >
                               <td className="truncate min-w-32 lg:min-w-64">
                                 <p className="link link-primary font-bold">
