@@ -3,12 +3,11 @@
 import { Suspense } from "react";
 import AboutHeader from "@/components/AboutHeader";
 import ClassifierFooter from "@/components/ClassifierFooter";
-import { FAQ } from "@/components/FAQ";
-import { classifierFaqList } from "@/constants/faq";
 import WithWithout, { Task } from "@/components/WithWithout";
-import Hero from "../../../components/Hero";
 import FeaturesGrid from "../../../components/FeaturesGrid";
 import Demo from "../../../components/Demo";
+import { FAQ } from "../../../components/FAQ";
+import { tariffImpactFaqList } from "../../../constants/faq";
 import CTA from "../../../components/CTA";
 
 const withoutTariffImpact: Task[] = [
@@ -21,7 +20,7 @@ const withoutTariffImpact: Task[] = [
     time: "😓",
   },
   {
-    title: "Worrying that you missed something",
+    title: "Manual Mistakes",
     time: "😅",
   },
   {
@@ -57,26 +56,11 @@ export default function Home() {
       </Suspense>
       <main>
         <FeaturesGrid />
-        <WithWithout
-          title="Copy, Paste, Clarity 😌"
-          subtitle="Lets you quickly take bottom-line saving action when updates happen"
-          // subtitle="No more delay, headaches, and error-prone manual labor"
-          withKeyPoint={{
-            title: "Instant Clarity",
-            detail: "No more guessing or waiting",
-          }}
-          withoutKeyPoint={{
-            title: "Confusion & Delay",
-            detail: "Manual, error-prone, time-consuming",
-          }}
-          withList={withTariffImpact}
-          withoutList={withoutTariffImpact}
-        />
         <Demo
           standoutPlacement="end"
-          titleStandout="before it's too late"
-          title="See if you're impacted"
-          subtitle="So you can save your time, worry, and bottom line"
+          titleStandout=""
+          title="Copy, Paste, Clarity ✅"
+          subtitle="Grab your codes and paste them in for instant answers"
           ctaText="Try it Now!"
           ctaLink="/tariffs/impact-checker"
           media={{
@@ -88,9 +72,29 @@ export default function Home() {
             altText: "Tariff Impacts",
           }}
         />
-        {/* <Pricing customerType={AboutPage.CLASSIFIER} /> */}
-        {/* <CTA /> */}
-        {/* <FAQ faqItems={classifierFaqList} /> */}
+        <WithWithout
+          title="No Waiting, Guessing, or Limits"
+          subtitle="Get answers in seconds for all your imports"
+          ctaText="Check your Imports!"
+          ctaLink="/tariffs/impact-checker"
+          withKeyPoint={{
+            title: "Clarity",
+            detail: "No more guessing or waiting",
+          }}
+          withoutKeyPoint={{
+            title: "Confusion & Delay",
+            detail: "Manual, error-prone, time-consuming",
+          }}
+          withList={withTariffImpact}
+          withoutList={withoutTariffImpact}
+        />
+        <CTA
+          title="Take Control of Your Imports"
+          subtitle="Find out if you're affected by new tariffs now!"
+          ctaText="Try it Free!"
+          ctaLink="/tariffs/impact-checker"
+        />
+        <FAQ faqItems={tariffImpactFaqList} />
       </main>
       <ClassifierFooter />
     </>

@@ -1,3 +1,4 @@
+import Link from "next/link";
 // A useful component when your product is challenging the status quo.
 // Highlight the current pain points (left) and how your product is solving them (right)
 
@@ -19,6 +20,8 @@ interface Props {
   withoutKeyPoint: KeyPoint;
   withList: Task[];
   withoutList: Task[];
+  ctaText?: string;
+  ctaLink?: string;
 }
 
 const WithWithout = ({
@@ -28,16 +31,25 @@ const WithWithout = ({
   withoutKeyPoint,
   withList,
   withoutList,
+  ctaText,
+  ctaLink,
 }: Props) => {
   return (
     <section className="bg-base-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-16 md:py-24">
-        <div className="flex flex-col gap-2 mb-8">
+        <div className="flex flex-col gap-4 mb-8 items-center">
           <h2 className="text-center font-black text-white text-3xl sm:text-4xl lg:text-5xl">
             {title}
           </h2>
           {subtitle && (
             <h3 className="text-center sm:text-lg lg:text-xl">{subtitle}</h3>
+          )}
+          {ctaText && ctaLink && (
+            <div className="flex justify-center lg:justify-start">
+              <Link className="btn btn-wide btn-primary" href={ctaLink}>
+                {ctaText}
+              </Link>
+            </div>
           )}
         </div>
         <div className="flex flex-col lg:flex-row justify-center items-center lg:items-start gap-4 sm:gap-6 md:gap-8 lg:gap-12">

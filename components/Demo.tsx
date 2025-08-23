@@ -47,13 +47,13 @@ const Demo = ({
         {/* Hero Text */}
         <div className="flex flex-col gap-4 text-center">
           {getHeadline()}
-          {/* <p className="text-lg text-neutral-300 leading-relaxed">{subtitle}</p> */}
+          <p className="text-lg text-neutral-300 leading-relaxed">{subtitle}</p>
 
-          <div className="flex justify-center">
+          {/* <div className="flex justify-center">
             <Link className="btn btn-wide btn-primary" href={ctaLink}>
               {ctaText}
             </Link>
-          </div>
+          </div> */}
 
           {/* <TestimonialsAvatars priority={true} /> */}
         </div>

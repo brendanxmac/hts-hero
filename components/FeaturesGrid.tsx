@@ -178,16 +178,18 @@ const FeaturesGrid = () => {
 
   return (
     <section className="flex justify-center items-center w-full bg-base-200 text-base-content px-6 py-10 lg:py-16">
-      <div className="flex flex-col max-w-7xl gap-4 sm:gap-8 px-4">
+      <div className="w-full flex flex-col max-w-5xl lg:min-w-5xl gap-4 sm:gap-8 px-4">
         <div className="flex flex-col gap-2 md:gap-8 text-center lg:text-left lg:flex-1 items-center">
-          <h1 className="text-white font-extrabold text-3xl md:text-4xl lg:text-6xl tracking-tight md:-mb-4 max-w-4xl text-center mx-auto">
-            <span className="text-primary">Instantly</span> Know When New
-            Tariffs Affect your Bottom Line{" "}
+          <h1 className="text-white font-extrabold text-3xl md:text-4xl lg:text-6xl tracking-tight md:-mb-4 max-w-5xl text-center mx-auto">
+            <span className="text-primary">Instantly</span> See If New <br />
+            Tariffs Affect Your Imports
+            {/* <span className="text-primary">Instantly</span> Know If New Tariffs
+            Affect your Bottom Line{" "} */}
           </h1>
           <p className="text-sm md:text-lg text-neutral-300 leading-relaxed max-w-5xl mx-auto">
             {/* Save your bottom line and your sanity with copy & paste */}
-            {/* Skip the delays, headaches, and error-prone manual labor */}
-            Be sure your bottom line is safe and quickly take action
+            Skip the surprises, delays, and error-prone manual checks
+            {/* Be sure your bottom line is safe and quickly take action */}
           </p>
 
           <div className="flex justify-center lg:justify-start">
@@ -195,7 +197,7 @@ const FeaturesGrid = () => {
               className="btn btn-wide btn-primary"
               href="/tariffs/impact-checker"
             >
-              Try it Now!
+              Check Now!
             </Link>
           </div>
 
@@ -212,7 +214,7 @@ const FeaturesGrid = () => {
                 className={`${feature.styles} rounded-3xl flex flex-col gap-6 w-full h-[22rem] lg:h-[25rem] pt-6 overflow-hidden border border-base-content/10`}
               >
                 <div className="px-6 space-y-2">
-                  <h3 className="font-bold text-xl lg:text-3xl tracking-tight">
+                  <h3 className="font-bold text-xl lg:text-2xl tracking-tight">
                     {feature.title}
                   </h3>
                   {/* <p className="opacity-80">{feature.description}</p> */}
