@@ -1,21 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { createSupabaseClient } from "@/libs/supabase/client";
 import { Provider } from "@supabase/supabase-js";
 import toast from "react-hot-toast";
 import config from "@/config";
 import { useUser } from "../../contexts/UserContext";
 import { redirect } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
-// This a login/singup page for Supabase Auth.
-// Successfull login redirects to /api/auth/callback where the Code Exchange is processed (see app/api/auth/callback/route.js).
-export default function Login() {
+// Component that uses useSearchParams wrapped in Suspense
+function LoginContent() {
   const { user } = useUser();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect");
 
   if (user) {
-    redirect("/app");
+    redirect(redirectTo || "/");
   }
 
   const supabase = createSupabaseClient();
@@ -36,7 +38,11 @@ export default function Login() {
 
     try {
       const { type, provider } = options;
-      const redirectURL = window.location.origin + "/api/auth/callback";
+      const redirectParam = redirectTo
+        ? `?redirect=${encodeURIComponent(redirectTo)}`
+        : "";
+      const redirectURL =
+        window.location.origin + "/api/auth/callback" + redirectParam;
 
       if (type === "oauth") {
         await supabase.auth.signInWithOAuth({
@@ -158,5 +164,15 @@ export default function Login() {
         </form>
       </div>
     </main>
+  );
+}
+
+// This a login/singup page for Supabase Auth.
+// Successfull login redirects to /api/auth/callback where the Code Exchange is processed (see app/api/auth/callback/route.js).
+export default function Login() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginContent />
+    </Suspense>
   );
 }

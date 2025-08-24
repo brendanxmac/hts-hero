@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent } from "react";
 import { TertiaryText } from "./TertiaryText";
 import SquareIconButton from "./SqaureIconButton";
 import { ArrowUpIcon } from "@heroicons/react/16/solid";
@@ -51,7 +51,7 @@ export default function SimpleTextInput({
             value={value}
             rows={1}
             onChange={handleInputChange}
-            className="textarea w-full max-h-32 min-h-32 rounded-none resize-none bg-inherit text-white placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-0"
+            className="textarea text-base w-full max-h-32 min-h-32 rounded-none resize-none bg-inherit text-white placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-0"
           ></textarea>
 
           {onSubmit && (

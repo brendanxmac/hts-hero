@@ -18,9 +18,14 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401) {
       // User not auth, ask to re login
       toast.error("Please Sign In");
-      // Sends the user to the login page
+      // Sends the user to the login page with current page as redirect
       if (typeof window !== "undefined") {
-        window.location.href = config.auth.loginUrl;
+        const currentPath = window.location.pathname;
+        const redirectParam =
+          currentPath !== "/"
+            ? `?redirect=${encodeURIComponent(currentPath)}`
+            : "";
+        window.location.href = config.auth.loginUrl + redirectParam;
       } else {
         redirect(config.auth.loginUrl);
       }

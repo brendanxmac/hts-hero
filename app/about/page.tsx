@@ -1,50 +1,7 @@
-// import Link from "next/link";
-// import HeaderLogoOnly from "../../components/HeaderLogoOnly";
-
-// export default function AboutPage() {
-//   return (
-//     <div className="min-h-screen max-h-screen overflow-hidden">
-//       <HeaderLogoOnly />
-//       <section className="max-w-4xl mx-auto flex flex-col items-center justify-center gap-6 p-8 bg-base-100">
-//         {/* <h3 className="w-full text-xl md:text-2xl font-extrabold tracking-tight text-white ">
-//           Welcome to HTS Hero!
-//         </h3> */}
-
-//         <div className="w-full space-y-12">
-//           <div>
-//             <h2 className="w-full text-lg md:text-xl font-semibold text-white">
-//               Welcome to HTS Hero!
-//             </h2>
-//             <h3 className="mt-2 w-full text-3xl md:text-4xl font-extrabold text-white">
-//               Which sounds more like you?
-//             </h3>
-//           </div>
-//           <div className="w-full flex flex-col gap-6">
-//             <Link
-//               href="/about/importer"
-//               className="grow btn btn-primary h-60 text-3xl"
-//             >
-//               Importer looking for HTS Code
-//             </Link>
-
-//             <Link
-//               href="/about/classifier"
-//               className="grow btn btn-secondary h-60 text-3xl"
-//             >
-//               Classifier looking to speed up my workflow
-//             </Link>
-//           </div>
-//         </div>
-//       </section>
-//     </div>
-//   );
-// }
-
 "use client";
 
 import { Suspense } from "react";
 import AboutHeader from "../../components/AboutHeader";
-import ClassifierHero from "../../components/ClassifierHero";
 import ClassifierCTA from "../../components/ClassifierCTA";
 import ClassifierFooter from "../../components/ClassifierFooter";
 import Pricing from "../../components/Pricing";
@@ -52,7 +9,54 @@ import { FAQ } from "../../components/FAQ";
 import { classifierFaqList } from "../../constants/faq";
 import { AboutPage } from "../../enums/classify";
 import FeaturesListicle from "../../components/FeaturesListicle";
-import WithWithout from "../../components/WithWithout";
+import WithWithout, { Task } from "../../components/WithWithout";
+import Hero from "../../components/Hero";
+
+const withoutClassify: Task[] = [
+  {
+    title: "Finding Headings",
+    time: "15 min",
+  },
+  {
+    title: "Fetching Notes & Rulings",
+    time: "10 min",
+  },
+  {
+    title: "Calculating Duty & Finding Exemptions",
+    time: "10 min",
+  },
+  {
+    title: "Creating Reports",
+    time: "15 min",
+  },
+  {
+    title: "Saving, Sharing, Finding, and Updating",
+    time: "?? min",
+  },
+];
+
+const withClassify: Task[] = [
+  {
+    title: "Finding Headings",
+    time: "0 min",
+  },
+  {
+    title: "Fetching Notes & Rulings",
+    time: "0 min",
+  },
+  {
+    title: "Calculating Duty & Finding Exemptions",
+    time: "0 min",
+  },
+  {
+    title: "Creating Reports",
+    time: "0 min",
+  },
+  {
+    title: "Saving, Sharing, Finding, and Updating",
+    time: "0 min",
+  },
+];
 
 export default function Home() {
   return (
@@ -61,8 +65,36 @@ export default function Home() {
         <AboutHeader />
       </Suspense>
       <main>
-        <ClassifierHero />
-        <WithWithout />
+        {/* <ClassifierHero /> */}
+        <Hero
+          title="Classify Anything in"
+          titleStandout="Minutes"
+          standoutPlacement="end"
+          subtitle="With the platform designed to make customs brokers unreasonably productive"
+          ctaText="Try it Now!"
+          ctaLink="/app"
+          media={{
+            title: "Classify Demo",
+            description: "Classify Demo",
+            mediaType: "video",
+            mediaPath: "/hero-demo.mp4",
+            mediaFormat: "mp4",
+            altText: "Classify Anything",
+          }}
+        />
+        <WithWithout
+          title="Automate the Boring Bits"
+          withoutKeyPoint={{
+            title: "~1 Hour",
+            detail: "Manual, time-consuming process",
+          }}
+          withKeyPoint={{
+            title: "Automated",
+            detail: "Steamlined, efficient workflow",
+          }}
+          withList={withClassify}
+          withoutList={withoutClassify}
+        />
         <FeaturesListicle />
         <Pricing customerType={AboutPage.CLASSIFIER} />
         <ClassifierCTA />

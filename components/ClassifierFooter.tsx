@@ -28,14 +28,11 @@ const ClassifierFooter = () => {
               <strong className="text-white font-extrabold tracking-tight text-base md:text-lg">
                 {config.appName}
               </strong>
-              <span className="bg-base-300 px-2 py-1 rounded-md text-stone-300 font-semibold text-xs">
-                Beta
-              </span>
             </Link>
 
             <p className="mt-3 text-sm text-base-content/80">
-              The Smarter Way to Classify
-              {/* {config.appDescription} */}
+              {/* The Intelligent Classification Assistant for Customs Brokers */}
+              {config.appDescription}
             </p>
             <p className="mt-3 text-sm text-base-content/60">
               Copyright © {new Date().getFullYear()} - All rights reserved

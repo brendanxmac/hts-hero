@@ -2,6 +2,85 @@ import Link from "next/link";
 import config from "../config";
 import { FAQItem } from "../components/FAQItem";
 
+export const tariffImpactFaqList: FAQItem[] = [
+  {
+    question: "Which announcements or updates do you support?",
+    answer: (
+      <div className="space-y-2 leading-relaxed">
+        You can see the full list of announcements and tariff updates we support
+        by checking the dropdown on the{" "}
+        <a href="/tariffs/impact-checker" className="text-secondary underline">
+          Impact Checker
+        </a>
+        .
+      </div>
+    ),
+  },
+  {
+    question:
+      "How long does it take you to update the system when new announcements are made?",
+    answer: (
+      <div className="space-y-2 leading-relaxed">
+        In most cases, when official announcements and updates are made, we can
+        add them within a few hours.
+        <br />
+        Depending on the announcement or update, sometimes we can add the new
+        list prior to it&apos;s official go-live date to give you even earlier
+        heads up.
+      </div>
+    ),
+  },
+  {
+    question: "Where do you get the lists outline what HTS Codes are impacted?",
+    answer: (
+      <div className="space-y-2 leading-relaxed">
+        We always include the source(s) we used to compile the list of impacted
+        codes right in the dropdown menu on the{" "}
+        <a href="/tariffs/impact-checker" className="text-secondary underline">
+          Impact Checker
+        </a>
+        .
+        <br />
+        <br />
+        If you notice missing or incorrect sources or codes, please{" "}
+        <a href="mailto:support@htshero.com" className="link text-secondary">
+          let us know!
+        </a>
+      </div>
+    ),
+  },
+  {
+    question: "Can you notify me when new updates are added?",
+    answer: (
+      <div className="space-y-2 leading-relaxed">
+        We&apos;re currently working on supporting this!
+        <br />
+        <br />
+        If notifications are something you&apos;d like to see, send us a quick{" "}
+        <a href="mailto:support@htshero.com" className="link text-secondary">
+          message
+        </a>{" "}
+        and we will bump it up the priority list!
+      </div>
+    ),
+  },
+  {
+    question: "Can I save lists of codes to check against later on?",
+    answer: (
+      <div className="space-y-2 leading-relaxed">
+        We&apos;re adding this feature soon!
+        <br />
+        <br />
+        If this is something you&apos;d like to be able to do, send us a quick{" "}
+        <a href="mailto:support@htshero.com" className="link text-secondary">
+          message
+        </a>{" "}
+        and we will bump it up the priority list!
+      </div>
+    ),
+  },
+];
+
 export const classifierFaqList: FAQItem[] = [
   {
     question: "What do I get exactly?",

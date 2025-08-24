@@ -4,22 +4,33 @@
 import Link from "next/link";
 import config from "@/config";
 import { useUser } from "../contexts/UserContext";
+import { usePathname } from "next/navigation";
+
+interface Props {
+  text?: string;
+  extraStyle?: string;
+}
 
 // A simple button to sign in with our providers (Google & Magic Links).
 // It automatically redirects user to callbackUrl (config.auth.callbackUrl) after login, which is normally a private page for users to manage their accounts.
 // If the user is already logged in, it will show their profile picture & redirect them to callbackUrl immediately.
-const ButtonSignin = ({ extraStyle }: { extraStyle?: string }) => {
+const ButtonSignin = ({ text, extraStyle }: Props) => {
+  const pathname = usePathname();
   const { user } = useUser();
 
   const getButtonText = () => {
-    if (user) {
-      return "🚀 Launch App";
-    }
-
-    return "Sign In";
+    return text || "🚀 Launch App";
   };
 
   const getRedirectUrl = () => {
+    if (pathname === "/about/tariffs") {
+      return "/tariffs/impact-checker";
+    }
+
+    if (pathname === "/about") {
+      return "/app";
+    }
+
     if (user) {
       return config.auth.callbackUrl;
     }

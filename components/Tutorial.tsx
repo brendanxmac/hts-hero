@@ -22,7 +22,7 @@ export const Tutorial = ({
   setShowTutorial,
   tutorial,
 }: Props) => {
-  const { name, element } = tutorial;
+  const { element } = tutorial;
 
   // useEffect(() => {
   // const hasSeenTutorial = localStorage.getItem(`seen-tutorial-${name}`);

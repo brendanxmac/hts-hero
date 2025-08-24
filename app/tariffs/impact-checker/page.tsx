@@ -7,12 +7,14 @@ import SimpleTextInput from "../../../components/SimpleTextInput";
 import { LoadingIndicator } from "../../../components/LoadingIndicator";
 import { august_15_FR_232_impacted_codes_list } from "../../../tariffs/announcements/232-FR-August-15";
 import Link from "next/link";
-import { TertiaryLabel } from "../../../components/TertiaryLabel";
 import { SecondaryText } from "../../../components/SecondaryText";
 import Modal from "../../../components/Modal";
 import { TariffImpactInputHelp } from "../../../components/TariffImpactInputHelp";
 import { TertiaryText } from "../../../components/TertiaryText";
 import { reciprocalTariffExclusionsList } from "../../../tariffs/exclusion-lists.ts/reciprocal-tariff-exlcusions";
+import { useUser } from "../../../contexts/UserContext";
+import { Color } from "../../../enums/style";
+import { SecondaryLabel } from "../../../components/SecondaryLabel";
 
 interface ListExample {
   name: string;
@@ -99,6 +101,7 @@ const changeLists: TariffsUpdate[] = [
 export default function Home() {
   const CHARACTER_LIMIT = 650;
   const { fetchElements, htsElements } = useHts();
+  const { user, isLoading } = useUser();
   const [loading, setLoading] = useState(true);
   const [inputValue, setInputValue] = useState("");
   const [results, setResults] = useState<TariffImpactResult[]>([]);
@@ -107,11 +110,9 @@ export default function Home() {
 
   useEffect(() => {
     const loadElements = async () => {
-      // if (htsElements.length === 0) {
       setLoading(true);
       await fetchElements("latest");
       setLoading(false);
-      // }
     };
 
     loadElements();
@@ -261,7 +262,7 @@ export default function Home() {
           <LoadingIndicator />
         </div>
       ) : (
-        <div className="w-full max-w-5xl mx-auto flex flex-col px-8 gap-4">
+        <div className="w-full max-w-5xl mx-auto flex flex-col px-8 gap-4 sm:gap-8">
           {/* Header */}
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-1">
@@ -278,11 +279,14 @@ export default function Home() {
           </div>
 
           {/* Inputs */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 sm:gap-8">
             <div className="flex flex-col gap-2">
-              <TertiaryLabel value="Select Tariff Announcement or List" />
+              <SecondaryLabel
+                value="Select Tariff Announcement or List"
+                color={Color.WHITE}
+              />
               <select
-                className="select select-bordered border-2 w-full"
+                className="select select-bordered border-2 w-full text-white text-base"
                 value={selectedChangeListIndex}
                 onChange={(e) => {
                   const selectedIndex = parseInt(e.target.value);
@@ -305,7 +309,7 @@ export default function Home() {
             <div className="flex flex-col gap-2">
               <div className="flex flex-col gap-1">
                 <div className="flex items-center">
-                  <TertiaryLabel value="Enter HTS Codes" />
+                  <SecondaryLabel value="Enter HTS Codes" color={Color.WHITE} />
                   <button
                     className="btn btn-circle btn-xs btn-primary ml-2 text-sm flex items-center justify-center"
                     onClick={() => setShowHelpModal(true)}
@@ -357,7 +361,7 @@ export default function Home() {
           {results && results.length > 0 && (
             <div>
               <div className="flex flex-col gap-2 bg-base-100 bg-transparent">
-                <TertiaryLabel value="Results" />
+                <SecondaryLabel value="Results" color={Color.WHITE} />
                 <div
                   className={`border-2 border-base-content/20 rounded-md ${
                     results.length > 0 ? "p-0" : "p-4"
