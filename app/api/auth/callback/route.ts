@@ -13,6 +13,7 @@ export const dynamic = "force-dynamic";
 export async function GET(req: NextRequest) {
   const requestUrl = new URL(req.url);
   const code = requestUrl.searchParams.get("code");
+  const redirectTo = requestUrl.searchParams.get("redirect");
 
   if (code) {
     const supabase = createClient();
@@ -53,7 +54,15 @@ export async function GET(req: NextRequest) {
 
   console.log("requestUrl.origin", requestUrl.origin);
   console.log("config.auth.callbackUrl", config.auth.callbackUrl);
+  console.log("redirectTo parameter", redirectTo);
 
   // URL to redirect to after sign in process completes
-  return NextResponse.redirect(requestUrl.origin + config.auth.callbackUrl);
+  // Use the redirectTo parameter if provided, otherwise fallback to default callback URL
+  const finalRedirectUrl = redirectTo
+    ? requestUrl.origin + decodeURIComponent(redirectTo)
+    : requestUrl.origin + config.auth.callbackUrl;
+
+  console.log("Final redirect URL", finalRedirectUrl);
+
+  return NextResponse.redirect(finalRedirectUrl);
 }

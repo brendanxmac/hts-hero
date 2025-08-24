@@ -19,11 +19,14 @@ export async function middleware(req: NextRequest) {
   const IS_TEST_ENV = process.env.APP_ENV === "test";
   const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
+  // Add the current pathname to headers so protected layouts can access it
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set("x-pathname", pathname);
+
   // If running in test env, we do not need to have a ensure
   // there is a valid user session in the cookies, so use the
   // supabase service role key instead for access to supabase
   if (IS_TEST_ENV) {
-    const requestHeaders = new Headers(req.headers);
     requestHeaders.set("Authorization", `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`);
     requestHeaders.set("apiKey", SUPABASE_SERVICE_ROLE_KEY);
 
@@ -34,7 +37,14 @@ export async function middleware(req: NextRequest) {
     });
   }
 
-  return await updateSession(req);
+  const response = await updateSession(req);
+
+  // Ensure the x-pathname header is preserved in the response
+  if (response instanceof NextResponse) {
+    response.headers.set("x-pathname", pathname);
+  }
+
+  return response;
 }
 
 export const config = {
