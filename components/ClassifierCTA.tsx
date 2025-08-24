@@ -18,7 +18,7 @@ const ClassifierCTA = () => {
             incredibly productive.
           </p>
 
-          <Link className="btn btn-primary btn-wide" href="/signin">
+          <Link className="btn btn-primary btn-wide" href="/app">
             Try {config.appName}!
           </Link>
         </div>

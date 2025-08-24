@@ -53,7 +53,7 @@ export const tariffImpactFeatures = [
               <li className="p-3 rounded-sm truncate">
                 <p>Reciprocal Tariff Exemptions | April 5th</p>
               </li>
-              <li className="p-3 bg-primary/60 rounded-lg animate-pulse">
+              <li className="p-3 bg-primary/80 rounded-lg">
                 <div className="w-full flex justify-between items-center">
                   <p className="truncate">
                     Items of Steel & Aluminum | Aug 19th

@@ -73,7 +73,7 @@ export default function Home() {
           standoutPlacement="end"
           subtitle="With the platform designed to make customs brokers unreasonably productive"
           ctaText="Try it Now!"
-          ctaLink="/signin"
+          ctaLink="/app"
           media={{
             title: "Classify Demo",
             description: "Classify Demo",

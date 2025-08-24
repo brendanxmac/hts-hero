@@ -4,6 +4,7 @@
 import Link from "next/link";
 import config from "@/config";
 import { useUser } from "../contexts/UserContext";
+import { usePathname } from "next/navigation";
 
 interface Props {
   text?: string;
@@ -14,6 +15,7 @@ interface Props {
 // It automatically redirects user to callbackUrl (config.auth.callbackUrl) after login, which is normally a private page for users to manage their accounts.
 // If the user is already logged in, it will show their profile picture & redirect them to callbackUrl immediately.
 const ButtonSignin = ({ text, extraStyle }: Props) => {
+  const pathname = usePathname();
   const { user } = useUser();
 
   const getButtonText = () => {
@@ -25,6 +27,14 @@ const ButtonSignin = ({ text, extraStyle }: Props) => {
   };
 
   const getRedirectUrl = () => {
+    if (pathname === "/about/tariffs") {
+      return "/tariffs/impact-checker";
+    }
+
+    if (pathname === "/about") {
+      return "/app";
+    }
+
     if (user) {
       return config.auth.callbackUrl;
     }

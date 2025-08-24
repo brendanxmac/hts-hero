@@ -31,7 +31,7 @@ const AboutHeader = () => {
         </div>
 
         <div className="flex justify-center lg:gap-12 lg:items-center">
-          <ButtonSignin text="Check your Imports!" extraStyle="btn-secondary" />
+          <ButtonSignin text="Check your Imports" />
         </div>
       </nav>
     </header>
