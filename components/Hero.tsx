@@ -49,13 +49,13 @@ const Hero = ({
 
   return (
     <section className="bg-none max-w-7xl mx-auto bg-base-100 px-4 sm:px-6 md:px-8 lg:px-12 py-8 sm:py-16 md:py-24">
-      <div className="flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-16">
+      <div className="flex flex-col items-center justify-center gap-10">
         {/* Hero Text */}
-        <div className="flex flex-col gap-4 md:gap-8 text-center lg:text-left lg:flex-1">
+        <div className="flex flex-col gap-4 md:gap-8 text-center">
           {getHeadline()}
           <p className="text-lg text-neutral-300 leading-relaxed">{subtitle}</p>
 
-          <div className="flex justify-center lg:justify-start">
+          <div className="flex justify-center">
             <Link className="btn btn-wide btn-primary" href={ctaLink}>
               {ctaText}
             </Link>
@@ -65,7 +65,7 @@ const Hero = ({
         </div>
 
         {/* Hero Video */}
-        <div className="flex justify-center sm:rounded-md overflow-hidden -mx-5 md:mx-0 lg:flex-1">
+        <div className="flex justify-center sm:rounded-md overflow-hidden max-w-6xl w-full">
           {media.mediaType === "video" ? (
             <video
               className="w-full border-2 border-neutral-content/20 rounded-md md:rounded-2xl"

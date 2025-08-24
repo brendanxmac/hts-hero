@@ -1,14 +1,14 @@
 "use client";
 
 import { Suspense } from "react";
-import AboutHeader from "@/components/AboutHeader";
 import ClassifierFooter from "@/components/ClassifierFooter";
 import WithWithout, { Task } from "@/components/WithWithout";
-import FeaturesGrid from "../../../components/FeaturesGrid";
-import Demo from "../../../components/Demo";
-import { FAQ } from "../../../components/FAQ";
-import { tariffImpactFaqList } from "../../../constants/faq";
-import CTA from "../../../components/CTA";
+import FeaturesGrid from "@/components/FeaturesGrid";
+import Demo from "@/components/Demo";
+import { FAQ } from "@/components/FAQ";
+import { tariffImpactFaqList } from "@/constants/faq";
+import CTA from "@/components/CTA";
+import TariffImpactHeader from "@/components/TariffImpactHeader";
 
 const withoutTariffImpact: Task[] = [
   {
@@ -52,7 +52,7 @@ export default function Home() {
   return (
     <>
       <Suspense>
-        <AboutHeader />
+        <TariffImpactHeader />
       </Suspense>
       <main>
         <FeaturesGrid />
@@ -75,7 +75,7 @@ export default function Home() {
         <WithWithout
           title="No Waiting, Guessing, or Limits"
           subtitle="Get answers in seconds for all your imports"
-          ctaText="Check your Imports!"
+          ctaText="Check your Imports"
           ctaLink="/tariffs/impact-checker"
           withKeyPoint={{
             title: "Clarity",

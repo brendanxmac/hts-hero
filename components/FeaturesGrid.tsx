@@ -5,54 +5,34 @@ import React, { useState, useEffect } from "react";
 interface TariffCheckerDummyResult {
   htsCode: string;
   impacted: boolean;
-  notes: string;
 }
 
 export const dummyTariffImpactResults: TariffCheckerDummyResult[] = [
   {
     htsCode: "2602.00.00.40",
-    impacted: true,
-    notes: "-",
-  },
-
-  {
-    htsCode: "9701.21.00.00",
     impacted: false,
-    notes: "-",
   },
-  {
-    htsCode: "4408.90.01.10",
-    impacted: true,
-    notes: "-",
-  },
-
-  {
-    htsCode: "9701.21.00.00",
-    impacted: false,
-    notes: "-",
-  },
-  {
-    htsCode: "2825.80.00.00",
-    impacted: true,
-    notes: "-",
-  },
-
   {
     htsCode: "8544.49.20.00",
     impacted: true,
-    notes: "-",
   },
-
   {
     htsCode: "9403.99.90.10",
     impacted: true,
-    notes: "-",
+  },
+  {
+    htsCode: "9701.21.00.00",
+    impacted: false,
+  },
+  {
+    htsCode: "4408.90.01.10",
+    impacted: false,
   },
 ];
 
 export const tariffImpactFeatures = [
   {
-    title: "Select Tariff Update",
+    title: "Select Tariff Announcement",
     description:
       "Select the tariff update / announcement you want to check against.",
     styles: "md:col-span-6 lg:col-span-2 bg-base-300 text-white",
@@ -66,36 +46,22 @@ export const tariffImpactFeatures = [
             >
               Tariff Announcement:
             </label>
-            <div className="select bg-base-200 w-full mb-2 mr-2 ring-2 text-xs sm:text-sm md:text-base ring-primary flex items-center hover:cursor-auto">
-              <p className="truncate">Steel & Aluminum Items | August 15th</p>
-            </div>
             <ul className="bg-base-100 border border-base-content/40 rounded-xl hover:bg-base-100 px-2 text-xs sm:text-sm md:text-base">
               <li className="p-3 rounded-sm truncate">
-                <a>Reciprocal Tariff Exemption | April 5th</a>
+                <p>Items from China</p>
               </li>
-              <li className="p-3 bg-primary/40 rounded-lg">
+              <li className="p-3 rounded-sm truncate">
+                <p>Reciprocal Tariff Exemptions | April 5th</p>
+              </li>
+              <li className="p-3 bg-primary/60 rounded-lg">
                 <div className="w-full flex justify-between items-center">
-                  <a className="truncate">
-                    Steel & Aluminum Items | August 15th
-                  </a>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                    stroke="currentColor"
-                    className="size-5 text-primary shrink-0"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="m4.5 12.75 6 6 9-13.5"
-                    />
-                  </svg>
+                  <p className="truncate">
+                    Items of Steel & Aluminum | Aug 19th
+                  </p>
                 </div>
               </li>
-              <li className="p-3 truncate">
-                <a>Furniture Tariffs | Coming Soon</a>
+              <li className="w-full p-3 truncate flex gap-2 items-center justify-between">
+                <p>Furniture Tariffs | Coming Soon</p>
               </li>
             </ul>
           </div>
@@ -123,14 +89,6 @@ const FeaturesGrid = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [currentPartialCode, setCurrentPartialCode] = useState("");
 
-  const codes = [
-    "2602.00.00.40",
-    "9701.21.00.00",
-    "4408.90.01.10",
-    "2825.80.00.00",
-    "8544.49.20.00",
-  ];
-
   useEffect(() => {
     // Start the typing cycle
     const startTyping = () => {
@@ -144,16 +102,17 @@ const FeaturesGrid = () => {
     startTyping();
 
     // Restart the entire cycle every 8 seconds
-    const cycleTimer = setInterval(startTyping, 8000);
+    const cycleTimer = setInterval(startTyping, 6500);
 
     return () => clearInterval(cycleTimer);
   }, []);
 
   useEffect(() => {
     // Handle typing animation
-    if (!isTyping || currentCodeIndex >= codes.length) return;
+    if (!isTyping || currentCodeIndex >= dummyTariffImpactResults.length)
+      return;
 
-    const currentCode = codes[currentCodeIndex];
+    const currentCode = dummyTariffImpactResults[currentCodeIndex].htsCode;
 
     if (currentCharIndex < currentCode.length) {
       // Type next character
@@ -174,7 +133,7 @@ const FeaturesGrid = () => {
 
       return () => clearTimeout(completeTimer);
     }
-  }, [currentCharIndex, currentCodeIndex, isTyping, codes]);
+  }, [currentCharIndex, currentCodeIndex, isTyping, dummyTariffImpactResults]);
 
   return (
     <section className="flex justify-center items-center w-full bg-base-200 text-base-content px-6 py-10 lg:py-16">
@@ -203,9 +162,7 @@ const FeaturesGrid = () => {
 
           {/* <TestimonialsAvatars priority={true} /> */}
         </div>
-        {/* <h2 className="font-black text-4xl md:text-5xl text-center">
-          Copy, Paste, <span className="text-white">Clarity ✅</span>
-        </h2> */}
+
         <div className="flex flex-col w-full h-fit gap-4 lg:gap-10 text-text-default max-w-7xl">
           <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
             {tariffImpactFeatures.map((feature, index) => (
@@ -220,31 +177,16 @@ const FeaturesGrid = () => {
                   <h3 className="text-lg sm:text-xl tracking-tight text-white font-semibold">
                     {feature.title}
                   </h3>
-                  {/* <p className="opacity-80">{feature.description}</p> */}
                 </div>
                 {index === 1 ? (
                   // First feature - typing animation
                   <div className="overflow-hidden h-full flex items-stretch">
                     <div className="w-full bg-base-200 rounded-t-box h-full py-4 px-6">
-                      {/* <div className="flex flex-col pr-2">
-                        <label
-                          htmlFor="hts-codes"
-                          className="font-medium uppercase tracking-wide text-base-content/60 text-sm mb-3"
-                        >
-                          Announcement:
-                        </label>
-                        <input
-                          type="text"
-                          className="select select-bordered w-full mb-4 mr-2"
-                          placeholder="Enter HTS Codes"
-                          value="Articles with Steel & Aluminum | August 15"
-                        />
-                      </div> */}
                       <p className="font-medium uppercase tracking-wide text-base-content/60 text-sm mb-3">
                         HTS Codes:
                       </p>
                       <div className="relative textarea py-4 h-full bg-base-100 border-base-content/10 text-base-content mr-2">
-                        <div className="text-lg font-medium text-white">
+                        <div className="text-base md:text-lg font-medium text-white">
                           {/* Show completed codes */}
                           {completedCodes.map((code, i) => (
                             <span key={i}>
@@ -255,23 +197,25 @@ const FeaturesGrid = () => {
                           ))}
 
                           {/* Show current partial code being typed */}
-                          {isTyping && currentCodeIndex < codes.length && (
-                            <>
-                              {completedCodes.length > 0 && ", "}
-                              {completedCodes.length > 0 && <br />}
-                              {currentPartialCode}
-                              <span className={`w-[1px] h-5 text-primary`}>
-                                |
-                              </span>
-                            </>
-                          )}
+                          {isTyping &&
+                            currentCodeIndex <
+                              dummyTariffImpactResults.length && (
+                              <>
+                                {completedCodes.length > 0 && ", "}
+                                {completedCodes.length > 0 && <br />}
+                                {currentPartialCode}
+                                <span className={`w-[1px] h-5 text-primary`}>
+                                  |
+                                </span>
+                              </>
+                            )}
                         </div>
                       </div>
                     </div>
                   </div>
                 ) : index === 2 ? (
                   // Second feature - opacity-based transition with purple pulse
-                  <div className="overflow-x-auto rounded-xl bg-base-100 overflow-hidden">
+                  <div className="overflow-x-auto bg-base-100 overflow-hidden">
                     <table className="rounded-md table table-zebra table-pin-rows w-full">
                       <thead>
                         <tr>
@@ -295,11 +239,11 @@ const FeaturesGrid = () => {
                           return (
                             <tr
                               key={`${completedCode}-${i}`}
-                              className="py-1 duration-100"
+                              className="py-1 animate-[fadeInRow_0.2s_ease-in-out_forwards] border-transparent"
                             >
                               <td className="truncate min-w-32">
                                 <p className="link link-primary font-bold">
-                                  {completedCode}
+                                  {htsCode}
                                 </p>
                               </td>
                               <td className="text-2xl">
