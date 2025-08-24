@@ -19,11 +19,7 @@ const ButtonSignin = ({ text, extraStyle }: Props) => {
   const { user } = useUser();
 
   const getButtonText = () => {
-    if (user) {
-      return text || "🚀 Launch App";
-    }
-
-    return "Sign In";
+    return text || "🚀 Launch App";
   };
 
   const getRedirectUrl = () => {

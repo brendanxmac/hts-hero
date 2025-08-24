@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import { FeatureI } from "../interfaces/ui";
 
@@ -21,8 +20,8 @@ const Demo = ({
   titleStandout,
   standoutPlacement,
   subtitle,
-  ctaText,
-  ctaLink,
+  // ctaText,
+  // ctaLink,
   media,
 }: Props) => {
   const getHeadline = () => {

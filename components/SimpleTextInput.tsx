@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent } from "react";
 import { TertiaryText } from "./TertiaryText";
 import SquareIconButton from "./SqaureIconButton";
 import { ArrowUpIcon } from "@heroicons/react/16/solid";

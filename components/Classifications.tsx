@@ -10,7 +10,7 @@ import { useHts } from "../contexts/HtsContext";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { TertiaryText } from "./TertiaryText";
-import { ArrowPathIcon, PlusIcon } from "@heroicons/react/16/solid";
+import { PlusIcon } from "@heroicons/react/16/solid";
 import { FunnelIcon } from "@heroicons/react/24/solid";
 import Fuse, { IFuseOptions } from "fuse.js";
 import { LoadingIndicator } from "./LoadingIndicator";

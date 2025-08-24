@@ -7,7 +7,6 @@ import SimpleTextInput from "../../../components/SimpleTextInput";
 import { LoadingIndicator } from "../../../components/LoadingIndicator";
 import { august_15_FR_232_impacted_codes_list } from "../../../tariffs/announcements/232-FR-August-15";
 import Link from "next/link";
-import { TertiaryLabel } from "../../../components/TertiaryLabel";
 import { SecondaryText } from "../../../components/SecondaryText";
 import Modal from "../../../components/Modal";
 import { TariffImpactInputHelp } from "../../../components/TariffImpactInputHelp";
@@ -108,9 +107,6 @@ export default function Home() {
   const [results, setResults] = useState<TariffImpactResult[]>([]);
   const [selectedChangeListIndex, setSelectedChangeListIndex] = useState(0);
   const [showHelpModal, setShowHelpModal] = useState(false);
-
-  console.log(user);
-  console.log(isLoading);
 
   useEffect(() => {
     const loadElements = async () => {

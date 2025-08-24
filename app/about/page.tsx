@@ -2,7 +2,6 @@
 
 import { Suspense } from "react";
 import AboutHeader from "../../components/AboutHeader";
-import ClassifierHero from "../../components/ClassifierHero";
 import ClassifierCTA from "../../components/ClassifierCTA";
 import ClassifierFooter from "../../components/ClassifierFooter";
 import Pricing from "../../components/Pricing";
