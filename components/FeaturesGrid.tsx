@@ -53,7 +53,7 @@ export const tariffImpactFeatures = [
               <li className="p-3 rounded-sm truncate">
                 <p>Reciprocal Tariff Exemptions | April 5th</p>
               </li>
-              <li className="p-3 bg-primary/60 rounded-lg">
+              <li className="p-3 bg-primary/60 rounded-lg animate-pulse">
                 <div className="w-full flex justify-between items-center">
                   <p className="truncate">
                     Items of Steel & Aluminum | Aug 19th
@@ -101,8 +101,8 @@ const FeaturesGrid = () => {
 
     startTyping();
 
-    // Restart the entire cycle every 8 seconds
-    const cycleTimer = setInterval(startTyping, 6500);
+    // Restart the entire cycle every 7 seconds
+    const cycleTimer = setInterval(startTyping, 7000);
 
     return () => clearInterval(cycleTimer);
   }, []);

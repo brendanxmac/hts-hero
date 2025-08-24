@@ -102,7 +102,7 @@ const changeLists: TariffsUpdate[] = [
 export default function Home() {
   const CHARACTER_LIMIT = 650;
   const { fetchElements, htsElements } = useHts();
-  const { user, isLoading, refreshUser } = useUser();
+  const { user, isLoading } = useUser();
   const [loading, setLoading] = useState(true);
   const [inputValue, setInputValue] = useState("");
   const [results, setResults] = useState<TariffImpactResult[]>([]);
@@ -114,11 +114,9 @@ export default function Home() {
 
   useEffect(() => {
     const loadElements = async () => {
-      // if (htsElements.length === 0) {
       setLoading(true);
       await fetchElements("latest");
       setLoading(false);
-      // }
     };
 
     loadElements();
