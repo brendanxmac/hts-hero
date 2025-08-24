@@ -89,9 +89,9 @@ export default function Home() {
           withoutList={withoutTariffImpact}
         />
         <CTA
-          title="Take Control of Your Imports"
+          title="Get Clarity in the Chaos"
           subtitle="Find out if you're affected by new tariffs now!"
-          ctaText="Try it Free!"
+          ctaText="Check your Imports"
           ctaLink="/tariffs/impact-checker"
         />
         <FAQ faqItems={tariffImpactFaqList} />

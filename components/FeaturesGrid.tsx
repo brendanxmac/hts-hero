@@ -52,68 +52,68 @@ export const dummyTariffImpactResults: TariffCheckerDummyResult[] = [
 
 export const tariffImpactFeatures = [
   {
-    title: "Enter HTS Codes",
+    title: "Select Tariff Update",
     description:
-      "Grab your codes from anywhere and paste them directly into the app.",
-    styles: "md:col-span-2 bg-base-300 text-white",
+      "Select the tariff update / announcement you want to check against.",
+    styles: "md:col-span-6 lg:col-span-2 bg-base-300 text-white",
     demo: (
       <div className="overflow-hidden h-full flex items-stretch">
-        <div className="w-full translate-x-6 bg-base-200 rounded-t-box h-full p-6">
-          <p className="font-medium uppercase tracking-wide text-base-content/60 text-sm mb-3">
-            HTS Codes:
-          </p>
-          <div className="relative textarea py-4 h-full bg-base-100 border-base-content/10 text-base-content">
-            <div className="absolute left-4 top-4 group-hover:hidden flex items-center ">
-              <span className="w-[2px] h-5 bg-primary animate-pulse"></span>
+        <div className="w-full bg-base-200 rounded-t-box h-full py-4 px-6">
+          <div className="flex flex-col">
+            <label
+              htmlFor="hts-codes"
+              className="font-medium uppercase tracking-wide text-base-content/60 text-sm mb-3"
+            >
+              Tariff Announcement:
+            </label>
+            <div className="select bg-base-200 w-full mb-2 mr-2 ring-2 text-xs sm:text-sm md:text-base ring-primary flex items-center hover:cursor-auto">
+              <p className="truncate">Steel & Aluminum Items | August 15th</p>
             </div>
-            <div className="opacity-0 group-hover:opacity-100 duration-100 flex flex-wrap">
-              <span className="text-lg font-medium">
-                2602.00.00.40, 9701.21.00.00, 4408.90.01.10, 9701.21.00.00,
-                2825.80.00.00, 8544.49.20.00, 9403.99.90.10, 7614.10.10.00
-              </span>
-              {/* <span className="w-[2px] h-5 bg-primary animate-pulse"></span> */}
-            </div>
+            <ul className="bg-base-100 border border-base-content/40 rounded-xl hover:bg-base-100 px-2 text-xs sm:text-sm md:text-base">
+              <li className="p-3 rounded-sm truncate">
+                <a>Reciprocal Tariff Exemption | April 5th</a>
+              </li>
+              <li className="p-3 bg-primary/40 rounded-lg">
+                <div className="w-full flex justify-between items-center">
+                  <a className="truncate">
+                    Steel & Aluminum Items | August 15th
+                  </a>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                    stroke="currentColor"
+                    className="size-5 text-primary shrink-0"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="m4.5 12.75 6 6 9-13.5"
+                    />
+                  </svg>
+                </div>
+              </li>
+              <li className="p-3 truncate">
+                <a>Furniture Tariffs | Coming Soon</a>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
     ),
   },
   {
-    title: "See Impacts",
+    title: "Enter Codes",
+    description:
+      "Grab your codes from anywhere and paste them directly into the app.",
+    styles: "md:col-span-3 lg:col-span-2 bg-base-300 text-white",
+  },
+  {
+    title: "See What's Affected",
     description:
       "Instantly see which HTS Codes are affected by the tariff updates",
-    styles: "md:col-span-2 bg-base-300 text-white",
-    demo: (
-      <div className="overflow-x-auto ml-5 rounded-md bg-base-100">
-        <table className="rounded-md table table-zebra table-lg table-pin-rows w-full">
-          <thead>
-            <tr>
-              <th className="w-4"></th>
-              <th>HTS Code</th>
-              <th>Impacted</th>
-              <th>Notes</th>
-            </tr>
-          </thead>
-          <tbody>
-            {dummyTariffImpactResults.map((result, i) => {
-              const { htsCode, impacted, notes } = result;
-              return (
-                <tr key={`${htsCode}-${i}`} className="py-1">
-                  <td>{i + 1}</td>
-
-                  <td className="truncate min-w-32 lg:min-w-64">
-                    <p className="link link-primary font-bold">{htsCode}</p>
-                  </td>
-
-                  <td>{impacted ? "✅" : "❌"}</td>
-                  <td>{notes}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    ),
+    styles: "md:col-span-3 lg:col-span-2 bg-base-300 text-white",
   },
 ];
 const FeaturesGrid = () => {
@@ -178,9 +178,9 @@ const FeaturesGrid = () => {
 
   return (
     <section className="flex justify-center items-center w-full bg-base-200 text-base-content px-6 py-10 lg:py-16">
-      <div className="w-full flex flex-col max-w-5xl lg:min-w-5xl gap-4 sm:gap-8 px-4">
+      <div className="w-full flex flex-col max-w-7xl lg:min-w-5xl gap-4 sm:gap-8">
         <div className="flex flex-col gap-2 md:gap-8 text-center lg:text-left lg:flex-1 items-center">
-          <h1 className="text-white font-extrabold text-3xl md:text-4xl lg:text-6xl tracking-tight md:-mb-4 max-w-5xl text-center mx-auto">
+          <h1 className="text-white font-extrabold text-3xl md:text-5xl lg:text-6xl tracking-tight md:-mb-4 max-w-5xl text-center mx-auto">
             <span className="text-primary">Instantly</span> See If New <br />
             Tariffs Affect Your Imports
             {/* <span className="text-primary">Instantly</span> Know If New Tariffs
@@ -207,27 +207,44 @@ const FeaturesGrid = () => {
           Copy, Paste, <span className="text-white">Clarity ✅</span>
         </h2> */}
         <div className="flex flex-col w-full h-fit gap-4 lg:gap-10 text-text-default max-w-7xl">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 lg:gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
             {tariffImpactFeatures.map((feature, index) => (
               <div
                 key={feature.title}
-                className={`${feature.styles} rounded-3xl flex flex-col gap-6 w-full h-[22rem] lg:h-[25rem] pt-6 overflow-hidden border border-base-content/10`}
+                className={`${feature.styles} rounded-3xl flex flex-col gap-6 w-full h-[22rem] lg:h-[25rem] pt-6 overflow-hidden border-2 border-base-content/30`}
               >
-                <div className="px-6 space-y-2">
-                  <h3 className="font-bold text-xl lg:text-2xl tracking-tight">
+                <div className="px-6 flex items-center gap-3">
+                  <div className="rounded-full h-6 w-6 md:h-7 md:w-7 bg-primary text-base-300 text-sm md:text-base font-semibold flex items-center justify-center">
+                    {index + 1}
+                  </div>
+                  <h3 className="text-lg sm:text-xl tracking-tight text-white font-semibold">
                     {feature.title}
                   </h3>
                   {/* <p className="opacity-80">{feature.description}</p> */}
                 </div>
-                {index === 0 ? (
+                {index === 1 ? (
                   // First feature - typing animation
                   <div className="overflow-hidden h-full flex items-stretch">
-                    <div className="w-full translate-x-6 bg-base-200 rounded-t-box h-full p-6">
+                    <div className="w-full bg-base-200 rounded-t-box h-full py-4 px-6">
+                      {/* <div className="flex flex-col pr-2">
+                        <label
+                          htmlFor="hts-codes"
+                          className="font-medium uppercase tracking-wide text-base-content/60 text-sm mb-3"
+                        >
+                          Announcement:
+                        </label>
+                        <input
+                          type="text"
+                          className="select select-bordered w-full mb-4 mr-2"
+                          placeholder="Enter HTS Codes"
+                          value="Articles with Steel & Aluminum | August 15"
+                        />
+                      </div> */}
                       <p className="font-medium uppercase tracking-wide text-base-content/60 text-sm mb-3">
                         HTS Codes:
                       </p>
-                      <div className="relative textarea py-4 h-full bg-base-100 border-base-content/10 text-base-content">
-                        <div className="text-lg font-medium">
+                      <div className="relative textarea py-4 h-full bg-base-100 border-base-content/10 text-base-content mr-2">
+                        <div className="text-lg font-medium text-white">
                           {/* Show completed codes */}
                           {completedCodes.map((code, i) => (
                             <span key={i}>
@@ -252,13 +269,13 @@ const FeaturesGrid = () => {
                       </div>
                     </div>
                   </div>
-                ) : index === 1 ? (
+                ) : index === 2 ? (
                   // Second feature - opacity-based transition with purple pulse
-                  <div className="overflow-x-auto ml-5 rounded-md bg-base-100 overflow-hidden">
+                  <div className="overflow-x-auto rounded-xl bg-base-100 overflow-hidden">
                     <table className="rounded-md table table-zebra table-pin-rows w-full">
                       <thead>
                         <tr>
-                          <th>HTS Code</th>
+                          <th className="min-w-32">HTS Code</th>
                           <th>Impacted</th>
                         </tr>
                       </thead>
@@ -280,7 +297,7 @@ const FeaturesGrid = () => {
                               key={`${completedCode}-${i}`}
                               className="py-1 duration-100"
                             >
-                              <td className="truncate min-w-32 lg:min-w-64">
+                              <td className="truncate min-w-32">
                                 <p className="link link-primary font-bold">
                                   {completedCode}
                                 </p>
