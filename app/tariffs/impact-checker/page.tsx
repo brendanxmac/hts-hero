@@ -15,17 +15,19 @@ import { reciprocalTariffExclusionsList } from "../../../tariffs/exclusion-lists
 import { useUser } from "../../../contexts/UserContext";
 import { Color } from "../../../enums/style";
 import { SecondaryLabel } from "../../../components/SecondaryLabel";
+import TariffUpdateDropdown from "../../../components/TariffUpdateDropdown";
 
 interface ListExample {
   name: string;
   list: string;
 }
 
-interface TariffsUpdate {
+interface TariffUpdate {
   name: string;
   sourceName: string;
   source: string;
   codesImpacted: string[];
+  dateReleased: Date;
 }
 
 interface TariffImpactResult {
@@ -36,13 +38,13 @@ interface TariffImpactResult {
 
 const exampleList = [
   "2602.00.00.40",
+  "8544.49.20.00",
   "9701.21.00.00",
+  "9403.99.90.10",
   "4408.90.01",
   "4408.90.01.10",
   "9701.21.00.00",
   "2825.80.00.00",
-  "8544.49.20.00",
-  "9403.99.90.10",
   "7614.10.10.00",
   "7614.10.50.00",
   "2106.90.99.98",
@@ -55,8 +57,8 @@ const newlineSeparatedList = [...exampleList]
 const spaceSeparatedList = [...exampleList]
   .sort(() => Math.random() - 0.5)
   .join(" ");
-const mixedSeparatedList =
-  "2602.00.00.40, 9701.21.00.00\n4408.90.01, 4408.90.01.10\n97.01.21.00.00, 2825.80.00.00\n8544.49.20.00, 9403.99.90.10\n7614.10.10.00, 7614.10.50.00\n2106.90.99.98";
+// const mixedSeparatedList =
+//   "2602.00.00.40, 9701.21.00.00\n4408.90.01, 4408.90.01.10\n97.01.21.00.00, 2825.80.00.00\n8544.49.20.00, 9403.99.90.10\n7614.10.10.00, 7614.10.50.00\n2106.90.99.98";
 
 const singleElementExamples = ["6902.20.10", "3808.94.10.00"];
 const listExamples: ListExample[] = [
@@ -72,28 +74,30 @@ const listExamples: ListExample[] = [
     name: "List with Spaces",
     list: spaceSeparatedList,
   },
-  {
-    name: "List with Mixed Separators",
-    list: mixedSeparatedList,
-  },
+  // {
+  //   name: "List with Mixed Separators",
+  //   list: mixedSeparatedList,
+  // },
 ];
 
-const section232SteelAndAluminumChanges: TariffsUpdate = {
-  name: "Section 232 Steel and Aluminum Updates | Federal Register - August 15, 2025",
+const section232SteelAndAluminumChanges: TariffUpdate = {
+  name: "Steel and Aluminum Updates",
   sourceName: "Federal Register",
   source:
     "https://www.federalregister.gov/public-inspection/2025-15819/adoption-and-procedures-of-the-section-232-steel-and-aluminum-tariff-inclusions-process",
   codesImpacted: august_15_FR_232_impacted_codes_list,
+  dateReleased: new Date("2025-08-19"),
 };
 
-const reciprocalTariffExclusions: TariffsUpdate = {
-  name: "Reciprocal Tariff Exclusions | USITC - 9903.01.32",
+const reciprocalTariffExclusions: TariffUpdate = {
+  name: "Reciprocal Tariff Exclusions",
   sourceName: "USITC - Chapter 99 Subchapter 3 Note 2(v)(iii) ",
   source: "https://hts.usitc.gov/search?query=9903.01.32",
   codesImpacted: reciprocalTariffExclusionsList,
+  dateReleased: new Date("2025-04-05"),
 };
 
-const changeLists: TariffsUpdate[] = [
+const changeLists: TariffUpdate[] = [
   section232SteelAndAluminumChanges,
   reciprocalTariffExclusions,
 ];
@@ -270,10 +274,7 @@ export default function Home() {
                 Tariff Impact Checker
               </h1>
               <div className="ml-1">
-                <SecondaryText
-                  value="Instantly see if any of your 8 or 10-digit HTS codes
-                  have been impacted by recent tariff announcements."
-                />
+                <SecondaryText value="Instantly see if any of your imports have been impacted by recent tariff announcements." />
               </div>
             </div>
           </div>
@@ -282,28 +283,14 @@ export default function Home() {
           <div className="flex flex-col gap-4 sm:gap-8">
             <div className="flex flex-col gap-2">
               <SecondaryLabel
-                value="Select Tariff Announcement or List"
+                value="Select Tariff Announcement"
                 color={Color.WHITE}
               />
-              <select
-                className="select select-bordered border-2 w-full text-white text-base"
-                value={selectedChangeListIndex}
-                onChange={(e) => {
-                  const selectedIndex = parseInt(e.target.value);
-                  if (
-                    selectedIndex >= 0 &&
-                    selectedIndex < changeLists.length
-                  ) {
-                    setSelectedChangeListIndex(selectedIndex);
-                  }
-                }}
-              >
-                {changeLists.map((changeListItem, index) => (
-                  <option key={index} value={index}>
-                    {changeListItem.name}
-                  </option>
-                ))}
-              </select>
+              <TariffUpdateDropdown
+                tariffUpdates={changeLists}
+                selectedIndex={selectedChangeListIndex}
+                onSelectionChange={setSelectedChangeListIndex}
+              />
             </div>
 
             <div className="flex flex-col gap-2">
