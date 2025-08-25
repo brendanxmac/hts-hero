@@ -9,48 +9,47 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-base-100 flex items-center justify-center p-4">
-      <div className="text-center max-w-4xl w-full">
+      <div className="text-center max-w-7xl w-full">
         {/* Header */}
         <div className="mb-8">
           {/* Welcome to text */}
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-4 tracking-tight">
+          <h3 className="text-lg sm:text-xl mb-4 sm:mb-6 tracking-tight">
             Welcome to
-          </h1>
+          </h3>
 
           {/* Logo and HTS Hero text */}
-          <div className="flex items-center justify-center gap-1 mb-10 md:mb-20">
+          <div className="flex items-center justify-center gap-1 mb-2">
             <Image
-              src="/hts-hero-logo.png"
+              src="/hts-hero-logo.svg"
               alt="HTS Hero"
               width={50}
               height={50}
-              className="w-10 h-10 sm:w-12 sm:h-w-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 object-contain"
+              className="w-10 h-10 sm:w-12 sm:h-w-12 md:w-16 md:h-16 object-contain"
             />
             <span className="px-2 sm:px-3 py-1 sm:py-2 text-white text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight">
               HTS Hero
             </span>
           </div>
 
-          <p className="text-xl md:text-2xl text-white font-bold">
-            How can we help you today?
-          </p>
+          <h1 className="sm:text-xl md:text-2xl lg:text-3xl text-white font-semibold tracking-tight mb-8">
+            Useful Tools for Busy Importers and Customs Brokers
+          </h1>
         </div>
 
         {/* Navigation Buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {/* Tariff Import Checker */}
           <Link
             href={user ? "/tariffs/impact-checker" : "/about/tariffs"}
             className="group btn btn-lg h-auto py-6 px-4 bg-base-200 border-2 border-neutral-600 hover:border-primary hover:bg-primary/10 transition-all duration-300 transform hover:scale-105"
           >
             <div className="flex flex-col items-center gap-4">
-              <div className="text-4xl">✅</div>
+              <div className="text-4xl">⚡️</div>
               <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors">
                 Tariff Impact Checker
               </h3>
               <p className="text-sm text-neutral-400 leading-relaxed">
-                Instantly see if your imports are impacted by any recent tariff
-                changes
+                Instant tariff impact check for your Imports
               </p>
             </div>
           </Link>
@@ -66,7 +65,7 @@ export default function Home() {
                 Classification Assistant
               </h3>
               <p className="text-sm text-neutral-400 leading-relaxed">
-                Experience the Smarter way to Classify
+                Smarter Classification for Customs Brokers
               </p>
             </div>
           </Link>
@@ -77,12 +76,12 @@ export default function Home() {
             className="group btn btn-lg h-auto py-6 px-4 bg-base-200 border-2 border-neutral-600 hover:border-primary hover:bg-primary/10 transition-all duration-300 transform hover:scale-105"
           >
             <div className="flex flex-col items-center gap-4">
-              <div className="text-4xl">🔍</div>
+              <div className="text-4xl">🧮</div>
               <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors">
-                HTS Explorer + Tariff Calculator
+                Tariff Simulator
               </h3>
               <p className="text-sm text-neutral-400 leading-relaxed">
-                HTS Search & Tariff Calculation Made Easy
+                HTS Explorer & Tariffs Made Easy
               </p>
             </div>
           </Link>
