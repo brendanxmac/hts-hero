@@ -86,7 +86,7 @@ const section232SteelAndAluminumChanges: TariffUpdate = {
   source:
     "https://www.federalregister.gov/public-inspection/2025-15819/adoption-and-procedures-of-the-section-232-steel-and-aluminum-tariff-inclusions-process",
   codesImpacted: august_15_FR_232_impacted_codes_list,
-  dateReleased: new Date("2025-08-15"),
+  dateReleased: new Date("2025-08-19"),
 };
 
 const reciprocalTariffExclusions: TariffUpdate = {
