@@ -194,7 +194,7 @@ export const Chapter = ({ chapter }: Props) => {
                 </div>
 
                 {isNotesDropdownOpen && (
-                  <div className="absolute z-10 w-full mt-1 bg-base-100 border border-base-300 rounded-lg shadow-xl max-h-64 overflow-hidden">
+                  <div className="absolute z-10 w-full mt-1 bg-base-100 border-2 border-base-content/40 rounded-lg shadow-xl max-h-64 overflow-hidden">
                     <div
                       className="max-h-60 overflow-y-auto pb-1"
                       ref={scrollContainerRef}
