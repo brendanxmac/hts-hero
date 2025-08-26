@@ -14,7 +14,11 @@ interface TariffAnnouncement {
   status: TariffStatus;
 }
 
-export const UpcomingTariffsList = () => {
+interface Props {
+  hideHeading?: boolean;
+}
+
+export const UpcomingTariffsList = ({ hideHeading }: Props) => {
   const tariffAnnouncements: TariffAnnouncement[] = [
     {
       name: "Digital Services Tax Reciprocal",
@@ -140,37 +144,43 @@ export const UpcomingTariffsList = () => {
   };
 
   return (
-    <section className="flex justify-center items-center w-full bg-base-200 text-base-content px-6 py-10 lg:py-16">
+    <section
+      className={`flex justify-center items-center w-full bg-base-200 text-base-content px-6  ${
+        hideHeading ? "" : "lg:py-16"
+      }`}
+    >
       <div className="w-full flex flex-col max-w-7xl lg:min-w-5xl gap-2 sm:gap-4">
-        <div className="text-center">
-          <div className="flex flex-col -space-y-4 md:space-y-0">
-            <h1 className="text-white font-extrabold text-2xl sm:text-3xl md:text-5xl lg:text-6xl tracking-tight max-w-5xl mx-auto leading-loose">
-              More Tariffs are Coming,
-            </h1>
-            <h1 className="text-white font-extrabold text-2xl sm:text-3xl md:text-5xl lg:text-6xl tracking-tight max-w-5xl mx-auto leading-loose">
-              {/* Be{" "} */}
-              <span className="bg-primary text-base-200 px-3 py-0 rounded-md">
-                Automate
-              </span>{" "}
-              your Impact Checks
-            </h1>
-          </div>
-          <p className="text-sm md:text-lg text-neutral-300 max-w-5xl mx-auto mt-2 md:mt-6">
-            {/* Weekly announcements and ongoing investigations seem to indicate
+        {!hideHeading && (
+          <div className="text-center">
+            <div className="flex flex-col -space-y-4 md:space-y-0">
+              <h1 className="text-white font-extrabold text-2xl sm:text-3xl md:text-5xl lg:text-6xl tracking-tight max-w-5xl mx-auto leading-loose">
+                More Tariffs are Coming,
+              </h1>
+              <h1 className="text-white font-extrabold text-2xl sm:text-3xl md:text-5xl lg:text-6xl tracking-tight max-w-5xl mx-auto leading-loose">
+                {/* Be{" "} */}
+                <span className="bg-primary text-base-200 px-3 py-0 rounded-md">
+                  Automate
+                </span>{" "}
+                your Impact Checks
+              </h1>
+            </div>
+            <p className="text-sm md:text-lg text-neutral-300 max-w-5xl mx-auto mt-2 md:mt-6">
+              {/* Weekly announcements and ongoing investigations seem to indicate
             there is much more on the way */}
-            Manually checking for tariff impacts just doesn&apos;t cut it
-            anymore.
-            {/* Get notified when your imports are affected by new tariffs. */}
-          </p>
-          <div className="flex justify-center mt-4">
-            <Link
-              className="btn btn-wide btn-primary"
-              href={"/tariffs/impact-checker"}
-            >
-              Automate my Checks
-            </Link>
+              Manually checking for tariff impacts just doesn&apos;t cut it
+              anymore.
+              {/* Get notified when your imports are affected by new tariffs. */}
+            </p>
+            <div className="flex justify-center mt-4">
+              <Link
+                className="btn btn-wide btn-primary"
+                href={"/tariffs/impact-checker"}
+              >
+                Automate my Checks
+              </Link>
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-6">
           {tariffAnnouncements.map((tariff, index) => (
@@ -180,7 +190,7 @@ export const UpcomingTariffsList = () => {
             >
               {/* Header Section */}
               <div className="mb-6">
-                <h3 className="md:text-xl font-bold text-gray-100 leading-tight mb-3 group-hover:text-primary transition-colors">
+                <h3 className="md:text-xl font-bold text-gray-100 leading-tight mb-3 transition-colors">
                   {tariff.name}
                 </h3>
                 <div className="flex items-center justify-between">
@@ -235,8 +245,8 @@ export const UpcomingTariffsList = () => {
 
         <div className="text-center mt-4">
           <p className="text-sm text-base-content/60 max-w-3xl mx-auto">
-            Tariff announcements are subject to change. "TBD" indicates rates
-            are unknown or being determined.
+            Tariff announcements are subject to change. &quot;TBD&quot;
+            indicates rates are unknown or being determined.
           </p>
           <a
             href="https://www.tradecomplianceresourcehub.com/2025/08/25/trump-2-0-tariff-tracker/"

@@ -7,32 +7,21 @@ import ButtonSignin from "./ButtonSignin";
 import logo from "@/app/logo.svg";
 import config from "@/config";
 import { usePathname, useSearchParams } from "next/navigation";
-import { PlayIcon } from "@heroicons/react/24/solid";
-import { getTutorialFromPathname, Tutorial, TutorialI } from "./Tutorial";
-
-const cta: JSX.Element = <ButtonSignin />;
 
 // A header with a logo on the left, links in the center (like Pricing, etc...), and a CTA (like Get Started or Login) on the right.
 // The header is responsive, and on mobile, the links are hidden behind a burger button.
-const UnauthenticatedHeader = () => {
+const UnauthenticatedTariffsHeader = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [showTutorial, setShowTutorial] = useState(false);
-  const [tutorial, setTutorial] = useState<TutorialI | null>(null);
-
-  useEffect(() => {
-    const tutorial = getTutorialFromPathname(pathname);
-    setTutorial(tutorial);
-  }, [pathname]);
 
   const links: {
     href: string;
     label: string;
   }[] = [
     {
-      href: "/about",
-      label: pathname === "/app" ? "Learn More" : "Want to Classify Quicker?",
+      href: "/about/tariffs",
+      label: "See if you're Impacted by New Tariffs",
     },
   ];
 
@@ -122,16 +111,6 @@ const UnauthenticatedHeader = () => {
         <div className="hidden sm:flex items-center gap-2">
           {/* Your links on large screens */}
           <div className="hidden sm:flex sm:justify-center sm:gap-4 sm:items-center">
-            {tutorial && (
-              <button
-                className="btn btn-sm"
-                onClick={() => setShowTutorial(true)}
-                data-tooltip-id="tooltip"
-              >
-                <PlayIcon className="w-5 h-5" />
-                Tutorial
-              </button>
-            )}
             {links.map((link) => (
               <Link
                 href={link.href}
@@ -142,11 +121,6 @@ const UnauthenticatedHeader = () => {
               </Link>
             ))}
           </div>
-
-          {/* CTA on large screens */}
-          {pathname !== "/explore" && (
-            <div className="hidden sm:flex sm:justify-end sm:flex-1">{cta}</div>
-          )}
         </div>
       </nav>
 
@@ -196,14 +170,6 @@ const UnauthenticatedHeader = () => {
             <div className="flow-root mt-6">
               <div className="py-4">
                 <div className="flex flex-col gap-y-4 items-start">
-                  <button
-                    className="btn btn-sm"
-                    onClick={() => setShowTutorial(true)}
-                    data-tooltip-id="tooltip"
-                  >
-                    <PlayIcon className="w-5 h-5" />
-                    Tutorial
-                  </button>
                   {links.map((link) => (
                     <Link
                       href={link.href}
@@ -216,23 +182,12 @@ const UnauthenticatedHeader = () => {
                 </div>
               </div>
               <div className="divider"></div>
-              {/* Your CTA on small screens */}
-              {pathname !== "/explore" && (
-                <div className="flex flex-col">{cta}</div>
-              )}
             </div>
           </div>
         </div>
-      )}
-      {tutorial && (
-        <Tutorial
-          showTutorial={showTutorial}
-          setShowTutorial={setShowTutorial}
-          tutorial={tutorial}
-        />
       )}
     </header>
   );
 };
 
-export default UnauthenticatedHeader;
+export default UnauthenticatedTariffsHeader;

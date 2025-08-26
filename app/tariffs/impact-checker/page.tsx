@@ -118,7 +118,6 @@ const changeLists: TariffUpdate[] = [
 export default function Home() {
   const CHARACTER_LIMIT = 650;
   const { fetchElements, htsElements } = useHts();
-  const { user, isLoading } = useUser();
   const [loading, setLoading] = useState(true);
   const [inputValue, setInputValue] = useState("");
   const [results, setResults] = useState<TariffImpactResult[]>([]);
