@@ -12,7 +12,6 @@ import Modal from "../../../components/Modal";
 import { TariffImpactInputHelp } from "../../../components/TariffImpactInputHelp";
 import { TertiaryText } from "../../../components/TertiaryText";
 import { reciprocalTariffExclusionsList } from "../../../tariffs/exclusion-lists.ts/reciprocal-tariff-exlcusions";
-import { useUser } from "../../../contexts/UserContext";
 import { Color } from "../../../enums/style";
 import { SecondaryLabel } from "../../../components/SecondaryLabel";
 import TariffUpdateDropdown from "../../../components/TariffUpdateDropdown";
@@ -83,7 +82,7 @@ const listExamples: ListExample[] = [
 ];
 
 const indiaOilBasedExclusions: TariffUpdate = {
-  name: "India Russian Oil Consumption Exemptions",
+  name: "Exemptions for India 25% Tariff for Russian Oil Use",
   sourceName: "CSMS #66027027",
   source: "https://content.govdelivery.com/accounts/USDHSCBP/bulletins/3ef7e13",
   codesImpacted: indiaRussianOilConsumptionExclusions,
@@ -102,7 +101,7 @@ const section232SteelAndAluminumChanges: TariffUpdate = {
 };
 
 const reciprocalTariffExclusions: TariffUpdate = {
-  name: "Reciprocal Tariff Exemptions",
+  name: "Exemptions for Reciprocal Tariffs",
   sourceName: "USITC - Chapter 99 Subchapter 3 Note 2(v)(iii) ",
   source: "https://hts.usitc.gov/search?query=9903.01.32",
   codesImpacted: reciprocalTariffExclusionsList,
@@ -118,7 +117,6 @@ const changeLists: TariffUpdate[] = [
 export default function Home() {
   const CHARACTER_LIMIT = 650;
   const { fetchElements, htsElements } = useHts();
-  const { user, isLoading } = useUser();
   const [loading, setLoading] = useState(true);
   const [inputValue, setInputValue] = useState("");
   const [results, setResults] = useState<TariffImpactResult[]>([]);

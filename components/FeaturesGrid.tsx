@@ -168,7 +168,7 @@ const FeaturesGrid = () => {
             {tariffImpactFeatures.map((feature, index) => (
               <div
                 key={feature.title}
-                className={`${feature.styles} rounded-3xl flex flex-col gap-6 w-full h-[22rem] lg:h-[25rem] pt-6 overflow-hidden border-2 border-base-content/30`}
+                className={`${feature.styles} rounded-3xl flex flex-col gap-2 sm:gap-6 w-full h-[22rem] lg:h-[25rem] pt-6 overflow-hidden border-2 border-base-content/30`}
               >
                 <div className="px-6 flex items-center gap-3">
                   <div className="rounded-full h-6 w-6 md:h-7 md:w-7 bg-primary text-base-300 text-sm md:text-base font-semibold flex items-center justify-center">

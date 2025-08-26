@@ -24,7 +24,7 @@ export const AuthenticatedHeader = () => {
   return (
     <header className="h-16 z-10 bg-base-100 flex items-center justify-between p-4 border-b border-base-content/20">
       <div className="flex gap-6">
-        <Link className="flex items-center gap-2 shrink-0" href="/explore">
+        <Link className="flex items-center gap-2 shrink-0" href="/">
           <Image
             src={logo}
             alt={`${config.appName} logo`}

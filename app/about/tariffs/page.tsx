@@ -9,6 +9,7 @@ import { FAQ } from "@/components/FAQ";
 import { tariffImpactFaqList } from "@/constants/faq";
 import CTA from "@/components/CTA";
 import TariffImpactHeader from "@/components/TariffImpactHeader";
+import { UpcomingTariffsList } from "../../../components/UpcomingTariffsList";
 
 const withoutTariffImpact: Task[] = [
   {
@@ -72,6 +73,7 @@ export default function Home() {
             altText: "Tariff Impacts",
           }}
         />
+        <UpcomingTariffsList />
         <WithWithout
           title="No Waiting, Guessing, or Limits"
           subtitle="Get answers in seconds for all your imports"
