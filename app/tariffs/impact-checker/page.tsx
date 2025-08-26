@@ -12,7 +12,6 @@ import Modal from "../../../components/Modal";
 import { TariffImpactInputHelp } from "../../../components/TariffImpactInputHelp";
 import { TertiaryText } from "../../../components/TertiaryText";
 import { reciprocalTariffExclusionsList } from "../../../tariffs/exclusion-lists.ts/reciprocal-tariff-exlcusions";
-import { useUser } from "../../../contexts/UserContext";
 import { Color } from "../../../enums/style";
 import { SecondaryLabel } from "../../../components/SecondaryLabel";
 import TariffUpdateDropdown from "../../../components/TariffUpdateDropdown";

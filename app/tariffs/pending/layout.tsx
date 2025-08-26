@@ -1,5 +1,4 @@
 import { ReactNode, Suspense } from "react";
-import UnauthenticatedHeader from "../../../components/UnauthenticatedHeader";
 import UnauthenticatedTariffsHeader from "../../../components/UnauthenticatedTariffsHeader";
 
 // This is a server-side component to ensure the user is logged in.
