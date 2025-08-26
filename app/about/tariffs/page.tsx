@@ -57,7 +57,6 @@ export default function Home() {
       </Suspense>
       <main>
         <FeaturesGrid />
-        <UpcomingTariffsList />
         <Demo
           standoutPlacement="end"
           titleStandout=""
@@ -74,6 +73,7 @@ export default function Home() {
             altText: "Tariff Impacts",
           }}
         />
+        <UpcomingTariffsList />
         <WithWithout
           title="No Waiting, Guessing, or Limits"
           subtitle="Get answers in seconds for all your imports"

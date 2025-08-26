@@ -1,13 +1,17 @@
+import Link from "next/link";
+
+enum TariffStatus {
+  MENTIONED = "Mentioned",
+  INVESTIGATION = "Investigation",
+  PENDING_PUBLICATION = "Pending Publication",
+  PUBLISHED = "Published",
+}
+
 interface TariffAnnouncement {
   name: string;
   date: Date;
   rate?: string;
-  status:
-    | "Announced"
-    | "Published"
-    | "Public Comment"
-    | "Draft"
-    | "Implemented";
+  status: TariffStatus;
 }
 
 export const UpcomingTariffsList = () => {
@@ -15,122 +19,115 @@ export const UpcomingTariffsList = () => {
     {
       name: "Digital Services Tax Reciprocal",
       date: new Date(2025, 7, 25), // August 25, 2025
-      status: "Announced" as const,
+      status: TariffStatus.MENTIONED,
     },
     {
       name: "Furniture",
       date: new Date(2025, 7, 22), // August 22, 2025
-      status: "Draft" as const,
+      status: TariffStatus.MENTIONED,
     },
     {
-      name: "Wind Turbines & their parts",
+      name: "Wind Turbines & Parts",
       date: new Date(2025, 7, 21), // August 21, 2025
-      status: "Published" as const,
+      status: TariffStatus.INVESTIGATION,
     },
     {
       name: "Polysilicon & Derivatives",
       date: new Date(2025, 6, 14), // July 14, 2025
-      status: "Implemented" as const,
+      status: TariffStatus.INVESTIGATION,
     },
     {
-      name: "Semiconductors & Equipment to Manufacture",
+      name: "Semiconductors & Equipment",
       date: new Date(2025, 7, 6), // August 6, 2025
       rate: "100%",
-      status: "Public Comment" as const,
+      status: TariffStatus.INVESTIGATION,
     },
     {
       name: "iPhones",
       date: new Date(2025, 4, 23), // May 23, 2025
       rate: "25%",
-      status: "Implemented" as const,
+      status: TariffStatus.MENTIONED,
     },
     {
-      name: "Commercial Aircraft & Jet Engine Parts",
+      name: "Aircraft & Jet Engine Parts",
       date: new Date(2025, 4, 13), // May 13, 2025
-      status: "Draft" as const,
+      status: TariffStatus.INVESTIGATION,
     },
     {
-      name: "Trucks & Truck parts",
+      name: "Trucks & Truck Parts",
       date: new Date(2025, 3, 22), // April 22, 2025
-      status: "Published" as const,
+      status: TariffStatus.INVESTIGATION,
     },
     {
       name: "Maritime Cargo Handling Equipment",
       date: new Date(2025, 3, 9), // April 9, 2025
       rate: "20-100%",
-      status: "Announced" as const,
+      status: TariffStatus.INVESTIGATION,
     },
     {
       name: "Agricultural Products",
       date: new Date(2025, 3, 2), // April 2, 2025
-      status: "Public Comment" as const,
+      status: TariffStatus.MENTIONED,
     },
     {
       name: "Lumber / Timber",
       date: new Date(2025, 2, 3), // March 3, 2025
       rate: "25%",
-      status: "Implemented" as const,
+      status: TariffStatus.INVESTIGATION,
     },
     {
-      name: "Pharmaceuticals, ingredients, & derivatives",
+      name: "Pharmaceuticals & Ingredients",
       date: new Date(2025, 7, 18), // February 2025
       rate: "200%",
-      status: "Published" as const,
+      status: TariffStatus.INVESTIGATION,
     },
     {
       name: "Critical Minerals",
       date: new Date(2025, 4, 15), // April 15, 2025
-      status: "Draft" as const,
+      status: TariffStatus.INVESTIGATION,
     },
     {
-      name: "Unmanned Aircraft Systems & their parts",
+      name: "Unmanned Aircraft Systems & Parts",
       date: new Date(2025, 7, 14), // July 14th, 2025
-      status: "Announced" as const,
+      status: TariffStatus.INVESTIGATION,
     },
   ].sort((a, b) => b.date.getTime() - a.date.getTime());
 
-  const getStatusBadge = (
-    status:
-      | "Announced"
-      | "Published"
-      | "Public Comment"
-      | "Draft"
-      | "Implemented"
-  ) => {
-    const statusStyles = {
-      Announced: {
-        bg: "bg-blue-500/15",
-        text: "text-blue-400",
-        border: "border-blue-500/25",
-        dot: "bg-blue-400",
-      },
-      Published: {
-        bg: "bg-green-500/15",
-        text: "text-green-400",
-        border: "border-green-500/25",
-        dot: "bg-green-400",
-      },
-      "Public Comment": {
-        bg: "bg-yellow-500/15",
-        text: "text-yellow-400",
-        border: "border-yellow-500/25",
-        dot: "bg-yellow-400",
-      },
-      Draft: {
-        bg: "bg-gray-500/15",
-        text: "text-gray-400",
-        border: "border-gray-500/25",
-        dot: "bg-gray-400",
-      },
-      Implemented: {
-        bg: "bg-purple-500/15",
-        text: "text-purple-400",
-        border: "border-purple-500/25",
-        dot: "bg-purple-400",
-      },
-    };
+  const getStatusStyles = (status: TariffStatus) => {
+    switch (status) {
+      case TariffStatus.MENTIONED:
+        return {
+          bg: "bg-info/20",
+          text: "text-info",
+          border: "border-info/30",
+          dot: "bg-info",
+        };
+      case TariffStatus.INVESTIGATION:
+        return {
+          bg: "bg-warning/20",
+          text: "text-warning",
+          border: "border-warning/30",
+          dot: "bg-warning",
+        };
+      case TariffStatus.PENDING_PUBLICATION:
+        return {
+          bg: "bg-orange-500/20",
+          text: "text-orange-500",
+          border: "border-orange-500/30",
+          dot: "bg-orange-500",
+        };
+      case TariffStatus.PUBLISHED:
+        return {
+          bg: "bg-success/20",
+          text: "text-success",
+          border: "border-success/30",
+          dot: "bg-success",
+        };
+    }
+  };
 
-    const style = statusStyles[status];
+  const getStatusBadge = (status: TariffStatus) => {
+    const style = getStatusStyles(status);
 
     return (
       <div
@@ -144,31 +141,51 @@ export const UpcomingTariffsList = () => {
 
   return (
     <section className="flex justify-center items-center w-full bg-base-200 text-base-content px-6 py-10 lg:py-16">
-      <div className="w-full flex flex-col max-w-7xl lg:min-w-5xl gap-4 sm:gap-8">
+      <div className="w-full flex flex-col max-w-7xl lg:min-w-5xl gap-2 sm:gap-4">
         <div className="text-center">
-          <h1 className="text-white font-extrabold text-3xl md:text-5xl lg:text-6xl tracking-tight md:-mb-4 max-w-5xl mx-auto">
-            More Tariffs are Coming
-          </h1>
-          <p className="text-sm md:text-lg text-neutral-300 leading-relaxed max-w-5xl mx-auto mt-4">
-            Weekly announcements and ongoing investigations indicate there is
-            much more on the way
+          <div className="flex flex-col -space-y-4 md:space-y-0">
+            <h1 className="text-white font-extrabold text-2xl sm:text-3xl md:text-5xl lg:text-6xl tracking-tight max-w-5xl mx-auto leading-loose">
+              More Tariffs are Coming,
+            </h1>
+            <h1 className="text-white font-extrabold text-2xl sm:text-3xl md:text-5xl lg:text-6xl tracking-tight max-w-5xl mx-auto leading-loose">
+              {/* Be{" "} */}
+              <span className="bg-primary text-base-200 px-3 py-0 rounded-md">
+                Automate
+              </span>{" "}
+              your Impact Checks
+            </h1>
+          </div>
+          <p className="text-sm md:text-lg text-neutral-300 max-w-5xl mx-auto mt-2 md:mt-6">
+            {/* Weekly announcements and ongoing investigations seem to indicate
+            there is much more on the way */}
+            Manually checking for tariff impacts just doesn&apos;t cut it
+            anymore.
+            {/* Get notified when your imports are affected by new tariffs. */}
           </p>
+          <div className="flex justify-center mt-4">
+            <Link
+              className="btn btn-wide btn-primary"
+              href={"/tariffs/impact-checker"}
+            >
+              Automate my Checks
+            </Link>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-6">
           {tariffAnnouncements.map((tariff, index) => (
             <div
               key={index}
-              className="group bg-gray-900/80 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-2xl hover:bg-gray-900/90 transition-all duration-100 p-6 border border-gray-600/40 hover:border-gray-500/60"
+              className="group bg-base-100 rounded-xl shadow-lg hover:shadow-2xl hover:bg-base-200/50 transition-all duration-100 p-6 border border-base-content/10 hover:border-base-content/20"
             >
               {/* Header Section */}
               <div className="mb-6">
-                <h3 className="text-xl font-bold text-white leading-tight mb-3 group-hover:text-gray-100 transition-colors">
+                <h3 className="md:text-xl font-bold text-gray-100 leading-tight mb-3 group-hover:text-primary transition-colors">
                   {tariff.name}
                 </h3>
                 <div className="flex items-center justify-between">
                   {getStatusBadge(tariff.status)}
-                  <div className="flex items-center text-sm text-gray-400">
+                  <div className="flex items-center text-sm text-base-content/60">
                     <svg
                       className="w-4 h-4 mr-2"
                       fill="none"
@@ -194,18 +211,20 @@ export const UpcomingTariffsList = () => {
               </div>
 
               {/* Rate Section */}
-              <div className="pt-4 border-t border-gray-700/50">
+              <div className="pt-4 border-t border-base-content/10">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400 text-sm font-medium">
+                  <span className="text-base-content/60 text-sm font-medium">
                     Tariff Rate
                   </span>
                   <div className="text-right">
                     {tariff.rate ? (
-                      <span className="text-lg font-bold text-white group-hover:text-red-500 transition-colors">
+                      <span className="text-lg font-bold text-base-content group-hover:text-secondary transition-colors">
                         {tariff.rate}
                       </span>
                     ) : (
-                      <span className="font-semibold text-gray-500">TBD</span>
+                      <span className="font-semibold text-base-content/50">
+                        TBD
+                      </span>
                     )}
                   </div>
                 </div>
@@ -214,14 +233,14 @@ export const UpcomingTariffsList = () => {
           ))}
         </div>
 
-        <div className="text-center mt-12">
-          <p className="text-sm text-gray-400 max-w-3xl mx-auto">
+        <div className="text-center mt-4">
+          <p className="text-sm text-base-content/60 max-w-3xl mx-auto">
             Tariff announcements are subject to change. "TBD" indicates rates
-            are unknowwn or being determined.
+            are unknown or being determined.
           </p>
           <a
             href="https://www.tradecomplianceresourcehub.com/2025/08/25/trump-2-0-tariff-tracker/"
-            className="text-xs link text-gray-400"
+            className="text-xs link link-primary text-base-content/70"
           >
             See source / all tariff announcements
           </a>
