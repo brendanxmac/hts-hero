@@ -41,6 +41,11 @@ export const UpcomingTariffsList = ({ hideHeading }: Props) => {
       status: TariffStatus.INVESTIGATION,
     },
     {
+      name: "Brazil Section 301 Investigation",
+      date: new Date(2025, 6, 18), // July 18, 2025
+      status: TariffStatus.INVESTIGATION,
+    },
+    {
       name: "Semiconductors & Equipment",
       date: new Date(2025, 7, 6), // August 6, 2025
       rate: "100%",
@@ -81,18 +86,18 @@ export const UpcomingTariffsList = ({ hideHeading }: Props) => {
     },
     {
       name: "Pharmaceuticals & Ingredients",
-      date: new Date(2025, 7, 18), // February 2025
+      date: new Date(2025, 6, 8), // July 2025
       rate: "200%",
       status: TariffStatus.INVESTIGATION,
     },
     {
       name: "Critical Minerals",
-      date: new Date(2025, 4, 15), // April 15, 2025
+      date: new Date(2025, 3, 15), // April 15, 2025
       status: TariffStatus.INVESTIGATION,
     },
     {
       name: "Unmanned Aircraft Systems & Parts",
-      date: new Date(2025, 7, 14), // July 14th, 2025
+      date: new Date(2025, 6, 14), // July 14th, 2025
       status: TariffStatus.INVESTIGATION,
     },
   ].sort((a, b) => b.date.getTime() - a.date.getTime());
