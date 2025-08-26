@@ -1,3 +1,4 @@
+// 9903.01.32
 export const reciprocalTariffExclusionsList = [
   "0508.00.00",
   "2504.10.50",

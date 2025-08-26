@@ -16,6 +16,7 @@ import { useUser } from "../../../contexts/UserContext";
 import { Color } from "../../../enums/style";
 import { SecondaryLabel } from "../../../components/SecondaryLabel";
 import TariffUpdateDropdown from "../../../components/TariffUpdateDropdown";
+import { indiaRussianOilConsumptionExclusions } from "../../../tariffs/exclusion-lists.ts/india-oil-issue-exclusions";
 
 interface ListExample {
   name: string;
@@ -28,6 +29,7 @@ interface TariffUpdate {
   source: string;
   codesImpacted: string[];
   dateReleased: Date;
+  notes?: string;
 }
 
 interface TariffImpactResult {
@@ -80,8 +82,18 @@ const listExamples: ListExample[] = [
   // },
 ];
 
+const indiaOilBasedExclusions: TariffUpdate = {
+  name: "India Russian Oil Consumption Exemptions",
+  sourceName: "CSMS #66027027",
+  source: "https://content.govdelivery.com/accounts/USDHSCBP/bulletins/3ef7e13",
+  codesImpacted: indiaRussianOilConsumptionExclusions,
+  dateReleased: new Date("2025-08-25"),
+  notes:
+    "Only applicable to imports from India. Additional exemptions exist if the import is a qualified donation, information materials, or chapter 98 provision. Certain exemptions come with exclusions which you can see by clicking the HTS Code in the results table. Always contact a customs broker for proper import assistance and guidance.",
+};
+
 const section232SteelAndAluminumChanges: TariffUpdate = {
-  name: "Steel and Aluminum Updates",
+  name: "Additional Articles of Steel and Aluminum",
   sourceName: "Federal Register",
   source:
     "https://www.federalregister.gov/public-inspection/2025-15819/adoption-and-procedures-of-the-section-232-steel-and-aluminum-tariff-inclusions-process",
@@ -90,7 +102,7 @@ const section232SteelAndAluminumChanges: TariffUpdate = {
 };
 
 const reciprocalTariffExclusions: TariffUpdate = {
-  name: "Reciprocal Tariff Exclusions",
+  name: "Reciprocal Tariff Exemptions",
   sourceName: "USITC - Chapter 99 Subchapter 3 Note 2(v)(iii) ",
   source: "https://hts.usitc.gov/search?query=9903.01.32",
   codesImpacted: reciprocalTariffExclusionsList,
@@ -98,6 +110,7 @@ const reciprocalTariffExclusions: TariffUpdate = {
 };
 
 const changeLists: TariffUpdate[] = [
+  indiaOilBasedExclusions,
   section232SteelAndAluminumChanges,
   reciprocalTariffExclusions,
 ];
@@ -291,6 +304,11 @@ export default function Home() {
                 selectedIndex={selectedChangeListIndex}
                 onSelectionChange={setSelectedChangeListIndex}
               />
+              {changeLists[selectedChangeListIndex].notes && (
+                <p className="text-xs text-warning font-bold">
+                  Note: {changeLists[selectedChangeListIndex].notes}
+                </p>
+              )}
             </div>
 
             <div className="flex flex-col gap-2">
@@ -361,7 +379,7 @@ export default function Home() {
                           <tr>
                             <th className="w-4"></th>
                             <th>HTS Code</th>
-                            <th>Impacted</th>
+                            <th>Included</th>
                             <th>Notes</th>
                           </tr>
                         </thead>

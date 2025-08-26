@@ -81,7 +81,7 @@ export default function Home() {
                 Tariff Simulator
               </h3>
               <p className="text-sm text-neutral-400 leading-relaxed">
-                HTS Explorer & Tariffs Made Easy
+                Find the tariff for any item, from any country
               </p>
             </div>
           </Link>
