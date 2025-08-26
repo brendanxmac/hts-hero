@@ -229,7 +229,7 @@ export const UpcomingTariffsList = ({ hideHeading }: Props) => {
               <div className="pt-4 border-t border-base-content/10">
                 <div className="flex items-center justify-between">
                   <span className="text-base-content/60 text-sm font-medium">
-                    Tariff Rate
+                    Possible Tariff Rate
                   </span>
                   <div className="text-right">
                     {tariff.rate ? (
