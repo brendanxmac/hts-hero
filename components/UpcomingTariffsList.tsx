@@ -167,7 +167,7 @@ export const UpcomingTariffsList = ({ hideHeading }: Props) => {
             <p className="text-sm md:text-lg text-neutral-300 max-w-5xl mx-auto mt-2 md:mt-6">
               {/* Weekly announcements and ongoing investigations seem to indicate
             there is much more on the way */}
-              Manually checking for tariff impacts just doesn&apos;t cut it
+              Manually checking your tariff impacts just doesn&apos;t cut it
               anymore.
               {/* Get notified when your imports are affected by new tariffs. */}
             </p>
