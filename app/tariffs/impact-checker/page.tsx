@@ -88,7 +88,7 @@ const indiaOilBasedExclusions: TariffUpdate = {
   codesImpacted: indiaRussianOilConsumptionExclusions,
   dateReleased: new Date("2025-08-25"),
   notes:
-    "Only applicable to imports from India. Additional exemptions exist if the import is a qualified donation, information materials, or chapter 98 provision. Certain exemptions come with exclusions which you can see by clicking the HTS Code in the results table. Always contact a customs broker for proper import assistance and guidance.",
+    "This specific announcement is only applicable to imports from India. Additional exemptions exist if the import is a qualified donation, information materials, or chapter 98 provision. Certain exemptions come with exclusions which you can see by clicking the HTS Code in the results table. Always contact a customs broker for proper import assistance and guidance.",
 };
 
 const section232SteelAndAluminumChanges: TariffUpdate = {
@@ -109,8 +109,8 @@ const reciprocalTariffExclusions: TariffUpdate = {
 };
 
 const changeLists: TariffUpdate[] = [
-  indiaOilBasedExclusions,
   section232SteelAndAluminumChanges,
+  indiaOilBasedExclusions,
   reciprocalTariffExclusions,
 ];
 
@@ -218,10 +218,10 @@ export default function Home() {
     } else if (codeExists) {
       if (impacted) {
         indicator = "✅";
-        tooltip = "Code is impacted";
+        tooltip = "Code is included";
       } else {
         indicator = "❌";
-        tooltip = "Code is not impacted";
+        tooltip = "Code is not included";
       }
     } else {
       indicator = "⚠️";
@@ -271,7 +271,7 @@ export default function Home() {
   };
 
   return (
-    <main className="w-full max-w-6xl mx-auto flex flex-col bg-base-300 py-6 overflow-y-auto">
+    <main className="w-full h-full max-w-6xl mx-auto flex flex-col bg-base-300 py-6 overflow-y-auto">
       {loading ? (
         <div className="w-full h-full flex justify-center pt-20">
           <LoadingIndicator />
