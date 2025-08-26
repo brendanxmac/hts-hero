@@ -89,7 +89,7 @@ const indiaOilBasedExclusions: TariffUpdate = {
   codesImpacted: indiaRussianOilConsumptionExclusions,
   dateReleased: new Date("2025-08-25"),
   notes:
-    "Additional exemptions exist if the import is a qualified donation, information materials, or chapter 98 provision. Certain exemptions come with exclusions which you can see by clicking the HTS Code in the results table. Always contact a customs broker for proper import assistance and guidance.",
+    "Only applicable to imports from India. Additional exemptions exist if the import is a qualified donation, information materials, or chapter 98 provision. Certain exemptions come with exclusions which you can see by clicking the HTS Code in the results table. Always contact a customs broker for proper import assistance and guidance.",
 };
 
 const section232SteelAndAluminumChanges: TariffUpdate = {
