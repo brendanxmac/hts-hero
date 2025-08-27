@@ -26,6 +26,7 @@ import {
   TradeProgramStatus,
 } from "../public/trade-programs";
 import { Column2CountryCodes } from "./tariff-columns";
+import { indiaTariffs } from "./india";
 
 export interface CountryWithTariffs extends Country {
   selectedTradeProgram: TradeProgram | null;
@@ -800,4 +801,5 @@ export const TariffsList: TariffI[] = [
   ...mexicoTariffs,
   ...brazilTariffs,
   ...copperTariffs,
+  ...indiaTariffs,
 ];
