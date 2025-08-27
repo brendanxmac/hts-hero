@@ -73,7 +73,7 @@ export default function SquareIconButton({
       ref={buttonRef}
       disabled={disabled}
       className={classNames(
-        `btn btn-xs btn-square shrink-0 text-white hover:text-white hover:shadow-md border-none hover:cursor-pointer`,
+        `btn btn-sm btn-square shrink-0 text-white hover:text-white hover:shadow-md border-none hover:cursor-pointer`,
         iconOnly
           ? "bg-none hover:bg-none"
           : transparent

@@ -14,6 +14,8 @@ if (typeof window !== "undefined" && MIXPANEL_TOKEN) {
 }
 
 export enum MixpanelEvent {
+  TARIFF_IMPACT_CHECK = "tariff_impact_check",
+  TARIFF_IMPACT_CHECK_FROM_SET = "tariff_impact_check_from_set",
   CLASSIFICATION_STARTED = "classification_started",
   CLASSIFICATION_COMPLETED = "classification_completed",
   SIGN_UP = "sign_up",

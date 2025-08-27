@@ -31,7 +31,7 @@ export const TariffImpactInputHelp = () => (
             d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
           ></path>
         </svg>
-        <span>
+        <span className="font-bold">
           Both 8 & 10 digit HTS codes are supported with or without decimal
           points
         </span>
@@ -96,7 +96,7 @@ export const TariffImpactInputHelp = () => (
         </span>
       </div>
 
-      <div className="alert alert-success">
+      <div className="alert alert-info">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -107,13 +107,13 @@ export const TariffImpactInputHelp = () => (
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth="2"
-            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
           ></path>
         </svg>
         <div className="flex flex-col">
-          <p>
+          <p className="font-bold">
             You can enter multiple codes using any of the following separators,{" "}
-            <span className="font-bold">
+            <span className="underline">
               or by copy and pasting cells directly from a spreadsheet column.
             </span>
           </p>

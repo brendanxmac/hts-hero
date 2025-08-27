@@ -1,9 +1,8 @@
 "use client";
 
-import { ChangeEvent } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { TertiaryText } from "./TertiaryText";
-import SquareIconButton from "./SqaureIconButton";
-import { ArrowUpIcon } from "@heroicons/react/16/solid";
+import { ArrowUpIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { classNames } from "../utilities/style";
 
 interface Props {
@@ -15,6 +14,7 @@ interface Props {
   isValid?: boolean;
   validationMessage?: string;
   characterLimit?: number;
+  disabled?: boolean;
 }
 
 export default function SimpleTextInput({
@@ -26,9 +26,57 @@ export default function SimpleTextInput({
   isValid,
   validationMessage,
   characterLimit,
+  disabled,
 }: Props) {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [showTopFade, setShowTopFade] = useState(false);
+  const [showBottomFade, setShowBottomFade] = useState(false);
+
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>): void => {
     onChange && onChange(e.target.value);
+    resizeTextarea();
+  };
+
+  const resizeTextarea = () => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    // Reset height to auto to get the correct scrollHeight
+    textarea.style.height = "auto";
+
+    // Calculate max height dynamically (12rem = 192px in most cases)
+    const computedStyle = window.getComputedStyle(textarea);
+    const maxHeightValue = computedStyle.getPropertyValue("max-height");
+    const maxHeight =
+      maxHeightValue === "none" ? 192 : parseInt(maxHeightValue);
+
+    // Set height based on content, but respect max-height
+    const newHeight = Math.min(textarea.scrollHeight, maxHeight);
+    textarea.style.height = `${newHeight}px`;
+
+    // Check scroll position after resize
+    setTimeout(() => checkScrollPosition(), 0);
+  };
+
+  const checkScrollPosition = () => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = textarea;
+    const isScrollable = scrollHeight > clientHeight;
+
+    setShowTopFade(isScrollable && scrollTop > 0);
+    setShowBottomFade(
+      isScrollable && scrollTop < scrollHeight - clientHeight - 1
+    );
+  };
+
+  useEffect(() => {
+    resizeTextarea();
+  }, [value]);
+
+  const handleScroll = () => {
+    checkScrollPosition();
   };
 
   return (
@@ -43,55 +91,73 @@ export default function SimpleTextInput({
       }}
     >
       {label && <TertiaryText value={label} />}
-      <div className={"w-full flex flex-col rounded-md bg-base-100 px-4 py-1"}>
-        <div className="w-full flex gap-2 items-center">
+      <div className="w-full flex flex-col rounded-md bg-base-100 px-4 py-2 gap-2">
+        <div className="relative">
           <textarea
+            ref={textareaRef}
             autoFocus
             placeholder={placeholder}
             value={value}
             rows={1}
             onChange={handleInputChange}
-            className="textarea text-base w-full max-h-32 min-h-32 rounded-none resize-none bg-inherit text-white placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-0"
+            onScroll={handleScroll}
+            className="textarea text-base w-full max-h-48 min-h-10 rounded-none resize-none bg-inherit text-white placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-1 overflow-y-auto"
           ></textarea>
 
-          {onSubmit && (
-            <SquareIconButton
-              disabled={!isValid}
-              icon={<ArrowUpIcon className="h-4 w-4" />}
-              onClick={() => {
-                onSubmit(value);
-              }}
-            />
+          {/* Top fade overlay */}
+          {showTopFade && (
+            <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-base-100 to-transparent pointer-events-none" />
           )}
+
+          {/* Bottom fade overlay */}
+          {showBottomFade && (
+            <div className="absolute bottom-0 left-0 right-0 h-7 bg-gradient-to-t from-base-100 to-transparent pointer-events-none" />
+          )}
+        </div>
+        <div className="w-full flex justify-between">
+          <div className="flex gap-2 items-center bg-base-100/90 backdrop-blur-sm px-2 py-1 rounded-md border border-base-content/80">
+            <p
+              className={classNames(
+                "text-white text-xs",
+                value.length >= characterLimit ? "font-bold" : undefined
+              )}
+            >
+              <span
+                className={
+                  value.length >= characterLimit ? "text-warning" : undefined
+                }
+              >
+                {value.length}
+              </span>
+              {` / ${characterLimit} characters`}
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              className="btn btn-sm btn-neutral"
+              disabled={value.length === 0}
+              onClick={() => {
+                onChange && onChange("");
+                textareaRef.current?.focus();
+              }}
+            >
+              Clear
+            </button>
+
+            {onSubmit && (
+              <button
+                className="btn btn-sm btn-primary"
+                disabled={isValid === false || disabled}
+                onClick={() => {
+                  onSubmit(value);
+                }}
+              >
+                Submit
+              </button>
+            )}
+          </div>
         </div>
       </div>
-
-      {characterLimit && value.length > characterLimit && (
-        <div className="absolute bottom-2 left-2 flex gap-2 items-center bg-base-100/90 backdrop-blur-sm px-2 py-1 rounded-md border border-base-content/80">
-          <p
-            className={classNames(
-              "text-white text-xs",
-              value.length >= characterLimit ? "font-bold" : undefined
-            )}
-          >
-            <span
-              className={
-                value.length >= characterLimit ? "text-warning" : undefined
-              }
-            >
-              {value.length}
-            </span>
-            {` / ${characterLimit}`}
-          </p>
-
-          {value.length > characterLimit && (
-            <p className="text-xs font-bold text-warning">
-              {validationMessage ||
-                `Input limit exceeded, results limited to ${characterLimit} characters`}
-            </p>
-          )}
-        </div>
-      )}
     </div>
   );
 }
