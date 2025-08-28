@@ -58,6 +58,42 @@ export default function Home() {
       <main>
         <FeaturesGrid />
         <Demo
+          standoutPlacement="start"
+          titleStandout="Instantly"
+          // title="Tariff Impact"
+          title="Know If New Tariffs Affect Your Imports"
+          // subtitle="Customized for your imports"
+          subtitle="Skip the late surprises, delays, and error-prone manual checks"
+          ctaText="Try it Now!"
+          ctaLink="/tariffs/impact-checker"
+          media={{
+            title: "Tariff Impact Notification",
+            description: "Tariff Impact Notification",
+            mediaType: "image",
+            mediaPath: "/notification.svg",
+            mediaFormat: "svg",
+            altText: "Tariff Impact Notification",
+          }}
+        />
+        <Demo
+          standoutPlacement="end"
+          titleStandout="Notifications"
+          // title="Tariff Impact"
+          title="Automatic"
+          // subtitle="Customized for your imports"
+          subtitle="When your imports are impacted by tariff announcements"
+          ctaText="Try it Now!"
+          ctaLink="/tariffs/impact-checker"
+          media={{
+            title: "Tariff Impact Notification",
+            description: "Tariff Impact Notification",
+            mediaType: "image",
+            mediaPath: "/notification.svg",
+            mediaFormat: "svg",
+            altText: "Tariff Impact Notification",
+          }}
+        />
+        <Demo
           standoutPlacement="end"
           titleStandout=""
           title="Copy, Paste, Clarity ✅"

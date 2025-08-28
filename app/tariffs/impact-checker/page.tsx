@@ -5,16 +5,12 @@ import { useHts } from "../../../contexts/HtsContext";
 import { validateTariffableHtsCode } from "../../../libs/hts";
 import SimpleTextInput from "../../../components/SimpleTextInput";
 import { LoadingIndicator } from "../../../components/LoadingIndicator";
-import { august_15_FR_232_impacted_codes_list } from "../../../tariffs/announcements/232-FR-August-15";
 import Link from "next/link";
 import { SecondaryText } from "../../../components/SecondaryText";
 import Modal from "../../../components/Modal";
 import { TariffImpactInputHelp } from "../../../components/TariffImpactInputHelp";
 import { TertiaryText } from "../../../components/TertiaryText";
-import { reciprocalTariffExclusionsList } from "../../../tariffs/exclusion-lists.ts/reciprocal-tariff-exlcusions";
-import { Color } from "../../../enums/style";
-import TariffUpdateDropdown from "../../../components/TariffUpdateDropdown";
-import { indiaRussianOilConsumptionExclusions } from "../../../tariffs/exclusion-lists.ts/india-oil-issue-exclusions";
+import TariffAnnouncementDropdown from "../../../components/TariffUpdateDropdown";
 import { PrimaryLabel } from "../../../components/PrimaryLabel";
 import { MixpanelEvent, trackEvent } from "../../../libs/mixpanel";
 import {
@@ -25,105 +21,111 @@ import {
 import toast from "react-hot-toast";
 import { useUser } from "../../../contexts/UserContext";
 import { HtsCodeSet } from "../../../interfaces/hts";
-import { Select } from "../../../components/Select";
 import HtsCodeSetDropdown from "../../../components/HtsCodeSetDropdown";
+import {
+  exampleLists,
+  tariffAnnouncementLists,
+  TariffImpactResult,
+} from "../../../tariffs/announcements/announcements";
 
-interface ListExample {
-  name: string;
-  list: string;
+// Modal content component for creating a list of codes
+function CreateListModal({
+  isOpen,
+  setIsOpen,
+  onSave,
+  isLoading,
+}: {
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+  onSave: (name: string, description: string) => void;
+  isLoading: boolean;
+}) {
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (name.trim()) {
+      onSave(name.trim(), description.trim());
+      setName("");
+      setDescription("");
+    }
+  };
+
+  return (
+    <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
+      <div className="p-6 max-w-md mx-auto">
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold text-base-content mb-2">
+            Create List of Codes
+          </h2>
+          <p className="text-sm text-base-content/70">
+            Give your list of codes a name to save them for later
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-base-content mb-2"
+            >
+              Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="input input-bordered w-full"
+              placeholder="Enter a name for your list"
+              required
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="description"
+              className="block text-sm font-medium text-base-content mb-2"
+            >
+              Description
+            </label>
+            <textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="textarea textarea-bordered w-full"
+              placeholder="Enter a description (optional)"
+              rows={3}
+            />
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              className="btn btn-ghost flex-1"
+              disabled={isLoading}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="btn btn-primary flex-1"
+              disabled={!name.trim() || isLoading}
+            >
+              {isLoading ? (
+                <span className="loading loading-spinner loading-xs"></span>
+              ) : (
+                "Create List"
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+    </Modal>
+  );
 }
-
-interface TariffUpdate {
-  name: string;
-  sourceName: string;
-  source: string;
-  codesImpacted: string[];
-  dateReleased: Date;
-  notes?: string;
-}
-
-interface TariffImpactResult {
-  code: string;
-  impacted: boolean | null;
-  error?: string;
-}
-
-const exampleList = [
-  "2602.00.00.40",
-  "8544.49.20.00",
-  "9701.21.00.00",
-  "9403.99.90.10",
-  "4408.90.01",
-  "4408.90.01.10",
-  "9701.21.00.00",
-  "2825.80.00.00",
-  "7614.10.10.00",
-  "7614.10.50.00",
-  "2106.90.99.98",
-];
-
-const commaSeparatedList = exampleList.join(", ");
-const newlineSeparatedList = [...exampleList]
-  .sort(() => Math.random() - 0.5)
-  .join("\n");
-const spaceSeparatedList = [...exampleList]
-  .sort(() => Math.random() - 0.5)
-  .join(" ");
-// const mixedSeparatedList =
-//   "2602.00.00.40, 9701.21.00.00\n4408.90.01, 4408.90.01.10\n97.01.21.00.00, 2825.80.00.00\n8544.49.20.00, 9403.99.90.10\n7614.10.10.00, 7614.10.50.00\n2106.90.99.98";
-
-const singleElementExamples = ["6902.20.10", "3808.94.10.00"];
-const listExamples: ListExample[] = [
-  {
-    name: "List with Commas",
-    list: commaSeparatedList,
-  },
-  {
-    name: "List with Newlines",
-    list: newlineSeparatedList,
-  },
-  {
-    name: "List with Spaces",
-    list: spaceSeparatedList,
-  },
-  // {
-  //   name: "List with Mixed Separators",
-  //   list: mixedSeparatedList,
-  // },
-];
-
-const indiaOilBasedExclusions: TariffUpdate = {
-  name: "Exemptions for India 25% Tariff for Russian Oil Use",
-  sourceName: "CSMS #66027027",
-  source: "https://content.govdelivery.com/accounts/USDHSCBP/bulletins/3ef7e13",
-  codesImpacted: indiaRussianOilConsumptionExclusions,
-  dateReleased: new Date("2025-08-25"),
-  notes:
-    "This specific announcement is only applicable to imports from India. Additional exemptions exist if the import is a qualified donation, information materials, or chapter 98 provision. Certain exemptions come with exclusions which you can see by clicking the HTS Code in the results table. Always contact a customs broker for proper import assistance and guidance.",
-};
-
-const section232SteelAndAluminumChanges: TariffUpdate = {
-  name: "Additional Articles of Steel and Aluminum",
-  sourceName: "Federal Register",
-  source:
-    "https://www.federalregister.gov/public-inspection/2025-15819/adoption-and-procedures-of-the-section-232-steel-and-aluminum-tariff-inclusions-process",
-  codesImpacted: august_15_FR_232_impacted_codes_list,
-  dateReleased: new Date("2025-08-19"),
-};
-
-const reciprocalTariffExclusions: TariffUpdate = {
-  name: "Exemptions for Reciprocal Tariffs",
-  sourceName: "USITC - Chapter 99 Subchapter 3 Note 2(v)(iii) ",
-  source: "https://hts.usitc.gov/search?query=9903.01.32",
-  codesImpacted: reciprocalTariffExclusionsList,
-  dateReleased: new Date("2025-04-05"),
-};
-
-const tariffAnnouncementLists: TariffUpdate[] = [
-  section232SteelAndAluminumChanges,
-  indiaOilBasedExclusions,
-  reciprocalTariffExclusions,
-];
 
 export default function Home() {
   const CHARACTER_LIMIT = 500;
@@ -135,6 +137,7 @@ export default function Home() {
   const [selectedTariffAnnouncementIndex, setSelectedTariffAnnouncementIndex] =
     useState(0);
   const [showHelpModal, setShowHelpModal] = useState(false);
+  const [showSaveCodesModal, setShowSaveCodesModal] = useState(false);
   const [htsCodeSets, setHtsCodeSets] = useState<HtsCodeSet[]>([]);
   const [selectedHtsCodeSetId, setSelectedHtsCodeSetId] = useState<
     string | null
@@ -142,25 +145,54 @@ export default function Home() {
   const [savingCodes, setSavingCodes] = useState(false);
   const [lastActionWasSubmit, setLastActionWasSubmit] = useState(false);
 
-  useEffect(() => {
-    // If we're setting this for the first time
-    if (htsCodeSets?.length > 0) {
-      console.log("htsCodeSets", htsCodeSets);
-      const { id, codes } = htsCodeSets[0];
-      setSelectedHtsCodeSetId(id);
-      setInputValue(codes.join(", "));
-      const results = getResults(codes.join(", "));
-      setResults(results);
-      setLastActionWasSubmit(true);
+  const handleSaveCodes = async (name: string, description: string) => {
+    try {
+      setSavingCodes(true);
+      setShowSaveCodesModal(false);
+
+      if (selectedHtsCodeSetId) {
+        console.log("updating existing set");
+        // todo just update the existing set
+      } else {
+        console.log("creating new set");
+        const newHtsCodeSet = await createHtsCodeSet(
+          inputValue,
+          name,
+          description
+        );
+        const htsCodeSets = await fetchHtsCodeSetsForUser(user!.id);
+        setHtsCodeSets(htsCodeSets);
+        setSelectedHtsCodeSetId(newHtsCodeSet.id);
+        toast.success("Codes saved successfully!");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Error saving codes");
+    } finally {
+      setSavingCodes(false);
     }
-  }, [htsCodeSets]);
+  };
+
+  // useEffect(() => {
+  //   // If we're setting this for the first time
+  //   if (htsCodeSets?.length > 0) {
+  //     console.log("htsCodeSets", htsCodeSets);
+  //     const { id, codes } = htsCodeSets[0];
+  //     setSelectedHtsCodeSetId(id);
+  //     setInputValue(codes.join(", "));
+  //     const results = getResults(codes.join(", "));
+  //     setResults(results);
+  //     setLastActionWasSubmit(true);
+  //   }
+  // }, [htsCodeSets]);
 
   useEffect(() => {
     const fetchHtsCodeSets = async () => {
       if (user) {
         const htsCodeSets = await fetchHtsCodeSetsForUser(user.id);
         setHtsCodeSets(htsCodeSets);
-        setSelectedHtsCodeSetId(htsCodeSets[0].id);
+        // Don't automatically select the first item - start with no selection
+        setSelectedHtsCodeSetId(null);
       }
     };
 
@@ -277,7 +309,10 @@ export default function Home() {
     setLastActionWasSubmit(true);
   };
 
-  const handleInputChange = (inputValue: string) => {
+  const handleInputChange = (
+    inputValue: string,
+    clearSelectedSet: boolean = false
+  ) => {
     // Preserve the user's input format as-is
     const characterLimitedInput =
       inputValue.length >= CHARACTER_LIMIT
@@ -285,9 +320,9 @@ export default function Home() {
         : inputValue;
     setInputValue(characterLimitedInput);
     setLastActionWasSubmit(false);
-    setResults([]);
 
-    if (inputValue === "") {
+    if (clearSelectedSet) {
+      setResults([]);
       setSelectedHtsCodeSetId(null);
     }
   };
@@ -316,7 +351,16 @@ export default function Home() {
     });
   };
 
-  const handleHtsCodeSetSelection = (htsCodeSetId: string) => {
+  const handleHtsCodeSetSelection = (htsCodeSetId: string | null) => {
+    if (htsCodeSetId === null) {
+      // Clear selection
+      setSelectedHtsCodeSetId(null);
+      setInputValue("");
+      setResults([]);
+      setLastActionWasSubmit(false);
+      return;
+    }
+
     const selectedSet = htsCodeSets.find((set) => set.id === htsCodeSetId);
     if (selectedSet) {
       // Join the codes with commas and spaces for readability
@@ -345,22 +389,31 @@ export default function Home() {
       ) : (
         <div className="w-full max-w-5xl mx-auto flex flex-col px-8 gap-4 sm:gap-8">
           {/* Header */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-1">
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-100">
-                Tariff Impact Checker
-              </h1>
+              <div className="flex justify-between items-center">
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-100">
+                  Tariff Impact Checker
+                </h1>
+
+                <button className="hidden sm:block btn btn-sm btn-primary">
+                  Want Impact Notifications?
+                </button>
+              </div>
               <div className="ml-1">
-                <SecondaryText value="Instantly see if any of your imports are impacted by recent tariff announcements." />
+                <SecondaryText value="Instantly see if your imports are impacted by tariff announcements." />
               </div>
             </div>
+            <button className="sm:hidden btn btn-sm btn-accent">
+              Want Notifications?
+            </button>
           </div>
 
           {/* Inputs */}
           <div className="flex flex-col gap-4 sm:gap-8">
             <div className="flex flex-col gap-2">
               <PrimaryLabel value="Select Tariff Announcement" />
-              <TariffUpdateDropdown
+              <TariffAnnouncementDropdown
                 tariffUpdates={tariffAnnouncementLists}
                 selectedIndex={selectedTariffAnnouncementIndex}
                 onSelectionChange={setSelectedTariffAnnouncementIndex}
@@ -389,33 +442,6 @@ export default function Home() {
                     ?
                   </button>
                 </div>
-                <div className="flex gap-2 items-center">
-                  <div className="flex flex-wrap items-center">
-                    <p className="text-xs font-bold text-gray-500">Examples:</p>
-                    {singleElementExamples.map((example) => (
-                      <button
-                        key={`${example}-example`}
-                        className="btn btn-xs text-base-content/80 hover:text-primary btn-link"
-                        onClick={() => {
-                          handleInputChange(example);
-                        }}
-                      >
-                        {example}
-                      </button>
-                    ))}
-                    {listExamples.map((example) => (
-                      <button
-                        key={`${example.name}-example`}
-                        className="btn btn-xs text-base-content/80 hover:text-primary btn-link"
-                        onClick={() => {
-                          handleInputChange(example.list);
-                        }}
-                      >
-                        {example.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
                 {loadingUser ? (
                   <LoadingIndicator />
                 ) : (
@@ -427,21 +453,16 @@ export default function Home() {
                           ? htsCodeSets.findIndex(
                               (set) => set.id === selectedHtsCodeSetId
                             )
-                          : 0
+                          : null
                       }
                       onSelectionChange={(index) => {
-                        handleHtsCodeSetSelection(htsCodeSets[index].id);
+                        if (index === null) {
+                          handleHtsCodeSetSelection(null);
+                        } else {
+                          handleHtsCodeSetSelection(htsCodeSets[index].id);
+                        }
                       }}
                     />
-                    // <Select
-                    //   options={htsCodeSets.map((set, i) => ({
-                    //     label: `${set.name || `${new Date(set.created_at).toLocaleDateString()}`} (${set.codes.length} ${set.codes.length === 1 ? "code" : "codes"})`,
-                    //     value: set.id,
-                    //   }))}
-                    //   selectedValue={selectedHtsCodeSetId}
-                    //   onSelectionChange={handleHtsCodeSetSelection}
-                    //   placeholder="Select from your saved sets of codes"
-                    // />
                   )
                 )}
               </div>
@@ -454,6 +475,22 @@ export default function Home() {
                 isValid={inputValue.length >= 8}
                 disabled={lastActionWasSubmit}
               />
+              <div className="flex gap-2 items-center">
+                <div className="flex flex-wrap items-center">
+                  <p className="text-xs font-bold text-gray-500">Try Me!</p>
+                  {exampleLists.map((example) => (
+                    <button
+                      key={`${example.name}-example`}
+                      className="btn btn-xs text-base-content/80 hover:text-primary btn-link"
+                      onClick={() => {
+                        handleInputChange(example.list, true);
+                      }}
+                    >
+                      {example.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -461,47 +498,26 @@ export default function Home() {
           {results && results.length > 0 && (
             <div>
               <div className="flex flex-col gap-2 bg-base-100 bg-transparent">
-                <div className="w-full flex justify-between items-end">
+                <div className="w-full flex-col sm:flex-row flex justify-between sm:items-end gap-2">
                   <PrimaryLabel value="Impact Check Results" />
-                  <div className="flex gap-2">
+                  <div className="w-full sm:w-auto flex gap-2">
                     <button
-                      className="btn btn-sm btn-primary w-44"
-                      onClick={async () => {
-                        try {
-                          setSavingCodes(true);
-                          if (selectedHtsCodeSetId) {
-                            console.log("updating existing set");
-                            // todo just update the existing set
-                          } else {
-                            console.log("creating new set");
-                            const newHtsCodeSet =
-                              await createHtsCodeSet(inputValue);
-                            const htsCodeSets = await fetchHtsCodeSetsForUser(
-                              user.id
-                            );
-                            setHtsCodeSets(htsCodeSets);
-                            setSelectedHtsCodeSetId(newHtsCodeSet.id);
-                          }
-                        } catch (error) {
-                          console.error(error);
-                          toast.error("Error saving codes");
-                        } finally {
-                          setSavingCodes(false);
-                        }
-                      }}
+                      disabled={!!selectedHtsCodeSetId}
+                      className="grow btn btn-sm btn-primary sm:w-32"
+                      onClick={() => setShowSaveCodesModal(true)}
                     >
                       {savingCodes ? (
-                        <span className="loading loading-spinner loading-xs"></span>
+                        <div className="flex gap-1 items-center">
+                          <span>Saving</span>
+                          <span className="loading loading-spinner loading-xs"></span>
+                        </div>
                       ) : (
-                        <span>
-                          {selectedHtsCodeSetId
-                            ? "Update Set"
-                            : "Save Codes as Set"}
-                        </span>
+                        <span>Save List</span>
                       )}
                     </button>
-                    <button className="btn btn-sm btn-secondary">
-                      Automate your Checks
+
+                    <button className="grow btn btn-sm btn-primary">
+                      Automate your Checks?
                     </button>
                   </div>
                 </div>
@@ -570,6 +586,12 @@ export default function Home() {
       <Modal isOpen={showHelpModal} setIsOpen={setShowHelpModal}>
         <TariffImpactInputHelp />
       </Modal>
+      <CreateListModal
+        isOpen={showSaveCodesModal}
+        setIsOpen={setShowSaveCodesModal}
+        onSave={handleSaveCodes}
+        isLoading={savingCodes}
+      />
     </main>
   );
 }

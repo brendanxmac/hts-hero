@@ -18,7 +18,7 @@ interface TariffUpdateDropdownProps {
   onSelectionChange: (index: number) => void;
 }
 
-export default function TariffUpdateDropdown({
+export default function TariffAnnouncementDropdown({
   tariffUpdates,
   selectedIndex,
   onSelectionChange,
@@ -38,9 +38,8 @@ export default function TariffUpdateDropdown({
       <Listbox value={selectedIndex} onChange={onSelectionChange}>
         <div className="relative">
           <Listbox.Button className="relative w-full cursor-default rounded-lg border-2 border-base-content/20 bg-base-100 py-3 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-primary-300 sm:text-sm">
-            <p className="truncate text-base font-semibold text-white">
-              {selectedUpdate.name} | {selectedUpdate.sourceName} |{" "}
-              {formatDate(selectedUpdate.dateReleased)}
+            <p className=" text-base font-semibold text-white">
+              {selectedUpdate.name}
             </p>
 
             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -70,11 +69,9 @@ export default function TariffUpdateDropdown({
                   {({ selected }) => (
                     <div className="flex flex-col gap-2">
                       <div className="flex items-start justify-between">
-                        <div className="flex flex-col gap-1 flex-1 min-w-0">
+                        <div className="flex flex-col flex-1 min-w-0">
                           {/* Name - largest, clearest text */}
-                          <p className={`text-base font-bold truncate`}>
-                            {update.name}
-                          </p>
+                          <p className={`text-base font-bold`}>{update.name}</p>
 
                           {/* Source Name - smaller beneath name */}
                           <p className="text-sm text-gray-400">
@@ -83,7 +80,7 @@ export default function TariffUpdateDropdown({
                               href={update.source}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="link link-primary truncate"
+                              className="link link-primary "
                               onClick={(e) => e.stopPropagation()}
                             >
                               {update.sourceName}

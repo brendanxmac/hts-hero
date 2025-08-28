@@ -41,7 +41,7 @@ const Demo = ({
   };
 
   return (
-    <section className="bg-none max-w-6xl mx-auto bg-base-100 px-4 sm:px-6 md:px-8 lg:px-12 py-8 sm:py-16 md:py-24">
+    <section className="bg-none max-w-4xl mx-auto bg-base-100 px-4 sm:px-6 md:px-8 lg:px-12 py-8 sm:py-16 md:py-24">
       <div className="flex flex-col items-center justify-center gap-4">
         {/* Hero Text */}
         <div className="flex flex-col gap-4 text-center">
@@ -70,7 +70,7 @@ const Demo = ({
             ></video>
           ) : (
             <Image
-              className="rounded-lg border-2 border-neutral-content/20"
+              className=""
               priority={true}
               src={media.mediaPath}
               alt={media.altText}

@@ -2,7 +2,6 @@
 
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { TertiaryText } from "./TertiaryText";
-import { ArrowUpIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { classNames } from "../utilities/style";
 
 interface Props {
@@ -10,7 +9,7 @@ interface Props {
   label?: string;
   placeholder: string;
   onSubmit?: (value: string) => void;
-  onChange?: (value: string) => void;
+  onChange?: (value: string, clearSelectedSet?: boolean) => void;
   isValid?: boolean;
   validationMessage?: string;
   characterLimit?: number;
@@ -33,7 +32,7 @@ export default function SimpleTextInput({
   const [showBottomFade, setShowBottomFade] = useState(false);
 
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>): void => {
-    onChange && onChange(e.target.value);
+    onChange && onChange(e.target.value, true);
     resizeTextarea();
   };
 
@@ -82,7 +81,7 @@ export default function SimpleTextInput({
   return (
     <div
       className={classNames(
-        "w-full flex flex-col gap-2 bg-base-100 border-2 border-base-content/20 rounded-md relative",
+        "w-full min-w-0 flex flex-col gap-2 bg-base-100 border-2 border-base-content/20 rounded-md relative",
         value.length > characterLimit ? "border-warning" : undefined
       )}
       onClick={(e) => {
@@ -91,7 +90,7 @@ export default function SimpleTextInput({
       }}
     >
       {label && <TertiaryText value={label} />}
-      <div className="w-full flex flex-col rounded-md bg-base-100 px-4 py-2 gap-2">
+      <div className="w-full flex flex-col rounded-md bg-base-100 px-2 sm:px-4 py-2 gap-2">
         <div className="relative">
           <textarea
             ref={textareaRef}
@@ -101,7 +100,7 @@ export default function SimpleTextInput({
             rows={1}
             onChange={handleInputChange}
             onScroll={handleScroll}
-            className="textarea text-base w-full max-h-48 min-h-10 rounded-none resize-none bg-inherit text-white placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-1 overflow-y-auto"
+            className="textarea text-sm sm:text-base w-full max-h-48 min-h-10 rounded-none resize-none bg-inherit text-white placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-1 overflow-y-auto"
           ></textarea>
 
           {/* Top fade overlay */}
@@ -114,11 +113,13 @@ export default function SimpleTextInput({
             <div className="absolute bottom-0 left-0 right-0 h-7 bg-gradient-to-t from-base-100 to-transparent pointer-events-none" />
           )}
         </div>
-        <div className="w-full flex justify-between">
-          <div className="flex gap-2 items-center bg-base-100/90 backdrop-blur-sm px-2 py-1 rounded-md border border-base-content/80">
+        {/* Responsive bottom section */}
+        <div className="w-full flex flex-col xs:flex-row gap-2 xs:justify-between">
+          {/* Character count - more compact on small screens */}
+          <div className="flex gap-1 sm:gap-2 items-center bg-base-100/90 backdrop-blur-sm px-1 sm:px-2 py-1 rounded-md border border-base-content/80 w-fit">
             <p
               className={classNames(
-                "text-white text-xs",
+                "text-white text-xs whitespace-nowrap",
                 value.length >= characterLimit ? "font-bold" : undefined
               )}
             >
@@ -129,33 +130,37 @@ export default function SimpleTextInput({
               >
                 {value.length}
               </span>
-              {` / ${characterLimit} characters`}
+              <span>{` / ${characterLimit} characters`}</span>
             </p>
           </div>
-          <div className="flex gap-2">
-            <button
-              className="btn btn-sm btn-neutral"
-              disabled={value.length === 0}
-              onClick={() => {
-                onChange && onChange("");
-                textareaRef.current?.focus();
-              }}
-            >
-              Clear
-            </button>
 
-            {onSubmit && (
+          {/* Buttons - stack vertically on very small screens, horizontally on larger */}
+          {value.length > 0 && (
+            <div className="flex flex-col xs:flex-row gap-2 w-full sm:w-auto justify-end">
               <button
-                className="btn btn-sm btn-primary"
-                disabled={isValid === false || disabled}
+                className="btn btn-sm btn-neutral w-full xs:w-auto text-xs sm:text-sm min-h-8 sm:min-h-9"
+                disabled={value.length === 0}
                 onClick={() => {
-                  onSubmit(value);
+                  onChange && onChange("", true);
+                  textareaRef.current?.focus();
                 }}
               >
-                Submit
+                Clear
               </button>
-            )}
-          </div>
+
+              {onSubmit && (
+                <button
+                  className="btn btn-sm btn-primary w-full xs:w-auto text-xs sm:text-sm min-h-8 sm:min-h-9"
+                  disabled={isValid === false || disabled}
+                  onClick={() => {
+                    onSubmit(value);
+                  }}
+                >
+                  Submit
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

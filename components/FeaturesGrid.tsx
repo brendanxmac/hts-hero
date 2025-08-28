@@ -48,7 +48,7 @@ export const tariffImpactFeatures = [
             </label>
             <ul className="bg-base-100 border border-base-content/40 rounded-xl hover:bg-base-100 px-2 text-xs sm:text-sm md:text-base">
               <li className="p-3 rounded-sm truncate">
-                <p>Items from China</p>
+                <p>"Russian Oil" Exemptions | Aug 27th</p>
               </li>
               <li className="p-3 rounded-sm truncate">
                 <p>Reciprocal Tariff Exemptions | April 5th</p>
