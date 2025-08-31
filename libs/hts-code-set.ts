@@ -64,22 +64,20 @@ export const createHtsCodeSet = async (
   return createHtsCodeSetResponse;
 };
 
-export const fetchHtsCodeSetsForUser = async (
-  userId: string
-): Promise<HtsCodeSet[]> => {
-  const fetchHtsCodeSetsForUserResponse: HtsCodeSet[] = await apiClient.get(
-    `/hts-code-sets?user_id=${userId}`
-  );
+export const fetchHtsCodeSetsForUser = async (): Promise<HtsCodeSet[]> => {
+  const fetchHtsCodeSetsForUserResponse: HtsCodeSet[] =
+    await apiClient.get(`/hts-code-sets`);
 
   return fetchHtsCodeSetsForUserResponse;
 };
 
 export const updateHtsCodeSet = async (
-  htsCodeSet: string[]
+  setId: string,
+  htsCodes: string[]
 ): Promise<HtsCodeSet> => {
   const updateHtsCodeSetResponse: HtsCodeSet = await apiClient.post(
     "/hts-code-sets/update",
-    { htsCodeSet }
+    { id: setId, htsCodes }
   );
 
   return updateHtsCodeSetResponse;

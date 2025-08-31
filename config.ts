@@ -2,6 +2,59 @@ import themes from "daisyui/src/theming/themes";
 import { ConfigProps, PricingPlan, PricingPlanI } from "./types/config";
 import { StripePaymentMode } from "./libs/stripe";
 
+const tariffImpactFree: PricingPlanI = {
+  name: PricingPlan.TARIFF_IMPACT_STARTER,
+  description: "A Few Checks",
+  mode: StripePaymentMode.SUBSCRIPTION,
+  price: 0,
+  features: [{ name: "Import HTS Codes" }, { name: "50 Checks/Month" }],
+};
+
+const tariffImpactStarter: PricingPlanI = {
+  name: PricingPlan.TARIFF_IMPACT_STANDARD,
+  description: "Tariff Impact Essentials",
+  mode: StripePaymentMode.SUBSCRIPTION,
+  price: 60,
+  priceAnchor: 120,
+  features: [
+    { name: "Import HTS Codes" },
+    { name: "300 Checks/Month" },
+    { name: "Notifications" },
+    // {
+    //   name: "Tariff Analyzer",
+    //   details: "See full tariff details & explore exemptions",
+    // },
+  ],
+};
+
+const tariffImpactPro: PricingPlanI = {
+  name: PricingPlan.TARIFF_IMPACT_PRO,
+  description: "The Ultimate Tariff Solution",
+  mode: StripePaymentMode.SUBSCRIPTION,
+  price: 100,
+  priceAnchor: 200,
+  isFeatured: true,
+  features: [
+    { name: "Import HTS Codes" },
+    { name: "Unlimited Checks" },
+    { name: "Notifications" },
+    {
+      name: "Financial Impact Analysis",
+      details: "See full tariff details & explore exemptions",
+    },
+    // { name: "Generate & share branded reports" }, // TODO: This could be great
+  ],
+};
+
+// const tariffImpactPremium: PricingPlanI = {
+//   name: PricingPlan.TARIFF_IMPACT_PREMIUM,
+//   description: "The Ultimate Tariff Change Solution",
+//   mode: StripePaymentMode.SUBSCRIPTION,
+//   price: 39,
+//   priceAnchor: 60,
+//   features: [{ name: "Everything in Pro, Plus:" }],
+// };
+
 const proPlan: PricingPlanI = {
   name: PricingPlan.PRO,
   description: "The Classification Assistant for Customs Brokers",
@@ -115,6 +168,7 @@ const config: ConfigProps = {
     // Create multiple plans in your Stripe dashboard, then add them here. You can add as many plans as you want, just make sure to add the priceId
     classifierPlans: [proPlan],
     conversionPlans: [proPlan],
+    tariffImpactPlans: [tariffImpactFree, tariffImpactStarter, tariffImpactPro],
   },
   // aws: {
   //   // If you use AWS S3/Cloudfront, put values in here

@@ -73,6 +73,10 @@ export enum PricingPlan {
   FIVE_DAY_PASS = "5-Day Pass",
   PRO = "Pro",
   PREMIUM = "Premium",
+  TARIFF_IMPACT_STARTER = "Starter",
+  TARIFF_IMPACT_STANDARD = "Standard",
+  TARIFF_IMPACT_PRO = "Pro",
+  TARIFF_IMPACT_PREMIUM = "Premium",
 }
 
 export interface PricingFeatureI {
@@ -107,6 +111,7 @@ export interface ConfigProps {
     // importerPlans: PricingPlanI[];
     classifierPlans: PricingPlanI[];
     conversionPlans: PricingPlanI[];
+    tariffImpactPlans: PricingPlanI[];
   };
   aws?: {
     bucket?: string;

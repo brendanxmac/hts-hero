@@ -61,7 +61,7 @@ export const tariffImpactFeatures = [
                 </div>
               </li>
               <li className="w-full p-3 truncate flex gap-2 items-center justify-between">
-                <p>Furniture Tariffs | Coming Soon</p>
+                <p>Furniture Tariffs | Pending</p>
               </li>
             </ul>
           </div>
@@ -140,15 +140,12 @@ const FeaturesGrid = () => {
       <div className="w-full flex flex-col max-w-7xl lg:min-w-5xl gap-4 sm:gap-8">
         <div className="flex flex-col gap-2 md:gap-8 text-center lg:text-left lg:flex-1 items-center">
           <h1 className="text-white font-extrabold text-3xl md:text-5xl lg:text-6xl tracking-tight md:-mb-4 max-w-5xl text-center mx-auto">
-            <span className="text-primary">Instantly</span> See If New <br />
+            <span className="text-primary">Instantly</span> Know When & How New{" "}
+            <br />
             Tariffs Affect Your Imports
-            {/* <span className="text-primary">Instantly</span> Know If New Tariffs
-            Affect your Bottom Line{" "} */}
           </h1>
           <p className="text-sm md:text-lg text-neutral-300 leading-relaxed max-w-5xl mx-auto">
-            {/* Save your bottom line and your sanity with copy & paste */}
-            Skip the surprises, delays, and error-prone manual checks
-            {/* Be sure your bottom line is safe and quickly take action */}
+            Save your bottom line and your sanity with copy & paste
           </p>
 
           <div className="flex justify-center lg:justify-start">

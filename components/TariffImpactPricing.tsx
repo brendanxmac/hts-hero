@@ -148,7 +148,7 @@ const TariffImpactPricing = () => {
             <div
               key={index}
               className={classNames(
-                "relative w-full max-w-lg",
+                "relative w-full max-w-xl",
                 plan.isFeatured && "border-2 border-primary rounded-lg",
                 !plan.isFeatured && "border-2 border-base-content/20 rounded-lg"
               )}
@@ -183,9 +183,9 @@ const TariffImpactPricing = () => {
                     )} */}
                     <p className="text-2xl font-bold">{plan.name}</p>
 
-                    {plan.description && (
+                    {/* {plan.description && (
                       <p className="text-base-content/80">{plan.description}</p>
-                    )}
+                    )} */}
                   </div>
                 </div>
                 <div className="flex gap-2 items-center">
@@ -201,7 +201,9 @@ const TariffImpactPricing = () => {
                     </div>
                   )}
                   {plan.price === 0 ? (
-                    <p className={`text-4xl tracking-tight font-extrabold`}>
+                    <p
+                      className={`text-4xl py-1.5 tracking-tight font-extrabold`}
+                    >
                       Free
                     </p>
                   ) : (
@@ -213,15 +215,11 @@ const TariffImpactPricing = () => {
                       </p>
                       {plan.mode === StripePaymentMode.SUBSCRIPTION && (
                         <div className="flex flex-col">
-                          {/* <p className="pl-2 text-sm text-base-content/80 font-semibold">
-                            / month / user
-                          </p> */}
                           <p className="pl-1 pb-1 text-sm text-base-content/80 font-semibold">
-                            / user / month
+                            / month
                           </p>
                         </div>
                       )}
-                      {/* </div> */}
                     </div>
                   )}
                 </div>
@@ -285,28 +283,18 @@ const TariffImpactPricing = () => {
           ))}
         </div>
 
-        {/* {customerType === "importer" && (
-          <div className="mt-16 flex flex-col gap-2 justify-center items-center">
-            <div className="flex gap-1 items-center">
-              <ShieldCheckIcon className="w-6 h-6 text-secondary" />
-              <h3 className="text-lg font-extrabold text-secondary">
-                Customs Code Approval Guarantee
-              </h3>
-            </div>
-            <p className="text-white">
-              We guarantee codes that customs will accept or you get a full
-              refund!
-            </p>
-            <p className="text-sm text-base-content/80">
-              <sup>
-                See{" "}
-                <Link href="/terms" className="hover:underline">
-                  terms and conditions
-                </Link>
-              </sup>{" "}
+        {/* Enterprise Plan -- aka lets talk */}
+        {/* <div className="flex flex-col md:flex-row justify-between md:items-center gap-3 w-full max-w-3xl mx-auto border-2 border-base-content/20 rounded-lg mt-4 p-6">
+          <div className="flex flex-col">
+            <p className="text-2xl text-white font-bold">Enterprise</p>
+            <p className="text-base-content/80">
+              Want the Impact Checker for your whole team?
             </p>
           </div>
-        )} */}
+          <button className="btn btn-primary md:btn-wide w-full">
+            Lets Talk!
+          </button>
+        </div> */}
       </div>
     </section>
   );

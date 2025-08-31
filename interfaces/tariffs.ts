@@ -33,3 +33,16 @@ export interface TariffSet {
   exceptionCodes: Set<string>;
   tariffs: UITariff[];
 }
+
+export interface TariffImpactCheck {
+  id: string; // uuid
+  user_id: string; // uuid
+  codes: string[]; // stored as jsonb
+  num_codes: number; // generated column
+  created_at: string; // ISO timestamp
+}
+
+export type NewTariffImpactCheck = Omit<
+  TariffImpactCheck,
+  "id" | "num_codes" | "created_at"
+>;

@@ -10,6 +10,7 @@ import { tariffImpactFaqList } from "@/constants/faq";
 import CTA from "@/components/CTA";
 import TariffImpactHeader from "@/components/TariffImpactHeader";
 import { UpcomingTariffsList } from "../../../components/UpcomingTariffsList";
+import TariffImpactPricing from "../../../components/TariffImpactPricing";
 
 const withoutTariffImpact: Task[] = [
   {
@@ -57,47 +58,14 @@ export default function Home() {
       </Suspense>
       <main>
         <FeaturesGrid />
-        <Demo
-          standoutPlacement="start"
-          titleStandout="Instantly"
-          // title="Tariff Impact"
-          title="Know If New Tariffs Affect Your Imports"
-          // subtitle="Customized for your imports"
-          subtitle="Skip the late surprises, delays, and error-prone manual checks"
-          ctaText="Try it Now!"
-          ctaLink="/tariffs/impact-checker"
-          media={{
-            title: "Tariff Impact Notification",
-            description: "Tariff Impact Notification",
-            mediaType: "image",
-            mediaPath: "/notification.svg",
-            mediaFormat: "svg",
-            altText: "Tariff Impact Notification",
-          }}
-        />
-        <Demo
-          standoutPlacement="end"
-          titleStandout="Notifications"
-          // title="Tariff Impact"
-          title="Automatic"
-          // subtitle="Customized for your imports"
-          subtitle="When your imports are impacted by tariff announcements"
-          ctaText="Try it Now!"
-          ctaLink="/tariffs/impact-checker"
-          media={{
-            title: "Tariff Impact Notification",
-            description: "Tariff Impact Notification",
-            mediaType: "image",
-            mediaPath: "/notification.svg",
-            mediaFormat: "svg",
-            altText: "Tariff Impact Notification",
-          }}
-        />
+
+        <UpcomingTariffsList />
+
         <Demo
           standoutPlacement="end"
           titleStandout=""
           title="Copy, Paste, Clarity ✅"
-          subtitle="Grab your codes and paste them in for instant answers"
+          subtitle="Enter the HTS codes for your imports and instantly see if new tariffs affect them"
           ctaText="Try it Now!"
           ctaLink="/tariffs/impact-checker"
           media={{
@@ -109,8 +77,64 @@ export default function Home() {
             altText: "Tariff Impacts",
           }}
         />
-        <UpcomingTariffsList />
-        <WithWithout
+
+        <Demo
+          standoutPlacement="end"
+          titleStandout="Financial Impact"
+          title="See Your"
+          subtitle="Get the full tariff breakdown & explore possible exemptions for your imports"
+          ctaText="Try it Now!"
+          ctaLink="/tariffs/impact-checker"
+          media={{
+            title: "Tariff Impacts",
+            description: "Tariff Impacts Demo",
+            mediaType: "video",
+            mediaPath: "/impact-3.mp4",
+            mediaFormat: "mp4",
+            altText: "Tariff Impacts",
+          }}
+        />
+
+        <div className="hidden md:block">
+          <Demo
+            standoutPlacement="end"
+            titleStandout="Ahead"
+            title="Stay One Step"
+            subtitle="Get notified, see the impacts, and take action to save your bottom-line"
+            ctaText="Try it Now!"
+            ctaLink="/tariffs/impact-checker"
+            media={{
+              title: "Tariff Impact Notification",
+              description: "Tariff Impact Notification",
+              mediaType: "image",
+              mediaPath: "/tariff-impact-notification-desktop.svg",
+              mediaFormat: "svg",
+              altText: "Tariff Impact Notification",
+            }}
+          />
+        </div>
+        <div className="md:hidden">
+          <Demo
+            standoutPlacement="start"
+            titleStandout="Get Notified"
+            title="When Updates Happen"
+            subtitle="Get notified, see the impacts, and take action to save your bottom-line"
+            ctaText="Try it Now!"
+            ctaLink="/tariffs/impact-checker"
+            media={{
+              title: "Tariff Impact Notification",
+              description: "Tariff Impact Notification",
+              mediaType: "image",
+              mediaPath: "/tariff-impact-notification-mobile.svg",
+              mediaFormat: "svg",
+              altText: "Tariff Impact Notification",
+            }}
+          />
+        </div>
+
+        <TariffImpactPricing />
+
+        {/* <WithWithout
           title="No Waiting, Guessing, or Limits"
           subtitle="Get answers in seconds for all your imports"
           ctaText="Check your Imports"
@@ -125,7 +149,7 @@ export default function Home() {
           }}
           withList={withTariffImpact}
           withoutList={withoutTariffImpact}
-        />
+        /> */}
         <CTA
           title="Get Clarity in the Chaos"
           subtitle="Find out if you're affected by new tariffs now!"

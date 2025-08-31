@@ -164,7 +164,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
             </div>
           </div>
 
-          <h1 className="text-lg md:text-3xl lg:text-4xl text-white font-bold">
+          <h1 className="text-2xl md:text-3xl lg:text-4xl text-white font-bold">
             {description}
           </h1>
         </div>
@@ -203,7 +203,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
             </div>
           )}
 
-          {shouldShowBaseTariffDetails && (
+          {!shouldShowBaseTariffDetails && (
             <div className="w-full flex flex-col gap-4">
               <SecondaryLabel value="Base Tariff Details" color={Color.WHITE} />
 

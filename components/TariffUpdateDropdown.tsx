@@ -38,7 +38,7 @@ export default function TariffAnnouncementDropdown({
       <Listbox value={selectedIndex} onChange={onSelectionChange}>
         <div className="relative">
           <Listbox.Button className="relative w-full cursor-default rounded-lg border-2 border-base-content/20 bg-base-100 py-3 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-primary-300 sm:text-sm">
-            <p className=" text-base font-semibold text-white">
+            <p className="text-sm md:text-base font-semibold text-white">
               {selectedUpdate.name}
             </p>
 
