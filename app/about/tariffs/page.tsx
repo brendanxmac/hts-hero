@@ -59,12 +59,10 @@ export default function Home() {
       <main>
         <FeaturesGrid />
 
-        <UpcomingTariffsList />
-
         <Demo
           standoutPlacement="end"
           titleStandout=""
-          title="Copy, Paste, Clarity ✅"
+          title="Copy, Paste, Tariff Clarity 😌"
           subtitle="Enter the HTS codes for your imports and instantly see if new tariffs affect them"
           ctaText="Try it Now!"
           ctaLink="/tariffs/impact-checker"
@@ -132,6 +130,8 @@ export default function Home() {
           />
         </div>
 
+        <UpcomingTariffsList />
+
         <TariffImpactPricing />
 
         {/* <WithWithout
@@ -150,12 +150,12 @@ export default function Home() {
           withList={withTariffImpact}
           withoutList={withoutTariffImpact}
         /> */}
-        <CTA
+        {/* <CTA
           title="Get Clarity in the Chaos"
           subtitle="Find out if you're affected by new tariffs now!"
           ctaText="Check your Imports"
           ctaLink="/tariffs/impact-checker"
-        />
+        /> */}
         <FAQ faqItems={tariffImpactFaqList} />
       </main>
       <ClassifierFooter />

@@ -28,7 +28,10 @@ import { useHts } from "../contexts/HtsContext";
 import { WorkflowStep } from "../enums/hts";
 import { PDFProps } from "../interfaces/ui";
 import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
-import { userHasActivePurchase } from "../libs/supabase/purchase";
+import {
+  Product,
+  userHasActivePurchaseForProduct,
+} from "../libs/supabase/purchase";
 import { isWithinPastNDays } from "../utilities/time";
 import { useUser } from "../contexts/UserContext";
 import { SecondaryText } from "./SecondaryText";
@@ -76,18 +79,20 @@ export const CandidateElement = ({
 
   const handleClassificationCompleted = async () => {
     const userCreatedDate = user ? new Date(user.created_at) : null;
-    const isTrialUser = userCreatedDate
-      ? isWithinPastNDays(userCreatedDate, 14)
+    const isClassifyTrialUser = userCreatedDate
+      ? isWithinPastNDays(userCreatedDate, 7)
       : false;
 
-    const isPayingUser = user ? await userHasActivePurchase(user.id) : false;
+    const isPayingUser = user
+      ? await userHasActivePurchaseForProduct(user.id, Product.CLASSIFY)
+      : false;
 
     // Track classification completed event
     trackEvent(MixpanelEvent.CLASSIFICATION_COMPLETED, {
       hts_code: element.htsno,
       item: classification.articleDescription,
       is_paying_user: isPayingUser,
-      is_trial_user: isTrialUser,
+      is_trial_user: isClassifyTrialUser,
     });
   };
 

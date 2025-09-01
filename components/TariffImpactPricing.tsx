@@ -2,19 +2,12 @@ import config from "@/config";
 import { classNames } from "../utilities/style";
 import { PricingFeatureI, PricingPlan } from "../types";
 import ButtonCheckout from "./ButtonCheckout";
-import { AboutPage } from "../enums/classify";
 import { StripePaymentMode } from "../libs/stripe";
 import Link from "next/link";
 
 // <Pricing/> displays the pricing plans for your app
 // It's your Stripe config in config.js.stripe.plans[] that will be used to display the plans
 // <ButtonCheckout /> renders a button that will redirect the user to Stripe checkout called the /api/stripe/create-checkout API endpoint with the correct priceId
-
-interface PricingProps {
-  customerType: AboutPage;
-  // setBuyAttempt?: (buyAttempt: BuyAttempt) => void;
-  // setShowItsFree?: (show: boolean) => void;
-}
 
 export const getFeatureSupportingLabel = (feature: PricingFeatureI) => {
   if (feature.comingSoon) {
@@ -85,51 +78,15 @@ const getPricingHeadline = () => {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        {/* <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-6xl max-w-6xl mx-auto tracking-relaxed">
-          Get Instant <span className="text-primary">Clarity</span> on Tariff
-          Changes
-        </h2> */}
-        {/* <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-6xl max-w-6xl mx-auto tracking-relaxed">
-          Manage Tariff Changes On{" "}
-          <span className="text-primary">Auto-Pilot</span>
-        </h2> */}
         <h2 className="text-white font-extrabold text-3xl sm:text-4xl md:text-6xl max-w-6xl mx-auto tracking-relaxed">
-          <span className="text-primary">Automate</span> Tariff Impact Checks
+          Get <span className="text-primary">Instant Clarity</span> When
+          <br /> New Tariffs are Announced
         </h2>
-        {/* <h2 className="text-white font-extrabold text-3xl sm:text-4xl md:text-6xl max-w-6xl mx-auto tracking-relaxed">
-          Tariff Impact Checks on{" "}
-          <span className="text-primary">Auto-Pilot</span>
-        </h2> */}
-        {/* <p className="font-medium lg:text-lg">
-          So you can take early action & save your bottom line
-        </p> */}
         <p className="text-sm md:text-lg text-neutral-300 font-medium mt-2">
           Join the forward-thinking importers & brokerages who are automating
           their tariff impact checks
         </p>
       </div>
-      {/* <div className="flex flex-col justify-center items-center">
-        <div className="flex items-center gap-1">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-            stroke="currentColor"
-            className="size-8 animate-pulse text-secondary"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-            />
-          </svg>
-
-          <p className="text-xl lg:text-2xl font-bold text-secondary">
-            50% Off Until October 1st!
-          </p>
-        </div>
-      </div> */}
     </div>
   );
 };
@@ -176,16 +133,11 @@ const TariffImpactPricing = () => {
               >
                 <div className="flex justify-between items-center gap-4">
                   <div className="flex flex-col">
-                    {/* {plan.name === PricingPlan.PREMIUM && (
-                      <span className="mb-4 w-fit bg-neutral-700 px-2 py-1 rounded-md text-stone-300 font-semibold">
-                        Coming Soon
-                      </span>
-                    )} */}
                     <p className="text-2xl font-bold">{plan.name}</p>
 
-                    {/* {plan.description && (
+                    {plan.description && (
                       <p className="text-base-content/80">{plan.description}</p>
-                    )} */}
+                    )}
                   </div>
                 </div>
                 <div className="flex gap-2 items-center">
@@ -250,31 +202,18 @@ const TariffImpactPricing = () => {
                     ))}
                   </ul>
                 )}
-                {!plan.isCompetitor && plan.name !== PricingPlan.PREMIUM && (
+                {!plan.isCompetitor && (
                   <div className="space-y-2">
-                    {plan.name === PricingPlan.FREE_TRIAL ? (
+                    {plan.planIdentifier ===
+                    PricingPlan.TARIFF_IMPACT_STARTER ? (
                       <Link
-                        href="/signin"
+                        href="/tariffs/impact-checker"
                         className="btn bg-primary/80 hover:bg-white hover:text-primary text-white rounded-md btn-block group"
                       >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth="1.5"
-                          stroke="currentColor"
-                          className="w-5 h-5 fill-white group-hover:fill-primary group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-200"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"
-                          />
-                        </svg>
-                        Start Free Trial
+                        Try Now!
                       </Link>
                     ) : (
-                      <ButtonCheckout itemId={plan.name} />
+                      <ButtonCheckout plan={plan} />
                     )}
                   </div>
                 )}

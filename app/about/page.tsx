@@ -70,7 +70,7 @@ export default function Home() {
           title="Classify Anything in"
           titleStandout="Minutes"
           standoutPlacement="end"
-          subtitle="With the platform designed to make customs brokers unreasonably productive"
+          subtitle="The classification assistant designed to make customs brokers unreasonably productive"
           ctaText="Try it Now!"
           ctaLink="/app"
           media={{

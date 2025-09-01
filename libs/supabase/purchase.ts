@@ -42,26 +42,72 @@ export const createPurchase = async (
   return data;
 };
 
-export const userHasActivePurchase = async (userId: string) => {
-  const supabase = createSupabaseClient();
-
+export const userHasActivePurchaseForProduct = async (
+  userId: string,
+  product: Product
+) => {
+  const userPurchases = await fetchPurchasesForUser(userId);
   // Add 2-day buffer to prevent lockouts during subscription renewal delays
-  const bufferDate = new Date();
-  bufferDate.setDate(bufferDate.getDate() - 2);
+  const expirationDateWithBuffer = new Date();
+  expirationDateWithBuffer.setDate(expirationDateWithBuffer.getDate() - 2);
 
-  const { data: purchases, error } = await supabase
-    .from("purchases")
-    .select("*")
-    .eq("user_id", userId)
-    .gte("expires_at", bufferDate.toISOString());
+  const activePurchases = userPurchases.filter(
+    (purchase) => new Date(purchase.expires_at) > expirationDateWithBuffer
+  );
 
-  if (error) {
-    console.error("Failed to fetch active purchases:", error);
-    throw error;
+  if (product === Product.CLASSIFY) {
+    return activePurchases.some(
+      (purchase) => purchase.product_name === PricingPlan.CLASSIFY_PRO
+    );
   }
 
-  return purchases.length > 0;
+  if (product === Product.TARIFF_IMPACT) {
+    return activePurchases.some(
+      (purchase) =>
+        purchase.product_name === PricingPlan.TARIFF_IMPACT_PRO ||
+        purchase.product_name === PricingPlan.TARIFF_IMPACT_STANDARD
+    );
+  }
+
+  return false;
 };
+
+export const getProductForPlan = (plan: PricingPlan) => {
+  switch (plan) {
+    case PricingPlan.CLASSIFY_PRO:
+      return Product.CLASSIFY;
+    case PricingPlan.TARIFF_IMPACT_STARTER:
+    case PricingPlan.TARIFF_IMPACT_STANDARD:
+    case PricingPlan.TARIFF_IMPACT_PRO:
+      return Product.TARIFF_IMPACT;
+  }
+};
+
+export enum Product {
+  CLASSIFY = "classify",
+  TARIFF_IMPACT = "tariff_impact",
+}
+
+// export const userHasActivePurchase = async (userId: string) => {
+//   const supabase = createSupabaseClient();
+
+//   // Add 2-day buffer to prevent lockouts during subscription renewal delays
+//   const bufferDate = new Date();
+//   bufferDate.setDate(bufferDate.getDate() - 2);
+
+//   const { data: purchases, error } = await supabase
+//     .from("purchases")
+//     .select("*")
+//     .eq("user_id", userId)
+//     .gte("expires_at", bufferDate.toISOString());
+
+//   if (error) {
+//     console.error("Failed to fetch active purchases:", error);
+//     throw error;
+//   }
+
+//   return purchases.length > 0;
+// };
 
 export const getLatestPurchase = async (
   userId: string
@@ -98,7 +144,7 @@ export const fetchPurchasesForUser = async (userId: string) => {
     throw error;
   }
 
-  return purchases;
+  return purchases as Purchase[];
 };
 
 export const getActiveTariffImpactPurchases = async (userId: string) => {

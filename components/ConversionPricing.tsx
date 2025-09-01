@@ -168,7 +168,7 @@ const ConversionPricing = () => {
               >
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-col">
-                    <p className="text-2xl font-bold">{plan.name}</p>
+                    <p className="text-2xl font-bold">{plan.planIdentifier}</p>
                     {plan.description && (
                       <p className="text-base-content/80">{plan.description}</p>
                     )}
@@ -234,7 +234,7 @@ const ConversionPricing = () => {
                 )}
                 {!plan.isCompetitor && (
                   <div className="space-y-2">
-                    <ButtonCheckout itemId={plan.name} />
+                    <ButtonCheckout plan={plan} />
                   </div>
                 )}
               </div>

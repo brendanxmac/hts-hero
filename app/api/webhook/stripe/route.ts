@@ -20,26 +20,21 @@ import { sendPurchaseConfirmationEmail } from "../../../../emails/purchase-confi
 
 const getPlanExpirationDate = (plan: PricingPlan) => {
   switch (plan) {
-    case PricingPlan.ONE_DAY_PASS:
-      return getIsoDateInFuture(1);
-    case PricingPlan.FIVE_DAY_PASS:
-      return getIsoDateInFuture(5);
-    case PricingPlan.PRO:
-    case PricingPlan.PREMIUM:
+    case PricingPlan.CLASSIFY_PRO:
+    case PricingPlan.TARIFF_IMPACT_STANDARD:
+    case PricingPlan.TARIFF_IMPACT_PRO:
       return getIsoDateInFuture(31);
   }
 };
 
 const getPlanFromPriceId = (priceId: string): PricingPlan | null => {
   switch (priceId) {
-    case process.env.STRIPE_ONE_DAY_PASS_PRICE_ID:
-      return PricingPlan.ONE_DAY_PASS;
-    case process.env.STRIPE_FIVE_DAY_PASS_PRICE_ID:
-      return PricingPlan.FIVE_DAY_PASS;
+    case process.env.STRIPE_TARIFF_IMPACT_STANDARD_PRICE_ID:
+      return PricingPlan.TARIFF_IMPACT_STANDARD;
+    case process.env.STRIPE_TARIFF_IMPACT_PRO_PRICE_ID:
+      return PricingPlan.TARIFF_IMPACT_PRO;
     case process.env.STRIPE_PRO_PRICE_ID:
-      return PricingPlan.PRO;
-    case process.env.STRIPE_PREMIUM_PRICE_ID:
-      return PricingPlan.PREMIUM;
+      return PricingPlan.CLASSIFY_PRO;
     default:
       return null;
   }

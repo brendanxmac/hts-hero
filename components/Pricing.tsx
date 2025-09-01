@@ -82,10 +82,6 @@ export const getFeatureIcon = (feature: PricingFeatureI) => {
 };
 
 const getPricingPlans = (customerType: AboutPage) => {
-  // if (customerType === AboutPage.IMPORTER) {
-  //   return config.stripe.importerPlans;
-  // }
-
   if (customerType === AboutPage.CLASSIFIER) {
     return config.stripe.classifierPlans;
   }
@@ -95,36 +91,14 @@ const getPricingPlans = (customerType: AboutPage) => {
 
 const getPricingHeadline = () => {
   return (
-    <div className="flex flex-col gap-8">
-      <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-6xl max-w-4xl mx-auto tracking-relaxed">
-        Save <span className="text-primary">hours</span> on classification, for
-        less than your daily coffee
+    <div className="flex flex-col gap-4 lg:gap-6">
+      <h2 className="text-white font-bold text-2xl sm:text-3xl md:text-4xl lg:text-5xl max-w-4xl mx-auto tracking-relaxed">
+        <span className="text-primary">Save Hours</span> on Classification,
+        Conquer Tariffs, Delight your Clients
       </h2>
-      <div className="flex flex-col justify-center items-center">
-        <p className="text-xl font-bold text-primary">
-          25% Off Your First Month!
-        </p>
-        <div className="flex items-center gap-1">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-            stroke="currentColor"
-            className="size-5 animate-pulse text-secondary"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-            />
-          </svg>
-
-          <p className="text-sm text-secondary font-semibold">
-            Offer valid until <span className="underline">September 1st</span>
-          </p>
-        </div>
-      </div>
+      <h3 className="text-sm md:text-base lg:text-lg">
+        For less than $3 per day
+      </h3>
     </div>
   );
 };
@@ -171,12 +145,7 @@ const Pricing = ({ customerType }: PricingProps) => {
               >
                 <div className="flex justify-between items-center gap-4">
                   <div className="flex flex-col">
-                    {/* {plan.name === PricingPlan.PREMIUM && (
-                      <span className="mb-4 w-fit bg-neutral-700 px-2 py-1 rounded-md text-stone-300 font-semibold">
-                        Coming Soon
-                      </span>
-                    )} */}
-                    <p className="text-2xl font-bold">{plan.name}</p>
+                    <p className="text-2xl font-bold">{plan.planIdentifier}</p>
 
                     {plan.description && (
                       <p className="text-base-content/80">{plan.description}</p>
@@ -247,11 +216,11 @@ const Pricing = ({ customerType }: PricingProps) => {
                     ))}
                   </ul>
                 )}
-                {!plan.isCompetitor && plan.name !== PricingPlan.PREMIUM && (
+                {!plan.isCompetitor && (
                   <div className="space-y-2">
-                    {plan.name === PricingPlan.FREE_TRIAL ? (
+                    {/* {plan.planIdentifier === PricingPlan.CLASSIFY_TRIAL ? (
                       <Link
-                        href="/signin"
+                        href="/app"
                         className="btn bg-primary/80 hover:bg-white hover:text-primary text-white rounded-md btn-block group"
                       >
                         <svg
@@ -268,11 +237,12 @@ const Pricing = ({ customerType }: PricingProps) => {
                             d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"
                           />
                         </svg>
-                        Start Free Trial
+                        Try Now!
                       </Link>
                     ) : (
-                      <ButtonCheckout itemId={plan.name} />
-                    )}
+                      <ButtonCheckout plan={plan} />
+                    )} */}
+                    <ButtonCheckout plan={plan} />
                   </div>
                 )}
               </div>

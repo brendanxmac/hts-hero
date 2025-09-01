@@ -6,7 +6,10 @@ import TextInput from "../TextInput";
 import { useEffect, useState } from "react";
 import { TertiaryLabel } from "../TertiaryLabel";
 import { SecondaryLabel } from "../SecondaryLabel";
-import { userHasActivePurchase } from "../../libs/supabase/purchase";
+import {
+  Product,
+  userHasActivePurchaseForProduct,
+} from "../../libs/supabase/purchase";
 import { useUser } from "../../contexts/UserContext";
 import { isWithinPastNDays } from "../../utilities/time";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
@@ -78,7 +81,10 @@ export const DescriptionStep = ({
                 : false;
 
               const isPayingUser = user
-                ? await userHasActivePurchase(user.id)
+                ? await userHasActivePurchaseForProduct(
+                    user.id,
+                    Product.CLASSIFY
+                  )
                 : false;
 
               if (isPayingUser || isTrialUser) {

@@ -1,4 +1,5 @@
 import { TariffImpactCheck } from "../interfaces/tariffs";
+import { PricingPlan } from "../types";
 import apiClient from "./api";
 import { parseHtsCodeSet } from "./hts-code-set";
 

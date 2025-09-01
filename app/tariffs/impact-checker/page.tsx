@@ -479,7 +479,7 @@ export default function Home() {
                 {checkLimit - numChecksThisMonth === 1 ? "" : "s"} Left
               </p>
 
-              <button className="link link-primary text-sm">
+              <button className="link link-primary text-sm font-bold">
                 Get Unlimited Checks
               </button>
             </div>

@@ -3,7 +3,8 @@ import { ConfigProps, PricingPlan, PricingPlanI } from "./types/config";
 import { StripePaymentMode } from "./libs/stripe";
 
 const tariffImpactFree: PricingPlanI = {
-  name: PricingPlan.TARIFF_IMPACT_STARTER,
+  name: "Starter",
+  planIdentifier: PricingPlan.TARIFF_IMPACT_STARTER,
   description: "A Few Checks",
   mode: StripePaymentMode.SUBSCRIPTION,
   price: 0,
@@ -11,7 +12,8 @@ const tariffImpactFree: PricingPlanI = {
 };
 
 const tariffImpactStarter: PricingPlanI = {
-  name: PricingPlan.TARIFF_IMPACT_STANDARD,
+  name: "Standard",
+  planIdentifier: PricingPlan.TARIFF_IMPACT_STANDARD,
   description: "Tariff Impact Essentials",
   mode: StripePaymentMode.SUBSCRIPTION,
   price: 60,
@@ -28,7 +30,8 @@ const tariffImpactStarter: PricingPlanI = {
 };
 
 const tariffImpactPro: PricingPlanI = {
-  name: PricingPlan.TARIFF_IMPACT_PRO,
+  name: "Pro",
+  planIdentifier: PricingPlan.TARIFF_IMPACT_PRO,
   description: "The Ultimate Tariff Solution",
   mode: StripePaymentMode.SUBSCRIPTION,
   price: 100,
@@ -46,21 +49,22 @@ const tariffImpactPro: PricingPlanI = {
   ],
 };
 
-// const tariffImpactPremium: PricingPlanI = {
-//   name: PricingPlan.TARIFF_IMPACT_PREMIUM,
-//   description: "The Ultimate Tariff Change Solution",
+// const classifyTrial: PricingPlanI = {
+//   name: "Free Trial",
+//   planIdentifier: PricingPlan.CLASSIFY_TRIAL,
+//   description: "Try Classify Pro for 7 Days",
 //   mode: StripePaymentMode.SUBSCRIPTION,
-//   price: 39,
-//   priceAnchor: 60,
-//   features: [{ name: "Everything in Pro, Plus:" }],
+//   price: 0,
+//   features: [{ name: "All features of Classify Pro, for 7 Days" }],
 // };
 
-const proPlan: PricingPlanI = {
-  name: PricingPlan.PRO,
+const classifyPro: PricingPlanI = {
+  name: "Pro",
+  planIdentifier: PricingPlan.CLASSIFY_PRO,
   description: "The Classification Assistant for Customs Brokers",
   mode: StripePaymentMode.SUBSCRIPTION,
-  price: 60,
-  priceAnchor: 80,
+  price: 80,
+  priceAnchor: 120,
   isFeatured: true,
   features: [
     { name: "Finds Headings" },
@@ -69,85 +73,6 @@ const proPlan: PricingPlanI = {
     { name: "Generates Reports" },
     { name: "Fetches Notes" },
     { name: "Finds CROSS Rulings" },
-    {
-      name: "Determines Tariff Update Impacts",
-      details:
-        "Instantly see if any of your imports are affected by tariff changes",
-    },
-  ],
-};
-
-const premiumPlan: PricingPlanI = {
-  name: PricingPlan.PREMIUM,
-  description: "Your Supercharged Classification Assistant",
-  mode: StripePaymentMode.SUBSCRIPTION,
-  price: 30,
-  priceAnchor: 60,
-  features: [
-    { name: "Everything in Pro, Plus:" },
-    {
-      name: "Classification History",
-      details: "For easy access, reference, & auditability",
-      comingSoon: true,
-    },
-    {
-      name: "Branded Reports",
-      details: "Your branding & logo on every report",
-      comingSoon: true,
-    },
-    {
-      name: "Sharable Classifications",
-      details:
-        "Secure view-only links to classifications for clients & customs",
-      comingSoon: true,
-    },
-    {
-      name: "Tariff Finder",
-      details: "Cut through the noise & nail your tariff calculations",
-      comingSoon: true,
-    },
-  ],
-};
-
-const freeTrial: PricingPlanI = {
-  name: PricingPlan.FREE_TRIAL,
-  description: "Try HTS Hero Pro free for 7 days",
-  mode: StripePaymentMode.PAYMENT,
-  price: 0,
-  priceAnchor: 40,
-  features: [
-    { name: "Finds Headings" },
-    { name: "Analyzes Candidates" },
-    { name: "Generates Reports" },
-    { name: "Fetches Notes" },
-    {
-      name: "Finds CROSS Rulings",
-    },
-    {
-      name: "Enhanced HTS Explorer",
-    },
-    {
-      name: "Built-in PDF Viewer",
-    },
-  ],
-};
-
-const fiveDayPassPlan: PricingPlanI = {
-  name: PricingPlan.FIVE_DAY_PASS,
-  description: "Try HTS Hero Pro for 5 Days",
-  mode: StripePaymentMode.PAYMENT,
-  price: 20,
-  priceAnchor: 40,
-  features: [
-    {
-      name: "Includes everything in Pro",
-    },
-    {
-      name: "One-Time Payment",
-    },
-    {
-      name: "Unlimited Access for 5 Days",
-    },
   ],
 };
 
@@ -166,8 +91,8 @@ const config: ConfigProps = {
   },
   stripe: {
     // Create multiple plans in your Stripe dashboard, then add them here. You can add as many plans as you want, just make sure to add the priceId
-    classifierPlans: [proPlan],
-    conversionPlans: [proPlan],
+    classifierPlans: [classifyPro],
+    conversionPlans: [classifyPro],
     tariffImpactPlans: [tariffImpactFree, tariffImpactStarter, tariffImpactPro],
   },
   // aws: {

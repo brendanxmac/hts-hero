@@ -31,6 +31,12 @@ const AboutHeader = () => {
         </div>
 
         <div className="flex justify-center lg:gap-12 lg:items-center">
+          <Link
+            href="/about/tariffs#pricing"
+            className="link link-hover font-bold hover:text-primary"
+          >
+            Pricing
+          </Link>
           <ButtonSignin text="Check your Imports" />
         </div>
       </nav>
