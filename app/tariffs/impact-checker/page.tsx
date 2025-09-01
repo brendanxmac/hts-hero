@@ -25,7 +25,6 @@ import { useUser } from "../../../contexts/UserContext";
 import { HtsCodeSet } from "../../../interfaces/hts";
 import HtsCodeSetDropdown from "../../../components/HtsCodeSetDropdown";
 import {
-  exampleLists,
   tariffAnnouncementLists,
   TariffImpactResult,
 } from "../../../tariffs/announcements/announcements";
@@ -41,6 +40,7 @@ import {
 import { PricingPlan } from "../../../types";
 import { classNames } from "../../../utilities/style";
 import { SaveCodeListModal } from "../../../components/SaveCodesListModal";
+import { findCodeSet, codeSetMatchesString } from "../../../utilities/hts";
 
 export default function Home() {
   const CHARACTER_LIMIT = 3000;
@@ -50,8 +50,8 @@ export default function Home() {
   const [inputValue, setInputValue] = useState("");
   const [results, setResults] = useState<TariffImpactResult[]>([]);
   const [fetchingTariffImpactChecks, setFetchingTariffImpactChecks] =
-    useState(false);
-  const [fetchingHtsCodeSets, setFetchingHtsCodeSets] = useState(false);
+    useState(true);
+  const [fetchingHtsCodeSets, setFetchingHtsCodeSets] = useState(true);
   const [tariffImpactChecks, setTariffImpactChecks] = useState<
     TariffImpactCheck[]
   >([]);
@@ -68,26 +68,39 @@ export default function Home() {
   const [activeTariffImpactPurchase, setActiveTariffImpactPurchase] =
     useState<Purchase | null>(null);
 
-  const handleSaveCodes = async (name: string, description: string) => {
+  // Update exist set of codes
+  const updateCodeSet = async () => {
+    try {
+      setSavingCodes(true);
+      const parsedCodes = parseHtsCodeSet(inputValue);
+      await updateHtsCodeSet(selectedHtsCodeSetId, parsedCodes);
+      const updatedCodeSets = await fetchHtsCodeSetsForUser();
+      setHtsCodeSets(updatedCodeSets);
+      toast.success("Code set updated successfully");
+    } catch (error) {
+      console.error(error);
+      toast.error("Error updating code set");
+    } finally {
+      setSavingCodes(false);
+    }
+  };
+
+  // Create new set of codes
+  const createCodeSet = async (name: string, description: string) => {
     try {
       setSavingCodes(true);
       setShowSaveCodesModal(false);
 
-      if (selectedHtsCodeSetId) {
-        console.log("updating existing set");
-        // todo just update the existing set
-      } else {
-        console.log("creating new set");
-        const newHtsCodeSet = await createHtsCodeSet(
-          inputValue,
-          name,
-          description
-        );
-        const htsCodeSets = await fetchHtsCodeSetsForUser();
-        setHtsCodeSets(htsCodeSets);
-        setSelectedHtsCodeSetId(newHtsCodeSet.id);
-        toast.success("Codes saved successfully!");
-      }
+      console.log("creating new code set");
+      const newHtsCodeSet = await createHtsCodeSet(
+        inputValue,
+        name,
+        description
+      );
+      const htsCodeSets = await fetchHtsCodeSetsForUser();
+      setHtsCodeSets(htsCodeSets);
+      setSelectedHtsCodeSetId(newHtsCodeSet.id);
+      toast.success("Codes saved successfully!");
     } catch (error) {
       console.error(error);
       toast.error("Error saving codes");
@@ -95,6 +108,27 @@ export default function Home() {
       setSavingCodes(false);
     }
   };
+
+  useEffect(() => {
+    const fetchTariffImpactChecks = async () => {
+      try {
+        setFetchingTariffImpactChecks(true);
+        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        const tariffImpactChecksLast30Days =
+          await fetchTariffImpactChecksForUser(thirtyDaysAgo);
+        setTariffImpactChecks(tariffImpactChecksLast30Days);
+      } catch {
+        toast.error("Error fetching tariff impact checks");
+      } finally {
+        setFetchingTariffImpactChecks(false);
+      }
+    };
+
+    if (results.length > 0) {
+      fetchTariffImpactChecks();
+    }
+    // Refetch tariff impact checks when results change
+  }, [results]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -108,8 +142,12 @@ export default function Home() {
     const fetchTariffImpactChecks = async () => {
       try {
         setFetchingTariffImpactChecks(true);
-        const tariffImpactChecks = await fetchTariffImpactChecksForUser();
-        setTariffImpactChecks(tariffImpactChecks);
+        const sinceThirtyDaysAgo = new Date(
+          Date.now() - 30 * 24 * 60 * 60 * 1000
+        );
+        const tariffImpactChecksLast30Days =
+          await fetchTariffImpactChecksForUser(sinceThirtyDaysAgo);
+        setTariffImpactChecks(tariffImpactChecksLast30Days);
         setFetchingTariffImpactChecks(false);
       } catch {
         toast.error("Error fetching tariff impact checks");
@@ -238,16 +276,8 @@ export default function Home() {
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      const currentDate = new Date();
-      const thirtyDaysAgo = new Date(
-        currentDate.getTime() - 30 * 24 * 60 * 60 * 1000
-      );
-      // Check if the user has hit the limit based on their plan
-      const tariffImpactChecksThisMonth = await fetchTariffImpactChecksForUser(
-        thirtyDaysAgo,
-        currentDate
-      );
-      const totalChecksThisMonth = tariffImpactChecksThisMonth.reduce(
+      // // Check if the user has hit the limit based on their plan
+      const totalChecksThisMonth = tariffImpactChecks.reduce(
         (acc, check) => acc + check.num_codes,
         0
       );
@@ -283,8 +313,8 @@ export default function Home() {
       console.log("New Impact Check", tariffImpactCheck);
 
       // setFetchingTariffImpactChecks(true);
-      const tariffImpactChecks = await fetchTariffImpactChecksForUser();
-      setTariffImpactChecks(tariffImpactChecks);
+      // const tariffImpactChecks = await fetchTariffImpactChecksForUser();
+      // setTariffImpactChecks(tariffImpactChecks);
       // setFetchingTariffImpactChecks(false);
 
       trackEvent(MixpanelEvent.TARIFF_IMPACT_CHECK, {
@@ -302,7 +332,10 @@ export default function Home() {
     }
   };
 
-  const handleInputChange = (inputValue: string) => {
+  const handleInputChange = (
+    inputValue: string,
+    clearSelectedSet?: boolean
+  ) => {
     // Preserve the user's input format as-is
     const characterLimitedInput =
       inputValue.length >= CHARACTER_LIMIT
@@ -311,33 +344,20 @@ export default function Home() {
     setInputValue(characterLimitedInput);
     setLastActionWasSubmit(false);
 
-    const inputAsCodes = parseHtsCodeSet(inputValue);
+    const codeSetThatMatchesInput = htsCodeSets.find((set) =>
+      codeSetMatchesString(inputValue, set)
+    );
 
-    // Check if the current input exactly matches any saved HTS code set
-    const matchingCodeSet = htsCodeSets.find((set) => {
-      if (inputAsCodes.length !== set.codes.length) {
-        return false;
+    console.log("Code set that matches input", codeSetThatMatchesInput);
+
+    if (clearSelectedSet) {
+      setSelectedHtsCodeSetId(null);
+    } else {
+      // Update the selected code set if we found a match
+      if (codeSetThatMatchesInput) {
+        setSelectedHtsCodeSetId(codeSetThatMatchesInput.id);
       }
-
-      // Sort both arrays to ensure order doesn't matter
-      const sortedInputCodes = [...inputAsCodes].sort();
-      const sortedSetCodes = [...set.codes].sort();
-
-      return sortedInputCodes.every(
-        (code, index) => code === sortedSetCodes[index]
-      );
-    });
-
-    console.log("Matching code set", matchingCodeSet);
-
-    // Update the selected code set if we found a match
-    if (matchingCodeSet) {
-      console.log("here here");
-      setSelectedHtsCodeSetId(matchingCodeSet.id);
     }
-    //  else {
-    //   setSelectedHtsCodeSetId(null);
-    // }
   };
 
   const getResults = (htsCodesString: string) => {
@@ -413,6 +433,20 @@ export default function Home() {
 
   const checkLimit = getCheckLimitForUser(activeTariffImpactPurchase);
 
+  const shouldShowSaveCodes = () => {
+    const isOneValidParsedCode = parseHtsCodeSet(inputValue).length > 0;
+
+    if (!selectedHtsCodeSetId) {
+      return isOneValidParsedCode;
+    } else {
+      const selectedSet = findCodeSet(selectedHtsCodeSetId, htsCodeSets);
+
+      if (!selectedSet) return false;
+
+      return !codeSetMatchesString(inputValue, selectedSet);
+    }
+  };
+
   return (
     <main className="w-screen h-full flex flex-col bg-base-300 py-6 overflow-y-auto">
       <div className="w-full max-w-5xl mx-auto flex flex-col px-8 gap-4 sm:gap-8">
@@ -427,7 +461,7 @@ export default function Home() {
             </div>
           </div>
 
-          {fetchingTariffImpactChecks ? (
+          {fetchingTariffImpactChecks && tariffImpactChecks.length === 0 ? (
             <LoadingIndicator spinnerOnly />
           ) : checkLimit === Infinity ? null : (
             <div className="flex flex-col items-center">
@@ -514,26 +548,13 @@ export default function Home() {
               value={inputValue}
               placeholder="3808.94.10.00, 0202.20.80.00, etc..."
               characterLimit={CHARACTER_LIMIT}
-              // showSaveCodes={!!selectedHtsCodeSetId}
+              showSaveCodes={shouldShowSaveCodes()}
               savingCodes={savingCodes}
               onSaveCodes={async () => {
                 if (!selectedHtsCodeSetId) {
                   setShowSaveCodesModal(true);
                 } else {
-                  // Update exist set of codes
-                  try {
-                    setSavingCodes(true);
-                    const parsedCodes = parseHtsCodeSet(inputValue);
-                    await updateHtsCodeSet(selectedHtsCodeSetId, parsedCodes);
-                    const updatedCodeSets = await fetchHtsCodeSetsForUser();
-                    setHtsCodeSets(updatedCodeSets);
-                    toast.success("Code set updated successfully");
-                  } catch (error) {
-                    console.error(error);
-                    toast.error("Error updating code set");
-                  } finally {
-                    setSavingCodes(false);
-                  }
+                  updateCodeSet();
                 }
               }}
               onSubmit={handleSubmit}
@@ -549,7 +570,7 @@ export default function Home() {
               loading={loading}
             />
             <div className="flex gap-2 items-center">
-              <div className="flex flex-wrap items-center">
+              {/* <div className="flex flex-wrap items-center">
                 <p className="text-xs font-bold text-gray-500">Try Me!</p>
                 {exampleLists.map((example) => (
                   <button
@@ -562,7 +583,7 @@ export default function Home() {
                     {example.name}
                   </button>
                 ))}
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -646,7 +667,7 @@ export default function Home() {
       <SaveCodeListModal
         isOpen={showSaveCodesModal}
         setIsOpen={setShowSaveCodesModal}
-        onSave={handleSaveCodes}
+        onSave={createCodeSet}
         isLoading={savingCodes}
       />
     </main>

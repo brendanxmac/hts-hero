@@ -123,7 +123,7 @@ export default function HtsCodeSetDropdown({
                             {htsCodeSet.name || "Untitled List"}
                           </h3>
                           <p className="text-sm text-gray-400 italic">
-                            {htsCodeSet.description || "N/A"}
+                            {htsCodeSet.description || null}
                           </p>
                         </div>
 
