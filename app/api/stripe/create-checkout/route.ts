@@ -58,26 +58,18 @@ export async function POST(req: NextRequest) {
       }
     };
 
-    const getPromotionCode = () => {
-      return process.env.STRIPE_HALF_OFF_PROMO_ID;
-    };
-
     const successUrl = `${process.env.BASE_URL}/signin`;
     const priceId = getPriceId(itemId);
     const mode = getMode(itemId);
-    const promotionCode = getPromotionCode();
 
     console.log("cancelUrl", cancelUrl);
-
     console.log(`User: ${user?.id}`);
     console.log("priceId", priceId);
     console.log("mode", mode);
-    console.log("promotionCode", promotionCode);
 
     const stripeSessionURL = await createCheckout({
       priceId,
       mode,
-      promotionCode,
       successUrl,
       cancelUrl: cancelUrl || `${process.env.BASE_URL}/about`,
       // If user is logged in, it will pass the user ID to the Stripe Session so it can be retrieved in the webhook later
