@@ -5,6 +5,7 @@ import apiClient from "@/libs/api";
 import { PricingPlan, PricingPlanI } from "../types";
 import { useUser } from "../contexts/UserContext";
 import {
+  fetchPurchasesForUser,
   getProductForPlan,
   userHasActivePurchaseForProduct,
 } from "../libs/supabase/purchase";
@@ -12,6 +13,7 @@ import toast from "react-hot-toast";
 
 interface Props {
   plan: PricingPlanI;
+  currentPlan?: PricingPlan;
 }
 
 const getBuyButtonText = (plan: PricingPlanI) => {
@@ -32,7 +34,7 @@ const getBuyButtonText = (plan: PricingPlanI) => {
 // It calls the /api/stripe/create-checkout route with the priceId, successUrl and cancelUrl
 // Users must be authenticated. It will prefill the Checkout data with their email and/or credit card (if any)
 // You can also change the mode to "subscription" if you want to create a subscription instead of a one-time payment
-const ButtonCheckout = ({ plan }: Props) => {
+const ButtonCheckout = ({ plan, currentPlan }: Props) => {
   const { user } = useUser();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -54,7 +56,11 @@ const ButtonCheckout = ({ plan }: Props) => {
     const userAlreadyHasAccess =
       user && (await userHasActivePurchaseForProduct(user.id, product));
 
-    if (userAlreadyHasAccess) {
+    const userAttemptingUpgradeFromStandardToPro =
+      plan.planIdentifier === PricingPlan.TARIFF_IMPACT_PRO &&
+      currentPlan === PricingPlan.TARIFF_IMPACT_STANDARD;
+
+    if (userAlreadyHasAccess && !userAttemptingUpgradeFromStandardToPro) {
       toast.success("You already have an active purchase");
       setIsLoading(false);
       return;

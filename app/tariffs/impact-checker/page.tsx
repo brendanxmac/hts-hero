@@ -25,6 +25,7 @@ import { useUser } from "../../../contexts/UserContext";
 import { HtsCodeSet } from "../../../interfaces/hts";
 import HtsCodeSetDropdown from "../../../components/HtsCodeSetDropdown";
 import {
+  exampleLists,
   tariffAnnouncementLists,
   TariffImpactResult,
 } from "../../../tariffs/announcements/announcements";
@@ -41,6 +42,7 @@ import { PricingPlan } from "../../../types";
 import { classNames } from "../../../utilities/style";
 import { SaveCodeListModal } from "../../../components/SaveCodesListModal";
 import { findCodeSet, codeSetMatchesString } from "../../../utilities/hts";
+import TariffConversionPricing from "../../../components/TariffConversionPricing";
 
 export default function Home() {
   const CHARACTER_LIMIT = 3000;
@@ -59,6 +61,7 @@ export default function Home() {
     useState(0);
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [showSaveCodesModal, setShowSaveCodesModal] = useState(false);
+  const [showPricingModal, setShowPricingModal] = useState(false);
   const [htsCodeSets, setHtsCodeSets] = useState<HtsCodeSet[]>([]);
   const [selectedHtsCodeSetId, setSelectedHtsCodeSetId] = useState<
     string | null
@@ -226,7 +229,7 @@ export default function Home() {
 
     if (impacted === null) {
       return (
-        <td>
+        <td className="hidden sm:table-cell">
           <TertiaryText value={error || "Code Unsupported"} />
         </td>
       );
@@ -234,13 +237,13 @@ export default function Home() {
 
     if (!codeExists) {
       return (
-        <td>
+        <td className="hidden sm:table-cell">
           <TertiaryText value="Code Does Not Exist" />
         </td>
       );
     }
 
-    return <td>-</td>;
+    return <td className="hidden sm:table-cell">-</td>;
   };
 
   const getImpactIndicator = (result: TariffImpactResult) => {
@@ -282,13 +285,10 @@ export default function Home() {
         0
       );
 
-      console.log("Impact Checks for User This Month");
-      console.log(totalChecksThisMonth);
-
       if (totalChecksThisMonth >= checkLimit) {
         // Show popup instead to get them to convert
         toast.error(
-          `You have reached your limit of ${checkLimit} checks this month`
+          `You have reached your limit of ${checkLimit} checks this month. Upgrade to get more checks.`
         );
         return;
       }
@@ -310,12 +310,6 @@ export default function Home() {
       }
 
       const tariffImpactCheck = await createTariffImpactCheck(inputValue);
-      console.log("New Impact Check", tariffImpactCheck);
-
-      // setFetchingTariffImpactChecks(true);
-      // const tariffImpactChecks = await fetchTariffImpactChecksForUser();
-      // setTariffImpactChecks(tariffImpactChecks);
-      // setFetchingTariffImpactChecks(false);
 
       trackEvent(MixpanelEvent.TARIFF_IMPACT_CHECK, {
         numCodes: results.length,
@@ -399,16 +393,6 @@ export default function Home() {
       const codesString = selectedSet.codes.join(", ");
       setInputValue(codesString);
       setSelectedHtsCodeSetId(htsCodeSetId);
-
-      // const results = getResults(codesString);
-
-      // setResults(results);
-      // setLastActionWasSubmit(true);
-      // trackEvent(MixpanelEvent.TARIFF_IMPACT_CHECK_FROM_SET, {
-      //   numCodes: results.length,
-      //   tariffList:
-      //     tariffAnnouncementLists[selectedTariffAnnouncementIndex].name,
-      // });
     }
   };
 
@@ -419,11 +403,11 @@ export default function Home() {
 
   const getCheckLimitForUser = (purchase: Purchase | null) => {
     if (purchase === null) {
-      return 1000;
+      return 50;
     }
 
     if (purchase.product_name === PricingPlan.TARIFF_IMPACT_STANDARD) {
-      return 200;
+      return 400;
     }
 
     if (purchase.product_name === PricingPlan.TARIFF_IMPACT_PRO) {
@@ -449,10 +433,10 @@ export default function Home() {
 
   return (
     <main className="w-screen h-full flex flex-col bg-base-300 py-6 overflow-y-auto">
-      <div className="w-full max-w-5xl mx-auto flex flex-col px-8 gap-4 sm:gap-8">
+      <div className="w-full max-w-5xl mx-auto flex flex-col px-4 sm:px-6 gap-8">
         {/* Header */}
-        <div className="flex justify-between items-start">
-          <div className="flex flex-col">
+        <div className="flex justify-between md:items-center flex-col-reverse md:flex-row gap-4">
+          <div className="flex flex-col md:gap-2">
             <h1 className="text-2xl md:text-3xl font-bold text-gray-100">
               Tariff Impact Checker
             </h1>
@@ -464,7 +448,7 @@ export default function Home() {
           {fetchingTariffImpactChecks && tariffImpactChecks.length === 0 ? (
             <LoadingIndicator spinnerOnly />
           ) : checkLimit === Infinity ? null : (
-            <div className="flex flex-col items-center">
+            <div className="bg-base-100/90 backdrop-blur-sm w-full md:w-auto flex md:flex-col justify-between items-center gap-4 md:gap-1 border border-base-content/20 p-2 md:p-3 rounded-lg">
               <p
                 className={classNames(
                   "text-sm font-bold",
@@ -479,7 +463,10 @@ export default function Home() {
                 {checkLimit - numChecksThisMonth === 1 ? "" : "s"} Left
               </p>
 
-              <button className="link link-primary text-sm font-bold">
+              <button
+                className="btn btn-sm btn-primary"
+                onClick={() => setShowPricingModal(true)}
+              >
                 Get Unlimited Checks
               </button>
             </div>
@@ -570,7 +557,7 @@ export default function Home() {
               loading={loading}
             />
             <div className="flex gap-2 items-center">
-              {/* <div className="flex flex-wrap items-center">
+              <div className="flex flex-wrap items-center">
                 <p className="text-xs font-bold text-gray-500">Try Me!</p>
                 {exampleLists.map((example) => (
                   <button
@@ -583,7 +570,7 @@ export default function Home() {
                     {example.name}
                   </button>
                 ))}
-              </div> */}
+              </div>
             </div>
           </div>
         </div>
@@ -592,12 +579,19 @@ export default function Home() {
         {results && results.length > 0 && (
           <div>
             <div className="flex flex-col gap-2 bg-base-100 bg-transparent">
-              <div className="w-full flex-col sm:flex-row flex justify-between sm:items-end gap-2">
+              <div className="w-full flex justify-between items-end sm:items-end gap-2">
                 <PrimaryLabel value="Impact Check Results" />
 
-                <button className="link link-primary text-sm">
-                  Want to Automate your Checks?
-                </button>
+                {/* {activeTariffImpactPurchase &&
+                activeTariffImpactPurchase.product_name ===
+                  PricingPlan.TARIFF_IMPACT_PRO ? null : (
+                  <button
+                    className="hidden sm:block btn btn-sm btn-primary"
+                    onClick={() => setShowPricingModal(true)}
+                  >
+                    Find Exemptions
+                  </button>
+                )} */}
               </div>
               <div
                 className={`border-2 border-base-content/20 rounded-md ${
@@ -612,7 +606,7 @@ export default function Home() {
                           <th className="w-4"></th>
                           <th>HTS Code</th>
                           <th>Impacted</th>
-                          <th>Notes</th>
+                          <th className="hidden sm:table-cell">Notes</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -670,6 +664,11 @@ export default function Home() {
         onSave={createCodeSet}
         isLoading={savingCodes}
       />
+      <Modal isOpen={showPricingModal} setIsOpen={setShowPricingModal}>
+        <TariffConversionPricing
+          currentPlan={activeTariffImpactPurchase?.product_name}
+        />
+      </Modal>
     </main>
   );
 }

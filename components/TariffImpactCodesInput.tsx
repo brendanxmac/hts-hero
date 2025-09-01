@@ -159,7 +159,7 @@ export default function TariffImpactCodesInput({
 
               <button
                 disabled={!showSaveCodes || savingCodes}
-                className="grow btn btn-sm btn-primary"
+                className="btn btn-sm btn-primary w-full min-w-20 xs:w-auto text-xs sm:text-sm"
                 onClick={() => onSaveCodes && onSaveCodes()}
               >
                 {savingCodes ? (

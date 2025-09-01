@@ -106,8 +106,9 @@ export interface ConfigProps {
   stripe: {
     // importerPlans: PricingPlanI[];
     classifierPlans: PricingPlanI[];
-    conversionPlans: PricingPlanI[];
+    classifierConversionPlans: PricingPlanI[];
     tariffImpactPlans: PricingPlanI[];
+    tariffImpactConversionPlans: PricingPlanI[];
   };
   aws?: {
     bucket?: string;

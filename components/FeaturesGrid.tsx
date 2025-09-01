@@ -71,13 +71,13 @@ export const tariffImpactFeatures = [
     title: "Enter Codes",
     description:
       "Grab your codes from anywhere and paste them directly into the app.",
-    styles: "md:col-span-3 lg:col-span-2 bg-base-300 text-white",
+    styles: "md:col-span-3 lg:col-span-2 bg-base-200 text-white",
   },
   {
     title: "See What's Affected",
     description:
       "Instantly see which HTS Codes are affected by the tariff updates",
-    styles: "md:col-span-3 lg:col-span-2 bg-base-300 text-white",
+    styles: "md:col-span-3 lg:col-span-2 bg-base-200 text-white",
   },
 ];
 const FeaturesGrid = () => {
@@ -209,45 +209,54 @@ const FeaturesGrid = () => {
                   </div>
                 ) : index === 2 ? (
                   // Second feature - opacity-based transition with purple pulse
-                  <div className="overflow-x-auto bg-base-100 overflow-hidden">
-                    <table className="rounded-md table table-zebra table-pin-rows w-full">
-                      <thead>
-                        <tr>
-                          <th className="min-w-32">HTS Code</th>
-                          <th>Impacted</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {/* Show rows only for completed codes */}
-                        {completedCodes.map((completedCode, i) => {
-                          // Find matching result for this completed code
-                          const result =
-                            dummyTariffImpactResults.find(
-                              (r) => r.htsCode === completedCode
-                            ) ||
-                            dummyTariffImpactResults[
-                              i % dummyTariffImpactResults.length
-                            ];
-                          const { htsCode, impacted } = result;
+                  <div className="overflow-hidden h-full flex items-stretch">
+                    <div className="w-full bg-base-200 rounded-t-box h-full py-4 px-6">
+                      <p className="font-medium uppercase tracking-wide text-base-content/60 text-sm mb-3">
+                        Results:
+                      </p>
+                      {completedCodes.length > 0 ? (
+                        <div className="bg-base-100 border border-base-content/40 rounded-xl overflow-hidden">
+                          <table className="table table-zebra table-sm table-pin-rows w-full">
+                            <thead>
+                              <tr>
+                                <th className="min-w-32">HTS Code</th>
+                                <th>Impacted</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {/* Show rows only for completed codes */}
+                              {completedCodes.map((completedCode, i) => {
+                                // Find matching result for this completed code
+                                const result =
+                                  dummyTariffImpactResults.find(
+                                    (r) => r.htsCode === completedCode
+                                  ) ||
+                                  dummyTariffImpactResults[
+                                    i % dummyTariffImpactResults.length
+                                  ];
+                                const { htsCode, impacted } = result;
 
-                          return (
-                            <tr
-                              key={`${completedCode}-${i}`}
-                              className="py-1 animate-[fadeInRow_0.2s_ease-in-out_forwards] border-transparent"
-                            >
-                              <td className="truncate min-w-32">
-                                <p className="link link-primary font-bold">
-                                  {htsCode}
-                                </p>
-                              </td>
-                              <td className="text-2xl">
-                                {impacted ? "✅" : "❌"}
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
+                                return (
+                                  <tr
+                                    key={`${completedCode}-${i}`}
+                                    className="py-1 animate-[fadeInRow_0.2s_ease-in-out_forwards] border-transparent"
+                                  >
+                                    <td className="truncate min-w-32">
+                                      <p className="link link-primary font-bold">
+                                        {htsCode}
+                                      </p>
+                                    </td>
+                                    <td className="text-xl">
+                                      {impacted ? "✅" : "❌"}
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      ) : null}
+                    </div>
                   </div>
                 ) : (
                   // Other features remain unchanged

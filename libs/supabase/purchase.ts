@@ -88,26 +88,26 @@ export enum Product {
   TARIFF_IMPACT = "tariff_impact",
 }
 
-// export const userHasActivePurchase = async (userId: string) => {
-//   const supabase = createSupabaseClient();
+export const userHasActivePurchase = async (userId: string) => {
+  const supabase = createSupabaseClient();
 
-//   // Add 2-day buffer to prevent lockouts during subscription renewal delays
-//   const bufferDate = new Date();
-//   bufferDate.setDate(bufferDate.getDate() - 2);
+  // Add 2-day buffer to prevent lockouts during subscription renewal delays
+  const bufferDate = new Date();
+  bufferDate.setDate(bufferDate.getDate() - 2);
 
-//   const { data: purchases, error } = await supabase
-//     .from("purchases")
-//     .select("*")
-//     .eq("user_id", userId)
-//     .gte("expires_at", bufferDate.toISOString());
+  const { data: purchases, error } = await supabase
+    .from("purchases")
+    .select("*")
+    .eq("user_id", userId)
+    .gte("expires_at", bufferDate.toISOString());
 
-//   if (error) {
-//     console.error("Failed to fetch active purchases:", error);
-//     throw error;
-//   }
+  if (error) {
+    console.error("Failed to fetch active purchases:", error);
+    throw error;
+  }
 
-//   return purchases.length > 0;
-// };
+  return purchases.length > 0;
+};
 
 export const getLatestPurchase = async (
   userId: string

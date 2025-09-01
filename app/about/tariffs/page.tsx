@@ -9,7 +9,7 @@ import { FAQ } from "@/components/FAQ";
 import { tariffImpactFaqList } from "@/constants/faq";
 import CTA from "@/components/CTA";
 import TariffImpactHeader from "@/components/TariffImpactHeader";
-import { UpcomingTariffsList } from "../../../components/UpcomingTariffsList";
+import { PendingTariffsList } from "../../../components/UpcomingTariffsList";
 import TariffImpactPricing from "../../../components/TariffImpactPricing";
 
 const withoutTariffImpact: Task[] = [
@@ -130,8 +130,6 @@ export default function Home() {
           />
         </div>
 
-        <UpcomingTariffsList />
-
         <TariffImpactPricing />
 
         {/* <WithWithout
@@ -157,6 +155,8 @@ export default function Home() {
           ctaLink="/tariffs/impact-checker"
         /> */}
         <FAQ faqItems={tariffImpactFaqList} />
+
+        <PendingTariffsList />
       </main>
       <ClassifierFooter />
     </>

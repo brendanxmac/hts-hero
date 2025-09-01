@@ -23,13 +23,15 @@ import { useHts } from "../contexts/HtsContext";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { PDFProps } from "../interfaces/ui";
 import { SupabaseBuckets } from "../constants/supabase";
-// import { Country } from "../constants/countries";
 import { Tariffs } from "./Tariffs";
 import { TariffColumn } from "../enums/tariff";
 import {
   getStringBeforeOpeningParenthesis,
   getStringBetweenParenthesis,
 } from "../utilities/hts";
+import { useUser } from "../contexts/UserContext";
+import { userHasActivePurchase } from "../libs/supabase/purchase";
+import { TertiaryText } from "./TertiaryText";
 
 interface Props {
   summaryOnly?: boolean;
@@ -42,13 +44,28 @@ export interface ContentRequirementI<T> {
 }
 
 export const Element = ({ element, summaryOnly = false }: Props) => {
+  const { user, isLoading: fetchingUser } = useUser();
   const { description, chapter, htsno } = element;
   const [children, setChildren] = useState<HtsElement[]>([]);
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { htsElements } = useHts();
   const { sections } = useHtsSections();
+  const [isPayingUser, setIsPayingUser] = useState<boolean>(false);
   // const [selectedCountries, setSelectedCountries] = useState<Country[]>([]);
+
+  useEffect(() => {
+    const fetchIsPayingUser = async () => {
+      if (user) {
+        const isPayingUser = await userHasActivePurchase(user.id);
+        setIsPayingUser(isPayingUser);
+      }
+    };
+
+    if (user) {
+      fetchIsPayingUser();
+    }
+  }, [user]);
 
   useEffect(() => {
     const elementChildren = getDirectChildrenElements(element, htsElements);
@@ -111,7 +128,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
           </div>
         </div>
 
-        {/* <div className="w-full h-[1px] bg-base-content/10" /> */}
+        <div className="w-full h-[1px] bg-base-content/10" />
 
         <div className="flex flex-col gap-1">
           <div className="w-full flex justify-between items-start gap-2">
@@ -203,9 +220,28 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
             </div>
           )}
 
-          {!shouldShowBaseTariffDetails && (
+          {shouldShowBaseTariffDetails && (
             <div className="w-full flex flex-col gap-4">
-              <SecondaryLabel value="Base Tariff Details" color={Color.WHITE} />
+              <div className="w-full flex justify-between gap-2 flex-col">
+                <div className="flex gap-2 items-end justify-between">
+                  <h2 className="text-lg md:text-2xl text-white font-bold">
+                    Tariff Details
+                  </h2>
+
+                  <a
+                    href="/tariffs/coverage"
+                    target="_blank"
+                    className="btn btn-primary btn-xs btn-link"
+                  >
+                    Learn More
+                  </a>
+                </div>
+                {/* <TertiaryText
+                  value="Explore and compare potential tariff values for any number of countries."
+                  color={Color.NEUTRAL_CONTENT}
+                /> */}
+              </div>
+              <SecondaryLabel value="Base Rate(s)" />
 
               <div className="grid grid-cols-2 gap-2">
                 <>
@@ -337,7 +373,26 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
           {/* If htsno is 10 digits, show the country selection */}
           {htsno && htsno.replaceAll(".", "").length === 10 && (
             <div className="w-full flex flex-col gap-4">
+              <div className="flex flex-col gap-1">
+                <div className="flex gap-4">
+                  <SecondaryLabel
+                    value="✨ Advanced Tariff Analysis"
+                    color={Color.WHITE}
+                  />
+                  <div className="bg-secondary rounded-full">
+                    <p className="text-base-100 px-2 py-1 font-semibold text-xs">
+                      Beta
+                    </p>
+                  </div>
+                </div>
+                <TertiaryText
+                  value="Explore and compare potential tariff values and exemptions for any number of countries."
+                  color={Color.NEUTRAL_CONTENT}
+                />
+              </div>
+
               <Tariffs
+                isPayingUser={isPayingUser}
                 htsElement={element}
                 tariffElement={getTariffElement(
                   element,

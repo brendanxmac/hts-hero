@@ -2,7 +2,7 @@ import themes from "daisyui/src/theming/themes";
 import { ConfigProps, PricingPlan, PricingPlanI } from "./types/config";
 import { StripePaymentMode } from "./libs/stripe";
 
-const tariffImpactFree: PricingPlanI = {
+export const tariffImpactStarter: PricingPlanI = {
   name: "Starter",
   planIdentifier: PricingPlan.TARIFF_IMPACT_STARTER,
   description: "A Few Checks",
@@ -11,7 +11,7 @@ const tariffImpactFree: PricingPlanI = {
   features: [{ name: "Import HTS Codes" }, { name: "50 Checks/Month" }],
 };
 
-const tariffImpactStarter: PricingPlanI = {
+export const tariffImpactStandard: PricingPlanI = {
   name: "Standard",
   planIdentifier: PricingPlan.TARIFF_IMPACT_STANDARD,
   description: "Tariff Impact Essentials",
@@ -29,7 +29,7 @@ const tariffImpactStarter: PricingPlanI = {
   ],
 };
 
-const tariffImpactPro: PricingPlanI = {
+export const tariffImpactPro: PricingPlanI = {
   name: "Pro",
   planIdentifier: PricingPlan.TARIFF_IMPACT_PRO,
   description: "The Ultimate Tariff Solution",
@@ -92,8 +92,13 @@ const config: ConfigProps = {
   stripe: {
     // Create multiple plans in your Stripe dashboard, then add them here. You can add as many plans as you want, just make sure to add the priceId
     classifierPlans: [classifyPro],
-    conversionPlans: [classifyPro],
-    tariffImpactPlans: [tariffImpactFree, tariffImpactStarter, tariffImpactPro],
+    classifierConversionPlans: [classifyPro],
+    tariffImpactPlans: [
+      tariffImpactStarter,
+      tariffImpactStandard,
+      tariffImpactPro,
+    ],
+    tariffImpactConversionPlans: [tariffImpactStandard, tariffImpactPro],
   },
   // aws: {
   //   // If you use AWS S3/Cloudfront, put values in here

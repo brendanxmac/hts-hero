@@ -20,6 +20,7 @@ import { TertiaryLabel } from "./TertiaryLabel";
 import { TradePrograms } from "../public/trade-programs";
 
 interface Props {
+  isPayingUser: boolean;
   country: CountryWithTariffs;
   htsElement: HtsElement;
   tariffElement: HtsElement;
@@ -30,6 +31,7 @@ interface Props {
 }
 
 export const InlineCountryTariff = ({
+  isPayingUser,
   country,
   htsElement,
   tariffElement,
@@ -423,6 +425,7 @@ export const InlineCountryTariff = ({
                 .filter((t) => !tariffSet.exceptionCodes.has(t.code))
                 .map((tariff) => (
                   <Tariff
+                    isPayingUser={isPayingUser}
                     key={tariff.code}
                     showInactive={showInactive}
                     tariff={tariff}

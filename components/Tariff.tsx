@@ -8,11 +8,12 @@ import {
   tariffIsActive,
 } from "../tariffs/tariffs";
 import { classNames } from "../utilities/style";
-import { TertiaryLabel } from "./TertiaryLabel";
 import { TariffColumn } from "../enums/tariff";
 import { TertiaryText } from "./TertiaryText";
+import Link from "next/link";
 
 interface Props {
+  isPayingUser: boolean;
   showInactive: boolean;
   exceptionLevel?: number;
   tariff: UITariff;
@@ -27,6 +28,7 @@ interface Props {
 }
 
 export const Tariff = ({
+  isPayingUser,
   exceptionLevel = 0,
   showInactive,
   tariff,
@@ -148,10 +150,13 @@ export const Tariff = ({
 
           <div className="flex flex-col gap-1 py-0.5">
             <div className="flex gap-2 items-center">
-              <TertiaryLabel
-                value={tariff.code}
-                color={Color.NEUTRAL_CONTENT}
-              />
+              <Link
+                href={`/explore?code=${tariff.code}`}
+                target="_blank"
+                className="link link-primary font-bold"
+              >
+                {tariff.code}
+              </Link>
               <TertiaryText value={tariff.name} color={Color.WHITE} />
             </div>
           </div>

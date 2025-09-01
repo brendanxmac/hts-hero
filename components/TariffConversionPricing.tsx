@@ -1,34 +1,75 @@
-import config from "@/config";
+import config, { tariffImpactPro, tariffImpactStandard } from "@/config";
 import { classNames } from "../utilities/style";
 import ButtonCheckout from "./ButtonCheckout";
 import { StripePaymentMode } from "../libs/stripe";
 import { getFeatureIcon, getFeatureSupportingLabel } from "./Pricing";
 import router from "next/router";
 import { useUser } from "../contexts/UserContext";
+import { PricingPlan } from "../types";
 
-// <Pricing/> displays the pricing plans for your app
-// It's your Stripe config in config.js.stripe.plans[] that will be used to display the plans
-// <ButtonCheckout /> renders a button that will redirect the user to Stripe checkout called the /api/stripe/create-checkout API endpoint with the correct priceId
+interface Props {
+  currentPlan?: PricingPlan;
+}
 
-// interface Props {
-//   customerType: AboutPage;
-// }
+const getSubheading = (currentPlan?: PricingPlan) => {
+  let subheading = "";
 
-const ConversionPricing = () => {
+  if (!currentPlan || currentPlan === PricingPlan.TARIFF_IMPACT_STARTER) {
+    subheading = "Why upgrade?";
+  } else if (currentPlan === PricingPlan.TARIFF_IMPACT_STANDARD) {
+    subheading = "Why upgrade to Pro?";
+  }
+
+  return <h3>{subheading}</h3>;
+};
+
+const getHeading = (currentPlan?: PricingPlan) => {
+  if (!currentPlan || currentPlan === PricingPlan.TARIFF_IMPACT_STARTER) {
+    return (
+      <h2 className="text-white text-3xl md:text-4xl font-extrabold text-center">
+        Get <span className="text-primary">Instant Clarity</span> When New
+        Tariffs are Announced
+      </h2>
+    );
+  }
+
+  if (currentPlan === PricingPlan.TARIFF_IMPACT_STANDARD) {
+    return (
+      <h2 className="text-white text-3xl md:text-4xl font-extrabold text-center">
+        See <span className="text-primary">Tariff Details & Exemptions</span>{" "}
+        <br />
+        for Any Item from any Country Imports
+      </h2>
+    );
+  }
+
+  return null;
+};
+
+const getPlans = (currentPlan?: PricingPlan) => {
+  if (!currentPlan || currentPlan === PricingPlan.TARIFF_IMPACT_STARTER) {
+    return [tariffImpactStandard, tariffImpactPro];
+  }
+
+  if (currentPlan === PricingPlan.TARIFF_IMPACT_STANDARD) {
+    return [tariffImpactPro];
+  }
+
+  return [];
+};
+
+const TariffConversionPricing = ({ currentPlan }: Props) => {
   const { user } = useUser();
+  const plans = getPlans(currentPlan);
 
   return (
     <section className="bg-base-300 overflow-hidden" id="pricing">
-      <div className="py-12 px-4 sm:px-8 max-w-7xl mx-auto flex flex-col items-center justify-center">
-        <h3 className="text-center mb-4">Your Free Trial has Ended</h3>
-        <h2 className="text-white text-3xl md:text-4xl font-extrabold text-center">
-          Upgrade to <span className="text-primary">Pro</span> to Continue
-          <br />
-          <span className="text-primary">Boosting</span> Your Classifications
-        </h2>
+      <div className="py-12 px-4 sm:px-8 max-w-7xl mx-auto flex flex-col items-center justify-center gap-8">
+        {getSubheading(currentPlan)}
+        {getHeading(currentPlan)}
 
         <div className="w-full relative flex justify-evenly flex-col lg:flex-row items-center lg:items-stretch gap-8 text-white">
-          {config.stripe.classifierConversionPlans.map((plan, index) => (
+          {plans.map((plan, index) => (
             <div
               key={index}
               className={classNames(
@@ -60,7 +101,7 @@ const ConversionPricing = () => {
               >
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-col">
-                    <p className="text-2xl font-bold">{plan.planIdentifier}</p>
+                    <p className="text-2xl font-bold">{plan.name}</p>
                     {plan.description && (
                       <p className="text-base-content/80">{plan.description}</p>
                     )}
@@ -126,7 +167,7 @@ const ConversionPricing = () => {
                 )}
                 {!plan.isCompetitor && (
                   <div className="space-y-2">
-                    <ButtonCheckout plan={plan} />
+                    <ButtonCheckout plan={plan} currentPlan={currentPlan} />
                   </div>
                 )}
               </div>
@@ -146,43 +187,9 @@ const ConversionPricing = () => {
             </button>
           </div>
         )}
-
-        {/* <div className="mt-4">
-          <TertiaryText value="One-time purchase. No Subscriptions. Instant access." />
-        </div> */}
-
-        {/* <Link
-          href="/about/importer"
-          className="mt-2 text-base-content/80 text-sm hover:underline"
-        >
-          Learn More
-        </Link> */}
-
-        {/* {customerType === "importer" && (
-          <div className="mt-16 flex flex-col gap-2 justify-center items-center">
-            <div className="flex gap-1 items-center">
-              <ShieldCheckIcon className="w-6 h-6 text-secondary" />
-              <h3 className="text-lg font-extrabold text-secondary">
-                Customs Code Approval Guarantee
-              </h3>
-            </div>
-            <p className="text-white">
-              We guarantee codes that customs will accept or you get a full
-              refund!
-            </p>
-            <p className="text-sm text-base-content/80">
-              <sup>
-                See{" "}
-                <Link href="/terms" className="hover:underline">
-                  terms and conditions
-                </Link>
-              </sup>{" "}
-            </p>
-          </div>
-        )} */}
       </div>
     </section>
   );
 };
 
-export default ConversionPricing;
+export default TariffConversionPricing;

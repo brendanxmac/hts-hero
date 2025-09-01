@@ -20,13 +20,16 @@ import { InlineCountryTariff } from "./InlineCountryTariff";
 import { SecondaryLabel } from "./SecondaryLabel";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { CountrySelection } from "./CountrySelection";
+import toast from "react-hot-toast";
+import Link from "next/link";
 
 interface Props {
+  isPayingUser: boolean;
   htsElement: HtsElement;
   tariffElement: HtsElement;
 }
 
-export const Tariffs = ({ htsElement, tariffElement }: Props) => {
+export const Tariffs = ({ htsElement, tariffElement, isPayingUser }: Props) => {
   const codeBasedContentRequirements = Array.from(
     TariffsList.filter((t) =>
       tariffIsApplicableToCode(t, htsElement.htsno)
@@ -177,7 +180,7 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="w-full flex justify-between gap-2 lg:items-end flex-col lg:flex-row">
+      {/* <div className="w-full flex justify-between gap-2 lg:items-end flex-col lg:flex-row">
         <div className="shrink-0">
           <div className="flex gap-2 items-end justify-between">
             <div className="flex gap-2 items-center">
@@ -203,7 +206,7 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
             color={Color.NEUTRAL_CONTENT}
           />
         </div>
-      </div>
+      </div> */}
 
       {/* Show inputs for any content requirements based */}
       {codeBasedContentRequirements.length > 0 && (
@@ -320,7 +323,15 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
                       !isExpanded && "not-last:border-b border-base-content/40",
                       isExpanded && "bg-base-300 hover:bg-primary/50 border-b-0"
                     )}
-                    onClick={() => toggleRow(country.code)}
+                    onClick={() => {
+                      if (isPayingUser) {
+                        toggleRow(country.code);
+                      } else {
+                        toast.error(
+                          "Please upgrade to view advanced tariff analysis"
+                        );
+                      }
+                    }}
                   >
                     <td className="w-8">
                       <ChevronDownIcon
@@ -337,30 +348,42 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
                     </td>
                     <td>
                       <div className="flex gap-2">
-                        {countryPercentTariffsSums.map((sum, i) => (
-                          <div
-                            key={`${country.code}-${i}-percent-sum-${i}`}
-                            className="flex gap-2"
+                        {!isPayingUser ? (
+                          <Link
+                            href="/about/tariffs"
+                            target="_blank"
+                            className="btn btn-link no-underline text-base-content hover:text-primary"
                           >
-                            <div className="flex gap-1">
-                              {countryAmounts && countryAmounts.length > 0 ? (
-                                <p className="text-white">{countryAmounts} +</p>
-                              ) : null}
-                              {<p className="text-white">{sum}%</p>}
-                              {i > 0 &&
-                                codeBasedContentRequirements &&
-                                codeBasedContentRequirements.length > 0 &&
-                                uiContentPercentages[i - 1].name && (
+                            🔒 Upgrade to View Tariff Details
+                          </Link>
+                        ) : (
+                          countryPercentTariffsSums.map((sum, i) => (
+                            <div
+                              key={`${country.code}-${i}-percent-sum-${i}`}
+                              className="flex gap-2"
+                            >
+                              <div className="flex gap-1">
+                                {countryAmounts && countryAmounts.length > 0 ? (
                                   <p className="text-white">
-                                    for {uiContentPercentages[i - 1].name}
+                                    {countryAmounts} +
                                   </p>
-                                )}
+                                ) : null}
+                                {<p className="text-white">{sum}%</p>}
+                                {i > 0 &&
+                                  codeBasedContentRequirements &&
+                                  codeBasedContentRequirements.length > 0 &&
+                                  uiContentPercentages[i - 1].name && (
+                                    <p className="text-white">
+                                      for {uiContentPercentages[i - 1].name}
+                                    </p>
+                                  )}
+                              </div>
+                              {countryPercentTariffsSums.length !== i + 1
+                                ? "|"
+                                : null}
                             </div>
-                            {countryPercentTariffsSums.length !== i + 1
-                              ? "|"
-                              : null}
-                          </div>
-                        ))}
+                          ))
+                        )}
                       </div>
                     </td>
                     <td>
@@ -388,6 +411,7 @@ export const Tariffs = ({ htsElement, tariffElement }: Props) => {
                           )}
                           countries={countries}
                           setCountries={setCountries}
+                          isPayingUser={isPayingUser}
                         />
                       </td>
                     </tr>

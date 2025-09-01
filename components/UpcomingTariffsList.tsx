@@ -18,7 +18,7 @@ interface Props {
   hideHeading?: boolean;
 }
 
-export const UpcomingTariffsList = ({ hideHeading }: Props) => {
+export const PendingTariffsList = ({ hideHeading }: Props) => {
   const tariffAnnouncements: TariffAnnouncement[] = [
     {
       name: "Taxed Digital Service Penalty",
@@ -150,6 +150,7 @@ export const UpcomingTariffsList = ({ hideHeading }: Props) => {
 
   return (
     <section
+      id="pending-tariffs"
       className={`flex justify-center items-center w-full bg-base-200 text-base-content px-6  ${
         hideHeading ? "" : "lg:py-16"
       }`}

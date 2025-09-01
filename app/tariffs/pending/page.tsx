@@ -1,6 +1,6 @@
 import config from "@/config";
 import { getSEOTags } from "../../../libs/seo";
-import { UpcomingTariffsList } from "../../../components/UpcomingTariffsList";
+import { PendingTariffsList } from "../../../components/UpcomingTariffsList";
 import Link from "next/link";
 
 export const metadata = getSEOTags({
@@ -45,7 +45,7 @@ export default function Home() {
 
         {/* Content Section */}
         <div className="max-w-7xl mx-auto pb-2">
-          <UpcomingTariffsList hideHeading />
+          <PendingTariffsList hideHeading />
         </div>
       </div>
     </main>
