@@ -100,7 +100,7 @@ const getPricingHeadline = () => {
         Save <span className="text-primary">hours</span> on classification, for
         less than your daily coffee
       </h2>
-      <div className="flex flex-col justify-center items-center">
+      {/* <div className="flex flex-col justify-center items-center">
         <p className="text-xl font-bold text-primary">
           25% Off Your First Month!
         </p>
@@ -124,7 +124,7 @@ const getPricingHeadline = () => {
             Offer valid until <span className="underline">September 1st</span>
           </p>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

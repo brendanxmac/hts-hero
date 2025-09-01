@@ -6,8 +6,8 @@ const proPlan: PricingPlanI = {
   name: PricingPlan.PRO,
   description: "The Classification Assistant for Customs Brokers",
   mode: StripePaymentMode.SUBSCRIPTION,
-  price: 60,
-  priceAnchor: 80,
+  price: 80,
+  priceAnchor: 120,
   isFeatured: true,
   features: [
     { name: "Finds Headings" },
@@ -16,11 +16,6 @@ const proPlan: PricingPlanI = {
     { name: "Generates Reports" },
     { name: "Fetches Notes" },
     { name: "Finds CROSS Rulings" },
-    {
-      name: "Determines Tariff Update Impacts",
-      details:
-        "Instantly see if any of your imports are affected by tariff changes",
-    },
   ],
 };
 
