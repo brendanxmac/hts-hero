@@ -441,21 +441,25 @@ export default function Home() {
               <h1 className="text-2xl md:text-3xl font-bold text-gray-100">
                 Tariff Impact Checker
               </h1>
-              {activeTariffImpactPurchase && (
-                <span
-                  className={classNames(
-                    "px-2 py-0.5 rounded-md font-semibold text-xs border",
+
+              <span
+                className={classNames(
+                  "px-2 py-0.5 rounded-md font-semibold text-xs border",
+                  activeTariffImpactPurchase &&
                     activeTariffImpactPurchase.product_name ===
                       PricingPlan.TARIFF_IMPACT_PRO &&
-                      "text-secondary border-secondary",
+                    "text-secondary border-secondary",
+                  activeTariffImpactPurchase &&
                     activeTariffImpactPurchase.product_name ===
                       PricingPlan.TARIFF_IMPACT_STANDARD &&
-                      "text-primary border-primary"
-                  )}
-                >
-                  {activeTariffImpactPurchase.product_name.split(" ")[2]}
-                </span>
-              )}
+                    "text-primary border-primary",
+                  !activeTariffImpactPurchase && "text-warning border-warning"
+                )}
+              >
+                {activeTariffImpactPurchase
+                  ? activeTariffImpactPurchase.product_name.split(" ")[2]
+                  : "Starter Plan"}
+              </span>
             </div>
 
             <div className="ml-1">

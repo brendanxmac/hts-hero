@@ -20,6 +20,7 @@ import {
   fetchPurchasesForUser,
   getActiveClassifyPurchase,
 } from "../libs/supabase/purchase";
+import { classNames } from "../utilities/style";
 
 interface Props {
   page: ClassifyPage;
@@ -190,11 +191,17 @@ export const Classifications = ({ page, setPage }: Props) => {
                 <h1 className="text-2xl md:text-3xl xl:text-4xl text-neutral-50 font-bold">
                   {getUserNameMessage()}
                 </h1>
-                {activeClassifyPlan && (
-                  <div className="shrink-0 h-fit w-fit text-sm border border-primary rounded-md px-2 py-0 text-primary font-semibold">
-                    {activeClassifyPlan}
-                  </div>
-                )}
+
+                <div
+                  className={classNames(
+                    "shrink-0 h-fit w-fit text-sm border rounded-md px-2 py-0 text-primary font-semibold",
+                    activeClassifyPlan
+                      ? "text-primary border-primary"
+                      : "text-warning border-warning"
+                  )}
+                >
+                  {activeClassifyPlan ? activeClassifyPlan : "Free Trial"}
+                </div>
               </div>
               <SecondaryText
                 value="Here you can review your classifications or start a new one now."
