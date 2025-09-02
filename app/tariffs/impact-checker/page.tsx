@@ -437,9 +437,27 @@ export default function Home() {
         {/* Header */}
         <div className="flex justify-between md:items-center flex-col-reverse md:flex-row gap-4">
           <div className="flex flex-col md:gap-2">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-100">
-              Tariff Impact Checker
-            </h1>
+            <div className="flex items-center gap-4">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-100">
+                Tariff Impact Checker
+              </h1>
+              {activeTariffImpactPurchase && (
+                <span
+                  className={classNames(
+                    "px-2 py-0.5 rounded-md font-semibold text-xs border",
+                    activeTariffImpactPurchase.product_name ===
+                      PricingPlan.TARIFF_IMPACT_PRO &&
+                      "text-secondary border-secondary",
+                    activeTariffImpactPurchase.product_name ===
+                      PricingPlan.TARIFF_IMPACT_STANDARD &&
+                      "text-primary border-primary"
+                  )}
+                >
+                  {activeTariffImpactPurchase.product_name.split(" ")[2]}
+                </span>
+              )}
+            </div>
+
             <div className="ml-1">
               <SecondaryText value="Instantly see if your imports are impacted by tariff announcements." />
             </div>

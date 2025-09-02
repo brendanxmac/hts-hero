@@ -49,41 +49,57 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
   };
 
   const handlePayment = async () => {
-    setIsLoading(true);
-
-    // Check if user has an active purchase
-    const product = getProductForPlan(plan.planIdentifier);
-    const userAlreadyHasAccess =
-      user && (await userHasActivePurchaseForProduct(user.id, product));
-
-    const userAttemptingUpgradeFromStandardToPro =
-      plan.planIdentifier === PricingPlan.TARIFF_IMPACT_PRO &&
-      currentPlan === PricingPlan.TARIFF_IMPACT_STANDARD;
-
-    if (userAlreadyHasAccess && !userAttemptingUpgradeFromStandardToPro) {
-      toast.success("You already have an active purchase");
-      setIsLoading(false);
-      return;
-    }
-
     try {
-      const { url }: { url: string } = await apiClient.post(
-        "/stripe/create-checkout",
-        {
-          itemId: plan.planIdentifier,
-          successEndpoint: getCheckoutSuccessEndpoint(plan.planIdentifier),
-          cancelUrl: window.location.href.includes("#")
-            ? window.location.href
-            : window.location.href + "#pricing",
-        }
-      );
+      setIsLoading(true);
+      // Check if user has an active purchase
+      const product = getProductForPlan(plan.planIdentifier);
+      const userHasActiveSubscriptionForProduct =
+        user && (await userHasActivePurchaseForProduct(user.id, product));
 
-      window.location.href = url;
+      const userAttemptingUpgradeFromStandardToPro =
+        plan.planIdentifier === PricingPlan.TARIFF_IMPACT_PRO &&
+        currentPlan === PricingPlan.TARIFF_IMPACT_STANDARD;
+
+      if (!userHasActiveSubscriptionForProduct) {
+        // Send them to checkout page
+        const { url }: { url: string } = await apiClient.post(
+          "/stripe/create-checkout",
+          {
+            itemId: plan.planIdentifier,
+            successEndpoint: getCheckoutSuccessEndpoint(plan.planIdentifier),
+            cancelUrl: window.location.href.includes("#")
+              ? window.location.href
+              : window.location.href + "#pricing",
+          }
+        );
+
+        window.location.href = url;
+      } else if (
+        userHasActiveSubscriptionForProduct &&
+        !userAttemptingUpgradeFromStandardToPro
+      ) {
+        toast.success(
+          "You already have an active purchase. Go to Profile > Billing to manage your purchases"
+        );
+        setIsLoading(false);
+      } else if (
+        userHasActiveSubscriptionForProduct &&
+        userAttemptingUpgradeFromStandardToPro
+      ) {
+        const { url }: { url: string } = await apiClient.post(
+          "/stripe/create-portal",
+          {
+            returnUrl: window.location.href,
+          }
+        );
+
+        window.open(url, "_blank");
+      }
     } catch (e) {
       console.error(e);
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   return (

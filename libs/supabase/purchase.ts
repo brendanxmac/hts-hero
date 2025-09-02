@@ -147,6 +147,18 @@ export const fetchPurchasesForUser = async (userId: string) => {
   return purchases as Purchase[];
 };
 
+export const getActiveClassifyPurchase = async (userId: string) => {
+  const allPurchases = await fetchPurchasesForUser(userId);
+  const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const activeClassifyPurchases = allPurchases.find(
+    (purchase) =>
+      purchase.product_name === PricingPlan.CLASSIFY_PRO &&
+      purchase.expires_at > yesterday
+  );
+
+  return activeClassifyPurchases;
+};
+
 export const getActiveTariffImpactPurchases = async (userId: string) => {
   const tariffImpactProducts = [
     PricingPlan.TARIFF_IMPACT_STANDARD,

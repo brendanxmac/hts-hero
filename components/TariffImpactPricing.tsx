@@ -4,6 +4,13 @@ import { PricingFeatureI, PricingPlan } from "../types";
 import ButtonCheckout from "./ButtonCheckout";
 import { StripePaymentMode } from "../libs/stripe";
 import Link from "next/link";
+import { useUser } from "../contexts/UserContext";
+import { useEffect, useState } from "react";
+import {
+  fetchPurchasesForUser,
+  getActivePriorityTariffImpactPurchase,
+  getActiveTariffImpactPurchases,
+} from "../libs/supabase/purchase";
 
 // <Pricing/> displays the pricing plans for your app
 // It's your Stripe config in config.js.stripe.plans[] that will be used to display the plans
@@ -92,6 +99,24 @@ const getPricingHeadline = () => {
 };
 
 const TariffImpactPricing = () => {
+  const [currentPlan, setCurrentPlan] = useState<PricingPlan | null>(null);
+  const { user } = useUser();
+
+  useEffect(() => {
+    // Fetch the users current Tariff Impact Plan
+    const fetchCurrentTariffImpactPlan = async () => {
+      const currentTariffImpactPlan =
+        await getActivePriorityTariffImpactPurchase(user.id);
+      if (currentTariffImpactPlan) {
+        setCurrentPlan(currentTariffImpactPlan.product_name);
+      }
+    };
+
+    if (user) {
+      fetchCurrentTariffImpactPlan();
+    }
+  }, [user]);
+
   return (
     <section className="bg-base-300 overflow-hidden" id="pricing">
       <div className="py-16 px-8 max-w-7xl mx-auto">
@@ -213,7 +238,7 @@ const TariffImpactPricing = () => {
                         Try Now!
                       </Link>
                     ) : (
-                      <ButtonCheckout plan={plan} />
+                      <ButtonCheckout plan={plan} currentPlan={currentPlan} />
                     )}
                   </div>
                 )}
