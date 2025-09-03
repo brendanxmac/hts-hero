@@ -1,7 +1,7 @@
 import { TariffImpactCheck } from "../interfaces/tariffs";
-import { PricingPlan } from "../types";
+import { TariffCodeSet } from "../tariffs/announcements/announcements";
 import apiClient from "./api";
-import { parseHtsCodeSet } from "./hts-code-set";
+import { formatHtsCodeWithPeriods, parseHtsCodeSet } from "./hts-code-set";
 
 export const createTariffImpactCheck = async (
   htsCodesString: string
@@ -35,4 +35,15 @@ export const fetchTariffImpactChecksForUser = async (
   );
 
   return tariffImpactChecksForUser;
+};
+
+export const codeIsIncludedInTariffCodeSet = (
+  code: string,
+  tariffCodeSet: TariffCodeSet
+) => {
+  const formattedCode = formatHtsCodeWithPeriods(code);
+
+  return tariffCodeSet.codes.some(
+    (change) => formattedCode.includes(change) || change.includes(formattedCode)
+  );
 };

@@ -78,9 +78,9 @@ export default function Home() {
 
         <Demo
           standoutPlacement="end"
-          titleStandout="Financial Impact"
-          title="See Your"
-          subtitle="Get the full tariff breakdown & explore possible exemptions for your imports"
+          titleStandout="Tariff Wizard"
+          title="Your Personal"
+          subtitle="See the full tariff breakdown for any import from any country & explore possible exemptions"
           ctaText="Try it Now!"
           ctaLink="/tariffs/impact-checker"
           media={{

@@ -159,7 +159,7 @@ export const getActiveClassifyPurchase = async (userId: string) => {
   return activeClassifyPurchases;
 };
 
-export const getActiveTariffImpactPurchases = async (userId: string) => {
+export const getActiveTariffImpactPurchasesForUser = async (userId: string) => {
   const tariffImpactProducts = [
     PricingPlan.TARIFF_IMPACT_STANDARD,
     PricingPlan.TARIFF_IMPACT_PRO,
@@ -179,7 +179,7 @@ export const getActivePriorityTariffImpactPurchase = async (
   userId: string
 ): Promise<Purchase | null> => {
   const activeTariffImpactPurchases =
-    await getActiveTariffImpactPurchases(userId);
+    await getActiveTariffImpactPurchasesForUser(userId);
 
   if (activeTariffImpactPurchases.length === 0) {
     return null;

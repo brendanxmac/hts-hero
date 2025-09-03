@@ -10,7 +10,7 @@ import { SecondaryText } from "../../../components/SecondaryText";
 import Modal from "../../../components/Modal";
 import { TariffImpactInputHelp } from "../../../components/TariffImpactInputHelp";
 import { TertiaryText } from "../../../components/TertiaryText";
-import TariffAnnouncementDropdown from "../../../components/TariffUpdateDropdown";
+import TariffUpdateDropdown from "../../../components/TariffUpdateDropdown";
 import { PrimaryLabel } from "../../../components/PrimaryLabel";
 import { MixpanelEvent, trackEvent } from "../../../libs/mixpanel";
 import {
@@ -26,11 +26,12 @@ import { HtsCodeSet } from "../../../interfaces/hts";
 import HtsCodeSetDropdown from "../../../components/HtsCodeSetDropdown";
 import {
   exampleLists,
-  tariffAnnouncementLists,
+  TariffCodeSet,
   TariffImpactResult,
 } from "../../../tariffs/announcements/announcements";
 import { TariffImpactCheck } from "../../../interfaces/tariffs";
 import {
+  codeIsIncludedInTariffCodeSet,
   createTariffImpactCheck,
   fetchTariffImpactChecksForUser,
 } from "../../../libs/tariff-impact-check";
@@ -43,6 +44,7 @@ import { classNames } from "../../../utilities/style";
 import { SaveCodeListModal } from "../../../components/SaveCodesListModal";
 import { findCodeSet, codeSetMatchesString } from "../../../utilities/hts";
 import TariffConversionPricing from "../../../components/TariffConversionPricing";
+import { fetchTariffCodeSets } from "../../../libs/tariff-code-set";
 
 export default function Home() {
   const CHARACTER_LIMIT = 3000;
@@ -70,6 +72,8 @@ export default function Home() {
   const [lastActionWasSubmit, setLastActionWasSubmit] = useState(false);
   const [activeTariffImpactPurchase, setActiveTariffImpactPurchase] =
     useState<Purchase | null>(null);
+  const [tariffCodeSets, setTariffCodeSets] = useState<TariffCodeSet[]>([]);
+  const [fetchingTariffCodeSets, setFetchingTariffCodeSets] = useState(true);
 
   // Update exist set of codes
   const updateCodeSet = async () => {
@@ -186,21 +190,40 @@ export default function Home() {
   }, [user]);
 
   useEffect(() => {
-    const loadElements = async () => {
-      setLoading(true);
-      await fetchElements("latest");
-      setLoading(false);
+    const loadAllData = async () => {
+      try {
+        setLoading(true);
+        await Promise.all([loadElements(), loadTariffCodeSets()]);
+      } catch (e) {
+        console.error(e);
+        toast.error(
+          "Error loading data. Reload the page or contact support if this continues"
+        );
+      } finally {
+        setLoading(false);
+      }
     };
 
-    loadElements();
+    const loadElements = async () => {
+      await fetchElements("latest");
+    };
+
+    const loadTariffCodeSets = async () => {
+      setFetchingTariffCodeSets(true);
+      const tariffCodeSets = await fetchTariffCodeSets();
+      setTariffCodeSets(tariffCodeSets);
+      setFetchingTariffCodeSets(false);
+    };
+
+    loadAllData();
   }, []);
 
   useEffect(() => {
     // Initialize with the first changeList when component mounts
-    if (tariffAnnouncementLists.length > 0) {
+    if (tariffCodeSets.length > 0) {
       setSelectedTariffAnnouncementIndex(0);
     }
-  }, []);
+  }, [tariffCodeSets]);
 
   useEffect(() => {
     handleInputChange(inputValue);
@@ -208,19 +231,6 @@ export default function Home() {
 
   const htsCodeExists = (str: string) => {
     return htsElements.some((element) => element.htsno === str);
-  };
-
-  const isEffectedByNewTariffs = (htsCode: string) => {
-    // Format the input code to have proper periods
-    const formattedCode = formatHtsCodeWithPeriods(htsCode);
-
-    // Simple substring check - much more efficient
-    return tariffAnnouncementLists[
-      selectedTariffAnnouncementIndex
-    ].codesImpacted.some(
-      (change) =>
-        formattedCode.includes(change) || change.includes(formattedCode)
-    );
   };
 
   const getNotes = (result: TariffImpactResult) => {
@@ -313,8 +323,7 @@ export default function Home() {
 
       trackEvent(MixpanelEvent.TARIFF_IMPACT_CHECK, {
         numCodes: results.length,
-        changeList:
-          tariffAnnouncementLists[selectedTariffAnnouncementIndex].name,
+        changeList: tariffCodeSets[selectedTariffAnnouncementIndex].name,
       });
 
       setResults(results);
@@ -372,7 +381,12 @@ export default function Home() {
 
       return {
         code: formattedCode,
-        impacted: isValidTariffableCode ? isEffectedByNewTariffs(code) : null,
+        impacted: isValidTariffableCode
+          ? codeIsIncludedInTariffCodeSet(
+              code,
+              tariffCodeSets[selectedTariffAnnouncementIndex]
+            )
+          : null,
         error,
       };
     });
@@ -458,7 +472,7 @@ export default function Home() {
               >
                 {activeTariffImpactPurchase
                   ? activeTariffImpactPurchase.product_name.split(" ")[2]
-                  : "Starter Plan"}
+                  : "Free Plan"}
               </span>
             </div>
 
@@ -485,6 +499,8 @@ export default function Home() {
                 {checkLimit - numChecksThisMonth === 1 ? "" : "s"} Left
               </p>
 
+              <span className="text-xs -mt-1">Until Next Month</span>
+
               <button
                 className="btn btn-sm btn-primary"
                 onClick={() => setShowPricingModal(true)}
@@ -499,18 +515,24 @@ export default function Home() {
         <div className="flex flex-col gap-4 sm:gap-8">
           {/* Tariff Announcement Selection */}
           <div className="flex flex-col gap-2">
-            <PrimaryLabel value="Select Tariff Announcement" />
-            <TariffAnnouncementDropdown
-              tariffUpdates={tariffAnnouncementLists}
+            <div className="w-full flex justify-between gap-4 items-center">
+              <PrimaryLabel value="Select Tariff Announcement" />
+              {fetchingTariffCodeSets && <LoadingIndicator spinnerOnly />}
+            </div>
+
+            <TariffUpdateDropdown
+              disabled={fetchingTariffCodeSets}
+              tariffCodeSets={tariffCodeSets}
               selectedIndex={selectedTariffAnnouncementIndex}
               onSelectionChange={setSelectedTariffAnnouncementIndex}
             />
-            {tariffAnnouncementLists[selectedTariffAnnouncementIndex].notes && (
-              <p className="text-xs text-neutral-content font-bold">
-                Note:{" "}
-                {tariffAnnouncementLists[selectedTariffAnnouncementIndex].notes}
-              </p>
-            )}
+
+            {tariffCodeSets.length > 0 &&
+              tariffCodeSets[selectedTariffAnnouncementIndex].note && (
+                <p className="text-xs text-neutral-content font-bold">
+                  Note: {tariffCodeSets[selectedTariffAnnouncementIndex].note}
+                </p>
+              )}
           </div>
 
           {/* HTS Code Selection */}

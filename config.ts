@@ -21,7 +21,7 @@ export const tariffImpactStandard: PricingPlanI = {
   features: [
     { name: "Import HTS Codes" },
     { name: "300 Checks/Month" },
-    { name: "Notifications" },
+    { name: "Impact Notifications" },
     // {
     //   name: "Tariff Analyzer",
     //   details: "See full tariff details & explore exemptions",
@@ -40,9 +40,9 @@ export const tariffImpactPro: PricingPlanI = {
   features: [
     { name: "Import HTS Codes" },
     { name: "Unlimited Checks" },
-    { name: "Notifications" },
+    { name: "Impact Notifications" },
     {
-      name: "Financial Impact Analysis",
+      name: "Tariff Wizard",
       details: "See full tariff details & explore exemptions",
     },
     // { name: "Generate & share branded reports" }, // TODO: This could be great

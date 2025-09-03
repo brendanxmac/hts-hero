@@ -17,18 +17,17 @@ export async function GET() {
       );
     }
 
-    const { data: htsCodeSets, error } = await supabase
-      .from("hts_code_sets")
+    const { data: tariffCodeSets, error } = await supabase
+      .from("tariff_code_sets")
       .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false });
+      .order("published_at", { ascending: false });
 
     if (error) {
-      console.error("Error fetching hts code sets:", error);
+      console.error("Error fetching tariff code sets:", error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json(htsCodeSets, { status: 200 });
+    return NextResponse.json(tariffCodeSets, { status: 200 });
   } catch (e) {
     console.error(e);
     return NextResponse.json({ error: e?.message }, { status: 500 });

@@ -282,7 +282,7 @@ export const Explore = () => {
 
               <div
                 role="tablist"
-                className="tabs tabs-boxed bg-primary/30 rounded-xl"
+                className="tabs tabs-boxed tabs-sm md:tabs-md bg-primary/30 rounded-xl"
               >
                 {ExploreTabs.map((tab) => (
                   <a

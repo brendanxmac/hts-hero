@@ -7,13 +7,16 @@ export interface ListExample {
   list: string;
 }
 
-export interface TariffAnnouncement {
+export interface TariffCodeSet {
+  id: string;
   name: string;
-  sourceName: string;
-  source: string;
-  codesImpacted: string[];
-  dateReleased: Date;
-  notes?: string;
+  source_name?: string;
+  source?: string;
+  codes: string[];
+  note?: string;
+  published_at: string; // ISO Date String
+  created_at: string; // ISO Date String
+  updated_at: string; // ISO Date String
 }
 
 export interface TariffImpactResult {
@@ -60,35 +63,34 @@ export const exampleLists: ListExample[] = [
   },
 ];
 
-const indiaOilBasedExclusions: TariffAnnouncement = {
-  name: "Exemptions for India's 'Russian Oil' 25% Tariff",
-  sourceName: "CSMS #66027027",
-  source: "https://content.govdelivery.com/accounts/USDHSCBP/bulletins/3ef7e13",
-  codesImpacted: indiaRussianOilConsumptionExclusions,
-  dateReleased: new Date("2025-08-25"),
-  notes:
-    "This specific announcement is only applicable to imports from India. Additional exemptions exist if the import is a qualified donation, information materials, or chapter 98 provision. Certain exemptions come with exclusions which you can see by clicking the HTS Code in the results table. Always contact a customs broker for proper import assistance and guidance.",
-};
+// const indiaOilBasedExclusions: TariffCodeSet = {
+//   name: "Exemptions for India's 'Russian Oil' 25% Tariff",
+//   source_name: "CSMS #66027027",
+//   source: "https://content.govdelivery.com/accounts/USDHSCBP/bulletins/3ef7e13",
+//   codes: indiaRussianOilConsumptionExclusions,
+//   published_at: new Date("2025-08-25"),
+//   note: "This specific announcement is only applicable to imports from India. Additional exemptions exist if the import is a qualified donation, information materials, or chapter 98 provision. Certain exemptions come with exclusions which you can see by clicking the HTS Code in the results table. Always contact a customs broker for proper import assistance and guidance.",
+// };
 
-const section232SteelAndAluminumChanges: TariffAnnouncement = {
-  name: "Additional Articles of Steel and Aluminum",
-  sourceName: "Federal Register",
-  source:
-    "https://www.federalregister.gov/public-inspection/2025-15819/adoption-and-procedures-of-the-section-232-steel-and-aluminum-tariff-inclusions-process",
-  codesImpacted: august_15_FR_232_impacted_codes_list,
-  dateReleased: new Date("2025-08-19"),
-};
+// const section232SteelAndAluminumChanges: TariffCodeSet = {
+//   name: "Additional Articles of Steel and Aluminum",
+//   source_name: "Federal Register",
+//   source:
+//     "https://www.federalregister.gov/public-inspection/2025-15819/adoption-and-procedures-of-the-section-232-steel-and-aluminum-tariff-inclusions-process",
+//   codes: august_15_FR_232_impacted_codes_list,
+//   published_at: new Date("2025-08-19"),
+// };
 
-const reciprocalTariffExclusions: TariffAnnouncement = {
-  name: "Exemptions for Reciprocal Tariffs",
-  sourceName: "USITC - Chapter 99 Subchapter 3 Note 2(v)(iii) ",
-  source: "https://hts.usitc.gov/search?query=9903.01.32",
-  codesImpacted: reciprocalTariffExclusionsList,
-  dateReleased: new Date("2025-04-05"),
-};
+// const reciprocalTariffExclusions: TariffCodeSet = {
+//   name: "Exemptions for Reciprocal Tariffs",
+//   source_name: "USITC - Chapter 99 Subchapter 3 Note 2(v)(iii) ",
+//   source: "https://hts.usitc.gov/search?query=9903.01.32",
+//   codes: reciprocalTariffExclusionsList,
+//   published_at: new Date("2025-04-05"),
+// };
 
-export const tariffAnnouncementLists: TariffAnnouncement[] = [
-  section232SteelAndAluminumChanges,
-  indiaOilBasedExclusions,
-  reciprocalTariffExclusions,
-];
+// export const tariffAnnouncementLists: TariffCodeSet[] = [
+//   section232SteelAndAluminumChanges,
+//   indiaOilBasedExclusions,
+//   reciprocalTariffExclusions,
+// ];

@@ -22,6 +22,7 @@ import { TertiaryLabel } from "./TertiaryLabel";
 import { CountrySelection } from "./CountrySelection";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import { PrimaryLabel } from "./PrimaryLabel";
 
 interface Props {
   isPayingUser: boolean;
@@ -179,38 +180,10 @@ export const Tariffs = ({ htsElement, tariffElement, isPayingUser }: Props) => {
   }, []);
 
   return (
-    <div className="flex flex-col gap-2">
-      {/* <div className="w-full flex justify-between gap-2 lg:items-end flex-col lg:flex-row">
-        <div className="shrink-0">
-          <div className="flex gap-2 items-end justify-between">
-            <div className="flex gap-2 items-center">
-              <h2 className="text-lg md:text-2xl text-white font-bold">
-                Tariff Explorer
-              </h2>
-              <div className="bg-secondary rounded-full">
-                <p className="text-base-100 px-2 py-0.5 font-semibold text-xs">
-                  Beta
-                </p>
-              </div>
-            </div>
-            <a
-              href="/tariffs/coverage"
-              target="_blank"
-              className="btn btn-primary btn-xs btn-link"
-            >
-              Learn More
-            </a>
-          </div>
-          <TertiaryText
-            value="Explore and compare potential tariff values for any number of countries."
-            color={Color.NEUTRAL_CONTENT}
-          />
-        </div>
-      </div> */}
-
+    <div className="flex flex-col gap-2 md:gap-8 my-2">
       {/* Show inputs for any content requirements based */}
       {codeBasedContentRequirements.length > 0 && (
-        <div className="grow w-full flex flex-col gap-4 my-4">
+        <div className="grow w-full flex flex-col md:flex-row gap-4">
           {codeBasedContentRequirements.map((contentRequirement) => (
             <div
               key={`${contentRequirement}-content-requirement`}
@@ -221,7 +194,7 @@ export const Tariffs = ({ htsElement, tariffElement, isPayingUser }: Props) => {
                 color={Color.WHITE}
               />
               <TertiaryText
-                value={`What percentage of the articles value that is ${contentRequirement}?`}
+                value={`What percent of the articles value is ${contentRequirement}?`}
                 color={Color.NEUTRAL_CONTENT}
               />
               <div className="flex gap-2 items-center mt-3">
@@ -254,173 +227,180 @@ export const Tariffs = ({ htsElement, tariffElement, isPayingUser }: Props) => {
         </div>
       )}
 
-      <div className="w-full">
-        <CountrySelection
-          selectedCountries={selectedCountries}
-          setSelectedCountries={setSelectedCountries}
-        />
-      </div>
+      <div className="flex flex-col gap-2">
+        <div className="w-full flex flex-col gap-2">
+          <SecondaryLabel value="Countries of Origin" color={Color.WHITE} />
+          <CountrySelection
+            selectedCountries={selectedCountries}
+            setSelectedCountries={setSelectedCountries}
+          />
+        </div>
 
-      <div className="w-full flex flex-col overflow-x-auto border-2 border-base-content/40 rounded-lg">
-        <table className="table">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Country of Origin</th>
-              <th className="w-auto min-w-64">
-                <div className="flex gap-2 items-center">
-                  <h3>Rates</h3>
-                  <button
-                    className={classNames(
-                      `btn btn-xs p-0.5`,
-                      (sortBy === TariffsTableSortOption.RATE_ASC ||
-                        sortBy === TariffsTableSortOption.RATE_DESC) &&
-                        "btn-primary",
-                      !sortBy && "btn-ghost"
-                    )}
-                    onClick={() => {
-                      if (!sortBy) {
-                        setSortBy(TariffsTableSortOption.RATE_ASC);
-                      }
-                      if (sortBy === TariffsTableSortOption.RATE_ASC) {
-                        setSortBy(TariffsTableSortOption.RATE_DESC);
-                      }
-                      if (sortBy === TariffsTableSortOption.RATE_DESC) {
-                        setSortBy(null);
-                      }
-                    }}
-                  >
-                    <ChevronDownIcon
+        <div className="w-full flex flex-col overflow-x-auto border border-base-content/40 rounded-lg">
+          <table className="table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Country of Origin</th>
+                <th className="w-auto min-w-64">
+                  <div className="flex gap-2 items-center">
+                    <h3>Rates</h3>
+                    <button
                       className={classNames(
-                        "w-4 h-4",
-                        sortBy === TariffsTableSortOption.RATE_ASC &&
-                          "rotate-180"
+                        `btn btn-xs p-0.5`,
+                        (sortBy === TariffsTableSortOption.RATE_ASC ||
+                          sortBy === TariffsTableSortOption.RATE_DESC) &&
+                          "btn-primary",
+                        !sortBy && "btn-ghost"
                       )}
-                    />
-                  </button>
-                </div>
-              </th>
-              <th className="max-w-20">FTA(s)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortedCountries.map((country, i) => {
-              const isExpanded = expandedRows.has(country.code);
-              const countryAmounts = getBaseAmountTariffsText(
-                country.baseTariffs
-              );
-
-              const countryPercentTariffsSums = country.tariffSets.map(
-                (tariffSet) =>
-                  getTotalPercentTariffsSum(tariffSet, country.baseTariffs)
-              );
-
-              return (
-                <React.Fragment key={`${country.code}-${i}`}>
-                  <tr
-                    className={classNames(
-                      "w-full cursor-pointer transition-colors hover:bg-base-content/10",
-                      !isExpanded && "not-last:border-b border-base-content/40",
-                      isExpanded && "bg-base-300 hover:bg-primary/50 border-b-0"
-                    )}
-                    onClick={() => {
-                      if (isPayingUser) {
-                        toggleRow(country.code);
-                      } else {
-                        toast.error(
-                          "Please upgrade to view advanced tariff analysis"
-                        );
-                      }
-                    }}
-                  >
-                    <td className="w-8">
+                      onClick={() => {
+                        if (!sortBy) {
+                          setSortBy(TariffsTableSortOption.RATE_ASC);
+                        }
+                        if (sortBy === TariffsTableSortOption.RATE_ASC) {
+                          setSortBy(TariffsTableSortOption.RATE_DESC);
+                        }
+                        if (sortBy === TariffsTableSortOption.RATE_DESC) {
+                          setSortBy(null);
+                        }
+                      }}
+                    >
                       <ChevronDownIcon
-                        className={`h-4 w-4 text-white transition-transform duration-100 ${
-                          isExpanded ? "" : "-rotate-180"
-                        }`}
-                      />
-                    </td>
-                    <td>
-                      <div className="flex gap-3 items-center">
-                        <h2 className="text-white">{country.flag}</h2>
-                        <h2 className="text-white">{country.name}</h2>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="flex gap-2">
-                        {!isPayingUser ? (
-                          <Link
-                            href="/about/tariffs"
-                            target="_blank"
-                            className="btn btn-link no-underline text-base-content hover:text-primary"
-                          >
-                            🔒 Upgrade to View Tariff Details
-                          </Link>
-                        ) : (
-                          countryPercentTariffsSums.map((sum, i) => (
-                            <div
-                              key={`${country.code}-${i}-percent-sum-${i}`}
-                              className="flex gap-2"
-                            >
-                              <div className="flex gap-1">
-                                {countryAmounts && countryAmounts.length > 0 ? (
-                                  <p className="text-white">
-                                    {countryAmounts} +
-                                  </p>
-                                ) : null}
-                                {<p className="text-white">{sum}%</p>}
-                                {i > 0 &&
-                                  codeBasedContentRequirements &&
-                                  codeBasedContentRequirements.length > 0 &&
-                                  uiContentPercentages[i - 1].name && (
-                                    <p className="text-white">
-                                      for {uiContentPercentages[i - 1].name}
-                                    </p>
-                                  )}
-                              </div>
-                              {countryPercentTariffsSums.length !== i + 1
-                                ? "|"
-                                : null}
-                            </div>
-                          ))
+                        className={classNames(
+                          "w-4 h-4",
+                          sortBy === TariffsTableSortOption.RATE_ASC &&
+                            "rotate-180"
                         )}
-                      </div>
-                    </td>
-                    <td>
-                      <p className="text-lg p-0">
-                        {country.specialTradePrograms.length > 0 ? "✅" : "−"}
-                      </p>
-                    </td>
-                  </tr>
-                  {isExpanded && (
+                      />
+                    </button>
+                  </div>
+                </th>
+                <th className="max-w-20">FTA(s)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedCountries.map((country, i) => {
+                const isExpanded = expandedRows.has(country.code);
+                const countryAmounts = getBaseAmountTariffsText(
+                  country.baseTariffs
+                );
+
+                const countryPercentTariffsSums = country.tariffSets.map(
+                  (tariffSet) =>
+                    getTotalPercentTariffsSum(tariffSet, country.baseTariffs)
+                );
+
+                return (
+                  <React.Fragment key={`${country.code}-${i}`}>
                     <tr
                       className={classNames(
-                        "w-full bg-base-300",
-                        isExpanded && "not-last:border-b border-base-content/40"
+                        "w-full cursor-pointer transition-colors hover:bg-base-content/10",
+                        !isExpanded &&
+                          "not-last:border-b border-base-content/40",
+                        isExpanded &&
+                          "bg-base-300 hover:bg-primary/50 border-b-0"
                       )}
+                      onClick={() => {
+                        if (isPayingUser) {
+                          toggleRow(country.code);
+                        } else {
+                          toast.error(
+                            "Please upgrade to view advanced tariff analysis"
+                          );
+                        }
+                      }}
                     >
-                      <td colSpan={4} className="p-4">
-                        <InlineCountryTariff
-                          key={`tariff-${country.code}-${i}`}
-                          country={country}
-                          htsElement={htsElement}
-                          tariffElement={tariffElement}
-                          contentRequirements={uiContentPercentages}
-                          countryIndex={countries.findIndex(
-                            (c) => c.code === country.code
-                          )}
-                          countries={countries}
-                          setCountries={setCountries}
-                          isPayingUser={isPayingUser}
+                      <td className="w-8">
+                        <ChevronDownIcon
+                          className={`h-4 w-4 text-white transition-transform duration-100 ${
+                            isExpanded ? "" : "-rotate-180"
+                          }`}
                         />
                       </td>
+                      <td>
+                        <div className="flex gap-3 items-center text-sm md:text-base">
+                          <h2 className="text-white">{country.flag}</h2>
+                          <h2 className="text-white">{country.name}</h2>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="flex gap-2">
+                          {!isPayingUser ? (
+                            <Link
+                              href="/about/tariffs"
+                              target="_blank"
+                              className="btn btn-link no-underline text-base-content hover:text-primary"
+                            >
+                              🔒 Unlock Advanced Tariff Details
+                            </Link>
+                          ) : (
+                            countryPercentTariffsSums.map((sum, i) => (
+                              <div
+                                key={`${country.code}-${i}-percent-sum-${i}`}
+                                className="flex gap-2"
+                              >
+                                <div className="flex gap-1">
+                                  {countryAmounts &&
+                                  countryAmounts.length > 0 ? (
+                                    <p className="text-white">
+                                      {countryAmounts} +
+                                    </p>
+                                  ) : null}
+                                  {<p className="text-white">{sum}%</p>}
+                                  {i > 0 &&
+                                    codeBasedContentRequirements &&
+                                    codeBasedContentRequirements.length > 0 &&
+                                    uiContentPercentages[i - 1].name && (
+                                      <p className="text-white">
+                                        for {uiContentPercentages[i - 1].name}
+                                      </p>
+                                    )}
+                                </div>
+                                {countryPercentTariffsSums.length !== i + 1
+                                  ? "|"
+                                  : null}
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <p className="text-lg p-0">
+                          {country.specialTradePrograms.length > 0 ? "✅" : "−"}
+                        </p>
+                      </td>
                     </tr>
-                  )}
-                </React.Fragment>
-              );
-            })}
-          </tbody>
-        </table>
+                    {isExpanded && (
+                      <tr
+                        className={classNames(
+                          "w-full bg-base-300",
+                          isExpanded &&
+                            "not-last:border-b border-base-content/40"
+                        )}
+                      >
+                        <td colSpan={4} className="p-4">
+                          <InlineCountryTariff
+                            key={`tariff-${country.code}-${i}`}
+                            country={country}
+                            htsElement={htsElement}
+                            tariffElement={tariffElement}
+                            contentRequirements={uiContentPercentages}
+                            countryIndex={countries.findIndex(
+                              (c) => c.code === country.code
+                            )}
+                            countries={countries}
+                            setCountries={setCountries}
+                            isPayingUser={isPayingUser}
+                          />
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

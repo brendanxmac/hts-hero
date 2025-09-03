@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import {
   fetchPurchasesForUser,
   getActivePriorityTariffImpactPurchase,
-  getActiveTariffImpactPurchases,
+  getActiveTariffImpactPurchasesForUser,
 } from "../libs/supabase/purchase";
 
 // <Pricing/> displays the pricing plans for your app
