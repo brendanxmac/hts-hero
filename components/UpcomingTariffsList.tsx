@@ -169,17 +169,17 @@ export const PendingTariffsList = ({ hideHeading }: Props) => {
                 </span>{" "}
               </h1> */}
             </div>
-            {/* <p className="text-sm md:text-lg text-neutral-300 max-w-5xl mx-auto mt-2 md:mt-4">
+            <p className="text-sm md:text-lg text-neutral-300 max-w-5xl mx-auto mt-2 md:mt-4">
               Quickly knowing your impacts can mean big savings
             </p>
             <div className="flex justify-center mt-4">
               <Link
                 className="btn btn-wide btn-primary"
-                href={"/tariffs/impact-checker"}
+                href={"/about/tariffs#pricing"}
               >
                 Be Prepared
               </Link>
-            </div> */}
+            </div>
           </div>
         )}
 

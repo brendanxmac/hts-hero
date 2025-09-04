@@ -55,7 +55,9 @@ export const tariffImpactFeatures = [
               </li>
               <li className="p-3 bg-base-300 rounded-lg">
                 <div className="w-full flex justify-between items-center">
-                  <p className="truncate">Items of Steel & Aluminum</p>
+                  <p className="truncate">
+                    Additional Steel & Aluminum Articles
+                  </p>
                 </div>
               </li>
               <li className="w-full p-3 truncate flex gap-2 items-center justify-between">

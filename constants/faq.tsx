@@ -4,15 +4,14 @@ import { FAQItem } from "../components/FAQItem";
 
 export const tariffImpactFaqList: FAQItem[] = [
   {
-    question: "Which announcements or updates do you support?",
+    question: "Which tariff announcements or updates do you support?",
     answer: (
       <div className="space-y-2 leading-relaxed">
-        You can see the full list of announcements and tariff updates we support
-        by checking the dropdown on the{" "}
-        <a href="/tariffs/impact-checker" className="text-secondary underline">
-          Impact Checker
-        </a>
-        .
+        Any tariff announcement that has a clearly defined list of affected HTS
+        codes will be made available for you to check against. <br />
+        If an announcement is made that is unclear about exactly what's impacted
+        we will still send you a notification and highlight what the
+        announcement says it covers.
       </div>
     ),
   },
@@ -31,21 +30,81 @@ export const tariffImpactFaqList: FAQItem[] = [
     ),
   },
   {
-    question: "Where do you get the lists outline what HTS Codes are impacted?",
+    question: "When do I get notified about my imports being affected?",
     answer: (
       <div className="space-y-2 leading-relaxed">
-        We always include the source(s) we used to compile the list of impacted
-        codes right in the dropdown menu on the{" "}
+        Anytime a new tariff announcement affects your imports!
+        <br />
+        Once we&apos;ve updated the system to include the new tariff
+        announcement and made sure everything is working properly, we notify all
+        customers on paid plans who have uploaded their lists of HTS codes.
+      </div>
+    ),
+  },
+  {
+    question: "How do you notify me about my imports being affected?",
+    answer: (
+      <div className="space-y-2 leading-relaxed">
+        We use your lists of HTS Codes to determine if your imports are affected
+        by a new tariff announcement. <br />
+        You can easily create these lists for your imports and organize them in
+        whatever way makes sense to you:
+        <br /> <br />
+        <ul className="list-disc list-inside">
+          <li>One list per customer</li>
+          <li>One list per product</li>
+          <li>One list per country</li>
+          <li>One list with all your codes</li>
+          <li>One list with a single code</li>
+          <li>etc...</li>
+        </ul>
+        <br />
+        Once your lists are in place, anytime a new tariff announcement impacts
+        any of the imports in any of your lists you'll receive an email
+        notification (one for each list that is affected).
+      </div>
+    ),
+  },
+  {
+    question: "Which announcements or updates do you currently support?",
+    answer: (
+      <div className="space-y-2 leading-relaxed">
+        {/* TODO: ADD LIST HERE */}
+        You can see the current list of announcements and tariff updates we
+        support by checking the announcement dropdown on the{" "}
         <a href="/tariffs/impact-checker" className="text-secondary underline">
           Impact Checker
         </a>
         .
+      </div>
+    ),
+  },
+  {
+    question: "Where do you get the lists outline what HTS Codes are impacted?",
+    answer: (
+      <div className="space-y-2 leading-relaxed">
+        We use officially published government lists and always cite our
+        sources.
         <br />
         <br />
-        If you notice missing or incorrect sources or codes, please{" "}
-        <a href="mailto:support@htshero.com" className="link text-secondary">
-          let us know!
+        The source(s) used to create the list of impacted HTS Codes are
+        displayed right in the announcement dropdown menu on the{" "}
+        <a href="/tariffs/impact-checker" className="text-secondary underline">
+          Impact Checker
         </a>
+        .
+      </div>
+    ),
+  },
+  {
+    question: "Can I save lists of my HTS codes to check against later on?",
+    answer: (
+      <div className="space-y-2 leading-relaxed">
+        Of course! This is already supported in the{" "}
+        <a href="/tariffs/impact-checker" className="text-secondary underline">
+          app
+        </a>
+        .
       </div>
     ),
   },
@@ -53,29 +112,12 @@ export const tariffImpactFaqList: FAQItem[] = [
     question: "Can you notify me when new updates are added?",
     answer: (
       <div className="space-y-2 leading-relaxed">
-        We&apos;re currently working on supporting this!
-        <br />
-        <br />
-        If notifications are something you&apos;d like to see, send us a quick{" "}
-        <a href="mailto:support@htshero.com" className="link text-secondary">
-          message
-        </a>{" "}
-        and we will bump it up the priority list!
-      </div>
-    ),
-  },
-  {
-    question: "Can I save lists of codes to check against later on?",
-    answer: (
-      <div className="space-y-2 leading-relaxed">
-        We&apos;re adding this feature soon!
-        <br />
-        <br />
-        If this is something you&apos;d like to be able to do, send us a quick{" "}
-        <a href="mailto:support@htshero.com" className="link text-secondary">
-          message
-        </a>{" "}
-        and we will bump it up the priority list!
+        You bet! Upload & save your list of imports and you're all set to
+        recieve notifications when your imports are affected as long as you're
+        on a{" "}
+        <a href="/about/tariffs#pricing" className="text-secondary underline">
+          paid plan
+        </a>
       </div>
     ),
   },

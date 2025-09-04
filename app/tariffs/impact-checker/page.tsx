@@ -572,7 +572,7 @@ export default function Home() {
           {/* Tariff Announcement Selection */}
           <div className="flex flex-col gap-2">
             <div className="w-full flex justify-between gap-4 items-center">
-              <PrimaryLabel value="Select Tariff Announcement" />
+              <PrimaryLabel value="Tariff Announcement" />
               {fetchingTariffCodeSets && <LoadingIndicator spinnerOnly />}
             </div>
 
@@ -596,7 +596,7 @@ export default function Home() {
             <div className="flex flex-col gap-1">
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
-                  <PrimaryLabel value="Enter HTS Codes" />
+                  <PrimaryLabel value="HTS Codes" />
                   <button
                     className="btn btn-circle btn-xs bg-base-content/30 hover:bg-base-content/70 text-white ml-2 text-sm flex items-center justify-center"
                     onClick={() => setShowHelpModal(true)}

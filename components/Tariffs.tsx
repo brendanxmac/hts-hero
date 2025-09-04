@@ -337,7 +337,7 @@ export const Tariffs = ({ htsElement, tariffElement, isPayingUser }: Props) => {
                             countryPercentTariffsSums.map((sum, i) => (
                               <div
                                 key={`${country.code}-${i}-percent-sum-${i}`}
-                                className="flex gap-2"
+                                className="flex gap-2 text-sm md:text-base"
                               >
                                 <div className="flex gap-1">
                                   {countryAmounts &&

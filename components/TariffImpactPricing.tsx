@@ -248,17 +248,20 @@ const TariffImpactPricing = () => {
         </div>
 
         {/* Enterprise Plan -- aka lets talk */}
-        {/* <div className="flex flex-col md:flex-row justify-between md:items-center gap-3 w-full max-w-3xl mx-auto border-2 border-base-content/20 rounded-lg mt-4 p-6">
+        <div className="flex flex-col md:flex-row justify-between md:items-center gap-3 w-full max-w-xl lg:max-w-7xl mx-auto border-2 border-base-content/20 rounded-lg mt-4 p-6">
           <div className="flex flex-col">
             <p className="text-2xl text-white font-bold">Enterprise</p>
             <p className="text-base-content/80">
-              Want the Impact Checker for your whole team?
+              Want Tariff Impact Checker for your whole team?
             </p>
           </div>
-          <button className="btn btn-primary md:btn-wide w-full">
+          <a
+            href="mailto:brendan@htshero.com?subject=Enterprise%20Inquiry%20for%20Tariff%20Impact%20Checker&body=Hi%20Brendan%2C%20I'm%20interested%20in%20getting%20Tariff%20Impact%20Checker%20for%20my%20team"
+            className="btn btn-primary md:btn-wide w-full"
+          >
             Lets Talk!
-          </button>
-        </div> */}
+          </a>
+        </div>
       </div>
     </section>
   );

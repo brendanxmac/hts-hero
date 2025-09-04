@@ -61,8 +61,8 @@ export default function Home() {
 
         <Demo
           standoutPlacement="end"
-          titleStandout=""
-          title="Copy, Paste, Tariff Clarity 😌"
+          titleStandout="Get Clarity 😌"
+          title="Enter Codes,"
           subtitle="Enter the HTS codes for your imports and instantly see if new tariffs affect them"
           ctaText="Try it Now!"
           ctaLink="/tariffs/impact-checker"
@@ -76,29 +76,12 @@ export default function Home() {
           }}
         />
 
-        <Demo
-          standoutPlacement="end"
-          titleStandout="Tariff Wizard"
-          title="Your Personal"
-          subtitle="See the full tariff breakdown for any import from any country & explore possible exemptions"
-          ctaText="Try it Now!"
-          ctaLink="/tariffs/impact-checker"
-          media={{
-            title: "Tariff Impacts",
-            description: "Tariff Impacts Demo",
-            mediaType: "video",
-            mediaPath: "/impact-3.mp4",
-            mediaFormat: "mp4",
-            altText: "Tariff Impacts",
-          }}
-        />
-
         <div className="hidden md:block">
           <Demo
-            standoutPlacement="end"
-            titleStandout="Ahead"
-            title="Stay One Step"
-            subtitle="Get notified, see the impacts, and take action to save your bottom-line"
+            standoutPlacement="start"
+            titleStandout="Get Notified"
+            title="When You're Affected"
+            subtitle="Recieve email notifications when new tariff announcements affect your imports"
             ctaText="Try it Now!"
             ctaLink="/tariffs/impact-checker"
             media={{
@@ -129,6 +112,23 @@ export default function Home() {
             }}
           />
         </div>
+
+        <Demo
+          standoutPlacement="end"
+          titleStandout="Your Options"
+          title="See Your Impacts &"
+          subtitle="Get the full tariff breakdown for any import & explore options for possible savings"
+          ctaText="Try it Now!"
+          ctaLink="/tariffs/impact-checker"
+          media={{
+            title: "Tariff Impacts",
+            description: "Tariff Impacts Demo",
+            mediaType: "video",
+            mediaPath: "/impacts-and-options.mp4",
+            mediaFormat: "mp4",
+            altText: "Tariff Impacts",
+          }}
+        />
 
         <TariffImpactPricing />
 

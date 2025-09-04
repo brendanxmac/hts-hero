@@ -183,6 +183,7 @@ export const Tariff = ({
             (exceptionTariff) =>
               (exceptionTariff.isActive || showInactive) && (
                 <Tariff
+                  isPayingUser={isPayingUser}
                   key={exceptionTariff.code}
                   exceptionLevel={exceptionLevel + 1}
                   setIndex={setIndex}
