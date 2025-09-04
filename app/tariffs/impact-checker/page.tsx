@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useHts } from "../../../contexts/HtsContext";
 import { validateTariffableHtsCode } from "../../../libs/hts";
 import TariffImpactCodesInput from "../../../components/TariffImpactCodesInput";
@@ -50,6 +51,7 @@ export default function Home() {
   const CHARACTER_LIMIT = 3000;
   const { user, isLoading: loadingUser } = useUser();
   const { fetchElements, htsElements } = useHts();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [inputValue, setInputValue] = useState("");
   const [results, setResults] = useState<TariffImpactResult[]>([]);
@@ -75,6 +77,7 @@ export default function Home() {
   const [tariffCodeSets, setTariffCodeSets] = useState<TariffCodeSet[]>([]);
   const [fetchingPurchases, setFetchingPurchases] = useState(true);
   const [fetchingTariffCodeSets, setFetchingTariffCodeSets] = useState(true);
+  const [urlParamsProcessed, setUrlParamsProcessed] = useState(false);
 
   // Update exist set of codes
   const updateCodeSet = async () => {
@@ -223,14 +226,62 @@ export default function Home() {
 
   useEffect(() => {
     // Initialize with the first changeList when component mounts
-    if (tariffCodeSets.length > 0) {
+    // Only do this if we haven't processed URL parameters yet
+    if (tariffCodeSets.length > 0 && !urlParamsProcessed) {
       setSelectedTariffAnnouncementIndex(0);
     }
-  }, [tariffCodeSets]);
+  }, [tariffCodeSets, urlParamsProcessed]);
 
   useEffect(() => {
     handleInputChange(inputValue);
   }, [selectedTariffAnnouncementIndex]);
+
+  // Process URL parameters after all data is loaded
+  useEffect(() => {
+    if (
+      !urlParamsProcessed &&
+      !loading &&
+      !fetchingTariffCodeSets &&
+      !fetchingHtsCodeSets &&
+      tariffCodeSets.length > 0
+    ) {
+      const tariffAnnouncementId = searchParams.get("tariffAnnouncement");
+      const htsCodeSetId = searchParams.get("htsCodeSet");
+
+      // Process tariff announcement parameter
+      if (tariffAnnouncementId) {
+        const matchingTariffIndex = tariffCodeSets.findIndex(
+          (set) => set.id === tariffAnnouncementId
+        );
+        if (matchingTariffIndex !== -1) {
+          setSelectedTariffAnnouncementIndex(matchingTariffIndex);
+        }
+      }
+
+      // Process HTS code set parameter
+      if (htsCodeSetId && htsCodeSets.length > 0) {
+        const matchingHtsCodeSet = htsCodeSets.find(
+          (set) => set.id === htsCodeSetId
+        );
+        if (matchingHtsCodeSet) {
+          setSelectedHtsCodeSetId(htsCodeSetId);
+          // Also populate the input with the codes from the selected set
+          const codesString = matchingHtsCodeSet.codes.join(", ");
+          setInputValue(codesString);
+        }
+      }
+
+      setUrlParamsProcessed(true);
+    }
+  }, [
+    urlParamsProcessed,
+    loading,
+    fetchingTariffCodeSets,
+    fetchingHtsCodeSets,
+    tariffCodeSets,
+    htsCodeSets,
+    searchParams,
+  ]);
 
   const htsCodeExists = (str: string) => {
     return htsElements.some((element) => element.htsno === str);
