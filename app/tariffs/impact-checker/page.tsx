@@ -73,6 +73,7 @@ export default function Home() {
   const [activeTariffImpactPurchase, setActiveTariffImpactPurchase] =
     useState<Purchase | null>(null);
   const [tariffCodeSets, setTariffCodeSets] = useState<TariffCodeSet[]>([]);
+  const [fetchingPurchases, setFetchingPurchases] = useState(true);
   const [fetchingTariffCodeSets, setFetchingTariffCodeSets] = useState(true);
 
   // Update exist set of codes
@@ -178,10 +179,12 @@ export default function Home() {
     };
 
     const fetchPurchases = async () => {
+      setFetchingPurchases(true);
       const activeTariffImpactPurchase =
         await getActivePriorityTariffImpactPurchase(user.id);
 
       setActiveTariffImpactPurchase(activeTariffImpactPurchase);
+      setFetchingPurchases(false);
     };
 
     if (user) {
@@ -456,24 +459,26 @@ export default function Home() {
                 Tariff Impact Checker
               </h1>
 
-              <span
-                className={classNames(
-                  "px-2 py-0.5 rounded-md font-semibold text-xs border",
-                  activeTariffImpactPurchase &&
-                    activeTariffImpactPurchase.product_name ===
-                      PricingPlan.TARIFF_IMPACT_PRO &&
-                    "text-secondary border-secondary",
-                  activeTariffImpactPurchase &&
-                    activeTariffImpactPurchase.product_name ===
-                      PricingPlan.TARIFF_IMPACT_STANDARD &&
-                    "text-primary border-primary",
-                  !activeTariffImpactPurchase && "text-warning border-warning"
-                )}
-              >
-                {activeTariffImpactPurchase
-                  ? activeTariffImpactPurchase.product_name.split(" ")[2]
-                  : "Free Plan"}
-              </span>
+              {!fetchingPurchases && (
+                <span
+                  className={classNames(
+                    "px-2 py-0.5 rounded-md font-semibold text-xs border",
+                    activeTariffImpactPurchase &&
+                      activeTariffImpactPurchase.product_name ===
+                        PricingPlan.TARIFF_IMPACT_PRO &&
+                      "text-secondary border-secondary",
+                    activeTariffImpactPurchase &&
+                      activeTariffImpactPurchase.product_name ===
+                        PricingPlan.TARIFF_IMPACT_STANDARD &&
+                      "text-primary border-primary",
+                    !activeTariffImpactPurchase && "text-warning border-warning"
+                  )}
+                >
+                  {activeTariffImpactPurchase
+                    ? activeTariffImpactPurchase.product_name.split(" ")[2]
+                    : "Free Plan"}
+                </span>
+              )}
             </div>
 
             <div className="ml-1">
