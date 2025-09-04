@@ -1,24 +1,38 @@
+import { HtsCodeSet } from "../../interfaces/hts";
 import { sendEmail } from "../../libs/resend";
+import { TariffCodeSet } from "../../tariffs/announcements/announcements";
 
 export const sendTariffImpactCheckEmail = async (
   recipient: string,
-  tariffAnnouncement: string,
-  subject: string
+  tariffCodeSet: TariffCodeSet,
+  userHtsCodeSet: HtsCodeSet,
+  affectedImportsCount: number
 ) => {
-  const html = tariffImpactCheckEmailHtml(tariffAnnouncement);
-  const text = tariffImpactCheckEmailText(tariffAnnouncement);
+  const html = tariffImpactCheckEmailHtml(
+    tariffCodeSet,
+    userHtsCodeSet,
+    affectedImportsCount
+  );
+  const text = tariffImpactCheckEmailText(
+    tariffCodeSet,
+    userHtsCodeSet,
+    affectedImportsCount
+  );
 
   await sendEmail({
     to: recipient,
-    subject: subject || `New Tariff Announcement - Check Your Imports`,
+    subject: `🚨 New Tariffs Affect ${affectedImportsCount} of your Imports`,
     text,
     html,
-    // TODO: implement no-reply?
     replyTo: "support@htshero.com",
   });
 };
 
-export const tariffImpactCheckEmailHtml = (tariffAnnouncement: string) => {
+export const tariffImpactCheckEmailHtml = (
+  tariffCodeSet: TariffCodeSet,
+  userHtsCodeSet: HtsCodeSet,
+  affectedImportsCount: number
+) => {
   return `<!DOCTYPE html>
 <html>
   <head>
@@ -56,25 +70,24 @@ export const tariffImpactCheckEmailHtml = (tariffAnnouncement: string) => {
     </style>
   </head>
   <body>
-    <h2>🚨 New Tariff Announcement: ${tariffAnnouncement}</h2>
+    <h2>New Tariff Announcement: ${tariffCodeSet.name}</h2>
     
     <div class="alert-box">
-      <h3>Important: Some of your imports may be affected</h3>
-      <p>A new tariff announcement has been made that may impact some of the products you import. It's important to check if your HTS codes are included in this announcement to understand the potential impact on your business.</p>
+      <h3>We&apos;ve identified that ${affectedImportsCount} of your ${userHtsCodeSet.name} imports are affected by this announcement</h3>
+      <p>To instantly see which ones are affected and the full tariff impacts, click the button below.</p>
     </div>
 
-    <p>Don't let unexpected tariff changes catch you off guard. Use our Tariff Impact Checker to quickly identify which of your imports are affected by this new announcement.</p>
-
-    <a href="https://htshero.com/tariffs/impact-checker" class="cta-button">Check Your Imports Now</a><br/>
+    <a href="https://htshero.com/tariffs/impact-checker?tariffAnnouncement=${tariffCodeSet.id}&htsCodeSet=${userHtsCodeSet.id}" class="cta-button">See Affected Imports</a><br/>
     
-    <p>Our impact checker will help you:</p>
+    <p>Our Tariff Impact Checker helps you or your clients:</p>
     <ul>
-      <li>Identify which of your HTS codes are included in the new tariff announcement</li>
-      <li>Understand the potential cost impact on your imports</li>
-      <li>Plan ahead for any necessary adjustments to your supply chain</li>
+      <li>See which imports are affected by new tariff announcements</li>
+      <li>Quickly understand the potential cost impacts</li>
+      <li>Discover possible exemptions, trade programs, and countries of origin alternatives</li>
+      <li>Get a jump start on supply chain adjustmnet, if needed</li>
     </ul>
 
-    <p>If you have any questions about this announcement or need assistance with your tariff analysis, our support team (support@htshero.com) is here to help!</p>
+    <p>If you have any questions about this announcement or need assistance, our support team (support@htshero.com) is here to help!</p>
     
     <div>
       <p>
@@ -87,16 +100,18 @@ export const tariffImpactCheckEmailHtml = (tariffAnnouncement: string) => {
 </html>`;
 };
 
-export const tariffImpactCheckEmailText = (tariffAnnouncement: string) => {
-  return `🚨 New Tariff Announcement: ${tariffAnnouncement}
+export const tariffImpactCheckEmailText = (
+  tariffCodeSet: TariffCodeSet
+  userHtsCodeSet: HtsCodeSet,
+  affectedImportsCount: number
+) => {
+  return `New Tariff Announcement: ${tariffAnnouncementName}
 
-Important: Some of your imports may be affected
+HTS Hero has identified that ${affectedImportsCount} of your ${affectedListName} imports have been identified to be impacted by these new tariffs
 
-A new tariff announcement has been made that may impact some of the products you import. It's important to check if your HTS codes are included in this announcement to understand the potential impact on your business.
+You can instantly see which ones are impacted and easily view the full tariff impacts to make informed decisions about your supply chain.
 
-Don't let unexpected tariff changes catch you off guard. Use our Tariff Impact Checker to quickly identify which of your imports are affected by this new announcement.
-
-Check Your Imports Now: https://htshero.com/tariffs/impact-checker
+See Affected Imports: https://htshero.com/tariffs/impact-checker
 
 Our impact checker will help you:
 • Identify which of your HTS codes are included in the new tariff announcement

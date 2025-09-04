@@ -126,23 +126,14 @@ const processTariffImpactNotifications = async (tariffCodeSetId: string) => {
             });
 
             if (codesIncludedInTariffSet.length > 0) {
-              const emailSubject = `🚨 ${codesIncludedInTariffSet.length} of your imports ${codesIncludedInTariffSet.length > 1 ? "are" : "is"} included in a new tariff announcement`;
-
               try {
-                // await sendTariffImpactCheckEmail(
-                //   user.email,
-                //   tariffCodeSet.name,
-                //   emailSubject
-                // );
+                await sendTariffImpactCheckEmail(
+                  user.email,
+                  tariffCodeSet,
+                  codeSet,
+                  codesIncludedInTariffSet.length
+                );
                 emailsSent++;
-
-                console.log(
-                  `🚨 ${codesIncludedInTariffSet.length} of your imports ${codesIncludedInTariffSet.length > 1 ? "are" : "is"} included in a new tariff announcement`
-                );
-                console.log(
-                  `Some of your ${codeSet.name} imports are included in the latest tariff announcement: ${tariffCodeSet.name}`
-                );
-                console.log();
               } catch (emailError) {
                 const errorMsg = `Failed to send email to user ${user.id} (${user.email}) for codeSet ${codeSet.id}: ${emailError instanceof Error ? emailError.message : String(emailError)}`;
                 errors.push(errorMsg);
