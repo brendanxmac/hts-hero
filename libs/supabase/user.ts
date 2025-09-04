@@ -12,6 +12,21 @@ export interface UserProfile {
   updated_at: string;
 }
 
+export const fetchUsers = async (userIds: string[]): Promise<UserProfile[]> => {
+  const supabase = createSupabaseClient();
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .in("id", userIds);
+
+  if (error) {
+    console.error("Failed to fetch users:", error);
+    throw new Error("Failed to fetch users");
+  }
+
+  return data as UserProfile[];
+};
+
 export const fetchUserByStripeCustomerId = async (stripeCustomerId: string) => {
   const supabase = createSupabaseClient();
 
