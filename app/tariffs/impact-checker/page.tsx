@@ -46,6 +46,7 @@ import { SaveCodeListModal } from "../../../components/SaveCodesListModal";
 import { findCodeSet, codeSetMatchesString } from "../../../utilities/hts";
 import TariffConversionPricing from "../../../components/TariffConversionPricing";
 import { fetchTariffCodeSets } from "../../../libs/tariff-code-set";
+import { ArrowRightIcon } from "@heroicons/react/16/solid";
 
 export default function Home() {
   const CHARACTER_LIMIT = 3000;
@@ -504,31 +505,61 @@ export default function Home() {
       <div className="w-full max-w-5xl mx-auto flex flex-col px-4 sm:px-6 gap-8 pb-6">
         {/* Header */}
         <div className="flex justify-between md:items-center flex-col-reverse md:flex-row gap-4">
-          <div className="flex flex-col md:gap-2">
-            <div className="flex items-center gap-4">
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-100">
-                Tariff Impact Checker
-              </h1>
+          <div className="w-full flex flex-col md:gap-2">
+            <div className="w-full flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex gap-4 items-center">
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-100">
+                  Tariff Impact Checker
+                </h1>
 
-              {!fetchingPurchases && (
-                <span
-                  className={classNames(
-                    "px-2 py-0.5 rounded-md font-semibold text-xs border",
-                    activeTariffImpactPurchase &&
-                      activeTariffImpactPurchase.product_name ===
-                        PricingPlan.TARIFF_IMPACT_PRO &&
-                      "text-secondary border-secondary",
-                    activeTariffImpactPurchase &&
-                      activeTariffImpactPurchase.product_name ===
-                        PricingPlan.TARIFF_IMPACT_STANDARD &&
-                      "text-primary border-primary",
-                    !activeTariffImpactPurchase && "text-warning border-warning"
-                  )}
-                >
-                  {activeTariffImpactPurchase
-                    ? activeTariffImpactPurchase.product_name.split(" ")[2]
-                    : "Free Plan"}
-                </span>
+                {!fetchingPurchases && (
+                  <div className="flex items-center gap-4">
+                    <span
+                      className={classNames(
+                        "h-fit px-2 py-0.5 rounded-md font-semibold text-xs border",
+                        activeTariffImpactPurchase &&
+                          activeTariffImpactPurchase.product_name ===
+                            PricingPlan.TARIFF_IMPACT_PRO &&
+                          "text-secondary border-secondary",
+                        activeTariffImpactPurchase &&
+                          activeTariffImpactPurchase.product_name ===
+                            PricingPlan.TARIFF_IMPACT_STANDARD &&
+                          "text-primary border-primary",
+                        !activeTariffImpactPurchase &&
+                          "text-warning border-warning"
+                      )}
+                    >
+                      {activeTariffImpactPurchase
+                        ? activeTariffImpactPurchase.product_name.split(" ")[2]
+                        : "Free Plan"}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {!fetchingTariffImpactChecks && checkLimit !== Infinity && (
+                <div className="w-full sm:w-auto justify-between sm:justify-normal flex items-center gap-4 px-4 sm:px-0 p-2 bg-base-100 border sm:border-none sm:bg-inherit border-base-content/20 rounded-md">
+                  <p
+                    className={classNames(
+                      "text-sm font-bold",
+                      numChecksThisMonth >= checkLimit
+                        ? "text-error"
+                        : checkLimit - numChecksThisMonth < 20
+                          ? "text-warning"
+                          : "text-gray-400"
+                    )}
+                  >
+                    {checkLimit - numChecksThisMonth} Check
+                    {checkLimit - numChecksThisMonth === 1 ? "" : "s"} Left
+                  </p>
+
+                  <button
+                    className="btn btn-sm btn-primary"
+                    onClick={() => setShowPricingModal(true)}
+                  >
+                    Upgrade <ArrowRightIcon className="w-4 h-4" />
+                  </button>
+                </div>
               )}
             </div>
 
@@ -537,10 +568,10 @@ export default function Home() {
             </div>
           </div>
 
-          {fetchingTariffImpactChecks && tariffImpactChecks.length === 0 ? (
+          {/* {fetchingTariffImpactChecks && tariffImpactChecks.length === 0 ? (
             <LoadingIndicator spinnerOnly />
           ) : checkLimit === Infinity ? null : (
-            <div className="bg-base-100/90 backdrop-blur-sm w-full md:w-auto flex md:flex-col justify-between items-center gap-4 md:gap-1 border border-base-content/20 p-2 md:p-3 rounded-lg">
+            <div className="bg-base-100/90 backdrop-blur-sm w-full md:w-auto flex md:flex-col gap-4 md:gap-2 justify-between items-center border border-base-content/20 p-2 md:p-3 rounded-lg">
               <p
                 className={classNames(
                   "text-sm font-bold",
@@ -555,8 +586,6 @@ export default function Home() {
                 {checkLimit - numChecksThisMonth === 1 ? "" : "s"} Left
               </p>
 
-              <span className="text-xs -mt-1">Until Next Month</span>
-
               <button
                 className="btn btn-sm btn-primary"
                 onClick={() => setShowPricingModal(true)}
@@ -564,7 +593,7 @@ export default function Home() {
                 Get Unlimited Checks
               </button>
             </div>
-          )}
+          )} */}
         </div>
 
         {/* Inputs */}
