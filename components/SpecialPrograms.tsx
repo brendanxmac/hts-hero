@@ -24,7 +24,7 @@ export const SpecialPrograms = ({ programs }: Props) => {
             data-tip={note?.description || note?.title || null}
           >
             <button
-              className="btn btn-link btn-xs text-xs p-0 hover:text-secondary"
+              className="btn btn-link btn-primary btn-xs text-xs p-0 font-bold"
               onClick={() => {
                 const note = getGeneralNoteFromSpecialTariffSymbol(
                   specialTariffSymbol.trim()

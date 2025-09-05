@@ -49,7 +49,7 @@ export const InlineCountryTariff = ({
       ? TariffColumn.OTHER
       : TariffColumn.GENERAL
   );
-  const [showInactive, setShowInactive] = useState<boolean>(true);
+  const [showInactive, setShowInactive] = useState<boolean>(false);
   const [isSpecialProgramOpen, setIsSpecialProgramOpen] =
     useState<boolean>(false);
   const {
@@ -130,14 +130,13 @@ export const InlineCountryTariff = ({
   }, []);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-8 pb-4">
       {/* Header with Buttons */}
-      <div className="w-full flex justify-between">
+      <div className="w-full flex justify-between items-end">
         {/* Special Tariff Program Selection */}
-
         <div className="w-full flex flex-col gap-2">
           <div className="w-full flex flex-col gap-1">
-            <TertiaryLabel value="Potential Special Trade Programs" />
+            <TertiaryLabel value="Apply Special Trade Programs" />
           </div>
           <div
             className="relative w-full max-w-lg"
@@ -250,13 +249,13 @@ export const InlineCountryTariff = ({
 
         <div className="w-full flex gap-2 justify-end">
           <button
-            className="btn btn-xs btn-primary"
+            className="btn btn-sm btn-primary"
             onClick={() => setShowInactive(!showInactive)}
           >
             {showInactive ? "Hide Inactive Tariffs" : "Show All Tariffs"}
           </button>
           <button
-            className="btn btn-xs btn-primary"
+            className="btn btn-sm btn-primary"
             // TODO: implement this reset now with setCountries
             onClick={() => {}}
           >
@@ -389,7 +388,10 @@ export const InlineCountryTariff = ({
       <div className={"w-full flex flex-col gap-4"}>
         {tariffSets.map((tariffSet, i) => (
           <div key={`tariff-set-${i}`} className="flex flex-col gap-4">
-            <TertiaryLabel value={`${tariffSet.name} Tariff`} />
+            <PrimaryLabel
+              value={`${tariffSet.name} Tariff Details`}
+              color={Color.WHITE}
+            />
 
             <div className="flex flex-col gap-2">
               {baseTariffs &&
@@ -432,24 +434,24 @@ export const InlineCountryTariff = ({
                   />
                 ))}
             </div>
-            <div className="-mt-3 w-full flex justify-between items-end gap-2">
-              <h2 className="text-white font-bold">Total:</h2>
+            <div className="w-full flex justify-between items-end gap-2">
+              <TertiaryLabel value="Total:" />
               <div className="flex gap-2">
                 {baseTariffs
                   .flatMap((t) => t.tariffs)
                   .filter((t) => t.type === "amount").length > 0 && (
                   <div className="flex gap-2">
-                    <p className="text-base font-bold text-primary transition duration-100">
+                    <p className="text-base font-bold text-white transition duration-100">
                       {getAmountRatesString(
                         baseTariffs.flatMap((t) => t.tariffs)
                       )}
                     </p>
-                    <p className="text-base font-bold text-primary transition duration-100">
+                    <p className="text-base font-bold text-white transition duration-100">
                       +
                     </p>
                   </div>
                 )}
-                <p className="text-base font-bold text-primary transition duration-100">
+                <p className="text-base font-bold text-white transition duration-100">
                   {getAdValoremRate(
                     tariffColumn,
                     tariffSet.tariffs,

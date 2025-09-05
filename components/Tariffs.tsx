@@ -180,227 +180,263 @@ export const Tariffs = ({ htsElement, tariffElement, isPayingUser }: Props) => {
   }, []);
 
   return (
-    <div className="flex flex-col gap-2 md:gap-8 my-2">
-      {/* Show inputs for any content requirements based */}
-      {codeBasedContentRequirements.length > 0 && (
-        <div className="grow w-full flex flex-col md:flex-row gap-4">
-          {codeBasedContentRequirements.map((contentRequirement) => (
-            <div
-              key={`${contentRequirement}-content-requirement`}
-              className="w-full flex flex-col"
-            >
-              <SecondaryLabel
-                value={`${contentRequirement} Value Percentage`}
-                color={Color.WHITE}
-              />
-              <TertiaryText
-                value={`What percent of the articles value is ${contentRequirement}?`}
-                color={Color.NEUTRAL_CONTENT}
-              />
-              <div className="flex gap-2 items-center mt-3">
-                <input
-                  type="range"
-                  min={0}
-                  max="100"
-                  value={
-                    uiContentPercentages?.find(
-                      (c) => c.name === contentRequirement
-                    )?.value || 0
-                  }
-                  className="range range-primary range-sm p-1"
-                  onChange={(e) => {
-                    const value = parseInt(e.target.value);
-                    handleSliderChange(contentRequirement, value);
-                  }}
+    <>
+      <style jsx>{`
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translateY(-5px);
+            max-height: 0;
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+            max-height: 1000px;
+          }
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+      `}</style>
+      <div className="flex flex-col gap-2 md:gap-8 my-2">
+        {/* Show inputs for any content requirements based */}
+        {codeBasedContentRequirements.length > 0 && (
+          <div className="grow w-full flex flex-col md:flex-row gap-4">
+            {codeBasedContentRequirements.map((contentRequirement) => (
+              <div
+                key={`${contentRequirement}-content-requirement`}
+                className="w-full flex flex-col"
+              >
+                <SecondaryLabel
+                  value={`${contentRequirement} Value Percentage`}
+                  color={Color.WHITE}
                 />
-                <TertiaryLabel
-                  value={`${
-                    uiContentPercentages?.find(
-                      (c) => c.name === contentRequirement
-                    )?.value || 0
-                  }%`}
+                <TertiaryText
+                  value={`What percent of the articles value is ${contentRequirement}?`}
                   color={Color.NEUTRAL_CONTENT}
                 />
+                <div className="flex gap-2 items-center mt-3">
+                  <input
+                    type="range"
+                    min={0}
+                    max="100"
+                    value={
+                      uiContentPercentages?.find(
+                        (c) => c.name === contentRequirement
+                      )?.value || 0
+                    }
+                    className="range range-primary range-sm p-1"
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value);
+                      handleSliderChange(contentRequirement, value);
+                    }}
+                  />
+                  <TertiaryLabel
+                    value={`${
+                      uiContentPercentages?.find(
+                        (c) => c.name === contentRequirement
+                      )?.value || 0
+                    }%`}
+                    color={Color.NEUTRAL_CONTENT}
+                  />
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
 
-      <div className="flex flex-col gap-2">
-        <div className="w-full flex flex-col gap-2">
-          <SecondaryLabel value="Countries of Origin" color={Color.WHITE} />
+        <div className="flex flex-col gap-2">
           <CountrySelection
             selectedCountries={selectedCountries}
             setSelectedCountries={setSelectedCountries}
           />
-        </div>
 
-        <div className="w-full flex flex-col overflow-x-auto border border-base-content/40 rounded-lg">
-          <table className="table">
-            <thead>
-              <tr>
-                <th></th>
-                <th>Country of Origin</th>
-                <th className="w-auto min-w-64">
-                  <div className="flex gap-2 items-center">
-                    <h3>Rates</h3>
-                    <button
-                      className={classNames(
-                        `btn btn-xs p-0.5`,
-                        (sortBy === TariffsTableSortOption.RATE_ASC ||
-                          sortBy === TariffsTableSortOption.RATE_DESC) &&
-                          "btn-primary",
-                        !sortBy && "btn-ghost"
-                      )}
-                      onClick={() => {
-                        if (!sortBy) {
-                          setSortBy(TariffsTableSortOption.RATE_ASC);
-                        }
-                        if (sortBy === TariffsTableSortOption.RATE_ASC) {
-                          setSortBy(TariffsTableSortOption.RATE_DESC);
-                        }
-                        if (sortBy === TariffsTableSortOption.RATE_DESC) {
-                          setSortBy(null);
-                        }
-                      }}
-                    >
-                      <ChevronDownIcon
+          <div className="w-full flex flex-col overflow-x-auto border border-base-content/40 rounded-lg">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Country of Origin</th>
+                  <th className="w-auto min-w-48">
+                    <div className="flex gap-2 items-center">
+                      <h3>Rate(s)</h3>
+                      <button
                         className={classNames(
-                          "w-4 h-4",
-                          sortBy === TariffsTableSortOption.RATE_ASC &&
-                            "rotate-180"
+                          `btn btn-xs p-0.5`,
+                          (sortBy === TariffsTableSortOption.RATE_ASC ||
+                            sortBy === TariffsTableSortOption.RATE_DESC) &&
+                            "btn-primary",
+                          !sortBy && "btn-ghost"
                         )}
-                      />
-                    </button>
-                  </div>
-                </th>
-                <th className="max-w-20">FTA(s)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedCountries.map((country, i) => {
-                const isExpanded = expandedRows.has(country.code);
-                const countryAmounts = getBaseAmountTariffsText(
-                  country.baseTariffs
-                );
-
-                const countryPercentTariffsSums = country.tariffSets.map(
-                  (tariffSet) =>
-                    getTotalPercentTariffsSum(tariffSet, country.baseTariffs)
-                );
-
-                return (
-                  <React.Fragment key={`${country.code}-${i}`}>
-                    <tr
-                      className={classNames(
-                        "w-full cursor-pointer transition-colors hover:bg-base-content/10 bg-base-100",
-                        !isExpanded &&
-                          "not-last:border-b border-base-content/40",
-                        isExpanded && "hover:bg-base-200 border-b-0"
-                      )}
-                      onClick={() => {
-                        if (isPayingUser) {
-                          toggleRow(country.code);
-                        } else {
-                          toast.error(
-                            "Please upgrade to view advanced tariff analysis"
-                          );
-                        }
-                      }}
-                    >
-                      <td className="w-6">
+                        onClick={() => {
+                          if (!sortBy) {
+                            setSortBy(TariffsTableSortOption.RATE_ASC);
+                          }
+                          if (sortBy === TariffsTableSortOption.RATE_ASC) {
+                            setSortBy(TariffsTableSortOption.RATE_DESC);
+                          }
+                          if (sortBy === TariffsTableSortOption.RATE_DESC) {
+                            setSortBy(null);
+                          }
+                        }}
+                      >
                         <ChevronDownIcon
-                          className={`h-4 w-4 text-white transition-transform duration-100 ${
-                            isExpanded ? "" : "-rotate-180"
-                          }`}
-                        />
-                      </td>
-                      <td>
-                        <div className="flex gap-3 items-center text-sm md:text-base">
-                          <h2 className="text-white">{country.flag}</h2>
-                          <h2 className="text-white">{country.name}</h2>
-                        </div>
-                      </td>
-                      <td>
-                        <div className="flex gap-2">
-                          {!isPayingUser ? (
-                            <Link
-                              href="/about/tariffs"
-                              target="_blank"
-                              className="btn btn-link no-underline text-base-content hover:text-primary"
-                            >
-                              🔒 Unlock Advanced Tariff Details
-                            </Link>
-                          ) : (
-                            countryPercentTariffsSums.map((sum, i) => (
-                              <div
-                                key={`${country.code}-${i}-percent-sum-${i}`}
-                                className="flex gap-2 text-sm md:text-base"
-                              >
-                                <div className="flex gap-1">
-                                  {countryAmounts &&
-                                  countryAmounts.length > 0 ? (
-                                    <p className="text-white">
-                                      {countryAmounts} +
-                                    </p>
-                                  ) : null}
-                                  {<p className="text-white">{sum}%</p>}
-                                  {i > 0 &&
-                                    codeBasedContentRequirements &&
-                                    codeBasedContentRequirements.length > 0 &&
-                                    uiContentPercentages[i - 1].name && (
-                                      <p className="text-white">
-                                        for {uiContentPercentages[i - 1].name}
-                                      </p>
-                                    )}
-                                </div>
-                                {countryPercentTariffsSums.length !== i + 1
-                                  ? "|"
-                                  : null}
-                              </div>
-                            ))
+                          className={classNames(
+                            "w-4 h-4",
+                            sortBy === TariffsTableSortOption.RATE_ASC &&
+                              "rotate-180"
                           )}
-                        </div>
-                      </td>
-                      <td>
-                        <p className="text-lg p-0">
-                          {country.specialTradePrograms.length > 0 ? "✅" : "−"}
-                        </p>
-                      </td>
-                    </tr>
-                    {isExpanded && (
+                        />
+                      </button>
+                    </div>
+                  </th>
+                  <th className="hidden md:block max-w-48">
+                    Special Trade Program(s)
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedCountries.map((country, i) => {
+                  const isExpanded = expandedRows.has(country.code);
+                  const countryAmounts = getBaseAmountTariffsText(
+                    country.baseTariffs
+                  );
+
+                  const countryPercentTariffsSums = country.tariffSets.map(
+                    (tariffSet) =>
+                      getTotalPercentTariffsSum(tariffSet, country.baseTariffs)
+                  );
+
+                  return (
+                    <React.Fragment key={`${country.code}-${i}`}>
                       <tr
                         className={classNames(
-                          "w-full bg-base-100",
-                          isExpanded &&
-                            "not-last:border-b border-b-4 border-b-gray-500"
+                          "w-full cursor-pointer transition-all duration-200 hover:bg-base-content/10 bg-base-100",
+                          !isExpanded &&
+                            "not-last:border-b border-base-content/40",
+                          isExpanded && "hover:bg-base-200 border-b-0"
                         )}
+                        onClick={() => {
+                          if (isPayingUser) {
+                            toggleRow(country.code);
+                          } else {
+                            toast.error(
+                              "Please upgrade to view advanced tariff analysis"
+                            );
+                          }
+                        }}
                       >
-                        <td colSpan={4} className="p-4 pl-16">
-                          <InlineCountryTariff
-                            key={`tariff-${country.code}-${i}`}
-                            country={country}
-                            htsElement={htsElement}
-                            tariffElement={tariffElement}
-                            contentRequirements={uiContentPercentages}
-                            countryIndex={countries.findIndex(
-                              (c) => c.code === country.code
-                            )}
-                            countries={countries}
-                            setCountries={setCountries}
-                            isPayingUser={isPayingUser}
+                        <td className="w-6">
+                          <ChevronDownIcon
+                            className={`h-4 w-4 text-white transition-transform duration-300 ease-in-out ${
+                              isExpanded ? "rotate-0" : "-rotate-180"
+                            }`}
                           />
                         </td>
+                        <td>
+                          <div className="flex gap-3 items-center text-sm md:text-base">
+                            <h2 className="text-white">{country.flag}</h2>
+                            <h2 className="text-white">{country.name}</h2>
+                          </div>
+                        </td>
+                        <td>
+                          <div className="flex gap-2">
+                            {!isPayingUser ? (
+                              <Link
+                                href="/about/tariffs"
+                                target="_blank"
+                                className="btn btn-link no-underline text-base-content hover:text-primary"
+                              >
+                                🔒 Unlock Advanced Tariff Details
+                              </Link>
+                            ) : (
+                              countryPercentTariffsSums.map((sum, i) => (
+                                <div
+                                  key={`${country.code}-${i}-percent-sum-${i}`}
+                                  className="flex gap-2 text-sm md:text-base"
+                                >
+                                  <div className="flex gap-1">
+                                    {countryAmounts &&
+                                    countryAmounts.length > 0 ? (
+                                      <p className="text-white">
+                                        {countryAmounts} +
+                                      </p>
+                                    ) : null}
+                                    {<p className="text-white">{sum}%</p>}
+                                    {i > 0 &&
+                                      codeBasedContentRequirements &&
+                                      codeBasedContentRequirements.length > 0 &&
+                                      uiContentPercentages[i - 1].name && (
+                                        <p className="text-white">
+                                          for {uiContentPercentages[i - 1].name}
+                                        </p>
+                                      )}
+                                  </div>
+                                  {countryPercentTariffsSums.length !== i + 1
+                                    ? "|"
+                                    : null}
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        </td>
+                        <td className="hidden md:block">
+                          <p className="text-lg p-0">
+                            {country.specialTradePrograms.length > 0
+                              ? "✅"
+                              : "−"}
+                          </p>
+                        </td>
                       </tr>
-                    )}
-                  </React.Fragment>
-                );
-              })}
-            </tbody>
-          </table>
+                      {isExpanded && (
+                        <tr
+                          className={classNames(
+                            "w-full bg-base-100 transition-all duration-300 ease-in-out",
+                            isExpanded &&
+                              "not-last:border-b border-b-4 border-b-gray-500"
+                          )}
+                          style={{
+                            animation: "slideDown 0.3s ease-in-out",
+                          }}
+                        >
+                          <td colSpan={4} className="p-4 pl-16">
+                            <div
+                              className="transition-all duration-300 ease-in-out"
+                              style={{
+                                animation: "fadeIn 0.3s ease-in-out",
+                              }}
+                            >
+                              <InlineCountryTariff
+                                key={`tariff-${country.code}-${i}`}
+                                country={country}
+                                htsElement={htsElement}
+                                tariffElement={tariffElement}
+                                contentRequirements={uiContentPercentages}
+                                countryIndex={countries.findIndex(
+                                  (c) => c.code === country.code
+                                )}
+                                countries={countries}
+                                setCountries={setCountries}
+                                isPayingUser={isPayingUser}
+                              />
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };

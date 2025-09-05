@@ -500,8 +500,8 @@ export default function Home() {
   };
 
   return (
-    <main className="w-screen h-full flex flex-col bg-base-300 py-6 overflow-y-auto">
-      <div className="w-full max-w-5xl mx-auto flex flex-col px-4 sm:px-6 gap-8">
+    <main className="w-screen h-full flex flex-col bg-base-300 py-6">
+      <div className="w-full max-w-5xl mx-auto flex flex-col px-4 sm:px-6 gap-8 pb-6">
         {/* Header */}
         <div className="flex justify-between md:items-center flex-col-reverse md:flex-row gap-4">
           <div className="flex flex-col md:gap-2">
@@ -694,7 +694,7 @@ export default function Home() {
                 )} */}
               </div>
               <div
-                className={`border-2 border-base-content/20 rounded-md ${
+                className={`border border-base-content/20 rounded-md ${
                   results.length > 0 ? "p-0" : "p-4"
                 }`}
               >

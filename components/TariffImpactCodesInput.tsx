@@ -90,7 +90,7 @@ export default function TariffImpactCodesInput({
   return (
     <div
       className={classNames(
-        "w-full min-w-0 flex flex-col gap-2 bg-base-100 border-2 border-base-content/20 rounded-md relative",
+        "w-full min-w-0 flex flex-col gap-2 bg-base-100 border border-base-content/20 rounded-md relative",
         value.length > characterLimit ? "border-warning" : undefined
       )}
       onClick={(e) => {

@@ -35,7 +35,6 @@ import { PrimaryLabel } from "./PrimaryLabel";
 import Link from "next/link";
 import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import { TertiaryText } from "./TertiaryText";
-import { SecondaryText } from "./SecondaryText";
 
 interface Props {
   summaryOnly?: boolean;
@@ -354,12 +353,10 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
           )} */}
 
           {htsno && htsno.replaceAll(".", "").length === 10 && (
-            <div className="w-full flex flex-col gap-4 mt-4">
+            <div className="w-full flex flex-col mt-4">
               <div className="w-full flex justify-between flex-col">
                 <div className="flex items-center">
-                  <h2 className="text-lg md:text-2xl text-white font-bold">
-                    📊 Tariff Wizard
-                  </h2>
+                  <PrimaryLabel value="📊 Tariff Wizard" color={Color.WHITE} />
 
                   <Link
                     href="/tariffs/coverage"
@@ -369,7 +366,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                     <QuestionMarkCircleIcon className="w-5 h-5 md:w-6 md:h-6" />
                   </Link>
                 </div>
-                <SecondaryText value="See the full tariff details for this element by country and explore potential exemptions" />
+                <TertiaryText value="See the full tariff details for any country and explore potential exemptions" />
               </div>
               <Tariffs
                 isPayingUser={isPayingUser}

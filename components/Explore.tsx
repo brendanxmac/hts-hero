@@ -55,7 +55,6 @@ export const Explore = () => {
   const [completedDirectNavigation, setCompletedDirectNavigation] =
     useState(false);
   const { htsElements, fetchElements, revision } = useHts();
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isSearchingRef = useRef(false);
 
@@ -126,8 +125,14 @@ export const Explore = () => {
 
   // Scroll to top when breadcrumbs change (navigation occurs)
   useEffect(() => {
-    if (scrollContainerRef.current && breadcrumbs.length > 1) {
-      scrollContainerRef.current.scrollTo({ top: 0, behavior: "instant" });
+    if (breadcrumbs.length > 1) {
+      // Find the scrollable container (the one with overflow-y-auto)
+      const scrollableContainer = document.querySelector(".overflow-y-auto");
+      // if (scrollableContainer) {
+      scrollableContainer.scrollTo({ top: 0, behavior: "instant" });
+      // } else {
+      //   window.scrollTo({ top: 0, behavior: "smooth" });
+      // }
     }
   }, [breadcrumbs]);
 
@@ -260,10 +265,7 @@ export const Explore = () => {
           <LoadingIndicator text={loadingText} />
         </div>
       ) : (
-        <div
-          ref={scrollContainerRef}
-          className="w-full h-full grow flex flex-col gap-4 overflow-y-scroll"
-        >
+        <div className="w-full h-full grow flex flex-col gap-4">
           <div className="flex gap-4 items-center justify-between flex-col md:flex-row">
             <div className="w-full flex gap-4 items-center justify-between md:justify-normal">
               <div className="flex flex-col -space-y-1">

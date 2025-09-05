@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 export default function Home() {
   return (
-    <main className="w-full max-w-6xl mx-auto h-svh grow overflow-auto flex flex-col bg-base-300">
+    <main className="w-full max-w-6xl mx-auto h-svh grow flex flex-col bg-base-300">
       <BreadcrumbsProvider>
         <Explore />
       </BreadcrumbsProvider>

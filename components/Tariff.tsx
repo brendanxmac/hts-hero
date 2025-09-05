@@ -154,7 +154,7 @@ export const Tariff = ({
               <Link
                 href={`/explore?code=${tariff.code}`}
                 target="_blank"
-                className="link link-primary"
+                className="link link-primary no-underline font-medium"
               >
                 {tariff.code}
               </Link>
