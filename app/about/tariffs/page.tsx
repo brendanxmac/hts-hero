@@ -117,7 +117,7 @@ export default function Home() {
           standoutPlacement="end"
           titleStandout="Your Options"
           title="See Your Impacts &"
-          subtitle="Get the full tariff breakdown for any import & explore options for possible savings"
+          subtitle="Get the full tariff breakdown for any import from any country & explore options for possible savings"
           ctaText="Try it Now!"
           ctaLink="/tariffs/impact-checker"
           media={{

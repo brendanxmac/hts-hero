@@ -224,7 +224,8 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
             </div>
           )}
 
-          {shouldShowBasicDutyRates && (
+          {/* FIXME: I think there are cases where additional duties come from outside the element */}
+          {/* {shouldShowBasicDutyRates && (
             <div className="w-full flex flex-col gap-2">
               <SecondaryLabel value="Basic Duty Rates" />
 
@@ -337,7 +338,6 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                   </h2>
                 </div>
 
-                {/* FIXME: I think there are cases where additional duties come from outside the element */}
                 {tariffElement.additionalDuties && (
                   <div className="flex flex-col gap-1 p-3 bg-base-100 border border-base-content/30 rounded-md min-w-24">
                     <TertiaryLabel
@@ -351,14 +351,14 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                 )}
               </div>
             </div>
-          )}
+          )} */}
 
           {htsno && htsno.replaceAll(".", "").length === 10 && (
-            <div className="w-full flex flex-col gap-4">
+            <div className="w-full flex flex-col gap-4 mt-4">
               <div className="w-full flex justify-between flex-col">
                 <div className="flex items-center">
                   <h2 className="text-lg md:text-2xl text-white font-bold">
-                    ✨ Tariff Wizard
+                    📊 Tariff Wizard
                   </h2>
 
                   <Link

@@ -137,17 +137,14 @@ export const InlineCountryTariff = ({
 
         <div className="w-full flex flex-col gap-2">
           <div className="w-full flex flex-col gap-1">
-            <TertiaryLabel
-              value="Potential Special Tariff Programs"
-              color={Color.WHITE}
-            />
+            <TertiaryLabel value="Potential Special Trade Programs" />
           </div>
           <div
             className="relative w-full max-w-lg"
             ref={specialProgramDropdownRef}
           >
             <div
-              className="w-full px-3 py-1 border-2 border-base-content/10 rounded-lg cursor-pointer bg-base-300 flex gap-3 items-center justify-between hover:bg-primary/20 transition-colors min-h-10"
+              className="w-full px-3 py-1 border-2 border-base-content/10 rounded-lg cursor-pointer bg-base-100 flex gap-3 items-center justify-between hover:bg-base-content/10 transition-colors min-h-10"
               onClick={() => setIsSpecialProgramOpen(!isSpecialProgramOpen)}
             >
               <div className="flex-1 flex items-center">
@@ -392,10 +389,7 @@ export const InlineCountryTariff = ({
       <div className={"w-full flex flex-col gap-4"}>
         {tariffSets.map((tariffSet, i) => (
           <div key={`tariff-set-${i}`} className="flex flex-col gap-4">
-            <TertiaryLabel
-              value={`${tariffSet.name} Tariff`}
-              color={Color.WHITE}
-            />
+            <TertiaryLabel value={`${tariffSet.name} Tariff`} />
 
             <div className="flex flex-col gap-2">
               {baseTariffs &&

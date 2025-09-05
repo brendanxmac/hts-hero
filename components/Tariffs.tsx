@@ -294,11 +294,10 @@ export const Tariffs = ({ htsElement, tariffElement, isPayingUser }: Props) => {
                   <React.Fragment key={`${country.code}-${i}`}>
                     <tr
                       className={classNames(
-                        "w-full cursor-pointer transition-colors hover:bg-base-content/10",
+                        "w-full cursor-pointer transition-colors hover:bg-base-content/10 bg-base-100",
                         !isExpanded &&
                           "not-last:border-b border-base-content/40",
-                        isExpanded &&
-                          "bg-base-300 hover:bg-primary/50 border-b-0"
+                        isExpanded && "hover:bg-base-200 border-b-0"
                       )}
                       onClick={() => {
                         if (isPayingUser) {
@@ -310,7 +309,7 @@ export const Tariffs = ({ htsElement, tariffElement, isPayingUser }: Props) => {
                         }
                       }}
                     >
-                      <td className="w-8">
+                      <td className="w-6">
                         <ChevronDownIcon
                           className={`h-4 w-4 text-white transition-transform duration-100 ${
                             isExpanded ? "" : "-rotate-180"
@@ -373,12 +372,12 @@ export const Tariffs = ({ htsElement, tariffElement, isPayingUser }: Props) => {
                     {isExpanded && (
                       <tr
                         className={classNames(
-                          "w-full bg-base-300",
+                          "w-full bg-base-100",
                           isExpanded &&
-                            "not-last:border-b border-base-content/40"
+                            "not-last:border-b border-b-4 border-b-gray-500"
                         )}
                       >
-                        <td colSpan={4} className="p-4">
+                        <td colSpan={4} className="p-4 pl-16">
                           <InlineCountryTariff
                             key={`tariff-${country.code}-${i}`}
                             country={country}

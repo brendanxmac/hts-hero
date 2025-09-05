@@ -11,6 +11,7 @@ import { classNames } from "../utilities/style";
 import { TariffColumn } from "../enums/tariff";
 import { TertiaryText } from "./TertiaryText";
 import Link from "next/link";
+import { TertiaryLabel } from "./TertiaryLabel";
 
 interface Props {
   isPayingUser: boolean;
@@ -153,11 +154,12 @@ export const Tariff = ({
               <Link
                 href={`/explore?code=${tariff.code}`}
                 target="_blank"
-                className="link link-primary font-bold"
+                className="link link-primary"
               >
                 {tariff.code}
               </Link>
-              <TertiaryText value={tariff.name} color={Color.WHITE} />
+              -
+              <TertiaryLabel value={tariff.name} />
             </div>
           </div>
         </div>
