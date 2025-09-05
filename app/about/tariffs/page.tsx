@@ -59,23 +59,6 @@ export default function Home() {
       <main>
         <FeaturesGrid />
 
-        <Demo
-          standoutPlacement="end"
-          titleStandout="Get Clarity 😌"
-          title="Enter Codes,"
-          subtitle="Enter the HTS codes for your imports and instantly see if new tariffs affect them"
-          ctaText="Try it Now!"
-          ctaLink="/tariffs/impact-checker"
-          media={{
-            title: "Tariff Impacts",
-            description: "Tariff Impacts Demo",
-            mediaType: "video",
-            mediaPath: "/tariff-impact-demo.mp4",
-            mediaFormat: "mp4",
-            altText: "Tariff Impacts",
-          }}
-        />
-
         <div className="hidden md:block">
           <Demo
             standoutPlacement="start"
@@ -115,9 +98,26 @@ export default function Home() {
 
         <Demo
           standoutPlacement="end"
-          titleStandout="Your Options"
-          title="See Your Impacts &"
-          subtitle="Get the full tariff breakdown for any import from any country & explore options for possible savings"
+          titleStandout="See Impacts"
+          title="Select Codes,"
+          subtitle="Enter the HTS codes for your imports and instantly see if tariff announcements affect them"
+          ctaText="Try it Now!"
+          ctaLink="/tariffs/impact-checker"
+          media={{
+            title: "Tariff Impacts",
+            description: "Tariff Impacts Demo",
+            mediaType: "video",
+            mediaPath: "/tariff-impact-demo.mp4",
+            mediaFormat: "mp4",
+            altText: "Tariff Impacts",
+          }}
+        />
+
+        <Demo
+          standoutPlacement="end"
+          titleStandout="For Any Import"
+          title="Discover All Tariffs,"
+          subtitle="Get the list of tariffs for any import from any country & explore options for possible savings"
           ctaText="Try it Now!"
           ctaLink="/tariffs/impact-checker"
           media={{
