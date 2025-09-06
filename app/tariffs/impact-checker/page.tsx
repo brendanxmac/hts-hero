@@ -16,18 +16,22 @@ import { Color } from "../../../enums/style";
 import { SecondaryLabel } from "../../../components/SecondaryLabel";
 import TariffUpdateDropdown from "../../../components/TariffUpdateDropdown";
 import { indiaRussianOilConsumptionExclusions } from "../../../tariffs/exclusion-lists.ts/india-oil-issue-exclusions";
+import {
+  additionalReciprocalExemptHeadingSept5,
+  removedReciprocalExemptHeadingsSept5,
+} from "../../../tariffs/announcements/reciprocal-changes-sept-5";
 
 interface ListExample {
   name: string;
   list: string;
 }
 
-interface TariffUpdate {
+export interface TariffUpdate {
   name: string;
   sourceName: string;
   source: string;
   codesImpacted: string[];
-  dateReleased: Date;
+  effectiveDate: Date;
   notes?: string;
 }
 
@@ -81,12 +85,30 @@ const listExamples: ListExample[] = [
   // },
 ];
 
+const additionalReciprocalExemptHeadingsFromSept5: TariffUpdate = {
+  name: "Imports Added to Reciprocal Tariff Exemptions",
+  sourceName: "Presidential Action, September 5th, whitehouse.gov",
+  source:
+    "https://www.whitehouse.gov/presidential-actions/2025/09/modifying-the-scope-of-reciprocal-tariffs-and-establishing-procedures-for-implementing-trade-and-security-agreements/",
+  codesImpacted: additionalReciprocalExemptHeadingSept5,
+  effectiveDate: new Date("2025-09-08"),
+};
+
+const removedReciprocalExemptHeadingsFromSept5: TariffUpdate = {
+  name: "Imports Removed from Reciprocal Tariff Exemptions",
+  sourceName: "Presidential Action, September 5th, whitehouse.gov",
+  source:
+    "https://www.whitehouse.gov/presidential-actions/2025/09/modifying-the-scope-of-reciprocal-tariffs-and-establishing-procedures-for-implementing-trade-and-security-agreements/",
+  codesImpacted: removedReciprocalExemptHeadingsSept5,
+  effectiveDate: new Date("2025-09-08"),
+};
+
 const indiaOilBasedExclusions: TariffUpdate = {
   name: "Exemptions for India 25% Tariff for Russian Oil Use",
   sourceName: "CSMS #66027027",
   source: "https://content.govdelivery.com/accounts/USDHSCBP/bulletins/3ef7e13",
   codesImpacted: indiaRussianOilConsumptionExclusions,
-  dateReleased: new Date("2025-08-25"),
+  effectiveDate: new Date("2025-08-25"),
   notes:
     "This specific announcement is only applicable to imports from India. Additional exemptions exist if the import is a qualified donation, information materials, or chapter 98 provision. Certain exemptions come with exclusions which you can see by clicking the HTS Code in the results table. Always contact a customs broker for proper import assistance and guidance.",
 };
@@ -97,7 +119,7 @@ const section232SteelAndAluminumChanges: TariffUpdate = {
   source:
     "https://www.federalregister.gov/public-inspection/2025-15819/adoption-and-procedures-of-the-section-232-steel-and-aluminum-tariff-inclusions-process",
   codesImpacted: august_15_FR_232_impacted_codes_list,
-  dateReleased: new Date("2025-08-19"),
+  effectiveDate: new Date("2025-08-19"),
 };
 
 const reciprocalTariffExclusions: TariffUpdate = {
@@ -105,14 +127,16 @@ const reciprocalTariffExclusions: TariffUpdate = {
   sourceName: "USITC - Chapter 99 Subchapter 3 Note 2(v)(iii) ",
   source: "https://hts.usitc.gov/search?query=9903.01.32",
   codesImpacted: reciprocalTariffExclusionsList,
-  dateReleased: new Date("2025-04-05"),
+  effectiveDate: new Date("2025-04-05"),
 };
 
 const changeLists: TariffUpdate[] = [
   section232SteelAndAluminumChanges,
   indiaOilBasedExclusions,
   reciprocalTariffExclusions,
-];
+  additionalReciprocalExemptHeadingsFromSept5,
+  removedReciprocalExemptHeadingsFromSept5,
+].sort((a, b) => b.effectiveDate.getTime() - a.effectiveDate.getTime());
 
 export default function Home() {
   const CHARACTER_LIMIT = 650;
