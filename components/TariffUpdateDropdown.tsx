@@ -3,14 +3,7 @@
 import { Fragment } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { ChevronUpDownIcon, CheckIcon } from "@heroicons/react/20/solid";
-
-interface TariffUpdate {
-  name: string;
-  sourceName: string;
-  source: string;
-  codesImpacted: string[];
-  dateReleased: Date;
-}
+import { TariffUpdate } from "../app/tariffs/impact-checker/page";
 
 interface TariffUpdateDropdownProps {
   tariffUpdates: TariffUpdate[];
@@ -39,8 +32,7 @@ export default function TariffUpdateDropdown({
         <div className="relative">
           <Listbox.Button className="relative w-full cursor-default rounded-lg border-2 border-base-content/20 bg-base-100 py-3 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-primary-300 sm:text-sm">
             <p className="truncate text-base font-semibold text-white">
-              {selectedUpdate.name} | {selectedUpdate.sourceName} |{" "}
-              {formatDate(selectedUpdate.dateReleased)}
+              {selectedUpdate.name} | {formatDate(selectedUpdate.effectiveDate)}
             </p>
 
             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -92,9 +84,9 @@ export default function TariffUpdateDropdown({
 
                           {/* Date Released - clearly displayed */}
                           <p className="text-sm text-gray-400">
-                            Released:{" "}
-                            <span className="text-secondary font-semibold">
-                              {formatDate(update.dateReleased)}
+                            Effective:{" "}
+                            <span className="text-white font-semibold">
+                              {formatDate(update.effectiveDate)}
                             </span>
                           </p>
                         </div>
