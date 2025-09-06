@@ -652,7 +652,7 @@ export const reciprocalTariffExclusionsList = [
   // "3907.29.00", Removed Sept 5th
   // "3907.30.00", Removed Sept 5th
   // "3907.61.00", Removed Sept 5th
-  // "3907.69.00", Removed Septh 5th
+  // "3907.69.00", Removed Sept 5th
   "3907.70.00",
   // "3907.99.50", Removed Sept 5th
   "3908.10.00",
