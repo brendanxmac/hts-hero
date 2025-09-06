@@ -86,7 +86,7 @@ const listExamples: ListExample[] = [
 ];
 
 const additionalReciprocalExemptHeadingsFromSept5: TariffUpdate = {
-  name: "Imports Added to Reciprocal Tariff Exemptions",
+  name: "Articles Added to Reciprocal Tariff Exemptions",
   sourceName: "Presidential Action, September 5th, whitehouse.gov",
   source:
     "https://www.whitehouse.gov/presidential-actions/2025/09/modifying-the-scope-of-reciprocal-tariffs-and-establishing-procedures-for-implementing-trade-and-security-agreements/",
@@ -95,7 +95,7 @@ const additionalReciprocalExemptHeadingsFromSept5: TariffUpdate = {
 };
 
 const removedReciprocalExemptHeadingsFromSept5: TariffUpdate = {
-  name: "Imports Removed from Reciprocal Tariff Exemptions",
+  name: "Articles Removed from Reciprocal Tariff Exemptions",
   sourceName: "Presidential Action, September 5th, whitehouse.gov",
   source:
     "https://www.whitehouse.gov/presidential-actions/2025/09/modifying-the-scope-of-reciprocal-tariffs-and-establishing-procedures-for-implementing-trade-and-security-agreements/",
