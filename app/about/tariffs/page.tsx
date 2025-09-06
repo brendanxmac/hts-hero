@@ -98,9 +98,9 @@ export default function Home() {
 
         <Demo
           standoutPlacement="end"
-          titleStandout="See Impacts"
-          title="Select Codes,"
-          subtitle="Enter the HTS codes for your imports and instantly see if tariff announcements affect them"
+          titleStandout="Affected"
+          title="See Which Imports Are"
+          subtitle="Instantly know which tariff announcements affect your imports"
           ctaText="Try it Now!"
           ctaLink="/tariffs/impact-checker"
           media={{
@@ -115,9 +115,9 @@ export default function Home() {
 
         <Demo
           standoutPlacement="end"
-          titleStandout="For Any Import"
-          title="Discover All Tariffs,"
-          subtitle="Get the list of tariffs for any import from any country & explore options for possible savings"
+          titleStandout="Savings"
+          title="Discover Potential"
+          subtitle="See the full list of tariffs for any import from any country & explore options for possible savings"
           ctaText="Try it Now!"
           ctaLink="/tariffs/impact-checker"
           media={{

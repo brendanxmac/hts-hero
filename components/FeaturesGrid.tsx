@@ -144,7 +144,7 @@ const FeaturesGrid = () => {
             Affect Your Imports
           </h1>
           <p className="text-sm md:text-lg lg:text-xl text-neutral-300 leading-relaxed max-w-5xl mx-auto md:mt-4">
-            Get Notified -> See The Impacts -> Discover your Options.
+            Get Notified -> See Affected Imports -> Discover Potential Savings.
           </p>
 
           <div className="flex justify-center lg:justify-start">
@@ -152,7 +152,7 @@ const FeaturesGrid = () => {
               className="btn btn-wide btn-primary"
               href="/tariffs/impact-checker"
             >
-              Get Started!
+              Check my Imports!
             </Link>
           </div>
 

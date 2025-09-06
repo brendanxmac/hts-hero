@@ -85,17 +85,21 @@ const getPricingHeadline = () => {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <h2 className="text-white font-extrabold text-3xl sm:text-4xl md:text-6xl max-w-6xl mx-auto tracking-relaxed">
-          <span className="text-primary">Rise Above</span> The Tariff Chaos
-        </h2>
-        {/* <h2 className="text-white font-extrabold text-3xl sm:text-4xl md:text-6xl max-w-6xl mx-auto tracking-relaxed">
-          Turn Tariff Chaos into{" "}
-          <span className="text-primary">Tariff Clarity</span>
+        {/* <h2 className="text-white font-extrabold text-3xl sm:text-4xl md:text-5xl max-w-6xl mx-auto tracking-relaxed">
+          Save hours on determining new tariff impacts and hunting down tariffs
+          details and exemptions
         </h2> */}
         {/* <h2 className="text-white font-extrabold text-3xl sm:text-4xl md:text-6xl max-w-6xl mx-auto tracking-relaxed">
+          <span className="text-primary">Rise Above</span> The Tariff Chaos
+        </h2> */}
+        {/* <h2 className="font-extrabold text-3xl sm:text-4xl md:text-6xl max-w-6xl mx-auto tracking-relaxed">
+          Turn Tariff Chaos into <br />
+          <span className="text-white">Tariff Clarity</span>
+        </h2> */}
+        <h2 className="text-white font-extrabold text-3xl sm:text-4xl md:text-6xl max-w-6xl mx-auto tracking-relaxed">
           Get <span className="text-primary">Instant Clarity</span> When
           <br /> New Tariffs are Announced
-        </h2> */}
+        </h2>
         <p className="text-sm md:text-lg text-neutral-300 font-medium mt-2">
           Join the forward-thinking importers & customs brokers who are
           automating tariff impact checks
@@ -259,12 +263,12 @@ const TariffImpactPricing = () => {
           <div className="flex flex-col">
             <p className="text-2xl text-white font-bold">Enterprise</p>
             <p className="text-base-content/80">
-              Want Tariff Impact Checker for your whole team?
+              Get Tariff Impact Checker for your whole team
             </p>
           </div>
           <a
             href="mailto:brendan@htshero.com?subject=Enterprise%20Inquiry%20for%20Tariff%20Impact%20Checker&body=Hi%20Brendan%2C%20I'm%20interested%20in%20getting%20Tariff%20Impact%20Checker%20for%20my%20team"
-            className="btn btn-primary md:btn-wide w-full"
+            className="btn btn-primary md:btn-wide w-full text-white"
           >
             Lets Talk!
           </a>

@@ -43,7 +43,7 @@ export const tariffImpactPro: PricingPlanI = {
     { name: "Impact Notifications" },
     {
       name: "Tariff Wizard",
-      details: "See full tariff details & explore exemptions",
+      details: "See all tariffs & discover potential savings",
     },
     // { name: "Generate & share branded reports" }, // TODO: This could be great
   ],
