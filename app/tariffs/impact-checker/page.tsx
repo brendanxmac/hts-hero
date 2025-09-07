@@ -87,7 +87,7 @@ const listExamples: ListExample[] = [
 
 const additionalReciprocalExemptHeadingsFromSept5: TariffUpdate = {
   name: "Articles Added to Reciprocal Tariff Exemptions",
-  sourceName: "Presidential Action, September 5th, whitehouse.gov",
+  sourceName: "Executive Order, September 5th, whitehouse.gov",
   source:
     "https://www.whitehouse.gov/presidential-actions/2025/09/modifying-the-scope-of-reciprocal-tariffs-and-establishing-procedures-for-implementing-trade-and-security-agreements/",
   codesImpacted: additionalReciprocalExemptHeadingSept5,
@@ -96,7 +96,7 @@ const additionalReciprocalExemptHeadingsFromSept5: TariffUpdate = {
 
 const removedReciprocalExemptHeadingsFromSept5: TariffUpdate = {
   name: "Articles Removed from Reciprocal Tariff Exemptions",
-  sourceName: "Presidential Action, September 5th, whitehouse.gov",
+  sourceName: "Executive Order, September 5th, whitehouse.gov",
   source:
     "https://www.whitehouse.gov/presidential-actions/2025/09/modifying-the-scope-of-reciprocal-tariffs-and-establishing-procedures-for-implementing-trade-and-security-agreements/",
   codesImpacted: removedReciprocalExemptHeadingsSept5,
