@@ -100,7 +100,7 @@ export default function Home() {
           standoutPlacement="end"
           titleStandout="Affected"
           title="See Which Imports Are"
-          subtitle="Instantly know which tariff announcements affect your imports"
+          subtitle="Instantly know which imports are affected by tariff announcements"
           ctaText="Try it Now!"
           ctaLink="/tariffs/impact-checker"
           media={{
