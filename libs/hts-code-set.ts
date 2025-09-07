@@ -16,29 +16,31 @@ export const formatHtsCodeWithPeriods = (code: string): string => {
     return `${digitsOnly.slice(0, 4)}.${digitsOnly.slice(4, 6)}.${digitsOnly.slice(6, 8)}`; // 1234.56.78
   } else if (digitsOnly.length === 10) {
     return `${digitsOnly.slice(0, 4)}.${digitsOnly.slice(4, 6)}.${digitsOnly.slice(6, 8)}.${digitsOnly.slice(8, 10)}`; // 1234.56.78.90
-  } else if (digitsOnly.length > 10) {
-    // For codes longer than 10 digits, format as 10-digit and ignore the rest
-    return `${digitsOnly.slice(0, 4)}.${digitsOnly.slice(4, 6)}.${digitsOnly.slice(6, 8)}.${digitsOnly.slice(8, 10)}`;
   }
+  // else if (digitsOnly.length > 10) {
+  //   // For codes longer than 10 digits, format as 10-digit and ignore the rest
+  //   return `${digitsOnly.slice(0, 4)}.${digitsOnly.slice(4, 6)}.${digitsOnly.slice(6, 8)}.${digitsOnly.slice(8, 10)}`;
+  // }
 
   // Return as-is if it doesn't match expected lengths
   return code;
 };
 
-export const parseHtsCodeSet = (htsCodeSet: string): string[] => {
+export const getHtsCodesFromString = (str: string) => {
   // Parse input by newlines or commas for processing
   const separators = /[\n, ]/;
-  const parsedCodes = htsCodeSet
+  return str
     .trim()
     .split(separators)
     .map((code) => code.trim())
     .filter((code) => code.length > 0);
+};
 
-  const validTariffableHtsCodes = parsedCodes.filter((code) => {
-    const { valid: isValidTariffableCode, error } =
-      validateTariffableHtsCode(code);
-    return isValidTariffableCode;
-  });
+export const getValidHtsCodesFromString = (htsCodeSet: string): string[] => {
+  const htsCodes = getHtsCodesFromString(htsCodeSet);
+  const validTariffableHtsCodes = htsCodes.filter(
+    (code) => validateTariffableHtsCode(code).valid
+  );
 
   const parsedHtsCodes = validTariffableHtsCodes.map(formatHtsCodeWithPeriods);
 
@@ -50,7 +52,7 @@ export const createHtsCodeSet = async (
   name?: string,
   description?: string
 ): Promise<HtsCodeSet> => {
-  const parsedHtsCodes = parseHtsCodeSet(htsCodesString);
+  const parsedHtsCodes = getValidHtsCodesFromString(htsCodesString);
 
   if (parsedHtsCodes.length === 0) {
     throw new Error("No valid HTS codes provided");

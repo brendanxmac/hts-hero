@@ -1,7 +1,3 @@
-import { indiaRussianOilConsumptionExclusions } from "../exclusion-lists.ts/india-oil-issue-exclusions";
-import { reciprocalTariffExclusionsList } from "../exclusion-lists.ts/reciprocal-tariff-exlcusions";
-import { august_15_FR_232_impacted_codes_list } from "./232-FR-August-15";
-
 export interface ListExample {
   name: string;
   list: string;
@@ -17,12 +13,6 @@ export interface TariffCodeSet {
   published_at: string; // ISO Date String
   created_at: string; // ISO Date String
   updated_at: string; // ISO Date String
-}
-
-export interface TariffImpactResult {
-  code: string;
-  impacted: boolean | null;
-  error?: string;
 }
 
 export const ExampleHtsCodeList = [

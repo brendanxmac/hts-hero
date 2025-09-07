@@ -1,5 +1,5 @@
 import { HtsCodeSet } from "../interfaces/hts";
-import { parseHtsCodeSet } from "../libs/hts-code-set";
+import { getValidHtsCodesFromString } from "../libs/hts-code-set";
 
 // Regex that gets whatever is inside the parentheses of special text, if exists
 export const getStringBetweenParenthesis = (str: string) => {
@@ -21,7 +21,7 @@ export const findCodeSet = (id: string, codeSets: HtsCodeSet[]) => {
 };
 
 export const codeSetMatchesString = (str: string, htsCodeSet: HtsCodeSet) => {
-  const stringCodes = parseHtsCodeSet(str);
+  const stringCodes = getValidHtsCodesFromString(str);
 
   // Check if current input is different from the selected set
   if (stringCodes.length !== htsCodeSet.codes.length) {

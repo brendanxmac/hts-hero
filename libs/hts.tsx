@@ -195,7 +195,7 @@ const isOnlyNumbersAndPeriods = (htsCode: string) => {
   return /^[\d.]+$/.test(trimmedCode);
 };
 
-interface TarrifableHtsCodeValidationResult {
+export interface TarrifableHtsCodeValidationResult {
   valid: boolean;
   error?: string;
 }

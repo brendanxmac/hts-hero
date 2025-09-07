@@ -12,13 +12,13 @@ export const HowToStep = ({ step }: Props) => {
 
   return (
     <div className="h-full w-full flex flex-col gap-4">
-      <div className="flex gap-2 items-center">
+      <div className="flex gap-2 items-center flex-shrink-0">
         {titleSvg}
         <PrimaryLabel value={title} color={Color.WHITE} />
       </div>
-      <div>{description}</div>
+      <div className="flex-shrink-0">{description}</div>
       {mediaPath && (
-        <div className="w-full aspect-video">
+        <div className="w-full flex-1 min-h-0">
           <Media feature={step} />
         </div>
       )}

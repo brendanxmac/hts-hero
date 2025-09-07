@@ -97,12 +97,11 @@ export const HowToGuide = ({ guideName }: HowToGuideProps) => {
       />
 
       {/* Modal */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-8 pointer-events-none">
-        <div className="w-full max-w-5xl max-h-[90vh] h-full border-2 border-base-content/30 bg-base-100 rounded-lg shadow-xl relative flex flex-col pointer-events-auto">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8 pointer-events-none">
+        <div className="w-full max-w-5xl h-[90vh] border-2 border-base-content/30 bg-base-100 rounded-lg shadow-xl relative flex flex-col pointer-events-auto">
           <div className="px-8 py-6 flex justify-between">
             <h1 className="text-3xl md:text-4xl text-white font-bold">
-              How to Find Your Code
-            </h1>
+              {getHow to Find Your Code         </h1>
             <button
               onClick={hideGuide}
               className="rounded-full border border-base-content/30 h-7 w-7 text-white p-1 hover:bg-base-content/10 flex items-center justify-center"
@@ -112,7 +111,7 @@ export const HowToGuide = ({ guideName }: HowToGuideProps) => {
           </div>
 
           {/* Content */}
-          <div className="flex-1 min-h-0 px-8 overflow-y-auto">
+          <div className="flex-1 min-h-0 px-8 overflow-hidden">
             <div className="h-full">
               <HowToStep step={guideSteps[currentStep]} />
             </div>

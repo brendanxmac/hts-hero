@@ -4,12 +4,13 @@ import { Fragment } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { ChevronUpDownIcon, CheckIcon } from "@heroicons/react/20/solid";
 import { HtsCodeSet } from "../interfaces/hts";
-import { classNames } from "../utilities/style";
+import { PlusIcon } from "@heroicons/react/16/solid";
 
 interface HtsCodeSetDropdownProps {
   htsCodeSets: HtsCodeSet[];
   selectedIndex: number | null;
   onSelectionChange: (index: number | null) => void;
+  onCreateSelected: () => void;
   placeholder?: string;
 }
 
@@ -17,6 +18,7 @@ export default function HtsCodeSetDropdown({
   htsCodeSets,
   selectedIndex,
   onSelectionChange,
+  onCreateSelected,
   placeholder = "Select from your Lists",
 }: HtsCodeSetDropdownProps) {
   const formatDate = (date: Date) => {
@@ -54,7 +56,7 @@ export default function HtsCodeSetDropdown({
         <div className="relative">
           <Listbox.Button className="relative w-full cursor-default rounded-lg border border-base-content/20 bg-base-100 py-3 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-primary-300 sm:text-sm">
             <p
-              className={`truncate text-sm sm:text-base font-semibold ${selectedSet ? "text-white" : "text-gray-400"}`}
+              className={`truncate text-sm sm:text-base ${selectedSet ? "text-white" : "text-gray-500"}`}
             >
               {getSelectedSetsTitle(selectedSet)}
             </p>
@@ -72,44 +74,66 @@ export default function HtsCodeSetDropdown({
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Listbox.Options className="absolute z-10 mt-1 max-h-64 w-full overflow-auto rounded-md bg-base-100 border-2 border-base-content/60 py-1 text-base shadow-lg shadow-base-300 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-              {/* Option to clear selection */}
-              <Listbox.Option
-                className={({ active, selected }) =>
-                  classNames(
-                    "relative cursor-default select-none py-2 px-4 transition-colors duration-200 text-gray-400",
-                    active && "bg-base-300",
-                    selected && "text-white"
-                  )
-                }
-                value={null}
+            <Listbox.Options className="absolute z-10 mt-1 max-h-64 w-full overflow-auto rounded-md bg-base-100 border border-base-content/20 py-1 text-base shadow-lg shadow-base-300 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+              {/* Create New List Option */}
+              <div
+                className="relative cursor-pointer select-none py-2 px-4 transition-colors duration-200 text-primary hover:bg-base-300 flex gap-1 items-center"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onCreateSelected();
+                }}
               >
-                {({ selected }) => (
-                  <div className="flex items-center justify-between">
-                    <p
-                      className={`text-sm sm:text-base font-medium ${
-                        selected ? "text-gray-400" : "text-primary"
-                      }`}
-                    >
-                      {selected ? "No List Selected" : "Clear Selection"}
-                    </p>
-                    {selected && (
-                      <span className="flex items-center justify-center text-primary ml-2 flex-shrink-0">
-                        <CheckIcon className="h-6 w-6" aria-hidden="true" />
-                      </span>
-                    )}
-                  </div>
-                )}
-              </Listbox.Option>
+                <PlusIcon className="h-5 w-5" />
+                <p className="text-sm sm:text-base font-medium">
+                  Create New List
+                </p>
+              </div>
 
-              {/* Divider */}
-              <div className="border-t border-base-content/20 my-1"></div>
+              {/* Show divider and clear selection option only if there are code sets */}
+              {htsCodeSets.length > 0 && (
+                <>
+                  {/* Divider */}
+                  <div className="border-t border-base-content/20 my-1"></div>
+
+                  {/* Option to clear selection */}
+                  {/* <Listbox.Option
+                    className={({ active, selected }) =>
+                      classNames(
+                        "relative cursor-default select-none py-2 px-4 transition-colors duration-200 text-gray-400",
+                        active && "bg-base-300",
+                        selected && "text-white"
+                      )
+                    }
+                    value={null}
+                  >
+                    {({ selected }) => (
+                      <div className="flex items-center justify-between">
+                        <p
+                          className={`text-sm sm:text-base font-medium ${
+                            selected ? "text-gray-400" : "text-primary"
+                          }`}
+                        >
+                          {selected ? "No List Selected" : "Clear Selection"}
+                        </p>
+                        {selected && (
+                          <span className="flex items-center justify-center text-primary ml-2 flex-shrink-0">
+                            <CheckIcon className="h-6 w-6" aria-hidden="true" />
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </Listbox.Option> */}
+
+                  {/* Divider */}
+                  {/* <div className="border-t border-base-content/20 my-1"></div> */}
+                </>
+              )}
 
               {htsCodeSets.map((htsCodeSet, index) => (
                 <Listbox.Option
                   key={index}
                   className={({ active }) =>
-                    `relative cursor-default border-b border-base-content/20 select-none py-3 px-4 transition-colors duration-200 text-white ${
+                    `relative hover:cursor-pointer border-b border-base-content/20 select-none py-3 px-4 transition-colors duration-200 text-white ${
                       active ? "bg-base-300" : ""
                     }`
                   }

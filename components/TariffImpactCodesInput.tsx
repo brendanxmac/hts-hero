@@ -16,23 +16,22 @@ interface Props {
   onChange?: (value: string, clearSelectedSet?: boolean) => void;
   isValid?: boolean;
   validationMessage?: string;
-  characterLimit?: number;
   disabled?: boolean;
   loading?: boolean;
 }
+
+const CHARACTER_LIMIT = 3000;
 
 export default function TariffImpactCodesInput({
   value,
   label,
   placeholder,
-  showSaveCodes = true,
+  showSaveCodes = false,
   savingCodes,
   onSaveCodes,
   onChange,
   onSubmit,
   isValid,
-  validationMessage,
-  characterLimit,
   disabled,
   loading,
 }: Props) {
@@ -91,7 +90,7 @@ export default function TariffImpactCodesInput({
     <div
       className={classNames(
         "w-full min-w-0 flex flex-col gap-2 bg-base-100 border border-base-content/20 rounded-md relative",
-        value.length > characterLimit ? "border-warning" : undefined
+        value.length > CHARACTER_LIMIT ? "border-warning" : undefined
       )}
       onClick={(e) => {
         e.stopPropagation();
@@ -129,17 +128,17 @@ export default function TariffImpactCodesInput({
             <p
               className={classNames(
                 "text-white text-xs whitespace-nowrap",
-                value.length >= characterLimit ? "font-bold" : undefined
+                value.length >= CHARACTER_LIMIT ? "font-bold" : undefined
               )}
             >
               <span
                 className={
-                  value.length >= characterLimit ? "text-warning" : undefined
+                  value.length >= CHARACTER_LIMIT ? "text-warning" : undefined
                 }
               >
                 {value.length}
               </span>
-              <span>{` / ${characterLimit} characters`}</span>
+              <span>{` / ${CHARACTER_LIMIT} characters`}</span>
             </p>
           </div>
 
@@ -157,20 +156,22 @@ export default function TariffImpactCodesInput({
                 Clear
               </button>
 
-              <button
-                disabled={!showSaveCodes || savingCodes}
-                className="btn btn-sm btn-primary w-full min-w-20 xs:w-auto text-xs sm:text-sm"
-                onClick={() => onSaveCodes && onSaveCodes()}
-              >
-                {savingCodes ? (
-                  <div className="flex gap-1 items-center">
-                    <span>Saving</span>
-                    <span className="loading loading-spinner loading-xs"></span>
-                  </div>
-                ) : (
-                  <span>Save List</span>
-                )}
-              </button>
+              {showSaveCodes && (
+                <button
+                  disabled={savingCodes}
+                  className="btn btn-sm btn-primary w-full min-w-20 xs:w-auto text-xs sm:text-sm"
+                  onClick={() => onSaveCodes && onSaveCodes()}
+                >
+                  {savingCodes ? (
+                    <div className="flex gap-1 items-center">
+                      <span>Saving</span>
+                      <span className="loading loading-spinner loading-xs"></span>
+                    </div>
+                  ) : (
+                    <span>Save</span>
+                  )}
+                </button>
+              )}
 
               {onSubmit && (
                 <button
