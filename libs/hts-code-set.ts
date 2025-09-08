@@ -36,6 +36,12 @@ export const getHtsCodesFromString = (str: string) => {
     .filter((code) => code.length > 0);
 };
 
+export const getValidHtsCodesFromSet = (codes: string[]) => {
+  return codes
+    .filter((code) => validateTariffableHtsCode(code).valid)
+    .map(formatHtsCodeWithPeriods);
+};
+
 export const getValidHtsCodesFromString = (htsCodeSet: string): string[] => {
   const htsCodes = getHtsCodesFromString(htsCodeSet);
   const validTariffableHtsCodes = htsCodes.filter(

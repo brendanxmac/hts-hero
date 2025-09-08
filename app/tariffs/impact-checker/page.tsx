@@ -13,6 +13,8 @@ import { PrimaryLabel } from "../../../components/PrimaryLabel";
 import { MixpanelEvent, trackEvent } from "../../../libs/mixpanel";
 import {
   fetchHtsCodeSetsForUser,
+  getHtsCodesFromString,
+  getValidHtsCodesFromSet,
   getValidHtsCodesFromString,
 } from "../../../libs/hts-code-set";
 import toast from "react-hot-toast";
@@ -42,6 +44,7 @@ import TariffConversionPricing from "../../../components/TariffConversionPricing
 import { fetchTariffCodeSets } from "../../../libs/tariff-code-set";
 import { ArrowRightIcon } from "@heroicons/react/16/solid";
 import { SecondaryText } from "../../../components/SecondaryText";
+import TariffImpactCodesInput from "../../../components/TariffImpactCodesInput";
 
 export default function Home() {
   const CHARACTER_LIMIT = 3000;
@@ -60,7 +63,10 @@ export default function Home() {
   const [selectedTariffAnnouncementIndex, setSelectedTariffAnnouncementIndex] =
     useState(0);
   const [showHelpModal, setShowHelpModal] = useState(false);
-  const [showSaveCodesModal, setShowSaveCodesModal] = useState(false);
+  const [saveCodesModal, setSaveCodesModal] = useState<{
+    show: boolean;
+    codes: string[];
+  }>({ show: false, codes: [] });
   const [showPricingModal, setShowPricingModal] = useState(false);
   const [htsCodeSets, setHtsCodeSets] = useState<HtsCodeSet[]>([]);
   const [selectedHtsCodeSetId, setSelectedHtsCodeSetId] = useState<
@@ -336,9 +342,27 @@ export default function Home() {
     );
   };
 
+  const getHtsCodesToCheck = () => {
+    const selectedCodeSet = htsCodeSets.find(
+      (set) => set.id === selectedHtsCodeSetId
+    );
+
+    if (selectedCodeSet) {
+      return selectedCodeSet.codes;
+    } else {
+      const characterLimitedInput =
+        inputValue.length >= CHARACTER_LIMIT
+          ? inputValue.slice(0, CHARACTER_LIMIT)
+          : inputValue;
+      return getHtsCodesFromString(characterLimitedInput);
+    }
+  };
+
   const handleSubmit = async () => {
     try {
+      setResults([]);
       setCheckingTariffImpacts(true);
+
       // // Check if the user has hit the limit based on their plan
       const totalChecksThisMonth = tariffImpactChecks.reduce(
         (acc, check) => acc + check.num_codes,
@@ -353,13 +377,26 @@ export default function Home() {
         return;
       }
 
-      const characterLimitedInput =
-        inputValue.length >= CHARACTER_LIMIT
-          ? inputValue.slice(0, CHARACTER_LIMIT)
-          : inputValue;
+      const htsCodes = getHtsCodesToCheck();
+
+      if (htsCodes.length === 0) {
+        toast.error(
+          "Please select a code set or enter at least 1 valid HTS code"
+        );
+        return;
+      }
+
+      const tariffUpdateToCheckAgainst =
+        tariffCodeSets[selectedTariffAnnouncementIndex];
+
+      if (!tariffUpdateToCheckAgainst) {
+        toast.error("Please select a tariff announcement");
+        return;
+      }
+
       const results = checkTariffImpactsForCodes(
-        characterLimitedInput,
-        tariffCodeSets[selectedTariffAnnouncementIndex]
+        htsCodes,
+        tariffUpdateToCheckAgainst
       );
 
       const numChecksForSubmit = results.length;
@@ -372,7 +409,7 @@ export default function Home() {
         return;
       }
 
-      await createTariffImpactCheck(inputValue);
+      await createTariffImpactCheck(getValidHtsCodesFromSet(htsCodes));
 
       trackEvent(MixpanelEvent.TARIFF_IMPACT_CHECK, {
         numCodes: results.length,
@@ -404,10 +441,8 @@ export default function Home() {
     setLastActionWasSubmit(false);
 
     const codeSetThatMatchesInput = htsCodeSets.find((set) =>
-      codeSetMatchesString(inputValue, set)
+      codeSetMatchesString(inputValue, set.codes)
     );
-
-    console.log("Code set that matches input", codeSetThatMatchesInput);
 
     if (clearSelectedSet) {
       setSelectedHtsCodeSetId(null);
@@ -415,6 +450,8 @@ export default function Home() {
       // Update the selected code set if we found a match
       if (codeSetThatMatchesInput) {
         setSelectedHtsCodeSetId(codeSetThatMatchesInput.id);
+      } else {
+        setSelectedHtsCodeSetId(null);
       }
     }
   };
@@ -469,7 +506,7 @@ export default function Home() {
 
       if (!selectedSet) return false;
 
-      return !codeSetMatchesString(inputValue, selectedSet);
+      return !codeSetMatchesString(inputValue, selectedSet.codes);
     }
   };
 
@@ -570,112 +607,85 @@ export default function Home() {
           </div>
 
           {/* HTS Code Selection */}
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-col gap-1">
-              <div className="flex flex-col">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center">
-                    <PrimaryLabel value="HTS Codes" />
-                    <button
-                      className="btn btn-circle btn-xs bg-base-content/30 hover:bg-base-content/70 text-white ml-2 text-sm flex items-center justify-center"
-                      onClick={() => setShowHelpModal(true)}
-                      title="Help with HTS code formats"
-                    >
-                      ?
-                    </button>
+          {!fetchingHtsCodeSets && (
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-1">
+                <div className="flex flex-col">
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center">
+                      <PrimaryLabel value="HTS Codes" />
+                      <button
+                        className="btn btn-circle btn-xs bg-base-content/30 hover:bg-base-content/70 text-white ml-2 text-sm flex items-center justify-center"
+                        onClick={() => setShowHelpModal(true)}
+                        title="Help with HTS code formats"
+                      >
+                        ?
+                      </button>
+                    </div>
+                    {loadingUser ||
+                      (fetchingHtsCodeSets && <LoadingIndicator spinnerOnly />)}
                   </div>
-                  {loadingUser ||
-                    (fetchingHtsCodeSets && <LoadingIndicator spinnerOnly />)}
+                  <SecondaryText value="Select or enter the HTS codes you want to check" />
                 </div>
-                <SecondaryText value="Select the HTS codes you want to check" />
-              </div>
 
-              <HtsCodeSetDropdown
-                htsCodeSets={htsCodeSets}
-                onCreateSelected={() => setShowSaveCodesModal(true)}
-                selectedIndex={
-                  selectedHtsCodeSetId
-                    ? htsCodeSets.findIndex(
-                        (set) => set.id === selectedHtsCodeSetId
-                      )
-                    : null
-                }
-                onSelectionChange={(index) => {
-                  setLastActionWasSubmit(false);
-
-                  if (index === null) {
-                    handleHtsCodeSetSelection(null);
-                  } else {
-                    handleHtsCodeSetSelection(htsCodeSets[index].id);
+                <HtsCodeSetDropdown
+                  htsCodeSets={htsCodeSets}
+                  onCreateSelected={() =>
+                    setSaveCodesModal({ show: true, codes: [] })
                   }
-                }}
+                  selectedIndex={
+                    selectedHtsCodeSetId
+                      ? htsCodeSets.findIndex(
+                          (set) => set.id === selectedHtsCodeSetId
+                        )
+                      : null
+                  }
+                  onSelectionChange={(index) => {
+                    setLastActionWasSubmit(false);
+
+                    if (index === null) {
+                      handleHtsCodeSetSelection(null);
+                    } else {
+                      handleHtsCodeSetSelection(htsCodeSets[index].id);
+                    }
+                  }}
+                />
+              </div>
+              <TariffImpactCodesInput
+                value={inputValue}
+                placeholder="3808.94.10.00, 0202.20.80.00, etc..."
+                // onSubmit={handleSubmit}
+                onChange={handleInputChange}
+                isValid={inputValue.length >= 8}
               />
             </div>
-            {/* <TariffImpactCodesInput
-              value={inputValue}
-              placeholder="3808.94.10.00, 0202.20.80.00, etc..."
-              characterLimit={CHARACTER_LIMIT}
-              showSaveCodes={shouldShowSaveCodes()}
-              savingCodes={savingCodes}
-              onSaveCodes={async () => {
-                if (!selectedHtsCodeSetId) {
-                  setShowSaveCodesModal(true);
-                } else {
-                  updateCodeSet();
-                }
-              }}
-              onSubmit={handleSubmit}
-              onChange={handleInputChange}
-              isValid={inputValue.length >= 8}
-              disabled={
-                lastActionWasSubmit ||
-                loading ||
-                savingCodes ||
-                fetchingTariffImpactChecks ||
-                fetchingHtsCodeSets
-              }
-              loading={loading}
-            /> */}
-            {/* <div className="flex gap-2 items-center">
-              <div className="flex flex-wrap items-center">
-                <p className="text-xs font-bold text-gray-500">Try Me!</p>
-                {exampleLists.map((example) => (
-                  <button
-                    key={`${example.name}-example`}
-                    className="btn btn-xs text-base-content/80 hover:text-primary btn-link"
-                    onClick={() => {
-                      handleInputChange(example.list);
-                    }}
-                  >
-                    {example.name}
-                  </button>
-                ))}
-              </div>
-            </div> */}
-          </div>
+          )}
         </div>
 
-        <button
-          className={classNames(
-            "w-full btn",
-            checkingTariffImpacts ? "btn-neutral" : "btn-primary"
-          )}
-          disabled={
-            lastActionWasSubmit ||
-            loading ||
-            fetchingTariffImpactChecks ||
-            fetchingHtsCodeSets ||
-            selectedHtsCodeSetId === null ||
-            selectedTariffAnnouncementIndex === null
-          }
-          onClick={() => handleSubmit()}
-        >
-          {checkingTariffImpacts ? (
-            <LoadingIndicator spinnerOnly />
-          ) : (
-            "Check Impacts"
-          )}
-        </button>
+        {!fetchingHtsCodeSets && !lastActionWasSubmit && (
+          <button
+            className={classNames(
+              "w-full btn",
+              checkingTariffImpacts ? "btn-neutral" : "btn-primary"
+            )}
+            disabled={
+              lastActionWasSubmit ||
+              loading ||
+              fetchingTariffImpactChecks ||
+              fetchingHtsCodeSets ||
+              (!inputValue &&
+                (selectedHtsCodeSetId === null ||
+                  selectedTariffAnnouncementIndex === null))
+            }
+            onClick={() => handleSubmit()}
+          >
+            {checkingTariffImpacts ? (
+              <LoadingIndicator spinnerOnly />
+            ) : (
+              "Check Impacts"
+            )}
+          </button>
+        )}
 
         {/* Results */}
         {results && results.length > 0 && (
@@ -684,16 +694,26 @@ export default function Home() {
               <div className="w-full flex justify-between items-end sm:items-end gap-2">
                 <PrimaryLabel value="Impact Check Results" />
 
-                {/* {activeTariffImpactPurchase &&
-                activeTariffImpactPurchase.product_name ===
-                  PricingPlan.TARIFF_IMPACT_PRO ? null : (
-                  <button
-                    className="hidden sm:block btn btn-sm btn-primary"
-                    onClick={() => setShowPricingModal(true)}
-                  >
-                    Find Exemptions
-                  </button>
-                )} */}
+                {results.length > 0 &&
+                  (!htsCodeSets.length ||
+                    !htsCodeSets.some((set) =>
+                      codeSetMatchesString(
+                        results.map((result) => result.code).join(", "),
+                        set.codes
+                      )
+                    )) && (
+                    <button
+                      className="hidden sm:block btn btn-sm btn-primary"
+                      onClick={() => {
+                        setSaveCodesModal({
+                          show: true,
+                          codes: results.map((result) => result.code),
+                        });
+                      }}
+                    >
+                      Get Tariff Notifications for These Codes
+                    </button>
+                  )}
               </div>
               <div
                 className={`border border-base-content/20 rounded-md ${
@@ -761,11 +781,15 @@ export default function Home() {
         <TariffImpactInputHelp />
       </Modal>
       <ManageCodeListModal
-        isOpen={showSaveCodesModal}
-        setIsOpen={setShowSaveCodesModal}
+        codes={saveCodesModal.codes}
+        isOpen={saveCodesModal.show}
+        setIsOpen={(show) =>
+          setSaveCodesModal({ show, codes: saveCodesModal.codes })
+        }
         onSetCreated={(set: HtsCodeSet) => {
           setHtsCodeSets([...htsCodeSets, set]);
           setSelectedHtsCodeSetId(set.id);
+          setInputValue(set.codes.join(", "));
         }}
       />
       <Modal isOpen={showPricingModal} setIsOpen={setShowPricingModal}>
@@ -775,4 +799,50 @@ export default function Home() {
       </Modal>
     </main>
   );
+}
+
+{
+  /* <TariffImpactCodesInput
+              value={inputValue}
+              placeholder="3808.94.10.00, 0202.20.80.00, etc..."
+              characterLimit={CHARACTER_LIMIT}
+              showSaveCodes={shouldShowSaveCodes()}
+              savingCodes={savingCodes}
+              onSaveCodes={async () => {
+                if (!selectedHtsCodeSetId) {
+                  setShowSaveCodesModal(true);
+                } else {
+                  updateCodeSet();
+                }
+              }}
+              onSubmit={handleSubmit}
+              onChange={handleInputChange}
+              isValid={inputValue.length >= 8}
+              disabled={
+                lastActionWasSubmit ||
+                loading ||
+                savingCodes ||
+                fetchingTariffImpactChecks ||
+                fetchingHtsCodeSets
+              }
+              loading={loading}
+            /> */
+}
+{
+  /* <div className="flex gap-2 items-center">
+              <div className="flex flex-wrap items-center">
+                <p className="text-xs font-bold text-gray-500">Try Me!</p>
+                {exampleLists.map((example) => (
+                  <button
+                    key={`${example.name}-example`}
+                    className="btn btn-xs text-base-content/80 hover:text-primary btn-link"
+                    onClick={() => {
+                      handleInputChange(example.list);
+                    }}
+                  >
+                    {example.name}
+                  </button>
+                ))}
+              </div>
+            </div> */
 }

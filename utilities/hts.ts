@@ -20,18 +20,20 @@ export const findCodeSet = (id: string, codeSets: HtsCodeSet[]) => {
   return codeSets.find((set) => set.id === id);
 };
 
-export const codeSetMatchesString = (str: string, htsCodeSet: HtsCodeSet) => {
+export const codeSetMatchesString = (str: string, htsCodeSet: string[]) => {
   const stringCodes = getValidHtsCodesFromString(str);
 
   // Check if current input is different from the selected set
-  if (stringCodes.length !== htsCodeSet.codes.length) {
+  if (stringCodes.length !== htsCodeSet.length) {
     return false;
   }
 
   const sortedStringCodes = [...stringCodes].sort();
-  const sortedSetCodes = [...htsCodeSet.codes].sort();
+  const sortedSetCodes = [...htsCodeSet].sort();
 
-  return sortedStringCodes.every(
-    (code, index) => code === sortedSetCodes[index]
+  const matches = sortedSetCodes.every((code) =>
+    sortedStringCodes.includes(code)
   );
+
+  return matches;
 };

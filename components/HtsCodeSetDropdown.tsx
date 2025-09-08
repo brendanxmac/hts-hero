@@ -84,9 +84,7 @@ export default function HtsCodeSetDropdown({
                 }}
               >
                 <PlusIcon className="h-5 w-5" />
-                <p className="text-sm sm:text-base font-medium">
-                  Create New List
-                </p>
+                <p className="text-sm sm:text-base font-medium">Create List</p>
               </div>
 
               {/* Show divider and clear selection option only if there are code sets */}

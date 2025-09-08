@@ -64,29 +64,26 @@ export default function TariffUpdateDropdown({
                   <Listbox.Option
                     key={index}
                     className={({ active }) =>
-                      `relative hover:cursor-pointer select-none py-3 px-4 text-white transition-colors duration-200 ${
+                      `relative hover:cursor-pointer select-none py-3 px-4 text-white transition-colors duration-200 border-b border-base-content/20 ${
                         active ? "bg-base-300" : ""
                       }`
                     }
                     value={index}
                   >
                     {({ selected }) => (
-                      <div className="flex flex-col gap-2">
-                        <div className="flex items-start justify-between">
-                          <div className="flex flex-col flex-1 min-w-0">
-                            {/* Name - largest, clearest text */}
-                            <p className={`text-base font-bold`}>
-                              {update.name}
-                            </p>
+                      <div className="flex items-start justify-between">
+                        <div className="flex flex-col gap-1">
+                          {/* Name - largest, clearest text */}
+                          <p className={`text-base`}>{update.name}</p>
 
+                          <div className="flex gap-x-3 flex-wrap">
                             {/* Source Name - smaller beneath name */}
-                            <p className="text-sm text-gray-400">
-                              Source:{" "}
+                            <p className="text-xs text-gray-400">
                               <a
                                 href={update.source}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="link link-primary "
+                                className="link"
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 {update.source_name}
@@ -94,24 +91,20 @@ export default function TariffUpdateDropdown({
                             </p>
 
                             {/* Date Released - clearly displayed */}
-                            <p className="text-sm text-gray-400">
-                              Released:{" "}
-                              <span className="text-gray-100 font-medium">
+                            <p className="text-xs text-gray-400">
+                              <span className="">
                                 {formatDate(update.published_at)}
                               </span>
                             </p>
                           </div>
-
-                          {/* Check icon for selected item */}
-                          {selected ? (
-                            <span className="flex items-center justify-center text-primary ml-2 flex-shrink-0">
-                              <CheckIcon
-                                className="h-6 w-6"
-                                aria-hidden="true"
-                              />
-                            </span>
-                          ) : null}
                         </div>
+
+                        {/* Check icon for selected item */}
+                        {selected ? (
+                          <span className="flex items-center justify-center text-primary ml-2 flex-shrink-0">
+                            <CheckIcon className="h-6 w-6" aria-hidden="true" />
+                          </span>
+                        ) : null}
                       </div>
                     )}
                   </Listbox.Option>

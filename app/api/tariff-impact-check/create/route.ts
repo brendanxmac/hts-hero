@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
         validateTariffableHtsCode(code);
 
       if (error) {
-        throw new Error(error);
+        console.error(`Invalid HTS Code in Tariff Check: ${code}`, error);
       }
       return isValidTariffableCode ? code : null;
     });

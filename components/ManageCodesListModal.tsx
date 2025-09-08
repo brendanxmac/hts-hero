@@ -4,7 +4,6 @@ import TariffImpactCodesInput from "./TariffImpactCodesInput";
 import toast from "react-hot-toast";
 import {
   createHtsCodeSet,
-  fetchHtsCodeSetsForUser,
   formatHtsCodeWithPeriods,
   getHtsCodesFromString,
 } from "../libs/hts-code-set";
@@ -20,28 +19,35 @@ interface Props {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   onSetCreated: (set: HtsCodeSet) => void;
+  codes: string[];
 }
 
 export const ManageCodeListModal = ({
   isOpen,
   setIsOpen,
   onSetCreated,
+  codes: passedCodes,
 }: Props) => {
+  const validateCodes = (codes: string[]) => {
+    return codes.map((htsCode) => ({
+      code: htsCode,
+      error: validateTariffableHtsCode(htsCode).error,
+    }));
+  };
   const [name, setName] = useState("");
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState(passedCodes.join(", "));
   const [saving, setSaving] = useState(false);
   const [codes, setCodes] = useState<ValidatedCode[]>([]);
+
+  useEffect(() => {
+    setInputValue(passedCodes.join(", "));
+  }, [passedCodes]);
 
   useEffect(() => {
     const htsCodesFromInput = getHtsCodesFromString(inputValue).map(
       formatHtsCodeWithPeriods
     );
-    const validatedCodes = htsCodesFromInput.map((htsCode) => {
-      return {
-        code: htsCode,
-        error: validateTariffableHtsCode(htsCode).error,
-      };
-    });
+    const validatedCodes = validateCodes(htsCodesFromInput);
 
     setCodes(validatedCodes);
   }, [inputValue]);
@@ -54,6 +60,9 @@ export const ManageCodeListModal = ({
       const newHtsCodeSet = await createHtsCodeSet(inputValue, name);
       onSetCreated(newHtsCodeSet);
       setIsOpen(false);
+      setName("");
+      setInputValue("");
+      setCodes([]);
     } catch (error) {
       console.error(error);
       toast.error("Error saving codes");
@@ -76,19 +85,22 @@ export const ManageCodeListModal = ({
 
   return (
     <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
-      <div className="w-full p-6 max-w-2xl">
+      <div className="w-full p-8 max-w-3xl">
         <div className="mb-6">
-          <h2 className="text-2xl font-semibold text-base-content">
+          <h2 className="text-2xl font-semibold text-white">
             Create List of Codes
           </h2>
           <p className="text-base-content/70">
-            Enter the HTS codes you want to do tariff impact checks on. We will
-            also notify you when these codes are affected by new tariff
-            announcements.
+            Enter the HTS codes you want to do tariff impact checks on.
+          </p>
+          <p className="text-base-content/70">
+            All paid plan users,{" "}
+            <span className="underline">will get notifications</span> when
+            they&apos;re affected by new tariffs.
           </p>
         </div>
 
-        <div className="flex flex-col gap-4">
+        <form className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
             <label
               htmlFor="name"
@@ -117,7 +129,8 @@ export const ManageCodeListModal = ({
             <TariffImpactCodesInput
               value={inputValue}
               onChange={(value) => setInputValue(value)}
-              placeholder="Enter the codes you want to check against"
+              // placeholder="Enter the codes you want to check against"
+              placeholder="3808.94.10.00, 0202.20.80.00, etc..."
             />
           </div>
 
@@ -181,7 +194,7 @@ export const ManageCodeListModal = ({
               )}
             </button>
           </div>
-        </div>
+        </form>
       </div>
     </Modal>
   );

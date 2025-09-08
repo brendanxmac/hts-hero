@@ -2,10 +2,7 @@ import { TariffImpactCheck } from "../interfaces/tariffs";
 import { TariffCodeSet } from "../tariffs/announcements/announcements";
 import apiClient from "./api";
 import { validateTariffableHtsCode } from "./hts";
-import {
-  formatHtsCodeWithPeriods,
-  getValidHtsCodesFromString,
-} from "./hts-code-set";
+import { formatHtsCodeWithPeriods } from "./hts-code-set";
 
 export interface TariffImpactResult {
   code: string;
@@ -14,17 +11,10 @@ export interface TariffImpactResult {
 }
 
 export const checkTariffImpactsForCodes = (
-  htsCodesString: string,
+  htsCodes: string[],
   tariffCodeSet: TariffCodeSet
 ): TariffImpactResult[] => {
-  const separators = /[\n, ]/;
-  const parsedCodes = htsCodesString
-    .trim()
-    .split(separators)
-    .map((code) => code.trim())
-    .filter((code) => code.length > 0);
-
-  return parsedCodes.map((code) => {
+  return htsCodes.map((code) => {
     const { valid: isValidTariffableCode, error } =
       validateTariffableHtsCode(code);
     // Format the code with proper periods if it's valid
@@ -43,20 +33,9 @@ export const checkTariffImpactsForCodes = (
 };
 
 export const createTariffImpactCheck = async (
-  htsCodesString: string
+  htsCodes: string[]
 ): Promise<TariffImpactCheck> => {
-  const parsedHtsCodes = getValidHtsCodesFromString(htsCodesString);
-
-  if (parsedHtsCodes.length === 0) {
-    throw new Error("No valid HTS codes provided");
-  }
-
-  const createHtsCodeSetResponse: TariffImpactCheck = await apiClient.post(
-    "/tariff-impact-check/create",
-    { htsCodes: parsedHtsCodes }
-  );
-
-  return createHtsCodeSetResponse;
+  return await apiClient.post("/tariff-impact-check/create", { htsCodes });
 };
 
 export const fetchTariffImpactChecksForUser = async (
