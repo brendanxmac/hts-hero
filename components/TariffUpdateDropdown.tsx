@@ -6,7 +6,7 @@ import { ChevronUpDownIcon, CheckIcon } from "@heroicons/react/20/solid";
 import { TariffCodeSet } from "../tariffs/announcements/announcements";
 
 interface TariffUpdateDropdownProps {
-  disabled: boolean;
+  disabled?: boolean;
   tariffCodeSets: TariffCodeSet[];
   selectedIndex: number;
   onSelectionChange: (index: number) => void;

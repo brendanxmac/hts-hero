@@ -366,7 +366,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                     <QuestionMarkCircleIcon className="w-5 h-5 md:w-6 md:h-6" />
                   </Link>
                 </div>
-                <TertiaryText value="See the full tariff details for any country and explore potential exemptions" />
+                <TertiaryText value="Quickly see tariff rates for any country of origin and explore potential exemptions" />
               </div>
               <Tariffs
                 isPayingUser={isPayingUser}

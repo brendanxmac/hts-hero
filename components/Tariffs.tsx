@@ -258,14 +258,14 @@ export const Tariffs = ({ htsElement, tariffElement, isPayingUser }: Props) => {
           />
 
           <div className="w-full flex flex-col overflow-x-auto border border-base-content/40 rounded-lg">
-            <table className="table">
+            <table className="table table-sm table-zebra table-pin-cols">
               <thead>
                 <tr>
                   <th></th>
                   <th>Country of Origin</th>
                   <th className="w-auto min-w-48">
                     <div className="flex gap-2 items-center">
-                      <h3>Rate(s)</h3>
+                      <h3>Tariff Rates</h3>
                       <button
                         className={classNames(
                           `btn btn-xs p-0.5`,
@@ -327,7 +327,7 @@ export const Tariffs = ({ htsElement, tariffElement, isPayingUser }: Props) => {
                             toggleRow(country.code);
                           } else {
                             toast.error(
-                              "Please upgrade to view advanced tariff analysis"
+                              "Please upgrade to view all tariff rates & exemptions"
                             );
                           }
                         }}
@@ -353,7 +353,7 @@ export const Tariffs = ({ htsElement, tariffElement, isPayingUser }: Props) => {
                                 target="_blank"
                                 className="btn btn-link no-underline text-base-content hover:text-primary"
                               >
-                                🔒 Unlock Advanced Tariff Details
+                                🔒 Get All Tariff Rates & Exemptions
                               </Link>
                             ) : (
                               countryPercentTariffsSums.map((sum, i) => (
@@ -386,8 +386,8 @@ export const Tariffs = ({ htsElement, tariffElement, isPayingUser }: Props) => {
                             )}
                           </div>
                         </td>
-                        <td className="hidden md:block">
-                          <p className="text-lg p-0">
+                        <td className="hidden md:table-cell align-middle">
+                          <p className="text-lg">
                             {country.specialTradePrograms.length > 0
                               ? "✅"
                               : "−"}

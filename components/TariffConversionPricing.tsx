@@ -11,7 +11,7 @@ interface Props {
   currentPlan?: PricingPlan;
 }
 
-const getSubheading = (currentPlan?: PricingPlan) => {
+const getContext = (currentPlan?: PricingPlan) => {
   let subheading = "";
 
   if (!currentPlan || currentPlan === PricingPlan.TARIFF_IMPACT_STARTER) {
@@ -26,7 +26,7 @@ const getSubheading = (currentPlan?: PricingPlan) => {
 const getHeading = (currentPlan?: PricingPlan) => {
   if (!currentPlan || currentPlan === PricingPlan.TARIFF_IMPACT_STARTER) {
     return (
-      <h2 className="text-white text-3xl md:text-4xl font-extrabold text-center">
+      <h2 className="text-white text-3xl md:text-4xl lg:text-6xl font-extrabold text-center">
         Get <span className="text-primary">Instant Clarity</span> When New
         Tariffs are Announced
       </h2>
@@ -43,6 +43,25 @@ const getHeading = (currentPlan?: PricingPlan) => {
     );
   }
 
+  return null;
+};
+
+const getSubheading = (currentPlan?: PricingPlan) => {
+  if (!currentPlan || currentPlan === PricingPlan.TARIFF_IMPACT_STARTER) {
+    return (
+      <h3 className="text-sm md:text-base text-center">
+        Join the forward-thinking importers & customs brokers who are automating
+        their tariff impact checks
+      </h3>
+    );
+  }
+
+  if (currentPlan === PricingPlan.TARIFF_IMPACT_STANDARD) {
+    <h3 className="text-sm md:text-base text-center">
+      Join the expert importers & customs brokers who are automating tariff
+      calculations & discovering tariff exemptions
+    </h3>;
+  }
   return null;
 };
 
@@ -64,9 +83,12 @@ const TariffConversionPricing = ({ currentPlan }: Props) => {
 
   return (
     <section className="bg-base-300 overflow-hidden" id="pricing">
-      <div className="py-12 px-4 sm:px-8 max-w-7xl mx-auto flex flex-col items-center justify-center gap-8">
-        {getSubheading(currentPlan)}
-        {getHeading(currentPlan)}
+      <div className="py-12 px-4 sm:px-8 max-w-5xl mx-auto flex flex-col items-center justify-center gap-8">
+        {getContext(currentPlan)}
+        <div className="flex flex-col gap-4">
+          {getHeading(currentPlan)}
+          {getSubheading(currentPlan)}
+        </div>
 
         <div className="w-full relative flex justify-evenly flex-col lg:flex-row items-center lg:items-stretch gap-8 text-white">
           {plans.map((plan, index) => (

@@ -39,7 +39,7 @@ import {
 import { PricingPlan } from "../../../types";
 import { classNames } from "../../../utilities/style";
 import { ManageCodeListModal } from "../../../components/ManageCodesListModal";
-import { findCodeSet, codeSetMatchesString } from "../../../utilities/hts";
+import { codeSetMatchesString } from "../../../utilities/hts";
 import TariffConversionPricing from "../../../components/TariffConversionPricing";
 import { fetchTariffCodeSets } from "../../../libs/tariff-code-set";
 import { ArrowRightIcon } from "@heroicons/react/16/solid";
@@ -48,15 +48,18 @@ import TariffImpactCodesInput from "../../../components/TariffImpactCodesInput";
 
 export default function Home() {
   const CHARACTER_LIMIT = 3000;
-  const { user, isLoading: loadingUser } = useUser();
-  const { fetchElements, htsElements } = useHts();
   const searchParams = useSearchParams();
-  const [loading, setLoading] = useState(true);
+
+  // Context
+  const { user } = useUser();
+  const { fetchElements, htsElements } = useHts();
+
+  // State
+  const [loadingPage, setLoadingPage] = useState(true);
   const [inputValue, setInputValue] = useState("");
   const [results, setResults] = useState<TariffImpactResult[]>([]);
   const [fetchingTariffImpactChecks, setFetchingTariffImpactChecks] =
     useState(true);
-  const [fetchingHtsCodeSets, setFetchingHtsCodeSets] = useState(true);
   const [tariffImpactChecks, setTariffImpactChecks] = useState<
     TariffImpactCheck[]
   >([]);
@@ -77,50 +80,8 @@ export default function Home() {
     useState<Purchase | null>(null);
   const [tariffCodeSets, setTariffCodeSets] = useState<TariffCodeSet[]>([]);
   const [fetchingPurchases, setFetchingPurchases] = useState(true);
-  const [fetchingTariffCodeSets, setFetchingTariffCodeSets] = useState(true);
   const [urlParamsProcessed, setUrlParamsProcessed] = useState(false);
   const [checkingTariffImpacts, setCheckingTariffImpacts] = useState(false);
-
-  // Update exist set of codes
-  // const updateCodeSet = async () => {
-  //   try {
-  //     setSavingCodes(true);
-  //     const parsedCodes = getValidHtsCodesFromString(inputValue);
-  //     await updateHtsCodeSet(selectedHtsCodeSetId, parsedCodes);
-  //     const updatedCodeSets = await fetchHtsCodeSetsForUser();
-  //     setHtsCodeSets(updatedCodeSets);
-  //     toast.success("Code set updated successfully");
-  //   } catch (error) {
-  //     console.error(error);
-  //     toast.error("Error updating code set");
-  //   } finally {
-  //     setSavingCodes(false);
-  //   }
-  // };
-
-  // Create new set of codes
-  // const createCodeSet = async (name: string, description: string) => {
-  //   try {
-  //     setSavingCodes(true);
-  //     setShowSaveCodesModal(false);
-
-  //     console.log("creating new code set");
-  //     const newHtsCodeSet = await createHtsCodeSet(
-  //       inputValue,
-  //       name,
-  //       description
-  //     );
-  //     const htsCodeSets = await fetchHtsCodeSetsForUser();
-  //     setHtsCodeSets(htsCodeSets);
-  //     setSelectedHtsCodeSetId(newHtsCodeSet.id);
-  //     toast.success("Codes saved successfully!");
-  //   } catch (error) {
-  //     console.error(error);
-  //     toast.error("Error saving codes");
-  //   } finally {
-  //     setSavingCodes(false);
-  //   }
-  // };
 
   useEffect(() => {
     const fetchTariffImpactChecks = async () => {
@@ -143,13 +104,39 @@ export default function Home() {
     // Refetch tariff impact checks when results change
   }, [results]);
 
+  // useEffect(() => {
+  //   const fetchUserData = async () => {
+  //     await Promise.all([
+  //       fetchHtsCodeSets(),
+  //       fetchTariffImpactChecks(),
+  //       fetchPurchases(),
+  //     ]);
+  //   };
+
+  //   if (user) {
+  //     fetchUserData();
+  //   }
+  // }, [user]);
+
   useEffect(() => {
-    const fetchUserData = async () => {
-      await Promise.all([
-        fetchHtsCodeSets(),
-        fetchTariffImpactChecks(),
-        fetchPurchases(),
-      ]);
+    const loadAllData = async () => {
+      try {
+        setLoadingPage(true);
+        await Promise.all([
+          loadElements(),
+          loadTariffCodeSets(),
+          fetchHtsCodeSets(),
+          fetchTariffImpactChecks(),
+          fetchPurchases(),
+        ]);
+      } catch (e) {
+        console.error(e);
+        toast.error(
+          "Error loading data. Reload the page or contact support if this continues"
+        );
+      } finally {
+        setLoadingPage(false);
+      }
     };
 
     const fetchTariffImpactChecks = async () => {
@@ -171,15 +158,11 @@ export default function Home() {
 
     const fetchHtsCodeSets = async () => {
       try {
-        setFetchingHtsCodeSets(true);
         const htsCodeSets = await fetchHtsCodeSetsForUser();
         setHtsCodeSets(htsCodeSets);
         setSelectedHtsCodeSetId(null);
-        setFetchingHtsCodeSets(false);
       } catch {
         toast.error("Error fetching hts code sets");
-      } finally {
-        setFetchingHtsCodeSets(false);
       }
     };
 
@@ -192,39 +175,19 @@ export default function Home() {
       setFetchingPurchases(false);
     };
 
-    if (user) {
-      fetchUserData();
-    }
-  }, [user]);
-
-  useEffect(() => {
-    const loadAllData = async () => {
-      try {
-        setLoading(true);
-        await Promise.all([loadElements(), loadTariffCodeSets()]);
-      } catch (e) {
-        console.error(e);
-        toast.error(
-          "Error loading data. Reload the page or contact support if this continues"
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
     const loadElements = async () => {
       await fetchElements("latest");
     };
 
     const loadTariffCodeSets = async () => {
-      setFetchingTariffCodeSets(true);
       const tariffCodeSets = await fetchTariffCodeSets();
       setTariffCodeSets(tariffCodeSets);
-      setFetchingTariffCodeSets(false);
     };
 
-    loadAllData();
-  }, []);
+    if (user) {
+      loadAllData();
+    }
+  }, [user]);
 
   useEffect(() => {
     // Initialize with the first changeList when component mounts
@@ -240,13 +203,7 @@ export default function Home() {
 
   // Process URL parameters after all data is loaded
   useEffect(() => {
-    if (
-      !urlParamsProcessed &&
-      !loading &&
-      !fetchingTariffCodeSets &&
-      !fetchingHtsCodeSets &&
-      tariffCodeSets.length > 0
-    ) {
+    if (!urlParamsProcessed && !loadingPage && tariffCodeSets.length > 0) {
       const tariffAnnouncementId = searchParams.get("tariffAnnouncement");
       const htsCodeSetId = searchParams.get("htsCodeSet");
 
@@ -277,9 +234,7 @@ export default function Home() {
     }
   }, [
     urlParamsProcessed,
-    loading,
-    fetchingTariffCodeSets,
-    fetchingHtsCodeSets,
+    loadingPage,
     tariffCodeSets,
     htsCodeSets,
     searchParams,
@@ -481,11 +436,11 @@ export default function Home() {
 
   const getCheckLimitForUser = (purchase: Purchase | null) => {
     if (purchase === null) {
-      return 50;
+      return 20;
     }
 
     if (purchase.product_name === PricingPlan.TARIFF_IMPACT_STANDARD) {
-      return 400;
+      return 300;
     }
 
     if (purchase.product_name === PricingPlan.TARIFF_IMPACT_PRO) {
@@ -495,20 +450,13 @@ export default function Home() {
 
   const checkLimit = getCheckLimitForUser(activeTariffImpactPurchase);
 
-  const shouldShowSaveCodes = () => {
-    const isOneValidParsedCode =
-      getValidHtsCodesFromString(inputValue).length > 0;
-
-    if (!selectedHtsCodeSetId) {
-      return isOneValidParsedCode;
-    } else {
-      const selectedSet = findCodeSet(selectedHtsCodeSetId, htsCodeSets);
-
-      if (!selectedSet) return false;
-
-      return !codeSetMatchesString(inputValue, selectedSet.codes);
-    }
-  };
+  if (loadingPage) {
+    return (
+      <main className="w-screen h-screen flex items-center justify-center bg-base-300">
+        <LoadingIndicator />
+      </main>
+    );
+  }
 
   return (
     <main className="w-screen h-full flex flex-col bg-base-300 py-6">
@@ -547,10 +495,10 @@ export default function Home() {
                 )}
               </div>
 
-              {fetchingTariffImpactChecks ? (
-                <LoadingIndicator spinnerOnly />
-              ) : (
-                checkLimit !== Infinity && (
+              {checkLimit !== Infinity &&
+                (fetchingTariffImpactChecks ? (
+                  <LoadingIndicator spinnerOnly />
+                ) : (
                   <div className="w-full sm:w-auto justify-between sm:justify-normal flex items-center gap-4 px-4 sm:px-0 p-2 bg-base-100 border sm:border-none sm:bg-inherit border-base-content/20 rounded-md">
                     <p
                       className={classNames(
@@ -573,8 +521,7 @@ export default function Home() {
                       Upgrade <ArrowRightIcon className="w-4 h-4" />
                     </button>
                   </div>
-                )
-              )}
+                ))}
             </div>
           </div>
         </div>
@@ -584,15 +531,11 @@ export default function Home() {
           {/* Tariff Announcement Selection */}
           <div className="flex flex-col gap-2">
             <div className="flex flex-col">
-              <div className="w-full flex justify-between gap-4 items-center">
-                <PrimaryLabel value="Tariff Announcement" />
-                {fetchingTariffCodeSets && <LoadingIndicator spinnerOnly />}
-              </div>
+              <PrimaryLabel value="Tariff Announcement" />
               <SecondaryText value="Select the tariff announcement you want to see the impacts of" />
             </div>
 
             <TariffUpdateDropdown
-              disabled={fetchingTariffCodeSets}
               tariffCodeSets={tariffCodeSets}
               selectedIndex={selectedTariffAnnouncementIndex}
               onSelectionChange={setSelectedTariffAnnouncementIndex}
@@ -607,27 +550,28 @@ export default function Home() {
           </div>
 
           {/* HTS Code Selection */}
-          {!fetchingHtsCodeSets && (
-            <div className="flex flex-col gap-2">
-              <div className="flex flex-col gap-1">
-                <div className="flex flex-col">
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center">
-                      <PrimaryLabel value="HTS Codes" />
-                      <button
-                        className="btn btn-circle btn-xs bg-base-content/30 hover:bg-base-content/70 text-white ml-2 text-sm flex items-center justify-center"
-                        onClick={() => setShowHelpModal(true)}
-                        title="Help with HTS code formats"
-                      >
-                        ?
-                      </button>
-                    </div>
-                    {loadingUser ||
-                      (fetchingHtsCodeSets && <LoadingIndicator spinnerOnly />)}
-                  </div>
-                  <SecondaryText value="Select or enter the HTS codes you want to check" />
-                </div>
 
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
+              <div className="flex flex-col">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center">
+                    <PrimaryLabel value="HTS Codes" />
+                    <button
+                      className="btn btn-circle btn-xs bg-base-content/30 hover:bg-base-content/70 text-white ml-2 text-sm flex items-center justify-center"
+                      onClick={() => setShowHelpModal(true)}
+                      title="Help with HTS code formats"
+                    >
+                      ?
+                    </button>
+                  </div>
+                </div>
+                <SecondaryText
+                  value={`${htsCodeSets.length > 0 ? "Select or enter" : "Enter"} the HTS codes you want to check`}
+                />
+              </div>
+
+              {htsCodeSets.length > 0 && (
                 <HtsCodeSetDropdown
                   htsCodeSets={htsCodeSets}
                   onCreateSelected={() =>
@@ -650,19 +594,18 @@ export default function Home() {
                     }
                   }}
                 />
-              </div>
-              <TariffImpactCodesInput
-                value={inputValue}
-                placeholder="3808.94.10.00, 0202.20.80.00, etc..."
-                // onSubmit={handleSubmit}
-                onChange={handleInputChange}
-                isValid={inputValue.length >= 8}
-              />
+              )}
             </div>
-          )}
+            <TariffImpactCodesInput
+              value={inputValue}
+              placeholder="3808.94.10.00, 0202.20.80.00, 9701.21.00.00, 2825.80.00.00, etc..."
+              onChange={handleInputChange}
+              isValid={inputValue.length >= 8}
+            />
+          </div>
         </div>
 
-        {!fetchingHtsCodeSets && !lastActionWasSubmit && (
+        {!lastActionWasSubmit && (
           <button
             className={classNames(
               "w-full btn",
@@ -670,9 +613,8 @@ export default function Home() {
             )}
             disabled={
               lastActionWasSubmit ||
-              loading ||
+              loadingPage ||
               fetchingTariffImpactChecks ||
-              fetchingHtsCodeSets ||
               (!inputValue &&
                 (selectedHtsCodeSetId === null ||
                   selectedTariffAnnouncementIndex === null))
@@ -703,7 +645,7 @@ export default function Home() {
                       )
                     )) && (
                     <button
-                      className="hidden sm:block btn btn-sm btn-primary"
+                      className="hidden sm:block btn btn-sm btn-secondary"
                       onClick={() => {
                         setSaveCodesModal({
                           show: true,
@@ -711,7 +653,7 @@ export default function Home() {
                         });
                       }}
                     >
-                      Get Tariff Notifications for These Codes
+                      Get Notifications for These Codes
                     </button>
                   )}
               </div>
@@ -781,6 +723,8 @@ export default function Home() {
         <TariffImpactInputHelp />
       </Modal>
       <ManageCodeListModal
+        user={user}
+        usersCodeSets={htsCodeSets}
         codes={saveCodesModal.codes}
         isOpen={saveCodesModal.show}
         setIsOpen={(show) =>
@@ -801,33 +745,6 @@ export default function Home() {
   );
 }
 
-{
-  /* <TariffImpactCodesInput
-              value={inputValue}
-              placeholder="3808.94.10.00, 0202.20.80.00, etc..."
-              characterLimit={CHARACTER_LIMIT}
-              showSaveCodes={shouldShowSaveCodes()}
-              savingCodes={savingCodes}
-              onSaveCodes={async () => {
-                if (!selectedHtsCodeSetId) {
-                  setShowSaveCodesModal(true);
-                } else {
-                  updateCodeSet();
-                }
-              }}
-              onSubmit={handleSubmit}
-              onChange={handleInputChange}
-              isValid={inputValue.length >= 8}
-              disabled={
-                lastActionWasSubmit ||
-                loading ||
-                savingCodes ||
-                fetchingTariffImpactChecks ||
-                fetchingHtsCodeSets
-              }
-              loading={loading}
-            /> */
-}
 {
   /* <div className="flex gap-2 items-center">
               <div className="flex flex-wrap items-center">

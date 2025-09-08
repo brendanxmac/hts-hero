@@ -5,10 +5,17 @@ import { StripePaymentMode } from "./libs/stripe";
 export const tariffImpactStarter: PricingPlanI = {
   name: "Starter",
   planIdentifier: PricingPlan.TARIFF_IMPACT_STARTER,
-  description: "A Few Checks",
+  description: "A Few Tariff Impact Checks",
   mode: StripePaymentMode.SUBSCRIPTION,
   price: 0,
-  features: [{ name: "Import HTS Codes" }, { name: "50 Checks/Month" }],
+  features: [
+    { name: "Upload & Organize Import Lists" },
+    {
+      name: "20 Tariff Impact Checks/Month",
+      details:
+        "1 Check = Any time you check an HTS code against any tariff update",
+    },
+  ],
 };
 
 export const tariffImpactStandard: PricingPlanI = {
@@ -16,11 +23,15 @@ export const tariffImpactStandard: PricingPlanI = {
   planIdentifier: PricingPlan.TARIFF_IMPACT_STANDARD,
   description: "Tariff Impact Essentials",
   mode: StripePaymentMode.SUBSCRIPTION,
-  price: 60,
-  priceAnchor: 120,
+  price: 39,
+  priceAnchor: 70,
   features: [
-    { name: "Import HTS Codes" },
-    { name: "300 Checks/Month" },
+    { name: "Upload & Organize Import Lists" },
+    {
+      name: "300 Tariff Impact Checks/Month",
+      details:
+        "1 Check = Any time you check an HTS code against any tariff update",
+    },
     { name: "Impact Notifications" },
     // {
     //   name: "Tariff Analyzer",
@@ -34,16 +45,21 @@ export const tariffImpactPro: PricingPlanI = {
   planIdentifier: PricingPlan.TARIFF_IMPACT_PRO,
   description: "The Ultimate Tariff Solution",
   mode: StripePaymentMode.SUBSCRIPTION,
-  price: 100,
-  priceAnchor: 200,
+  price: 79,
+  priceAnchor: 150,
   isFeatured: true,
   features: [
-    { name: "Import HTS Codes" },
-    { name: "Unlimited Checks" },
+    { name: "Upload & Organize Import Lists" },
+    {
+      name: "Unlimited Tariff Impact Checks",
+      details:
+        "1 Check = Any time you check an HTS code against any tariff update",
+    },
     { name: "Impact Notifications" },
     {
       name: "Tariff Wizard",
-      details: "See all tariffs & discover potential savings",
+      details:
+        "Quickly calculate tariffs & discover potential savings for any import",
     },
     // { name: "Generate & share branded reports" }, // TODO: This could be great
   ],

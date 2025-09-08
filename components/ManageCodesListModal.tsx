@@ -9,6 +9,9 @@ import {
 } from "../libs/hts-code-set";
 import { HtsCodeSet } from "../interfaces/hts";
 import { validateTariffableHtsCode } from "../libs/hts";
+import { sendTariffImpactCheckExampleEmail } from "../emails/tariff-impact/tariff-impact-check-example-email";
+import { User } from "@supabase/supabase-js";
+import { sentEmailWithExampleOfTariffImpactCheck } from "../libs/tariff-impact-check";
 
 interface ValidatedCode {
   code: string;
@@ -16,6 +19,8 @@ interface ValidatedCode {
 }
 
 interface Props {
+  user: User;
+  usersCodeSets?: HtsCodeSet[];
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   onSetCreated: (set: HtsCodeSet) => void;
@@ -23,10 +28,12 @@ interface Props {
 }
 
 export const ManageCodeListModal = ({
+  user,
   isOpen,
   setIsOpen,
   onSetCreated,
   codes: passedCodes,
+  usersCodeSets,
 }: Props) => {
   const validateCodes = (codes: string[]) => {
     return codes.map((htsCode) => ({
@@ -53,11 +60,30 @@ export const ManageCodeListModal = ({
   }, [inputValue]);
 
   // Create new set of codes
-  const upsertCodeSet = async (name: string, codes: string[]) => {
-    console.log("Creating New Code Set");
+  const upsertCodeSet = async (name: string) => {
     try {
       setSaving(true);
       const newHtsCodeSet = await createHtsCodeSet(inputValue, name);
+
+      if (!usersCodeSets || usersCodeSets.length === 0) {
+        if (user) {
+          try {
+            await sentEmailWithExampleOfTariffImpactCheck(user.email);
+            toast.success(
+              "List Created! Check your email for an example of an impact notification. (Be sure to check spam too!)",
+              { duration: 10000 }
+            );
+          } catch (error) {
+            console.error("Error sending tariff impact check example email");
+            console.error(error);
+            toast.success("List Created!");
+          }
+        } else {
+          toast.success("List Created!");
+        }
+      } else {
+        toast.success("List Created!");
+      }
       onSetCreated(newHtsCodeSet);
       setIsOpen(false);
       setName("");
@@ -76,27 +102,23 @@ export const ManageCodeListModal = ({
     const codeSetName = name.trim();
     const noErrors = codes.every(({ error }) => !error);
     const atLeastOneCode = codes.length > 0;
-    const htsCodes = codes.map(({ code }) => code);
+
     // Check that there are codes
     if (codeSetName && noErrors && atLeastOneCode) {
-      await upsertCodeSet(name.trim(), htsCodes);
+      await upsertCodeSet(name.trim());
     }
   };
 
   return (
     <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
-      <div className="w-full p-8 max-w-3xl">
+      <div className="w-full px-8 pt-8 pb-4 max-w-3xl">
         <div className="mb-6">
           <h2 className="text-2xl font-semibold text-white">
-            Create List of Codes
+            Create Tariff Notifications List
           </h2>
           <p className="text-base-content/70">
-            Enter the HTS codes you want to do tariff impact checks on.
-          </p>
-          <p className="text-base-content/70">
-            All paid plan users,{" "}
-            <span className="underline">will get notifications</span> when
-            they&apos;re affected by new tariffs.
+            Enter the HTS codes you want to do tariff impact checks on and get
+            notified about.
           </p>
         </div>
 
@@ -165,7 +187,7 @@ export const ManageCodeListModal = ({
             </div>
           )}
 
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-3 pt-2">
             <button
               type="button"
               onClick={() => setIsOpen(false)}

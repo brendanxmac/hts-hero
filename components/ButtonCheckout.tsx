@@ -5,7 +5,6 @@ import apiClient from "@/libs/api";
 import { PricingPlan, PricingPlanI } from "../types";
 import { useUser } from "../contexts/UserContext";
 import {
-  fetchPurchasesForUser,
   getProductForPlan,
   userHasActivePurchaseForProduct,
 } from "../libs/supabase/purchase";
@@ -19,7 +18,7 @@ interface Props {
 const getBuyButtonText = (plan: PricingPlanI) => {
   switch (plan.planIdentifier) {
     case PricingPlan.TARIFF_IMPACT_STARTER:
-      return `Try Now!`;
+      return `Get Starter!`;
     case PricingPlan.TARIFF_IMPACT_STANDARD:
       return `Get Standard!`;
     case PricingPlan.CLASSIFY_PRO:
