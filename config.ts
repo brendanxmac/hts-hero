@@ -43,7 +43,7 @@ export const tariffImpactStandard: PricingPlanI = {
 export const tariffImpactPro: PricingPlanI = {
   name: "Pro",
   planIdentifier: PricingPlan.TARIFF_IMPACT_PRO,
-  description: "The Ultimate Tariff Solution",
+  description: "Master Tariffs & Save Money",
   mode: StripePaymentMode.SUBSCRIPTION,
   price: 79,
   priceAnchor: 150,

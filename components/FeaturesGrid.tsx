@@ -32,7 +32,7 @@ export const dummyTariffImpactResults: TariffCheckerDummyResult[] = [
 
 export const tariffImpactFeatures = [
   {
-    title: "Select Tariff Announcement",
+    title: "Select Tariff Update",
     description:
       "Select the tariff update / announcement you want to check against.",
     styles: "md:col-span-6 lg:col-span-2 bg-base-300 text-white",
@@ -44,14 +44,17 @@ export const tariffImpactFeatures = [
               htmlFor="hts-codes"
               className="font-medium uppercase tracking-wide text-base-content/60 text-sm mb-3"
             >
-              Tariff Announcement:
+              Tariff Update:
             </label>
             <ul className="bg-base-100 border border-base-content/40 rounded-xl hover:bg-base-100 px-2 text-sm md:text-base">
               <li className="p-3 rounded-sm truncate">
-                <p>"Russian Oil" Exemptions</p>
+                <p>Additional Reciprocal Tariff Exemptions</p>
               </li>
               <li className="p-3 rounded-sm truncate">
-                <p>Reciprocal Tariff Exemptions</p>
+                <p>Removed Reciprocal Tariff Exemptions</p>
+              </li>
+              <li className="p-3 rounded-sm truncate">
+                <p>"Russian Oil" Exemptions</p>
               </li>
               <li className="p-3 bg-base-300 rounded-lg">
                 <div className="w-full flex justify-between items-center">
@@ -60,8 +63,8 @@ export const tariffImpactFeatures = [
                   </p>
                 </div>
               </li>
-              <li className="w-full p-3 truncate flex gap-2 items-center justify-between">
-                <p>Furniture Tariffs (Coming Soon)</p>
+              <li className="p-3 rounded-sm truncate">
+                <p>Reciprocal Tariff Exemptions</p>
               </li>
             </ul>
           </div>
@@ -140,7 +143,7 @@ const FeaturesGrid = () => {
       <div className="w-full flex flex-col max-w-7xl lg:min-w-5xl gap-4 sm:gap-8">
         <div className="flex flex-col gap-2 md:gap-4 text-center lg:text-left lg:flex-1 items-center">
           <h1 className="text-white font-extrabold text-3xl sm:text-4xl md:text-6xl lg:text-7xl tracking-tight md:-mb-4 max-w-5xl text-center mx-auto">
-            <span className="text-primary">Instantly</span> See How New Tariffs
+            <span className="text-primary">Instantly</span> See How Tariff Changes
             Affect Your Imports
           </h1>
           <p className="text-sm md:text-lg lg:text-xl text-neutral-300 leading-relaxed max-w-5xl mx-auto md:mt-4">

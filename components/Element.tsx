@@ -91,14 +91,14 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
   };
 
   // FIXME: what if the element only has additionalDuties? Shoul this be considered here?
-  const elementHasTariffDetails =
-    element.general ||
-    element.special ||
-    element.other ||
-    element.additionalDuties;
+  // const elementHasTariffDetails =
+  //   element.general ||
+  //   element.special ||
+  //   element.other ||
+  //   element.additionalDuties;
 
   const shouldShowBasicDutyRates =
-    (!isFullHTSCode(htsno) && elementHasTariffDetails) || isFullHTSCode(htsno);
+    element.chapter == 98 || element.chapter == 99;
 
   const tariffElement =
     getTariffElement(element, htsElements, breadcrumbs) || element;
@@ -224,7 +224,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
           )}
 
           {/* FIXME: I think there are cases where additional duties come from outside the element */}
-          {/* {shouldShowBasicDutyRates && (
+          {shouldShowBasicDutyRates && (
             <div className="w-full flex flex-col gap-2">
               <SecondaryLabel value="Basic Duty Rates" />
 
@@ -235,7 +235,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                       value={"General Rate"}
                       color={Color.NEUTRAL_CONTENT}
                     />
-                    <h2 className="font-bold text-white">
+                    <h2 className="text-white">
                       {tariffElement.general || "-"}
                     </h2>
                   </div>
@@ -251,7 +251,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                     color={Color.NEUTRAL_CONTENT}
                   />
                   <div className="flex flex-col">
-                    <h2 className="font-bold text-white">
+                    <h2 className="text-white">
                       {getStringBeforeOpeningParenthesis(
                         tariffElement.special
                       ) || "-"}
@@ -317,9 +317,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                       value={"Other Rate"}
                       color={Color.NEUTRAL_CONTENT}
                     />
-                    <h2 className="font-bold text-white">
-                      {tariffElement.other || "-"}
-                    </h2>
+                    <h2 className="text-white">{tariffElement.other || "-"}</h2>
                   </div>
                   {getTemporaryTariffTextElement(
                     tariffElement,
@@ -332,7 +330,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                     value={`Units`}
                     color={Color.NEUTRAL_CONTENT}
                   />
-                  <h2 className="font-bold text-white">
+                  <h2 className="text-white">
                     {tariffElement.units.join(", ") || "-"}
                   </h2>
                 </div>
@@ -350,7 +348,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                 )}
               </div>
             </div>
-          )} */}
+          )}
 
           {htsno && htsno.replaceAll(".", "").length === 10 && (
             <div className="w-full flex flex-col mt-4">
