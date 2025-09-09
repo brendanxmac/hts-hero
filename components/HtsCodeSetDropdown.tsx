@@ -84,48 +84,10 @@ export default function HtsCodeSetDropdown({
                 }}
               >
                 <PlusIcon className="h-5 w-5" />
-                <p className="text-sm sm:text-base font-medium">Create List</p>
+                <p className="text-sm font-medium">Create List</p>
               </div>
 
-              {/* Show divider and clear selection option only if there are code sets */}
-              {htsCodeSets.length > 0 && (
-                <>
-                  {/* Divider */}
-                  <div className="border-t border-base-content/20 my-1"></div>
-
-                  {/* Option to clear selection */}
-                  {/* <Listbox.Option
-                    className={({ active, selected }) =>
-                      classNames(
-                        "relative cursor-default select-none py-2 px-4 transition-colors duration-200 text-gray-400",
-                        active && "bg-base-300",
-                        selected && "text-white"
-                      )
-                    }
-                    value={null}
-                  >
-                    {({ selected }) => (
-                      <div className="flex items-center justify-between">
-                        <p
-                          className={`text-sm sm:text-base font-medium ${
-                            selected ? "text-gray-400" : "text-primary"
-                          }`}
-                        >
-                          {selected ? "No List Selected" : "Clear Selection"}
-                        </p>
-                        {selected && (
-                          <span className="flex items-center justify-center text-primary ml-2 flex-shrink-0">
-                            <CheckIcon className="h-6 w-6" aria-hidden="true" />
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </Listbox.Option> */}
-
-                  {/* Divider */}
-                  {/* <div className="border-t border-base-content/20 my-1"></div> */}
-                </>
-              )}
+              <div className="border-t border-base-content/20 my-1"></div>
 
               {htsCodeSets.map((htsCodeSet, index) => (
                 <Listbox.Option
@@ -139,33 +101,19 @@ export default function HtsCodeSetDropdown({
                 >
                   {({ selected }) => (
                     <div className="flex items-start justify-between gap-3">
-                      <div className="flex-1 flex flex-col gap-2">
-                        <div className="flex flex-col">
-                          <h3 className="sm:text-lg font-semibold text-white truncate">
-                            {htsCodeSet.name || "Untitled List"}
-                          </h3>
-                          <p className="text-sm text-gray-400 italic">
-                            {htsCodeSet.description || null}
-                          </p>
-                        </div>
+                      <div className="flex-1 flex flex-wrap gap-x-3 items-center justify-between">
+                        <h3 className="text-white truncate">
+                          {htsCodeSet.name || "Untitled List"}
+                        </h3>
 
                         <div className="flex gap-2">
-                          <div className="flex gap-2 items-center">
-                            <span className="text-xs text-gray-500 flex-shrink-0">
-                              Codes:
-                            </span>
-                            <span className="text-sm text-gray-300 break-words">
-                              {htsCodeSet.codes.length}
-                            </span>
-                          </div>
-                          <div className="flex gap-2 items-center">
-                            <span className="text-xs text-gray-500 flex-shrink-0">
-                              Created:
-                            </span>
-                            <span className="text-sm text-gray-300">
-                              {formatDate(new Date(htsCodeSet.created_at))}
-                            </span>
-                          </div>
+                          <p className="text-xs text-gray-400 flex-shrink-0">
+                            {htsCodeSet.codes.length} codes
+                          </p>
+
+                          <p className="text-xs text-gray-400">
+                            {formatDate(new Date(htsCodeSet.created_at))}
+                          </p>
                         </div>
                       </div>
 

@@ -63,20 +63,27 @@ export default function TariffUpdateDropdown({
                 tariffCodeSets.map((update, index) => (
                   <Listbox.Option
                     key={index}
-                    className={({ active }) =>
+                    className={({ active, selected }) =>
                       `relative hover:cursor-pointer select-none py-3 px-4 text-white transition-colors duration-200 border-b border-base-content/20 ${
-                        active ? "bg-base-300" : ""
+                        active ? "bg-base-300" : selected ? "bg-base-300" : ""
                       }`
                     }
                     value={index}
                   >
                     {({ selected }) => (
                       <div className="flex items-start justify-between">
-                        <div className="flex flex-col gap-1">
+                        <div className="w-full flex flex-wrap gap-x-3 items-center justify-between">
                           {/* Name - largest, clearest text */}
-                          <p className={`text-base`}>{update.name}</p>
+                          <p className="text-sm">{update.name}</p>
 
                           <div className="flex gap-x-3 flex-wrap">
+                            {/* Date Released - clearly displayed */}
+                            <p className="text-xs text-gray-400">
+                              <span className="">
+                                {formatDate(update.effective_at)}
+                              </span>
+                            </p>
+
                             {/* Source Name - smaller beneath name */}
                             <p className="text-xs text-gray-400">
                               <a
@@ -88,13 +95,6 @@ export default function TariffUpdateDropdown({
                               >
                                 {update.source_name}
                               </a>
-                            </p>
-
-                            {/* Date Released - clearly displayed */}
-                            <p className="text-xs text-gray-400">
-                              <span className="">
-                                {formatDate(update.effective_at)}
-                              </span>
                             </p>
                           </div>
                         </div>
