@@ -14,11 +14,15 @@ if (typeof window !== "undefined" && MIXPANEL_TOKEN) {
 }
 
 export enum MixpanelEvent {
-  TARIFF_IMPACT_CHECK = "tariff_impact_check",
-  TARIFF_IMPACT_CHECK_FROM_SET = "tariff_impact_check_from_set",
-  CLASSIFICATION_STARTED = "classification_started",
-  CLASSIFICATION_COMPLETED = "classification_completed",
-  SIGN_UP = "sign_up",
+  CLICKED_TARIFF_IMPACT_UPGRADE = "Tariff Impact Upgrade Clicked",
+  INITIATED_IMPACT_STANDARD_CHECKOUT = "Impact Standard Checkout Clicked",
+  INITIATED_IMPACT_PRO_CHECKOUT = "Impact Pro Checkout Clicked",
+  INITIATED_CLASSIFY_PRO_CHECKOUT = "Classify Pro Checkout Clicked",
+  CODE_SET_CREATED = "Code Set Created",
+  TARIFF_IMPACT_CHECK = "Tariff Impact Check",
+  CLASSIFICATION_STARTED = "Classification Started",
+  CLASSIFICATION_COMPLETED = "Classification Completed",
+  SIGN_UP = "Sign Up",
 }
 
 // Browser-side tracking functions

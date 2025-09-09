@@ -54,7 +54,7 @@ export const tariffImpactFeatures = [
                 <p>Removed Reciprocal Tariff Exemptions</p>
               </li>
               <li className="p-3 rounded-sm truncate">
-                <p>"Russian Oil" Exemptions</p>
+                <p>Russian Oil Exemptions</p>
               </li>
               <li className="p-3 bg-base-300 rounded-lg">
                 <div className="w-full flex justify-between items-center">
@@ -143,11 +143,11 @@ const FeaturesGrid = () => {
       <div className="w-full flex flex-col max-w-7xl lg:min-w-5xl gap-4 sm:gap-8">
         <div className="flex flex-col gap-2 md:gap-4 text-center lg:text-left lg:flex-1 items-center">
           <h1 className="text-white font-extrabold text-3xl sm:text-4xl md:text-6xl lg:text-7xl tracking-tight md:-mb-4 max-w-5xl text-center mx-auto">
-            <span className="text-primary">Instantly</span> See How Tariff Changes
+            <span className="text-primary">Instantly</span> See How New Tariffs
             Affect Your Imports
           </h1>
           <p className="text-sm md:text-lg lg:text-xl text-neutral-300 leading-relaxed max-w-5xl mx-auto md:mt-4">
-            Get Notified -> See Affected Imports -> Discover Potential Savings
+            Get Notified. See Affected Imports. Discover Potential Savings
           </p>
 
           <div className="flex justify-center lg:justify-start">
@@ -155,7 +155,7 @@ const FeaturesGrid = () => {
               className="btn btn-wide btn-primary"
               href="/tariffs/impact-checker"
             >
-              Check my Imports!
+              Check your Imports!
             </Link>
           </div>
 

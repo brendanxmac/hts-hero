@@ -15,16 +15,12 @@ import {
   fetchHtsCodeSetsForUser,
   getHtsCodesFromString,
   getValidHtsCodesFromSet,
-  getValidHtsCodesFromString,
 } from "../../../libs/hts-code-set";
 import toast from "react-hot-toast";
 import { useUser } from "../../../contexts/UserContext";
 import { HtsCodeSet } from "../../../interfaces/hts";
 import HtsCodeSetDropdown from "../../../components/HtsCodeSetDropdown";
-import {
-  exampleLists,
-  TariffCodeSet,
-} from "../../../tariffs/announcements/announcements";
+import { TariffCodeSet } from "../../../tariffs/announcements/announcements";
 import { TariffImpactCheck } from "../../../interfaces/tariffs";
 import {
   checkTariffImpactsForCodes,
@@ -103,20 +99,6 @@ export default function Home() {
     }
     // Refetch tariff impact checks when results change
   }, [results]);
-
-  // useEffect(() => {
-  //   const fetchUserData = async () => {
-  //     await Promise.all([
-  //       fetchHtsCodeSets(),
-  //       fetchTariffImpactChecks(),
-  //       fetchPurchases(),
-  //     ]);
-  //   };
-
-  //   if (user) {
-  //     fetchUserData();
-  //   }
-  // }, [user]);
 
   useEffect(() => {
     const loadAllData = async () => {
@@ -368,7 +350,7 @@ export default function Home() {
 
       try {
         // Don't want to await this and don't want to error if it fails
-        createTariffImpactCheck(
+        await createTariffImpactCheck(
           tariffUpdateToCheckAgainst.id,
           validCodesToCheck,
           selectedHtsCodeSetId
@@ -527,7 +509,17 @@ export default function Home() {
 
                     <button
                       className="btn btn-sm btn-primary"
-                      onClick={() => setShowPricingModal(true)}
+                      onClick={() => {
+                        setShowPricingModal(true);
+                        try {
+                          trackEvent(
+                            MixpanelEvent.CLICKED_TARIFF_IMPACT_UPGRADE
+                          );
+                        } catch (e) {
+                          console.error("Error tracking tariff impact upgrade");
+                          console.error(e);
+                        }
+                      }}
                     >
                       Upgrade <ArrowRightIcon className="w-4 h-4" />
                     </button>

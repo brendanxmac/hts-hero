@@ -47,7 +47,7 @@ export interface ContentRequirementI<T> {
 }
 
 export const Element = ({ element, summaryOnly = false }: Props) => {
-  const { user, isLoading: fetchingUser } = useUser();
+  const { user } = useUser();
   const { description, chapter, htsno } = element;
   const [children, setChildren] = useState<HtsElement[]>([]);
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);

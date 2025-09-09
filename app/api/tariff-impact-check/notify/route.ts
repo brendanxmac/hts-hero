@@ -8,11 +8,7 @@ import { TariffCodeSet } from "../../../../tariffs/announcements/announcements";
 import { HtsCodeSet } from "../../../../interfaces/hts";
 import { codeIsIncludedInTariffCodeSet } from "../../../../libs/tariff-impact-check";
 import { sendTariffImpactCheckEmail } from "../../../../emails/tariff-impact/tariff-impact-check-email";
-import {
-  fetchUser,
-  fetchUsers,
-  UserProfile,
-} from "../../../../libs/supabase/user";
+import { fetchUsers } from "../../../../libs/supabase/user";
 import { sendTariffImpactCheckResultsEmail } from "../../../../emails/tariff-impact/tariff-impact-check-results-email";
 
 const requesterIsAdmin = (req: NextRequest) => {
@@ -22,9 +18,7 @@ const requesterIsAdmin = (req: NextRequest) => {
   return requestApiKey || requestApiKey === serverApiKey;
 };
 
-export const fetchActiveTariffImpactPurchases = async (
-  supabase: SupabaseClient
-) => {
+const fetchActiveTariffImpactPurchases = async (supabase: SupabaseClient) => {
   const { data: purchases, error } = await supabase
     .from("purchases")
     .select("*")
@@ -45,7 +39,7 @@ export const fetchActiveTariffImpactPurchases = async (
   return purchases;
 };
 
-export const fetchCodeSetsForUser = async (
+const fetchCodeSetsForUser = async (
   supabase: SupabaseClient,
   userId: string
 ): Promise<HtsCodeSet[]> => {
@@ -62,10 +56,7 @@ export const fetchCodeSetsForUser = async (
   return codeSets;
 };
 
-export const fetchTariffCodeSet = async (
-  supabase: SupabaseClient,
-  id: string
-) => {
+const fetchTariffCodeSet = async (supabase: SupabaseClient, id: string) => {
   const { data: codeSet, error } = await supabase
     .from("tariff_code_sets")
     .select("*")

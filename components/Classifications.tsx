@@ -15,11 +15,7 @@ import { FunnelIcon } from "@heroicons/react/24/solid";
 import Fuse, { IFuseOptions } from "fuse.js";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { PricingPlan } from "../types";
-import { fetchTariffImpactChecksForUser } from "../libs/tariff-impact-check";
-import {
-  fetchPurchasesForUser,
-  getActiveClassifyPurchase,
-} from "../libs/supabase/purchase";
+import { getActiveClassifyPurchase } from "../libs/supabase/purchase";
 import { classNames } from "../utilities/style";
 
 interface Props {

@@ -7,46 +7,61 @@ import FeaturesGrid from "@/components/FeaturesGrid";
 import Demo from "@/components/Demo";
 import { FAQ } from "@/components/FAQ";
 import { tariffImpactFaqList } from "@/constants/faq";
-import CTA from "@/components/CTA";
 import TariffImpactHeader from "@/components/TariffImpactHeader";
 import { PendingTariffsList } from "../../../components/UpcomingTariffsList";
 import TariffImpactPricing from "../../../components/TariffImpactPricing";
 
 const withoutTariffImpact: Task[] = [
   {
-    title: "Waiting for your team or broker",
-    time: "⏳",
+    title: "Finding & Understanding the Changes",
+    time: "1 hour / change",
   },
   {
-    title: "One code at at time",
-    time: "😓",
+    title: "Getting a list of exactly what's affected",
+    time: "30 min / change",
   },
   {
-    title: "Manual Mistakes",
-    time: "😅",
+    title: "Checking client imports against the what's affected",
+    time: "~20 min / client",
   },
   {
-    title: "Not realizing another update has happened",
-    time: "🤦‍♂️",
+    title: "Finding the latest applicable tariffs & possible exemptions",
+    time: "20 min / import",
+  },
+  {
+    title: "Finding & applying the latest tariff stacking rules",
+    time: "10 min / import",
+  },
+  {
+    title: "Getting final rates for coutry of origin",
+    time: "10 min / import",
   },
 ];
 
 const withTariffImpact: Task[] = [
   {
-    title: "Instant results",
-    time: "⚡️",
+    title: "Get Notified When New Tariffs Affect your Imports",
+    time: "0 min",
   },
   {
-    title: "All codes at once",
-    time: "🎉",
+    title: "Instantly see which imports are affected",
+    time: "0 min",
   },
   {
-    title: "No second guessing",
-    time: "😌",
+    title: "Save lists of codes for future checks",
+    time: "0 min",
   },
   {
-    title: "Notifies you when updates happen (coming soon)",
-    time: "💬",
+    title: "Find all Tariffs & Exemptions",
+    time: "0 min",
+  },
+  {
+    title: "Applies Stacking Rules Automatically",
+    time: "0 min",
+  },
+  {
+    title: "Finds Rates for Every Country",
+    time: "0 min",
   },
 ];
 
@@ -58,6 +73,23 @@ export default function Home() {
       </Suspense>
       <main>
         <FeaturesGrid />
+
+        <WithWithout
+          title="Keeping up with Tariff Changes is a Nightmare"
+          // subtitle="Automatically stay up to date with new tariffs and find ways to reduce your landed costs"
+          // ctaText="Check your Imports"
+          // ctaLink="/tariffs/impact-checker"
+          // withKeyPoint={{
+          //   title: "Clarity",
+          //   detail: "No more guessing or waiting",
+          // }}
+          withoutKeyPoint={{
+            title: "Error-Prone & Time-Consuming",
+            // detail: "Manual, error-prone, time-consuming",
+          }}
+          // withList={withTariffImpact}
+          withoutList={withoutTariffImpact}
+        />
 
         <div className="hidden md:block">
           <Demo
@@ -116,8 +148,8 @@ export default function Home() {
         <Demo
           standoutPlacement="end"
           titleStandout="Savings"
-          title="Discover Potential"
-          subtitle="See the full list of tariffs for any import from any country & explore options for possible savings"
+          title="See The Current Tariff Rates & Discover Potential"
+          subtitle="See the full list of tariffs for any import from any country & explore ways to save"
           ctaText="Try it Now!"
           ctaLink="/tariffs/impact-checker"
           media={{
@@ -132,28 +164,6 @@ export default function Home() {
 
         <TariffImpactPricing />
 
-        {/* <WithWithout
-          title="No Waiting, Guessing, or Limits"
-          subtitle="Get answers in seconds for all your imports"
-          ctaText="Check your Imports"
-          ctaLink="/tariffs/impact-checker"
-          withKeyPoint={{
-            title: "Clarity",
-            detail: "No more guessing or waiting",
-          }}
-          withoutKeyPoint={{
-            title: "Confusion & Delay",
-            detail: "Manual, error-prone, time-consuming",
-          }}
-          withList={withTariffImpact}
-          withoutList={withoutTariffImpact}
-        /> */}
-        {/* <CTA
-          title="Get Clarity in the Chaos"
-          subtitle="Find out if you're affected by new tariffs now!"
-          ctaText="Check your Imports"
-          ctaLink="/tariffs/impact-checker"
-        /> */}
         <FAQ faqItems={tariffImpactFaqList} />
 
         <PendingTariffsList />

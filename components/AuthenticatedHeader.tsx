@@ -8,7 +8,6 @@ import ButtonAccount from "./ButtonAccount";
 import ButtonSupport from "./ButtonSupport";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { PlayIcon } from "@heroicons/react/24/solid";
 import { getTutorialFromPathname, Tutorial, TutorialI } from "./Tutorial";
 
 export const AuthenticatedHeader = () => {

@@ -5,10 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { PricingPlan } from "../../../../types";
 import { getIsoDateInFuture } from "../../../../utilities/time";
-import {
-  createPurchase,
-  getLatestPurchase,
-} from "../../../../libs/supabase/purchase";
+import { createPurchase } from "../../../../libs/supabase/purchase";
 import {
   fetchUser,
   fetchUserByEmail,

@@ -6,11 +6,7 @@ import { StripePaymentMode } from "../libs/stripe";
 import Link from "next/link";
 import { useUser } from "../contexts/UserContext";
 import { useEffect, useState } from "react";
-import {
-  fetchPurchasesForUser,
-  getActivePriorityTariffImpactPurchase,
-  getActiveTariffImpactPurchasesForUser,
-} from "../libs/supabase/purchase";
+import { getActivePriorityTariffImpactPurchase } from "../libs/supabase/purchase";
 
 // <Pricing/> displays the pricing plans for your app
 // It's your Stripe config in config.js.stripe.plans[] that will be used to display the plans
@@ -84,10 +80,20 @@ export const getFeatureIcon = (feature: PricingFeatureI) => {
 const getPricingHeadline = () => {
   return (
     <div className="flex flex-col gap-2">
-      <h2 className="text-white font-extrabold text-3xl sm:text-4xl md:text-6xl max-w-6xl mx-auto tracking-relaxed">
+      {/* <h3 className=" font-medium text-lg sm:text-xl max-w-6xl mx-auto tracking-relaxed mb-4 md:mb-16">
+        Tariff impact checks take <span className="text-primary">hours</span>,
+        and more tariffs are coming...
+      </h3> */}
+      <h2 className="text-white font-extrabold text-4xl md:text-6xl max-w-6xl mx-auto tracking-relaxed">
+        <span className="text-primary">Save Hours</span> on Tariff Checks &{" "}
+        {/* <br /> */}
+        {/* <span className="text-primary">Save Dollars</span> on Import Costs */}
+        Find Ways to <span className="text-primary">Reduce Landed Costs</span>
+      </h2>
+      {/* <h2 className="text-white font-extrabold text-3xl sm:text-4xl md:text-6xl max-w-6xl mx-auto tracking-relaxed">
         Get <span className="text-primary">Instant Clarity</span> When
         <br /> New Tariffs are Announced
-      </h2>
+      </h2> */}
       <p className="text-sm md:text-lg text-neutral-300 font-medium mt-2">
         Join the forward-thinking importers & customs brokers who are automating
         their tariff impact checks

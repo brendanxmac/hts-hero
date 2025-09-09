@@ -5,15 +5,14 @@ import { StripePaymentMode } from "./libs/stripe";
 export const tariffImpactStarter: PricingPlanI = {
   name: "Starter",
   planIdentifier: PricingPlan.TARIFF_IMPACT_STARTER,
-  description: "A Few Tariff Impact Checks",
+  description: "A Few Tariff Checks",
   mode: StripePaymentMode.SUBSCRIPTION,
   price: 0,
   features: [
-    { name: "Upload & Organize Import Lists" },
     {
-      name: "20 Tariff Impact Checks/Month",
+      name: "20 Tariff Impact Checks / Month",
       details:
-        "1 Check = Any time you check an HTS code against any tariff update",
+        "A check happens any time you submit a code to see if it's affected by a tariff update",
     },
   ],
 };
@@ -21,18 +20,17 @@ export const tariffImpactStarter: PricingPlanI = {
 export const tariffImpactStandard: PricingPlanI = {
   name: "Standard",
   planIdentifier: PricingPlan.TARIFF_IMPACT_STANDARD,
-  description: "Tariff Impact Essentials",
+  description: "Tariff Essentials",
   mode: StripePaymentMode.SUBSCRIPTION,
   price: 39,
   priceAnchor: 70,
   features: [
-    { name: "Upload & Organize Import Lists" },
     {
-      name: "300 Tariff Impact Checks/Month",
+      name: "300 Tariff Impact Checks / Month",
       details:
-        "1 Check = Any time you check an HTS code against any tariff update",
+        "A check happens any time you submit a code to see if it's affected by a tariff update",
     },
-    { name: "Impact Notifications" },
+    { name: "Notifications when your imports are affected by new tariffs" },
     // {
     //   name: "Tariff Analyzer",
     //   details: "See full tariff details & explore exemptions",
@@ -49,13 +47,12 @@ export const tariffImpactPro: PricingPlanI = {
   priceAnchor: 150,
   isFeatured: true,
   features: [
-    { name: "Upload & Organize Import Lists" },
     {
       name: "Unlimited Tariff Impact Checks",
       details:
-        "1 Check = Any time you check an HTS code against any tariff update",
+        "A check is any time you submit a code to see if it's affected by a tariff update and get the answer",
     },
-    { name: "Impact Notifications" },
+    { name: "Notifications when your imports are affected by new tariffs" },
     {
       name: "Tariff Wizard",
       details:

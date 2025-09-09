@@ -22,7 +22,6 @@ import { TertiaryLabel } from "./TertiaryLabel";
 import { CountrySelection } from "./CountrySelection";
 import toast from "react-hot-toast";
 import Link from "next/link";
-import { PrimaryLabel } from "./PrimaryLabel";
 
 interface Props {
   isPayingUser: boolean;

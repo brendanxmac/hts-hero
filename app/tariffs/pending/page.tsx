@@ -1,7 +1,6 @@
 import config from "@/config";
 import { getSEOTags } from "../../../libs/seo";
 import { PendingTariffsList } from "../../../components/UpcomingTariffsList";
-import Link from "next/link";
 
 export const metadata = getSEOTags({
   title: `Pending Tariffs | ${config.appName}`,

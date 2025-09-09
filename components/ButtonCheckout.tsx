@@ -9,6 +9,7 @@ import {
   userHasActivePurchaseForProduct,
 } from "../libs/supabase/purchase";
 import toast from "react-hot-toast";
+import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
 
 interface Props {
   plan: PricingPlanI;
@@ -47,6 +48,25 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
     }
   };
 
+  const logCheckoutAttempt = () => {
+    try {
+      switch (plan.planIdentifier) {
+        case PricingPlan.TARIFF_IMPACT_STANDARD:
+          trackEvent(MixpanelEvent.INITIATED_IMPACT_STANDARD_CHECKOUT);
+          break;
+        case PricingPlan.TARIFF_IMPACT_PRO:
+          trackEvent(MixpanelEvent.INITIATED_IMPACT_PRO_CHECKOUT);
+          break;
+        case PricingPlan.CLASSIFY_PRO:
+          trackEvent(MixpanelEvent.INITIATED_CLASSIFY_PRO_CHECKOUT);
+          break;
+      }
+    } catch (e) {
+      console.error("Error tracking checkout");
+      console.error(e);
+    }
+  };
+
   const handlePayment = async () => {
     try {
       setIsLoading(true);
@@ -67,8 +87,8 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
             itemId: plan.planIdentifier,
             successEndpoint: getCheckoutSuccessEndpoint(plan.planIdentifier),
             cancelUrl: window.location.href.includes("#")
-              ? window.location.href
-              : window.location.href + "#pricing",
+              ? window.location.href + "#pricing"
+              : window.location.href,
           }
         );
 
@@ -94,6 +114,8 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
 
         window.open(url, "_blank");
       }
+
+      logCheckoutAttempt();
     } catch (e) {
       console.error(e);
     } finally {

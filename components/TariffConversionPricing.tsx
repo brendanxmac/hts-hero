@@ -1,4 +1,4 @@
-import config, { tariffImpactPro, tariffImpactStandard } from "@/config";
+import { tariffImpactPro, tariffImpactStandard } from "@/config";
 import { classNames } from "../utilities/style";
 import ButtonCheckout from "./ButtonCheckout";
 import { StripePaymentMode } from "../libs/stripe";

@@ -1,4 +1,3 @@
-import { Color } from "../enums/style";
 import { UITariff, TariffSet } from "../interfaces/tariffs";
 import {
   CountryWithTariffs,
@@ -9,7 +8,6 @@ import {
 } from "../tariffs/tariffs";
 import { classNames } from "../utilities/style";
 import { TariffColumn } from "../enums/tariff";
-import { TertiaryText } from "./TertiaryText";
 import Link from "next/link";
 import { TertiaryLabel } from "./TertiaryLabel";
 

@@ -1,10 +1,9 @@
 import config from "@/config";
 import { classNames } from "../utilities/style";
-import { PricingFeatureI, PricingPlan } from "../types";
+import { PricingFeatureI } from "../types";
 import ButtonCheckout from "./ButtonCheckout";
 import { AboutPage } from "../enums/classify";
 import { StripePaymentMode } from "../libs/stripe";
-import Link from "next/link";
 
 // <Pricing/> displays the pricing plans for your app
 // It's your Stripe config in config.js.stripe.plans[] that will be used to display the plans

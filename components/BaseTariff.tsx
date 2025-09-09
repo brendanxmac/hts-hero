@@ -1,4 +1,3 @@
-import { Color } from "../enums/style";
 import { HtsElement } from "../interfaces/hts";
 import { BaseTariffI } from "../libs/hts";
 import { classNames } from "../utilities/style";

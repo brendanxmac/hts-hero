@@ -9,7 +9,6 @@ import { DescriptionStep } from "./workflow/DescriptionStep";
 import { useClassifyTab } from "../contexts/ClassifyTabContext";
 import { ClassifyPage, ClassifyTab } from "../enums/classify";
 import { LoadingIndicator } from "./LoadingIndicator";
-import { Loader } from "../interfaces/ui";
 import { useHts } from "../contexts/HtsContext";
 import { ClassificationResultPage } from "./ClassificationResultPage";
 import Modal from "./Modal";
@@ -48,11 +47,6 @@ export const Classify = ({ setPage }: Props) => {
     return WorkflowStep.DESCRIPTION;
   });
 
-  const [loading, setLoading] = useState<Loader>({
-    isLoading: isFetching,
-    text: "",
-  });
-
   useEffect(() => {
     return () => {
       setClassification(null);
@@ -60,10 +54,10 @@ export const Classify = ({ setPage }: Props) => {
     };
   }, []);
 
-  if (loading.isLoading || isFetching) {
+  if (isFetching) {
     return (
       <div className="h-full w-full flex items-center justify-center">
-        <LoadingIndicator text={loading.text} />
+        <LoadingIndicator />
       </div>
     );
   }

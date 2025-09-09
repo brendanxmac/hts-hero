@@ -9,9 +9,9 @@ import {
 } from "../libs/hts-code-set";
 import { HtsCodeSet } from "../interfaces/hts";
 import { validateTariffableHtsCode } from "../libs/hts";
-import { sendTariffImpactCheckExampleEmail } from "../emails/tariff-impact/tariff-impact-check-example-email";
 import { User } from "@supabase/supabase-js";
 import { sentEmailWithExampleOfTariffImpactCheck } from "../libs/tariff-impact-check";
+import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
 
 interface ValidatedCode {
   code: string;
@@ -60,10 +60,19 @@ export const ManageCodeListModal = ({
   }, [inputValue]);
 
   // Create new set of codes
-  const upsertCodeSet = async (name: string) => {
+  const createCodeSet = async (name: string) => {
     try {
       setSaving(true);
       const newHtsCodeSet = await createHtsCodeSet(inputValue, name);
+
+      try {
+        trackEvent(MixpanelEvent.CODE_SET_CREATED, {
+          numCodes: newHtsCodeSet.codes.length,
+        });
+      } catch (e) {
+        console.error("Error tracking code set created");
+        console.error(e);
+      }
 
       if (!usersCodeSets || usersCodeSets.length === 0) {
         if (user) {
@@ -105,7 +114,7 @@ export const ManageCodeListModal = ({
 
     // Check that there are codes
     if (codeSetName && noErrors && atLeastOneCode) {
-      await upsertCodeSet(name.trim());
+      await createCodeSet(name.trim());
     }
   };
 
