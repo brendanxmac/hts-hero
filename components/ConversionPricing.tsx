@@ -19,13 +19,15 @@ const ConversionPricing = () => {
 
   return (
     <section className="bg-base-300 overflow-hidden" id="pricing">
-      <div className="py-12 px-4 sm:px-8 max-w-7xl mx-auto flex flex-col items-center justify-center">
-        <h3 className="text-center mb-4">Your Free Trial has Ended</h3>
-        <h2 className="text-white text-3xl md:text-4xl font-extrabold text-center">
-          Upgrade to <span className="text-primary">Pro</span> to Continue
-          <br />
-          <span className="text-primary">Boosting</span> Your Classifications
-        </h2>
+      <div className="py-12 px-4 sm:px-8 max-w-7xl mx-auto flex flex-col gap-4 md:gap-8 items-center justify-center">
+        <div className="flex flex-col gap-2">
+          <h3 className="text-center mb-4">Your Free Trial has Ended</h3>
+          <h2 className="text-white text-3xl md:text-4xl font-extrabold text-center">
+            Upgrade to <span className="text-primary">Pro</span> to Continue
+            <br />
+            <span className="text-primary">Boosting</span> Your Classifications
+          </h2>
+        </div>
 
         <div className="w-full relative flex justify-evenly flex-col lg:flex-row items-center lg:items-stretch gap-8 text-white">
           {config.stripe.classifierConversionPlans.map((plan, index) => (

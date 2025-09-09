@@ -186,7 +186,7 @@ export const ManageCodeListModal = ({
                       .filter(({ error }) => error)
                       .map(({ code, error }, index) => (
                         <tr key={code + index}>
-                          <td>{code}</td>
+                          <td className="truncate max-w-48">{code}</td>
                           <td>{error || "-"}</td>
                         </tr>
                       ))}

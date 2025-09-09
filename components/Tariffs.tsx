@@ -348,7 +348,7 @@ export const Tariffs = ({ htsElement, tariffElement, isPayingUser }: Props) => {
                           <div className="flex gap-2">
                             {!isPayingUser ? (
                               <Link
-                                href="/about/tariffs"
+                                href="/about/tariffs#pricing"
                                 target="_blank"
                                 className="btn btn-link no-underline text-base-content hover:text-primary"
                               >

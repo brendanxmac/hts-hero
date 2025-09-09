@@ -183,6 +183,17 @@ export default function Home() {
     handleInputChange(inputValue);
   }, [selectedTariffAnnouncementIndex]);
 
+  // Will automatically check results if url params both processed & set
+  useEffect(() => {
+    if (
+      urlParamsProcessed &&
+      selectedHtsCodeSetId &&
+      selectedTariffAnnouncementIndex
+    ) {
+      handleSubmit();
+    }
+  }, [urlParamsProcessed]);
+
   // Process URL parameters after all data is loaded
   useEffect(() => {
     if (!urlParamsProcessed && !loadingPage && tariffCodeSets.length > 0) {
@@ -309,7 +320,8 @@ export default function Home() {
       if (totalChecksThisMonth >= checkLimit) {
         // Show popup instead to get them to convert
         toast.error(
-          `You have reached your limit of ${checkLimit} checks this month. Upgrade to get more checks.`
+          `You have reached your limit of ${checkLimit} checks this month. Upgrade to get more checks.`,
+          { duration: 6000 }
         );
         return;
       }
@@ -493,19 +505,22 @@ export default function Home() {
                   <LoadingIndicator spinnerOnly />
                 ) : (
                   <div className="w-full sm:w-auto justify-between sm:justify-normal flex items-center gap-4 px-4 sm:px-0 p-2 bg-base-100 border sm:border-none sm:bg-inherit border-base-content/20 rounded-md">
-                    <p
-                      className={classNames(
-                        "text-sm font-bold",
-                        numChecksThisMonth >= checkLimit
-                          ? "text-error"
-                          : checkLimit - numChecksThisMonth < 20
-                            ? "text-warning"
-                            : "text-gray-400"
-                      )}
-                    >
-                      {checkLimit - numChecksThisMonth} Check
-                      {checkLimit - numChecksThisMonth === 1 ? "" : "s"} Left
-                    </p>
+                    <div className="flex flex-col">
+                      <p
+                        className={classNames(
+                          "text-sm font-bold",
+                          numChecksThisMonth >= checkLimit
+                            ? "text-error"
+                            : checkLimit - numChecksThisMonth < 20
+                              ? "text-warning"
+                              : "text-gray-400"
+                        )}
+                      >
+                        {checkLimit - numChecksThisMonth} Check
+                        {checkLimit - numChecksThisMonth === 1 ? "" : "s"} Left
+                      </p>
+                      <p className="text-xs">{`Limit: ${checkLimit}/month`}</p>
+                    </div>
 
                     <button
                       className="btn btn-sm btn-primary"

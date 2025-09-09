@@ -21,7 +21,7 @@ const withoutTariffImpact: Task[] = [
     time: "30 min / change",
   },
   {
-    title: "Checking client imports against the what's affected",
+    title: "Checking client imports against what's affected",
     time: "~20 min / client",
   },
   {

@@ -65,7 +65,7 @@ const fetchTariffCodeSet = async (supabase: SupabaseClient, id: string) => {
 
   if (error) {
     console.error(`Failed to tariff code set with id: ${id}`, error);
-    throw new Error(`Bad Request`);
+    throw new Error(`Failed to fetch tariff code set with id: ${id}`);
   }
 
   return codeSet;
@@ -74,7 +74,9 @@ const fetchTariffCodeSet = async (supabase: SupabaseClient, id: string) => {
 // Helper function to add delay between email sends
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const processTariffImpactNotifications = async (tariffCodeSetId: string) => {
+const processTariffImpactNotifications = async (
+  tariffCodeSet: TariffCodeSet
+) => {
   const errors: string[] = [];
   let processedUsers = 0;
   let processedCodeSets = 0;
@@ -86,7 +88,6 @@ const processTariffImpactNotifications = async (tariffCodeSetId: string) => {
 
   try {
     const supabase = createClient();
-    const tariffCodeSet = await fetchTariffCodeSet(supabase, tariffCodeSetId);
 
     console.log(
       `🚀 Starting tariff impact notification processing for: ${tariffCodeSet.name}`
@@ -272,10 +273,10 @@ export async function POST(req: NextRequest) {
 
     // Validate that the tariff code set exists
     const supabase = createClient();
-    await fetchTariffCodeSet(supabase, tariffCodeSetId);
+    const tariffCodeSet = await fetchTariffCodeSet(supabase, tariffCodeSetId);
 
     // Start processing asynchronously (don't await)
-    processTariffImpactNotifications(tariffCodeSetId);
+    processTariffImpactNotifications(tariffCodeSet);
 
     // Return immediately with success
     return NextResponse.json({ message: "Success" }, { status: 200 });

@@ -85,7 +85,7 @@ export const Classify = ({ setPage }: Props) => {
       {/* Classify Tab */}
       <div
         className={classNames(
-          "h-full grow overflow-hidden",
+          "h-full grow overflow-y-auto",
           workflowStep === WorkflowStep.DESCRIPTION && !classification
             ? "col-span-12"
             : "col-span-8"
@@ -101,12 +101,6 @@ export const Classify = ({ setPage }: Props) => {
                 setShowPricing={setShowPricing}
               />
             )}
-            {/* {workflowStep === WorkflowStep.ANALYSIS && (
-              <AnalysisStep
-                setWorkflowStep={setWorkflowStep}
-                setClassificationLevel={setClassificationLevel}
-              />
-            )} */}
             {workflowStep === WorkflowStep.CLASSIFICATION && (
               <ClassificationStep
                 key={`classification-step-${classificationLevel}`}

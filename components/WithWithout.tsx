@@ -55,29 +55,31 @@ const WithWithout = ({
         <div className="flex flex-col lg:flex-row justify-center items-center lg:items-start gap-4 sm:gap-6 md:gap-8 lg:gap-12">
           {/* Without HTS Hero Card */}
           <div className="bg-base-100 backdrop-blur-sm text-white p-4 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl flex flex-col gap-4 sm:gap-6 shadow-2xl border border-neutral-600/30 w-full max-w-sm sm:max-w-md lg:max-w-2xl">
-            {/* <div className="flex flex-col items-center justify-center gap-3">
-              <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-red-900/50 rounded-full">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2}
-                  stroke="currentColor"
-                  className="w-6 h-6 sm:w-7 sm:h-7 md:w-10 md:h-10 text-red-300"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
-                  />
-                </svg>
+            {withList && (
+              <div className="flex flex-col items-center justify-center gap-3">
+                <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-red-900/50 rounded-full">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                    stroke="currentColor"
+                    className="w-6 h-6 sm:w-7 sm:h-7 md:w-10 md:h-10 text-red-300"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
+                    />
+                  </svg>
+                </div>
+                <div className="flex flex-col items-center justify-center">
+                  <h2 className="text-center text-white text-2xl sm:text-3xl lg:text-4xl font-bold">
+                    <span className="text-red-400">Without</span> HTS Hero
+                  </h2>
+                </div>
               </div>
-              <div className="flex flex-col items-center justify-center">
-                <h2 className="text-center text-white text-2xl sm:text-3xl lg:text-4xl font-bold">
-                  <span className="text-red-400">Without</span> HTS Hero
-                </h2>
-              </div>
-            </div> */}
+            )}
 
             <ul className="flex flex-col gap-1 sm:gap-2">
               {withoutList.map((task, index) => (
