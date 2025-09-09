@@ -6,7 +6,9 @@ import { TariffImpactCheck } from "../../../../interfaces/tariffs";
 export const dynamic = "force-dynamic";
 
 interface CreateTariffImpactCheckDTO {
+  tariffCodeSetId: string;
   htsCodes: string[];
+  htsCodeSetId?: string;
 }
 
 export async function POST(req: NextRequest) {
@@ -23,11 +25,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { htsCodes }: CreateTariffImpactCheckDTO = await req.json();
+    const {
+      htsCodes,
+      tariffCodeSetId,
+      htsCodeSetId,
+    }: CreateTariffImpactCheckDTO = await req.json();
 
     console.log("htsCodes", htsCodes);
 
-    if (!htsCodes) {
+    if (!htsCodes || !tariffCodeSetId) {
       return NextResponse.json(
         {
           error: "HTS Codes not provided",
@@ -52,6 +58,8 @@ export async function POST(req: NextRequest) {
         {
           user_id: user.id,
           codes: validatedHtsCodes,
+          tariff_code_set: tariffCodeSetId,
+          hts_code_set: htsCodeSetId ? htsCodeSetId : null,
         },
       ])
       .select()

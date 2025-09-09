@@ -364,11 +364,22 @@ export default function Home() {
         return;
       }
 
-      await createTariffImpactCheck(getValidHtsCodesFromSet(htsCodes));
+      const validCodesToCheck = getValidHtsCodesFromSet(htsCodes);
+
+      try {
+        // Don't want to await this and don't want to error if it fails
+        createTariffImpactCheck(
+          tariffUpdateToCheckAgainst.id,
+          validCodesToCheck,
+          selectedHtsCodeSetId
+        );
+      } catch (e) {
+        console.error("Error creating tariff impact check:", e);
+      }
 
       trackEvent(MixpanelEvent.TARIFF_IMPACT_CHECK, {
-        numCodes: results.length,
-        changeList: tariffCodeSets[selectedTariffAnnouncementIndex].name,
+        numCodes: validCodesToCheck.length,
+        changeList: tariffUpdateToCheckAgainst.name,
       });
 
       setResults(results);

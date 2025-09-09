@@ -38,9 +38,15 @@ export const checkTariffImpactsForCodes = (
 };
 
 export const createTariffImpactCheck = async (
-  htsCodes: string[]
+  tariffCodeSetId: string,
+  htsCodes: string[],
+  htsCodeSetId?: string
 ): Promise<TariffImpactCheck> => {
-  return await apiClient.post("/tariff-impact-check/create", { htsCodes });
+  return await apiClient.post("/tariff-impact-check/create", {
+    htsCodes,
+    tariffCodeSetId,
+    htsCodeSetId,
+  });
 };
 
 export const fetchTariffImpactChecksForUser = async (

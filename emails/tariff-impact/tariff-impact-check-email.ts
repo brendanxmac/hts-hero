@@ -375,7 +375,7 @@ export const tariffImpactCheckEmailHtml = (
     <div class="email-container">
       <div class="content">
         <div class="alert-section">
-          <h2>New Tariffs Impact Alert</h2>
+          <h2>New Tariff Impact Alert</h2>
           <p style="font-size: 17px; color: #334155; margin: 0 0 20px 0; line-height: 1.6;">
           We've identified that <strong>${affectedImportsCount} of your imports</strong> are affected by a new tariff announcement.
         </p>
@@ -442,7 +442,7 @@ export const tariffImpactCheckEmailText = (
   userHtsCodeSet: HtsCodeSet,
   affectedImportsCount: number
 ) => {
-  return `New Tariffs Impact Alert
+  return `New Tariff Impact Alert
 
 We've identified that ${affectedImportsCount} of your imports are affected by a new tariff announcement.
 

@@ -386,7 +386,7 @@ export const tariffImpactCheckEmailHtml = () => {
           <p>This is a fake example of a tariff impact check notification for demonstration purposes only</p>
         </div>
         <div class="alert-section">
-          <h2>New Tariffs Impact Alert</h2>
+          <h2>New Tariff Impact Alert</h2>
           <p style="font-size: 17px; color: #334155; margin: 0 0 20px 0; line-height: 1.6;">
           We've identified that <strong>6 of your imports</strong> are affected by a new tariff announcement.
         </p>
@@ -451,7 +451,7 @@ export const tariffImpactCheckEmailHtml = () => {
 export const tariffImpactCheckEmailText = () => {
   return `*** THIS IS A FAKE EXAMPLE OF A TARIFF IMPACT CHECK NOTIFICATION FOR DEMONSTRATION PURPOSES ONLY ***
 
-New Tariffs Impact Alert
+New Tariff Impact Alert
 
 We've identified that 6 of your imports are affected by a new tariff announcement.
 

@@ -20,7 +20,7 @@ export async function GET() {
     const { data: tariffCodeSets, error } = await supabase
       .from("tariff_code_sets")
       .select("*")
-      .order("published_at", { ascending: false });
+      .order("effective_at", { ascending: false });
 
     if (error) {
       console.error("Error fetching tariff code sets:", error);

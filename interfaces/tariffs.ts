@@ -37,6 +37,8 @@ export interface TariffSet {
 export interface TariffImpactCheck {
   id: string; // uuid
   user_id: string; // uuid
+  tariff_code_set: string; // uuid
+  hts_code_set?: string; // uuid
   codes: string[]; // stored as jsonb
   num_codes: number; // generated column
   created_at: string; // ISO timestamp

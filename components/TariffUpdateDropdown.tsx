@@ -41,7 +41,7 @@ export default function TariffUpdateDropdown({
           <Listbox.Button className="relative w-full cursor-default rounded-lg border border-base-content/20 bg-base-100 py-3 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-primary-300 sm:text-sm">
             <p className="text-sm md:text-base text-white">
               {selectedUpdate
-                ? `${selectedUpdate.name} | ${formatDate(selectedUpdate.published_at)}`
+                ? `${selectedUpdate.name} | ${formatDate(selectedUpdate.effective_at)}`
                 : "Select a Tariff Announcement"}
             </p>
 
@@ -93,7 +93,7 @@ export default function TariffUpdateDropdown({
                             {/* Date Released - clearly displayed */}
                             <p className="text-xs text-gray-400">
                               <span className="">
-                                {formatDate(update.published_at)}
+                                {formatDate(update.effective_at)}
                               </span>
                             </p>
                           </div>
