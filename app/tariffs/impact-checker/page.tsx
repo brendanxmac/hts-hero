@@ -20,6 +20,7 @@ import {
   additionalReciprocalExemptHeadingSept5,
   removedReciprocalExemptHeadingsSept5,
 } from "../../../tariffs/announcements/reciprocal-changes-sept-5";
+import { potentialReciprocalExemptionsForAlignedPartners } from "../../../tariffs/exclusion-lists.ts/potential-reciprocal-exclusions-for-aligned-partners";
 
 interface ListExample {
   name: string;
@@ -85,7 +86,15 @@ const listExamples: ListExample[] = [
   // },
 ];
 
-const additionalReciprocalExemptHeadingsFromSept5: TariffUpdate = {
+const potentialReciprocalExclusionsForAlignedPartnersSept9: TariffUpdate = {
+  name: "Potential Reciprocal Tariff Exemptions for Aligned Partners",
+  sourceName: "Executive Order, Annex III",
+  source: "https://www.whitehouse.gov/wp-content/uploads/2025/09/ANNEX-II.pdf",
+  codesImpacted: potentialReciprocalExemptionsForAlignedPartners,
+  effectiveDate: new Date("2025-09-08"),
+};
+
+const additionalReciprocalExemptHeadingsFromSept9: TariffUpdate = {
   name: "Articles Added to Reciprocal Tariff Exemptions",
   sourceName: "Executive Order, September 5th, whitehouse.gov",
   source:
@@ -94,7 +103,7 @@ const additionalReciprocalExemptHeadingsFromSept5: TariffUpdate = {
   effectiveDate: new Date("2025-09-08"),
 };
 
-const removedReciprocalExemptHeadingsFromSept5: TariffUpdate = {
+const removedReciprocalExemptHeadingsFromSept9: TariffUpdate = {
   name: "Articles Removed from Reciprocal Tariff Exemptions",
   sourceName: "Executive Order, September 5th, whitehouse.gov",
   source:
@@ -134,8 +143,9 @@ const changeLists: TariffUpdate[] = [
   section232SteelAndAluminumChanges,
   indiaOilBasedExclusions,
   reciprocalTariffExclusions,
-  additionalReciprocalExemptHeadingsFromSept5,
-  removedReciprocalExemptHeadingsFromSept5,
+  potentialReciprocalExclusionsForAlignedPartnersSept9,
+  additionalReciprocalExemptHeadingsFromSept9,
+  removedReciprocalExemptHeadingsFromSept9,
 ].sort((a, b) => b.effectiveDate.getTime() - a.effectiveDate.getTime());
 
 export default function Home() {
