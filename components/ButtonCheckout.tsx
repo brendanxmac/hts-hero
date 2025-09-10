@@ -93,7 +93,7 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
             itemId: plan.planIdentifier,
             successEndpoint: getCheckoutSuccessEndpoint(plan.planIdentifier),
             cancelUrl: window.location.href.includes("#")
-              ? window.location.href + "#pricing"
+              ? window.location.href.split("#")[0] + "#pricing"
               : window.location.href,
           }
         );
