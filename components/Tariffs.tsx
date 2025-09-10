@@ -263,7 +263,7 @@ export const Tariffs = ({
           />
 
           <div className="w-full flex flex-col overflow-x-auto border border-base-content/40 rounded-lg">
-            <table className="table table-sm table-zebra table-pin-cols">
+            <table className="table table-sm table-pin-cols">
               <thead>
                 <tr>
                   <th></th>
