@@ -144,7 +144,7 @@ export const CountrySelection = ({
   return (
     <div className="relative" ref={dropdownRef}>
       <div
-        className="w-full p-1 pr-2 border border-base-content/50 rounded-md cursor-pointer flex gap-3 items-center justify-between hover:bg-primary/20 transition-colors min-h-10"
+        className="w-full p-1 pr-2 border border-base-content/50 rounded-md cursor-pointer flex gap-3 items-center justify-between hover:bg-base-content/10 transition-colors min-h-10"
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="flex-1 flex flex-wrap gap-2 items-center">
@@ -213,7 +213,7 @@ export const CountrySelection = ({
       </div>
 
       {isOpen && (
-        <div className="absolute z-10 w-full mt-1 bg-base-100 border border-base-300 rounded-lg shadow-xl max-h-60 overflow-hidden">
+        <div className="absolute z-10 w-full mt-1 bg-base-100 border border-base-content/20 rounded-lg shadow-xl max-h-96 overflow-hidden">
           <div className="p-2 border-b border-base-300">
             <input
               type="text"
@@ -221,7 +221,7 @@ export const CountrySelection = ({
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="w-full p-2 border border-base-300 rounded-md bg-base-100 text-base-content placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full p-2 border border-base-content/20 rounded-md bg-base-100 text-base-content placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary"
               autoFocus
             />
           </div>
@@ -231,12 +231,12 @@ export const CountrySelection = ({
               filteredCountries.map((country, index) => (
                 <div
                   key={index}
-                  className={`px-3 py-2 cursor-pointer flex items-center justify-between ${
+                  className={`px-3 py-2 hover:cursor-pointer flex items-center justify-between ${
                     index === highlightedIndex
-                      ? "bg-primary text-primary-content"
+                      ? "bg-primary/30 hover:bg-primary/30"
                       : isCountrySelected(country)
-                        ? "bg-primary/10 border-l-2 border-primary"
-                        : "hover:bg-base-200"
+                        ? "bg-primary/20 hover:bg-primary/30"
+                        : "hover:bg-base-100"
                   }`}
                   onClick={() => handleCountrySelect(country)}
                   onMouseEnter={() => setHighlightedIndex(index)}
@@ -248,7 +248,7 @@ export const CountrySelection = ({
                         index === highlightedIndex
                           ? "text-white"
                           : isCountrySelected(country)
-                            ? "text-primary font-medium"
+                            ? "text-white"
                             : "text-base-content"
                       }
                     >
@@ -257,7 +257,7 @@ export const CountrySelection = ({
                   </div>
                   {isCountrySelected(country) && (
                     <svg
-                      className="w-4 h-4 text-primary"
+                      className="w-5 h-5 text-primary"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"

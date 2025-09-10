@@ -42,6 +42,53 @@ export const createPurchase = async (
   return data;
 };
 
+export const userHasActivePurchaseForProduct = async (
+  userId: string,
+  product: Product
+) => {
+  const userPurchases = await fetchPurchasesForUser(userId);
+  // Add 2-day buffer to prevent lockouts during subscription renewal delays
+  const expirationDateWithBuffer = new Date();
+  expirationDateWithBuffer.setDate(expirationDateWithBuffer.getDate() - 2);
+
+  const activePurchases = userPurchases.filter(
+    (purchase) => new Date(purchase.expires_at) > expirationDateWithBuffer
+  );
+
+  if (product === Product.CLASSIFY) {
+    return activePurchases.some(
+      (purchase) => purchase.product_name === PricingPlan.CLASSIFY_PRO
+    );
+  }
+
+  if (product === Product.TARIFF_IMPACT) {
+    return activePurchases.some(
+      (purchase) =>
+        purchase.product_name === PricingPlan.TARIFF_IMPACT_STARTER ||
+        purchase.product_name === PricingPlan.TARIFF_IMPACT_STANDARD ||
+        purchase.product_name === PricingPlan.TARIFF_IMPACT_PRO
+    );
+  }
+
+  return false;
+};
+
+export const getProductForPlan = (plan: PricingPlan) => {
+  switch (plan) {
+    case PricingPlan.CLASSIFY_PRO:
+      return Product.CLASSIFY;
+    case PricingPlan.TARIFF_IMPACT_STARTER:
+    case PricingPlan.TARIFF_IMPACT_STANDARD:
+    case PricingPlan.TARIFF_IMPACT_PRO:
+      return Product.TARIFF_IMPACT;
+  }
+};
+
+export enum Product {
+  CLASSIFY = "classify",
+  TARIFF_IMPACT = "tariff_impact",
+}
+
 export const userHasActivePurchase = async (userId: string) => {
   const supabase = createSupabaseClient();
 
@@ -82,4 +129,100 @@ export const getLatestPurchase = async (
   }
 
   return purchase;
+};
+
+export const fetchPurchasesForUser = async (userId: string) => {
+  const supabase = createSupabaseClient();
+
+  const { data: purchases, error } = await supabase
+    .from("purchases")
+    .select("*")
+    .eq("user_id", userId)
+    .order("expires_at", { ascending: false });
+
+  if (error) {
+    console.error("Failed to fetch purchases:", error);
+    throw error;
+  }
+
+  return purchases as Purchase[];
+};
+
+export const getActiveClassifyPurchase = async (userId: string) => {
+  const allPurchases = await fetchPurchasesForUser(userId);
+  const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const activeClassifyPurchases = allPurchases.find(
+    (purchase) =>
+      purchase.product_name === PricingPlan.CLASSIFY_PRO &&
+      purchase.expires_at > yesterday
+  );
+
+  return activeClassifyPurchases;
+};
+
+export const getActiveTariffImpactPurchasesForUser = async (userId: string) => {
+  const tariffImpactProducts = [
+    PricingPlan.TARIFF_IMPACT_STARTER,
+    PricingPlan.TARIFF_IMPACT_STANDARD,
+    PricingPlan.TARIFF_IMPACT_PRO,
+  ];
+  const allPurchases = await fetchPurchasesForUser(userId);
+  const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const activeTariffImpactPurchases = allPurchases.filter(
+    (purchase) =>
+      tariffImpactProducts.includes(purchase.product_name) &&
+      purchase.expires_at > yesterday
+  );
+
+  return activeTariffImpactPurchases;
+};
+
+export const getActivePriorityTariffImpactPurchase = async (
+  userId: string
+): Promise<Purchase | null> => {
+  const activeTariffImpactPurchases =
+    await getActiveTariffImpactPurchasesForUser(userId);
+
+  if (activeTariffImpactPurchases.length === 0) {
+    return null;
+  }
+
+  if (activeTariffImpactPurchases.length === 1) {
+    return activeTariffImpactPurchases[0];
+  }
+
+  // This works because the list is already sorted by expires_at DESCENDING
+  // so the list has the newest subscriptions first, therefore finding the first
+  // active tariff impact purchase is the one with the newest expires_at
+
+  // Find the first active PRO purchase because it's the most powerful and handles
+  // cases where the user might have upgraded and has 2 active purchases
+  const proPurchase = activeTariffImpactPurchases.find(
+    (purchase) => purchase.product_name === PricingPlan.TARIFF_IMPACT_PRO
+  );
+
+  if (proPurchase) {
+    return proPurchase;
+  }
+
+  // If no PRO purchase found, find the first STANDARD purchase
+  const standardPurchase = activeTariffImpactPurchases.find(
+    (purchase) => purchase.product_name === PricingPlan.TARIFF_IMPACT_STANDARD
+  );
+
+  if (standardPurchase) {
+    return standardPurchase;
+  }
+
+  // If no PRO purchase found, find the first STARTER purchase
+  const starterPurchase = activeTariffImpactPurchases.find(
+    (purchase) => purchase.product_name === PricingPlan.TARIFF_IMPACT_STARTER
+  );
+
+  if (starterPurchase) {
+    return starterPurchase;
+  }
+
+  // If no pro, standard, or starter then there is no active / best
+  return null;
 };

@@ -11,7 +11,7 @@ export const Media = ({ feature }: { feature: FeatureI }) => {
 
   const { mediaType, mediaPath, mediaFormat, altText } = feature;
   const style =
-    "w-full h-full rounded-2xl object-contain border-2 border-white/20";
+    "w-full h-full rounded-2xl object-contain border-2 border-white/20 max-h-full";
 
   if (mediaType === "video") {
     return (

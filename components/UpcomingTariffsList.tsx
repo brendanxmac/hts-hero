@@ -2,7 +2,7 @@ import Link from "next/link";
 
 enum TariffStatus {
   MENTIONED = "Mentioned",
-  INVESTIGATION = "Investigation",
+  INVESTIGATION = "Under Investigation",
   PENDING_PUBLICATION = "Pending Publication",
   PUBLISHED = "Published",
 }
@@ -18,10 +18,10 @@ interface Props {
   hideHeading?: boolean;
 }
 
-export const UpcomingTariffsList = ({ hideHeading }: Props) => {
+export const PendingTariffsList = ({ hideHeading }: Props) => {
   const tariffAnnouncements: TariffAnnouncement[] = [
     {
-      name: "Digital Services Tax Reciprocal",
+      name: "Taxed Digital Service Penalty",
       date: new Date(2025, 7, 25), // August 25, 2025
       status: TariffStatus.MENTIONED,
     },
@@ -150,6 +150,7 @@ export const UpcomingTariffsList = ({ hideHeading }: Props) => {
 
   return (
     <section
+      id="pending-tariffs"
       className={`flex justify-center items-center w-full bg-base-200 text-base-content px-6  ${
         hideHeading ? "" : "lg:py-16"
       }`}
@@ -159,35 +160,35 @@ export const UpcomingTariffsList = ({ hideHeading }: Props) => {
           <div className="text-center">
             <div className="flex flex-col -space-y-4 md:space-y-0">
               <h1 className="text-white font-extrabold text-2xl sm:text-3xl md:text-5xl lg:text-6xl tracking-tight max-w-5xl mx-auto leading-loose">
-                More Tariffs are Coming,
+                More Tariffs are Coming 👇
               </h1>
-              <h1 className="text-white font-extrabold text-2xl sm:text-3xl md:text-5xl lg:text-6xl tracking-tight max-w-5xl mx-auto leading-loose">
-                {/* Be{" "} */}
+              {/* <h1 className="text-white font-extrabold text-2xl sm:text-3xl md:text-5xl lg:text-6xl tracking-tight max-w-5xl mx-auto leading-loose">
+                Know Your Impacts
                 <span className="bg-primary text-base-200 px-3 py-0 rounded-md">
-                  Automate
+                  Instantly
                 </span>{" "}
-                your Impact Checks
-              </h1>
+              </h1> */}
             </div>
-            <p className="text-sm md:text-lg text-neutral-300 max-w-5xl mx-auto mt-2 md:mt-6">
-              {/* Weekly announcements and ongoing investigations seem to indicate
-            there is much more on the way */}
-              Manually checking your tariff impacts just doesn&apos;t cut it
-              anymore.
-              {/* Get notified when your imports are affected by new tariffs. */}
+            <p className="text-sm md:text-lg text-neutral-300 max-w-5xl mx-auto mt-2 md:mt-4">
+              Quickly knowing your impacts can mean big savings
             </p>
             <div className="flex justify-center mt-4">
               <Link
                 className="btn btn-wide btn-primary"
-                href={"/tariffs/impact-checker"}
+                href={"/about/tariffs#pricing"}
               >
-                Automate my Checks
+                Be Prepared
               </Link>
             </div>
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 mt-6">
+          {/* {!hideHeading && (
+            <h2 className="col-span-full text-lg md:text-xl font-bold text-gray-500 leading-tight text-center">
+              Pending Tariffs
+            </h2>
+          )} */}
           {tariffAnnouncements.map((tariff, index) => (
             <div
               key={index}
@@ -248,18 +249,20 @@ export const UpcomingTariffsList = ({ hideHeading }: Props) => {
           ))}
         </div>
 
-        <div className="text-center mt-4">
-          <p className="text-sm text-base-content/60 max-w-3xl mx-auto">
-            Tariff announcements are subject to change. &quot;TBD&quot;
-            indicates rates are unknown or being determined.
-          </p>
-          <a
-            href="https://www.tradecomplianceresourcehub.com/2025/08/25/trump-2-0-tariff-tracker/"
-            className="text-xs link link-primary text-base-content/70"
-          >
-            See source / all tariff announcements
-          </a>
-        </div>
+        {hideHeading && (
+          <div className="text-center mt-4">
+            <p className="text-sm text-base-content/60 max-w-3xl mx-auto">
+              Tariff announcements are subject to change. &quot;TBD&quot;
+              indicates rates are unknown or being determined.
+            </p>
+            <a
+              href="https://www.tradecomplianceresourcehub.com/2025/08/25/trump-2-0-tariff-tracker/"
+              className="text-xs link link-primary text-base-content/70"
+            >
+              See source / all tariff announcements
+            </a>
+          </div>
+        )}
       </div>
     </section>
   );

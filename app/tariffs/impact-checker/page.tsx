@@ -1,219 +1,267 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useHts } from "../../../contexts/HtsContext";
-import { validateTariffableHtsCode } from "../../../libs/hts";
-import SimpleTextInput from "../../../components/SimpleTextInput";
 import { LoadingIndicator } from "../../../components/LoadingIndicator";
-import { august_15_FR_232_impacted_codes_list } from "../../../tariffs/announcements/232-FR-August-15";
 import Link from "next/link";
-import { SecondaryText } from "../../../components/SecondaryText";
 import Modal from "../../../components/Modal";
 import { TariffImpactInputHelp } from "../../../components/TariffImpactInputHelp";
 import { TertiaryText } from "../../../components/TertiaryText";
-import { reciprocalTariffExclusionsList } from "../../../tariffs/exclusion-lists.ts/reciprocal-tariff-exlcusions";
-import { Color } from "../../../enums/style";
-import { SecondaryLabel } from "../../../components/SecondaryLabel";
 import TariffUpdateDropdown from "../../../components/TariffUpdateDropdown";
-import { indiaRussianOilConsumptionExclusions } from "../../../tariffs/exclusion-lists.ts/india-oil-issue-exclusions";
+import { PrimaryLabel } from "../../../components/PrimaryLabel";
+import { MixpanelEvent, trackEvent } from "../../../libs/mixpanel";
 import {
-  additionalReciprocalExemptHeadingSept5,
-  removedReciprocalExemptHeadingsSept5,
-} from "../../../tariffs/announcements/reciprocal-changes-sept-5";
-import { potentialReciprocalExemptionsForAlignedPartners } from "../../../tariffs/exclusion-lists.ts/potential-reciprocal-exclusions-for-aligned-partners";
-
-interface ListExample {
-  name: string;
-  list: string;
-}
-
-export interface TariffUpdate {
-  name: string;
-  sourceName: string;
-  source: string;
-  codesImpacted: string[];
-  effectiveDate: Date;
-  notes?: string;
-}
-
-interface TariffImpactResult {
-  code: string;
-  impacted: boolean | null;
-  error?: string;
-}
-
-const exampleList = [
-  "2602.00.00.40",
-  "8544.49.20.00",
-  "9701.21.00.00",
-  "9403.99.90.10",
-  "4408.90.01",
-  "4408.90.01.10",
-  "9701.21.00.00",
-  "2825.80.00.00",
-  "7614.10.10.00",
-  "7614.10.50.00",
-  "2106.90.99.98",
-];
-
-const commaSeparatedList = exampleList.join(", ");
-const newlineSeparatedList = [...exampleList]
-  .sort(() => Math.random() - 0.5)
-  .join("\n");
-const spaceSeparatedList = [...exampleList]
-  .sort(() => Math.random() - 0.5)
-  .join(" ");
-// const mixedSeparatedList =
-//   "2602.00.00.40, 9701.21.00.00\n4408.90.01, 4408.90.01.10\n97.01.21.00.00, 2825.80.00.00\n8544.49.20.00, 9403.99.90.10\n7614.10.10.00, 7614.10.50.00\n2106.90.99.98";
-
-const singleElementExamples = ["6902.20.10", "3808.94.10.00"];
-const listExamples: ListExample[] = [
-  {
-    name: "List with Commas",
-    list: commaSeparatedList,
-  },
-  {
-    name: "List with Newlines",
-    list: newlineSeparatedList,
-  },
-  {
-    name: "List with Spaces",
-    list: spaceSeparatedList,
-  },
-  // {
-  //   name: "List with Mixed Separators",
-  //   list: mixedSeparatedList,
-  // },
-];
-
-const potentialReciprocalExclusionsForAlignedPartnersSept9: TariffUpdate = {
-  name: "Potential Reciprocal Tariff Exemptions for Aligned Partners",
-  sourceName: "Executive Order, Annex III",
-  source: "https://www.whitehouse.gov/wp-content/uploads/2025/09/ANNEX-II.pdf",
-  codesImpacted: potentialReciprocalExemptionsForAlignedPartners,
-  effectiveDate: new Date("2025-09-08"),
-};
-
-const additionalReciprocalExemptHeadingsFromSept9: TariffUpdate = {
-  name: "Articles Added to Reciprocal Tariff Exemptions",
-  sourceName: "Executive Order, September 5th, whitehouse.gov",
-  source:
-    "https://www.whitehouse.gov/presidential-actions/2025/09/modifying-the-scope-of-reciprocal-tariffs-and-establishing-procedures-for-implementing-trade-and-security-agreements/",
-  codesImpacted: additionalReciprocalExemptHeadingSept5,
-  effectiveDate: new Date("2025-09-08"),
-};
-
-const removedReciprocalExemptHeadingsFromSept9: TariffUpdate = {
-  name: "Articles Removed from Reciprocal Tariff Exemptions",
-  sourceName: "Executive Order, September 5th, whitehouse.gov",
-  source:
-    "https://www.whitehouse.gov/presidential-actions/2025/09/modifying-the-scope-of-reciprocal-tariffs-and-establishing-procedures-for-implementing-trade-and-security-agreements/",
-  codesImpacted: removedReciprocalExemptHeadingsSept5,
-  effectiveDate: new Date("2025-09-08"),
-};
-
-const indiaOilBasedExclusions: TariffUpdate = {
-  name: "Exemptions for India 25% Tariff for Russian Oil Use",
-  sourceName: "CSMS #66027027",
-  source: "https://content.govdelivery.com/accounts/USDHSCBP/bulletins/3ef7e13",
-  codesImpacted: indiaRussianOilConsumptionExclusions,
-  effectiveDate: new Date("2025-08-25"),
-  notes:
-    "This specific announcement is only applicable to imports from India. Additional exemptions exist if the import is a qualified donation, information materials, or chapter 98 provision. Certain exemptions come with exclusions which you can see by clicking the HTS Code in the results table. Always contact a customs broker for proper import assistance and guidance.",
-};
-
-const section232SteelAndAluminumChanges: TariffUpdate = {
-  name: "Additional Articles of Steel and Aluminum",
-  sourceName: "Federal Register",
-  source:
-    "https://www.federalregister.gov/public-inspection/2025-15819/adoption-and-procedures-of-the-section-232-steel-and-aluminum-tariff-inclusions-process",
-  codesImpacted: august_15_FR_232_impacted_codes_list,
-  effectiveDate: new Date("2025-08-19"),
-};
-
-const reciprocalTariffExclusions: TariffUpdate = {
-  name: "Exemptions for Reciprocal Tariffs",
-  sourceName: "USITC - Chapter 99 Subchapter 3 Note 2(v)(iii) ",
-  source: "https://hts.usitc.gov/search?query=9903.01.32",
-  codesImpacted: reciprocalTariffExclusionsList,
-  effectiveDate: new Date("2025-04-05"),
-};
-
-const changeLists: TariffUpdate[] = [
-  section232SteelAndAluminumChanges,
-  indiaOilBasedExclusions,
-  reciprocalTariffExclusions,
-  potentialReciprocalExclusionsForAlignedPartnersSept9,
-  additionalReciprocalExemptHeadingsFromSept9,
-  removedReciprocalExemptHeadingsFromSept9,
-].sort((a, b) => b.effectiveDate.getTime() - a.effectiveDate.getTime());
+  fetchHtsCodeSetsForUser,
+  getHtsCodesFromString,
+  getValidHtsCodesFromSet,
+} from "../../../libs/hts-code-set";
+import toast from "react-hot-toast";
+import { useUser } from "../../../contexts/UserContext";
+import { HtsCodeSet } from "../../../interfaces/hts";
+import HtsCodeSetDropdown from "../../../components/HtsCodeSetDropdown";
+import { TariffCodeSet } from "../../../tariffs/announcements/announcements";
+import { TariffImpactCheck } from "../../../interfaces/tariffs";
+import {
+  checkTariffImpactsForCodes,
+  createTariffImpactCheck,
+  fetchTariffImpactChecksForUser,
+  TariffImpactResult,
+} from "../../../libs/tariff-impact-check";
+import {
+  getActivePriorityTariffImpactPurchase,
+  Purchase,
+} from "../../../libs/supabase/purchase";
+import { PricingPlan } from "../../../types";
+import { classNames } from "../../../utilities/style";
+import { ManageCodeListModal } from "../../../components/ManageCodesListModal";
+import { codeSetMatchesString } from "../../../utilities/hts";
+import { fetchTariffCodeSets } from "../../../libs/tariff-code-set";
+import { ArrowRightIcon } from "@heroicons/react/16/solid";
+import { SecondaryText } from "../../../components/SecondaryText";
+import TariffImpactCodesInput from "../../../components/TariffImpactCodesInput";
+import { fetchUser, updateUserProfile } from "../../../libs/supabase/user";
+import TariffImpactPricing from "../../../components/TariffImpactPricing";
 
 export default function Home() {
-  const CHARACTER_LIMIT = 650;
+  const CHARACTER_LIMIT = 3000;
+  const searchParams = useSearchParams();
+
+  // Context
+  const { user } = useUser();
   const { fetchElements, htsElements } = useHts();
-  const [loading, setLoading] = useState(true);
+
+  // State
+  const [loadingPage, setLoadingPage] = useState(true);
   const [inputValue, setInputValue] = useState("");
   const [results, setResults] = useState<TariffImpactResult[]>([]);
-  const [selectedChangeListIndex, setSelectedChangeListIndex] = useState(0);
+  const [fetchingTariffImpactChecks, setFetchingTariffImpactChecks] =
+    useState(true);
+  const [tariffImpactChecks, setTariffImpactChecks] = useState<
+    TariffImpactCheck[]
+  >([]);
+  const [selectedTariffAnnouncementIndex, setSelectedTariffAnnouncementIndex] =
+    useState(0);
   const [showHelpModal, setShowHelpModal] = useState(false);
+  const [saveCodesModal, setSaveCodesModal] = useState<{
+    show: boolean;
+    codes: string[];
+  }>({ show: false, codes: [] });
+  const [showPricingModal, setShowPricingModal] = useState(false);
+  const [htsCodeSets, setHtsCodeSets] = useState<HtsCodeSet[]>([]);
+  const [selectedHtsCodeSetId, setSelectedHtsCodeSetId] = useState<
+    string | null
+  >(null);
+  const [lastActionWasSubmit, setLastActionWasSubmit] = useState(false);
+  const [activeTariffImpactPurchase, setActiveTariffImpactPurchase] =
+    useState<Purchase | null>(null);
+  const [tariffCodeSets, setTariffCodeSets] = useState<TariffCodeSet[]>([]);
+  const [fetchingPurchases, setFetchingPurchases] = useState(true);
+  const [urlParamsProcessed, setUrlParamsProcessed] = useState(false);
+  const [checkingTariffImpacts, setCheckingTariffImpacts] = useState(false);
+  const [isTrialUser, setIsTrialUser] = useState(false);
 
   useEffect(() => {
-    const loadElements = async () => {
-      setLoading(true);
-      await fetchElements("latest");
-      setLoading(false);
+    const fetchTariffImpactChecks = async () => {
+      try {
+        setFetchingTariffImpactChecks(true);
+        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        const tariffImpactChecksLast30Days =
+          await fetchTariffImpactChecksForUser(thirtyDaysAgo);
+        setTariffImpactChecks(tariffImpactChecksLast30Days);
+      } catch {
+        toast.error("Error fetching tariff impact checks");
+      } finally {
+        setFetchingTariffImpactChecks(false);
+      }
     };
 
-    loadElements();
-  }, []);
+    if (results.length > 0) {
+      fetchTariffImpactChecks();
+    }
+    // Refetch tariff impact checks when results change
+  }, [results]);
+
+  useEffect(() => {
+    const loadAllData = async () => {
+      try {
+        setLoadingPage(true);
+        await Promise.all([
+          loadElements(),
+          loadTariffCodeSets(),
+          fetchHtsCodeSets(),
+          fetchTariffImpactChecks(),
+          fetchPurchases(),
+          loadUserProfile(),
+        ]);
+      } catch (e) {
+        console.error(e);
+        toast.error(
+          "Error loading data. Reload the page or contact support if this continues"
+        );
+      } finally {
+        setLoadingPage(false);
+      }
+    };
+
+    const fetchTariffImpactChecks = async () => {
+      try {
+        setFetchingTariffImpactChecks(true);
+        const sinceThirtyDaysAgo = new Date(
+          Date.now() - 30 * 24 * 60 * 60 * 1000
+        );
+        const tariffImpactChecksLast30Days =
+          await fetchTariffImpactChecksForUser(sinceThirtyDaysAgo);
+        setTariffImpactChecks(tariffImpactChecksLast30Days);
+        setFetchingTariffImpactChecks(false);
+      } catch {
+        toast.error("Error fetching tariff impact checks");
+      } finally {
+        setFetchingTariffImpactChecks(false);
+      }
+    };
+
+    const fetchHtsCodeSets = async () => {
+      try {
+        const htsCodeSets = await fetchHtsCodeSetsForUser();
+        setHtsCodeSets(htsCodeSets);
+        setSelectedHtsCodeSetId(null);
+      } catch {
+        toast.error("Error fetching hts code sets");
+      }
+    };
+
+    const fetchPurchases = async () => {
+      setFetchingPurchases(true);
+      const activeTariffImpactPurchase =
+        await getActivePriorityTariffImpactPurchase(user.id);
+
+      setActiveTariffImpactPurchase(activeTariffImpactPurchase);
+      setFetchingPurchases(false);
+    };
+
+    const loadElements = async () => {
+      await fetchElements("latest");
+    };
+
+    const loadTariffCodeSets = async () => {
+      const tariffCodeSets = await fetchTariffCodeSets();
+      setTariffCodeSets(tariffCodeSets);
+    };
+
+    const loadUserProfile = async () => {
+      const userProfile = await fetchUser(user.id);
+      const userTrialStartDate = userProfile?.tariff_impact_trial_started_at;
+
+      if (userTrialStartDate) {
+        // if the trial started more than 7 days ago, set isTrialUser to false
+        const trialStartedMoreThan7DaysAgo =
+          new Date(userTrialStartDate) <
+          new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+        if (trialStartedMoreThan7DaysAgo) {
+          setIsTrialUser(false);
+        } else {
+          setIsTrialUser(true);
+        }
+      } else {
+        // Update user profile setting tariff_impact_trial_started_at to now
+        await updateUserProfile(user.id, {
+          tariff_impact_trial_started_at: new Date().toISOString(),
+        });
+        setIsTrialUser(true);
+      }
+    };
+
+    if (user) {
+      loadAllData();
+    }
+  }, [user]);
 
   useEffect(() => {
     // Initialize with the first changeList when component mounts
-    if (changeLists.length > 0) {
-      setSelectedChangeListIndex(0);
+    // Only do this if we haven't processed URL parameters yet
+    if (tariffCodeSets.length > 0 && !urlParamsProcessed) {
+      setSelectedTariffAnnouncementIndex(0);
     }
-  }, []);
+  }, [tariffCodeSets, urlParamsProcessed]);
 
   useEffect(() => {
     handleInputChange(inputValue);
-  }, [selectedChangeListIndex]);
+  }, [selectedTariffAnnouncementIndex]);
+
+  // Will automatically check results if url params both processed & set
+  useEffect(() => {
+    if (
+      urlParamsProcessed &&
+      selectedHtsCodeSetId &&
+      selectedTariffAnnouncementIndex
+    ) {
+      handleSubmit();
+    }
+  }, [urlParamsProcessed]);
+
+  // Process URL parameters after all data is loaded
+  useEffect(() => {
+    if (!urlParamsProcessed && !loadingPage && tariffCodeSets.length > 0) {
+      const tariffAnnouncementId = searchParams.get("tariffAnnouncement");
+      const htsCodeSetId = searchParams.get("htsCodeSet");
+
+      // Process tariff announcement parameter
+      if (tariffAnnouncementId) {
+        const matchingTariffIndex = tariffCodeSets.findIndex(
+          (set) => set.id === tariffAnnouncementId
+        );
+        if (matchingTariffIndex !== -1) {
+          setSelectedTariffAnnouncementIndex(matchingTariffIndex);
+        }
+      }
+
+      // Process HTS code set parameter
+      if (htsCodeSetId && htsCodeSets.length > 0) {
+        const matchingHtsCodeSet = htsCodeSets.find(
+          (set) => set.id === htsCodeSetId
+        );
+        if (matchingHtsCodeSet) {
+          setSelectedHtsCodeSetId(htsCodeSetId);
+          // Also populate the input with the codes from the selected set
+          const codesString = matchingHtsCodeSet.codes.join(", ");
+          setInputValue(codesString);
+        }
+      }
+
+      setUrlParamsProcessed(true);
+    }
+  }, [
+    urlParamsProcessed,
+    loadingPage,
+    tariffCodeSets,
+    htsCodeSets,
+    searchParams,
+  ]);
 
   const htsCodeExists = (str: string) => {
     return htsElements.some((element) => element.htsno === str);
-  };
-
-  // Helper function to format HTS codes with proper periods
-  const formatHtsCodeWithPeriods = (code: string): string => {
-    // Remove any existing periods first
-    const digitsOnly = code.replace(/\./g, "");
-
-    // Only format if it's a valid length (4, 6, 8, or 10 digits)
-    if (digitsOnly.length === 4) {
-      return digitsOnly; // Just the heading: 1234
-    } else if (digitsOnly.length === 6) {
-      return `${digitsOnly.slice(0, 4)}.${digitsOnly.slice(4, 6)}`; // 1234.56
-    } else if (digitsOnly.length === 8) {
-      return `${digitsOnly.slice(0, 4)}.${digitsOnly.slice(4, 6)}.${digitsOnly.slice(6, 8)}`; // 1234.56.78
-    } else if (digitsOnly.length === 10) {
-      return `${digitsOnly.slice(0, 4)}.${digitsOnly.slice(4, 6)}.${digitsOnly.slice(6, 8)}.${digitsOnly.slice(8, 10)}`; // 1234.56.78.90
-    } else if (digitsOnly.length > 10) {
-      // For codes longer than 10 digits, format as 10-digit and ignore the rest
-      return `${digitsOnly.slice(0, 4)}.${digitsOnly.slice(4, 6)}.${digitsOnly.slice(6, 8)}.${digitsOnly.slice(8, 10)}`;
-    }
-
-    // Return as-is if it doesn't match expected lengths
-    return code;
-  };
-
-  const isEffectedByNewTariffs = (htsCode: string) => {
-    // Format the input code to have proper periods
-    const formattedCode = formatHtsCodeWithPeriods(htsCode);
-
-    // Simple substring check - much more efficient
-    return changeLists[selectedChangeListIndex].codesImpacted.some(
-      (change) =>
-        formattedCode.includes(change) || change.includes(formattedCode)
-    );
   };
 
   const getNotes = (result: TariffImpactResult) => {
@@ -222,7 +270,7 @@ export default function Home() {
 
     if (impacted === null) {
       return (
-        <td>
+        <td className="hidden sm:table-cell">
           <TertiaryText value={error || "Code Unsupported"} />
         </td>
       );
@@ -230,13 +278,13 @@ export default function Home() {
 
     if (!codeExists) {
       return (
-        <td>
+        <td className="hidden sm:table-cell">
           <TertiaryText value="Code Does Not Exist" />
         </td>
       );
     }
 
-    return <td>-</td>;
+    return <td className="hidden sm:table-cell">-</td>;
   };
 
   const getImpactIndicator = (result: TariffImpactResult) => {
@@ -252,10 +300,10 @@ export default function Home() {
     } else if (codeExists) {
       if (impacted) {
         indicator = "✅";
-        tooltip = "Code is included";
+        tooltip = "Code is impacted";
       } else {
         indicator = "❌";
-        tooltip = "Code is not included";
+        tooltip = "Code is not impacted";
       }
     } else {
       indicator = "⚠️";
@@ -269,201 +317,554 @@ export default function Home() {
     );
   };
 
-  const handleInputChange = (inputValue: string) => {
-    // Preserve the user's input format as-is
-    setInputValue(inputValue);
+  const getHtsCodesToCheck = () => {
+    const selectedCodeSet = htsCodeSets.find(
+      (set) => set.id === selectedHtsCodeSetId
+    );
 
+    if (selectedCodeSet) {
+      return selectedCodeSet.codes;
+    } else {
+      const characterLimitedInput =
+        inputValue.length >= CHARACTER_LIMIT
+          ? inputValue.slice(0, CHARACTER_LIMIT)
+          : inputValue;
+      return getHtsCodesFromString(characterLimitedInput);
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      setResults([]);
+      setCheckingTariffImpacts(true);
+
+      // // Check if the user has hit the limit based on their plan
+      const totalChecksThisMonth = tariffImpactChecks
+        .filter((checks) =>
+          activeTariffImpactPurchase
+            ? checks.plan === activeTariffImpactPurchase.product_name
+            : checks.plan === "Trial"
+        )
+        .reduce((acc, check) => acc + check.num_codes, 0);
+
+      if (totalChecksThisMonth >= checkLimit) {
+        // Show popup instead to get them to convert
+        if (!isTrialUser && !activeTariffImpactPurchase) {
+          toast.error(
+            `Your 7 day trial has expired. Upgrade to get more checks, notifications when your imports are affected, and tariff rates for any import`,
+            { duration: 8000 }
+          );
+        } else {
+          toast.error(
+            `You have reached your limit of ${checkLimit} checks this month. Upgrade to get more checks & unlock live tariff rates for any import.`,
+            { duration: 6000 }
+          );
+        }
+        return;
+      }
+
+      const htsCodes = getHtsCodesToCheck();
+
+      if (htsCodes.length === 0) {
+        toast.error(
+          "Please select a code set or enter at least 1 valid HTS code"
+        );
+        return;
+      }
+
+      const tariffUpdateToCheckAgainst =
+        tariffCodeSets[selectedTariffAnnouncementIndex];
+
+      if (!tariffUpdateToCheckAgainst) {
+        toast.error("Please select a tariff announcement");
+        return;
+      }
+
+      const results = checkTariffImpactsForCodes(
+        htsCodes,
+        tariffUpdateToCheckAgainst
+      );
+
+      const numChecksForSubmit = results.length;
+
+      if (totalChecksThisMonth + numChecksForSubmit > checkLimit) {
+        toast.error(
+          `You're trying to check ${numChecksForSubmit} codes but only have ${checkLimit - totalChecksThisMonth} left this month. Enter less codes or upgrade to get more checks`,
+          { duration: 10000 }
+        );
+        return;
+      }
+
+      const validCodesToCheck = getValidHtsCodesFromSet(htsCodes);
+
+      try {
+        // Don't want to error if it fails
+        await createTariffImpactCheck(
+          tariffUpdateToCheckAgainst.id,
+          validCodesToCheck,
+          selectedHtsCodeSetId,
+          activeTariffImpactPurchase?.product_name || "Trial"
+        );
+      } catch (e) {
+        console.error("Error creating tariff impact check:", e);
+      }
+
+      trackEvent(MixpanelEvent.TARIFF_IMPACT_CHECK, {
+        numCodes: validCodesToCheck.length,
+        changeList: tariffUpdateToCheckAgainst.name,
+      });
+
+      setResults(results);
+      setLastActionWasSubmit(true);
+    } catch (e) {
+      console.log(e);
+      toast.error(`Error creating tariff impact check: ${e.message}`, {
+        duration: 5000,
+      });
+    } finally {
+      setCheckingTariffImpacts(false);
+    }
+  };
+
+  const handleInputChange = (
+    inputValue: string,
+    clearSelectedSet?: boolean
+  ) => {
+    // Preserve the user's input format as-is
     const characterLimitedInput =
       inputValue.length >= CHARACTER_LIMIT
         ? inputValue.slice(0, CHARACTER_LIMIT)
         : inputValue;
+    setInputValue(characterLimitedInput);
+    setLastActionWasSubmit(false);
 
-    // Parse input by newlines or commas for processing
-    const separators = /[\n, ]/;
-    const parsedCodes = characterLimitedInput
-      .trim()
-      .split(separators)
-      .map((code) => code.trim())
-      .filter((code) => code.length > 0);
+    const codeSetThatMatchesInput = htsCodeSets.find((set) =>
+      codeSetMatchesString(inputValue, set.codes)
+    );
 
-    const results = parsedCodes.map((code) => {
-      const { valid: isValidTariffableCode, error } =
-        validateTariffableHtsCode(code);
-      // Format the code with proper periods if it's valid
-      const formattedCode = isValidTariffableCode
-        ? formatHtsCodeWithPeriods(code)
-        : code;
-
-      return {
-        code: formattedCode,
-        impacted: isValidTariffableCode ? isEffectedByNewTariffs(code) : null,
-        error,
-      };
-    });
-
-    setResults(results);
+    if (clearSelectedSet) {
+      setSelectedHtsCodeSetId(null);
+    } else {
+      // Update the selected code set if we found a match
+      if (codeSetThatMatchesInput) {
+        setSelectedHtsCodeSetId(codeSetThatMatchesInput.id);
+      } else {
+        setSelectedHtsCodeSetId(null);
+      }
+    }
   };
 
+  const handleHtsCodeSetSelection = (htsCodeSetId: string | null) => {
+    if (htsCodeSetId === null) {
+      // Clear selection
+      setSelectedHtsCodeSetId(null);
+      setInputValue("");
+      setLastActionWasSubmit(false);
+      return;
+    }
+
+    const selectedSet = htsCodeSets.find((set) => set.id === htsCodeSetId);
+    if (selectedSet) {
+      // Join the codes with commas and spaces for readability
+      const codesString = selectedSet.codes.join(", ");
+      setInputValue(codesString);
+      setSelectedHtsCodeSetId(htsCodeSetId);
+    }
+  };
+
+  const numChecksThisMonth = tariffImpactChecks
+    .filter((checks) =>
+      activeTariffImpactPurchase
+        ? checks.plan === activeTariffImpactPurchase.product_name
+        : checks.plan === "Trial"
+    )
+    .reduce((acc, check) => acc + check.num_codes, 0);
+
+  const getCheckLimitForUser = (purchase?: Purchase | null) => {
+    if (!purchase) {
+      if (isTrialUser) {
+        return Infinity;
+      } else {
+        return 0;
+      }
+    }
+
+    if (purchase.product_name === PricingPlan.TARIFF_IMPACT_PRO) {
+      return Infinity;
+    }
+
+    if (purchase.product_name === PricingPlan.TARIFF_IMPACT_STANDARD) {
+      return 400;
+    }
+
+    if (purchase.product_name === PricingPlan.TARIFF_IMPACT_STARTER) {
+      return 40;
+    }
+  };
+
+  const checkLimit = getCheckLimitForUser(activeTariffImpactPurchase);
+
+  const getPlanStyles = (purchase?: Purchase | null) => {
+    if (!purchase) {
+      if (isTrialUser) {
+        return "text-warning border-warning";
+      } else {
+        return "text-error border-error";
+      }
+    }
+
+    if (purchase.product_name === PricingPlan.TARIFF_IMPACT_STARTER) {
+      return "text-accent border-accent";
+    }
+
+    if (purchase.product_name === PricingPlan.TARIFF_IMPACT_STANDARD) {
+      return "text-primary border-primary";
+    }
+
+    if (purchase.product_name === PricingPlan.TARIFF_IMPACT_PRO) {
+      return "text-secondary border-secondary";
+    }
+  };
+
+  const getPlanText = (purchase?: Purchase | null) => {
+    if (!purchase) {
+      if (isTrialUser) {
+        return "Free Trial";
+      } else {
+        return "Trial Expired";
+      }
+    }
+
+    if (purchase.product_name === PricingPlan.TARIFF_IMPACT_STARTER) {
+      return "Starter";
+    }
+
+    if (purchase.product_name === PricingPlan.TARIFF_IMPACT_STANDARD) {
+      return "Standard";
+    }
+
+    if (purchase.product_name === PricingPlan.TARIFF_IMPACT_PRO) {
+      return "Pro";
+    }
+  };
+
+  if (loadingPage) {
+    return (
+      <main className="w-screen h-screen flex items-center justify-center bg-base-300">
+        <LoadingIndicator />
+      </main>
+    );
+  }
+
   return (
-    <main className="w-full h-full max-w-6xl mx-auto flex flex-col bg-base-300 py-6 overflow-y-auto">
-      {loading ? (
-        <div className="w-full h-full flex justify-center pt-20">
-          <LoadingIndicator />
-        </div>
-      ) : (
-        <div className="w-full max-w-5xl mx-auto flex flex-col px-8 gap-4 sm:gap-8">
-          {/* Header */}
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1">
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-100">
-                Tariff Impact Checker
-              </h1>
-              <div className="ml-1">
-                <SecondaryText value="Instantly see if any of your imports have been impacted by recent tariff announcements." />
+    <main className="w-screen h-full flex flex-col bg-base-300 py-6">
+      <div className="w-full max-w-5xl mx-auto flex flex-col px-4 sm:px-6 gap-6 pb-6">
+        {/* Header */}
+        <div className="flex justify-between md:items-center flex-col-reverse md:flex-row gap-4">
+          <div className="w-full flex flex-col">
+            <div className="w-full flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex gap-4 items-center">
+                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-100">
+                  Tariff Impact Checker
+                </h1>
+
+                {!fetchingPurchases && (
+                  <div className="flex items-center gap-4">
+                    <span
+                      className={classNames(
+                        "h-fit px-2 py-0.5 rounded-md font-semibold text-xs border",
+                        getPlanStyles(activeTariffImpactPurchase)
+                      )}
+                    >
+                      {getPlanText(activeTariffImpactPurchase)}
+                    </span>
+                  </div>
+                )}
               </div>
+
+              {(!activeTariffImpactPurchase ||
+                activeTariffImpactPurchase.product_name !==
+                  PricingPlan.TARIFF_IMPACT_PRO) &&
+                (fetchingTariffImpactChecks ? (
+                  <LoadingIndicator spinnerOnly />
+                ) : (
+                  <div className="w-full sm:w-auto justify-between sm:justify-normal flex items-center gap-4 px-4 sm:px-0 p-2 bg-base-100 border sm:border-none sm:bg-inherit border-base-content/20 rounded-md">
+                    {checkLimit !== Infinity && (
+                      <div className="flex flex-col">
+                        <p
+                          className={classNames(
+                            "text-sm font-bold",
+                            numChecksThisMonth >= checkLimit
+                              ? "text-error"
+                              : checkLimit - numChecksThisMonth < 20
+                                ? "text-warning"
+                                : "text-gray-400"
+                          )}
+                        >
+                          {checkLimit - numChecksThisMonth} Check
+                          {checkLimit - numChecksThisMonth === 1
+                            ? ""
+                            : "s"}{" "}
+                          Left
+                        </p>
+                        <p className="text-xs">{`Limit: ${checkLimit}/month`}</p>
+                      </div>
+                    )}
+
+                    <button
+                      className="btn btn-sm btn-primary"
+                      onClick={() => {
+                        setShowPricingModal(true);
+                        try {
+                          trackEvent(
+                            MixpanelEvent.CLICKED_TARIFF_IMPACT_UPGRADE
+                          );
+                        } catch (e) {
+                          console.error("Error tracking tariff impact upgrade");
+                          console.error(e);
+                        }
+                      }}
+                    >
+                      Upgrade <ArrowRightIcon className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
             </div>
           </div>
+        </div>
 
-          {/* Inputs */}
-          <div className="flex flex-col gap-4 sm:gap-8">
-            <div className="flex flex-col gap-2">
-              <SecondaryLabel
-                value="Select Tariff Announcement"
-                color={Color.WHITE}
-              />
-              <TariffUpdateDropdown
-                tariffUpdates={changeLists}
-                selectedIndex={selectedChangeListIndex}
-                onSelectionChange={setSelectedChangeListIndex}
-              />
-              {changeLists[selectedChangeListIndex].notes && (
-                <p className="text-xs text-warning font-bold">
-                  Note: {changeLists[selectedChangeListIndex].notes}
+        {/* Inputs */}
+        <div className="flex flex-col gap-4 sm:gap-8">
+          {/* Tariff Announcement Selection */}
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-col">
+              <PrimaryLabel value="Tariff Announcement" />
+              <SecondaryText value="Select the tariff announcement you want to see the impacts of" />
+            </div>
+
+            <TariffUpdateDropdown
+              tariffCodeSets={tariffCodeSets}
+              selectedIndex={selectedTariffAnnouncementIndex}
+              onSelectionChange={setSelectedTariffAnnouncementIndex}
+            />
+
+            {tariffCodeSets.length > 0 &&
+              tariffCodeSets[selectedTariffAnnouncementIndex].note && (
+                <p className="text-xs text-neutral-content font-bold">
+                  Note: {tariffCodeSets[selectedTariffAnnouncementIndex].note}
                 </p>
               )}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center">
-                  <SecondaryLabel value="Enter HTS Codes" color={Color.WHITE} />
-                  <button
-                    className="btn btn-circle btn-xs btn-primary ml-2 text-sm flex items-center justify-center"
-                    onClick={() => setShowHelpModal(true)}
-                    title="Help with HTS code formats"
-                  >
-                    ?
-                  </button>
-                </div>
-                <div className="flex gap-2 items-center">
-                  <div className="flex flex-wrap items-center">
-                    <p className="text-xs font-bold text-gray-500">
-                      See Examples:
-                    </p>
-                    {singleElementExamples.map((example) => (
-                      <button
-                        key={`${example}-example`}
-                        className="btn btn-xs btn-primary btn-link"
-                        onClick={() => {
-                          handleInputChange(example);
-                        }}
-                      >
-                        {example}
-                      </button>
-                    ))}
-                    {listExamples.map((example) => (
-                      <button
-                        key={`${example.name}-example`}
-                        className="btn btn-xs btn-primary btn-link"
-                        onClick={() => {
-                          handleInputChange(example.list);
-                        }}
-                      >
-                        {example.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <SimpleTextInput
-                value={inputValue}
-                placeholder="3808.94.10.00, 0202.20.80.00, etc..."
-                characterLimit={CHARACTER_LIMIT}
-                onChange={handleInputChange}
-              />
-            </div>
           </div>
 
-          {/* Results */}
-          {results && results.length > 0 && (
-            <div>
-              <div className="flex flex-col gap-2 bg-base-100 bg-transparent">
-                <SecondaryLabel value="Results" color={Color.WHITE} />
-                <div
-                  className={`border-2 border-base-content/20 rounded-md ${
-                    results.length > 0 ? "p-0" : "p-4"
-                  }`}
-                >
-                  {results.length > 0 ? (
-                    <div className="overflow-x-auto rounded-md">
-                      <table className="table table-zebra table-sm table-pin-cols w-full">
-                        <thead>
-                          <tr>
-                            <th className="w-4"></th>
-                            <th>HTS Code</th>
-                            <th>Included</th>
-                            <th>Notes</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {results.map((result, i) => {
-                            const htsElementForCode = htsElements.find(
-                              (element) => element.htsno === result.code
-                            );
-                            const impactIndicator = getImpactIndicator(result);
-                            const notes = getNotes(result);
+          {/* HTS Code Selection */}
 
-                            return (
-                              <tr key={`${result.code}-${i}`} className="py-1">
-                                <td>{i + 1}</td>
-                                {htsElementForCode ? (
-                                  <td className="truncate min-w-32 lg:min-w-64">
-                                    <Link
-                                      href={`/explore?code=${result.code}`}
-                                      target="_blank"
-                                      className="link link-primary font-bold"
-                                    >
-                                      {result.code}
-                                    </Link>
-                                  </td>
-                                ) : (
-                                  <td className="truncate min-w-32 lg:min-w-64">
-                                    {result.code}
-                                  </td>
-                                )}
-                                {impactIndicator}
-                                {notes}
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-                  ) : (
-                    <p className="text-sm text-gray-500">
-                      No results yet, enter code(s) to see if they are impacted
-                      by the selected tariff change list.
-                    </p>
-                  )}
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
+              <div className="flex flex-col">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center">
+                    <PrimaryLabel value="HTS Codes" />
+                    <button
+                      className="btn btn-circle btn-xs bg-base-content/30 hover:bg-base-content/70 text-white ml-2 text-sm flex items-center justify-center"
+                      onClick={() => setShowHelpModal(true)}
+                      title="Help with HTS code formats"
+                    >
+                      ?
+                    </button>
+                  </div>
                 </div>
+                <SecondaryText
+                  value={`${htsCodeSets.length > 0 ? "Select or enter" : "Enter"} the HTS codes you want to check`}
+                />
+              </div>
+
+              {htsCodeSets.length > 0 && (
+                <HtsCodeSetDropdown
+                  htsCodeSets={htsCodeSets}
+                  onCreateSelected={() =>
+                    setSaveCodesModal({ show: true, codes: [] })
+                  }
+                  selectedIndex={
+                    selectedHtsCodeSetId
+                      ? htsCodeSets.findIndex(
+                          (set) => set.id === selectedHtsCodeSetId
+                        )
+                      : null
+                  }
+                  onSelectionChange={(index) => {
+                    setLastActionWasSubmit(false);
+
+                    if (index === null) {
+                      handleHtsCodeSetSelection(null);
+                    } else {
+                      handleHtsCodeSetSelection(htsCodeSets[index].id);
+                    }
+                  }}
+                />
+              )}
+            </div>
+            <TariffImpactCodesInput
+              value={inputValue}
+              placeholder="3808.94.10.00, 0202.20.80.00, 9701.21.00.00, 2825.80.00.00, etc..."
+              onChange={handleInputChange}
+              isValid={inputValue.length >= 8}
+            />
+          </div>
+        </div>
+
+        {!lastActionWasSubmit && (
+          <button
+            className={classNames(
+              "w-full btn",
+              checkingTariffImpacts ? "btn-neutral" : "btn-primary"
+            )}
+            disabled={
+              lastActionWasSubmit ||
+              loadingPage ||
+              fetchingTariffImpactChecks ||
+              (!inputValue &&
+                (selectedHtsCodeSetId === null ||
+                  selectedTariffAnnouncementIndex === null))
+            }
+            onClick={() => handleSubmit()}
+          >
+            {checkingTariffImpacts ? (
+              <LoadingIndicator spinnerOnly />
+            ) : (
+              "Check Impacts"
+            )}
+          </button>
+        )}
+
+        {/* Results */}
+        {results && results.length > 0 && (
+          <div>
+            <div className="flex flex-col gap-2 bg-base-100 bg-transparent">
+              <div className="w-full flex justify-between items-end sm:items-end gap-2">
+                <PrimaryLabel value="Impact Check Results" />
+
+                {results.length > 0 &&
+                  (!htsCodeSets.length ||
+                    !htsCodeSets.some((set) =>
+                      codeSetMatchesString(
+                        results.map((result) => result.code).join(", "),
+                        set.codes
+                      )
+                    )) && (
+                    <button
+                      className="hidden sm:block btn btn-sm btn-secondary"
+                      onClick={() => {
+                        setSaveCodesModal({
+                          show: true,
+                          codes: results.map((result) => result.code),
+                        });
+                      }}
+                    >
+                      Get Notifications for These Codes
+                    </button>
+                  )}
+              </div>
+              <div
+                className={`border border-base-content/20 rounded-md ${
+                  results.length > 0 ? "p-0" : "p-4"
+                }`}
+              >
+                {results.length > 0 ? (
+                  <div className="overflow-x-auto rounded-md">
+                    <table className="table table-zebra table-sm table-pin-cols w-full">
+                      <thead>
+                        <tr>
+                          <th className="w-4"></th>
+                          <th>HTS Code</th>
+                          <th>Impacted</th>
+                          <th className="hidden sm:table-cell">Notes</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {results.map((result, i) => {
+                          const htsElementForCode = htsElements.find(
+                            (element) => element.htsno === result.code
+                          );
+                          const impactIndicator = getImpactIndicator(result);
+                          const notes = getNotes(result);
+
+                          return (
+                            <tr key={`${result.code}-${i}`} className="py-1">
+                              <td>{i + 1}</td>
+                              {htsElementForCode ? (
+                                <td className="truncate min-w-32 lg:min-w-64">
+                                  <Link
+                                    href={`/explore?code=${result.code}`}
+                                    target="_blank"
+                                    className="link link-primary font-bold"
+                                  >
+                                    {result.code}
+                                  </Link>
+                                </td>
+                              ) : (
+                                <td className="truncate min-w-32 lg:min-w-64">
+                                  {result.code}
+                                </td>
+                              )}
+                              {impactIndicator}
+                              {notes}
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">
+                    No results yet, enter code(s) to see if they are impacted by
+                    the selected tariff change list.
+                  </p>
+                )}
               </div>
             </div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
+
       <Modal isOpen={showHelpModal} setIsOpen={setShowHelpModal}>
         <TariffImpactInputHelp />
       </Modal>
+      <ManageCodeListModal
+        user={user}
+        usersCodeSets={htsCodeSets}
+        codes={saveCodesModal.codes}
+        isOpen={saveCodesModal.show}
+        setIsOpen={(show) =>
+          setSaveCodesModal({ show, codes: saveCodesModal.codes })
+        }
+        onSetCreated={(set: HtsCodeSet) => {
+          setHtsCodeSets([...htsCodeSets, set]);
+          setSelectedHtsCodeSetId(set.id);
+          setInputValue(set.codes.join(", "));
+        }}
+      />
+      <Modal isOpen={showPricingModal} setIsOpen={setShowPricingModal}>
+        <TariffImpactPricing />
+      </Modal>
     </main>
   );
+}
+
+{
+  /* <div className="flex gap-2 items-center">
+              <div className="flex flex-wrap items-center">
+                <p className="text-xs font-bold text-gray-500">Try Me!</p>
+                {exampleLists.map((example) => (
+                  <button
+                    key={`${example.name}-example`}
+                    className="btn btn-xs text-base-content/80 hover:text-primary btn-link"
+                    onClick={() => {
+                      handleInputChange(example.list);
+                    }}
+                  >
+                    {example.name}
+                  </button>
+                ))}
+              </div>
+            </div> */
 }

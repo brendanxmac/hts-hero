@@ -47,7 +47,7 @@ export const InlineCountryTariff = ({
       ? TariffColumn.OTHER
       : TariffColumn.GENERAL
   );
-  const [showInactive, setShowInactive] = useState<boolean>(true);
+  const [showInactive, setShowInactive] = useState<boolean>(false);
   const [isSpecialProgramOpen, setIsSpecialProgramOpen] =
     useState<boolean>(false);
   const {
@@ -128,24 +128,20 @@ export const InlineCountryTariff = ({
   }, []);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-8 pb-4">
       {/* Header with Buttons */}
-      <div className="w-full flex justify-between">
+      <div className="w-full flex justify-between items-end">
         {/* Special Tariff Program Selection */}
-
         <div className="w-full flex flex-col gap-2">
           <div className="w-full flex flex-col gap-1">
-            <TertiaryLabel
-              value="Potential Special Tariff Programs"
-              color={Color.WHITE}
-            />
+            <TertiaryLabel value="Apply Special Trade Programs" />
           </div>
           <div
             className="relative w-full max-w-lg"
             ref={specialProgramDropdownRef}
           >
             <div
-              className="w-full px-3 py-1 border-2 border-base-content/10 rounded-lg cursor-pointer bg-base-300 flex gap-3 items-center justify-between hover:bg-primary/20 transition-colors min-h-10"
+              className="w-full px-3 py-1 border-2 border-base-content/10 rounded-lg cursor-pointer bg-base-100 flex gap-3 items-center justify-between hover:bg-base-content/10 transition-colors min-h-10"
               onClick={() => setIsSpecialProgramOpen(!isSpecialProgramOpen)}
             >
               <div className="flex-1 flex items-center">
@@ -251,18 +247,14 @@ export const InlineCountryTariff = ({
 
         <div className="w-full flex gap-2 justify-end">
           <button
-            className="btn btn-xs btn-primary"
+            className="btn btn-sm btn-primary"
             onClick={() => setShowInactive(!showInactive)}
           >
             {showInactive ? "Hide Inactive Tariffs" : "Show All Tariffs"}
           </button>
-          <button
-            className="btn btn-xs btn-primary"
-            // TODO: implement this reset now with setCountries
-            onClick={() => {}}
-          >
+          {/* <button className="btn btn-sm btn-primary" onClick={() => {}}>
             Reset
-          </button>
+          </button> */}
         </div>
       </div>
 
@@ -390,10 +382,7 @@ export const InlineCountryTariff = ({
       <div className={"w-full flex flex-col gap-4"}>
         {tariffSets.map((tariffSet, i) => (
           <div key={`tariff-set-${i}`} className="flex flex-col gap-4">
-            <TertiaryLabel
-              value={`${tariffSet.name} Tariff`}
-              color={Color.WHITE}
-            />
+            <PrimaryLabel value={`${tariffSet.name} Tariff Details`} />
 
             <div className="flex flex-col gap-2">
               {baseTariffs &&
@@ -435,24 +424,24 @@ export const InlineCountryTariff = ({
                   />
                 ))}
             </div>
-            <div className="-mt-3 w-full flex justify-between items-end gap-2">
-              <h2 className="text-white font-bold">Total:</h2>
+            <div className="w-full flex justify-between items-end gap-2">
+              <TertiaryLabel value="Total:" />
               <div className="flex gap-2">
                 {baseTariffs
                   .flatMap((t) => t.tariffs)
                   .filter((t) => t.type === "amount").length > 0 && (
                   <div className="flex gap-2">
-                    <p className="text-base font-bold text-primary transition duration-100">
+                    <p className="text-base font-bold text-white transition duration-100">
                       {getAmountRatesString(
                         baseTariffs.flatMap((t) => t.tariffs)
                       )}
                     </p>
-                    <p className="text-base font-bold text-primary transition duration-100">
+                    <p className="text-base font-bold text-white transition duration-100">
                       +
                     </p>
                   </div>
                 )}
-                <p className="text-base font-bold text-primary transition duration-100">
+                <p className="text-base font-bold text-white transition duration-100">
                   {getAdValoremRate(
                     tariffColumn,
                     tariffSet.tariffs,

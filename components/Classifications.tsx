@@ -14,6 +14,9 @@ import { PlusIcon } from "@heroicons/react/16/solid";
 import { FunnelIcon } from "@heroicons/react/24/solid";
 import Fuse, { IFuseOptions } from "fuse.js";
 import { LoadingIndicator } from "./LoadingIndicator";
+import { PricingPlan } from "../types";
+import { getActiveClassifyPurchase } from "../libs/supabase/purchase";
+import { classNames } from "../utilities/style";
 
 interface Props {
   page: ClassifyPage;
@@ -43,7 +46,22 @@ export const Classifications = ({ page, setPage }: Props) => {
     isLoading: classificationsLoading,
     refreshClassifications,
   } = useClassifications();
+  const [activeClassifyPlan, setActiveClassifyPlan] =
+    useState<PricingPlan | null>(null);
   const { user, error: userError } = useUser();
+
+  useEffect(() => {
+    const fetchActiveClassifyPurchase = async () => {
+      const activeClassifyPurchase = await getActiveClassifyPurchase(user.id);
+
+      if (activeClassifyPurchase) {
+        setActiveClassifyPlan(activeClassifyPurchase.product_name);
+      }
+    };
+    if (user) {
+      fetchActiveClassifyPurchase();
+    }
+  }, [user]);
 
   // Create searchable data for Fuse.js
   const searchableClassifications: SearchableClassification[] = useMemo(() => {
@@ -165,9 +183,22 @@ export const Classifications = ({ page, setPage }: Props) => {
           {/* Header Row */}
           <div className="w-full flex flex-col md:flex-row gap-4 justify-between items-start">
             <div className="flex flex-col">
-              <h1 className="text-2xl md:text-3xl xl:text-4xl text-neutral-50 font-bold">
-                {getUserNameMessage()}
-              </h1>
+              <div className="flex sm:flex-row flex-col-reverse sm:items-center gap-2">
+                <h1 className="text-2xl md:text-3xl xl:text-4xl text-neutral-50 font-bold">
+                  {getUserNameMessage()}
+                </h1>
+
+                <div
+                  className={classNames(
+                    "shrink-0 h-fit w-fit text-sm border rounded-md px-2 py-0 text-primary font-semibold",
+                    activeClassifyPlan
+                      ? "text-primary border-primary"
+                      : "text-warning border-warning"
+                  )}
+                >
+                  {activeClassifyPlan ? activeClassifyPlan : "Free Trial"}
+                </div>
+              </div>
               <SecondaryText
                 value="Here you can review your classifications or start a new one now."
                 color={Color.NEUTRAL_CONTENT}
@@ -196,7 +227,7 @@ export const Classifications = ({ page, setPage }: Props) => {
 
           {/* Search and Actions Row */}
           <div className="flex flex-col md:flex-row gap-3 items-start md:items-end justify-between">
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
               <h2 className="text-xl md:text-2xl text-neutral-50 font-bold">
                 Your Classifications
               </h2>

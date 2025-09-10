@@ -2,8 +2,78 @@ import themes from "daisyui/src/theming/themes";
 import { ConfigProps, PricingPlan, PricingPlanI } from "./types/config";
 import { StripePaymentMode } from "./libs/stripe";
 
-const proPlan: PricingPlanI = {
-  name: PricingPlan.PRO,
+export const tariffImpactStarter: PricingPlanI = {
+  name: "Starter",
+  planIdentifier: PricingPlan.TARIFF_IMPACT_STARTER,
+  description: "Notifications & Some Tariff Checks",
+  mode: StripePaymentMode.SUBSCRIPTION,
+  price: 19,
+  priceAnchor: 30,
+  features: [
+    {
+      name: "40 Tariff Impact Checks / Month",
+      details:
+        "A check happens any time you submit a code to see if it's affected by a tariff update",
+    },
+    {
+      name: "Notifications when your imports are affected by new tariffs",
+    },
+  ],
+};
+
+export const tariffImpactStandard: PricingPlanI = {
+  name: "Standard",
+  planIdentifier: PricingPlan.TARIFF_IMPACT_STANDARD,
+  description: "Tariff Essentials",
+  mode: StripePaymentMode.SUBSCRIPTION,
+  price: 49,
+  priceAnchor: 70,
+  features: [
+    {
+      name: "400 Tariff Impact Checks / Month",
+      details:
+        "A check happens any time you submit a code to see if it's affected by a tariff update",
+    },
+    { name: "Notifications when your imports are affected by new tariffs" },
+  ],
+};
+
+export const tariffImpactPro: PricingPlanI = {
+  name: "Pro",
+  planIdentifier: PricingPlan.TARIFF_IMPACT_PRO,
+  description: "Master Tariffs & Save Money",
+  mode: StripePaymentMode.SUBSCRIPTION,
+  price: 79,
+  priceAnchor: 150,
+  isFeatured: true,
+  features: [
+    {
+      name: "Unlimited Tariff Impact Checks",
+      details:
+        "A check is any time you submit a code to see if it's affected by a tariff update and get the answer",
+    },
+    { name: "Notifications when your imports are affected by new tariffs" },
+    {
+      name: "Tariff Wizard",
+      details:
+        "Quickly calculate tariffs & discover potential savings for any import",
+    },
+    // { name: "Generate & share branded reports" }, // TODO: This could be great
+  ],
+};
+
+// const classifyTrial: PricingPlanI = {
+//   name: "Free Trial",
+//   planIdentifier: PricingPlan.CLASSIFY_TRIAL,
+//   description: "Try Classify Pro for 7 Days",
+//   mode: StripePaymentMode.SUBSCRIPTION,
+//   price: 0,
+//   features: [{ name: "All features of Classify Pro, for 7 Days" }],
+// };
+
+const classifyPro: PricingPlanI = {
+  name: "Pro",
+  planIdentifier: PricingPlan.CLASSIFY_PRO,
   description: "The Classification Assistant for Customs Brokers",
   mode: StripePaymentMode.SUBSCRIPTION,
   price: 80,
@@ -16,80 +86,6 @@ const proPlan: PricingPlanI = {
     { name: "Generates Reports" },
     { name: "Fetches Notes" },
     { name: "Finds CROSS Rulings" },
-  ],
-};
-
-const premiumPlan: PricingPlanI = {
-  name: PricingPlan.PREMIUM,
-  description: "Your Supercharged Classification Assistant",
-  mode: StripePaymentMode.SUBSCRIPTION,
-  price: 30,
-  priceAnchor: 60,
-  features: [
-    { name: "Everything in Pro, Plus:" },
-    {
-      name: "Classification History",
-      details: "For easy access, reference, & auditability",
-      comingSoon: true,
-    },
-    {
-      name: "Branded Reports",
-      details: "Your branding & logo on every report",
-      comingSoon: true,
-    },
-    {
-      name: "Sharable Classifications",
-      details:
-        "Secure view-only links to classifications for clients & customs",
-      comingSoon: true,
-    },
-    {
-      name: "Tariff Finder",
-      details: "Cut through the noise & nail your tariff calculations",
-      comingSoon: true,
-    },
-  ],
-};
-
-const freeTrial: PricingPlanI = {
-  name: PricingPlan.FREE_TRIAL,
-  description: "Try HTS Hero Pro free for 7 days",
-  mode: StripePaymentMode.PAYMENT,
-  price: 0,
-  priceAnchor: 40,
-  features: [
-    { name: "Finds Headings" },
-    { name: "Analyzes Candidates" },
-    { name: "Generates Reports" },
-    { name: "Fetches Notes" },
-    {
-      name: "Finds CROSS Rulings",
-    },
-    {
-      name: "Enhanced HTS Explorer",
-    },
-    {
-      name: "Built-in PDF Viewer",
-    },
-  ],
-};
-
-const fiveDayPassPlan: PricingPlanI = {
-  name: PricingPlan.FIVE_DAY_PASS,
-  description: "Try HTS Hero Pro for 5 Days",
-  mode: StripePaymentMode.PAYMENT,
-  price: 20,
-  priceAnchor: 40,
-  features: [
-    {
-      name: "Includes everything in Pro",
-    },
-    {
-      name: "One-Time Payment",
-    },
-    {
-      name: "Unlimited Access for 5 Days",
-    },
   ],
 };
 
@@ -108,8 +104,13 @@ const config: ConfigProps = {
   },
   stripe: {
     // Create multiple plans in your Stripe dashboard, then add them here. You can add as many plans as you want, just make sure to add the priceId
-    classifierPlans: [proPlan],
-    conversionPlans: [proPlan],
+    classifierPlans: [classifyPro],
+    classifierConversionPlans: [classifyPro],
+    tariffImpactPlans: [
+      tariffImpactStarter,
+      tariffImpactStandard,
+      tariffImpactPro,
+    ],
   },
   // aws: {
   //   // If you use AWS S3/Cloudfront, put values in here

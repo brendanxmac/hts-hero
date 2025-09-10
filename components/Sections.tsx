@@ -16,14 +16,14 @@ export const Sections = ({
   breadcrumbs,
   setBreadcrumbs,
 }: SectionsProps) => {
-  const [allExpanded, setAllExpanded] = useState(true);
+  const [allExpanded, setAllExpanded] = useState(false);
 
   if (sections.length === 0) return null;
 
   return (
     <div className="h-full flex flex-col gap-2">
       <button
-        className="btn btn-sm btn-primary w-fit self-end"
+        className="btn btn-link btn-primary p-0 btn-xs w-fit self-end"
         onClick={() => setAllExpanded(!allExpanded)}
       >
         {allExpanded ? "Collapse All Sections" : "Expand All Sections"}

@@ -21,7 +21,7 @@ const ButtonSupport = () => {
 
   return (
     <button
-      className="btn btn-sm"
+      className="btn-wide sm:w-fit btn btn-sm btn-neutral"
       onClick={handleClick}
       data-tooltip-id="tooltip"
     >

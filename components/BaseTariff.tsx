@@ -1,4 +1,3 @@
-import { Color } from "../enums/style";
 import { HtsElement } from "../interfaces/hts";
 import { BaseTariffI } from "../libs/hts";
 import { classNames } from "../utilities/style";
@@ -40,11 +39,9 @@ export const BaseTariff = ({ index, htsElement, tariff }: Props) => {
               className="checkbox checkbox-primary checkbox-xs"
             />
             <div className="flex gap-2 items-center">
-              <TertiaryLabel value={htsElement.htsno} />
-              <TertiaryText
-                value={`General Duty: ${primaryText}`}
-                color={Color.WHITE}
-              />
+              <TertiaryText value={htsElement.htsno} />
+              -
+              <TertiaryLabel value={`General Duty: ${primaryText}`} />
             </div>
           </div>
 

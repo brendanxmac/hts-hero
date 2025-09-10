@@ -1,4 +1,3 @@
-import { Color } from "../enums/style";
 import { UITariff, TariffSet } from "../interfaces/tariffs";
 import {
   CountryWithTariffs,
@@ -8,9 +7,9 @@ import {
   tariffIsActive,
 } from "../tariffs/tariffs";
 import { classNames } from "../utilities/style";
-import { TertiaryLabel } from "./TertiaryLabel";
 import { TariffColumn } from "../enums/tariff";
-import { TertiaryText } from "./TertiaryText";
+import Link from "next/link";
+import { TertiaryLabel } from "./TertiaryLabel";
 
 interface Props {
   showInactive: boolean;
@@ -148,11 +147,15 @@ export const Tariff = ({
 
           <div className="flex flex-col gap-1 py-0.5">
             <div className="flex gap-2 items-center">
-              <TertiaryLabel
-                value={tariff.code}
-                color={Color.NEUTRAL_CONTENT}
-              />
-              <TertiaryText value={tariff.name} color={Color.WHITE} />
+              <Link
+                href={`/explore?code=${tariff.code}`}
+                target="_blank"
+                className="link link-primary no-underline font-medium"
+              >
+                {tariff.code}
+              </Link>
+              -
+              <TertiaryLabel value={tariff.name} />
             </div>
           </div>
         </div>

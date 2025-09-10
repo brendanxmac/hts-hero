@@ -4,13 +4,19 @@ import { NextRequest, NextResponse } from "next/server";
 import { PricingPlan } from "../../../../types";
 import { fetchUser, UserProfile } from "../../../../libs/supabase/user";
 
+interface CreateCheckoutDto {
+  itemId: PricingPlan;
+  successEndpoint: string;
+  cancelUrl: string;
+}
+
 // This function is used to create a Stripe Checkout Session (one-time payment or subscription)
 // It's called by the <ButtonCheckout /> component
 // Users must be authenticated. It will prefill the Checkout data with their email and/or credit card (if any)
 export async function POST(req: NextRequest) {
-  const body = await req.json();
+  const requestDto: CreateCheckoutDto = await req.json();
 
-  if (!body.itemId) {
+  if (!requestDto.itemId) {
     return NextResponse.json({ error: "Item ID is required" }, { status: 400 });
   }
 
@@ -21,7 +27,7 @@ export async function POST(req: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    const { itemId, cancelUrl } = body;
+    const { itemId, successEndpoint, cancelUrl } = requestDto;
 
     let userProfile: UserProfile | null = null;
 
@@ -29,40 +35,37 @@ export async function POST(req: NextRequest) {
       userProfile = await fetchUser(user.id);
     }
 
-    const getPriceId = (itemId: string) => {
-      console.log("itemId", itemId);
-      if (itemId === PricingPlan.ONE_DAY_PASS) {
-        return process.env.STRIPE_ONE_DAY_PASS_PRICE_ID;
+    const getPriceId = (itemId: PricingPlan) => {
+      switch (itemId) {
+        case PricingPlan.CLASSIFY_PRO:
+          return process.env.STRIPE_CLASSIFY_PRO_PRICE_ID;
+        case PricingPlan.TARIFF_IMPACT_STARTER:
+          return process.env.STRIPE_TARIFF_IMPACT_STARTER_PRICE_ID;
+        case PricingPlan.TARIFF_IMPACT_STANDARD:
+          return process.env.STRIPE_TARIFF_IMPACT_STANDARD_PRICE_ID;
+        case PricingPlan.TARIFF_IMPACT_PRO:
+          return process.env.STRIPE_TARIFF_IMPACT_PRO_PRICE_ID;
+        default:
+          return null;
       }
-      if (itemId === PricingPlan.FIVE_DAY_PASS) {
-        return process.env.STRIPE_FIVE_DAY_PASS_PRICE_ID;
-      }
-      if (itemId === PricingPlan.PRO) {
-        return process.env.STRIPE_PRO_PRICE_ID;
-      }
-      if (itemId === PricingPlan.PREMIUM) {
-        return process.env.STRIPE_PREMIUM_PRICE_ID;
-      }
-
-      return null;
     };
 
     const getMode = (itemId: PricingPlan): StripePaymentMode => {
       switch (itemId) {
-        case PricingPlan.ONE_DAY_PASS:
-        case PricingPlan.FIVE_DAY_PASS:
-          return StripePaymentMode.PAYMENT;
-        case PricingPlan.PRO:
-        case PricingPlan.PREMIUM:
+        case PricingPlan.CLASSIFY_PRO:
+        case PricingPlan.TARIFF_IMPACT_STARTER:
+        case PricingPlan.TARIFF_IMPACT_STANDARD:
+        case PricingPlan.TARIFF_IMPACT_PRO:
           return StripePaymentMode.SUBSCRIPTION;
       }
     };
 
-    const successUrl = `${process.env.BASE_URL}/signin`;
+    const successUrl = `${process.env.BASE_URL}${successEndpoint ? successEndpoint : "/"}`;
     const priceId = getPriceId(itemId);
     const mode = getMode(itemId);
 
     console.log("cancelUrl", cancelUrl);
+    console.log("successEndpoint", successEndpoint);
     console.log(`User: ${user?.id}`);
     console.log("priceId", priceId);
     console.log("mode", mode);
@@ -70,6 +73,7 @@ export async function POST(req: NextRequest) {
     const stripeSessionURL = await createCheckout({
       priceId,
       mode,
+      // promotionCode removed for now,
       successUrl,
       cancelUrl: cancelUrl || `${process.env.BASE_URL}/about`,
       // If user is logged in, it will pass the user ID to the Stripe Session so it can be retrieved in the webhook later

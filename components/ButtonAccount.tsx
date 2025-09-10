@@ -22,7 +22,7 @@ const ButtonAccount = () => {
   };
 
   const handleProfile = async () => {
-    window.location.href = "/profile";
+    window.open("/profile", "_blank");
   };
 
   const handleBilling = async () => {
@@ -36,7 +36,7 @@ const ButtonAccount = () => {
         }
       );
 
-      window.location.href = url;
+      window.open(url, "_blank");
     } catch (e) {
       console.error(e);
     }

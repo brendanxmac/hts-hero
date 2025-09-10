@@ -1,3 +1,13 @@
+export interface HtsCodeSet {
+  id: string;
+  user_id: string;
+  name?: string;
+  codes: string[]; // <-- Treat codes as a string array in TypeScript
+  description?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Eval {
   index: number;
   content: string;

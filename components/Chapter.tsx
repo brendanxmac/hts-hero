@@ -263,7 +263,9 @@ export const Chapter = ({ chapter }: Props) => {
 
       <div className="flex flex-col gap-2 bg-base-100">
         <div className="w-full flex sm:justify-between sm:items-end gap-1 sm:gap-4 flex-col sm:flex-row">
-          <SecondaryLabel value="Headings" />
+          <SecondaryLabel
+            value={`Headings${(chapter.number === 98 || chapter.number === 99) && ` (${filteredElements.length})`}`}
+          />
           {/* Filter Bar */}
           <div className="flex-1 relative sm:max-w-xs w-full">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -289,9 +291,6 @@ export const Chapter = ({ chapter }: Props) => {
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          {chapter.number === 98 || chapter.number === 99 ? (
-            <p>Items: {filteredElements.length}</p>
-          ) : null}
           {filteredElements.map((element, i) => {
             return (
               <ElementSummary

@@ -68,11 +68,10 @@ export type Theme = "black" | "light" | "dark" | "";
 // | "";
 
 export enum PricingPlan {
-  FREE_TRIAL = "7-Day Trial",
-  ONE_DAY_PASS = "1-Day Pass",
-  FIVE_DAY_PASS = "5-Day Pass",
-  PRO = "Pro",
-  PREMIUM = "Premium",
+  CLASSIFY_PRO = "Classify Pro",
+  TARIFF_IMPACT_STARTER = "Tariff Impact Starter",
+  TARIFF_IMPACT_STANDARD = "Tariff Impact Standard",
+  TARIFF_IMPACT_PRO = "Tariff Impact Pro",
 }
 
 export interface PricingFeatureI {
@@ -87,7 +86,8 @@ export interface PricingPlanI {
   isCompetitor?: boolean;
   mode: StripePaymentMode;
   // priceId: string;
-  name: PricingPlan;
+  name: string;
+  planIdentifier: PricingPlan;
   description?: string;
   price: number;
   // promotionCode?: string;
@@ -106,7 +106,8 @@ export interface ConfigProps {
   stripe: {
     // importerPlans: PricingPlanI[];
     classifierPlans: PricingPlanI[];
-    conversionPlans: PricingPlanI[];
+    classifierConversionPlans: PricingPlanI[];
+    tariffImpactPlans: PricingPlanI[];
   };
   aws?: {
     bucket?: string;

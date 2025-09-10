@@ -38,7 +38,7 @@ export const ClassificationResultPage = () => {
         <div className="flex flex-col gap-1">
           <div className="flex justify-between items-center">
             <h2 className="text-xl md:text-2xl font-bold text-white">
-              Your Classificaiton Result
+              Your Classification Result
             </h2>
             <div className="flex gap-2">
               <button

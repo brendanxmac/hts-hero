@@ -19,124 +19,18 @@ const ConversionPricing = () => {
 
   return (
     <section className="bg-base-300 overflow-hidden" id="pricing">
-      <div className="py-12 px-4 sm:px-8 max-w-7xl mx-auto flex flex-col items-center justify-center">
-        {/* <div className="mb-10 flex flex-col gap-2 items-center border-2 border-neutral-content/20 rounded-lg p-4">
-          <TertiaryLabel value="🎁 Your HTS Code:" />
-          <h2 className="text-3xl md:text-4xl text-secondary font-extrabold select-none text-center">
-            xxxx.xx.xx.xx
+      <div className="py-12 px-4 sm:px-8 max-w-7xl mx-auto flex flex-col gap-4 md:gap-8 items-center justify-center">
+        <div className="flex flex-col gap-2">
+          <h3 className="text-center mb-4">Your Free Trial has Ended</h3>
+          <h2 className="text-white text-3xl md:text-4xl font-extrabold text-center">
+            Upgrade to <span className="text-primary">Pro</span> to Continue
+            <br />
+            <span className="text-primary">Boosting</span> Your Classifications
           </h2>
-          <div className="flex items-center justify-center gap-1 w-full animate-pulse">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-4 h-4 text-neutral-300"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"
-              />
-            </svg>
-
-            <p className="text-center text-sm text-neutral-300 tracking-tight">
-              HTS Code Hidden, Get Access Below
-            </p>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-4 h-4 text-neutral-300"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"
-              />
-            </svg>
-          </div>
-        </div> */}
-
-        {/* <div className="flex gap-2 items-center">
-          <h1 className="text-white text-2xl sm:text-3xl md:text-4xl font-bold">
-            Your HTS Code is:
-          </h1>
-          <div className="bg-white rounded-lg p-2">
-            <div className="flex items-center justify-center gap-1 w-full animate-pulse">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={3}
-                stroke="currentColor"
-                className="w-4 h-4 text-secondary"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"
-                />
-              </svg>
-
-              <p className="text-center font-bold text-sm text-secondary tracking-tight">
-                HTS Code Hidden, Get Access Below
-              </p>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={3}
-                stroke="currentColor"
-                className="w-4 h-4 text-secondary"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"
-                />
-              </svg>
-            </div>
-          </div>
-        </div> */}
-        <h3 className="text-center mb-4">Your Free Trial has Ended</h3>
-        <h2 className="text-white text-3xl md:text-4xl font-extrabold text-center">
-          Upgrade to <span className="text-primary">Pro</span> to Continue
-          <br />
-          <span className="text-primary">Boosting</span> Your Classifications
-        </h2>
-
-        <div className="flex flex-col justify-center items-center py-6">
-          <p className="text-xl font-bold text-primary">
-            25% Off Your First Month!
-          </p>
-          <div className="flex items-center gap-1">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              className="size-5 animate-pulse text-secondary"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-              />
-            </svg>
-
-            <p className="text-sm text-secondary font-semibold">
-              Offer valid until <span className="underline">September 1st</span>
-            </p>
-          </div>
         </div>
 
         <div className="w-full relative flex justify-evenly flex-col lg:flex-row items-center lg:items-stretch gap-8 text-white">
-          {config.stripe.conversionPlans.map((plan, index) => (
+          {config.stripe.classifierConversionPlans.map((plan, index) => (
             <div
               key={index}
               className={classNames(
@@ -168,7 +62,7 @@ const ConversionPricing = () => {
               >
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-col">
-                    <p className="text-2xl font-bold">{plan.name}</p>
+                    <p className="text-2xl font-bold">{plan.planIdentifier}</p>
                     {plan.description && (
                       <p className="text-base-content/80">{plan.description}</p>
                     )}
@@ -234,7 +128,7 @@ const ConversionPricing = () => {
                 )}
                 {!plan.isCompetitor && (
                   <div className="space-y-2">
-                    <ButtonCheckout itemId={plan.name} />
+                    <ButtonCheckout plan={plan} />
                   </div>
                 )}
               </div>

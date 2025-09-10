@@ -77,17 +77,17 @@ export const purchaseConfirmationEmailHtml = (
     <h3>What's next?</h3>
     <p>🚨 If you didn't sign up prior to purchasing,<span style="color: red; font-weight: bold;"> you must sign up with the same email you used to purchase.</span></p>
     <p>Once logged in, you'll be able to access all the HTS Hero features that you purchased!</p>
-    <p>To view or manage your purchase, log into HTS Hero & click on your profile icon in the top right corner, then click "Billing".</p>
+    <p>To view or manage your purchases, log into HTS Hero & click on your profile icon in the top right corner, then click "Billing".</p>
     <p>If you have any questions or need assistance, our support team (support@htshero.com) is here to help!</p>
     
 
-    <a href="https://htshero.com/signin" class="cta-button">Get your HTS Code!</a><br/>
+    <a href="https://htshero.com" class="cta-button">Get Started!</a><br/>
     
     <div>
       <p>
         Best,<br /><br />
         Brendan<br />
-        Founder | <a href="https://htshero.com/about">HTS Hero</a>
+        Founder | <a href="https://htshero.com">HTS Hero</a>
       </p>
     </div>
   </body>

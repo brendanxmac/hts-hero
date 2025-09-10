@@ -2,72 +2,125 @@
 
 import { useState } from "react";
 import apiClient from "@/libs/api";
-import { PricingPlan } from "../types";
+import { PricingPlan, PricingPlanI } from "../types";
 import { useUser } from "../contexts/UserContext";
-import { userHasActivePurchase } from "../libs/supabase/purchase";
+import {
+  getProductForPlan,
+  userHasActivePurchaseForProduct,
+} from "../libs/supabase/purchase";
 import toast from "react-hot-toast";
+import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
 
 interface Props {
-  itemId: PricingPlan;
+  plan: PricingPlanI;
+  currentPlan?: PricingPlan;
 }
 
-const getBuyButtonText = (plan: PricingPlan) => {
-  if (plan === PricingPlan.ONE_DAY_PASS) {
-    return "Get 1-Day Pass";
+const getBuyButtonText = (plan: PricingPlanI) => {
+  switch (plan.planIdentifier) {
+    case PricingPlan.TARIFF_IMPACT_STARTER:
+      return `Get Starter!`;
+    case PricingPlan.TARIFF_IMPACT_STANDARD:
+      return `Get Standard!`;
+    case PricingPlan.CLASSIFY_PRO:
+    case PricingPlan.TARIFF_IMPACT_PRO:
+      return `Go ${plan.name}!`;
+    default:
+      return "Buy Now!";
   }
-
-  if (plan === PricingPlan.FIVE_DAY_PASS) {
-    return "Get 5-Day Pass";
-  }
-
-  if (plan === PricingPlan.PRO) {
-    return `Go ${plan}!`;
-  }
-
-  if (plan === PricingPlan.PREMIUM) {
-    return `Get ${plan}!`;
-  }
-
-  return "Buy Now!";
 };
 
 // This component is used to create Stripe Checkout Sessions
 // It calls the /api/stripe/create-checkout route with the priceId, successUrl and cancelUrl
 // Users must be authenticated. It will prefill the Checkout data with their email and/or credit card (if any)
 // You can also change the mode to "subscription" if you want to create a subscription instead of a one-time payment
-const ButtonCheckout = ({ itemId }: Props) => {
+const ButtonCheckout = ({ plan, currentPlan }: Props) => {
   const { user } = useUser();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const handlePayment = async () => {
-    setIsLoading(true);
-
-    // Check if user has an active purchase
-    const userAlreadyHasAccess = user && (await userHasActivePurchase(user.id));
-
-    if (userAlreadyHasAccess) {
-      toast.success("You already have an active purchase");
-      setIsLoading(false);
-      return;
+  const getCheckoutSuccessEndpoint = (plan: PricingPlan) => {
+    switch (plan) {
+      case PricingPlan.CLASSIFY_PRO:
+        return "/app";
+      case PricingPlan.TARIFF_IMPACT_STARTER:
+      case PricingPlan.TARIFF_IMPACT_STANDARD:
+      case PricingPlan.TARIFF_IMPACT_PRO:
+        return "/tariffs/impact-checker";
     }
+  };
 
+  const logCheckoutAttempt = () => {
     try {
-      const { url }: { url: string } = await apiClient.post(
-        "/stripe/create-checkout",
-        {
-          itemId,
-          cancelUrl: window.location.href.includes("#")
-            ? window.location.href
-            : window.location.href + "#pricing",
-        }
-      );
-
-      window.location.href = url;
+      switch (plan.planIdentifier) {
+        case PricingPlan.TARIFF_IMPACT_STARTER:
+          trackEvent(MixpanelEvent.INITIATED_IMPACT_STARTER_CHECKOUT);
+          break;
+        case PricingPlan.TARIFF_IMPACT_STANDARD:
+          trackEvent(MixpanelEvent.INITIATED_IMPACT_STANDARD_CHECKOUT);
+          break;
+        case PricingPlan.TARIFF_IMPACT_PRO:
+          trackEvent(MixpanelEvent.INITIATED_IMPACT_PRO_CHECKOUT);
+          break;
+        case PricingPlan.CLASSIFY_PRO:
+          trackEvent(MixpanelEvent.INITIATED_CLASSIFY_PRO_CHECKOUT);
+          break;
+      }
     } catch (e) {
+      console.error("Error tracking checkout");
       console.error(e);
     }
+  };
 
-    setIsLoading(false);
+  const handlePayment = async () => {
+    try {
+      setIsLoading(true);
+      // Check if user has an active purchase
+      const product = getProductForPlan(plan.planIdentifier);
+      const hasActiveProductSubscription =
+        user && (await userHasActivePurchaseForProduct(user.id, product));
+
+      const userAttemptingUpgrade =
+        (plan.planIdentifier === PricingPlan.TARIFF_IMPACT_STANDARD &&
+          currentPlan === PricingPlan.TARIFF_IMPACT_STARTER) ||
+        (plan.planIdentifier === PricingPlan.TARIFF_IMPACT_PRO &&
+          currentPlan === PricingPlan.TARIFF_IMPACT_STANDARD);
+
+      if (!hasActiveProductSubscription) {
+        // Send them to checkout page
+        const { url }: { url: string } = await apiClient.post(
+          "/stripe/create-checkout",
+          {
+            itemId: plan.planIdentifier,
+            successEndpoint: getCheckoutSuccessEndpoint(plan.planIdentifier),
+            cancelUrl: window.location.href.includes("#")
+              ? window.location.href + "#pricing"
+              : window.location.href,
+          }
+        );
+
+        window.location.href = url;
+      } else if (hasActiveProductSubscription && !userAttemptingUpgrade) {
+        toast.success(
+          "You already have an active purchase. Go to Profile > Billing to manage your purchases"
+        );
+        setIsLoading(false);
+      } else if (hasActiveProductSubscription && userAttemptingUpgrade) {
+        const { url }: { url: string } = await apiClient.post(
+          "/stripe/create-portal",
+          {
+            returnUrl: window.location.href,
+          }
+        );
+
+        window.location.href = url;
+      }
+
+      logCheckoutAttempt();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -93,7 +146,7 @@ const ButtonCheckout = ({ itemId }: Props) => {
           />
         </svg>
       )}
-      {getBuyButtonText(itemId)}
+      {getBuyButtonText(plan)}
     </button>
   );
 };

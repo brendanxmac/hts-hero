@@ -1,7 +1,6 @@
 import config from "@/config";
 import { getSEOTags } from "../../../libs/seo";
-import { UpcomingTariffsList } from "../../../components/UpcomingTariffsList";
-import Link from "next/link";
+import { PendingTariffsList } from "../../../components/UpcomingTariffsList";
 
 export const metadata = getSEOTags({
   title: `Pending Tariffs | ${config.appName}`,
@@ -30,7 +29,7 @@ export default function Home() {
             </a>
           </p>
 
-          <div className="w-full flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center mt-6 -mb-4">
+          {/* <div className="w-full flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center mt-6 -mb-10 px-6">
             <h2 className="text-xl sm:text-2xl font-bold text-white">
               Pending Tariffs
             </h2>
@@ -40,12 +39,12 @@ export default function Home() {
             >
               Check Tariff Impacts on Your Imports
             </Link>
-          </div>
+          </div> */}
         </div>
 
         {/* Content Section */}
-        <div className="max-w-7xl mx-auto px-6 pt-6 pb-2">
-          <UpcomingTariffsList hideHeading />
+        <div className="max-w-7xl mx-auto pb-2">
+          <PendingTariffsList hideHeading />
         </div>
       </div>
     </main>

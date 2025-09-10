@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { copyToClipboard } from "../utilities/data";
 import { ClipboardDocumentIcon, CheckIcon } from "@heroicons/react/24/outline";

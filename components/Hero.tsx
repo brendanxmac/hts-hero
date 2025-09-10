@@ -28,7 +28,7 @@ const Hero = ({
   const getHeadline = () => {
     if (standoutPlacement === "start") {
       return (
-        <h1 className="text-white font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-tight md:-mb-4">
+        <h1 className="text-white font-extrabold text-4xl md:text-5xl lg:text-7xl tracking-tight md:-mb-4">
           <span className="bg-primary px-2 text-base-300 transform -rotate-1 inline-block">
             {titleStandout}
           </span>{" "}
@@ -37,7 +37,7 @@ const Hero = ({
       );
     } else {
       return (
-        <h1 className="text-white font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-tight md:-mb-4">
+        <h1 className="text-white font-extrabold text-4xl md:text-5xl lg:text-7xl tracking-tight md:-mb-4">
           {title}{" "}
           <span className="bg-primary px-2 text-base-300 transform -rotate-1 inline-block">
             {titleStandout}

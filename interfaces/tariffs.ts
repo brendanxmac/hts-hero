@@ -1,4 +1,5 @@
 import { ContentRequirement, TariffCategory } from "../enums/tariff";
+import { PricingPlan } from "../types";
 
 export interface TariffI {
   code: string;
@@ -33,3 +34,19 @@ export interface TariffSet {
   exceptionCodes: Set<string>;
   tariffs: UITariff[];
 }
+
+export interface TariffImpactCheck {
+  id: string; // uuid
+  user_id: string; // uuid
+  tariff_code_set: string; // uuid
+  hts_code_set?: string; // uuid
+  codes: string[]; // stored as jsonb
+  num_codes: number; // generated column
+  created_at: string; // ISO timestamp
+  plan?: PricingPlan | "Trial";
+}
+
+export type NewTariffImpactCheck = Omit<
+  TariffImpactCheck,
+  "id" | "num_codes" | "created_at"
+>;

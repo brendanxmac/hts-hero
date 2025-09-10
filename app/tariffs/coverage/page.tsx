@@ -12,6 +12,9 @@ export const metadata = getSEOTags({
 
 const tariffsSupported: BulletPoint[] = [
   {
+    title: "India Retaliatory 25% for Russia Oil Use",
+  },
+  {
     title: "Brazil 40% Retaliatory",
   },
   {
@@ -114,9 +117,6 @@ const capabilitiesSupported: BulletPoint[] = [
 ];
 
 const tariffsComingSoon: BulletPoint[] = [
-  {
-    title: "India Retaliatory Based on Russia Oil",
-  },
   {
     title: "Japan 15% Reciprocal Cap [If Officially Published]",
     description: "Apply the same deal to Japan that the EU got for reciprocal",
