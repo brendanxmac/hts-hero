@@ -38,32 +38,32 @@ const withoutTariffImpact: Task[] = [
   },
 ];
 
-const withTariffImpact: Task[] = [
-  {
-    title: "Get Notified When New Tariffs Affect your Imports",
-    time: "0 min",
-  },
-  {
-    title: "Instantly see which imports are affected",
-    time: "0 min",
-  },
-  {
-    title: "Save lists of codes for future checks",
-    time: "0 min",
-  },
-  {
-    title: "Find all Tariffs & Exemptions",
-    time: "0 min",
-  },
-  {
-    title: "Applies Stacking Rules Automatically",
-    time: "0 min",
-  },
-  {
-    title: "Finds Rates for Every Country",
-    time: "0 min",
-  },
-];
+// const withTariffImpact: Task[] = [
+//   {
+//     title: "Get Notified When New Tariffs Affect your Imports",
+//     time: "0 min",
+//   },
+//   {
+//     title: "Instantly see which imports are affected",
+//     time: "0 min",
+//   },
+//   {
+//     title: "Save lists of codes for future checks",
+//     time: "0 min",
+//   },
+//   {
+//     title: "Find all Tariffs & Exemptions",
+//     time: "0 min",
+//   },
+//   {
+//     title: "Applies Stacking Rules Automatically",
+//     time: "0 min",
+//   },
+//   {
+//     title: "Finds Rates for Every Country",
+//     time: "0 min",
+//   },
+// ];
 
 export default function Home() {
   return (

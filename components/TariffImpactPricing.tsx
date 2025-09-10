@@ -3,7 +3,6 @@ import { classNames } from "../utilities/style";
 import { PricingFeatureI, PricingPlan } from "../types";
 import ButtonCheckout from "./ButtonCheckout";
 import { StripePaymentMode } from "../libs/stripe";
-import Link from "next/link";
 import { useUser } from "../contexts/UserContext";
 import { useEffect, useState } from "react";
 import { getActivePriorityTariffImpactPurchase } from "../libs/supabase/purchase";
@@ -272,8 +271,8 @@ const TariffImpactPricing = () => {
                 Find Your Perfect Plan
               </h3>
               <p className="text-base-content/70 text-sm sm:text-base">
-                Tell us about your imports and we'll recommend the best plan for
-                your needs
+                Tell us about your imports and we&apos;ll recommend the best
+                plan for your needs
               </p>
             </div>
 
