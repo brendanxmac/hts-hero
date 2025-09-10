@@ -5,14 +5,18 @@ import { StripePaymentMode } from "./libs/stripe";
 export const tariffImpactStarter: PricingPlanI = {
   name: "Starter",
   planIdentifier: PricingPlan.TARIFF_IMPACT_STARTER,
-  description: "A Few Tariff Checks",
+  description: "Notifications & Some Tariff Checks",
   mode: StripePaymentMode.SUBSCRIPTION,
-  price: 0,
+  price: 19,
+  priceAnchor: 30,
   features: [
     {
-      name: "20 Tariff Impact Checks / Month",
+      name: "40 Tariff Impact Checks / Month",
       details:
         "A check happens any time you submit a code to see if it's affected by a tariff update",
+    },
+    {
+      name: "Notifications when your imports are affected by new tariffs",
     },
   ],
 };
@@ -22,19 +26,15 @@ export const tariffImpactStandard: PricingPlanI = {
   planIdentifier: PricingPlan.TARIFF_IMPACT_STANDARD,
   description: "Tariff Essentials",
   mode: StripePaymentMode.SUBSCRIPTION,
-  price: 39,
+  price: 49,
   priceAnchor: 70,
   features: [
     {
-      name: "300 Tariff Impact Checks / Month",
+      name: "400 Tariff Impact Checks / Month",
       details:
         "A check happens any time you submit a code to see if it's affected by a tariff update",
     },
     { name: "Notifications when your imports are affected by new tariffs" },
-    // {
-    //   name: "Tariff Analyzer",
-    //   details: "See full tariff details & explore exemptions",
-    // },
   ],
 };
 

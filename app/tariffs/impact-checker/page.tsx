@@ -444,8 +444,12 @@ export default function Home() {
       return 20;
     }
 
+    if (purchase.product_name === PricingPlan.TARIFF_IMPACT_STARTER) {
+      return 40;
+    }
+
     if (purchase.product_name === PricingPlan.TARIFF_IMPACT_STANDARD) {
-      return 300;
+      return 400;
     }
 
     if (purchase.product_name === PricingPlan.TARIFF_IMPACT_PRO) {

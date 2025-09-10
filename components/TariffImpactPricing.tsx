@@ -80,20 +80,10 @@ export const getFeatureIcon = (feature: PricingFeatureI) => {
 const getPricingHeadline = () => {
   return (
     <div className="flex flex-col gap-2">
-      {/* <h3 className=" font-medium text-lg sm:text-xl max-w-6xl mx-auto tracking-relaxed mb-4 md:mb-16">
-        Tariff impact checks take <span className="text-primary">hours</span>,
-        and more tariffs are coming...
-      </h3> */}
       <h2 className="text-white font-extrabold text-4xl md:text-6xl max-w-6xl mx-auto tracking-relaxed">
-        <span className="text-primary">Save Hours</span> on Tariff Checks &{" "}
-        {/* <br /> */}
-        {/* <span className="text-primary">Save Dollars</span> on Import Costs */}
-        Find Ways to <span className="text-primary">Reduce Landed Costs</span>
+        <span className="text-primary">Save Hours</span> on Tariff Checks & Find
+        Ways to <span className="text-primary">Reduce Landed Costs</span>
       </h2>
-      {/* <h2 className="text-white font-extrabold text-3xl sm:text-4xl md:text-6xl max-w-6xl mx-auto tracking-relaxed">
-        Get <span className="text-primary">Instant Clarity</span> When
-        <br /> New Tariffs are Announced
-      </h2> */}
       <p className="text-sm md:text-lg text-neutral-300 font-medium mt-2">
         Join the forward-thinking importers & customs brokers who are automating
         their tariff impact checks
@@ -104,7 +94,24 @@ const getPricingHeadline = () => {
 
 const TariffImpactPricing = () => {
   const [currentPlan, setCurrentPlan] = useState<PricingPlan | null>(null);
+  const [numberOfImports, setNumberOfImports] = useState(30);
   const { user } = useUser();
+
+  const planDescriptions = {
+    starter:
+      "Ideal for solo importers on a budget who manage 1-5 imports & want to know when their imports are affected by new tariffs so they can take quick action.",
+    standard:
+      "Perfect for small businesses managing up to 30 imports who need to know when their imports are affected by new tariffs so they can take bottom-line saving action.",
+    pro: "Crafted for forward-thinking importers & customs brokers who want to ensure their imports are tariff optimized & monitored 24/7.",
+  };
+
+  const getRecommendedPlan = () => {
+    if (numberOfImports <= 5)
+      return { name: "Starter", description: planDescriptions.starter };
+    if (numberOfImports <= 29)
+      return { name: "Standard", description: planDescriptions.standard };
+    return { name: "Pro", description: planDescriptions.pro };
+  };
 
   useEffect(() => {
     // Fetch the users current Tariff Impact Plan
@@ -265,6 +272,90 @@ const TariffImpactPricing = () => {
           >
             Lets Talk!
           </a>
+        </div>
+
+        {/* Interactive Plan Selection Guide */}
+        <div className="w-full max-w-7xl mx-auto mt-12 bg-base-100">
+          <div className="border border-base-content/20 rounded-xl bg-gradient-to-br from-base-200/50 to-base-300/50 backdrop-blur-sm p-8">
+            <div className="text-center mb-8">
+              <h3 className="text-lg sm:text-2xl font-bold text-white mb-2">
+                Find Your Perfect Plan
+              </h3>
+              <p className="text-base-content/70 text-sm sm:text-base">
+                Tell us about your imports and we'll recommend the best plan for
+                your needs
+              </p>
+            </div>
+
+            <div className="flex flex-col items-center gap-6">
+              {/* Import Volume Slider */}
+              <div className="w-full max-w-2xl">
+                <div className="flex items-center justify-between gap-4 mb-4">
+                  <h4 className="text-sm sm:text-xl font-medium text-white">
+                    How many imports do you manage?
+                  </h4>
+                  <div className="bg-primary/20 border border-primary/50 rounded-lg px-2 sm:px-4 py-1 flex items-center">
+                    <span className="text-primary font-bold text:sm sm:text-xl">
+                      {numberOfImports > 29
+                        ? `${numberOfImports}+`
+                        : numberOfImports}
+                    </span>
+                    <span className="text-white/70 text-sm ml-1">
+                      {numberOfImports === 1 ? "import" : "imports"}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="relative">
+                  <input
+                    type="range"
+                    min="1"
+                    max="100"
+                    value={numberOfImports}
+                    onChange={(e) => setNumberOfImports(Number(e.target.value))}
+                    className="range range-primary w-full range-xs sm:range-sm"
+                  />
+                  <div className="hidden sm:flex justify-between text-xs text-base-content/50 mt-1">
+                    <span>Solo Importer</span>
+                    <span>Broker / Importer</span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span>Big Importer / Broker</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Recommended Plan Display */}
+              <div className="w-full max-w-2xl">
+                <div className="bg-primary/10 border border-primary/30 rounded-lg p-6">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="flex items-center gap-3">
+                      <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
+                      <h5 className="text-lg font-semibold text-white">
+                        Recommended Plan:
+                      </h5>
+                    </div>
+                    <div className="badge badge-primary badge-lg text-black font-semibold">
+                      {getRecommendedPlan().name}
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <p className="text-sm sm:text-base text-base-content leading-relaxed">
+                      {getRecommendedPlan().description}
+                    </p>
+                  </div>
+                </div>
+                <div className="pt-4">
+                  <p className="text-xs sm:text-sm text-base-content/80 text-center">
+                    💡 You can always upgrade or downgrade your plan as your
+                    needs change
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
