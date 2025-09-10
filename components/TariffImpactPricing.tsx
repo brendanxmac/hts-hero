@@ -264,7 +264,7 @@ const TariffImpactPricing = () => {
         </div>
 
         {/* Interactive Plan Selection Guide */}
-        <div className="w-full max-w-7xl mx-auto mt-12 bg-base-100">
+        <div className="w-full max-w-7xl mx-auto mt-12 md:mt-24 bg-base-100">
           <div className="border border-base-content/20 rounded-xl bg-gradient-to-br from-base-200/50 to-base-300/50 backdrop-blur-sm p-8">
             <div className="text-center mb-8">
               <h3 className="text-lg sm:text-2xl font-bold text-white mb-2">
