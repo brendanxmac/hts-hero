@@ -130,7 +130,7 @@ const TariffImpactPricing = () => {
 
   return (
     <section className="bg-base-300 overflow-hidden" id="pricing">
-      <div className="py-16 px-8 max-w-7xl mx-auto">
+      <div className="p-8 max-w-7xl mx-auto">
         <div className="flex flex-col text-center w-full my-10">
           <p className="font-medium mb-8">Pricing</p>
           {getPricingHeadline()}
@@ -240,17 +240,7 @@ const TariffImpactPricing = () => {
                 )}
                 {!plan.isCompetitor && (
                   <div className="space-y-2">
-                    {plan.planIdentifier ===
-                    PricingPlan.TARIFF_IMPACT_STARTER ? (
-                      <Link
-                        href="/tariffs/impact-checker"
-                        className="btn bg-primary/80 hover:bg-white hover:text-primary text-white rounded-md btn-block group"
-                      >
-                        Try Now!
-                      </Link>
-                    ) : (
-                      <ButtonCheckout plan={plan} currentPlan={currentPlan} />
-                    )}
+                    <ButtonCheckout plan={plan} currentPlan={currentPlan} />
                   </div>
                 )}
               </div>

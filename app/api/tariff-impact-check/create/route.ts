@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "../../supabase/server";
 import { validateTariffableHtsCode } from "../../../../libs/hts";
 import { TariffImpactCheck } from "../../../../interfaces/tariffs";
+import { PricingPlan } from "../../../../types";
 
 export const dynamic = "force-dynamic";
 
@@ -9,6 +10,7 @@ interface CreateTariffImpactCheckDTO {
   tariffCodeSetId: string;
   htsCodes: string[];
   htsCodeSetId?: string;
+  plan: PricingPlan | "Trial";
 }
 
 export async function POST(req: NextRequest) {
@@ -29,6 +31,7 @@ export async function POST(req: NextRequest) {
       htsCodes,
       tariffCodeSetId,
       htsCodeSetId,
+      plan,
     }: CreateTariffImpactCheckDTO = await req.json();
 
     console.log("htsCodes", htsCodes);
@@ -60,6 +63,7 @@ export async function POST(req: NextRequest) {
           codes: validatedHtsCodes,
           tariff_code_set: tariffCodeSetId,
           hts_code_set: htsCodeSetId ? htsCodeSetId : null,
+          plan: plan,
         },
       ])
       .select()

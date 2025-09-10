@@ -1,5 +1,6 @@
 import { TariffImpactCheck } from "../interfaces/tariffs";
 import { TariffCodeSet } from "../tariffs/announcements/announcements";
+import { PricingPlan } from "../types";
 import apiClient from "./api";
 import { validateTariffableHtsCode } from "./hts";
 import { formatHtsCodeWithPeriods } from "./hts-code-set";
@@ -40,12 +41,14 @@ export const checkTariffImpactsForCodes = (
 export const createTariffImpactCheck = async (
   tariffCodeSetId: string,
   htsCodes: string[],
-  htsCodeSetId?: string
+  htsCodeSetId?: string,
+  plan: PricingPlan | "Trial" = "Trial"
 ): Promise<TariffImpactCheck> => {
   return await apiClient.post("/tariff-impact-check/create", {
     htsCodes,
     tariffCodeSetId,
     htsCodeSetId,
+    plan,
   });
 };
 

@@ -1,4 +1,5 @@
 import { ContentRequirement, TariffCategory } from "../enums/tariff";
+import { PricingPlan } from "../types";
 
 export interface TariffI {
   code: string;
@@ -42,6 +43,7 @@ export interface TariffImpactCheck {
   codes: string[]; // stored as jsonb
   num_codes: number; // generated column
   created_at: string; // ISO timestamp
+  plan?: PricingPlan | "Trial";
 }
 
 export type NewTariffImpactCheck = Omit<

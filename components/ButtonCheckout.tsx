@@ -42,6 +42,7 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
     switch (plan) {
       case PricingPlan.CLASSIFY_PRO:
         return "/app";
+      case PricingPlan.TARIFF_IMPACT_STARTER:
       case PricingPlan.TARIFF_IMPACT_STANDARD:
       case PricingPlan.TARIFF_IMPACT_PRO:
         return "/tariffs/impact-checker";
@@ -51,6 +52,9 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
   const logCheckoutAttempt = () => {
     try {
       switch (plan.planIdentifier) {
+        case PricingPlan.TARIFF_IMPACT_STARTER:
+          trackEvent(MixpanelEvent.INITIATED_IMPACT_STARTER_CHECKOUT);
+          break;
         case PricingPlan.TARIFF_IMPACT_STANDARD:
           trackEvent(MixpanelEvent.INITIATED_IMPACT_STANDARD_CHECKOUT);
           break;
@@ -72,14 +76,16 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
       setIsLoading(true);
       // Check if user has an active purchase
       const product = getProductForPlan(plan.planIdentifier);
-      const userHasActiveSubscriptionForProduct =
+      const hasActiveProductSubscription =
         user && (await userHasActivePurchaseForProduct(user.id, product));
 
-      const userAttemptingUpgradeFromStandardToPro =
-        plan.planIdentifier === PricingPlan.TARIFF_IMPACT_PRO &&
-        currentPlan === PricingPlan.TARIFF_IMPACT_STANDARD;
+      const userAttemptingUpgrade =
+        (plan.planIdentifier === PricingPlan.TARIFF_IMPACT_STANDARD &&
+          currentPlan === PricingPlan.TARIFF_IMPACT_STARTER) ||
+        (plan.planIdentifier === PricingPlan.TARIFF_IMPACT_PRO &&
+          currentPlan === PricingPlan.TARIFF_IMPACT_STANDARD);
 
-      if (!userHasActiveSubscriptionForProduct) {
+      if (!hasActiveProductSubscription) {
         // Send them to checkout page
         const { url }: { url: string } = await apiClient.post(
           "/stripe/create-checkout",
@@ -93,18 +99,12 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
         );
 
         window.location.href = url;
-      } else if (
-        userHasActiveSubscriptionForProduct &&
-        !userAttemptingUpgradeFromStandardToPro
-      ) {
+      } else if (hasActiveProductSubscription && !userAttemptingUpgrade) {
         toast.success(
           "You already have an active purchase. Go to Profile > Billing to manage your purchases"
         );
         setIsLoading(false);
-      } else if (
-        userHasActiveSubscriptionForProduct &&
-        userAttemptingUpgradeFromStandardToPro
-      ) {
+      } else if (hasActiveProductSubscription && userAttemptingUpgrade) {
         const { url }: { url: string } = await apiClient.post(
           "/stripe/create-portal",
           {
@@ -112,7 +112,7 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
           }
         );
 
-        window.open(url, "_blank");
+        window.location.href = url;
       }
 
       logCheckoutAttempt();

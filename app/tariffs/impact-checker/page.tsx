@@ -36,11 +36,12 @@ import { PricingPlan } from "../../../types";
 import { classNames } from "../../../utilities/style";
 import { ManageCodeListModal } from "../../../components/ManageCodesListModal";
 import { codeSetMatchesString } from "../../../utilities/hts";
-import TariffConversionPricing from "../../../components/TariffConversionPricing";
 import { fetchTariffCodeSets } from "../../../libs/tariff-code-set";
 import { ArrowRightIcon } from "@heroicons/react/16/solid";
 import { SecondaryText } from "../../../components/SecondaryText";
 import TariffImpactCodesInput from "../../../components/TariffImpactCodesInput";
+import { fetchUser, updateUserProfile } from "../../../libs/supabase/user";
+import TariffImpactPricing from "../../../components/TariffImpactPricing";
 
 export default function Home() {
   const CHARACTER_LIMIT = 3000;
@@ -78,6 +79,7 @@ export default function Home() {
   const [fetchingPurchases, setFetchingPurchases] = useState(true);
   const [urlParamsProcessed, setUrlParamsProcessed] = useState(false);
   const [checkingTariffImpacts, setCheckingTariffImpacts] = useState(false);
+  const [isTrialUser, setIsTrialUser] = useState(false);
 
   useEffect(() => {
     const fetchTariffImpactChecks = async () => {
@@ -110,6 +112,7 @@ export default function Home() {
           fetchHtsCodeSets(),
           fetchTariffImpactChecks(),
           fetchPurchases(),
+          loadUserProfile(),
         ]);
       } catch (e) {
         console.error(e);
@@ -164,6 +167,30 @@ export default function Home() {
     const loadTariffCodeSets = async () => {
       const tariffCodeSets = await fetchTariffCodeSets();
       setTariffCodeSets(tariffCodeSets);
+    };
+
+    const loadUserProfile = async () => {
+      const userProfile = await fetchUser(user.id);
+      const userTrialStartDate = userProfile?.tariff_impact_trial_started_at;
+
+      if (userTrialStartDate) {
+        // if the trial started more than 7 days ago, set isTrialUser to false
+        const trialStartedMoreThan7DaysAgo =
+          new Date(userTrialStartDate) <
+          new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+        if (trialStartedMoreThan7DaysAgo) {
+          setIsTrialUser(false);
+        } else {
+          setIsTrialUser(true);
+        }
+      } else {
+        // Update user profile setting tariff_impact_trial_started_at to now
+        await updateUserProfile(user.id, {
+          tariff_impact_trial_started_at: new Date().toISOString(),
+        });
+        setIsTrialUser(true);
+      }
     };
 
     if (user) {
@@ -312,17 +339,27 @@ export default function Home() {
       setCheckingTariffImpacts(true);
 
       // // Check if the user has hit the limit based on their plan
-      const totalChecksThisMonth = tariffImpactChecks.reduce(
-        (acc, check) => acc + check.num_codes,
-        0
-      );
+      const totalChecksThisMonth = tariffImpactChecks
+        .filter((checks) =>
+          activeTariffImpactPurchase
+            ? checks.plan === activeTariffImpactPurchase.product_name
+            : checks.plan === "Trial"
+        )
+        .reduce((acc, check) => acc + check.num_codes, 0);
 
       if (totalChecksThisMonth >= checkLimit) {
         // Show popup instead to get them to convert
-        toast.error(
-          `You have reached your limit of ${checkLimit} checks this month. Upgrade to get more checks.`,
-          { duration: 6000 }
-        );
+        if (!isTrialUser && !activeTariffImpactPurchase) {
+          toast.error(
+            `Your 7 day trial has expired. Upgrade to get more checks, notifications when your imports are affected, and tariff rates for any import`,
+            { duration: 8000 }
+          );
+        } else {
+          toast.error(
+            `You have reached your limit of ${checkLimit} checks this month. Upgrade to get more checks & unlock live tariff rates for any import.`,
+            { duration: 6000 }
+          );
+        }
         return;
       }
 
@@ -361,11 +398,12 @@ export default function Home() {
       const validCodesToCheck = getValidHtsCodesFromSet(htsCodes);
 
       try {
-        // Don't want to await this and don't want to error if it fails
+        // Don't want to error if it fails
         await createTariffImpactCheck(
           tariffUpdateToCheckAgainst.id,
           validCodesToCheck,
-          selectedHtsCodeSetId
+          selectedHtsCodeSetId,
+          activeTariffImpactPurchase?.product_name || "Trial"
         );
       } catch (e) {
         console.error("Error creating tariff impact check:", e);
@@ -434,30 +472,81 @@ export default function Home() {
     }
   };
 
-  const numChecksThisMonth = tariffImpactChecks.reduce(
-    (acc, check) => acc + check.num_codes,
-    0
-  );
+  const numChecksThisMonth = tariffImpactChecks
+    .filter((checks) =>
+      activeTariffImpactPurchase
+        ? checks.plan === activeTariffImpactPurchase.product_name
+        : checks.plan === "Trial"
+    )
+    .reduce((acc, check) => acc + check.num_codes, 0);
 
-  const getCheckLimitForUser = (purchase: Purchase | null) => {
-    if (purchase === null) {
-      return 20;
+  const getCheckLimitForUser = (purchase?: Purchase | null) => {
+    if (!purchase) {
+      if (isTrialUser) {
+        return Infinity;
+      } else {
+        return 0;
+      }
     }
 
-    if (purchase.product_name === PricingPlan.TARIFF_IMPACT_STARTER) {
-      return 40;
+    if (purchase.product_name === PricingPlan.TARIFF_IMPACT_PRO) {
+      return Infinity;
     }
 
     if (purchase.product_name === PricingPlan.TARIFF_IMPACT_STANDARD) {
       return 400;
     }
 
-    if (purchase.product_name === PricingPlan.TARIFF_IMPACT_PRO) {
-      return Infinity;
+    if (purchase.product_name === PricingPlan.TARIFF_IMPACT_STARTER) {
+      return 40;
     }
   };
 
   const checkLimit = getCheckLimitForUser(activeTariffImpactPurchase);
+
+  const getPlanStyles = (purchase?: Purchase | null) => {
+    if (!purchase) {
+      if (isTrialUser) {
+        return "text-warning border-warning";
+      } else {
+        return "text-error border-error";
+      }
+    }
+
+    if (purchase.product_name === PricingPlan.TARIFF_IMPACT_STARTER) {
+      return "text-accent border-accent";
+    }
+
+    if (purchase.product_name === PricingPlan.TARIFF_IMPACT_STANDARD) {
+      return "text-primary border-primary";
+    }
+
+    if (purchase.product_name === PricingPlan.TARIFF_IMPACT_PRO) {
+      return "text-secondary border-secondary";
+    }
+  };
+
+  const getPlanText = (purchase?: Purchase | null) => {
+    if (!purchase) {
+      if (isTrialUser) {
+        return "Free Trial";
+      } else {
+        return "Trial Expired";
+      }
+    }
+
+    if (purchase.product_name === PricingPlan.TARIFF_IMPACT_STARTER) {
+      return "Starter";
+    }
+
+    if (purchase.product_name === PricingPlan.TARIFF_IMPACT_STANDARD) {
+      return "Standard";
+    }
+
+    if (purchase.product_name === PricingPlan.TARIFF_IMPACT_PRO) {
+      return "Pro";
+    }
+  };
 
   if (loadingPage) {
     return (
@@ -484,47 +573,43 @@ export default function Home() {
                     <span
                       className={classNames(
                         "h-fit px-2 py-0.5 rounded-md font-semibold text-xs border",
-                        activeTariffImpactPurchase &&
-                          activeTariffImpactPurchase.product_name ===
-                            PricingPlan.TARIFF_IMPACT_PRO &&
-                          "text-secondary border-secondary",
-                        activeTariffImpactPurchase &&
-                          activeTariffImpactPurchase.product_name ===
-                            PricingPlan.TARIFF_IMPACT_STANDARD &&
-                          "text-primary border-primary",
-                        !activeTariffImpactPurchase &&
-                          "text-warning border-warning"
+                        getPlanStyles(activeTariffImpactPurchase)
                       )}
                     >
-                      {activeTariffImpactPurchase
-                        ? activeTariffImpactPurchase.product_name.split(" ")[2]
-                        : "Free Plan"}
+                      {getPlanText(activeTariffImpactPurchase)}
                     </span>
                   </div>
                 )}
               </div>
 
-              {checkLimit !== Infinity &&
+              {(!activeTariffImpactPurchase ||
+                activeTariffImpactPurchase.product_name !==
+                  PricingPlan.TARIFF_IMPACT_PRO) &&
                 (fetchingTariffImpactChecks ? (
                   <LoadingIndicator spinnerOnly />
                 ) : (
                   <div className="w-full sm:w-auto justify-between sm:justify-normal flex items-center gap-4 px-4 sm:px-0 p-2 bg-base-100 border sm:border-none sm:bg-inherit border-base-content/20 rounded-md">
-                    <div className="flex flex-col">
-                      <p
-                        className={classNames(
-                          "text-sm font-bold",
-                          numChecksThisMonth >= checkLimit
-                            ? "text-error"
-                            : checkLimit - numChecksThisMonth < 20
-                              ? "text-warning"
-                              : "text-gray-400"
-                        )}
-                      >
-                        {checkLimit - numChecksThisMonth} Check
-                        {checkLimit - numChecksThisMonth === 1 ? "" : "s"} Left
-                      </p>
-                      <p className="text-xs">{`Limit: ${checkLimit}/month`}</p>
-                    </div>
+                    {checkLimit !== Infinity && (
+                      <div className="flex flex-col">
+                        <p
+                          className={classNames(
+                            "text-sm font-bold",
+                            numChecksThisMonth >= checkLimit
+                              ? "text-error"
+                              : checkLimit - numChecksThisMonth < 20
+                                ? "text-warning"
+                                : "text-gray-400"
+                          )}
+                        >
+                          {checkLimit - numChecksThisMonth} Check
+                          {checkLimit - numChecksThisMonth === 1
+                            ? ""
+                            : "s"}{" "}
+                          Left
+                        </p>
+                        <p className="text-xs">{`Limit: ${checkLimit}/month`}</p>
+                      </div>
+                    )}
 
                     <button
                       className="btn btn-sm btn-primary"
@@ -759,9 +844,7 @@ export default function Home() {
         }}
       />
       <Modal isOpen={showPricingModal} setIsOpen={setShowPricingModal}>
-        <TariffConversionPricing
-          currentPlan={activeTariffImpactPurchase?.product_name}
-        />
+        <TariffImpactPricing />
       </Modal>
     </main>
   );

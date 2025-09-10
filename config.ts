@@ -111,7 +111,6 @@ const config: ConfigProps = {
       tariffImpactStandard,
       tariffImpactPro,
     ],
-    tariffImpactConversionPlans: [tariffImpactStandard, tariffImpactPro],
   },
   // aws: {
   //   // If you use AWS S3/Cloudfront, put values in here

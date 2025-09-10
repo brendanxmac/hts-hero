@@ -36,23 +36,24 @@ export async function POST(req: NextRequest) {
     }
 
     const getPriceId = (itemId: PricingPlan) => {
-      console.log("itemId", itemId);
-
       switch (itemId) {
         case PricingPlan.CLASSIFY_PRO:
           return process.env.STRIPE_CLASSIFY_PRO_PRICE_ID;
+        case PricingPlan.TARIFF_IMPACT_STARTER:
+          return process.env.STRIPE_TARIFF_IMPACT_STARTER_PRICE_ID;
         case PricingPlan.TARIFF_IMPACT_STANDARD:
           return process.env.STRIPE_TARIFF_IMPACT_STANDARD_PRICE_ID;
         case PricingPlan.TARIFF_IMPACT_PRO:
           return process.env.STRIPE_TARIFF_IMPACT_PRO_PRICE_ID;
+        default:
+          return null;
       }
-
-      return null;
     };
 
     const getMode = (itemId: PricingPlan): StripePaymentMode => {
       switch (itemId) {
         case PricingPlan.CLASSIFY_PRO:
+        case PricingPlan.TARIFF_IMPACT_STARTER:
         case PricingPlan.TARIFF_IMPACT_STANDARD:
         case PricingPlan.TARIFF_IMPACT_PRO:
           return StripePaymentMode.SUBSCRIPTION;
@@ -72,7 +73,7 @@ export async function POST(req: NextRequest) {
     const stripeSessionURL = await createCheckout({
       priceId,
       mode,
-      // promotionCode,
+      // promotionCode removed for now,
       successUrl,
       cancelUrl: cancelUrl || `${process.env.BASE_URL}/about`,
       // If user is logged in, it will pass the user ID to the Stripe Session so it can be retrieved in the webhook later

@@ -108,7 +108,6 @@ export interface ConfigProps {
     classifierPlans: PricingPlanI[];
     classifierConversionPlans: PricingPlanI[];
     tariffImpactPlans: PricingPlanI[];
-    tariffImpactConversionPlans: PricingPlanI[];
   };
   aws?: {
     bucket?: string;
