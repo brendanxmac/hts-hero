@@ -76,9 +76,9 @@ export default function Home() {
             className="group btn btn-lg h-auto py-6 px-4 bg-base-200 border-2 border-neutral-600 hover:border-primary hover:bg-primary/10 transition-all duration-300 transform hover:scale-105"
           >
             <div className="flex flex-col items-center gap-4">
-              <div className="text-4xl">🧮</div>
+              <div className="text-4xl">📊</div>
               <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors">
-                Tariff Simulator
+                Tariff Wizard
               </h3>
               <p className="text-sm text-neutral-400 leading-relaxed">
                 Find the tariff for any item, from any country
