@@ -382,10 +382,7 @@ export const InlineCountryTariff = ({
       <div className={"w-full flex flex-col gap-4"}>
         {tariffSets.map((tariffSet, i) => (
           <div key={`tariff-set-${i}`} className="flex flex-col gap-4">
-            <PrimaryLabel
-              value={`${tariffSet.name} Tariff Details`}
-              color={Color.WHITE}
-            />
+            <PrimaryLabel value={`${tariffSet.name} Tariff Details`} />
 
             <div className="flex flex-col gap-2">
               {baseTariffs &&
