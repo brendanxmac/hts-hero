@@ -20,7 +20,6 @@ import { TertiaryLabel } from "./TertiaryLabel";
 import { TradePrograms } from "../public/trade-programs";
 
 interface Props {
-  isPayingUser: boolean;
   country: CountryWithTariffs;
   htsElement: HtsElement;
   tariffElement: HtsElement;
@@ -31,7 +30,6 @@ interface Props {
 }
 
 export const InlineCountryTariff = ({
-  isPayingUser,
   country,
   htsElement,
   tariffElement,
@@ -254,13 +252,9 @@ export const InlineCountryTariff = ({
           >
             {showInactive ? "Hide Inactive Tariffs" : "Show All Tariffs"}
           </button>
-          <button
-            className="btn btn-sm btn-primary"
-            // TODO: implement this reset now with setCountries
-            onClick={() => {}}
-          >
+          {/* <button className="btn btn-sm btn-primary" onClick={() => {}}>
             Reset
-          </button>
+          </button> */}
         </div>
       </div>
 
@@ -421,7 +415,6 @@ export const InlineCountryTariff = ({
                 .filter((t) => !tariffSet.exceptionCodes.has(t.code))
                 .map((tariff) => (
                   <Tariff
-                    isPayingUser={isPayingUser}
                     key={tariff.code}
                     showInactive={showInactive}
                     tariff={tariff}

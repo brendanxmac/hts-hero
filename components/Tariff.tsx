@@ -12,7 +12,6 @@ import Link from "next/link";
 import { TertiaryLabel } from "./TertiaryLabel";
 
 interface Props {
-  isPayingUser: boolean;
   showInactive: boolean;
   exceptionLevel?: number;
   tariff: UITariff;
@@ -27,7 +26,6 @@ interface Props {
 }
 
 export const Tariff = ({
-  isPayingUser,
   exceptionLevel = 0,
   showInactive,
   tariff,
@@ -183,7 +181,6 @@ export const Tariff = ({
             (exceptionTariff) =>
               (exceptionTariff.isActive || showInactive) && (
                 <Tariff
-                  isPayingUser={isPayingUser}
                   key={exceptionTariff.code}
                   exceptionLevel={exceptionLevel + 1}
                   setIndex={setIndex}

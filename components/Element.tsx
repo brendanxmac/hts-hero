@@ -35,6 +35,7 @@ import { PrimaryLabel } from "./PrimaryLabel";
 import Link from "next/link";
 import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import { TertiaryText } from "./TertiaryText";
+import { fetchUser, updateUserProfile } from "../libs/supabase/user";
 
 interface Props {
   summaryOnly?: boolean;
@@ -55,6 +56,8 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
   const { htsElements } = useHts();
   const { sections } = useHtsSections();
   const [isPayingUser, setIsPayingUser] = useState<boolean>(false);
+  const [isTariffImpactTrialUser, setIsTariffImpactTrialUser] =
+    useState<boolean>(false);
   // const [selectedCountries, setSelectedCountries] = useState<Country[]>([]);
 
   useEffect(() => {
@@ -65,8 +68,38 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
       }
     };
 
+    const fetchIsTariffImpactTrialUser = async () => {
+      if (user) {
+        const userProfile = await fetchUser(user.id);
+        const userTrialStartDate = userProfile?.tariff_impact_trial_started_at;
+
+        if (userTrialStartDate) {
+          // if the trial started more than 7 days ago, set isTrialUser to false
+          const trialStartedMoreThan7DaysAgo =
+            new Date(userTrialStartDate) <
+            new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+          if (trialStartedMoreThan7DaysAgo) {
+            setIsTariffImpactTrialUser(false);
+          } else {
+            setIsTariffImpactTrialUser(true);
+          }
+        } else {
+          // Update user profile setting tariff_impact_trial_started_at to now
+          await updateUserProfile(user.id, {
+            tariff_impact_trial_started_at: new Date().toISOString(),
+          });
+          setIsTariffImpactTrialUser(true);
+        }
+      }
+    };
+
+    const fetchUserData = async () => {
+      await Promise.all([fetchIsPayingUser(), fetchIsTariffImpactTrialUser()]);
+    };
+
     if (user) {
-      fetchIsPayingUser();
+      fetchUserData();
     }
   }, [user]);
 
@@ -368,6 +401,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
               </div>
               <Tariffs
                 isPayingUser={isPayingUser}
+                isTariffImpactTrialUser={isTariffImpactTrialUser}
                 htsElement={element}
                 tariffElement={getTariffElement(
                   element,

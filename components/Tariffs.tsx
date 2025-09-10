@@ -25,11 +25,17 @@ import Link from "next/link";
 
 interface Props {
   isPayingUser: boolean;
+  isTariffImpactTrialUser: boolean;
   htsElement: HtsElement;
   tariffElement: HtsElement;
 }
 
-export const Tariffs = ({ htsElement, tariffElement, isPayingUser }: Props) => {
+export const Tariffs = ({
+  htsElement,
+  tariffElement,
+  isPayingUser,
+  isTariffImpactTrialUser,
+}: Props) => {
   const codeBasedContentRequirements = Array.from(
     TariffsList.filter((t) =>
       tariffIsApplicableToCode(t, htsElement.htsno)
@@ -322,7 +328,7 @@ export const Tariffs = ({ htsElement, tariffElement, isPayingUser }: Props) => {
                           isExpanded && "hover:bg-base-200 border-b-0"
                         )}
                         onClick={() => {
-                          if (isPayingUser) {
+                          if (isPayingUser || isTariffImpactTrialUser) {
                             toggleRow(country.code);
                           } else {
                             toast.error(
@@ -346,13 +352,13 @@ export const Tariffs = ({ htsElement, tariffElement, isPayingUser }: Props) => {
                         </td>
                         <td>
                           <div className="flex gap-2">
-                            {!isPayingUser ? (
+                            {!isPayingUser && !isTariffImpactTrialUser ? (
                               <Link
                                 href="/about/tariffs#pricing"
                                 target="_blank"
-                                className="btn btn-link no-underline text-base-content hover:text-primary"
+                                className="link link-primary no-underline text-base-content hover:text-primary hover:underline"
                               >
-                                🔒 Get All Tariff Rates & Exemptions
+                                🔒 Unlock with Pro
                               </Link>
                             ) : (
                               countryPercentTariffsSums.map((sum, i) => (
@@ -422,7 +428,6 @@ export const Tariffs = ({ htsElement, tariffElement, isPayingUser }: Props) => {
                                 )}
                                 countries={countries}
                                 setCountries={setCountries}
-                                isPayingUser={isPayingUser}
                               />
                             </div>
                           </td>
