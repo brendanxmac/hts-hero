@@ -81,11 +81,11 @@ const WithWithout = ({
               </div>
             )}
 
-            <ul className="flex flex-col gap-1 sm:gap-2">
+            <ul className="flex flex-col gap-1 sm:gap-3">
               {withoutList.map((task, index) => (
                 <li
                   key={index}
-                  className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-base-300/80 rounded-lg border border-gray-700"
+                  className="flex items-center gap-2 sm:gap-3 p-2 sm:p-4 bg-base-300/80 rounded-lg border border-gray-700"
                 >
                   <div className="flex-1">
                     <div className="flex items-center justify-between gap-2 sm:gap-3 md:gap-4">
@@ -103,7 +103,7 @@ const WithWithout = ({
 
             <div className="mt-auto pt-2 sm:pt-3">
               <div className="text-center">
-                <p className="text-red-400 font-bold text-2xl sm:text-3xl md:text-4xl mb-1 sm:mb-2">
+                <p className="text-red-400 font-bold text-2xl sm:text-3xl mb-1 sm:mb-2">
                   {withoutKeyPoint.title}
                 </p>
               </div>
@@ -140,11 +140,11 @@ const WithWithout = ({
                 </div>
               </div>
 
-              <ul className="flex flex-col gap-1 sm:gap-2">
+              <ul className="flex flex-col gap-1 sm:gap-4">
                 {withList.map((task, index) => (
                   <li
                     key={index}
-                    className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-base-300/80 rounded-lg border border-gray-700"
+                    className="flex items-center gap-2 sm:gap-3 p-2 sm:p-4 bg-base-300/80 rounded-lg border border-gray-700"
                   >
                     <div className="flex-1">
                       <div className="flex items-center justify-between gap-2 sm:gap-3 md:gap-4">
@@ -172,14 +172,14 @@ const WithWithout = ({
             </div>
           )}
         </div>
-        <div className="flex items-center justify-center gap-1 w-full mt-4 md:mt-8 animate-pulse">
+        <div className="flex items-center justify-center gap-6 w-full mt-8 md:mt-12 animate-pulse">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="w-4 h-4 text-neutral-300"
+            className="w-4 h-4 sm:w-6 sm:h-6 text-neutral-300"
           >
             <path
               strokeLinecap="round"
@@ -188,7 +188,7 @@ const WithWithout = ({
             />
           </svg>
 
-          <p className="text-center text-sm text-neutral-300 tracking-tight">
+          <p className="text-center font-bold text-neutral-300 tracking-tight text-lg sm:text-xl md:text-2xl">
             There&apos;s a better way
           </p>
 
@@ -198,7 +198,7 @@ const WithWithout = ({
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="w-4 h-4 text-neutral-300"
+            className="w-4 h-4 sm:w-6 sm:h-6 text-neutral-300"
           >
             <path
               strokeLinecap="round"

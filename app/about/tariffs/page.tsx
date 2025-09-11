@@ -13,27 +13,23 @@ import TariffImpactPricing from "../../../components/TariffImpactPricing";
 
 const withoutTariffImpact: Task[] = [
   {
-    title: "Finding & Understanding the Changes",
+    title: "Tracking & Understanding Changes",
     time: "1 hour / change",
   },
   {
-    title: "Getting a list of exactly what's affected",
+    title: "Finding Out What's Affected",
     time: "30 min / change",
   },
   {
-    title: "Checking client imports against what's affected",
+    title: "Checking Imports",
     time: "~20 min / client",
   },
   {
-    title: "Finding the latest applicable tariffs & possible exemptions",
+    title: "Finding Latest Tariffs & Exemptions",
     time: "20 min / import",
   },
   {
-    title: "Finding & applying the latest tariff stacking rules",
-    time: "10 min / import",
-  },
-  {
-    title: "Getting final rates for coutry of origin",
+    title: "Applying Current Tariff Stacking Rules",
     time: "10 min / import",
   },
 ];
