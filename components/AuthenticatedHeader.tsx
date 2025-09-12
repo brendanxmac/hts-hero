@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import config from "@/config";
-import logo from "@/app/logo.png";
+import logo from "@/app/logo.svg";
 import ButtonAccount from "./ButtonAccount";
 import ButtonSupport from "./ButtonSupport";
 import { usePathname, useSearchParams } from "next/navigation";

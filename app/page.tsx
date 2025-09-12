@@ -20,7 +20,7 @@ export default function Home() {
           {/* Logo and HTS Hero text */}
           <div className="flex items-center justify-center gap-1 mb-2">
             <Image
-              src="/hts-hero-logo.svg"
+              src="/logo.svg"
               alt="HTS Hero"
               width={50}
               height={50}
