@@ -1,25 +1,19 @@
 // emails/WelcomeEmail.tsx
 import {
   Button,
-  Column,
   Container,
   Head,
   Heading,
   Html,
   Img,
   Preview,
-  Row,
   Section,
   Text,
   Tailwind,
   pixelBasedPreset,
 } from "@react-email/components";
 
-interface WelcomeEmailProps {
-  name: string;
-}
-
-export default function WelcomeEmail({ name }: WelcomeEmailProps) {
+export default function WelcomeEmail() {
   return (
     <Html>
       <Head />
@@ -35,15 +29,21 @@ export default function WelcomeEmail({ name }: WelcomeEmailProps) {
             <Img
               alt="HTS Hero Logo"
               className="py-8 mx-auto"
+              width="200"
               height="40"
-              src="https://exviallkczzlrkpaafxq.supabase.co/storage/v1/object/public/content/logo-text-white.svg"
+              style={{
+                width: "200px",
+                maxWidth: "100%",
+                height: "auto",
+              }}
+              src="https://exviallkczzlrkpaafxq.supabase.co/storage/v1/object/public/content/logo-with-text.png"
             />
           </Section>
 
           {/* Warm Welcome */}
           <Section className="text-center mb-8">
             <Heading className="text-3xl font-bold text-gray-900 mb-4 tracking-tight">
-              👋 Welcome{name ? `, ${name}` : ""}!
+              👋 Welcome!
             </Heading>
             <Text className="text-lg text-gray-700 leading-relaxed mx-auto mb-4">
               You've just joined the hundreds of importers & customs brokers who
@@ -57,7 +57,7 @@ export default function WelcomeEmail({ name }: WelcomeEmailProps) {
           {/* Service Description */}
           <Section className="mb-10 text-center">
             <Heading className="text-center text-4xl mb-2">🚀</Heading>
-            <Heading className="text-center text-2xl font-semibold mb-2 text-gray-900">
+            <Heading className="text-center text-3xl font-semibold mb-2 text-gray-900">
               Time Saving Tools for{" "}
               <span className="text-[#617BFF]">Trade Professionals</span>
             </Heading>
@@ -85,38 +85,36 @@ export default function WelcomeEmail({ name }: WelcomeEmailProps) {
           {/* Key Features */}
           <Section className="mb-8 text-center">
             <Heading className="text-4xl mb-2">🛠️</Heading>
-            <Heading className="text-2xl font-bold mb-8 text-gray-900">
+            <Heading className="text-3xl font-bold mb-8 text-gray-900">
               Your New Toolkit
             </Heading>
 
-            <div className="flex flex-col gap-6">
-              <Section className="bg-[#617BFF]/10 rounded-lg p-6 text-center">
-                <Text className="font-bold text-xl mb-3 text-gray-900">
-                  ✅ Tariff Impact Checker
-                </Text>
-                <Text className="leading-relaxed text-lg text-gray-600">
-                  Instantly know when and how new tariffs affect your imports.
-                </Text>
-              </Section>
+            <Section className="bg-[#617BFF]/10 rounded-lg p-6 text-center mb-6">
+              <Text className="font-bold text-xl mb-3 text-gray-900">
+                ✅ Tariff Impact Checker
+              </Text>
+              <Text className="leading-relaxed text-lg text-gray-600">
+                Instantly know when and how new tariffs affect your imports.
+              </Text>
+            </Section>
 
-              <Section className="bg-[#617BFF]/10 rounded-lg p-6 text-center">
-                <Text className="font-bold text-xl mb-3 text-gray-900">
-                  🎯 Classification Assistant
-                </Text>
-                <Text className="leading-relaxed text-lg text-gray-600">
-                  Classify anything in minutes & delight your clients.
-                </Text>
-              </Section>
+            <Section className="bg-[#617BFF]/10 rounded-lg p-6 text-center mb-6">
+              <Text className="font-bold text-xl mb-3 text-gray-900">
+                🎯 Classification Assistant
+              </Text>
+              <Text className="leading-relaxed text-lg text-gray-600">
+                Classify anything in minutes & delight your clients.
+              </Text>
+            </Section>
 
-              <Section className="bg-[#617BFF]/10 rounded-lg p-6 text-center">
-                <Text className="font-bold text-xl mb-3 text-gray-900">
-                  📊 Tariff Wizard
-                </Text>
-                <Text className="leading-relaxed text-lg text-gray-600">
-                  Find duty rates and possible savings for any import.
-                </Text>
-              </Section>
-            </div>
+            <Section className="bg-[#617BFF]/10 rounded-lg p-6 text-center">
+              <Text className="font-bold text-xl mb-3 text-gray-900">
+                📊 Tariff Wizard
+              </Text>
+              <Text className="leading-relaxed text-lg text-gray-600">
+                Find duty rates and possible savings for any import.
+              </Text>
+            </Section>
           </Section>
 
           {/* Call to Action */}

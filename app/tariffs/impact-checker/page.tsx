@@ -777,7 +777,7 @@ export default function Home() {
                           <th className="w-4"></th>
                           <th>HTS Code</th>
                           <th>Impacted</th>
-                          <th className="hidden sm:table-cell">Notes</th>
+                          {/* <th className="hidden sm:table-cell">Notes</th> */}
                         </tr>
                       </thead>
                       <tbody>
@@ -807,7 +807,7 @@ export default function Home() {
                                 </td>
                               )}
                               {impactIndicator}
-                              {notes}
+                              {/* {notes} */}
                             </tr>
                           );
                         })}

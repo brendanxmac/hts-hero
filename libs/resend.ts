@@ -7,6 +7,26 @@ if (!process.env.RESEND_API_KEY) {
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+export const sendEmailFromComponent = async ({
+  to,
+  subject,
+  emailComponent,
+  replyTo,
+}: {
+  to: string | string[];
+  subject: string;
+  emailComponent: React.ReactNode;
+  replyTo?: string | string[];
+}) => {
+  return resend.emails.send({
+    from: config.resend.fromNoReply,
+    to,
+    subject,
+    react: emailComponent,
+    ...(replyTo && { replyTo }),
+  });
+};
+
 export const sendEmail = async ({
   to,
   subject,
