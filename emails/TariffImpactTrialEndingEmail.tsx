@@ -13,11 +13,14 @@ import {
   pixelBasedPreset,
 } from "@react-email/components";
 
-export default function TariffImpactTrialSartedEmail() {
+export default function TariffImpactTrialEndingEmail() {
   return (
     <Html>
       <Head />
-      <Preview>Trial Activated!</Preview>
+      <Preview>
+        ⏰ Your Tariff Impact Checker Pro trial ends tomorrow - Upgrade now &
+        save!
+      </Preview>
       <Tailwind
         config={{
           presets: [pixelBasedPreset],
@@ -37,30 +40,29 @@ export default function TariffImpactTrialSartedEmail() {
             src="https://exviallkczzlrkpaafxq.supabase.co/storage/v1/object/public/content/logo-text-black.png"
           />
 
-          <Section className="bg-[#617BFF]/10 rounded-lg p-6 text-center">
-            <Text className="text-base text-gray-700 leading-relaxed mx-auto mb-0">
-              Free 7 Day Trial Activated:
+          <Section className="bg-red-50 p-4 rounded-md text-center">
+            <Text className="text-lg font-semibold text-red-600 leading-relaxed mx-auto mb-2">
+              ⏰ Trial Ends Tomorrow!
             </Text>
-            <Heading className="text-2xl font-bold text-gray-900 mb-2 tracking-tight">
-              Tariff Impact Checker Pro
+            <Heading className="text-2xl font-bold text-gray-900 mb-3 tracking-tight">
+              Your Trial of Tariff Impact Pro Ends Tomorrow
             </Heading>
-
-            <Text className="text-sm mb-0 text-gray-600">
-              🚀 You now have full access to Tariff Impact Checker Pro for the
-              next 7 days, including all the benefits below.
-            </Text>
           </Section>
 
-          {/* Get Notified */}
-          <Section className="my-16 text-center">
-            {/* <Heading className="text-center text-3xl mb-2">🔔</Heading> */}
-            <Heading className="text-center text-2xl font-semibold my-0 text-gray-900">
-              <span className="text-[#617BFF]">Get Notified</span> When New
-              Tariffs Affect your Imports
+          <Heading className="text-center text-4xl font-bold text-gray-900 mb-3 mt-14 px-4">
+            <span className="text-red-500">You'll Lose Access</span> to These
+            Powerful Features:
+          </Heading>
+
+          {/* What You'll Lose - Get Notified */}
+          <Section className="my-12 text-center bg-gray-50 rounded-lg p-6">
+            <Heading className="text-center text-xl font-semibold my-0 text-gray-900 mb-3">
+              <span className="text-[#617BFF]">Notifications</span> When New
+              Tariffs Affect Your Imports
             </Heading>
-            <Text className="text-sm text-gray-700 leading-relaxed mx-auto mt-1 mb-4">
-              Recieve emails when new tariff announcements affect any of your
-              imports
+            <Text className="text-base text-gray-700 leading-relaxed mx-auto mt-1 mb-4">
+              No more automatic emails when new tariff announcements affect any
+              of your imports &rarr; you'll have to monitor changes manually
             </Text>
             <Img
               alt="HTS Hero Tariff Impact Notification"
@@ -74,17 +76,16 @@ export default function TariffImpactTrialSartedEmail() {
               src="https://exviallkczzlrkpaafxq.supabase.co/storage/v1/object/public/content/tariff-impact-notification.png"
             />
           </Section>
-          {/* See What's Impacted */}
-          <Section className="my-16 text-center">
-            {/* <Heading className="text-center text-3xl mb-2">✅</Heading> */}
-            <Heading className="text-center text-2xl font-semibold my-0 text-gray-900">
-              See Which Imports{" "}
+          {/* What You'll Lose - See What's Impacted */}
+          <Section className="my-12 text-center bg-gray-50 rounded-lg p-6">
+            <Heading className="text-center text-xl font-semibold my-0 text-gray-900 mb-3">
+              Instantly Seeing Which Imports{" "}
               <span className="text-[#617BFF]">Are Affected</span> by New
               Tariffs
             </Heading>
-            <Text className="text-sm text-gray-700 leading-relaxed mx-auto mt-1 mb-4">
-              Instantly know which of your imports are affected by new tariff
-              announcements
+            <Text className="text-base text-gray-700 leading-relaxed mx-auto mt-1 mb-4">
+              No more instant analysis of which imports are affected by new
+              tariff announcements &rarr; back to error-prone manual checks
             </Text>
             <Img
               alt="HTS Hero See What's Affected"
@@ -100,14 +101,15 @@ export default function TariffImpactTrialSartedEmail() {
             />
           </Section>
 
-          <Section className="my-10 text-center">
-            <Heading className="text-center text-2xl font-semibold my-0 text-gray-900">
-              <span className="text-[#617BFF]">Instantly</span> Know The Impact
-              On Your Bottom Line
+          <Section className="mt-12 mb-8 text-center bg-gray-50 rounded-lg p-6">
+            <Heading className="text-center text-xl font-semibold my-0 text-gray-900 mb-3">
+              <span className="text-[#617BFF]">Automatic</span> Duty Rate and
+              Saving Lookups for Any Import
             </Heading>
             <Text className="text-sm text-gray-700 leading-relaxed mx-auto mt-1 mb-4">
-              Find the latest duty rates, exemptions, and possible savings for
-              any import, from any country
+              No more instant access to the latest duty rates, exemptions, and
+              possible savings for any import &rarr; back to time-consuming
+              manual lookups
             </Text>
             <Img
               alt="HTS Hero Tariff Impact Notification"
@@ -123,15 +125,26 @@ export default function TariffImpactTrialSartedEmail() {
             />
           </Section>
 
-          {/* Call to Action */}
-          <Section className="text-center mb-10 mt-16">
-            {/* TODO: add a button that goes to a tutorial and or how to page */}
+          {/* Urgent Call to Action */}
+          <Section className="text-center mb-10 mt-0 rounded-xl p-4">
+            <Heading className="text-4xl font-bold text-gray-900 mb-3">
+              Stay Prepared for Tariff Changes
+            </Heading>
+            <Text className="text-base text-gray-700 mb-6 font-medium">
+              Upgrade today to keep all your Pro features for a fraction of the
+              price
+            </Text>
+
             <Button
-              href="https://htshero.com"
-              className="bg-[#617BFF] text-white font-medium py-3 px-20 mx-auto rounded-xl text-lg"
+              href="https://htshero.com/upgrade?discount=TRIAL50"
+              className="bg-[#617BFF] text-white font-bold py-4 px-8 mx-auto rounded-xl text-xl mb-0"
             >
-              Get Started →
+              Upgrade Now - Save 50%
             </Button>
+
+            <Text className="text-sm font-bold text-red-500 mb-0">
+              <sup>*</sup>Offer expires when your trial ends tomorrow
+            </Text>
           </Section>
 
           {/* Support Section */}

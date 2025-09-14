@@ -32,7 +32,7 @@ export default function Home() {
           </div>
 
           <h1 className="sm:text-xl md:text-2xl lg:text-3xl text-white font-semibold tracking-tight mb-8">
-            Useful Tools for Busy Importers and Customs Brokers
+            Time Saving Tools for Busy Importers and Customs Brokers
           </h1>
         </div>
 
