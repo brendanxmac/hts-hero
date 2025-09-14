@@ -24,21 +24,18 @@ export default function TariffImpactTrialSartedEmail() {
         }}
       >
         <Container className="mx-auto py-4 font-sans max-w-[600px] bg-white">
-          {/* Header with Logo */}
-          <Section className="rounded-lg w-full text-center mb-2">
-            <Img
-              alt="HTS Hero Logo"
-              className="py-8 mx-auto"
-              width="200"
-              height="40"
-              style={{
-                width: "170px",
-                maxWidth: "100%",
-                height: "auto",
-              }}
-              src="https://exviallkczzlrkpaafxq.supabase.co/storage/v1/object/public/content/logo-text-black.png"
-            />
-          </Section>
+          <Img
+            alt="HTS Hero Logo"
+            className="py-8 mx-auto"
+            width="200"
+            height="40"
+            style={{
+              width: "170px",
+              maxWidth: "100%",
+              height: "auto",
+            }}
+            src="https://exviallkczzlrkpaafxq.supabase.co/storage/v1/object/public/content/logo-text-black.png"
+          />
 
           <Section className="bg-[#617BFF]/10 rounded-lg p-6 text-center">
             <Text className="text-base text-gray-700 leading-relaxed mx-auto mb-0">

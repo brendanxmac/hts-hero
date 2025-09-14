@@ -23,34 +23,31 @@ export default function WelcomeEmail() {
           presets: [pixelBasedPreset],
         }}
       >
-        <Container className="mx-auto py-8 font-sans max-w-[600px] bg-white">
-          {/* Header with Logo */}
-          <Section className="bg-black rounded-lg w-full text-center mb-8">
-            <Img
-              alt="HTS Hero Logo"
-              className="py-8 mx-auto"
-              width="200"
-              height="40"
-              style={{
-                width: "200px",
-                maxWidth: "100%",
-                height: "auto",
-              }}
-              src="https://exviallkczzlrkpaafxq.supabase.co/storage/v1/object/public/content/logo-with-text.png"
-            />
-          </Section>
+        <Container className="mx-auto py-4 font-sans max-w-[600px] bg-white">
+          <Img
+            alt="HTS Hero Logo"
+            className="py-8 mx-auto"
+            width="200"
+            height="40"
+            style={{
+              width: "170px",
+              maxWidth: "100%",
+              height: "auto",
+            }}
+            src="https://exviallkczzlrkpaafxq.supabase.co/storage/v1/object/public/content/logo-text-black.png"
+          />
 
           {/* Warm Welcome */}
           <Section className="text-center mb-8">
-            <Heading className="text-3xl font-bold text-gray-900 mb-4 tracking-tight">
-              👋 Welcome!
+            <Heading className="text-2xl font-bold text-[#617BFF] mb-4 tracking-tight">
+              Welcome! 👋
             </Heading>
             <Text className="text-lg text-gray-700 leading-relaxed mx-auto mb-4">
-              You've just joined the hundreds of importers & customs brokers who
-              save hours every day with our tools.
+              We&apos;re honored to have you here.
             </Text>
-            <Text className="text-lg text-gray-700 leading-relaxed mx-auto">
-              Let&apos;s get started.
+            <Text className="text-lg text-gray-700 leading-relaxed mx-auto mb-4">
+              Hundreds of importers & customs brokers save hours every day with
+              our tools, and we&apos;re excited to help you do the same.
             </Text>
           </Section>
 
@@ -67,17 +64,29 @@ export default function WelcomeEmail() {
                 Trade has never been more complicated.
               </Text>
               <Text className="text-lg leading-relaxed mb-4 text-gray-700">
-                The constant changes and increased demands are overwhelming.
+                Constant changes, new rules, and increased regulation are
+                overwhelming even the most experienced veterans.
+              </Text>
+              <Text className="text-lg leading-relaxed mb-4 text-gray-700">
+                Spreadsheets and old systems just aren&apos;t cutting it
+                anymore.
+              </Text>
+              <Text className="text-lg leading-relaxed mb-4 text-gray-700">
+                You&apos;re being asked to chop down a tree with a dull axe in
+                half the time.
+              </Text>
+              <Text className="text-lg leading-relaxed mb-4 text-gray-700">
+                We believe trade professionals deserve better...
               </Text>
               <Text className="text-lg leading-relaxed mb-4 font-bold text-gray-900">
-                Our tools help you work{" "}
+                So we&apos;re building tools that help you work{" "}
                 <span className="underline text-[#617BFF]">
                   smarter, faster, and with greater confidence.
                 </span>
               </Text>
               <Text className="text-lg leading-relaxed mb-4 text-gray-700">
-                We understand your daily challenges and provide a much needed
-                boost.
+                The industry is begging for a better way and we&apos;re paving
+                that path.
               </Text>
             </Section>
           </Section>
