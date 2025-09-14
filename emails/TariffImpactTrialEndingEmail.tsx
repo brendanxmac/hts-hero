@@ -55,7 +55,7 @@ export default function TariffImpactTrialEndingEmail() {
           </Heading>
 
           {/* What You'll Lose - Get Notified */}
-          <Section className="my-12 text-center bg-gray-50 rounded-lg p-6">
+          <Section className="my-6 mt-10 text-center bg-gray-50 rounded-lg p-6">
             <Heading className="text-center text-xl font-semibold my-0 text-gray-900 mb-3">
               <span className="text-[#617BFF]">Notifications</span> When New
               Tariffs Affect Your Imports
@@ -77,7 +77,7 @@ export default function TariffImpactTrialEndingEmail() {
             />
           </Section>
           {/* What You'll Lose - See What's Impacted */}
-          <Section className="my-12 text-center bg-gray-50 rounded-lg p-6">
+          <Section className="my-6 text-center bg-gray-50 rounded-lg p-6">
             <Heading className="text-center text-xl font-semibold my-0 text-gray-900 mb-3">
               Instantly Seeing Which Imports{" "}
               <span className="text-[#617BFF]">Are Affected</span> by New
@@ -101,7 +101,7 @@ export default function TariffImpactTrialEndingEmail() {
             />
           </Section>
 
-          <Section className="mt-12 mb-8 text-center bg-gray-50 rounded-lg p-6">
+          <Section className="my-6 text-center bg-gray-50 rounded-lg p-6">
             <Heading className="text-center text-xl font-semibold my-0 text-gray-900 mb-3">
               <span className="text-[#617BFF]">Automatic</span> Duty Rate and
               Saving Lookups for Any Import
@@ -126,24 +126,26 @@ export default function TariffImpactTrialEndingEmail() {
           </Section>
 
           {/* Urgent Call to Action */}
-          <Section className="text-center mb-10 mt-0 rounded-xl p-4">
+          <Section className="text-center my-10 rounded-xl p-4">
             <Heading className="text-4xl font-bold text-gray-900 mb-3">
-              Stay Prepared for Tariff Changes
+              More Tariffs are Coming,
+              <br />
+              <span className="text-[#617BFF]">Stay Prepared</span>
             </Heading>
             <Text className="text-base text-gray-700 mb-6 font-medium">
-              Upgrade today to keep all your Pro features for a fraction of the
+              Upgrade today to keep all your Pro features at a fraction of the
               price
             </Text>
 
             <Button
-              href="https://htshero.com/upgrade?discount=TRIAL50"
+              href="https://htshero.com/about/tariffs#pricing"
               className="bg-[#617BFF] text-white font-bold py-4 px-8 mx-auto rounded-xl text-xl mb-0"
             >
               Upgrade Now - Save 50%
             </Button>
 
             <Text className="text-sm font-bold text-red-500 mb-0">
-              <sup>*</sup>Offer expires when your trial ends tomorrow
+              Offer expires when your trial ends tomorrow
             </Text>
           </Section>
 
