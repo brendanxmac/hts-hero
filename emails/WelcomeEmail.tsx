@@ -83,13 +83,14 @@ export default function WelcomeEmail() {
                 </span>
               </Text>
               <Text className="text-lg leading-relaxed mb-4 text-gray-700">
-                The industry needs a better way and we&apos;re paving that path.
+                The industry needs a better way and we&apos;re paving the path.
               </Text>
               <Text className="text-lg leading-relaxed mb-4 text-gray-700">
-                As trade changes, the only mistake is not changing with it.
+                As trade changes, the only mistake would be not changing with
+                it.
               </Text>
               <Text className="text-lg leading-relaxed mb-4 text-gray-700">
-                Upgrade your tools, conquer uncertainty, and lead the industry.
+                Upgrade your tools, conquer complexity, and lead the industry.
               </Text>
             </Section>
           </Section>
