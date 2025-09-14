@@ -23,7 +23,7 @@ export default function TariffImpactTrialSartedEmail() {
           presets: [pixelBasedPreset],
         }}
       >
-        <Container className="mx-auto py-8 font-sans max-w-[600px] bg-white">
+        <Container className="mx-auto py-4 font-sans max-w-[600px] bg-white">
           {/* Header with Logo */}
           <Section className="rounded-lg w-full text-center mb-2">
             <Img
@@ -58,12 +58,12 @@ export default function TariffImpactTrialSartedEmail() {
           <Section className="my-16 text-center">
             {/* <Heading className="text-center text-3xl mb-2">🔔</Heading> */}
             <Heading className="text-center text-2xl font-semibold my-0 text-gray-900">
-              <span className="text-[#617BFF]">Get Notified</span> When Tariff
-              Changes Affect your Imports
+              <span className="text-[#617BFF]">Get Notified</span> When New
+              Tariffs Affect your Imports
             </Heading>
             <Text className="text-sm text-gray-700 leading-relaxed mx-auto mt-1 mb-4">
-              Recieve email notifications when new tariff announcements affect
-              your imports
+              Recieve emails when new tariff announcements affect any of your
+              imports
             </Text>
             <Img
               alt="HTS Hero Tariff Impact Notification"
@@ -81,8 +81,9 @@ export default function TariffImpactTrialSartedEmail() {
           <Section className="my-16 text-center">
             {/* <Heading className="text-center text-3xl mb-2">✅</Heading> */}
             <Heading className="text-center text-2xl font-semibold my-0 text-gray-900">
-              See Which Imports Are{" "}
-              <span className="text-[#617BFF]">Affected</span>
+              See Which Imports{" "}
+              <span className="text-[#617BFF]">Are Affected</span> by New
+              Tariffs
             </Heading>
             <Text className="text-sm text-gray-700 leading-relaxed mx-auto mt-1 mb-4">
               Instantly know which of your imports are affected by new tariff
@@ -101,16 +102,15 @@ export default function TariffImpactTrialSartedEmail() {
               src="https://exviallkczzlrkpaafxq.supabase.co/storage/v1/object/public/content/see-whats-affected.png"
             />
           </Section>
-          {/* Tariff Wizard */}
+
           <Section className="my-10 text-center">
-            {/* <Heading className="text-center text-3xl mb-2">🔔</Heading> */}
             <Heading className="text-center text-2xl font-semibold my-0 text-gray-900">
-              Meet Your Personal{" "}
-              <span className="text-[#617BFF]">Tariff Wizard</span>
+              {/* Find The Duty Rates and Exemptions for Any Import */}
+              Instantly Know The Impact On Your Bottom Line
             </Heading>
             <Text className="text-sm text-gray-700 leading-relaxed mx-auto mt-1 mb-4">
-              Instantly find duty rates and possible savings for any import,
-              from any country
+              Find the latest duty rates, exemptions, and possible savings for
+              any import, from any country
             </Text>
             <Img
               alt="HTS Hero Tariff Impact Notification"
