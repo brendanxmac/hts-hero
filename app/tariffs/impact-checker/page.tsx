@@ -42,6 +42,7 @@ import { SecondaryText } from "../../../components/SecondaryText";
 import TariffImpactCodesInput from "../../../components/TariffImpactCodesInput";
 import { fetchUser, updateUserProfile } from "../../../libs/supabase/user";
 import TariffImpactPricing from "../../../components/TariffImpactPricing";
+import apiClient from "../../../libs/api";
 
 export default function Home() {
   const CHARACTER_LIMIT = 3000;
@@ -186,9 +187,10 @@ export default function Home() {
         }
       } else {
         // Update user profile setting tariff_impact_trial_started_at to now
-        await updateUserProfile(user.id, {
-          tariff_impact_trial_started_at: new Date().toISOString(),
+        await apiClient.post("/tariff-impact-check/trial-started", {
+          email: user.email,
         });
+        trackEvent(MixpanelEvent.TARIFF_IMPACT_TRIAL_STARTED);
         setIsTrialUser(true);
       }
     };

@@ -26,7 +26,7 @@ export default function TariffImpactTrialEndingEmail() {
           presets: [pixelBasedPreset],
         }}
       >
-        <Container className="mx-auto py-4 font-sans max-w-[600px] bg-white">
+        <Container className="mx-auto py-2 font-sans max-w-[600px] bg-white">
           <Img
             alt="HTS Hero Logo"
             className="py-8 mx-auto"
@@ -40,19 +40,81 @@ export default function TariffImpactTrialEndingEmail() {
             src="https://exviallkczzlrkpaafxq.supabase.co/storage/v1/object/public/content/logo-text-black.png"
           />
 
-          <Section className="bg-red-50 p-4 rounded-md text-center">
-            <Text className="text-lg font-semibold text-red-600 leading-relaxed mx-auto mb-2">
-              ⏰ Trial Ends Tomorrow!
+          {/* Professional Trial Ending Section */}
+          <Section className="text-center mt-0 mb-12 px-4">
+            {/* Trial Status */}
+            <Text className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">
+              Trial Update
             </Text>
-            <Heading className="text-2xl font-bold text-gray-900 mb-3 tracking-tight">
-              Your Trial of Tariff Impact Pro Ends Tomorrow
+            <Heading className="text-2xl font-bold text-gray-900 mb-4">
+              Your Tariff Impact Pro trial ends{" "}
+              <span className="underline">tomorrow</span>
             </Heading>
+
+            {/* Appreciation */}
+            <Text className="text-base text-gray-600 leading-relaxed mb-4 max-w-lg mx-auto">
+              We hope you got a chance to see how much time and effort our tools
+              can save you and your clients.
+            </Text>
+
+            {/* Value Proposition */}
+            {/* <Container className="bg-gray-50 py-8 px-6 mb-8 rounded-md"> */}
+            {/* <Heading className="text-xl font-semibold text-gray-900 mb-4">
+                We're Here to Help!
+              </Heading>
+
+              <Text className="text-gray-600 mb-6 leading-relaxed">
+                We know trade is chaotic right now want to extending a helping
+                hand.
+              </Text> */}
+
+            {/* Special Offer Highlight */}
+            <Container className="bg-gray-50 py-6 px-6 my-8">
+              <Text className="text-sm font-medium text-blue-600 uppercase tracking-wide mb-2">
+                Limited Time Offer
+              </Text>
+              <Heading className="text-2xl font-bold text-gray-900 mb-0">
+                Upgrade to Pro Today and Save 50%!
+              </Heading>
+              <Text className="text-sm text-gray-600 mb-6 leading-relaxed mt-2">
+                Trade is unpredictable right now and we know many are looking
+                for some relief. So here's a limited time offer to upgrade to
+                Pro and save 50%.
+              </Text>
+
+              {/* Primary CTA */}
+              <Button
+                href="https://htshero.com/about/tariffs#pricing"
+                className="bg-blue-600 text-white font-semibold py-4 px-8 text-lg mb-4"
+              >
+                Upgrade to Pro - Save 50%
+              </Button>
+
+              <Text className="text-sm text-gray-500">
+                ⏰ This offer expires at the end of the month
+              </Text>
+            </Container>
+
+            {/* Secondary CTA for hesitant users */}
+            <Text className="text-sm text-gray-500 mb-2">
+              Need more time to decide?
+            </Text>
+            <Button
+              href="mailto:support@htshero.com?subject=Trial Extension Request"
+              className="text-blue-600 font-medium underline text-sm"
+            >
+              Contact us about extending your trial
+            </Button>
+            {/* </Container> */}
           </Section>
 
-          <Heading className="text-center text-4xl font-bold text-gray-900 mb-3 mt-14 px-4">
-            <span className="text-red-500">You'll Lose Access</span> to These
-            Powerful Features:
-          </Heading>
+          {/* What You'll Lose Section */}
+          <Section className="text-center mb-3 mt-6 px-4">
+            <Heading className="text-center text-3xl font-bold text-gray-900">
+              <span className="text-red-500">You'll Lose Access</span> to These
+              Powerful Features:
+            </Heading>
+          </Section>
 
           {/* What You'll Lose - Get Notified */}
           <Section className="my-6 mt-10 text-center bg-gray-50 rounded-lg p-6">

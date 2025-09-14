@@ -17,7 +17,9 @@ export default function TariffImpactTrialSartedEmail() {
   return (
     <Html>
       <Head />
-      <Preview>Trial Activated!</Preview>
+      <Preview>
+        Get started today and see how we save you hours on tariffs.
+      </Preview>
       <Tailwind
         config={{
           presets: [pixelBasedPreset],

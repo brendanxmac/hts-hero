@@ -24,6 +24,7 @@ export enum MixpanelEvent {
   CLASSIFICATION_STARTED = "Classification Started",
   CLASSIFICATION_COMPLETED = "Classification Completed",
   SIGN_UP = "Sign Up",
+  TARIFF_IMPACT_TRIAL_STARTED = "Tariff Impact Trial Started",
 }
 
 // Browser-side tracking functions
