@@ -84,7 +84,7 @@ export default function TariffImpactTrialEndingEmail() {
               Tariffs
             </Heading>
             <Text className="text-base text-gray-700 leading-relaxed mx-auto mt-1 mb-4">
-              No more instant analysis of which imports are affected by new
+              No more instant answers about which imports are affected by new
               tariff announcements &rarr; back to error-prone manual checks
             </Text>
             <Img
@@ -128,9 +128,10 @@ export default function TariffImpactTrialEndingEmail() {
           {/* Urgent Call to Action */}
           <Section className="text-center my-10 rounded-xl p-4">
             <Heading className="text-4xl font-bold text-gray-900 mb-3">
-              More Tariffs are Coming,
-              <br />
-              <span className="text-[#617BFF]">Stay Prepared</span>
+              <span className="text-[#617BFF]">Save Hours</span> on Tariff
+              Checks,
+              <br /> <span className="text-[#617BFF]">Be Prepared</span> for
+              Tariff Changes
             </Heading>
             <Text className="text-base text-gray-700 mb-6 font-medium">
               Upgrade today to keep all your Pro features at a fraction of the

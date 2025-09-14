@@ -27,7 +27,7 @@ export const tariffImpactStandard: PricingPlanI = {
   description: "Tariff Essentials",
   mode: StripePaymentMode.SUBSCRIPTION,
   price: 49,
-  priceAnchor: 70,
+  priceAnchor: 90,
   features: [
     {
       name: "400 Tariff Impact Checks / Month",
@@ -44,13 +44,13 @@ export const tariffImpactPro: PricingPlanI = {
   description: "Master Tariffs & Save Money",
   mode: StripePaymentMode.SUBSCRIPTION,
   price: 79,
-  priceAnchor: 150,
+  priceAnchor: 160,
   isFeatured: true,
   features: [
     {
       name: "Unlimited Tariff Impact Checks",
       details:
-        "A check is any time you submit a code to see if it's affected by a tariff update and get the answer",
+        "A check happens any time you submit a code to see if it's affected by a tariff update",
     },
     { name: "Notifications when your imports are affected by new tariffs" },
     {
