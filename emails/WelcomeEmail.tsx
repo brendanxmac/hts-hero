@@ -43,7 +43,7 @@ export default function WelcomeEmail() {
               Welcome! 👋
             </Heading>
             <Text className="text-lg text-gray-700 leading-relaxed mx-auto mb-4">
-              We&apos;re honored to have you here.
+              We&apos;re thrilled to have you here.
             </Text>
             <Text className="text-lg text-gray-700 leading-relaxed mx-auto mb-4">
               Hundreds of importers & customs brokers save hours every day with
@@ -64,12 +64,10 @@ export default function WelcomeEmail() {
                 Trade has never been more complicated.
               </Text>
               <Text className="text-lg leading-relaxed mb-4 text-gray-700">
-                Constant changes, new rules, and increased regulation are
-                overwhelming even the most experienced veterans.
+                The nonstop changes and increased regulation is overwhelming.
               </Text>
               <Text className="text-lg leading-relaxed mb-4 text-gray-700">
-                Spreadsheets and old systems just aren&apos;t cutting it
-                anymore.
+                Spreadsheets and old systems aren&apos;t cutting it anymore.
               </Text>
               <Text className="text-lg leading-relaxed mb-4 text-gray-700">
                 You&apos;re being asked to chop down a tree with a dull axe in
@@ -85,8 +83,13 @@ export default function WelcomeEmail() {
                 </span>
               </Text>
               <Text className="text-lg leading-relaxed mb-4 text-gray-700">
-                The industry is begging for a better way and we&apos;re paving
-                that path.
+                The industry needs a better way and we&apos;re paving that path.
+              </Text>
+              <Text className="text-lg leading-relaxed mb-4 text-gray-700">
+                As trade changes, the only mistake is not changing with it.
+              </Text>
+              <Text className="text-lg leading-relaxed mb-4 text-gray-700">
+                Upgrade your tools, conquer uncertainty, and lead the industry.
               </Text>
             </Section>
           </Section>
