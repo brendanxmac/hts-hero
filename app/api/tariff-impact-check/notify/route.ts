@@ -7,9 +7,17 @@ import { PricingPlan } from "../../../../types/config";
 import { TariffCodeSet } from "../../../../tariffs/announcements/announcements";
 import { HtsCodeSet } from "../../../../interfaces/hts";
 import { codeIsIncludedInTariffCodeSet } from "../../../../libs/tariff-impact-check";
-import { sendTariffImpactCheckEmail } from "../../../../emails/tariff-impact/tariff-impact-check-email";
+import {
+  tariffImpactCheckEmailHtml,
+  tariffImpactCheckEmailText,
+} from "../../../../emails/tariff-impact/tariff-impact-check-email";
 import { fetchUsers } from "../../../../libs/supabase/user";
 import { sendTariffImpactCheckResultsEmail } from "../../../../emails/tariff-impact/tariff-impact-check-results-email";
+import { sendEmails } from "../../../../libs/resend";
+import { CreateEmailOptions } from "resend";
+import config from "../../../../config";
+import ImpactedByNewTariffsEmail from "../../../../emails/ImpactedByNewTariffs";
+import React from "react";
 
 const requesterIsAdmin = (req: NextRequest) => {
   const serverApiKey = process.env.SERVER_ADMIN_API_KEY;
@@ -72,8 +80,27 @@ const fetchTariffCodeSet = async (supabase: SupabaseClient, id: string) => {
   return codeSet;
 };
 
-// Helper function to add delay between email sends
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+// Helper function to prepare email data for bulk sending
+const createTariffImpactEmail = (
+  recipient: string,
+  tariffCodeSet: TariffCodeSet,
+  userHtsCodeSet: HtsCodeSet,
+  affectedImportsCount: number
+): CreateEmailOptions => {
+  return {
+    from: config.resend.fromAdmin,
+    to: recipient,
+    subject: `🚨 New Tariffs Affect ${affectedImportsCount} of your Imports`,
+    react: React.createElement(ImpactedByNewTariffsEmail, {
+      tariffName: tariffCodeSet.name,
+      userImportListName: userHtsCodeSet.name,
+      affectedImportsCount,
+      tariffCodeSetId: tariffCodeSet.id,
+      htsCodeSetId: userHtsCodeSet.id,
+    }),
+    replyTo: "support@htshero.com",
+  };
+};
 
 const processTariffImpactNotifications = async (
   tariffCodeSet: TariffCodeSet
@@ -81,10 +108,7 @@ const processTariffImpactNotifications = async (
   const errors: string[] = [];
   let processedUsers = 0;
   let processedCodeSets = 0;
-  let emailsSent = 0;
-  let totalUsersToProcess = 0;
-  let totalCodeSetsToProcess = 0;
-  let totalEmailsToSend = 0;
+  let emailsToSend: CreateEmailOptions[] = [];
   const startTime = Date.now();
 
   try {
@@ -112,49 +136,21 @@ const processTariffImpactNotifications = async (
       userIdsWithActiveTariffImpactPurchases
     );
 
-    totalUsersToProcess = usersWithTariffImpactPurchases.length;
-    console.log(`👥 Total users to process: ${totalUsersToProcess}`);
-
-    // Pre-calculate total code sets and potential emails for progress tracking
-    for (const user of usersWithTariffImpactPurchases) {
-      try {
-        const codeSets = await fetchCodeSetsForUser(supabase, user.id);
-        totalCodeSetsToProcess += codeSets.length;
-
-        // Count potential emails
-        for (const codeSet of codeSets) {
-          const codesIncludedInTariffSet = codeSet.codes.filter((code) => {
-            return codeIsIncludedInTariffCodeSet(code, tariffCodeSet);
-          });
-          if (codesIncludedInTariffSet.length > 0) {
-            totalEmailsToSend++;
-          }
-        }
-      } catch (error) {
-        console.warn(
-          `⚠️ Failed to pre-calculate for user ${user.id}: ${error}`
-        );
-      }
-    }
-
-    console.log(`📊 Processing estimates:`);
-    console.log(`   - Total code sets: ${totalCodeSetsToProcess}`);
-    console.log(`   - Estimated emails to send: ${totalEmailsToSend}`);
     console.log(
-      `   - Estimated processing time: ${Math.ceil(totalEmailsToSend * 0.8)} seconds`
+      `👥 Total users to process: ${usersWithTariffImpactPurchases.length}`
     );
 
-    // Process each user with error handling and rate limiting
+    // Collect all emails to send
     for (const user of usersWithTariffImpactPurchases) {
       try {
         processedUsers++;
         const codeSets = await fetchCodeSetsForUser(supabase, user.id);
 
         console.log(
-          `👤 Processing user ${processedUsers}/${totalUsersToProcess}: ${user.id}`
+          `👤 Processing user ${processedUsers}/${usersWithTariffImpactPurchases.length}: ${user.id}`
         );
 
-        // Process each codeSet for this user with error handling
+        // Process each codeSet for this user
         for (const codeSet of codeSets) {
           try {
             processedCodeSets++;
@@ -163,41 +159,14 @@ const processTariffImpactNotifications = async (
             });
 
             if (codesIncludedInTariffSet.length > 0) {
-              try {
-                // Add delay before sending email (rate limiting)
-                if (emailsSent > 0) {
-                  await delay(700); // 800ms delay between emails
-                }
-
-                await sendTariffImpactCheckEmail(
-                  user.email,
-                  tariffCodeSet,
-                  codeSet,
-                  codesIncludedInTariffSet.length
-                );
-                emailsSent++;
-
-                // Log progress every 10 emails or at milestones
-                if (emailsSent % 10 === 0 || emailsSent === totalEmailsToSend) {
-                  const elapsed = Date.now() - startTime;
-                  const avgTimePerEmail = elapsed / emailsSent;
-                  const remainingEmails = totalEmailsToSend - emailsSent;
-                  const estimatedRemainingTime = Math.ceil(
-                    (remainingEmails * avgTimePerEmail) / 1000
-                  );
-
-                  console.log(
-                    `📧 Email progress: ${emailsSent}/${totalEmailsToSend} sent (${Math.round((emailsSent / totalEmailsToSend) * 100)}%)`
-                  );
-                  console.log(
-                    `⏱️  Elapsed: ${Math.round(elapsed / 1000)}s, ETA: ${estimatedRemainingTime}s`
-                  );
-                }
-              } catch (emailError) {
-                const errorMsg = `Failed to send email to user ${user.id} (${user.email}) for codeSet ${codeSet.id}: ${emailError instanceof Error ? emailError.message : String(emailError)}`;
-                errors.push(errorMsg);
-                console.error(`❌ ${errorMsg}`, emailError);
-              }
+              // Prepare email data instead of sending immediately
+              const emailData = createTariffImpactEmail(
+                user.email,
+                tariffCodeSet,
+                codeSet,
+                codesIncludedInTariffSet.length
+              );
+              emailsToSend.push(emailData);
             }
           } catch (codeSetError) {
             const errorMsg = `Failed to process codeSet ${codeSet.id} for user ${user.id}: ${codeSetError instanceof Error ? codeSetError.message : String(codeSetError)}`;
@@ -212,27 +181,71 @@ const processTariffImpactNotifications = async (
       }
     }
 
+    console.log(`📊 Data collection completed:`);
+    console.log(`   - Processed ${processedUsers} users`);
+    console.log(`   - Processed ${processedCodeSets} code sets`);
+    console.log(`   - Prepared ${emailsToSend.length} emails to send`);
+
+    // Send all emails in bulk using the sendEmails function
+    let emailsSent = 0;
+
+    if (emailsToSend.length > 0) {
+      console.log(`📧 Sending ${emailsToSend.length} emails in bulk...`);
+
+      try {
+        const results = await sendEmails(emailsToSend);
+
+        // Count successful sends
+        for (const result of results) {
+          console.log("Processing batch result:", result);
+
+          // Check if this is an error result (has error property with actual error)
+          if ("error" in result && result.error) {
+            const errorMsg = `Bulk email batch error: ${JSON.stringify(result.error)}`;
+            errors.push(errorMsg);
+            console.error("❌ Batch failed:", result.error);
+          } else {
+            // This is a successful batch result
+            const batchResult = result as any;
+            if (batchResult.data && Array.isArray(batchResult.data)) {
+              const batchEmailsSent = batchResult.data.length;
+              emailsSent += batchEmailsSent;
+              console.log(
+                `✅ Batch completed successfully: ${batchEmailsSent} emails sent`
+              );
+            } else {
+              console.warn(
+                "⚠️ Batch result missing expected data array:",
+                batchResult
+              );
+            }
+          }
+        }
+
+        console.log(
+          `✅ Bulk email sending completed. Sent ${emailsSent} emails.`
+        );
+      } catch (bulkEmailError) {
+        const errorMsg = `Failed to send bulk emails: ${bulkEmailError instanceof Error ? bulkEmailError.message : String(bulkEmailError)}`;
+        errors.push(errorMsg);
+        console.error(`❌ ${errorMsg}`, bulkEmailError);
+      }
+    }
+
     const totalTime = Date.now() - startTime;
-    const avgTimePerEmail = emailsSent > 0 ? totalTime / emailsSent : 0;
 
     // Log final processing summary
     console.log(`✅ Tariff impact notification processing completed:`);
     console.log(`   📊 Final Statistics:`);
+    console.log(`   - Processed ${processedUsers} users`);
+    console.log(`   - Processed ${processedCodeSets} code sets`);
+    console.log(`   - Prepared ${emailsToSend.length} emails for sending`);
     console.log(
-      `   - Processed ${processedUsers}/${totalUsersToProcess} users (${Math.round((processedUsers / totalUsersToProcess) * 100)}%)`
-    );
-    console.log(
-      `   - Processed ${processedCodeSets}/${totalCodeSetsToProcess} code sets (${Math.round((processedCodeSets / totalCodeSetsToProcess) * 100)}%)`
-    );
-    console.log(
-      `   - Sent ${emailsSent}/${totalEmailsToSend} emails (${Math.round((emailsSent / totalEmailsToSend) * 100)}%)`
+      `   - Successfully sent ${emailsSent}/${emailsToSend.length} emails (${emailsToSend.length > 0 ? Math.round((emailsSent / emailsToSend.length) * 100) : 0}%)`
     );
     console.log(`   - Encountered ${errors.length} errors`);
     console.log(
       `   ⏱️  Total processing time: ${Math.round(totalTime / 1000)}s`
-    );
-    console.log(
-      `   📈 Average time per email: ${Math.round(avgTimePerEmail)}ms`
     );
 
     if (errors.length > 0) {

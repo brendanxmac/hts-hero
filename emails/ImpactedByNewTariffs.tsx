@@ -40,10 +40,10 @@ export default function ImpactedByNewTariffsEmail({
           presets: [pixelBasedPreset],
         }}
       >
-        <Container className="mx-auto py-2 font-sans max-w-[600px] bg-white">
+        <Container className="mx-auto py-6 font-sans max-w-[600px] bg-white">
           <Img
             alt="HTS Hero Logo"
-            className="py-8 mx-auto"
+            className="py-6 mx-auto"
             width="200"
             height="40"
             style={{
@@ -55,17 +55,17 @@ export default function ImpactedByNewTariffsEmail({
           />
 
           {/* Alert Section with Border */}
-          <Section className="text-center px-4 mb-8 border-4 border-[#4F46E5] rounded-lg bg-white shadow-lg">
-            <Heading className="text-2xl font-bold text-gray-900 mb-2">
+          <Section className="text-center px-2 mb-8">
+            <Heading className="text-2xl font-bold text-gray-900 mb-4">
               🚨 New Tariff Impact Alert
             </Heading>
 
-            <Text className="text-base text-gray-800 leading-relaxed mt-2 mb-4">
+            <Text className="text-base text-gray-800 leading-relaxed mt-0 mb-6">
               We've identified that{" "}
               <span className="font-bold text-red-600">
-                {affectedImportsCount} of your imports are affected
+                {affectedImportsCount} of your imports
               </span>{" "}
-              by new tariffs.
+              are affected by the new tariff announcement.
             </Text>
 
             {/* <Heading className="text-lg font-bold text-gray-900 leading-relaxed mb-3">
@@ -73,34 +73,34 @@ export default function ImpactedByNewTariffsEmail({
             </Heading> */}
 
             {/* Impact Summary Grid */}
-            <Container className="bg-gray-900 border-2 border-gray-600 rounded-lg py-6 mb-6">
+            <Container className="bg-gray-50 rounded-lg p-4 mb-6">
               {/* Tariff Announcement */}
-              <Container className="mb-4 pb-4 border-b-2 border-gray-500">
-                <Text className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1 my-0">
+              <Container className="mb-4 pb-2">
+                <Text className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-1 my-0">
                   TARIFF ANNOUNCEMENT
                 </Text>
-                <Text className="text-xl font-semibold text-white my-0">
+                <Text className="text-lg font-bold text-gray-900 my-0 leading-tight">
                   {tariffName}
                 </Text>
               </Container>
 
               {/* Import List */}
-              <Container className="mb-4 pb-4 border-b-2 border-gray-500">
-                <Text className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1 my-0">
+              <Container className="mb-4 pb-2">
+                <Text className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-1 my-0">
                   IMPORT LIST
                 </Text>
-                <Text className="text-xl font-semibold text-white my-0">
+                <Text className="text-lg font-bold text-gray-900 my-0 leading-tight">
                   {userImportListName}
                 </Text>
               </Container>
 
               {/* Affected Count */}
               <Container className="mb-0">
-                <Text className="text-xs font-medium text-gray-400 uppercase tracking-wide mt-0 mb-2">
+                <Text className="text-xs font-bold text-gray-600 uppercase tracking-wide mt-0 mb-2">
                   IMPORTS AFFECTED
                 </Text>
-                <Container className="w-fit bg-red-500 px-4 py-0 rounded-lg">
-                  <Text className="text-2xl text-white font-semibold my-0">
+                <Container className="w-fit bg-red-600 px-3 py-1 rounded">
+                  <Text className="text-lg text-white font-bold my-0 leading-none">
                     {affectedImportsCount}{" "}
                     {affectedImportsCount === 1 ? "import" : "imports"}
                   </Text>
@@ -108,10 +108,10 @@ export default function ImpactedByNewTariffsEmail({
               </Container>
             </Container>
             {/* CTA Button */}
-            <Container className="text-center mt-6">
+            <Container className="text-center mt-8">
               <Button
                 href={impactCheckerUrl}
-                className="bg-[#4F46E5] text-white font-bold py-4 px-8 text-lg rounded-lg border-2 border-[#3730A3]"
+                className="w-full bg-[#4F46E5] text-white font-bold py-4 text-lg rounded-lg"
               >
                 See Affected Imports →
               </Button>
@@ -119,51 +119,46 @@ export default function ImpactedByNewTariffsEmail({
           </Section>
 
           {/* Benefits Section */}
-          <Section className="px-2 mb-2 mt-8 text-center">
-            <Heading className="text-2xl font-bold text-gray-900 mb-2 text-center">
+          {/* <Section className="px-6 mb-6 mt-12 text-center">
+            <Heading className="text-2xl font-bold text-gray-900 mb-6 text-center">
               Tired of Tariff Chaos?
             </Heading>
 
             <Container className="mt-0">
-              <Text className="text-lg text-gray-800 mb-4 font-medium">
+              <Text className="text-lg text-gray-800 mb-5 font-medium leading-relaxed">
                 <span className="text-green-500 font-bold text-xl mr-3">✓</span>
                 See which of your imports are affected by new tariff
                 announcements
               </Text>
 
-              <Text className="text-lg text-gray-800 mb-4 font-medium">
+              <Text className="text-lg text-gray-800 mb-5 font-medium leading-relaxed">
                 <span className="text-green-500 font-bold text-xl mr-3">✓</span>
                 Quickly know how new tariffs change your landed costs
               </Text>
 
-              <Text className="text-lg text-gray-800 mb-4 font-medium">
+              <Text className="text-lg text-gray-800 mb-6 font-medium leading-relaxed">
                 <span className="text-green-500 font-bold text-xl mr-3">✓</span>
                 Discover ways to save on your import costs
               </Text>
             </Container>
 
-            {/* CTA Button */}
-            <Container className="text-center mt-6">
+            <Container className="text-center mt-8">
               <Button
                 href={impactCheckerUrl}
-                className="bg-[#4F46E5] text-white font-bold py-4 px-8 text-lg rounded-lg border-2 border-[#3730A3]"
+                className="bg-[#4F46E5] text-white font-bold py-4 px-10 text-lg rounded-lg border-2 border-[#3730A3]"
               >
                 Upgrade to Pro →
               </Button>
             </Container>
-          </Section>
+          </Section> */}
 
           {/* Support Section */}
-          <Section className="px-4 my-8 bg-gray-100 border-2 border-gray-200 rounded-lg p-6 text-center">
-            <Text className="text-lg text-gray-800 my-0 font-medium">
-              If you have questions about this notification or need assistance,
-              our support team is here to help!
-              <br />
-              <br />
-              Contact us at{" "}
+          <Section className="px-4 my-10 text-center">
+            <Text className="text-sm text-gray-700 my-0 leading-relaxed">
+              Questions about this notification? Contact our support team at{" "}
               <Button
                 href="mailto:support@htshero.com"
-                className="text-[#4F46E5] font-bold underline text-lg"
+                className="text-[#4F46E5] font-medium underline"
               >
                 support@htshero.com
               </Button>
@@ -171,24 +166,24 @@ export default function ImpactedByNewTariffsEmail({
           </Section>
 
           {/* Disclaimers */}
-          <Section className="text-center px-4 mb-4">
-            <Text className="text-xs text-gray-600 leading-relaxed mb-3">
-              Data Source Disclaimer: We obtain our tariff information from
-              official government sources, but we do not guarantee the full
-              accuracy of our tariff impact checks, especially if some time has
-              passed since you initially received this email.
+          <Section className="text-center px-4 mb-6">
+            <Text className="text-xs text-gray-500 leading-relaxed mb-3">
+              <span className="font-medium">Data Source Disclaimer:</span>{" "}
+              Tariff information is obtained from official government sources.
+              We do not guarantee full accuracy, especially if time has passed
+              since receiving this email.
             </Text>
-            <Text className="text-xs text-gray-600 leading-relaxed mb-0">
-              Liability Disclaimer HTS Hero is not responsible for any actions
-              taken based on the information displayed. Please verify all tariff
-              information with official sources or contact a customs broker
-              before making business decisions.
+            <Text className="text-xs text-gray-500 leading-relaxed mb-0">
+              <span className="font-medium">Liability Disclaimer:</span> HTS
+              Hero is not responsible for actions taken based on this
+              information. Please verify with official sources or consult a
+              customs broker before making taking action.
             </Text>
           </Section>
 
           {/* Footer */}
-          <Section className="text-center">
-            <Text className="text-center text-gray-500 text-sm my-2 font-medium">
+          <Section className="text-center pt-6">
+            <Text className="text-center text-gray-400 text-xs my-2">
               © 2025 HTS Hero. All rights reserved.
             </Text>
           </Section>
