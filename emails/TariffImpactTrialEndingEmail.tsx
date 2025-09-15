@@ -43,9 +43,9 @@ export default function TariffImpactTrialEndingEmail() {
           {/* Professional Trial Ending Section */}
           <Section className="text-center mt-0 mb-2 px-4">
             {/* Trial Status */}
-            <Text className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">
+            {/* <Text className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">
               Trial Update
-            </Text>
+            </Text> */}
             <Heading className="text-2xl font-bold text-gray-900 mb-4">
               ⏰ Your Trial Ends <span className="underline">Tomorrow</span>
             </Heading>
@@ -57,7 +57,7 @@ export default function TariffImpactTrialEndingEmail() {
             </Text>
 
             {/* Special Offer Highlight */}
-            <Container className="bg-gray-900 py-6 px-6 mt-14 mb-8 rounded-lg">
+            <Container className="bg-gray-900 py-6 px-6 mt-10 mb-8 rounded-lg">
               <Text className="text-sm font-medium text-[#617BFF] uppercase tracking-wide mb-2">
                 Limited Time Offer
               </Text>
@@ -65,9 +65,8 @@ export default function TariffImpactTrialEndingEmail() {
                 Upgrade & Save 50%
               </Heading>
               <Text className="text-sm text-gray-300 mb-6 leading-relaxed mt-2">
-                Trade is tough right now and everyone needs a little relief.{" "}
-                <br /> So here's a limited time offer to upgrade to Pro and save
-                50%.
+                Trade is tough right now and everyone needs a little relief. So
+                were offering Tariff Impact Pro at 50% off for a limited time.
               </Text>
 
               {/* Primary CTA */}

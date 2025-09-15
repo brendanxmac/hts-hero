@@ -1,15 +1,17 @@
+import config from "@/config";
 import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "../../supabase/server";
-import { sendEmailFromComponent } from "../../../../libs/resend";
-import TariffImpactTrialSartedEmail from "../../../../emails/TariffImpactTrialSartedEmail";
+import { sendEmail, sendEmailFromComponent, sendEmails } from "@/libs/resend";
+import TariffImpactTrialSartedEmail from "@/emails/TariffImpactTrialSartedEmail";
 import React from "react";
-import { getExactDateDaysAgo } from "../../../../libs/date";
-import TariffImpactTrialEndingEmail from "../../../../emails/TariffImpactTrialEndingEmail";
+import { getExactDateDaysAgo } from "@/libs/date";
+import TariffImpactTrialEndingEmail from "@/emails/TariffImpactTrialEndingEmail";
 import {
   fetchPurchasesForUser,
   getActiveTariffImpactPurchasesForUser,
-} from "../../../../libs/supabase/purchase";
-import { PricingPlan } from "../../../../types";
+} from "@/libs/supabase/purchase";
+import { PricingPlan } from "@/types";
+import { CreateEmailOptions } from "resend";
 
 export async function POST(req: NextRequest) {
   try {
@@ -85,36 +87,47 @@ export async function POST(req: NextRequest) {
       usersWithTrialExpiringAndNoActivePurchase.map((user) => user.id)
     );
 
-    const emailsSent = [];
-    const errors = [];
+    const trialExpiringEmails = usersWithTrialExpiringAndNoActivePurchase.map(
+      (user): CreateEmailOptions => ({
+        from: config.resend.fromAdmin,
+        to: user.email,
+        subject: "Your Trial Ends Tomorrow - Don't Miss Out!",
+        react: React.createElement(TariffImpactTrialEndingEmail),
+        replyTo: config.resend.supportEmail,
+      })
+    );
 
-    // Send trial ending email to each qualifying user with rate limiting
-    for (const user of usersWithTrialExpiringAndNoActivePurchase || []) {
-      try {
-        // await sendEmailFromComponent({
-        //   to: user.email,
-        //   subject: "Your Trial Ends Tomorrow - Don't Miss Out!",
-        //   emailComponent: React.createElement(TariffImpactTrialEndingEmail),
-        // });
+    if (trialExpiringEmails.length > 1000) {
+      sendEmail({
+        to: "brendan@htshero.com",
+        subject: "Over 1000 Trial Emails to Send",
+        text: "Over 1000 Trial Emails to Send",
+        html: "Over 1000 Tariff Impact Trial Emails to Send",
+        replyTo: config.resend.supportEmail,
+      });
 
-        emailsSent.push(user.email);
-        console.log(`Trial ending email sent to: ${user.email}`);
-
-        // Rate limit: wait 700ms before sending next email
-        await new Promise((resolve) => setTimeout(resolve, 700));
-      } catch (emailError) {
-        console.error(`Failed to send email to ${user.email}:`, emailError);
-        errors.push({ email: user.email, error: emailError.message });
-      }
+      return NextResponse.json(
+        {
+          message: "Over 1000 Trial Emails to Send",
+        },
+        { status: 400 }
+      );
     }
+
+    // return NextResponse.json(
+    //   {
+    //     emails: trialExpiringEmails.map((email) => email.to),
+    //   },
+    //   { status: 200 }
+    // );
+
+    const bulkEmailsSendResponse = await sendEmails(trialExpiringEmails);
 
     return NextResponse.json(
       {
-        message: "Trial ending notifications processed",
-        emailsSent: emailsSent.length,
-        emails: emailsSent,
-        errors: errors.length > 0 ? errors : undefined,
+        message: "Sent Tariff Impact Trial Ending Emails",
         dateChecked: dateSixDaysAgo,
+        emailsSent: bulkEmailsSendResponse.length,
       },
       { status: 200 }
     );
