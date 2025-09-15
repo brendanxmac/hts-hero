@@ -166,7 +166,7 @@ const processTariffImpactNotifications = async (
               try {
                 // Add delay before sending email (rate limiting)
                 if (emailsSent > 0) {
-                  await delay(800); // 800ms delay between emails
+                  await delay(700); // 800ms delay between emails
                 }
 
                 await sendTariffImpactCheckEmail(
