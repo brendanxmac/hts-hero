@@ -40,7 +40,7 @@ import { fetchTariffCodeSets } from "../../../libs/tariff-code-set";
 import { ArrowRightIcon } from "@heroicons/react/16/solid";
 import { SecondaryText } from "../../../components/SecondaryText";
 import TariffImpactCodesInput from "../../../components/TariffImpactCodesInput";
-import { fetchUser, updateUserProfile } from "../../../libs/supabase/user";
+import { fetchUser } from "../../../libs/supabase/user";
 import TariffImpactPricing from "../../../components/TariffImpactPricing";
 import apiClient from "../../../libs/api";
 
@@ -779,7 +779,7 @@ export default function Home() {
                           <th className="w-4"></th>
                           <th>HTS Code</th>
                           <th>Impacted</th>
-                          {/* <th className="hidden sm:table-cell">Notes</th> */}
+                          <th className="hidden sm:table-cell">Notes</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -809,7 +809,7 @@ export default function Home() {
                                 </td>
                               )}
                               {impactIndicator}
-                              {/* {notes} */}
+                              {notes}
                             </tr>
                           );
                         })}

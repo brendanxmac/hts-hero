@@ -104,7 +104,7 @@ const processTariffImpactNotifications = async (
   const errors: string[] = [];
   let processedUsers = 0;
   let processedCodeSets = 0;
-  let emailsToSend: CreateEmailOptions[] = [];
+  const emailsToSend: CreateEmailOptions[] = [];
   const startTime = Date.now();
 
   try {
