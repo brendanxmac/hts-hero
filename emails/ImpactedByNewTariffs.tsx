@@ -40,16 +40,15 @@ export default function ImpactedByNewTariffsEmail({
           presets: [pixelBasedPreset],
         }}
       >
-        <Container className="mx-auto py-6 font-sans max-w-[600px] bg-white">
+        <Container className="mx-auto py-4 font-sans max-w-[600px] bg-white">
           <Img
             alt="HTS Hero Logo"
-            className="py-6 mx-auto"
-            width="200"
-            height="40"
+            className="py-4 mx-auto"
+            width="170"
+            height="30"
             style={{
-              width: "170px",
-              maxWidth: "100%",
-              height: "auto",
+              width: "auto",
+              height: "30px",
             }}
             src="https://exviallkczzlrkpaafxq.supabase.co/storage/v1/object/public/content/logo-text-black.png"
           />
@@ -73,7 +72,7 @@ export default function ImpactedByNewTariffsEmail({
             </Heading> */}
 
             {/* Impact Summary Grid */}
-            <Container className="bg-gray-50 rounded-lg p-4 mb-6">
+            <Container className="bg-stone-100 rounded-lg p-4 mb-6">
               {/* Tariff Announcement */}
               <Container className="mb-4 pb-2">
                 <Text className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-1 my-0">

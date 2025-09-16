@@ -21,16 +21,6 @@ export async function GET(req: NextRequest) {
     const user = data.user;
 
     if (user) {
-      // check if the user was just created
-      console.log("user", user.created_at);
-
-      console.log("Date.now()", Date.now());
-      console.log("user.created_at", new Date(user.created_at).getTime());
-      console.log(
-        "user.created_at - 10000",
-        new Date(user.created_at).getTime() - 10000
-      );
-
       // check if user.created_at was within the last 10 seconds
       const isNewUser =
         user?.created_at &&
@@ -51,10 +41,6 @@ export async function GET(req: NextRequest) {
       }
     }
   }
-
-  console.log("requestUrl.origin", requestUrl.origin);
-  console.log("config.auth.callbackUrl", config.auth.callbackUrl);
-  console.log("redirectTo parameter", redirectTo);
 
   // URL to redirect to after sign in process completes
   // Use the redirectTo parameter if provided, otherwise fallback to default callback URL

@@ -17,7 +17,7 @@ export default function WelcomeEmail() {
   return (
     <Html>
       <Head />
-      <Preview>Welcome to HTS Hero!</Preview>
+      <Preview>Ready to simplify your import process?</Preview>
       <Tailwind
         config={{
           presets: [pixelBasedPreset],
@@ -26,26 +26,25 @@ export default function WelcomeEmail() {
         <Container className="mx-auto py-4 font-sans max-w-[600px] bg-white">
           <Img
             alt="HTS Hero Logo"
-            className="py-8 mx-auto"
+            className="py-4 mx-auto"
             width="200"
             height="40"
             style={{
-              width: "170px",
-              maxWidth: "100%",
-              height: "auto",
+              width: "auto",
+              height: "30px",
             }}
             src="https://exviallkczzlrkpaafxq.supabase.co/storage/v1/object/public/content/logo-text-black.png"
           />
 
           {/* Warm Welcome */}
-          <Section className="text-center mb-8">
-            <Heading className="text-2xl font-bold text-[#617BFF] mb-4 tracking-tight">
-              Welcome! 👋
+          <Section className="text-center my-8">
+            <Heading className="text-3xl font-bold mb-4 tracking-tight">
+              Welcome!
             </Heading>
-            <Text className="text-lg text-gray-700 leading-relaxed mx-auto mb-4">
+            <Text className="text-base text-gray-700 leading-relaxed mx-auto mb-4">
               We&apos;re thrilled to have you here.
             </Text>
-            <Text className="text-lg text-gray-700 leading-relaxed mx-auto mb-4">
+            <Text className="text-base text-gray-700 leading-relaxed mx-auto mb-4">
               Hundreds of importers & customs brokers save hours every day with
               our tools, and we&apos;re excited to help you do the same.
             </Text>
@@ -60,37 +59,39 @@ export default function WelcomeEmail() {
             </Heading>
 
             <Section className="text-center">
-              <Text className="text-lg leading-relaxed mb-4 text-gray-700">
+              <Text className="text-base leading-relaxed mb-4 text-gray-700">
                 Trade has never been more complicated.
               </Text>
-              <Text className="text-lg leading-relaxed mb-4 text-gray-700">
-                The nonstop changes and increased regulation is overwhelming.
+              <Text className="text-base leading-relaxed mb-4 text-gray-700">
+                The nonstop changes and increased regulations have become
+                overwhelming.
               </Text>
-              <Text className="text-lg leading-relaxed mb-4 text-gray-700">
-                Spreadsheets and old systems aren&apos;t cutting it anymore.
+              <Text className="text-base leading-relaxed mb-4 text-gray-700">
+                Spreadsheets and old systems just aren&apos;t cutting it
+                anymore.
               </Text>
-              <Text className="text-lg leading-relaxed mb-4 text-gray-700">
-                You&apos;re being asked to chop down a tree with a dull axe in
-                half the time.
+              <Text className="text-base leading-relaxed mb-4 text-gray-700">
+                The industry needs a better way to keep up with the changes.
               </Text>
-              <Text className="text-lg leading-relaxed mb-4 text-gray-700">
-                We believe trade professionals deserve better...
+              <Text className="text-base leading-relaxed mb-4 text-gray-700">
+                And we're up for that challenge.
               </Text>
-              <Text className="text-lg leading-relaxed mb-4 font-bold text-gray-900">
-                So we&apos;re building tools that help you work{" "}
-                <span className="underline text-[#617BFF]">
+              <Text className="text-base leading-relaxed mb-4 font-bold text-gray-900">
+                Our tools help importers & customs brokers work{" "}
+                <span className="underline">
                   smarter, faster, and with greater confidence.
                 </span>
               </Text>
-              <Text className="text-lg leading-relaxed mb-4 text-gray-700">
-                The industry needs a better way and we&apos;re paving the path.
-              </Text>
-              <Text className="text-lg leading-relaxed mb-4 text-gray-700">
+              <Text className="text-base leading-relaxed mb-4 text-gray-700">
                 As trade changes, the only mistake would be not changing with
                 it.
               </Text>
-              <Text className="text-lg leading-relaxed mb-4 text-gray-700">
-                Upgrade your tools, conquer complexity, and lead the industry.
+              <Text className="text-base leading-relaxed mb-4 text-gray-700">
+                You either adapt or get left behind.
+              </Text>
+              <Text className="text-base leading-relaxed mb-4 text-gray-700">
+                Upgrade your tools, conquer the complexity, and embrace a new
+                way forward.
               </Text>
             </Section>
           </Section>
