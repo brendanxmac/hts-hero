@@ -59,9 +59,7 @@ function LoginContent() {
           },
         });
 
-        toast.success(
-          "Check for an email from Supabase Auth! (including spam)"
-        );
+        toast.success("Check for an email from HTS Hero! (including spam)");
 
         setIsDisabled(true);
       }
