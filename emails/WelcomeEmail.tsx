@@ -1,4 +1,3 @@
-// emails/WelcomeEmail.tsx
 import {
   Button,
   Container,
@@ -33,9 +32,8 @@ export default function WelcomeEmail() {
               width: "auto",
               height: "30px",
             }}
-            src="https://exviallkczzlrkpaafxq.supabase.co/storage/v1/object/public/content/logo-text-black.png"
+            src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/content/logo-text-black.png`}
           />
-
           {/* Warm Welcome */}
           <Section className="text-center my-8">
             <Heading className="text-center text-4xl mb-2">🎉</Heading>
@@ -50,7 +48,6 @@ export default function WelcomeEmail() {
               our tools, and we&apos;re excited to help you do the same.
             </Text>
           </Section>
-
           {/* Service Description */}
           <Section className="mb-10 text-center">
             <Heading className="text-center text-4xl mb-2">🚀</Heading>
@@ -96,7 +93,6 @@ export default function WelcomeEmail() {
               </Text>
             </Section>
           </Section>
-
           {/* Key Features */}
           <Section className="mb-8 text-center">
             <Heading className="text-4xl mb-2">🛠️</Heading>
@@ -131,7 +127,6 @@ export default function WelcomeEmail() {
               </Text>
             </Section>
           </Section>
-
           {/* Call to Action */}
           <Section className="text-center mb-10 mt-8">
             <Button
@@ -141,7 +136,6 @@ export default function WelcomeEmail() {
               Get Started →
             </Button>
           </Section>
-
           {/* Support Section */}
           <Section className="text-center">
             <Heading className="text-xl font-semibold text-gray-900">

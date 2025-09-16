@@ -34,7 +34,7 @@ export default function TariffImpactTrialEndingEmail() {
               maxWidth: "100%",
               height: "auto",
             }}
-            src="https://exviallkczzlrkpaafxq.supabase.co/storage/v1/object/public/content/logo-text-black.png"
+            src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/content/logo-text-black.png`}
           />
 
           {/* Professional Trial Ending Section */}
@@ -119,7 +119,7 @@ export default function TariffImpactTrialEndingEmail() {
                 maxWidth: "500px",
                 height: "auto",
               }}
-              src="https://exviallkczzlrkpaafxq.supabase.co/storage/v1/object/public/content/tariff-impact-notification.png"
+              src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/content/tariff-impact-notification.png`}
             />
           </Section>
           {/* What You'll Lose - See What's Impacted */}
@@ -142,7 +142,7 @@ export default function TariffImpactTrialEndingEmail() {
                 maxWidth: "600px",
                 height: "auto",
               }}
-              src="https://exviallkczzlrkpaafxq.supabase.co/storage/v1/object/public/content/see-whats-affected.png"
+              src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/content/see-whats-affected.png`}
             />
           </Section>
 
@@ -166,7 +166,7 @@ export default function TariffImpactTrialEndingEmail() {
                 maxWidth: "600px",
                 height: "auto",
               }}
-              src="https://exviallkczzlrkpaafxq.supabase.co/storage/v1/object/public/content/tariff-wizard.png"
+              src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/content/tariff-wizard.png`}
             />
           </Section>
 

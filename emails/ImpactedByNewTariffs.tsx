@@ -48,7 +48,7 @@ export default function ImpactedByNewTariffsEmail({
               width: "auto",
               height: "30px",
             }}
-            src="https://exviallkczzlrkpaafxq.supabase.co/storage/v1/object/public/content/logo-text-black.png"
+            src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/content/logo-text-black.png`}
           />
 
           {/* Alert Section with Border */}
