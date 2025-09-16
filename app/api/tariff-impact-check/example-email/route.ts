@@ -1,6 +1,8 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "../../supabase/server";
-import { sendTariffImpactCheckExampleEmail } from "../../../../emails/tariff-impact/tariff-impact-check-example-email";
+import { sendEmailFromComponent } from "../../../../libs/resend";
+import React from "react";
+import ImpactedByNewTariffsEmailExample from "../../../../emails/ImpactedByNewTariffsExample";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +37,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await sendTariffImpactCheckExampleEmail(email);
+    await sendEmailFromComponent({
+      to: email,
+      subject: "New Tariffs Affect 5 of your Imports [Fake Example]",
+      emailComponent: React.createElement(ImpactedByNewTariffsEmailExample),
+      replyTo: "support@htshero.com",
+    });
 
     return NextResponse.json({ message: "Success" }, { status: 200 });
   } catch (e) {

@@ -1,55 +1,5 @@
 import { HtsCodeSet } from "../../interfaces/hts";
-import { sendEmail, sendEmailFromComponent } from "../../libs/resend";
 import { TariffCodeSet } from "../../tariffs/announcements/announcements";
-import ImpactedByNewTariffsEmail from "../ImpactedByNewTariffs";
-
-export const sendTariffImpactCheckEmail = async (
-  recipient: string,
-  tariffCodeSet: TariffCodeSet,
-  userHtsCodeSet: HtsCodeSet,
-  affectedImportsCount: number
-) => {
-  const html = tariffImpactCheckEmailHtml(
-    tariffCodeSet,
-    userHtsCodeSet,
-    affectedImportsCount
-  );
-  const text = tariffImpactCheckEmailText(
-    tariffCodeSet,
-    userHtsCodeSet,
-    affectedImportsCount
-  );
-
-  await sendEmail({
-    to: recipient,
-    subject: `🚨 New Tariffs Affect ${affectedImportsCount} of your Imports`,
-    text,
-    html,
-    replyTo: "support@htshero.com",
-  });
-};
-
-export const sendTariffImpactCheckEmailReact = async (
-  recipient: string,
-  tariffCodeSet: TariffCodeSet,
-  userHtsCodeSet: HtsCodeSet,
-  affectedImportsCount: number
-) => {
-  const emailComponent = ImpactedByNewTariffsEmail({
-    tariffName: tariffCodeSet.name,
-    userImportListName: userHtsCodeSet.name,
-    affectedImportsCount,
-    tariffCodeSetId: tariffCodeSet.id,
-    htsCodeSetId: userHtsCodeSet.id,
-  });
-
-  await sendEmailFromComponent({
-    to: recipient,
-    subject: `🚨 New Tariffs Affect ${affectedImportsCount} of your Imports`,
-    emailComponent,
-    replyTo: "support@htshero.com",
-  });
-};
 
 export const tariffImpactCheckEmailHtml = (
   tariffCodeSet: TariffCodeSet,

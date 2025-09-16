@@ -12,29 +12,13 @@ import {
   pixelBasedPreset,
 } from "@react-email/components";
 
-interface ImpactedByNewTariffsEmailProps {
-  tariffName: string;
-  userImportListName: string;
-  affectedImportsCount: number;
-  tariffCodeSetId: string;
-  htsCodeSetId: string;
-}
-
-export default function ImpactedByNewTariffsEmail({
-  tariffName = "New Steel and Aluminum Tariffs",
-  userImportListName = "My Import Portfolio",
-  affectedImportsCount = 5,
-  tariffCodeSetId = "tariff-123",
-  htsCodeSetId = "hts-456",
-}: ImpactedByNewTariffsEmailProps) {
-  const impactCheckerUrl = `https://htshero.com/tariffs/impact-checker?tariffAnnouncement=${tariffCodeSetId}&htsCodeSet=${htsCodeSetId}`;
+export default function ImpactedByNewTariffsEmailExample() {
+  const impactCheckerUrl = `https://htshero.com/tariffs/impact-checker`;
 
   return (
     <Html>
       <Head />
-      <Preview>
-        {`New Tariffs Affect ${affectedImportsCount} of your Imports - See Affected Imports`}
-      </Preview>
+      <Preview>See Affected Imports 👉</Preview>
       <Tailwind
         config={{
           presets: [pixelBasedPreset],
@@ -53,6 +37,36 @@ export default function ImpactedByNewTariffsEmail({
             src="https://exviallkczzlrkpaafxq.supabase.co/storage/v1/object/public/content/logo-text-black.png"
           />
 
+          {/* Demo Example Notice */}
+          <Section className="text-center px-2 mb-6">
+            <Container
+              className="bg-orange-50 border-l-4 border-orange-400 p-4 rounded-r-lg"
+              style={{
+                backgroundColor: "#fff7ed",
+                borderLeft: "4px solid #fb923c",
+                padding: "16px",
+                borderTopRightRadius: "8px",
+                borderBottomRightRadius: "8px",
+              }}
+            >
+              <Text
+                className="text-orange-800 text-sm font-medium my-0 leading-relaxed"
+                style={{
+                  color: "#9a3412",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  margin: "0",
+                  lineHeight: "1.5",
+                }}
+              >
+                ⚠️ <span className="font-bold">DEMONSTRATION ONLY</span> - This
+                is a fake tariff impact alert. None of your imports are
+                affected. This is just an example of what you can expect when
+                your imports are affected in the future.
+              </Text>
+            </Container>
+          </Section>
+
           {/* Alert Section with Border */}
           <Section className="text-center px-2 mb-8">
             <Heading className="text-2xl font-bold text-gray-900 mb-4">
@@ -61,9 +75,7 @@ export default function ImpactedByNewTariffsEmail({
 
             <Text className="text-base text-gray-800 leading-relaxed mt-0 mb-6">
               We've identified that{" "}
-              <span className="font-bold text-red-600">
-                {affectedImportsCount} of your imports
-              </span>{" "}
+              <span className="font-bold text-red-600">5 of your imports</span>{" "}
               are affected by the new tariff announcement.
             </Text>
 
@@ -79,7 +91,7 @@ export default function ImpactedByNewTariffsEmail({
                   TARIFF ANNOUNCEMENT
                 </Text>
                 <Text className="text-lg font-bold text-gray-900 my-0 leading-tight">
-                  {tariffName}
+                  Fake Tariff Announcement
                 </Text>
               </Container>
 
@@ -89,7 +101,7 @@ export default function ImpactedByNewTariffsEmail({
                   IMPORT LIST
                 </Text>
                 <Text className="text-lg font-bold text-gray-900 my-0 leading-tight">
-                  {userImportListName}
+                  Fake Import List
                 </Text>
               </Container>
 
@@ -100,8 +112,7 @@ export default function ImpactedByNewTariffsEmail({
                 </Text>
                 <Container className="w-fit bg-red-600 px-3 py-1 rounded">
                   <Text className="text-lg text-white font-bold my-0 leading-none">
-                    {affectedImportsCount}{" "}
-                    {affectedImportsCount === 1 ? "import" : "imports"}
+                    5 imports
                   </Text>
                 </Container>
               </Container>

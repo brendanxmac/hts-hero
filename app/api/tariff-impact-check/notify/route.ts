@@ -7,10 +7,6 @@ import { PricingPlan } from "../../../../types/config";
 import { TariffCodeSet } from "../../../../tariffs/announcements/announcements";
 import { HtsCodeSet } from "../../../../interfaces/hts";
 import { codeIsIncludedInTariffCodeSet } from "../../../../libs/tariff-impact-check";
-import {
-  tariffImpactCheckEmailHtml,
-  tariffImpactCheckEmailText,
-} from "../../../../emails/tariff-impact/tariff-impact-check-email";
 import { fetchUsers } from "../../../../libs/supabase/user";
 import { sendTariffImpactCheckResultsEmail } from "../../../../emails/tariff-impact/tariff-impact-check-results-email";
 import { sendEmails } from "../../../../libs/resend";
