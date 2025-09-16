@@ -36,7 +36,7 @@ export default function TariffImpactTrialSartedEmail() {
               maxWidth: "100%",
               height: "auto",
             }}
-            src="https://exviallkczzlrkpaafxq.supabase.co/storage/v1/object/public/content/logo-text-black.png"
+            src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/content/logo-text-black.png`}
           />
 
           <Section className="p-4 text-center mt-0">
@@ -76,7 +76,7 @@ export default function TariffImpactTrialSartedEmail() {
                 maxWidth: "500px",
                 height: "auto",
               }}
-              src="https://exviallkczzlrkpaafxq.supabase.co/storage/v1/object/public/content/tariff-impact-notification.png"
+              src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/content/tariff-impact-notification.png`}
             />
           </Section>
           {/* See What's Impacted */}
@@ -88,7 +88,6 @@ export default function TariffImpactTrialSartedEmail() {
               Tariffs
             </Heading>
             <Text className="text-sm text-gray-700 leading-relaxed mx-auto mt-1 mb-4">
-              Instantly know which of your imports are affected by new tariff
               announcements
             </Text>
             <Img
@@ -101,7 +100,7 @@ export default function TariffImpactTrialSartedEmail() {
                 maxWidth: "600px",
                 height: "auto",
               }}
-              src="https://exviallkczzlrkpaafxq.supabase.co/storage/v1/object/public/content/see-whats-affected.png"
+              src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/content/see-whats-affected.png`}
             />
           </Section>
 
@@ -124,7 +123,7 @@ export default function TariffImpactTrialSartedEmail() {
                 maxWidth: "600px",
                 height: "auto",
               }}
-              src="https://exviallkczzlrkpaafxq.supabase.co/storage/v1/object/public/content/tariff-wizard.png"
+              src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/content/tariff-wizard.png`}
             />
           </Section>
 
