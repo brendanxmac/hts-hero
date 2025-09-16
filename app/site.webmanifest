@@ -1,6 +1,6 @@
 {
-  "name": "MyWebSite",
-  "short_name": "MySite",
+  "name": "HTS Hero",
+  "short_name": "HTS Hero",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
