@@ -27,7 +27,7 @@ export const tariffImpactStandard: PricingPlanI = {
   description: "Tariff Essentials",
   mode: StripePaymentMode.SUBSCRIPTION,
   price: 49,
-  priceAnchor: 70,
+  priceAnchor: 90,
   features: [
     {
       name: "400 Tariff Impact Checks / Month",
@@ -44,13 +44,13 @@ export const tariffImpactPro: PricingPlanI = {
   description: "Master Tariffs & Save Money",
   mode: StripePaymentMode.SUBSCRIPTION,
   price: 79,
-  priceAnchor: 150,
+  priceAnchor: 160,
   isFeatured: true,
   features: [
     {
       name: "Unlimited Tariff Impact Checks",
       details:
-        "A check is any time you submit a code to see if it's affected by a tariff update and get the answer",
+        "A check happens any time you submit a code to see if it's affected by a tariff update",
     },
     { name: "Notifications when your imports are affected by new tariffs" },
     {
@@ -122,7 +122,7 @@ const config: ConfigProps = {
     // REQUIRED — Email 'From' field to be used when sending magic login links
     fromNoReply: `HTS Hero <noreply@notify.htshero.com>`,
     // REQUIRED — Email 'From' field to be used when sending other emails, like abandoned carts, updates etc..
-    fromAdmin: `Brendan at HTS Hero <brendan@notify.htshero.com>`,
+    fromAdmin: `HTS Hero <brendan@notify.htshero.com>`,
     // Email shown to customer if need support. Leave empty if not needed => if empty, set up Crisp above, otherwise you won't be able to offer customer support."
     supportEmail: "support@htshero.com",
   },

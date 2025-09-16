@@ -1,11 +1,6 @@
-<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="100" height="100" rx="28" fill="white"/>
-<mask id="mask0_352_759" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="14" y="14" width="72" height="72">
-<circle cx="49.9999" cy="49.9999" r="35.9999" fill="#D9D9D9"/>
-</mask>
-<g mask="url(#mask0_352_759)">
-<circle cx="49.9505" cy="49.9505" r="36.052" fill="#40C969"/>
-<line x1="38.3629" y1="51.1174" x2="49.8187" y2="63.0039" stroke="white" stroke-width="9" stroke-linecap="round"/>
-<line x1="77.4993" y1="20.1135" x2="50.1604" y2="63.0767" stroke="white" stroke-width="9" stroke-linecap="round"/>
-</g>
+<svg width="576" height="576" viewBox="0 0 576 576" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="288" cy="288" r="287.5" fill="white" stroke="white"/>
+<circle cx="288" cy="288" r="240.871" fill="#617BFF" stroke="white"/>
+<line x1="211.249" y1="300.375" x2="277.451" y2="368.417" stroke="white" stroke-width="53" stroke-linecap="round"/>
+<line x1="452.985" y1="96.1134" x2="279.426" y2="368.861" stroke="white" stroke-width="53" stroke-linecap="round"/>
 </svg>

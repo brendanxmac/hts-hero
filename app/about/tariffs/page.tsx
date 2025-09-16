@@ -143,8 +143,8 @@ export default function Home() {
 
         <Demo
           standoutPlacement="end"
-          titleStandout="Savings"
-          title="See The Current Tariff Rates & Discover Potential"
+          titleStandout="Discover Savings"
+          title="Know When Your Landed Costs Change &"
           subtitle="See the full list of tariffs for any import from any country & explore ways to save"
           ctaText="Try it Now!"
           ctaLink="/tariffs/impact-checker"

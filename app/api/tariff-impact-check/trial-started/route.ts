@@ -1,12 +1,13 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "../../supabase/server";
 import { sendEmailFromComponent } from "../../../../libs/resend";
+import TariffImpactTrialSartedEmail from "../../../../emails/TariffImpactTrialSartedEmail";
 import React from "react";
-import ImpactedByNewTariffsEmailExample from "../../../../emails/ImpactedByNewTariffsExample";
+import { updateUserProfile } from "../../../../libs/supabase/user";
 
 export const dynamic = "force-dynamic";
 
-interface SendExampleImpactNotificationEmailDto {
+interface TariffImpactTrialStartedDto {
   email: string;
 }
 
@@ -16,7 +17,6 @@ export async function POST(req: NextRequest) {
     const { data } = await supabase.auth.getUser();
     const user = data.user;
 
-    // User who are not logged in can't do searches
     if (!user) {
       return NextResponse.json(
         { error: "You must be logged in to complete this action." },
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { email }: SendExampleImpactNotificationEmailDto = await req.json();
+    const { email }: TariffImpactTrialStartedDto = await req.json();
 
     if (!email) {
       return NextResponse.json({ error: "Missing email" }, { status: 400 });
@@ -37,12 +37,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await sendEmailFromComponent({
-      to: email,
-      subject: "[Fake Example] New Tariffs Affect 5 of your Imports",
-      emailComponent: React.createElement(ImpactedByNewTariffsEmailExample),
-      replyTo: "support@htshero.com",
-    });
+    await Promise.all([
+      updateUserProfile(user.id, {
+        tariff_impact_trial_started_at: new Date().toISOString(),
+      }),
+      sendEmailFromComponent({
+        to: email,
+        subject: "Trial Activated!",
+        emailComponent: React.createElement(TariffImpactTrialSartedEmail),
+        replyTo: "support@htshero.com",
+      }),
+    ]);
 
     return NextResponse.json({ message: "Success" }, { status: 200 });
   } catch (e) {

@@ -42,6 +42,7 @@ import { SecondaryText } from "../../../components/SecondaryText";
 import TariffImpactCodesInput from "../../../components/TariffImpactCodesInput";
 import { fetchUser, updateUserProfile } from "../../../libs/supabase/user";
 import TariffImpactPricing from "../../../components/TariffImpactPricing";
+import apiClient from "../../../libs/api";
 
 export default function Home() {
   const CHARACTER_LIMIT = 3000;
@@ -174,10 +175,10 @@ export default function Home() {
       const userTrialStartDate = userProfile?.tariff_impact_trial_started_at;
 
       if (userTrialStartDate) {
-        // if the trial started more than 7 days ago, set isTrialUser to false
+        // if the trial started more than 10 days ago, set isTrialUser to false
         const trialStartedMoreThan7DaysAgo =
           new Date(userTrialStartDate) <
-          new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+          new Date(Date.now() - 10 * 24 * 60 * 60 * 1000);
 
         if (trialStartedMoreThan7DaysAgo) {
           setIsTrialUser(false);
@@ -186,9 +187,10 @@ export default function Home() {
         }
       } else {
         // Update user profile setting tariff_impact_trial_started_at to now
-        await updateUserProfile(user.id, {
-          tariff_impact_trial_started_at: new Date().toISOString(),
+        await apiClient.post("/tariff-impact-check/trial-started", {
+          email: user.email,
         });
+        trackEvent(MixpanelEvent.TARIFF_IMPACT_TRIAL_STARTED);
         setIsTrialUser(true);
       }
     };
@@ -351,7 +353,7 @@ export default function Home() {
         // Show popup instead to get them to convert
         if (!isTrialUser && !activeTariffImpactPurchase) {
           toast.error(
-            `Your 7 day trial has expired. Upgrade to get more checks, notifications when your imports are affected, and tariff rates for any import`,
+            `Your trial has expired. Upgrade to get more checks, notifications when your imports are affected, and tariff rates for any import`,
             { duration: 8000 }
           );
         } else {
@@ -777,7 +779,7 @@ export default function Home() {
                           <th className="w-4"></th>
                           <th>HTS Code</th>
                           <th>Impacted</th>
-                          <th className="hidden sm:table-cell">Notes</th>
+                          {/* <th className="hidden sm:table-cell">Notes</th> */}
                         </tr>
                       </thead>
                       <tbody>
@@ -807,7 +809,7 @@ export default function Home() {
                                 </td>
                               )}
                               {impactIndicator}
-                              {notes}
+                              {/* {notes} */}
                             </tr>
                           );
                         })}

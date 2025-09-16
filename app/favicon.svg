@@ -1,10 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" width="1000" height="1000"><g clip-path="url(#SvgjsClipPath1007)"><rect width="1000" height="1000" fill="#ffffff"></rect><g transform="matrix(0.9887005649717514,0,0,0.9887005649717514,150,150)"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" width="708" height="708"><svg width="708" height="708" viewBox="0 0 708 708" fill="none" xmlns="http://www.w3.org/2000/svg">
-<mask id="mask0_332_745" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="708" height="708">
-<circle cx="354" cy="354" r="354" fill="#D9D9D9"></circle>
-</mask>
-<g mask="url(#mask0_332_745)">
-<circle cx="353.513" cy="353.513" r="354.513" fill="#40C969"></circle>
-<line x1="215.483" y1="367.607" x2="331.704" y2="487.058" stroke="white" stroke-width="65" stroke-linecap="round"></line>
-<line x1="620.804" y1="43.8921" x2="339.355" y2="486.191" stroke="white" stroke-width="65" stroke-linecap="round"></line>
-</g>
-</svg></svg></g></g><defs><clipPath id="SvgjsClipPath1007"><rect width="1000" height="1000" x="0" y="0" rx="350" ry="350"></rect></clipPath></defs></svg>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="576" height="576"><svg width="576" height="576" viewBox="0 0 576 576" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="288" cy="288" r="287.5" fill="white" stroke="white"></circle>
+<circle cx="288" cy="288" r="240.871" fill="#617BFF" stroke="white"></circle>
+<line x1="211.249" y1="300.375" x2="277.451" y2="368.417" stroke="white" stroke-width="53" stroke-linecap="round"></line>
+<line x1="452.985" y1="96.1134" x2="279.426" y2="368.861" stroke="white" stroke-width="53" stroke-linecap="round"></line>
+</svg><style>@media (prefers-color-scheme: light) { :root { filter: none; } }
+@media (prefers-color-scheme: dark) { :root { filter: none; } }
+</style></svg>

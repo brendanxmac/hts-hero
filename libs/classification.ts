@@ -75,7 +75,7 @@ export const generateClassificationReport = async (
   const companyLogoFormat = getImageFormatFromFilename(
     userProfile.company_logo || ""
   );
-  logo.src = companyLogo.signedUrl || "/hts-hero-logo-with-text.png";
+  logo.src = companyLogo.signedUrl || "/logo-with-text.svg";
 
   // Wait for image to load to get actual dimensions
   await new Promise((resolve, reject) => {
