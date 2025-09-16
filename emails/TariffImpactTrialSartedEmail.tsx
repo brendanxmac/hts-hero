@@ -65,7 +65,7 @@ export default function TariffImpactTrialSartedEmail() {
             </Heading>
             <Text className="text-sm text-gray-700 leading-relaxed mx-auto mt-1 mb-4">
               Recieve emails when new tariff announcements affect any of your
-              imports
+              imports.
             </Text>
             <Img
               alt="HTS Hero Tariff Impact Notification"
@@ -88,7 +88,7 @@ export default function TariffImpactTrialSartedEmail() {
               Tariffs
             </Heading>
             <Text className="text-sm text-gray-700 leading-relaxed mx-auto mt-1 mb-4">
-              announcements
+              See which imports are affected by new tariffs in a single click.
             </Text>
             <Img
               alt="HTS Hero See What's Affected"
@@ -111,7 +111,7 @@ export default function TariffImpactTrialSartedEmail() {
             </Heading>
             <Text className="text-sm text-gray-700 leading-relaxed mx-auto mt-1 mb-4">
               Find the latest duty rates, exemptions, and possible savings for
-              any import, from any country
+              any import, from any country.
             </Text>
             <Img
               alt="HTS Hero Tariff Impact Notification"
