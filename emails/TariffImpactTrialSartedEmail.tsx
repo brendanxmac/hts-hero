@@ -18,7 +18,7 @@ export default function TariffImpactTrialSartedEmail() {
     <Html>
       <Head />
       <Preview>
-        Get started today and see how we save you hours on tariffs.
+        Upload your Imports & Start Mastering Tariffs with Tariff Impact Pro
       </Preview>
       <Tailwind
         config={{
@@ -28,7 +28,7 @@ export default function TariffImpactTrialSartedEmail() {
         <Container className="mx-auto py-4 font-sans max-w-[600px] bg-white">
           <Img
             alt="HTS Hero Logo"
-            className="py-8 mx-auto"
+            className="py-8 mx-auto mb-0 pb-4"
             width="200"
             height="40"
             style={{
@@ -39,23 +39,26 @@ export default function TariffImpactTrialSartedEmail() {
             src="https://exviallkczzlrkpaafxq.supabase.co/storage/v1/object/public/content/logo-text-black.png"
           />
 
-          <Section className="bg-[#617BFF]/10 rounded-lg p-6 text-center">
-            <Text className="text-base text-gray-700 leading-relaxed mx-auto mb-0">
-              Free 7 Day Trial Activated:
-            </Text>
+          <Section className="p-4 text-center mt-0">
             <Heading className="text-2xl font-bold text-gray-900 mb-2 tracking-tight">
-              Tariff Impact Checker Pro
+              🚀 Trial Activated!
             </Heading>
 
-            <Text className="text-sm mb-0 text-gray-600">
-              🚀 You now have full access to Tariff Impact Checker Pro for the
-              next 7 days, including all the benefits below.
+            <Text className="text-base mb-0 text-gray-600">
+              You have full access to{" "}
+              <span className="text-[#617BFF] font-bold underline">
+                Tariff Impact Pro
+              </span>{" "}
+              for the next 7 days, including all the benefits listed below.
             </Text>
           </Section>
 
+          <Heading className="text-center text-4xl font-bold text-gray-900 my-10">
+            Tariffs <span className="text-[#617BFF]">Made Easy</span>
+          </Heading>
+
           {/* Get Notified */}
-          <Section className="my-16 text-center">
-            {/* <Heading className="text-center text-3xl mb-2">🔔</Heading> */}
+          <Section className="my-8 text-center bg-[#617BFF]/10 rounded-lg p-4">
             <Heading className="text-center text-2xl font-semibold my-0 text-gray-900">
               <span className="text-[#617BFF]">Get Notified</span> When New
               Tariffs Affect your Imports
@@ -77,7 +80,7 @@ export default function TariffImpactTrialSartedEmail() {
             />
           </Section>
           {/* See What's Impacted */}
-          <Section className="my-16 text-center">
+          <Section className="my-8 text-center bg-[#617BFF]/10 rounded-lg p-4">
             {/* <Heading className="text-center text-3xl mb-2">✅</Heading> */}
             <Heading className="text-center text-2xl font-semibold my-0 text-gray-900">
               See Which Imports{" "}
@@ -102,9 +105,9 @@ export default function TariffImpactTrialSartedEmail() {
             />
           </Section>
 
-          <Section className="my-10 text-center">
+          <Section className="my-8 text-center bg-[#617BFF]/10 rounded-lg p-4">
             <Heading className="text-center text-2xl font-semibold my-0 text-gray-900">
-              <span className="text-[#617BFF]">Instantly</span> Know The Impact
+              <span className="text-[#617BFF]">Instantly</span> See The Impact
               On Your Bottom Line
             </Heading>
             <Text className="text-sm text-gray-700 leading-relaxed mx-auto mt-1 mb-4">
@@ -126,7 +129,7 @@ export default function TariffImpactTrialSartedEmail() {
           </Section>
 
           {/* Call to Action */}
-          <Section className="text-center mb-10 mt-16">
+          <Section className="text-center mb-10 mt-6">
             {/* TODO: add a button that goes to a tutorial and or how to page */}
             <Button
               href="https://htshero.com"

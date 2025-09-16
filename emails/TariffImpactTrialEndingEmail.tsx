@@ -17,10 +17,7 @@ export default function TariffImpactTrialEndingEmail() {
   return (
     <Html>
       <Head />
-      <Preview>
-        ⏰ Your Tariff Impact Checker Pro trial ends tomorrow - Upgrade now &
-        save!
-      </Preview>
+      <Preview>Upgrade Now & Save 50%!</Preview>
       <Tailwind
         config={{
           presets: [pixelBasedPreset],

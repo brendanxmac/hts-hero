@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
 
     await sendEmailFromComponent({
       to: email,
-      subject: "New Tariffs Affect 5 of your Imports [Fake Example]",
+      subject: "[Fake Example] New Tariffs Affect 5 of your Imports",
       emailComponent: React.createElement(ImpactedByNewTariffsEmailExample),
       replyTo: "support@htshero.com",
     });

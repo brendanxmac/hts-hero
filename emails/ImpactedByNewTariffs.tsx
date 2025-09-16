@@ -32,9 +32,7 @@ export default function ImpactedByNewTariffsEmail({
   return (
     <Html>
       <Head />
-      <Preview>
-        {`New Tariffs Affect ${affectedImportsCount} of your Imports - See Affected Imports`}
-      </Preview>
+      <Preview>{`See Your Affected Imports 👉`}</Preview>
       <Tailwind
         config={{
           presets: [pixelBasedPreset],

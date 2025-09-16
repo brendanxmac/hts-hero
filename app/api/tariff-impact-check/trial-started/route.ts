@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
       }),
       sendEmailFromComponent({
         to: email,
-        subject: "Trial Activated: Tariff Impact Pro",
+        subject: "Trial Activated!",
         emailComponent: React.createElement(TariffImpactTrialSartedEmail),
         replyTo: "support@htshero.com",
       }),

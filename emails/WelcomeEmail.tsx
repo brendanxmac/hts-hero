@@ -17,7 +17,7 @@ export default function WelcomeEmail() {
   return (
     <Html>
       <Head />
-      <Preview>Time Saving Tools for Trade Professionals</Preview>
+      <Preview>🚀 Time Saving Tools for Trade Professionals</Preview>
       <Tailwind
         config={{
           presets: [pixelBasedPreset],

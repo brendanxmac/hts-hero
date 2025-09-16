@@ -4,6 +4,11 @@ import { UserProfile } from "../../../../../libs/supabase/user";
 import WelcomeEmail from "../../../../../emails/WelcomeEmail";
 import React from "react";
 import { sendEmailFromComponent } from "../../../../../libs/resend";
+import { MixpanelEvent } from "../../../../../libs/mixpanel";
+import {
+  identifyUserServer,
+  trackEventServer,
+} from "../../../../../libs/mixpanel-server";
 
 export const dynamic = "force-dynamic";
 
@@ -79,6 +84,18 @@ export async function POST(req: NextRequest) {
       emailComponent: React.createElement(WelcomeEmail),
       replyTo: "support@htshero.com",
     });
+
+    try {
+      identifyUserServer(user.id, {
+        email: user.email || "",
+      });
+
+      trackEventServer(MixpanelEvent.SIGN_UP, user.id, {
+        email: user.email || "",
+      });
+    } catch (e) {
+      console.error("Failed to identify user in Mixpanel:", e);
+    }
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (e) {

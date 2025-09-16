@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
       (user): CreateEmailOptions => ({
         from: config.resend.fromAdmin,
         to: user.email,
-        subject: "Your Trial Ends Tomorrow - Don't Miss Out!",
+        subject: "⏰ Your Tariff Impact Checker Pro trial ends tomorrow!",
         react: React.createElement(TariffImpactTrialEndingEmail),
         replyTo: config.resend.supportEmail,
       })
