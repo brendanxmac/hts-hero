@@ -136,7 +136,7 @@ export default function WelcomeEmail() {
           <Section className="text-center mb-10 mt-8">
             <Button
               href="https://htshero.com"
-              className="bg-[#617BFF] text-white font-bold py-4 px-12 mx-auto rounded-xl text-lg"
+              className="w-full bg-[#617BFF] text-white font-bold py-4 mx-auto rounded-xl text-lg"
             >
               Get Started →
             </Button>

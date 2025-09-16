@@ -58,7 +58,7 @@ export default function TariffImpactTrialSartedEmail() {
           </Heading>
 
           {/* Get Notified */}
-          <Section className="my-8 text-center bg-[#617BFF]/10 rounded-lg p-4">
+          <Section className="my-8 text-center bg-[#617BFF]/10 rounded-lg px-4 py-8">
             <Heading className="text-center text-2xl font-semibold my-0 text-gray-900">
               <span className="text-[#617BFF]">Get Notified</span> When New
               Tariffs Affect your Imports
@@ -80,7 +80,7 @@ export default function TariffImpactTrialSartedEmail() {
             />
           </Section>
           {/* See What's Impacted */}
-          <Section className="my-8 text-center bg-[#617BFF]/10 rounded-lg p-4">
+          <Section className="my-8 text-center bg-[#617BFF]/10 rounded-lg px-4 py-8">
             {/* <Heading className="text-center text-3xl mb-2">✅</Heading> */}
             <Heading className="text-center text-2xl font-semibold my-0 text-gray-900">
               See Which Imports{" "}
@@ -105,7 +105,7 @@ export default function TariffImpactTrialSartedEmail() {
             />
           </Section>
 
-          <Section className="my-8 text-center bg-[#617BFF]/10 rounded-lg p-4">
+          <Section className="my-8 text-center bg-[#617BFF]/10 rounded-lg px-4 py-8">
             <Heading className="text-center text-2xl font-semibold my-0 text-gray-900">
               <span className="text-[#617BFF]">Instantly</span> See The Impact
               On Your Bottom Line
@@ -132,7 +132,7 @@ export default function TariffImpactTrialSartedEmail() {
           <Section className="text-center mb-10 mt-6">
             {/* TODO: add a button that goes to a tutorial and or how to page */}
             <Button
-              href="https://htshero.com"
+              href="https://htshero.com/tariffs/impact-checker"
               className="bg-[#617BFF] text-white font-medium py-3 px-20 mx-auto rounded-xl text-lg"
             >
               Get Started →
