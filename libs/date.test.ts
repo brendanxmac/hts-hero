@@ -66,10 +66,10 @@ for (let i = 0; i <= 10; i++) {
 }
 
 testDates.forEach(({ daysAgo, dateISO, label }) => {
-  const result6Days = isExactlyDaysAgo(dateISO, 6);
+  const result9Days = isExactlyDaysAgo(dateISO, 9);
   const resultDaysAgo = isExactlyDaysAgo(dateISO, daysAgo);
   console.log(`Date (${label}): ${dateISO}`);
-  console.log(`  Is exactly 6 days ago: ${result6Days}`);
+  console.log(`  Is exactly 9 days ago: ${result9Days}`);
   console.log(`  Is exactly ${daysAgo} days ago: ${resultDaysAgo}`);
   console.log("");
 });
@@ -78,14 +78,14 @@ testDates.forEach(({ daysAgo, dateISO, label }) => {
 console.log("\n2. Testing getDayRange function:");
 console.log("--------------------------------");
 
-const sixDaysAgoRange = getDayRange(6);
-console.log("Range for 6 days ago:");
-console.log(`  Start: ${sixDaysAgoRange.start}`);
-console.log(`  End: ${sixDaysAgoRange.end}`);
+const nineDaysAgoRange = getDayRange(9);
+console.log("Range for 9 days ago:");
+console.log(`  Start: ${nineDaysAgoRange.start}`);
+console.log(`  End: ${nineDaysAgoRange.end}`);
 
 // Verify the range covers exactly one day
-const startDate = new Date(sixDaysAgoRange.start);
-const endDate = new Date(sixDaysAgoRange.end);
+const startDate = new Date(nineDaysAgoRange.start);
+const endDate = new Date(nineDaysAgoRange.end);
 console.log(`  Start time: ${startDate.toTimeString()}`);
 console.log(`  End time: ${endDate.toTimeString()}`);
 console.log(
@@ -96,9 +96,9 @@ console.log(
 console.log("\n3. Testing edge cases:");
 console.log("---------------------");
 
-// Test times throughout the day 6 days ago
+// Test times throughout the day 9 days ago
 const baseDate = new Date();
-baseDate.setDate(baseDate.getDate() - 6);
+baseDate.setDate(baseDate.getDate() - 9);
 
 const timesToTest = [
   { hours: 0, minutes: 0, seconds: 0, label: "start of day" },
@@ -112,9 +112,9 @@ timesToTest.forEach(({ hours, minutes, seconds, label }) => {
   const testISO = testDate.toISOString();
 
   console.log(`Testing ${label} (${testISO}):`);
-  console.log(`  Is exactly 6 days ago: ${isExactlyDaysAgo(testISO, 6)}`);
+  console.log(`  Is exactly 9 days ago: ${isExactlyDaysAgo(testISO, 9)}`);
   console.log(
-    `  Is in 6-day range: ${testISO >= sixDaysAgoRange.start && testISO <= sixDaysAgoRange.end}`
+    `  Is in 9-day range: ${testISO >= nineDaysAgoRange.start && testISO <= nineDaysAgoRange.end}`
   );
 });
 
@@ -123,8 +123,8 @@ console.log("\n4. Testing dates that should NOT match:");
 console.log("--------------------------------------");
 
 const nonMatchingDates = [
-  { daysAgo: 5, label: "5 days ago (too recent)" },
-  { daysAgo: 7, label: "7 days ago (too old)" },
+  { daysAgo: 8, label: "8 days ago (too recent)" },
+  { daysAgo: 10, label: "10 days ago (too old)" },
   { daysAgo: 0, label: "today" },
 ];
 
@@ -135,10 +135,10 @@ nonMatchingDates.forEach(({ daysAgo, label }) => {
 
   console.log(`Testing ${label} (${testISO}):`);
   console.log(
-    `  Is exactly 6 days ago: ${isExactlyDaysAgo(testISO, 6)} (should be false)`
+    `  Is exactly 9 days ago: ${isExactlyDaysAgo(testISO, 9)} (should be false)`
   );
   console.log(
-    `  Is in 6-day range: ${testISO >= sixDaysAgoRange.start && testISO <= sixDaysAgoRange.end} (should be false)`
+    `  Is in 9-day range: ${testISO >= nineDaysAgoRange.start && testISO <= nineDaysAgoRange.end} (should be false)`
   );
 });
 
@@ -146,19 +146,19 @@ nonMatchingDates.forEach(({ daysAgo, label }) => {
 console.log("\n5. Testing getExactDateDaysAgo function (NEW FIX):");
 console.log("------------------------------------------------");
 
-const exactSixDaysAgo = getExactDateDaysAgo(6);
-console.log(`Exact date 6 days ago: ${exactSixDaysAgo}`);
+const exactNineDaysAgo = getExactDateDaysAgo(9);
+console.log(`Exact date 9 days ago: ${exactNineDaysAgo}`);
 
 // Test the timezone fix
 console.log("\n6. TIMEZONE FIX VERIFICATION:");
 console.log("-----------------------------");
-console.log("BEFORE: getDayRange(6) would span TWO dates due to timezone");
-console.log(`  Range start date: ${sixDaysAgoRange.start.split("T")[0]}`);
-console.log(`  Range end date: ${sixDaysAgoRange.end.split("T")[0]}`);
+console.log("BEFORE: getDayRange(9) would span TWO dates due to timezone");
+console.log(`  Range start date: ${nineDaysAgoRange.start.split("T")[0]}`);
+console.log(`  Range end date: ${nineDaysAgoRange.end.split("T")[0]}`);
 console.log("  ^ This caused both 2025-09-07 AND 2025-09-08 to match!");
 
-console.log("\nAFTER: getExactDateDaysAgo(6) returns ONE specific date");
-console.log(`  Exact date: ${exactSixDaysAgo}`);
+console.log("\nAFTER: getExactDateDaysAgo(9) returns ONE specific date");
+console.log(`  Exact date: ${exactNineDaysAgo}`);
 console.log("  ^ Only users with THIS exact date will match!");
 
 // Test against the actual problem dates
@@ -166,7 +166,7 @@ const problemDates = ["2025-09-07", "2025-09-08"];
 console.log("\n7. Testing against the ACTUAL problem dates:");
 console.log("--------------------------------------------");
 problemDates.forEach((dateStr) => {
-  const matches = dateStr === exactSixDaysAgo;
+  const matches = dateStr === exactNineDaysAgo;
   console.log(
     `${dateStr}: ${matches ? "MATCHES" : "no match"} (${matches ? "Email sent" : "Email NOT sent"})`
   );

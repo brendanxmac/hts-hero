@@ -175,10 +175,10 @@ export default function Home() {
       const userTrialStartDate = userProfile?.tariff_impact_trial_started_at;
 
       if (userTrialStartDate) {
-        // if the trial started more than 7 days ago, set isTrialUser to false
+        // if the trial started more than 10 days ago, set isTrialUser to false
         const trialStartedMoreThan7DaysAgo =
           new Date(userTrialStartDate) <
-          new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+          new Date(Date.now() - 10 * 24 * 60 * 60 * 1000);
 
         if (trialStartedMoreThan7DaysAgo) {
           setIsTrialUser(false);
@@ -353,7 +353,7 @@ export default function Home() {
         // Show popup instead to get them to convert
         if (!isTrialUser && !activeTariffImpactPurchase) {
           toast.error(
-            `Your 7 day trial has expired. Upgrade to get more checks, notifications when your imports are affected, and tariff rates for any import`,
+            `Your trial has expired. Upgrade to get more checks, notifications when your imports are affected, and tariff rates for any import`,
             { duration: 8000 }
           );
         } else {

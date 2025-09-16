@@ -1,15 +1,10 @@
 import config from "@/config";
 import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "../../supabase/server";
-import { sendEmail, sendEmailFromComponent, sendEmails } from "@/libs/resend";
-import TariffImpactTrialSartedEmail from "@/emails/TariffImpactTrialSartedEmail";
+import { sendEmail, sendEmails } from "@/libs/resend";
 import React from "react";
 import { getExactDateDaysAgo } from "@/libs/date";
 import TariffImpactTrialEndingEmail from "@/emails/TariffImpactTrialEndingEmail";
-import {
-  fetchPurchasesForUser,
-  getActiveTariffImpactPurchasesForUser,
-} from "@/libs/supabase/purchase";
 import { PricingPlan } from "@/types";
 import { CreateEmailOptions } from "resend";
 
@@ -23,32 +18,32 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Get the exact date for 6 days ago (avoids timezone issues with DATE fields)
-    const dateSixDaysAgo = getExactDateDaysAgo(6);
+    // Get the exact date for 9 days ago (avoids timezone issues with DATE fields)
+    const dateNineDaysAgo = getExactDateDaysAgo(9);
 
     // Check all users who have a tariff impact trial that started
-    //  exactly 6 days ago AND do not have a stripe customer id
+    //  exactly 9 days ago AND do not have a stripe customer id
     const supabase = createClient();
-    const { data: trialUsersWhoStartedSixDaysAgo, error } = await supabase
+    const { data: trialUsersWhoStartedNineDaysAgo, error } = await supabase
       .from("users")
       .select("*")
       .not("tariff_impact_trial_started_at", "is", null)
-      .eq("tariff_impact_trial_started_at", dateSixDaysAgo);
+      .eq("tariff_impact_trial_started_at", dateNineDaysAgo);
 
     if (error) {
       console.error("Error fetching users:", error);
       return NextResponse.json(
-        { error: "Database query failed" },
+        { error: "Users query failed" },
         { status: 500 }
       );
     }
 
     console.log(
-      "Trial Started 6 Days Ago:",
-      trialUsersWhoStartedSixDaysAgo.map((user) => user.id)
+      "Trial Started 9 Days Ago:",
+      trialUsersWhoStartedNineDaysAgo.map((user) => user.id)
     );
 
-    const trialUserIds = trialUsersWhoStartedSixDaysAgo.map((user) => user.id);
+    const trialUserIds = trialUsersWhoStartedNineDaysAgo.map((user) => user.id);
 
     const { data: tariffImpactPurchases, error: tariffImpactPurchasesError } =
       await supabase
@@ -61,6 +56,17 @@ export async function POST(req: NextRequest) {
         ])
         .in("user_id", trialUserIds)
         .gte("expires_at", new Date().toISOString());
+
+    if (tariffImpactPurchasesError) {
+      console.error(
+        "Error fetching tariff impact purchases:",
+        tariffImpactPurchasesError
+      );
+      return NextResponse.json(
+        { error: "Purchases query failed" },
+        { status: 500 }
+      );
+    }
 
     const trialUsersWithActiveTariffImpactPurchases = trialUserIds.filter(
       (userId) => {
@@ -76,7 +82,7 @@ export async function POST(req: NextRequest) {
     );
 
     const usersWithTrialExpiringAndNoActivePurchase =
-      trialUsersWhoStartedSixDaysAgo.filter((user) => {
+      trialUsersWhoStartedNineDaysAgo.filter((user) => {
         return !tariffImpactPurchases.some(
           (purchase) => purchase.user_id === user.id
         );
@@ -119,7 +125,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         message: "Sent Tariff Impact Trial Ending Emails",
-        dateChecked: dateSixDaysAgo,
+        dateChecked: dateNineDaysAgo,
         emailsSent: bulkEmailsSendResponse.length,
       },
       { status: 200 }
