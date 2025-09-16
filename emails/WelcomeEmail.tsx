@@ -38,6 +38,7 @@ export default function WelcomeEmail() {
 
           {/* Warm Welcome */}
           <Section className="text-center my-8">
+            <Heading className="text-center text-4xl mb-2">🎉</Heading>
             <Heading className="text-3xl font-bold mb-4 tracking-tight">
               Welcome!
             </Heading>
