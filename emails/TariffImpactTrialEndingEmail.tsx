@@ -39,18 +39,17 @@ export default function TariffImpactTrialEndingEmail() {
 
           {/* Professional Trial Ending Section */}
           <Section className="text-center mt-0 mb-2 px-4">
-            {/* Trial Status */}
-            {/* <Text className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">
-              Trial Update
-            </Text> */}
             <Heading className="text-2xl font-bold text-gray-900 mb-4">
               ⏰ Your Trial Ends <span className="underline">Tomorrow</span>
             </Heading>
 
             {/* Appreciation */}
             <Text className="text-base text-gray-600 leading-relaxed mb-4 max-w-lg mx-auto">
-              We hope you got a chance to see how much time and effort Tariff
-              Impact Pro can save you and your clients.
+              We hope you got a chance to see how much time and effort{" "}
+              <span className="text-[#617BFF] font-bold">
+                Tariff Impact Pro
+              </span>{" "}
+              can save you and your clients.
             </Text>
 
             {/* Special Offer Highlight */}
@@ -97,15 +96,12 @@ export default function TariffImpactTrialEndingEmail() {
               Powerful Features:
             </Heading> */}
             <Heading className="text-4xl font-bold text-gray-900 mb-3">
-              <span className="text-[#617BFF]">Save Hours</span> on Tariff
-              Checks,
-              <br /> <span className="text-[#617BFF]">Be Prepared</span> for
-              Tariff Changes
+              Tariffs <span className="text-[#617BFF]">Made Easy</span>
             </Heading>
           </Section>
 
           {/* What You'll Lose - Get Notified */}
-          <Section className="my-6 text-center bg-gray-50 rounded-lg p-6">
+          <Section className="my-6 text-center bg-[#617BFF]/10 rounded-lg p-6">
             <Heading className="text-center text-xl font-semibold my-0 text-gray-900 mb-3">
               <span className="text-[#617BFF]">Get Notified</span> When New
               Tariffs Affect Your Imports
@@ -127,7 +123,7 @@ export default function TariffImpactTrialEndingEmail() {
             />
           </Section>
           {/* What You'll Lose - See What's Impacted */}
-          <Section className="my-6 text-center bg-gray-50 rounded-lg p-6">
+          <Section className="my-6 text-center bg-[#617BFF]/10 rounded-lg p-6">
             <Heading className="text-center text-xl font-semibold my-0 text-gray-900 mb-3">
               Know <span className="text-[#617BFF]"> Which Imports</span> Are
               Affected by New Tariffs
@@ -150,7 +146,7 @@ export default function TariffImpactTrialEndingEmail() {
             />
           </Section>
 
-          <Section className="my-6 text-center bg-gray-50 rounded-lg p-6">
+          <Section className="my-6 text-center bg-[#617BFF]/10 rounded-lg p-6">
             <Heading className="text-center text-xl font-semibold my-0 text-gray-900 mb-3">
               See Your Landed Cost Changes &{" "}
               <span className="text-[#617BFF]">Find Possible Savings</span>
@@ -177,7 +173,9 @@ export default function TariffImpactTrialEndingEmail() {
           {/* Urgent Call to Action */}
           <Section className="text-center mb-10 mt-8 p-4">
             <Text className="text-3xl text-gray-900 mb-6 font-bold">
-              Keep Your Pro Features & Continue Mastering Tariffs 👇
+              <span className="text-[#617BFF]">Save Hours</span> on Tariff
+              Checks & <span className="text-[#617BFF]">Be Prepared</span> for
+              Tariff Changes 👇
             </Text>
 
             <Button

@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
       (user): CreateEmailOptions => ({
         from: config.resend.fromAdmin,
         to: user.email,
-        subject: "⏰ Your Tariff Impact Checker Pro trial ends tomorrow!",
+        subject: "⏰ Your Tariff Impact Checker Pro Trial Ends Tomorrow!",
         react: React.createElement(TariffImpactTrialEndingEmail),
         replyTo: config.resend.supportEmail,
       })
@@ -113,13 +113,6 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
-    // return NextResponse.json(
-    //   {
-    //     emails: trialExpiringEmails.map((email) => email.to),
-    //   },
-    //   { status: 200 }
-    // );
 
     const bulkEmailsSendResponse = await sendEmails(trialExpiringEmails);
 
