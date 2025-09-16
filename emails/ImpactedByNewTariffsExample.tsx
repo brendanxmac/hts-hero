@@ -84,30 +84,30 @@ export default function ImpactedByNewTariffsEmailExample() {
             </Heading> */}
 
             {/* Impact Summary Grid */}
-            <Container className="bg-stone-100 rounded-lg p-4 mb-6">
+            <Container className="bg-[#617BFF]/10 rounded-lg p-6 mb-6">
               {/* Tariff Announcement */}
               <Container className="mb-4 pb-2">
-                <Text className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-1 my-0">
+                <Text className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1 my-0">
                   TARIFF ANNOUNCEMENT
                 </Text>
-                <Text className="text-lg font-bold text-gray-900 my-0 leading-tight">
+                <Text className="text-lg font-bold text-black my-0 leading-tight">
                   Fake Tariff Announcement
                 </Text>
               </Container>
 
               {/* Import List */}
               <Container className="mb-4 pb-2">
-                <Text className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-1 my-0">
+                <Text className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1 my-0">
                   IMPORT LIST
                 </Text>
-                <Text className="text-lg font-bold text-gray-900 my-0 leading-tight">
+                <Text className="text-lg font-bold text-black my-0 leading-tight">
                   Fake Import List
                 </Text>
               </Container>
 
               {/* Affected Count */}
               <Container className="mb-0">
-                <Text className="text-xs font-bold text-gray-600 uppercase tracking-wide mt-0 mb-2">
+                <Text className="text-xs font-medium text-gray-500 uppercase tracking-wide mt-0 mb-2">
                   IMPORTS AFFECTED
                 </Text>
                 <Container className="w-fit bg-red-600 px-3 py-1 rounded">
