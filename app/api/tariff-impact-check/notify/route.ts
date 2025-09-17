@@ -285,8 +285,8 @@ export async function POST(req: NextRequest) {
     const supabase = createClient();
     const tariffCodeSet = await fetchTariffCodeSet(supabase, tariffCodeSetId);
 
-    // Start processing asynchronously (don't await)
-    processTariffImpactNotifications(tariffCodeSet);
+    // Process emails
+    await processTariffImpactNotifications(tariffCodeSet);
 
     // Return immediately with success
     return NextResponse.json({ message: "Success" }, { status: 200 });
