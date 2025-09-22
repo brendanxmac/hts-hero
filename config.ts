@@ -14,9 +14,9 @@ export const tariffImpactStarter: PricingPlanI = {
       details: "See if your imports are affected by tariff updates",
     },
     {
-      name: "Create Import Lists",
+      name: "Import Lists",
       details:
-        "Stay organized and quickly check your imports against future tariff updates",
+        "Organize your imports and quickly check them against future tariff updates",
     },
   ],
 };

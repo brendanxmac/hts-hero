@@ -546,29 +546,7 @@ export default function Home() {
 
         {/* Inputs */}
         <div className="flex flex-col gap-4 sm:gap-8">
-          {/* Tariff Announcement Selection */}
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-col">
-              <PrimaryLabel value="Tariff Announcement" />
-              <SecondaryText value="Select the tariff announcement you want to see the impacts of" />
-            </div>
-
-            <TariffUpdateDropdown
-              tariffCodeSets={tariffCodeSets}
-              selectedIndex={selectedTariffAnnouncementIndex}
-              onSelectionChange={setSelectedTariffAnnouncementIndex}
-            />
-
-            {tariffCodeSets.length > 0 &&
-              tariffCodeSets[selectedTariffAnnouncementIndex].note && (
-                <p className="text-xs text-neutral-content font-bold">
-                  Note: {tariffCodeSets[selectedTariffAnnouncementIndex].note}
-                </p>
-              )}
-          </div>
-
           {/* HTS Code Selection */}
-
           <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-1">
               <div className="flex flex-col">
@@ -620,6 +598,26 @@ export default function Home() {
               onChange={handleInputChange}
               isValid={inputValue.length >= 8}
             />
+          </div>
+          {/* Tariff Announcement Selection */}
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-col">
+              <PrimaryLabel value="Tariff Announcement" />
+              <SecondaryText value="Select the tariff announcement you want to see the impacts of" />
+            </div>
+
+            <TariffUpdateDropdown
+              tariffCodeSets={tariffCodeSets}
+              selectedIndex={selectedTariffAnnouncementIndex}
+              onSelectionChange={setSelectedTariffAnnouncementIndex}
+            />
+
+            {tariffCodeSets.length > 0 &&
+              tariffCodeSets[selectedTariffAnnouncementIndex].note && (
+                <p className="text-xs text-neutral-content font-bold">
+                  Note: {tariffCodeSets[selectedTariffAnnouncementIndex].note}
+                </p>
+              )}
           </div>
         </div>
 

@@ -358,7 +358,7 @@ export const Tariffs = ({
                                 target="_blank"
                                 className="link link-primary no-underline text-base-content hover:text-primary hover:underline"
                               >
-                                🔒 Unlock with Pro
+                                🔒 Get Pro to Unlock
                               </Link>
                             ) : (
                               countryPercentTariffsSums.map((sum, i) => (
