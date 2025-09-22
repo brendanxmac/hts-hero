@@ -64,7 +64,6 @@ export const userHasActivePurchaseForProduct = async (
   if (product === Product.TARIFF_IMPACT) {
     return activePurchases.some(
       (purchase) =>
-        purchase.product_name === PricingPlan.TARIFF_IMPACT_STARTER ||
         purchase.product_name === PricingPlan.TARIFF_IMPACT_STANDARD ||
         purchase.product_name === PricingPlan.TARIFF_IMPACT_PRO
     );
@@ -77,7 +76,6 @@ export const getProductForPlan = (plan: PricingPlan) => {
   switch (plan) {
     case PricingPlan.CLASSIFY_PRO:
       return Product.CLASSIFY;
-    case PricingPlan.TARIFF_IMPACT_STARTER:
     case PricingPlan.TARIFF_IMPACT_STANDARD:
     case PricingPlan.TARIFF_IMPACT_PRO:
       return Product.TARIFF_IMPACT;
@@ -162,7 +160,6 @@ export const getActiveClassifyPurchase = async (userId: string) => {
 
 export const getActiveTariffImpactPurchasesForUser = async (userId: string) => {
   const tariffImpactProducts = [
-    PricingPlan.TARIFF_IMPACT_STARTER,
     PricingPlan.TARIFF_IMPACT_STANDARD,
     PricingPlan.TARIFF_IMPACT_PRO,
   ];
@@ -214,15 +211,6 @@ export const getActivePriorityTariffImpactPurchase = async (
     return standardPurchase;
   }
 
-  // If no PRO purchase found, find the first STARTER purchase
-  const starterPurchase = activeTariffImpactPurchases.find(
-    (purchase) => purchase.product_name === PricingPlan.TARIFF_IMPACT_STARTER
-  );
-
-  if (starterPurchase) {
-    return starterPurchase;
-  }
-
-  // If no pro, standard, or starter then there is no active / best
+  // If no pro or standard then there is no active / best
   return null;
 };

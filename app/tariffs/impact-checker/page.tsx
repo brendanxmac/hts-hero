@@ -340,31 +340,6 @@ export default function Home() {
       setResults([]);
       setCheckingTariffImpacts(true);
 
-      // // Check if the user has hit the limit based on their plan
-      const totalChecksThisMonth = tariffImpactChecks
-        .filter((checks) =>
-          activeTariffImpactPurchase
-            ? checks.plan === activeTariffImpactPurchase.product_name
-            : checks.plan === "Trial"
-        )
-        .reduce((acc, check) => acc + check.num_codes, 0);
-
-      if (totalChecksThisMonth >= checkLimit) {
-        // Show popup instead to get them to convert
-        if (!isTrialUser && !activeTariffImpactPurchase) {
-          toast.error(
-            `Your trial has expired. Upgrade to get more checks, notifications when your imports are affected, and tariff rates for any import`,
-            { duration: 8000 }
-          );
-        } else {
-          toast.error(
-            `You have reached your limit of ${checkLimit} checks this month. Upgrade to get more checks & unlock live tariff rates for any import.`,
-            { duration: 6000 }
-          );
-        }
-        return;
-      }
-
       const htsCodes = getHtsCodesToCheck();
 
       if (htsCodes.length === 0) {
@@ -386,16 +361,6 @@ export default function Home() {
         htsCodes,
         tariffUpdateToCheckAgainst
       );
-
-      const numChecksForSubmit = results.length;
-
-      if (totalChecksThisMonth + numChecksForSubmit > checkLimit) {
-        toast.error(
-          `You're trying to check ${numChecksForSubmit} codes but only have ${checkLimit - totalChecksThisMonth} left this month. Enter less codes or upgrade to get more checks`,
-          { duration: 10000 }
-        );
-        return;
-      }
 
       const validCodesToCheck = getValidHtsCodesFromSet(htsCodes);
 
@@ -474,49 +439,13 @@ export default function Home() {
     }
   };
 
-  const numChecksThisMonth = tariffImpactChecks
-    .filter((checks) =>
-      activeTariffImpactPurchase
-        ? checks.plan === activeTariffImpactPurchase.product_name
-        : checks.plan === "Trial"
-    )
-    .reduce((acc, check) => acc + check.num_codes, 0);
-
-  const getCheckLimitForUser = (purchase?: Purchase | null) => {
-    if (!purchase) {
-      if (isTrialUser) {
-        return Infinity;
-      } else {
-        return 0;
-      }
-    }
-
-    if (purchase.product_name === PricingPlan.TARIFF_IMPACT_PRO) {
-      return Infinity;
-    }
-
-    if (purchase.product_name === PricingPlan.TARIFF_IMPACT_STANDARD) {
-      return 400;
-    }
-
-    if (purchase.product_name === PricingPlan.TARIFF_IMPACT_STARTER) {
-      return 40;
-    }
-  };
-
-  const checkLimit = getCheckLimitForUser(activeTariffImpactPurchase);
-
   const getPlanStyles = (purchase?: Purchase | null) => {
     if (!purchase) {
       if (isTrialUser) {
         return "text-warning border-warning";
       } else {
-        return "text-error border-error";
+        return "text-accent border-accent";
       }
-    }
-
-    if (purchase.product_name === PricingPlan.TARIFF_IMPACT_STARTER) {
-      return "text-accent border-accent";
     }
 
     if (purchase.product_name === PricingPlan.TARIFF_IMPACT_STANDARD) {
@@ -533,12 +462,8 @@ export default function Home() {
       if (isTrialUser) {
         return "Free Trial";
       } else {
-        return "Trial Expired";
+        return "Starter";
       }
-    }
-
-    if (purchase.product_name === PricingPlan.TARIFF_IMPACT_STARTER) {
-      return "Starter";
     }
 
     if (purchase.product_name === PricingPlan.TARIFF_IMPACT_STANDARD) {
@@ -564,7 +489,7 @@ export default function Home() {
         {/* Header */}
         <div className="flex justify-between md:items-center flex-col-reverse md:flex-row gap-4">
           <div className="w-full flex flex-col">
-            <div className="w-full flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="flex gap-4 items-center">
                 <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-100">
                   Tariff Impact Checker
@@ -590,31 +515,9 @@ export default function Home() {
                 (fetchingTariffImpactChecks ? (
                   <LoadingIndicator spinnerOnly />
                 ) : (
-                  <div className="w-full sm:w-auto justify-between sm:justify-normal flex items-center gap-4 px-4 sm:px-0 p-2 bg-base-100 border sm:border-none sm:bg-inherit border-base-content/20 rounded-md">
-                    {checkLimit !== Infinity && (
-                      <div className="flex flex-col">
-                        <p
-                          className={classNames(
-                            "text-sm font-bold",
-                            numChecksThisMonth >= checkLimit
-                              ? "text-error"
-                              : checkLimit - numChecksThisMonth < 20
-                                ? "text-warning"
-                                : "text-gray-400"
-                          )}
-                        >
-                          {checkLimit - numChecksThisMonth} Check
-                          {checkLimit - numChecksThisMonth === 1
-                            ? ""
-                            : "s"}{" "}
-                          Left
-                        </p>
-                        <p className="text-xs">{`Limit: ${checkLimit}/month`}</p>
-                      </div>
-                    )}
-
+                  <div className="w-full sm:w-auto justify-between sm:justify-normal flex items-center gap-4">
                     <button
-                      className="btn btn-sm btn-primary"
+                      className="w-full sm:max-w-32 btn btn-sm btn-primary"
                       onClick={() => {
                         setShowPricingModal(true);
                         try {
@@ -637,29 +540,7 @@ export default function Home() {
 
         {/* Inputs */}
         <div className="flex flex-col gap-4 sm:gap-8">
-          {/* Tariff Announcement Selection */}
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-col">
-              <PrimaryLabel value="Tariff Announcement" />
-              <SecondaryText value="Select the tariff announcement you want to see the impacts of" />
-            </div>
-
-            <TariffUpdateDropdown
-              tariffCodeSets={tariffCodeSets}
-              selectedIndex={selectedTariffAnnouncementIndex}
-              onSelectionChange={setSelectedTariffAnnouncementIndex}
-            />
-
-            {tariffCodeSets.length > 0 &&
-              tariffCodeSets[selectedTariffAnnouncementIndex].note && (
-                <p className="text-xs text-neutral-content font-bold">
-                  Note: {tariffCodeSets[selectedTariffAnnouncementIndex].note}
-                </p>
-              )}
-          </div>
-
           {/* HTS Code Selection */}
-
           <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-1">
               <div className="flex flex-col">
@@ -711,6 +592,26 @@ export default function Home() {
               onChange={handleInputChange}
               isValid={inputValue.length >= 8}
             />
+          </div>
+          {/* Tariff Announcement Selection */}
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-col">
+              <PrimaryLabel value="Tariff Announcement" />
+              <SecondaryText value="Select the tariff announcement you want to see the impacts of" />
+            </div>
+
+            <TariffUpdateDropdown
+              tariffCodeSets={tariffCodeSets}
+              selectedIndex={selectedTariffAnnouncementIndex}
+              onSelectionChange={setSelectedTariffAnnouncementIndex}
+            />
+
+            {tariffCodeSets.length > 0 &&
+              tariffCodeSets[selectedTariffAnnouncementIndex].note && (
+                <p className="text-xs text-neutral-content font-bold">
+                  Note: {tariffCodeSets[selectedTariffAnnouncementIndex].note}
+                </p>
+              )}
           </div>
         </div>
 

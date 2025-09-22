@@ -5,18 +5,18 @@ import { StripePaymentMode } from "./libs/stripe";
 export const tariffImpactStarter: PricingPlanI = {
   name: "Starter",
   planIdentifier: PricingPlan.TARIFF_IMPACT_STARTER,
-  description: "Notifications & Some Tariff Checks",
+  description: "See if your imports are affected by tariffs",
   mode: StripePaymentMode.SUBSCRIPTION,
-  price: 19,
-  priceAnchor: 30,
+  price: 0,
   features: [
     {
-      name: "40 Tariff Impact Checks / Month",
-      details:
-        "A check happens any time you submit a code to see if it's affected by a tariff update",
+      name: "Unlimited Tariff Impact Checks",
+      details: "See if your imports are affected by tariff updates",
     },
     {
-      name: "Notifications when your imports are affected by new tariffs",
+      name: "Import Lists",
+      details:
+        "Organize your imports and quickly check them against future tariff updates",
     },
   ],
 };
@@ -24,35 +24,49 @@ export const tariffImpactStarter: PricingPlanI = {
 export const tariffImpactStandard: PricingPlanI = {
   name: "Standard",
   planIdentifier: PricingPlan.TARIFF_IMPACT_STANDARD,
-  description: "Tariff Essentials",
+  description: "24/7 Tariff Monitoring for Your Imports",
   mode: StripePaymentMode.SUBSCRIPTION,
-  price: 49,
-  priceAnchor: 90,
+  price: 19,
+  priceAnchor: 40,
   features: [
     {
-      name: "400 Tariff Impact Checks / Month",
-      details:
-        "A check happens any time you submit a code to see if it's affected by a tariff update",
+      name: "Unlimited Tariff Impact Checks",
+      details: "See if your imports are affected by tariff updates",
     },
-    { name: "Notifications when your imports are affected by new tariffs" },
+    {
+      name: "Import Lists",
+      details:
+        "Organize your imports and quickly check them against future tariff updates",
+    },
+    {
+      name: "Import Tariff Monitoring",
+      details: "Get notified when your imports are affected by new tariffs",
+    },
   ],
 };
 
 export const tariffImpactPro: PricingPlanI = {
   name: "Pro",
   planIdentifier: PricingPlan.TARIFF_IMPACT_PRO,
-  description: "Master Tariffs & Save Money",
+  description: "Master Tariffs & Find Ways to Save",
   mode: StripePaymentMode.SUBSCRIPTION,
-  price: 79,
-  priceAnchor: 160,
+  price: 39,
+  priceAnchor: 90,
   isFeatured: true,
   features: [
     {
       name: "Unlimited Tariff Impact Checks",
-      details:
-        "A check happens any time you submit a code to see if it's affected by a tariff update",
+      details: "See if your imports are affected by tariff updates",
     },
-    { name: "Notifications when your imports are affected by new tariffs" },
+    {
+      name: "Import Lists",
+      details:
+        "Organize your imports and quickly check them against future tariff updates",
+    },
+    {
+      name: "Import Tariff Monitoring",
+      details: "Get notified when your imports are affected by new tariffs",
+    },
     {
       name: "Tariff Wizard",
       details:

@@ -50,7 +50,6 @@ export async function POST(req: NextRequest) {
         .from("purchases")
         .select("*")
         .in("product_name", [
-          PricingPlan.TARIFF_IMPACT_STARTER,
           PricingPlan.TARIFF_IMPACT_STANDARD,
           PricingPlan.TARIFF_IMPACT_PRO,
         ])

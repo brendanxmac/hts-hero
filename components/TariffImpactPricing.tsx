@@ -84,7 +84,7 @@ const getPricingHeadline = () => {
         Ways to <span className="text-primary">Reduce Landed Costs</span>
       </h2>
       <p className="text-sm md:text-lg text-neutral-300 font-medium mt-2">
-        Join the forward-thinking importers & customs brokers who are automating
+        Join over 100 importers & customs brokers who are already automating
         their tariff impact checks
       </p>
     </div>
@@ -98,10 +98,10 @@ const TariffImpactPricing = () => {
 
   const planDescriptions = {
     starter:
-      "Ideal for solo importers on a budget who manage 1-5 imports & want to know when their imports are affected by new tariffs so they can take quick action.",
+      "Crafted for small importers on a budget who want to know if their imports are affected by new tariffs.",
     standard:
-      "Perfect for small businesses managing up to 30 imports who need to know when their imports are affected by new tariffs so they can take bottom-line saving action.",
-    pro: "Crafted for forward-thinking importers & customs brokers who want to ensure their imports are tariff optimized & monitored 24/7.",
+      "Perfect for small businesses managing up to 30 imports who need to know when their imports are affected by new tariffs so they can protect their bottom-line.",
+    pro: "Ideal for importers & customs brokers who want their imports tariff optimized & monitored 24/7.",
   };
 
   const getRecommendedPlan = () => {
@@ -251,9 +251,7 @@ const TariffImpactPricing = () => {
         <div className="flex flex-col md:flex-row justify-between md:items-center gap-3 w-full max-w-xl lg:max-w-7xl mx-auto border-2 border-base-content/20 rounded-lg mt-4 p-6">
           <div className="flex flex-col">
             <p className="text-2xl text-white font-bold">Enterprise</p>
-            <p className="text-base-content/80">
-              Get Tariff Impact Checker for your whole team
-            </p>
+            <p className="text-base-content/80">Get Pro for your whole team</p>
           </div>
           <a
             href="mailto:brendan@htshero.com?subject=Enterprise%20Inquiry%20for%20Tariff%20Impact%20Checker&body=Hi%20Brendan%2C%20I'm%20interested%20in%20getting%20Tariff%20Impact%20Checker%20for%20my%20team"

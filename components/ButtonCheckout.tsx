@@ -19,7 +19,7 @@ interface Props {
 const getBuyButtonText = (plan: PricingPlanI) => {
   switch (plan.planIdentifier) {
     case PricingPlan.TARIFF_IMPACT_STARTER:
-      return `Get Starter!`;
+      return `Launch App!`;
     case PricingPlan.TARIFF_IMPACT_STANDARD:
       return `Get Standard!`;
     case PricingPlan.CLASSIFY_PRO:
@@ -42,7 +42,6 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
     switch (plan) {
       case PricingPlan.CLASSIFY_PRO:
         return "/app";
-      case PricingPlan.TARIFF_IMPACT_STARTER:
       case PricingPlan.TARIFF_IMPACT_STANDARD:
       case PricingPlan.TARIFF_IMPACT_PRO:
         return "/tariffs/impact-checker";
@@ -52,9 +51,6 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
   const logCheckoutAttempt = () => {
     try {
       switch (plan.planIdentifier) {
-        case PricingPlan.TARIFF_IMPACT_STARTER:
-          trackEvent(MixpanelEvent.INITIATED_IMPACT_STARTER_CHECKOUT);
-          break;
         case PricingPlan.TARIFF_IMPACT_STANDARD:
           trackEvent(MixpanelEvent.INITIATED_IMPACT_STANDARD_CHECKOUT);
           break;
@@ -73,6 +69,11 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
 
   const handlePayment = async () => {
     try {
+      if (plan.planIdentifier === PricingPlan.TARIFF_IMPACT_STARTER) {
+        window.location.href = "/tariffs/impact-checker";
+        return;
+      }
+
       setIsLoading(true);
       // Check if user has an active purchase
       const product = getProductForPlan(plan.planIdentifier);
@@ -80,10 +81,8 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
         user && (await userHasActivePurchaseForProduct(user.id, product));
 
       const userAttemptingUpgrade =
-        (plan.planIdentifier === PricingPlan.TARIFF_IMPACT_STANDARD &&
-          currentPlan === PricingPlan.TARIFF_IMPACT_STARTER) ||
-        (plan.planIdentifier === PricingPlan.TARIFF_IMPACT_PRO &&
-          currentPlan === PricingPlan.TARIFF_IMPACT_STANDARD);
+        plan.planIdentifier === PricingPlan.TARIFF_IMPACT_PRO &&
+        currentPlan === PricingPlan.TARIFF_IMPACT_STANDARD;
 
       if (!hasActiveProductSubscription) {
         // Send them to checkout page

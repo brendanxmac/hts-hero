@@ -27,7 +27,6 @@ const fetchActiveTariffImpactPurchases = async (supabase: SupabaseClient) => {
     .from("purchases")
     .select("*")
     .in("product_name", [
-      PricingPlan.TARIFF_IMPACT_STARTER,
       PricingPlan.TARIFF_IMPACT_STANDARD,
       PricingPlan.TARIFF_IMPACT_PRO,
     ])

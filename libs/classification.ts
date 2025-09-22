@@ -104,7 +104,7 @@ export const generateClassificationReport = async (
   let yPosition = logoHeight + margin;
   doc.setFont("helvetica", "bold");
   doc.setFontSize(20);
-  doc.text("Classification Summary", margin, yPosition);
+  doc.text("Classification Advisory", margin, yPosition); // TODO: consider adding "& Tariff"
   yPosition += 6;
 
   // 2. Add date/time header
