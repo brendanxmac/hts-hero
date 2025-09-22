@@ -15,7 +15,6 @@ if (typeof window !== "undefined" && MIXPANEL_TOKEN) {
 
 export enum MixpanelEvent {
   CLICKED_TARIFF_IMPACT_UPGRADE = "Tariff Impact Upgrade Clicked",
-  INITIATED_IMPACT_STARTER_CHECKOUT = "Impact Starter Checkout Clicked",
   INITIATED_IMPACT_STANDARD_CHECKOUT = "Impact Standard Checkout Clicked",
   INITIATED_IMPACT_PRO_CHECKOUT = "Impact Pro Checkout Clicked",
   INITIATED_CLASSIFY_PRO_CHECKOUT = "Classify Pro Checkout Clicked",
