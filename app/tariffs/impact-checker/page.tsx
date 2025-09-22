@@ -439,12 +439,6 @@ export default function Home() {
     }
   };
 
-  const getCheckLimitForUser = (purchase?: Purchase | null) => {
-    return Infinity;
-  };
-
-  const checkLimit = getCheckLimitForUser(activeTariffImpactPurchase);
-
   const getPlanStyles = (purchase?: Purchase | null) => {
     if (!purchase) {
       if (isTrialUser) {
