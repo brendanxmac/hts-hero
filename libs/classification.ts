@@ -239,180 +239,193 @@ export const generateClassificationReport = async (
   doc.text(notesLines, margin, yPosition);
   yPosition += notesLines.length * 6 + 15;
 
-  // Add progression descriptions
-  // doc.setFont("helvetica", "bold");
-  // doc.setFontSize(12);
-  // doc.text("Selections:", margin, yPosition);
-  // yPosition += 7;
-
-  // classification.levels.forEach((level, index) => {
-  //   const description = level.selection?.description;
-  //   const htsno = level.selection?.htsno;
-  //   // Add indentation dashes based on level
-  //   const indentation = "-".repeat(index + 1);
-  //   const prefix = `${indentation} `;
-  //   if (description) {
-  //     doc.setFont("helvetica", "normal");
-  //     doc.setFontSize(10);
-
-  //     if (htsno) {
-  //       // Draw the prefix in normal weight
-  //       doc.setFont("helvetica", "normal");
-  //       doc.text(prefix, margin, yPosition);
-  //       const prefixWidth = doc.getTextWidth(prefix);
-
-  //       // Draw the HTS number in bold
-  //       doc.setFont("helvetica", "bold");
-  //       doc.text(htsno + ": ", margin + prefixWidth, yPosition);
-  //       const htsnoWidth = doc.getTextWidth(htsno + ": ");
-
-  //       // Move to next line for description
-  //       yPosition += 6;
-
-  //       // Draw the description in normal weight, indented to align with HTS number
-  //       doc.setFont("helvetica", "normal");
-  //       const descLines = doc.splitTextToSize(
-  //         description,
-  //         contentWidth - prefixWidth - htsnoWidth
-  //       );
-  //       doc.text(descLines, margin + prefixWidth, yPosition);
-  //       yPosition += descLines.length * 6 + 2;
-  //     } else {
-  //       // If no HTS number, just draw the description
-  //       const descLines = doc.splitTextToSize(
-  //         prefix + " " + description,
-  //         contentWidth
-  //       );
-  //       doc.text(descLines, margin, yPosition);
-  //       yPosition += descLines.length * 6 + 2;
-  //     }
-  //   }
-  // });
-
+  // Show Classification - Professional Design
   doc.addPage();
   yPosition = margin;
 
-  // 7. Add classification levels section
+  // Enhanced Classification Header with decorative line
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(20);
-  doc.text("Classification Details", margin, yPosition);
-  yPosition += 14;
+  doc.setFontSize(24);
+  doc.setTextColor(0, 0, 0); // Black color
+  doc.text("Classification Breakdown", margin, yPosition);
+  yPosition += 4;
 
-  // Process each level
+  // Add decorative line under header
+  doc.setDrawColor(0, 0, 0);
+  doc.setLineWidth(0.8);
+  doc.line(margin, yPosition, pageWidth - margin, yPosition);
+  yPosition += 6;
+
   classification.levels.forEach((level, index) => {
-    // Level header
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
-    doc.text(`Level ${index + 1}`, margin, yPosition);
-    yPosition += 4;
+    const description = level.selection?.description;
+    const htsno = level.selection?.htsno;
 
-    // Add visual separation
-    doc.setDrawColor(200, 200, 200);
-    doc.line(margin, yPosition, pageWidth - margin, yPosition);
-    yPosition += 10;
+    if (description) {
+      // Check if we need a page break
+      if (yPosition > pageHeight - 60) {
+        doc.addPage();
+        yPosition = margin;
 
-    // Selected Element Section
-    if (level.selection) {
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(14);
-      doc.text("Selection:", margin, yPosition);
-
-      yPosition += 10;
-      doc.setFontSize(12);
-
-      // HTS Code
-      doc.setFont("helvetica", "bold");
-      doc.text(formatHtsNumber(level.selection.htsno), margin, yPosition);
-      yPosition += 6;
-
-      // Description
-      doc.setFont("helvetica", "normal");
-      const descriptionLines = doc.splitTextToSize(
-        level.selection.description,
-        contentWidth
-      );
-      doc.text(descriptionLines, margin, yPosition);
-      yPosition += descriptionLines.length * 6 + 6;
-
-      // Classifier Notes
-      if (level.notes) {
+        // Add continuation header
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(10);
-        doc.text("Classifier Notes:", margin, yPosition);
-        yPosition += 6;
-        doc.setFont("helvetica", "normal");
-        const notesLines = doc.splitTextToSize(level.notes, contentWidth);
-        doc.text(notesLines, margin, yPosition);
-        yPosition += notesLines.length * 6 + 15;
+        doc.setFontSize(16);
+        doc.setTextColor(0, 0, 0);
+        doc.text("Classification Breakdown (continued)", margin, yPosition);
+        yPosition += 12;
       }
 
-      // Recommendation Reason
-      // if (level.analysisReason) {
-      //   doc.setFont("helvetica", "bold");
-      //   doc.text("HTS Hero Analysis:", margin, yPosition);
-      //   yPosition += 6;
-      //   doc.setFont("helvetica", "normal");
-      //   const reasonLines = doc.splitTextToSize(
-      //     level.analysisReason,
-      //     contentWidth
-      //   );
-      //   doc.text(reasonLines, margin, yPosition);
-      //   yPosition += reasonLines.length * 6 + 5;
-      // }
-    }
+      // Calculate background height based on content with consistent padding
+      const textWidth = contentWidth - 16; // Account for internal padding
+      const tempDescLines = doc.splitTextToSize(description, textWidth);
+      const backgroundHeight = htsno
+        ? tempDescLines.length * 2.5 + 16 // Extra height for HTS code + padding
+        : tempDescLines.length * 2.5 + 12; // Padding for description only
 
-    // Other Candidates Section
-    if (level.candidates && level.candidates.length > 0) {
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(14);
-      doc.text("Candidates:", margin, yPosition);
-      yPosition += 7;
+      // Create consistent gray background for every level
+      doc.setFillColor(248, 249, 250); // Light gray background for all levels
+      doc.rect(margin - 4, yPosition, contentWidth + 8, backgroundHeight, "F");
 
-      level.candidates.forEach((candidate) => {
-        doc.setFontSize(10);
-        doc.setFont("helvetica", "normal");
-        doc.text(formatHtsNumber(candidate.htsno), margin, yPosition);
-        yPosition += 4;
-
-        if (candidate.htsno === level.selection?.htsno) {
-          doc.setTextColor(34, 197, 94);
-        } else {
-          doc.setTextColor(0, 0, 0);
-        }
-
-        // Description
-        const candidateLines = doc.splitTextToSize(
-          candidate.description,
-          contentWidth - 10
-        );
+      if (htsno) {
+        // HTS number in prominent display with internal padding
         doc.setFont("helvetica", "bold");
-        doc.text(candidateLines, margin, yPosition);
-        yPosition += candidateLines.length * 6 + 2;
-        doc.setTextColor(0, 0, 0);
-      });
-    }
+        doc.setFontSize(14);
+        doc.setTextColor(0, 0, 0); // Black color for HTS codes
+        doc.text(htsno, margin + 4, yPosition + 8);
 
-    // If not last page, add a page break
-    if (index < classification.levels.length - 1) {
+        // Description with internal padding
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(11);
+        doc.setTextColor(0, 0, 0); // Black color
+        const descLines = doc.splitTextToSize(description, textWidth);
+        doc.text(descLines, margin + 4, yPosition + 16);
+
+        // Move to end of this level's content
+        yPosition += backgroundHeight;
+      } else {
+        // For levels without HTS numbers - description only with internal padding
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(11);
+        doc.setTextColor(0, 0, 0); // Black color
+        const descLines = doc.splitTextToSize(description, textWidth);
+        doc.text(descLines, margin + 4, yPosition + 6);
+
+        // Move to end of this level's content
+        yPosition += backgroundHeight;
+      }
+
+      // Add consistent spacing between levels
+      yPosition += 6;
+    }
+  });
+
+  // Add a final decorative element
+  yPosition += 10;
+  doc.setDrawColor(0, 0, 0);
+  doc.setLineWidth(0.5);
+  doc.line(margin, yPosition, pageWidth - margin, yPosition);
+  yPosition += 5;
+
+  // Add enhanced summary box at the end
+  const finalClassificationLevel =
+    classification.levels[classification.levels.length - 1].selection;
+  if (finalClassificationLevel && finalClassificationLevel.htsno) {
+    // Check if we need space for the summary box
+    if (yPosition > pageHeight - 60) {
       doc.addPage();
       yPosition = margin;
     }
-  });
+
+    // Final Classification Summary Box with shadow effect
+    // Shadow effect
+    doc.setFillColor(200, 200, 200);
+    doc.rect(margin + 2, yPosition + 2, contentWidth, 35, "F");
+
+    // Main box
+    doc.setFillColor(248, 249, 250); // Light gray background to match other levels
+    doc.setDrawColor(0, 0, 0);
+    doc.setLineWidth(1.5);
+    doc.rect(margin, yPosition, contentWidth, 35, "FD"); // Fill and Draw
+
+    yPosition += 10;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.setTextColor(0, 0, 0);
+    doc.text("Full 10-digit HTS Code", margin + 12, yPosition);
+
+    yPosition += 12;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.setTextColor(0, 0, 0); // Black color
+    doc.text(finalClassificationLevel.htsno, margin + 12, yPosition);
+
+    yPosition += 25;
+  }
+
+  // doc.addPage();
+  // yPosition = margin;
+
+  // 7. Add classification selections section
+  // doc.setFont("helvetica", "bold");
+  // doc.setFontSize(20);
+  // doc.text("Classification Selections", margin, yPosition);
+  // yPosition += 14;
+
+  // Process each level - show only selections
+  // classification.levels.forEach((level, index) => {
+  //   // Only show levels that have a selection
+  //   if (level.selection) {
+  //     // HTS Code (show partial or full code)
+  //     doc.setFont("helvetica", "bold");
+  //     doc.setFontSize(12);
+  //     doc.text(formatHtsNumber(level.selection.htsno), margin, yPosition);
+  //     yPosition += 8;
+
+  //     // Description
+  //     doc.setFont("helvetica", "normal");
+  //     doc.setFontSize(11);
+  //     const descriptionLines = doc.splitTextToSize(
+  //       level.selection.description,
+  //       contentWidth
+  //     );
+  //     doc.text(descriptionLines, margin, yPosition);
+  //     yPosition += descriptionLines.length * 6 + 12;
+
+  //     // Add subtle visual separation between selections (except for last one)
+  //     if (index < classification.levels.length - 1) {
+  //       doc.setDrawColor(230, 230, 230);
+  //       doc.line(margin, yPosition, pageWidth - margin, yPosition);
+  //       yPosition += 12;
+  //     }
+
+  //     // Check if we need a page break (if content would exceed page)
+  //     if (yPosition > pageHeight - 60) {
+  //       doc.addPage();
+  //       yPosition = margin;
+  //     }
+  //   }
+  // });
 
   if (userProfile.company_disclaimer) {
     doc.addPage();
     yPosition = margin;
 
+    // Professional disclaimer header
     doc.setFont("helvetica", "bold");
-    doc.text("Company Disclaimer:", margin, margin);
-    yPosition += 6;
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    doc.text("Disclaimer:", margin, yPosition);
+    yPosition += 5;
+
+    // Professional disclaimer text
     doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
     const disclaimerLines = doc.splitTextToSize(
       userProfile.company_disclaimer,
       contentWidth
     );
     doc.text(disclaimerLines, margin, yPosition);
-    yPosition += disclaimerLines.length * 6 + 5;
+    yPosition += disclaimerLines.length * 5 + 5;
   }
 
   return doc;
