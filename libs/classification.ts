@@ -114,8 +114,15 @@ export const generateClassificationReport = async (
   // 4. Add a classification Details header
   let yPosition = logoHeight + margin;
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(20);
+  doc.setFontSize(24);
+  doc.setTextColor(0, 0, 0); // Black color
   doc.text("Import Classification Advisory", margin, yPosition); // TODO: consider adding "& Tariff"
+  yPosition += 4;
+
+  // Add decorative line under header
+  doc.setDrawColor(0, 0, 0);
+  doc.setLineWidth(0.8);
+  doc.line(margin, yPosition, pageWidth - margin, yPosition);
   yPosition += 6;
 
   // 2. Add date/time header
@@ -145,7 +152,7 @@ export const generateClassificationReport = async (
   if (classifier) {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(12);
-    doc.text("Advisory Opinion Provided By:", margin, yPosition);
+    doc.text("Advisory Provided By:", margin, yPosition);
     yPosition += 5;
     doc.setFont("helvetica", "normal");
     doc.setFontSize(11);
@@ -172,23 +179,40 @@ export const generateClassificationReport = async (
   doc.text(descriptionLines, margin, yPosition);
   yPosition += descriptionLines.length * 6;
 
-  // 6. Add final HTS Code and Tariff Data section
-  yPosition += 5;
-
   const finalLevel =
     classification.levels[classification.levels.length - 1].selection;
 
   if (finalLevel) {
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(11);
+    // Check if we need space for the HTS code box
+    if (yPosition > pageHeight - 60) {
+      doc.addPage();
+      yPosition = margin;
+    }
 
-    // HTS Code
-    doc.setFont("helvetica", "bold");
-    doc.text("HTS Code:", margin, yPosition);
-    yPosition += 5;
-    doc.setFont("helvetica", "normal");
-    doc.text(formatHtsNumber(finalLevel.htsno), margin, yPosition);
+    // Final Classification HTS Code Box with shadow effect
+    // Shadow effect
+    doc.setFillColor(200, 200, 200);
+    doc.rect(margin + 2, yPosition + 2, contentWidth, 35, "F");
+
+    // Main box
+    doc.setFillColor(248, 249, 250); // Light gray background
+    doc.setDrawColor(0, 0, 0);
+    doc.setLineWidth(1.5);
+    doc.rect(margin, yPosition, contentWidth, 35, "FD"); // Fill and Draw
+
     yPosition += 10;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.setTextColor(0, 0, 0);
+    doc.text("HTS Code Advisory", margin + 12, yPosition);
+
+    yPosition += 12;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.setTextColor(0, 0, 0); // Black color
+    doc.text(finalLevel.htsno, margin + 12, yPosition);
+
+    yPosition += 25;
 
     // Tariff Data
     // if (elementWithTariffData.general) {
@@ -232,7 +256,8 @@ export const generateClassificationReport = async (
   }
 
   doc.setFont("helvetica", "bold");
-  doc.text("Advisor Notes:", margin, yPosition);
+  doc.setFontSize(12);
+  doc.text("Advisory Notes:", margin, yPosition);
   yPosition += 6;
   doc.setFont("helvetica", "normal");
   const notesLines = doc.splitTextToSize(classification.notes, contentWidth);
@@ -317,49 +342,6 @@ export const generateClassificationReport = async (
       yPosition += 6;
     }
   });
-
-  // Add a final decorative element
-  yPosition += 10;
-  doc.setDrawColor(0, 0, 0);
-  doc.setLineWidth(0.5);
-  doc.line(margin, yPosition, pageWidth - margin, yPosition);
-  yPosition += 5;
-
-  // Add enhanced summary box at the end
-  const finalClassificationLevel =
-    classification.levels[classification.levels.length - 1].selection;
-  if (finalClassificationLevel && finalClassificationLevel.htsno) {
-    // Check if we need space for the summary box
-    if (yPosition > pageHeight - 60) {
-      doc.addPage();
-      yPosition = margin;
-    }
-
-    // Final Classification Summary Box with shadow effect
-    // Shadow effect
-    doc.setFillColor(200, 200, 200);
-    doc.rect(margin + 2, yPosition + 2, contentWidth, 35, "F");
-
-    // Main box
-    doc.setFillColor(248, 249, 250); // Light gray background to match other levels
-    doc.setDrawColor(0, 0, 0);
-    doc.setLineWidth(1.5);
-    doc.rect(margin, yPosition, contentWidth, 35, "FD"); // Fill and Draw
-
-    yPosition += 10;
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(14);
-    doc.setTextColor(0, 0, 0);
-    doc.text("Full 10-digit HTS Code", margin + 12, yPosition);
-
-    yPosition += 12;
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(18);
-    doc.setTextColor(0, 0, 0); // Black color
-    doc.text(finalClassificationLevel.htsno, margin + 12, yPosition);
-
-    yPosition += 25;
-  }
 
   // doc.addPage();
   // yPosition = margin;
