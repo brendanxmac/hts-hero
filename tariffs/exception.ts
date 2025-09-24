@@ -1175,7 +1175,7 @@ export const exceptionTariffs: TariffI[] = [
     code: "9903.01.33",
     description:
       "Articles of iron or steel, derivative articles of iron or steel, articles of aluminum, derivative articles of aluminum, passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks and parts of passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks, semi-finished copper and intensive copper derivative products, of any country, as provided in subdivision (v)(vi) through (v)(xii) of note 2 to this subchapter",
-    name: "232 Group Exception: Iron & Steel / Aluminum / Copper, Autos, and Auto Parts",
+    name: "Section 232 Exemption: Iron, Steel, Aluminum, Copper, Autos, and Auto Parts",
     inclusions: {
       countries: ["*"],
       tariffs: [

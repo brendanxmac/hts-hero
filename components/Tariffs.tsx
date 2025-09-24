@@ -301,7 +301,7 @@ export const Tariffs = ({
                       </button>
                     </div>
                   </th>
-                  <th className="hidden md:block max-w-48">
+                  <th className="hidden md:table-cell max-w-48">
                     Special Trade Program(s)
                   </th>
                 </tr>

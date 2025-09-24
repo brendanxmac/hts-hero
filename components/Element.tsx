@@ -143,12 +143,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
           <div className="flex flex-wrap text-xs gap-y-2">
             {getBreadCrumbsForElement(element, sections, htsElements).map(
               (breadcrumb, i) => (
-                <div
-                  key={`breadcrumb-${i}`}
-                  style={{
-                    marginLeft: !breadcrumb.label && i > 0 ? `1rem` : "0",
-                  }}
-                >
+                <div key={`breadcrumb-${i}`}>
                   {breadcrumb.label && (
                     <b className="text-white">{breadcrumb.label} </b>
                   )}
@@ -387,7 +382,15 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
             <div className="w-full flex flex-col mt-4">
               <div className="w-full flex justify-between flex-col">
                 <div className="flex items-center">
-                  <PrimaryLabel value="📊 Tariff Wizard" color={Color.WHITE} />
+                  <div className="flex gap-2 items-center">
+                    <PrimaryLabel
+                      value="📊 Tariff Wizard"
+                      color={Color.WHITE}
+                    />
+                    <div className="text-xs text-base-300 font-bold bg-accent px-2 py-0.5 rounded-md">
+                      Beta
+                    </div>
+                  </div>
 
                   <Link
                     href="/tariffs/coverage"
@@ -397,7 +400,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                     <QuestionMarkCircleIcon className="w-5 h-5 md:w-6 md:h-6" />
                   </Link>
                 </div>
-                <TertiaryText value="Quickly see tariff rates for any country of origin and explore potential exemptions" />
+                <TertiaryText value="Explore tariffs for any country of origin and find potential exemptions" />
               </div>
               <Tariffs
                 isPayingUser={isPayingUser}
