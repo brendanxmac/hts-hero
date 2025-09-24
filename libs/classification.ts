@@ -73,341 +73,425 @@ export const generateClassificationReport = async (
 ): Promise<jsPDF> => {
   const elementWithTariffData =
     getElementWithTariffDataFromClassification(classification);
-  // 1. Create a new PDF document with proper margins
-  const doc = new jsPDF();
-  const pageWidth = doc.internal.pageSize.width;
-  const pageHeight = doc.internal.pageSize.height;
-  const margin = 20;
-  const contentWidth = pageWidth - 2 * margin;
 
-  // 3. Add HTS Hero logo or users company logo with correct aspect ratio and centered
-  const logo = new Image();
-  const companyLogo = await fetchLogo();
-  const companyLogoFormat = getImageFormatFromFilename(
-    userProfile.company_logo || ""
-  );
-  logo.src = companyLogo.signedUrl || "/pdf-report-default-logo.png";
-
-  // Wait for image to load to get actual dimensions
-  await new Promise((resolve, reject) => {
-    logo.onload = resolve;
-    logo.onerror = reject;
+  // Initialize PDF document with professional settings
+  const doc = new jsPDF({
+    orientation: "portrait",
+    unit: "pt",
+    format: "a4",
   });
 
-  const targetHeight = 40; // Set your desired height here
-  const aspectRatio = logo.width / logo.height;
-  const logoWidth = targetHeight * aspectRatio;
-  const logoHeight = targetHeight;
-  const logoX = (pageWidth - logoWidth) / 2; // Center horizontally
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 40;
+  const contentWidth = pageWidth - 2 * margin;
 
-  doc.addImage(
-    logo,
-    companyLogoFormat || "PNG",
-    logoX,
-    10,
-    logoWidth,
-    logoHeight,
-    undefined,
-    "FAST"
-  ); // Add quality parameter
+  // Typography constants for consistency
+  const fonts = {
+    title: { size: 20, weight: "bold" },
+    header: { size: 16, weight: "bold" },
+    subheader: { size: 12, weight: "bold" },
+    body: { size: 10, weight: "normal" },
+    caption: { size: 8, weight: "normal" },
+    htsCode: { size: 18, weight: "bold" }, // Larger HTS code
+    htsCodeLabel: { size: 14, weight: "bold" },
+  };
 
-  // 4. Add a classification Details header
-  let yPosition = logoHeight + margin;
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(24);
-  doc.setTextColor(0, 0, 0); // Black color
-  doc.text("Import Classification Advisory", margin, yPosition); // TODO: consider adding "& Tariff"
-  yPosition += 4;
+  // Color scheme
+  const colors = {
+    primary: [0, 0, 0], // Black
+    secondary: [100, 100, 100], // Dark gray
+    accent: [248, 249, 250], // Light gray background
+    border: [200, 200, 200], // Light border
+  };
 
-  // Add decorative line under header
-  doc.setDrawColor(0, 0, 0);
-  doc.setLineWidth(0.8);
-  doc.line(margin, yPosition, pageWidth - margin, yPosition);
-  yPosition += 6;
+  let yPosition = margin;
 
-  // 2. Add date/time header
+  // Helper function to set typography
+  const setTypography = (fontConfig: typeof fonts.title) => {
+    doc.setFont("helvetica", fontConfig.weight as any);
+    doc.setFontSize(fontConfig.size);
+  };
+
+  // Helper function to set text color
+  const setTextColor = (color: number[]) => {
+    doc.setTextColor(color[0], color[1], color[2]);
+  };
+
+  // Add company logo with proper error handling and improved sizing
+  try {
+    const logo = new Image();
+    const companyLogo = await fetchLogo();
+    const companyLogoFormat = getImageFormatFromFilename(
+      userProfile.company_logo || ""
+    );
+    logo.src = companyLogo.signedUrl || "/pdf-report-default-logo.png";
+
+    await new Promise<void>((resolve, reject) => {
+      logo.onload = () => resolve();
+      logo.onerror = () => reject(new Error("Logo failed to load"));
+    });
+
+    // Cap height at 80px and ensure proper centering regardless of dimensions
+    const logoMaxHeight = 80;
+    const logoMaxWidth = pageWidth * 0.8; // Allow more width for wide logos
+    const aspectRatio = logo.width / logo.height;
+
+    let logoWidth = logoMaxHeight * aspectRatio;
+    let logoHeight = logoMaxHeight;
+
+    // If the logo would be too wide, scale it down proportionally
+    if (logoWidth > logoMaxWidth) {
+      logoWidth = logoMaxWidth;
+      logoHeight = logoMaxWidth / aspectRatio;
+    }
+
+    // Center the logo horizontally
+    const logoX = (pageWidth - logoWidth) / 2;
+
+    doc.addImage(
+      logo,
+      companyLogoFormat || "PNG",
+      logoX,
+      yPosition - 20,
+      logoWidth,
+      logoHeight,
+      undefined,
+      "FAST"
+    );
+
+    yPosition += logoHeight + 10; // More space after logo
+  } catch (error) {
+    console.warn("Logo could not be loaded, continuing without logo");
+    yPosition += 20;
+  }
+
+  // Main document title with improved spacing
+  setTypography(fonts.title);
+  setTextColor(colors.primary);
+  const title = "HTS Classification Advisory";
+  const titleWidth = doc.getTextWidth(title);
+  const titleX = (pageWidth - titleWidth) / 2;
+  doc.text(title, titleX, yPosition);
+  yPosition += 12;
+  // Document metadata with better spacing
   const now = new Date();
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(9);
-  doc.text(
-    `Generated on: ${now.toLocaleDateString()} at ${now.toLocaleTimeString()}`,
-    margin,
-    yPosition
-  );
+  setTypography(fonts.caption);
+  setTextColor(colors.secondary);
+  const dateText = `Generated ${now.toLocaleDateString()} at ${now.toLocaleTimeString()}`;
+  const dateTextWidth = doc.getTextWidth(dateText);
+  const dateTextX = (pageWidth - dateTextWidth) / 2;
+  doc.text(dateText, dateTextX, yPosition);
   yPosition += 10;
 
-  // Add importer, if it exists
-  if (importer) {
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(12);
-    doc.text("Importer/Client:", margin, yPosition);
-    yPosition += 5;
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(11);
-    doc.text(importer.name, margin, yPosition);
-    yPosition += 10;
+  // Decorative line under title
+  doc.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
+  doc.setLineWidth(1);
+  doc.line(margin, yPosition, pageWidth - margin, yPosition);
+  yPosition += 20;
+
+  // Client and Advisory provider information side by side with enhanced styling
+  if (importer || classifier) {
+    const columnWidth = (contentWidth - 20) / 2; // Half width with gap
+    const leftColumnX = margin;
+    const rightColumnX = margin + columnWidth + 20; // 20pt gap between columns
+    const boxHeight = 80;
+    const boxPadding = 15;
+
+    // Importer/Client section (left column)
+    if (importer) {
+      // Draw background box for Advisory Provided To
+      doc.setFillColor(248, 250, 252); // Very light blue-gray (same as item box)
+      doc.setDrawColor(226, 232, 240); // Light border
+      doc.setLineWidth(1);
+      doc.roundedRect(
+        leftColumnX,
+        yPosition,
+        columnWidth,
+        boxHeight,
+        6,
+        6,
+        "FD"
+      );
+
+      // Section header
+      setTypography({ size: 12, weight: "bold" });
+      setTextColor([30, 41, 59]); // Dark slate
+      doc.text(
+        "ADVISORY PROVIDED TO",
+        leftColumnX + boxPadding,
+        yPosition + 18
+      );
+
+      // Client name
+      setTypography({ size: 10, weight: "normal" });
+      setTextColor([51, 65, 85]); // Slate gray
+      doc.text(importer.name, leftColumnX + boxPadding, yPosition + 35);
+    }
+
+    // Advisory provider information (right column)
+    if (classifier) {
+      // Draw background box for Advisory Provided By
+      doc.setFillColor(248, 250, 252); // Very light blue-gray (same as item box)
+      doc.setDrawColor(226, 232, 240); // Light border
+      doc.setLineWidth(1);
+      doc.roundedRect(
+        rightColumnX,
+        yPosition,
+        columnWidth,
+        boxHeight,
+        6,
+        6,
+        "FD"
+      );
+
+      // Section header
+      setTypography({ size: 12, weight: "bold" });
+      setTextColor([30, 41, 59]); // Dark slate
+      doc.text(
+        "ADVISORY PROVIDED BY",
+        rightColumnX + boxPadding,
+        yPosition + 18
+      );
+
+      let textY = yPosition + 35;
+
+      // Classifier name
+      setTypography({ size: 10, weight: "normal" });
+      setTextColor([51, 65, 85]); // Slate gray
+      doc.text(classifier.name, rightColumnX + boxPadding, textY);
+      textY += 12;
+
+      if (userProfile.email) {
+        doc.text(userProfile.email, rightColumnX + boxPadding, textY);
+        textY += 12;
+      }
+
+      if (userProfile.company_address) {
+        const addressLines = doc.splitTextToSize(
+          userProfile.company_address,
+          columnWidth - boxPadding * 2
+        );
+        doc.text(addressLines, rightColumnX + boxPadding, textY);
+      }
+    }
+
+    yPosition += boxHeight + 20; // Move down after both boxes
   }
 
-  // Add classifier, if it exists
-  if (classifier) {
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(12);
-    doc.text("Advisory Provided By:", margin, yPosition);
-    yPosition += 5;
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(11);
-    doc.text(classifier.name, margin, yPosition);
-    yPosition += 5;
-    doc.text(userProfile.email, margin, yPosition);
-    yPosition += 5;
-    doc.text(userProfile.company_address, margin, yPosition);
-    yPosition += 10;
-  }
+  // === MAIN CLASSIFICATION SECTION ===
 
-  // Add item description section
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(12);
-  doc.text("Item Description:", margin, yPosition);
-  yPosition += 5;
+  // Item to Classify section with enhanced visual design
+  const sectionPadding = 15;
+  const boxPadding = 20;
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(11);
-  const descriptionLines = doc.splitTextToSize(
+  // Item Description Box
+  const itemBoxHeight = 60;
+
+  // Draw background box for item description
+  doc.setFillColor(239, 246, 255); // Light blue (same as HTS code section)
+  doc.setDrawColor(147, 197, 253); // Blue border (same as HTS code section)
+  doc.setLineWidth(2);
+  doc.roundedRect(margin, yPosition, contentWidth, itemBoxHeight, 8, 8, "FD");
+
+  // Item section header
+  setTypography({ size: 14, weight: "bold" });
+  setTextColor([30, 58, 138]); // Dark blue (same as HTS code section)
+  doc.text("ITEM DESCRIPTION", margin + boxPadding, yPosition + 20);
+
+  // Item description
+  setTypography({ size: 11, weight: "normal" });
+  setTextColor([51, 65, 85]); // Slate gray
+  const itemDescLines = doc.splitTextToSize(
     classification.articleDescription,
-    contentWidth
+    contentWidth - boxPadding * 2
   );
-  doc.text(descriptionLines, margin, yPosition);
-  yPosition += descriptionLines.length * 6;
+  doc.text(itemDescLines, margin + boxPadding, yPosition + 38);
+
+  yPosition += itemBoxHeight + sectionPadding;
 
   const finalLevel =
     classification.levels[classification.levels.length - 1].selection;
 
   if (finalLevel) {
-    // Check if we need space for the HTS code box
-    if (yPosition > pageHeight - 60) {
-      doc.addPage();
-      yPosition = margin;
-    }
+    // === HTS CODE SECTION ===
+    const htsBoxHeight = 85;
 
-    // Final Classification HTS Code Box with shadow effect
-    // Shadow effect
-    doc.setFillColor(200, 200, 200);
-    doc.rect(margin + 2, yPosition + 2, contentWidth, 35, "F");
+    // Draw prominent background box for HTS code
+    doc.setFillColor(239, 246, 255); // Light blue
+    doc.setDrawColor(147, 197, 253); // Blue border
+    doc.setLineWidth(2);
+    doc.roundedRect(margin, yPosition, contentWidth, htsBoxHeight, 8, 8, "FD");
 
-    // Main box
-    doc.setFillColor(248, 249, 250); // Light gray background
-    doc.setDrawColor(0, 0, 0);
-    doc.setLineWidth(1.5);
-    doc.rect(margin, yPosition, contentWidth, 35, "FD"); // Fill and Draw
+    // HTS section header
+    setTypography({ size: 14, weight: "bold" });
+    setTextColor([30, 58, 138]); // Dark blue
+    doc.text("SUGGESTED CLASSIFICATION", margin + boxPadding, yPosition + 22);
 
-    yPosition += 10;
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(14);
-    doc.setTextColor(0, 0, 0);
-    doc.text("HTS Code Advisory", margin + 12, yPosition);
+    // HTS Code - large and prominent, left-aligned
+    setTypography({ size: 28, weight: "bold" });
+    setTextColor([30, 58, 138]); // Dark blue
+    const htsCodeText = formatHtsNumber(finalLevel.htsno);
+    doc.text(htsCodeText, margin + boxPadding, yPosition + 55);
 
-    yPosition += 12;
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(18);
-    doc.setTextColor(0, 0, 0); // Black color
-    doc.text(finalLevel.htsno, margin + 12, yPosition);
-
-    yPosition += 25;
-
-    // Tariff Data
-    // if (elementWithTariffData.general) {
-    //   doc.setFont("helvetica", "bold");
-    //   doc.text("General Tariff:", margin, yPosition);
-    //   yPosition += 5;
-    //   doc.setFont("helvetica", "normal");
-    //   const generalLines = doc.splitTextToSize(
-    //     elementWithTariffData.general,
-    //     contentWidth
+    // HTS description if available
+    // if (finalLevel.description) {
+    //   setTypography({ size: 9, weight: "normal" });
+    //   setTextColor([51, 65, 85]);
+    //   const htsDescLines = doc.splitTextToSize(
+    //     finalLevel.description,
+    //     contentWidth - boxPadding * 2
     //   );
-    //   doc.text(generalLines, margin, yPosition);
-    //   yPosition += generalLines.length * 6 + 5;
+    //   doc.text(htsDescLines, margin + boxPadding, yPosition + 72);
     // }
 
-    // if (elementWithTariffData.special) {
-    //   doc.setFont("helvetica", "bold");
-    //   doc.text("Special Tariff:", margin, yPosition);
-    //   yPosition += 5;
-    //   doc.setFont("helvetica", "normal");
-    //   const specialLines = doc.splitTextToSize(
-    //     elementWithTariffData.special,
-    //     contentWidth
-    //   );
-    //   doc.text(specialLines, margin, yPosition);
-    //   yPosition += specialLines.length * 6 + 5;
-    // }
-
-    // if (elementWithTariffData.other) {
-    //   doc.setFont("helvetica", "bold");
-    //   doc.text("Other Tariff:", margin, yPosition);
-    //   yPosition += 5;
-    //   doc.setFont("helvetica", "normal");
-    //   const otherLines = doc.splitTextToSize(
-    //     elementWithTariffData.other,
-    //     contentWidth
-    //   );
-    //   doc.text(otherLines, margin, yPosition);
-    //   yPosition += otherLines.length * 6 + 5;
-    // }
+    yPosition += htsBoxHeight + sectionPadding;
   }
 
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(12);
-  doc.text("Advisory Notes:", margin, yPosition);
-  yPosition += 6;
-  doc.setFont("helvetica", "normal");
-  const notesLines = doc.splitTextToSize(classification.notes, contentWidth);
-  doc.text(notesLines, margin, yPosition);
-  yPosition += notesLines.length * 6 + 15;
+  // === ADVISORY NOTES SECTION ===
 
-  // Show Classification - Professional Design
+  // Calculate dynamic height based on notes content
+  setTypography({ size: 10, weight: "normal" }); // Set font for measurement
+  const notesLines = doc.splitTextToSize(
+    classification.notes || "No additional notes provided.",
+    contentWidth - boxPadding * 2
+  );
+  const notesBoxHeight = Math.max(80, notesLines.length * 12 + 45);
+
+  // Draw background box for advisory notes
+  doc.setFillColor(239, 246, 255); // Light blue (same as HTS code section)
+  doc.setDrawColor(147, 197, 253); // Blue border (same as HTS code section)
+  doc.setLineWidth(1.5);
+  doc.roundedRect(margin, yPosition, contentWidth, notesBoxHeight, 6, 6, "FD");
+
+  // Notes section header
+  setTypography({ size: 14, weight: "bold" });
+  setTextColor([30, 58, 138]); // Dark blue (same as HTS code section)
+  doc.text("BASIS FOR CLASSIFICATION", margin + boxPadding, yPosition + 22);
+
+  // Advisory notes content
+  setTypography({ size: 10, weight: "normal" });
+  setTextColor([51, 65, 85]); // Slate gray (consistent with other sections)
+  doc.text(notesLines, margin + boxPadding, yPosition + 42);
+
+  yPosition += notesBoxHeight + 30;
+
+  // Classification breakdown on new page
   doc.addPage();
   yPosition = margin;
 
-  // Enhanced Classification Header with decorative line
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(24);
-  doc.setTextColor(0, 0, 0); // Black color
-  doc.text("Classification Breakdown", margin, yPosition);
-  yPosition += 4;
+  // Page header
+  setTypography(fonts.title);
+  setTextColor(colors.primary);
+  const breakdownTitle = "Classification Breakdown";
+  const breakdownTitleWidth = doc.getTextWidth(breakdownTitle);
+  const breakdownTitleX = (pageWidth - breakdownTitleWidth) / 2;
+  doc.text(breakdownTitle, breakdownTitleX, yPosition);
+  yPosition += 10;
 
-  // Add decorative line under header
-  doc.setDrawColor(0, 0, 0);
-  doc.setLineWidth(0.8);
+  // Decorative line
+  doc.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
+  doc.setLineWidth(1);
   doc.line(margin, yPosition, pageWidth - margin, yPosition);
-  yPosition += 6;
+  yPosition += 15;
 
-  classification.levels.forEach((level, index) => {
+  classification.levels.forEach((level) => {
     const description = level.selection?.description;
     const htsno = level.selection?.htsno;
 
     if (description) {
       // Check if we need a page break
-      if (yPosition > pageHeight - 60) {
+      if (yPosition > pageHeight - 100) {
         doc.addPage();
         yPosition = margin;
 
         // Add continuation header
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(16);
-        doc.setTextColor(0, 0, 0);
+        setTypography(fonts.header);
+        setTextColor(colors.primary);
         doc.text("Classification Breakdown (continued)", margin, yPosition);
-        yPosition += 12;
+        yPosition += 30;
       }
 
-      // Calculate background height based on content with consistent padding
-      const textWidth = contentWidth - 16; // Account for internal padding
-      const tempDescLines = doc.splitTextToSize(description, textWidth);
-      const backgroundHeight = htsno
-        ? tempDescLines.length * 2.5 + 16 // Extra height for HTS code + padding
-        : tempDescLines.length * 2.5 + 12; // Padding for description only
+      // DEBUG: Let's see the actual values
+      // A4 page width is 595.28pt, with 40pt margins on each side = 515.28pt content width
+      // We want to use almost all of this width for text
 
-      // Create consistent gray background for every level
-      doc.setFillColor(248, 249, 250); // Light gray background for all levels
-      doc.rect(margin - 4, yPosition, contentWidth + 8, backgroundHeight, "F");
+      const horizontalPadding = 10; // Nice comfortable padding from edges
+      const verticalPadding = 10; // Nice comfortable padding from top/bottom
+      const availableTextWidth = contentWidth - 2 * horizontalPadding;
+
+      // Use the full available width for text wrapping
+      setTypography(fonts.body); // Set typography BEFORE splitTextToSize
+      const descLines = doc.splitTextToSize(description, availableTextWidth);
+      const lineHeight = 12;
+      const boxHeight = htsno
+        ? descLines.length * lineHeight + 2 * verticalPadding + 15 // Extra space for HTS code
+        : descLines.length * lineHeight + 2 * verticalPadding;
+
+      // Draw the background box
+      doc.setFillColor(colors.accent[0], colors.accent[1], colors.accent[2]);
+      doc.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
+      doc.setLineWidth(0.5);
+      doc.rect(margin, yPosition, contentWidth, boxHeight, "FD");
+
+      // Position text with comfortable padding from edges
+      const textX = margin + horizontalPadding;
+      const textY = yPosition + verticalPadding;
 
       if (htsno) {
-        // HTS number in prominent display with internal padding
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(14);
-        doc.setTextColor(0, 0, 0); // Black color for HTS codes
-        doc.text(htsno, margin + 4, yPosition + 8);
+        // HTS code
+        setTypography(fonts.subheader);
+        setTextColor(colors.primary);
+        doc.text(htsno, textX, textY + 5);
 
-        // Description with internal padding
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(11);
-        doc.setTextColor(0, 0, 0); // Black color
-        const descLines = doc.splitTextToSize(description, textWidth);
-        doc.text(descLines, margin + 4, yPosition + 16);
-
-        // Move to end of this level's content
-        yPosition += backgroundHeight;
+        // Description - using nearly full width
+        setTypography(fonts.body);
+        setTextColor(colors.primary);
+        doc.text(descLines, textX, textY + 20);
       } else {
-        // For levels without HTS numbers - description only with internal padding
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(11);
-        doc.setTextColor(0, 0, 0); // Black color
-        const descLines = doc.splitTextToSize(description, textWidth);
-        doc.text(descLines, margin + 4, yPosition + 6);
-
-        // Move to end of this level's content
-        yPosition += backgroundHeight;
+        // Description only - using nearly full width
+        setTypography(fonts.body);
+        setTextColor(colors.primary);
+        doc.text(descLines, textX, textY + 5);
       }
 
-      // Add consistent spacing between levels
-      yPosition += 6;
+      yPosition += boxHeight + 15;
     }
   });
 
-  // doc.addPage();
-  // yPosition = margin;
-
-  // 7. Add classification selections section
-  // doc.setFont("helvetica", "bold");
-  // doc.setFontSize(20);
-  // doc.text("Classification Selections", margin, yPosition);
-  // yPosition += 14;
-
-  // Process each level - show only selections
-  // classification.levels.forEach((level, index) => {
-  //   // Only show levels that have a selection
-  //   if (level.selection) {
-  //     // HTS Code (show partial or full code)
-  //     doc.setFont("helvetica", "bold");
-  //     doc.setFontSize(12);
-  //     doc.text(formatHtsNumber(level.selection.htsno), margin, yPosition);
-  //     yPosition += 8;
-
-  //     // Description
-  //     doc.setFont("helvetica", "normal");
-  //     doc.setFontSize(11);
-  //     const descriptionLines = doc.splitTextToSize(
-  //       level.selection.description,
-  //       contentWidth
-  //     );
-  //     doc.text(descriptionLines, margin, yPosition);
-  //     yPosition += descriptionLines.length * 6 + 12;
-
-  //     // Add subtle visual separation between selections (except for last one)
-  //     if (index < classification.levels.length - 1) {
-  //       doc.setDrawColor(230, 230, 230);
-  //       doc.line(margin, yPosition, pageWidth - margin, yPosition);
-  //       yPosition += 12;
-  //     }
-
-  //     // Check if we need a page break (if content would exceed page)
-  //     if (yPosition > pageHeight - 60) {
-  //       doc.addPage();
-  //       yPosition = margin;
-  //     }
-  //   }
-  // });
-
+  // Add disclaimer if provided
   if (userProfile.company_disclaimer) {
+    // Add new page
     doc.addPage();
     yPosition = margin;
 
-    // Professional disclaimer header
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0);
+    // Disclaimer section
+    setTypography(fonts.body);
+    setTextColor(colors.primary);
     doc.text("Disclaimer:", margin, yPosition);
-    yPosition += 5;
+    yPosition += 10;
 
-    // Professional disclaimer text
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0);
+    setTypography(fonts.caption);
+    setTextColor(colors.secondary);
     const disclaimerLines = doc.splitTextToSize(
       userProfile.company_disclaimer,
       contentWidth
     );
     doc.text(disclaimerLines, margin, yPosition);
-    yPosition += disclaimerLines.length * 5 + 5;
+  }
+
+  // Add page numbers to all pages
+  const totalPages = doc.getNumberOfPages();
+  for (let i = 1; i <= totalPages; i++) {
+    doc.setPage(i);
+    setTypography(fonts.caption);
+    setTextColor(colors.secondary);
+
+    // Page number at bottom center
+    const pageText = `Page ${i} of ${totalPages}`;
+    const pageTextWidth = doc.getTextWidth(pageText);
+    const pageTextX = (pageWidth - pageTextWidth) / 2;
+    doc.text(pageText, pageTextX, pageHeight - 20);
   }
 
   return doc;
