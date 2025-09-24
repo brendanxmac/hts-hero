@@ -12,6 +12,7 @@ import { PrimaryText } from "./PrimaryText";
 import { SecondaryLabel } from "./SecondaryLabel";
 import { TertiaryText } from "./TertiaryText";
 import { LoadingIndicator } from "./LoadingIndicator";
+import { useClassifications } from "../contexts/ClassificationsContext";
 
 interface Props {
   classificationRecord: ClassificationRecord;

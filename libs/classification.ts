@@ -1,4 +1,9 @@
-import { Classification, ClassificationRecord } from "../interfaces/hts";
+import {
+  Classification,
+  ClassificationRecord,
+  Classifier,
+  Importer,
+} from "../interfaces/hts";
 import apiClient from "./api";
 import jsPDF from "jspdf";
 import { getElementWithTariffDataFromClassification } from "./hts";
@@ -24,11 +29,15 @@ export const createClassification = async (
 
 export const updateClassification = async (
   id: string,
-  classification: Classification
+  classification?: Classification,
+  importer_id?: string,
+  classifier_id?: string
 ) => {
   const response = await apiClient.post("/classification/update", {
     id,
     classification,
+    importer_id,
+    classifier_id,
   });
 
   return response.data;
@@ -58,7 +67,9 @@ const getImageFormatFromFilename = (filename: string): string => {
 
 export const generateClassificationReport = async (
   classification: Classification,
-  userProfile: UserProfile
+  userProfile: UserProfile,
+  importer?: Importer,
+  classifier?: Classifier
 ): Promise<jsPDF> => {
   const elementWithTariffData =
     getElementWithTariffDataFromClassification(classification);
@@ -75,7 +86,7 @@ export const generateClassificationReport = async (
   const companyLogoFormat = getImageFormatFromFilename(
     userProfile.company_logo || ""
   );
-  logo.src = companyLogo.signedUrl || "/logo-with-text.svg";
+  logo.src = companyLogo.signedUrl || "/pdf-report-default-logo.png";
 
   // Wait for image to load to get actual dimensions
   await new Promise((resolve, reject) => {
@@ -104,7 +115,7 @@ export const generateClassificationReport = async (
   let yPosition = logoHeight + margin;
   doc.setFont("helvetica", "bold");
   doc.setFontSize(20);
-  doc.text("Classification Advisory", margin, yPosition); // TODO: consider adding "& Tariff"
+  doc.text("Import Classification Advisory", margin, yPosition); // TODO: consider adding "& Tariff"
   yPosition += 6;
 
   // 2. Add date/time header
@@ -118,7 +129,35 @@ export const generateClassificationReport = async (
   );
   yPosition += 10;
 
-  // 5. Add item description section
+  // Add importer, if it exists
+  if (importer) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.text("Importer/Client:", margin, yPosition);
+    yPosition += 5;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
+    doc.text(importer.name, margin, yPosition);
+    yPosition += 10;
+  }
+
+  // Add classifier, if it exists
+  if (classifier) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.text("Advisory Opinion Provided By:", margin, yPosition);
+    yPosition += 5;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
+    doc.text(classifier.name, margin, yPosition);
+    yPosition += 5;
+    doc.text(userProfile.email, margin, yPosition);
+    yPosition += 5;
+    doc.text(userProfile.company_address, margin, yPosition);
+    yPosition += 10;
+  }
+
+  // Add item description section
   doc.setFont("helvetica", "bold");
   doc.setFontSize(12);
   doc.text("Item Description:", margin, yPosition);
@@ -152,48 +191,48 @@ export const generateClassificationReport = async (
     yPosition += 10;
 
     // Tariff Data
-    if (elementWithTariffData.general) {
-      doc.setFont("helvetica", "bold");
-      doc.text("General Tariff:", margin, yPosition);
-      yPosition += 5;
-      doc.setFont("helvetica", "normal");
-      const generalLines = doc.splitTextToSize(
-        elementWithTariffData.general,
-        contentWidth
-      );
-      doc.text(generalLines, margin, yPosition);
-      yPosition += generalLines.length * 6 + 5;
-    }
+    // if (elementWithTariffData.general) {
+    //   doc.setFont("helvetica", "bold");
+    //   doc.text("General Tariff:", margin, yPosition);
+    //   yPosition += 5;
+    //   doc.setFont("helvetica", "normal");
+    //   const generalLines = doc.splitTextToSize(
+    //     elementWithTariffData.general,
+    //     contentWidth
+    //   );
+    //   doc.text(generalLines, margin, yPosition);
+    //   yPosition += generalLines.length * 6 + 5;
+    // }
 
-    if (elementWithTariffData.special) {
-      doc.setFont("helvetica", "bold");
-      doc.text("Special Tariff:", margin, yPosition);
-      yPosition += 5;
-      doc.setFont("helvetica", "normal");
-      const specialLines = doc.splitTextToSize(
-        elementWithTariffData.special,
-        contentWidth
-      );
-      doc.text(specialLines, margin, yPosition);
-      yPosition += specialLines.length * 6 + 5;
-    }
+    // if (elementWithTariffData.special) {
+    //   doc.setFont("helvetica", "bold");
+    //   doc.text("Special Tariff:", margin, yPosition);
+    //   yPosition += 5;
+    //   doc.setFont("helvetica", "normal");
+    //   const specialLines = doc.splitTextToSize(
+    //     elementWithTariffData.special,
+    //     contentWidth
+    //   );
+    //   doc.text(specialLines, margin, yPosition);
+    //   yPosition += specialLines.length * 6 + 5;
+    // }
 
-    if (elementWithTariffData.other) {
-      doc.setFont("helvetica", "bold");
-      doc.text("Other Tariff:", margin, yPosition);
-      yPosition += 5;
-      doc.setFont("helvetica", "normal");
-      const otherLines = doc.splitTextToSize(
-        elementWithTariffData.other,
-        contentWidth
-      );
-      doc.text(otherLines, margin, yPosition);
-      yPosition += otherLines.length * 6 + 5;
-    }
+    // if (elementWithTariffData.other) {
+    //   doc.setFont("helvetica", "bold");
+    //   doc.text("Other Tariff:", margin, yPosition);
+    //   yPosition += 5;
+    //   doc.setFont("helvetica", "normal");
+    //   const otherLines = doc.splitTextToSize(
+    //     elementWithTariffData.other,
+    //     contentWidth
+    //   );
+    //   doc.text(otherLines, margin, yPosition);
+    //   yPosition += otherLines.length * 6 + 5;
+    // }
   }
 
   doc.setFont("helvetica", "bold");
-  doc.text("Classifier Notes:", margin, yPosition);
+  doc.text("Advisor Notes:", margin, yPosition);
   yPosition += 6;
   doc.setFont("helvetica", "normal");
   const notesLines = doc.splitTextToSize(classification.notes, contentWidth);

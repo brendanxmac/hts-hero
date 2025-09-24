@@ -400,7 +400,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                     <QuestionMarkCircleIcon className="w-5 h-5 md:w-6 md:h-6" />
                   </Link>
                 </div>
-                <TertiaryText value="Explore tariffs for any country of origin and find potential exemptions" />
+                <TertiaryText value="Simulate tariff scenarios for any country of origin and find potential exemptions" />
               </div>
               <Tariffs
                 isPayingUser={isPayingUser}

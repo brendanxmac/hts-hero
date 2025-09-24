@@ -14,10 +14,12 @@ import { fetchClassifiersForUser } from "../libs/supabase/classifiers";
 import { fetchImportersForUser } from "../libs/supabase/importers";
 import { Classifier, Importer } from "../interfaces/hts";
 import { useClassifications } from "../contexts/ClassificationsContext";
+import { updateClassification } from "../libs/classification";
 
 export const ClassificationResultPage = () => {
   const { user } = useUser();
-  const { classification, setClassification } = useClassification();
+  const { classification, setClassification, classificationId } =
+    useClassification();
   const { classifications } = useClassifications();
   const { levels } = classification;
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
@@ -25,7 +27,7 @@ export const ClassificationResultPage = () => {
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
   const classificationRecord = classifications.find(
-    (c) => c.classification.id === classification.id
+    (c) => c.id === classificationId
   );
 
   // State for classifiers and importers
@@ -33,6 +35,8 @@ export const ClassificationResultPage = () => {
   const [importers, setImporters] = useState<Importer[]>([]);
   const [selectedClassifierId, setSelectedClassifierId] = useState<string>("");
   const [selectedImporterId, setSelectedImporterId] = useState<string>("");
+  const [isLoadingClassifiers, setIsLoadingClassifiers] = useState(true);
+  const [isLoadingImporters, setIsLoadingImporters] = useState(true);
 
   // Fetch classifiers and importers on component mount
   useEffect(() => {
@@ -44,8 +48,20 @@ export const ClassificationResultPage = () => {
         ]);
         setClassifiers(fetchedClassifiers);
         setImporters(fetchedImporters);
+        setIsLoadingClassifiers(false);
+        setIsLoadingImporters(false);
+
+        console.log("classificationRecord: ");
+        console.log(classificationRecord);
+
+        if (classificationRecord) {
+          setSelectedClassifierId(classificationRecord.classifier_id || "");
+          setSelectedImporterId(classificationRecord.importer_id || "");
+        }
       } catch (error) {
         console.error("Error fetching classifiers and importers:", error);
+        setIsLoadingClassifiers(false);
+        setIsLoadingImporters(false);
       }
     };
 
@@ -66,22 +82,39 @@ export const ClassificationResultPage = () => {
         <div className="flex flex-col gap-1">
           <div className="flex justify-between items-center">
             <h2 className="text-xl md:text-2xl font-bold text-white">
-              Classification Details
+              Classification Overview
             </h2>
             <div className="flex gap-2">
               <button
                 className="btn btn-xs btn-primary"
+                disabled={loading || isLoadingClassifiers || isLoadingImporters}
                 onClick={async () => {
                   setLoading(true);
                   const userProfile = await fetchUser(user.id);
+                  const importer = importers.find(
+                    (i) => i.id === selectedImporterId
+                  );
+
+                  console.log("importer: ");
+                  console.log(importer);
+
+                  const classifier = classifiers.find(
+                    (c) => c.id === selectedClassifierId
+                  );
+
+                  console.log("classifier: ");
+                  console.log(classifier);
+
                   await downloadClassificationReport(
                     classification,
-                    userProfile
+                    userProfile,
+                    importer,
+                    classifier
                   );
                   setLoading(false);
                 }}
               >
-                {loading ? (
+                {loading || isLoadingClassifiers || isLoadingImporters ? (
                   <LoadingIndicator text="Downloading" color={Color.WHITE} />
                 ) : (
                   <>
@@ -109,18 +142,30 @@ export const ClassificationResultPage = () => {
             <select
               className="select w-full"
               value={selectedClassifierId}
-              onChange={(e) => setSelectedClassifierId(e.target.value)}
+              disabled={isLoadingClassifiers}
+              onChange={(e) => {
+                setSelectedClassifierId(e.target.value);
+                updateClassification(
+                  classificationId,
+                  undefined,
+                  undefined,
+                  e.target.value
+                );
+              }}
             >
               <option value="" disabled>
-                {classifiers.length === 0
-                  ? "No classifiers available"
-                  : "Select classifier"}
+                {isLoadingClassifiers
+                  ? "Loading classifiers..."
+                  : classifiers.length === 0
+                    ? "No classifiers available"
+                    : "Select classifier"}
               </option>
-              {classifiers.map((classifier) => (
-                <option key={classifier.id} value={classifier.id}>
-                  {classifier.name}
-                </option>
-              ))}
+              {!isLoadingClassifiers &&
+                classifiers.map((classifier) => (
+                  <option key={classifier.id} value={classifier.id}>
+                    {classifier.name}
+                  </option>
+                ))}
             </select>
           </div>
 
@@ -129,18 +174,30 @@ export const ClassificationResultPage = () => {
             <select
               className="select w-full"
               value={selectedImporterId}
-              onChange={(e) => setSelectedImporterId(e.target.value)}
+              disabled={isLoadingImporters}
+              onChange={(e) => {
+                setSelectedImporterId(e.target.value);
+                updateClassification(
+                  classificationId,
+                  undefined,
+                  e.target.value,
+                  undefined
+                );
+              }}
             >
               <option value="" disabled>
-                {importers.length === 0
-                  ? "No importers available"
-                  : "Select importer"}
+                {isLoadingImporters
+                  ? "Loading importers..."
+                  : importers.length === 0
+                    ? "No importers available"
+                    : "Select importer"}
               </option>
-              {importers.map((importer) => (
-                <option key={importer.id} value={importer.id}>
-                  {importer.name}
-                </option>
-              ))}
+              {!isLoadingImporters &&
+                importers.map((importer) => (
+                  <option key={importer.id} value={importer.id}>
+                    {importer.name}
+                  </option>
+                ))}
             </select>
           </div>
         </div>
