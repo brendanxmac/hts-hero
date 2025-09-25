@@ -16,6 +16,7 @@ import { PrimaryLabel } from "./PrimaryLabel";
 import { Color } from "../enums/style";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { useState, useEffect } from "react";
+import { BeakerIcon } from "@heroicons/react/16/solid";
 
 interface Props {
   user: UserProfile;
@@ -148,9 +149,22 @@ export default function Profile({ user }: Props) {
   return (
     <div className="w-full max-w-4xl mx-auto p-6 flex flex-col gap-2">
       <div className="w-full bg-base-100 rounded-lg border border-base-content/20 p-6 flex flex-col gap-8">
-        <div className="flex flex-col">
-          <h1 className="text-2xl font-bold text-white">Manage Your Profile</h1>
-          <TertiaryText value="Update your account information and preferences" />
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-col">
+            <h1 className="text-2xl font-bold text-white">
+              Manage Your Profile
+            </h1>
+            <TertiaryText value="Update your account information and preferences" />
+          </div>
+          {hasChanges && (
+            <button
+              onClick={handleSaveChanges}
+              disabled={isSaving}
+              className="w-fit btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {isSaving ? "Saving..." : "Save Changes"}
+            </button>
+          )}
         </div>
 
         {/* Account Details Section */}
@@ -201,7 +215,7 @@ export default function Profile({ user }: Props) {
             <TertiaryLabel value="Company Disclaimer" />
             <div className="w-full flex flex-col gap-3">
               <textarea
-                className="w-full resize-none p-3 bg-base-100 border-2 border-base-content/20 rounded-lg text-base-content placeholder-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary"
+                className="textarea textarea-bordered w-full resize-y"
                 placeholder="Enter your company disclaimer..."
                 rows={4}
                 value={disclaimer}
@@ -227,7 +241,17 @@ export default function Profile({ user }: Props) {
 
         {/* Classifiers Section */}
         <div className="w-full flex flex-col gap-4">
-          <PrimaryLabel value="Classifiers" color={Color.WHITE} />
+          <div className="flex items-center gap-2">
+            <PrimaryLabel value="Classifiers" color={Color.WHITE} />
+            <div
+              className="tooltip tooltip-bottom"
+              data-tip="This feature is experimental"
+            >
+              <div className="rounded-sm bg-accent p-0.5 text-xs text-base-300">
+                <BeakerIcon className="w-4 h-4" />
+              </div>
+            </div>
+          </div>
           <div className="flex gap-2">
             <input
               type="text"
@@ -280,7 +304,17 @@ export default function Profile({ user }: Props) {
 
         {/* Importers Section */}
         <div className="w-full flex flex-col gap-4">
-          <PrimaryLabel value="Importers" color={Color.WHITE} />
+          <div className="flex items-center gap-2">
+            <PrimaryLabel value="Importers" color={Color.WHITE} />
+            <div
+              className="tooltip tooltip-bottom"
+              data-tip="This feature is experimental"
+            >
+              <div className="rounded-sm bg-accent p-0.5 text-xs text-base-300">
+                <BeakerIcon className="w-4 h-4" />
+              </div>
+            </div>
+          </div>
           <div className="flex gap-2">
             <input
               type="text"

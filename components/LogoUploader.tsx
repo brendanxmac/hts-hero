@@ -94,8 +94,8 @@ export default function LogoUploader({ userId }: { userId: string }) {
       )}
       <div
         {...getRootProps()}
-        className={`w-full border-dashed border-2 p-6 text-center rounded cursor-pointer transition flex flex-col items-center
-          ${isDragActive ? "border-blue-500 bg-blue-50" : "border-gray-300"}
+        className={`w-full border-2 p-6 text-center rounded cursor-pointer transition flex flex-col items-center
+          ${isDragActive ? "border-blue-500 bg-blue-50" : "border-base-content/20"}
         `}
       >
         <input {...getInputProps()} />
