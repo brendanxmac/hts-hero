@@ -8,7 +8,7 @@ import TariffImpactTrialEndingEmail from "@/emails/TariffImpactTrialEndingEmail"
 import { PricingPlan } from "@/types";
 import { CreateEmailOptions } from "resend";
 
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
     const authHeader = req.headers.get("authorization");
 
@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
       (user): CreateEmailOptions => ({
         from: config.resend.fromAdmin,
         to: user.email,
-        subject: "⏰ Your Tariff Impact Checker Pro Trial Ends Tomorrow!",
+        subject: "⏰ Your Tariff Pro Trial Ends Tomorrow!",
         react: React.createElement(TariffImpactTrialEndingEmail),
         replyTo: config.resend.supportEmail,
       })

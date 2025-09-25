@@ -46,10 +46,8 @@ export default function TariffImpactTrialEndingEmail() {
             {/* Appreciation */}
             <Text className="text-base text-gray-600 leading-relaxed mb-4 max-w-lg mx-auto">
               We hope you got a chance to see how much time and effort{" "}
-              <span className="text-[#617BFF] font-bold">
-                Tariff Impact Pro
-              </span>{" "}
-              can save you and your clients.
+              <span className="text-[#617BFF] font-bold">Tariff Pro</span> can
+              save you and your clients.
             </Text>
 
             {/* Special Offer Highlight */}
@@ -74,7 +72,7 @@ export default function TariffImpactTrialEndingEmail() {
               </Button>
 
               <Text className="text-sm text-red-500 font-medium">
-                ⏰ Offer expires when your trial ends tomorrow!
+                ⏰ Offer expires at the end of the month!
               </Text>
               {/* Secondary CTA for hesitant users */}
               <Text className="text-sm text-gray-400 mb-2 mt-8">
@@ -186,7 +184,7 @@ export default function TariffImpactTrialEndingEmail() {
             </Button>
 
             <Text className="text-sm font-medium text-red-500 mb-0">
-              ⏰ Offer expires when your trial ends tomorrow
+              ⏰ Offer expires at the end of the month!
             </Text>
           </Section>
 
