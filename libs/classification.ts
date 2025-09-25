@@ -295,7 +295,7 @@ export const generateClassificationReport = async (
   doc.roundedRect(margin, yPosition, contentWidth, itemBoxHeight, 6, 6, "FD");
 
   // Item section header
-  setTypography({ size: 14, weight: "bold" });
+  setTypography({ size: 12, weight: "bold" });
   setTextColor([30, 41, 59]); // Dark slate (same as advisory sections)
   doc.text("ITEM TO CLASSIFY", margin + boxPadding, yPosition + 20);
 
@@ -324,7 +324,7 @@ export const generateClassificationReport = async (
     doc.roundedRect(margin, yPosition, contentWidth, htsBoxHeight, 8, 8, "FD");
 
     // HTS section header
-    setTypography({ size: 14, weight: "bold" });
+    setTypography({ size: 12, weight: "bold" });
     setTextColor([30, 58, 138]); // Dark blue
     doc.text("SUGGESTED CLASSIFICATION", margin + boxPadding, yPosition + 22);
 
@@ -392,7 +392,7 @@ export const generateClassificationReport = async (
     );
 
     // First section header
-    setTypography({ size: 14, weight: "bold" });
+    setTypography({ size: 12, weight: "bold" });
     setTextColor([30, 58, 138]); // Dark blue
     doc.text("BASIS FOR CLASSIFICATION", margin + boxPadding, yPosition + 22);
 

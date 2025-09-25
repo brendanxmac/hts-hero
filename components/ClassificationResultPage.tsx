@@ -171,7 +171,10 @@ export const ClassificationResultPage = () => {
                 }}
               >
                 {loading || isLoadingClassifiers || isLoadingImporters ? (
-                  <LoadingIndicator text="Downloading" color={Color.WHITE} />
+                  <LoadingIndicator
+                    text={loading ? "Downloading" : "Loading"}
+                    color={Color.WHITE}
+                  />
                 ) : (
                   <>
                     <ArrowDownTrayIcon className="w-4 h-4" />
@@ -332,7 +335,7 @@ export const ClassificationResultPage = () => {
         <div className="w-full flex flex-col gap-2">
           <TertiaryLabel value="Notes" />
           <textarea
-            className="min-h-36 textarea textarea-bordered border-2 focus:outline-none text-white placeholder:text-white/20 text-base w-full"
+            className="min-h-36 textarea textarea-bordered text-white placeholder:text-white/20 text-base w-full"
             placeholder="Add any final notes here. They will be included in your classification advisory."
             value={classification.notes || ""}
             onChange={(e) => {
