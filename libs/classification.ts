@@ -289,15 +289,15 @@ export const generateClassificationReport = async (
   const itemBoxHeight = 60;
 
   // Draw background box for item description
-  doc.setFillColor(239, 246, 255); // Light blue (same as HTS code section)
-  doc.setDrawColor(147, 197, 253); // Blue border (same as HTS code section)
-  doc.setLineWidth(2);
-  doc.roundedRect(margin, yPosition, contentWidth, itemBoxHeight, 8, 8, "FD");
+  doc.setFillColor(248, 250, 252); // Very light blue-gray (same as advisory sections)
+  doc.setDrawColor(226, 232, 240); // Light border (same as advisory sections)
+  doc.setLineWidth(1);
+  doc.roundedRect(margin, yPosition, contentWidth, itemBoxHeight, 6, 6, "FD");
 
   // Item section header
   setTypography({ size: 14, weight: "bold" });
-  setTextColor([30, 58, 138]); // Dark blue (same as HTS code section)
-  doc.text("ITEM DESCRIPTION", margin + boxPadding, yPosition + 20);
+  setTextColor([30, 41, 59]); // Dark slate (same as advisory sections)
+  doc.text("ITEM TO CLASSIFY", margin + boxPadding, yPosition + 20);
 
   // Item description
   setTypography({ size: 11, weight: "normal" });
@@ -329,10 +329,10 @@ export const generateClassificationReport = async (
     doc.text("SUGGESTED CLASSIFICATION", margin + boxPadding, yPosition + 22);
 
     // HTS Code - large and prominent, left-aligned
-    setTypography({ size: 28, weight: "bold" });
+    setTypography({ size: 24, weight: "bold" });
     setTextColor([30, 58, 138]); // Dark blue
     const htsCodeText = formatHtsNumber(finalLevel.htsno);
-    doc.text(htsCodeText, margin + boxPadding, yPosition + 55);
+    doc.text(htsCodeText, margin + boxPadding, yPosition + 60);
 
     // HTS description if available
     // if (finalLevel.description) {
@@ -358,23 +358,122 @@ export const generateClassificationReport = async (
   );
   const notesBoxHeight = Math.max(80, notesLines.length * 12 + 45);
 
-  // Draw background box for advisory notes
-  doc.setFillColor(239, 246, 255); // Light blue (same as HTS code section)
-  doc.setDrawColor(147, 197, 253); // Blue border (same as HTS code section)
-  doc.setLineWidth(1.5);
-  doc.roundedRect(margin, yPosition, contentWidth, notesBoxHeight, 6, 6, "FD");
+  // Check if we need to split the BASIS FOR CLASSIFICATION section
+  const remainingPageSpace = pageHeight - yPosition - 60; // 60pt margin for footer
+  const lineHeight = 12;
+  const headerSpace = 45; // Space needed for header and padding
+  const maxLinesOnCurrentPage = Math.floor(
+    (remainingPageSpace - headerSpace) / lineHeight
+  );
 
-  // Notes section header
-  setTypography({ size: 14, weight: "bold" });
-  setTextColor([30, 58, 138]); // Dark blue (same as HTS code section)
-  doc.text("BASIS FOR CLASSIFICATION", margin + boxPadding, yPosition + 22);
+  if (notesLines.length > maxLinesOnCurrentPage && maxLinesOnCurrentPage > 3) {
+    // Split content: some on current page, rest on next page
+    const firstPageLines = notesLines.slice(0, maxLinesOnCurrentPage);
+    const secondPageLines = notesLines.slice(maxLinesOnCurrentPage);
 
-  // Advisory notes content
-  setTypography({ size: 10, weight: "normal" });
-  setTextColor([51, 65, 85]); // Slate gray (consistent with other sections)
-  doc.text(notesLines, margin + boxPadding, yPosition + 42);
+    // First section on current page
+    const firstBoxHeight = Math.max(
+      80,
+      firstPageLines.length * lineHeight + headerSpace
+    );
 
-  yPosition += notesBoxHeight + 30;
+    // Draw background box for first section
+    doc.setFillColor(239, 246, 255); // Light blue
+    doc.setDrawColor(147, 197, 253); // Blue border
+    doc.setLineWidth(1.5);
+    doc.roundedRect(
+      margin,
+      yPosition,
+      contentWidth,
+      firstBoxHeight,
+      6,
+      6,
+      "FD"
+    );
+
+    // First section header
+    setTypography({ size: 14, weight: "bold" });
+    setTextColor([30, 58, 138]); // Dark blue
+    doc.text("BASIS FOR CLASSIFICATION", margin + boxPadding, yPosition + 22);
+
+    // First section content
+    setTypography({ size: 10, weight: "normal" });
+    setTextColor([51, 65, 85]); // Slate gray
+    doc.text(firstPageLines, margin + boxPadding, yPosition + 42);
+
+    // Move to next page for second section
+    doc.addPage();
+    yPosition = margin;
+
+    // Second section on new page
+    const secondBoxHeight = Math.max(
+      80,
+      secondPageLines.length * lineHeight + headerSpace
+    );
+
+    // Draw background box for second section
+    doc.setFillColor(239, 246, 255); // Light blue
+    doc.setDrawColor(147, 197, 253); // Blue border
+    doc.setLineWidth(1.5);
+    doc.roundedRect(
+      margin,
+      yPosition,
+      contentWidth,
+      secondBoxHeight,
+      6,
+      6,
+      "FD"
+    );
+
+    // Second section header with (continued) suffix
+    setTypography({ size: 14, weight: "bold" });
+    setTextColor([30, 58, 138]); // Dark blue
+    doc.text(
+      "BASIS FOR CLASSIFICATION (continued)",
+      margin + boxPadding,
+      yPosition + 22
+    );
+
+    // Second section content
+    setTypography({ size: 10, weight: "normal" });
+    setTextColor([51, 65, 85]); // Slate gray
+    doc.text(secondPageLines, margin + boxPadding, yPosition + 42);
+
+    yPosition += secondBoxHeight + 30;
+  } else {
+    // Fits on current page or move entire section to next page
+    if (notesBoxHeight > remainingPageSpace) {
+      // Move entire section to next page
+      doc.addPage();
+      yPosition = margin;
+    }
+
+    // Draw background box for advisory notes
+    doc.setFillColor(239, 246, 255); // Light blue
+    doc.setDrawColor(147, 197, 253); // Blue border
+    doc.setLineWidth(1.5);
+    doc.roundedRect(
+      margin,
+      yPosition,
+      contentWidth,
+      notesBoxHeight,
+      6,
+      6,
+      "FD"
+    );
+
+    // Notes section header
+    setTypography({ size: 14, weight: "bold" });
+    setTextColor([30, 58, 138]); // Dark blue
+    doc.text("BASIS FOR CLASSIFICATION", margin + boxPadding, yPosition + 22);
+
+    // Advisory notes content
+    setTypography({ size: 10, weight: "normal" });
+    setTextColor([51, 65, 85]); // Slate gray
+    doc.text(notesLines, margin + boxPadding, yPosition + 42);
+
+    yPosition += notesBoxHeight + 30;
+  }
 
   // Classification breakdown on new page
   doc.addPage();
@@ -428,11 +527,11 @@ export const generateClassificationReport = async (
         ? descLines.length * lineHeight + 2 * verticalPadding + 15 // Extra space for HTS code
         : descLines.length * lineHeight + 2 * verticalPadding;
 
-      // Draw the background box
+      // Draw the background box with rounded corners and thicker border
       doc.setFillColor(colors.accent[0], colors.accent[1], colors.accent[2]);
       doc.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
-      doc.setLineWidth(0.5);
-      doc.rect(margin, yPosition, contentWidth, boxHeight, "FD");
+      doc.setLineWidth(1.5);
+      doc.roundedRect(margin, yPosition, contentWidth, boxHeight, 6, 6, "FD");
 
       // Position text with comfortable padding from edges
       const textX = margin + horizontalPadding;
@@ -442,17 +541,17 @@ export const generateClassificationReport = async (
         // HTS code
         setTypography(fonts.subheader);
         setTextColor(colors.primary);
-        doc.text(htsno, textX, textY + 5);
+        doc.text(htsno, textX, textY + 10);
 
         // Description - using nearly full width
         setTypography(fonts.body);
         setTextColor(colors.primary);
-        doc.text(descLines, textX, textY + 20);
+        doc.text(descLines, textX, textY + 22);
       } else {
         // Description only - using nearly full width
         setTypography(fonts.body);
         setTextColor(colors.primary);
-        doc.text(descLines, textX, textY + 5);
+        doc.text(descLines, textX, textY + 10);
       }
 
       yPosition += boxHeight + 15;
