@@ -8,6 +8,7 @@ export interface UserProfile {
   stripe_customer_id?: string;
   company_logo?: string;
   company_disclaimer?: string;
+  company_address?: string;
   tariff_impact_trial_started_at?: string;
   created_at: string;
   updated_at: string;
@@ -92,7 +93,8 @@ export const updateUserProfile = async (
     .from("users")
     .update(userProfile)
     .eq("id", userId)
-    .select();
+    .select()
+    .single<UserProfile>();
 
   if (error) {
     console.error("Failed to update user profile:", error);

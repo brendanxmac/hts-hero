@@ -52,7 +52,6 @@ export const ClassificationProvider = ({
   const [classificationId, setClassificationId] = useState<string | null>(null);
   const [classification, setClassification] = useState<Classification>(null);
 
-  // This is causing classifications to get wiped out when navigating away from the page
   useEffect(() => {
     if (!classification || !classificationId) {
       return;

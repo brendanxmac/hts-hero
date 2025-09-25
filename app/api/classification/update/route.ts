@@ -9,7 +9,9 @@ export const dynamic = "force-dynamic";
 
 interface UpdateClassificationDto {
   id: string;
-  classification: Classification;
+  classification?: Classification;
+  importer_id?: string;
+  classifier_id?: string;
 }
 
 export async function POST(req: NextRequest) {
@@ -26,22 +28,53 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { id, classification }: UpdateClassificationDto = await req.json();
+    const {
+      id,
+      classification,
+      importer_id,
+      classifier_id,
+    }: UpdateClassificationDto = await req.json();
 
-    if (!classification) {
+    if (!id) {
       return NextResponse.json(
         {
-          error: "Missing classification",
+          error: "Missing classification id",
         },
         { status: 400 }
       );
     }
 
+    // Build update object with only provided fields
+    const updateData: Partial<
+      Pick<
+        ClassificationRecord,
+        "classification" | "importer_id" | "classifier_id"
+      >
+    > = {};
+
+    if (classification !== undefined) {
+      updateData.classification = classification;
+    }
+    if (importer_id !== undefined) {
+      updateData.importer_id = importer_id;
+    }
+    if (classifier_id !== undefined) {
+      updateData.classifier_id = classifier_id;
+    }
+
+    // Don't proceed if no fields to update
+    if (Object.keys(updateData).length === 0) {
+      return NextResponse.json(
+        {
+          success: true,
+        },
+        { status: 200 }
+      );
+    }
+
     const { error } = await supabase
       .from("classifications")
-      .update({
-        classification,
-      })
+      .update(updateData)
       .eq("id", id)
       .select()
       .single<ClassificationRecord>();

@@ -134,6 +134,8 @@ export interface CandidateSelection {
 export interface ClassificationRecord {
   id: string;
   user_id: string;
+  importer_id?: string;
+  classifier_id?: string;
   classification: Classification;
   created_at: string;
   updated_at: string;
@@ -162,4 +164,18 @@ export interface ClassificationProgression {
 export interface TemporaryTariff {
   description: string;
   element?: HtsElement;
+}
+
+export interface Classifier {
+  id: string;
+  user_id: string;
+  name: string;
+  created_at: string;
+}
+
+export interface Importer {
+  id: string;
+  user_id: string;
+  name: string;
+  created_at: string;
 }

@@ -134,7 +134,7 @@ export const InlineCountryTariff = ({
         {/* Special Tariff Program Selection */}
         <div className="w-full flex flex-col gap-2">
           <div className="w-full flex flex-col gap-1">
-            <TertiaryLabel value="Apply Special Trade Programs" />
+            <TertiaryLabel value="Special Trade Programs" />
           </div>
           <div
             className="relative w-full max-w-lg"

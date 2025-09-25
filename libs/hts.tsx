@@ -18,6 +18,8 @@ import {
   Classification,
   SectionAndChapterDetails,
   SelectionWithReason,
+  Importer,
+  Classifier,
 } from "../interfaces/hts";
 import {
   elementsAtClassificationLevel,
@@ -42,9 +44,16 @@ import {
 
 export const downloadClassificationReport = async (
   classification: Classification,
-  userProfile: UserProfile
+  userProfile: UserProfile,
+  importer?: Importer,
+  classifier?: Classifier
 ) => {
-  const doc = await generateClassificationReport(classification, userProfile);
+  const doc = await generateClassificationReport(
+    classification,
+    userProfile,
+    importer,
+    classifier
+  );
 
   // Generate a filename based on the current date and time
   const now = new Date();
@@ -62,7 +71,9 @@ export const downloadClassificationReport = async (
     .replace(",", "");
 
   // Save the PDF
-  doc.save(`hts-hero-classification-${formattedDate}.pdf`);
+  doc.save(
+    `classification-advisory${importer ? `-${importer.name}` : ""}-${formattedDate}.pdf`
+  );
 };
 
 // Create a function that takes a classification and iterates in reverse through the levels to find the first level with tariff data
