@@ -88,7 +88,7 @@ export const chinaTariffs: TariffI[] = [
       // "9903.88.66", // inactive
       // "9903.88.67", // inactive
       // "9903.88.68", // inactive
-      "9903.88.69", // Deactivates August 31st (pending)
+      "9903.88.69", // Deactivates August 31st (pending) (EXTENDED!!!)
     ],
     inclusions: {
       countries: ["CN"],
