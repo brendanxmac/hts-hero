@@ -5,9 +5,8 @@ import config from "@/config";
 import { getSEOTags } from "@/libs/seo";
 
 export const metadata = getSEOTags({
-  title: `${config.appName} Blog | Stripe Chargeback Protection`,
-  description:
-    "Learn how to prevent chargebacks, how to accept payments online, and keep your Stripe account in good standing",
+  title: `${config.appName} Blog`,
+  description: "The latest updates on tariffs, HTS codes, and more",
   canonicalUrlRelative: "/blog",
 });
 
@@ -20,13 +19,14 @@ export default async function Blog() {
     .slice(0, 6);
   return (
     <>
-      <section className="text-center max-w-xl mx-auto mt-12 mb-24 md:mb-32">
-        <h1 className="font-extrabold text-3xl lg:text-5xl tracking-tight mb-6">
-          The {config.appName} Blog
+      <section className="text-center max-w-xl mx-auto mt-6 mb-12">
+        <h1 className="text-white font-extrabold text-3xl lg:text-5xl tracking-tight mb-6">
+          Stay Up to Date on The{" "}
+          <span className="text-primary">Latest HTS Updates</span>
         </h1>
         <p className="text-lg opacity-80 leading-relaxed">
-          Learn how to ship your startup in days, not weeks. And get the latest
-          updates about the boilerplate
+          The latest updates on HTS codes, tariffs, and all of {config.appName}
+          &apos;s product updates & deals.
         </p>
       </section>
 

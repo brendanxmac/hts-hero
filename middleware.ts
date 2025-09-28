@@ -10,12 +10,6 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/tariffs/impact-checker", req.url));
   }
 
-  const isRedirectPath = pathname === "/blog";
-
-  if (isRedirectPath) {
-    return NextResponse.redirect(new URL("/", req.url));
-  }
-
   const IS_TEST_ENV = process.env.APP_ENV === "test";
   const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
