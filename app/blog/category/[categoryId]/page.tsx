@@ -1,4 +1,4 @@
-import { categories, articles } from "../../_assets/content";
+import { articleCategories, articles } from "../../_assets/content";
 import CardArticle from "../../_assets/components/CardArticle";
 import CardCategory from "../../_assets/components/CardCategory";
 import { getSEOTags } from "@/libs/seo";
@@ -9,7 +9,7 @@ export async function generateMetadata({
 }: {
   params: { categoryId: string };
 }) {
-  const category = categories.find(
+  const category = articleCategories.find(
     (category) => category.slug === params.categoryId
   );
 
@@ -25,7 +25,7 @@ export default async function Category({
 }: {
   params: { categoryId: string };
 }) {
-  const category = categories.find(
+  const category = articleCategories.find(
     (category) => category.slug === params.categoryId
   );
   const articlesInCategory = articles
@@ -72,7 +72,7 @@ export default async function Category({
         </h2>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {categories
+          {articleCategories
             .filter((c) => c.slug !== category.slug)
             .map((category) => (
               <CardCategory key={category.slug} category={category} tag="h3" />

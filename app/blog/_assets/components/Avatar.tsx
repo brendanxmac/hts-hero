@@ -1,9 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
-import { articleType } from "../content";
+import { ArticleI } from "../content";
 
 // This is the author avatar that appears in the article page and in <CardArticle /> component
-const Avatar = ({ article }: { article: articleType }) => {
+const Avatar = ({ article }: { article: ArticleI }) => {
   return (
     <Link
       href={`/blog/author/${article.author.slug}`}

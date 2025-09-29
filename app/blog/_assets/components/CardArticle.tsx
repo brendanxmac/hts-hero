@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import BadgeCategory from "./BadgeCategory";
 import Avatar from "./Avatar";
-import { articleType } from "../content";
+import { ArticleI } from "../content";
 
 // This is the article card that appears in the home page, in the category page, and in the author's page
 const CardArticle = ({
@@ -12,7 +12,7 @@ const CardArticle = ({
   showCategory = true,
   isImagePriority = false,
 }: {
-  article: articleType;
+  article: ArticleI;
   tag?: keyof JSX.IntrinsicElements;
   showCategory?: boolean;
   isImagePriority?: boolean;
@@ -30,7 +30,7 @@ const CardArticle = ({
               width={600}
               height={338}
               priority={isImagePriority}
-              className="aspect-video object-center object-cover"
+              className="aspect-auto object-center object-fill"
             />
           </figure>
         )}

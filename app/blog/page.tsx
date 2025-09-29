@@ -1,4 +1,4 @@
-import { categories, articles } from "./_assets/content";
+import { articleCategories, articles } from "./_assets/content";
 import CardArticle from "./_assets/components/CardArticle";
 import CardCategory from "./_assets/components/CardCategory";
 import config from "@/config";
@@ -46,7 +46,7 @@ export default async function Blog() {
         </p>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {categories.map((category) => (
+          {articleCategories.map((category) => (
             <CardCategory key={category.slug} category={category} tag="div" />
           ))}
         </div>

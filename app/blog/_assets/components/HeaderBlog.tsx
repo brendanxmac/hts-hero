@@ -8,7 +8,7 @@ import Link from "next/link";
 import Image from "next/image";
 import logo from "@/app/logo.svg";
 import config from "@/config";
-import { categories } from "../content";
+import { articleCategories } from "../content";
 import ButtonSignin from "@/components/ButtonSignin";
 
 const links: {
@@ -60,7 +60,7 @@ const ButtonPopoverCategories = () => {
               {({ close }) => (
                 <div className="overflow-hidden rounded-box shadow-lg ring-1 ring-base-content ring-opacity-5">
                   <div className="relative grid gap-2 bg-base-100 p-2 overflow-hidden">
-                    {categories.map((category) => (
+                    {articleCategories.map((category) => (
                       <div key={category.slug} onClick={() => close()}>
                         <Link
                           className="block text-left p-3 -m-1 cursor-pointer hover:bg-base-200 rounded-box duration-200"
@@ -122,7 +122,7 @@ const ButtonAccordionCategories = () => {
 
       {isOpen && (
         <ul className="space-y-4">
-          {categories.map((category) => (
+          {articleCategories.map((category) => (
             <li key={category.slug}>
               <Link
                 href={`/blog/category/${category.slug}`}
