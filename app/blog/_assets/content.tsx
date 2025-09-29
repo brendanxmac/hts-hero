@@ -133,7 +133,7 @@ export const authors: authorType[] = [
     job: "Founder of HTS Hero",
     // The description of the author to display in the author's bio. Up to 160 characters.
     description:
-      "Brendan is a software engineer and an entrepreneur whose led software teams around the world. He's built systems that serve hundred of thousands of users and ",
+      "Brendan is a software engineer and an entrepreneur whose led software teams around the world & built systems that serve hundred of thousands of people.",
     // The avatar of the author to display in the author's bio and avatar badge. It's better to use a local image, but you can also use an external image (https://...)
     avatar: brendanImg,
     // A list of social links to display in the author's bio.
