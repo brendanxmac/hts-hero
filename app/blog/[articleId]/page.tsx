@@ -57,7 +57,7 @@ export default async function Article({
     .slice(0, 3);
 
   return (
-    <>
+    <div className="max-w-3xl mx-auto">
       {/* SCHEMA JSON-LD MARKUP FOR GOOGLE */}
       <Script
         type="application/ld+json"
@@ -108,7 +108,7 @@ export default async function Article({
 
       <article>
         {/* HEADER WITH CATEGORIES AND DATE AND TITLE */}
-        <section className="my-12 md:my-20 max-w-[800px]">
+        <section className="my-12 md:my-16">
           <div className="flex items-center gap-4 mb-6">
             {article.categories.map((category) => (
               <BadgeCategory
@@ -130,52 +130,52 @@ export default async function Article({
             {article.title}
           </h1>
 
-          <p className="text-base-content/80 md:text-lg max-w-[700px]">
+          <p className="text-base-content/80 md:text-lg">
             {article.description}
           </p>
         </section>
 
-        <div className="flex flex-col md:flex-row">
-          {/* SIDEBAR WITH AUTHORS AND 3 RELATED ARTICLES */}
-          <section className="max-md:pb-4 md:pl-12 max-md:border-b md:border-l md:order-last md:w-72 shrink-0 border-base-content/10">
+        {/* ARTICLE CONTENT */}
+        <section className="space-y-12 md:space-y-20">
+          {article.content}
+        </section>
+
+        {/* AUTHOR AND RELATED ARTICLES AT BOTTOM */}
+        <section className="mt-16 pt-8 border-t border-base-content/10">
+          <div className="mb-8">
             <p className="text-base-content/80 text-sm mb-2 md:mb-3">
               Posted by
             </p>
             <Avatar article={article} />
+          </div>
 
-            {articlesRelated.length > 0 && (
-              <div className="hidden md:block mt-12">
-                <p className=" text-base-content/80 text-sm  mb-2 md:mb-3">
-                  Related reading
-                </p>
-                <div className="space-y-2 md:space-y-5">
-                  {articlesRelated.map((article) => (
-                    <div className="" key={article.slug}>
-                      <p className="mb-0.5">
-                        <Link
-                          href={`/blog/${article.slug}`}
-                          className="link link-hover hover:link-primary font-medium"
-                          rel="bookmark"
-                        >
-                          {article.title}
-                        </Link>
-                      </p>
-                      <p className="text-base-content/80 max-w-full text-sm">
-                        {article.description}
-                      </p>
-                    </div>
-                  ))}
-                </div>
+          {articlesRelated.length > 0 && (
+            <div>
+              <p className="text-base-content/80 text-sm mb-4">
+                Related reading
+              </p>
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {articlesRelated.map((article) => (
+                  <div key={article.slug} className="space-y-2">
+                    <p className="mb-0.5">
+                      <Link
+                        href={`/blog/${article.slug}`}
+                        className="link link-hover hover:link-primary font-medium"
+                        rel="bookmark"
+                      >
+                        {article.title}
+                      </Link>
+                    </p>
+                    <p className="text-base-content/80 text-sm">
+                      {article.description}
+                    </p>
+                  </div>
+                ))}
               </div>
-            )}
-          </section>
-
-          {/* ARTICLE CONTENT */}
-          <section className="w-full max-md:pt-4 md:pr-20 space-y-12 md:space-y-20">
-            {article.content}
-          </section>
-        </div>
+            </div>
+          )}
+        </section>
       </article>
-    </>
+    </div>
   );
 }

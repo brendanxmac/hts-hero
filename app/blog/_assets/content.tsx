@@ -1,7 +1,8 @@
 import type { JSX } from "react";
 import Image, { StaticImageData } from "next/image";
-import marcImg from "@/app/blog/_assets/images/authors/marc.png";
-import introducingSupabaseImg from "@/public/blog/introducing-supabase/header.png";
+import brendanImg from "@/app/blog/_assets/images/authors/brendan.png";
+import htsRevision20Img from "@/app/blog/_assets/images/hts-rev-20-image.png";
+import Link from "next/link";
 
 // ==================================================================================================================================================================
 // BLOG CATEGORIES 🏷️
@@ -19,6 +20,7 @@ export type categoryType = {
 const categorySlugs: { [key: string]: string } = {
   feature: "feature",
   tutorial: "tutorial",
+  tariffs: "tariffs",
 };
 
 // All the blog categories data display in the /blog/category/[categoryI].js pages.
@@ -38,12 +40,20 @@ export const categories: categoryType[] = [
   },
   {
     slug: categorySlugs.tutorial,
-    title: "How Tos & Tutorials",
+    title: "How To's & Tutorials",
     titleShort: "Tutorials",
     description:
       "Learn how to use ShipFast with these step-by-step tutorials. I'll show you how to ship faster and save time.",
     descriptionShort:
       "Learn how to use ShipFast with these step-by-step tutorials.",
+  },
+  {
+    slug: categorySlugs.tariffs,
+    title: "Tariff Updates",
+    titleShort: "Tariff Updates",
+    description:
+      "Updates on tariff changes and announcements to help you stay ontop of it all",
+    descriptionShort: "Stay updated on the latest tariff updates",
   },
 ];
 
@@ -80,8 +90,7 @@ const socialIcons: {
         x="0px"
         y="0px"
         viewBox="0 0 1668.56 1221.19"
-        className="w-9 h-9"
-        // Using a dark theme? ->  className="w-9 h-9 fill-white"
+        className="w-9 h-9 fill-white"
       >
         <g id="layer1" transform="translate(52.390088,-25.058597)">
           <path
@@ -97,24 +106,10 @@ const socialIcons: {
     svg: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        className="w-6 h-6"
-        // Using a dark theme? ->  className="w-6 h-6 fill-white"
+        className="w-6 h-6 fill-white"
         viewBox="0 0 24 24"
       >
         <path d="M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5c0-1.38 1.11-2.5 2.48-2.5s2.48 1.12 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0h-4.968v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0v8.399h4.988v-10.131c0-7.88-8.922-7.593-11.018-3.714v-2.155z" />
-      </svg>
-    ),
-  },
-  github: {
-    name: "GitHub",
-    svg: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="w-6 h-6"
-        // Using a dark theme? ->  className="w-6 h-6 fill-white"
-        viewBox="0 0 24 24"
-      >
-        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
       </svg>
     ),
   },
@@ -124,39 +119,29 @@ const socialIcons: {
 const authorSlugs: {
   [key: string]: string;
 } = {
-  marc: "marc",
+  brendan: "brendan",
 };
 
 // All the blog authors data display in the /blog/author/[authorId].js pages.
 export const authors: authorType[] = [
   {
     // The slug to use in the URL, from the authorSlugs object above.
-    slug: authorSlugs.marc,
+    slug: authorSlugs.brendan,
     // The name to display in the author's bio. Up to 60 characters.
-    name: "Marc Lou",
+    name: "Brendan Mclaughlin",
     // The job to display in the author's bio. Up to 60 characters.
-    job: "Maker of ByeDispute",
+    job: "Founder of HTS Hero",
     // The description of the author to display in the author's bio. Up to 160 characters.
     description:
-      "Marc is a developer and an entrepreneur. He's built 20 startups in the last 3 years. 6 were profitable and 3 were acquired. He's currently building ByeDispute, the #1 Stripe Chargebacks Protection tool.",
+      "Brendan is a software engineer and an entrepreneur whose led software teams around the world & built systems that serve hundred of thousands of people.",
     // The avatar of the author to display in the author's bio and avatar badge. It's better to use a local image, but you can also use an external image (https://...)
-    avatar: marcImg,
+    avatar: brendanImg,
     // A list of social links to display in the author's bio.
     socials: [
       {
-        name: socialIcons.twitter.name,
-        icon: socialIcons.twitter.svg,
-        url: "https://twitter.com/marc_louvion",
-      },
-      {
         name: socialIcons.linkedin.name,
         icon: socialIcons.linkedin.svg,
-        url: "https://www.linkedin.com/in/marclouvion/",
-      },
-      {
-        name: socialIcons.github.name,
-        icon: socialIcons.github.svg,
-        url: "https://github.com/Marc-Lou-Org/ship-fast",
+        url: "https://www.linkedin.com/in/brendan-mclaughlin-profile/",
       },
     ],
   },
@@ -200,89 +185,175 @@ const styles: {
 export const articles: articleType[] = [
   {
     // The unique slug to use in the URL. It's also used to generate the canonical URL.
-    slug: "introducing-supabase",
+    slug: "new-tariffs-on-india",
     // The title to display in the article page (h1). Less than 60 characters. It's also used to generate the meta title.
-    title: "Introducing Supabase to ShipFast",
+    title: "India Hit with 25% Tariff for Russian Oil Use",
     // The description of the article to display in the article page. Up to 160 characters. It's also used to generate the meta description.
     description:
-      "Supabase is an open-source Firebase alternative. It's a great tool for building a backend for your app. It's now integrated with ShipFast!",
+      "India has been hit with an additional 25% tariff for their use of Russian oil. This is a retaliatory measure by the United States to address 'threats' from Russia.",
     // An array of categories of the article. It's used to generate the category badges, the category filter, and more.
     categories: [
-      categories.find((category) => category.slug === categorySlugs.feature),
+      categories.find((category) => category.slug === categorySlugs.tariffs),
     ],
     // The author of the article. It's used to generate a link to the author's bio page.
-    author: authors.find((author) => author.slug === authorSlugs.marc),
+    author: authors.find((author) => author.slug === authorSlugs.brendan),
     // The date of the article. It's used to generate the meta date.
-    publishedAt: "2023-11-20",
+    publishedAt: "2025-09-28",
     image: {
       // The image to display in <CardArticle /> components.
-      src: introducingSupabaseImg,
+      src: htsRevision20Img,
       // The relative URL of the same image to use in the Open Graph meta tags & the Schema Markup JSON-LD. It should be the same image as the src above.
-      urlRelative: "/blog/introducing-supabase/header.jpg",
-      alt: "Supabase and ShipFast logo combined",
+      urlRelative: "/blog/hts-rev-20-image.png",
+      alt: "HTS Revision 20 Image",
     },
     // The actual content of the article that will be shown under the <h1> title in the article page.
     content: (
       <>
         <Image
-          src={introducingSupabaseImg}
-          alt="Supabase and ShipFast logo combined"
+          src={htsRevision20Img}
+          alt="HTS Revision 20 Image"
           width={700}
           height={500}
           priority={true}
           className="rounded-box"
-          placeholder="blur"
         />
         <section>
-          <h2 className={styles.h2}>Introduction</h2>
+          <h2 className={styles.h3}>Introduction</h2>
           <p className={styles.p}>
-            Supabase is an open-source Firebase alternative. It&apos;s a great
-            tool for building a backend for your app. It&apos;s now integrated
-            with ShipFast!
+            On August 27th the United States imposed an additional 25% tariff on
+            most imports from India.
           </p>
-        </section>
-
-        <section>
-          <h3 className={styles.h3}>1. Create a supabase account</h3>
+          <br />
           <p className={styles.p}>
-            First, go to{" "}
-            <a href="https://supabase.com/" className="link link-primary">
-              Supabase
+            As published in this{" "}
+            <a
+              className="link link-primary font-bold"
+              href="https://www.whitehouse.gov/presidential-actions/2025/08/addressing-threats-to-the-united-states-by-the-government-of-the-russian-federation/"
+            >
+              executive order from August 6th
+            </a>
+            , the United States is taking action to address "threats" from
+            Russia.
+          </p>
+          <br />
+          <p className={styles.p}>
+            In this case, the United States is applying a 25% tariff on imports
+            from India due to their consumption of Russia oil which props up the
+            Russian economy.
+          </p>
+          <br />
+          <h2 className={styles.h3}>Details</h2>
+          <p className={styles.p}>
+            The August 6th announcement stated that the HTS would be updated to
+            reflect this measure, which has now happened. The details are as
+            follows:
+          </p>
+          <br />
+          <p className={styles.p}>
+            <strong>Effective: </strong>August 27th, 2025
+          </p>
+          <p className={styles.p}>
+            <strong>Source: </strong>
+            <a
+              className="link link-primary font-bold"
+              href="https://hts.usitc.gov/reststop/file?release=currentRelease&filename=Chapter%2099"
+            >
+              Chapter 99, Subchapter III, Note 2(z)(i-x)
+            </a>
+          </p>
+
+          <p className={styles.p}>
+            <strong>Updates: </strong>
+          </p>
+
+          <p className={styles.p}>
+            The{" "}
+            <a
+              className="link"
+              href="https://hts.usitc.gov/reststop/file?release=2025HTSRev20&filename=Change%20Record"
+            >
+              official change record
             </a>{" "}
-            and create an account. It&apos;s free for up to 10,000 rows per
-            table.
-            <br />
-            Then create a new project and a new table. You can use the following
-            SQL schema:
+            to the HTS highlights 6 new HTS Headings. <br />
+            One for the new tariff itself and the expected series of exemption
+            from that tariff for various reasons.
           </p>
+          <br />
 
-          <pre className={styles.code}>
-            <code>
-              {`CREATE TABLE public.users (
-  id bigint NOT NULL DEFAULT nextval('users_id_seq'::regclass),
-  email text NOT NULL,
-  password text NOT NULL,
-  created_at timestamp with time zone NOT NULL DEFAULT now(),
-  updated_at timestamp with time zone NOT NULL DEFAULT now(),
-  CONSTRAINT users_pkey PRIMARY KEY (id)
-);`}
-            </code>
-          </pre>
-        </section>
-
-        <section>
-          <h3 className={styles.h3}>2. Add your credentials to ShipFast</h3>
-          <p className={styles.p}>
-            Copy the <span className={styles.codeInline}>API URL</span> and{" "}
-            <span className={styles.codeInline}>API Key</span> from your
-            Supabase project settings and add them to your ShipFast project
-            settings. Add these files to your project:
-          </p>
-
-          <ul className={styles.ul}>
-            <li className={styles.li}>.env.local</li>
-            <li className={styles.li}>.env.production</li>
+          <ul>
+            <li>
+              <a
+                className="link link-primary font-bold"
+                href="https://htshero.com/explore?code=9903.01.84"
+              >
+                9903.01.84
+              </a>{" "}
+              - 25% India Russian Oil Use Retaliatory Tariff
+            </li>
+            <li>
+              <a
+                className="link link-primary font-bold"
+                href="https://htshero.com/explore?code=9903.01.85"
+              >
+                9903.01.85
+              </a>{" "}
+              - Exemption for goods of India already in transit
+            </li>
+            <li>
+              <a
+                className="link link-primary font-bold"
+                href="https://htshero.com/explore?code=9903.01.86"
+              >
+                9903.01.86
+              </a>{" "}
+              - Exemption for critical goods
+            </li>
+            <li>
+              <a
+                className="link link-primary font-bold"
+                href="https://htshero.com/explore?code=9903.01.87"
+              >
+                9903.01.87
+              </a>{" "}
+              - Exemption for Section 232 Articles
+            </li>
+            <li>
+              <a
+                className="link link-primary font-bold"
+                href="https://htshero.com/explore?code=9903.01.88"
+              >
+                9903.01.88
+              </a>{" "}
+              - Exemption for Donations
+            </li>
+            <li>
+              <a
+                className="link link-primary font-bold"
+                href="https://htshero.com/explore?code=9903.01.89"
+              >
+                9903.01.89
+              </a>{" "}
+              - Exemption for Information Materials
+            </li>
           </ul>
+          <br />
+
+          <h2 className={styles.h3}>Check your Imports</h2>
+          <p className={styles.p}>
+            Knowing which imports are affected by certain tariffs or quality for
+            exemptions has become overwhelming.
+          </p>
+          <br />
+
+          <p className={styles.p}>
+            To make sure you&apos;re importing at the best rates & see the full
+            list of tariffs & exemptions for your imports, checkout checkout our
+            free tariff impact checker.
+          </p>
+          <br />
+          <Link href="/about/tariffs" className="btn btn-primary">
+            See if your imports are affected
+          </Link>
         </section>
       </>
     ),

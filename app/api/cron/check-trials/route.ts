@@ -92,12 +92,14 @@ export async function GET(req: NextRequest) {
       usersWithTrialExpiringAndNoActivePurchase.map((user) => user.id)
     );
 
+    const reactEmail = React.createElement(TariffImpactTrialEndingEmail);
+
     const trialExpiringEmails = usersWithTrialExpiringAndNoActivePurchase.map(
       (user): CreateEmailOptions => ({
         from: config.resend.fromAdmin,
         to: user.email,
         subject: "⏰ Your Tariff Pro Trial Ends Tomorrow!",
-        react: React.createElement(TariffImpactTrialEndingEmail),
+        react: reactEmail,
         replyTo: config.resend.supportEmail,
       })
     );

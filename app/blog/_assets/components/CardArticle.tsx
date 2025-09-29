@@ -20,13 +20,9 @@ const CardArticle = ({
   const TitleTag = tag;
 
   return (
-    <article className="card bg-base-200 rounded-box overflow-hidden">
-      {article.image?.src && (
-        <Link
-          href={`/blog/${article.slug}`}
-          className="link link-hover hover:link-primary"
-          rel="bookmark"
-        >
+    <Link href={`/blog/${article.slug}`} className="block" rel="bookmark">
+      <article className="card bg-base-200 rounded-box overflow-hidden hover:shadow-lg hover:scale-[1.02] transition-all duration-200 cursor-pointer">
+        {article.image?.src && (
           <figure>
             <Image
               src={article.image.src}
@@ -34,51 +30,44 @@ const CardArticle = ({
               width={600}
               height={338}
               priority={isImagePriority}
-              placeholder="blur"
-              className="aspect-video object-center object-cover hover:scale-[1.03] duration-200 ease-in-out"
+              className="aspect-video object-center object-cover"
             />
           </figure>
-        </Link>
-      )}
-      <div className="card-body">
-        {/* CATEGORIES */}
-        {showCategory && (
-          <div className="flex flex-wrap gap-2">
-            {article.categories.map((category) => (
-              <BadgeCategory category={category} key={category.slug} />
-            ))}
-          </div>
         )}
+        <div className="card-body">
+          {/* CATEGORIES */}
+          {showCategory && (
+            <div className="flex flex-wrap gap-2">
+              {article.categories.map((category) => (
+                <BadgeCategory category={category} key={category.slug} />
+              ))}
+            </div>
+          )}
 
-        {/* TITLE WITH RIGHT TAG */}
-        <TitleTag className="mb-1 text-xl md:text-2xl font-bold">
-          <Link
-            href={`/blog/${article.slug}`}
-            className="link link-hover hover:link-primary"
-            rel="bookmark"
-          >
+          {/* TITLE WITH RIGHT TAG */}
+          <TitleTag className="mb-1 text-xl md:text-2xl font-bold">
             {article.title}
-          </Link>
-        </TitleTag>
+          </TitleTag>
 
-        <div className=" text-base-content/80 space-y-4">
-          {/* DESCRIPTION */}
-          <p className="">{article.description}</p>
+          <div className=" text-base-content/80 space-y-4">
+            {/* DESCRIPTION */}
+            <p className="">{article.description}</p>
 
-          {/* AUTHOR & DATE */}
-          <div className="flex items-center gap-4 text-sm">
-            <Avatar article={article} />
+            {/* AUTHOR & DATE */}
+            <div className="flex items-center gap-4 text-sm">
+              <Avatar article={article} />
 
-            <span itemProp="datePublished">
-              {new Date(article.publishedAt).toLocaleDateString("en-US", {
-                month: "long",
-                day: "numeric",
-              })}
-            </span>
+              <span itemProp="datePublished">
+                {new Date(article.publishedAt).toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                })}
+              </span>
+            </div>
           </div>
         </div>
-      </div>
-    </article>
+      </article>
+    </Link>
   );
 };
 
