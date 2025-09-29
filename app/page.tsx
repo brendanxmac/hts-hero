@@ -49,7 +49,7 @@ export default function Home() {
                 Tariff Impact Checker
               </h3>
               <p className="text-sm text-neutral-400 leading-relaxed">
-                Instant tariff impact check for your Imports
+                See if your imports are affected by new tariffs
               </p>
             </div>
           </Link>
