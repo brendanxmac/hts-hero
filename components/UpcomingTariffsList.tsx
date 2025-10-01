@@ -21,14 +21,24 @@ interface Props {
 export const PendingTariffsList = ({ hideHeading }: Props) => {
   const tariffAnnouncements: TariffAnnouncement[] = [
     {
+      name: "Robotics & Industrial Machinery",
+      date: new Date(2025, 8, 24), // September 24, 2025
+      status: TariffStatus.INVESTIGATION,
+    },
+    {
+      name: "Personal Protective Equipment, Medical Consumables & Equipment",
+      date: new Date(2025, 8, 24), // September 24, 2025
+      status: TariffStatus.INVESTIGATION,
+    },
+    {
       name: "Taxed Digital Service Penalty",
       date: new Date(2025, 7, 25), // August 25, 2025
       status: TariffStatus.MENTIONED,
     },
     {
       name: "Furniture",
-      date: new Date(2025, 7, 22), // August 22, 2025
-      status: TariffStatus.MENTIONED,
+      date: new Date(2025, 8, 29), // September 29, 2025
+      status: TariffStatus.PENDING_PUBLICATION,
     },
     {
       name: "Wind Turbines & Parts",
@@ -64,8 +74,9 @@ export const PendingTariffsList = ({ hideHeading }: Props) => {
     },
     {
       name: "Trucks & Truck Parts",
-      date: new Date(2025, 3, 22), // April 22, 2025
-      status: TariffStatus.INVESTIGATION,
+      date: new Date(2025, 8, 25), // September 25, 2025
+      rate: "25%",
+      status: TariffStatus.PENDING_PUBLICATION,
     },
     {
       name: "Maritime Cargo Handling Equipment",
@@ -80,15 +91,15 @@ export const PendingTariffsList = ({ hideHeading }: Props) => {
     },
     {
       name: "Lumber / Timber",
-      date: new Date(2025, 2, 3), // March 3, 2025
+      date: new Date(2025, 8, 29), // March 3, 2025
       rate: "25%",
-      status: TariffStatus.INVESTIGATION,
+      status: TariffStatus.PUBLISHED,
     },
     {
       name: "Pharmaceuticals & Ingredients",
-      date: new Date(2025, 6, 8), // July 2025
-      rate: "200%",
-      status: TariffStatus.INVESTIGATION,
+      date: new Date(2025, 8, 25), // September 25, 2025
+      rate: "100%",
+      status: TariffStatus.PENDING_PUBLICATION,
     },
     {
       name: "Critical Minerals",
