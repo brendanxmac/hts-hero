@@ -3,7 +3,7 @@ import { automobileTariffs } from "./automobile";
 import { canadaTariffs } from "./canada";
 import { chinaTariffs } from "./china";
 import { mexicoTariffs } from "./mexico";
-import { reciprocalTariffs } from "./reciprocal";
+import { worldwideReciprocalTariff } from "./reciprocal";
 import { exceptionTariffs } from "./exception";
 import { ironAndSteelTariffs } from "./iron-and-steel";
 import { HtsElement } from "../interfaces/hts";
@@ -791,7 +791,7 @@ export const getTariffsForCode = (htsCode: string) => {
 //  basis. 7601.10.60.40 is a good example of this
 
 export const TariffsList: TariffI[] = [
-  ...reciprocalTariffs,
+  ...worldwideReciprocalTariff,
   ...aluminumTariffs,
   ...automobileTariffs,
   ...canadaTariffs,

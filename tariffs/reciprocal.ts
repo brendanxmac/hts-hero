@@ -1,6 +1,6 @@
 import { TariffI } from "../interfaces/tariffs";
 
-const recriprocalExceptions = [
+const recriprocalTariffExemptions = [
   // Donations
   "9903.01.30",
   // Information Materials
@@ -38,7 +38,7 @@ const recriprocalExceptions = [
   "9903.78.01",
 ];
 
-export const reciprocalTariffs: TariffI[] = [
+export const worldwideReciprocalTariff: TariffI[] = [
   // ===========================
   // WORLDWIDE RECIPROCAL TARIFF
   // ===========================
@@ -174,7 +174,7 @@ export const reciprocalTariffs: TariffI[] = [
         "VN",
         "ZM",
         "ZW",
-      ], // TODO: add all the countries here that got specific reciprocal tariffs .02.02-71
+      ],
     },
     inclusions: {
       countries: ["*"],
@@ -330,7 +330,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["AF"],
     },
@@ -343,7 +343,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 30,
     special: 30,
     other: 30,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["DZ"],
     },
@@ -356,7 +356,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["AO"],
     },
@@ -369,7 +369,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 20,
     special: 20,
     other: 20,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["BD"],
     },
@@ -382,7 +382,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["BO"],
     },
@@ -395,7 +395,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 30,
     special: 30,
     other: 30,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["BA"],
     },
@@ -408,7 +408,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["BW"],
     },
@@ -421,7 +421,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 10,
     special: 10,
     other: 10,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["BR"],
     },
@@ -434,7 +434,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["BN"],
     },
@@ -447,7 +447,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 19,
     special: 19,
     other: 19,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["KH"],
     },
@@ -460,7 +460,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["CM"],
     },
@@ -473,7 +473,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["TD"],
     },
@@ -486,7 +486,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["CR"],
     },
@@ -499,7 +499,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["CI"],
     },
@@ -512,7 +512,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["CD"],
     },
@@ -525,7 +525,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["EC"],
     },
@@ -538,7 +538,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["EC"],
     },
@@ -552,7 +552,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 0,
     special: 0,
     other: 0,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: [
         "AT",
@@ -594,7 +594,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 0,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: [
         "AT",
@@ -635,7 +635,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 10,
     special: 10,
     other: 10,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["FK"],
     },
@@ -648,7 +648,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["FJ"],
     },
@@ -661,7 +661,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["GH"],
     },
@@ -674,7 +674,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["GY"],
     },
@@ -687,7 +687,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["IS"],
     },
@@ -700,7 +700,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["IN"],
     },
@@ -713,7 +713,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 19,
     special: 19,
     other: 19,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["ID"],
     },
@@ -726,7 +726,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 35,
     special: 35,
     other: 35,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["IQ"],
     },
@@ -739,7 +739,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["IL"],
     },
@@ -752,7 +752,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["JP"],
     },
@@ -765,7 +765,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["JO"],
     },
@@ -778,7 +778,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["KZ"],
     },
@@ -791,7 +791,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 40,
     special: 40,
     other: 40,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["LA"],
     },
@@ -804,7 +804,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["LS"],
     },
@@ -817,7 +817,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 30,
     special: 30,
     other: 30,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["LY"],
     },
@@ -830,7 +830,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["LI"],
     },
@@ -843,7 +843,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["MG"],
     },
@@ -856,7 +856,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["MW"],
     },
@@ -869,7 +869,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 19,
     special: 19,
     other: 19,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["MY"],
     },
@@ -882,7 +882,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["MU"],
     },
@@ -895,7 +895,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["MD"],
     },
@@ -908,7 +908,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["MZ"],
     },
@@ -921,7 +921,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 40,
     special: 40,
     other: 40,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["MM"],
     },
@@ -934,7 +934,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["NA"],
     },
@@ -947,7 +947,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["NR"],
     },
@@ -960,7 +960,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["NZ"],
     },
@@ -973,7 +973,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 18,
     special: 18,
     other: 18,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["NI"],
     },
@@ -986,7 +986,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["NG"],
     },
@@ -999,7 +999,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["MK"],
     },
@@ -1012,7 +1012,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["NO"],
     },
@@ -1025,7 +1025,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 19,
     special: 19,
     other: 19,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["PK"],
     },
@@ -1038,7 +1038,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["PG"],
     },
@@ -1051,7 +1051,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 19,
     special: 19,
     other: 19,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["PH"],
     },
@@ -1064,7 +1064,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 35,
     special: 35,
     other: 35,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["RS"],
     },
@@ -1077,7 +1077,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 30,
     special: 30,
     other: 30,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["ZA"],
     },
@@ -1090,7 +1090,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["KR"],
     },
@@ -1103,7 +1103,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 20,
     special: 20,
     other: 20,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["LK"],
     },
@@ -1116,7 +1116,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 39,
     special: 39,
     other: 39,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["CH"],
     },
@@ -1129,7 +1129,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 41,
     special: 41,
     other: 41,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["SY"],
     },
@@ -1142,7 +1142,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 20,
     special: 20,
     other: 20,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["TW"],
     },
@@ -1155,7 +1155,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 19,
     special: 19,
     other: 19,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["TH"],
     },
@@ -1168,7 +1168,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["TT"],
     },
@@ -1181,7 +1181,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["TN"],
     },
@@ -1194,7 +1194,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["TR"],
     },
@@ -1207,7 +1207,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["UG"],
     },
@@ -1220,7 +1220,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 10,
     special: 10,
     other: 10,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["GB"],
     },
@@ -1233,7 +1233,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["VU"],
     },
@@ -1246,7 +1246,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["VE"],
     },
@@ -1259,7 +1259,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 20,
     special: 20,
     other: 20,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["VN"],
     },
@@ -1272,7 +1272,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["ZM"],
     },
@@ -1285,7 +1285,7 @@ export const reciprocalTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 15,
-    exceptions: recriprocalExceptions,
+    exceptions: recriprocalTariffExemptions,
     inclusions: {
       countries: ["ZW"],
     },
