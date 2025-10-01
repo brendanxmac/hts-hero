@@ -61,7 +61,7 @@ export const indiaTariffs: TariffI[] = [
     requiresReview: true,
   },
   {
-    code: "9903.01.86", // Same as reciprocal tariff exemptions
+    code: "9903.01.86", // Same as 9903.01.32, reciprocal tariff exemptions
     description:
       "Articles the product of India, classified in the subheadings enumerated in subdivision (v)(iii) of U.S. note 2 to this subchapter",
     name: "Excluded Subheadings of India",
@@ -74,7 +74,7 @@ export const indiaTariffs: TariffI[] = [
     },
   },
   {
-    code: "9903.01.87", // Same as 9903.01.32, seection 232 exemptions
+    code: "9903.01.87", // Section 232 exemptions - Same as 9903.01.33 minus UK exemptions
     description:
       "Articles of iron or steel, derivative articles of iron or steel, articles of aluminum, derivative articles of aluminum, passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks and parts of passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks, and semi-finished copper and intensive copper derivative products, of India, as provided in subdivision (z)(iii) through (z)(ix) of note 2 to this subchapter",
     name: "Section 232's of India",
