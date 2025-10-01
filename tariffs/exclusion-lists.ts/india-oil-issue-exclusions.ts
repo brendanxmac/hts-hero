@@ -1,4 +1,4 @@
-import { reciprocalTariffExclusionsList } from "./reciprocal-tariff-exlcusions";
+import { reciprocalTariffExemptionsList } from "./reciprocal-tariff-exlcusions";
 
 const aluminum99038502 = [
   "7601",
@@ -798,7 +798,7 @@ const copperAndDerivatives99037801 = [
 ];
 
 export const indiaRussianOilConsumptionExclusions = [
-  ...reciprocalTariffExclusionsList,
+  ...reciprocalTariffExemptionsList,
   ...aluminum99038502,
   ...aluminumDerivatives99038504,
   ...derivativeAluminumProducts99038507,
