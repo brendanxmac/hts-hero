@@ -10,7 +10,19 @@ export const aluminumTariffs: TariffI[] = [
     general: 50,
     special: 50,
     other: 50,
-    exceptions: ["9903.85.67", "9903.85.69", "9903.94.05"],
+    exceptions: [
+      "9903.85.67",
+      "9903.85.69",
+      "9903.94.05",
+      // Japan Vehicles & Light Trucks
+      "9903.94.40",
+      "9903.94.41",
+      // Japan Auto Parts
+      "9903.94.42",
+      "9903.94.43",
+      // Japan Civil Aircraft
+      "9903.96.02",
+    ],
     contentRequirement: { content: "Aluminum" },
     exclusions: {
       countries: ["GB"],
@@ -112,6 +124,12 @@ export const aluminumTariffs: TariffI[] = [
       // Civil Aircraft Articles from UK
       "9903.96.01",
       "9903.94.05",
+      // Japan Vehicles & Light Trucks
+      "9903.94.40",
+      "9903.94.41",
+      // Japan Auto Parts
+      "9903.94.42",
+      "9903.94.43",
     ],
     inclusions: {
       countries: ["GB"],
@@ -147,6 +165,12 @@ export const aluminumTariffs: TariffI[] = [
       // Civil Aircraft Articles from UK
       "9903.96.01",
       "9903.94.05",
+      // Japan Vehicles & Light Trucks
+      "9903.94.40",
+      "9903.94.41",
+      // Japan Auto Parts
+      "9903.94.42",
+      "9903.94.43",
     ],
     inclusions: {
       countries: ["GB"],
@@ -179,6 +203,14 @@ export const aluminumTariffs: TariffI[] = [
       "9903.85.14",
       "9903.85.15",
       "9903.94.05",
+      // Japan Vehicles & Light Trucks
+      "9903.94.40",
+      "9903.94.41",
+      // Japan Auto Parts
+      "9903.94.42",
+      "9903.94.43",
+      // Japan Civil Aircraft
+      "9903.96.02",
     ],
     inclusions: {
       codes: [
@@ -389,6 +421,14 @@ export const aluminumTariffs: TariffI[] = [
       "9903.85.15",
       // Auto Parts
       "9903.94.05",
+      // Japan Vehicles & Light Trucks
+      "9903.94.40",
+      "9903.94.41",
+      // Japan Auto Parts
+      "9903.94.42",
+      "9903.94.43",
+      // Japan Civil Aircraft
+      "9903.96.02",
     ],
     inclusions: {
       codes: [
@@ -801,6 +841,12 @@ export const aluminumTariffs: TariffI[] = [
       "9903.96.01",
       // Auto Parts
       "9903.94.05",
+      // Japan Vehicles & Light Trucks
+      "9903.94.40",
+      "9903.94.41",
+      // Japan Auto Parts
+      "9903.94.42",
+      "9903.94.43",
     ],
     inclusions: {
       countries: ["GB"],
@@ -852,6 +898,12 @@ export const aluminumTariffs: TariffI[] = [
       "9903.96.01",
       // Auto Parts
       "9903.94.05",
+      // Japan Vehicles & Light Trucks
+      "9903.94.40",
+      "9903.94.41",
+      // Japan Auto Parts
+      "9903.94.42",
+      "9903.94.43",
     ],
     inclusions: {
       countries: ["GB"],
@@ -1380,6 +1432,14 @@ export const aluminumTariffs: TariffI[] = [
       "9903.85.15",
       // Auto Parts
       "9903.94.05",
+      // Japan Vehicles & Light Trucks
+      "9903.94.40",
+      "9903.94.41",
+      // Japan Auto Parts
+      "9903.94.42",
+      "9903.94.43",
+      // Japan Civil Aircraft
+      "9903.96.02",
     ],
     inclusions: {
       codes: [

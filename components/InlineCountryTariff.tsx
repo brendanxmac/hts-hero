@@ -40,7 +40,8 @@ export const InlineCountryTariff = ({
 }: Props) => {
   const [units, setUnits] = useState<number>(1);
   const [customsValue, setCustomsValue] = useState<number>(1000);
-  const isEUCountry = EuropeanUnionCountries.includes(country.code);
+  const is15PercentCapCountry =
+    EuropeanUnionCountries.includes(country.code) || country.code === "JP";
 
   const [tariffColumn, setTariffColumn] = useState<TariffColumn>(
     Column2CountryCodes.includes(country.code)
@@ -258,7 +259,7 @@ export const InlineCountryTariff = ({
         </div>
       </div>
 
-      {isEUCountry &&
+      {is15PercentCapCountry &&
         baseTariffs
           .flatMap((t) => t.tariffs)
           .some((t) => t.type === "amount") && (

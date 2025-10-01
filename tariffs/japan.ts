@@ -1,276 +1,123 @@
 import { TariffI } from "../interfaces/tariffs";
+import { automobileParts33G, automobiles33B } from "./automobile";
 import { reciprocalTariffExemptionsList } from "./exclusion-lists.ts/reciprocal-tariff-exlcusions";
+import { recriprocalTariffExemptions } from "./reciprocal";
 
-export const exceptionTariffs: TariffI[] = [
+// TODO: Need to add codes some 02.72, 02.73
+
+export const japanTariffs: TariffI[] = [
   {
-    code: "9903.01.28",
+    code: "9903.02.72",
     description:
-      "Articles the product of any country that (1) were loaded onto a vessel at the port of loading and in transit on the final mode of transit prior to entry into the United States, before 12:01 a.m. eastern daylight time on April 5, 2025; and (2) are entered for consumption, or withdrawn from warehouse for consumption after 12:01 a.m. eastern daylight time on April 5, 2025",
-    name: "Loaded, Entered, or Withdrawn from Warehouse Prior to April 5, 2025",
-    exclusions: {
-      countries: [
-        "AF",
-        "DZ",
-        "AO",
-        "BD",
-        "BO",
-        "BA",
-        "BW",
-        "BR",
-        "BN",
-        "KH",
-        "CM",
-        "TD",
-        "CR",
-        "CI",
-        "CD",
-        "EC",
-        "EC",
-        "AT",
-        "BE",
-        "BG",
-        "HR",
-        "CY",
-        "CZ",
-        "DK",
-        "EE",
-        "FI",
-        "FR",
-        "DE",
-        "GR",
-        "HU",
-        "IE",
-        "IT",
-        "LV",
-        "LT",
-        "LU",
-        "MT",
-        "NL",
-        "PL",
-        "PT",
-        "RO",
-        "SK",
-        "SI",
-        "ES",
-        "SE",
-        "AT",
-        "BE",
-        "BG",
-        "HR",
-        "CY",
-        "CZ",
-        "DK",
-        "EE",
-        "FI",
-        "FR",
-        "DE",
-        "GR",
-        "HU",
-        "IE",
-        "IT",
-        "LV",
-        "LT",
-        "LU",
-        "MT",
-        "NL",
-        "PL",
-        "PT",
-        "RO",
-        "SK",
-        "SI",
-        "ES",
-        "SE",
-        "FK",
-        "FJ",
-        "GH",
-        "GY",
-        "IS",
-        "IN",
-        "ID",
-        "IQ",
-        "IL",
-        "JP",
-        "JO",
-        "KZ",
-        "LA",
-        "LS",
-        "LY",
-        "LI",
-        "MG",
-        "MW",
-        "MY",
-        "MU",
-        "MD",
-        "MZ",
-        "MM",
-        "NA",
-        "NR",
-        "NZ",
-        "NI",
-        "NG",
-        "MK",
-        "NO",
-        "PK",
-        "PG",
-        "PH",
-        "RS",
-        "ZA",
-        "KR",
-        "LK",
-        "CH",
-        "SY",
-        "TW",
-        "TH",
-        "TT",
-        "TN",
-        "TR",
-        "UG",
-        "GB",
-        "VU",
-        "VE",
-        "VN",
-        "ZM",
-        "ZW",
-      ], // TODO: add all the countries here that got specific reciprocal tariffs .02.02-71
-    },
-    inclusions: {
-      countries: ["*"],
-    },
-    general: 0,
-    special: 0,
-    other: 0,
-    requiresReview: true, // Could just add date(s), but keeping it simple for now...
-  },
-  {
-    code: "9903.01.29",
-    description:
-      "Articles the product of any country identified in general note 3(b)",
-    name: "From Country in Column 2",
-    inclusions: {
-      countries: ["BY", "CU", "KP", "RU"],
-    },
-    general: 0,
-    special: 0,
-    other: 0,
-  },
-  {
-    code: "9903.01.30",
-    description:
-      "Articles that are donations, by persons subject to the jurisdiction of the United States, such as food, clothing, and medicine, intended to be used to relieve human suffering, as provided for in subdivision (v)(ii) of U.S. note 2 to this subchapter",
-    name: "Donation",
-    inclusions: {
-      countries: ["*"],
-      // *, meaning all, is used here because this applies to every single country,
-      // including china and other countries with additional IEEPA tariffs like
-      // northern and southern border protection tariffs on CA & MX.
-    },
-    general: 0,
-    special: 0,
-    other: 0,
-    requiresReview: true, // TODO: could add toggle for "isDonation"
-  },
-  {
-    code: "9903.01.31",
-    description:
-      "Articles that are informational materials, including but not limited to, publications, films, posters, phonograph records, photographs, microfilms, microfiche, tapes, compact disks, CD ROMs, artworks, and news wire feeds",
-    name: "Informational Materials / Artwork",
-    inclusions: {
-      countries: ["*"],
-    },
-    general: 0,
-    special: 0,
-    other: 0,
-    // maybe could get clever here and do "is information material", but leaving it for now and let user flip switch
-    // Maybe could also start compiling a list of headings / subheading that would qualify which would enable partial automatic
-    requiresReview: true,
-  },
-  {
-    code: "9903.01.32",
-    description:
-      "Articles the product of any country, classified in the subheadings enumerated in subdivision (v)(iii) of U.S. note 2 to this subchapter",
-    name: "Excluded Reciprocal Tariff Subheadings",
-    inclusions: {
-      countries: ["*"],
-      codes: reciprocalTariffExemptionsList,
-    },
-    general: 0,
-    special: 0,
-    other: 0,
-  },
-  {
-    // NOTE: I've already grabbed the various 99's that capture each of these categories and marked them as exceptions
-    // What I should do is... get that list and replace it wherever this one is called from...
-    code: "9903.01.33",
-    description:
-      "Articles of iron or steel, derivative articles of iron or steel, articles of aluminum, derivative articles of aluminum, passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks and parts of passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks, semi-finished copper and intensive copper derivative products, of any country, as provided in subdivision (v)(vi) through (v)(xii) of note 2 to this subchapter",
-    name: "Reciprocal Exemption for Section 232's (Iron, Steel, Aluminum, Copper, Autos, and Auto Parts)",
-    inclusions: {
-      countries: ["*"],
-      tariffs: [
-        // todo: what to do about this being an edge case? tariff that includes tariffs itself as a mere container?
-        // Iron / Steel
-        "9903.81.87",
-        "9903.81.88", // FTZ
-        // Derivative Iron / Steel
-        "9903.81.89",
-        "9903.81.90",
-        "9903.81.91",
-        "9903.81.92", // Poured / Cast in the US
-        "9903.81.93", // FTZ
-        // Aluminum
-        "9903.85.02",
-        // Aluminum Derivatives
-        "9903.85.04",
-        "9903.85.07",
-        "9903.85.08",
-        // Aluminum Smelted in U.S
-        "9903.85.09",
-        // Automobiles
-        "9903.94.01",
-        "9903.94.03",
-        // Auto Parts
-        "9903.94.05",
-        // UK Aluminum
-        "9903.85.12",
-        // UK Aluminum Derivatitves (13,14,15)
-        "9903.85.13",
-        "9903.85.14",
-        "9903.85.15",
-        // Semi-finished Copper & Intensive Copper Derivatives
-        "9903.78.01",
-      ],
-    },
-    general: 0,
-    special: 0,
-    other: 0,
-  },
-  {
-    code: "9903.01.34",
-    description:
-      "The U.S. content of articles the product of any country, in which the U.S. content of the article provides at least 20 percent of the Customs value of the imported article, as provided for in subdivision (v)(xiii) of U.S. note 2 to this subchapter",
-    name: "If U.S. Content > 20%, Only Non U.S. Content has Duty Applied",
-    general: null,
-    special: null,
-    other: null,
-    inclusions: {
-      countries: ["*"],
-    },
-    requiresReview: true,
-    // contentRequirement: {
-    //   content: "U.S. Content",
-    //   minimumPercent: 20,
-    // },
-  },
-  {
-    code: "9903.96.01",
-    description:
-      "Effective with respect to entries on or after [ ], articles of civil aircraft (all aircraft other than military aircraft); their engines, parts, and components; their other parts, components, and subassemblies; and ground flight simulators and their parts and components of the United Kingdom, classified in the subheadings enumerated in subdivision (a) of U.S. note 35 to this subchapter. [Compilers note: This heading is effective on or after June 30, 2025. For more information, see 90 Fed. Reg. 27851.]",
-    name: "U.K. Civil Aircraft, Engines, Parts, Components, & Subassemblies",
+      "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33, and except as provided for in headings 9903.01.34, 9903.02.01, and 9903.96.02, articles the product of Japan, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 15 percent, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
+    name: "Japan Reciprocal Tariff (General Duty >=15%)",
     general: 0,
     special: 0,
     other: 0,
     inclusions: {
-      countries: ["GB"],
+      countries: ["JP"],
+    },
+    exceptions: [
+      ...recriprocalTariffExemptions,
+      "9903.01.30",
+      "9903.01.31",
+      "9903.01.32",
+      "9903.01.33",
+      "9903.01.34",
+      "9903.02.01",
+      "9903.96.02",
+    ],
+  },
+  {
+    code: "9903.02.73",
+    description:
+      "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33, and except as provided for in headings 9903.01.34, 9903.02.01, and 9903.96.02, articles the product of Japan, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 15 percent, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
+    name: "Japan Reciprocal Tariff (General Duty <15%)",
+    general: 0,
+    special: 0,
+    other: 0,
+    inclusions: {
+      countries: ["JP"],
+    },
+    exceptions: [
+      ...recriprocalTariffExemptions,
+      "9903.01.30",
+      "9903.01.31",
+      "9903.01.32",
+      "9903.01.33",
+      "9903.01.34",
+      "9903.02.01",
+      "9903.96.02",
+    ],
+  },
+  {
+    code: "9903.94.40",
+    description:
+      "Passenger vehicles and light trucks that are products of Japan as provided for in subdivision (k) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 15 percent as provided for in subdivision (m) of U.S. note 33 to this subchapter",
+    name: "Vehicles & Light Trucks of Japan, Duty >=15%",
+    general: 0,
+    special: 0,
+    other: 0,
+    exceptions: ["9903.94.02", "9903.94.04"],
+    inclusions: {
+      countries: ["JP"],
+      codes: automobiles33B,
+    },
+  },
+  {
+    code: "9903.94.41",
+    description:
+      "Passenger vehicles and light trucks that are products of Japan provided for in subdivision (k) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 15 percent as provided for in subdivision (m) of U.S. note 33 to this subchapter.",
+    name: "Vehicles & Light Trucks of Japan, Duty <15%",
+    general: 15,
+    special: 15,
+    other: 0,
+    exceptions: ["9903.94.02", "9903.94.04"],
+    inclusions: {
+      countries: ["JP"],
+      codes: automobiles33B,
+    },
+  },
+  {
+    code: "9903.94.42",
+    description:
+      "Parts of passenger vehicles and light trucks that are products of Japan as provided for subdivision (l) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 15 percent as provided for in subdivision (m) of U.S. note 33 to this subchapter.",
+    name: "Part of Vehicles & Light Trucks of Japan, Duty >=15%",
+    general: 0,
+    special: 0,
+    other: 0,
+    exceptions: ["9903.94.06"],
+    inclusions: {
+      countries: ["JP"],
+      codes: automobileParts33G,
+    },
+  },
+  {
+    code: "9903.94.43",
+    description:
+      "Parts of passenger vehicles and light trucks that are products of Japan as provided for subdivision (l) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 15 percent as provided for in subdivision (m) of U.S. note 33 to this subchapter.",
+    name: "Part of Vehicles & Light Trucks of Japan, Duty <15%",
+    general: 15,
+    special: 15,
+    other: 0,
+    exceptions: ["9903.94.06"],
+    inclusions: {
+      countries: ["JP"],
+      codes: automobileParts33G,
+    },
+  },
+  {
+    code: "9903.96.02",
+    description:
+      "Articles of civil aircraft (all aircraft other than military aircraft); their engines, parts, and components; their other parts, components, and subassemblies; and ground flight simulators and their parts and components of Japan, excluding unmanned aircraft, classified in the subheadings enumerated in subdivision (b) of U.S. note 35 to this subchapter.",
+    name: "Articles of Civil Aircraft of Japan",
+    general: 0,
+    special: 0,
+    other: 0,
+    requiresReview: true, // in order to determine if it is an article of civil aircraft
+    exceptions: ["9903.94.06"],
+    inclusions: {
+      countries: ["JP"],
       codes: [
         "3917.21.00",
         "3917.22.00",
@@ -698,17 +545,6 @@ export const exceptionTariffs: TariffI[] = [
         "8802.30.01",
         "8802.40.01",
         "8805.29.00",
-        "8806.10.00",
-        "8806.21.00",
-        "8806.22.00",
-        "8806.23.00",
-        "8806.24.00",
-        "8806.29.00",
-        "8806.91.00",
-        "8806.92.00",
-        "8806.93.00",
-        "8806.94.00",
-        "8806.99.00",
         "8807.10.00",
         "8807.20.00",
         "8807.30.00",

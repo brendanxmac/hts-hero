@@ -19,7 +19,11 @@ import { TariffI, UITariff, TariffSet } from "../interfaces/tariffs";
 import { TariffColumn } from "../enums/tariff";
 import { brazilTariffs } from "./brazil";
 import { copperTariffs } from "./copper";
-import { Country, EuropeanUnionCountries } from "../constants/countries";
+import {
+  Countries,
+  Country,
+  EuropeanUnionCountries,
+} from "../constants/countries";
 import {
   TradeProgram,
   TradePrograms,
@@ -27,6 +31,7 @@ import {
 } from "../public/trade-programs";
 import { Column2CountryCodes } from "./tariff-columns";
 import { indiaTariffs } from "./india";
+import { japanTariffs } from "./japan";
 
 export interface CountryWithTariffs extends Country {
   selectedTradeProgram: TradeProgram | null;
@@ -151,7 +156,7 @@ export const addTariffsToCountry = (
   );
 
   let applicableTariffs = getTariffs(country.code, htsElement.htsno);
-  applicableTariffs = filterCountryTariffsForEuException(
+  applicableTariffs = filterCountryTariffsFor15PercentExeption(
     applicableTariffs,
     country,
     baseTariffsForColumn,
@@ -230,7 +235,7 @@ export const getBaseAmountTariffsSum = (baseTariffs: ParsedBaseTariff[]) => {
   return baseAmountTariffs.reduce((acc, t) => acc + t.value, 0);
 };
 
-export const filterCountryTariffsForEuException = (
+export const filterCountryTariffsFor15PercentExeption = (
   tariffs: TariffI[],
   country: Country,
   baseTariffsForColumn: ParsedBaseTariff[],
@@ -238,8 +243,9 @@ export const filterCountryTariffsForEuException = (
   units?: number
 ) => {
   const isEUCountry = EuropeanUnionCountries.includes(country.code);
+  const isJapan = country.code === "JP";
 
-  if (!isEUCountry) {
+  if (!isEUCountry && !isJapan) {
     return tariffs;
   }
 
@@ -255,6 +261,22 @@ export const filterCountryTariffsForEuException = (
         return t.code !== "9903.02.20";
       } else {
         return t.code !== "9903.02.19";
+      }
+    }
+
+    if (isJapan) {
+      if (totalBaseRate >= 15) {
+        return (
+          t.code !== "9903.02.73" &&
+          t.code !== "9903.94.41" &&
+          t.code !== "9903.94.43"
+        );
+      } else {
+        return (
+          t.code !== "9903.02.72" &&
+          t.code !== "9903.94.40" &&
+          t.code !== "9903.94.42"
+        );
       }
     }
 
@@ -802,4 +824,5 @@ export const TariffsList: TariffI[] = [
   ...brazilTariffs,
   ...copperTariffs,
   ...indiaTariffs,
+  ...japanTariffs,
 ];
