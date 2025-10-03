@@ -214,6 +214,8 @@ export const getBasePercentTariffsText = (baseTariffs: ParsedBaseTariff[]) => {
 };
 
 export const getBasePercentTariffsSum = (baseTariffs: ParsedBaseTariff[]) => {
+  console.log("baseTariffs:");
+  console.log(baseTariffs);
   const basePercentTariffs = getBasePercentTariffs(baseTariffs);
   return basePercentTariffs.reduce((acc, t) => acc + t.value, 0);
 };
@@ -249,7 +251,7 @@ export const filterCountryTariffsFor15PercentExeption = (
     return tariffs;
   }
 
-  const totalBaseRate = getEUCountryTotalBaseRate(
+  const totalBaseRate = get15PercentCountryTotalBaseRate(
     baseTariffsForColumn.flatMap((t) => t.tariffs),
     customsValue ?? 1000,
     units ?? 10
@@ -445,7 +447,7 @@ export const getContentRequirementTariffSets = (
 export const getAdValoremRate = (
   column: TariffColumn,
   tariffSet: UITariff[],
-  baseTariffs: BaseTariffI[]
+  baseTariffs?: BaseTariffI[]
 ) => {
   let rate = 0;
   tariffSet.forEach((tariff) => {
@@ -465,7 +467,7 @@ export const getAdValoremRate = (
   return rate;
 };
 
-export const getEUCountryTotalBaseRate = (
+export const get15PercentCountryTotalBaseRate = (
   baseTariffs: BaseTariffI[],
   customsValue: number,
   units?: number

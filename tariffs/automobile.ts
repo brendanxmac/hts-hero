@@ -454,7 +454,7 @@ export const automobileTariffs: TariffI[] = [
     code: "9903.94.02",
     description:
       "Effective with respect to entries on or after April 3, 2025, articles as provided for in subdivision (c) of U.S. note 33 to this subchapter.",
-    name: "Articles of Ch.99, III, 33(b) that are not passenger vehicles or light trucks or the US content of those articles",
+    name: "The U.S Content of Articles of Ch.99, III, 33(b) OR non passenger vehicles / light trucks of those headings",
     general: 0,
     special: 0,
     other: 0,
@@ -467,7 +467,7 @@ export const automobileTariffs: TariffI[] = [
     code: "9903.94.03",
     description:
       "Effective with respect to entries on or after April 3, 2025, certain passenger vehicles and light trucks, as provided for in subdivision (d) of U.S. note 33 to this subchapter.",
-    name: "Only Non-US Content",
+    name: "Tariff On Only The Non-US Content of Passenger Vehicles / Light Trucks If Approved by Secretary of Commerce",
     // TODO: need slider,
     general: 25, // on the % of the non U.S. content
     special: 25, // on the % of the non U.S. content

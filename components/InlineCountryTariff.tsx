@@ -9,7 +9,7 @@ import { PrimaryLabel } from "./PrimaryLabel";
 import { Color } from "../enums/style";
 import { Column2CountryCodes } from "../tariffs/tariff-columns";
 import {
-  getEUCountryTotalBaseRate,
+  get15PercentCountryTotalBaseRate,
   getAmountRates,
   getAmountRatesString,
   getAdValoremRate,
@@ -38,8 +38,8 @@ export const InlineCountryTariff = ({
   countries,
   setCountries,
 }: Props) => {
-  const [units, setUnits] = useState<number>(1);
-  const [customsValue, setCustomsValue] = useState<number>(1000);
+  const [units, setUnits] = useState<number>(1000);
+  const [customsValue, setCustomsValue] = useState<number>(10000);
   const is15PercentCapCountry =
     EuropeanUnionCountries.includes(country.code) || country.code === "JP";
 
@@ -271,21 +271,7 @@ export const InlineCountryTariff = ({
                 .flatMap((t) => t.tariffs)
                 .some((t) => t.type === "amount") && (
                 <div>
-                  <label className="label">
-                    <span className="label-text">
-                      {htsElement.units.length > 0 ||
-                      tariffElement.units.length > 0
-                        ? `${[...htsElement.units, ...tariffElement.units]
-                            .reduce((acc, unit) => {
-                              if (!acc.includes(unit)) {
-                                acc.push(unit);
-                              }
-                              return acc;
-                            }, [])
-                            .join(",")}`
-                        : ""}
-                    </span>
-                  </label>
+                  <label className="label">Units / Weight / Amount</label>
                   <input
                     type="number"
                     min={0}
@@ -295,6 +281,19 @@ export const InlineCountryTariff = ({
                       setUnits(Number(e.target.value));
                     }}
                   />
+                  <sup className="ml-3">
+                    {htsElement.units.length > 0 ||
+                    tariffElement.units.length > 0
+                      ? `${[...htsElement.units, ...tariffElement.units]
+                          .reduce((acc, unit) => {
+                            if (!acc.includes(unit)) {
+                              acc.push(unit);
+                            }
+                            return acc;
+                          }, [])
+                          .join(",")}`
+                      : ""}
+                  </sup>
                 </div>
               )}
             <div>
@@ -311,29 +310,18 @@ export const InlineCountryTariff = ({
                 }}
               />
             </div>
-            <div className="flex flex-col">
-              <label className="label">
-                <span className="label-text">
-                  General Ad Valorem Equivalent Rate
-                </span>
+            <div className="ml-4 flex flex-col">
+              <label className="label label-text">
+                General Ad Valorem Equivalent Rate
               </label>
-              <div className="flex flex-col">
-                <PrimaryLabel
-                  value={`${getEUCountryTotalBaseRate(
-                    baseTariffs.flatMap((t) => t.tariffs),
-                    customsValue,
-                    units
-                  ).toFixed(3)}
-              %`}
-                  color={Color.PRIMARY}
-                />
-                <p>
-                  <sup>
-                    &ge; 15% means reciprocal tariff exclusion for EU countries
-                  </sup>
-                </p>
-                {/* <TertiaryText value="Used for EU countries to see if general ad valorem equivalent rate exceeds 15% for reciprocal tariff determination" /> */}
-              </div>
+
+              <h2 className="text-primary font-bold text-2xl">
+                {`${get15PercentCountryTotalBaseRate(
+                  baseTariffs.flatMap((t) => t.tariffs),
+                  customsValue,
+                  units
+                ).toFixed(3)}%`}
+              </h2>
             </div>
             <div className="flex flex-col items-end">
               {baseTariffs
@@ -367,7 +355,7 @@ export const InlineCountryTariff = ({
               <div className="w-full border-t border-base-content/50 my-2" />
               <div className="flex w-full justify-end">
                 <p>
-                  {getEUCountryTotalBaseRate(
+                  {get15PercentCountryTotalBaseRate(
                     baseTariffs.flatMap((t) => t.tariffs),
                     customsValue,
                     units
@@ -384,7 +372,6 @@ export const InlineCountryTariff = ({
         {tariffSets.map((tariffSet, i) => (
           <div key={`tariff-set-${i}`} className="flex flex-col gap-4">
             <PrimaryLabel value={`${tariffSet.name} Tariff Details`} />
-
             <div className="flex flex-col gap-2">
               {baseTariffs &&
                 baseTariffs.length > 0 &&
@@ -427,30 +414,41 @@ export const InlineCountryTariff = ({
             </div>
             <div className="w-full flex justify-between items-end gap-2">
               <TertiaryLabel value="Total:" />
-              <div className="flex gap-2">
-                {baseTariffs
-                  .flatMap((t) => t.tariffs)
-                  .filter((t) => t.type === "amount").length > 0 && (
-                  <div className="flex gap-2">
-                    <p className="text-base font-bold text-white transition duration-100">
-                      {getAmountRatesString(
-                        baseTariffs.flatMap((t) => t.tariffs)
-                      )}
-                    </p>
-                    <p className="text-base font-bold text-white transition duration-100">
-                      +
-                    </p>
-                  </div>
-                )}
+              {is15PercentCapCountry &&
+              get15PercentCountryTotalBaseRate(
+                baseTariffs.flatMap((t) => t.tariffs),
+                customsValue,
+                units
+              ) < 15 ? (
                 <p className="text-base font-bold text-white transition duration-100">
-                  {getAdValoremRate(
-                    tariffColumn,
-                    tariffSet.tariffs,
-                    baseTariffs.flatMap((t) => t.tariffs)
-                  )}
-                  %
+                  {getAdValoremRate(tariffColumn, tariffSet.tariffs)}%
                 </p>
-              </div>
+              ) : (
+                <div className="flex gap-2">
+                  {baseTariffs
+                    .flatMap((t) => t.tariffs)
+                    .filter((t) => t.type === "amount").length > 0 && (
+                    <div className="flex gap-2">
+                      <p className="text-base font-bold text-white transition duration-100">
+                        {getAmountRatesString(
+                          baseTariffs.flatMap((t) => t.tariffs)
+                        )}
+                      </p>
+                      <p className="text-base font-bold text-white transition duration-100">
+                        +
+                      </p>
+                    </div>
+                  )}
+                  <p className="text-base font-bold text-white transition duration-100">
+                    {getAdValoremRate(
+                      tariffColumn,
+                      tariffSet.tariffs,
+                      baseTariffs.flatMap((t) => t.tariffs)
+                    )}
+                    %
+                  </p>
+                </div>
+              )}
             </div>
             {baseTariffs.flatMap((t) => t.parsingFailures).length > 0 && (
               <div className="flex flex-col gap-2 p-4 border-2 border-red-500 rounded-md">
