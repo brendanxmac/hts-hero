@@ -22,6 +22,8 @@ export const aluminumTariffs: TariffI[] = [
       "9903.94.43",
       // Japan Civil Aircraft
       "9903.96.02",
+      // EU Civil Aircraft
+      "9903.02.76",
     ],
     contentRequirement: { content: "Aluminum" },
     exclusions: {
@@ -211,6 +213,8 @@ export const aluminumTariffs: TariffI[] = [
       "9903.94.43",
       // Japan Civil Aircraft
       "9903.96.02",
+      // EU Civil Aircraft
+      "9903.02.76",
     ],
     inclusions: {
       codes: [
@@ -429,6 +433,8 @@ export const aluminumTariffs: TariffI[] = [
       "9903.94.43",
       // Japan Civil Aircraft
       "9903.96.02",
+      // EU Civil Aircraft
+      "9903.02.76",
     ],
     inclusions: {
       codes: [
@@ -1440,6 +1446,8 @@ export const aluminumTariffs: TariffI[] = [
       "9903.94.43",
       // Japan Civil Aircraft
       "9903.96.02",
+      // EU Civil Aircraft
+      "9903.02.76",
     ],
     inclusions: {
       codes: [

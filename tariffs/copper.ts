@@ -20,6 +20,8 @@ export const copperTariffs: TariffI[] = [
       "9903.94.43",
       // Japan Civil Aircraft
       "9903.96.02",
+      // EU Civil Aircraft
+      "9903.02.76",
     ],
     inclusions: {
       countries: ["*"],

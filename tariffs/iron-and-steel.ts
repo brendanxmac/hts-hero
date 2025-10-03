@@ -27,6 +27,8 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.94.43",
       // Japan Civil Aircraft
       "9903.96.02",
+      // EU Civil Aircraft
+      "9903.02.76",
     ],
     exclusions: {
       // 16(j)
@@ -94,6 +96,8 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.94.43",
       // Japan Civil Aircraft
       "9903.96.02",
+      // EU Civil Aircraft
+      "9903.02.76",
     ],
     exclusions: {
       countries: ["GB"],
@@ -547,10 +551,12 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.94.43",
       // Japan Civil Aircraft
       "9903.96.02",
+      // EU Civil Aircraft
+      "9903.02.76",
     ],
     exclusions: {
-      // 16(j)
       countries: ["GB"],
+      // 16(j)
       codes: ["7216.61.00", "7216.69.00", "7216.91.00"],
     },
     inclusions: {
@@ -611,6 +617,8 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.94.43",
       // Japan Civil Aircraft
       "9903.96.02",
+      // EU Civil Aircraft
+      "9903.02.76",
     ],
     exclusions: {
       countries: ["GB"],
@@ -651,6 +659,8 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.94.43",
       // Japan Civil Aircraft
       "9903.96.02",
+      // EU Civil Aircraft
+      "9903.02.76",
     ],
     exclusions: {
       countries: ["GB"],
@@ -841,6 +851,8 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.94.43",
       // Japan Civil Aircraft
       "9903.96.02",
+      // EU Civil Aircraft
+      "9903.02.76",
     ],
     exclusions: {
       countries: ["GB"],

@@ -1,9 +1,6 @@
 import { TariffI } from "../interfaces/tariffs";
 import { automobileParts33G, automobiles33B } from "./automobile";
-import { reciprocalTariffExemptionsList } from "./exclusion-lists.ts/reciprocal-tariff-exlcusions";
 import { recriprocalTariffExemptions } from "./reciprocal";
-
-// TODO: Need to add codes some 02.72, 02.73
 
 export const japanTariffs: TariffI[] = [
   {
@@ -58,6 +55,7 @@ export const japanTariffs: TariffI[] = [
     general: 0,
     special: 0,
     other: 0,
+    requiresReview: true,
     exceptions: ["9903.94.02", "9903.94.04"],
     inclusions: {
       countries: ["JP"],
@@ -72,6 +70,7 @@ export const japanTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 0,
+    requiresReview: true,
     exceptions: ["9903.94.02", "9903.94.04"],
     inclusions: {
       countries: ["JP"],
@@ -86,6 +85,7 @@ export const japanTariffs: TariffI[] = [
     general: 0,
     special: 0,
     other: 0,
+    requiresReview: true,
     exceptions: ["9903.94.06"],
     inclusions: {
       countries: ["JP"],
@@ -100,6 +100,7 @@ export const japanTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 0,
+    requiresReview: true,
     exceptions: ["9903.94.06"],
     inclusions: {
       countries: ["JP"],

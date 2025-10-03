@@ -1,6 +1,16 @@
+import { EuropeanUnionCountries } from "../constants/countries";
 import { TariffI } from "../interfaces/tariffs";
 
+// Via 99,III,2(v)(i)
 export const recriprocalTariffExemptions = [
+  // Product of Canada
+  "9903.01.26",
+  // Product of Mexico
+  "9903.01.27",
+  // Loaded before April 5
+  "9903.01.28",
+  // Column 2 countries
+  "9903.01.29",
   // Donations
   "9903.01.30",
   // Information Materials
@@ -36,6 +46,15 @@ export const recriprocalTariffExemptions = [
   "9903.94.05",
   // Copper
   "9903.78.01",
+  // U.K. Civil Aircraft, Engines, Parts, Components, & Subassemblies
+  "9903.96.01",
+  // Japan Civil Aircraft, Engines, Parts, Components, & Subassemblies
+  "9903.96.02",
+  // EU Articles
+  "9903.02.74",
+  "9903.02.75",
+  "9903.02.76", // Civil Aircraft
+  "9903.02.77",
 ];
 
 export const worldwideReciprocalTariff: TariffI[] = [
@@ -45,7 +64,7 @@ export const worldwideReciprocalTariff: TariffI[] = [
   {
     code: "9903.01.25",
     description:
-      "Articles the product of any country, except for products described in headings 9903.01.26–9903.01.33, 9903.02.02–9903.02.71, and 9903.96.01, and except as provided for in headings 9903.01.34 and 9903.02.01, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
+      "Articles the product of any country, except for products described in headings 9903.01.26– 9903.01.33, 9903.02.02–9903.02.77, 9903.96.01, and 9903.96.02, and except as provided for in headings 9903.01.34 and 9903.02.01, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     name: "Worldwide Reciprocal 10% (IEEPA)",
     general: 10,
     special: 10,
@@ -177,8 +196,8 @@ export const worldwideReciprocalTariff: TariffI[] = [
       ],
     },
     inclusions: {
-      countries: ["*"],
       // When a tariff applies to all countries we just do *
+      countries: ["*"],
     },
     exceptions: [
       // Product of Canada
@@ -190,22 +209,23 @@ export const worldwideReciprocalTariff: TariffI[] = [
       // Column 2 countries
       "9903.01.29",
       // Donations
-      // Donations
       "9903.01.30",
-      // Information Materials / Artworks
-      // Information Materials
+      // Information Materials / Artwork
       "9903.01.31",
       // Excluded Subheading Articles
       "9903.01.32",
+      // Catch all for 232's
+      "9903.01.33",
       // Over 20% US Content Exception
       // U.S. Content > 20%
       "9903.01.34",
-      // Catch all for 232's
-      "9903.01.33",
       // U.K. Civil Aircraft, Engines, Parts, Components, & Subassemblies
       "9903.96.01",
+      // Japan Civil Aircraft, Engines, Parts, Components, & Subassemblies
+      "9903.96.02",
+      // EU Civil Aircraft
+      "9903.02.76",
       // Considerd to have been transshipped to evade duties
-      // Transhipping Identified
       "9903.02.01",
       // Countries with Specific Reciprocal Tariffs (9903.02.02–9903.02.71)
       "9903.02.02",
@@ -549,84 +569,40 @@ export const worldwideReciprocalTariff: TariffI[] = [
     // TODO: this one does NOT add with the base tariff
     code: "9903.02.19",
     description:
-      "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of the European Union, with an ad valorem (or ad valorem equivalent) rate of duty under column 1-General equal to or greater than 15 percent, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
+      "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025,except for products described in headings 9903.01.30–9903.01.33 and 9903.02.74– 9903.02.77, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of the European Union, with an ad valorem (or ad valorem equivalent) rate of duty under column 1-General equal to or greater than 15 percent, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     name: "EU Reciprocal Tariff (General Duty >= 15%)",
     general: 0,
     special: 0,
     other: 0,
-    exceptions: recriprocalTariffExemptions,
+    exceptions: [
+      ...recriprocalTariffExemptions,
+      "9903.02.74",
+      "9903.02.75",
+      "9903.02.76",
+      "9903.02.77",
+    ],
     inclusions: {
-      countries: [
-        "AT",
-        "BE",
-        "BG",
-        "HR",
-        "CY",
-        "CZ",
-        "DK",
-        "EE",
-        "FI",
-        "FR",
-        "DE",
-        "GR",
-        "HU",
-        "IE",
-        "IT",
-        "LV",
-        "LT",
-        "LU",
-        "MT",
-        "NL",
-        "PL",
-        "PT",
-        "RO",
-        "SK",
-        "SI",
-        "ES",
-        "SE",
-      ],
+      countries: EuropeanUnionCountries,
     },
   },
   {
     // TODO: this one does NOT add with the base tariff
     code: "9903.02.20",
     description:
-      "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of the European Union, with an ad valorem (or ad valorem equivalent) rate of duty under column 1-General less than 15 percent, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
+      "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30–9903.01.33 and 9903.02.74– 9903.02.77, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of the European Union, with an ad valorem (or ad valorem equivalent) rate of duty under column 1-General less than 15 percent, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     name: "EU Reciprocal Tariff (General Duty < 15%)",
     general: 15,
     special: 15,
     other: 0,
-    exceptions: recriprocalTariffExemptions,
+    exceptions: [
+      ...recriprocalTariffExemptions,
+      "9903.02.74",
+      "9903.02.75",
+      "9903.02.76",
+      "9903.02.77",
+    ],
     inclusions: {
-      countries: [
-        "AT",
-        "BE",
-        "BG",
-        "HR",
-        "CY",
-        "CZ",
-        "DK",
-        "EE",
-        "FI",
-        "FR",
-        "DE",
-        "GR",
-        "HU",
-        "IE",
-        "IT",
-        "LV",
-        "LT",
-        "LU",
-        "MT",
-        "NL",
-        "PL",
-        "PT",
-        "RO",
-        "SK",
-        "SI",
-        "ES",
-        "SE",
-      ],
+      countries: EuropeanUnionCountries,
     },
   },
   {

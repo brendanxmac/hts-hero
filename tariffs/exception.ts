@@ -269,6 +269,7 @@ export const exceptionTariffs: TariffI[] = [
     general: 0,
     special: 0,
     other: 0,
+    requiresReview: true,
     inclusions: {
       countries: ["GB"],
       codes: [

@@ -32,6 +32,7 @@ import {
 import { Column2CountryCodes } from "./tariff-columns";
 import { indiaTariffs } from "./india";
 import { japanTariffs } from "./japan";
+import { europeanUnionTariffs } from "./european-union";
 
 export interface CountryWithTariffs extends Country {
   selectedTradeProgram: TradeProgram | null;
@@ -260,9 +261,17 @@ export const filterCountryTariffsFor15PercentExeption = (
   return tariffs.filter((t) => {
     if (isEUCountry) {
       if (totalBaseRate >= 15) {
-        return t.code !== "9903.02.20";
+        return (
+          t.code !== "9903.02.20" &&
+          t.code !== "9903.94.51" &&
+          t.code !== "9903.94.53"
+        );
       } else {
-        return t.code !== "9903.02.19";
+        return (
+          t.code !== "9903.02.19" &&
+          t.code !== "9903.94.50" &&
+          t.code !== "9903.94.52"
+        );
       }
     }
 
@@ -827,4 +836,5 @@ export const TariffsList: TariffI[] = [
   ...copperTariffs,
   ...indiaTariffs,
   ...japanTariffs,
+  ...europeanUnionTariffs,
 ];

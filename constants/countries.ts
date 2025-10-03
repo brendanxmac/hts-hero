@@ -61,7 +61,7 @@ export const EuropeanUnionCountries = [
   "BE", // Belgium
   "BG", // Bulgaria
   "HR", // Croatia
-  "CY", // Republic
+  "CY", // Cyrpus
   "CZ", // Czechia
   "DK", // Denmark
   "EE", // Estonia
