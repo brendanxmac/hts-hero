@@ -132,10 +132,21 @@ export const addTariffsToCountries = (
   countries: Country[],
   htsElement: HtsElement,
   tariffElement: HtsElement,
-  contentRequirements: ContentRequirementI<ContentRequirements>[]
+  contentRequirements: ContentRequirementI<ContentRequirements>[],
+  tradeProgram?: TradeProgram,
+  units?: number,
+  customsValue?: number
 ) =>
   countries.map((country) =>
-    addTariffsToCountry(country, htsElement, tariffElement, contentRequirements)
+    addTariffsToCountry(
+      country,
+      htsElement,
+      tariffElement,
+      contentRequirements,
+      tradeProgram,
+      units,
+      customsValue
+    )
   );
 
 export const addTariffsToCountry = (
@@ -186,11 +197,17 @@ export const addTariffsToCountry = (
 
 export const getTotalPercentTariffsSum = (
   tariffSet: TariffSet,
-  baseTariffs: ParsedBaseTariff[]
+  baseTariffs: ParsedBaseTariff[],
+  has15PercentCap: boolean = false
 ) => {
-  return (
-    getAssociatedTariffsSum(tariffSet) + getBasePercentTariffsSum(baseTariffs)
-  );
+  if (has15PercentCap) {
+    // This works because there is an associated tariff that represents the 15%
+    return getAssociatedTariffsSum(tariffSet);
+  } else {
+    return (
+      getAssociatedTariffsSum(tariffSet) + getBasePercentTariffsSum(baseTariffs)
+    );
+  }
 };
 
 export const getAssociatedTariffsSum = (tariffSet: TariffSet) => {
@@ -203,6 +220,13 @@ export const getAssociatedTariffsSum = (tariffSet: TariffSet) => {
   return 0;
 };
 
+export const getBasePercentTariffsSum = (baseTariffs: ParsedBaseTariff[]) => {
+  // console.log("baseTariffs:");
+  // console.log(baseTariffs[0]);
+  const basePercentTariffs = getBasePercentTariffs(baseTariffs);
+  return basePercentTariffs.reduce((acc, t) => acc + t.value, 0);
+};
+
 export const getBasePercentTariffs = (baseTariffs: ParsedBaseTariff[]) => {
   return baseTariffs
     .flatMap((t) => t.tariffs)
@@ -212,13 +236,6 @@ export const getBasePercentTariffs = (baseTariffs: ParsedBaseTariff[]) => {
 export const getBasePercentTariffsText = (baseTariffs: ParsedBaseTariff[]) => {
   const basePercentTariffs = getBasePercentTariffs(baseTariffs);
   return basePercentTariffs.map((t) => t.raw);
-};
-
-export const getBasePercentTariffsSum = (baseTariffs: ParsedBaseTariff[]) => {
-  console.log("baseTariffs:");
-  console.log(baseTariffs);
-  const basePercentTariffs = getBasePercentTariffs(baseTariffs);
-  return basePercentTariffs.reduce((acc, t) => acc + t.value, 0);
 };
 
 export const getBaseAmountTariffs = (baseTariffs: ParsedBaseTariff[]) => {

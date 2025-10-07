@@ -17,7 +17,7 @@ interface Props {
   showCharacterCount?: boolean;
 }
 
-export default function TextInput({
+export default function TextAreaInput({
   label,
   placeholder,
   defaultValue,

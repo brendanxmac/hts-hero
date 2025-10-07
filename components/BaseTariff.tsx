@@ -9,9 +9,15 @@ interface Props {
   index: number;
   htsElement: HtsElement;
   tariff: BaseTariffI;
+  active: boolean;
 }
 
-export const BaseTariff = ({ index, htsElement, tariff }: Props) => {
+export const BaseTariff = ({
+  index,
+  htsElement,
+  tariff,
+  active = true,
+}: Props) => {
   const primaryText =
     tariff.value === null && tariff.details
       ? tariff.details
@@ -56,7 +62,10 @@ export const BaseTariff = ({ index, htsElement, tariff }: Props) => {
         ) : (
           <p
             className={classNames(
-              "shrink-0 min-w-32 text-right text-base text-white font-bold"
+              "shrink-0 min-w-32 text-right text-base",
+              active
+                ? "text-white font-bold"
+                : "line-through text-neutral-content"
             )}
           >
             {valueText}

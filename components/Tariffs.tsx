@@ -1,6 +1,10 @@
 import { useEffect, useState, useRef } from "react";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
-import { Countries, Country } from "../constants/countries";
+import {
+  Countries,
+  Country,
+  EuropeanUnionCountries,
+} from "../constants/countries";
 import { ContentRequirementI } from "./Element";
 import { HtsElement } from "../interfaces/hts";
 import { ContentRequirements } from "../enums/tariff";
@@ -11,6 +15,7 @@ import {
   CountryWithTariffs,
   addTariffsToCountries,
   getBaseAmountTariffsText,
+  get15PercentCountryTotalBaseRate,
 } from "../tariffs/tariffs";
 import { Color } from "../enums/style";
 import { TertiaryText } from "./TertiaryText";
@@ -22,6 +27,7 @@ import { TertiaryLabel } from "./TertiaryLabel";
 import { CountrySelection } from "./CountrySelection";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import { NumberInput } from "./NumberInput";
 
 interface Props {
   isPayingUser: boolean;
@@ -36,6 +42,18 @@ export const Tariffs = ({
   isPayingUser,
   isTariffImpactTrialUser,
 }: Props) => {
+  // UI states - update immediately for responsive feedback
+  const [uiUnits, setUiUnits] = useState<number>(1000);
+  const [uiCustomsValue, setUiCustomsValue] = useState<number>(10000);
+  // Calculation states - update after debounce for expensive operations
+  const [units, setUnits] = useState<number>(1000);
+  const [customsValue, setCustomsValue] = useState<number>(10000);
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+  const [selectedCountries, setSelectedCountries] = useState<Country[]>([]);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const unitsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const customsValueTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const codeBasedContentRequirements = Array.from(
     TariffsList.filter((t) =>
       tariffIsApplicableToCode(t, htsElement.htsno)
@@ -63,9 +81,6 @@ export const Tariffs = ({
         value: 80,
       }))
     );
-  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
-  const [selectedCountries, setSelectedCountries] = useState<Country[]>([]);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const toggleRow = (countryCode: string) => {
     const updatedRows = new Set(expandedRows);
@@ -101,6 +116,36 @@ export const Tariffs = ({
     }, 300);
   };
 
+  const handleUnitsChange = (value: number) => {
+    // Update UI immediately for responsive feedback
+    setUiUnits(value);
+
+    // Clear existing timeout for expensive calculation
+    if (unitsTimeoutRef.current) {
+      clearTimeout(unitsTimeoutRef.current);
+    }
+
+    // Debounce the expensive recalculation (300ms)
+    unitsTimeoutRef.current = setTimeout(() => {
+      setUnits(value);
+    }, 300);
+  };
+
+  const handleCustomsValueChange = (value: number) => {
+    // Update UI immediately for responsive feedback
+    setUiCustomsValue(value);
+
+    // Clear existing timeout for expensive calculation
+    if (customsValueTimeoutRef.current) {
+      clearTimeout(customsValueTimeoutRef.current);
+    }
+
+    // Debounce the expensive recalculation (300ms)
+    customsValueTimeoutRef.current = setTimeout(() => {
+      setCustomsValue(value);
+    }, 300);
+  };
+
   const [countries, setCountries] = useState<CountryWithTariffs[]>([]);
 
   enum TariffsTableSortOption {
@@ -114,18 +159,71 @@ export const Tariffs = ({
 
   const sortByRateAsc = () => {
     return [...countries].sort((a, b) => {
+      const aIs15CapCountry =
+        EuropeanUnionCountries.includes(a.code) || a.code === "JP";
+      const bIs15CapCountry =
+        EuropeanUnionCountries.includes(b.code) || b.code === "JP";
+      const adValoremEquivalentRateA = get15PercentCountryTotalBaseRate(
+        a.baseTariffs.flatMap((t) => t.tariffs),
+        customsValue,
+        units
+      );
+      const adValoremEquivalentRateB = get15PercentCountryTotalBaseRate(
+        b.baseTariffs.flatMap((t) => t.tariffs),
+        customsValue,
+        units
+      );
+      const a15PercentCapApplies =
+        aIs15CapCountry && adValoremEquivalentRateA < 15;
+      const b15PercentCapApplies =
+        bIs15CapCountry && adValoremEquivalentRateB < 15;
+
       return (
-        getTotalPercentTariffsSum(a.tariffSets[0], a.baseTariffs) -
-        getTotalPercentTariffsSum(b.tariffSets[0], b.baseTariffs)
+        getTotalPercentTariffsSum(
+          a.tariffSets[0],
+          a.baseTariffs,
+          a15PercentCapApplies
+        ) -
+        getTotalPercentTariffsSum(
+          b.tariffSets[0],
+          b.baseTariffs,
+          b15PercentCapApplies
+        )
       );
     });
   };
 
   const sortByRateDesc = () => {
     return [...countries].sort((a, b) => {
+      const aIs15CapCountry =
+        EuropeanUnionCountries.includes(a.code) || a.code === "JP";
+      const bIs15CapCountry =
+        EuropeanUnionCountries.includes(b.code) || b.code === "JP";
+      const adValoremEquivalentRateA = get15PercentCountryTotalBaseRate(
+        a.baseTariffs.flatMap((t) => t.tariffs),
+        customsValue,
+        units
+      );
+      const adValoremEquivalentRateB = get15PercentCountryTotalBaseRate(
+        b.baseTariffs.flatMap((t) => t.tariffs),
+        customsValue,
+        units
+      );
+      const a15PercentCapApplies =
+        aIs15CapCountry && adValoremEquivalentRateA < 15;
+      const b15PercentCapApplies =
+        bIs15CapCountry && adValoremEquivalentRateB < 15;
       return (
-        getTotalPercentTariffsSum(b.tariffSets[0], b.baseTariffs) -
-        getTotalPercentTariffsSum(a.tariffSets[0], a.baseTariffs)
+        getTotalPercentTariffsSum(
+          b.tariffSets[0],
+          b.baseTariffs,
+          b15PercentCapApplies
+        ) -
+        getTotalPercentTariffsSum(
+          a.tariffSets[0],
+          a.baseTariffs,
+          a15PercentCapApplies
+        )
       );
     });
   };
@@ -144,17 +242,21 @@ export const Tariffs = ({
     useState<CountryWithTariffs[]>(countries);
 
   useEffect(() => {
-    // Recalculate countries when content percentages change
+    // Recalculate countries when content percentage, units, or customsValue change
     const updatedCountries = addTariffsToCountries(
       Countries,
       htsElement,
       tariffElement,
-      codeBasedContentPercentages
+      codeBasedContentPercentages,
+      undefined,
+      units,
+      customsValue
     );
     setCountries(updatedCountries);
-  }, [codeBasedContentPercentages]);
+  }, [codeBasedContentPercentages, units, customsValue]);
 
   useEffect(() => {
+    console.log("HERERE", sortBy, selectedCountries.length, countries.length);
     if (sortBy) {
       setSortedCountries(
         sortCountries(sortBy).filter((country) =>
@@ -175,11 +277,17 @@ export const Tariffs = ({
     }
   }, [sortBy, selectedCountries, countries]);
 
-  // Cleanup timeout on unmount
+  // Cleanup timeouts on unmount
   useEffect(() => {
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
+      }
+      if (unitsTimeoutRef.current) {
+        clearTimeout(unitsTimeoutRef.current);
+      }
+      if (customsValueTimeoutRef.current) {
+        clearTimeout(customsValueTimeoutRef.current);
       }
     };
   }, []);
@@ -256,6 +364,33 @@ export const Tariffs = ({
           </div>
         )}
 
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <NumberInput
+            label="Amount / Units / Weight"
+            value={uiUnits}
+            setValue={handleUnitsChange}
+            min={0}
+            subtext={
+              htsElement.units.length > 0 || tariffElement.units.length > 0
+                ? `${[...htsElement.units, ...tariffElement.units]
+                    .reduce((acc, unit) => {
+                      if (!acc.includes(unit)) {
+                        acc.push(unit);
+                      }
+                      return acc;
+                    }, [])
+                    .join(",")}`
+                : ""
+            }
+          />
+          <NumberInput
+            label="Customs Value (USD)"
+            value={uiCustomsValue}
+            setValue={handleCustomsValueChange}
+            min={0}
+          />
+        </div>
+
         <div className="flex flex-col gap-2">
           <CountrySelection
             selectedCountries={selectedCountries}
@@ -309,13 +444,34 @@ export const Tariffs = ({
               <tbody>
                 {sortedCountries.map((country, i) => {
                   const isExpanded = expandedRows.has(country.code);
+                  const adValoremEquivalentRate =
+                    get15PercentCountryTotalBaseRate(
+                      country.baseTariffs.flatMap((t) => t.tariffs),
+                      customsValue,
+                      units
+                    );
+                  const is15PercentCapCountry =
+                    EuropeanUnionCountries.includes(country.code) ||
+                    country.code === "JP";
+
+                  const cappedBy15PercentRule =
+                    is15PercentCapCountry && adValoremEquivalentRate < 15;
+
+                  if (cappedBy15PercentRule) {
+                    console.log(country.name);
+                  }
+
                   const countryAmounts = getBaseAmountTariffsText(
                     country.baseTariffs
                   );
 
                   const countryPercentTariffsSums = country.tariffSets.map(
                     (tariffSet) =>
-                      getTotalPercentTariffsSum(tariffSet, country.baseTariffs)
+                      getTotalPercentTariffsSum(
+                        tariffSet,
+                        country.baseTariffs,
+                        cappedBy15PercentRule
+                      )
                   );
 
                   return (
@@ -367,8 +523,8 @@ export const Tariffs = ({
                                   className="flex gap-2 text-sm md:text-base"
                                 >
                                   <div className="flex gap-1">
-                                    {countryAmounts &&
-                                    countryAmounts.length > 0 ? (
+                                    {cappedBy15PercentRule ? null : countryAmounts &&
+                                      countryAmounts.length > 0 ? (
                                       <p className="text-white">
                                         {countryAmounts} +
                                       </p>
@@ -428,6 +584,8 @@ export const Tariffs = ({
                                 )}
                                 countries={countries}
                                 setCountries={setCountries}
+                                units={units}
+                                customsValue={customsValue}
                               />
                             </div>
                           </td>

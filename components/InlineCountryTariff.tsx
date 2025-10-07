@@ -18,8 +18,11 @@ import {
 } from "../tariffs/tariffs";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { TradePrograms } from "../public/trade-programs";
+import { NumberInput } from "./NumberInput";
 
 interface Props {
+  units: number;
+  customsValue: number;
   country: CountryWithTariffs;
   htsElement: HtsElement;
   tariffElement: HtsElement;
@@ -30,6 +33,8 @@ interface Props {
 }
 
 export const InlineCountryTariff = ({
+  units,
+  customsValue,
   country,
   htsElement,
   tariffElement,
@@ -38,11 +43,6 @@ export const InlineCountryTariff = ({
   countries,
   setCountries,
 }: Props) => {
-  const [units, setUnits] = useState<number>(1000);
-  const [customsValue, setCustomsValue] = useState<number>(10000);
-  const is15PercentCapCountry =
-    EuropeanUnionCountries.includes(country.code) || country.code === "JP";
-
   const [tariffColumn, setTariffColumn] = useState<TariffColumn>(
     Column2CountryCodes.includes(country.code)
       ? TariffColumn.OTHER
@@ -66,6 +66,15 @@ export const InlineCountryTariff = ({
   );
   const specialProgramDropdownRef = useRef<HTMLDivElement>(null);
   const isOtherColumnCountry = Column2CountryCodes.includes(country.code);
+  const is15PercentCapCountry =
+    EuropeanUnionCountries.includes(country.code) || country.code === "JP";
+  const adValoremEquivalentRate = get15PercentCountryTotalBaseRate(
+    country.baseTariffs.flatMap((t) => t.tariffs),
+    customsValue,
+    units
+  );
+  const below15PercentRuleApplies =
+    is15PercentCapCountry && adValoremEquivalentRate < 15;
 
   useEffect(() => {
     const updatedCountries = [...countries];
@@ -259,114 +268,6 @@ export const InlineCountryTariff = ({
         </div>
       </div>
 
-      {is15PercentCapCountry &&
-        baseTariffs
-          .flatMap((t) => t.tariffs)
-          .some((t) => t.type === "amount") && (
-          <div className="flex flex-wrap gap-2">
-            {baseTariffs &&
-              baseTariffs.flatMap((t) => t.tariffs).length > 0 &&
-              (htsElement.units.length > 0 || tariffElement.units.length > 0) &&
-              baseTariffs
-                .flatMap((t) => t.tariffs)
-                .some((t) => t.type === "amount") && (
-                <div>
-                  <label className="label">Units / Weight / Amount</label>
-                  <input
-                    type="number"
-                    min={0}
-                    className="input input-bordered w-full max-w-xs"
-                    value={units}
-                    onChange={(e) => {
-                      setUnits(Number(e.target.value));
-                    }}
-                  />
-                  <sup className="ml-3">
-                    {htsElement.units.length > 0 ||
-                    tariffElement.units.length > 0
-                      ? `${[...htsElement.units, ...tariffElement.units]
-                          .reduce((acc, unit) => {
-                            if (!acc.includes(unit)) {
-                              acc.push(unit);
-                            }
-                            return acc;
-                          }, [])
-                          .join(",")}`
-                      : ""}
-                  </sup>
-                </div>
-              )}
-            <div>
-              <label className="label">
-                <span className="label-text">Customs Value (USD)</span>
-              </label>
-              <input
-                type="number"
-                min={0}
-                className="input input-bordered w-full max-w-xs"
-                value={customsValue}
-                onChange={(e) => {
-                  setCustomsValue(Number(e.target.value));
-                }}
-              />
-            </div>
-            <div className="ml-4 flex flex-col">
-              <label className="label label-text">
-                General Ad Valorem Equivalent Rate
-              </label>
-
-              <h2 className="text-primary font-bold text-2xl">
-                {`${get15PercentCountryTotalBaseRate(
-                  baseTariffs.flatMap((t) => t.tariffs),
-                  customsValue,
-                  units
-                ).toFixed(3)}%`}
-              </h2>
-            </div>
-            <div className="flex flex-col items-end">
-              {baseTariffs
-                .flatMap((t) => t.tariffs)
-                .filter((t) => t.type === "amount").length > 0 && (
-                <div>
-                  {getAmountRates(baseTariffs.flatMap((t) => t.tariffs)).map(
-                    (t) => (
-                      <div key={`${t}-${units}-${customsValue}`}>
-                        <p>{`${t} * ${units || 1} / ${customsValue} * 100 = ${(
-                          ((t * (units || 1)) / customsValue) *
-                          100
-                        ).toFixed(4)}%`}</p>
-                      </div>
-                    )
-                  )}
-                </div>
-              )}
-              {baseTariffs
-                .flatMap((t) => t.tariffs)
-                .filter((t) => t.type === "percent")
-                .map((t) => (
-                  <div
-                    key={`${t.raw}-${units}-${customsValue}`}
-                    className="flex w-full justify-between"
-                  >
-                    <p>+</p>
-                    <p>{t.value}%</p>
-                  </div>
-                ))}
-              <div className="w-full border-t border-base-content/50 my-2" />
-              <div className="flex w-full justify-end">
-                <p>
-                  {get15PercentCountryTotalBaseRate(
-                    baseTariffs.flatMap((t) => t.tariffs),
-                    customsValue,
-                    units
-                  ).toFixed(3)}
-                  %
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
       {/* Tariff Sets */}
       <div className={"w-full flex flex-col gap-4"}>
         {tariffSets.map((tariffSet, i) => (
@@ -394,6 +295,7 @@ export const InlineCountryTariff = ({
                       index={i}
                       htsElement={tariffElement}
                       tariff={t}
+                      active={!below15PercentRuleApplies}
                     />
                   ))}
               {tariffSet.tariffs

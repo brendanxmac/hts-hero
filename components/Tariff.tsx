@@ -45,18 +45,18 @@ export const Tariff = ({
   renderedCodes.add(tariff.code);
 
   const toggleTariff = (tariff: UITariff) => {
-    const set = tariffSets[setIndex];
+    const tariffSet = tariffSets[setIndex];
     const toggledValue = !tariff.isActive;
 
-    for (const t of set.tariffs) {
+    for (const t of tariffSet.tariffs) {
       if (t.code === tariff.code) {
         t.isActive = toggledValue;
         continue;
       }
 
       if (
-        isAncestorTariff(t, tariff, set.tariffs) ||
-        isDescendantTariff(t, tariff, set.tariffs)
+        isAncestorTariff(t, tariff, tariffSet.tariffs) ||
+        isDescendantTariff(t, tariff, tariffSet.tariffs)
       ) {
         if (toggledValue) {
           // TODO: I think this is missing additionalDuties?
@@ -75,14 +75,14 @@ export const Tariff = ({
             continue;
           }
         } else if (!t.requiresReview) {
-          t.isActive = tariffIsActive(t, set.tariffs);
+          t.isActive = tariffIsActive(t, tariffSet.tariffs);
         }
       }
     }
 
     // call setTariffSets and update the given set within it while keeping all other sets the same
     const updatedTariffSets = [...tariffSets];
-    updatedTariffSets[setIndex] = set;
+    updatedTariffSets[setIndex] = tariffSet;
 
     const updatedCountries = [...countries];
     updatedCountries[countryIndex] = {
