@@ -256,7 +256,6 @@ export const Tariffs = ({
   }, [codeBasedContentPercentages, units, customsValue]);
 
   useEffect(() => {
-    console.log("HERERE", sortBy, selectedCountries.length, countries.length);
     if (sortBy) {
       setSortedCountries(
         sortCountries(sortBy).filter((country) =>
@@ -446,7 +445,19 @@ export const Tariffs = ({
                   const isExpanded = expandedRows.has(country.code);
                   const adValoremEquivalentRate =
                     get15PercentCountryTotalBaseRate(
-                      country.baseTariffs.flatMap((t) => t.tariffs),
+                      country.baseTariffs
+                        .flatMap((t) => t.tariffs)
+                        .filter((t) => {
+                          if (
+                            country.selectedTradeProgram &&
+                            country.selectedTradeProgram.symbol !== "none"
+                          ) {
+                            return t.programs?.includes(
+                              country.selectedTradeProgram.symbol
+                            );
+                          }
+                          return true;
+                        }),
                       customsValue,
                       units
                     );
@@ -457,19 +468,28 @@ export const Tariffs = ({
                   const cappedBy15PercentRule =
                     is15PercentCapCountry && adValoremEquivalentRate < 15;
 
-                  if (cappedBy15PercentRule) {
-                    console.log(country.name);
-                  }
+                  const countryBaseTariffs = country.baseTariffs.filter((t) => {
+                    if (
+                      country.selectedTradeProgram &&
+                      country.selectedTradeProgram.symbol !== "none"
+                    ) {
+                      return t.tariffs.some((t) =>
+                        t.programs?.includes(
+                          country.selectedTradeProgram.symbol
+                        )
+                      );
+                    }
+                    return true;
+                  });
 
-                  const countryAmounts = getBaseAmountTariffsText(
-                    country.baseTariffs
-                  );
+                  const countryAmounts =
+                    getBaseAmountTariffsText(countryBaseTariffs);
 
                   const countryPercentTariffsSums = country.tariffSets.map(
                     (tariffSet) =>
                       getTotalPercentTariffsSum(
                         tariffSet,
-                        country.baseTariffs,
+                        countryBaseTariffs,
                         cappedBy15PercentRule
                       )
                   );
@@ -566,7 +586,7 @@ export const Tariffs = ({
                             animation: "slideDown 0.3s ease-in-out",
                           }}
                         >
-                          <td colSpan={4} className="p-4 pl-16">
+                          <td colSpan={4} className="p-4">
                             <div
                               className="transition-all duration-300 ease-in-out"
                               style={{

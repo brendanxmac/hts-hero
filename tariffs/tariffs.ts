@@ -156,7 +156,8 @@ export const addTariffsToCountry = (
   contentRequirements: ContentRequirementI<ContentRequirements>[],
   tradeProgram?: TradeProgram,
   units?: number,
-  customsValue?: number
+  customsValue?: number,
+  existingTariffSets?: TariffSet[]
 ): CountryWithTariffs => {
   const isColumn2Country = Column2CountryCodes.includes(country.code);
   const tariffColumn =
@@ -182,7 +183,13 @@ export const addTariffsToCountry = (
     ),
   }));
 
-  const tariffSets = getTariffSets(applicableTariffs, contentRequirements);
+  const tariffSets = getTariffSets(
+    applicableTariffs,
+    contentRequirements,
+    existingTariffSets
+  );
+
+  console.log;
 
   const specialTradePrograms = getSpecialTradePrograms(country, tariffElement);
 
@@ -201,7 +208,7 @@ export const getTotalPercentTariffsSum = (
   has15PercentCap: boolean = false
 ) => {
   if (has15PercentCap) {
-    // This works because there is an associated tariff that represents the 15%
+    // This works because there is an associated tariff that represents the 15% so we just don't add the base
     return getAssociatedTariffsSum(tariffSet);
   } else {
     return (
@@ -364,7 +371,8 @@ export const getSpecialTradePrograms = (
 
 export const getTariffSets = (
   tariffs: TariffI[],
-  contentRequirements: ContentRequirementI<ContentRequirements>[]
+  contentRequirements: ContentRequirementI<ContentRequirements>[],
+  existingTariffSets?: TariffSet[]
 ): TariffSet[] => {
   const contentRequirementAt100 = contentRequirements.find(
     (r) => r.value === 100
@@ -374,14 +382,24 @@ export const getTariffSets = (
   );
 
   if (contentRequirementAt100) {
-    return getContentRequirementTariffSets(tariffs, [contentRequirementAt100]);
+    return getContentRequirementTariffSets(
+      tariffs,
+      [contentRequirementAt100],
+      existingTariffSets
+    );
   } else {
     const contentRequirementSets = getContentRequirementTariffSets(
       tariffs,
-      contentRequirementsNotAt0
+      contentRequirementsNotAt0,
+      existingTariffSets
     );
     return [
-      getArticleTariffSet(tariffs, Section232MetalTariffs, contentRequirements),
+      getArticleTariffSet(
+        tariffs,
+        Section232MetalTariffs,
+        contentRequirements,
+        existingTariffSets
+      ),
       ...contentRequirementSets,
     ];
   }
@@ -390,7 +408,8 @@ export const getTariffSets = (
 export const getArticleTariffSet = (
   tariffs: TariffI[],
   ignoreCodes: string[] = [],
-  contentRequirements: ContentRequirementI<ContentRequirements>[]
+  contentRequirements: ContentRequirementI<ContentRequirements>[],
+  existingTariffSets?: TariffSet[]
 ): TariffSet => {
   const contentRequirementCodes = new Set<string>();
   const contentRequirementTariffs = tariffs.filter((t) => t.contentRequirement);
@@ -418,10 +437,19 @@ export const getArticleTariffSet = (
 
   // Set isActive here now that we have the full picture
   const regularSetWithIsActive = regularSetWithoutContentRequirementTariffs.map(
-    (t) => ({
-      ...t,
-      isActive: tariffIsActive(t, regularSetWithoutContentRequirementTariffs),
-    })
+    (t) => {
+      // Try to preserve existing isActive state from the first existing tariff set (Article set)
+      const existingTariff = existingTariffSets?.[0]?.tariffs?.find(
+        (existing) => existing.code === t.code
+      );
+
+      return {
+        ...t,
+        isActive:
+          existingTariff?.isActive ??
+          tariffIsActive(t, regularSetWithoutContentRequirementTariffs),
+      };
+    }
   );
 
   return {
@@ -433,11 +461,13 @@ export const getArticleTariffSet = (
 
 export const getContentRequirementTariffSets = (
   tariffs: TariffI[],
-  contentRequirements: ContentRequirementI<ContentRequirements>[]
+  contentRequirements: ContentRequirementI<ContentRequirements>[],
+  existingTariffSets?: TariffSet[]
 ): TariffSet[] => {
   const sets: TariffSet[] = [];
 
-  for (const contentRequirement of contentRequirements) {
+  for (let i = 0; i < contentRequirements.length; i++) {
+    const contentRequirement = contentRequirements[i];
     const exceptionCodes = new Set<string>();
     let tariffSet = tariffs.filter(
       (t) =>
@@ -455,7 +485,8 @@ export const getContentRequirementTariffSets = (
       collectExceptionCodes(t, tariffs, exceptionCodes);
     });
 
-    const tariffSetWithIsActive = tariffSet.map((t) => ({
+    // Initially set tariffs without isActive - we'll set it outside the loop
+    const tariffSetWithoutIsActive = tariffSet.map((t) => ({
       ...t,
       isActive: tariffIsActive(t, tariffs),
     }));
@@ -463,8 +494,26 @@ export const getContentRequirementTariffSets = (
     sets.push({
       name: `${contentRequirement.name} Content`,
       exceptionCodes,
-      tariffs: tariffSetWithIsActive,
+      tariffs: tariffSetWithoutIsActive,
     });
+  }
+
+  // Now apply existing isActive states outside the loop
+  if (existingTariffSets) {
+    for (let i = 0; i < sets.length; i++) {
+      const existingTariffSet = existingTariffSets[i + 1]; // Content requirement sets start at index 1
+      if (existingTariffSet) {
+        sets[i].tariffs = sets[i].tariffs.map((t) => {
+          const existingTariff = existingTariffSet.tariffs?.find(
+            (existing) => existing.code === t.code
+          );
+          return {
+            ...t,
+            isActive: existingTariff?.isActive ?? t.isActive,
+          };
+        });
+      }
+    }
   }
 
   return sets;
@@ -532,18 +581,11 @@ export const getAmountRatesString = (baseTariffs: BaseTariffI[]) => {
 export const getBaseTariffsForColumn = (
   htsElement: HtsElement,
   column: TariffColumn
-  // TODO: I think we need to pass country here
-  // in the case that column is special and countries are specified
-  // so that we can ONLY apply them if applicable to that country
 ) => {
   const tariffString = getTariffForColumn(column, htsElement);
   // only needed if string has countries specified, which USITC writes within parenthesis ()
   // if not parenthesis then the function just returns the tariff as an element in array
   const tariffParts = splitOnClosingParen(tariffString);
-
-  // if (column === TariffColumn.SPECIAL) {
-  //   console.log(tariffParts);
-  // }
 
   return tariffParts.map((part) => getBaseTariffs(part));
 };

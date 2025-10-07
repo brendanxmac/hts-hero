@@ -4,6 +4,7 @@ import { classNames } from "../utilities/style";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { SpecialPrograms } from "./SpecialPrograms";
 import { TertiaryText } from "./TertiaryText";
+import { Color } from "../enums/style";
 
 interface Props {
   index: number;
@@ -58,7 +59,7 @@ export const BaseTariff = ({
           </div>
         </div>
         {reviewText ? (
-          <TertiaryLabel value={reviewText} />
+          <TertiaryLabel value={reviewText} color={Color.WHITE} />
         ) : (
           <p
             className={classNames(
