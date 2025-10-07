@@ -363,32 +363,39 @@ export const Tariffs = ({
           </div>
         )}
 
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <NumberInput
-            label="Amount / Units / Weight"
-            value={uiUnits}
-            setValue={handleUnitsChange}
-            min={0}
-            subtext={
-              htsElement.units.length > 0 || tariffElement.units.length > 0
-                ? `${[...htsElement.units, ...tariffElement.units]
-                    .reduce((acc, unit) => {
-                      if (!acc.includes(unit)) {
-                        acc.push(unit);
-                      }
-                      return acc;
-                    }, [])
-                    .join(",")}`
-                : ""
-            }
-          />
-          <NumberInput
-            label="Customs Value (USD)"
-            value={uiCustomsValue}
-            setValue={handleCustomsValueChange}
-            min={0}
-          />
-        </div>
+        {sortedCountries.some(
+          (c) =>
+            c.baseTariffs
+              .flatMap((t) => t.tariffs)
+              .filter((t) => t.type === "amount").length > 0
+        ) && (
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <NumberInput
+              label="Amount / Units / Weight"
+              value={uiUnits}
+              setValue={handleUnitsChange}
+              min={0}
+              subtext={
+                htsElement.units.length > 0 || tariffElement.units.length > 0
+                  ? `${[...htsElement.units, ...tariffElement.units]
+                      .reduce((acc, unit) => {
+                        if (!acc.includes(unit)) {
+                          acc.push(unit);
+                        }
+                        return acc;
+                      }, [])
+                      .join(",")}`
+                  : ""
+              }
+            />
+            <NumberInput
+              label="Customs Value (USD)"
+              value={uiCustomsValue}
+              setValue={handleCustomsValueChange}
+              min={0}
+            />
+          </div>
+        )}
 
         <div className="flex flex-col gap-2">
           <CountrySelection
