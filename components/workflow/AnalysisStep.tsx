@@ -3,7 +3,7 @@ import { WorkflowStep } from "../../enums/hts";
 import { Color } from "../../enums/style";
 import { PrimaryLabel } from "../PrimaryLabel";
 import { TertiaryText } from "../TertiaryText";
-import TextInput from "../TextInput";
+import TextAreaInput from "../TextAreaInput";
 import { useEffect, useState } from "react";
 import { StepNavigation } from "./StepNavigation";
 
@@ -36,7 +36,7 @@ export const AnalysisStep = ({
             color={Color.WHITE}
           />
         </div>
-        <TextInput
+        <TextAreaInput
           placeholder="Enter item description"
           defaultValue={analysis}
           onSubmit={(value) => {

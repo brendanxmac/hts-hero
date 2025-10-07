@@ -19,6 +19,16 @@ export const ironAndSteelTariffs: TariffI[] = [
     exceptions: [
       // Auto Parts
       "9903.94.05",
+      // Japan Vehicles & Light Trucks
+      "9903.94.40",
+      "9903.94.41",
+      // Japan Auto Parts
+      "9903.94.42",
+      "9903.94.43",
+      // Japan Civil Aircraft
+      "9903.96.02",
+      // EU Civil Aircraft
+      "9903.02.76",
     ],
     exclusions: {
       // 16(j)
@@ -46,7 +56,7 @@ export const ironAndSteelTariffs: TariffI[] = [
         "7301.10.00",
         "7302.10",
         "7302.40.00",
-        "7302.90.00",
+        "7302.90",
         "7304",
         "7306",
         "7305",
@@ -78,6 +88,16 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.81.92",
       // Auto Parts
       "9903.94.05",
+      // Japan Vehicles & Light Trucks
+      "9903.94.40",
+      "9903.94.41",
+      // Japan Auto Parts
+      "9903.94.42",
+      "9903.94.43",
+      // Japan Civil Aircraft
+      "9903.96.02",
+      // EU Civil Aircraft
+      "9903.02.76",
     ],
     exclusions: {
       countries: ["GB"],
@@ -266,6 +286,12 @@ export const ironAndSteelTariffs: TariffI[] = [
     exceptions: [
       // Auto Parts
       "9903.94.05",
+      // Japan Vehicles & Light Trucks
+      "9903.94.40",
+      "9903.94.41",
+      // Japan Auto Parts
+      "9903.94.42",
+      "9903.94.43",
     ],
     exclusions: {
       codes: ["7216.61.00", "7216.69.00", "7216.91.00"],
@@ -323,6 +349,12 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.81.92",
       // Auto Parts
       "9903.94.05",
+      // Japan Vehicles & Light Trucks
+      "9903.94.40",
+      "9903.94.41",
+      // Japan Auto Parts
+      "9903.94.42",
+      "9903.94.43",
     ],
     inclusions: {
       countries: ["GB"],
@@ -511,10 +543,20 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.81.88",
       // Auto Parts
       "9903.94.05",
+      // Japan Vehicles & Light Trucks
+      "9903.94.40",
+      "9903.94.41",
+      // Japan Auto Parts
+      "9903.94.42",
+      "9903.94.43",
+      // Japan Civil Aircraft
+      "9903.96.02",
+      // EU Civil Aircraft
+      "9903.02.76",
     ],
     exclusions: {
-      // 16(j)
       countries: ["GB"],
+      // 16(j)
       codes: ["7216.61.00", "7216.69.00", "7216.91.00"],
     },
     inclusions: {
@@ -567,6 +609,16 @@ export const ironAndSteelTariffs: TariffI[] = [
       // TODO: should this be here? "9903.81.92",
       // Auto Parts
       "9903.94.05",
+      // Japan Vehicles & Light Trucks
+      "9903.94.40",
+      "9903.94.41",
+      // Japan Auto Parts
+      "9903.94.42",
+      "9903.94.43",
+      // Japan Civil Aircraft
+      "9903.96.02",
+      // EU Civil Aircraft
+      "9903.02.76",
     ],
     exclusions: {
       countries: ["GB"],
@@ -599,6 +651,16 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.81.92",
       // Auto Parts
       "9903.94.05",
+      // Japan Vehicles & Light Trucks
+      "9903.94.40",
+      "9903.94.41",
+      // Japan Auto Parts
+      "9903.94.42",
+      "9903.94.43",
+      // Japan Civil Aircraft
+      "9903.96.02",
+      // EU Civil Aircraft
+      "9903.02.76",
     ],
     exclusions: {
       countries: ["GB"],
@@ -781,6 +843,16 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.81.92",
       // Auto Parts
       "9903.94.05",
+      // Japan Vehicles & Light Trucks
+      "9903.94.40",
+      "9903.94.41",
+      // Japan Auto Parts
+      "9903.94.42",
+      "9903.94.43",
+      // Japan Civil Aircraft
+      "9903.96.02",
+      // EU Civil Aircraft
+      "9903.02.76",
     ],
     exclusions: {
       countries: ["GB"],
@@ -1596,6 +1668,12 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.96.01",
       // Auto Parts
       "9903.94.05",
+      // Japan Vehicles & Light Trucks
+      "9903.94.40",
+      "9903.94.41",
+      // Japan Auto Parts
+      "9903.94.42",
+      "9903.94.43",
     ],
     inclusions: {
       countries: ["GB"],
@@ -1778,6 +1856,12 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.96.01",
       // Auto Parts
       "9903.94.05",
+      // Japan Vehicles & Light Trucks
+      "9903.94.40",
+      "9903.94.41",
+      // Japan Auto Parts
+      "9903.94.42",
+      "9903.94.43",
     ],
     inclusions: {
       countries: ["GB"],
@@ -2218,6 +2302,12 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.96.01",
       // Auto Parts
       "9903.94.05",
+      // Japan Vehicles & Light Trucks
+      "9903.94.40",
+      "9903.94.41",
+      // Japan Auto Parts
+      "9903.94.42",
+      "9903.94.43",
     ],
     exclusions: {
       codes: ["7216.61.00", "7216.69.00", "7216.91.00"],
@@ -2274,6 +2364,12 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.96.01",
       // Auto Parts
       "9903.94.05",
+      // Japan Vehicles & Light Trucks
+      "9903.94.40",
+      "9903.94.41",
+      // Japan Auto Parts
+      "9903.94.42",
+      "9903.94.43",
     ],
     inclusions: {
       countries: ["GB"],

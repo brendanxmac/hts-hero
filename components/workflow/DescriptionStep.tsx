@@ -2,7 +2,7 @@ import { useClassification } from "../../contexts/ClassificationContext";
 import { WorkflowStep } from "../../enums/hts";
 import { Color } from "../../enums/style";
 import { TertiaryText } from "../TertiaryText";
-import TextInput from "../TextInput";
+import TextAreaInput from "../TextAreaInput";
 import { useEffect, useState } from "react";
 import { TertiaryLabel } from "../TertiaryLabel";
 import { SecondaryLabel } from "../SecondaryLabel";
@@ -66,7 +66,7 @@ export const DescriptionStep = ({
             Enter a detailed description of your item
           </h2>
         </div>
-        <TextInput
+        <TextAreaInput
           placeholder="e.g. Men's 100% cotton denim jeans, dyed blue & pre-washed for an athletic figure"
           defaultValue={classification?.articleDescription || ""}
           onChange={(value) => {

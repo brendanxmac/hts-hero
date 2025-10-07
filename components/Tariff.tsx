@@ -10,6 +10,7 @@ import { classNames } from "../utilities/style";
 import { TariffColumn } from "../enums/tariff";
 import Link from "next/link";
 import { TertiaryLabel } from "./TertiaryLabel";
+import { Color } from "../enums/style";
 
 interface Props {
   showInactive: boolean;
@@ -45,18 +46,18 @@ export const Tariff = ({
   renderedCodes.add(tariff.code);
 
   const toggleTariff = (tariff: UITariff) => {
-    const set = tariffSets[setIndex];
+    const tariffSet = tariffSets[setIndex];
     const toggledValue = !tariff.isActive;
 
-    for (const t of set.tariffs) {
+    for (const t of tariffSet.tariffs) {
       if (t.code === tariff.code) {
         t.isActive = toggledValue;
         continue;
       }
 
       if (
-        isAncestorTariff(t, tariff, set.tariffs) ||
-        isDescendantTariff(t, tariff, set.tariffs)
+        isAncestorTariff(t, tariff, tariffSet.tariffs) ||
+        isDescendantTariff(t, tariff, tariffSet.tariffs)
       ) {
         if (toggledValue) {
           // TODO: I think this is missing additionalDuties?
@@ -75,14 +76,14 @@ export const Tariff = ({
             continue;
           }
         } else if (!t.requiresReview) {
-          t.isActive = tariffIsActive(t, set.tariffs);
+          t.isActive = tariffIsActive(t, tariffSet.tariffs);
         }
       }
     }
 
     // call setTariffSets and update the given set within it while keeping all other sets the same
     const updatedTariffSets = [...tariffSets];
-    updatedTariffSets[setIndex] = set;
+    updatedTariffSets[setIndex] = tariffSet;
 
     const updatedCountries = [...countries];
     updatedCountries[countryIndex] = {
@@ -95,16 +96,16 @@ export const Tariff = ({
   };
 
   // Map exception levels to Tailwind margin classes
-  const marginClasses: Record<number, string> = {
-    0: "",
-    1: "ml-6",
-    2: "ml-12",
-    3: "ml-18",
-    4: "ml-24",
-    5: "ml-30",
-  };
+  // const marginClasses: Record<number, string> = {
+  //   0: "",
+  //   1: "ml-6",
+  //   2: "ml-12",
+  //   3: "ml-18",
+  //   4: "ml-24",
+  //   5: "ml-30",
+  // };
 
-  const marginClass = marginClasses[exceptionLevel] || "";
+  // const marginClass = marginClasses[exceptionLevel] || "";
   const exceptions = getTariffsByCode(tariff.exceptions || []);
   const exceptionsThatDontNeedReview = exceptions.filter(
     (e) => !e.requiresReview
@@ -125,8 +126,8 @@ export const Tariff = ({
       <div
         key={`${tariff.code}-${exceptionLevel}`}
         className={classNames(
-          "text-white flex gap-2 justify-between items-end border-b border-base-content/20",
-          marginClass
+          "text-white flex gap-2 justify-between items-end border-b border-base-content/20"
+          // !tariff.isActive && !showInactive && "hidden"
         )}
       >
         <div className="flex gap-2 items-center">
@@ -155,7 +156,10 @@ export const Tariff = ({
                 {tariff.code}
               </Link>
               -
-              <TertiaryLabel value={tariff.name} />
+              <TertiaryLabel
+                value={tariff.name}
+                color={tariff.isActive ? Color.WHITE : Color.NEUTRAL_CONTENT}
+              />
             </div>
           </div>
         </div>
@@ -173,29 +177,26 @@ export const Tariff = ({
         </p>
       </div>
 
-      {tariff.exceptions?.length > 0 &&
+      {/* {tariff.exceptions?.length > 0 &&
         tariff.exceptions
           .map((e) => tariffSets[setIndex].tariffs.find((t) => t.code === e))
           .filter(Boolean)
-          .map(
-            (exceptionTariff) =>
-              (exceptionTariff.isActive || showInactive) && (
-                <Tariff
-                  key={exceptionTariff.code}
-                  exceptionLevel={exceptionLevel + 1}
-                  setIndex={setIndex}
-                  showInactive={showInactive}
-                  tariff={exceptionTariff}
-                  tariffSets={tariffSets}
-                  // setTariffSets={setTariffSets}
-                  renderedCodes={renderedCodes}
-                  column={column}
-                  countryIndex={countryIndex}
-                  countries={countries}
-                  setCountries={setCountries}
-                />
-              )
-          )}
+          .map((exceptionTariff) => (
+            <Tariff
+              key={exceptionTariff.code}
+              exceptionLevel={exceptionLevel + 1}
+              setIndex={setIndex}
+              showInactive={showInactive}
+              tariff={exceptionTariff}
+              tariffSets={tariffSets}
+              // setTariffSets={setTariffSets}
+              renderedCodes={renderedCodes}
+              column={column}
+              countryIndex={countryIndex}
+              countries={countries}
+              setCountries={setCountries}
+            />
+          ))} */}
     </div>
   );
 };

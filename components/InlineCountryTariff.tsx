@@ -6,11 +6,9 @@ import { HtsElement } from "../interfaces/hts";
 import { BaseTariff } from "./BaseTariff";
 import { ContentRequirements, TariffColumn } from "../enums/tariff";
 import { PrimaryLabel } from "./PrimaryLabel";
-import { Color } from "../enums/style";
 import { Column2CountryCodes } from "../tariffs/tariff-columns";
 import {
-  getEUCountryTotalBaseRate,
-  getAmountRates,
+  get15PercentCountryTotalBaseRate,
   getAmountRatesString,
   getAdValoremRate,
   CountryWithTariffs,
@@ -20,6 +18,8 @@ import { TertiaryLabel } from "./TertiaryLabel";
 import { TradePrograms } from "../public/trade-programs";
 
 interface Props {
+  units: number;
+  customsValue: number;
   country: CountryWithTariffs;
   htsElement: HtsElement;
   tariffElement: HtsElement;
@@ -30,6 +30,8 @@ interface Props {
 }
 
 export const InlineCountryTariff = ({
+  units,
+  customsValue,
   country,
   htsElement,
   tariffElement,
@@ -38,10 +40,6 @@ export const InlineCountryTariff = ({
   countries,
   setCountries,
 }: Props) => {
-  const [units, setUnits] = useState<number>(1);
-  const [customsValue, setCustomsValue] = useState<number>(1000);
-  const isEUCountry = EuropeanUnionCountries.includes(country.code);
-
   const [tariffColumn, setTariffColumn] = useState<TariffColumn>(
     Column2CountryCodes.includes(country.code)
       ? TariffColumn.OTHER
@@ -65,20 +63,15 @@ export const InlineCountryTariff = ({
   );
   const specialProgramDropdownRef = useRef<HTMLDivElement>(null);
   const isOtherColumnCountry = Column2CountryCodes.includes(country.code);
-
-  useEffect(() => {
-    const updatedCountries = [...countries];
-    updatedCountries[countryIndex] = addTariffsToCountry(
-      country,
-      htsElement,
-      tariffElement,
-      contentRequirements,
-      selectedTradeProgram,
-      units,
-      customsValue
-    );
-    setCountries(updatedCountries);
-  }, [units, customsValue]);
+  const is15PercentCapCountry =
+    EuropeanUnionCountries.includes(country.code) || country.code === "JP";
+  const adValoremEquivalentRate = get15PercentCountryTotalBaseRate(
+    country.baseTariffs.flatMap((t) => t.tariffs),
+    customsValue,
+    units
+  );
+  const below15PercentRuleApplies =
+    is15PercentCapCountry && adValoremEquivalentRate < 15;
 
   const getTariffColumn = () => {
     if (selectedSpecialProgram && selectedSpecialProgram.symbol === "none") {
@@ -104,7 +97,8 @@ export const InlineCountryTariff = ({
       contentRequirements,
       tradeProgram,
       units,
-      customsValue
+      customsValue,
+      country.tariffSets // Pass existing tariff sets to preserve isActive states
     );
     setCountries(updatedCountries);
 
@@ -258,132 +252,11 @@ export const InlineCountryTariff = ({
         </div>
       </div>
 
-      {isEUCountry &&
-        baseTariffs
-          .flatMap((t) => t.tariffs)
-          .some((t) => t.type === "amount") && (
-          <div className="flex flex-wrap gap-2">
-            {baseTariffs &&
-              baseTariffs.flatMap((t) => t.tariffs).length > 0 &&
-              (htsElement.units.length > 0 || tariffElement.units.length > 0) &&
-              baseTariffs
-                .flatMap((t) => t.tariffs)
-                .some((t) => t.type === "amount") && (
-                <div>
-                  <label className="label">
-                    <span className="label-text">
-                      {htsElement.units.length > 0 ||
-                      tariffElement.units.length > 0
-                        ? `${[...htsElement.units, ...tariffElement.units]
-                            .reduce((acc, unit) => {
-                              if (!acc.includes(unit)) {
-                                acc.push(unit);
-                              }
-                              return acc;
-                            }, [])
-                            .join(",")}`
-                        : ""}
-                    </span>
-                  </label>
-                  <input
-                    type="number"
-                    min={0}
-                    className="input input-bordered w-full max-w-xs"
-                    value={units}
-                    onChange={(e) => {
-                      setUnits(Number(e.target.value));
-                    }}
-                  />
-                </div>
-              )}
-            <div>
-              <label className="label">
-                <span className="label-text">Customs Value (USD)</span>
-              </label>
-              <input
-                type="number"
-                min={0}
-                className="input input-bordered w-full max-w-xs"
-                value={customsValue}
-                onChange={(e) => {
-                  setCustomsValue(Number(e.target.value));
-                }}
-              />
-            </div>
-            <div className="flex flex-col">
-              <label className="label">
-                <span className="label-text">
-                  General Ad Valorem Equivalent Rate
-                </span>
-              </label>
-              <div className="flex flex-col">
-                <PrimaryLabel
-                  value={`${getEUCountryTotalBaseRate(
-                    baseTariffs.flatMap((t) => t.tariffs),
-                    customsValue,
-                    units
-                  ).toFixed(3)}
-              %`}
-                  color={Color.PRIMARY}
-                />
-                <p>
-                  <sup>
-                    &ge; 15% means reciprocal tariff exclusion for EU countries
-                  </sup>
-                </p>
-                {/* <TertiaryText value="Used for EU countries to see if general ad valorem equivalent rate exceeds 15% for reciprocal tariff determination" /> */}
-              </div>
-            </div>
-            <div className="flex flex-col items-end">
-              {baseTariffs
-                .flatMap((t) => t.tariffs)
-                .filter((t) => t.type === "amount").length > 0 && (
-                <div>
-                  {getAmountRates(baseTariffs.flatMap((t) => t.tariffs)).map(
-                    (t) => (
-                      <div key={`${t}-${units}-${customsValue}`}>
-                        <p>{`${t} * ${units || 1} / ${customsValue} * 100 = ${(
-                          ((t * (units || 1)) / customsValue) *
-                          100
-                        ).toFixed(4)}%`}</p>
-                      </div>
-                    )
-                  )}
-                </div>
-              )}
-              {baseTariffs
-                .flatMap((t) => t.tariffs)
-                .filter((t) => t.type === "percent")
-                .map((t) => (
-                  <div
-                    key={`${t.raw}-${units}-${customsValue}`}
-                    className="flex w-full justify-between"
-                  >
-                    <p>+</p>
-                    <p>{t.value}%</p>
-                  </div>
-                ))}
-              <div className="w-full border-t border-base-content/50 my-2" />
-              <div className="flex w-full justify-end">
-                <p>
-                  {getEUCountryTotalBaseRate(
-                    baseTariffs.flatMap((t) => t.tariffs),
-                    customsValue,
-                    units
-                  ).toFixed(3)}
-                  %
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
       {/* Tariff Sets */}
       <div className={"w-full flex flex-col gap-4"}>
         {tariffSets.map((tariffSet, i) => (
           <div key={`tariff-set-${i}`} className="flex flex-col gap-4">
             <PrimaryLabel value={`${tariffSet.name} Tariff Details`} />
-
             <div className="flex flex-col gap-2">
               {baseTariffs &&
                 baseTariffs.length > 0 &&
@@ -406,10 +279,11 @@ export const InlineCountryTariff = ({
                       index={i}
                       htsElement={tariffElement}
                       tariff={t}
+                      active={!below15PercentRuleApplies}
                     />
                   ))}
               {tariffSet.tariffs
-                .filter((t) => !tariffSet.exceptionCodes.has(t.code))
+                .filter((t) => t.isActive || showInactive)
                 .map((tariff) => (
                   <Tariff
                     key={tariff.code}
@@ -424,32 +298,79 @@ export const InlineCountryTariff = ({
                   />
                 ))}
             </div>
+
             <div className="w-full flex justify-between items-end gap-2">
               <TertiaryLabel value="Total:" />
-              <div className="flex gap-2">
-                {baseTariffs
-                  .flatMap((t) => t.tariffs)
-                  .filter((t) => t.type === "amount").length > 0 && (
-                  <div className="flex gap-2">
-                    <p className="text-base font-bold text-white transition duration-100">
-                      {getAmountRatesString(
-                        baseTariffs.flatMap((t) => t.tariffs)
-                      )}
-                    </p>
-                    <p className="text-base font-bold text-white transition duration-100">
-                      +
-                    </p>
-                  </div>
-                )}
+              {is15PercentCapCountry &&
+              get15PercentCountryTotalBaseRate(
+                baseTariffs.flatMap((t) => t.tariffs),
+                customsValue,
+                units
+              ) < 15 ? (
                 <p className="text-base font-bold text-white transition duration-100">
-                  {getAdValoremRate(
-                    tariffColumn,
-                    tariffSet.tariffs,
-                    baseTariffs.flatMap((t) => t.tariffs)
-                  )}
-                  %
+                  {getAdValoremRate(tariffColumn, tariffSet.tariffs)}%
                 </p>
-              </div>
+              ) : (
+                <div className="flex gap-2">
+                  {baseTariffs
+                    .flatMap((t) => t.tariffs)
+                    .filter((t) => {
+                      if (
+                        selectedSpecialProgram &&
+                        selectedSpecialProgram.symbol !== "none"
+                      ) {
+                        return t.programs?.includes(
+                          selectedSpecialProgram.symbol
+                        );
+                      }
+                      return true;
+                    })
+                    .filter((t) => t.type === "amount").length > 0 && (
+                    <div className="flex gap-2">
+                      <p className="text-base font-bold text-white transition duration-100">
+                        {getAmountRatesString(
+                          baseTariffs
+                            .flatMap((t) => t.tariffs)
+                            .filter((t) => {
+                              if (
+                                selectedSpecialProgram &&
+                                selectedSpecialProgram.symbol !== "none"
+                              ) {
+                                return t.programs?.includes(
+                                  selectedSpecialProgram.symbol
+                                );
+                              }
+                              return true;
+                            })
+                        )}
+                      </p>
+                      <p className="text-base font-bold text-white transition duration-100">
+                        +
+                      </p>
+                    </div>
+                  )}
+                  <p className="text-base font-bold text-white transition duration-100">
+                    {getAdValoremRate(
+                      tariffColumn,
+                      tariffSet.tariffs,
+                      baseTariffs
+                        .flatMap((t) => t.tariffs)
+                        .filter((t) => {
+                          if (
+                            selectedSpecialProgram &&
+                            selectedSpecialProgram.symbol !== "none"
+                          ) {
+                            return t.programs?.includes(
+                              selectedSpecialProgram.symbol
+                            );
+                          }
+                          return true;
+                        })
+                    )}
+                    %
+                  </p>
+                </div>
+              )}
             </div>
             {baseTariffs.flatMap((t) => t.parsingFailures).length > 0 && (
               <div className="flex flex-col gap-2 p-4 border-2 border-red-500 rounded-md">
