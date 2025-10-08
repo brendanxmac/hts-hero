@@ -58,6 +58,7 @@ export const ClassificationResultPage = () => {
         const [fetchedClassifiers, fetchedImporters] = await Promise.all([
           fetchClassifiersForUser(),
           fetchImportersForUser(),
+          refreshClassifications(),
         ]);
         setClassifiers(fetchedClassifiers);
         setImporters(fetchedImporters);
@@ -144,34 +145,36 @@ export const ClassificationResultPage = () => {
               Classification Overview
             </h2>
             <div className="flex gap-2">
-              <button
-                className={classNames(
-                  "btn btn-xs",
-                  classificationRecord.finalized ? "" : "btn-primary"
-                )}
-                disabled={updatingClassificationStatus}
-                onClick={async () => {
-                  setUpdatingClassificationStatus(true);
-                  await updateClassification(
-                    classificationId,
-                    undefined,
-                    undefined,
-                    undefined,
-                    !classificationRecord.finalized
-                  );
-                  await refreshClassifications();
-                  classificationRecord = classifications.find(
-                    (c) => c.id === classificationId
-                  );
-                  setUpdatingClassificationStatus(false);
-                }}
-              >
-                {updatingClassificationStatus ? (
-                  <LoadingIndicator text="Updating" />
-                ) : (
-                  `Set as ${classificationRecord.finalized ? "Draft" : "Final"}`
-                )}
-              </button>
+              {classificationRecord && (
+                <button
+                  className={classNames(
+                    "btn btn-xs",
+                    classificationRecord?.finalized ? "" : "btn-primary"
+                  )}
+                  disabled={updatingClassificationStatus}
+                  onClick={async () => {
+                    setUpdatingClassificationStatus(true);
+                    await updateClassification(
+                      classificationId,
+                      undefined,
+                      undefined,
+                      undefined,
+                      !classificationRecord.finalized
+                    );
+                    await refreshClassifications();
+                    classificationRecord = classifications.find(
+                      (c) => c.id === classificationId
+                    );
+                    setUpdatingClassificationStatus(false);
+                  }}
+                >
+                  {updatingClassificationStatus ? (
+                    <LoadingIndicator text="Updating" />
+                  ) : (
+                    `Set as ${classificationRecord.finalized ? "Draft" : "Final"}`
+                  )}
+                </button>
+              )}
               <button
                 className="btn btn-xs btn-primary"
                 disabled={loading || isLoadingClassifiers || isLoadingImporters}
