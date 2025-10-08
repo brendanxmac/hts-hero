@@ -140,6 +140,7 @@ export interface ClassificationRecord {
   created_at: string;
   updated_at: string;
   revision: string;
+  finalized?: boolean;
 }
 
 export interface Classification {

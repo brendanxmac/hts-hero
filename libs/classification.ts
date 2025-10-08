@@ -31,13 +31,15 @@ export const updateClassification = async (
   id: string,
   classification?: Classification,
   importer_id?: string,
-  classifier_id?: string
+  classifier_id?: string,
+  finalized?: boolean
 ) => {
   const response = await apiClient.post("/classification/update", {
     id,
     classification,
     importer_id,
     classifier_id,
+    finalized,
   });
 
   return response.data;

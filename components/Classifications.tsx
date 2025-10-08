@@ -38,6 +38,9 @@ export const Classifications = ({ page, setPage }: Props) => {
     text: "",
   });
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeTab, setActiveTab] = useState<"all" | "finalized" | "draft">(
+    "all"
+  );
   const { htsElements, fetchElements } = useHts();
   const { getSections, sections } = useHtsSections();
   const {
@@ -100,7 +103,7 @@ export const Classifications = ({ page, setPage }: Props) => {
   }, [searchableClassifications]);
 
   // Filter classifications based on search query using Fuse.js
-  const filteredClassifications = useMemo(() => {
+  const searchFilteredClassifications = useMemo(() => {
     if (!searchQuery.trim() || !classifications) {
       return classifications || [];
     }
@@ -112,6 +115,28 @@ export const Classifications = ({ page, setPage }: Props) => {
       resultIds.includes(classification.id)
     );
   }, [searchQuery, classifications, fuse]);
+
+  // Filter classifications based on active tab (finalized status)
+  const filteredClassifications = useMemo(() => {
+    if (!searchFilteredClassifications) {
+      return [];
+    }
+
+    switch (activeTab) {
+      case "all":
+        return searchFilteredClassifications;
+      case "finalized":
+        return searchFilteredClassifications.filter(
+          (classification) => classification.finalized === true
+        );
+      case "draft":
+        return searchFilteredClassifications.filter(
+          (classification) => !classification.finalized
+        );
+      default:
+        return searchFilteredClassifications;
+    }
+  }, [searchFilteredClassifications, activeTab]);
 
   useEffect(() => {
     const fetchClassifications = async () => {
@@ -227,10 +252,48 @@ export const Classifications = ({ page, setPage }: Props) => {
 
           {/* Search and Actions Row */}
           <div className="flex flex-col md:flex-row gap-3 items-start md:items-end justify-between">
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-4 items-center">
               <h2 className="text-xl md:text-2xl text-neutral-50 font-bold">
                 Your Classifications
               </h2>
+              {!loader.isLoading && (
+                <div
+                  role="tablist"
+                  className="tabs tabs-boxed tabs-sm bg-primary/30 rounded-xl gap-1"
+                >
+                  <a
+                    role="tab"
+                    className={`tab transition-all duration-200 ease-in text-white font-semibold ${
+                      activeTab === "all" ? "tab-active" : "hover:bg-primary/70"
+                    }`}
+                    onClick={() => setActiveTab("all")}
+                  >
+                    All
+                  </a>
+                  <a
+                    role="tab"
+                    className={`tab transition-all duration-200 ease-in text-white font-semibold ${
+                      activeTab === "finalized"
+                        ? "tab-active"
+                        : "hover:bg-primary/70"
+                    }`}
+                    onClick={() => setActiveTab("finalized")}
+                  >
+                    Finalized
+                  </a>
+                  <a
+                    role="tab"
+                    className={`tab transition-all duration-200 ease-in text-white font-semibold ${
+                      activeTab === "draft"
+                        ? "tab-active"
+                        : "hover:bg-primary/70"
+                    }`}
+                    onClick={() => setActiveTab("draft")}
+                  >
+                    Drafts
+                  </a>
+                </div>
+              )}
               {loader.isLoading ||
                 (classificationsLoading && (
                   <span className={`loading loading-spinner loading-sm`}></span>
