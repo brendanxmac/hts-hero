@@ -206,7 +206,7 @@ export const Classifications = ({ page, setPage }: Props) => {
       <div className="flex flex-col h-full">
         <div className="flex flex-col gap-4 py-2">
           {/* Header Row */}
-          <div className="w-full flex flex-col md:flex-row gap-4 justify-between items-start">
+          <div className="w-full flex flex-col sm:flex-row gap-4 justify-between items-start">
             <div className="flex flex-col gap-2">
               <div className="flex sm:flex-row flex-col sm:items-center gap-2">
                 <h1 className="text-2xl md:text-3xl xl:text-4xl text-neutral-50 font-bold">
@@ -215,7 +215,7 @@ export const Classifications = ({ page, setPage }: Props) => {
 
                 <div
                   className={classNames(
-                    "shrink-0 h-fit w-fit text-sm border rounded-md px-2 py-0 text-primary font-semibold",
+                    "hidden md:block shrink-0 h-fit w-fit text-sm border rounded-md px-2 py-0 text-primary font-semibold",
                     activeClassifyPlan
                       ? "text-primary border-primary"
                       : "text-warning border-warning"
@@ -225,12 +225,12 @@ export const Classifications = ({ page, setPage }: Props) => {
                 </div>
               </div>
               <SecondaryText
-                value="Here you can review your classifications or start a new one now."
+                value="Review your classifications or start a new one now."
                 color={Color.NEUTRAL_CONTENT}
               />
             </div>
             {/* Action Buttons */}
-            <div className="flex gap-2 w-full md:w-auto">
+            <div className="flex gap-2 w-full sm:w-auto">
               <button
                 className="btn btn-primary btn-sm grow md:grow-0"
                 onClick={async () => {
@@ -251,7 +251,7 @@ export const Classifications = ({ page, setPage }: Props) => {
           </div>
 
           {/* Search and Actions Row */}
-          <div className="flex flex-col md:flex-row gap-3 items-start md:items-end justify-between">
+          <div className="flex flex-col gap-3 items-start justify-between">
             <div className="flex flex-col gap-2 sm:flex-row sm:gap-4 items-center">
               <h2 className="text-xl md:text-2xl text-neutral-50 font-bold">
                 Your Classifications
@@ -299,13 +299,13 @@ export const Classifications = ({ page, setPage }: Props) => {
             </div>
             {/* Filter Bar */}
 
-            <div className="flex-1 relative md:max-w-md w-full">
+            <div className="flex-1 relative w-full">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <FunnelIcon className="h-5 w-5 text-neutral-400" />
               </div>
               <input
                 type="text"
-                placeholder="Filter by description or code..."
+                placeholder="Filter classifications by description or code..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-1 bg-base-100 border-2 border-base-content/20 rounded-lg text-neutral-200 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
