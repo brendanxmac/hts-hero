@@ -77,7 +77,7 @@ export const indiaTariffs: TariffI[] = [
     code: "9903.01.87", // Section 232 exemptions - Same as 9903.01.33 minus UK exemptions
     description:
       "Articles of iron or steel, derivative articles of iron or steel, articles of aluminum, derivative articles of aluminum, passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks and parts of passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks, and semi-finished copper and intensive copper derivative products, of India, as provided in subdivision (z)(iii) through (z)(ix) of note 2 to this subchapter",
-    name: "Section 232's of India",
+    name: "India 25% IEEPA Exemption: Section 232's (Iron / Steel, Aluminum, Copper, Automobiles, & Auto Parts)",
     general: 0,
     special: 0,
     other: 0,
