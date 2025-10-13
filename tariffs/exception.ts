@@ -203,7 +203,7 @@ export const exceptionTariffs: TariffI[] = [
     code: "9903.01.33",
     description:
       "Articles of iron or steel, derivative articles of iron or steel, articles of aluminum, derivative articles of aluminum, passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks and parts of passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks, semi-finished copper and intensive copper derivative products, of any country, as provided in subdivision (v)(vi) through (v)(xii) of note 2 to this subchapter",
-    name: "Reciprocal Exemption for Section 232's (Iron, Steel, Aluminum, Copper, Autos, and Auto Parts)",
+    name: "Reciprocal Exemption for Section 232's (Iron, Steel, Aluminum, Copper, Autos, Auto Parts, and Wood)",
     inclusions: {
       countries: ["*"],
       tariffs: [
@@ -238,6 +238,13 @@ export const exceptionTariffs: TariffI[] = [
         "9903.85.15",
         // Semi-finished Copper & Intensive Copper Derivatives
         "9903.78.01",
+        // Wood
+        "9903.76.01",
+        "9903.76.02",
+        "9903.76.03",
+        "9903.76.20",
+        "9903.76.21",
+        "9903.76.22",
       ],
     },
     general: 0,

@@ -33,6 +33,7 @@ import { Column2CountryCodes } from "./tariff-columns";
 import { indiaTariffs } from "./india";
 import { japanTariffs } from "./japan";
 import { europeanUnionTariffs } from "./european-union";
+import { woodTariffs } from "./wood";
 
 export interface CountryWithTariffs extends Country {
   selectedTradeProgram: TradeProgram | null;
@@ -896,4 +897,5 @@ export const TariffsList: TariffI[] = [
   ...indiaTariffs,
   ...japanTariffs,
   ...europeanUnionTariffs,
+  ...woodTariffs,
 ];

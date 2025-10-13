@@ -55,6 +55,13 @@ export const recriprocalTariffExemptions = [
   "9903.02.75",
   "9903.02.76", // Civil Aircraft
   "9903.02.77",
+  // Wood
+  "9903.76.01",
+  "9903.76.02",
+  "9903.76.03",
+  "9903.76.20",
+  "9903.76.21",
+  "9903.76.22",
 ];
 
 export const worldwideReciprocalTariff: TariffI[] = [
