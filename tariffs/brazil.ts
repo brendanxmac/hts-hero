@@ -786,7 +786,7 @@ export const brazilTariffs: TariffI[] = [
     code: "9903.01.83",
     description:
       "Articles of iron or steel, derivative articles of iron or steel, articles of aluminum, derivative articles of aluminum, passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks and parts of passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks, and semi-finished copper and intensive copper derivative products, of Brazil, as provided in subdivision (x)(v) through (x)(xi) of note 2 to this subchapter",
-    name: "Articles of Iron / Steel, Aluminum, Copper, Auto / Auto Parts from Brazil",
+    name: "Exemption for Section 232 Articles of Brazil (Iron / Steel, Aluminum, Copper, Auto / Auto Parts, or Wood)",
     general: 0,
     special: 0,
     other: 0,
@@ -816,6 +816,13 @@ export const brazilTariffs: TariffI[] = [
         "9903.94.05",
         // Copper
         "9903.78.01",
+        // Wood
+        "9903.76.01",
+        "9903.76.02",
+        "9903.76.03",
+        "9903.76.20",
+        "9903.76.21",
+        "9903.76.22",
       ],
     },
   },

@@ -77,7 +77,7 @@ export const indiaTariffs: TariffI[] = [
     code: "9903.01.87", // Section 232 exemptions - Same as 9903.01.33 minus UK exemptions
     description:
       "Articles of iron or steel, derivative articles of iron or steel, articles of aluminum, derivative articles of aluminum, passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks and parts of passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks, and semi-finished copper and intensive copper derivative products, of India, as provided in subdivision (z)(iii) through (z)(ix) of note 2 to this subchapter",
-    name: "Section 232's of India",
+    name: "Exemption for Section 232 Articles of India (Iron, Steel, Aluminum, Copper, Autos, Auto Parts, and Wood)",
     general: 0,
     special: 0,
     other: 0,
@@ -106,6 +106,13 @@ export const indiaTariffs: TariffI[] = [
         "9903.94.05",
         // Copper & derivatives
         "9903.78.01",
+        // Wood
+        "9903.76.01",
+        "9903.76.02",
+        "9903.76.03",
+        "9903.76.20",
+        "9903.76.21",
+        "9903.76.22",
       ],
       countries: ["IN"],
     },
