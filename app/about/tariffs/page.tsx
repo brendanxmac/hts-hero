@@ -92,7 +92,7 @@ export default function Home() {
             standoutPlacement="start"
             titleStandout="Get Notified"
             title="When Tariff Changes Affect your Imports"
-            subtitle="Recieve email notifications when new tariff announcements affect your imports"
+            subtitle="Receive email notifications when new tariff announcements affect your imports"
             ctaText="Try it Now!"
             ctaLink="/tariffs/impact-checker"
             media={{
@@ -144,7 +144,7 @@ export default function Home() {
         <Demo
           standoutPlacement="end"
           titleStandout="Discover Savings"
-          title="Know When Your Landed Costs Change &"
+          title=""
           subtitle="See the full list of tariffs for any import from any country & explore ways to save"
           ctaText="Try it Now!"
           ctaLink="/tariffs/impact-checker"

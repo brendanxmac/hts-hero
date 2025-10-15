@@ -1268,7 +1268,7 @@ export const chinaTariffs: TariffI[] = [
     code: "9903.88.03",
     description:
       "Except as provided in headings 9903.88.13, 9903.88.18, 9903.88.33, 9903.88.34, 9903.88.35, 9903.88.36, 9903.88.37, 9903.88.38, 9903.88.40, 9903.88.41, 9903.88.43, 9903.88.45, 9903.88.46, 9903.88.48, 9903.88.56, 9903.88.64, 9903.88.66, 9903.88.67, 9903.88.68, or 9903.88.69, articles the product of China, as provided for in U.S. note 20(e) to this subchapter and as provided for in the subheadings enumerated in U.S. note 20(f)",
-    name: "Articles of China from 20 (e) and (f) (Section 232)",
+    name: "Articles of China from 20 (e) and (f) (Section 301)",
     general: 25,
     special: 0,
     other: 0,

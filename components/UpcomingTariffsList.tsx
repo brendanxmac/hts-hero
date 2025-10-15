@@ -36,9 +36,9 @@ export const PendingTariffsList = ({ hideHeading }: Props) => {
       status: TariffStatus.MENTIONED,
     },
     {
-      name: "Furniture",
+      name: "Wooden Furniture",
       date: new Date(2025, 8, 29), // September 29, 2025
-      status: TariffStatus.PENDING_PUBLICATION,
+      status: TariffStatus.PUBLISHED,
     },
     {
       name: "Wind Turbines & Parts",
