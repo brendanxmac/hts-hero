@@ -36,7 +36,7 @@ export const chinaTariffs: TariffI[] = [
     code: "9903.01.22",
     description:
       "Articles the product of China and Hong Kong that are informational materials, including but not limited to, publications, films, posters, phonograph records, photographs, microfilms, microfiche, tapes, compact disks, CD ROMs, artworks, and news wire feeds",
-    name: "Informational Material & Artworks",
+    name: "Informational Material & Artworks of China or Hong Kong",
     general: 0,
     special: 0,
     other: 0,
@@ -45,24 +45,23 @@ export const chinaTariffs: TariffI[] = [
     },
     requiresReview: true, // TODO: again, consider a toggle or starting a list for informationMaterials
   },
-  {
-    code: "9903.01.23",
-    description:
-      "Except for products described in headings 9903.01.21 and 9903.01.22, and other than products for personal use included in accompanied baggage of persons arriving in the United States, articles the product of China and Hong Kong that: (1) were loaded onto a vessel at the port of loading, or in transit on the final mode of transport prior to entry into the United States, before 12:01 a.m. eastern standard time on February 1, 2025; and (2) are entered for consumption, or withdrawn from warehouse for consumption, on or after 12:01 a.m. eastern standard time on February 4, 2025, and before 12:01 a.m. eastern standard time on March 7, 2025.",
-    // TODO: consider adding date range...
-    name: "Loaded, Entered, or Withdrawn from Warehouse within Date Range",
-    general: 0,
-    special: 0,
-    other: 0,
-    inclusions: {
-      countries: ["CN", "HK"],
-    },
-    // FIXME: removing these for now as they cause an
-    // issue with the nested exceptions, but are still covered by
-    // the 9903.01.24 exceptions
-    // exceptions: ["9903.01.21", "9903.01.22"],
-    requiresReview: true,
-  },
+  // {
+  //   code: "9903.01.23",
+  //   description:
+  //     "Except for products described in headings 9903.01.21 and 9903.01.22, and other than products for personal use included in accompanied baggage of persons arriving in the United States, articles the product of China and Hong Kong that: (1) were loaded onto a vessel at the port of loading, or in transit on the final mode of transport prior to entry into the United States, before 12:01 a.m. eastern standard time on February 1, 2025; and (2) are entered for consumption, or withdrawn from warehouse for consumption, on or after 12:01 a.m. eastern standard time on February 4, 2025, and before 12:01 a.m. eastern standard time on March 7, 2025.",
+  //   name: "Articles of China or Hong KongLoaded, Entered, or Withdrawn from Warehouse within Date Range",
+  //   general: 0,
+  //   special: 0,
+  //   other: 0,
+  //   inclusions: {
+  //     countries: ["CN", "HK"],
+  //   },
+  //   // FIXME: removing these for now as they cause an
+  //   // issue with the nested exceptions, but are still covered by
+  //   // the 9903.01.24 exceptions
+  //   // exceptions: ["9903.01.21", "9903.01.22"],
+  //   requiresReview: true,
+  // },
   {
     code: "9903.88.01",
     description:
