@@ -3,7 +3,7 @@
 import { Suspense } from "react";
 import ClassifierFooter from "@/components/ClassifierFooter";
 import WithWithout, { Task } from "@/components/WithWithout";
-import FeaturesGrid from "@/components/FeaturesGrid";
+import TariffImpactFeaturesGrid from "@/components/TariffImpactFeaturesGrid";
 import Demo from "@/components/Demo";
 import { FAQ } from "@/components/FAQ";
 import { tariffImpactFaqList } from "@/constants/faq";
@@ -68,7 +68,7 @@ export default function Home() {
         <TariffImpactHeader />
       </Suspense>
       <main>
-        <FeaturesGrid />
+        <TariffImpactFeaturesGrid />
 
         <WithWithout
           title="Keeping up with Tariff Changes is a Nightmare"
