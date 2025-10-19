@@ -16,6 +16,7 @@ import Testimonial1Small from "../../components/Testimonial1Small";
 import TestimonialRating from "../../components/TestimonialRating";
 import Testimonials3 from "../../components/Testimonials3";
 import TrustedBy from "../../components/TrustedBy";
+import ClassifierHero from "../../components/ClassifierHero";
 
 const withoutClassify: Task[] = [
   {
@@ -70,8 +71,8 @@ export default function Home() {
         <AboutHeader />
       </Suspense>
       <main>
-        {/* <ClassifierHero /> */}
-        <FeaturesGridClassify />
+        <ClassifierHero />
+        {/* <FeaturesGridClassify /> */}
         <TrustedBy />
         {/* <Testimonial1Small />
         <Testimonials3 />
@@ -94,7 +95,7 @@ export default function Home() {
           }}
         /> */}
         <WithWithout
-          title="Automate the Boring Bits"
+          title="Classification Doesn't Have to Be Tedious & Time-Consuming"
           withoutKeyPoint={{
             title: "~1 Hour",
             detail: "Manual, time-consuming process",

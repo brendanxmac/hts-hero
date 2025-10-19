@@ -14,13 +14,11 @@ const companies = [
 const individualTestimonials = [
   {
     role: "Director of Operations & Compliance, LCB",
-    company: "Harren Group",
     quote:
       "I was really pleased with the AI recommendation – it was very intuitive and caught something I hadn’t seen earlier",
   },
   {
     role: "VP Forwarding & Customs Brokerage",
-    company: "Logisteed America",
     quote:
       "Been loving using htshero. Excellent tool and fun watching you develop this.",
   },
@@ -46,7 +44,7 @@ const IndividualTestimonial = ({
       "{testimonial.quote}"
     </blockquote>
     <div className="text-gray-500 dark:text-gray-400 text-xs font-medium">
-      {testimonial.role}, {testimonial.company}
+      {testimonial.role}
     </div>
   </div>
 );

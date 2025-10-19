@@ -120,7 +120,7 @@ export default function WelcomeEmail() {
 
             <Section className="bg-[#617BFF]/10 rounded-lg p-6 text-center">
               <Text className="font-bold text-xl mb-3 text-gray-900">
-                📊 Tariff Wizard
+                📊 Tariff Estimator
               </Text>
               <Text className="leading-relaxed text-lg text-gray-600">
                 Find duty rates and possible savings for any import.

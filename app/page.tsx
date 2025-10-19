@@ -82,7 +82,7 @@ export default function Home() {
               </h3>
               <p className="text-sm text-neutral-400 leading-relaxed">
                 {/* Check tariff rates for any item from any country */}
-                Check if you can import at a profit
+                Explore the Profitability of New Products
               </p>
             </div>
           </Link>

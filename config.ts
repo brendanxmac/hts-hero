@@ -68,7 +68,7 @@ export const tariffImpactPro: PricingPlanI = {
       details: "Get notified when your imports are affected by new tariffs",
     },
     {
-      name: "Tariff Wizard",
+      name: "Tariff Estimator",
       details:
         "Quickly calculate tariffs & discover potential savings for any import",
     },
@@ -97,7 +97,7 @@ const classifyPro: PricingPlanI = {
     { name: "Finds Headings" },
     { name: "Analyzes Candidates" },
     { name: "Finds CROSS Rulings" },
-    { name: "Fetches Tariffs" },
+    { name: "Calculates Tariffs" },
     { name: "Generates Reports" },
   ],
 };

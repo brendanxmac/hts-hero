@@ -10,6 +10,7 @@ import { tariffImpactFaqList } from "@/constants/faq";
 import TariffImpactHeader from "@/components/TariffImpactHeader";
 import { PendingTariffsList } from "../../../components/UpcomingTariffsList";
 import TariffImpactPricing from "../../../components/TariffImpactPricing";
+import TariffEstimatorHeader from "../../../components/TariffEstimatorHeader";
 
 const withoutTariffImpact: Task[] = [
   {
@@ -68,6 +69,7 @@ export default function Home() {
         <TariffImpactHeader />
       </Suspense>
       <main>
+        <TariffEstimatorHeader />
         <TariffImpactFeaturesGrid />
 
         <WithWithout

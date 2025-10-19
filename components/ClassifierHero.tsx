@@ -1,47 +1,51 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 
 const ClassifierHero = () => {
   return (
-    <section className="bg-none max-w-7xl mx-auto bg-base-100 flex flex-col items-center justify-center gap-10 p-8">
+    <section className="bg-none max-w-7xl mx-auto bg-base-100 flex flex-col items-center justify-center gap-4 p-8 md:py-12">
       <div className="flex flex-col gap-6 items-center justify-center text-center">
         <div className="flex flex-col gap-4 md:gap-8">
-          <h1 className="text-white font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-tight md:-mb-4">
-            Classify Anything in{" "}
-            <span className="bg-primary px-2 text-base-300 transform -rotate-2 inline-block">
+          <h1 className="text-white font-extrabold text-4xl md:text-5xl lg:text-7xl tracking-tight md:-mb-4">
+            Classify in{" "}
+            <span className="bg-primary px-2 text-base-300 inline-block mt-2">
               Minutes
             </span>
+            <br />
+            Without Cutting Corners
+            {/* Classify Anything in{" "}
+            <span className="bg-primary px-2 text-base-300 inline-block mt-2">
+              Minutes
+            </span>{" "} */}
           </h1>
-          <p className="text-lg text-neutral-300 leading-relaxed">
-            With the platform designed to make customs brokers unreasonably
-            productive
+          <p className="text-lg lg:text-xl text-neutral-300 leading-relaxed">
+            Save hours on classification, master tariffs, and delight your
+            clients.
           </p>
         </div>
-
         <Link className="btn btn-wide btn-primary" href="/signin">
           Try it Now!
         </Link>
-
-        {/* <TestimonialsAvatars priority={true} /> */}
       </div>
-      <div className="flex justify-center sm:rounded-2xl overflow-hidden -mx-5 md:mx-0">
-        {/* <Image
-          className="rounded-3xl border-2 border-neutral-content/20"
+      <div className="flex justify-center sm:rounded-2xl overflow-hidden md:mx-0">
+        <Image
+          className="rounded-lg"
           priority={true}
-          src="/classifications.png"
+          src="/wahla.svg"
           alt="Classifications"
           width={1000}
           height={1000}
-        /> */}
-        <video
+        />
+        {/* <video
           className="w-full border-2 border-neutral-content/20 rounded-md md:rounded-2xl"
           autoPlay
           muted
           loop
           playsInline
           src="/hero-demo.mp4"
-        ></video>
+        ></video> */}
       </div>
     </section>
   );
