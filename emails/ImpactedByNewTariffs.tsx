@@ -62,7 +62,7 @@ export default function ImpactedByNewTariffsEmail({
               <span className="font-bold text-red-600">
                 {affectedImportsCount} of your imports
               </span>{" "}
-              are affected by the new tariff announcement.
+              might be affected by a new tariff announcement.
             </Text>
 
             {/* <Heading className="text-lg font-bold text-gray-900 leading-relaxed mb-3">
