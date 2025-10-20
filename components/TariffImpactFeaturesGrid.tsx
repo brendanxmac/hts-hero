@@ -85,7 +85,7 @@ export const tariffImpactFeatures = [
     styles: "md:col-span-3 lg:col-span-2 bg-base-200 text-white",
   },
 ];
-const FeaturesGrid = () => {
+const TariffImpactFeaturesGrid = () => {
   const [completedCodes, setCompletedCodes] = useState<string[]>([]);
   const [currentCodeIndex, setCurrentCodeIndex] = useState(0);
   const [currentCharIndex, setCurrentCharIndex] = useState(0);
@@ -277,4 +277,4 @@ const FeaturesGrid = () => {
   );
 };
 
-export default FeaturesGrid;
+export default TariffImpactFeaturesGrid;

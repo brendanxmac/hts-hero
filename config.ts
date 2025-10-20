@@ -96,10 +96,9 @@ const classifyPro: PricingPlanI = {
   features: [
     { name: "Finds Headings" },
     { name: "Analyzes Candidates" },
-    { name: "Calculates Tariffs" },
-    { name: "Generates Reports" },
-    { name: "Fetches Notes" },
     { name: "Finds CROSS Rulings" },
+    { name: "Fetches Tariffs" },
+    { name: "Generates Reports" },
   ],
 };
 

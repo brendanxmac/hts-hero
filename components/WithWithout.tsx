@@ -36,7 +36,7 @@ const WithWithout = ({
 }: Props) => {
   return (
     <section className="bg-base-300">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-16 md:py-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-16 md:py-24">
         <div className="flex flex-col gap-4 mb-8 items-center">
           <h2 className="text-center font-black text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
             {title}
@@ -54,7 +54,7 @@ const WithWithout = ({
         </div>
         <div className="flex flex-col lg:flex-row justify-center items-center lg:items-start gap-4 sm:gap-6 md:gap-8 lg:gap-12">
           {/* Without HTS Hero Card */}
-          <div className="bg-base-100 backdrop-blur-sm text-white p-4 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl flex flex-col gap-4 sm:gap-6 shadow-2xl border border-neutral-600/30 w-full max-w-sm sm:max-w-md lg:max-w-2xl">
+          <div className="bg-base-100 backdrop-blur-sm text-white p-4 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl flex flex-col gap-4 sm:gap-6 shadow-2xl border border-neutral-600/30 w-full max-w-sm sm:max-w-md lg:max-w-3xl">
             {withList && (
               <div className="flex flex-col items-center justify-center gap-3">
                 <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-red-900/50 rounded-full">
@@ -115,7 +115,7 @@ const WithWithout = ({
 
           {/* With HTS Hero Card */}
           {withList && (
-            <div className="bg-base-100 backdrop-blur-sm text-white p-4 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl flex flex-col gap-4 sm:gap-6 shadow-2xl border border-gray-700 w-full max-w-sm sm:max-w-md lg:max-w-lg xl:max-w-md">
+            <div className="bg-base-100 backdrop-blur-sm text-white p-4 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl flex flex-col gap-4 sm:gap-6 shadow-2xl border border-gray-700 w-full max-w-sm sm:max-w-md lg:max-w-3xl">
               <div className="flex flex-col items-center justify-center gap-3">
                 <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-green-900/50 rounded-full">
                   <svg

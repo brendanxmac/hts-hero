@@ -11,6 +11,11 @@ import { AboutPage } from "../../enums/classify";
 import FeaturesListicle from "../../components/FeaturesListicle";
 import WithWithout, { Task } from "../../components/WithWithout";
 import Hero from "../../components/Hero";
+import FeaturesGridClassify from "../../components/FeaturesGridClassify";
+import Testimonial1Small from "../../components/Testimonial1Small";
+import TestimonialRating from "../../components/TestimonialRating";
+import Testimonials3 from "../../components/Testimonials3";
+import TrustedBy from "../../components/TrustedBy";
 
 const withoutClassify: Task[] = [
   {
@@ -66,7 +71,13 @@ export default function Home() {
       </Suspense>
       <main>
         {/* <ClassifierHero /> */}
-        <Hero
+        <FeaturesGridClassify />
+        <TrustedBy />
+        {/* <Testimonial1Small />
+        <Testimonials3 />
+        <TestimonialRating /> */}
+        {/* <TestimonialsAvatars priority={true} /> */}
+        {/* <Hero
           title="Classify Anything in"
           titleStandout="Minutes"
           standoutPlacement="end"
@@ -81,7 +92,7 @@ export default function Home() {
             mediaFormat: "mp4",
             altText: "Classify Anything",
           }}
-        />
+        /> */}
         <WithWithout
           title="Automate the Boring Bits"
           withoutKeyPoint={{

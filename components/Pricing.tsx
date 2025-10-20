@@ -93,7 +93,7 @@ const getPricingHeadline = () => {
     <div className="flex flex-col gap-4 lg:gap-6">
       <h2 className="text-white font-bold text-2xl sm:text-3xl md:text-4xl lg:text-5xl max-w-4xl mx-auto tracking-relaxed">
         <span className="text-primary">Save Hours</span> on Classification,
-        Conquer Tariffs, Delight your Clients
+        Master Tariffs, and Delight your Clients
       </h2>
       <h3 className="text-sm md:text-base lg:text-lg">
         For less than $3 per day
