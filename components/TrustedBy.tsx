@@ -43,7 +43,7 @@ const IndividualTestimonial = ({
 }) => (
   <div className="flex flex-col items-center text-center max-w-sm mx-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200/50 dark:border-gray-700/50">
     <blockquote className="text-sm text-gray-700 dark:text-gray-200 mb-3 italic">
-      "{testimonial.quote}"
+      &quot;{testimonial.quote}&quot;
     </blockquote>
     <div className="text-gray-500 dark:text-gray-400 text-xs font-medium">
       {testimonial.role}, {testimonial.company}
