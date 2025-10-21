@@ -31,13 +31,13 @@ export default function Home() {
             </span>
           </div>
 
-          <h1 className="sm:text-xl md:text-2xl lg:text-3xl text-white font-semibold tracking-tight mb-8">
-            Time Saving Tools for Busy Importers and Customs Brokers
+          <h1 className="sm:text-xl md:text-2xl lg:text-3xl text-white font-semibold tracking-tight mb-8 md:mb-12">
+            Time Saving Tools for Importers and Customs Brokers
           </h1>
         </div>
 
         {/* Navigation Buttons */}
-        <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
           {/* Tariff Import Checker */}
           <Link
             href={user ? "/tariffs/impact-checker" : "/about/tariffs"}
@@ -65,7 +65,7 @@ export default function Home() {
                 Classification Assistant
               </h3>
               <p className="text-sm text-neutral-400 leading-relaxed">
-                Smarter Classification for Customs Brokers
+                Turbocharged Classification for Customs Brokers
               </p>
             </div>
           </Link>
@@ -78,10 +78,11 @@ export default function Home() {
             <div className="flex flex-col items-center gap-4">
               <div className="text-4xl">📊</div>
               <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors">
-                Tariff Wizard
+                Tariff Estimator
               </h3>
               <p className="text-sm text-neutral-400 leading-relaxed">
-                Find the tariff for any item, from any country
+                Check tariff rates for any item from any country
+                {/* Check if you can import at a profit */}
               </p>
             </div>
           </Link>

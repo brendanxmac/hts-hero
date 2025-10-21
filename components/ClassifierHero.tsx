@@ -7,15 +7,15 @@ const ClassifierHero = () => {
     <section className="bg-none max-w-7xl mx-auto bg-base-100 flex flex-col items-center justify-center gap-10 p-8">
       <div className="flex flex-col gap-6 items-center justify-center text-center">
         <div className="flex flex-col gap-4 md:gap-8">
-          <h1 className="text-white font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-tight md:-mb-4">
+          <h1 className="text-white font-extrabold text-4xl md:text-5xl lg:text-7xl tracking-tight md:-mb-4">
             Classify Anything in{" "}
             <span className="bg-primary px-2 text-base-300 transform -rotate-2 inline-block">
               Minutes
             </span>
           </h1>
           <p className="text-lg text-neutral-300 leading-relaxed">
-            With the platform designed to make customs brokers unreasonably
-            productive
+            Go from product description to HTS Code & client-ready report,
+            insanely fast
           </p>
         </div>
 
