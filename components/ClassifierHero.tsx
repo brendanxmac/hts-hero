@@ -14,8 +14,8 @@ const ClassifierHero = () => {
             </span>
           </h1>
           <p className="text-lg text-neutral-300 leading-relaxed">
-            Go from product description to HTS Code & client-ready report
-            incredibly fast
+            Go from product description to HTS Code & client-ready report,
+            insanely fast
           </p>
         </div>
 
