@@ -65,7 +65,7 @@ export default function Home() {
                 Classification Assistant
               </h3>
               <p className="text-sm text-neutral-400 leading-relaxed">
-                Classification Turbocharged for Customs Brokers
+                Turbocharged Classification for Customs Brokers
               </p>
             </div>
           </Link>
@@ -81,8 +81,8 @@ export default function Home() {
                 Tariff Estimator
               </h3>
               <p className="text-sm text-neutral-400 leading-relaxed">
-                {/* Check tariff rates for any item from any country */}
-                Check if you can import at a profit
+                Check tariff rates for any item from any country
+                {/* Check if you can import at a profit */}
               </p>
             </div>
           </Link>
