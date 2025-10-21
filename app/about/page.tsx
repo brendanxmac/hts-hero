@@ -16,6 +16,7 @@ import Testimonial1Small from "../../components/Testimonial1Small";
 import TestimonialRating from "../../components/TestimonialRating";
 import Testimonials3 from "../../components/Testimonials3";
 import TrustedBy from "../../components/TrustedBy";
+import ClassifierHero from "../../components/ClassifierHero";
 
 const withoutClassify: Task[] = [
   {
@@ -70,8 +71,8 @@ export default function Home() {
         <AboutHeader />
       </Suspense>
       <main>
-        {/* <ClassifierHero /> */}
-        <FeaturesGridClassify />
+        <ClassifierHero />
+        {/* <FeaturesGridClassify /> */}
         <TrustedBy />
         {/* <Testimonial1Small />
         <Testimonials3 />
