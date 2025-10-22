@@ -17,11 +17,11 @@ const individualTestimonials = [
     quote:
       "Been loving using htshero. Excellent tool and fun watching you develop this.",
   },
-  {
-    role: "Director of Customs Operations",
-    company: "Nicole",
-    quote: "This is saving our team so much time! thank you",
-  },
+  // {
+  //   role: "Director of Customs Operations",
+  //   company: "Nicole",
+  //   quote: "This is saving our team so much time! thank you",
+  // },
 ];
 
 // Individual testimonial component
@@ -88,7 +88,7 @@ const ClassifierHero = () => {
       </section>
 
       {/* Individual Testimonials Section - Full width below other content */}
-      <section className="w-full bg-base-100 py-8 md:py-4">
+      <section className="w-full bg-base-100 py-12">
         <div className="max-w-7xl mx-auto px-8">
           <div className="flex flex-wrap justify-center items-stretch gap-6 md:gap-8">
             {individualTestimonials.map((testimonial, index) => (
