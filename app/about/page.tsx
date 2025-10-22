@@ -95,7 +95,7 @@ export default function Home() {
           }}
         /> */}
         <WithWithout
-          title="Automate the Boring Bits"
+          title="Manual Classification is Time-Consuming"
           withoutKeyPoint={{
             title: "~1 Hour",
             detail: "Manual, time-consuming process",
