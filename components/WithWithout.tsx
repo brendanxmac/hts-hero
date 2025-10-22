@@ -36,9 +36,9 @@ const WithWithout = ({
 }: Props) => {
   return (
     <section className="bg-base-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-16 md:py-24">
-        <div className="flex flex-col gap-4 mb-8 items-center">
-          <h2 className="text-center font-black text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-16 md:py-24">
+        <div className="flex flex-col gap-4 mb-12 md:mb-16 items-center max-w-2xl mx-auto">
+          <h2 className="text-center font-black text-white text-3xl sm:text-4xl md:text-5xl">
             {title}
           </h2>
           {subtitle && (
@@ -85,14 +85,14 @@ const WithWithout = ({
               {withoutList.map((task, index) => (
                 <li
                   key={index}
-                  className="flex items-center gap-2 sm:gap-3 p-2 sm:p-4 bg-base-300/80 rounded-lg border border-gray-700"
+                  className="flex items-center gap-2 sm:gap-3 px-3 py-2 sm:py-2 bg-base-300/80 rounded-lg border border-gray-700"
                 >
                   <div className="flex-1">
                     <div className="flex items-center justify-between gap-2 sm:gap-3 md:gap-4">
-                      <span className="text-neutral-200 font-semibold md:text-xl">
+                      <span className="text-neutral-200 font-semibold text-sm md:text-lg">
                         {task.title}
                       </span>
-                      <span className="text-red-200 font-bold text-sm sm:text-base md:text-lg bg-red-900/50 px-2 sm:px-3 py-1 rounded-full flex-shrink-0 whitespace-nowrap border border-red-700/30">
+                      <span className="text-red-200 font-bold text-sm sm:text-base md:text-lg bg-red-900/50 px-2 py-0.5 rounded-full flex-shrink-0 whitespace-nowrap border border-red-700/30">
                         {task.time}
                       </span>
                     </div>
@@ -140,18 +140,18 @@ const WithWithout = ({
                 </div>
               </div>
 
-              <ul className="flex flex-col gap-1 sm:gap-4">
+              <ul className="flex flex-col gap-1 sm:gap-3">
                 {withList.map((task, index) => (
                   <li
                     key={index}
-                    className="flex items-center gap-2 sm:gap-3 p-2 sm:p-4 bg-base-300/80 rounded-lg border border-gray-700"
+                    className="flex items-center gap-2 sm:gap-3 px-3 py-2 sm:py-2 bg-base-300/80 rounded-lg border border-gray-700"
                   >
                     <div className="flex-1">
                       <div className="flex items-center justify-between gap-2 sm:gap-3 md:gap-4">
-                        <span className="text-neutral-200 font-semibold md:text-xl">
+                        <span className="text-neutral-200 font-semibold text-sm md:text-lg">
                           {task.title}
                         </span>
-                        <span className="text-green-200 font-bold text-sm sm:text-base md:text-lg bg-green-900/50 px-2 sm:px-3 py-1 rounded-full flex-shrink-0 whitespace-nowrap border border-green-700/30">
+                        <span className="text-green-200 font-bold text-sm sm:text-base md:text-lg bg-green-900/50 px-2 py-0.5 rounded-full flex-shrink-0 whitespace-nowrap border border-green-700/30">
                           {task.time}
                         </span>
                       </div>

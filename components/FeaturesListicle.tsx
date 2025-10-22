@@ -69,13 +69,10 @@ const features: {
         point: "Generate classification reports, in a single click",
       },
       {
-        point:
-          "Includes your notes, branding, disclaimers, and a breakdown all decisions",
+        point: "Includes your notes, branding, & disclaimers",
       },
       {
         point: "Easily export & share with your clients",
-        detail:
-          "⏳ Coming Soon: Send reports client in a click, or let them view their classifications right in HTS Hero",
       },
       {
         point: "~20 minutes saved",
@@ -85,26 +82,26 @@ const features: {
     ],
     svg: <DocumentCheckSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   },
-  {
-    name: "Fetches Notes",
-    points: [
-      {
-        point:
-          "Immediately see the notes that might impact your classification",
-        detail: "General, Section, Chapter, Subheading, etc...",
-      },
-      {
-        point: "Helps you find the details of HTS references",
-        detail: `👉 "See heading 9902.22.84" 👉 "Articles of heading 4601"`,
-      },
-      {
-        point: "~10 minutes saved",
-        detail: "per classification",
-        isKey: true,
-      },
-    ],
-    svg: <DocumentSearchSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
-  },
+  // {
+  //   name: "Fetches Notes",
+  //   points: [
+  //     {
+  //       point:
+  //         "Immediately see the notes that might impact your classification",
+  //       detail: "General, Section, Chapter, Subheading, etc...",
+  //     },
+  //     {
+  //       point: "Helps you find the details of HTS references",
+  //       detail: `👉 "See heading 9902.22.84" 👉 "Articles of heading 4601"`,
+  //     },
+  //     {
+  //       point: "~10 minutes saved",
+  //       detail: "per classification",
+  //       isKey: true,
+  //     },
+  //   ],
+  //   svg: <DocumentSearchSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
+  // },
   {
     name: "Finds CROSS Rulings",
     points: [
