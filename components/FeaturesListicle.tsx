@@ -177,7 +177,8 @@ const FeaturesListicle = () => {
             The Smarter Way to Classify
           </h2>
           <p className="text-neutral-300 leading-relaxed mb-3 lg:text-lg">
-            Classify quickly with confidence and dazzle your clients
+            HTS Hero automates the time-consuming & tedious parts of
+            classification
           </p>
         </div>
       </div>
