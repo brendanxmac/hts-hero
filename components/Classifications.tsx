@@ -12,11 +12,13 @@ import { PrimaryLabel } from "./PrimaryLabel";
 import { TertiaryText } from "./TertiaryText";
 import { PlusIcon } from "@heroicons/react/16/solid";
 import { FunnelIcon } from "@heroicons/react/24/solid";
+import { BoltIcon } from "@heroicons/react/16/solid";
 import Fuse, { IFuseOptions } from "fuse.js";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { PricingPlan } from "../types";
 import { getActiveClassifyPurchase } from "../libs/supabase/purchase";
 import { classNames } from "../utilities/style";
+import Link from "next/link";
 
 interface Props {
   page: ClassifyPage;
@@ -231,6 +233,15 @@ export const Classifications = ({ page, setPage }: Props) => {
             </div>
             {/* Action Buttons */}
             <div className="flex gap-2 w-full sm:w-auto">
+              {!activeClassifyPlan && (
+                <Link
+                  href="/about#pricing"
+                  className="btn btn-secondary btn-sm flex gap-2"
+                >
+                  <BoltIcon className="h-4 w-4" />
+                  Upgrade
+                </Link>
+              )}
               <button
                 className="btn btn-primary btn-sm grow md:grow-0"
                 onClick={async () => {
