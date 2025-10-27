@@ -28,15 +28,15 @@ const withoutClassify: Task[] = [
     time: "10 min",
   },
   {
-    title: "Calculating Duty & Finding Exemptions",
+    title: "Finding Tariffs & Exemptions",
     time: "10 min",
   },
   {
-    title: "Creating Reports",
+    title: "Creating Advisory Reports",
     time: "15 min",
   },
   {
-    title: "Saving, Sharing, Finding, and Updating",
+    title: "Saving, Sharing, Finding, and Updating Classifications",
     time: "?? min",
   },
 ];
@@ -51,15 +51,15 @@ const withClassify: Task[] = [
     time: "0 min",
   },
   {
-    title: "Calculating Duty & Finding Exemptions",
+    title: "Finding Tariffs & Exemptions",
     time: "0 min",
   },
   {
-    title: "Creating Reports",
+    title: "Creating Advisory Reports",
     time: "0 min",
   },
   {
-    title: "Saving, Sharing, Finding, and Updating",
+    title: "Saving, Sharing, Finding, and Updating Classifications",
     time: "0 min",
   },
 ];
@@ -72,30 +72,13 @@ export default function Home() {
       </Suspense>
       <main>
         <ClassifierHero />
-        {/* <FeaturesGridClassify /> */}
+
         <TrustedBy />
-        {/* <Testimonial1Small />
-        <Testimonials3 />
-        <TestimonialRating /> */}
-        {/* <TestimonialsAvatars priority={true} /> */}
-        {/* <Hero
-          title="Classify Anything in"
-          titleStandout="Minutes"
-          standoutPlacement="end"
-          subtitle="The classification assistant designed to make customs brokers unreasonably productive"
-          ctaText="Try it Now!"
-          ctaLink="/app"
-          media={{
-            title: "Classify Demo",
-            description: "Classify Demo",
-            mediaType: "video",
-            mediaPath: "/hero-demo.mp4",
-            mediaFormat: "mp4",
-            altText: "Classify Anything",
-          }}
-        /> */}
+
+        <FeaturesListicle />
+
         <WithWithout
-          title="Manual Classification is Time-Consuming"
+          title="Classification Doesn't Have to Be Painful"
           withoutKeyPoint={{
             title: "~1 Hour",
             detail: "Manual, time-consuming process",
@@ -107,10 +90,38 @@ export default function Home() {
           withList={withClassify}
           withoutList={withoutClassify}
         />
-        <FeaturesListicle />
+
+        <section className="relative max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+          <div className="flex flex-col items-center text-center gap-3 sm:gap-4 mb-8 max-w-3xl mx-auto">
+            <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white/80">
+              Real product demo
+            </span>
+            <h2 className="font-black text-white text-3xl sm:text-5xl md:text-6xl">
+              See How it Works
+            </h2>
+            <p className="text-white/80 sm:text-lg lg:text-xl">
+              A quick demo so you know exactly what you&apos;ll get
+            </p>
+          </div>
+          <div className="relative max-w-3xl mx-auto">
+            <div className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-tr from-indigo-500/20 via-cyan-500/10 to-transparent blur"></div>
+            <div className="relative rounded-2xl border border-white/10 bg-black/30 shadow-xl">
+              <iframe
+                className="w-full aspect-video rounded-lg"
+                src="https://www.youtube.com/embed/HSo8h_DCEZ0?si=9kTFpfYuyg00yxSC"
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              ></iframe>
+            </div>
+          </div>
+        </section>
+
         <Pricing customerType={AboutPage.CLASSIFIER} />
-        <ClassifierCTA />
         <FAQ faqItems={classifierFaqList} />
+        <ClassifierCTA />
       </main>
       <ClassifierFooter />
     </>

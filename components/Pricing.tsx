@@ -91,9 +91,10 @@ const getPricingPlans = (customerType: AboutPage) => {
 const getPricingHeadline = () => {
   return (
     <div className="flex flex-col gap-4 lg:gap-6">
-      <h2 className="text-white font-bold text-2xl sm:text-3xl md:text-4xl lg:text-5xl max-w-4xl mx-auto tracking-relaxed">
+      <h2 className="text-white font-black text-2xl sm:text-3xl md:text-4xl lg:text-5xl max-w-4xl mx-auto tracking-relaxed">
         <span className="text-primary">Save Hours</span> on Classification,
-        Master Tariffs, and Delight your Clients
+        <br />
+        Tariffs, and Client Reports
       </h2>
       <h3 className="text-sm md:text-base lg:text-lg">
         For less than $3 per day
@@ -107,7 +108,7 @@ const Pricing = ({ customerType }: PricingProps) => {
     <section className="bg-base-300 overflow-hidden" id="pricing">
       <div className="py-16 px-8 max-w-7xl mx-auto">
         <div className="flex flex-col text-center w-full mb-12">
-          {/* <p className="font-medium text-primary mb-8">Pricing</p> */}
+          <p className="font-medium text-primary mb-8">Pricing</p>
           {getPricingHeadline()}
         </div>
 

@@ -58,7 +58,7 @@ const IndividualTestimonial = ({
 
 const TrustedBy = () => {
   return (
-    <section className="py-8 bg-black">
+    <section className="py-8 bg-base-300">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <div className="text-center flex flex-col gap-4">
