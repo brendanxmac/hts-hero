@@ -1,36 +1,38 @@
 "use client";
 
-import { useState, useRef } from "react";
 import type { JSX } from "react";
+import Image from "next/image";
 import { FeaturePoint, FeaturePoints } from "./FeaturePoints";
-import DocumentSearchSVG from "./svg/DocumentSearchSVG";
 import LightBulbSVG from "./svg/LightBulbSVG";
 import DocumentCheckSVG from "./svg/DocumentCheckSVG";
-import { classNames } from "../utilities/style";
 import LightningSVG from "./svg/LightningSVG";
-import SearchSVG from "./svg/SearchSVG";
-import CursorSVG from "./svg/CursorSVG";
+import ScaleSVG from "./svg/Scale";
+import PuzzlePieceSVG from "./svg/PuzzlePieceSVG";
 
 const features: {
   name: string;
+  subtitle: string;
   points: FeaturePoint[];
   svg: JSX.Element;
+  image: { src: string; alt: string };
 }[] = [
   {
-    name: "Finds Headings",
+    name: "Finds Heading Candidates",
+    subtitle:
+      "Enter a description and instantly see HS headings that jump‑start your work.",
     points: [
       {
-        point: "Enter an item description and get suitable headings in seconds",
+        point:
+          "Enter an item description and get suitable HS headings in seconds",
       },
       {
-        point:
-          "Jump-starts your classifications instead of you starting from scratch",
+        point: "Jump-start classifications instead of starting from scratch",
       },
       {
         point: "Discover headings you might have missed",
       },
       {
-        point: "Lets you easily find & apply your own",
+        point: "Easily find & apply your own",
       },
       {
         point: "~10 minutes saved",
@@ -39,18 +41,21 @@ const features: {
       },
     ],
     svg: <LightningSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
+    image: { src: "/candidates.png", alt: "Candidates HS headings" },
   },
   {
     name: "Analyzes Candidates",
+    subtitle:
+      "Compare candidates with GRI analysis to select the best option confidently.",
     points: [
       {
-        point: "Gives you a GRI analysis of the candidates at every level",
+        point: "Provides a GRI analysis of candidates at every level",
       },
       {
         point: "Helps you quickly find the best candidate",
       },
       {
-        point: "Lets you easily add your own notes for any decision",
+        point: "Add your own notes for any decision",
         detail:
           "Which are automatically included in your reports and help refresh your memory later on",
       },
@@ -61,15 +66,70 @@ const features: {
       },
     ],
     svg: <LightBulbSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
+    image: {
+      src: "/analysis.png",
+      alt: "Analyze candidates and choose confidently",
+    },
   },
   {
-    name: "Generates Reports",
+    name: "Finds CROSS Rulings",
+    subtitle:
+      "Surface relevant CROSS rulings based on your description and final code.",
+    points: [
+      {
+        point: "Automatically searches CROSS rulings for you",
+        detail: "Based on the item description & final code",
+      },
+      {
+        point:
+          "Lets you quickly see if you're on the right track by seeing relevant rulings",
+      },
+      {
+        point: "~10 minutes saved",
+        detail: "per classification",
+        isKey: true,
+      },
+    ],
+    svg: <ScaleSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
+    image: { src: "/cross.png", alt: "Relevant CROSS rulings" },
+  },
+  {
+    name: "Fetches Tariffs",
+    subtitle:
+      "See the latest duty rates, exemptions, and savings opportunities at a glance.",
+    points: [
+      {
+        point: "See the latest tariffs for any import from any country",
+      },
+      {
+        point: "Discover ways to save",
+        detail: "Explore & apply exemptions & trade programs",
+      },
+      {
+        point: "Constantly updated with the latest tariff annoucements",
+      },
+      {
+        point: "~20 minutes saved",
+        detail: "per classification",
+        isKey: true,
+      },
+    ],
+    svg: <PuzzlePieceSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
+    image: {
+      src: "/tariffs.png",
+      alt: "Tariff insights and savings",
+    },
+  },
+  {
+    name: "Generates Branded Reports",
+    subtitle: "Create polished client-ready reports in a single click.",
     points: [
       {
         point: "Generate classification reports, in a single click",
       },
       {
-        point: "Includes your notes, branding, & disclaimers",
+        point:
+          "Automatically includes notes, branding, disclaimers, classifier, & client",
       },
       {
         point: "Easily export & share with your clients",
@@ -81,6 +141,10 @@ const features: {
       },
     ],
     svg: <DocumentCheckSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
+    image: {
+      src: "/report.png",
+      alt: "One-click classification reports",
+    },
   },
   // {
   //   name: "Fetches Notes",
@@ -102,119 +166,63 @@ const features: {
   //   ],
   //   svg: <DocumentSearchSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
   // },
-  {
-    name: "Finds CROSS Rulings",
-    points: [
-      {
-        point: "Automatically searches CROSS rulings for you",
-        detail: "Based on the item description & final code",
-      },
-      {
-        point: "~10 minutes saved",
-        detail: "per classification",
-        isKey: true,
-      },
-    ],
-    svg: <SearchSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
-  },
-  {
-    name: "HTS Explorer",
-    points: [
-      {
-        point: "A 'clickable' HTS explorer tailor-made for the broker workflow",
-        detail:
-          "Navigate the entire HTS without the downloads and initial search, just click",
-      },
-      {
-        point:
-          "A built in PDF viewer lets see everything you need in a single tab",
-      },
-    ],
-    svg: <CursorSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
-  },
 ];
 
 const FeaturesListicle = () => {
-  const featuresEndRef = useRef<null>(null);
-  const [featureSelected, setFeatureSelected] = useState<string>(
-    features[0].name
-  );
-  const [hasClicked, setHasClicked] = useState<boolean>(false);
-
   return (
     <section className="py-24 bg-base-100" id="features">
-      <div className="max-w-5xl mx-auto">
-        <div className="text-center max-md:px-8 max-w-5xl mb-8 md:px-12">
-          <h2 className="text-white font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-tight mb-5">
-            {/* 💡 COPY TIP: Remind visitors about the value of your product. Why do they need it? */}
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center max-md:px-8 mb-12 md:px-12">
+          <h2 className="text-white font-black text-4xl md:text-5xl lg:text-6xl tracking-tight mb-5">
             The Smarter Way to Classify
           </h2>
           <p className="text-neutral-300 leading-relaxed mb-3 lg:text-lg">
-            {/* 💡 COPY TIP: Explain how your product delivers what you promise in the headline. */}
-            HTS Hero finds the information you need to classify and generates
-            polished reports.
+            Classify quickly with confidence and dazzle your clients
           </p>
         </div>
       </div>
 
-      <div className="mx-6 md:mx-12">
-        <div className="grid grid-cols-3 md:flex justify-between px-2 gap-4 max-w-3xl mx-auto mb-8">
-          {features.map((feature) => (
-            <div
-              key={feature.name}
-              onClick={() => {
-                if (!hasClicked) setHasClicked(true);
-                setFeatureSelected(feature.name);
-              }}
-              className={classNames(
-                featureSelected === feature.name
-                  ? "border-2 border-primary"
-                  : "hover:scale-[1.03] cursor-pointer",
-                "flex flex-col items-center justify-center gap-3 p-2 duration-100 group rounded-lg border-2 border-transparent"
-              )}
-            >
-              <span
-                className={`duration-100 shrink-0 ${
-                  featureSelected === feature.name
-                    ? "text-primary"
-                    : "text-base-content/60 group-hover:text-white"
-                }`}
+      <div className="px-6 md:px-12 max-w-6xl mx-auto">
+        <div className="flex flex-col gap-10 md:gap-12">
+          {features.map((feature, index) => {
+            // const mediaLeft = index % 2 === 1;
+            return (
+              <article
+                key={feature.name}
+                className="rounded-2xl md:rounded-3xl bg-base-200 border border-base-content/10 p-6 md:p-10"
               >
-                {feature.svg}
-              </span>
-              <p
-                className={`font-semibold text-sm text-center ${
-                  featureSelected === feature.name
-                    ? "text-primary"
-                    : "text-base-content/60 group-hover:text-white"
-                }`}
-              >
-                {feature.name}
-              </p>
-            </div>
-          ))}
-        </div>
-        <div className="max-w-3xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-center md:justify-start md:items-center gap-12">
-            <div
-              className="leading-relaxed flex flex-col gap-4 max-w-3xl animate-opacity"
-              key={featureSelected}
-            >
-              <h3 className="text-white font-semibold text-lg">
-                {features.find((f) => f.name === featureSelected)["name"]}
-              </h3>
-
-              <FeaturePoints
-                points={
-                  features.find((f) => f.name === featureSelected)["points"]
-                }
-              />
-            </div>
-          </div>
+                <div
+                  className={`grid grid-cols-1 items-center gap-8 lg:gap-12 lg:grid-cols-[1fr_1fr]`}
+                >
+                  <div>
+                    <div className="flex items-center gap-3 mb-8">
+                      <span className="text-primary">{feature.svg}</span>
+                      <h3 className="text-white text-2xl md:text-3xl font-extrabold tracking-tight">
+                        {feature.name}
+                      </h3>
+                    </div>
+                    {/* <p className="text-neutral-300 mb-6 md:mb-8">
+                      {feature.subtitle}
+                    </p> */}
+                    <FeaturePoints points={feature.points} />
+                  </div>
+                  <div>
+                    <div className="w-full h-full flex justify-center">
+                      <Image
+                        src={feature.image.src}
+                        alt={feature.image.alt}
+                        width={900}
+                        height={600}
+                        className="w-full max-w-2xl rounded-2xl md:rounded-3xl border-2 border-white/10 object-cover"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
         </div>
       </div>
-      {/* Just used to know it's the end of the autoscroll feature (optional, see useEffect) */}
-      <p className="opacity-0" ref={featuresEndRef}></p>
     </section>
   );
 };

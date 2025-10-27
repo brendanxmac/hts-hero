@@ -36,9 +36,9 @@ const WithWithout = ({
 }: Props) => {
   return (
     <section className="bg-base-300">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-16 md:py-24">
-        <div className="flex flex-col gap-4 mb-12 md:mb-16 items-center max-w-2xl mx-auto">
-          <h2 className="text-center font-black text-white text-3xl sm:text-4xl md:text-5xl">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-10 md:py-16">
+        <div className="flex flex-col gap-4 mb-8 items-center max-w-2xl mx-auto">
+          <h2 className="text-center font-black text-white text-4xl sm:text-5xl md:text-6xl">
             {title}
           </h2>
           {subtitle && (
@@ -54,10 +54,10 @@ const WithWithout = ({
         </div>
         <div className="flex flex-col lg:flex-row justify-center items-center lg:items-start gap-4 sm:gap-6 md:gap-8 lg:gap-12">
           {/* Without HTS Hero Card */}
-          <div className="bg-base-100 backdrop-blur-sm text-white p-4 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl flex flex-col gap-4 sm:gap-6 shadow-2xl border border-neutral-600/30 w-full max-w-sm sm:max-w-md lg:max-w-3xl">
+          <div className="bg-base-300 backdrop-blur-sm text-white p-4 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl flex flex-col gap-4 sm:gap-6 shadow-2xl border border-gray-700 w-full max-w-sm sm:max-w-md lg:max-w-3xl">
             {withList && (
               <div className="flex flex-col items-center justify-center gap-3">
-                <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-red-900/50 rounded-full">
+                {/* <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-red-900/50 rounded-full">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -72,9 +72,10 @@ const WithWithout = ({
                       d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
                     />
                   </svg>
-                </div>
+                </div> */}
                 <div className="flex flex-col items-center justify-center">
-                  <h2 className="text-center text-white text-2xl sm:text-3xl lg:text-4xl font-bold">
+                  <h2 className="text-center text-white text-2xl sm:text-3xl font-bold">
+                    Classification <br />
                     <span className="text-red-400">Without</span> HTS Hero
                   </h2>
                 </div>
@@ -115,10 +116,10 @@ const WithWithout = ({
 
           {/* With HTS Hero Card */}
           {withList && (
-            <div className="bg-base-100 backdrop-blur-sm text-white p-4 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl flex flex-col gap-4 sm:gap-6 shadow-2xl border border-gray-700 w-full max-w-sm sm:max-w-md lg:max-w-3xl">
+            <div className="bg-base-300 backdrop-blur-sm text-white p-4 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl flex flex-col gap-4 sm:gap-6 shadow-2xl border border-gray-700 w-full max-w-sm sm:max-w-md lg:max-w-3xl">
               <div className="flex flex-col items-center justify-center gap-3">
-                <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-green-900/50 rounded-full">
-                  <svg
+                {/* <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-green-900/50 rounded-full">
+                    <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -132,9 +133,10 @@ const WithWithout = ({
                       d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
                     />
                   </svg>
-                </div>
+                </div> */}
                 <div className="flex flex-col items-center justify-center">
-                  <h2 className="text-center text-white text-2xl sm:text-3xl lg:text-4xl font-bold">
+                  <h2 className="text-center text-white text-2xl sm:text-3xl font-bold">
+                    Classification <br />
                     <span className="text-green-400">With</span> HTS Hero
                   </h2>
                 </div>
@@ -179,7 +181,7 @@ const WithWithout = ({
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="w-4 h-4 sm:w-6 sm:h-6 text-neutral-300"
+            className="w-4 h-4 text-neutral-300"
           >
             <path
               strokeLinecap="round"
@@ -188,7 +190,7 @@ const WithWithout = ({
             />
           </svg>
 
-          <p className="text-center font-bold text-neutral-300 tracking-tight text-lg sm:text-xl md:text-2xl">
+          <p className="text-center font-bold text-neutral-300 tracking-tight text-lg sm:text-xl">
             There&apos;s a better way
           </p>
 
@@ -198,7 +200,7 @@ const WithWithout = ({
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="w-4 h-4 sm:w-6 sm:h-6 text-neutral-300"
+            className="w-4 h-4 text-neutral-300"
           >
             <path
               strokeLinecap="round"
