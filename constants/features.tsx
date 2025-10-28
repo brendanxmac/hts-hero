@@ -2,9 +2,9 @@ import { FeatureI } from "../interfaces/ui";
 
 export const classifyFeatures: FeatureI[] = [
   {
-    title: "Finds Headings",
+    title: "Finds Heading Candidates",
     description:
-      "Automtically gets the most likely headings for the item you're classifying",
+      "Automtically finds likely headings for the item you're classifying",
     mediaType: "video",
     altText: "Finds the Best Candidates Video",
     mediaPath: "/finds-candidates.mp4",

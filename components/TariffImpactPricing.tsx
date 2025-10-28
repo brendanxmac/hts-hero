@@ -79,13 +79,15 @@ export const getFeatureIcon = (feature: PricingFeatureI) => {
 const getPricingHeadline = () => {
   return (
     <div className="flex flex-col gap-2">
-      <h2 className="text-white font-extrabold text-4xl md:text-6xl max-w-6xl mx-auto tracking-relaxed">
-        <span className="text-primary">Save Hours</span> on Tariff Checks & Find
-        Ways to <span className="text-primary">Reduce Landed Costs</span>
+      <h2 className="text-white font-extrabold text-4xl md:text-5xl max-w-6xl mx-auto">
+        <span className="text-secondary">Master</span> Tariffs.{" "}
+      </h2>
+      <h2 className="text-white font-extrabold text-4xl md:text-5xl max-w-6xl mx-auto">
+        <span className="text-accent">Discover</span> Savings.
       </h2>
       <p className="text-sm md:text-lg text-neutral-300 font-medium mt-2">
-        Join over 100 importers & customs brokers who are already automating
-        their tariff impact checks
+        Join 200+ importers & customs brokers who are already conquering the
+        tariff chaos
       </p>
     </div>
   );
@@ -128,10 +130,10 @@ const TariffImpactPricing = () => {
   }, [user]);
 
   return (
-    <section className="bg-base-300 overflow-hidden" id="pricing">
-      <div className="p-8 max-w-7xl mx-auto">
+    <section className="bg-base-100 overflow-hidden" id="pricing">
+      <div className="px-8 max-w-7xl mx-auto pt-10 pb-20">
         <div className="flex flex-col text-center w-full my-10">
-          <p className="font-medium mb-8">Pricing</p>
+          {/* <p className="font-medium mb-8">Pricing</p> */}
           {getPricingHeadline()}
         </div>
 
@@ -248,7 +250,7 @@ const TariffImpactPricing = () => {
         </div>
 
         {/* Enterprise Plan -- aka lets talk */}
-        <div className="flex flex-col md:flex-row justify-between md:items-center gap-3 w-full max-w-xl lg:max-w-7xl mx-auto border-2 border-base-content/20 rounded-lg mt-4 p-6">
+        <div className="bg-base-300 flex flex-col md:flex-row justify-between md:items-center gap-3 w-full max-w-xl lg:max-w-7xl mx-auto border-2 border-base-content/20 rounded-lg mt-4 p-6">
           <div className="flex flex-col">
             <p className="text-2xl text-white font-bold">Enterprise</p>
             <p className="text-base-content/80">Get Pro for your whole team</p>
@@ -262,7 +264,7 @@ const TariffImpactPricing = () => {
         </div>
 
         {/* Interactive Plan Selection Guide */}
-        <div className="w-full max-w-7xl mx-auto mt-12 md:mt-24 bg-base-100">
+        {/* <div className="w-full max-w-7xl mx-auto mt-12 bg-base-200">
           <div className="border border-base-content/20 rounded-xl bg-gradient-to-br from-base-200/50 to-base-300/50 backdrop-blur-sm p-8">
             <div className="text-center mb-8">
               <h3 className="text-lg sm:text-2xl font-bold text-white mb-2">
@@ -275,7 +277,6 @@ const TariffImpactPricing = () => {
             </div>
 
             <div className="flex flex-col items-center gap-6">
-              {/* Import Volume Slider */}
               <div className="w-full max-w-2xl">
                 <div className="flex items-center justify-between gap-4 mb-4">
                   <h4 className="text-sm sm:text-xl font-medium text-white">
@@ -313,7 +314,6 @@ const TariffImpactPricing = () => {
                 </div>
               </div>
 
-              {/* Recommended Plan Display */}
               <div className="w-full max-w-2xl">
                 <div className="bg-primary/10 border border-primary/30 rounded-lg p-6">
                   <div className="flex items-center gap-3 mb-2">
@@ -343,7 +343,7 @@ const TariffImpactPricing = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );

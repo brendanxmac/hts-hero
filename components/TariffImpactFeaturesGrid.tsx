@@ -139,10 +139,10 @@ const TariffImpactFeaturesGrid = () => {
   }, [currentCharIndex, currentCodeIndex, isTyping, dummyTariffImpactResults]);
 
   return (
-    <section className="flex justify-center items-center w-full bg-base-200 text-base-content px-6 py-10 lg:py-16">
+    <section className="flex justify-center items-center w-full bg-base-300 text-base-content px-6 pt-10 lg:pt-16">
       <div className="w-full flex flex-col max-w-7xl lg:min-w-5xl gap-4 sm:gap-8">
         <div className="flex flex-col gap-2 md:gap-4 text-center lg:text-left lg:flex-1 items-center">
-          <h1 className="text-white font-extrabold text-3xl sm:text-4xl md:text-6xl lg:text-7xl tracking-tight max-w-5xl text-center mx-auto">
+          <h1 className="text-white font-extrabold text-3xl sm:text-4xl md:text-6xl tracking-tight max-w-4xl text-center mx-auto">
             <span className="text-primary">Instantly</span> Know How New Tariffs
             Affect Your Imports
           </h1>

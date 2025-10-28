@@ -19,7 +19,7 @@ export const FeaturePoints = ({ points }: Props) => {
           key={point}
           className={classNames(
             "flex items-start gap-3",
-            isKey && "text-primary pt-3 text-xl font-extrabold",
+            isKey && "text-secondary pt-3 text-xl font-extrabold",
             !isKey && "text-gray-100"
           )}
         >
@@ -57,7 +57,7 @@ export const FeaturePoints = ({ points }: Props) => {
 
             // <span className="text-xs text-gray-400">Coming Soon</span>
           )}
-          <div className="flex flex-col gap-1 -mt-1">
+          <div className="flex flex-col gap-1 -mt-1 md:text-lg">
             <span>{point}</span>
 
             {detail && <span className="text-xs text-gray-400">{detail}</span>}
