@@ -8,14 +8,14 @@ export default function Home() {
   const { user } = useUser();
 
   return (
-    <div className="min-h-screen bg-base-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-base-300 flex items-center justify-center p-4">
       <div className="text-center max-w-7xl w-full">
         {/* Header */}
         <div className="mb-8">
           {/* Welcome to text */}
-          <h3 className="text-lg sm:text-xl mb-4 sm:mb-6 tracking-tight">
+          {/* <h3 className="text-lg sm:text-xl mb-4 sm:mb-6 tracking-tight">
             Welcome to
-          </h3>
+          </h3> */}
 
           {/* Logo and HTS Hero text */}
           <div className="flex items-center justify-center gap-1 mb-2">
@@ -38,18 +38,19 @@ export default function Home() {
 
         {/* Navigation Buttons */}
         <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
-          {/* Tariff Import Checker */}
+          {/* HTS Explorer */}
           <Link
-            href={user ? "/tariffs/impact-checker" : "/about/tariffs"}
+            href="/explore"
             className="group btn btn-lg h-auto py-6 px-4 bg-base-200 border-2 border-neutral-600 hover:border-primary hover:bg-primary/10 transition-all duration-300 transform hover:scale-105"
           >
             <div className="flex flex-col items-center gap-4">
-              <div className="text-4xl">⚡️</div>
+              <div className="text-4xl">📊</div>
               <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors">
-                Tariff Impact Checker
+                Tariff Finder
               </h3>
               <p className="text-sm text-neutral-400 leading-relaxed">
-                See if your imports are affected by new tariffs
+                Check tariff rates for any item from any country
+                {/* Check if you can import at a profit */}
               </p>
             </div>
           </Link>
@@ -70,19 +71,18 @@ export default function Home() {
             </div>
           </Link>
 
-          {/* HTS Explorer */}
+          {/* Tariff Import Checker */}
           <Link
-            href="/explore"
+            href={user ? "/tariffs/impact-checker" : "/about/tariffs"}
             className="group btn btn-lg h-auto py-6 px-4 bg-base-200 border-2 border-neutral-600 hover:border-primary hover:bg-primary/10 transition-all duration-300 transform hover:scale-105"
           >
             <div className="flex flex-col items-center gap-4">
-              <div className="text-4xl">📊</div>
+              <div className="text-4xl">⚡️</div>
               <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors">
-                Tariff Estimator
+                Tariff Impact Checker
               </h3>
               <p className="text-sm text-neutral-400 leading-relaxed">
-                Check tariff rates for any item from any country
-                {/* Check if you can import at a profit */}
+                See if your imports are affected by new tariffs
               </p>
             </div>
           </Link>
