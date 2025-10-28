@@ -45,22 +45,27 @@ const withClassify: Task[] = [
   {
     title: "Finding Headings",
     time: "0 min",
+    notTime: "15 min",
   },
   {
     title: "Fetching Notes & Rulings",
     time: "0 min",
+    notTime: "10 min",
   },
   {
     title: "Finding Tariffs & Exemptions",
     time: "0 min",
+    notTime: "10 min",
   },
   {
     title: "Creating Advisory Reports",
     time: "0 min",
+    notTime: "15 min",
   },
   {
     title: "Saving, Sharing, Finding, and Updating Classifications",
     time: "0 min",
+    notTime: "?? min",
   },
 ];
 
@@ -77,22 +82,23 @@ export default function Home() {
 
         <FeaturesListicle />
 
-        <WithWithout
+        {/* <WithWithout
+          subject="Classification"
           title="Classification Doesn't Have to Be Painful"
-          withoutKeyPoint={{
-            title: "~1 Hour",
-            detail: "Manual, time-consuming process",
-          }}
+          // withoutKeyPoint={{
+          //   title: "~1 Hour",
+          //   detail: "Manual, time-consuming process",
+          // }}
           withKeyPoint={{
             title: "Automated",
             detail: "Steamlined, efficient workflow",
           }}
           withList={withClassify}
-          withoutList={withoutClassify}
-        />
+          // withoutList={withoutClassify}
+        /> */}
 
-        <section className="relative max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-          <div className="flex flex-col items-center text-center gap-3 sm:gap-4 mb-8 max-w-3xl mx-auto">
+        <section className="relative w-full bg-base-300 px-4 sm:px-6 py-12 sm:py-20">
+          <div className="flex flex-col max-w-5xl mx-auto items-center text-center gap-3 sm:gap-4 mb-8">
             <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white/80">
               Real product demo
             </span>

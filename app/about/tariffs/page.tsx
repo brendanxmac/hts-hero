@@ -10,6 +10,7 @@ import { tariffImpactFaqList } from "@/constants/faq";
 import TariffImpactHeader from "@/components/TariffImpactHeader";
 import { PendingTariffsList } from "../../../components/UpcomingTariffsList";
 import TariffImpactPricing from "../../../components/TariffImpactPricing";
+import TrustedBy from "../../../components/TrustedBy";
 
 const withoutTariffImpact: Task[] = [
   {
@@ -70,28 +71,31 @@ export default function Home() {
       <main>
         <TariffImpactFeaturesGrid />
 
-        <WithWithout
-          title="Keeping up with Tariff Changes is a Nightmare"
-          // subtitle="Automatically stay up to date with new tariffs and find ways to reduce your landed costs"
-          // ctaText="Check your Imports"
-          // ctaLink="/tariffs/impact-checker"
-          // withKeyPoint={{
-          //   title: "Clarity",
-          //   detail: "No more guessing or waiting",
-          // }}
-          withoutKeyPoint={{
-            title: "Error-Prone & Time-Consuming",
-            // detail: "Manual, error-prone, time-consuming",
+        <TrustedBy showTestimonials={false} />
+        <div className="h-10 bg-base-300"></div>
+
+        <Demo
+          standoutPlacement="end"
+          titleStandout=""
+          title="See If Your Imports Are Affected By New Tariffs"
+          subtitle="Instantly know which imports are affected by tariff updates"
+          ctaText="Try it Now!"
+          ctaLink="/tariffs/impact-checker"
+          media={{
+            title: "Tariff Impacts",
+            description: "Tariff Impacts Demo",
+            mediaType: "video",
+            mediaPath: "/tariff-impact-demo.mp4",
+            mediaFormat: "mp4",
+            altText: "Tariff Impacts",
           }}
-          // withList={withTariffImpact}
-          withoutList={withoutTariffImpact}
         />
 
         <div className="hidden md:block">
           <Demo
             standoutPlacement="start"
-            titleStandout="Get Notified"
-            title="When Tariff Changes Affect your Imports"
+            titleStandout=""
+            title="Get Notified When Tariffs Affect Your Imports"
             subtitle="Receive email notifications when new tariff announcements affect your imports"
             ctaText="Try it Now!"
             ctaLink="/tariffs/impact-checker"
@@ -108,8 +112,8 @@ export default function Home() {
         <div className="md:hidden">
           <Demo
             standoutPlacement="start"
-            titleStandout="Get Notified"
-            title="When Updates Happen"
+            titleStandout=""
+            title="Get Notified When Tariffs Affect Your Imports"
             subtitle="Get notified, see the impacts, and take action to save your bottom-line"
             ctaText="Try it Now!"
             ctaLink="/tariffs/impact-checker"
@@ -126,25 +130,8 @@ export default function Home() {
 
         <Demo
           standoutPlacement="end"
-          titleStandout="Are Affected"
-          title="See Which Imports"
-          subtitle="Instantly know which imports are affected by tariff updates"
-          ctaText="Try it Now!"
-          ctaLink="/tariffs/impact-checker"
-          media={{
-            title: "Tariff Impacts",
-            description: "Tariff Impacts Demo",
-            mediaType: "video",
-            mediaPath: "/tariff-impact-demo.mp4",
-            mediaFormat: "mp4",
-            altText: "Tariff Impacts",
-          }}
-        />
-
-        <Demo
-          standoutPlacement="end"
-          titleStandout="Discover Savings"
-          title=""
+          titleStandout=""
+          title="Discover Tariff Savings"
           subtitle="See the full list of tariffs for any import from any country & explore ways to save"
           ctaText="Try it Now!"
           ctaLink="/tariffs/impact-checker"
@@ -156,6 +143,24 @@ export default function Home() {
             mediaFormat: "mp4",
             altText: "Tariff Impacts",
           }}
+        />
+
+        <WithWithout
+          subject="Tariffs"
+          title="Keeping up with Tariff Changes is a Nightmare"
+          // subtitle="Automatically stay up to date with new tariffs and find ways to reduce your landed costs"
+          // ctaText="Check your Imports"
+          // ctaLink="/tariffs/impact-checker"
+          // withKeyPoint={{
+          //   title: "Clarity",
+          //   detail: "No more guessing or waiting",
+          // }}
+          withoutKeyPoint={{
+            title: "Error-Prone & Time-Consuming",
+            // detail: "Manual, error-prone, time-consuming",
+          }}
+          // withList={withTariffImpact}
+          withoutList={withoutTariffImpact}
         />
 
         <TariffImpactPricing />

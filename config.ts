@@ -94,7 +94,7 @@ const classifyPro: PricingPlanI = {
   priceAnchor: 120,
   isFeatured: true,
   features: [
-    { name: "Finds Headings" },
+    { name: "Finds Heading Candidates" },
     { name: "Analyzes Candidates" },
     { name: "Finds CROSS Rulings" },
     { name: "Fetches Tariffs" },

@@ -22,11 +22,11 @@ const features: {
       "Enter a description and instantly see HS headings that jump‑start your work.",
     points: [
       {
-        point:
-          "Enter an item description and get suitable HS headings in seconds",
+        point: "Get suitable HS headings for any item in seconds",
       },
       {
-        point: "Jump-start classifications instead of starting from scratch",
+        point:
+          "Jump-start classifications instead of starting from scratch every time",
       },
       {
         point: "Discover headings you might have missed",
@@ -55,9 +55,8 @@ const features: {
         point: "Helps you quickly find the best candidate",
       },
       {
-        point: "Add your own notes for any decision",
-        detail:
-          "Which are automatically included in your reports and help refresh your memory later on",
+        point: "Lets you add your own notes for any decision",
+        detail: "These are automatically included in your reports",
       },
       {
         point: "~10 minutes saved",
@@ -78,7 +77,6 @@ const features: {
     points: [
       {
         point: "Automatically searches CROSS rulings for you",
-        detail: "Based on the item description & final code",
       },
       {
         point:
@@ -102,8 +100,7 @@ const features: {
         point: "See the latest tariffs for any import from any country",
       },
       {
-        point: "Discover ways to save",
-        detail: "Explore & apply exemptions & trade programs",
+        point: "Discover ways to save with exemptions & trade programs",
       },
       {
         point: "Constantly updated with the latest tariff annoucements",
@@ -129,7 +126,7 @@ const features: {
       },
       {
         point:
-          "Automatically includes notes, branding, disclaimers, classifier, & client",
+          "Automatically includes your notes, branding, disclaimers, contact info, & more",
       },
       {
         point: "Easily export & share with your clients",
@@ -184,21 +181,18 @@ const FeaturesListicle = () => {
       </div>
 
       <div className="px-6 md:px-12 max-w-6xl mx-auto">
-        <div className="flex flex-col gap-10 md:gap-12">
+        <div className="flex flex-col gap-10 md:gap-14">
           {features.map((feature, index) => {
-            // const mediaLeft = index % 2 === 1;
+            const mediaLeft = index % 2 === 1;
             return (
-              <article
-                key={feature.name}
-                className="rounded-2xl md:rounded-3xl bg-base-200 border border-base-content/10 p-6 md:p-10"
-              >
+              <article key={feature.name} className="py-6 md:py-10">
                 <div
-                  className={`grid grid-cols-1 items-center gap-8 lg:gap-12 lg:grid-cols-[1fr_1fr]`}
+                  className={`grid grid-cols-1 items-center gap-8 lg:gap-16 lg:grid-cols-[1fr_1fr]`}
                 >
-                  <div>
+                  <div className={`${mediaLeft ? "lg:order-2" : "lg:order-1"}`}>
                     <div className="flex items-center gap-3 mb-8">
                       <span className="text-primary">{feature.svg}</span>
-                      <h3 className="text-white text-2xl md:text-3xl font-extrabold tracking-tight">
+                      <h3 className="text-white text-2xl md:text-4xl font-extrabold tracking-tight">
                         {feature.name}
                       </h3>
                     </div>
@@ -207,7 +201,7 @@ const FeaturesListicle = () => {
                     </p> */}
                     <FeaturePoints points={feature.points} />
                   </div>
-                  <div>
+                  <div className={`${mediaLeft ? "lg:order-1" : "lg:order-2"}`}>
                     <div className="w-full h-full flex justify-center">
                       <Image
                         src={feature.image.src}

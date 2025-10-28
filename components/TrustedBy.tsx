@@ -12,8 +12,8 @@ const companies = [
 
 // Company name component
 const CompanyName = ({ company }: { company: (typeof companies)[0] }) => (
-  <div className="flex items-center justify-center h-12">
-    <div className="text-primary text-sm font-medium text-center whitespace-nowrap border border-neutral-600/30 rounded-lg px-4 py-2 bg-neutral-800/50 hover:bg-neutral-700/50 transition-all duration-300 cursor-default">
+  <div className="flex items-center justify-center">
+    <div className="text-neutral-400 text-center border border-neutral-500/50 rounded-md whitespace-nowrap px-3 py-1.5 transition-all duration-300 cursor-default">
       {company}
     </div>
   </div>
@@ -46,8 +46,8 @@ const IndividualTestimonial = ({
 }: {
   testimonial: (typeof individualTestimonials)[0];
 }) => (
-  <div className="flex flex-col items-center text-center w-full sm:flex-1 sm:max-w-sm lg:max-w-md bg-neutral-800/40 backdrop-blur-sm rounded-xl p-6 border border-neutral-600/30 hover:border-neutral-500/50 transition-all duration-300">
-    <blockquote className="text-sm text-neutral-300 mb-3 italic">
+  <div className="flex flex-col items-center text-center w-full sm:flex-1 sm:max-w-sm lg:max-w-md bg-neutral-800/40 backdrop-blur-sm rounded-xl p-4 border border-neutral-500/50 transition-all duration-300">
+    <blockquote className="sm:text-lg text-gray-100 mb-3">
       &quot;{testimonial.quote}&quot;
     </blockquote>
     <div className="text-neutral-400 text-xs font-medium">
@@ -56,61 +56,50 @@ const IndividualTestimonial = ({
   </div>
 );
 
-const TrustedBy = () => {
+interface Props {
+  showTestimonials?: boolean;
+}
+
+const TrustedBy = ({ showTestimonials = true }: Props) => {
   return (
-    <section className="py-8 bg-base-300">
+    <section className="py-8 md:py-14 bg-base-300">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
-        <div className="text-center flex flex-col gap-4">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+        <div className="text-center flex flex-col gap-6">
+          <div className="flex flex-col gap-2">
+            <h2 className="text-2xl md:text-3xl font-bold text-white">
               Trusted by Industry Leaders
             </h2>
             <p className="text-sm sm:text-base text-neutral-300 max-w-7xl mx-auto">
               Join hundreds of customs brokers & importers who use HTS Hero to
               make tariffs & classification a breeze
-              {/* who rely on HTS Hero to boost their classifications
-              and get tariff insights. */}
             </p>
           </div>
           <div className="relative overflow-hidden">
-            <div className="flex flex-wrap justify-center gap-2">
-              {/* Company names */}
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              {/* Company names with separators */}
               {companies.map((company, index) => (
-                <CompanyName key={`first-${index}`} company={company} />
+                <CompanyName key={`company-${index}`} company={company} />
               ))}
             </div>
           </div>
         </div>
 
         {/* Individual Testimonials Section - Full width below other content */}
-        <section className="w-full py-4">
-          <div className="max-w-7xl mx-auto px-8">
-            <div className="flex flex-wrap justify-center items-stretch gap-6 md:gap-8">
-              {individualTestimonials.map((testimonial, index) => (
-                <IndividualTestimonial key={index} testimonial={testimonial} />
-              ))}
+        {showTestimonials && (
+          <section className="w-full py-10">
+            <div className="max-w-7xl mx-auto">
+              <div className="flex flex-wrap justify-center items-stretch gap-6 md:gap-8">
+                {individualTestimonials.map((testimonial, index) => (
+                  <IndividualTestimonial
+                    key={index}
+                    testimonial={testimonial}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
-
-        {/* Stats Section */}
-        {/* <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-          <div className="bg-base-100 rounded-2xl p-6 shadow-lg">
-            <div className="text-3xl font-bold text-primary mb-2">500+</div>
-            <div className="text-base-content/70">Active Users</div>
-          </div>
-          <div className="bg-base-100 rounded-2xl p-6 shadow-lg">
-            <div className="text-3xl font-bold text-primary mb-2">50K+</div>
-            <div className="text-base-content/70">
-              Classifications Completed
-            </div>
-          </div>
-          <div className="bg-base-100 rounded-2xl p-6 shadow-lg">
-            <div className="text-3xl font-bold text-primary mb-2">99.2%</div>
-            <div className="text-base-content/70">Accuracy Rate</div>
-          </div>
-        </div> */}
+          </section>
+        )}
       </div>
 
       <style jsx>{`

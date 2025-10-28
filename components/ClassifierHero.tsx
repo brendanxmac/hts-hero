@@ -15,8 +15,10 @@ const ClassifierHero = () => {
               </span>
             </h1>
             <p className="text-sm sm:text-lg text-neutral-300 leading-relaxed">
-              Go from product description to classification & client-ready
-              report incredibly fast
+              Turn any product description into a branded classification report
+              - faster than ever
+              {/* Go from product description to classification &
+              client-ready report incredibly fast */}
             </p>
           </div>
 
@@ -43,7 +45,10 @@ const ClassifierHero = () => {
             autoPlay
             muted
             loop
+            controls
+            controlsList="nofullscreen noplaybackrate nodownload"
             playsInline
+            disablePictureInPicture
             src="/new-hero-demo.mp4"
           ></video>
         </div>
