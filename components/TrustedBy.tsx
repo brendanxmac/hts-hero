@@ -67,7 +67,7 @@ const TrustedBy = ({ showTestimonials = true }: Props) => {
         {/* Header */}
         <div className="text-center flex flex-col gap-6">
           <div className="flex flex-col gap-2">
-            <h2 className="text-2xl md:text-3xl font-bold text-white">
+            <h2 className="text-lg sm:text-2xl md:text-3xl font-bold text-white">
               Trusted by Industry Leaders
             </h2>
             <p className="text-sm sm:text-base text-neutral-300 max-w-7xl mx-auto">
