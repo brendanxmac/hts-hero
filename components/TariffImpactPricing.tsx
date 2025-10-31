@@ -79,10 +79,10 @@ export const getFeatureIcon = (feature: PricingFeatureI) => {
 const getPricingHeadline = () => {
   return (
     <div className="flex flex-col gap-2">
-      <h2 className="text-white font-extrabold text-4xl md:text-5xl max-w-6xl mx-auto">
+      <h2 className="text-white font-extrabold text-3xl sm:text-4xl md:text-5xl max-w-6xl mx-auto">
         <span className="text-secondary">Master</span> Tariffs.{" "}
       </h2>
-      <h2 className="text-white font-extrabold text-4xl md:text-5xl max-w-6xl mx-auto">
+      <h2 className="text-white font-extrabold text-3xl sm:text-4xl md:text-5xl max-w-6xl mx-auto">
         <span className="text-accent">Discover</span> Savings.
       </h2>
       <p className="text-sm md:text-lg text-neutral-300 font-medium mt-2">

@@ -73,6 +73,7 @@ export default function Home() {
       <main>
         <TariffFeaturesGrid />
 
+        <div className="h-8 bg-base-300"></div>
         <TrustedBy showTestimonials={false} />
         <div className="h-10 bg-base-300"></div>
 
