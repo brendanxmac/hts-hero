@@ -149,7 +149,8 @@ const TariffImpactFeaturesGrid = () => {
             Know How New Tariffs Affect Your Imports
           </h1>
           <p className="text-sm md:text-lg lg:text-xl text-neutral-300 leading-relaxed max-w-5xl mx-auto md:my-4">
-            Get notified, see what's affected, and discover potential savings
+            Get notified, see what&apos;s affected, and discover potential
+            savings
           </p>
 
           <div className="flex justify-center lg:justify-start">
