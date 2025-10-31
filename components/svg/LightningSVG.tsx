@@ -1,8 +1,14 @@
 import SVG, { SVGProps } from "./SVG";
 
-export default function LightningSVG({ color, size, viewBox }: SVGProps) {
+export default function LightningSVG({
+  color,
+  size,
+  viewBox,
+  fill = false,
+}: SVGProps) {
   return (
     <SVG
+      fill={fill}
       color={color}
       size={size}
       viewBox={viewBox}

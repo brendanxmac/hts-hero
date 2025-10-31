@@ -96,10 +96,10 @@ const getPricingHeadline = () => {
           <span className="text-secondary">Quick</span> Classifications,
         </h2>
         <h2 className="text-white font-black text-3xl md:text-4xl lg:text-5xl max-w-4xl mx-auto tracking-relaxed">
-          <span className="text-primary">Effortless</span> Tariffs,
+          <span className="text-accent">Effortless</span> Tariffs,
         </h2>
         <h2 className="text-white font-black text-3xl md:text-4xl lg:text-5xl max-w-4xl mx-auto tracking-relaxed">
-          <span className="text-accent">Happier</span> Clients
+          <span className="text-primary">Happier</span> Clients
         </h2>
       </div>
       <h3 className="lg:text-lg">Less than $3 per day</h3>

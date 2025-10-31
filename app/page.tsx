@@ -46,7 +46,7 @@ export default function Home() {
             <div className="flex flex-col items-center gap-4">
               <div className="text-4xl">📊</div>
               <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors">
-                Tariff Finder
+                Tariff Tracker
               </h3>
               <p className="text-sm text-neutral-400 leading-relaxed">
                 Check tariff rates for any item from any country

@@ -143,26 +143,6 @@ const features: {
       alt: "One-click classification reports",
     },
   },
-  // {
-  //   name: "Fetches Notes",
-  //   points: [
-  //     {
-  //       point:
-  //         "Immediately see the notes that might impact your classification",
-  //       detail: "General, Section, Chapter, Subheading, etc...",
-  //     },
-  //     {
-  //       point: "Helps you find the details of HTS references",
-  //       detail: `👉 "See heading 9902.22.84" 👉 "Articles of heading 4601"`,
-  //     },
-  //     {
-  //       point: "~10 minutes saved",
-  //       detail: "per classification",
-  //       isKey: true,
-  //     },
-  //   ],
-  //   svg: <DocumentSearchSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
-  // },
 ];
 
 const FeaturesListicle = () => {

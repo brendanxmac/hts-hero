@@ -11,8 +11,6 @@ import TariffImpactHeader from "@/components/TariffImpactHeader";
 import { PendingTariffsList } from "../../../components/UpcomingTariffsList";
 import TariffImpactPricing from "../../../components/TariffImpactPricing";
 import TrustedBy from "../../../components/TrustedBy";
-import TariffFeaturesGrid from "../../../components/TariffHero";
-import TariffFeaturesListicle from "../../../components/TariffFeaturesListicle";
 
 const withoutTariffImpact: Task[] = [
   {
@@ -71,14 +69,12 @@ export default function Home() {
         <TariffImpactHeader />
       </Suspense>
       <main>
-        <TariffFeaturesGrid />
+        <TariffImpactFeaturesGrid />
 
         <TrustedBy showTestimonials={false} />
         <div className="h-10 bg-base-300"></div>
 
-        <TariffFeaturesListicle />
-
-        {/* <Demo
+        <Demo
           standoutPlacement="end"
           titleStandout=""
           title="See If Your Imports Are Affected By New Tariffs"
@@ -147,7 +143,7 @@ export default function Home() {
             mediaFormat: "mp4",
             altText: "Tariff Impacts",
           }}
-        /> */}
+        />
 
         <WithWithout
           subject="Tariffs"
@@ -169,7 +165,7 @@ export default function Home() {
 
         <TariffImpactPricing />
 
-        {/* <FAQ faqItems={tariffImpactFaqList} /> */}
+        <FAQ faqItems={tariffImpactFaqList} />
 
         <PendingTariffsList />
       </main>

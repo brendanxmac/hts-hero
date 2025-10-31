@@ -152,7 +152,7 @@ const TariffImpactPricing = () => {
                   <span
                     className={`badge text-xs text-black font-semibold border-0 bg-primary`}
                   >
-                    Best Value
+                    Most Popular
                   </span>
                 </div>
               )}
