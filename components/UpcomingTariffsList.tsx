@@ -21,6 +21,11 @@ interface Props {
 export const PendingTariffsList = ({ hideHeading }: Props) => {
   const tariffAnnouncements: TariffAnnouncement[] = [
     {
+      name: "Medium & Heavy Duty Vehicles",
+      date: new Date(2025, 10, 1), // November 1, 2025
+      status: TariffStatus.PENDING_PUBLICATION,
+    },
+    {
       name: "Robotics & Industrial Machinery",
       date: new Date(2025, 8, 24), // September 24, 2025
       status: TariffStatus.INVESTIGATION,
@@ -72,12 +77,12 @@ export const PendingTariffsList = ({ hideHeading }: Props) => {
       date: new Date(2025, 4, 13), // May 13, 2025
       status: TariffStatus.INVESTIGATION,
     },
-    {
-      name: "Trucks & Truck Parts",
-      date: new Date(2025, 8, 25), // September 25, 2025
-      rate: "25%",
-      status: TariffStatus.PENDING_PUBLICATION,
-    },
+    // {
+    //   name: "Trucks & Truck Parts",
+    //   date: new Date(2025, 8, 25), // September 25, 2025
+    //   rate: "25%",
+    //   status: TariffStatus.PENDING_PUBLICATION,
+    // },
     {
       name: "Maritime Cargo Handling Equipment",
       date: new Date(2025, 3, 9), // April 9, 2025

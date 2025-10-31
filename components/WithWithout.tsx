@@ -93,18 +93,21 @@ const WithWithout = ({
                     className="flex items-center gap-2 sm:gap-3 px-3 py-2 sm:py-2 bg-base-300/80 rounded-lg border border-gray-700"
                   >
                     <div className="flex-1">
-                      <div className="flex items-center justify-between gap-2 sm:gap-3 md:gap-4">
-                        <span className="text-neutral-200 font-semibold text-sm md:text-lg">
-                          {task.title}
-                        </span>
-                        <span className="text-red-200 font-bold text-sm sm:text-base md:text-lg bg-red-900/50 px-2 py-0.5 rounded-full flex-shrink-0 whitespace-nowrap border border-red-700/30">
+                      <div className="flex items-center gap-2 sm:gap-3 md:gap-3">
+                        {/* <span className="text-red-200 font-bold text-sm sm:text-base md:text-lg bg-red-900/50 px-2 py-0.5 rounded-full flex-shrink-0 whitespace-nowrap border border-red-700/30">
                           <span>{task.time}</span>
                           {task.notTime && (
                             <span className="ml-2 line-through opacity-70">
                               {task.notTime}
                             </span>
                           )}
-                        </span>
+                        </span> */}
+                        <p className="text-neutral-200 font-semibold text-sm md:text-lg">
+                          {task.time}
+                        </p>
+                        <p className="text-neutral-200 font-semibold text-sm md:text-lg">
+                          {task.title}
+                        </p>
                       </div>
                     </div>
                   </li>

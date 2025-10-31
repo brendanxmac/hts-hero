@@ -384,7 +384,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                 <div className="flex items-center">
                   <div className="flex gap-2 items-center">
                     <PrimaryLabel
-                      value="📊 Tariff Wizard"
+                      value="📊 Tariff Explorer"
                       color={Color.WHITE}
                     />
                     <div className="text-xs text-base-300 font-bold bg-accent px-2 py-0.5 rounded-md">

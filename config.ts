@@ -11,12 +11,12 @@ export const tariffImpactStarter: PricingPlanI = {
   features: [
     {
       name: "Unlimited Tariff Impact Checks",
-      details: "See if your imports are affected by tariff updates",
+      details: "See if your imports are affected by new tariff updates",
     },
     {
-      name: "Import Lists",
+      name: "Product Catalog",
       details:
-        "Organize your imports and quickly check them against future tariff updates",
+        "Upload your imports and quickly check them against new tariff announcements",
     },
   ],
 };
@@ -31,15 +31,15 @@ export const tariffImpactStandard: PricingPlanI = {
   features: [
     {
       name: "Unlimited Tariff Impact Checks",
-      details: "See if your imports are affected by tariff updates",
+      details: "See if your imports are affected by new tariff updates",
     },
     {
-      name: "Import Lists",
+      name: "Product Catalog",
       details:
-        "Organize your imports and quickly check them against future tariff updates",
+        "Upload your imports and quickly check them against new tariff announcements",
     },
     {
-      name: "Import Tariff Monitoring",
+      name: "Tariff Monitoring for your Imports",
       details: "Get notified when your imports are affected by new tariffs",
     },
   ],
@@ -56,21 +56,20 @@ export const tariffImpactPro: PricingPlanI = {
   features: [
     {
       name: "Unlimited Tariff Impact Checks",
-      details: "See if your imports are affected by tariff updates",
+      details: "See if your imports are affected by new tariff announcements",
     },
     {
-      name: "Import Lists",
+      name: "Product Catalog",
       details:
-        "Organize your imports and quickly check them against future tariff updates",
+        "Upload your imports and quickly check them against tariff updates",
     },
     {
-      name: "Import Tariff Monitoring",
+      name: "Tariff Monitoring for your Imports",
       details: "Get notified when your imports are affected by new tariffs",
     },
     {
-      name: "Tariff Wizard",
-      details:
-        "Quickly calculate tariffs & discover potential savings for any import",
+      name: "Tariff Explorer",
+      details: "See tariff rates & exemptions for any item from any country",
     },
     // { name: "Generate & share branded reports" }, // TODO: This could be great
   ],
