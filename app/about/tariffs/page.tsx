@@ -17,23 +17,23 @@ import TariffFeaturesListicle from "../../../components/TariffFeaturesListicle";
 const withoutTariffImpact: Task[] = [
   {
     title: "Tracking & Understanding Changes",
-    time: "1 hour / change",
+    time: "📚",
   },
   {
     title: "Finding Out What's Affected",
-    time: "30 min / change",
+    time: "🔎",
   },
   {
     title: "Checking Imports",
-    time: "~20 min / catalog",
+    time: "😵‍💫",
   },
   {
     title: "Finding Latest Tariffs & Exemptions",
-    time: "20 min / import",
+    time: "🙃",
   },
   {
     title: "Applying Current Tariff Stacking Rules",
-    time: "10 min / import",
+    time: "😫",
   },
 ];
 
