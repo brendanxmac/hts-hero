@@ -1,11 +1,17 @@
 import SVG, { SVGProps } from "./SVG";
 
-export default function ScaleSVG({ color, size, viewBox }: SVGProps) {
+export default function ScaleSVG({
+  color,
+  size,
+  viewBox,
+  fill = false,
+}: SVGProps) {
   return (
     <SVG
       color={color}
       size={size}
       viewBox={viewBox}
+      fill={fill}
       path={
         <path
           stroke-linecap="round"

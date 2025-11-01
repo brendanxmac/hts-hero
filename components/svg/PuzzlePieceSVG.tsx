@@ -1,11 +1,17 @@
 import SVG, { SVGProps } from "./SVG";
 
-export default function PuzzlePieceSVG({ color, size, viewBox }: SVGProps) {
+export default function PuzzlePieceSVG({
+  color,
+  size,
+  viewBox,
+  fill = false,
+}: SVGProps) {
   return (
     <SVG
       color={color}
       size={size}
       viewBox={viewBox}
+      fill={fill}
       path={
         <path
           strokeLinecap="round"

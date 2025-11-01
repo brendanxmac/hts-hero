@@ -40,7 +40,7 @@ const features: {
         isKey: true,
       },
     ],
-    svg: <LightningSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
+    svg: <LightningSVG color="#facc15" size={7} viewBox="0 0 24 24" />,
     image: { src: "/candidates.png", alt: "Candidates HS headings" },
   },
   {
@@ -64,7 +64,7 @@ const features: {
         isKey: true,
       },
     ],
-    svg: <LightBulbSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
+    svg: <LightBulbSVG color="#facc15" size={7} viewBox="0 0 24 24" />,
     image: {
       src: "/analysis.png",
       alt: "Analyze candidates and choose confidently",
@@ -88,7 +88,7 @@ const features: {
         isKey: true,
       },
     ],
-    svg: <ScaleSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
+    svg: <ScaleSVG color="#facc15" size={7} viewBox="0 0 24 24" />,
     image: { src: "/cross.png", alt: "Relevant CROSS rulings" },
   },
   {
@@ -111,7 +111,7 @@ const features: {
         isKey: true,
       },
     ],
-    svg: <PuzzlePieceSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
+    svg: <PuzzlePieceSVG color="#facc15" size={7} viewBox="0 0 24 24" />,
     image: {
       src: "/tariffs.png",
       alt: "Tariff insights and savings",
@@ -137,7 +137,7 @@ const features: {
         isKey: true,
       },
     ],
-    svg: <DocumentCheckSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
+    svg: <DocumentCheckSVG color="#facc15" size={7} viewBox="0 0 24 24" />,
     image: {
       src: "/report.png",
       alt: "One-click classification reports",
@@ -151,7 +151,7 @@ const FeaturesListicle = () => {
       <div className="max-w-6xl mx-auto">
         <div className="text-center max-md:px-8 mb-12 md:px-12">
           <h2 className="text-white font-black text-4xl md:text-5xl lg:text-6xl tracking-tight mb-5">
-            The Smarter Way to Classify
+            The <span className="text-yellow-400">Smarter</span> Way to Classify
           </h2>
           <p className="text-neutral-300 leading-relaxed mb-3 lg:text-lg">
             HTS Hero automates the time-consuming & tedious parts of

@@ -4,14 +4,8 @@ import type { JSX } from "react";
 import Image from "next/image";
 import { FeaturePoint, FeaturePoints } from "./FeaturePoints";
 import LightBulbSVG from "./svg/LightBulbSVG";
-import DocumentCheckSVG from "./svg/DocumentCheckSVG";
 import LightningSVG from "./svg/LightningSVG";
-import ScaleSVG from "./svg/Scale";
-import PuzzlePieceSVG from "./svg/PuzzlePieceSVG";
 import RocketSVG from "./svg/RocketSVG";
-import CheckSVG from "./svg/CheckSVG";
-import CheckBadgeSVG from "./svg/CheckBadgeSVG";
-import StarSVG from "./svg/StarSVG";
 
 const features: {
   name: string;
@@ -41,7 +35,7 @@ const features: {
       // },
     ],
     svg: <LightningSVG color="#facc15" size={7} viewBox="0 0 24 24" />,
-    image: { src: "/tariffs.png", alt: "Candidates HS headings" },
+    image: { src: "/tariffs.png", alt: "Check Tariff Rates" },
   },
   {
     name: "Find Savings",
@@ -53,7 +47,7 @@ const features: {
         point: "Apply free trade programs you may be elidgible for",
       },
     ],
-    svg: <RocketSVG color="#facc15" fill={true} size={7} viewBox="0 0 24 24" />,
+    svg: <RocketSVG color="#facc15" size={7} viewBox="0 0 24 24" />,
     image: {
       src: "/finds-savings.png",
       alt: "Finds Savings",
@@ -73,9 +67,7 @@ const features: {
         point: "Know the latest tariff rate before your next purchase order",
       },
     ],
-    svg: (
-      <LightBulbSVG color="#facc15" fill={true} size={7} viewBox="0 0 24 24" />
-    ),
+    svg: <LightBulbSVG color="#facc15" size={7} viewBox="0 0 24 24" />,
     image: { src: "/avoid-surprises.png", alt: "Avoid Surprises" },
   },
 ];
