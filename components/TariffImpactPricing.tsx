@@ -130,7 +130,7 @@ const TariffImpactPricing = () => {
   }, [user]);
 
   return (
-    <section className="bg-base-100 overflow-hidden" id="pricing">
+    <section className="bg-base-300 overflow-hidden" id="pricing">
       <div className="px-8 max-w-7xl mx-auto pt-10 pb-20">
         <div className="flex flex-col text-center w-full my-10">
           {/* <p className="font-medium mb-8">Pricing</p> */}

@@ -22,7 +22,7 @@ export default function SVG({
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox={viewBox}
-      fill={fill ? color : "none"}
+      fill={"none"}
       strokeWidth="1.5"
       stroke={color ? color : "currentColor"}
       className={`h-${size || 5} w-${

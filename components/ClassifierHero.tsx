@@ -10,7 +10,7 @@ const ClassifierHero = () => {
           <div className="flex flex-col gap-5 md:gap-8 mt-8">
             <h1 className="text-white font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-tight md:-mb-4">
               Classify Anything in{" "}
-              <span className="bg-primary px-2 text-base-300 rounded-sm inline-block mt-2">
+              <span className="bg-yellow-400 px-2 text-base-300 rounded-sm inline-block mt-2">
                 Minutes
               </span>
             </h1>
@@ -23,7 +23,7 @@ const ClassifierHero = () => {
           </div>
 
           <Link
-            className="btn btn-wide btn-sm sm:btn-md btn-primary"
+            className="btn btn-wide btn-sm sm:btn-md bg-yellow-400 text-base-300 hover:bg-yellow-500"
             href="/signin"
           >
             Try it Now!
