@@ -1,5 +1,6 @@
 import { EuropeanUnionCountries } from "../constants/countries";
 import { TariffI } from "../interfaces/tariffs";
+import { reciprocalTariffExemptionsList } from "./exclusion-lists.ts/reciprocal-tariff-exlcusions";
 
 // Via 99,III,2(v)(i)
 export const recriprocalTariffExemptions = [
@@ -62,6 +63,16 @@ export const recriprocalTariffExemptions = [
   "9903.76.20",
   "9903.76.21",
   "9903.76.22",
+  // Medium & Heavy Duty Vehicles
+  "9903.74.01",
+  // Buses & Similar Vehicles
+  "9903.74.02",
+  // Non-US Content of Medium & Heavy Duty Vehicles
+  "9903.74.03",
+  // Medium & Heavy Duty Vehicle Parts
+  "9903.74.08",
+  // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+  "9903.74.09",
 ];
 
 export const worldwideReciprocalTariff: TariffI[] = [
@@ -207,33 +218,7 @@ export const worldwideReciprocalTariff: TariffI[] = [
       countries: ["*"],
     },
     exceptions: [
-      // Product of Canada
-      "9903.01.26",
-      // Product of Mexico
-      "9903.01.27",
-      // Loaded before April 5
-      "9903.01.28",
-      // Column 2 countries
-      "9903.01.29",
-      // Donations
-      "9903.01.30",
-      // Information Materials / Artwork
-      "9903.01.31",
-      // Excluded Subheading Articles
-      "9903.01.32",
-      // Catch all for 232's
-      "9903.01.33",
-      // Over 20% US Content Exception
-      // U.S. Content > 20%
-      "9903.01.34",
-      // U.K. Civil Aircraft, Engines, Parts, Components, & Subassemblies
-      "9903.96.01",
-      // Japan Civil Aircraft, Engines, Parts, Components, & Subassemblies
-      "9903.96.02",
-      // EU Civil Aircraft
-      "9903.02.76",
-      // Considerd to have been transshipped to evade duties
-      "9903.02.01",
+      ...recriprocalTariffExemptions,
       // Countries with Specific Reciprocal Tariffs (9903.02.02–9903.02.71)
       "9903.02.02",
       "9903.02.03",
@@ -307,6 +292,10 @@ export const worldwideReciprocalTariff: TariffI[] = [
       "9903.02.71",
       "9903.02.72",
       "9903.02.73",
+      // Medium & Heavy Duty Vehicle Parts
+      "9903.74.08",
+      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+      "9903.74.09",
     ],
   },
   {

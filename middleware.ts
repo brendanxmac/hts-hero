@@ -7,7 +7,7 @@ export async function middleware(req: NextRequest) {
   const isTariffPath = pathname === "/tariffs";
 
   if (isTariffPath) {
-    return NextResponse.redirect(new URL("/tariffs/impact-checker", req.url));
+    return NextResponse.redirect(new URL("/explore", req.url));
   }
 
   const IS_TEST_ENV = process.env.APP_ENV === "test";

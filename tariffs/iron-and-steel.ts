@@ -29,6 +29,14 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.96.02",
       // EU Civil Aircraft
       "9903.02.76",
+      // Heavy Duty Vehicles
+      "9903.74.01",
+      // Buses & Similar Vehicles
+      "9903.74.02",
+      // Medium & Heavy Duty Vehicle Parts
+      "9903.74.08",
+      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+      "9903.74.09",
     ],
     exclusions: {
       // 16(j)
@@ -98,6 +106,14 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.96.02",
       // EU Civil Aircraft
       "9903.02.76",
+      // Heavy Duty Vehicles
+      "9903.74.01",
+      // Buses & Similar Vehicles
+      "9903.74.02",
+      // Medium & Heavy Duty Vehicle Parts
+      "9903.74.08",
+      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+      "9903.74.09",
     ],
     exclusions: {
       countries: ["GB"],
@@ -292,7 +308,16 @@ export const ironAndSteelTariffs: TariffI[] = [
       // Japan Auto Parts
       "9903.94.42",
       "9903.94.43",
+      // Heavy Duty Vehicles
+      "9903.74.01",
+      // Buses & Similar Vehicles
+      "9903.74.02",
+      // Medium & Heavy Duty Vehicle Parts
+      "9903.74.08",
+      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+      "9903.74.09",
     ],
+
     exclusions: {
       codes: ["7216.61.00", "7216.69.00", "7216.91.00"],
     },
@@ -355,6 +380,14 @@ export const ironAndSteelTariffs: TariffI[] = [
       // Japan Auto Parts
       "9903.94.42",
       "9903.94.43",
+      // Heavy Duty Vehicles
+      "9903.74.01",
+      // Buses & Similar Vehicles
+      "9903.74.02",
+      // Medium & Heavy Duty Vehicle Parts
+      "9903.74.08",
+      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+      "9903.74.09",
     ],
     inclusions: {
       countries: ["GB"],
@@ -553,6 +586,14 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.96.02",
       // EU Civil Aircraft
       "9903.02.76",
+      // Heavy Duty Vehicles
+      "9903.74.01",
+      // Buses & Similar Vehicles
+      "9903.74.02",
+      // Medium & Heavy Duty Vehicle Parts
+      "9903.74.08",
+      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+      "9903.74.09",
     ],
     exclusions: {
       countries: ["GB"],
@@ -619,6 +660,14 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.96.02",
       // EU Civil Aircraft
       "9903.02.76",
+      // Heavy Duty Vehicles
+      "9903.74.01",
+      // Buses & Similar Vehicles
+      "9903.74.02",
+      // Medium & Heavy Duty Vehicle Parts
+      "9903.74.08",
+      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+      "9903.74.09",
     ],
     exclusions: {
       countries: ["GB"],
@@ -661,6 +710,14 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.96.02",
       // EU Civil Aircraft
       "9903.02.76",
+      // Heavy Duty Vehicles
+      "9903.74.01",
+      // Buses & Similar Vehicles
+      "9903.74.02",
+      // Medium & Heavy Duty Vehicle Parts
+      "9903.74.08",
+      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+      "9903.74.09",
     ],
     exclusions: {
       countries: ["GB"],
@@ -853,6 +910,14 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.96.02",
       // EU Civil Aircraft
       "9903.02.76",
+      // Heavy Duty Vehicles
+      "9903.74.01",
+      // Buses & Similar Vehicles
+      "9903.74.02",
+      // Medium & Heavy Duty Vehicle Parts
+      "9903.74.08",
+      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+      "9903.74.09",
     ],
     exclusions: {
       countries: ["GB"],
@@ -1674,6 +1739,14 @@ export const ironAndSteelTariffs: TariffI[] = [
       // Japan Auto Parts
       "9903.94.42",
       "9903.94.43",
+      // Heavy Duty Vehicles
+      "9903.74.01",
+      // Buses & Similar Vehicles
+      "9903.74.02",
+      // Medium & Heavy Duty Vehicle Parts
+      "9903.74.08",
+      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+      "9903.74.09",
     ],
     inclusions: {
       countries: ["GB"],
@@ -1862,6 +1935,14 @@ export const ironAndSteelTariffs: TariffI[] = [
       // Japan Auto Parts
       "9903.94.42",
       "9903.94.43",
+      // Heavy Duty Vehicles
+      "9903.74.01",
+      // Buses & Similar Vehicles
+      "9903.74.02",
+      // Medium & Heavy Duty Vehicle Parts
+      "9903.74.08",
+      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+      "9903.74.09",
     ],
     inclusions: {
       countries: ["GB"],
@@ -2308,6 +2389,14 @@ export const ironAndSteelTariffs: TariffI[] = [
       // Japan Auto Parts
       "9903.94.42",
       "9903.94.43",
+      // Heavy Duty Vehicles
+      "9903.74.01",
+      // Buses & Similar Vehicles
+      "9903.74.02",
+      // Medium & Heavy Duty Vehicle Parts
+      "9903.74.08",
+      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+      "9903.74.09",
     ],
     exclusions: {
       codes: ["7216.61.00", "7216.69.00", "7216.91.00"],
@@ -2370,6 +2459,14 @@ export const ironAndSteelTariffs: TariffI[] = [
       // Japan Auto Parts
       "9903.94.42",
       "9903.94.43",
+      // Heavy Duty Vehicles
+      "9903.74.01",
+      // Buses & Similar Vehicles
+      "9903.74.02",
+      // Medium & Heavy Duty Vehicle Parts
+      "9903.74.08",
+      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+      "9903.74.09",
     ],
     inclusions: {
       countries: ["GB"],

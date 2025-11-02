@@ -40,6 +40,14 @@ export const mexicoTariffs: TariffI[] = [
       "9903.76.20",
       "9903.76.21",
       "9903.76.22",
+      // Heavy Duty Vehicles
+      "9903.74.01",
+      // Buses & Similar Vehicles
+      "9903.74.02",
+      // Medium & Heavy Duty Vehicle Parts
+      "9903.74.08",
+      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+      "9903.74.09",
     ],
   },
   {

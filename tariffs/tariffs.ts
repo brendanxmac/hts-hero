@@ -34,6 +34,7 @@ import { indiaTariffs } from "./india";
 import { japanTariffs } from "./japan";
 import { europeanUnionTariffs } from "./european-union";
 import { woodTariffs } from "./wood";
+import { heavyVehicleTariffs } from "./heavy-vehicles";
 
 export interface CountryWithTariffs extends Country {
   selectedTradeProgram: TradeProgram | null;
@@ -898,4 +899,5 @@ export const TariffsList: TariffI[] = [
   ...japanTariffs,
   ...europeanUnionTariffs,
   ...woodTariffs,
+  ...heavyVehicleTariffs,
 ];

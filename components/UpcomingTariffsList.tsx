@@ -193,7 +193,7 @@ export const PendingTariffsList = ({ hideHeading }: Props) => {
                 className="btn btn-wide btn-primary"
                 href={"/about/tariffs#pricing"}
               >
-                Be Prepared
+                Be Prepared Today!
               </Link>
             </div>
           </div>

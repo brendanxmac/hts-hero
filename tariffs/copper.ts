@@ -94,6 +94,7 @@ export const copperTariffs: TariffI[] = [
     other: 50,
     contentRequirement: { content: "Copper" },
     exceptions: [
+      // Automobiles
       "9903.94.05",
       // Japan Vehicles & Light Trucks
       "9903.94.40",
@@ -105,6 +106,14 @@ export const copperTariffs: TariffI[] = [
       "9903.96.02",
       // EU Civil Aircraft
       "9903.02.76",
+      // Heavy Duty Vehicles
+      "9903.74.01",
+      // Buses & Similar Vehicles
+      "9903.74.02",
+      // Medium & Heavy Duty Vehicle Parts
+      "9903.74.08",
+      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+      "9903.74.09",
     ],
     inclusions: {
       countries: ["*"],
