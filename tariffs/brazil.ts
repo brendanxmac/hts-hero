@@ -26,6 +26,10 @@ export const brazilTariffs: TariffI[] = [
       "9903.74.08",
       // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
       "9903.74.09",
+      // Auto Parts
+      "9903.94.05",
+      // Auto Parts Certified for the production or repair of automobiles in the United States
+      "9903.94.07",
     ],
     inclusions: {
       countries: ["BR"],

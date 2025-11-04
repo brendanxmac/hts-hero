@@ -290,13 +290,15 @@ export const filterCountryTariffsFor15PercentExeption = (
         return (
           t.code !== "9903.02.20" &&
           t.code !== "9903.94.51" &&
-          t.code !== "9903.94.53"
+          t.code !== "9903.94.53" &&
+          t.code !== "9903.94.45"
         );
       } else {
         return (
           t.code !== "9903.02.19" &&
           t.code !== "9903.94.50" &&
-          t.code !== "9903.94.52"
+          t.code !== "9903.94.52" &&
+          t.code !== "9903.94.44"
         );
       }
     }
@@ -306,13 +308,15 @@ export const filterCountryTariffsFor15PercentExeption = (
         return (
           t.code !== "9903.02.73" &&
           t.code !== "9903.94.41" &&
-          t.code !== "9903.94.43"
+          t.code !== "9903.94.43" &&
+          t.code !== "9903.94.55"
         );
       } else {
         return (
           t.code !== "9903.02.72" &&
           t.code !== "9903.94.40" &&
-          t.code !== "9903.94.42"
+          t.code !== "9903.94.42" &&
+          t.code !== "9903.94.54"
         );
       }
     }
@@ -783,9 +787,9 @@ export const tariffIsApplicable = (
 
   // matches against ANY heading, subheading, or full code
   //TODO: consider if we get an HTS code without the right format on the full 10 digits
-  const includesCode = codes
-    ?.map((code) => htsCode.includes(code))
-    .some(Boolean);
+  const includesCode =
+    codes?.includes("*") ||
+    codes?.map((code) => htsCode.includes(code)).some(Boolean);
   // TODO: test that this will grab heading and subheadings properly for full codes...
 
   if (!includesCode && !includesCountry) {

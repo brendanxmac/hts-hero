@@ -81,7 +81,7 @@ export const japanTariffs: TariffI[] = [
     code: "9903.94.42",
     description:
       "Parts of passenger vehicles and light trucks that are products of Japan as provided for subdivision (l) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 15 percent as provided for in subdivision (m) of U.S. note 33 to this subchapter.",
-    name: "Part of Vehicles & Light Trucks of Japan, Duty >=15%",
+    name: "Parts of Vehicles & Light Trucks of Japan, Duty >=15%",
     general: 0,
     special: 0,
     other: 0,
@@ -96,7 +96,7 @@ export const japanTariffs: TariffI[] = [
     code: "9903.94.43",
     description:
       "Parts of passenger vehicles and light trucks that are products of Japan as provided for subdivision (l) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 15 percent as provided for in subdivision (m) of U.S. note 33 to this subchapter.",
-    name: "Part of Vehicles & Light Trucks of Japan, Duty <15%",
+    name: "Parts of Vehicles & Light Trucks of Japan, Duty <15%",
     general: 15,
     special: 15,
     other: 0,

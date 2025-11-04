@@ -73,6 +73,17 @@ export const recriprocalTariffExemptions = [
   "9903.74.08",
   // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
   "9903.74.09",
+  "9903.94.07",
+  // Auto Parts of the UK
+  "9903.94.33",
+  // Auto Parts of the EU >15%
+  "9903.94.44",
+  // Auto Parts of the EU <=15%
+  "9903.94.45",
+  // Auto Parts of Japan >15%
+  "9903.94.54",
+  // Auto Parts of Japan <=15%
+  "9903.94.55",
 ];
 
 export const worldwideReciprocalTariff: TariffI[] = [
