@@ -21,7 +21,7 @@ export const TextCopyButton = ({ value }: Props) => {
       className={`${
         recentlyCopied
           ? "bg-[#40C969] shadow-sm"
-          : "bg-neutral-700 hover:text-black hover:bg-white"
+          : "bg-neutral-700 hover:text-white hover:bg-primary"
       } shrink-0 h-6 w-6 rounded-full flex items-center justify-center text-sm font-bold text-neutral-400`}
     >
       {recentlyCopied ? (

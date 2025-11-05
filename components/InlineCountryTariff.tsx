@@ -16,6 +16,9 @@ import {
 } from "../tariffs/tariffs";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { TradePrograms } from "../public/trade-programs";
+import { TextCopyButton } from "./Copy";
+import { copyToClipboard } from "../utilities/data";
+import { TariffSet } from "../interfaces/tariffs";
 
 interface Props {
   units: number;
@@ -83,6 +86,119 @@ export const InlineCountryTariff = ({
     } else {
       return TariffColumn.SPECIAL;
     }
+  };
+
+  const getBaseTariffsText = () => {
+    if (baseTariffs && baseTariffs.length > 0) {
+      const activeBaseTariffs = baseTariffs
+        .filter((t) => {
+          if (
+            selectedSpecialProgram &&
+            selectedSpecialProgram.symbol !== "none"
+          ) {
+            return t.tariffs.some((t) =>
+              t.programs?.includes(selectedSpecialProgram.symbol)
+            );
+          }
+          return true;
+        })
+        .flatMap((t) => t.tariffs);
+
+      const baseTariffsAsText = activeBaseTariffs.map((tariff) => {
+        const primaryText =
+          tariff.value === null && tariff.details
+            ? tariff.details
+            : tariff.type === "percent"
+              ? `Ad Valorem`
+              : `Quantity`;
+        // FIXME: at some point, filter out the country based "See" ones so that they don't cause noise here
+        const reviewText = tariff.value === null ? "Needs Review" : "";
+        const valueText =
+          tariff.type === "percent" ? `${tariff.value}%` : tariff.raw;
+        return `${tariffElement.htsno} - ${reviewText ? "Needs Review" : valueText} - General Duty (${primaryText})`;
+      });
+      return baseTariffsAsText.join("\n");
+    }
+
+    return "";
+  };
+
+  const getTariffSetText = (tariffSet: TariffSet) => {
+    const tariffSetTitle = tariffSet.name
+      ? `${tariffSet.name} Tariff Details`
+      : "Tariff Details";
+    const baseTariffsText = getBaseTariffsText();
+    const tariffSetText = tariffSet.tariffs.map((tariff) => {
+      if (tariff.isActive) {
+        return `${tariff.code} - ${tariff[tariffColumn] === null ? "Needs Review" : `${tariff[tariffColumn]}% - ${tariff.name}`}`;
+      }
+      return "";
+    });
+
+    const is15PercentCapCountryLessThan15Percent =
+      is15PercentCapCountry &&
+      get15PercentCountryTotalBaseRate(
+        baseTariffs.flatMap((t) => t.tariffs),
+        customsValue,
+        units
+      ) < 15;
+    const cappedCountryRate = `${getAdValoremRate(tariffColumn, tariffSet.tariffs)}%`;
+    const hasBaseTariffs =
+      baseTariffs
+        .flatMap((t) => t.tariffs)
+        .filter((t) => {
+          if (
+            selectedSpecialProgram &&
+            selectedSpecialProgram.symbol !== "none"
+          ) {
+            return t.programs?.includes(selectedSpecialProgram.symbol);
+          }
+          return true;
+        })
+        .filter((t) => t.type === "amount").length > 0;
+    const baseTariffRates = `${getAmountRatesString(
+      baseTariffs
+        .flatMap((t) => t.tariffs)
+        .filter((t) => {
+          if (
+            selectedSpecialProgram &&
+            selectedSpecialProgram.symbol !== "none"
+          ) {
+            return t.programs?.includes(selectedSpecialProgram.symbol);
+          }
+          return true;
+        })
+    )} + `;
+    const adValoremRate = `${getAdValoremRate(
+      tariffColumn,
+      tariffSet.tariffs,
+      baseTariffs
+        .flatMap((t) => t.tariffs)
+        .filter((t) => {
+          if (
+            selectedSpecialProgram &&
+            selectedSpecialProgram.symbol !== "none"
+          ) {
+            return t.programs?.includes(selectedSpecialProgram.symbol);
+          }
+          return true;
+        })
+    )} %`;
+
+    const setTotal = is15PercentCapCountryLessThan15Percent
+      ? cappedCountryRate
+      : hasBaseTariffs
+        ? baseTariffRates + adValoremRate
+        : adValoremRate;
+
+    return `${tariffSetTitle}\n${baseTariffsText}\n${tariffSetText.filter((t) => t !== "").join("\n")}\nTotal: ${setTotal}\n`;
+  };
+
+  const copyTariffDetails = () => {
+    const tradeProgramText = selectedTradeProgram?.name
+      ? `Trade Program: ${selectedTradeProgram.name}\n`
+      : "";
+    return `${tradeProgramText}\n${tariffSets.map((set) => getTariffSetText(set)).join("\n")}`;
   };
 
   useEffect(() => {
@@ -239,13 +355,20 @@ export const InlineCountryTariff = ({
           </div>
         </div>
 
-        <div className="w-full flex gap-2 justify-end">
+        <div className="w-full flex gap-2 justify-end items-center">
           <button
             className="btn btn-sm btn-primary"
             onClick={() => setShowInactive(!showInactive)}
           >
             {showInactive ? "Hide Inactive Tariffs" : "Show All Tariffs"}
           </button>
+          <button
+            className="btn btn-sm btn-primary"
+            onClick={() => copyToClipboard(copyTariffDetails() || "")}
+          >
+            Copy Tariff Details
+          </button>
+          {/* <TextCopyButton value={`Tariff Details`} /> */}
           {/* <button className="btn btn-sm btn-primary" onClick={() => {}}>
             Reset
           </button> */}
