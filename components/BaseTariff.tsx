@@ -5,7 +5,6 @@ import { TertiaryLabel } from "./TertiaryLabel";
 import { SpecialPrograms } from "./SpecialPrograms";
 import { TertiaryText } from "./TertiaryText";
 import { Color } from "../enums/style";
-import { TextCopyButton } from "./Copy";
 
 interface Props {
   index: number;
@@ -65,26 +64,20 @@ export const BaseTariff = ({
             )}
           </div>
         </div>
-        <div className="flex gap-2 mb-1">
-          {reviewText ? (
-            <TertiaryLabel value={reviewText} color={Color.WHITE} />
-          ) : (
-            <p
-              className={classNames(
-                "shrink-0 min-w-32 text-right text-base",
-                active
-                  ? "text-white font-bold"
-                  : "line-through text-neutral-content"
-              )}
-            >
-              {valueText}
-            </p>
-          )}
-
-          <TextCopyButton
-            value={`${htsElement.htsno} - General Duty (${primaryText}) - ${reviewText ? "Needs Review" : valueText}`}
-          />
-        </div>
+        {reviewText ? (
+          <TertiaryLabel value={reviewText} color={Color.WHITE} />
+        ) : (
+          <p
+            className={classNames(
+              "shrink-0 min-w-32 text-right text-base",
+              active
+                ? "text-white font-bold"
+                : "line-through text-neutral-content"
+            )}
+          >
+            {valueText}
+          </p>
+        )}
       </div>
     </div>
   );
