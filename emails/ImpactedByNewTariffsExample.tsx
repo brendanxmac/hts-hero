@@ -76,7 +76,7 @@ export default function ImpactedByNewTariffsEmailExample() {
             <Text className="text-base text-gray-800 leading-relaxed mt-0 mb-6">
               We've identified that{" "}
               <span className="font-bold text-red-600">5 of your imports</span>{" "}
-              are affected by the new tariff announcement.
+              are affected by a new tariff announcement.
             </Text>
 
             {/* <Heading className="text-lg font-bold text-gray-900 leading-relaxed mb-3">
