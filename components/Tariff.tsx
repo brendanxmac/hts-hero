@@ -11,7 +11,6 @@ import { TariffColumn } from "../enums/tariff";
 import Link from "next/link";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { Color } from "../enums/style";
-import { TextCopyButton } from "./Copy";
 
 interface Props {
   showInactive: boolean;
@@ -164,23 +163,18 @@ export const Tariff = ({
             </div>
           </div>
         </div>
-        <div className="flex gap-2 mb-1">
-          <p
-            className={classNames(
-              "shrink-0 min-w-32 text-right text-base",
-              tariff.isActive
-                ? "text-white font-bold"
-                : tariff[column] === null
-                  ? "text-neutral-content"
-                  : "line-through text-neutral-content"
-            )}
-          >
-            {tariff[column] === null ? "Needs Review" : `${tariff[column]}%`}
-          </p>
-          <TextCopyButton
-            value={`${tariff.code} - ${tariff[column] === null ? "Needs Review" : `${tariff[column]}%`}`}
-          />
-        </div>
+        <p
+          className={classNames(
+            "shrink-0 min-w-32 text-right text-base",
+            tariff.isActive
+              ? "text-white font-bold"
+              : tariff[column] === null
+                ? "text-neutral-content"
+                : "line-through text-neutral-content"
+          )}
+        >
+          {tariff[column] === null ? "Needs Review" : `${tariff[column]}%`}
+        </p>
       </div>
 
       {/* {tariff.exceptions?.length > 0 &&
