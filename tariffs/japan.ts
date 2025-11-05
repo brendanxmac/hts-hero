@@ -1,5 +1,5 @@
 import { TariffI } from "../interfaces/tariffs";
-import { automobileParts33G, automobiles33B } from "./automobile";
+import { automobiles33B, automobileParts33G } from "./lists";
 import { recriprocalTariffExemptions } from "./reciprocal";
 
 export const japanTariffs: TariffI[] = [
