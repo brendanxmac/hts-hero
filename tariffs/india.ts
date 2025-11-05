@@ -45,6 +45,20 @@ export const indiaTariffs: TariffI[] = [
       "9903.94.05",
       // Copper & derivatives
       "9903.78.01",
+      // Medium & Heavy Duty Vehicles
+      "9903.74.01",
+      // Buses & Similar Vehicles
+      "9903.74.02",
+      // Non-US Content of Medium & Heavy Duty Vehicles
+      "9903.74.03",
+      // Parts of Medium or Heavy Duty Vehicles
+      "9903.74.08",
+      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+      "9903.74.09",
+      // Auto Parts
+      "9903.94.05",
+      // Auto Parts Certified for the production or repair of automobiles in the United States
+      "9903.94.07",
     ],
   },
   {

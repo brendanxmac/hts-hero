@@ -1,6 +1,6 @@
 import { EuropeanUnionCountries } from "../constants/countries";
 import { TariffI } from "../interfaces/tariffs";
-import { automobileParts33G, automobiles33B } from "./automobile";
+import { automobiles33B, automobileParts33G } from "./lists";
 
 export const europeanUnionTariffs: TariffI[] = [
   {

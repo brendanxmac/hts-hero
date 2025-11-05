@@ -13,7 +13,7 @@ const TariffHero = () => {
           <div className="flex justify-center lg:justify-start mt-4">
             <Link
               className="btn btn-wide bg-yellow-400 text-base-300 hover:bg-yellow-500"
-              href="/tariffs/impact-checker"
+              href="/explore"
             >
               Check your Imports!
             </Link>

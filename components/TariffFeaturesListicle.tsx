@@ -44,7 +44,7 @@ const features: {
         point: "See all the tariff exemptions that might apply",
       },
       {
-        point: "Apply free trade programs you may be elidgible for",
+        point: "Apply free trade programs you may be eligible for",
       },
     ],
     svg: <RocketSVG color="#facc15" size={7} viewBox="0 0 24 24" />,

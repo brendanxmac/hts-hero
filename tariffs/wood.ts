@@ -41,7 +41,28 @@ export const woodTariffs: TariffI[] = [
         "4407.19.00",
       ],
     },
-    exceptions: ["9903.94.01", "9903.94.03", "9903.94.05"],
+    exceptions: [
+      "9903.94.01",
+      "9903.94.03",
+      // Auto Parts
+      "9903.94.05",
+      // Auto Parts Certified for the production or repair of automobiles in the United States
+      "9903.94.07",
+      // Medium & Heavy Duty Vehicle Parts
+      "9903.74.08",
+      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+      "9903.74.09",
+      // Auto Parts of UK
+      "9903.94.33",
+      // Auto Parts of EU >15%
+      "9903.94.44",
+      // Auto Parts of EU <=15%
+      "9903.94.45",
+      // Auto Parts of Japan >15%
+      "9903.94.54",
+      // Auto Parts of Japan <=15%
+      "9903.94.55",
+    ],
   },
   {
     code: "9903.76.02",
@@ -56,7 +77,28 @@ export const woodTariffs: TariffI[] = [
     inclusions: {
       codes: upholsteredWoodenProducts,
     },
-    exceptions: ["9903.94.01", "9903.94.03", "9903.94.05"],
+    exceptions: [
+      "9903.94.01",
+      "9903.94.03",
+      // Auto Parts
+      "9903.94.05",
+      // Auto Parts Certified for the production or repair of automobiles in the United States
+      "9903.94.07",
+      // Medium & Heavy Duty Vehicle Parts
+      "9903.74.08",
+      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+      "9903.74.09",
+      // Auto Parts of UK
+      "9903.94.33",
+      // Auto Parts of EU >15%
+      "9903.94.44",
+      // Auto Parts of EU <=15%
+      "9903.94.45",
+      // Auto Parts of Japan >15%
+      "9903.94.54",
+      // Auto Parts of Japan <=15%
+      "9903.94.55",
+    ],
   },
   {
     code: "9903.76.03",
@@ -72,7 +114,29 @@ export const woodTariffs: TariffI[] = [
     inclusions: {
       codes: completedKitchenCabinetsAndVanities,
     },
-    exceptions: ["9903.94.01", "9903.94.03", "9903.94.05", "9903.76.04"],
+    exceptions: [
+      "9903.94.01",
+      "9903.94.03",
+      "9903.76.04",
+      // Auto Parts
+      "9903.94.05",
+      // Auto Parts Certified for the production or repair of automobiles in the United States
+      "9903.94.07",
+      // Medium & Heavy Duty Vehicle Parts
+      "9903.74.08",
+      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+      "9903.74.09",
+      // Auto Parts of UK
+      "9903.94.33",
+      // Auto Parts of EU >15%
+      "9903.94.44",
+      // Auto Parts of EU <=15%
+      "9903.94.45",
+      // Auto Parts of Japan >15%
+      "9903.94.54",
+      // Auto Parts of Japan <=15%
+      "9903.94.55",
+    ],
   },
   {
     code: "9903.76.04",

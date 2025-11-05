@@ -42,7 +42,7 @@ const TariffImpactHeader = () => {
         <div className="flex lg:flex-1">
           <Link
             className="text-white flex items-center gap-2 shrink-0 "
-            href="/tariffs/impact-checker"
+            href="/explore"
           >
             <Image
               src={logo}
@@ -103,10 +103,7 @@ const TariffImpactHeader = () => {
         >
           {/* Logo and close button */}
           <div className="flex items-center justify-between">
-            <Link
-              className="flex items-center gap-2 shrink-0 "
-              href="/tariffs/impact-checker"
-            >
+            <Link className="flex items-center gap-2 shrink-0 " href="/explore">
               <Image
                 src={logo}
                 alt={`${config.appName} logo`}

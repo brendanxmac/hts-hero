@@ -13,7 +13,10 @@ export const aluminumTariffs: TariffI[] = [
     exceptions: [
       "9903.85.67",
       "9903.85.69",
+      // Auto Parts
       "9903.94.05",
+      // Auto Parts Certified for the production or repair of automobiles in the United States
+      "9903.94.07",
       // Japan Vehicles & Light Trucks
       "9903.94.40",
       "9903.94.41",
@@ -24,6 +27,24 @@ export const aluminumTariffs: TariffI[] = [
       "9903.96.02",
       // EU Civil Aircraft
       "9903.02.76",
+      // Heavy Duty Vehicles
+      "9903.74.01",
+      // Buses & Similar Vehicles
+      "9903.74.02",
+      // Medium & Heavy Duty Vehicle Parts
+      "9903.74.08",
+      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+      "9903.74.09",
+      // Auto Parts of UK
+      "9903.94.33",
+      // Auto Parts of EU >15%
+      "9903.94.44",
+      // Auto Parts of EU <=15%
+      "9903.94.45",
+      // Auto Parts of Japan >15%
+      "9903.94.54",
+      // Auto Parts of Japan <=15%
+      "9903.94.55",
     ],
     contentRequirement: { content: "Aluminum" },
     exclusions: {
@@ -125,13 +146,34 @@ export const aluminumTariffs: TariffI[] = [
       "9903.85.69",
       // Civil Aircraft Articles from UK
       "9903.96.01",
-      "9903.94.05",
       // Japan Vehicles & Light Trucks
       "9903.94.40",
       "9903.94.41",
       // Japan Auto Parts
       "9903.94.42",
       "9903.94.43",
+      // Heavy Duty Vehicles
+      "9903.74.01",
+      // Buses & Similar Vehicles
+      "9903.74.02",
+      // Medium & Heavy Duty Vehicle Parts
+      "9903.74.08",
+      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+      "9903.74.09",
+      // Auto Parts
+      "9903.94.05",
+      // Auto Parts Certified for the production or repair of automobiles in the United States
+      "9903.94.07",
+      // Auto Parts of UK
+      "9903.94.33",
+      // Auto Parts of EU >15%
+      "9903.94.44",
+      // Auto Parts of EU <=15%
+      "9903.94.45",
+      // Auto Parts of Japan >15%
+      "9903.94.54",
+      // Auto Parts of Japan <=15%
+      "9903.94.55",
     ],
     inclusions: {
       countries: ["GB"],
@@ -173,6 +215,26 @@ export const aluminumTariffs: TariffI[] = [
       // Japan Auto Parts
       "9903.94.42",
       "9903.94.43",
+      // Heavy Duty Vehicles
+      "9903.74.01",
+      // Buses & Similar Vehicles
+      "9903.74.02",
+      // Medium & Heavy Duty Vehicle Parts
+      "9903.74.08",
+      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+      "9903.74.09",
+      // Auto Parts Certified for the production or repair of automobiles in the United States
+      "9903.94.07",
+      // Auto Parts of UK
+      "9903.94.33",
+      // Auto Parts of EU >15%
+      "9903.94.44",
+      // Auto Parts of EU <=15%
+      "9903.94.45",
+      // Auto Parts of Japan >15%
+      "9903.94.54",
+      // Auto Parts of Japan <=15%
+      "9903.94.55",
     ],
     inclusions: {
       countries: ["GB"],
@@ -215,6 +277,27 @@ export const aluminumTariffs: TariffI[] = [
       "9903.96.02",
       // EU Civil Aircraft
       "9903.02.76",
+      // Heavy Duty Vehicles
+      "9903.74.01",
+      // Buses & Similar Vehicles
+      "9903.74.02",
+      // Medium & Heavy Duty Vehicle Parts
+      "9903.74.08",
+      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+      "9903.74.09",
+      // TODO: Need to add auto parts? 9903.94.05
+      // Auto Parts Certified for the production or repair of automobiles in the United States
+      "9903.94.07",
+      // Auto Parts of UK
+      "9903.94.33",
+      // Auto Parts of EU >15%
+      "9903.94.44",
+      // Auto Parts of EU <=15%
+      "9903.94.45",
+      // Auto Parts of Japan >15%
+      "9903.94.54",
+      // Auto Parts of Japan <=15%
+      "9903.94.55",
     ],
     inclusions: {
       codes: [
@@ -425,6 +508,8 @@ export const aluminumTariffs: TariffI[] = [
       "9903.85.15",
       // Auto Parts
       "9903.94.05",
+      // Auto Parts Certified for the production or repair of automobiles in the United States
+      "9903.94.07",
       // Japan Vehicles & Light Trucks
       "9903.94.40",
       "9903.94.41",
@@ -435,6 +520,24 @@ export const aluminumTariffs: TariffI[] = [
       "9903.96.02",
       // EU Civil Aircraft
       "9903.02.76",
+      // Heavy Duty Vehicles
+      "9903.74.01",
+      // Buses & Similar Vehicles
+      "9903.74.02",
+      // Medium & Heavy Duty Vehicle Parts
+      "9903.74.08",
+      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+      "9903.74.09",
+      // Auto Parts of UK
+      "9903.94.33",
+      // Auto Parts of EU >15%
+      "9903.94.44",
+      // Auto Parts of EU <=15%
+      "9903.94.45",
+      // Auto Parts of Japan >15%
+      "9903.94.54",
+      // Auto Parts of Japan <=15%
+      "9903.94.55",
     ],
     inclusions: {
       codes: [
@@ -847,12 +950,32 @@ export const aluminumTariffs: TariffI[] = [
       "9903.96.01",
       // Auto Parts
       "9903.94.05",
+      // Auto Parts Certified for the production or repair of automobiles in the United States
+      "9903.94.07",
       // Japan Vehicles & Light Trucks
       "9903.94.40",
       "9903.94.41",
       // Japan Auto Parts
       "9903.94.42",
       "9903.94.43",
+      // Heavy Duty Vehicles
+      "9903.74.01",
+      // Buses & Similar Vehicles
+      "9903.74.02",
+      // Medium & Heavy Duty Vehicle Parts
+      "9903.74.08",
+      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+      "9903.74.09",
+      // Auto Parts of UK
+      "9903.94.33",
+      // Auto Parts of EU >15%
+      "9903.94.44",
+      // Auto Parts of EU <=15%
+      "9903.94.45",
+      // Auto Parts of Japan >15%
+      "9903.94.54",
+      // Auto Parts of Japan <=15%
+      "9903.94.55",
     ],
     inclusions: {
       countries: ["GB"],
@@ -904,12 +1027,32 @@ export const aluminumTariffs: TariffI[] = [
       "9903.96.01",
       // Auto Parts
       "9903.94.05",
+      // Auto Parts Certified for the production or repair of automobiles in the United States
+      "9903.94.07",
       // Japan Vehicles & Light Trucks
       "9903.94.40",
       "9903.94.41",
       // Japan Auto Parts
       "9903.94.42",
       "9903.94.43",
+      // Heavy Duty Vehicles
+      "9903.74.01",
+      // Buses & Similar Vehicles
+      "9903.74.02",
+      // Medium & Heavy Duty Vehicle Parts
+      "9903.74.08",
+      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+      "9903.74.09",
+      // Auto Parts of UK
+      "9903.94.33",
+      // Auto Parts of EU >15%
+      "9903.94.44",
+      // Auto Parts of EU <=15%
+      "9903.94.45",
+      // Auto Parts of Japan >15%
+      "9903.94.54",
+      // Auto Parts of Japan <=15%
+      "9903.94.55",
     ],
     inclusions: {
       countries: ["GB"],
@@ -1438,6 +1581,8 @@ export const aluminumTariffs: TariffI[] = [
       "9903.85.15",
       // Auto Parts
       "9903.94.05",
+      // Auto Parts Certified for the production or repair of automobiles in the United States
+      "9903.94.07",
       // Japan Vehicles & Light Trucks
       "9903.94.40",
       "9903.94.41",
@@ -1448,6 +1593,24 @@ export const aluminumTariffs: TariffI[] = [
       "9903.96.02",
       // EU Civil Aircraft
       "9903.02.76",
+      // Heavy Duty Vehicles
+      "9903.74.01",
+      // Buses & Similar Vehicles
+      "9903.74.02",
+      // Medium & Heavy Duty Vehicle Parts
+      "9903.74.08",
+      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+      "9903.74.09",
+      // Auto Parts of UK
+      "9903.94.33",
+      // Auto Parts of EU >15%
+      "9903.94.44",
+      // Auto Parts of EU <=15%
+      "9903.94.45",
+      // Auto Parts of Japan >15%
+      "9903.94.54",
+      // Auto Parts of Japan <=15%
+      "9903.94.55",
     ],
     inclusions: {
       codes: [
