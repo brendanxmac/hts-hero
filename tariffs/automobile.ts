@@ -141,9 +141,7 @@ export const automobileTariffs: TariffI[] = [
     code: "9903.94.06",
     description:
       "Effective with respect to entries on or after May 3, 2025, articles provided for in subdivision (h) of U.S. note 33 to this subchapter.",
-    //   TODO: Adding quick ability to see USCMA notes would be BIG differentiator
-    // becausse for this one USCMA quaifications or being a part but not for passenger vehicles or light trucks is the big thing
-    name: "Exclusion: (1) USCMA Eligible other than automobile knock-down kits or parts compilations; (2) Not part for passenger vehicles or light trucks",
+    name: "Is not an auto part for passenger vehicles or light trucks, or is an auto part that is USCMA Eligible other than knock-down kits or parts compilations",
     general: 0,
     special: 0,
     other: 0,
@@ -157,7 +155,7 @@ export const automobileTariffs: TariffI[] = [
     code: "9903.94.07",
     description:
       "Except as provided for in headings 9903.94.33, 9903.94.44, 9903.94.45, 9903.94.54 and 9903.94.55, automobile parts as provided for in subdivision (p) of U.S. note 33 to this subchapter.",
-    name: "Parts for the production or repair of automobiles in the United States as certified by the importer of record",
+    name: "Parts for Production or Repair of Automobiles in the US",
     general: 25,
     special: 25,
     other: 25,
@@ -290,7 +288,7 @@ export const automobileTariffs: TariffI[] = [
     other: 0,
     requiresReview: true,
     inclusions: {
-      countries: EuropeanUnionCountries,
+      countries: ["JP"],
       codes: ["*"],
     },
     exclusions: {

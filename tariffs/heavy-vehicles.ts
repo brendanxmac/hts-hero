@@ -31,7 +31,13 @@ export const heavyVehicleTariffs: TariffI[] = [
     general: 10,
     special: 10,
     other: 10,
-    exceptions: ["9903.74.03", "9903.74.05", "9903.74.06", "9903.74.07"],
+    exceptions: [
+      "9903.74.03",
+      "9903.74.05",
+      "9903.74.06",
+      "9903.74.07",
+      "9903.74.09",
+    ],
     inclusions: {
       codes: busesAndSimilarVehicles,
     },
@@ -41,13 +47,14 @@ export const heavyVehicleTariffs: TariffI[] = [
     description:
       "Medium- and heavy-duty vehicles, as provided for in subdivision (d) of U.S. note 38 to this subchapter.",
     name: "US Content Exemption: Pay 25% on ONLY the Non-US Content of Heavy Duty Vehicles that are USMCA Eligible & Approved by Secretary of Commerce",
-    general: 25,
-    special: 25,
+    general: 0,
+    special: 0,
     other: 0,
     requiresReview: true,
     inclusions: {
       codes: mediumAndHeavyDutyVehicles,
     },
+    // exceptions: ["9903.74.05"],
   },
   {
     code: "9903.74.05",
@@ -106,7 +113,7 @@ export const heavyVehicleTariffs: TariffI[] = [
     code: "9903.74.09",
     description:
       "Medium- and heavy-duty vehicle parts, as provided for in subdivision (j) of U.S. note 38 to this subchapter.",
-    name: "Medium & Heavy Duty Vehicle Parts used for Production or Repair in the US",
+    name: "Parts for Production or Repair of Medium & Heavy Duty Vehicles in the US",
     general: 25,
     special: 25,
     other: 25,
@@ -143,7 +150,7 @@ export const heavyVehicleTariffs: TariffI[] = [
     code: "9903.74.11",
     description:
       "Articles as provided for in subdivision (l) of U.S. note 38 to this subchapter.",
-    name: "Exception: Is not a part for medium of heavy duty vehicles",
+    name: "Is not a part for medium of heavy duty vehicles",
     general: 0,
     special: 0,
     other: 0,

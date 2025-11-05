@@ -68,7 +68,7 @@ export const tariffImpactPro: PricingPlanI = {
       details: "Get notified when your imports are affected by new tariffs",
     },
     {
-      name: "Tariff Explorer",
+      name: "Tariff Finder",
       details: "See tariff rates & exemptions for any item from any country",
     },
     // { name: "Generate & share branded reports" }, // TODO: This could be great
