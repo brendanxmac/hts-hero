@@ -5,7 +5,7 @@ export const chinaTariffs: TariffI[] = [
     code: "9903.01.24",
     description:
       "Except for products described in headings 9903.01.21, 9903.01.22, 9903.01.23, or U.S. note 2(w) to this subchapter articles the product of China and Hong Kong, as provided for in U.S. note 2(u) to this subchapter",
-    name: "China & Hong Kong 20% (IEEPA)",
+    name: "China & Hong Kong IEEPA Fentanyl",
     general: 10,
     special: 10,
     other: 0,
