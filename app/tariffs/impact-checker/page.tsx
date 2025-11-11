@@ -43,6 +43,8 @@ import TariffImpactCodesInput from "../../../components/TariffImpactCodesInput";
 import { fetchUser } from "../../../libs/supabase/user";
 import TariffImpactPricing from "../../../components/TariffImpactPricing";
 import apiClient from "../../../libs/api";
+import { CountrySelection } from "../../../components/CountrySelection";
+import { Countries, Country } from "../../../constants/countries";
 
 export default function Home() {
   const CHARACTER_LIMIT = 3000;
@@ -81,6 +83,7 @@ export default function Home() {
   const [urlParamsProcessed, setUrlParamsProcessed] = useState(false);
   const [checkingTariffImpacts, setCheckingTariffImpacts] = useState(false);
   const [isTrialUser, setIsTrialUser] = useState(false);
+  const [selectedCountries, setSelectedCountries] = useState<Country[]>([]);
 
   useEffect(() => {
     const fetchTariffImpactChecks = async () => {
@@ -262,11 +265,26 @@ export default function Home() {
     searchParams,
   ]);
 
+  useEffect(() => {
+    const countriesSpecified =
+      tariffCodeSets[selectedTariffAnnouncementIndex]?.countries;
+    const announcementHasCountriesSpecified =
+      countriesSpecified && countriesSpecified.length > 0;
+
+    if (announcementHasCountriesSpecified) {
+      setSelectedCountries(
+        Countries.filter((c) => countriesSpecified.includes(c.code))
+      );
+    } else {
+      setSelectedCountries([]);
+    }
+  }, [selectedTariffAnnouncementIndex, tariffCodeSets]);
+
   const htsCodeExists = (str: string) => {
     return htsElements.some((element) => element.htsno === str);
   };
 
-  const getNotes = (result: TariffImpactResult) => {
+  const getNotes = (result: TariffImpactResult, note?: string) => {
     const { impacted, code, error } = result;
     const codeExists = htsCodeExists(code);
 
@@ -286,7 +304,7 @@ export default function Home() {
       );
     }
 
-    return <td className="hidden sm:table-cell">-</td>;
+    return <td className="hidden sm:table-cell">{note || "-"}</td>;
   };
 
   const getImpactIndicator = (result: TariffImpactResult) => {
@@ -608,11 +626,27 @@ export default function Home() {
 
             {tariffCodeSets.length > 0 &&
               tariffCodeSets[selectedTariffAnnouncementIndex].note && (
-                <p className="text-xs text-neutral-content font-bold">
+                <p className="text-xs text-secondary font-bold">
                   Note: {tariffCodeSets[selectedTariffAnnouncementIndex].note}
                 </p>
               )}
           </div>
+          {/* TODO: Country Selection */}
+          {/* {tariffCodeSets[selectedTariffAnnouncementIndex]?.countries &&
+            tariffCodeSets[selectedTariffAnnouncementIndex]?.countries.length >
+              0 && (
+              <div className="flex flex-col gap-2">
+                <div className="flex flex-col">
+                  <PrimaryLabel value="Country of Origin" />
+                  <SecondaryText value="Select the country of origin you want to see the impacts of" />
+                </div>
+
+                <CountrySelection
+                  selectedCountries={selectedCountries}
+                  setSelectedCountries={setSelectedCountries}
+                />
+              </div>
+            )} */}
         </div>
 
         {!lastActionWasSubmit && (
@@ -689,7 +723,11 @@ export default function Home() {
                             (element) => element.htsno === result.code
                           );
                           const impactIndicator = getImpactIndicator(result);
-                          const notes = getNotes(result);
+                          const notes = getNotes(
+                            result,
+                            tariffCodeSets[selectedTariffAnnouncementIndex]
+                              ?.note
+                          );
 
                           return (
                             <tr key={`${result.code}-${i}`} className="py-1">

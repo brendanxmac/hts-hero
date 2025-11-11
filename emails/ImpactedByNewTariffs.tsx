@@ -18,6 +18,8 @@ interface ImpactedByNewTariffsEmailProps {
   affectedImportsCount: number;
   tariffCodeSetId: string;
   htsCodeSetId: string;
+  maybeAffected: boolean;
+  note?: string;
 }
 
 export default function ImpactedByNewTariffsEmail({
@@ -26,13 +28,15 @@ export default function ImpactedByNewTariffsEmail({
   affectedImportsCount = 5,
   tariffCodeSetId = "tariff-123",
   htsCodeSetId = "hts-456",
+  maybeAffected = true,
+  note,
 }: ImpactedByNewTariffsEmailProps) {
   const impactCheckerUrl = `https://htshero.com/tariffs/impact-checker?tariffAnnouncement=${tariffCodeSetId}&htsCodeSet=${htsCodeSetId}`;
 
   return (
     <Html>
       <Head />
-      <Preview>{`See Your Affected Imports 👉`}</Preview>
+      <Preview>See Which Imports 👉</Preview>
       <Tailwind
         config={{
           presets: [pixelBasedPreset],
@@ -62,7 +66,8 @@ export default function ImpactedByNewTariffsEmail({
               <span className="font-bold text-red-600">
                 {affectedImportsCount} of your imports
               </span>{" "}
-              are affected by the new tariff announcement.
+              {maybeAffected ? "might be" : "are"} affected by the new tariff
+              announcement.
             </Text>
 
             {/* <Heading className="text-lg font-bold text-gray-900 leading-relaxed mb-3">
@@ -92,9 +97,9 @@ export default function ImpactedByNewTariffsEmail({
               </Container>
 
               {/* Affected Count */}
-              <Container className="mb-0">
+              <Container className="mb-4 pb-2">
                 <Text className="text-xs font-medium text-gray-500 uppercase tracking-wide mt-0 mb-2">
-                  IMPORTS AFFECTED
+                  IMPORTS {maybeAffected && "POTENTIALLY "} AFFECTED
                 </Text>
                 <Container className="w-fit bg-red-600 px-3 py-1 rounded">
                   <Text className="text-lg text-white font-bold my-0 leading-none">
@@ -103,6 +108,16 @@ export default function ImpactedByNewTariffsEmail({
                   </Text>
                 </Container>
               </Container>
+              {note && (
+                <Container className="mb-0">
+                  <Text className="text-xs font-medium text-gray-500 uppercase tracking-wide mt-0 mb-2">
+                    NOTE
+                  </Text>
+                  <Text className="italic text-gray-900 my-0 leading-tight">
+                    {note}
+                  </Text>
+                </Container>
+              )}
             </Container>
             {/* CTA Button */}
             <Container className="text-center mt-8">
@@ -110,7 +125,7 @@ export default function ImpactedByNewTariffsEmail({
                 href={impactCheckerUrl}
                 className="w-full bg-[#4F46E5] text-white font-bold py-4 text-lg rounded-lg"
               >
-                See Affected Imports →
+                Check Your Imports →
               </Button>
             </Container>
           </Section>
