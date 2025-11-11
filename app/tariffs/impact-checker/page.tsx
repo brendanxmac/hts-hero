@@ -83,7 +83,7 @@ export default function Home() {
   const [urlParamsProcessed, setUrlParamsProcessed] = useState(false);
   const [checkingTariffImpacts, setCheckingTariffImpacts] = useState(false);
   const [isTrialUser, setIsTrialUser] = useState(false);
-  const [selectedCountries, setSelectedCountries] = useState<Country[]>([]);
+  // const [selectedCountries, setSelectedCountries] = useState<Country[]>([]);
 
   useEffect(() => {
     const fetchTariffImpactChecks = async () => {
@@ -265,20 +265,20 @@ export default function Home() {
     searchParams,
   ]);
 
-  useEffect(() => {
-    const countriesSpecified =
-      tariffCodeSets[selectedTariffAnnouncementIndex]?.countries;
-    const announcementHasCountriesSpecified =
-      countriesSpecified && countriesSpecified.length > 0;
+  // useEffect(() => {
+  //   const countriesSpecified =
+  //     tariffCodeSets[selectedTariffAnnouncementIndex]?.countries;
+  //   const announcementHasCountriesSpecified =
+  //     countriesSpecified && countriesSpecified.length > 0;
 
-    if (announcementHasCountriesSpecified) {
-      setSelectedCountries(
-        Countries.filter((c) => countriesSpecified.includes(c.code))
-      );
-    } else {
-      setSelectedCountries([]);
-    }
-  }, [selectedTariffAnnouncementIndex, tariffCodeSets]);
+  //   if (announcementHasCountriesSpecified) {
+  //     setSelectedCountries(
+  //       Countries.filter((c) => countriesSpecified.includes(c.code))
+  //     );
+  //   } else {
+  //     setSelectedCountries([]);
+  //   }
+  // }, [selectedTariffAnnouncementIndex, tariffCodeSets]);
 
   const htsCodeExists = (str: string) => {
     return htsElements.some((element) => element.htsno === str);
