@@ -75,7 +75,10 @@ export const codeIsIncludedInTariffCodeSet = (
 ) => {
   const formattedCode = formatHtsCodeWithPeriods(code);
 
-  return tariffCodeSet.codes.some(
-    (change) => formattedCode.includes(change) || change.includes(formattedCode)
+  return (
+    tariffCodeSet.codes.includes("*") ||
+    tariffCodeSet.codes.some(
+      (code) => formattedCode.includes(code) || code.includes(formattedCode)
+    )
   );
 };

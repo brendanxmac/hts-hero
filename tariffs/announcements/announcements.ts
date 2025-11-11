@@ -10,6 +10,7 @@ export interface TariffCodeSet {
   source?: string;
   codes: string[];
   note?: string;
+  countries?: string[];
   effective_at: string; // ISO Date String
   created_at: string; // ISO Date String
   updated_at: string; // ISO Date String

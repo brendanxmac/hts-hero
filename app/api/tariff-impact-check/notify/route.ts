@@ -77,28 +77,39 @@ const fetchTariffCodeSet = async (supabase: SupabaseClient, id: string) => {
 
 // Helper function to prepare email data for bulk sending
 const createTariffImpactEmail = (
+  maybeAffected: boolean = true,
   recipient: string,
   tariffCodeSet: TariffCodeSet,
   userHtsCodeSet: HtsCodeSet,
-  affectedImportsCount: number
+  affectedImportsCount: number,
+  note?: string
 ): CreateEmailOptions => {
+  const subjectPrefix = maybeAffected
+    ? "🚨 New Tariffs Might Affect"
+    : "🚨 New Tariffs Affect";
   return {
     from: config.resend.fromAdmin,
     to: recipient,
-    subject: `🚨 New Tariffs Affect ${affectedImportsCount} of your Imports`,
+    subject: `${subjectPrefix} ${affectedImportsCount} of your Imports`,
     react: React.createElement(ImpactedByNewTariffsEmail, {
+      maybeAffected,
       tariffName: tariffCodeSet.name,
       userImportListName: userHtsCodeSet.name,
       affectedImportsCount,
       tariffCodeSetId: tariffCodeSet.id,
       htsCodeSetId: userHtsCodeSet.id,
+      note,
     }),
     replyTo: "support@htshero.com",
   };
 };
 
+// maybeAffected indicates if there's not a 100% guarantee that the detected imports are affected
+
 const processTariffImpactNotifications = async (
-  tariffCodeSet: TariffCodeSet
+  tariffCodeSet: TariffCodeSet,
+  maybeAffected: boolean = true,
+  note?: string
 ) => {
   const errors: string[] = [];
   let processedUsers = 0;
@@ -156,10 +167,12 @@ const processTariffImpactNotifications = async (
             if (codesIncludedInTariffSet.length > 0) {
               // Prepare email data instead of sending immediately
               const emailData = createTariffImpactEmail(
+                maybeAffected,
                 user.email,
                 tariffCodeSet,
                 codeSet,
-                codesIncludedInTariffSet.length
+                codesIncludedInTariffSet.length,
+                note
               );
               emailsToSend.push(emailData);
             }
@@ -274,9 +287,9 @@ export async function POST(req: NextRequest) {
 
     // Validate request body
     const body = await req.json();
-    const { tariffCodeSetId } = body;
+    const { tariffCodeSetId, maybeAffected, note } = body;
 
-    if (!tariffCodeSetId) {
+    if (!tariffCodeSetId || maybeAffected === undefined) {
       return NextResponse.json({ error: "Bad Request" }, { status: 400 });
     }
 
@@ -285,7 +298,7 @@ export async function POST(req: NextRequest) {
     const tariffCodeSet = await fetchTariffCodeSet(supabase, tariffCodeSetId);
 
     // Process emails
-    await processTariffImpactNotifications(tariffCodeSet);
+    await processTariffImpactNotifications(tariffCodeSet, maybeAffected, note);
 
     // Return immediately with success
     return NextResponse.json({ message: "Success" }, { status: 200 });
