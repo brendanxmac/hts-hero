@@ -10946,6 +10946,23 @@ export const chinaTariffs: TariffI[] = [
       codes: ["8101.94.00", "8101.99.10", "8101.99.80"],
     },
   },
+  // TODO: 9903.91.12-16 GO LIVE NOVEMBER 10, 2026
+  // TODO: 9903.91.12-16 GO LIVE NOVEMBER 10, 2026
+  // TODO: 9903.91.12-16 GO LIVE NOVEMBER 10, 2026
+  // {
+  //   code: "9903.91.12",
+  //   description:
+  //     "Effective with respect to entries, on or after November 10, 2026, of intermodal chassis, subassemblies thereof, and parts thereof (provided for in statistical reporting number 8716.39.0090, or in subheadings 8716.90.30 or 8716.90.50), articles the product of China, as provided for in subdivision (k)(i) of U.S. note 31 to this subchapter, except as provided in heading 9903.91.1",
+  //   name: "Intermodal Chassis & their subassemblies or parts from China",
+  //   general: 100,
+  //   special: 0,
+  //   other: 0,
+  //   inclusions: {
+  //     countries: ["CN"],
+  //     codes: ["8716.39.00", "8716.90.30", "8716.90.50"],
+  //   },
+  //   exceptions: ["9903.91.13"],
+  // },
   {
     code: "9903.92.09",
     description:
