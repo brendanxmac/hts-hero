@@ -14,7 +14,7 @@ import PasswordRequirements from "@/components/PasswordRequirements";
 
 // Component that uses useSearchParams wrapped in Suspense
 function LoginContent() {
-  const { user, signOut } = useUser();
+  const { user } = useUser();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect");
 
@@ -25,6 +25,7 @@ function LoginContent() {
   const supabase = createSupabaseClient();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
@@ -34,14 +35,18 @@ function LoginContent() {
   const [otpCode, setOtpCode] = useState<string>("");
   const [showForgotPassword, setShowForgotPassword] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
   const [isPasswordValid, setIsPasswordValid] = useState<boolean>(false);
+  const [passwordsMatch, setPasswordsMatch] = useState<boolean>(false);
 
   const handleValidationChange = (
     isValid: boolean,
-    passwordsMatch: boolean
+    passwordsMatchParam: boolean
   ) => {
-    // For signup, we need valid password. We don't check passwordsMatch since there's no confirm field
+    // For signup, we need valid password and passwords to match
     setIsPasswordValid(isValid);
+    setPasswordsMatch(passwordsMatchParam);
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
@@ -107,6 +112,12 @@ function LoginContent() {
       return;
     }
 
+    // Validate passwords match for signup
+    if (isSignUp && !passwordsMatch) {
+      toast.error("Passwords must match");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -117,11 +128,15 @@ function LoginContent() {
         window.location.origin + "/api/auth/callback" + redirectParam;
 
       if (isSignUp) {
+        const signUpRedirect =
+          window.location.origin +
+          "/api/auth/callback" +
+          `?redirect=${encodeURIComponent("/signin")}`;
         const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: redirectURL,
+            emailRedirectTo: signUpRedirect,
           },
         });
 
@@ -186,7 +201,12 @@ function LoginContent() {
         if (error) {
           toast.error(error.message);
         } else {
-          toast.success("Check for an email from HTS Hero! (including spam)");
+          toast.success(
+            "Email sent! Check your inbox for a message from HTS Hero (including spam). If this is your first time signing in, you will need to confirm your email first.",
+            {
+              duration: 30000,
+            }
+          );
           setShowOtpVerification(true);
           setShowOtpForm(false);
         }
@@ -221,9 +241,9 @@ function LoginContent() {
         {showForgotPassword
           ? "Reset Your Password"
           : showOtpVerification
-            ? "One-Time Password"
+            ? "Enter Passcode"
             : showOtpForm
-              ? "Sign in with One-Time Password"
+              ? "Sign in with Passcode"
               : isSignUp
                 ? "Sign up for"
                 : "Sign in to"}{" "}
@@ -251,7 +271,7 @@ function LoginContent() {
                   type="email"
                   value={email}
                   autoComplete="email"
-                  placeholder="john-doe@gmail.com"
+                  placeholder="Enter your email"
                   className="input input-bordered w-full placeholder:opacity-60"
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isDisabled}
@@ -294,7 +314,7 @@ function LoginContent() {
               <div className="flex flex-col gap-0">
                 <label className="label">
                   <span className="label-text">
-                    Enter the code from your email
+                    Enter one-time the passcode sent to your email
                   </span>
                 </label>
                 <input
@@ -302,20 +322,20 @@ function LoginContent() {
                   name="otp"
                   type="text"
                   value={otpCode}
-                  autoComplete="one-time-code"
                   placeholder="123456"
-                  className="input input-bordered w-full placeholder:opacity-60 text-center text-2xl tracking-widest"
+                  className="input input-bordered w-full placeholder:opacity-40 text-center text-2xl tracking-widest"
                   onChange={(e) => setOtpCode(e.target.value)}
                   maxLength={6}
                   pattern="[0-9]*"
                   inputMode="numeric"
+                  data-1p-ignore
                 />
               </div>
 
               <div className="flex gap-2 w-full">
                 <button
                   className="grow btn btn-outline"
-                  onClick={() => {
+                  onClick={(e) => {
                     setShowOtpVerification(false);
                     setShowOtpForm(true);
                     setOtpCode("");
@@ -371,6 +391,7 @@ function LoginContent() {
                     setIsDisabled(false);
                   }}
                   disabled={isLoading}
+                  type="button"
                 >
                   Back
                 </button>
@@ -382,7 +403,19 @@ function LoginContent() {
                   {isLoading && (
                     <span className="loading loading-spinner loading-xs"></span>
                   )}
-                  Send OTP
+                  Send Passcode
+                </button>
+              </div>
+
+              <div className="text-center">
+                <button
+                  type="button"
+                  className="btn btn-link btn-sm"
+                  onClick={() => setShowOtpVerification(true)}
+                  disabled={isLoading}
+                  data-1p-ignore
+                >
+                  Already have a passcode? Enter it here
                 </button>
               </div>
             </form>
@@ -397,8 +430,8 @@ function LoginContent() {
                 </label>
                 <input
                   type="email"
-                  placeholder="john-doe@gmail.com"
-                  className="input input-bordered w-full placeholder:opacity-20"
+                  placeholder="Enter your email"
+                  className="input input-bordered w-full placeholder:opacity-30"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -413,11 +446,12 @@ function LoginContent() {
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
-                    className="input input-bordered w-full pr-10"
+                    className="input input-bordered w-full pr-10 placeholder:opacity-30"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     minLength={6}
+                    placeholder="Enter your password"
                     disabled={isDisabled}
                   />
                   <button
@@ -437,8 +471,44 @@ function LoginContent() {
               </div>
 
               {isSignUp && (
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text">Confirm Password</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      className="input input-bordered w-full pr-10 placeholder:opacity-30"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                      minLength={6}
+                      disabled={isDisabled}
+                      placeholder="Confirm your password"
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/50 hover:text-base-content transition-colors"
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+                      disabled={isDisabled}
+                      tabIndex={-1}
+                    >
+                      {showConfirmPassword ? (
+                        <EyeSlashIcon className="w-5 h-5" />
+                      ) : (
+                        <EyeIcon className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {isSignUp && (
                 <PasswordRequirements
                   password={password}
+                  confirmPassword={confirmPassword}
                   onValidationChange={handleValidationChange}
                 />
               )}
@@ -447,7 +517,9 @@ function LoginContent() {
                 type="submit"
                 className="btn btn-primary btn-block"
                 disabled={
-                  isLoading || isDisabled || (isSignUp && !isPasswordValid)
+                  isLoading ||
+                  isDisabled ||
+                  (isSignUp && (!isPasswordValid || !passwordsMatch))
                 }
               >
                 {isLoading ? (
@@ -466,6 +538,7 @@ function LoginContent() {
                   onClick={() => {
                     setIsSignUp(!isSignUp);
                     setIsDisabled(false);
+                    setConfirmPassword("");
                   }}
                   disabled={isLoading}
                 >
@@ -530,7 +603,7 @@ function LoginContent() {
                     />
                   </svg>
                 )}
-                Sign {isSignUp ? "up" : "in"} with Google
+                Continue with Google
               </button>
 
               <button
@@ -552,7 +625,7 @@ function LoginContent() {
                     d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
                   />
                 </svg>
-                Sign {isSignUp ? "up" : "in"} with Passcode
+                Continue with Passcode
               </button>
             </div>
           </>

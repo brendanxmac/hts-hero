@@ -8,6 +8,7 @@ import config from "@/config";
 import { useRouter } from "next/navigation";
 import PasswordRequirements from "@/components/PasswordRequirements";
 import { useUser } from "../../contexts/UserContext";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 export default function ResetPassword() {
   const { signOut } = useUser();
@@ -19,6 +20,9 @@ export default function ResetPassword() {
   const [isValidToken, setIsValidToken] = useState<boolean>(false);
   const [isCheckingToken, setIsCheckingToken] = useState<boolean>(true);
   const [canSubmit, setCanSubmit] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
 
   useEffect(() => {
     // Check if user has a valid session (from reset link)
@@ -151,30 +155,60 @@ export default function ResetPassword() {
             <label className="label">
               <span className="label-text">New Password</span>
             </label>
-            <input
-              required
-              name="password"
-              type="password"
-              value={password}
-              autoComplete="new-password"
-              className="input input-bordered w-full"
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="relative">
+              <input
+                required
+                name="password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                autoComplete="new-password"
+                placeholder="Enter your new password"
+                className="input input-bordered w-full pr-10 placeholder:opacity-30"
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/50 hover:text-base-content transition-colors"
+                onClick={() => setShowPassword(!showPassword)}
+                tabIndex={-1}
+              >
+                {showPassword ? (
+                  <EyeSlashIcon className="w-5 h-5" />
+                ) : (
+                  <EyeIcon className="w-5 h-5" />
+                )}
+              </button>
+            </div>
           </div>
 
           <div className="flex flex-col gap-0">
             <label className="label">
               <span className="label-text">Confirm New Password</span>
             </label>
-            <input
-              required
-              name="confirmPassword"
-              type="password"
-              value={confirmPassword}
-              autoComplete="new-password"
-              className="input input-bordered w-full"
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
+            <div className="relative">
+              <input
+                required
+                name="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                value={confirmPassword}
+                autoComplete="new-password"
+                placeholder="Confirm your new password"
+                className="input input-bordered w-full pr-10 placeholder:opacity-30"
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/50 hover:text-base-content transition-colors"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                tabIndex={-1}
+              >
+                {showConfirmPassword ? (
+                  <EyeSlashIcon className="w-5 h-5" />
+                ) : (
+                  <EyeIcon className="w-5 h-5" />
+                )}
+              </button>
+            </div>
           </div>
 
           <PasswordRequirements
@@ -195,9 +229,17 @@ export default function ResetPassword() {
           </button>
 
           <div className="text-center">
-            <Link href="/signin" className="btn btn-link btn-sm">
+            <button
+              className="btn btn-link btn-sm"
+              onClick={async () => {
+                setIsLoading(true);
+                await signOut();
+                router.push("/signin");
+              }}
+              disabled={isLoading}
+            >
               Back to Sign In
-            </Link>
+            </button>
           </div>
         </form>
       </div>
