@@ -7,8 +7,10 @@ import toast from "react-hot-toast";
 import config from "@/config";
 import { useRouter } from "next/navigation";
 import PasswordRequirements from "@/components/PasswordRequirements";
+import { useUser } from "../../contexts/UserContext";
 
 export default function ResetPassword() {
+  const { signOut } = useUser();
   const router = useRouter();
   const supabase = createSupabaseClient();
   const [password, setPassword] = useState<string>("");
@@ -57,9 +59,10 @@ export default function ResetPassword() {
         toast.error(error.message);
       } else {
         toast.success("Password updated successfully!");
-        // Redirect to app after successful password reset
+        await signOut();
+        // Redirect to sign in after successful password reset for security best practice
         setTimeout(() => {
-          router.push("/app");
+          router.push("/signin");
         }, 1000);
       }
     } catch (error) {

@@ -50,7 +50,7 @@ export const AuthenticatedHeader = () => {
             </span>
           </Link>
 
-          <div className="hidden sm:flex items-center justify-start gap-4">
+          <div className="hidden md:flex items-center justify-start gap-4">
             <Link
               href="/explore"
               className={`btn btn-link px-0 gap-0 ${
@@ -86,7 +86,7 @@ export const AuthenticatedHeader = () => {
         </div>
 
         {/* Burger button to open menu on mobile */}
-        <div className="flex sm:hidden">
+        <div className="flex md:hidden">
           <button
             type="button"
             className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5"
@@ -110,9 +110,9 @@ export const AuthenticatedHeader = () => {
           </button>
         </div>
 
-        <div className="hidden sm:flex items-center gap-2">
+        <div className="hidden md:flex items-center gap-2">
           {/* Your links on large screens */}
-          <div className="hidden sm:flex sm:justify-center sm:gap-4 sm:items-center">
+          <div className="hidden md:flex md:justify-center md:gap-4 md:items-center">
             {tutorial && (
               <button
                 className="btn btn-sm btn-neutral"
@@ -126,7 +126,7 @@ export const AuthenticatedHeader = () => {
           </div>
 
           {/* CTA on large screens */}
-          <div className="hidden sm:flex sm:justify-end sm:flex-1 gap-4 items-center">
+          <div className="hidden md:flex md:justify-end md:flex-1 gap-4 items-center">
             <ButtonSupport />
             <ButtonAccount />
           </div>
@@ -137,7 +137,7 @@ export const AuthenticatedHeader = () => {
       {isOpen && (
         <div className="relative z-50">
           <div
-            className={`fixed inset-y-0 right-0 z-10 w-full px-8 py-4 overflow-y-auto bg-base-200 sm:max-w-sm sm:ring-1 sm:ring-neutral/10 transform origin-right transition ease-in-out duration-300`}
+            className={`fixed inset-y-0 right-0 z-10 w-full px-8 py-4 overflow-y-auto bg-base-200 md:max-w-sm md:ring-1 md:ring-neutral/10 transform origin-right transition ease-in-out duration-300`}
           >
             {/* Your logo/name on small screens */}
             <div className="flex items-center justify-between">
@@ -179,14 +179,6 @@ export const AuthenticatedHeader = () => {
             <div className="flow-root mt-6">
               <div className="py-4">
                 <div className="flex flex-col gap-y-4 items-start">
-                  <button
-                    className="btn btn-sm"
-                    onClick={() => setShowTutorial(true)}
-                    data-tooltip-id="tooltip"
-                  >
-                    <PlayIcon className="w-5 h-5" />
-                    Tutorial
-                  </button>
                   <Link
                     href="/explore"
                     className={`font-semibold link link-hover ${
@@ -222,6 +214,16 @@ export const AuthenticatedHeader = () => {
               <div className="divider"></div>
               {/* Your CTA on small screens */}
               <div className="w-full flex gap-2 justify-between items-center">
+                {tutorial && (
+                  <button
+                    className="grow btn btn-sm btn-neutral"
+                    onClick={() => setShowTutorial(true)}
+                    data-tooltip-id="tooltip"
+                  >
+                    <PlayIcon className="w-5 h-5" />
+                    Tutorial
+                  </button>
+                )}
                 <ButtonSupport />
                 <ButtonAccount />
               </div>

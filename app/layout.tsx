@@ -10,6 +10,9 @@ import { HtsSectionsProvider } from "../contexts/HtsSectionsContext";
 import { ClassificationProvider } from "../contexts/ClassificationContext";
 import { HtsProvider } from "../contexts/HtsContext";
 import { UserProvider } from "../contexts/UserContext";
+import { createClient } from "./api/supabase/server";
+import { AuthenticatedHeader } from "../components/AuthenticatedHeader";
+import UnauthenticatedHeader from "../components/UnauthenticatedHeader";
 
 const font = Inter({ subsets: ["latin"] });
 
@@ -24,7 +27,11 @@ export const viewport: Viewport = {
 // You can override them in each page passing params to getSOTags() function.
 export const metadata = getSEOTags();
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
   return (
     <html lang="en" data-theme={config.colors.theme} className={font.className}>
       <body>

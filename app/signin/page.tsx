@@ -14,7 +14,7 @@ import PasswordRequirements from "@/components/PasswordRequirements";
 
 // Component that uses useSearchParams wrapped in Suspense
 function LoginContent() {
-  const { user } = useUser();
+  const { user, signOut } = useUser();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect");
 
@@ -465,8 +465,6 @@ function LoginContent() {
                   className="btn btn-link btn-sm"
                   onClick={() => {
                     setIsSignUp(!isSignUp);
-                    setEmail("");
-                    setPassword("");
                     setIsDisabled(false);
                   }}
                   disabled={isLoading}
