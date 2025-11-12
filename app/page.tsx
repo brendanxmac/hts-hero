@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { Suspense } from "react";
 import { useUser } from "../contexts/UserContext";
 import { AuthenticatedHeader } from "../components/AuthenticatedHeader";
 import UnauthenticatedHeader from "../components/UnauthenticatedHeader";
@@ -11,7 +12,13 @@ export default function Home() {
 
   return (
     <div className="h-screen flex flex-col">
-      {user ? <AuthenticatedHeader /> : <UnauthenticatedHeader />}
+      <Suspense
+        fallback={
+          <div className="h-16 bg-base-100 border-b border-base-content/20" />
+        }
+      >
+        {user ? <AuthenticatedHeader /> : <UnauthenticatedHeader />}
+      </Suspense>
       <div className="h-full bg-base-300 flex items-center justify-center p-4">
         <div className="text-center max-w-7xl w-full">
           <div className="mb-8">
