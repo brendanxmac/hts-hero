@@ -115,9 +115,17 @@ export default function ResetPassword() {
             This password reset link is invalid or has expired. Please request a
             new password reset link.
           </p>
-          <Link href="/signin" className="btn btn-primary">
+          <button
+            className="btn btn-link btn-sm"
+            onClick={async () => {
+              setIsLoading(true);
+              await signOut();
+              router.push("/signin");
+            }}
+            disabled={isLoading}
+          >
             Back to Sign In
-          </Link>
+          </button>
         </div>
       </main>
     );
