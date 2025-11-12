@@ -18,7 +18,8 @@ const ButtonAccount = () => {
 
   const handleSignOut = async () => {
     await signOut();
-    window.location.href = "/";
+    const redirectTo = window.location.pathname;
+    window.location.href = `/signin?redirect=${encodeURIComponent(redirectTo)}`;
   };
 
   const handleProfile = async () => {

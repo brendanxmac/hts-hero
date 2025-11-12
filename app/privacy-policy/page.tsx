@@ -39,12 +39,14 @@ We may collect the following personal information when you interact with our sit
 - Payment information
 
 Non-Personal Information:
-We also collect non-personal information through the use of cookies to improve your experience and analyze website performance.
+We also collect non-personal information to improve our services, including:
+- Cookies for core website functionality
+- Usage data when website features are used
 
 2. How We Use Your Information
 We use the information collected for the following purposes:
-- To process & support orders
-- To communicate with you regarding your account or transactions
+- To process & support orders (if applicable)
+- To communicate with you regarding your account or transactions (if applicable)
 - To improve our website and services
 
 3. Data Sharing

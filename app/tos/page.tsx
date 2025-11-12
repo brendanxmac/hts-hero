@@ -31,9 +31,11 @@ Welcome to HTS Hero ("we," "us," or "our"). By accessing and using our website (
 
 1. Use of Service
 
-HTS Hero provides tools that help users find HTS code(s) for their product(s).
-Users are welcome to use the platform and the suggestions it provides at their discretion.
+HTS Hero provides tools that simplify tariffs and HTS classification.
+Users are welcome to use the platform and the assitance and information it provides at their discretion.
 HTS Hero does not guarantee the accuracy or completeness of the results provided.
+Any analysis or suggestions provided are for informational purposes only and should be verified by the user before making any decisions.
+We do not classify anything for you, we provide you with information that may help you with your own classifications.
 
 
 2. Payments
@@ -46,8 +48,9 @@ HTS Hero does not guarantee the accuracy or completeness of the results provided
 3. User Responsibilities
 
 By using our website, you agree to:
-- Provide accurate information when creating an account or making a purchase.
+- Provide accurate information when creating an account or making a purchase (if applicable).
 - Refrain from any unlawful use of our services.
+- Use all information at your own discretion, and make all decisions based on your own research and judgement
 
 
 4. Data Collection
