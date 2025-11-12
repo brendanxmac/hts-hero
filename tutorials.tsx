@@ -7,7 +7,7 @@ export enum TutorialName {
 
 export const exploreTutorial = (
   <iframe
-    src="https://www.youtube.com/embed/3CcVBsW9jkg?si=7T7D4hrR3_OYhMLT"
+    src="https://www.youtube.com/embed/KZ6zv9ujarY?si=J4OtRKsBFnMC5gKs"
     allowFullScreen
     className="w-full h-full"
   ></iframe>
@@ -15,7 +15,7 @@ export const exploreTutorial = (
 
 export const classifyTutorial = (
   <iframe
-    src="https://www.youtube.com/embed/qoptx3EpNrc?si=_xvYkdlgZlc9xW6V"
+    src="https://www.youtube.com/embed/HSo8h_DCEZ0?si=ZP6ERGpSwl1jbUlb"
     allowFullScreen
     className="w-full h-full"
   ></iframe>

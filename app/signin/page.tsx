@@ -9,6 +9,8 @@ import config from "@/config";
 import { useUser } from "../../contexts/UserContext";
 import { redirect } from "next/navigation";
 import { useSearchParams } from "next/navigation";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import PasswordRequirements from "@/components/PasswordRequirements";
 
 // Component that uses useSearchParams wrapped in Suspense
 function LoginContent() {
@@ -27,7 +29,20 @@ function LoginContent() {
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
   const [showOtpForm, setShowOtpForm] = useState<boolean>(false);
+  const [showOtpVerification, setShowOtpVerification] =
+    useState<boolean>(false);
+  const [otpCode, setOtpCode] = useState<string>("");
   const [showForgotPassword, setShowForgotPassword] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [isPasswordValid, setIsPasswordValid] = useState<boolean>(false);
+
+  const handleValidationChange = (
+    isValid: boolean,
+    passwordsMatch: boolean
+  ) => {
+    // For signup, we need valid password. We don't check passwordsMatch since there's no confirm field
+    setIsPasswordValid(isValid);
+  };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +50,7 @@ function LoginContent() {
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + "/api/auth/callback",
+        redirectTo: window.location.origin + "/reset-password",
       });
 
       if (error) {
@@ -52,8 +67,46 @@ function LoginContent() {
     }
   };
 
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        email,
+        token: otpCode,
+        type: "email",
+      });
+
+      if (error) {
+        if (error.message.includes("expired")) {
+          toast.error("This code has expired. Please request a new one.");
+        } else if (error.message.includes("invalid")) {
+          toast.error("Invalid code. Please check and try again.");
+        } else {
+          toast.error(error.message);
+        }
+      } else {
+        toast.success("Successfully signed in!");
+        window.location.href = redirectTo || "/";
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("An error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleEmailPasswordAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate password requirements for signup
+    if (isSignUp && !isPasswordValid) {
+      toast.error("Please meet all password requirements");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -126,13 +179,17 @@ function LoginContent() {
           },
         });
       } else if (type === "otp") {
-        await supabase.auth.signInWithOtp({
+        const { error } = await supabase.auth.signInWithOtp({
           email,
         });
 
-        toast.success("Check for an email from HTS Hero! (including spam)");
-
-        setIsDisabled(true);
+        if (error) {
+          toast.error(error.message);
+        } else {
+          toast.success("Check for an email from HTS Hero! (including spam)");
+          setShowOtpVerification(true);
+          setShowOtpForm(false);
+        }
       }
     } catch (error) {
       console.log(error);
@@ -163,12 +220,17 @@ function LoginContent() {
       <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-center mb-8">
         {showForgotPassword
           ? "Reset Your Password"
-          : showOtpForm
-            ? "Sign in with One-Time Password"
-            : isSignUp
-              ? "Sign up for"
-              : "Sign in to"}{" "}
-        {!showOtpForm && !showForgotPassword && config.appName}
+          : showOtpVerification
+            ? "One-Time Password"
+            : showOtpForm
+              ? "Sign in with One-Time Password"
+              : isSignUp
+                ? "Sign up for"
+                : "Sign in to"}{" "}
+        {!showOtpForm &&
+          !showForgotPassword &&
+          !showOtpVerification &&
+          config.appName}
       </h1>
 
       <div className="space-y-4 max-w-xl mx-auto">
@@ -189,7 +251,7 @@ function LoginContent() {
                   type="email"
                   value={email}
                   autoComplete="email"
-                  placeholder="your@email.com"
+                  placeholder="john-doe@gmail.com"
                   className="input input-bordered w-full placeholder:opacity-60"
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isDisabled}
@@ -218,6 +280,60 @@ function LoginContent() {
                     <span className="loading loading-spinner loading-xs"></span>
                   )}
                   Send Reset Link
+                </button>
+              </div>
+            </form>
+          </>
+        ) : showOtpVerification ? (
+          /* OTP Verification Form */
+          <>
+            <form
+              className="form-control w-full space-y-4"
+              onSubmit={handleVerifyOtp}
+            >
+              <div className="flex flex-col gap-0">
+                <label className="label">
+                  <span className="label-text">
+                    Enter the code from your email
+                  </span>
+                </label>
+                <input
+                  required
+                  name="otp"
+                  type="text"
+                  value={otpCode}
+                  autoComplete="one-time-code"
+                  placeholder="123456"
+                  className="input input-bordered w-full placeholder:opacity-60 text-center text-2xl tracking-widest"
+                  onChange={(e) => setOtpCode(e.target.value)}
+                  maxLength={6}
+                  pattern="[0-9]*"
+                  inputMode="numeric"
+                />
+              </div>
+
+              <div className="flex gap-2 w-full">
+                <button
+                  className="grow btn btn-outline"
+                  onClick={() => {
+                    setShowOtpVerification(false);
+                    setShowOtpForm(true);
+                    setOtpCode("");
+                  }}
+                  disabled={isLoading}
+                  type="button"
+                >
+                  Back
+                </button>
+                <button
+                  className="grow btn btn-primary"
+                  disabled={isLoading}
+                  type="submit"
+                >
+                  {isLoading && (
+                    <span className="loading loading-spinner loading-xs"></span>
+                  )}
+                  Sign In
                 </button>
               </div>
             </form>
@@ -281,8 +397,8 @@ function LoginContent() {
                 </label>
                 <input
                   type="email"
-                  placeholder="your@email.com"
-                  className="input input-bordered w-full"
+                  placeholder="john-doe@gmail.com"
+                  className="input input-bordered w-full placeholder:opacity-20"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -294,22 +410,45 @@ function LoginContent() {
                 <label className="label">
                   <span className="label-text">Password</span>
                 </label>
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  className="input input-bordered w-full"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={6}
-                  disabled={isDisabled}
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    className="input input-bordered w-full pr-10"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    minLength={6}
+                    disabled={isDisabled}
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/50 hover:text-base-content transition-colors"
+                    onClick={() => setShowPassword(!showPassword)}
+                    disabled={isDisabled}
+                    tabIndex={-1}
+                  >
+                    {showPassword ? (
+                      <EyeSlashIcon className="w-5 h-5" />
+                    ) : (
+                      <EyeIcon className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
               </div>
+
+              {isSignUp && (
+                <PasswordRequirements
+                  password={password}
+                  onValidationChange={handleValidationChange}
+                />
+              )}
 
               <button
                 type="submit"
                 className="btn btn-primary btn-block"
-                disabled={isLoading || isDisabled}
+                disabled={
+                  isLoading || isDisabled || (isSignUp && !isPasswordValid)
+                }
               >
                 {isLoading ? (
                   <span className="loading loading-spinner loading-xs"></span>
@@ -393,7 +532,7 @@ function LoginContent() {
                     />
                   </svg>
                 )}
-                Continue with Google
+                Sign {isSignUp ? "up" : "in"} with Google
               </button>
 
               <button
@@ -415,7 +554,7 @@ function LoginContent() {
                     d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
                   />
                 </svg>
-                Send One-Time Password
+                Sign {isSignUp ? "up" : "in"} with Passcode
               </button>
             </div>
           </>

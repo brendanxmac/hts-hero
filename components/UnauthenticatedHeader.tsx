@@ -74,7 +74,7 @@ const UnauthenticatedHeader = () => {
                     : "text-base-content no-underline"
                 }`}
               >
-                Explore
+                Tariff Finder
               </button>
             </Link>
             <Link href="/about">
@@ -136,7 +136,7 @@ const UnauthenticatedHeader = () => {
               <Link
                 href={link.href}
                 key={link.href}
-                className="btn btn-primary btn-sm font-semibold link link-hover"
+                className="btn btn-sm bg-yellow-400 text-black hover:bg-yellow-500 font-semibold link link-hover"
               >
                 {link.label}
               </Link>

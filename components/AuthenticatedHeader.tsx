@@ -9,6 +9,7 @@ import ButtonSupport from "./ButtonSupport";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getTutorialFromPathname, Tutorial, TutorialI } from "./Tutorial";
+import { PlayIcon } from "@heroicons/react/16/solid";
 
 export const AuthenticatedHeader = () => {
   const pathname = usePathname();
@@ -58,7 +59,7 @@ export const AuthenticatedHeader = () => {
                   : "text-base-content no-underline"
               }`}
             >
-              Explore
+              Tariff Finder
             </Link>
             <Link
               href="/app"
@@ -111,10 +112,10 @@ export const AuthenticatedHeader = () => {
 
         <div className="hidden sm:flex items-center gap-2">
           {/* Your links on large screens */}
-          {/* <div className="hidden sm:flex sm:justify-center sm:gap-4 sm:items-center">
+          <div className="hidden sm:flex sm:justify-center sm:gap-4 sm:items-center">
             {tutorial && (
               <button
-                className="btn btn-sm"
+                className="btn btn-sm btn-neutral"
                 onClick={() => setShowTutorial(true)}
                 data-tooltip-id="tooltip"
               >
@@ -122,7 +123,7 @@ export const AuthenticatedHeader = () => {
                 Tutorial
               </button>
             )}
-          </div> */}
+          </div>
 
           {/* CTA on large screens */}
           <div className="hidden sm:flex sm:justify-end sm:flex-1 gap-4 items-center">
@@ -178,14 +179,14 @@ export const AuthenticatedHeader = () => {
             <div className="flow-root mt-6">
               <div className="py-4">
                 <div className="flex flex-col gap-y-4 items-start">
-                  {/* <button
+                  <button
                     className="btn btn-sm"
                     onClick={() => setShowTutorial(true)}
                     data-tooltip-id="tooltip"
                   >
                     <PlayIcon className="w-5 h-5" />
                     Tutorial
-                  </button> */}
+                  </button>
                   <Link
                     href="/explore"
                     className={`font-semibold link link-hover ${
@@ -194,7 +195,7 @@ export const AuthenticatedHeader = () => {
                         : "text-base-content no-underline"
                     }`}
                   >
-                    Explore
+                    Tariff Finder
                   </Link>
                   <Link
                     href="/app"

@@ -24,14 +24,6 @@ export const Tutorial = ({
 }: Props) => {
   const { element } = tutorial;
 
-  // useEffect(() => {
-  // const hasSeenTutorial = localStorage.getItem(`seen-tutorial-${name}`);
-  // if (!hasSeenTutorial) {
-  //   setShowTutorial(true);
-  //   localStorage.setItem(`seen-tutorial-${name}`, "true");
-  // }
-  // }, []);
-
   return (
     <Modal isOpen={showTutorial} setIsOpen={setShowTutorial}>
       <div className="w-full h-[80vh] min-h-[500px]">
