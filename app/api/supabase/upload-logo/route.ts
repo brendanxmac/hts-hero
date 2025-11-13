@@ -16,16 +16,24 @@ export const runtime = "edge";
 // The file is cached for 1 hour to improve performance
 export async function POST(req: Request) {
   const supabase = createClient();
+  const { data } = await supabase.auth.getUser();
+  const user = data.user;
+
+  // User who are not logged in can't do searches
+  if (!user) {
+    return NextResponse.json(
+      { error: "You must be logged in to complete this action." },
+      { status: 401 }
+    );
+  }
+
   const formData = await req.formData();
 
   const file = formData.get("file") as File;
   const userId = formData.get("userId") as string;
 
   if (!file || !userId) {
-    return NextResponse.json(
-      { error: "Missing file or userId" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Bad Request" }, { status: 400 });
   }
 
   if (file.size > 4 * 1024 * 1024) {

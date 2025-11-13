@@ -8,7 +8,7 @@ import apiClient from "./api";
 import jsPDF from "jspdf";
 import { getElementWithTariffDataFromClassification } from "./hts";
 import { UserProfile } from "./supabase/user";
-import { fetchLogo } from "./supabase/storage";
+import { fetchUserLogo } from "./supabase/storage";
 
 const formatHtsNumber = (htsno: string | undefined | null): string => {
   return htsno?.trim() || "-";
@@ -123,7 +123,7 @@ export const generateClassificationReport = async (
   // Add company logo with proper error handling and improved sizing
   try {
     const logo = new Image();
-    const companyLogo = await fetchLogo();
+    const companyLogo = await fetchUserLogo();
     const companyLogoFormat = getImageFormatFromFilename(
       userProfile.company_logo || ""
     );

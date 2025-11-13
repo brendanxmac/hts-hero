@@ -2,35 +2,60 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { fetchUser } from "../libs/supabase/user";
+import { fetchUser, UserProfile } from "../libs/supabase/user";
 import { TertiaryText } from "./TertiaryText";
 import { SecondaryLabel } from "./SecondaryLabel";
-import { fetchLogo, uploadLogo } from "../libs/supabase/storage";
+import {
+  fetchTeamLogo,
+  fetchUserLogo,
+  uploadTeamLogo,
+  uploadUserLogo,
+} from "../libs/supabase/storage";
 import { LoadingIndicator } from "./LoadingIndicator";
 import Image from "next/image";
+import { fetchTeam } from "../libs/supabase/teams";
 
-export default function LogoUploader({ userId }: { userId: string }) {
+interface Props {
+  user: UserProfile;
+  teamId?: string;
+}
+
+export default function LogoUploader({ user, teamId }: Props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const isTeamAdmin = teamId ? user.team_id === teamId && !!user.admin : false;
 
   useEffect(() => {
     const fetchLogoUrl = async () => {
       setLoading(true);
-      const user = await fetchUser(userId);
-      if (user && user.company_logo) {
-        const { signedUrl, error } = await fetchLogo();
-        if (error) {
-          setError(error);
-        } else {
-          setPreviewUrl(signedUrl || null);
+      if (teamId) {
+        const team = await fetchTeam(teamId);
+        if (team && team.logo) {
+          const { signedUrl, error } = await fetchTeamLogo(team.id);
+          if (error) {
+            setError(error);
+          } else {
+            setPreviewUrl(signedUrl || null);
+          }
+        }
+      } else {
+        const userProfile = await fetchUser(user.id);
+        if (userProfile && userProfile.company_logo) {
+          const { signedUrl, error } = await fetchUserLogo();
+          if (error) {
+            setError(error);
+          } else {
+            setPreviewUrl(signedUrl || null);
+          }
         }
       }
+
       setLoading(false);
     };
     fetchLogoUrl();
-  }, [userId]);
+  }, [user.id, teamId]);
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
@@ -49,12 +74,19 @@ export default function LogoUploader({ userId }: { userId: string }) {
 
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("userId", userId);
+
+      if (teamId) {
+        formData.append("teamId", teamId);
+      } else {
+        formData.append("user.id", user.id);
+      }
 
       setUploading(true);
       setError(null);
 
-      const { signedUrl, error } = await uploadLogo(formData);
+      const { signedUrl, error } = teamId
+        ? await uploadTeamLogo(formData)
+        : await uploadUserLogo(formData);
 
       if (error) {
         setError(error || "Upload failed");
@@ -64,7 +96,7 @@ export default function LogoUploader({ userId }: { userId: string }) {
 
       setUploading(false);
     },
-    [userId]
+    [user.id, teamId]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -92,22 +124,24 @@ export default function LogoUploader({ userId }: { userId: string }) {
           )}
         </div>
       )}
-      <div
-        {...getRootProps()}
-        className={`w-full border-2 p-6 text-center rounded cursor-pointer transition flex flex-col items-center
+      {isTeamAdmin && (
+        <div
+          {...getRootProps()}
+          className={`w-full border-2 p-6 text-center rounded cursor-pointer transition flex flex-col items-center
           ${isDragActive ? "border-blue-500 bg-blue-50" : "border-base-content/20"}
         `}
-      >
-        <input {...getInputProps()} />
-        <SecondaryLabel
-          value={
-            uploading
-              ? "Uploading..."
-              : `Drag & drop or click to ${previewUrl ? "update" : "upload"} logo`
-          }
-        />
-        <TertiaryText value="(Must be PNG/JPEG, Max Size 4MB)" />
-      </div>
+        >
+          <input {...getInputProps()} />
+          <SecondaryLabel
+            value={
+              uploading
+                ? "Uploading..."
+                : `Drag & drop or click to ${previewUrl ? "update" : "upload"} logo`
+            }
+          />
+          <TertiaryText value="(Must be PNG/JPEG, Max Size 4MB)" />
+        </div>
+      )}
 
       {error && <p className="text-sm text-red-500">{error}</p>}
     </div>
