@@ -131,6 +131,12 @@ export interface CandidateSelection {
   // logic: string;
 }
 
+export enum ClassificationStatus {
+  DRAFT = "draft",
+  REVIEW = "review",
+  FINAL = "final",
+}
+
 export interface ClassificationRecord {
   id: string;
   user_id: string;
@@ -140,12 +146,15 @@ export interface ClassificationRecord {
     name?: string;
     email: string;
   };
+  importer?: {
+    name: string;
+  };
   classifier_id?: string;
   classification: Classification;
   created_at: string;
   updated_at: string;
   revision: string;
-  finalized?: boolean;
+  status: ClassificationStatus;
 }
 
 export interface Classification {

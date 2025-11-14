@@ -1,6 +1,7 @@
 import {
   Classification,
   ClassificationRecord,
+  ClassificationStatus,
   Classifier,
   Importer,
 } from "../interfaces/hts";
@@ -33,14 +34,14 @@ export const updateClassification = async (
   classification?: Classification,
   importer_id?: string,
   classifier_id?: string,
-  finalized?: boolean
+  status?: ClassificationStatus
 ) => {
   const response = await apiClient.post("/classification/update", {
     id,
     classification,
     importer_id,
     classifier_id,
-    finalized,
+    status,
   });
 
   return response.data;

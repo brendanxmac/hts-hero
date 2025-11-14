@@ -1,6 +1,5 @@
 import { ClassifyPage } from "../enums/classify";
 import { ClassificationSummary } from "./ClassificationSummary";
-import { SecondaryText } from "./SecondaryText";
 import { Color } from "../enums/style";
 import { useClassifications } from "../contexts/ClassificationsContext";
 import { useUser } from "../contexts/UserContext";
@@ -11,7 +10,7 @@ import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { TertiaryText } from "./TertiaryText";
 import { PlusIcon } from "@heroicons/react/16/solid";
-import { FunnelIcon } from "@heroicons/react/24/solid";
+import { FunnelIcon } from "@heroicons/react/16/solid";
 import { BoltIcon } from "@heroicons/react/16/solid";
 import Fuse, { IFuseOptions } from "fuse.js";
 import { LoadingIndicator } from "./LoadingIndicator";
@@ -19,7 +18,16 @@ import { PricingPlan } from "../types";
 import { getActiveClassifyPurchase } from "../libs/supabase/purchase";
 import apiClient from "../libs/api";
 import { classifyPro } from "../config";
-import { fetchUser, UserProfile } from "../libs/supabase/user";
+import {
+  fetchUser,
+  fetchUsersByTeam,
+  UserProfile,
+} from "../libs/supabase/user";
+import {
+  fetchImportersForTeam,
+  fetchImportersForUser,
+} from "../libs/supabase/importers";
+import { ClassificationStatus, Importer } from "../interfaces/hts";
 
 interface Props {
   page: ClassifyPage;
@@ -33,6 +41,60 @@ interface SearchableClassification {
   htsCodes: string[];
 }
 
+// Empty state configuration
+interface EmptyStateConfig {
+  iconPath: string;
+  title: string;
+  descriptions: string[];
+  buttonText: string;
+  buttonClassName?: string;
+  onButtonClick: () => void | Promise<void>;
+  buttonIcon?: React.ReactNode;
+  maxWidth?: string;
+}
+
+// Reusable empty state component
+const EmptyState = ({ config }: { config: EmptyStateConfig }) => (
+  <div className="flex-1 flex flex-col items-center justify-center gap-3">
+    <div className="w-24 h-24 text-neutral-content">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth={1}
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d={config.iconPath}
+        />
+      </svg>
+    </div>
+    <div className="flex flex-col gap-4 items-center">
+      <div
+        className={`text-center flex flex-col gap-1 items-center ${config.maxWidth || ""}`}
+      >
+        <PrimaryLabel value={config.title} color={Color.WHITE} />
+        {config.descriptions.map((desc, index) => (
+          <TertiaryText
+            key={index}
+            value={desc}
+            color={Color.NEUTRAL_CONTENT}
+          />
+        ))}
+      </div>
+      <button
+        className={config.buttonClassName || "btn btn-primary w-fit"}
+        onClick={config.onButtonClick}
+      >
+        {config.buttonIcon}
+        {config.buttonText}
+      </button>
+    </div>
+  </div>
+);
+
 export const Classifications = ({ page, setPage }: Props) => {
   const [loadingNewClassification, setLoadingNewClassification] =
     useState(false);
@@ -42,9 +104,9 @@ export const Classifications = ({ page, setPage }: Props) => {
     text: "",
   });
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState<"all" | "finalized" | "draft">(
-    "all"
-  );
+  const [activeTab, setActiveTab] = useState<
+    "all" | "final" | "review" | "draft"
+  >("all");
   const { htsElements, fetchElements } = useHts();
   const { getSections, sections } = useHtsSections();
   const {
@@ -57,6 +119,129 @@ export const Classifications = ({ page, setPage }: Props) => {
     useState<PricingPlan | null>(null);
   const { user, error: userError } = useUser();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [teamUsers, setTeamUsers] = useState<UserProfile[]>([]);
+  const [importers, setImporters] = useState<Importer[]>([]);
+  const [selectedUserId, setSelectedUserId] = useState<string>("");
+  const [selectedImporterId, setSelectedImporterId] = useState<string>("");
+
+  // Helper function to get the appropriate empty state configuration
+  const getEmptyStateConfig = (): EmptyStateConfig | null => {
+    const hasClassifications = classifications && classifications.length > 0;
+    const noFiltered = filteredClassifications.length === 0;
+    const hasActiveFilters =
+      searchQuery !== "" ||
+      (teamUsers.length > 0 && selectedUserId !== "") ||
+      selectedImporterId !== "";
+    const noActiveFilters =
+      searchQuery === "" &&
+      selectedImporterId === "" &&
+      (teamUsers.length === 0 || selectedUserId === "");
+
+    // No classifications at all
+    if (!hasClassifications) {
+      return {
+        iconPath:
+          "M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z",
+        title: "No Classifications Yet",
+        descriptions: [
+          "You haven't started or completed any classifications yet, but can start one now.",
+        ],
+        buttonText: "Start First Classification",
+        onButtonClick: () => setPage(ClassifyPage.CLASSIFY),
+      };
+    }
+
+    // No search results (active filters applied)
+    if (hasClassifications && noFiltered && hasActiveFilters) {
+      return {
+        iconPath:
+          "M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z",
+        title: "No Matching Classifications",
+        descriptions: ["No classifications found for your search critieria."],
+        buttonText: "Clear Filters",
+        buttonClassName: "btn btn-primary w-fit btn-sm",
+        onButtonClick: () => {
+          setSearchQuery("");
+          setSelectedUserId("");
+          setSelectedImporterId("");
+        },
+      };
+    }
+
+    // Empty state for draft tab
+    if (
+      hasClassifications &&
+      noFiltered &&
+      activeTab === "draft" &&
+      noActiveFilters
+    ) {
+      return {
+        iconPath:
+          "M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z",
+        title: "No Draft Classifications",
+        descriptions: [
+          "You don't have any draft classifications at the moment.",
+          "Start a new classification to begin working on a draft.",
+        ],
+        buttonText: "Start New Classification",
+        buttonIcon: loadingNewClassification ? (
+          <span className={`loading loading-spinner loading-sm`}></span>
+        ) : (
+          <PlusIcon className="h-5 w-5" />
+        ),
+        onButtonClick: async () => {
+          setLoadingNewClassification(true);
+          await fetchElements("latest");
+          setPage(ClassifyPage.CLASSIFY);
+          setLoadingNewClassification(false);
+        },
+      };
+    }
+
+    // Empty state for finalized tab
+    if (
+      hasClassifications &&
+      noFiltered &&
+      activeTab === "final" &&
+      noActiveFilters
+    ) {
+      return {
+        iconPath: "M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
+        title: "No Finalized Classifications",
+        descriptions: [
+          "Classifications that you've fully completed can be marked as final.",
+          'To do this, open the classification and click "Mark as Final" in the top right hand corner.',
+        ],
+        buttonText: "View Drafts",
+        buttonClassName: "btn btn-primary btn-wide btn-sm",
+        maxWidth: "max-w-md",
+        onButtonClick: () => setActiveTab("draft"),
+      };
+    }
+
+    // Empty state for review tab
+    if (
+      hasClassifications &&
+      noFiltered &&
+      activeTab === "review" &&
+      noActiveFilters
+    ) {
+      return {
+        iconPath: "M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
+        title: "No Classifications in Review",
+        descriptions: [
+          "Classifications can be marked as 'Needs Review'.",
+          "To do this, open the classification and select this status",
+        ],
+        buttonText: "View Drafts",
+        buttonClassName: "btn btn-primary btn-wide btn-sm",
+        maxWidth: "max-w-md",
+        onButtonClick: () => setActiveTab("draft"),
+      };
+    }
+
+    return null;
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,7 +255,29 @@ export const Classifications = ({ page, setPage }: Props) => {
       }
 
       if (userProfile) {
+        let teamUsers: UserProfile[] = [];
+        let importers: Importer[] = [];
+
+        if (userProfile.team_id) {
+          [teamUsers, importers] = await Promise.all([
+            fetchUsersByTeam(userProfile.team_id),
+            userProfile.team_id
+              ? await fetchImportersForTeam(userProfile.team_id)
+              : await fetchImportersForUser(),
+          ]);
+        } else {
+          importers = await fetchImportersForUser();
+        }
+
+        console.log("teamUsers", teamUsers);
+        console.log("importers", importers);
+
+        setTeamUsers(teamUsers);
+        setImporters(importers);
         setUserProfile(userProfile);
+
+        // Set current user as default selected classifier
+        setSelectedUserId(user.id);
       }
     };
 
@@ -130,7 +337,7 @@ export const Classifications = ({ page, setPage }: Props) => {
   }, [searchQuery, classifications, fuse]);
 
   // Filter classifications based on active tab (finalized status)
-  const filteredClassifications = useMemo(() => {
+  const tabFilteredClassifications = useMemo(() => {
     if (!searchFilteredClassifications) {
       return [];
     }
@@ -138,18 +345,46 @@ export const Classifications = ({ page, setPage }: Props) => {
     switch (activeTab) {
       case "all":
         return searchFilteredClassifications;
-      case "finalized":
+      case "final":
         return searchFilteredClassifications.filter(
-          (classification) => classification.finalized === true
+          (classification) =>
+            classification.status === ClassificationStatus.FINAL
+        );
+      case "review":
+        return searchFilteredClassifications.filter(
+          (classification) =>
+            classification.status === ClassificationStatus.REVIEW
         );
       case "draft":
         return searchFilteredClassifications.filter(
-          (classification) => !classification.finalized
+          (classification) =>
+            classification.status === ClassificationStatus.DRAFT
         );
       default:
         return searchFilteredClassifications;
     }
   }, [searchFilteredClassifications, activeTab]);
+
+  // Filter classifications based on selected user and importer
+  const filteredClassifications = useMemo(() => {
+    let filtered = tabFilteredClassifications;
+
+    // Filter by selected user
+    if (selectedUserId) {
+      filtered = filtered.filter(
+        (classification) => classification.user_id === selectedUserId
+      );
+    }
+
+    // Filter by selected importer
+    if (selectedImporterId) {
+      filtered = filtered.filter(
+        (classification) => classification.importer_id === selectedImporterId
+      );
+    }
+
+    return filtered;
+  }, [tabFilteredClassifications, selectedUserId, selectedImporterId]);
 
   useEffect(() => {
     const fetchClassifications = async () => {
@@ -210,7 +445,7 @@ export const Classifications = ({ page, setPage }: Props) => {
           <div className="w-full flex justify-between items-center">
             <div className="flex flex-col gap-2 sm:flex-row sm:gap-4 items-center">
               <h2 className="text-xl md:text-3xl text-neutral-content font-bold">
-                Your Classifications
+                Classifications
               </h2>
               {!loader.isLoading && (
                 <div
@@ -231,13 +466,24 @@ export const Classifications = ({ page, setPage }: Props) => {
                   <a
                     role="tab"
                     className={`tab transition-all duration-200 ease-in text-white font-semibold ${
-                      activeTab === "finalized"
+                      activeTab === "final"
                         ? "tab-active"
                         : "hover:bg-primary/70 hover:text-black"
                     }`}
-                    onClick={() => setActiveTab("finalized")}
+                    onClick={() => setActiveTab("final")}
                   >
-                    Finalized
+                    Final
+                  </a>
+                  <a
+                    role="tab"
+                    className={`tab transition-all duration-200 ease-in text-white font-semibold ${
+                      activeTab === "review"
+                        ? "tab-active"
+                        : "hover:bg-primary/70 hover:text-black"
+                    }`}
+                    onClick={() => setActiveTab("review")}
+                  >
+                    Needs Review
                   </a>
                   <a
                     role="tab"
@@ -311,18 +557,64 @@ export const Classifications = ({ page, setPage }: Props) => {
             </div>
           </div>
 
-          {/* Filter Bar */}
-          <div className="flex-1 relative w-full">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <FunnelIcon className="h-5 w-5 text-neutral-400" />
+          {/* Filtering */}
+          <div className="w-full flex gap-2">
+            {/* Filter Bar */}
+            <div className="grow flex-1 flex flex-col gap-1">
+              <label className="text-xs font-medium text-neutral-content">
+                Description or Code
+              </label>
+
+              <input
+                type="text"
+                placeholder="Filter by description, code"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full input input-sm pr-4 py-1 bg-base-100 border-2 border-base-content/20 rounded-lg text-neutral-200 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              />
             </div>
-            <input
-              type="text"
-              placeholder="Filter by description, code, or classifier"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-1 bg-base-100 border-2 border-base-content/20 rounded-lg text-neutral-200 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
+
+            {/* Filter By User/Classifier */}
+            {teamUsers.length > 0 && (
+              <div className="flex flex-col gap-1 min-w-[250px]">
+                <label className="text-xs font-medium text-neutral-content">
+                  Classifier
+                </label>
+                <select
+                  value={selectedUserId}
+                  onChange={(e) => setSelectedUserId(e.target.value)}
+                  className="select select-sm bg-base-100 border-2 border-base-content/20 text-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                >
+                  <option value="">All Users</option>
+                  {teamUsers.map((user) => (
+                    <option key={user.id} value={user.id}>
+                      {user.name || user.email}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Filter By Importer */}
+            {importers.length > 0 && (
+              <div className="flex flex-col gap-1 min-w-[250px]">
+                <label className="text-xs font-medium text-neutral-content">
+                  Importer
+                </label>
+                <select
+                  value={selectedImporterId}
+                  onChange={(e) => setSelectedImporterId(e.target.value)}
+                  className="select select-sm bg-base-100 border-2 border-base-content/20 text-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                >
+                  <option value="">All Importers</option>
+                  {importers.map((importer) => (
+                    <option key={importer.id} value={importer.id}>
+                      {importer.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -339,202 +631,16 @@ export const Classifications = ({ page, setPage }: Props) => {
           ))}
         </div>
       )}
-      {!loader.isLoading &&
-        !classificationsLoading &&
-        classifications &&
-        classifications.length === 0 && (
-          <div className="flex-1 flex flex-col items-center justify-center gap-3">
-            <div className="w-24 h-24 text-neutral-content">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1}
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
-                />
-              </svg>
-            </div>
-            <div className="flex flex-col gap-4 items-center">
-              <div className="text-center flex flex-col gap-1 items-center">
-                <PrimaryLabel
-                  value="No Classifications Yet"
-                  color={Color.WHITE}
-                />
-                <TertiaryText
-                  value="You haven't started or completed any classifications yet, but can start one now."
-                  color={Color.NEUTRAL_CONTENT}
-                />
-              </div>
-              <button
-                className="btn btn-primary w-fit"
-                onClick={() => setPage(ClassifyPage.CLASSIFY)}
-              >
-                Start First Classification
-              </button>
-            </div>
-          </div>
-        )}
 
-      {/* No search results */}
+      {/* Unified empty state rendering */}
       {!loader.isLoading &&
         !classificationsLoading &&
-        classifications &&
-        classifications.length > 0 &&
-        filteredClassifications.length === 0 &&
-        searchQuery !== "" && (
-          <div className="flex-1 flex flex-col items-center justify-center gap-3">
-            <div className="w-24 h-24 text-neutral-content">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1}
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-                />
-              </svg>
-            </div>
-            <div className="flex flex-col gap-4 items-center">
-              <div className="text-center flex flex-col gap-1 items-center">
-                <PrimaryLabel
-                  value="No Matching Classifications"
-                  color={Color.WHITE}
-                />
-                <TertiaryText
-                  value={`No classifications found matching "${searchQuery}".`}
-                  color={Color.NEUTRAL_CONTENT}
-                />
-                <TertiaryText
-                  value="Try adjusting your search terms or start a new classification."
-                  color={Color.NEUTRAL_CONTENT}
-                />
-              </div>
-              <button
-                className="btn btn-primary w-fit btn-sm"
-                onClick={() => setSearchQuery("")}
-              >
-                Clear Search
-              </button>
-            </div>
-          </div>
-        )}
-
-      {/* Empty state for draft tab */}
-      {!loader.isLoading &&
-        !classificationsLoading &&
-        classifications &&
-        classifications.length > 0 &&
-        filteredClassifications.length === 0 &&
-        searchQuery === "" &&
-        activeTab === "draft" && (
-          <div className="flex-1 flex flex-col items-center justify-center gap-3">
-            <div className="w-24 h-24 text-neutral-content">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1}
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
-                />
-              </svg>
-            </div>
-            <div className="flex flex-col gap-4 items-center">
-              <div className="text-center flex flex-col gap-1 items-center">
-                <PrimaryLabel
-                  value="No Draft Classifications"
-                  color={Color.WHITE}
-                />
-                <TertiaryText
-                  value="You don't have any draft classifications at the moment."
-                  color={Color.NEUTRAL_CONTENT}
-                />
-                <TertiaryText
-                  value="Start a new classification to begin working on a draft."
-                  color={Color.NEUTRAL_CONTENT}
-                />
-              </div>
-              <button
-                className="btn btn-primary w-fit"
-                onClick={async () => {
-                  setLoadingNewClassification(true);
-                  await fetchElements("latest");
-                  setPage(ClassifyPage.CLASSIFY);
-                  setLoadingNewClassification(false);
-                }}
-              >
-                {loadingNewClassification ? (
-                  <span className={`loading loading-spinner loading-sm`}></span>
-                ) : (
-                  <PlusIcon className="h-5 w-5" />
-                )}
-                Start New Classification
-              </button>
-            </div>
-          </div>
-        )}
-
-      {/* Empty state for finalized tab */}
-      {!loader.isLoading &&
-        !classificationsLoading &&
-        classifications &&
-        classifications.length > 0 &&
-        filteredClassifications.length === 0 &&
-        searchQuery === "" &&
-        activeTab === "finalized" && (
-          <div className="flex-1 flex flex-col items-center justify-center gap-3">
-            <div className="w-24 h-24 text-neutral-content">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1}
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-            <div className="flex flex-col gap-4 items-center">
-              <div className="text-center flex flex-col gap-1 items-center max-w-md">
-                <PrimaryLabel
-                  value="No Finalized Classifications"
-                  color={Color.WHITE}
-                />
-                <TertiaryText
-                  value="Classifications that you've fully completed can be marked as final."
-                  color={Color.NEUTRAL_CONTENT}
-                />
-                <TertiaryText
-                  value='To do this, open the classification and click "Mark as Final" in the top right hand corner.'
-                  color={Color.NEUTRAL_CONTENT}
-                />
-              </div>
-              <button
-                className="btn btn-primary btn-wide btn-sm"
-                onClick={() => setActiveTab("draft")}
-              >
-                View Drafts
-              </button>
-            </div>
-          </div>
-        )}
+        (() => {
+          const emptyStateConfig = getEmptyStateConfig();
+          return emptyStateConfig ? (
+            <EmptyState config={emptyStateConfig} />
+          ) : null;
+        })()}
     </div>
   );
 };

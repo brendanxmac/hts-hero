@@ -27,9 +27,10 @@ export async function GET() {
 
     // If user is on a team, fetch all classifications for the team
     // Otherwise, fetch only the user's own classifications
+    // Also fetch the importers name for the classification
     let query = supabase
       .from("classifications")
-      .select("*, classifier:users(name, email)")
+      .select("*, classifier:users(name, email), importer:importers(name)")
       .order("updated_at", { ascending: false })
       .order("created_at", { ascending: false });
 

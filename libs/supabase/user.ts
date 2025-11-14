@@ -16,6 +16,24 @@ export interface UserProfile {
   updated_at: string;
 }
 
+export const fetchUsersByTeam = async (
+  teamId: string
+): Promise<UserProfile[]> => {
+  const supabase = createSupabaseClient();
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("team_id", teamId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Failed to fetch users by team:", error);
+    throw new Error("Failed to fetch users by team");
+  }
+
+  return data as UserProfile[];
+};
+
 export const fetchUsers = async (userIds: string[]): Promise<UserProfile[]> => {
   const supabase = createSupabaseClient();
   const { data, error } = await supabase

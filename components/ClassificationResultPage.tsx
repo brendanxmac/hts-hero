@@ -13,7 +13,7 @@ import {
   createImporter,
   fetchImportersForTeam,
 } from "../libs/supabase/importers";
-import { Importer } from "../interfaces/hts";
+import { ClassificationStatus, Importer } from "../interfaces/hts";
 import { useClassifications } from "../contexts/ClassificationsContext";
 import { updateClassification } from "../libs/classification";
 import classNames from "classnames";
@@ -110,36 +110,38 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
             <h2 className="text-xl md:text-2xl font-bold text-white">
               Classification Overview
             </h2>
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
               {classificationRecord && (
-                <button
-                  className={classNames(
-                    "btn btn-xs",
-                    classificationRecord?.finalized ? "" : "btn-primary"
+                <div className="relative">
+                  <select
+                    className="select select-primary select-sm"
+                    value={classificationRecord.status}
+                    disabled={updatingClassificationStatus}
+                    onChange={async (e) => {
+                      const newStatus = e.target.value as ClassificationStatus;
+                      setUpdatingClassificationStatus(true);
+                      await updateClassification(
+                        classificationId,
+                        undefined,
+                        undefined,
+                        undefined,
+                        newStatus
+                      );
+                      await refreshClassifications();
+                      classificationRecord = classifications.find(
+                        (c) => c.id === classificationId
+                      );
+                      setUpdatingClassificationStatus(false);
+                    }}
+                  >
+                    <option value={ClassificationStatus.DRAFT}>Draft</option>
+                    <option value={ClassificationStatus.REVIEW}>Review</option>
+                    <option value={ClassificationStatus.FINAL}>Final</option>
+                  </select>
+                  {updatingClassificationStatus && (
+                    <span className="loading loading-spinner loading-xs absolute right-8 top-1/2 -translate-y-1/2"></span>
                   )}
-                  disabled={updatingClassificationStatus}
-                  onClick={async () => {
-                    setUpdatingClassificationStatus(true);
-                    await updateClassification(
-                      classificationId,
-                      undefined,
-                      undefined,
-                      undefined,
-                      !classificationRecord.finalized
-                    );
-                    await refreshClassifications();
-                    classificationRecord = classifications.find(
-                      (c) => c.id === classificationId
-                    );
-                    setUpdatingClassificationStatus(false);
-                  }}
-                >
-                  {updatingClassificationStatus ? (
-                    <LoadingIndicator text="Updating" />
-                  ) : (
-                    `Set as ${classificationRecord.finalized ? "Draft" : "Final"}`
-                  )}
-                </button>
+                </div>
               )}
               <button
                 className="btn btn-xs btn-primary"
