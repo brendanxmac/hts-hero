@@ -20,6 +20,7 @@ import {
   SelectionWithReason,
   Importer,
   Classifier,
+  ClassificationRecord,
 } from "../interfaces/hts";
 import {
   elementsAtClassificationLevel,
@@ -43,16 +44,14 @@ import {
 } from "../utilities/hts";
 
 export const downloadClassificationReport = async (
-  classification: Classification,
+  classification: ClassificationRecord,
   userProfile: UserProfile,
-  importer?: Importer,
-  classifier?: Classifier
+  importer?: Importer
 ) => {
   const doc = await generateClassificationReport(
     classification,
     userProfile,
-    importer,
-    classifier
+    importer
   );
 
   // Generate a filename based on the current date and time

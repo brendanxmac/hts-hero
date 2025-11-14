@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient, getSignedUrl } from "../server";
 import { fetchUser, updateUserProfile } from "../../../../libs/supabase/user";
 import { v4 as uuidv4 } from "uuid";
+import { updateTeamProfile } from "../../../../libs/supabase/teams";
 
 // Specifies that this API route should run on Edge Runtime
 // This means the API route will run on Edge servers (CDN nodes) closer to users
@@ -82,8 +83,8 @@ export async function POST(req: Request) {
   }
 
   // Update user profile with logo url
-  await updateUserProfile(teamId, {
-    company_logo: fileName,
+  await updateTeamProfile(teamId, {
+    logo: fileName,
   });
 
   const { signedUrl, error } = await getSignedUrl("logos", fileName);

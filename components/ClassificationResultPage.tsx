@@ -1,30 +1,30 @@
 import { useEffect, useState } from "react";
 import { useClassification } from "../contexts/ClassificationContext";
-import { Color } from "../enums/style";
 import { downloadClassificationReport } from "../libs/hts";
 import { PDFProps } from "../interfaces/ui";
 import PDF from "./PDF";
 import { ArrowDownTrayIcon, BeakerIcon } from "@heroicons/react/16/solid";
 import { useUser } from "../contexts/UserContext";
-import { fetchUser } from "../libs/supabase/user";
+import { fetchUser, UserProfile } from "../libs/supabase/user";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { Element } from "./Element";
-import { TertiaryLabel } from "./TertiaryLabel";
-import {
-  fetchClassifiersForUser,
-  createClassifier,
-} from "../libs/supabase/classifiers";
 import {
   fetchImportersForUser,
   createImporter,
+  fetchImportersForTeam,
 } from "../libs/supabase/importers";
-import { Classifier, Importer } from "../interfaces/hts";
+import { Importer } from "../interfaces/hts";
 import { useClassifications } from "../contexts/ClassificationsContext";
 import { updateClassification } from "../libs/classification";
 import classNames from "classnames";
+import { SecondaryLabel } from "./SecondaryLabel";
+import { TertiaryText } from "./TertiaryText";
 
-export const ClassificationResultPage = () => {
-  const { user } = useUser();
+interface Props {
+  userProfile: UserProfile;
+}
+
+export const ClassificationResultPage = ({ userProfile }: Props) => {
   const { classification, setClassification, classificationId } =
     useClassification();
   const { classifications, refreshClassifications } = useClassifications();
@@ -40,41 +40,30 @@ export const ClassificationResultPage = () => {
   );
 
   // State for classifiers and importers
-  const [classifiers, setClassifiers] = useState<Classifier[]>([]);
   const [importers, setImporters] = useState<Importer[]>([]);
-  const [selectedClassifierId, setSelectedClassifierId] = useState<string>("");
   const [selectedImporterId, setSelectedImporterId] = useState<string>("");
-  const [isLoadingClassifiers, setIsLoadingClassifiers] = useState(true);
   const [isLoadingImporters, setIsLoadingImporters] = useState(true);
-  const [newClassifier, setNewClassifier] = useState("");
   const [newImporter, setNewImporter] = useState("");
-  const [isCreatingClassifier, setIsCreatingClassifier] = useState(false);
   const [isCreatingImporter, setIsCreatingImporter] = useState(false);
 
   // Fetch classifiers and importers on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [fetchedClassifiers, fetchedImporters] = await Promise.all([
-          fetchClassifiersForUser(),
-          fetchImportersForUser(),
+        const [fetchedImporters] = await Promise.all([
+          userProfile.team_id
+            ? fetchImportersForTeam(classificationRecord.team_id)
+            : fetchImportersForUser(),
           refreshClassifications(),
         ]);
-        setClassifiers(fetchedClassifiers);
         setImporters(fetchedImporters);
-        setIsLoadingClassifiers(false);
         setIsLoadingImporters(false);
 
-        console.log("classificationRecord: ");
-        console.log(classificationRecord);
-
         if (classificationRecord) {
-          setSelectedClassifierId(classificationRecord.classifier_id || "");
           setSelectedImporterId(classificationRecord.importer_id || "");
         }
       } catch (error) {
         console.error("Error fetching classifiers and importers:", error);
-        setIsLoadingClassifiers(false);
         setIsLoadingImporters(false);
       }
     };
@@ -89,29 +78,6 @@ export const ClassificationResultPage = () => {
       }, 1500);
     }
   }, [copied]);
-
-  const handleAddClassifier = async () => {
-    if (!newClassifier.trim()) return;
-
-    setIsCreatingClassifier(true);
-    try {
-      const newClassifierData = await createClassifier(newClassifier.trim());
-      setClassifiers((prev) => [...prev, newClassifierData]);
-      setNewClassifier("");
-      // Automatically select the newly created classifier
-      setSelectedClassifierId(newClassifierData.id);
-      updateClassification(
-        classificationId,
-        undefined,
-        undefined,
-        newClassifierData.id
-      );
-    } catch (error) {
-      console.error("Failed to create classifier:", error);
-    } finally {
-      setIsCreatingClassifier(false);
-    }
-  };
 
   const handleAddImporter = async () => {
     if (!newImporter.trim()) return;
@@ -177,34 +143,22 @@ export const ClassificationResultPage = () => {
               )}
               <button
                 className="btn btn-xs btn-primary"
-                disabled={loading || isLoadingClassifiers || isLoadingImporters}
+                disabled={loading || isLoadingImporters}
                 onClick={async () => {
                   setLoading(true);
-                  const userProfile = await fetchUser(user.id);
                   const importer = importers.find(
                     (i) => i.id === selectedImporterId
                   );
 
-                  console.log("importer: ");
-                  console.log(importer);
-
-                  const classifier = classifiers.find(
-                    (c) => c.id === selectedClassifierId
-                  );
-
-                  console.log("classifier: ");
-                  console.log(classifier);
-
                   await downloadClassificationReport(
-                    classification,
+                    classificationRecord,
                     userProfile,
-                    importer,
-                    classifier
+                    importer
                   );
                   setLoading(false);
                 }}
               >
-                {loading || isLoadingClassifiers || isLoadingImporters ? (
+                {loading || isLoadingImporters ? (
                   <LoadingIndicator
                     text={loading ? "Downloading" : "Loading"}
                   />
@@ -220,7 +174,7 @@ export const ClassificationResultPage = () => {
         </div>
 
         <div className="flex flex-col gap-2">
-          <TertiaryLabel value="Item Description" />
+          <SecondaryLabel value="Item Description" />
           <input
             className="input input-bordered w-full text-xl disabled:text-gray-300"
             value={classification.articleDescription}
@@ -230,83 +184,9 @@ export const ClassificationResultPage = () => {
 
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex flex-col gap-2 flex-1">
-            <div className="flex items-center gap-2">
-              <TertiaryLabel value="Classifier" />
-              <div
-                className="tooltip tooltip-bottom"
-                data-tip="This feature is experimental"
-              >
-                <div className="rounded-sm bg-accent p-0.5 text-xs text-base-300">
-                  <BeakerIcon className="w-4 h-4" />
-                </div>
-              </div>
-            </div>
-            <select
-              className="select w-full"
-              value={selectedClassifierId}
-              disabled={isLoadingClassifiers}
-              onChange={(e) => {
-                setSelectedClassifierId(e.target.value);
-                updateClassification(
-                  classificationId,
-                  undefined,
-                  undefined,
-                  e.target.value
-                );
-              }}
-            >
-              <option value="" disabled>
-                {isLoadingClassifiers
-                  ? "Loading classifiers..."
-                  : classifiers.length === 0
-                    ? "No classifiers available"
-                    : "Select classifier"}
-              </option>
-              {!isLoadingClassifiers &&
-                classifiers.map((classifier) => (
-                  <option key={classifier.id} value={classifier.id}>
-                    {classifier.name}
-                  </option>
-                ))}
-            </select>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="Add new classifier"
-                value={newClassifier}
-                className="input input-sm input-bordered flex-1"
-                onChange={(e) => setNewClassifier(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    handleAddClassifier();
-                  }
-                }}
-              />
-              <button
-                className="btn btn-primary btn-sm"
-                onClick={handleAddClassifier}
-                disabled={isCreatingClassifier || !newClassifier.trim()}
-              >
-                {isCreatingClassifier ? (
-                  <span className="loading loading-spinner loading-xs"></span>
-                ) : (
-                  "Add"
-                )}
-              </button>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-2 flex-1">
-            <div className="flex items-center gap-2">
-              <TertiaryLabel value="Importer" />
-              <div
-                className="tooltip tooltip-bottom"
-                data-tip="This feature is experimental"
-              >
-                <div className="rounded-sm bg-accent p-0.5 text-xs text-base-300">
-                  <BeakerIcon className="w-4 h-4" />
-                </div>
-              </div>
+            <div className="flex flex-col gap-1">
+              <SecondaryLabel value="Importer" />
+              <TertiaryText value="Select the importer or client that you are providing this advisory to" />
             </div>
             <select
               className="select w-full"
@@ -366,10 +246,10 @@ export const ClassificationResultPage = () => {
 
         {/* NOTES */}
         <div className="w-full flex flex-col gap-2">
-          <TertiaryLabel value="Notes" />
+          <SecondaryLabel value="Notes" />
           <textarea
             className="min-h-36 textarea textarea-bordered text-white placeholder:text-white/20 text-base w-full"
-            placeholder="Add any final notes here. They will be included in your classification advisory."
+            placeholder="Add any notes about your classification here. They will be included in your classification advisory."
             value={classification.notes || ""}
             onChange={(e) => {
               setClassification({
@@ -381,7 +261,7 @@ export const ClassificationResultPage = () => {
         </div>
 
         <div className="flex flex-col gap-2">
-          <TertiaryLabel value="HTS Code & Tariff Details" />
+          <SecondaryLabel value="HTS Code & Tariff Details" />
           <Element element={element} />
         </div>
       </div>

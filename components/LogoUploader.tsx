@@ -25,20 +25,28 @@ export default function LogoUploader({ user, teamId }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const isTeamAdmin = teamId ? user.team_id === teamId && !!user.admin : false;
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const isOnTeam = !!user.team_id;
+  const isTeamAdmin = isOnTeam && user.team_id === teamId && !!user.admin;
 
   useEffect(() => {
     const fetchLogoUrl = async () => {
       setLoading(true);
+      setImageLoaded(false);
+
       if (teamId) {
         const team = await fetchTeam(teamId);
         if (team && team.logo) {
           const { signedUrl, error } = await fetchTeamLogo(team.id);
           if (error) {
             setError(error);
+            setLoading(false);
           } else {
             setPreviewUrl(signedUrl || null);
+            // Don't set loading to false yet - wait for image to load
           }
+        } else {
+          setLoading(false);
         }
       } else {
         const userProfile = await fetchUser(user.id);
@@ -46,13 +54,15 @@ export default function LogoUploader({ user, teamId }: Props) {
           const { signedUrl, error } = await fetchUserLogo();
           if (error) {
             setError(error);
+            setLoading(false);
           } else {
             setPreviewUrl(signedUrl || null);
+            // Don't set loading to false yet - wait for image to load
           }
+        } else {
+          setLoading(false);
         }
       }
-
-      setLoading(false);
     };
     fetchLogoUrl();
   }, [user.id, teamId]);
@@ -78,11 +88,12 @@ export default function LogoUploader({ user, teamId }: Props) {
       if (teamId) {
         formData.append("teamId", teamId);
       } else {
-        formData.append("user.id", user.id);
+        formData.append("userId", user.id);
       }
 
       setUploading(true);
       setError(null);
+      setImageLoaded(false);
 
       const { signedUrl, error } = teamId
         ? await uploadTeamLogo(formData)
@@ -90,11 +101,11 @@ export default function LogoUploader({ user, teamId }: Props) {
 
       if (error) {
         setError(error || "Upload failed");
+        setUploading(false);
       } else {
         setPreviewUrl(signedUrl);
+        // Don't set uploading to false yet - wait for image to load
       }
-
-      setUploading(false);
     },
     [user.id, teamId]
   );
@@ -110,9 +121,13 @@ export default function LogoUploader({ user, teamId }: Props) {
 
   return (
     <div className="w-full flex flex-col items-start gap-4">
-      {(loading || previewUrl) && (
+      {(loading || uploading || previewUrl) && (
         <div className="h-24 w-full flex-col items-center justify-center gap-2">
-          {loading && <LoadingIndicator text="Fetching logo" />}
+          {(loading || uploading) && !imageLoaded && (
+            <LoadingIndicator
+              text={uploading ? "Uploading logo" : "Fetching logo"}
+            />
+          )}
           {previewUrl && (
             <Image
               src={previewUrl}
@@ -120,11 +135,16 @@ export default function LogoUploader({ user, teamId }: Props) {
               className="h-24 w-auto rounded-lg"
               width={400}
               height={400}
+              onLoad={() => {
+                setImageLoaded(true);
+                setLoading(false);
+                setUploading(false);
+              }}
             />
           )}
         </div>
       )}
-      {isTeamAdmin && (
+      {(!isOnTeam || isTeamAdmin) && (
         <div
           {...getRootProps()}
           className={`w-full border-2 p-6 text-center rounded cursor-pointer transition flex flex-col items-center

@@ -38,7 +38,7 @@ export async function GET() {
   );
 
   if (error) {
-    console.error("error", error);
+    console.error("error fetching user logo", error);
     return NextResponse.json({ error }, { status: 500 });
   }
 

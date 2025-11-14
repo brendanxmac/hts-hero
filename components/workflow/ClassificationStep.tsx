@@ -8,7 +8,11 @@ import {
   getBestDescriptionCandidates,
   getElementsInChapter,
 } from "../../libs/hts";
-import { CandidateSelection, HtsElement } from "../../interfaces/hts";
+import {
+  CandidateSelection,
+  ClassificationRecord,
+  HtsElement,
+} from "../../interfaces/hts";
 import { HtsSection } from "../../interfaces/hts";
 import { getHtsSectionsAndChapters } from "../../libs/hts";
 import { setIndexInArray } from "../../utilities/data";
@@ -25,12 +29,14 @@ import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import { TertiaryLabel } from "../TertiaryLabel";
 import toast from "react-hot-toast";
+import { useUser } from "../../contexts/UserContext";
 
 export interface ClassificationStepProps {
   setWorkflowStep: (step: WorkflowStep) => void;
   classificationLevel: number | undefined;
   setClassificationLevel: (level: number | undefined) => void;
   setFetchingOptionsOrSuggestions: (fetching: boolean) => void;
+  classificationRecord: ClassificationRecord;
 }
 
 export const ClassificationStep = ({
@@ -38,12 +44,15 @@ export const ClassificationStep = ({
   classificationLevel,
   setClassificationLevel,
   setFetchingOptionsOrSuggestions,
+  classificationRecord,
 }: ClassificationStepProps) => {
   const { setActiveTab } = useClassifyTab();
   const [loading, setLoading] = useState<Loader>({
     isLoading: false,
     text: "",
   });
+
+  const { user } = useUser();
   const [showCrossRulingsModal, setShowCrossRulingsModal] = useState(false);
   const { classification, addLevel, updateLevel } = useClassification();
   const { articleDescription, levels } = classification;
@@ -62,6 +71,7 @@ export const ClassificationStep = ({
   const { htsElements } = useHts();
 
   const optionsForLevel = levels[classificationLevel]?.candidates.length;
+  const isUsersClassification = classificationRecord.user_id === user.id;
 
   useEffect(() => {
     setFetchingOptionsOrSuggestions(loading.isLoading);
@@ -363,6 +373,9 @@ export const ClassificationStep = ({
                   setClassificationLevel={setClassificationLevel}
                   setLoading={setLoading}
                   setWorkflowStep={setWorkflowStep}
+                  disabled={
+                    classificationRecord.finalized || !isUsersClassification
+                  }
                 />
               </div>
             )}

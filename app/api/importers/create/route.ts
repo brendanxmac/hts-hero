@@ -1,11 +1,13 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "../../supabase/server";
 import { Importer } from "../../../../interfaces/hts";
+import { fetchUser } from "../../../../libs/supabase/user";
 
 export const dynamic = "force-dynamic";
 
 interface CreateImporterDto {
   name: string;
+  teamId: string;
 }
 
 export async function POST(req: NextRequest) {
@@ -22,7 +24,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { name }: CreateImporterDto = await req.json();
+    const { name, teamId }: CreateImporterDto = await req.json();
 
     if (!name) {
       return NextResponse.json(
@@ -33,14 +35,32 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const userProfile = await fetchUser(user.id);
+
+    if (!userProfile) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // If user is not a team admin, then they cannot add an importer
+    const userIsTeamAdmin = userProfile.team_id === teamId && userProfile.admin;
+
+    const newImporter: Partial<Importer> = {
+      name: name,
+    };
+
+    if (teamId) {
+      if (!userIsTeamAdmin) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      } else {
+        newImporter.team_id = teamId;
+      }
+    } else {
+      newImporter.user_id = user.id;
+    }
+
     const { data: importerRecord, error } = await supabase
       .from("importers")
-      .insert([
-        {
-          user_id: user.id,
-          name: name,
-        },
-      ])
+      .insert([newImporter])
       .select()
       .single<Importer>();
 

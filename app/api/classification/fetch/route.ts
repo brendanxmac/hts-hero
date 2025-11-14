@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "../../supabase/server";
+import { fetchUser } from "../../../../libs/supabase/user";
 
 export const dynamic = "force-dynamic";
 
@@ -17,11 +18,28 @@ export async function GET() {
       );
     }
 
-    const { data: classifications, error } = await supabase
+    const userProfile = await fetchUser(user.id);
+    if (!userProfile) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const userIsOnTeam = userProfile.team_id;
+
+    // If user is on a team, fetch all classifications for the team
+    // Otherwise, fetch only the user's own classifications
+    let query = supabase
       .from("classifications")
-      .select("*")
-      .eq("user_id", user.id)
+      .select("*, classifier:users(name, email)")
+      .order("updated_at", { ascending: false })
       .order("created_at", { ascending: false });
+
+    if (userIsOnTeam) {
+      query = query.eq("team_id", userIsOnTeam);
+    } else {
+      query = query.eq("user_id", user.id);
+    }
+
+    const { data: classifications, error } = await query;
 
     if (error) {
       console.error("Error creating classification:", error);

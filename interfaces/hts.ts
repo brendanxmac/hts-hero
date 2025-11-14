@@ -134,7 +134,12 @@ export interface CandidateSelection {
 export interface ClassificationRecord {
   id: string;
   user_id: string;
+  team_id?: string;
   importer_id?: string;
+  classifier?: {
+    name?: string;
+    email: string;
+  };
   classifier_id?: string;
   classification: Classification;
   created_at: string;
@@ -176,7 +181,8 @@ export interface Classifier {
 
 export interface Importer {
   id: string;
-  user_id: string;
+  user_id?: string;
+  team_id?: string;
   name: string;
   created_at: string;
 }

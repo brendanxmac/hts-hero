@@ -17,8 +17,9 @@ import Fuse, { IFuseOptions } from "fuse.js";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { PricingPlan } from "../types";
 import { getActiveClassifyPurchase } from "../libs/supabase/purchase";
-import { classNames } from "../utilities/style";
-import Link from "next/link";
+import apiClient from "../libs/api";
+import { classifyPro } from "../config";
+import { fetchUser, UserProfile } from "../libs/supabase/user";
 
 interface Props {
   page: ClassifyPage;
@@ -35,6 +36,7 @@ interface SearchableClassification {
 export const Classifications = ({ page, setPage }: Props) => {
   const [loadingNewClassification, setLoadingNewClassification] =
     useState(false);
+  const [loadingUpgrade, setLoadingUpgrade] = useState(false);
   const [loader, setLoader] = useState<Loader>({
     isLoading: true,
     text: "",
@@ -54,17 +56,26 @@ export const Classifications = ({ page, setPage }: Props) => {
   const [activeClassifyPlan, setActiveClassifyPlan] =
     useState<PricingPlan | null>(null);
   const { user, error: userError } = useUser();
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
-    const fetchActiveClassifyPurchase = async () => {
-      const activeClassifyPurchase = await getActiveClassifyPurchase(user.id);
+    const fetchData = async () => {
+      const [activeClassifyPurchase, userProfile] = await Promise.all([
+        getActiveClassifyPurchase(user.id),
+        fetchUser(user.id),
+      ]);
 
       if (activeClassifyPurchase) {
         setActiveClassifyPlan(activeClassifyPurchase.product_name);
       }
+
+      if (userProfile) {
+        setUserProfile(userProfile);
+      }
     };
+
     if (user) {
-      fetchActiveClassifyPurchase();
+      fetchData();
     }
   }, [user]);
 
@@ -166,18 +177,6 @@ export const Classifications = ({ page, setPage }: Props) => {
     }
   }, []);
 
-  const getUserNameMessage = () => {
-    const hasClassifications = classifications && classifications.length > 0;
-    let message = hasClassifications ? "Welcome back" : "Welcome to HTS Hero";
-
-    if (user?.user_metadata?.name) {
-      const firstName = user.user_metadata.name.split(" ")[0];
-      message += `, ${firstName}`;
-    }
-
-    return `${message} 👋`;
-  };
-
   if (classificationsError || userError) {
     return (
       <div className="h-full w-full max-w-3xl mx-auto pt-12 flex flex-col gap-8">
@@ -204,67 +203,13 @@ export const Classifications = ({ page, setPage }: Props) => {
   }
 
   return (
-    <div className="h-full w-full max-w-5xl mx-auto pt-2 lg:pt-8 px-4 flex flex-col gap-4">
-      <div className="flex flex-col h-full">
-        <div className="flex flex-col gap-4 py-2">
-          {/* Header Row */}
-          <div className="w-full flex flex-col sm:flex-row gap-4 justify-between items-start">
-            <div className="flex flex-col gap-2">
-              <div className="flex sm:flex-row flex-col sm:items-center gap-2">
-                <h1 className="text-2xl md:text-3xl xl:text-4xl text-neutral-50 font-bold">
-                  {getUserNameMessage()}
-                </h1>
-
-                <div
-                  className={classNames(
-                    "hidden md:block shrink-0 h-fit w-fit text-sm border rounded-md px-2 py-0 text-primary font-semibold",
-                    activeClassifyPlan
-                      ? "text-primary border-primary"
-                      : "text-warning border-warning"
-                  )}
-                >
-                  {activeClassifyPlan ? activeClassifyPlan : "Free Trial"}
-                </div>
-              </div>
-              <SecondaryText
-                value="Review your classifications or start a new one now."
-                color={Color.NEUTRAL_CONTENT}
-              />
-            </div>
-            {/* Action Buttons */}
-            <div className="flex gap-2 w-full sm:w-auto">
-              {!activeClassifyPlan && (
-                <Link
-                  href="/about#pricing"
-                  className="btn btn-secondary btn-sm flex gap-2"
-                >
-                  <BoltIcon className="h-4 w-4" />
-                  Upgrade
-                </Link>
-              )}
-              <button
-                className="btn btn-primary btn-sm grow md:grow-0"
-                onClick={async () => {
-                  setLoadingNewClassification(true);
-                  await fetchElements("latest");
-                  setPage(ClassifyPage.CLASSIFY);
-                  setLoadingNewClassification(false);
-                }}
-              >
-                {loadingNewClassification ? (
-                  <span className={`loading loading-spinner loading-sm`}></span>
-                ) : (
-                  <PlusIcon className="h-5 w-5" />
-                )}
-                New Classification
-              </button>
-            </div>
-          </div>
-
-          {/* Search and Actions Row */}
-          <div className="flex flex-col gap-3 items-start justify-between">
+    <div className="h-full w-full max-w-5xl mx-auto p-4 flex flex-col">
+      <div className="flex flex-col gap-4 py-2">
+        {/* Search and Actions Row */}
+        <div className="w-full flex flex-col gap-3 items-start justify-between">
+          <div className="w-full flex justify-between items-center">
             <div className="flex flex-col gap-2 sm:flex-row sm:gap-4 items-center">
-              <h2 className="text-xl md:text-2xl text-neutral-50 font-bold">
+              <h2 className="text-xl md:text-3xl text-neutral-content font-bold">
                 Your Classifications
               </h2>
               {!loader.isLoading && (
@@ -307,241 +252,289 @@ export const Classifications = ({ page, setPage }: Props) => {
                   </a>
                 </div>
               )}
+              {loader.isLoading ||
+                (classificationsLoading && (
+                  <span className={`loading loading-spinner loading-sm`}></span>
+                ))}
             </div>
-            {/* Filter Bar */}
-
-            <div className="flex-1 relative w-full">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FunnelIcon className="h-5 w-5 text-neutral-400" />
-              </div>
-              <input
-                type="text"
-                placeholder="Filter classifications by description or code..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-1 bg-base-100 border-2 border-base-content/20 rounded-lg text-neutral-200 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-              />
-            </div>
-          </div>
-        </div>
-
-        {loader.isLoading ||
-          (classificationsLoading && (
-            <div className="w-full flex justify-center items-center">
-              <span className={`loading loading-spinner loading-sm`}></span>
-            </div>
-          ))}
-
-        {filteredClassifications && filteredClassifications.length > 0 && (
-          <div className="flex flex-col gap-2 pt-2 pb-6">
-            {filteredClassifications.map((classification, index) => (
-              <ClassificationSummary
-                key={`classification-${index}`}
-                classificationRecord={classification}
-                setPage={setPage}
-              />
-            ))}
-          </div>
-        )}
-        {!loader.isLoading &&
-          !classificationsLoading &&
-          classifications &&
-          classifications.length === 0 && (
-            <div className="flex-1 flex flex-col items-center justify-center gap-3">
-              <div className="w-24 h-24 text-neutral-content">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1}
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
-                  />
-                </svg>
-              </div>
-              <div className="flex flex-col gap-4 items-center">
-                <div className="text-center flex flex-col gap-1 items-center">
-                  <PrimaryLabel
-                    value="No Classifications Yet"
-                    color={Color.WHITE}
-                  />
-                  <TertiaryText
-                    value="You haven't started or completed any classifications yet, but can start one now."
-                    color={Color.NEUTRAL_CONTENT}
-                  />
-                </div>
+            {/* Action Buttons */}
+            <div className="flex gap-2 w-full sm:w-auto items-center">
+              {!activeClassifyPlan && (
                 <button
-                  className="btn btn-primary w-fit"
-                  onClick={() => setPage(ClassifyPage.CLASSIFY)}
-                >
-                  Start First Classification
-                </button>
-              </div>
-            </div>
-          )}
-
-        {/* No search results */}
-        {!loader.isLoading &&
-          !classificationsLoading &&
-          classifications &&
-          classifications.length > 0 &&
-          filteredClassifications.length === 0 &&
-          searchQuery !== "" && (
-            <div className="flex-1 flex flex-col items-center justify-center gap-3">
-              <div className="w-24 h-24 text-neutral-content">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1}
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-                  />
-                </svg>
-              </div>
-              <div className="flex flex-col gap-4 items-center">
-                <div className="text-center flex flex-col gap-1 items-center">
-                  <PrimaryLabel
-                    value="No Matching Classifications"
-                    color={Color.WHITE}
-                  />
-                  <TertiaryText
-                    value={`No classifications found matching "${searchQuery}".`}
-                    color={Color.NEUTRAL_CONTENT}
-                  />
-                  <TertiaryText
-                    value="Try adjusting your search terms or start a new classification."
-                    color={Color.NEUTRAL_CONTENT}
-                  />
-                </div>
-                <button
-                  className="btn btn-primary w-fit btn-sm"
-                  onClick={() => setSearchQuery("")}
-                >
-                  Clear Search
-                </button>
-              </div>
-            </div>
-          )}
-
-        {/* Empty state for draft tab */}
-        {!loader.isLoading &&
-          !classificationsLoading &&
-          classifications &&
-          classifications.length > 0 &&
-          filteredClassifications.length === 0 &&
-          searchQuery === "" &&
-          activeTab === "draft" && (
-            <div className="flex-1 flex flex-col items-center justify-center gap-3">
-              <div className="w-24 h-24 text-neutral-content">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1}
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
-                  />
-                </svg>
-              </div>
-              <div className="flex flex-col gap-4 items-center">
-                <div className="text-center flex flex-col gap-1 items-center">
-                  <PrimaryLabel
-                    value="No Draft Classifications"
-                    color={Color.WHITE}
-                  />
-                  <TertiaryText
-                    value="You don't have any draft classifications at the moment."
-                    color={Color.NEUTRAL_CONTENT}
-                  />
-                  <TertiaryText
-                    value="Start a new classification to begin working on a draft."
-                    color={Color.NEUTRAL_CONTENT}
-                  />
-                </div>
-                <button
-                  className="btn btn-primary w-fit"
+                  className="btn btn-secondary btn-sm flex gap-2"
+                  disabled={loadingUpgrade}
                   onClick={async () => {
-                    setLoadingNewClassification(true);
-                    await fetchElements("latest");
-                    setPage(ClassifyPage.CLASSIFY);
-                    setLoadingNewClassification(false);
+                    try {
+                      setLoadingUpgrade(true);
+                      // Send them to checkout page
+                      const { url }: { url: string } = await apiClient.post(
+                        "/stripe/create-checkout",
+                        {
+                          itemId: classifyPro.planIdentifier,
+                          successEndpoint: "/app",
+                          cancelUrl: window.location.href,
+                        }
+                      );
+
+                      window.location.href = url;
+                    } catch (error) {
+                      setLoadingUpgrade(false);
+                    }
                   }}
                 >
-                  {loadingNewClassification ? (
+                  {loadingUpgrade ? (
                     <span
                       className={`loading loading-spinner loading-sm`}
                     ></span>
                   ) : (
-                    <PlusIcon className="h-5 w-5" />
+                    <BoltIcon className="h-4 w-4" />
                   )}
-                  Start New Classification
+                  Upgrade
                 </button>
-              </div>
+              )}
+              <button
+                className="btn btn-primary btn-sm grow md:grow-0"
+                onClick={async () => {
+                  setLoadingNewClassification(true);
+                  await fetchElements("latest");
+                  setPage(ClassifyPage.CLASSIFY);
+                  setLoadingNewClassification(false);
+                }}
+              >
+                {loadingNewClassification ? (
+                  <span className={`loading loading-spinner loading-sm`}></span>
+                ) : (
+                  <PlusIcon className="h-5 w-5" />
+                )}
+                New Classification
+              </button>
             </div>
-          )}
+          </div>
 
-        {/* Empty state for finalized tab */}
-        {!loader.isLoading &&
-          !classificationsLoading &&
-          classifications &&
-          classifications.length > 0 &&
-          filteredClassifications.length === 0 &&
-          searchQuery === "" &&
-          activeTab === "finalized" && (
-            <div className="flex-1 flex flex-col items-center justify-center gap-3">
-              <div className="w-24 h-24 text-neutral-content">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1}
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <div className="flex flex-col gap-4 items-center">
-                <div className="text-center flex flex-col gap-1 items-center max-w-md">
-                  <PrimaryLabel
-                    value="No Finalized Classifications"
-                    color={Color.WHITE}
-                  />
-                  <TertiaryText
-                    value="Classifications that you've fully completed can be marked as final."
-                    color={Color.NEUTRAL_CONTENT}
-                  />
-                  <TertiaryText
-                    value='To do this, open the classification and click "Mark as Final" in the top right hand corner.'
-                    color={Color.NEUTRAL_CONTENT}
-                  />
-                </div>
-                <button
-                  className="btn btn-primary btn-wide btn-sm"
-                  onClick={() => setActiveTab("draft")}
-                >
-                  View Drafts
-                </button>
-              </div>
+          {/* Filter Bar */}
+          <div className="flex-1 relative w-full">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <FunnelIcon className="h-5 w-5 text-neutral-400" />
             </div>
-          )}
+            <input
+              type="text"
+              placeholder="Filter by description, code, or classifier"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-1 bg-base-100 border-2 border-base-content/20 rounded-lg text-neutral-200 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            />
+          </div>
+        </div>
       </div>
+
+      {filteredClassifications && filteredClassifications.length > 0 && (
+        <div className="flex flex-col gap-2 pt-2 pb-6">
+          {filteredClassifications.map((classification, index) => (
+            <ClassificationSummary
+              key={`classification-${index}`}
+              classificationRecord={classification}
+              setPage={setPage}
+              user={userProfile}
+            />
+          ))}
+        </div>
+      )}
+      {!loader.isLoading &&
+        !classificationsLoading &&
+        classifications &&
+        classifications.length === 0 && (
+          <div className="flex-1 flex flex-col items-center justify-center gap-3">
+            <div className="w-24 h-24 text-neutral-content">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1}
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                />
+              </svg>
+            </div>
+            <div className="flex flex-col gap-4 items-center">
+              <div className="text-center flex flex-col gap-1 items-center">
+                <PrimaryLabel
+                  value="No Classifications Yet"
+                  color={Color.WHITE}
+                />
+                <TertiaryText
+                  value="You haven't started or completed any classifications yet, but can start one now."
+                  color={Color.NEUTRAL_CONTENT}
+                />
+              </div>
+              <button
+                className="btn btn-primary w-fit"
+                onClick={() => setPage(ClassifyPage.CLASSIFY)}
+              >
+                Start First Classification
+              </button>
+            </div>
+          </div>
+        )}
+
+      {/* No search results */}
+      {!loader.isLoading &&
+        !classificationsLoading &&
+        classifications &&
+        classifications.length > 0 &&
+        filteredClassifications.length === 0 &&
+        searchQuery !== "" && (
+          <div className="flex-1 flex flex-col items-center justify-center gap-3">
+            <div className="w-24 h-24 text-neutral-content">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1}
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                />
+              </svg>
+            </div>
+            <div className="flex flex-col gap-4 items-center">
+              <div className="text-center flex flex-col gap-1 items-center">
+                <PrimaryLabel
+                  value="No Matching Classifications"
+                  color={Color.WHITE}
+                />
+                <TertiaryText
+                  value={`No classifications found matching "${searchQuery}".`}
+                  color={Color.NEUTRAL_CONTENT}
+                />
+                <TertiaryText
+                  value="Try adjusting your search terms or start a new classification."
+                  color={Color.NEUTRAL_CONTENT}
+                />
+              </div>
+              <button
+                className="btn btn-primary w-fit btn-sm"
+                onClick={() => setSearchQuery("")}
+              >
+                Clear Search
+              </button>
+            </div>
+          </div>
+        )}
+
+      {/* Empty state for draft tab */}
+      {!loader.isLoading &&
+        !classificationsLoading &&
+        classifications &&
+        classifications.length > 0 &&
+        filteredClassifications.length === 0 &&
+        searchQuery === "" &&
+        activeTab === "draft" && (
+          <div className="flex-1 flex flex-col items-center justify-center gap-3">
+            <div className="w-24 h-24 text-neutral-content">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1}
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                />
+              </svg>
+            </div>
+            <div className="flex flex-col gap-4 items-center">
+              <div className="text-center flex flex-col gap-1 items-center">
+                <PrimaryLabel
+                  value="No Draft Classifications"
+                  color={Color.WHITE}
+                />
+                <TertiaryText
+                  value="You don't have any draft classifications at the moment."
+                  color={Color.NEUTRAL_CONTENT}
+                />
+                <TertiaryText
+                  value="Start a new classification to begin working on a draft."
+                  color={Color.NEUTRAL_CONTENT}
+                />
+              </div>
+              <button
+                className="btn btn-primary w-fit"
+                onClick={async () => {
+                  setLoadingNewClassification(true);
+                  await fetchElements("latest");
+                  setPage(ClassifyPage.CLASSIFY);
+                  setLoadingNewClassification(false);
+                }}
+              >
+                {loadingNewClassification ? (
+                  <span className={`loading loading-spinner loading-sm`}></span>
+                ) : (
+                  <PlusIcon className="h-5 w-5" />
+                )}
+                Start New Classification
+              </button>
+            </div>
+          </div>
+        )}
+
+      {/* Empty state for finalized tab */}
+      {!loader.isLoading &&
+        !classificationsLoading &&
+        classifications &&
+        classifications.length > 0 &&
+        filteredClassifications.length === 0 &&
+        searchQuery === "" &&
+        activeTab === "finalized" && (
+          <div className="flex-1 flex flex-col items-center justify-center gap-3">
+            <div className="w-24 h-24 text-neutral-content">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1}
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <div className="flex flex-col gap-4 items-center">
+              <div className="text-center flex flex-col gap-1 items-center max-w-md">
+                <PrimaryLabel
+                  value="No Finalized Classifications"
+                  color={Color.WHITE}
+                />
+                <TertiaryText
+                  value="Classifications that you've fully completed can be marked as final."
+                  color={Color.NEUTRAL_CONTENT}
+                />
+                <TertiaryText
+                  value='To do this, open the classification and click "Mark as Final" in the top right hand corner.'
+                  color={Color.NEUTRAL_CONTENT}
+                />
+              </div>
+              <button
+                className="btn btn-primary btn-wide btn-sm"
+                onClick={() => setActiveTab("draft")}
+              >
+                View Drafts
+              </button>
+            </div>
+          </div>
+        )}
     </div>
   );
 };

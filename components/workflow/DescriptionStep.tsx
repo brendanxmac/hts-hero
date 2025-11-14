@@ -16,12 +16,14 @@ import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 import { ClassifyPage } from "../../enums/classify";
 import { ArrowLeftIcon } from "@heroicons/react/16/solid";
 import toast from "react-hot-toast";
+import { ClassificationRecord } from "../../interfaces/hts";
 
 interface Props {
   setPage: (page: ClassifyPage) => void;
   setWorkflowStep: (step: WorkflowStep) => void;
   setClassificationLevel: (level: number | undefined) => void;
   setShowPricing: (show: boolean) => void;
+  classificationRecord: ClassificationRecord;
 }
 
 export const DescriptionStep = ({
@@ -29,6 +31,7 @@ export const DescriptionStep = ({
   setWorkflowStep,
   setClassificationLevel,
   setShowPricing,
+  classificationRecord,
 }: Props) => {
   const { user } = useUser();
   const { classification, startNewClassification, setArticleDescription } =
@@ -41,6 +44,8 @@ export const DescriptionStep = ({
   useEffect(() => {
     setLocalItemDescription(classification?.articleDescription || "");
   }, [classification?.articleDescription]);
+
+  const isUsersClassification = classificationRecord.user_id === user.id;
 
   return (
     <div className="h-full flex flex-col">
@@ -115,7 +120,11 @@ export const DescriptionStep = ({
               setLoading(false);
             }
           }}
-          disabled={localItemDescription.length === 0}
+          canSubmit={
+            !classificationRecord.finalized ||
+            (isUsersClassification && localItemDescription.length > 0)
+          }
+          disabled={classificationRecord.finalized || !isUsersClassification}
           loading={loading}
         />
 

@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
   const { signedUrl, error } = await getSignedUrl("logos", team.logo);
 
   if (error) {
-    console.error("error", error);
+    console.error("error fetching team logo", error);
     return NextResponse.json({ error }, { status: 500 });
   }
 

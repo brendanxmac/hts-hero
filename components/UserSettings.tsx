@@ -3,7 +3,7 @@ import { Color } from "../enums/style";
 import { updateUserProfile, UserProfile } from "../libs/supabase/user";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { TertiaryLabel } from "./TertiaryLabel";
-import { Classifier, Importer } from "../interfaces/hts";
+import { Importer } from "../interfaces/hts";
 import {
   fetchClassifiersForUser,
   createClassifier,
@@ -16,6 +16,7 @@ import { BeakerIcon } from "@heroicons/react/16/solid";
 import LogoUploader from "./LogoUploader";
 import { TertiaryText } from "./TertiaryText";
 import { Team } from "../libs/supabase/teams";
+import { SecondaryLabel } from "./SecondaryLabel";
 
 interface Props {
   user: UserProfile;
@@ -34,9 +35,7 @@ export const UserSettings = ({ user, team }: Props) => {
     user.company_address || ""
   );
   const [isSaving, setIsSaving] = useState(false);
-  const [newClassifier, setNewClassifier] = useState("");
   const [newImporter, setNewImporter] = useState("");
-  const [classifiers, setClassifiers] = useState<Classifier[]>([]);
   const [importers, setImporters] = useState<Importer[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [isCreatingClassifier, setIsCreatingClassifier] = useState(false);
@@ -56,11 +55,7 @@ export const UserSettings = ({ user, team }: Props) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [classifiersData, importersData] = await Promise.all([
-          fetchClassifiersForUser(),
-          fetchImportersForUser(),
-        ]);
-        setClassifiers(classifiersData);
+        const [importersData] = await Promise.all([fetchImportersForUser()]);
         setImporters(importersData);
       } catch (error) {
         console.error("Failed to fetch data:", error);
@@ -78,21 +73,6 @@ export const UserSettings = ({ user, team }: Props) => {
 
   const handleAddressChange = (value: string) => {
     setAddress(value);
-  };
-
-  const handleAddClassifier = async () => {
-    if (!newClassifier.trim()) return;
-
-    setIsCreatingClassifier(true);
-    try {
-      const newClassifierData = await createClassifier(newClassifier.trim());
-      setClassifiers((prev) => [...prev, newClassifierData]);
-      setNewClassifier("");
-    } catch (error) {
-      console.error("Failed to create classifier:", error);
-    } finally {
-      setIsCreatingClassifier(false);
-    }
   };
 
   const handleAddImporter = async () => {
@@ -193,12 +173,15 @@ export const UserSettings = ({ user, team }: Props) => {
       </div>
 
       {!team && (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-8">
           <PrimaryLabel value="Company Details" color={Color.WHITE} />
 
           {/* Logo Section */}
           <div className="w-full flex flex-col gap-4">
-            <TertiaryLabel value="Company Logo" />
+            <div className="flex flex-col">
+              <SecondaryLabel value="Company Logo" />
+              <TertiaryText value="This logo will be displayed on classification advisory reports" />
+            </div>
             <div className="w-full flex items-center gap-4">
               <div className="w-full flex flex-col items-center gap-2">
                 <LogoUploader user={user} />
@@ -206,13 +189,16 @@ export const UserSettings = ({ user, team }: Props) => {
             </div>
           </div>
 
-          {/* Company Disclaimer Section */}
+          {/* Classification Disclaimer Section */}
           <div className="w-full flex flex-col gap-4">
-            <TertiaryLabel value="Company Disclaimer" />
+            <div className="flex flex-col">
+              <SecondaryLabel value="Classification Disclaimer" />
+              <TertiaryText value="This disclaimer will be displayed on classification advisory reports" />
+            </div>
             <div className="w-full flex flex-col gap-3">
               <textarea
                 className="textarea textarea-bordered w-full resize-y"
-                placeholder="Enter your company disclaimer..."
+                placeholder="Enter your classification disclaimer..."
                 rows={4}
                 value={disclaimer}
                 onChange={(e) => handleDisclaimerChange(e.target.value)}
@@ -236,84 +222,22 @@ export const UserSettings = ({ user, team }: Props) => {
         </div>
       )}
 
-      {/* Classifiers Section */}
-      {!team && (
-        <div className="w-full flex flex-col gap-4">
-          <div className="flex items-center gap-2">
-            <PrimaryLabel value="Classifiers" color={Color.WHITE} />
-            <div
-              className="tooltip tooltip-bottom"
-              data-tip="This feature is experimental"
-            >
-              <div className="rounded-sm bg-accent p-0.5 text-xs text-base-300">
-                <BeakerIcon className="w-4 h-4" />
-              </div>
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              placeholder="Enter classifiers name"
-              value={newClassifier}
-              className="max-w-md input input-sm input-bordered flex-1 py-4"
-              onChange={(e) => setNewClassifier(e.target.value)}
-            />
-            <button
-              className="btn btn-primary btn-sm"
-              onClick={handleAddClassifier}
-              disabled={isCreatingClassifier || !newClassifier.trim()}
-            >
-              {isCreatingClassifier ? (
-                <span className="loading loading-spinner loading-xs"></span>
-              ) : (
-                "Add"
-              )}
-            </button>
-          </div>
-          {isLoadingData ? (
-            <div className="w-full flex flex-col items-center justify-center bg-base-200 px-4 py-6 rounded-md border-2 border-base-content/20">
-              <span className="loading loading-spinner loading-md"></span>
-              <TertiaryText value="Loading classifiers..." />
-            </div>
-          ) : classifiers.length === 0 ? (
-            <div className="w-full flex flex-col items-center justify-center bg-base-200 px-4 py-6 rounded-md border-2 border-base-content/20">
-              <TertiaryText value="No classifiers added yet" />
-            </div>
-          ) : (
-            <div className="w-full flex flex-col gap-2">
-              {classifiers.map((classifier) => (
-                <div
-                  key={classifier.id}
-                  className="flex items-center justify-between bg-base-200 px-4 py-3 rounded-md border border-base-content/20"
-                >
-                  <div className="flex flex-col">
-                    <span className="text-base-content font-medium">
-                      {classifier.name}
-                    </span>
-                    <TertiaryText
-                      value={`Created ${new Date(classifier.created_at).toLocaleDateString()}`}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
       {/* Importers Section */}
       {!team && (
         <div className="w-full flex flex-col gap-4">
-          <div className="flex items-center gap-2">
-            <PrimaryLabel value="Importers" color={Color.WHITE} />
-            <div
-              className="tooltip tooltip-bottom"
-              data-tip="This feature is experimental"
-            >
-              <div className="rounded-sm bg-accent p-0.5 text-xs text-base-300">
-                <BeakerIcon className="w-4 h-4" />
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <PrimaryLabel value="Importers" color={Color.WHITE} />
+              <div
+                className="tooltip tooltip-bottom"
+                data-tip="This feature is experimental"
+              >
+                <div className="rounded-sm bg-accent p-0.5 text-xs text-base-300">
+                  <BeakerIcon className="w-4 h-4" />
+                </div>
               </div>
             </div>
+            <TertiaryText value="The list of importers or clients that you provide advisory services to" />
           </div>
           <div className="flex gap-2">
             <input

@@ -7,11 +7,13 @@ import { Importer } from "../interfaces/hts";
 import {
   fetchImportersForUser,
   createImporter,
+  fetchImportersForTeam,
 } from "../libs/supabase/importers";
 import LogoUploader from "./LogoUploader";
 import { TertiaryText } from "./TertiaryText";
 import { Team, updateTeamProfile } from "../libs/supabase/teams";
 import { BeakerIcon } from "@heroicons/react/24/solid";
+import { SecondaryLabel } from "./SecondaryLabel";
 
 interface Props {
   user: UserProfile;
@@ -48,7 +50,9 @@ export const TeamSettings = ({ user, team }: Props) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [importersData] = await Promise.all([fetchImportersForUser()]);
+        const [importersData] = await Promise.all([
+          fetchImportersForTeam(team.id),
+        ]);
         setImporters(importersData);
       } catch (error) {
         console.error("Failed to fetch data:", error);
@@ -73,7 +77,7 @@ export const TeamSettings = ({ user, team }: Props) => {
 
     setIsCreatingImporter(true);
     try {
-      const newImporterData = await createImporter(newImporter.trim());
+      const newImporterData = await createImporter(newImporter.trim(), team.id);
       setImporters((prev) => [...prev, newImporterData]);
       setNewImporter("");
     } catch (error) {
@@ -120,7 +124,7 @@ export const TeamSettings = ({ user, team }: Props) => {
     address !== originalAddress;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-8">
       {/* Team Details Section */}
       <div className="flex flex-col gap-4">
         <div className="flex gap-2 justify-between items-center h-8">
@@ -138,7 +142,7 @@ export const TeamSettings = ({ user, team }: Props) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Name Section */}
           <div className="flex flex-col gap-2">
-            <TertiaryLabel value="Name" />
+            <TertiaryLabel value="Name" color={Color.WHITE} />
             <input
               type="text"
               placeholder="Enter team name"
@@ -151,7 +155,7 @@ export const TeamSettings = ({ user, team }: Props) => {
 
           {/* Company Address Section */}
           <div className="w-full flex flex-col gap-2">
-            <TertiaryLabel value="Address" />
+            <TertiaryLabel value="Address" color={Color.WHITE} />
             <input
               type="text"
               placeholder="Enter your company address"
@@ -166,7 +170,10 @@ export const TeamSettings = ({ user, team }: Props) => {
 
       {/* Logo Section */}
       <div className="w-full flex flex-col gap-4">
-        <TertiaryLabel value="Logo" />
+        <div className="flex flex-col">
+          <SecondaryLabel value="Logo" color={Color.WHITE} />
+          <TertiaryText value="This logo will be displayed on classification advisory reports" />
+        </div>
         <div className="w-full flex items-center gap-4">
           <div className="w-full flex flex-col items-center gap-2">
             <LogoUploader user={user} teamId={team.id} />
@@ -176,7 +183,13 @@ export const TeamSettings = ({ user, team }: Props) => {
 
       {/* Company Disclaimer Section */}
       <div className="w-full flex flex-col gap-4">
-        <TertiaryLabel value="Disclaimer" />
+        <div className="flex flex-col">
+          <SecondaryLabel
+            value="Classification Disclaimer"
+            color={Color.WHITE}
+          />
+          <TertiaryText value="This disclaimer will be displayed on classification advisory reports" />
+        </div>
         <div className="w-full flex flex-col gap-3">
           <textarea
             className="textarea textarea-bordered w-full resize-y"
@@ -190,18 +203,20 @@ export const TeamSettings = ({ user, team }: Props) => {
       </div>
 
       {/* Importers Section */}
-
       <div className="w-full flex flex-col gap-4">
-        <div className="flex items-center gap-2">
-          <PrimaryLabel value="Importers" color={Color.WHITE} />
-          <div
-            className="tooltip tooltip-bottom"
-            data-tip="This feature is experimental"
-          >
-            <div className="rounded-sm bg-accent p-0.5 text-xs text-base-300">
-              <BeakerIcon className="w-4 h-4" />
+        <div className="flex flex-col">
+          <div className="flex items-center gap-2">
+            <SecondaryLabel value="Importers" color={Color.WHITE} />
+            <div
+              className="tooltip tooltip-bottom"
+              data-tip="This feature is experimental"
+            >
+              <div className="rounded-sm bg-accent p-0.5 text-xs text-base-300">
+                <BeakerIcon className="w-4 h-4" />
+              </div>
             </div>
           </div>
+          <TertiaryText value="The list of importers or clients that you provide advisory services to" />
         </div>
         <div className="flex gap-2">
           <input
