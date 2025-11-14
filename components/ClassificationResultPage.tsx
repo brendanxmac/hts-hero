@@ -16,7 +16,6 @@ import {
 import { ClassificationStatus, Importer } from "../interfaces/hts";
 import { useClassifications } from "../contexts/ClassificationsContext";
 import { updateClassification } from "../libs/classification";
-import classNames from "classnames";
 import { SecondaryLabel } from "./SecondaryLabel";
 import { TertiaryText } from "./TertiaryText";
 
@@ -38,6 +37,9 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
   let classificationRecord = classifications.find(
     (c) => c.id === classificationId
   );
+
+  const canUpdateStatus =
+    userProfile.admin || userProfile.id === classificationRecord?.user_id;
 
   // State for classifiers and importers
   const [importers, setImporters] = useState<Importer[]>([]);
@@ -114,9 +116,9 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
               {classificationRecord && (
                 <div className="relative">
                   <select
-                    className="select select-primary select-sm"
+                    className="select select-sm"
                     value={classificationRecord.status}
-                    disabled={updatingClassificationStatus}
+                    disabled={updatingClassificationStatus || !canUpdateStatus}
                     onChange={async (e) => {
                       const newStatus = e.target.value as ClassificationStatus;
                       setUpdatingClassificationStatus(true);

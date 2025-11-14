@@ -1,16 +1,12 @@
 import { ClassifyPage } from "../enums/classify";
 import { ClassificationSummary } from "./ClassificationSummary";
-import { Color } from "../enums/style";
 import { useClassifications } from "../contexts/ClassificationsContext";
 import { useUser } from "../contexts/UserContext";
 import { useEffect, useState, useMemo } from "react";
 import { Loader } from "../interfaces/ui";
 import { useHts } from "../contexts/HtsContext";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
-import { PrimaryLabel } from "./PrimaryLabel";
-import { TertiaryText } from "./TertiaryText";
 import { PlusIcon } from "@heroicons/react/16/solid";
-import { FunnelIcon } from "@heroicons/react/16/solid";
 import { BoltIcon } from "@heroicons/react/16/solid";
 import Fuse, { IFuseOptions } from "fuse.js";
 import { LoadingIndicator } from "./LoadingIndicator";
@@ -28,6 +24,7 @@ import {
   fetchImportersForUser,
 } from "../libs/supabase/importers";
 import { ClassificationStatus, Importer } from "../interfaces/hts";
+import { EmptyResults, EmptyResultsConfig } from "./EmptyResults";
 
 interface Props {
   page: ClassifyPage;
@@ -40,60 +37,6 @@ interface SearchableClassification {
   articleDescription: string;
   htsCodes: string[];
 }
-
-// Empty state configuration
-interface EmptyStateConfig {
-  iconPath: string;
-  title: string;
-  descriptions: string[];
-  buttonText: string;
-  buttonClassName?: string;
-  onButtonClick: () => void | Promise<void>;
-  buttonIcon?: React.ReactNode;
-  maxWidth?: string;
-}
-
-// Reusable empty state component
-const EmptyState = ({ config }: { config: EmptyStateConfig }) => (
-  <div className="flex-1 flex flex-col items-center justify-center gap-3">
-    <div className="w-24 h-24 text-neutral-content">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={1}
-        stroke="currentColor"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d={config.iconPath}
-        />
-      </svg>
-    </div>
-    <div className="flex flex-col gap-4 items-center">
-      <div
-        className={`text-center flex flex-col gap-1 items-center ${config.maxWidth || ""}`}
-      >
-        <PrimaryLabel value={config.title} color={Color.WHITE} />
-        {config.descriptions.map((desc, index) => (
-          <TertiaryText
-            key={index}
-            value={desc}
-            color={Color.NEUTRAL_CONTENT}
-          />
-        ))}
-      </div>
-      <button
-        className={config.buttonClassName || "btn btn-primary w-fit"}
-        onClick={config.onButtonClick}
-      >
-        {config.buttonIcon}
-        {config.buttonText}
-      </button>
-    </div>
-  </div>
-);
 
 export const Classifications = ({ page, setPage }: Props) => {
   const [loadingNewClassification, setLoadingNewClassification] =
@@ -125,7 +68,7 @@ export const Classifications = ({ page, setPage }: Props) => {
   const [selectedImporterId, setSelectedImporterId] = useState<string>("");
 
   // Helper function to get the appropriate empty state configuration
-  const getEmptyStateConfig = (): EmptyStateConfig | null => {
+  const getEmptyStateConfig = (): EmptyResultsConfig | null => {
     const hasClassifications = classifications && classifications.length > 0;
     const noFiltered = filteredClassifications.length === 0;
     const hasActiveFilters =
@@ -277,7 +220,7 @@ export const Classifications = ({ page, setPage }: Props) => {
         setUserProfile(userProfile);
 
         // Set current user as default selected classifier
-        setSelectedUserId(user.id);
+        // setSelectedUserId(user.id);
       }
     };
 
@@ -442,72 +385,76 @@ export const Classifications = ({ page, setPage }: Props) => {
       <div className="flex flex-col gap-4 py-2">
         {/* Search and Actions Row */}
         <div className="w-full flex flex-col gap-3 items-start justify-between">
-          <div className="w-full flex justify-between items-center">
-            <div className="flex flex-col gap-2 sm:flex-row sm:gap-4 items-center">
-              <h2 className="text-xl md:text-3xl text-neutral-content font-bold">
+          <div className="w-full flex flex-col md:flex-row md:justify-between gap-4 md:gap-2 items-start md:items-center">
+            <div className="flex flex-col gap-2 sm:flex-row sm:gap-4 items-start md:items-center">
+              <h2 className="text-2xl md:text-3xl text-neutral-content font-bold">
                 Classifications
               </h2>
-              {!loader.isLoading && (
-                <div
-                  role="tablist"
-                  className="tabs tabs-boxed tabs-sm bg-primary/30 rounded-xl gap-1"
-                >
-                  <a
-                    role="tab"
-                    className={`tab transition-all duration-200 ease-in text-white font-semibold ${
-                      activeTab === "all"
-                        ? "tab-active"
-                        : "hover:bg-primary/70 hover:text-black"
-                    }`}
-                    onClick={() => setActiveTab("all")}
+              <div className="flex gap-2">
+                {!loader.isLoading && (
+                  <div
+                    role="tablist"
+                    className="tabs tabs-boxed tabs-sm bg-primary/30 rounded-xl gap-1"
                   >
-                    All
-                  </a>
-                  <a
-                    role="tab"
-                    className={`tab transition-all duration-200 ease-in text-white font-semibold ${
-                      activeTab === "final"
-                        ? "tab-active"
-                        : "hover:bg-primary/70 hover:text-black"
-                    }`}
-                    onClick={() => setActiveTab("final")}
-                  >
-                    Final
-                  </a>
-                  <a
-                    role="tab"
-                    className={`tab transition-all duration-200 ease-in text-white font-semibold ${
-                      activeTab === "review"
-                        ? "tab-active"
-                        : "hover:bg-primary/70 hover:text-black"
-                    }`}
-                    onClick={() => setActiveTab("review")}
-                  >
-                    Needs Review
-                  </a>
-                  <a
-                    role="tab"
-                    className={`tab transition-all duration-200 ease-in text-white font-semibold ${
-                      activeTab === "draft"
-                        ? "tab-active"
-                        : "hover:bg-primary/70 hover:text-black"
-                    }`}
-                    onClick={() => setActiveTab("draft")}
-                  >
-                    Drafts
-                  </a>
-                </div>
-              )}
-              {loader.isLoading ||
-                (classificationsLoading && (
-                  <span className={`loading loading-spinner loading-sm`}></span>
-                ))}
+                    <a
+                      role="tab"
+                      className={`tab transition-all duration-200 ease-in text-white font-semibold ${
+                        activeTab === "all"
+                          ? "tab-active"
+                          : "hover:bg-primary/70 hover:text-black"
+                      }`}
+                      onClick={() => setActiveTab("all")}
+                    >
+                      All
+                    </a>
+                    <a
+                      role="tab"
+                      className={`tab transition-all duration-200 ease-in text-white font-semibold ${
+                        activeTab === "final"
+                          ? "tab-active"
+                          : "hover:bg-primary/70 hover:text-black"
+                      }`}
+                      onClick={() => setActiveTab("final")}
+                    >
+                      Final
+                    </a>
+                    <a
+                      role="tab"
+                      className={`tab transition-all duration-200 ease-in text-white font-semibold ${
+                        activeTab === "review"
+                          ? "tab-active"
+                          : "hover:bg-primary/70 hover:text-black"
+                      }`}
+                      onClick={() => setActiveTab("review")}
+                    >
+                      Needs Review
+                    </a>
+                    <a
+                      role="tab"
+                      className={`tab transition-all duration-200 ease-in text-white font-semibold ${
+                        activeTab === "draft"
+                          ? "tab-active"
+                          : "hover:bg-primary/70 hover:text-black"
+                      }`}
+                      onClick={() => setActiveTab("draft")}
+                    >
+                      Drafts
+                    </a>
+                  </div>
+                )}
+                {loader.isLoading ||
+                  (classificationsLoading && (
+                    <span
+                      className={`loading loading-spinner loading-sm`}
+                    ></span>
+                  ))}
+              </div>
             </div>
             {/* Action Buttons */}
             <div className="flex gap-2 w-full sm:w-auto items-center">
               {!activeClassifyPlan && (
                 <button
-                  className="btn btn-secondary btn-sm flex gap-2"
+                  className="btn btn-secondary btn-sm flex gap-2 grow md:grow-0"
                   disabled={loadingUpgrade}
                   onClick={async () => {
                     try {
@@ -558,12 +505,22 @@ export const Classifications = ({ page, setPage }: Props) => {
           </div>
 
           {/* Filtering */}
-          <div className="w-full flex gap-2">
+          <div className="w-full flex flex-col md:flex-row gap-2">
             {/* Filter Bar */}
             <div className="grow flex-1 flex flex-col gap-1">
-              <label className="text-xs font-medium text-neutral-content">
-                Description or Code
-              </label>
+              <div className="flex justify-between items-center">
+                <label className="text-xs font-medium text-neutral-content">
+                  Description or Code
+                </label>
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="text-xs text-primary font-bold hover:text-primary/80 transition-colors"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
 
               <input
                 type="text"
@@ -577,9 +534,19 @@ export const Classifications = ({ page, setPage }: Props) => {
             {/* Filter By User/Classifier */}
             {teamUsers.length > 0 && (
               <div className="flex flex-col gap-1 min-w-[250px]">
-                <label className="text-xs font-medium text-neutral-content">
-                  Classifier
-                </label>
+                <div className="flex justify-between items-center">
+                  <label className="text-xs font-medium text-neutral-content">
+                    Classifier
+                  </label>
+                  {selectedUserId && (
+                    <button
+                      onClick={() => setSelectedUserId("")}
+                      className="text-xs text-primary font-bold hover:text-primary/80 transition-colors"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
                 <select
                   value={selectedUserId}
                   onChange={(e) => setSelectedUserId(e.target.value)}
@@ -598,9 +565,19 @@ export const Classifications = ({ page, setPage }: Props) => {
             {/* Filter By Importer */}
             {importers.length > 0 && (
               <div className="flex flex-col gap-1 min-w-[250px]">
-                <label className="text-xs font-medium text-neutral-content">
-                  Importer
-                </label>
+                <div className="flex justify-between items-center">
+                  <label className="text-xs font-medium text-neutral-content">
+                    Importer
+                  </label>
+                  {selectedImporterId && (
+                    <button
+                      onClick={() => setSelectedImporterId("")}
+                      className="text-xs text-primary font-bold hover:text-primary/80 transition-colors"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
                 <select
                   value={selectedImporterId}
                   onChange={(e) => setSelectedImporterId(e.target.value)}
@@ -638,7 +615,7 @@ export const Classifications = ({ page, setPage }: Props) => {
         (() => {
           const emptyStateConfig = getEmptyStateConfig();
           return emptyStateConfig ? (
-            <EmptyState config={emptyStateConfig} />
+            <EmptyResults config={emptyStateConfig} />
           ) : null;
         })()}
     </div>

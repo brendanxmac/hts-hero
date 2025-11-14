@@ -113,7 +113,7 @@ export default function TextAreaInput({
             )}
             {onSubmit && (
               <SquareIconButton
-                disabled={canSubmit || loading}
+                disabled={!canSubmit || loading}
                 icon={
                   loading ? (
                     <span className="loading loading-spinner loading-xs"></span>

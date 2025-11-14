@@ -5,6 +5,7 @@ import {
   ClassificationRecord,
 } from "../../../../interfaces/hts";
 import { getHtsRevisionRecord } from "../../../../libs/supabase/hts-revision";
+import { fetchUser } from "../../../../libs/supabase/user";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +27,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const userProfile = await fetchUser(user.id);
+    if (!userProfile) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const { classification }: CreateClassificationDto = await req.json();
 
     if (!classification) {
@@ -45,6 +51,7 @@ export async function POST(req: NextRequest) {
       .insert([
         {
           user_id: user.id,
+          team_id: userProfile.team_id,
           classification: classification,
           revision: revision.name,
         },

@@ -11,6 +11,7 @@ import {
 import {
   CandidateSelection,
   ClassificationRecord,
+  ClassificationStatus,
   HtsElement,
 } from "../../interfaces/hts";
 import { HtsSection } from "../../interfaces/hts";
@@ -71,7 +72,9 @@ export const ClassificationStep = ({
   const { htsElements } = useHts();
 
   const optionsForLevel = levels[classificationLevel]?.candidates.length;
-  const isUsersClassification = classificationRecord.user_id === user.id;
+  const isUsersClassification = classificationRecord
+    ? classificationRecord.user_id === user.id
+    : true;
 
   useEffect(() => {
     setFetchingOptionsOrSuggestions(loading.isLoading);
@@ -318,7 +321,12 @@ export const ClassificationStep = ({
                 <button
                   className="grow btn btn-xs btn-primary"
                   onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
-                  disabled={loading.isLoading}
+                  disabled={
+                    loading.isLoading ||
+                    classificationRecord?.status ===
+                      ClassificationStatus.FINAL ||
+                    !isUsersClassification
+                  }
                 >
                   <MagnifyingGlassIcon className="w-4 h-4" />
                   Find Headings
@@ -356,7 +364,12 @@ export const ClassificationStep = ({
                   onClick={() => {
                     setShowNotes(true);
                   }}
-                  disabled={loading.isLoading}
+                  disabled={
+                    loading.isLoading ||
+                    classificationRecord?.status ===
+                      ClassificationStatus.FINAL ||
+                    !isUsersClassification
+                  }
                 >
                   <PencilSquareIcon className="w-4 h-4" />
                   Add Notes
@@ -374,7 +387,10 @@ export const ClassificationStep = ({
                   setLoading={setLoading}
                   setWorkflowStep={setWorkflowStep}
                   disabled={
-                    classificationRecord.finalized || !isUsersClassification
+                    !isUsersClassification ||
+                    classificationRecord?.status ===
+                      ClassificationStatus.FINAL ||
+                    !isUsersClassification
                   }
                 />
               </div>
@@ -386,7 +402,10 @@ export const ClassificationStep = ({
           <div className="w-full flex flex-col gap-2">
             <div className="flex flex-col">
               <div className="flex items-center justify-between gap-1">
-                <SecondaryLabel value="Classifier Notes" color={Color.WHITE} />
+                <SecondaryLabel
+                  value="Classification Advisory Notes"
+                  color={Color.WHITE}
+                />
                 <button
                   className="btn btn-xs btn-primary"
                   onClick={() => {
@@ -395,7 +414,7 @@ export const ClassificationStep = ({
                       notes: "",
                     });
                   }}
-                  disabled={loading.isLoading}
+                  disabled={loading.isLoading || !isUsersClassification}
                 >
                   <XMarkIcon className="w-4 h-4" />
                   Remove Notes
@@ -405,8 +424,8 @@ export const ClassificationStep = ({
 
             <textarea
               className="min-h-36 textarea textarea-bordered border-2 focus:outline-none text-white placeholder:text-white/20 placeholder:italic text-base w-full"
-              placeholder="Notes added to this level are saved to your classification and included in your report."
-              disabled={loading.isLoading}
+              placeholder="Notes added are saved and will be included in advisory reports you generate."
+              disabled={loading.isLoading || !isUsersClassification}
               value={levels[classificationLevel]?.notes || ""}
               onChange={(e) => {
                 updateLevel(classificationLevel, {

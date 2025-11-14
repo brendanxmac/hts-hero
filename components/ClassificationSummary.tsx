@@ -6,6 +6,7 @@ import { Color } from "../enums/style";
 import {
   ClassificationProgression,
   ClassificationRecord,
+  ClassificationStatus,
 } from "../interfaces/hts";
 import { formatHumanReadableDate } from "../libs/date";
 import { LoadingIndicator } from "./LoadingIndicator";
@@ -83,7 +84,7 @@ export const ClassificationSummary = ({
               value={getFinalClassificationElement(classification.levels).htsno}
               color={Color.PRIMARY}
             />
-            {classificationRecord.finalized && (
+            {classificationRecord.status === ClassificationStatus.FINAL && (
               <CheckBadgeIcon className="h-5 w-5 text-success" />
             )}
           </div>

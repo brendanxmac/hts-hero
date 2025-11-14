@@ -2,7 +2,6 @@ import {
   Classification,
   ClassificationRecord,
   ClassificationStatus,
-  Classifier,
   Importer,
 } from "../interfaces/hts";
 import apiClient from "./api";

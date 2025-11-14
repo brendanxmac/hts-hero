@@ -16,14 +16,18 @@ import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 import { ClassifyPage } from "../../enums/classify";
 import { ArrowLeftIcon } from "@heroicons/react/16/solid";
 import toast from "react-hot-toast";
-import { ClassificationRecord } from "../../interfaces/hts";
+import {
+  ClassificationRecord,
+  ClassificationStatus,
+} from "../../interfaces/hts";
+import { useClassifications } from "../../contexts/ClassificationsContext";
 
 interface Props {
   setPage: (page: ClassifyPage) => void;
   setWorkflowStep: (step: WorkflowStep) => void;
   setClassificationLevel: (level: number | undefined) => void;
   setShowPricing: (show: boolean) => void;
-  classificationRecord: ClassificationRecord;
+  classificationRecord?: ClassificationRecord | undefined;
 }
 
 export const DescriptionStep = ({
@@ -36,6 +40,7 @@ export const DescriptionStep = ({
   const { user } = useUser();
   const { classification, startNewClassification, setArticleDescription } =
     useClassification();
+  const { refreshClassifications } = useClassifications();
   const [localItemDescription, setLocalItemDescription] = useState(
     classification?.articleDescription || ""
   );
@@ -45,7 +50,9 @@ export const DescriptionStep = ({
     setLocalItemDescription(classification?.articleDescription || "");
   }, [classification?.articleDescription]);
 
-  const isUsersClassification = classificationRecord.user_id === user.id;
+  const isUsersClassification = classificationRecord
+    ? classificationRecord.user_id === user.id
+    : true;
 
   return (
     <div className="h-full flex flex-col">
@@ -97,6 +104,10 @@ export const DescriptionStep = ({
                   localItemDescription !== classification?.articleDescription
                 ) {
                   await startNewClassification(localItemDescription);
+                  // Very important, this is what gets the newly created classification record
+                  // which controls the rest of the classification flow
+                  await refreshClassifications();
+
                   // Track classification started event
                   trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
                     item: localItemDescription,
@@ -121,10 +132,11 @@ export const DescriptionStep = ({
             }
           }}
           canSubmit={
-            !classificationRecord.finalized ||
-            (isUsersClassification && localItemDescription.length > 0)
+            classificationRecord === undefined &&
+            isUsersClassification &&
+            localItemDescription.length > 0
           }
-          disabled={classificationRecord.finalized || !isUsersClassification}
+          disabled={classificationRecord !== undefined}
           loading={loading}
         />
 

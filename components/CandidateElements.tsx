@@ -33,7 +33,8 @@ export const CandidateElements = ({
 
     if (
       candidates.length > 0 &&
-      !classification.levels[classificationLevel].analysisElement
+      !classification.levels[classificationLevel].analysisElement &&
+      !disabled
     ) {
       getBestCandidate();
     }
