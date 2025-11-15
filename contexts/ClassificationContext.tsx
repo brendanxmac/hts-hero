@@ -67,7 +67,7 @@ export const ClassificationProvider = ({
 
     const timeoutId = setTimeout(() => {
       saveClassification();
-    }, 500);
+    }, 300);
 
     return () => {
       clearTimeout(timeoutId);

@@ -105,7 +105,7 @@ export const CandidateElement = ({
         isLevelSelection &&
           "shadow-[inset_0_0_0_4px_oklch(var(--p))] border-transparent",
         !isLevelSelection &&
-          `${disabled ? "cursor-not-allowed" : "hover:cursor-pointer"} hover:bg-base-300 ${disabled && "shadow-[inset_0_0_0_2px_oklch(var(--bc))]"}`,
+          `${disabled ? "cursor-not-allowed" : "hover:cursor-pointer"} hover:bg-base-300 ${disabled && "shadow-[inset_0_0_0_1px_oklch(var(--bc))]"}`,
         disabled &&
           "bg-base-200/70 cursor-not-allowed border-base-300/60 hover:bg-base-200/70"
       )}

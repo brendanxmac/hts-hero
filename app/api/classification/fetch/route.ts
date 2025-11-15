@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "../../supabase/server";
-import { fetchUser } from "../../../../libs/supabase/user";
+import { fetchUser, fetchUsersByTeam } from "../../../../libs/supabase/user";
 
 export const dynamic = "force-dynamic";
 
@@ -23,9 +23,13 @@ export async function GET() {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const userIsOnTeam = userProfile.team_id;
+    const teamId = userProfile.team_id;
+    const userIsOnTeam = !!teamId;
 
     // If user is on a team, fetch all classifications for the team
+    // This includes:
+    // 1. Classifications with the team_id
+    // 2. Classifications created by any user who is currently on the team (including their personal ones from before joining)
     // Otherwise, fetch only the user's own classifications
     // Also fetch the importers name for the classification
     let query = supabase
@@ -35,7 +39,16 @@ export async function GET() {
       .order("created_at", { ascending: false });
 
     if (userIsOnTeam) {
-      query = query.eq("team_id", userIsOnTeam);
+      // Get all user IDs on the team
+      const teamMembers = await fetchUsersByTeam(teamId);
+      const teamMemberIds = teamMembers.map((member) => member.id);
+
+      // Fetch classifications that either:
+      // - Have the team_id, OR
+      // - Were created by any current team member
+      query = query.or(
+        `team_id.eq.${teamId},user_id.in.(${teamMemberIds.join(",")})`
+      );
     } else {
       query = query.eq("user_id", user.id);
     }

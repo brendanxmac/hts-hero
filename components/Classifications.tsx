@@ -594,16 +594,30 @@ export const Classifications = ({ page, setPage }: Props) => {
       </div>
 
       {filteredClassifications && filteredClassifications.length > 0 && (
-        <div className="flex flex-col gap-2 pt-2 pb-6">
-          {filteredClassifications.map((classification, index) => (
-            <ClassificationSummary
-              key={`classification-${index}`}
-              classificationRecord={classification}
-              setPage={setPage}
-              user={userProfile}
-            />
-          ))}
-        </div>
+        <>
+          {/* Results Counter */}
+          <div className="pt-2 pb-1">
+            <p className="text-sm text-neutral-content">
+              <span className="font-semibold">
+                {filteredClassifications.length}
+              </span>{" "}
+              {filteredClassifications.length === 1
+                ? "classification"
+                : "classifications"}
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-2 pb-6">
+            {filteredClassifications.map((classification, index) => (
+              <ClassificationSummary
+                key={`classification-${index}`}
+                classificationRecord={classification}
+                setPage={setPage}
+                user={userProfile}
+              />
+            ))}
+          </div>
+        </>
       )}
 
       {/* Unified empty state rendering */}
