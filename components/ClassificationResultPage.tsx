@@ -180,7 +180,7 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
         <div className="flex flex-col gap-2">
           <SecondaryLabel value="Item Description" />
           <input
-            className="input input-bordered w-full text-xl disabled:text-gray-300"
+            className="input input-bordered w-full disabled:text-gray-300"
             value={classification.articleDescription}
             disabled
           />
