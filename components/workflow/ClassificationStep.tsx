@@ -342,22 +342,6 @@ export const ClassificationStep = ({
                 <MagnifyingGlassIcon className="w-4 h-4" />
                 Search CROSS
               </button>
-              {/* <button
-                className="btn btn-xs btn-primary"
-                onClick={() => {
-                  // remove analysis from this level if it exists
-                  updateLevel(classificationLevel, {
-                    analysisElement: undefined,
-                    analysisReason: undefined,
-                    analysisQuestions: undefined,
-                  });
-                  getBestCandidate();
-                }}
-                disabled={loading.isLoading}
-              >
-                <SparklesIcon className="w-4 h-4" />
-                Analyze Options
-              </button> */}
               {!showNotes && (
                 <button
                   className="mx-auto btn btn-xs btn-primary"

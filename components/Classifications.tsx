@@ -212,9 +212,6 @@ export const Classifications = ({ page, setPage }: Props) => {
           importers = await fetchImportersForUser();
         }
 
-        console.log("teamUsers", teamUsers);
-        console.log("importers", importers);
-
         setTeamUsers(teamUsers);
         setImporters(importers);
         setUserProfile(userProfile);

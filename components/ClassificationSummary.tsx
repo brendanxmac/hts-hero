@@ -10,12 +10,10 @@ import {
 } from "../interfaces/hts";
 import { formatHumanReadableDate } from "../libs/date";
 import { LoadingIndicator } from "./LoadingIndicator";
-import { TertiaryLabel } from "./TertiaryLabel";
-import { PrimaryLabel } from "./PrimaryLabel";
 import { TertiaryText } from "./TertiaryText";
 import { UserProfile } from "../libs/supabase/user";
-import { CheckCircleIcon } from "@heroicons/react/24/solid";
-import { CheckBadgeIcon, LockClosedIcon } from "@heroicons/react/16/solid";
+import { CheckCircleIcon } from "@heroicons/react/20/solid";
+import { PrimaryText } from "./PrimaryText";
 
 interface Props {
   classificationRecord: ClassificationRecord;
@@ -45,7 +43,6 @@ const getFinalClassificationElement = (
 export const ClassificationSummary = ({
   classificationRecord,
   setPage,
-  user,
 }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const { setClassification, setClassificationId } = useClassification();
@@ -78,24 +75,37 @@ export const ClassificationSummary = ({
       )}
 
       <div className="flex flex-col gap-1">
-        {getFinalClassificationElement(classification.levels) && (
-          <div className="flex items-center gap-3 justify-between">
-            <TertiaryLabel
-              value={getFinalClassificationElement(classification.levels).htsno}
-              color={Color.PRIMARY}
+        <div className="flex items-center gap-3 justify-between">
+          <div className="flex items-center gap-2">
+            <TertiaryText
+              value={
+                getFinalClassificationElement(classification.levels)
+                  ? getFinalClassificationElement(classification.levels).htsno
+                  : "Incomplete"
+              }
             />
             {classificationRecord.status === ClassificationStatus.FINAL && (
-              <CheckBadgeIcon className="h-5 w-5 text-success" />
+              <CheckCircleIcon className="h-5 w-5 text-success" />
             )}
           </div>
-        )}
+
+          <div className="flex items-center gap-2">
+            <TertiaryText value="Last updated:" color={Color.DARK_GRAY} />
+            <TertiaryText
+              value={formatHumanReadableDate(classificationRecord.updated_at)}
+            />
+          </div>
+        </div>
         {/* Article Description - Most prominent */}
-        <PrimaryLabel value={classification.articleDescription} />
+        <PrimaryText
+          value={classification.articleDescription}
+          color={Color.WHITE}
+        />
       </div>
 
       {/* Metadata - Less prominent but clear */}
-      <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-base-content/60 pt-2 border-t border-base-content/10">
-        {user && user.team_id && (
+      {/* <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-base-content/60 pt-2 border-t border-base-content/10"> */}
+      {/* {user && user.team_id && (
           <div className="flex items-center gap-2">
             <TertiaryText value="Classifier:" color={Color.DARK_GRAY} />
             <TertiaryText
@@ -105,7 +115,6 @@ export const ClassificationSummary = ({
                     classificationRecord.classifier.email
                   : "Unknown"
               }
-              color={Color.DARK_GRAY}
             />
           </div>
         )}
@@ -118,18 +127,16 @@ export const ClassificationSummary = ({
                 ? classificationRecord.importer.name
                 : "Unassigned"
             }
-            color={Color.DARK_GRAY}
           />
-        </div>
+        </div> */}
 
-        <div className="flex items-center gap-2">
+      {/* <div className="flex items-center gap-2">
           <TertiaryText value="Last updated:" color={Color.DARK_GRAY} />
           <TertiaryText
             value={formatHumanReadableDate(classificationRecord.updated_at)}
-            color={Color.DARK_GRAY}
           />
-        </div>
-      </div>
+        </div> */}
+      {/* </div> */}
     </div>
   );
 };
