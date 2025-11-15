@@ -93,7 +93,7 @@ export const ClassificationNavigation = ({
           <div className="flex items-center justify-center gap-4">
             <div
               role="tablist"
-              className="tabs tabs-sm tabs-boxed bg-primary/30 rounded-xl"
+              className="tabs tabs-sm gap-1 tabs-boxed bg-primary/30 rounded-xl"
             >
               {ClassifyTabs.map((tab) => (
                 <button
@@ -104,7 +104,10 @@ export const ClassificationNavigation = ({
                   className={classNames(
                     "tab transition-all duration-200 ease-in text-white font-semibold",
                     tab.value === activeTab && "tab-active",
-                    fetchingOptionsOrSuggestions && "tab-disabled"
+                    fetchingOptionsOrSuggestions && "tab-disabled",
+                    tab.value === ClassifyTab.CLASSIFY &&
+                      activeTab !== ClassifyTab.CLASSIFY &&
+                      "animate-pulse bg-warning"
                   )}
                 >
                   {tab.icon}

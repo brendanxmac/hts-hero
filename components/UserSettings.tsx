@@ -135,7 +135,7 @@ export const UserSettings = ({ user, team }: Props) => {
             value={user.team_id ? "Personal Settings" : "Account Settings"}
             color={Color.WHITE}
           />
-          {/* {hasChanges && (
+          {hasChanges && (
             <button
               onClick={handleSaveChanges}
               disabled={isSaving}
@@ -143,7 +143,7 @@ export const UserSettings = ({ user, team }: Props) => {
             >
               {isSaving ? "Saving..." : "Save Changes"}
             </button>
-          )} */}
+          )}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Name Section */}
