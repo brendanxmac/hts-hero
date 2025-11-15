@@ -384,7 +384,7 @@ export const Classifications = ({ page, setPage }: Props) => {
         <div className="w-full flex flex-col gap-3 items-start justify-between">
           <div className="w-full flex flex-col md:flex-row md:justify-between gap-4 md:gap-2 items-start md:items-center">
             <div className="flex flex-col gap-2 sm:flex-row sm:gap-4 items-start md:items-center">
-              <h2 className="text-2xl md:text-3xl text-neutral-content font-bold">
+              <h2 className="text-2xl lg:text-3xl font-bold text-neutral-content">
                 Classifications
               </h2>
               <div className="flex gap-2">
