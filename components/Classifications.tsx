@@ -66,6 +66,7 @@ export const Classifications = ({ page, setPage }: Props) => {
   const [importers, setImporters] = useState<Importer[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<string>("");
   const [selectedImporterId, setSelectedImporterId] = useState<string>("");
+  const UNASSIGNED_IMPORTER_VALUE = "unassigned";
 
   // Helper function to get the appropriate empty state configuration
   const getEmptyStateConfig = (): EmptyResultsConfig | null => {
@@ -318,9 +319,17 @@ export const Classifications = ({ page, setPage }: Props) => {
 
     // Filter by selected importer
     if (selectedImporterId) {
-      filtered = filtered.filter(
-        (classification) => classification.importer_id === selectedImporterId
-      );
+      if (selectedImporterId === UNASSIGNED_IMPORTER_VALUE) {
+        // Filter for classifications with no importer
+        filtered = filtered.filter(
+          (classification) => classification.importer_id === null
+        );
+      } else {
+        // Filter for specific importer
+        filtered = filtered.filter(
+          (classification) => classification.importer_id === selectedImporterId
+        );
+      }
     }
 
     return filtered;
@@ -560,35 +569,34 @@ export const Classifications = ({ page, setPage }: Props) => {
             )}
 
             {/* Filter By Importer */}
-            {importers.length > 0 && (
-              <div className="flex flex-col gap-1 min-w-[250px]">
-                <div className="flex justify-between items-center">
-                  <label className="text-xs font-medium text-neutral-content">
-                    Importer
-                  </label>
-                  {selectedImporterId && (
-                    <button
-                      onClick={() => setSelectedImporterId("")}
-                      className="text-xs text-primary font-bold hover:text-primary/80 transition-colors"
-                    >
-                      Clear
-                    </button>
-                  )}
-                </div>
-                <select
-                  value={selectedImporterId}
-                  onChange={(e) => setSelectedImporterId(e.target.value)}
-                  className="select select-sm bg-base-100 border-2 border-base-content/20 text-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                >
-                  <option value="">All Importers</option>
-                  {importers.map((importer) => (
-                    <option key={importer.id} value={importer.id}>
-                      {importer.name}
-                    </option>
-                  ))}
-                </select>
+            <div className="flex flex-col gap-1 min-w-[250px]">
+              <div className="flex justify-between items-center">
+                <label className="text-xs font-medium text-neutral-content">
+                  Importer
+                </label>
+                {selectedImporterId && (
+                  <button
+                    onClick={() => setSelectedImporterId("")}
+                    className="text-xs text-primary font-bold hover:text-primary/80 transition-colors"
+                  >
+                    Clear
+                  </button>
+                )}
               </div>
-            )}
+              <select
+                value={selectedImporterId}
+                onChange={(e) => setSelectedImporterId(e.target.value)}
+                className="select select-sm bg-base-100 border-2 border-base-content/20 text-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              >
+                <option value="">All Importers</option>
+                <option value={UNASSIGNED_IMPORTER_VALUE}>Unassigned</option>
+                {importers.map((importer) => (
+                  <option key={importer.id} value={importer.id}>
+                    {importer.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
       </div>

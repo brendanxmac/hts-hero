@@ -194,38 +194,59 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
               <SecondaryLabel value="Importer" />
               <TertiaryText value="Select the importer or client that you are providing this advisory to" />
             </div>
-            <select
-              className="select w-full"
-              value={selectedImporterId}
-              disabled={isLoadingImporters || !canUpdateDetails}
-              onChange={(e) => {
-                setSelectedImporterId(e.target.value);
-                updateClassification(
-                  classificationId,
-                  undefined,
-                  e.target.value,
-                  undefined
-                );
-              }}
-            >
-              <option value="" disabled>
-                {isLoadingImporters
-                  ? "Loading importers..."
-                  : importers.length === 0
-                    ? "No importers available"
-                    : "Select importer"}
-              </option>
-              {!isLoadingImporters &&
-                importers.map((importer) => (
-                  <option key={importer.id} value={importer.id}>
-                    {importer.name}
-                  </option>
-                ))}
-            </select>
+            <div className="flex gap-2">
+              <select
+                className="select w-full flex-1"
+                value={selectedImporterId}
+                disabled={isLoadingImporters || !canUpdateDetails}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setSelectedImporterId(value);
+                  updateClassification(
+                    classificationId,
+                    undefined,
+                    value || null,
+                    undefined
+                  );
+                }}
+              >
+                <option value="">
+                  {isLoadingImporters
+                    ? "Loading importers..."
+                    : importers.length === 0
+                      ? "No importers available"
+                      : "Select importer"}
+                </option>
+                {!isLoadingImporters &&
+                  importers.map((importer) => (
+                    <option key={importer.id} value={importer.id}>
+                      {importer.name}
+                    </option>
+                  ))}
+              </select>
+              {selectedImporterId && (
+                <button
+                  className="btn btn-outline"
+                  onClick={() => {
+                    setSelectedImporterId("");
+                    updateClassification(
+                      classificationId,
+                      undefined,
+                      null,
+                      undefined
+                    );
+                  }}
+                  disabled={isLoadingImporters || !canUpdateDetails}
+                  title="Clear selected importer"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
             <div className="flex gap-2">
               <input
                 type="text"
-                placeholder="Add new importer"
+                placeholder="Create new importer"
                 value={newImporter}
                 disabled={!canUpdateDetails}
                 className="input input-sm input-bordered flex-1"
@@ -246,7 +267,7 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
                 {isCreatingImporter ? (
                   <span className="loading loading-spinner loading-xs"></span>
                 ) : (
-                  "Add"
+                  "Create"
                 )}
               </button>
             </div>
