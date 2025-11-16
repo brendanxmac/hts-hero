@@ -1,14 +1,15 @@
 import {
   Classification,
   ClassificationRecord,
-  Classifier,
+  ClassificationStatus,
   Importer,
 } from "../interfaces/hts";
 import apiClient from "./api";
 import jsPDF from "jspdf";
 import { getElementWithTariffDataFromClassification } from "./hts";
-import { UserProfile } from "./supabase/user";
-import { fetchLogo } from "./supabase/storage";
+import { fetchUser, UserProfile } from "./supabase/user";
+import { fetchTeamLogo, fetchUserLogo } from "./supabase/storage";
+import { fetchTeam, Team } from "./supabase/teams";
 
 const formatHtsNumber = (htsno: string | undefined | null): string => {
   return htsno?.trim() || "-";
@@ -32,14 +33,14 @@ export const updateClassification = async (
   classification?: Classification,
   importer_id?: string,
   classifier_id?: string,
-  finalized?: boolean
+  status?: ClassificationStatus
 ) => {
   const response = await apiClient.post("/classification/update", {
     id,
     classification,
     importer_id,
     classifier_id,
-    finalized,
+    status,
   });
 
   return response.data;
@@ -67,12 +68,36 @@ const getImageFormatFromFilename = (filename: string): string => {
   return "PNG";
 };
 
-export const generateClassificationReport = async (
-  classification: Classification,
+const getCompanyLogo = async (
   userProfile: UserProfile,
-  importer?: Importer,
-  classifier?: Classifier
+  team?: Team
+): Promise<{ logoUrl: string; logoFormat: string }> => {
+  if (userProfile.team_id) {
+    const team = await fetchTeam(userProfile.team_id);
+    if (team && team.logo) {
+      const companyLogo = await fetchTeamLogo(team.id);
+      const companyLogoFormat = getImageFormatFromFilename(team.logo);
+      return { logoUrl: companyLogo.signedUrl, logoFormat: companyLogoFormat };
+    }
+  } else {
+    const companyLogo = await fetchUserLogo();
+    const companyLogoFormat = getImageFormatFromFilename(
+      userProfile.company_logo || ""
+    );
+    return { logoUrl: companyLogo.signedUrl, logoFormat: companyLogoFormat };
+  }
+};
+
+export const generateClassificationReport = async (
+  classificationRecord: ClassificationRecord,
+  userProfile: UserProfile,
+  importer?: Importer
 ): Promise<jsPDF> => {
+  const { classification, user_id } = classificationRecord;
+  const team = userProfile.team_id
+    ? await fetchTeam(userProfile.team_id)
+    : undefined;
+
   const elementWithTariffData =
     getElementWithTariffDataFromClassification(classification);
 
@@ -123,11 +148,9 @@ export const generateClassificationReport = async (
   // Add company logo with proper error handling and improved sizing
   try {
     const logo = new Image();
-    const companyLogo = await fetchLogo();
-    const companyLogoFormat = getImageFormatFromFilename(
-      userProfile.company_logo || ""
-    );
-    logo.src = companyLogo.signedUrl || "/pdf-report-default-logo.png";
+    // if user is part of a team, use the teams logo
+    const { logoUrl, logoFormat } = await getCompanyLogo(userProfile, team);
+    logo.src = logoUrl || "/pdf-report-default-logo.png";
 
     await new Promise<void>((resolve, reject) => {
       logo.onload = () => resolve();
@@ -153,7 +176,7 @@ export const generateClassificationReport = async (
 
     doc.addImage(
       logo,
-      companyLogoFormat || "PNG",
+      logoFormat || "PNG",
       logoX,
       yPosition - 20,
       logoWidth,
@@ -193,99 +216,78 @@ export const generateClassificationReport = async (
   yPosition += 20;
 
   // Client and Advisory provider information side by side with enhanced styling
-  if (importer || classifier) {
-    const columnWidth = (contentWidth - 20) / 2; // Half width with gap
-    const leftColumnX = margin;
-    const rightColumnX = margin + columnWidth + 20; // 20pt gap between columns
-    const boxHeight = 80;
-    const boxPadding = 15;
+  const boxHeight = 80;
+  const padding = 15;
 
-    // Importer/Client section (left column)
-    if (importer) {
-      // Draw background box for Advisory Provided To
-      doc.setFillColor(248, 250, 252); // Very light blue-gray (same as item box)
-      doc.setDrawColor(226, 232, 240); // Light border
-      doc.setLineWidth(1);
-      doc.roundedRect(
-        leftColumnX,
-        yPosition,
-        columnWidth,
-        boxHeight,
-        6,
-        6,
-        "FD"
-      );
+  // Determine layout based on whether importer is defined
+  const hasImporter = !!importer;
+  const columnWidth = hasImporter ? (contentWidth - 20) / 2 : contentWidth; // Half width with gap if importer exists, full width otherwise
+  const leftColumnX = margin;
+  const rightColumnX = hasImporter ? margin + columnWidth + 20 : margin; // 20pt gap between columns if importer exists
 
-      // Section header
-      setTypography({ size: 12, weight: "bold" });
-      setTextColor([30, 41, 59]); // Dark slate
-      doc.text(
-        "ADVISORY PROVIDED TO",
-        leftColumnX + boxPadding,
-        yPosition + 18
-      );
+  // Importer/Client section (left column) - only show if importer is defined
+  if (importer) {
+    // Draw background box for Advisory Provided To
+    doc.setFillColor(248, 250, 252); // Very light blue-gray (same as item box)
+    doc.setDrawColor(226, 232, 240); // Light border
+    doc.setLineWidth(1);
+    doc.roundedRect(leftColumnX, yPosition, columnWidth, boxHeight, 6, 6, "FD");
 
-      // Client name
-      setTypography({ size: 10, weight: "normal" });
-      setTextColor([51, 65, 85]); // Slate gray
-      doc.text(importer.name, leftColumnX + boxPadding, yPosition + 35);
-    }
+    // Section header
+    setTypography({ size: 12, weight: "bold" });
+    setTextColor([30, 41, 59]); // Dark slate
+    doc.text("ADVISORY PROVIDED TO", leftColumnX + padding, yPosition + 18);
 
-    // Advisory provider information (right column)
-    if (classifier) {
-      // Draw background box for Advisory Provided By
-      doc.setFillColor(248, 250, 252); // Very light blue-gray (same as item box)
-      doc.setDrawColor(226, 232, 240); // Light border
-      doc.setLineWidth(1);
-      doc.roundedRect(
-        rightColumnX,
-        yPosition,
-        columnWidth,
-        boxHeight,
-        6,
-        6,
-        "FD"
-      );
-
-      // Section header
-      setTypography({ size: 12, weight: "bold" });
-      setTextColor([30, 41, 59]); // Dark slate
-      doc.text(
-        "ADVISORY PROVIDED BY",
-        rightColumnX + boxPadding,
-        yPosition + 18
-      );
-
-      let textY = yPosition + 35;
-
-      // Classifier name
-      setTypography({ size: 10, weight: "normal" });
-      setTextColor([51, 65, 85]); // Slate gray
-      doc.text(classifier.name, rightColumnX + boxPadding, textY);
-      textY += 12;
-
-      if (userProfile.email) {
-        doc.text(userProfile.email, rightColumnX + boxPadding, textY);
-        textY += 12;
-      }
-
-      if (userProfile.company_address) {
-        const addressLines = doc.splitTextToSize(
-          userProfile.company_address,
-          columnWidth - boxPadding * 2
-        );
-        doc.text(addressLines, rightColumnX + boxPadding, textY);
-      }
-    }
-
-    yPosition += boxHeight + 20; // Move down after both boxes
+    // Client name
+    setTypography({ size: 10, weight: "normal" });
+    setTextColor([51, 65, 85]); // Slate gray
+    doc.text(importer.name, leftColumnX + padding, yPosition + 35);
   }
 
-  // === MAIN CLASSIFICATION SECTION ===
+  // Get the classifiers name & email
+  const classifier =
+    userProfile.id === user_id ? userProfile : await fetchUser(user_id);
 
+  // Advisory provider information (right column if importer exists, full width otherwise)
+  // Draw background box for Advisory Provided By
+  doc.setFillColor(248, 250, 252); // Very light blue-gray (same as item box)
+  doc.setDrawColor(226, 232, 240); // Light border
+  doc.setLineWidth(1);
+  doc.roundedRect(rightColumnX, yPosition, columnWidth, boxHeight, 6, 6, "FD");
+
+  // Section header
+  setTypography({ size: 12, weight: "bold" });
+  setTextColor([30, 41, 59]); // Dark slate
+  doc.text("ADVISORY PROVIDED BY", rightColumnX + padding, yPosition + 18);
+
+  let textY = yPosition + 35;
+
+  // Classifier name
+  setTypography({ size: 10, weight: "normal" });
+  setTextColor([51, 65, 85]); // Slate gray
+  doc.text(classifier.name, rightColumnX + padding, textY);
+  textY += 12;
+
+  if (classifier.email) {
+    doc.text(classifier.email, rightColumnX + padding, textY);
+    textY += 12;
+  }
+
+  const address = team ? team.address || "" : userProfile.company_address || "";
+  if (address) {
+    const addressLines = doc.splitTextToSize(
+      address,
+      columnWidth - padding * 2
+    );
+    doc.text(addressLines, rightColumnX + padding, textY);
+  }
+
+  yPosition += boxHeight + 20; // Move down after both boxes
+
+  // === MAIN CLASSIFICATION SECTION ===
   // Item to Classify section with enhanced visual design
   const sectionPadding = 15;
-  const boxPadding = 20;
+  const clssifierBoxPadding = 20;
 
   // Item Description Box
   const itemBoxHeight = 60;
@@ -299,16 +301,16 @@ export const generateClassificationReport = async (
   // Item section header
   setTypography({ size: 12, weight: "bold" });
   setTextColor([30, 41, 59]); // Dark slate (same as advisory sections)
-  doc.text("ITEM TO CLASSIFY", margin + boxPadding, yPosition + 20);
+  doc.text("ITEM TO CLASSIFY", margin + clssifierBoxPadding, yPosition + 20);
 
   // Item description
   setTypography({ size: 11, weight: "normal" });
   setTextColor([51, 65, 85]); // Slate gray
   const itemDescLines = doc.splitTextToSize(
     classification.articleDescription,
-    contentWidth - boxPadding * 2
+    contentWidth - clssifierBoxPadding * 2
   );
-  doc.text(itemDescLines, margin + boxPadding, yPosition + 38);
+  doc.text(itemDescLines, margin + clssifierBoxPadding, yPosition + 38);
 
   yPosition += itemBoxHeight + sectionPadding;
 
@@ -328,13 +330,17 @@ export const generateClassificationReport = async (
     // HTS section header
     setTypography({ size: 12, weight: "bold" });
     setTextColor([30, 58, 138]); // Dark blue
-    doc.text("SUGGESTED CLASSIFICATION", margin + boxPadding, yPosition + 22);
+    doc.text(
+      "SUGGESTED CLASSIFICATION",
+      margin + clssifierBoxPadding,
+      yPosition + 22
+    );
 
     // HTS Code - large and prominent, left-aligned
     setTypography({ size: 24, weight: "bold" });
     setTextColor([30, 58, 138]); // Dark blue
     const htsCodeText = formatHtsNumber(finalLevel.htsno);
-    doc.text(htsCodeText, margin + boxPadding, yPosition + 60);
+    doc.text(htsCodeText, margin + clssifierBoxPadding, yPosition + 60);
 
     // HTS description if available
     // if (finalLevel.description) {
@@ -356,7 +362,7 @@ export const generateClassificationReport = async (
   setTypography({ size: 10, weight: "normal" }); // Set font for measurement
   const notesLines = doc.splitTextToSize(
     classification.notes || "No additional notes provided.",
-    contentWidth - boxPadding * 2
+    contentWidth - clssifierBoxPadding * 2
   );
   const notesBoxHeight = Math.max(80, notesLines.length * 12 + 45);
 
@@ -396,12 +402,16 @@ export const generateClassificationReport = async (
     // First section header
     setTypography({ size: 12, weight: "bold" });
     setTextColor([30, 58, 138]); // Dark blue
-    doc.text("BASIS FOR CLASSIFICATION", margin + boxPadding, yPosition + 22);
+    doc.text(
+      "BASIS FOR CLASSIFICATION",
+      margin + clssifierBoxPadding,
+      yPosition + 22
+    );
 
     // First section content
     setTypography({ size: 10, weight: "normal" });
     setTextColor([51, 65, 85]); // Slate gray
-    doc.text(firstPageLines, margin + boxPadding, yPosition + 42);
+    doc.text(firstPageLines, margin + clssifierBoxPadding, yPosition + 42);
 
     // Move to next page for second section
     doc.addPage();
@@ -432,14 +442,14 @@ export const generateClassificationReport = async (
     setTextColor([30, 58, 138]); // Dark blue
     doc.text(
       "BASIS FOR CLASSIFICATION (continued)",
-      margin + boxPadding,
+      margin + clssifierBoxPadding,
       yPosition + 22
     );
 
     // Second section content
     setTypography({ size: 10, weight: "normal" });
     setTextColor([51, 65, 85]); // Slate gray
-    doc.text(secondPageLines, margin + boxPadding, yPosition + 42);
+    doc.text(secondPageLines, margin + clssifierBoxPadding, yPosition + 42);
 
     yPosition += secondBoxHeight + 30;
   } else {
@@ -467,12 +477,16 @@ export const generateClassificationReport = async (
     // Notes section header
     setTypography({ size: 14, weight: "bold" });
     setTextColor([30, 58, 138]); // Dark blue
-    doc.text("BASIS FOR CLASSIFICATION", margin + boxPadding, yPosition + 22);
+    doc.text(
+      "BASIS FOR CLASSIFICATION",
+      margin + clssifierBoxPadding,
+      yPosition + 22
+    );
 
     // Advisory notes content
     setTypography({ size: 10, weight: "normal" });
     setTextColor([51, 65, 85]); // Slate gray
-    doc.text(notesLines, margin + boxPadding, yPosition + 42);
+    doc.text(notesLines, margin + clssifierBoxPadding, yPosition + 42);
 
     yPosition += notesBoxHeight + 30;
   }

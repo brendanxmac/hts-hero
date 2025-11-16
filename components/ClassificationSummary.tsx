@@ -6,17 +6,20 @@ import { Color } from "../enums/style";
 import {
   ClassificationProgression,
   ClassificationRecord,
+  ClassificationStatus,
 } from "../interfaces/hts";
 import { formatHumanReadableDate } from "../libs/date";
-import { PrimaryText } from "./PrimaryText";
-import { SecondaryLabel } from "./SecondaryLabel";
-import { TertiaryText } from "./TertiaryText";
 import { LoadingIndicator } from "./LoadingIndicator";
-import { useClassifications } from "../contexts/ClassificationsContext";
+import { TertiaryText } from "./TertiaryText";
+import { UserProfile } from "../libs/supabase/user";
+import { CheckCircleIcon } from "@heroicons/react/20/solid";
+import { SecondaryLabel } from "./SecondaryLabel";
+import { DocumentTextIcon, FlagIcon } from "@heroicons/react/24/solid";
 
 interface Props {
   classificationRecord: ClassificationRecord;
   setPage: (page: ClassifyPage) => void;
+  user: UserProfile;
 }
 
 const getLastDecision = (decisions: ClassificationProgression[]) => {
@@ -41,6 +44,7 @@ const getFinalClassificationElement = (
 export const ClassificationSummary = ({
   classificationRecord,
   setPage,
+  user,
 }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const { setClassification, setClassificationId } = useClassification();
@@ -49,7 +53,7 @@ export const ClassificationSummary = ({
 
   return (
     <div
-      className="bg-base-100 p-4 rounded-md cursor-pointer flex flex-col gap-2 border-2 border-base-content/30 hover:bg-base-300 relative"
+      className="bg-base-100 p-3 rounded-lg cursor-pointer flex flex-col gap-1 border border-base-content/30 hover:bg-base-200 transition-all relative"
       onClick={async () => {
         // Get the classifications revision and see if we need to use useHts to fetch the elements
         const classificationRevision = classificationRecord.revision;
@@ -67,29 +71,82 @@ export const ClassificationSummary = ({
       }}
     >
       {isLoading && (
-        <div className="absolute inset-0 bg-base-300/80 flex items-center justify-center rounded-md z-10">
+        <div className="absolute inset-0 bg-base-300/80 flex items-center justify-center rounded-lg z-10">
           <LoadingIndicator text="Loading..." />
         </div>
       )}
-      <div className="flex justify-between">
-        {getFinalClassificationElement(classification.levels) ? (
-          <SecondaryLabel
-            value={getFinalClassificationElement(classification.levels).htsno}
-            color={Color.PRIMARY}
-          />
-        ) : (
-          <SecondaryLabel value="In Progress" color={Color.SECONDARY} />
-        )}
-        <div className="flex items-center gap-2">
+
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-3 justify-between">
           <TertiaryText
-            value={formatHumanReadableDate(classificationRecord.created_at)}
+            value={
+              getFinalClassificationElement(classification.levels)
+                ? getFinalClassificationElement(classification.levels).htsno
+                : "Incomplete"
+            }
+          />
+          {classificationRecord.status === ClassificationStatus.REVIEW && (
+            <div className="flex items-center gap-1">
+              <FlagIcon className="h-4 w-4 text-warning" />
+              <p className="text-xs font-bold text-warning">Needs Review</p>
+            </div>
+          )}
+          {classificationRecord.status === ClassificationStatus.FINAL && (
+            <div className="flex items-center gap-1">
+              <CheckCircleIcon className="h-5 w-5 text-success" />
+              <p className="text-xs font-bold text-success">Finalized</p>
+            </div>
+          )}
+          {classificationRecord.status === ClassificationStatus.DRAFT && (
+            <div className="flex items-center gap-1">
+              <DocumentTextIcon className="h-4 w-4" />
+              <p className="text-xs font-bold">Draft</p>
+            </div>
+          )}
+        </div>
+        {/* Article Description - Most prominent */}
+        <SecondaryLabel
+          value={classification.articleDescription}
+          color={Color.WHITE}
+        />
+      </div>
+
+      {/* Metadata - Less prominent but clear */}
+      <div className="flex flex-wrap justify-between gap-x-3 gap-y-2 text-sm pt-1 border-t border-base-content/10 text-base-content/60">
+        <div className="flex flex-wrap gap-3">
+          {user && user.team_id && (
+            <div className="flex items-center gap-1">
+              <TertiaryText value="Classifier:" color={Color.DARK_GRAY} />
+              <TertiaryText
+                value={
+                  classificationRecord.classifier
+                    ? classificationRecord.classifier?.name ||
+                      classificationRecord.classifier.email
+                    : "Unknown"
+                }
+              />
+            </div>
+          )}
+
+          <div className="flex items-center gap-1">
+            <TertiaryText value="Importer:" color={Color.DARK_GRAY} />
+            <TertiaryText
+              value={
+                classificationRecord.importer
+                  ? classificationRecord.importer.name
+                  : "Unassigned"
+              }
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center gap-1">
+          <TertiaryText value="Last updated:" color={Color.DARK_GRAY} />
+          <TertiaryText
+            value={formatHumanReadableDate(classificationRecord.updated_at)}
           />
         </div>
       </div>
-      <PrimaryText
-        value={classification.articleDescription}
-        color={Color.WHITE}
-      />
     </div>
   );
 };

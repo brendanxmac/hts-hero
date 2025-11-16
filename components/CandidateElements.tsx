@@ -11,6 +11,7 @@ interface Props {
   setClassificationLevel: (level: number | undefined) => void;
   setWorkflowStep: (step: WorkflowStep) => void;
   setLoading: (loading: Loader) => void;
+  disabled: boolean;
 }
 
 export const CandidateElements = ({
@@ -18,6 +19,7 @@ export const CandidateElements = ({
   setClassificationLevel,
   setWorkflowStep,
   setLoading,
+  disabled = false,
 }: Props) => {
   const { classification, setClassification } = useClassification();
   const { levels } = classification;
@@ -31,7 +33,8 @@ export const CandidateElements = ({
 
     if (
       candidates.length > 0 &&
-      !classification.levels[classificationLevel].analysisElement
+      !classification.levels[classificationLevel].analysisElement &&
+      !disabled
     ) {
       getBestCandidate();
     }
@@ -96,6 +99,7 @@ export const CandidateElements = ({
         <div className="h-full flex flex-col gap-4 pb-4">
           {candidates.map((element) => (
             <CandidateElement
+              disabled={disabled}
               key={element.uuid}
               element={element}
               classificationLevel={classificationLevel}

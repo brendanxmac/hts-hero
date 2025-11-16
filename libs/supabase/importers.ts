@@ -5,6 +5,15 @@ export const fetchImportersForUser = async (): Promise<Importer[]> => {
   return apiClient.get(`/importers`);
 };
 
-export const createImporter = async (name: string): Promise<Importer> => {
-  return apiClient.post(`/importers/create`, { name });
+export const fetchImportersForTeam = async (
+  teamId: string
+): Promise<Importer[]> => {
+  return apiClient.get(`/importers?teamId=${teamId}`);
+};
+
+export const createImporter = async (
+  name: string,
+  teamId?: string
+): Promise<Importer> => {
+  return apiClient.post(`/importers/create`, { name, teamId });
 };

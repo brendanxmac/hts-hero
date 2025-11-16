@@ -84,7 +84,7 @@ export const tariffImpactPro: PricingPlanI = {
 //   features: [{ name: "All features of Classify Pro, for 7 Days" }],
 // };
 
-const classifyPro: PricingPlanI = {
+export const classifyPro: PricingPlanI = {
   name: "Pro",
   planIdentifier: PricingPlan.CLASSIFY_PRO,
   description: "The Classification Assistant for Customs Brokers",

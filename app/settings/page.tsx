@@ -3,7 +3,7 @@
 import { fetchUser, UserProfile } from "../../libs/supabase/user";
 import { useEffect, useState } from "react";
 import { LoadingIndicator } from "../../components/LoadingIndicator";
-import Profile from "../../components/Profile";
+import SettingsPage from "../../components/SettingsPage";
 import { useUser } from "../../contexts/UserContext";
 
 export default function Home() {
@@ -32,7 +32,7 @@ export default function Home() {
         </div>
       ) : userProfile ? (
         <div className="h-full overflow-y-auto">
-          <Profile user={userProfile} />
+          <SettingsPage user={userProfile} />
         </div>
       ) : (
         <div className="flex justify-center items-center h-full">

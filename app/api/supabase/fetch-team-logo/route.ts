@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient, getSignedUrl } from "../server";
 import { fetchUser } from "../../../../libs/supabase/user";
+import { fetchTeam } from "../../../../libs/supabase/teams";
 
 // Specifies that this API route should run on Edge Runtime
 // This means the API route will run on Edge servers (CDN nodes) closer to users
@@ -13,32 +14,47 @@ export const runtime = "edge";
 // A signed URL is generated for the file and returned to the client
 // The signed URL is valid for 7 days and can be used to access the file from the client
 // The file is cached for 1 hour to improve performance
-export async function GET() {
+export async function GET(req: NextRequest) {
+  // Get Team Id from request query parameters
+  const searchParams = req.nextUrl.searchParams;
+  const teamId = searchParams.get("teamId");
+
+  if (!teamId) {
+    return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+  }
+
   const supabase = createClient();
   const { data } = await supabase.auth.getUser();
   const user = data.user;
 
-  // Users who are not logged in can't fetch logo
+  // User who are not logged in can't do searches
   if (!user) {
     return NextResponse.json(
-      { error: "You must be logged in to complete this action" },
+      { error: "You must be logged in to complete this action." },
       { status: 401 }
     );
   }
 
   const userProfile = await fetchUser(user.id);
 
-  if (!userProfile?.company_logo) {
+  if (!userProfile.team_id || userProfile.team_id !== teamId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const team = await fetchTeam(teamId);
+
+  if (!team) {
+    return NextResponse.json({ error: "Team not found" }, { status: 404 });
+  }
+
+  if (!team.logo) {
     return NextResponse.json({ signedUrl: null });
   }
 
-  const { signedUrl, error } = await getSignedUrl(
-    "logos",
-    userProfile.company_logo
-  );
+  const { signedUrl, error } = await getSignedUrl("logos", team.logo);
 
   if (error) {
-    console.error("error", error);
+    console.error("error fetching team logo", error);
     return NextResponse.json({ error }, { status: 500 });
   }
 

@@ -124,7 +124,7 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
 
   return (
     <button
-      className="btn bg-primary/80 hover:bg-white hover:text-primary text-white rounded-md btn-block group"
+      className="btn bg-primary/80 hover:bg-white hover:text-primary text-white rounded-md w-full group"
       onClick={() => handlePayment()}
     >
       {isLoading ? (

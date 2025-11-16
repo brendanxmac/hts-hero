@@ -14,6 +14,7 @@ interface Props {
   onChange?: (value: string) => void;
   loading?: boolean;
   disabled?: boolean;
+  canSubmit?: boolean;
   showCharacterCount?: boolean;
 }
 
@@ -23,8 +24,9 @@ export default function TextAreaInput({
   defaultValue,
   onChange,
   onSubmit,
-  disabled,
+  canSubmit,
   loading,
+  disabled = false,
   showCharacterCount = true,
 }: Props) {
   const characterLimit = 500;
@@ -63,15 +65,17 @@ export default function TextAreaInput({
     >
       {label && <TertiaryText value={label} />}
       <div
-        className={
-          "w-full flex flex-col gap-2 bg-base-100 rounded-md px-4 py-3"
-        }
+        className={classNames(
+          "w-full flex flex-col gap-2 bg-base-100 rounded-md px-4 py-3",
+          disabled ? "bg-base-200" : "bg-base-100"
+        )}
       >
         <textarea
           ref={textareaRef}
           autoFocus
           placeholder={placeholder}
           rows={1}
+          disabled={disabled}
           value={localProductDescription}
           onChange={handleInputChange}
           onKeyDown={(e) => {
@@ -109,7 +113,7 @@ export default function TextAreaInput({
             )}
             {onSubmit && (
               <SquareIconButton
-                disabled={disabled || loading}
+                disabled={!canSubmit || loading}
                 icon={
                   loading ? (
                     <span className="loading loading-spinner loading-xs"></span>

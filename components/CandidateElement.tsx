@@ -44,6 +44,7 @@ interface Props {
   classificationLevel: number;
   setClassificationLevel: (level: number | undefined) => void;
   setWorkflowStep: (step: WorkflowStep) => void;
+  disabled: boolean;
 }
 
 export const CandidateElement = ({
@@ -51,6 +52,7 @@ export const CandidateElement = ({
   classificationLevel,
   setClassificationLevel,
   setWorkflowStep,
+  disabled = false,
 }: Props) => {
   const { user } = useUser();
   const { htsno, chapter, description, indent } = element;
@@ -99,13 +101,16 @@ export const CandidateElement = ({
   return (
     <div
       className={classNames(
-        "flex w-full rounded-md bg-base-100 p-4 gap-4",
-        isLevelSelection && "shadow-[inset_0_0_0_4px_oklch(var(--p))]",
+        "flex w-full rounded-md bg-base-100 p-4 gap-4 transition-all border-2",
+        isLevelSelection &&
+          "shadow-[inset_0_0_0_4px_oklch(var(--p))] border-transparent",
         !isLevelSelection &&
-          "hover:cursor-pointer hover:bg-base-300 border-2 border-neutral-content"
+          `${disabled ? "cursor-not-allowed" : "hover:cursor-pointer"} hover:bg-base-300 ${disabled && "shadow-[inset_0_0_0_1px_oklch(var(--bc))]"}`,
+        disabled &&
+          "bg-base-200/70 cursor-not-allowed border-base-300/60 hover:bg-base-200/70"
       )}
       onClick={() => {
-        if (isLevelSelection) {
+        if (isLevelSelection || disabled) {
           return;
         }
 
@@ -175,6 +180,7 @@ export const CandidateElement = ({
             <div className="flex gap-2">
               <SquareIconButton
                 transparent
+                disabled={disabled}
                 tooltip={`Chapter ${chapter} Notes`}
                 icon={<DocumentTextIcon className="h-4 w-4" />}
                 onClick={() =>
@@ -188,6 +194,7 @@ export const CandidateElement = ({
 
               <SquareIconButton
                 transparent
+                disabled={disabled}
                 icon={<MagnifyingGlassIcon className="h-4 w-4" />}
                 tooltip={`View Element`}
                 onClick={() => {
@@ -214,6 +221,7 @@ export const CandidateElement = ({
               {indent === "0" && (
                 <SquareIconButton
                   transparent
+                  disabled={disabled}
                   icon={<TrashIcon className="h-4 w-4" />}
                   tooltip={`Remove`}
                   onClick={() => {

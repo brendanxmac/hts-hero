@@ -5,14 +5,26 @@ export interface FileUploadDownloadResponse {
   error: string | null;
 }
 
-export const uploadLogo = async (
+export const uploadUserLogo = async (
   formData: FormData
 ): Promise<FileUploadDownloadResponse> => {
-  return apiClient.post("/supabase/upload-logo", formData);
+  return apiClient.post("/supabase/upload-user-logo", formData);
 };
 
-export const fetchLogo = async (): Promise<FileUploadDownloadResponse> => {
-  return apiClient.get("/supabase/fetch-logo");
+export const uploadTeamLogo = async (
+  formData: FormData
+): Promise<FileUploadDownloadResponse> => {
+  return apiClient.post("/supabase/upload-team-logo", formData);
+};
+
+export const fetchUserLogo = async (): Promise<FileUploadDownloadResponse> => {
+  return apiClient.get("/supabase/fetch-user-logo");
+};
+
+export const fetchTeamLogo = async (
+  teamId: string
+): Promise<FileUploadDownloadResponse> => {
+  return apiClient.get("/supabase/fetch-team-logo", { params: { teamId } });
 };
 
 export const fetchPDF = async (

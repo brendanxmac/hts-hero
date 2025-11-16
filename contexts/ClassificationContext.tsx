@@ -5,6 +5,7 @@ import {
   useContext,
   useState,
   useEffect,
+  useRef,
   ReactNode,
 } from "react";
 import { Classification, ClassificationProgression } from "../interfaces/hts";
@@ -51,20 +52,27 @@ export const ClassificationProvider = ({
 }) => {
   const [classificationId, setClassificationId] = useState<string | null>(null);
   const [classification, setClassification] = useState<Classification>(null);
+  const lastClassificationIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!classification || !classificationId) {
       return;
     }
 
+    // If the classificationId has changed, update the ref and skip save
+    if (lastClassificationIdRef.current !== classificationId) {
+      lastClassificationIdRef.current = classificationId;
+      return;
+    }
+
     const timeoutId = setTimeout(() => {
       saveClassification();
-    }, 500);
+    }, 300);
 
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [classification]);
+  }, [classification, classificationId]);
 
   const setArticleDescription = (description: string) => {
     setClassification((prev) => ({

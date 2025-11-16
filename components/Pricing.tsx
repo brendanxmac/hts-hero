@@ -109,8 +109,8 @@ const getPricingHeadline = () => {
 
 const Pricing = ({ customerType }: PricingProps) => {
   return (
-    <section className="bg-base-100 overflow-hidden" id="pricing">
-      <div className="py-16 px-8 max-w-7xl mx-auto">
+    <section className="bg-base-100 overflow-hidden">
+      <div className="py-16 px-8 max-w-7xl mx-auto" id="pricing">
         <div className="flex flex-col text-center w-full mb-12">
           <p className="font-medium text-gray-400 mb-8">Pricing</p>
           {getPricingHeadline()}

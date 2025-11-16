@@ -1,13 +1,18 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "../supabase/server";
+import { fetchUser } from "../../../libs/supabase/user";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     const supabase = createClient();
     const { data } = await supabase.auth.getUser();
     const user = data.user;
+
+    // Get teamId from request query params
+    const searchParams = req.nextUrl.searchParams;
+    const teamId = searchParams.get("teamId");
 
     // User who are not logged in can't do searches
     if (!user) {
@@ -17,11 +22,29 @@ export async function GET() {
       );
     }
 
-    const { data: importers, error } = await supabase
+    const userProfile = await fetchUser(user.id);
+    if (!userProfile) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const userIsOnTeam = userProfile.team_id === teamId;
+
+    if (teamId && !userIsOnTeam) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const query = supabase
       .from("importers")
       .select("*")
-      .eq("user_id", user.id)
       .order("created_at", { ascending: false });
+
+    if (teamId) {
+      query.eq("team_id", teamId);
+    } else {
+      query.eq("user_id", user.id);
+    }
+
+    const { data: importers, error } = await query;
 
     if (error) {
       console.error("Error fetching importers:", error);

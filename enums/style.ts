@@ -7,6 +7,8 @@ export enum Color {
   NEUTRAL_CONTENT = "neutral-content",
   WHITE = "white",
   BLACK = "black",
+  WARNING = "warning",
+  DARK_GRAY = "[#222222]",
 }
 
 export enum HorizontalAlignment {

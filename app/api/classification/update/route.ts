@@ -3,6 +3,7 @@ import { createClient } from "../../supabase/server";
 import {
   Classification,
   ClassificationRecord,
+  ClassificationStatus,
 } from "../../../../interfaces/hts";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +13,7 @@ interface UpdateClassificationDto {
   classification?: Classification;
   importer_id?: string;
   classifier_id?: string;
-  finalized?: boolean;
+  status?: ClassificationStatus;
 }
 
 export async function POST(req: NextRequest) {
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
       classification,
       importer_id,
       classifier_id,
-      finalized,
+      status,
     }: UpdateClassificationDto = await req.json();
 
     if (!id) {
@@ -50,7 +51,7 @@ export async function POST(req: NextRequest) {
     const updateData: Partial<
       Pick<
         ClassificationRecord,
-        "classification" | "importer_id" | "classifier_id" | "finalized"
+        "classification" | "importer_id" | "classifier_id" | "status"
       >
     > = {};
 
@@ -63,8 +64,8 @@ export async function POST(req: NextRequest) {
     if (classifier_id !== undefined) {
       updateData.classifier_id = classifier_id;
     }
-    if (finalized !== undefined) {
-      updateData.finalized = finalized;
+    if (status !== undefined) {
+      updateData.status = status;
     }
     // Don't proceed if no fields to update
     if (Object.keys(updateData).length === 0) {

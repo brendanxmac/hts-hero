@@ -1,12 +1,12 @@
 // Company names data
 const companies = [
+  "Amazon",
   "Kuehne + Nagel",
   "DSV",
   "Border Brokers",
   "Harren Group",
   "JORI Logistics",
   "Ingersoll Rand",
-  "GCB USA",
   "True North Brokerage",
 ];
 
@@ -22,6 +22,11 @@ const CompanyName = ({ company }: { company: (typeof companies)[0] }) => (
 // Individual testimonials with profile images
 const individualTestimonials = [
   {
+    role: "Vice President, LCB",
+    company: "DEX Global",
+    quote: "I don't know how you do it, but I am glad I have my HTS Hero!",
+  },
+  {
     role: "Director of Operations & Compliance, LCB",
     company: "Harren Group",
     quote:
@@ -33,11 +38,6 @@ const individualTestimonials = [
     quote:
       "Been loving using htshero. Excellent tool and fun watching you develop this.",
   },
-  // {
-  //   role: "Director of Customs Operations",
-  //   company: "Nicole",
-  //   quote: "This is saving our team so much time! thank you",
-  // },
 ];
 
 // Individual testimonial component

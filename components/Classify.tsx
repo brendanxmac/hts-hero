@@ -15,19 +15,28 @@ import Modal from "./Modal";
 import ConversionPricing from "./ConversionPricing";
 import { useClassification } from "../contexts/ClassificationContext";
 import { classNames } from "../utilities/style";
+import { fetchUser, UserProfile } from "../libs/supabase/user";
+import { useUser } from "../contexts/UserContext";
+import { useClassifications } from "../contexts/ClassificationsContext";
 
 interface Props {
   setPage: (page: ClassifyPage) => void;
 }
 
 export const Classify = ({ setPage }: Props) => {
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [fetchingOptionsOrSuggestions, setFetchingOptionsOrSuggestions] =
     useState(false);
   const [showPricing, setShowPricing] = useState(false);
   const { activeTab } = useClassifyTab();
   const { isFetching } = useHts();
-  const { classification, setClassification, setClassificationId } =
-    useClassification();
+  const {
+    classification,
+    setClassification,
+    setClassificationId,
+    classificationId,
+  } = useClassification();
+  const { classifications } = useClassifications();
   const [classificationLevel, setClassificationLevel] = useState<
     number | undefined
   >(() => {
@@ -36,6 +45,10 @@ export const Classify = ({ setPage }: Props) => {
     }
     return undefined;
   });
+
+  const classificationRecord = classifications.find(
+    (c) => c.id === classificationId
+  );
 
   const [workflowStep, setWorkflowStep] = useState(() => {
     if (classification?.isComplete) {
@@ -47,6 +60,19 @@ export const Classify = ({ setPage }: Props) => {
     return WorkflowStep.DESCRIPTION;
   });
 
+  const { user } = useUser();
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      const userProfile = await fetchUser(user.id);
+      setUserProfile(userProfile || null);
+    };
+
+    if (user) {
+      fetchUserProfile();
+    }
+  }, [user]);
+
   useEffect(() => {
     return () => {
       setClassification(null);
@@ -54,7 +80,7 @@ export const Classify = ({ setPage }: Props) => {
     };
   }, []);
 
-  if (isFetching) {
+  if (isFetching || !userProfile) {
     return (
       <div className="h-full w-full flex items-center justify-center">
         <LoadingIndicator />
@@ -99,6 +125,7 @@ export const Classify = ({ setPage }: Props) => {
                 setWorkflowStep={setWorkflowStep}
                 setClassificationLevel={setClassificationLevel}
                 setShowPricing={setShowPricing}
+                classificationRecord={classificationRecord}
               />
             )}
             {workflowStep === WorkflowStep.CLASSIFICATION && (
@@ -110,10 +137,11 @@ export const Classify = ({ setPage }: Props) => {
                 setFetchingOptionsOrSuggestions={
                   setFetchingOptionsOrSuggestions
                 }
+                classificationRecord={classificationRecord}
               />
             )}
             {workflowStep === WorkflowStep.RESULT && (
-              <ClassificationResultPage />
+              <ClassificationResultPage userProfile={userProfile} />
             )}
           </>
         )}
