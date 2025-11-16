@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "../../supabase/server";
 import { Importer } from "../../../../interfaces/hts";
-import { fetchUser } from "../../../../libs/supabase/user";
+import { fetchUser, UserRole } from "../../../../libs/supabase/user";
 
 export const dynamic = "force-dynamic";
 
@@ -42,7 +42,8 @@ export async function POST(req: NextRequest) {
     }
 
     // If user is not a team admin, then they cannot add an importer
-    const userIsTeamAdmin = userProfile.team_id === teamId && userProfile.admin;
+    const userIsTeamAdmin =
+      userProfile.team_id === teamId && userProfile.role === UserRole.ADMIN;
 
     const newImporter: Partial<Importer> = {
       name: name,

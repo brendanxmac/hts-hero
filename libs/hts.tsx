@@ -19,7 +19,6 @@ import {
   SectionAndChapterDetails,
   SelectionWithReason,
   Importer,
-  Classifier,
   ClassificationRecord,
 } from "../interfaces/hts";
 import {

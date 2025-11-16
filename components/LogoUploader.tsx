@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { fetchUser, UserProfile } from "../libs/supabase/user";
+import { fetchUser, UserProfile, UserRole } from "../libs/supabase/user";
 import { TertiaryText } from "./TertiaryText";
 import { SecondaryLabel } from "./SecondaryLabel";
 import {
@@ -14,6 +14,7 @@ import {
 import { LoadingIndicator } from "./LoadingIndicator";
 import Image from "next/image";
 import { fetchTeam } from "../libs/supabase/teams";
+import toast from "react-hot-toast";
 
 interface Props {
   user: UserProfile;
@@ -27,7 +28,8 @@ export default function LogoUploader({ user, teamId }: Props) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
   const isOnTeam = !!user.team_id;
-  const isTeamAdmin = isOnTeam && user.team_id === teamId && !!user.admin;
+  const isTeamAdmin =
+    isOnTeam && user.team_id === teamId && user.role === UserRole.ADMIN;
 
   useEffect(() => {
     const fetchLogoUrl = async () => {
@@ -70,10 +72,13 @@ export default function LogoUploader({ user, teamId }: Props) {
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
       const file = acceptedFiles[0];
-      if (!file) return;
+      if (!file) {
+        toast.error("Only PNG and JPEG files are allowed");
+        return;
+      }
 
       if (file.size > 4 * 1024 * 1024) {
-        setError("File too large (max 4MB)");
+        toast.error("File too large (max 4MB)");
         return;
       }
 

@@ -1,12 +1,19 @@
 import { createSupabaseClient } from "./client";
 
+export enum UserRole {
+  IMPORTER = "importer",
+  USER = "user",
+  ADMIN = "admin",
+  SUPER_ADMIN = "superAdmin",
+}
+
 export interface UserProfile {
   id: string;
   name?: string;
   email: string;
   image?: string;
   team_id?: string;
-  admin?: boolean;
+  role: UserRole;
   stripe_customer_id?: string;
   company_logo?: string;
   company_disclaimer?: string;

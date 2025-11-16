@@ -3,9 +3,8 @@ import { useClassification } from "../contexts/ClassificationContext";
 import { downloadClassificationReport } from "../libs/hts";
 import { PDFProps } from "../interfaces/ui";
 import PDF from "./PDF";
-import { ArrowDownTrayIcon, BeakerIcon } from "@heroicons/react/16/solid";
-import { useUser } from "../contexts/UserContext";
-import { fetchUser, UserProfile } from "../libs/supabase/user";
+import { ArrowDownTrayIcon } from "@heroicons/react/16/solid";
+import { UserProfile, UserRole } from "../libs/supabase/user";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { Element } from "./Element";
 import {
@@ -38,8 +37,9 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
     (c) => c.id === classificationId
   );
 
-  const canUpdateStatus =
-    userProfile.admin || userProfile.id === classificationRecord?.user_id;
+  const canUpdateDetails =
+    userProfile.role === UserRole.ADMIN ||
+    userProfile.id === classificationRecord?.user_id;
 
   // State for classifiers and importers
   const [importers, setImporters] = useState<Importer[]>([]);
@@ -54,7 +54,7 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
       try {
         const [fetchedImporters] = await Promise.all([
           userProfile.team_id
-            ? fetchImportersForTeam(classificationRecord.team_id)
+            ? fetchImportersForTeam(userProfile.team_id)
             : fetchImportersForUser(),
           refreshClassifications(),
         ]);
@@ -118,7 +118,7 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
                   <select
                     className="select select-sm"
                     value={classificationRecord.status}
-                    disabled={updatingClassificationStatus || !canUpdateStatus}
+                    disabled={updatingClassificationStatus || !canUpdateDetails}
                     onChange={async (e) => {
                       const newStatus = e.target.value as ClassificationStatus;
                       setUpdatingClassificationStatus(true);
@@ -149,6 +149,8 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
                 className="btn btn-xs btn-primary"
                 disabled={loading || isLoadingImporters}
                 onClick={async () => {
+                  console.log("importers", importers);
+                  console.log("selectedImporterId", selectedImporterId);
                   setLoading(true);
                   const importer = importers.find(
                     (i) => i.id === selectedImporterId
@@ -195,7 +197,7 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
             <select
               className="select w-full"
               value={selectedImporterId}
-              disabled={isLoadingImporters}
+              disabled={isLoadingImporters || !canUpdateDetails}
               onChange={(e) => {
                 setSelectedImporterId(e.target.value);
                 updateClassification(
@@ -225,6 +227,7 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
                 type="text"
                 placeholder="Add new importer"
                 value={newImporter}
+                disabled={!canUpdateDetails}
                 className="input input-sm input-bordered flex-1"
                 onChange={(e) => setNewImporter(e.target.value)}
                 onKeyDown={(e) => {
@@ -236,7 +239,9 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
               <button
                 className="btn btn-primary btn-sm"
                 onClick={handleAddImporter}
-                disabled={isCreatingImporter || !newImporter.trim()}
+                disabled={
+                  isCreatingImporter || !newImporter.trim() || !canUpdateDetails
+                }
               >
                 {isCreatingImporter ? (
                   <span className="loading loading-spinner loading-xs"></span>
@@ -250,11 +255,12 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
 
         {/* NOTES */}
         <div className="w-full flex flex-col gap-2">
-          <SecondaryLabel value="Notes" />
+          <SecondaryLabel value="Basis for Classification" />
           <textarea
             className="min-h-36 textarea textarea-bordered text-white placeholder:text-white/20 text-base w-full"
             placeholder="Add any notes about your classification here. They will be included in your classification advisory."
             value={classification.notes || ""}
+            disabled={!canUpdateDetails}
             onChange={(e) => {
               setClassification({
                 ...classification,

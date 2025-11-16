@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { Color } from "../enums/style";
-import { UserProfile } from "../libs/supabase/user";
+import { UserProfile, UserRole } from "../libs/supabase/user";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { Importer } from "../interfaces/hts";
 import {
-  fetchImportersForUser,
   createImporter,
   fetchImportersForTeam,
 } from "../libs/supabase/importers";
@@ -34,7 +33,7 @@ export const TeamSettings = ({ user, team }: Props) => {
   const [importers, setImporters] = useState<Importer[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [isCreatingImporter, setIsCreatingImporter] = useState(false);
-  const isTeamAdmin = user.team_id === team.id && !!user.admin;
+  const isTeamAdmin = user.team_id === team.id && user.role === UserRole.ADMIN;
 
   // Update local state when user prop changes
   useEffect(() => {

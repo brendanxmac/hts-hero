@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import { createClient, getSignedUrl } from "../server";
-import { fetchUser, updateUserProfile } from "../../../../libs/supabase/user";
+import {
+  fetchUser,
+  updateUserProfile,
+  UserRole,
+} from "../../../../libs/supabase/user";
 import { v4 as uuidv4 } from "uuid";
-import { updateTeamProfile } from "../../../../libs/supabase/teams";
+import { fetchTeam, updateTeamProfile } from "../../../../libs/supabase/teams";
 
 // Specifies that this API route should run on Edge Runtime
 // This means the API route will run on Edge servers (CDN nodes) closer to users
@@ -39,13 +43,16 @@ export async function POST(req: Request) {
 
   // If the user making the request does not belong to the team passed
   // or is not an admin, reject the request with 401
-  const userProfile = await fetchUser(user.id);
+  const [userProfile, team] = await Promise.all([
+    fetchUser(user.id),
+    fetchTeam(teamId),
+  ]);
 
   if (!userProfile) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  if (userProfile.team_id !== teamId && !userProfile.admin) {
+  if (userProfile.team_id !== teamId && userProfile.role !== UserRole.ADMIN) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -73,10 +80,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: uploadError.message }, { status: 500 });
   }
 
-  if (userProfile?.company_logo) {
+  if (team && team.logo) {
     await supabase.storage
       .from("logos")
-      .remove([userProfile.company_logo])
+      .remove([team.logo])
       .catch((error) => {
         console.log("error removing old logo", error);
       });
