@@ -95,24 +95,7 @@ const getPricingHeadline = () => {
 
 const TariffImpactPricing = () => {
   const [currentPlan, setCurrentPlan] = useState<PricingPlan | null>(null);
-  const [numberOfImports, setNumberOfImports] = useState(30);
   const { user } = useUser();
-
-  const planDescriptions = {
-    starter:
-      "Crafted for small importers on a budget who want to know if their imports are affected by new tariffs.",
-    standard:
-      "Perfect for small businesses managing up to 30 imports who need to know when their imports are affected by new tariffs so they can protect their bottom-line.",
-    pro: "Ideal for importers & customs brokers who want their imports tariff optimized & monitored 24/7.",
-  };
-
-  const getRecommendedPlan = () => {
-    if (numberOfImports <= 5)
-      return { name: "Starter", description: planDescriptions.starter };
-    if (numberOfImports <= 29)
-      return { name: "Standard", description: planDescriptions.standard };
-    return { name: "Pro", description: planDescriptions.pro };
-  };
 
   useEffect(() => {
     // Fetch the users current Tariff Impact Plan
@@ -262,88 +245,6 @@ const TariffImpactPricing = () => {
             Lets Talk!
           </a>
         </div>
-
-        {/* Interactive Plan Selection Guide */}
-        {/* <div className="w-full max-w-7xl mx-auto mt-12 bg-base-200">
-          <div className="border border-base-content/20 rounded-xl bg-gradient-to-br from-base-200/50 to-base-300/50 backdrop-blur-sm p-8">
-            <div className="text-center mb-8">
-              <h3 className="text-lg sm:text-2xl font-bold text-white mb-2">
-                Find Your Perfect Plan
-              </h3>
-              <p className="text-base-content/70 text-sm sm:text-base">
-                Tell us about your imports and we&apos;ll recommend the best
-                plan for your needs
-              </p>
-            </div>
-
-            <div className="flex flex-col items-center gap-6">
-              <div className="w-full max-w-2xl">
-                <div className="flex items-center justify-between gap-4 mb-4">
-                  <h4 className="text-sm sm:text-xl font-medium text-white">
-                    How many imports do you manage?
-                  </h4>
-                  <div className="bg-primary/20 border border-primary/50 rounded-lg px-2 sm:px-4 py-1 flex items-center">
-                    <span className="text-primary font-bold text:sm sm:text-xl">
-                      {numberOfImports > 29
-                        ? `${numberOfImports}+`
-                        : numberOfImports}
-                    </span>
-                    <span className="text-white/70 text-sm ml-1">
-                      {numberOfImports === 1 ? "import" : "imports"}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="relative">
-                  <input
-                    type="range"
-                    min="1"
-                    max="100"
-                    value={numberOfImports}
-                    onChange={(e) => setNumberOfImports(Number(e.target.value))}
-                    className="range range-primary w-full range-xs sm:range-sm"
-                  />
-                  <div className="hidden sm:flex justify-between text-xs text-base-content/50 mt-1">
-                    <span>Solo Importer</span>
-                    <span>Broker / Importer</span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span>Big Importer / Broker</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="w-full max-w-2xl">
-                <div className="bg-primary/10 border border-primary/30 rounded-lg p-6">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
-                      <h5 className="text-lg font-semibold text-white">
-                        Recommended Plan:
-                      </h5>
-                    </div>
-                    <div className="badge badge-primary badge-lg text-black font-semibold">
-                      {getRecommendedPlan().name}
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <p className="text-sm sm:text-base text-base-content leading-relaxed">
-                      {getRecommendedPlan().description}
-                    </p>
-                  </div>
-                </div>
-                <div className="pt-4">
-                  <p className="text-xs sm:text-sm text-base-content/80 text-center">
-                    💡 You can always upgrade or downgrade your plan as your
-                    needs change
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> */}
       </div>
     </section>
   );

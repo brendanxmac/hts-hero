@@ -16,10 +16,7 @@ import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 import { ClassifyPage } from "../../enums/classify";
 import { ArrowLeftIcon } from "@heroicons/react/16/solid";
 import toast from "react-hot-toast";
-import {
-  ClassificationRecord,
-  ClassificationStatus,
-} from "../../interfaces/hts";
+import { ClassificationRecord } from "../../interfaces/hts";
 import { useClassifications } from "../../contexts/ClassificationsContext";
 
 interface Props {

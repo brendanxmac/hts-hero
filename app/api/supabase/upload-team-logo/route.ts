@@ -1,10 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient, getSignedUrl } from "../server";
-import {
-  fetchUser,
-  updateUserProfile,
-  UserRole,
-} from "../../../../libs/supabase/user";
+import { fetchUser, UserRole } from "../../../../libs/supabase/user";
 import { v4 as uuidv4 } from "uuid";
 import { fetchTeam, updateTeamProfile } from "../../../../libs/supabase/teams";
 

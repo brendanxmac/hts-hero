@@ -10,9 +10,6 @@ import { HtsSectionsProvider } from "../contexts/HtsSectionsContext";
 import { ClassificationProvider } from "../contexts/ClassificationContext";
 import { HtsProvider } from "../contexts/HtsContext";
 import { UserProvider } from "../contexts/UserContext";
-import { createClient } from "./api/supabase/server";
-import { AuthenticatedHeader } from "../components/AuthenticatedHeader";
-import UnauthenticatedHeader from "../components/UnauthenticatedHeader";
 
 const font = Inter({ subsets: ["latin"] });
 
