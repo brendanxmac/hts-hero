@@ -5,10 +5,6 @@ import { PrimaryLabel } from "./PrimaryLabel";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { Importer } from "../interfaces/hts";
 import {
-  fetchClassifiersForUser,
-  createClassifier,
-} from "../libs/supabase/classifiers";
-import {
   fetchImportersForUser,
   createImporter,
 } from "../libs/supabase/importers";
@@ -38,7 +34,6 @@ export const UserSettings = ({ user, team }: Props) => {
   const [newImporter, setNewImporter] = useState("");
   const [importers, setImporters] = useState<Importer[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
-  const [isCreatingClassifier, setIsCreatingClassifier] = useState(false);
   const [isCreatingImporter, setIsCreatingImporter] = useState(false);
 
   // Update local state when user prop changes

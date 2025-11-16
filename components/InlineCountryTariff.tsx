@@ -16,7 +16,6 @@ import {
 } from "../tariffs/tariffs";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { TradePrograms } from "../public/trade-programs";
-import { TextCopyButton } from "./Copy";
 import { copyToClipboard } from "../utilities/data";
 import { TariffSet } from "../interfaces/tariffs";
 

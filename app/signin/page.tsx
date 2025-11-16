@@ -121,12 +121,6 @@ function LoginContent() {
     setIsLoading(true);
 
     try {
-      const redirectParam = redirectTo
-        ? `?redirect=${encodeURIComponent(redirectTo)}`
-        : "";
-      const redirectURL =
-        window.location.origin + "/api/auth/callback" + redirectParam;
-
       if (isSignUp) {
         const signUpRedirect =
           window.location.origin +
@@ -335,7 +329,7 @@ function LoginContent() {
               <div className="flex gap-2 w-full">
                 <button
                   className="grow btn btn-outline"
-                  onClick={(e) => {
+                  onClick={() => {
                     setShowOtpVerification(false);
                     setShowOtpForm(true);
                     setOtpCode("");

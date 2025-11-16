@@ -43,8 +43,6 @@ import TariffImpactCodesInput from "../../../components/TariffImpactCodesInput";
 import { fetchUser } from "../../../libs/supabase/user";
 import TariffImpactPricing from "../../../components/TariffImpactPricing";
 import apiClient from "../../../libs/api";
-import { CountrySelection } from "../../../components/CountrySelection";
-import { Countries, Country } from "../../../constants/countries";
 
 export default function Home() {
   const CHARACTER_LIMIT = 3000;
