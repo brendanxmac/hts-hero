@@ -147,6 +147,9 @@ const features: {
         point: "Review & approve your teams classifications",
       },
       {
+        point: "Search by description, status, importer, etc...",
+      },
+      {
         point: "Quicker Classifications, Less Mistakes",
         isKey: true,
       },

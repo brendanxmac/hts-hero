@@ -15,10 +15,8 @@ const ClassifierHero = () => {
               </span>
             </h1>
             <p className="text-sm sm:text-lg text-neutral-300 leading-relaxed">
-              Turn product descriptions into classification reports, insanely
-              fast
-              {/* Go from product description to classification &
-              client-ready report incredibly fast */}
+              Turn product descriptions into polished classification reports,
+              insanely fast
             </p>
           </div>
 

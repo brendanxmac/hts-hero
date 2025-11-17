@@ -108,8 +108,8 @@ export default function Home() {
             <div className="relative rounded-2xl border border-white/10 bg-black/30 shadow-xl">
               <iframe
                 className="w-full aspect-video rounded-lg"
-                src="https://www.youtube.com/embed/HSo8h_DCEZ0?si=9kTFpfYuyg00yxSC"
-                title="YouTube video player"
+                src="https://www.youtube.com/embed/izlXZvC-O7I?si=o6G0z0ZDhEbvIMqg"
+                title="Classify Demo"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"

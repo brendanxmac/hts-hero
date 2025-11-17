@@ -6,7 +6,6 @@ import { AboutPage } from "../enums/classify";
 import { StripePaymentMode } from "../libs/stripe";
 import { useState } from "react";
 import { ShieldCheckIcon } from "@heroicons/react/24/solid";
-import Link from "next/link";
 
 // <Pricing/> displays the pricing plans for your app
 // It's your Stripe config in config.js.stripe.plans[] that will be used to display the plans
@@ -155,23 +154,23 @@ const Pricing = ({ customerType }: PricingProps) => {
                 )}
               >
                 {plan.isFeatured && (
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
                     <span
                       className={`badge text-xs text-black font-semibold border-0 bg-primary`}
                     >
-                      Popular
+                      Best Value
                     </span>
                   </div>
                 )}
 
                 {plan.isFeatured && (
                   <div
-                    className={`absolute -inset-[1px] rounded-[9px] bg-primary z-10`}
+                    className={`absolute -inset-[1px] rounded-[9px] bg-primary`}
                   ></div>
                 )}
 
                 <div
-                  className={`relative flex flex-col h-full gap-4 lg:gap-6 z-10 bg-base-300 p-6 rounded-lg ${
+                  className={`relative flex flex-col h-full gap-4 lg:gap-6 bg-base-300 p-6 rounded-lg ${
                     plan.isCompetitor && "bg-red-500/20"
                   }`}
                 >
@@ -300,10 +299,10 @@ const Pricing = ({ customerType }: PricingProps) => {
           })}
         </div>
 
-        <div className="mt-10 flex flex-col gap-2 justify-center text-center items-center max-w-2xl mx-auto">
-          <div className="flex gap-1 items-center">
+        <div className="mt-10 flex flex-col gap-2 justify-center text-center items-center bg-base-100 p-4 max-w-2xl mx-auto rounded-lg border-2 border-base-content/20">
+          <div className="flex gap-2 items-center">
             <ShieldCheckIcon className="w-6 h-6 text-yellow-400" />
-            <h3 className="text-xl font-extrabold text-yellow-400">
+            <h3 className="text-lg sm:text-2xl font-bold text-yellow-400">
               Quicker Classifications Guarantee
             </h3>
           </div>
@@ -311,10 +310,10 @@ const Pricing = ({ customerType }: PricingProps) => {
             We know trying a new tool can feel risky, so here&apos;s our
             promise:
           </p> */}
-          <p className="text-white font-bold">
-            If you do 20 classifications and a free onboarding session within 30
-            days of buying and are still not happy with your purchase,
-            we&apos;ll give you a full refund!
+          <p className="text-white font-medium text-sm sm:text-lg">
+            If you do 20 classifications and an onboarding session and are
+            unsatisfied with your purchase after 30 days, we&apos;ll give you a
+            full refund!
           </p>
         </div>
       </div>
