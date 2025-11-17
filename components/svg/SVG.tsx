@@ -22,12 +22,12 @@ export default function SVG({
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox={viewBox}
-      fill={"none"}
-      strokeWidth="1.5"
-      stroke={color ? color : "currentColor"}
+      fill={fill ? color : "none"}
+      strokeWidth="1"
+      stroke={color ? color : "none"}
       className={`h-${size || 5} w-${
         size || 5
-      } inline shrink-0 opacity-80 text-${color || "white"}`}
+      } inline shrink-0 opacity-80 ${!fill && `text-[${color}]`}`}
     >
       {path}
     </svg>

@@ -69,6 +69,7 @@ export type Theme = "black" | "light" | "dark" | "";
 
 export enum PricingPlan {
   CLASSIFY_PRO = "Classify Pro",
+  CLASSIFY_TEAM = "Classify for Teams",
   TARIFF_IMPACT_STARTER = "Tariff Impact Starter",
   TARIFF_IMPACT_STANDARD = "Tariff Impact Standard",
   TARIFF_IMPACT_PRO = "Tariff Impact Pro",
@@ -89,9 +90,10 @@ export interface PricingPlanI {
   name: string;
   planIdentifier: PricingPlan;
   description?: string;
-  price: number;
+  prices: number[];
   // promotionCode?: string;
-  priceAnchor?: number;
+  priceAnchors?: number[];
+  priceTiers?: string[];
   features: PricingFeatureI[];
 }
 
