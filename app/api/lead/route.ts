@@ -14,10 +14,7 @@ export async function POST(req: NextRequest) {
     const { email, name, notes }: DemoRequestDto = await req.json();
 
     if (!email || !name) {
-      return NextResponse.json(
-        { error: "Missing required fields: email and name" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Bad Request" }, { status: 400 });
     }
 
     // Validate email format
