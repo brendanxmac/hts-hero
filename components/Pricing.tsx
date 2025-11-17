@@ -4,6 +4,8 @@ import { PricingFeatureI } from "../types";
 import ButtonCheckout from "./ButtonCheckout";
 import { AboutPage } from "../enums/classify";
 import { StripePaymentMode } from "../libs/stripe";
+import { useState } from "react";
+import { ShieldCheckIcon } from "@heroicons/react/24/solid";
 
 // <Pricing/> displays the pricing plans for your app
 // It's your Stripe config in config.js.stripe.plans[] that will be used to display the plans
@@ -92,137 +94,179 @@ const getPricingHeadline = () => {
   return (
     <div className="flex flex-col gap-4 lg:gap-6">
       <div className="flex flex-col gap-2">
-        <h2 className="text-white font-black text-3xl md:text-4xl lg:text-5xl max-w-4xl mx-auto tracking-relaxed">
-          <span className="text-secondary">Quick</span> Classifications,
+        <h2 className="text-white font-black text-3xl md:text-4xl lg:text-5xl max-w-4xl mx-auto leading-relaxed md:[&>span]:inline-block md:[&>span]:mb-2">
+          <span className="text-yellow-400">Quicker</span> Classifications{", "}
+          <span className="text-yellow-400">Effortless</span> Tariffs{", "}
+          <span className="text-yellow-400">Happier</span> Clients
+        </h2>
+        {/* <h2 className="text-white font-black text-3xl md:text-4xl lg:text-5xl max-w-4xl mx-auto tracking-relaxed">
+          <span className="text-yellow-400">Effortless</span> Tariffs
         </h2>
         <h2 className="text-white font-black text-3xl md:text-4xl lg:text-5xl max-w-4xl mx-auto tracking-relaxed">
-          <span className="text-accent">Effortless</span> Tariffs,
-        </h2>
-        <h2 className="text-white font-black text-3xl md:text-4xl lg:text-5xl max-w-4xl mx-auto tracking-relaxed">
-          <span className="text-primary">Happier</span> Clients
-        </h2>
+          <span className="text-yellow-400">Happier</span> Clients
+        </h2> */}
       </div>
-      <h3 className="lg:text-lg">Less than $3 per day</h3>
+      {/* <h3 className="lg:text-lg">For less than $3 per day!</h3> */}
     </div>
   );
 };
 
 const Pricing = ({ customerType }: PricingProps) => {
+  // Track the selected price tier index for each plan
+  const [selectedTierIndices, setSelectedTierIndices] = useState<{
+    [key: number]: number;
+  }>({});
+
+  const handleTierChange = (planIndex: number, tierIndex: number) => {
+    setSelectedTierIndices((prev) => ({
+      ...prev,
+      [planIndex]: tierIndex,
+    }));
+  };
+
   return (
     <section className="bg-base-100 overflow-hidden">
       <div className="py-16 px-8 max-w-7xl mx-auto" id="pricing">
-        <div className="flex flex-col text-center w-full mb-12">
+        <div className="flex flex-col text-center w-full">
           <p className="font-medium text-gray-400 mb-8">Pricing</p>
           {getPricingHeadline()}
         </div>
+        <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8 text-white mt-10">
+          {getPricingPlans(customerType).map((plan, index) => {
+            const defaultTierIndex = plan.prices.length - 1;
+            const currentTierIndex =
+              selectedTierIndices[index] ?? defaultTierIndex;
+            const currentPrice = plan.prices[currentTierIndex];
+            const currentPriceAnchor = plan.priceAnchors?.[currentTierIndex];
+            const hasMultipleTiers =
+              plan.prices.length > 1 &&
+              plan.priceTiers &&
+              plan.priceTiers.length > 1;
 
-        <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8 text-white">
-          {getPricingPlans(customerType).map((plan, index) => (
-            <div
-              key={index}
-              className={classNames(
-                "relative w-full max-w-lg",
-                plan.isFeatured && "border-2 border-primary rounded-lg",
-                !plan.isFeatured && "border-2 border-base-content/20 rounded-lg"
-              )}
-            >
-              {plan.isFeatured && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
-                  <span
-                    className={`badge text-xs text-black font-semibold border-0 bg-primary`}
-                  >
-                    Limited Time Offer
-                  </span>
-                </div>
-              )}
-
-              {plan.isFeatured && (
-                <div
-                  className={`absolute -inset-[1px] rounded-[9px] bg-primary z-10`}
-                ></div>
-              )}
-
+            return (
               <div
-                className={`relative flex flex-col h-full gap-4 lg:gap-8 z-10 bg-base-300 p-8 rounded-lg ${
-                  plan.isCompetitor && "bg-red-500/20"
-                }`}
+                key={index}
+                className={classNames(
+                  "relative w-full max-w-lg",
+                  plan.isFeatured && "border-2 border-primary rounded-lg",
+                  !plan.isFeatured &&
+                    "border-2 border-base-content/20 rounded-lg"
+                )}
               >
-                <div className="flex justify-between items-center gap-4">
-                  <div className="flex flex-col">
-                    <p className="text-2xl font-bold">{plan.planIdentifier}</p>
-
-                    {plan.description && (
-                      <p className="text-base-content/80">{plan.description}</p>
-                    )}
+                {plan.isFeatured && (
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+                    <span
+                      className={`badge text-xs text-black font-semibold border-0 bg-primary`}
+                    >
+                      Best Value
+                    </span>
                   </div>
-                </div>
-                <div className="flex gap-2 items-center">
-                  {plan.priceAnchor && (
-                    <div className="flex flex-col justify-end mb-[4px] text-lg ">
-                      <p className="text-xs text-base-content/40">USD</p>
-                      <p className="relative">
-                        <span className="absolute bg-neutral-500 h-[2px] inset-x-0 top-[45%]"></span>
-                        <span className="text-base-content/50 text-xl font-bold">
-                          ${plan.priceAnchor}
-                        </span>
+                )}
+
+                {plan.isFeatured && (
+                  <div
+                    className={`absolute -inset-[1px] rounded-[9px] bg-primary`}
+                  ></div>
+                )}
+
+                <div
+                  className={`relative flex flex-col h-full gap-4 lg:gap-6 bg-base-300 p-6 rounded-lg ${
+                    plan.isCompetitor && "bg-red-500/20"
+                  }`}
+                >
+                  <div className="flex justify-between items-center gap-4">
+                    <div className="flex flex-col">
+                      <p className="text-2xl font-bold">
+                        {plan.planIdentifier}
                       </p>
+
+                      {plan.description && (
+                        <p className="text-base-content/80">
+                          {plan.description}
+                        </p>
+                      )}
                     </div>
-                  )}
-                  {plan.price === 0 ? (
-                    <p className={`text-4xl tracking-tight font-extrabold`}>
-                      Free
-                    </p>
-                  ) : (
-                    <div className="flex items-end">
-                      <p
-                        className={`${plan.isCompetitor ? "text-red-600" : "text-white"} text-5xl text-base-content tracking-tight font-extrabold`}
-                      >
-                        ${plan.price}
-                      </p>
-                      {plan.mode === StripePaymentMode.SUBSCRIPTION && (
-                        <div className="flex flex-col">
-                          {/* <p className="pl-2 text-sm text-base-content/80 font-semibold">
-                            / month / user
-                          </p> */}
-                          <p className="pl-1 pb-1 text-sm text-base-content/80 font-semibold">
-                            / user / month
+                  </div>
+                  <div className="flex justify-between items-end gap-4">
+                    <div className="flex gap-2 items-center">
+                      {currentPriceAnchor && (
+                        <div className="flex flex-col justify-end mb-[4px] text-lg ">
+                          <p className="text-xs text-base-content/40">USD</p>
+                          <p className="relative">
+                            <span className="absolute bg-neutral-500 h-[2px] inset-x-0 top-[45%]"></span>
+                            <span className="text-base-content/50 text-xl font-bold">
+                              ${currentPriceAnchor}
+                            </span>
                           </p>
                         </div>
                       )}
-                      {/* </div> */}
-                    </div>
-                  )}
-                </div>
-                {plan.features && (
-                  <ul className="space-y-4 leading-relaxed text-base flex-1">
-                    {plan.features.map((feature, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        {getFeatureIcon(feature)}
-                        <div className="flex flex-col -mt-1">
-                          <div
-                            className={classNames(
-                              "flex items-center gap-2 w-full",
-                              feature.comingSoon && "mb-1"
-                            )}
+                      {currentPrice === 0 ? (
+                        <p className={`text-4xl tracking-tight font-extrabold`}>
+                          Free
+                        </p>
+                      ) : (
+                        <div className="flex items-end">
+                          <p
+                            className={`${plan.isCompetitor ? "text-red-600" : "text-white"} text-5xl text-base-content tracking-tight font-extrabold`}
                           >
-                            <p>{feature.name} </p>
-                            {(feature.comingSoon || feature.roadmap) && (
-                              <span className="bg-neutral-700 px-2 py-1 rounded-md text-stone-300 font-semibold text-xs">
-                                {getFeatureSupportingLabel(feature)}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-xs text-gray-400">
-                            {feature.details}
+                            ${currentPrice}
                           </p>
+                          {plan.mode === StripePaymentMode.SUBSCRIPTION && (
+                            <div className="flex flex-col">
+                              <p className="pl-1 pb-1 text-sm text-base-content/80 font-semibold">
+                                / user / month
+                              </p>
+                            </div>
+                          )}
                         </div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                {!plan.isCompetitor && (
-                  <div className="space-y-2">
-                    {/* {plan.planIdentifier === PricingPlan.CLASSIFY_TRIAL ? (
+                      )}
+                    </div>
+                    {hasMultipleTiers && (
+                      <select
+                        value={currentTierIndex}
+                        onChange={(e) =>
+                          handleTierChange(index, parseInt(e.target.value))
+                        }
+                        className="select select-bordered select-sm bg-base-100 text-white font-semibold"
+                      >
+                        {plan.priceTiers!.map((tier, i) => (
+                          <option key={i} value={i}>
+                            {tier}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+                  {plan.features && (
+                    <ul className="space-y-4 leading-relaxed text-base flex-1">
+                      {plan.features.map((feature, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          {getFeatureIcon(feature)}
+                          <div className="flex flex-col -mt-1">
+                            <div
+                              className={classNames(
+                                "flex items-center gap-2 w-full",
+                                feature.comingSoon && "mb-1"
+                              )}
+                            >
+                              <p>{feature.name} </p>
+                              {(feature.comingSoon || feature.roadmap) && (
+                                <span className="bg-neutral-700 px-2 py-1 rounded-md text-stone-300 font-semibold text-xs">
+                                  {getFeatureSupportingLabel(feature)}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-gray-400">
+                              {feature.details}
+                            </p>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {!plan.isCompetitor && (
+                    <div className="space-y-2">
+                      {/* {plan.planIdentifier === PricingPlan.CLASSIFY_TRIAL ? (
                       <Link
                         href="/app"
                         className="btn bg-primary/80 hover:bg-white hover:text-primary text-white rounded-md btn-block group"
@@ -246,36 +290,32 @@ const Pricing = ({ customerType }: PricingProps) => {
                     ) : (
                       <ButtonCheckout plan={plan} />
                     )} */}
-                    <ButtonCheckout plan={plan} />
-                  </div>
-                )}
+                      <ButtonCheckout plan={plan} />
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        {/* {customerType === "importer" && (
-          <div className="mt-16 flex flex-col gap-2 justify-center items-center">
-            <div className="flex gap-1 items-center">
-              <ShieldCheckIcon className="w-6 h-6 text-secondary" />
-              <h3 className="text-lg font-extrabold text-secondary">
-                Customs Code Approval Guarantee
-              </h3>
-            </div>
-            <p className="text-white">
-              We guarantee codes that customs will accept or you get a full
-              refund!
-            </p>
-            <p className="text-sm text-base-content/80">
-              <sup>
-                See{" "}
-                <Link href="/terms" className="hover:underline">
-                  terms and conditions
-                </Link>
-              </sup>{" "}
-            </p>
+        <div className="mt-10 flex flex-col gap-2 justify-center text-center items-center bg-base-100 p-4 max-w-2xl mx-auto rounded-lg border-2 border-base-content/20">
+          <div className="flex gap-2 items-center">
+            <ShieldCheckIcon className="w-6 h-6 text-yellow-400" />
+            <h3 className="text-lg sm:text-2xl font-bold text-yellow-400">
+              Quicker Classifications Guarantee
+            </h3>
           </div>
-        )} */}
+          {/* <p className="text-white">
+            We know trying a new tool can feel risky, so here&apos;s our
+            promise:
+          </p> */}
+          <p className="text-white font-medium text-sm sm:text-lg">
+            If you do 20 classifications and an onboarding session and are
+            unsatisfied with your purchase after 30 days, we&apos;ll give you a
+            full refund!
+          </p>
+        </div>
       </div>
     </section>
   );

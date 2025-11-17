@@ -96,6 +96,17 @@ const getPricingHeadline = () => {
 const TariffImpactPricing = () => {
   const [currentPlan, setCurrentPlan] = useState<PricingPlan | null>(null);
   const { user } = useUser();
+  // Track the selected price tier index for each plan
+  const [selectedTierIndices, setSelectedTierIndices] = useState<{
+    [key: number]: number;
+  }>({});
+
+  const handleTierChange = (planIndex: number, tierIndex: number) => {
+    setSelectedTierIndices((prev) => ({
+      ...prev,
+      [planIndex]: tierIndex,
+    }));
+  };
 
   useEffect(() => {
     // Fetch the users current Tariff Impact Plan
@@ -121,115 +132,147 @@ const TariffImpactPricing = () => {
         </div>
 
         <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8 text-white">
-          {config.stripe.tariffImpactPlans.map((plan, index) => (
-            <div
-              key={index}
-              className={classNames(
-                "relative w-full max-w-xl",
-                plan.isFeatured && "border-2 border-primary rounded-lg",
-                !plan.isFeatured && "border-2 border-base-content/20 rounded-lg"
-              )}
-            >
-              {plan.isFeatured && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
-                  <span
-                    className={`badge text-xs text-black font-semibold border-0 bg-primary`}
-                  >
-                    Most Popular
-                  </span>
-                </div>
-              )}
+          {config.stripe.tariffImpactPlans.map((plan, index) => {
+            const defaultTierIndex = plan.prices.length - 1;
+            const currentTierIndex =
+              selectedTierIndices[index] ?? defaultTierIndex;
+            const currentPrice = plan.prices[currentTierIndex];
+            const currentPriceAnchor = plan.priceAnchors?.[currentTierIndex];
+            const hasMultipleTiers =
+              plan.prices.length > 1 &&
+              plan.priceTiers &&
+              plan.priceTiers.length > 1;
 
-              {plan.isFeatured && (
-                <div
-                  className={`absolute -inset-[1px] rounded-[9px] bg-primary z-10`}
-                ></div>
-              )}
-
+            return (
               <div
-                className={`relative flex flex-col h-full gap-4 lg:gap-8 z-10 bg-base-300 p-8 rounded-lg ${
-                  plan.isCompetitor && "bg-red-500/20"
-                }`}
+                key={index}
+                className={classNames(
+                  "relative w-full max-w-xl",
+                  plan.isFeatured && "border-2 border-primary rounded-lg",
+                  !plan.isFeatured &&
+                    "border-2 border-base-content/20 rounded-lg"
+                )}
               >
-                <div className="flex justify-between items-center gap-4">
-                  <div className="flex flex-col">
-                    <p className="text-2xl font-bold">{plan.name}</p>
-
-                    {plan.description && (
-                      <p className="text-base-content/80">{plan.description}</p>
-                    )}
-                  </div>
-                </div>
-                <div className="flex gap-2 items-center">
-                  {plan.priceAnchor && (
-                    <div className="flex flex-col justify-end mb-[4px] text-lg ">
-                      <p className="text-xs text-base-content/40">USD</p>
-                      <p className="relative">
-                        <span className="absolute bg-neutral-500 h-[2px] inset-x-0 top-[45%]"></span>
-                        <span className="text-base-content/50 text-xl font-bold">
-                          ${plan.priceAnchor}
-                        </span>
-                      </p>
-                    </div>
-                  )}
-                  {plan.price === 0 ? (
-                    <p
-                      className={`text-4xl py-1.5 tracking-tight font-extrabold`}
+                {plan.isFeatured && (
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+                    <span
+                      className={`badge text-xs text-black font-semibold border-0 bg-primary`}
                     >
-                      Free
-                    </p>
-                  ) : (
-                    <div className="flex items-end">
-                      <p
-                        className={`${plan.isCompetitor ? "text-red-600" : "text-white"} text-5xl text-base-content tracking-tight font-extrabold`}
-                      >
-                        ${plan.price}
-                      </p>
-                      {plan.mode === StripePaymentMode.SUBSCRIPTION && (
-                        <div className="flex flex-col">
-                          <p className="pl-1 pb-1 text-sm text-base-content/80 font-semibold">
-                            / month
+                      Most Popular
+                    </span>
+                  </div>
+                )}
+
+                {plan.isFeatured && (
+                  <div
+                    className={`absolute -inset-[1px] rounded-[9px] bg-primary z-10`}
+                  ></div>
+                )}
+
+                <div
+                  className={`relative flex flex-col h-full gap-4 lg:gap-8 z-10 bg-base-300 p-8 rounded-lg ${
+                    plan.isCompetitor && "bg-red-500/20"
+                  }`}
+                >
+                  <div className="flex justify-between items-center gap-4">
+                    <div className="flex flex-col">
+                      <p className="text-2xl font-bold">{plan.name}</p>
+
+                      {plan.description && (
+                        <p className="text-base-content/80">
+                          {plan.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-end gap-4">
+                    <div className="flex gap-2 items-center">
+                      {currentPriceAnchor && (
+                        <div className="flex flex-col justify-end mb-[4px] text-lg ">
+                          <p className="text-xs text-base-content/40">USD</p>
+                          <p className="relative">
+                            <span className="absolute bg-neutral-500 h-[2px] inset-x-0 top-[45%]"></span>
+                            <span className="text-base-content/50 text-xl font-bold">
+                              ${currentPriceAnchor}
+                            </span>
                           </p>
                         </div>
                       )}
+                      {currentPrice === 0 ? (
+                        <p
+                          className={`text-4xl py-1.5 tracking-tight font-extrabold`}
+                        >
+                          Free
+                        </p>
+                      ) : (
+                        <div className="flex items-end">
+                          <p
+                            className={`${plan.isCompetitor ? "text-red-600" : "text-white"} text-5xl text-base-content tracking-tight font-extrabold`}
+                          >
+                            ${currentPrice}
+                          </p>
+                          {plan.mode === StripePaymentMode.SUBSCRIPTION && (
+                            <div className="flex flex-col">
+                              <p className="pl-1 pb-1 text-sm text-base-content/80 font-semibold">
+                                / month
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    {hasMultipleTiers && (
+                      <select
+                        value={currentTierIndex}
+                        onChange={(e) =>
+                          handleTierChange(index, parseInt(e.target.value))
+                        }
+                        className="select select-bordered select-sm bg-base-100 text-white font-semibold"
+                      >
+                        {plan.priceTiers!.map((tier, i) => (
+                          <option key={i} value={i}>
+                            {tier}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+                  {plan.features && (
+                    <ul className="space-y-4 leading-relaxed text-base flex-1">
+                      {plan.features.map((feature, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          {getFeatureIcon(feature)}
+                          <div className="flex flex-col -mt-1">
+                            <div
+                              className={classNames(
+                                "flex items-center gap-2 w-full",
+                                feature.comingSoon && "mb-1"
+                              )}
+                            >
+                              <p>{feature.name} </p>
+                              {(feature.comingSoon || feature.roadmap) && (
+                                <span className="bg-neutral-700 px-2 py-1 rounded-md text-stone-300 font-semibold text-xs">
+                                  {getFeatureSupportingLabel(feature)}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-gray-400">
+                              {feature.details}
+                            </p>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {!plan.isCompetitor && (
+                    <div className="space-y-2">
+                      <ButtonCheckout plan={plan} currentPlan={currentPlan} />
                     </div>
                   )}
                 </div>
-                {plan.features && (
-                  <ul className="space-y-4 leading-relaxed text-base flex-1">
-                    {plan.features.map((feature, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        {getFeatureIcon(feature)}
-                        <div className="flex flex-col -mt-1">
-                          <div
-                            className={classNames(
-                              "flex items-center gap-2 w-full",
-                              feature.comingSoon && "mb-1"
-                            )}
-                          >
-                            <p>{feature.name} </p>
-                            {(feature.comingSoon || feature.roadmap) && (
-                              <span className="bg-neutral-700 px-2 py-1 rounded-md text-stone-300 font-semibold text-xs">
-                                {getFeatureSupportingLabel(feature)}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-xs text-gray-400">
-                            {feature.details}
-                          </p>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                {!plan.isCompetitor && (
-                  <div className="space-y-2">
-                    <ButtonCheckout plan={plan} currentPlan={currentPlan} />
-                  </div>
-                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Enterprise Plan -- aka lets talk */}

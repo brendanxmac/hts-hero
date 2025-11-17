@@ -7,7 +7,7 @@ export const tariffImpactStarter: PricingPlanI = {
   planIdentifier: PricingPlan.TARIFF_IMPACT_STARTER,
   description: "See if your imports are affected by tariffs",
   mode: StripePaymentMode.SUBSCRIPTION,
-  price: 0,
+  prices: [0],
   features: [
     {
       name: "Unlimited Tariff Impact Checks",
@@ -26,8 +26,8 @@ export const tariffImpactStandard: PricingPlanI = {
   planIdentifier: PricingPlan.TARIFF_IMPACT_STANDARD,
   description: "24/7 Tariff Monitoring for Your Imports",
   mode: StripePaymentMode.SUBSCRIPTION,
-  price: 19,
-  priceAnchor: 40,
+  prices: [19],
+  priceAnchors: [40],
   features: [
     {
       name: "Unlimited Tariff Impact Checks",
@@ -50,8 +50,8 @@ export const tariffImpactPro: PricingPlanI = {
   planIdentifier: PricingPlan.TARIFF_IMPACT_PRO,
   description: "Master Tariffs & Find Ways to Save",
   mode: StripePaymentMode.SUBSCRIPTION,
-  price: 39,
-  priceAnchor: 90,
+  prices: [39],
+  priceAnchors: [90],
   isFeatured: true,
   features: [
     {
@@ -87,17 +87,37 @@ export const tariffImpactPro: PricingPlanI = {
 export const classifyPro: PricingPlanI = {
   name: "Pro",
   planIdentifier: PricingPlan.CLASSIFY_PRO,
-  description: "The Classification Assistant for Customs Brokers",
+  description: "The Smarter Way to Classify",
   mode: StripePaymentMode.SUBSCRIPTION,
-  price: 80,
-  priceAnchor: 120,
+  prices: [80],
+  priceAnchors: [120],
+  features: [
+    { name: "Finds Candidates" },
+    { name: "Analyzes Options" },
+    { name: "Searches CROSS Rulings" },
+    { name: "Finds & Calculates Tariffs" },
+    { name: "Creates Reports" },
+  ],
+};
+
+export const classifyTeam: PricingPlanI = {
+  name: "Team",
+  planIdentifier: PricingPlan.CLASSIFY_TEAM,
+  description: "The Classification Workspace for Teams",
+  mode: StripePaymentMode.SUBSCRIPTION,
+  prices: [80, 70, 60],
+  priceAnchors: [120, 120, 120],
+  priceTiers: ["2-4 users", "5-9 users", "10+ users"],
   isFeatured: true,
   features: [
-    { name: "Finds Heading Candidates" },
-    { name: "Analyzes Candidates" },
-    { name: "Finds CROSS Rulings" },
-    { name: "Fetches Tariffs" },
-    { name: "Generates Reports" },
+    { name: "Finds Candidates" },
+    { name: "Analyzes Options" },
+    { name: "Searches CROSS Rulings" },
+    { name: "Finds & Calculates Tariffs" },
+    { name: "Creates Reports" },
+    { name: "Collaborate on Classifiactions" },
+    { name: "Keep track of your teams progress" },
+    { name: "Review & approve your teams classifications" },
   ],
 };
 
@@ -116,8 +136,8 @@ const config: ConfigProps = {
   },
   stripe: {
     // Create multiple plans in your Stripe dashboard, then add them here. You can add as many plans as you want, just make sure to add the priceId
-    classifierPlans: [classifyPro],
-    classifierConversionPlans: [classifyPro],
+    classifierPlans: [classifyPro, classifyTeam],
+    classifierConversionPlans: [classifyPro, classifyTeam],
     tariffImpactPlans: [
       tariffImpactStarter,
       tariffImpactStandard,

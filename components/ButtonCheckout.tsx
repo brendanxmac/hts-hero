@@ -10,6 +10,7 @@ import {
 } from "../libs/supabase/purchase";
 import toast from "react-hot-toast";
 import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
+import ClassifyTeamModal from "./ClassifyTeamModal";
 
 interface Props {
   plan: PricingPlanI;
@@ -25,6 +26,8 @@ const getBuyButtonText = (plan: PricingPlanI) => {
     case PricingPlan.CLASSIFY_PRO:
     case PricingPlan.TARIFF_IMPACT_PRO:
       return `Go ${plan.name}!`;
+    case PricingPlan.CLASSIFY_TEAM:
+      return "Let's Talk!";
     default:
       return "Buy Now!";
   }
@@ -37,6 +40,7 @@ const getBuyButtonText = (plan: PricingPlanI) => {
 const ButtonCheckout = ({ plan, currentPlan }: Props) => {
   const { user } = useUser();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const getCheckoutSuccessEndpoint = (plan: PricingPlan) => {
     switch (plan) {
@@ -67,8 +71,32 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
     }
   };
 
+  const handleClassifyTeamClick = async () => {
+    const userEmail = user?.email || "";
+    const userName = user?.user_metadata?.full_name || "";
+
+    // Track the event
+    try {
+      trackEvent(MixpanelEvent.CLICKED_CLASSIFY_TEAM_LETS_TALK, {
+        userEmail,
+        userName,
+        isLoggedIn: !!user,
+      });
+    } catch (e) {
+      console.error("Error tracking classify team click:", e);
+    }
+
+    // Open the modal
+    setIsModalOpen(true);
+  };
+
   const handlePayment = async () => {
     try {
+      if (plan.planIdentifier === PricingPlan.CLASSIFY_TEAM) {
+        await handleClassifyTeamClick();
+        return;
+      }
+
       if (plan.planIdentifier === PricingPlan.TARIFF_IMPACT_STARTER) {
         window.location.href = "/tariffs/impact-checker";
         return;
@@ -123,30 +151,39 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
   };
 
   return (
-    <button
-      className="btn bg-primary/80 hover:bg-white hover:text-primary text-white rounded-md w-full group"
-      onClick={() => handlePayment()}
-    >
-      {isLoading ? (
-        <span className="loading loading-spinner loading-xs"></span>
-      ) : (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth="1.5"
-          stroke="currentColor"
-          className="w-5 h-5 fill-white group-hover:fill-primary group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-200"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"
-          />
-        </svg>
-      )}
-      {getBuyButtonText(plan)}
-    </button>
+    <>
+      <button
+        className="btn bg-primary/80 hover:bg-white hover:text-primary text-white rounded-md w-full group"
+        onClick={() => handlePayment()}
+      >
+        {isLoading ? (
+          <span className="loading loading-spinner loading-xs"></span>
+        ) : (
+          plan.planIdentifier !== PricingPlan.CLASSIFY_TEAM && (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="w-5 h-5 fill-white group-hover:fill-primary group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-200"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"
+              />
+            </svg>
+          )
+        )}
+        {getBuyButtonText(plan)}
+      </button>
+
+      <ClassifyTeamModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+    </>
   );
 };
 

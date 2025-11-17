@@ -4,29 +4,27 @@ import type { JSX } from "react";
 import Image from "next/image";
 import { FeaturePoint, FeaturePoints } from "./FeaturePoints";
 import LightBulbSVG from "./svg/LightBulbSVG";
-import DocumentCheckSVG from "./svg/DocumentCheckSVG";
+import DocumentTextSVG from "./svg/DocumentTextSVG";
 import LightningSVG from "./svg/LightningSVG";
 import ScaleSVG from "./svg/Scale";
 import PuzzlePieceSVG from "./svg/PuzzlePieceSVG";
+import UsersSVG from "./svg/UsersSVG";
 
 const features: {
   name: string;
-  subtitle: string;
   points: FeaturePoint[];
   svg: JSX.Element;
   image: { src: string; alt: string };
 }[] = [
   {
-    name: "Finds Heading Candidates",
-    subtitle:
-      "Enter a description and instantly see HS headings that jump‑start your work.",
+    name: "Finds Candidates",
     points: [
-      {
-        point: "Get suitable HS headings for any item in seconds",
-      },
       {
         point:
           "Jump-start classifications instead of starting from scratch every time",
+      },
+      {
+        point: "Get HS headings for any item in seconds",
       },
       {
         point: "Discover headings you might have missed",
@@ -40,13 +38,11 @@ const features: {
         isKey: true,
       },
     ],
-    svg: <LightningSVG color="#facc15" size={7} viewBox="0 0 24 24" />,
+    svg: <LightningSVG color="#facc15" fill size={8} viewBox="0 0 24 24" />,
     image: { src: "/candidates.png", alt: "Candidates HS headings" },
   },
   {
-    name: "Analyzes Candidates",
-    subtitle:
-      "Compare candidates with GRI analysis to select the best option confidently.",
+    name: "Analyzes Options",
     points: [
       {
         point: "Provides a GRI analysis of candidates at every level",
@@ -64,16 +60,14 @@ const features: {
         isKey: true,
       },
     ],
-    svg: <LightBulbSVG color="#facc15" size={7} viewBox="0 0 24 24" />,
+    svg: <LightBulbSVG color="#facc15" fill size={8} viewBox="0 0 24 24" />,
     image: {
       src: "/analysis.png",
       alt: "Analyze candidates and choose confidently",
     },
   },
   {
-    name: "Finds CROSS Rulings",
-    subtitle:
-      "Surface relevant CROSS rulings based on your description and final code.",
+    name: "Searches CROSS Rulings",
     points: [
       {
         point: "Automatically searches CROSS rulings for you",
@@ -88,13 +82,11 @@ const features: {
         isKey: true,
       },
     ],
-    svg: <ScaleSVG color="#facc15" size={7} viewBox="0 0 24 24" />,
+    svg: <ScaleSVG color="#facc15" size={8} fill viewBox="0 0 24 24" />,
     image: { src: "/cross.png", alt: "Relevant CROSS rulings" },
   },
   {
-    name: "Fetches Tariffs",
-    subtitle:
-      "See the latest duty rates, exemptions, and savings opportunities at a glance.",
+    name: "Finds & Calculates Tariffs",
     points: [
       {
         point: "See the latest tariffs for any import from any country",
@@ -111,15 +103,14 @@ const features: {
         isKey: true,
       },
     ],
-    svg: <PuzzlePieceSVG color="#facc15" size={7} viewBox="0 0 24 24" />,
+    svg: <PuzzlePieceSVG color="#facc15" fill size={8} viewBox="0 0 24 24" />,
     image: {
       src: "/tariffs.png",
       alt: "Tariff insights and savings",
     },
   },
   {
-    name: "Generates Branded Reports",
-    subtitle: "Create polished client-ready reports in a single click.",
+    name: "Creates Branded Reports",
     points: [
       {
         point: "Generate classification reports, in a single click",
@@ -137,9 +128,35 @@ const features: {
         isKey: true,
       },
     ],
-    svg: <DocumentCheckSVG color="#facc15" size={7} viewBox="0 0 24 24" />,
+    svg: <DocumentTextSVG color="#facc15" size={8} viewBox="0 0 24 24" />,
     image: {
       src: "/report.png",
+      alt: "One-click classification reports",
+    },
+  },
+  {
+    name: "A Collaborative Workspace for Your Team",
+    points: [
+      {
+        point: "Collaborate on classifications",
+      },
+      {
+        point: "Keep track of your teams progress",
+      },
+      {
+        point: "Review & approve your teams classifications",
+      },
+      {
+        point: "Search by description, status, importer, etc...",
+      },
+      {
+        point: "Quicker Classifications, Less Mistakes",
+        isKey: true,
+      },
+    ],
+    svg: <UsersSVG color="#facc15" size={8} fill viewBox="0 0 24 24" />,
+    image: {
+      src: "/teams.png",
       alt: "One-click classification reports",
     },
   },
@@ -182,13 +199,13 @@ const FeaturesListicle = () => {
                     <FeaturePoints points={feature.points} />
                   </div>
                   <div className={`${mediaLeft ? "lg:order-1" : "lg:order-2"}`}>
-                    <div className="w-full h-full flex justify-center">
+                    <div className="w-full h-full flex justify-center p-4 bg-primary rounded-2xl md:rounded-3xl border-2 border-gray-700">
                       <Image
                         src={feature.image.src}
                         alt={feature.image.alt}
                         width={900}
                         height={600}
-                        className="w-full max-w-2xl rounded-2xl md:rounded-3xl border-2 border-white/10 object-cover"
+                        className="w-full max-w-2xl rounded-md object-cover"
                       />
                     </div>
                   </div>
