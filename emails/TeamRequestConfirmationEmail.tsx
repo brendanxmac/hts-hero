@@ -47,7 +47,7 @@ export default function TeamRequestConfirmationEmail({
           />
 
           {/* Greeting */}
-          <Section className="px-4 mb-6">
+          <Section className="px-4">
             <Text className="text-base text-gray-800 leading-relaxed">
               Hi {name},
             </Text>
@@ -62,108 +62,106 @@ export default function TeamRequestConfirmationEmail({
           </Section>
 
           {/* Features Section */}
-          <Section className="px-4 mb-6">
-            <Container
-              className="rounded-lg p-6"
+          <Section
+            className="rounded-lg p-6 mb-2 w-full"
+            style={{
+              background: "#000",
+              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            <Heading
+              className="text-white text-xl font-bold mb-4"
               style={{
-                background: "#000",
-                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                color: "#ffffff",
+                marginTop: "0",
               }}
             >
-              <Heading
-                className="text-white text-xl font-bold mb-4"
+              Here&apos;s what we&apos;ll cover on our call:
+            </Heading>
+            <Text
+              className="text-white text-base mb-3 pl-5"
+              style={{
+                color: "#ffffff",
+                position: "relative",
+                marginBottom: "12px",
+                paddingLeft: "20px",
+              }}
+            >
+              <span
                 style={{
-                  color: "#ffffff",
-                  marginTop: "0",
+                  position: "absolute",
+                  left: "0",
+                  color: "#fbbf24",
+                  fontWeight: "bold",
                 }}
               >
-                Here&apos;s what we&apos;ll cover on our call:
-              </Heading>
-              <Text
-                className="text-white text-base mb-3 pl-5"
+                ✓
+              </span>
+              Your team&apos;s specific needs and how {productName} can help
+            </Text>
+            <Text
+              className="text-white text-base mb-3 pl-5"
+              style={{
+                color: "#ffffff",
+                position: "relative",
+                marginBottom: "12px",
+                paddingLeft: "20px",
+              }}
+            >
+              <span
                 style={{
-                  color: "#ffffff",
-                  position: "relative",
-                  marginBottom: "12px",
-                  paddingLeft: "20px",
+                  position: "absolute",
+                  left: "0",
+                  color: "#fbbf24",
+                  fontWeight: "bold",
                 }}
               >
-                <span
-                  style={{
-                    position: "absolute",
-                    left: "0",
-                    color: "#fbbf24",
-                    fontWeight: "bold",
-                  }}
-                >
-                  ✓
-                </span>
-                Your team&apos;s specific needs and how {productName} can help
-              </Text>
-              <Text
-                className="text-white text-base mb-3 pl-5"
+                ✓
+              </span>
+              Support, onboarding, & pricing options
+            </Text>
+            <Text
+              className="text-white text-base mb-3 pl-5"
+              style={{
+                color: "#ffffff",
+                position: "relative",
+                marginBottom: "12px",
+                paddingLeft: "20px",
+              }}
+            >
+              <span
                 style={{
-                  color: "#ffffff",
-                  position: "relative",
-                  marginBottom: "12px",
-                  paddingLeft: "20px",
+                  position: "absolute",
+                  left: "0",
+                  color: "#fbbf24",
+                  fontWeight: "bold",
                 }}
               >
-                <span
-                  style={{
-                    position: "absolute",
-                    left: "0",
-                    color: "#fbbf24",
-                    fontWeight: "bold",
-                  }}
-                >
-                  ✓
-                </span>
-                Support, onboarding, & pricing options
-              </Text>
-              <Text
-                className="text-white text-base mb-3 pl-5"
+                ✓
+              </span>
+              A demo of the product
+            </Text>
+            <Text
+              className="text-white text-base pl-5"
+              style={{
+                color: "#ffffff",
+                position: "relative",
+                marginBottom: "0",
+                paddingLeft: "20px",
+              }}
+            >
+              <span
                 style={{
-                  color: "#ffffff",
-                  position: "relative",
-                  marginBottom: "12px",
-                  paddingLeft: "20px",
+                  position: "absolute",
+                  left: "0",
+                  color: "#fbbf24",
+                  fontWeight: "bold",
                 }}
               >
-                <span
-                  style={{
-                    position: "absolute",
-                    left: "0",
-                    color: "#fbbf24",
-                    fontWeight: "bold",
-                  }}
-                >
-                  ✓
-                </span>
-                A demo of the product
-              </Text>
-              <Text
-                className="text-white text-base pl-5"
-                style={{
-                  color: "#ffffff",
-                  position: "relative",
-                  marginBottom: "0",
-                  paddingLeft: "20px",
-                }}
-              >
-                <span
-                  style={{
-                    position: "absolute",
-                    left: "0",
-                    color: "#fbbf24",
-                    fontWeight: "bold",
-                  }}
-                >
-                  ✓
-                </span>
-                Any other questions you have
-              </Text>
-            </Container>
+                ✓
+              </span>
+              Any other questions you have
+            </Text>
           </Section>
 
           {/* CTA Section */}
@@ -172,14 +170,17 @@ export default function TeamRequestConfirmationEmail({
               If you <span className="underline">didn&apos;t</span> already book
               your demo call, you can do that here:
             </Text>
-            <Container className="text-center mt-4">
-              <Button
-                href={`https://calendly.com/brendan-htshero/30min?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`}
-                className="w-full bg-[#617BFF] text-white font-bold py-4 text-base rounded-lg"
-              >
-                Book Your Demo Call →
-              </Button>
-            </Container>
+            <Button
+              href={`https://calendly.com/brendan-htshero/30min?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`}
+              className="bg-[#617BFF] text-white font-bold py-4 text-base rounded-lg mt-4"
+              style={{
+                display: "block",
+                width: "100%",
+                textAlign: "center",
+              }}
+            >
+              Book Your Demo Call →
+            </Button>
           </Section>
 
           {/* Additional Info */}
