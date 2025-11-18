@@ -78,7 +78,7 @@ export default function Home() {
 
             {/* Tariff Import Checker */}
             <Link
-              href={user ? "/tariffs/impact-checker" : "/about/tariffs"}
+              href="/tariffs/impact-checker"
               className="group btn btn-lg h-auto py-6 px-4 bg-base-200 border-2 border-neutral-600 hover:border-primary hover:bg-primary/10 transition-all duration-300 transform hover:scale-105"
             >
               <div className="flex flex-col items-center gap-4">
