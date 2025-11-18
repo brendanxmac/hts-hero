@@ -74,7 +74,10 @@ const LetsTalkModal = ({
       onClose();
 
       // Open a new tab at this url: https://calendly.com/brendan-htshero/30min
-      window.open("https://calendly.com/brendan-htshero/30min", "_blank");
+      window.open(
+        `https://calendly.com/brendan-htshero/30min?name=${encodeURIComponent(formData.name)}&email=${encodeURIComponent(formData.email)}`,
+        "_blank"
+      );
     } catch (error) {
       console.error("Error submitting enterprise request:", error);
       toast.error("Failed to send request. Please try again.");

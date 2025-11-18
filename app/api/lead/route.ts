@@ -1,8 +1,35 @@
 import { NextResponse, NextRequest } from "next/server";
-import { sendEmail } from "../../../libs/resend";
-import { sendTeamRequestConfirmationEmail } from "../../../emails/team-request/team-request-confirmation-email";
+import { sendEmail, sendEmailFromComponent } from "../../../libs/resend";
+import TeamRequestConfirmationEmail from "../../../emails/TeamRequestConfirmationEmail";
+import React from "react";
 
 export const dynamic = "force-dynamic";
+
+interface TeamRequestConfirmationParams {
+  name: string;
+  email: string;
+  productType: "classify" | "tariff";
+}
+
+export const sendTeamRequestConfirmationEmail = async ({
+  name,
+  productType,
+  email,
+}: TeamRequestConfirmationParams) => {
+  const productName = productType === "tariff" ? "Tariff Pro" : "Classify Pro";
+  const emoji = "🎉";
+
+  await sendEmailFromComponent({
+    to: email,
+    subject: `${emoji} Your Demo of ${productName} for Teams!`,
+    emailComponent: React.createElement(TeamRequestConfirmationEmail, {
+      name,
+      productName,
+      email,
+    }),
+    replyTo: "brendan@htshero.com",
+  });
+};
 
 interface DemoRequestDto {
   email: string;
@@ -69,22 +96,37 @@ export async function POST(req: NextRequest) {
       </div>
     `;
 
+    Promise.all([
+      sendEmail({
+        to: "brendan@htshero.com",
+        subject,
+        text,
+        html,
+        replyTo: email,
+      }),
+      sendTeamRequestConfirmationEmail({
+        name,
+        productType,
+        email,
+      }),
+    ]);
+
     // Send enterprise request email to Brendan
-    await sendEmail({
-      to: "brendan@htshero.com",
-      subject,
-      text,
-      html,
-      replyTo: email,
-    });
+    // await sendEmail({
+    //   to: "brendan@htshero.com",
+    //   subject,
+    //   text,
+    //   html,
+    //   replyTo: email,
+    // });
 
     // Send confirmation email to the prospect
-    await sendTeamRequestConfirmationEmail({
-      name,
-      email,
-      productType,
-      notes,
-    });
+    // await sendTeamRequestConfirmationEmail({
+    //   name,
+    //   email,
+    //   productType,
+    //   notes,
+    // });
 
     return NextResponse.json(
       { message: `${productName} Team request sent successfully!` },
