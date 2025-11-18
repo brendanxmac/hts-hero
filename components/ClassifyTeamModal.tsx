@@ -172,7 +172,7 @@ const LetsTalkModal = ({
           <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 pt-4">
             <button
               type="button"
-              className="btn btn-ghost w-full sm:w-auto sm:flex-1"
+              className="btn btn-outline w-full sm:w-auto sm:flex-1"
               onClick={handleClose}
               disabled={isSubmitting}
             >
