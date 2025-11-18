@@ -6,7 +6,7 @@ import { StripePaymentMode } from "../libs/stripe";
 import { useUser } from "../contexts/UserContext";
 import { useEffect, useState } from "react";
 import { getActivePriorityTariffPurchase } from "../libs/supabase/purchase";
-import LetsTalkModal from "./ClassifyTeamModal";
+import LetsTalkModal from "./LetsTalkModal";
 import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
 
 // <Pricing/> displays the pricing plans for your app
@@ -308,7 +308,7 @@ const TariffImpactPricing = () => {
             onClick={handleEnterpriseClick}
             className="btn btn-primary md:btn-wide w-full text-white"
           >
-            Let's Talk!
+            Request Demo
           </button>
         </div>
       </div>

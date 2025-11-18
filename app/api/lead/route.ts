@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { sendEmail } from "../../../libs/resend";
+import { sendTeamRequestConfirmationEmail } from "../../../emails/team-request/team-request-confirmation-email";
 
 export const dynamic = "force-dynamic";
 
@@ -68,12 +69,21 @@ export async function POST(req: NextRequest) {
       </div>
     `;
 
+    // Send enterprise request email to Brendan
     await sendEmail({
       to: "brendan@htshero.com",
       subject,
       text,
       html,
       replyTo: email,
+    });
+
+    // Send confirmation email to the prospect
+    await sendTeamRequestConfirmationEmail({
+      name,
+      email,
+      productType,
+      notes,
     });
 
     return NextResponse.json(

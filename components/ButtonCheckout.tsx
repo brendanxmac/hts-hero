@@ -10,7 +10,7 @@ import {
 } from "../libs/supabase/purchase";
 import toast from "react-hot-toast";
 import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
-import LetsTalkModal from "./ClassifyTeamModal";
+import LetsTalkModal from "./LetsTalkModal";
 
 interface Props {
   plan: PricingPlanI;
@@ -27,7 +27,7 @@ const getBuyButtonText = (plan: PricingPlanI) => {
     case PricingPlan.TARIFF_IMPACT_PRO:
       return `Go ${plan.name}!`;
     case PricingPlan.CLASSIFY_TEAM:
-      return "Let's Talk!";
+      return "Request Demo";
     default:
       return "Buy Now!";
   }

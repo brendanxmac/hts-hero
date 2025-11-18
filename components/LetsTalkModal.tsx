@@ -65,13 +65,16 @@ const LetsTalkModal = ({
       });
 
       toast.success(
-        "Request sent successfully! We'll reach out to you ASAP to get started!",
-        { duration: 10000 }
+        "Demo request successfull! Check your email to confirm your time slot (Be sure to check spam!).",
+        { duration: 15000 }
       );
 
       // Reset form and close modal
       setFormData({ email: "", name: "", notes: "" });
       onClose();
+
+      // Open a new tab at this url: https://calendly.com/brendan-htshero/30min
+      window.open("https://calendly.com/brendan-htshero/30min", "_blank");
     } catch (error) {
       console.error("Error submitting enterprise request:", error);
       toast.error("Failed to send request. Please try again.");
@@ -103,8 +106,12 @@ const LetsTalkModal = ({
           </h3>
 
           <p className="text-sm sm:text-base text-base-content/70">
-            Fill out the form below or send us an email and we&apos;ll reach out
-            to discuss your team&apos;s needs!
+            Fill out the form below or{" "}
+            <a href="mailto:brendan@htshero.com" className="link">
+              send us an email
+            </a>{" "}
+            to schedule a quick demo!
+            <br />
           </p>
         </div>
 
@@ -186,29 +193,28 @@ const LetsTalkModal = ({
               {isSubmitting ? (
                 <>
                   <span className="loading loading-spinner loading-sm"></span>
-                  <span className="text-sm sm:text-base">Sending...</span>
+                  <span className="text-sm sm:text-base">Submitting...</span>
                 </>
               ) : (
-                <span className="text-sm sm:text-base">Request Demo</span>
+                <span className="text-sm sm:text-base">Book Your Demo</span>
               )}
             </button>
           </div>
         </form>
 
         {/* Divider */}
-        <div className="divider mt-8">OR</div>
+        {/* <div className="divider mt-8">OR</div>
 
         <button
           type="button"
           onClick={handleCopyEmail}
-          className="btn btn-outline btn-primary w-full my-3"
+          className="group btn btn-outline btn-primary w-full my-3"
           disabled={isSubmitting}
         >
-          <EnvelopeIcon className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+          <EnvelopeIcon className="w-4 h-4 sm:w-5 sm:h-5 text-primary group-hover:text-base-100" />
           <span className="text-sm sm:text-base">Send Us An Email</span>
-        </button>
+        </button> */}
       </div>
-
       <div className="modal-backdrop bg-black/50" onClick={handleClose}></div>
     </div>
   );
