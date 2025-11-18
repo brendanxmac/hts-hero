@@ -17,6 +17,7 @@ function LoginContent() {
   const { user } = useUser();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect");
+  const isRedirectForSignUp = searchParams.get("sign-up") === "true";
 
   if (user) {
     redirect(redirectTo || "/");
@@ -28,7 +29,7 @@ function LoginContent() {
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
-  const [isSignUp, setIsSignUp] = useState<boolean>(false);
+  const [isSignUp, setIsSignUp] = useState<boolean>(isRedirectForSignUp);
   const [showOtpForm, setShowOtpForm] = useState<boolean>(false);
   const [showOtpVerification, setShowOtpVerification] =
     useState<boolean>(false);
@@ -499,13 +500,14 @@ function LoginContent() {
                 </div>
               )}
 
-              {isSignUp && (
-                <PasswordRequirements
-                  password={password}
-                  confirmPassword={confirmPassword}
-                  onValidationChange={handleValidationChange}
-                />
-              )}
+              {isSignUp &&
+                (password.length > 0 || confirmPassword.length > 0) && (
+                  <PasswordRequirements
+                    password={password}
+                    confirmPassword={confirmPassword}
+                    onValidationChange={handleValidationChange}
+                  />
+                )}
 
               <button
                 type="submit"

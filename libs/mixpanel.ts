@@ -19,6 +19,7 @@ export enum MixpanelEvent {
   INITIATED_IMPACT_PRO_CHECKOUT = "Impact Pro Checkout Clicked",
   INITIATED_CLASSIFY_PRO_CHECKOUT = "Classify Pro Checkout Clicked",
   CLICKED_CLASSIFY_TEAM_LETS_TALK = "Classify Team Let's Talk Clicked",
+  CLICKED_TARIFF_TEAM_LETS_TALK = "Tariff Team Let's Talk Clicked",
   CODE_SET_CREATED = "Code Set Created",
   TARIFF_IMPACT_CHECK = "Tariff Impact Check",
   CLASSIFICATION_STARTED = "Classification Started",

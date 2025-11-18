@@ -174,7 +174,7 @@ export const getActiveTariffImpactPurchasesForUser = async (userId: string) => {
   return activeTariffImpactPurchases;
 };
 
-export const getActivePriorityTariffImpactPurchase = async (
+export const getActivePriorityTariffPurchase = async (
   userId: string
 ): Promise<Purchase | null> => {
   const activeTariffImpactPurchases =
