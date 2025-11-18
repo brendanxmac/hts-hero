@@ -4,11 +4,6 @@ import { useState, useEffect } from "react";
 import { useUser } from "../contexts/UserContext";
 import apiClient from "@/libs/api";
 import toast from "react-hot-toast";
-import {
-  ClipboardIcon,
-  DocumentDuplicateIcon,
-  EnvelopeIcon,
-} from "@heroicons/react/24/solid";
 
 export type EnterpriseProductType = "classify" | "tariff";
 

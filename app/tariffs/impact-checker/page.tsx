@@ -21,16 +21,13 @@ import { useUser } from "../../../contexts/UserContext";
 import { HtsCodeSet } from "../../../interfaces/hts";
 import HtsCodeSetDropdown from "../../../components/HtsCodeSetDropdown";
 import { TariffCodeSet } from "../../../tariffs/announcements/announcements";
-import { TariffImpactCheck } from "../../../interfaces/tariffs";
 import {
   checkTariffImpactsForCodes,
   createTariffImpactCheck,
-  fetchTariffImpactChecksForUser,
   TariffImpactResult,
 } from "../../../libs/tariff-impact-check";
 import {
   getActivePriorityTariffPurchase,
-  getActiveTariffImpactPurchasesForUser,
   Purchase,
 } from "../../../libs/supabase/purchase";
 import { PricingPlan } from "../../../types";
@@ -73,10 +70,8 @@ export default function Home() {
   const [activeTariffImpactPurchase, setActiveTariffPurchase] =
     useState<Purchase | null>(null);
   const [tariffCodeSets, setTariffCodeSets] = useState<TariffCodeSet[]>([]);
-  const [fetchingPurchases, setFetchingPurchases] = useState(false);
   const [urlParamsProcessed, setUrlParamsProcessed] = useState(false);
   const [checkingTariffImpacts, setCheckingTariffImpacts] = useState(false);
-  const [isTrialUser, setIsTrialUser] = useState(false);
 
   useEffect(() => {
     const loadAllData = async () => {
@@ -115,15 +110,11 @@ export default function Home() {
     const fetchPurchases = async () => {
       if (user) {
         try {
-          setFetchingPurchases(true);
           const activeTariffImpactPurchase =
             await getActivePriorityTariffPurchase(user.id);
           setActiveTariffPurchase(activeTariffImpactPurchase);
-          setFetchingPurchases(false);
         } catch {
           toast.error("Error fetching purchases");
-        } finally {
-          setFetchingPurchases(false);
         }
       }
     };
@@ -144,30 +135,16 @@ export default function Home() {
           const userTrialStartDate =
             userProfile?.tariff_impact_trial_started_at;
 
-          if (userTrialStartDate) {
-            // if the trial started more than 10 days ago, set isTrialUser to false
-            const trialStartedMoreThan7DaysAgo =
-              new Date(userTrialStartDate) <
-              new Date(Date.now() - 10 * 24 * 60 * 60 * 1000);
-
-            if (trialStartedMoreThan7DaysAgo) {
-              setIsTrialUser(false);
-            } else {
-              setIsTrialUser(true);
-            }
-          } else {
+          if (!userTrialStartDate) {
             // Update user profile setting tariff_impact_trial_started_at to now
             await apiClient.post("/tariff-impact-check/trial-started", {
               email: user.email,
             });
             trackEvent(MixpanelEvent.TARIFF_IMPACT_TRIAL_STARTED);
-            setIsTrialUser(true);
           }
         } catch {
           toast.error("Error fetching user profile");
         }
-      } else {
-        setIsTrialUser(true);
       }
     };
 

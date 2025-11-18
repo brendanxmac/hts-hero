@@ -11,7 +11,7 @@ interface TeamRequestConfirmationParams {
   productType: "classify" | "tariff";
 }
 
-export const sendTeamRequestConfirmationEmail = async ({
+const sendTeamRequestConfirmationEmail = async ({
   name,
   productType,
   email,
