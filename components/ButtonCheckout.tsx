@@ -10,7 +10,7 @@ import {
 } from "../libs/supabase/purchase";
 import toast from "react-hot-toast";
 import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
-import ClassifyTeamModal from "./ClassifyTeamModal";
+import LetsTalkModal from "./ClassifyTeamModal";
 
 interface Props {
   plan: PricingPlanI;
@@ -179,7 +179,7 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
         {getBuyButtonText(plan)}
       </button>
 
-      <ClassifyTeamModal
+      <LetsTalkModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />

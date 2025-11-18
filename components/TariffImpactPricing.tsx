@@ -5,7 +5,9 @@ import ButtonCheckout from "./ButtonCheckout";
 import { StripePaymentMode } from "../libs/stripe";
 import { useUser } from "../contexts/UserContext";
 import { useEffect, useState } from "react";
-import { getActivePriorityTariffImpactPurchase } from "../libs/supabase/purchase";
+import { getActivePriorityTariffPurchase } from "../libs/supabase/purchase";
+import LetsTalkModal from "./ClassifyTeamModal";
+import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
 
 // <Pricing/> displays the pricing plans for your app
 // It's your Stripe config in config.js.stripe.plans[] that will be used to display the plans
@@ -79,15 +81,15 @@ export const getFeatureIcon = (feature: PricingFeatureI) => {
 const getPricingHeadline = () => {
   return (
     <div className="flex flex-col gap-2">
-      <h2 className="text-white font-extrabold text-3xl sm:text-4xl md:text-5xl max-w-6xl mx-auto">
-        <span className="text-secondary">Master</span> Tariffs.{" "}
-      </h2>
-      <h2 className="text-white font-extrabold text-3xl sm:text-4xl md:text-5xl max-w-6xl mx-auto">
-        <span className="text-accent">Discover</span> Savings.
-      </h2>
+      <div className="flex gap-4 mx-auto max-w-6xl">
+        <h2 className="text-white font-extrabold text-3xl sm:text-4xl md:text-5xl">
+          <span className="text-yellow-400">Master</span> Tariffs & Discover{" "}
+          <span className="text-yellow-400">Savings</span>
+        </h2>
+      </div>
       <p className="text-sm md:text-lg text-neutral-300 font-medium mt-2">
-        Join 200+ importers & customs brokers who are already conquering the
-        tariff chaos
+        Join 200+ importers & customs brokers who are conquering tariff chaos
+        with HTS Hero
       </p>
     </div>
   );
@@ -96,6 +98,7 @@ const getPricingHeadline = () => {
 const TariffImpactPricing = () => {
   const [currentPlan, setCurrentPlan] = useState<PricingPlan | null>(null);
   const { user } = useUser();
+  const [isEnterpriseModalOpen, setIsEnterpriseModalOpen] = useState(false);
   // Track the selected price tier index for each plan
   const [selectedTierIndices, setSelectedTierIndices] = useState<{
     [key: number]: number;
@@ -108,11 +111,31 @@ const TariffImpactPricing = () => {
     }));
   };
 
+  const handleEnterpriseClick = () => {
+    const userEmail = user?.email || "";
+    const userName = user?.user_metadata?.full_name || "";
+
+    // Track the event
+    try {
+      trackEvent(MixpanelEvent.CLICKED_TARIFF_TEAM_LETS_TALK, {
+        userEmail,
+        userName,
+        isLoggedIn: !!user,
+      });
+    } catch (e) {
+      console.error("Error tracking tariff team click:", e);
+    }
+
+    // Open the modal
+    setIsEnterpriseModalOpen(true);
+  };
+
   useEffect(() => {
     // Fetch the users current Tariff Impact Plan
     const fetchCurrentTariffImpactPlan = async () => {
-      const currentTariffImpactPlan =
-        await getActivePriorityTariffImpactPurchase(user.id);
+      const currentTariffImpactPlan = await getActivePriorityTariffPurchase(
+        user.id
+      );
       if (currentTariffImpactPlan) {
         setCurrentPlan(currentTariffImpactPlan.product_name);
       }
@@ -281,14 +304,20 @@ const TariffImpactPricing = () => {
             <p className="text-2xl text-white font-bold">Enterprise</p>
             <p className="text-base-content/80">Get Pro for your whole team</p>
           </div>
-          <a
-            href="mailto:brendan@htshero.com?subject=Enterprise%20Inquiry%20for%20Tariff%20Impact%20Checker&body=Hi%20Brendan%2C%20I'm%20interested%20in%20getting%20Tariff%20Impact%20Checker%20for%20my%20team"
+          <button
+            onClick={handleEnterpriseClick}
             className="btn btn-primary md:btn-wide w-full text-white"
           >
-            Lets Talk!
-          </a>
+            Let's Talk!
+          </button>
         </div>
       </div>
+
+      <LetsTalkModal
+        isOpen={isEnterpriseModalOpen}
+        onClose={() => setIsEnterpriseModalOpen(false)}
+        productType="tariff"
+      />
     </section>
   );
 };

@@ -6,16 +6,16 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   try {
     const supabase = createClient();
-    const { data } = await supabase.auth.getUser();
-    const user = data.user;
+    // const { data } = await supabase.auth.getUser();
+    // const user = data.user;
 
     // User who are not logged in can't do searches
-    if (!user) {
-      return NextResponse.json(
-        { error: "You must be logged in to complete this action." },
-        { status: 401 }
-      );
-    }
+    // if (!user) {
+    //   return NextResponse.json(
+    //     { error: "You must be logged in to complete this action." },
+    //     { status: 401 }
+    //   );
+    // }
 
     const { data: tariffCodeSets, error } = await supabase
       .from("tariff_code_sets")
