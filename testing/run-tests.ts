@@ -1,11 +1,9 @@
 import fs from "fs";
 import path from "path";
 import {
-  evaluateBestHeadings,
   getBestClassificationProgression,
   getBestDescriptionCandidates,
   getHtsChapterData,
-  getHtsLevel,
   getHtsSectionsAndChapters,
   getElementsWithinIndentLevelFromStartPoint,
   updateHtsDescription,
@@ -135,58 +133,6 @@ const getHeadingCandidates = async (
   );
 
   return headingCandidates.flat();
-};
-
-const getBestHeading = async (
-  productDescription: string,
-  headingCandidates: HtsElement[]
-): Promise<BestNextElementResponse> => {
-  const headingsEvaluation = await evaluateBestHeadings(
-    headingCandidates.map((h) => ({
-      code: h.htsno,
-      description: h.description,
-    })),
-    productDescription
-  );
-
-  // Get the chapter and chapter data of the chapter the selected heading belongs to
-  if (!headingsEvaluation.code) {
-    throw new Error("No code found in headings evaluation");
-  }
-
-  const headingDescription = headingCandidates.find(
-    (c) => c.htsno === headingsEvaluation.code
-  )?.description;
-
-  if (!headingDescription) {
-    console.log("\n\n");
-    throw new Error("No heading description found");
-  }
-
-  const chapterData = await getHtsChapterData(
-    headingsEvaluation.code.substring(0, 2)
-  );
-  const chapterDataWithParentIndex = setIndexInArray(chapterData);
-  const elementsAtLevel = elementsAtClassificationLevel(
-    chapterDataWithParentIndex,
-    0
-  );
-
-  const bestHeading = elementsAtLevel.find(
-    (e) => e.htsno === headingsEvaluation.code
-  );
-
-  if (!bestHeading) {
-    throw new Error("No selected heading found");
-  }
-
-  return {
-    bestElement: bestHeading,
-    // TODO: toggle this to get the reasoning from the best progression response
-    // will also need to update the GPT response format to include the logic
-    reasoning: "", //headingsEvaluation.evaluation
-    elementsAtLevel,
-  };
 };
 
 const getNextElementsChunk = (

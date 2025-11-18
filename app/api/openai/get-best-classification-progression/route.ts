@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const gptResponse = await openai.chat.completions.create({
       temperature: 0,
-      model: OpenAIModel.FOUR_ONE,
+      model: OpenAIModel.FIVE_ONE,
       response_format: responseFormat,
       // In your response, "questions" is optional, and should only have questions about the product that would help make a better decision between the options, if answered.\n
       messages: [

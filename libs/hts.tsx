@@ -456,25 +456,6 @@ export const fetchTopLevelSectionNotes = async (
   });
 };
 
-export const determineExclusionarySectionNotes = async (
-  notes: UINote[],
-  productDescription: string
-): Promise<Eval[]> => {
-  // Query ChatGPT to filter to relevant notes
-  const exclustionaryNotesResponse: Array<ChatCompletion.Choice> =
-    await apiClient.post("/openai/get-exclusionary-notes", {
-      productDescription,
-      notes,
-    });
-  console.log("Exlcusionary notes:");
-  console.log(exclustionaryNotesResponse[0].message.content);
-  const relevantNotesParsed = JSON.parse(
-    exclustionaryNotesResponse[0].message.content!
-  ) as Eval[];
-
-  return relevantNotesParsed;
-};
-
 export const logSearch = async (productDescription: string) => {
   const logSearchResponse: { success?: boolean; error?: string } =
     await apiClient.post("/search/log", {
@@ -482,19 +463,6 @@ export const logSearch = async (productDescription: string) => {
     });
 
   return logSearchResponse;
-};
-
-export const evaluateBestHeadings = async (
-  headings: SimplifiedHtsElement[],
-  productDescription: string
-): Promise<BestHeadingEvaluationResponse> => {
-  const bestHeadingResponse: Array<ChatCompletion.Choice> =
-    await apiClient.post("/openai/rank-headings", {
-      headings,
-      productDescription,
-    });
-
-  return JSON.parse(bestHeadingResponse[0].message.content);
 };
 
 export const getBestClassificationProgression = async (
@@ -516,17 +484,6 @@ export const getBestClassificationProgression = async (
   }
 
   return JSON.parse(bestCandidate);
-};
-
-export const getBestChaptersForProductDescription = async (
-  productDescription: string
-): Promise<BestChaptersResponse> => {
-  const bestChaptersResponse: Array<ChatCompletion.Choice> =
-    await apiClient.post("/openai/get-best-chapters-for-product-description", {
-      productDescription,
-    });
-
-  return JSON.parse(bestChaptersResponse[0].message.content);
 };
 
 export const getBestDescriptionCandidates = async (
@@ -648,35 +605,6 @@ export const getBestIndentLevelMatch = async (
       selectionProgression
     );
   }
-};
-
-export const getHSChapter = async (productDescription: string) => {
-  const hsHeadingsResponse: Array<ChatCompletion.Choice> = await apiClient.post(
-    "/openai/get-hs-headings",
-    {
-      productDescription,
-      model: OpenAIModel.FOUR,
-    }
-  );
-
-  const hsHeadings = hsHeadingsResponse[0].message.content;
-
-  console.log(hsHeadings);
-
-  if (!hsHeadings)
-    throw new Error(`failed to get HS Headings for product description`);
-
-  // TODO: Consider doing this for all headings
-  // TODO: Consider jumping right to heading and not back to chapter...
-  //  especially since this take the most time -- however don't sacrifice accuracy
-
-  // const parsed: HsHeading[] = JSON.parse(hsHeadings);
-  const parsed: { candidates: HsHeading[] } = JSON.parse(hsHeadings);
-  console.log(`Headings:`);
-  console.log(parsed.candidates);
-  const chapter = parsed.candidates[0].section.substring(0, 2);
-
-  return chapter;
 };
 
 export const getCodeFromHtsPrimitive = (
