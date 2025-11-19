@@ -556,7 +556,7 @@ export default function Home() {
 
             {tariffCodeSets.length > 0 &&
               tariffCodeSets[selectedTariffAnnouncementIndex].note && (
-                <p className="text-xs text-secondary font-bold">
+                <p className="text-xs font-semibold">
                   Note: {tariffCodeSets[selectedTariffAnnouncementIndex].note}
                 </p>
               )}

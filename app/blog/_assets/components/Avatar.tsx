@@ -3,13 +3,15 @@ import Image from "next/image";
 import { ArticleI } from "../content";
 
 // This is the author avatar that appears in the article page and in <CardArticle /> component
-const Avatar = ({ article }: { article: ArticleI }) => {
-  return (
-    <Link
-      href={`/blog/author/${article.author.slug}`}
-      className="inline-flex items-center gap-2 group"
-      rel="author"
-    >
+const Avatar = ({
+  article,
+  isLink = true,
+}: {
+  article: ArticleI;
+  isLink?: boolean;
+}) => {
+  const content = (
+    <>
       <span itemProp="author">
         <Image
           src={article.author.avatar}
@@ -20,7 +22,23 @@ const Avatar = ({ article }: { article: ArticleI }) => {
           height={28}
         />
       </span>
-      <span className="group-hover:underline">{article.author.name}</span>
+      <span className={isLink ? "group-hover:underline" : ""}>
+        {article.author.name}
+      </span>
+    </>
+  );
+
+  if (!isLink) {
+    return <span className="inline-flex items-center gap-2">{content}</span>;
+  }
+
+  return (
+    <Link
+      href={`/blog/author/${article.author.slug}`}
+      className="inline-flex items-center gap-2 group"
+      rel="author"
+    >
+      {content}
     </Link>
   );
 };

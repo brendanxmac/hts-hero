@@ -20,8 +20,12 @@ const CardArticle = ({
   const TitleTag = tag;
 
   return (
-    <Link href={`/blog/${article.slug}`} className="block" rel="bookmark">
-      <article className="card bg-base-200 rounded-box overflow-hidden hover:shadow-lg hover:scale-[1.02] transition-all duration-200 cursor-pointer">
+    <article className="card bg-base-200 rounded-box overflow-hidden hover:shadow-lg hover:scale-[1.02] transition-all duration-200">
+      <Link
+        href={`/blog/${article.slug}`}
+        className="block cursor-pointer"
+        rel="bookmark"
+      >
         {article.image?.src && (
           <figure>
             <Image
@@ -39,7 +43,12 @@ const CardArticle = ({
           {showCategory && (
             <div className="flex flex-wrap gap-2">
               {article.categories.map((category) => (
-                <BadgeCategory category={category} key={category.slug} />
+                <span
+                  key={category.slug}
+                  className="badge badge-sm badge-primary font-bold md:badge-md"
+                >
+                  {category.titleShort}
+                </span>
               ))}
             </div>
           )}
@@ -55,7 +64,7 @@ const CardArticle = ({
 
             {/* AUTHOR & DATE */}
             <div className="flex items-center gap-4 text-sm">
-              <Avatar article={article} />
+              <Avatar article={article} isLink={false} />
 
               <span itemProp="datePublished">
                 {new Date(article.publishedAt).toLocaleDateString("en-US", {
@@ -66,8 +75,8 @@ const CardArticle = ({
             </div>
           </div>
         </div>
-      </article>
-    </Link>
+      </Link>
+    </article>
   );
 };
 
