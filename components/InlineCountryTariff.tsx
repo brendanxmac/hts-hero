@@ -18,6 +18,7 @@ import { TertiaryLabel } from "./TertiaryLabel";
 import { TradePrograms } from "../public/trade-programs";
 import { copyToClipboard } from "../utilities/data";
 import { TariffSet } from "../interfaces/tariffs";
+import { SubheadingsConditionallyExemptFromReciprocal } from "../tariffs/exclusion-lists.ts/reciprocal-tariff-exlcusions";
 
 interface Props {
   units: number;
@@ -236,6 +237,15 @@ export const InlineCountryTariff = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const getNoteForConditionalReciprocalExemption = () => {
+    const subheading = Object.keys(
+      SubheadingsConditionallyExemptFromReciprocal
+    ).find((subheading) => tariffElement.htsno.includes(subheading));
+    return subheading
+      ? SubheadingsConditionallyExemptFromReciprocal[subheading]
+      : null;
+  };
+
   return (
     <div className="flex flex-col gap-8 pb-4">
       {/* Header with Buttons */}
@@ -376,6 +386,21 @@ export const InlineCountryTariff = ({
 
       {/* Tariff Sets */}
       <div className={"w-full flex flex-col gap-4"}>
+        {getNoteForConditionalReciprocalExemption() && (
+          <div>
+            <p className="text-warning font-semibold">
+              Note: {getNoteForConditionalReciprocalExemption()}{" "}
+              <span className="underline">
+                is/are EXEMPT from reciprocal tariffs
+              </span>
+            </p>
+            <p className="text-base-content">
+              If applicable to your import, be sure to apply this to the
+              calculations below
+            </p>
+          </div>
+        )}
+
         {tariffSets.map((tariffSet, i) => (
           <div key={`tariff-set-${i}`} className="flex flex-col gap-4">
             <PrimaryLabel value={`${tariffSet.name} Tariff Details`} />
