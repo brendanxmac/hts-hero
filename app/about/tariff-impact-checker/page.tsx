@@ -7,7 +7,7 @@ import TariffImpactFeaturesGrid from "@/components/TariffImpactFeaturesGrid";
 import Demo from "@/components/Demo";
 import { FAQ } from "@/components/FAQ";
 import { tariffImpactFaqList } from "@/constants/faq";
-import TariffImpactHeader from "@/components/TariffImpactHeader";
+import TariffAboutHeader from "@/components/TariffAboutHeader";
 import { PendingTariffsList } from "../../../components/UpcomingTariffsList";
 import TariffImpactPricing from "../../../components/TariffImpactPricing";
 import TrustedBy from "../../../components/TrustedBy";
@@ -66,7 +66,7 @@ export default function Home() {
   return (
     <>
       <Suspense>
-        <TariffImpactHeader />
+        <TariffAboutHeader />
       </Suspense>
       <main>
         <TariffImpactFeaturesGrid />
@@ -148,18 +148,9 @@ export default function Home() {
         <WithWithout
           subject="Tariffs"
           title="Keeping up with Tariff Changes is a Nightmare"
-          // subtitle="Automatically stay up to date with new tariffs and find ways to reduce your landed costs"
-          // ctaText="Check your Imports"
-          // ctaLink="/tariffs/impact-checker"
-          // withKeyPoint={{
-          //   title: "Clarity",
-          //   detail: "No more guessing or waiting",
-          // }}
           withoutKeyPoint={{
             title: "Error-Prone & Time-Consuming",
-            // detail: "Manual, error-prone, time-consuming",
           }}
-          // withList={withTariffImpact}
           withoutList={withoutTariffImpact}
         />
 

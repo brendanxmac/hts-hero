@@ -23,7 +23,7 @@ const links = [
   },
 ];
 
-const TariffImpactHeader = () => {
+const TariffAboutHeader = () => {
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -42,7 +42,7 @@ const TariffImpactHeader = () => {
         <div className="flex lg:flex-1">
           <Link
             className="text-white flex items-center gap-2 shrink-0 "
-            href="/explore"
+            href="/"
           >
             <Image
               src={logo}
@@ -160,4 +160,4 @@ const TariffImpactHeader = () => {
   );
 };
 
-export default TariffImpactHeader;
+export default TariffAboutHeader;

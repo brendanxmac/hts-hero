@@ -143,10 +143,10 @@ const TariffImpactFeaturesGrid = () => {
       <div className="w-full flex flex-col max-w-7xl lg:min-w-5xl gap-4 sm:gap-8">
         <div className="flex flex-col gap-2 md:gap-4 text-center lg:text-left lg:flex-1 items-center">
           <h1 className="text-white font-extrabold text-3xl sm:text-4xl md:text-6xl tracking-tight max-w-4xl text-center mx-auto">
-            <span className="bg-primary px-2 py-0.5 text-base-300 rounded-sm inline-block mt-2">
+            <span className="bg-yellow-400 px-2 py-0.5 text-base-300 rounded-sm inline-block mt-2">
               Instantly
             </span>{" "}
-            Know How New Tariffs Affect Your Imports
+            See If New Tariffs Affect Your Imports
           </h1>
           <p className="text-sm md:text-lg lg:text-xl text-neutral-300 leading-relaxed max-w-5xl mx-auto md:my-4">
             Get notified, see what&apos;s affected, and discover potential
@@ -155,7 +155,7 @@ const TariffImpactFeaturesGrid = () => {
 
           <div className="flex justify-center lg:justify-start">
             <Link
-              className="btn btn-wide btn-primary"
+              className="btn btn-wide bg-yellow-400 text-base-300 hover:bg-yellow-500"
               href="/tariffs/impact-checker"
             >
               Check your Imports!

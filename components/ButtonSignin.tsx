@@ -19,12 +19,16 @@ const ButtonSignin = ({ text, extraStyle }: Props) => {
   const { user } = useUser();
 
   const getButtonText = () => {
-    return text || "🚀 Launch App";
+    return text || "Launch App ->";
   };
 
   const getRedirectUrl = () => {
-    if (pathname === "/about/tariffs") {
+    if (pathname === "/about/tariff-impact-checker") {
       return "/tariffs/impact-checker";
+    }
+
+    if (pathname === "/about/tariffs") {
+      return "/explore";
     }
 
     if (pathname === "/about") {
@@ -41,7 +45,7 @@ const ButtonSignin = ({ text, extraStyle }: Props) => {
   return (
     <Link
       href={getRedirectUrl()}
-      className={`btn btn-primary btn-sm ${extraStyle ? extraStyle : ""}`}
+      className={`btn btn-sm btn-primary ${extraStyle ? extraStyle : ""}`}
     >
       <p>{getButtonText()}</p>
     </Link>

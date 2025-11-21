@@ -1,11 +1,35 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import { Suspense } from "react";
 import { useUser } from "../contexts/UserContext";
 import { AuthenticatedHeader } from "../components/AuthenticatedHeader";
 import UnauthenticatedHeader from "../components/UnauthenticatedHeader";
+import ProductCard from "../components/ProductCard";
+
+const products = [
+  {
+    emoji: "💰",
+    title: "Tariff Finder",
+    description: "Find the Best Tariff Rate for Any Item",
+    aboutUrl: "/about/tariffs",
+    appUrl: "/explore",
+  },
+  {
+    emoji: "🎯",
+    title: "Classification Assistant",
+    description: "Turbocharge Your Classifications",
+    aboutUrl: "/about",
+    appUrl: "/app",
+  },
+  {
+    emoji: "✅",
+    title: "Tariff Impact Checker",
+    description: "See if your imports are affected by new tariffs",
+    aboutUrl: "/about/tariff-impact-checker",
+    appUrl: "/tariffs/impact-checker",
+  },
+];
 
 export default function Home() {
   const { user } = useUser();
@@ -37,60 +61,22 @@ export default function Home() {
             </div>
 
             <h1 className="sm:text-xl md:text-2xl lg:text-3xl text-white font-semibold tracking-tight mb-8 md:mb-12">
-              Time Saving Tools for Importers and Customs Brokers
+              Quicker Classifications. Effortless Tariffs
             </h1>
           </div>
 
           {/* Navigation Buttons */}
           <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            {/* HTS Explorer */}
-            <Link
-              href="/explore"
-              className="group btn btn-lg h-auto py-6 px-4 bg-base-200 border-2 border-neutral-600 hover:border-primary hover:bg-primary/10 transition-all duration-300 transform hover:scale-105"
-            >
-              <div className="flex flex-col items-center gap-4">
-                <div className="text-4xl">📊</div>
-                <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors">
-                  Tariff Finder
-                </h3>
-                <p className="text-sm text-neutral-400 leading-relaxed">
-                  Check tariff rates for any item from any country
-                  {/* Check if you can import at a profit */}
-                </p>
-              </div>
-            </Link>
-
-            {/* Classification Assistant */}
-            <Link
-              href={user ? "/app" : "/about"}
-              className="group btn btn-lg h-auto py-6 px-4 bg-base-200 border-2 border-neutral-600 hover:border-primary hover:bg-primary/10 transition-all duration-300 transform hover:scale-105"
-            >
-              <div className="flex flex-col items-center gap-4">
-                <div className="text-4xl">🎯</div>
-                <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors">
-                  Classification Assistant
-                </h3>
-                <p className="text-sm text-neutral-400 leading-relaxed">
-                  Turbocharged Classification for Customs Brokers
-                </p>
-              </div>
-            </Link>
-
-            {/* Tariff Import Checker */}
-            <Link
-              href="/tariffs/impact-checker"
-              className="group btn btn-lg h-auto py-6 px-4 bg-base-200 border-2 border-neutral-600 hover:border-primary hover:bg-primary/10 transition-all duration-300 transform hover:scale-105"
-            >
-              <div className="flex flex-col items-center gap-4">
-                <div className="text-4xl">⚡️</div>
-                <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors">
-                  Tariff Impact Checker
-                </h3>
-                <p className="text-sm text-neutral-400 leading-relaxed">
-                  See if your imports are affected by new tariffs
-                </p>
-              </div>
-            </Link>
+            {products.map((product) => (
+              <ProductCard
+                key={product.title}
+                emoji={product.emoji}
+                title={product.title}
+                description={product.description}
+                aboutUrl={product.aboutUrl}
+                appUrl={product.appUrl}
+              />
+            ))}
           </div>
         </div>
       </div>

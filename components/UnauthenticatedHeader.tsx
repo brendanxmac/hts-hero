@@ -82,7 +82,7 @@ const UnauthenticatedHeader = () => {
             </span>
           </Link>
           <div className="hidden md:flex items-center justify-start gap-4">
-            <Link href="/explore">
+            <Link href="/about/tariffs">
               <button
                 className={`btn btn-link px-0 gap-0 ${
                   pathname === "/explore"
@@ -95,14 +95,22 @@ const UnauthenticatedHeader = () => {
             </Link>
             <Link href="/about">
               <button
-                className={`btn btn-link px-0 gap-0 text-base-content no-underline`}
+                className={`btn btn-link px-0 gap-0 ${
+                  pathname === "/app"
+                    ? "text-primary underline"
+                    : "text-base-content no-underline"
+                }`}
               >
                 Classify
               </button>
             </Link>
-            <Link href="/about/tariffs">
+            <Link href="/about/tariff-impact-checker">
               <button
-                className={`btn btn-link px-0 gap-0 text-base-content no-underline`}
+                className={`btn btn-link px-0 gap-0 ${
+                  pathname === "/tariffs/impact-checker"
+                    ? "text-primary underline"
+                    : "text-base-content no-underline"
+                }`}
               >
                 Tariff Impact Checker
               </button>
@@ -148,23 +156,14 @@ const UnauthenticatedHeader = () => {
                 Tutorial
               </button>
             )}
-            <button
-              className="btn btn-sm bg-yellow-400 text-black hover:bg-yellow-500 font-semibold link link-hover"
-              onClick={() => {
-                window.location.href = "/about";
-              }}
+            <Link
+              className="btn btn-sm btn-primary font-semibold link link-hover"
+              href="/about"
             >
-              Want to Classify Quicker?
-            </button>
-            {/* {links.map((link) => (
-              <Link
-                href={link.href}
-                key={link.href}
-                className="btn btn-sm bg-yellow-400 text-black hover:bg-yellow-500 font-semibold link link-hover"
-              >
-                {link.label}
-              </Link>
-            ))} */}
+              {pathname === "/explore"
+                ? "Want Effortless Tariffs?"
+                : "Want Quicker Classifications?"}
+            </Link>
           </div>
 
           {/* CTA on large screens */}
