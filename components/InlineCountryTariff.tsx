@@ -199,7 +199,7 @@ export const InlineCountryTariff = ({
     const harborMaintenanceFee = `Harbor Maintenance Fee: 0.125%`;
     const merchandiseProcessingFee = `Merchandise Processing Fee: 0.3464%\n  Minimum: $33.58 (Valued <= $9,640.00)\n  Maximum: $651.50 (Valued >= $188,077.37)\n  Note: Informal entries under $2,500 only pay a $2.69 flat fee`;
     const tradeProgramText = selectedTradeProgram?.name
-      ? `Trade Program: ${selectedTradeProgram.name}\n`
+      ? `Trade Program Applied: ${selectedTradeProgram.name}\n\n`
       : "";
     return `${tariffContext}\n\n${tradeProgramText}${tariffSets.map((set) => getTariffSetText(set)).join("\n")}\n${harborMaintenanceFee}\n\n${merchandiseProcessingFee}`;
   };
