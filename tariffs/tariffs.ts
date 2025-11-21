@@ -528,8 +528,7 @@ export const getContentRequirementTariffSets = (
 export const getAdValoremRate = (
   column: TariffColumn,
   tariffSet: UITariff[],
-  baseTariffs?: BaseTariffI[],
-  addMpfAndHmf: boolean = false
+  baseTariffs?: BaseTariffI[]
 ) => {
   let rate = 0;
   tariffSet.forEach((tariff) => {
@@ -544,10 +543,6 @@ export const getAdValoremRate = (
       .forEach((t) => {
         rate += t.value;
       });
-  }
-
-  if (addMpfAndHmf) {
-    rate += 0.125 + 0.3464;
   }
 
   return rate;
