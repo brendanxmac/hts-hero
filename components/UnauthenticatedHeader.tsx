@@ -167,9 +167,7 @@ const UnauthenticatedHeader = () => {
           </div>
 
           {/* CTA on large screens */}
-          {pathname !== "/explore" && (
-            <div className="hidden md:flex md:justify-end md:flex-1">{cta}</div>
-          )}
+          <div className="hidden md:flex md:justify-end md:flex-1">{cta}</div>
         </div>
       </nav>
 
