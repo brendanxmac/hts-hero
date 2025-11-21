@@ -77,7 +77,7 @@ export default function Home() {
         <Demo
           standoutPlacement="end"
           titleStandout=""
-          title="See If Your Imports Are Affected By New Tariffs"
+          title="See If New Tariffs Affect Your Imports"
           subtitle="Instantly know which imports are affected by tariff updates"
           ctaText="Try it Now!"
           ctaLink="/tariffs/impact-checker"

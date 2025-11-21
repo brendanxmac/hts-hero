@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 interface TeamRequestConfirmationParams {
   name: string;
   email: string;
-  productType: "classify" | "tariff";
+  productType: "classify" | "tariff" | "both";
 }
 
 const sendTeamRequestConfirmationEmail = async ({
@@ -16,7 +16,12 @@ const sendTeamRequestConfirmationEmail = async ({
   productType,
   email,
 }: TeamRequestConfirmationParams) => {
-  const productName = productType === "tariff" ? "Tariff Pro" : "Classify Pro";
+  const productName =
+    productType === "both"
+      ? "HTS Hero"
+      : productType === "tariff"
+        ? "Tariff Pro"
+        : "Classify Pro";
   const emoji = "🎉";
 
   await sendEmailFromComponent({
@@ -35,7 +40,7 @@ interface DemoRequestDto {
   email: string;
   name: string;
   notes?: string;
-  productType?: "classify" | "tariff";
+  productType?: "classify" | "tariff" | "both";
 }
 
 export async function POST(req: NextRequest) {
@@ -62,8 +67,13 @@ export async function POST(req: NextRequest) {
 
     // Determine product name and emoji based on productType
     const productName =
-      productType === "tariff" ? "Tariff Pro" : "Classify Pro";
-    const emoji = productType === "tariff" ? "📊" : "🎯";
+      productType === "both"
+        ? "HTS Hero"
+        : productType === "tariff"
+          ? "Tariff Pro"
+          : "Classify Pro";
+    const emoji =
+      productType === "both" ? "🚀" : productType === "tariff" ? "📊" : "🎯";
 
     // Send enterprise request email to Brendan
     const subject = `${emoji} New ${productName} Team Request!`;
