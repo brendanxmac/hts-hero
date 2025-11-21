@@ -198,7 +198,7 @@ export const InlineCountryTariff = ({
   const copyTariffDetails = () => {
     const tariffContext = `Tariff Details for ${country.name}:`;
     const harborMaintenanceFee = `Harbor Maintenance Fee:\n   0.125% of the value of the imported cargo`;
-    const merchandiseProcessingFee = `Merchandise Processing Fee:\n   0.3464% of the value of the imported cargo\n     Minimum: $33.58 (Valued <= $9,640.00)\n     Maximum: $651.50 (Valued >= $188,077.37)\n     Note: Informal entires under $2,500 face a flat fee of $2.69 instead of the rate`;
+    const merchandiseProcessingFee = `Merchandise Processing Fee:\n   0.3464% of the value of the imported cargo\n     Minimum: $33.58 (Valued <= $9,640.00)\n     Maximum: $651.50 (Valued >= $188,077.37)\n     Note: Informal entries under $2,500 only pay a $2.69 flat fee`;
     const tradeProgramText = selectedTradeProgram?.name
       ? `Trade Program: ${selectedTradeProgram.name}\n`
       : "";
