@@ -5,13 +5,14 @@ import { useUser } from "../contexts/UserContext";
 import apiClient from "@/libs/api";
 import toast from "react-hot-toast";
 
-export type EnterpriseProductType = "classify" | "tariff" | "both";
+export type ProductType = "classify" | "tariff" | "both";
 
 interface ClassifyTeamModalProps {
   isOpen: boolean;
   onClose: () => void;
-  productType?: EnterpriseProductType;
+  productType?: ProductType;
   showProductSelector?: boolean;
+  isTeamRequest?: boolean;
 }
 
 const LetsTalkModal = ({
@@ -19,11 +20,12 @@ const LetsTalkModal = ({
   onClose,
   productType = "both",
   showProductSelector = false,
+  isTeamRequest = false,
 }: ClassifyTeamModalProps) => {
   const { user } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedProduct, setSelectedProduct] =
-    useState<EnterpriseProductType>(productType);
+    useState<ProductType>(productType);
   const [formData, setFormData] = useState({
     email: "",
     name: "",
@@ -266,7 +268,6 @@ const LetsTalkModal = ({
             </button>
           </div>
         </form>
-
         {/* Divider */}
         {/* <div className="divider mt-8">OR</div>
 
