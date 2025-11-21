@@ -13,21 +13,21 @@ import {
 } from "@react-email/components";
 import React from "react";
 
-interface TeamRequestConfirmationEmailProps {
+interface DemoRequestConfirmationEmailProps {
   name: string;
   productName: string;
   email: string;
 }
 
-export default function TeamRequestConfirmationEmail({
+export default function DemoRequestConfirmationEmail({
   name = "there",
   productName = "Tariff Pro",
   email,
-}: TeamRequestConfirmationEmailProps) {
+}: DemoRequestConfirmationEmailProps) {
   return (
     <Html>
       <Head />
-      <Preview>🎉 Your Demo of {productName} for Teams!</Preview>
+      <Preview>Here&apos;s what you can look forward to</Preview>
       <Tailwind
         config={{
           presets: [pixelBasedPreset],
@@ -53,7 +53,7 @@ export default function TeamRequestConfirmationEmail({
             </Text>
             <Text className="text-base text-gray-800 leading-relaxed">
               Thank you for your interest in{" "}
-              <span className="font-bold">{productName} for Teams</span>!
+              <span className="font-bold">{productName}</span>!
             </Text>
             <Text className="text-base text-gray-800 leading-relaxed">
               We&apos;ve received your request and are looking forward to your
@@ -96,8 +96,8 @@ export default function TeamRequestConfirmationEmail({
                 }}
               >
                 ✓
-              </span>
-              Your team&apos;s specific needs and how {productName} can help
+              </span>{" "}
+              Your specific needs and how {productName} can help
             </Text>
             <Text
               className="text-white text-base mb-3 pl-5"
@@ -117,29 +117,29 @@ export default function TeamRequestConfirmationEmail({
                 }}
               >
                 ✓
-              </span>
+              </span>{" "}
+              A full demo of {productName}
+            </Text>
+            <Text
+              className="text-white text-base mb-3 pl-5"
+              style={{
+                color: "#ffffff",
+                position: "relative",
+                marginBottom: "12px",
+                paddingLeft: "20px",
+              }}
+            >
+              <span
+                style={{
+                  position: "absolute",
+                  left: "0",
+                  color: "#fbbf24",
+                  fontWeight: "bold",
+                }}
+              >
+                ✓
+              </span>{" "}
               Support, onboarding, & pricing options
-            </Text>
-            <Text
-              className="text-white text-base mb-3 pl-5"
-              style={{
-                color: "#ffffff",
-                position: "relative",
-                marginBottom: "12px",
-                paddingLeft: "20px",
-              }}
-            >
-              <span
-                style={{
-                  position: "absolute",
-                  left: "0",
-                  color: "#fbbf24",
-                  fontWeight: "bold",
-                }}
-              >
-                ✓
-              </span>
-              A demo of the product
             </Text>
             <Text
               className="text-white text-base pl-5"
@@ -159,41 +159,22 @@ export default function TeamRequestConfirmationEmail({
                 }}
               >
                 ✓
-              </span>
-              Any other questions you have
+              </span>{" "}
+              Any other questions you might have
             </Text>
-          </Section>
-
-          {/* CTA Section */}
-          <Section className="px-4 mb-6">
-            <Text className="text-lg font-bold text-gray-900 leading-relaxed">
-              If you <span className="underline">didn&apos;t</span> already book
-              your demo call, you can do that here:
-            </Text>
-            <Button
-              href={`https://calendly.com/brendan-htshero/30min?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`}
-              className="bg-[#617BFF] text-white font-bold py-4 text-base rounded-lg mt-4"
-              style={{
-                display: "block",
-                width: "100%",
-                textAlign: "center",
-              }}
-            >
-              Book Your Demo Call →
-            </Button>
           </Section>
 
           {/* Additional Info */}
           <Section className="px-4 mb-2">
             <Text className="text-base text-gray-800 leading-relaxed">
-              Otherwise, feel free to explore{" "}
+              Feel free to explore{" "}
               <Button
                 href="https://htshero.com"
                 className="text-[#617BFF] font-medium underline"
               >
                 all our tools
               </Button>{" "}
-              in the meantime.
+              in the meantime, and prepare any questions you might have.
             </Text>
             <Text className="text-base text-gray-800 leading-relaxed">
               If you have any urgent questions, don&apos;t hesitate to reach
@@ -227,6 +208,25 @@ export default function TeamRequestConfirmationEmail({
                 brendan@htshero.com
               </Button>
             </Text>
+          </Section>
+
+          {/* CTA Section */}
+          <Section className="px-4 mb-6">
+            <Text className="text-lg font-bold text-gray-900 leading-relaxed">
+              If you <span className="underline">didn&apos;t</span> already book
+              your demo call, you can do that here:
+            </Text>
+            <Button
+              href={`https://calendly.com/brendan-htshero/30min?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`}
+              className="bg-[#617BFF] text-white font-bold py-4 text-base rounded-lg mt-4"
+              style={{
+                display: "block",
+                width: "100%",
+                textAlign: "center",
+              }}
+            >
+              Book Your Demo Call →
+            </Button>
           </Section>
 
           {/* Footer */}

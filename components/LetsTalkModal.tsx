@@ -5,21 +5,27 @@ import { useUser } from "../contexts/UserContext";
 import apiClient from "@/libs/api";
 import toast from "react-hot-toast";
 
-export type EnterpriseProductType = "classify" | "tariff";
+export type ProductType = "classify" | "tariff" | "both";
 
 interface ClassifyTeamModalProps {
   isOpen: boolean;
   onClose: () => void;
-  productType?: EnterpriseProductType;
+  productType?: ProductType;
+  showProductSelector?: boolean;
+  isTeamRequest?: boolean;
 }
 
 const LetsTalkModal = ({
   isOpen,
   onClose,
-  productType = "classify",
+  productType = "both",
+  showProductSelector = false,
+  isTeamRequest = false,
 }: ClassifyTeamModalProps) => {
   const { user } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedProduct, setSelectedProduct] =
+    useState<ProductType>(productType);
   const [formData, setFormData] = useState({
     email: "",
     name: "",
@@ -35,9 +41,19 @@ const LetsTalkModal = ({
         notes: "",
       });
     }
-  }, [isOpen, user]);
+    // Reset selected product when modal opens
+    if (isOpen) {
+      setSelectedProduct(productType);
+    }
+  }, [isOpen, user, productType]);
 
   const getProductName = () => {
+    if (showProductSelector) {
+      if (selectedProduct === "both") {
+        return "Classify Pro & Tariff Pro";
+      }
+      return selectedProduct === "classify" ? "Classify Pro" : "Tariff Pro";
+    }
     return productType === "classify" ? "Classify Pro" : "Tariff Pro";
   };
 
@@ -52,11 +68,15 @@ const LetsTalkModal = ({
     setIsSubmitting(true);
 
     try {
+      const finalProductType = showProductSelector
+        ? selectedProduct
+        : productType;
+
       await apiClient.post("/lead", {
         email: formData.email,
         name: formData.name,
         notes: formData.notes,
-        productType,
+        productType: finalProductType,
       });
 
       toast.success(
@@ -70,7 +90,7 @@ const LetsTalkModal = ({
 
       // Open a new tab at this url: https://calendly.com/brendan-htshero/30min
       window.open(
-        `https://calendly.com/brendan-htshero/30min?name=${encodeURIComponent(formData.name)}&email=${encodeURIComponent(formData.email)}`,
+        `https://calendly.com/brendan-htshero/30min?name=${encodeURIComponent(formData.name)}&email=${encodeURIComponent(formData.email)}&a1=${encodeURIComponent(formData.notes)}`,
         "_blank"
       );
     } catch (error) {
@@ -100,7 +120,7 @@ const LetsTalkModal = ({
         {/* Header Section */}
         <div className="flex flex-col gap-3 mb-4">
           <h3 className="font-bold text-lg sm:text-xl md:text-2xl leading-tight flex-1">
-            Get {getProductName()} for your Team
+            Book Your Demo
           </h3>
 
           <p className="text-sm sm:text-base text-base-content/70">
@@ -115,6 +135,55 @@ const LetsTalkModal = ({
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
+          {showProductSelector && (
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text text-sm sm:text-base font-medium">
+                  What would you like a demo of?{" "}
+                  <span className="text-error">*</span>
+                </span>
+              </label>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedProduct("classify")}
+                  className={`btn flex-1 ${
+                    selectedProduct === "classify"
+                      ? "btn-primary text-white"
+                      : "btn-outline"
+                  }`}
+                  disabled={isSubmitting}
+                >
+                  Quicker Classifications
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedProduct("tariff")}
+                  className={`btn flex-1 ${
+                    selectedProduct === "tariff"
+                      ? "btn-primary text-white"
+                      : "btn-outline"
+                  }`}
+                  disabled={isSubmitting}
+                >
+                  Effortless Tariffs
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedProduct("both")}
+                  className={`btn flex-1 ${
+                    selectedProduct === "both"
+                      ? "btn-primary text-white"
+                      : "btn-outline"
+                  }`}
+                  disabled={isSubmitting}
+                >
+                  Both
+                </button>
+              </div>
+            </div>
+          )}
+
           <div className="form-control">
             <label className="label">
               <span className="label-text text-sm sm:text-base font-medium">
@@ -186,7 +255,7 @@ const LetsTalkModal = ({
             <button
               type="submit"
               className="btn bg-primary hover:bg-primary/80 text-white w-full sm:w-auto sm:flex-1"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !formData.email || !formData.name}
             >
               {isSubmitting ? (
                 <>
@@ -194,12 +263,11 @@ const LetsTalkModal = ({
                   <span className="text-sm sm:text-base">Submitting...</span>
                 </>
               ) : (
-                <span className="text-sm sm:text-base">Book Your Demo</span>
+                <span className="text-sm sm:text-base">Submit</span>
               )}
             </button>
           </div>
         </form>
-
         {/* Divider */}
         {/* <div className="divider mt-8">OR</div>
 

@@ -72,7 +72,7 @@ const UnauthenticatedTariffsHeader = () => {
                 Classify
               </button>
             </Link>
-            <Link href="/about/tariffs">
+            <Link href="/about/tariff-impact-checker">
               <button
                 className={`btn btn-link px-0 gap-0 text-base-content no-underline`}
               >

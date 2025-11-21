@@ -537,7 +537,7 @@ export const Tariffs = ({
                           <div className="flex gap-2">
                             {!isPayingUser && !isTariffImpactTrialUser ? (
                               <Link
-                                href="/about/tariffs#pricing"
+                                href="/about/tariffs"
                                 target="_blank"
                                 className="link link-primary no-underline text-base-content hover:text-primary hover:underline"
                               >

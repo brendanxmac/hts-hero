@@ -1,28 +1,32 @@
 import { NextResponse, NextRequest } from "next/server";
 import { sendEmail, sendEmailFromComponent } from "../../../libs/resend";
-import TeamRequestConfirmationEmail from "../../../emails/TeamRequestConfirmationEmail";
+import DemoRequestConfirmationEmail from "../../../emails/DemoRequestConfirmationEmail";
 import React from "react";
 
 export const dynamic = "force-dynamic";
 
-interface TeamRequestConfirmationParams {
+interface DemoRequestConfirmationParams {
   name: string;
   email: string;
-  productType: "classify" | "tariff";
+  productType: "classify" | "tariff" | "both";
 }
 
-const sendTeamRequestConfirmationEmail = async ({
+const sendDemoRequestConfirmationEmail = async ({
   name,
   productType,
   email,
-}: TeamRequestConfirmationParams) => {
-  const productName = productType === "tariff" ? "Tariff Pro" : "Classify Pro";
-  const emoji = "🎉";
+}: DemoRequestConfirmationParams) => {
+  const productName =
+    productType === "both"
+      ? "HTS Hero"
+      : productType === "tariff"
+        ? "Tariff Pro"
+        : "Classify Pro";
 
   await sendEmailFromComponent({
     to: email,
-    subject: `${emoji} Your Demo of ${productName} for Teams!`,
-    emailComponent: React.createElement(TeamRequestConfirmationEmail, {
+    subject: `${productName} Demo Confirmed!`,
+    emailComponent: React.createElement(DemoRequestConfirmationEmail, {
       name,
       productName,
       email,
@@ -35,7 +39,7 @@ interface DemoRequestDto {
   email: string;
   name: string;
   notes?: string;
-  productType?: "classify" | "tariff";
+  productType?: "classify" | "tariff" | "both";
 }
 
 export async function POST(req: NextRequest) {
@@ -62,22 +66,27 @@ export async function POST(req: NextRequest) {
 
     // Determine product name and emoji based on productType
     const productName =
-      productType === "tariff" ? "Tariff Pro" : "Classify Pro";
-    const emoji = productType === "tariff" ? "📊" : "🎯";
+      productType === "both"
+        ? "HTS Hero"
+        : productType === "tariff"
+          ? "Tariff Pro"
+          : "Classify Pro";
+    const emoji =
+      productType === "both" ? "🚀" : productType === "tariff" ? "📊" : "🎯";
 
     // Send enterprise request email to Brendan
-    const subject = `${emoji} New ${productName} Team Request!`;
-    const text = `${name} (${email}) has requested a demo for ${productName} Team plan!\n\nNotes: ${notes || "None provided"}`;
+    const subject = `${emoji} New ${productName} Demo Request!`;
+    const text = `${name} (${email}) has requested a demo for ${productName} plan!\n\nNotes: ${notes || "None provided"}`;
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #f59e0b;">${emoji} New ${productName} Team Request!</h2>
+        <h2 style="color: #f59e0b;">${emoji} New ${productName} Demo Request!</h2>
         <p style="font-size: 16px; line-height: 1.5;">
-          <strong>${name}</strong> has requested info about the <strong>${productName} Team</strong> plan!
+          <strong>${name}</strong> has requested info about the <strong>${productName}</strong> plan!
         </p>
         <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
           <p style="margin: 8px 0;"><strong>Name:</strong> ${name}</p>
           <p style="margin: 8px 0;"><strong>Email:</strong> ${email}</p>
-          <p style="margin: 8px 0;"><strong>Plan:</strong> ${productName} for Teams</p>
+          <p style="margin: 8px 0;"><strong>Plan:</strong> ${productName}</p>
           <p style="margin: 8px 0;"><strong>Time:</strong> ${new Date().toLocaleString()}</p>
           ${
             notes
@@ -91,7 +100,7 @@ export async function POST(req: NextRequest) {
           }
         </div>
         <p style="font-size: 14px; color: #6b7280;">
-          Follow up with them soon to discuss their team needs!
+          Follow up with them soon to discuss their needs!
         </p>
       </div>
     `;
@@ -104,32 +113,15 @@ export async function POST(req: NextRequest) {
         html,
         replyTo: email,
       }),
-      sendTeamRequestConfirmationEmail({
+      sendDemoRequestConfirmationEmail({
         name,
         productType,
         email,
       }),
     ]);
 
-    // Send enterprise request email to Brendan
-    // await sendEmail({
-    //   to: "brendan@htshero.com",
-    //   subject,
-    //   text,
-    //   html,
-    //   replyTo: email,
-    // });
-
-    // Send confirmation email to the prospect
-    // await sendTeamRequestConfirmationEmail({
-    //   name,
-    //   email,
-    //   productType,
-    //   notes,
-    // });
-
     return NextResponse.json(
-      { message: `${productName} Team request sent successfully!` },
+      { message: `${productName} Demo request sent successfully!` },
       { status: 200 }
     );
   } catch (e) {

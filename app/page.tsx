@@ -1,17 +1,66 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { useUser } from "../contexts/UserContext";
 import { AuthenticatedHeader } from "../components/AuthenticatedHeader";
 import UnauthenticatedHeader from "../components/UnauthenticatedHeader";
+import ProductCard, { ProductCardI } from "../components/ProductCard";
+import LetsTalkModal from "../components/LetsTalkModal";
+import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
+
+const products: ProductCardI[] = [
+  {
+    emoji: "💰",
+    title: "Tariff Finder",
+    description: "Find the Best Tariff Rate for Any Item",
+    aboutUrl: "/about/tariffs",
+    appUrl: "/explore",
+    cta: "Find Tariffs",
+  },
+  {
+    emoji: "🎯",
+    title: "Classification Assistant",
+    description: "Turbocharge Your Classifications",
+    aboutUrl: "/about",
+    appUrl: "/app",
+    cta: "Classify",
+  },
+  {
+    emoji: "✅",
+    title: "Tariff Impact Checker",
+    description: "See If new tariffs affect your imports",
+    aboutUrl: "/about/tariff-impact-checker",
+    appUrl: "/tariffs/impact-checker",
+    cta: "Check Your Imports",
+  },
+];
 
 export default function Home() {
   const { user } = useUser();
+  const [isBookDemoModalOpen, setIsBookDemoModalOpen] = useState(false);
+
+  const handleBookDemoClick = () => {
+    const userEmail = user?.email || "";
+    const userName = user?.user_metadata?.full_name || "";
+
+    // Track the event
+    try {
+      trackEvent(MixpanelEvent.CLICKED_TARIFF_TEAM_LETS_TALK, {
+        userEmail,
+        userName,
+        isLoggedIn: !!user,
+      });
+    } catch (e) {
+      console.error("Error tracking book demo click:", e);
+    }
+
+    // Open the modal
+    setIsBookDemoModalOpen(true);
+  };
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <Suspense
         fallback={
           <div className="h-16 bg-base-100 border-b border-base-content/20" />
@@ -19,7 +68,7 @@ export default function Home() {
       >
         {user ? <AuthenticatedHeader /> : <UnauthenticatedHeader />}
       </Suspense>
-      <div className="h-full bg-base-300 flex items-center justify-center p-4">
+      <div className="flex-1 bg-base-300 flex items-center justify-center p-4">
         <div className="text-center max-w-7xl w-full">
           <div className="mb-8">
             {/* Logo and HTS Hero text */}
@@ -29,71 +78,56 @@ export default function Home() {
                 alt="HTS Hero"
                 width={50}
                 height={50}
-                className="w-10 h-10 sm:w-12 sm:h-w-12 md:w-16 md:h-16 object-contain"
+                className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 object-contain"
               />
-              <span className="px-2 sm:px-3 py-1 sm:py-2 text-white text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight">
+              <span className="px-2 sm:px-3 py-1 sm:py-2 text-white text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight">
                 HTS Hero
               </span>
             </div>
 
-            <h1 className="sm:text-xl md:text-2xl lg:text-3xl text-white font-semibold tracking-tight mb-8 md:mb-12">
-              Time Saving Tools for Importers and Customs Brokers
+            <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white font-semibold tracking-tight mb-8 md:mb-12">
+              Quicker Classifications. Effortless Tariffs
             </h1>
           </div>
 
           {/* Navigation Buttons */}
-          <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            {/* HTS Explorer */}
-            <Link
-              href="/explore"
-              className="group btn btn-lg h-auto py-6 px-4 bg-base-200 border-2 border-neutral-600 hover:border-primary hover:bg-primary/10 transition-all duration-300 transform hover:scale-105"
-            >
-              <div className="flex flex-col items-center gap-4">
-                <div className="text-4xl">📊</div>
-                <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors">
-                  Tariff Finder
-                </h3>
-                <p className="text-sm text-neutral-400 leading-relaxed">
-                  Check tariff rates for any item from any country
-                  {/* Check if you can import at a profit */}
-                </p>
-              </div>
-            </Link>
+          <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+            {products.map((product) => (
+              <ProductCard
+                key={product.title}
+                emoji={product.emoji}
+                title={product.title}
+                description={product.description}
+                aboutUrl={product.aboutUrl}
+                appUrl={product.appUrl}
+                cta={product.cta}
+              />
+            ))}
+          </div>
 
-            {/* Classification Assistant */}
-            <Link
-              href={user ? "/app" : "/about"}
-              className="group btn btn-lg h-auto py-6 px-4 bg-base-200 border-2 border-neutral-600 hover:border-primary hover:bg-primary/10 transition-all duration-300 transform hover:scale-105"
-            >
-              <div className="flex flex-col items-center gap-4">
-                <div className="text-4xl">🎯</div>
-                <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors">
-                  Classification Assistant
-                </h3>
-                <p className="text-sm text-neutral-400 leading-relaxed">
-                  Turbocharged Classification for Customs Brokers
-                </p>
-              </div>
-            </Link>
-
-            {/* Tariff Import Checker */}
-            <Link
-              href="/tariffs/impact-checker"
-              className="group btn btn-lg h-auto py-6 px-4 bg-base-200 border-2 border-neutral-600 hover:border-primary hover:bg-primary/10 transition-all duration-300 transform hover:scale-105"
-            >
-              <div className="flex flex-col items-center gap-4">
-                <div className="text-4xl">⚡️</div>
-                <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors">
-                  Tariff Impact Checker
-                </h3>
-                <p className="text-sm text-neutral-400 leading-relaxed">
-                  See if your imports are affected by new tariffs
-                </p>
-              </div>
-            </Link>
+          {/* CTA Section */}
+          <div className="mt-8">
+            <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 rounded-2xl p-6 shadow-xl backdrop-blur-sm">
+              <h2 className="text-lg sm:text-xl font-semibold text-white mb-6">
+                Want quicker classifications or effortless tariffs for you or
+                your team?
+              </h2>
+              <button
+                onClick={handleBookDemoClick}
+                className="btn btn-primary btn-wide"
+              >
+                Book Demo
+              </button>
+            </div>
           </div>
         </div>
       </div>
+
+      <LetsTalkModal
+        isOpen={isBookDemoModalOpen}
+        onClose={() => setIsBookDemoModalOpen(false)}
+        showProductSelector={true}
+      />
     </div>
   );
 }
