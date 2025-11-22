@@ -34,7 +34,7 @@ const features: {
       //   isKey: true,
       // },
     ],
-    svg: <LightningSVG color="#facc15" size={7} viewBox="0 0 24 24" />,
+    svg: <LightningSVG color="#facc15" size={7} fill viewBox="0 0 24 24" />,
     image: { src: "/tariffs.png", alt: "Check Tariff Rates" },
   },
   {
@@ -47,7 +47,7 @@ const features: {
         point: "Apply free trade programs you may be eligible for",
       },
     ],
-    svg: <RocketSVG color="#facc15" size={7} viewBox="0 0 24 24" />,
+    svg: <RocketSVG color="#facc15" size={7} fill viewBox="0 0 24 24" />,
     image: {
       src: "/finds-savings.png",
       alt: "Finds Savings",
@@ -67,7 +67,7 @@ const features: {
         point: "Know the latest tariff rate before your next purchase order",
       },
     ],
-    svg: <LightBulbSVG color="#facc15" size={7} viewBox="0 0 24 24" />,
+    svg: <LightBulbSVG color="#facc15" size={7} fill viewBox="0 0 24 24" />,
     image: { src: "/avoid-surprises.png", alt: "Avoid Surprises" },
   },
 ];
