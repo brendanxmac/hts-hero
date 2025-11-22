@@ -17,23 +17,22 @@ const features: {
   image: { src: string; alt: string };
 }[] = [
   {
-    name: "Finds Candidates",
+    name: "Quickly See Candidates for Any Product",
     points: [
       {
-        point:
-          "Jump-start classifications instead of starting from scratch every time",
+        point: "Jump-Start Classifications with AI Suggestions",
       },
       {
-        point: "Get HS headings for any item in seconds",
+        point: "See HS Heading Suggestions for any Item",
       },
       {
-        point: "Discover headings you might have missed",
+        point: "Discover Headings You Might Have Missed",
       },
       {
-        point: "Easily find & apply your own",
+        point: "Easily Find & Apply Your Own HS Headings",
       },
       {
-        point: "~10 minutes saved",
+        point: "~10 Minutes Saved",
         detail: "per classification",
         isKey: true,
       },
@@ -42,17 +41,17 @@ const features: {
     image: { src: "/candidates.png", alt: "Candidates HS headings" },
   },
   {
-    name: "Analyzes Options",
+    name: "Get GRI Analysis of All Candidates",
     points: [
       {
-        point: "Provides a GRI analysis of candidates at every level",
+        point: "Provides a GRI Analysis of Candidates at Every Level",
       },
       {
-        point: "Helps you quickly find the best candidate",
+        point: "Helps you Quickly Determine the Best Candidate",
       },
       {
-        point: "Lets you add your own notes for any decision",
-        detail: "These are automatically included in your reports",
+        point: "Easily Add Your Own Notes",
+        detail: "Which will be included in your reports automatically",
       },
       {
         point: "~10 minutes saved",
@@ -67,14 +66,13 @@ const features: {
     },
   },
   {
-    name: "Searches CROSS Rulings",
+    name: "Discover Relevant CROSS Rulings",
     points: [
       {
-        point: "Automatically searches CROSS rulings for you",
+        point: "Automatically Finds CROSS Rulings For You",
       },
       {
-        point:
-          "Lets you quickly see if you're on the right track by seeing relevant rulings",
+        point: "Helps You Quickly See If You're On The Right Track",
       },
       {
         point: "~10 minutes saved",
@@ -86,34 +84,10 @@ const features: {
     image: { src: "/cross.png", alt: "Relevant CROSS rulings" },
   },
   {
-    name: "Finds & Calculates Tariffs",
+    name: "Generate Client-Ready Advisory Reports",
     points: [
       {
-        point: "See the latest tariffs for any import from any country",
-      },
-      {
-        point: "Discover ways to save with exemptions & trade programs",
-      },
-      {
-        point: "Constantly updated with the latest tariff annoucements",
-      },
-      {
-        point: "~20 minutes saved",
-        detail: "per classification",
-        isKey: true,
-      },
-    ],
-    svg: <PuzzlePieceSVG color="#facc15" fill size={8} viewBox="0 0 24 24" />,
-    image: {
-      src: "/tariffs.png",
-      alt: "Tariff insights and savings",
-    },
-  },
-  {
-    name: "Creates Branded Reports",
-    points: [
-      {
-        point: "Generate classification reports, in a single click",
+        point: "Generate polished classification reports, in a single click",
       },
       {
         point:
@@ -135,19 +109,38 @@ const features: {
     },
   },
   {
-    name: "A Collaborative Workspace for Your Team",
+    name: "See The Latest Tariffs for Any Import from Any Country",
     points: [
       {
-        point: "Collaborate on classifications",
+        point: "Discover ways to save with exemptions & trade programs",
       },
       {
-        point: "Keep track of your teams progress",
+        point: "Constantly updated with the latest tariff annoucements",
       },
       {
-        point: "Review & approve your teams classifications",
+        point: "~20 minutes saved",
+        detail: "per classification",
+        isKey: true,
+      },
+    ],
+    svg: <PuzzlePieceSVG color="#facc15" fill size={8} viewBox="0 0 24 24" />,
+    image: {
+      src: "/tariffs.png",
+      alt: "Tariff insights and savings",
+    },
+  },
+  {
+    name: "Collaborate With Your Whole Team",
+    points: [
+      {
+        point: "See, Review, & Approve Each Others Classifications",
       },
       {
-        point: "Search by description, status, importer, etc...",
+        point: "Collaborate on Classifications & Track Progress",
+      },
+      {
+        point:
+          "Search for Classifications by Description, Status, Importer, and Classifier",
       },
       {
         point: "Quicker Classifications, Less Mistakes",
@@ -182,23 +175,24 @@ const FeaturesListicle = () => {
           {features.map((feature, index) => {
             const mediaLeft = index % 2 === 1;
             return (
-              <article key={feature.name} className="py-6 md:py-10">
+              <div key={feature.name} className="py-6 md:py-10">
                 <div
                   className={`grid grid-cols-1 items-center gap-8 lg:gap-16 lg:grid-cols-[1fr_1fr]`}
                 >
-                  <div className={`${mediaLeft ? "lg:order-2" : "lg:order-1"}`}>
+                  <div
+                    className={`order-2 ${mediaLeft ? "lg:order-2" : "lg:order-1"}`}
+                  >
                     <div className="flex items-center gap-3 mb-8">
                       <span className="text-primary">{feature.svg}</span>
                       <h3 className="text-white text-2xl md:text-4xl font-extrabold tracking-tight">
                         {feature.name}
                       </h3>
                     </div>
-                    {/* <p className="text-neutral-300 mb-6 md:mb-8">
-                      {feature.subtitle}
-                    </p> */}
                     <FeaturePoints points={feature.points} />
                   </div>
-                  <div className={`${mediaLeft ? "lg:order-1" : "lg:order-2"}`}>
+                  <div
+                    className={`order-1 ${mediaLeft ? "lg:order-1" : "lg:order-2"}`}
+                  >
                     <div className="w-full h-full flex justify-center p-4 bg-primary rounded-2xl md:rounded-3xl border-2 border-gray-700">
                       <Image
                         src={feature.image.src}
@@ -210,7 +204,7 @@ const FeaturesListicle = () => {
                     </div>
                   </div>
                 </div>
-              </article>
+              </div>
             );
           })}
         </div>

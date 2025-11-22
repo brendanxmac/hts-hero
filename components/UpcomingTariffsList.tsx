@@ -23,7 +23,7 @@ export const PendingTariffsList = ({ hideHeading }: Props) => {
     {
       name: "Medium & Heavy Duty Vehicles",
       date: new Date(2025, 10, 1), // November 1, 2025
-      status: TariffStatus.PENDING_PUBLICATION,
+      status: TariffStatus.PUBLISHED,
     },
     {
       name: "Robotics & Industrial Machinery",
@@ -167,7 +167,7 @@ export const PendingTariffsList = ({ hideHeading }: Props) => {
   return (
     <section
       id="pending-tariffs"
-      className={`flex justify-center items-center w-full bg-base-200 text-base-content px-6  ${
+      className={`flex justify-center items-center w-full bg-base-300 text-base-content px-6  ${
         hideHeading ? "" : "lg:py-16"
       }`}
     >

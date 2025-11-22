@@ -92,11 +92,11 @@ export const classifyPro: PricingPlanI = {
   prices: [80],
   priceAnchors: [120],
   features: [
-    { name: "Finds Candidates" },
-    { name: "Analyzes Options" },
-    { name: "Searches CROSS Rulings" },
-    { name: "Finds & Calculates Tariffs" },
-    { name: "Creates Reports" },
+    { name: "Get Candidates for any Item" },
+    { name: "GRI Analysis of all Candidates" },
+    { name: "Discover Relevant CROSS Rulings" },
+    { name: "See the Latest Tariffs for any Import from any Country" },
+    { name: "Generate Client-Ready Advisory Reports" },
   ],
 };
 
@@ -110,14 +110,12 @@ export const classifyTeam: PricingPlanI = {
   priceTiers: ["2-4 users", "5-9 users", "10+ users"],
   isFeatured: true,
   features: [
-    { name: "Finds Candidates" },
-    { name: "Analyzes Options" },
-    { name: "Searches CROSS Rulings" },
-    { name: "Finds & Calculates Tariffs" },
-    { name: "Creates Reports" },
-    { name: "Collaborate on Classifiactions" },
-    { name: "Keep track of your teams progress" },
-    { name: "Review & approve your teams classifications" },
+    { name: "Get Candidates for any Item" },
+    { name: "GRI Analysis of all Candidates" },
+    { name: "Discover Relevant CROSS Rulings" },
+    { name: "See the Latest Tariffs for any Import from any Country" },
+    { name: "Generate Client-Ready Advisory Reports" },
+    { name: "See, Review, & Approve Your Team's Classifications" },
   ],
 };
 

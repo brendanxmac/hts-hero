@@ -125,7 +125,7 @@ const Pricing = ({ customerType }: PricingProps) => {
   };
 
   return (
-    <section className="bg-base-100 overflow-hidden">
+    <section className="bg-base-300 overflow-hidden">
       <div className="py-16 px-8 max-w-7xl mx-auto" id="pricing">
         <div className="flex flex-col text-center w-full">
           <p className="font-medium text-gray-400 mb-8">Pricing</p>
@@ -279,7 +279,7 @@ const Pricing = ({ customerType }: PricingProps) => {
           <div className="flex gap-2 items-center">
             <ShieldCheckIcon className="w-6 h-6 text-yellow-400" />
             <h3 className="text-lg sm:text-2xl font-bold text-yellow-400">
-              Quicker Classifications Guarantee
+              Smarter Classifications Guarantee
             </h3>
           </div>
           {/* <p className="text-white">
@@ -287,7 +287,7 @@ const Pricing = ({ customerType }: PricingProps) => {
             promise:
           </p> */}
           <p className="text-white font-medium text-sm sm:text-lg">
-            If you do 20 classifications and an onboarding session and are
+            If you complete onboarding and 20 classifications and are still
             unsatisfied with your purchase after 30 days, we&apos;ll give you a
             full refund!
           </p>
