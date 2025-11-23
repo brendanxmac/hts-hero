@@ -102,10 +102,10 @@ export default function WelcomeEmail() {
 
             <Section className="bg-[#617BFF]/10 rounded-lg p-6 text-center mb-6">
               <Text className="font-bold text-xl mb-3 text-gray-900">
-                ✅ Tariff Impact Checker
+                📊 Tariff Finder
               </Text>
               <Text className="leading-relaxed text-lg text-gray-600">
-                Instantly know when and how new tariffs affect your imports.
+                See tariff rates and possible savings for any import.
               </Text>
             </Section>
 
@@ -114,16 +114,17 @@ export default function WelcomeEmail() {
                 🎯 Classification Assistant
               </Text>
               <Text className="leading-relaxed text-lg text-gray-600">
-                Classify anything in minutes & delight your clients.
+                Classify anything in minutes with your entire team, and generate
+                client-ready advisory reports in a single click
               </Text>
             </Section>
 
             <Section className="bg-[#617BFF]/10 rounded-lg p-6 text-center">
               <Text className="font-bold text-xl mb-3 text-gray-900">
-                📊 Tariff Finder
+                ✅ Tariff Impact Checker
               </Text>
               <Text className="leading-relaxed text-lg text-gray-600">
-                See tariff rates and possible savings for any import.
+                Instantly know when and how new tariffs affect your imports.
               </Text>
             </Section>
           </Section>
