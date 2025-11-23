@@ -19,6 +19,8 @@ import { TradePrograms } from "../public/trade-programs";
 import { copyToClipboard } from "../utilities/data";
 import { TariffSet } from "../interfaces/tariffs";
 import { SubheadingsConditionallyExemptFromReciprocal } from "../tariffs/exclusion-lists.ts/reciprocal-tariff-exlcusions";
+import { Color } from "../enums/style";
+import { SecondaryLabel } from "./SecondaryLabel";
 
 interface Props {
   units: number;
@@ -259,13 +261,13 @@ export const InlineCountryTariff = ({
   };
 
   return (
-    <div className="flex flex-col gap-8 pb-4">
+    <div className="flex flex-col gap-6 pb-4">
       {/* Header with Buttons */}
       <div className="w-full flex justify-between items-end">
         {/* Special Tariff Program Selection */}
         <div className="w-full flex flex-col gap-2">
           <div className="w-full flex flex-col gap-1">
-            <TertiaryLabel value="Special Trade Programs" />
+            <PrimaryLabel value="Special Trade Programs" />
           </div>
           <div
             className="relative w-full max-w-lg"
@@ -389,10 +391,6 @@ export const InlineCountryTariff = ({
           >
             {isCopied ? "Copied!" : "Copy Tariff Details"}
           </button>
-          {/* <TextCopyButton value={`Tariff Details`} /> */}
-          {/* <button className="btn btn-sm btn-primary" onClick={() => {}}>
-            Reset
-          </button> */}
         </div>
       </div>
 
@@ -415,7 +413,7 @@ export const InlineCountryTariff = ({
         )}
 
         {tariffSets.map((tariffSet, i) => (
-          <div key={`tariff-set-${i}`} className="flex flex-col gap-4">
+          <div key={`tariff-set-${i}`} className="flex flex-col gap-2">
             <PrimaryLabel value={`${tariffSet.name} Tariff Details`} />
             <div className="flex flex-col gap-2">
               {baseTariffs &&
@@ -467,7 +465,7 @@ export const InlineCountryTariff = ({
                 customsValue,
                 units
               ) < 15 ? (
-                <p className="text-base font-bold text-white transition duration-100">
+                <p className="text-base font-bold text-primary transition duration-100">
                   {getAdValoremRate(tariffColumn, tariffSet.tariffs)}%
                 </p>
               ) : (
@@ -487,7 +485,7 @@ export const InlineCountryTariff = ({
                     })
                     .filter((t) => t.type === "amount").length > 0 && (
                     <div className="flex gap-2">
-                      <p className="text-base font-bold text-white transition duration-100">
+                      <p className="text-base font-bold text-primary transition duration-100">
                         {getAmountRatesString(
                           baseTariffs
                             .flatMap((t) => t.tariffs)
@@ -504,12 +502,12 @@ export const InlineCountryTariff = ({
                             })
                         )}
                       </p>
-                      <p className="text-base font-bold text-white transition duration-100">
+                      <p className="text-base font-bold text-primary transition duration-100">
                         +
                       </p>
                     </div>
                   )}
-                  <p className="text-base font-bold text-white transition duration-100">
+                  <p className="text-base font-bold text-primary transition duration-100">
                     {getAdValoremRate(
                       tariffColumn,
                       tariffSet.tariffs,
@@ -568,6 +566,18 @@ export const InlineCountryTariff = ({
             )}
           </div>
         ))}
+      </div>
+      <div className="flex flex-col gap-2">
+        {/* Harbor Maintenance Fee */}
+        <div className="flex justify-between items-center gap-2">
+          <PrimaryLabel value="Harbor Maintenance Fee" />
+          <SecondaryLabel value="0.125%" color={Color.PRIMARY} />
+        </div>
+        {/* Merchandise Processing Fee */}
+        <div className="flex justify-between items-center gap-2">
+          <PrimaryLabel value="Merchandise Processing Fee" />
+          <SecondaryLabel value="0.3464%" color={Color.PRIMARY} />
+        </div>
       </div>
     </div>
   );
