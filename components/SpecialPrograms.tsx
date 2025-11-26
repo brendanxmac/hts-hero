@@ -12,7 +12,8 @@ export const SpecialPrograms = ({ programs }: Props) => {
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
 
   return (
-    <div className="flex gap-1">
+    <div className="flex flex-wrap gap-1 items-center">
+      <p className="text-sm text-base-content/60">Special Trade Programs:</p>
       {programs.map((specialTariffSymbol, index) => {
         const note = getGeneralNoteFromSpecialTariffSymbol(
           specialTariffSymbol.trim()
@@ -20,7 +21,7 @@ export const SpecialPrograms = ({ programs }: Props) => {
         return (
           <div
             key={`${specialTariffSymbol}-${index}`}
-            className="tooltip tooltip-primary tooltip-bottom"
+            className="tooltip tooltip-primary"
             data-tip={note?.description || note?.title || null}
           >
             <button

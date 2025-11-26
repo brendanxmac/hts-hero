@@ -270,7 +270,7 @@ export const Explore = () => {
             <div className="w-full flex gap-4 items-center justify-between md:justify-normal">
               <div className="flex flex-col -space-y-1">
                 <div className="flex gap-2 items-start">
-                  <h1 className="shrink-0 text-2xl md:text-3xl font-bold text-white">
+                  <h1 className="shrink-0 text-2xl md:text-3xl font-bold">
                     HTS {revision?.split("-")[0]}
                   </h1>
                   <div className="mb-0.5">

@@ -122,14 +122,17 @@ export const Tariff = ({
       .some((e) => tariffIsActive(e, tariffSets[setIndex].tariffs));
 
   return (
-    <div className="w-full flex flex-col gap-2">
+    <div className="w-full">
       <div
         key={`${tariff.code}-${exceptionLevel}`}
         className={classNames(
-          "flex gap-2 justify-between items-end border-b border-base-content/20"
+          "flex gap-3 justify-between items-center py-2 px-4 rounded-lg transition-all duration-200",
+          tariff.isActive
+            ? "bg-primary/5 hover:bg-primary/10 border border-primary/20"
+            : "border border-base-300"
         )}
       >
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-3 items-center flex-1 min-w-0">
           <input
             type="checkbox"
             checked={tariff.isActive}
@@ -137,7 +140,7 @@ export const Tariff = ({
               !tariff.requiresReview ||
               hasExceptionTariffThatDoesNotNeedReviewThatIsActive
             }
-            className="checkbox checkbox-primary checkbox-xs"
+            className="checkbox checkbox-primary checkbox-sm shrink-0"
             onChange={() => {
               if (tariff.requiresReview) {
                 toggleTariff(tariff);
@@ -145,35 +148,37 @@ export const Tariff = ({
             }}
           />
 
-          <div className="flex flex-col gap-1 py-0.5">
-            <div className="flex gap-2 items-center">
+          <div className="flex flex-col gap-1 min-w-0 flex-1">
+            <div className="flex gap-2 items-center flex-wrap">
               <Link
                 href={`/explore?code=${tariff.code}`}
                 target="_blank"
-                className="link link-primary font-semibold"
+                className="link link-primary font-semibold text-sm hover:text-primary-focus transition-colors"
               >
                 {tariff.code}
               </Link>
-              -
-              <TertiaryLabel
-                value={tariff.name}
-                color={tariff.isActive ? Color.BASE_CONTENT : Color.SECONDARY}
-              />
+              <span className="text-base-content">•</span>
+              <span className={classNames("text-sm font-medium")}>
+                {tariff.name}
+              </span>
             </div>
           </div>
         </div>
-        <p
-          className={classNames(
-            "shrink-0 min-w-32 text-right text-base",
-            tariff.isActive
-              ? "font-bold"
-              : tariff[column] === null
-                ? "text-neutral-content"
-                : "line-through text-neutral-content"
-          )}
-        >
-          {tariff[column] === null ? "Needs Review" : `${tariff[column]}%`}
-        </p>
+
+        <div className="shrink-0 min-w-[120px] text-right">
+          <p
+            className={classNames(
+              "text-base font-semibold",
+              tariff.isActive
+                ? "text-primary"
+                : tariff[column] === null
+                  ? "text-base-content/40"
+                  : "line-through text-base-content/40"
+            )}
+          >
+            {tariff[column] === null ? "Needs Review" : `${tariff[column]}%`}
+          </p>
+        </div>
       </div>
 
       {/* {tariff.exceptions?.length > 0 &&
