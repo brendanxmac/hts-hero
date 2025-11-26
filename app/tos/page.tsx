@@ -93,7 +93,7 @@ You acknowledge and agree that:
 * You will perform your own due diligence and research before making any decisions based on the Service
 * We are not liable for any customs outcomes, duties, penalties, or delays arising from your use of the Service or any actions taken based on the Service
 
-This disclaimer applies to both individual and business users.
+This disclaimer applies to all users.
 
 7. Intellectual Property
 All software, models, UI, prompts, and documentation are owned by Provider.
@@ -105,10 +105,11 @@ https://www.htshero.com/privacy-policy
 The Privacy Policy explains how we collect, use, and protect your data.
 
 9. Third-Party Services & AI Processing
-HTS Hero may use third-party services, including:
-* Supabase
-* Vercel
-* Large Language Models
+HTS Hero may use third-party services, for activities such as:
+* Hosting
+* Authentication
+* Data Storage
+* Request Processing
 
 We apply appropriate safeguards, but cannot control third-party systems.
 By using the Service, you consent to this processing.
