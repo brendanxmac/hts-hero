@@ -7,7 +7,7 @@ interface Props {
 
 export const SecondaryLabel = ({
   value,
-  color = Color.NEUTRAL_CONTENT,
+  color = Color.BASE_CONTENT,
 }: Props) => {
   return (
     <h3 className={`shrink-0 text-${color} text-sm md:text-base font-bold`}>

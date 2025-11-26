@@ -10,7 +10,7 @@ interface Props {
 export const SecondaryText = ({
   value,
   copyable,
-  color = Color.NEUTRAL_CONTENT,
+  color = Color.BASE_CONTENT,
 }: Props) => {
   return (
     <div className="flex gap-2 items-center">

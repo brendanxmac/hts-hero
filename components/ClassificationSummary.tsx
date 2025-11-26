@@ -15,6 +15,8 @@ import { UserProfile } from "../libs/supabase/user";
 import { CheckCircleIcon } from "@heroicons/react/20/solid";
 import { SecondaryLabel } from "./SecondaryLabel";
 import { DocumentTextIcon, FlagIcon } from "@heroicons/react/24/solid";
+import { TagIcon, UserIcon } from "@heroicons/react/16/solid";
+import SquareIconButton from "./SqaureIconButton";
 
 interface Props {
   classificationRecord: ClassificationRecord;
@@ -53,7 +55,7 @@ export const ClassificationSummary = ({
 
   return (
     <div
-      className="bg-base-100 p-3 rounded-lg cursor-pointer flex flex-col gap-1 border border-base-content/30 hover:bg-base-200 transition-all relative"
+      className="bg-base-100 p-3 rounded-lg cursor-pointer flex flex-col gap-1 border-2 border-base-content transition-all duration-100 relative shadow-sm hover:shadow-md hover:scale-[1.01]"
       onClick={async () => {
         // Get the classifications revision and see if we need to use useHts to fetch the elements
         const classificationRevision = classificationRecord.revision;
@@ -105,18 +107,24 @@ export const ClassificationSummary = ({
           )}
         </div>
         {/* Article Description - Most prominent */}
-        <SecondaryLabel
-          value={classification.articleDescription}
-          color={Color.WHITE}
-        />
+        <SecondaryLabel value={classification.articleDescription} />
       </div>
 
       {/* Metadata - Less prominent but clear */}
-      <div className="flex flex-wrap justify-between gap-x-3 gap-y-2 text-sm pt-1 border-t border-base-content/10 text-base-content/60">
+      <div className="flex flex-wrap justify-between gap-x-3 gap-y-2 text-sm pt-1 border-t border-base-content/20 text-base-content/60">
         <div className="flex flex-wrap gap-3">
           {user && user.team_id && (
             <div className="flex items-center gap-1">
-              <TertiaryText value="Classifier:" color={Color.DARK_GRAY} />
+              <UserIcon className="h-4 w-4" />
+              {/* <SquareIconButton
+                onClick={() => {}}
+                transparent
+                iconOnly
+                icon={<UserIcon className="h-4 w-4" />}
+                tooltip="Classifier"
+              /> */}
+              {/* <UserIcon className="h-4 w-4" /> */}
+              {/* <TertiaryText value="Classifier:" color={Color.DARK_GRAY} /> */}
               <TertiaryText
                 value={
                   classificationRecord.classifier
@@ -129,7 +137,15 @@ export const ClassificationSummary = ({
           )}
 
           <div className="flex items-center gap-1">
-            <TertiaryText value="Importer:" color={Color.DARK_GRAY} />
+            <TagIcon className="h-4 w-4" />
+            {/* <SquareIconButton
+              onClick={() => {}}
+              transparent
+              iconOnly
+              icon={<TagIcon className="h-4 w-4" />}
+              tooltip="Importer"
+            /> */}
+            {/* <TertiaryText value="Importer:" color={Color.DARK_GRAY} /> */}
             <TertiaryText
               value={
                 classificationRecord.importer

@@ -9,7 +9,7 @@ interface Props {
 
 export const PrimaryText = ({
   value,
-  color = Color.NEUTRAL_CONTENT,
+  color = Color.BASE_CONTENT,
   copyable = false,
 }: Props) => {
   return (

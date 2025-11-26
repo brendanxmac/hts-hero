@@ -11,7 +11,7 @@ interface Props {
 export const TertiaryText = ({
   value,
   copyable,
-  color = Color.NEUTRAL_CONTENT,
+  color = Color.BASE_CONTENT,
   capitalize = false,
 }: Props) => {
   return (

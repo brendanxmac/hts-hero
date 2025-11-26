@@ -19,7 +19,7 @@ interface Props {
 
 export const EmptyResults = ({ config }: Props) => (
   <div className="flex-1 flex flex-col items-center justify-center gap-3">
-    <div className="w-24 h-24 text-neutral-content">
+    <div className="w-24 h-24">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -38,13 +38,9 @@ export const EmptyResults = ({ config }: Props) => (
       <div
         className={`text-center flex flex-col gap-1 items-center ${config.maxWidth || ""}`}
       >
-        <PrimaryLabel value={config.title} color={Color.WHITE} />
+        <PrimaryLabel value={config.title} />
         {config.descriptions.map((desc, index) => (
-          <TertiaryText
-            key={index}
-            value={desc}
-            color={Color.NEUTRAL_CONTENT}
-          />
+          <TertiaryText key={index} value={desc} />
         ))}
       </div>
       <button

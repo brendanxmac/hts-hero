@@ -39,7 +39,7 @@ export default function SquareIconButton({
       if (anchorRef.current) {
         const rect = anchorRef.current.getBoundingClientRect();
         setCoords({
-          top: rect.top - rect.height - window.scrollY - 25, // 6px below the button
+          top: rect.top - rect.height - window.scrollY + 5,
           left: rect.left + window.scrollX + rect.width / 2,
           width: rect.width,
         });
@@ -57,7 +57,7 @@ export default function SquareIconButton({
           zIndex: 9999,
           pointerEvents: "none",
         }}
-        className="bg-primary text-xs text-white px-2 py-1 rounded-md shadow-lg border border-base-300"
+        className="text-xs px-2 py-1 bg-base-100 rounded-md shadow-xl border-2 border-base-content"
       >
         {children}
       </div>,
@@ -73,9 +73,9 @@ export default function SquareIconButton({
       ref={buttonRef}
       disabled={disabled}
       className={classNames(
-        `btn btn-sm btn-square shrink-0 text-white hover:text-white hover:shadow-md border-none hover:cursor-pointer`,
+        `btn btn-sm btn-square shrink-0 border-none hover:cursor-pointer`,
         iconOnly
-          ? "bg-none hover:bg-none"
+          ? "bg-transparent hover:bg-transparent shadow-none"
           : transparent
             ? `bg-none hover:bg-${color}/80`
             : `bg-${color} hover:btn-secondary`

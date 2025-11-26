@@ -5,9 +5,6 @@ interface Props {
   color?: Color;
 }
 
-export const PrimaryLabel = ({
-  value,
-  color = Color.NEUTRAL_CONTENT,
-}: Props) => {
+export const PrimaryLabel = ({ value, color = Color.BASE_CONTENT }: Props) => {
   return <h2 className={`text-${color} font-bold md:text-xl`}>{value}</h2>;
 };
