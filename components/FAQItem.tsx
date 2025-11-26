@@ -28,7 +28,7 @@ export const FaqItem = ({ item }: Props) => {
         <span className={`flex-1 ${isOpen && "text-primary"}`}>{question}</span>
         {isOpen ? (
           <ChevronDownIcon
-            className={"text-white h-6 w-6"}
+            className={"text-base-content h-6 w-6"}
             onClick={(e) => {
               e.preventDefault();
               setIsOpen(false);
@@ -36,7 +36,7 @@ export const FaqItem = ({ item }: Props) => {
           />
         ) : (
           <ChevronRightIcon
-            className={"text-white h-6 w-6"}
+            className={"text-base-content h-6 w-6"}
             onClick={(e) => {
               e.preventDefault();
               setIsOpen(true);

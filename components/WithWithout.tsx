@@ -38,10 +38,10 @@ const WithWithout = ({
   ctaLink,
 }: Props) => {
   return (
-    <section className="bg-base-300">
+    <section className="bg-base-200">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-10 md:py-16">
         <div className="flex flex-col gap-4 mb-8 items-center max-w-3xl mx-auto">
-          <h2 className="text-center font-black text-white text-4xl sm:text-5xl md:text-6xl">
+          <h2 className="text-center font-black text-4xl sm:text-5xl md:text-6xl">
             {title}
           </h2>
           {subtitle && (
@@ -58,7 +58,7 @@ const WithWithout = ({
         <div className="flex flex-col lg:flex-row justify-center items-center lg:items-start gap-4 sm:gap-6 md:gap-8 lg:gap-12">
           {/* Without HTS Hero Card */}
           {withoutList && (
-            <div className="bg-base-300 backdrop-blur-sm text-white p-4 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl flex flex-col gap-4 sm:gap-6 shadow-2xl border border-gray-700 w-full max-w-sm sm:max-w-md lg:max-w-xl">
+            <div className="bg-base-300 backdrop-blur-sm p-4 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl flex flex-col gap-4 sm:gap-6 shadow-2xl border border-gray-700 w-full max-w-sm sm:max-w-md lg:max-w-xl">
               {/* {withoutList && ( */}
               {/* <div className="flex flex-col items-center justify-center gap-3"> */}
               {/* <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-red-900/50 rounded-full">
@@ -78,7 +78,7 @@ const WithWithout = ({
                   </svg>
                 </div> */}
               {/* <div className="flex flex-col items-center justify-center">
-                    <h2 className="text-center text-white text-2xl sm:text-3xl font-bold">
+                    <h2 className="text-center text-2xl sm:text-3xl font-bold">
                       {subject} <br />
                       <span className="text-red-400">Without</span> HTS Hero
                     </h2>
@@ -102,10 +102,10 @@ const WithWithout = ({
                             </span>
                           )}
                         </span> */}
-                        <p className="text-neutral-200 font-semibold text-sm md:text-lg">
+                        {/* <p className="font-semibold text-sm md:text-lg">
                           {task.time}
-                        </p>
-                        <p className="text-neutral-200 font-semibold text-sm md:text-lg">
+                        </p> */}
+                        <p className="font-semibold text-sm md:text-lg">
                           {task.title}
                         </p>
                       </div>
@@ -129,7 +129,7 @@ const WithWithout = ({
 
           {/* With HTS Hero Card */}
           {withList && (
-            <div className="bg-base-300 backdrop-blur-sm text-white p-4 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl flex flex-col gap-4 sm:gap-6 shadow-2xl border border-gray-700 w-full max-w-sm sm:max-w-md lg:max-w-lg">
+            <div className="bg-base-300 backdrop-blur-sm p-4 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl flex flex-col gap-4 sm:gap-6 shadow-2xl border border-gray-700 w-full max-w-sm sm:max-w-md lg:max-w-lg">
               <div className="flex flex-col items-center justify-center gap-3">
                 {/* <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-green-900/50 rounded-full">
                     <svg
@@ -148,7 +148,7 @@ const WithWithout = ({
                   </svg>
                 </div> */}
                 <div className="flex flex-col items-center justify-center">
-                  <h2 className="text-center text-white text-2xl sm:text-3xl font-bold">
+                  <h2 className="text-center text-2xl sm:text-3xl font-bold">
                     {subject} <br />
                     <span className="text-green-400">With</span> HTS Hero
                   </h2>

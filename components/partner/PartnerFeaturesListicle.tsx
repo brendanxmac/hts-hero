@@ -37,7 +37,7 @@ const features: {
         isKey: true,
       },
     ],
-    svg: <StarSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
+    svg: <StarSVG color="primary" size={7} viewBox="0 0 24 24" />,
   },
   {
     name: "Capture More Clients",
@@ -55,7 +55,7 @@ const features: {
         isKey: true,
       },
     ],
-    svg: <FunnelSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
+    svg: <FunnelSVG color="primary" size={7} viewBox="0 0 24 24" />,
   },
   {
     name: "Encourage Upsells",
@@ -75,7 +75,7 @@ const features: {
         isKey: true,
       },
     ],
-    svg: <UpRightArrowSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
+    svg: <UpRightArrowSVG color="primary" size={7} viewBox="0 0 24 24" />,
   },
   {
     name: "Reduce your Workload",
@@ -95,7 +95,7 @@ const features: {
         isKey: true,
       },
     ],
-    svg: <RocketSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
+    svg: <RocketSVG color="primary" size={7} viewBox="0 0 24 24" />,
   },
   {
     name: "Set Up in Minutes",
@@ -118,7 +118,7 @@ const features: {
         isKey: true,
       },
     ],
-    svg: <LightningSVG color="#40C969" size={7} viewBox="0 0 24 24" />,
+    svg: <LightningSVG color="primary" size={7} viewBox="0 0 24 24" />,
   },
 ];
 

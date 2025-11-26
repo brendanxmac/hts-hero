@@ -404,7 +404,7 @@ export const Classifications = ({ page, setPage }: Props) => {
                   >
                     <a
                       role="tab"
-                      className={`tab transition-all duration-200 ease-in text-white font-semibold ${
+                      className={`tab transition-all duration-200 ease-in font-semibold ${
                         activeTab === "all"
                           ? "tab-active"
                           : "hover:bg-primary/70 hover:text-black"
@@ -415,7 +415,7 @@ export const Classifications = ({ page, setPage }: Props) => {
                     </a>
                     <a
                       role="tab"
-                      className={`tab transition-all duration-200 ease-in text-white font-semibold ${
+                      className={`tab transition-all duration-200 ease-in font-semibold ${
                         activeTab === "final"
                           ? "tab-active"
                           : "hover:bg-primary/70 hover:text-black"
@@ -426,7 +426,7 @@ export const Classifications = ({ page, setPage }: Props) => {
                     </a>
                     <a
                       role="tab"
-                      className={`tab transition-all duration-200 ease-in text-white font-semibold ${
+                      className={`tab transition-all duration-200 ease-in font-semibold ${
                         activeTab === "review"
                           ? "tab-active"
                           : "hover:bg-primary/70 hover:text-black"
@@ -437,7 +437,7 @@ export const Classifications = ({ page, setPage }: Props) => {
                     </a>
                     <a
                       role="tab"
-                      className={`tab transition-all duration-200 ease-in text-white font-semibold ${
+                      className={`tab transition-all duration-200 ease-in font-semibold ${
                         activeTab === "draft"
                           ? "tab-active"
                           : "hover:bg-primary/70 hover:text-black"

@@ -167,7 +167,7 @@ export const PendingTariffsList = ({ hideHeading }: Props) => {
   return (
     <section
       id="pending-tariffs"
-      className={`flex justify-center items-center w-full bg-base-300 text-base-content px-6  ${
+      className={`flex justify-center items-center w-full bg-base-100 text-base-content px-6  ${
         hideHeading ? "" : "lg:py-16"
       }`}
     >
@@ -175,17 +175,11 @@ export const PendingTariffsList = ({ hideHeading }: Props) => {
         {!hideHeading && (
           <div className="text-center">
             <div className="flex flex-col -space-y-4 md:space-y-0">
-              <h1 className="text-white font-extrabold text-2xl sm:text-3xl md:text-5xl lg:text-6xl tracking-tight max-w-5xl mx-auto leading-loose">
-                More Tariffs are Coming 👇
+              <h1 className="font-extrabold text-2xl sm:text-3xl md:text-5xl lg:text-6xl tracking-tight max-w-5xl mx-auto leading-loose">
+                More Tariffs are Coming
               </h1>
-              {/* <h1 className="text-white font-extrabold text-2xl sm:text-3xl md:text-5xl lg:text-6xl tracking-tight max-w-5xl mx-auto leading-loose">
-                Know Your Impacts
-                <span className="bg-primary text-base-200 px-3 py-0 rounded-md">
-                  Instantly
-                </span>{" "}
-              </h1> */}
             </div>
-            <p className="text-sm md:text-lg text-neutral-300 max-w-5xl mx-auto mt-2 md:mt-4">
+            <p className="text-sm md:text-lg max-w-5xl mx-auto mt-2 md:mt-4">
               Quickly knowing your impacts can mean big savings
             </p>
             <div className="flex justify-center mt-4">
@@ -200,19 +194,14 @@ export const PendingTariffsList = ({ hideHeading }: Props) => {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 mt-6">
-          {/* {!hideHeading && (
-            <h2 className="col-span-full text-lg md:text-xl font-bold text-gray-500 leading-tight text-center">
-              Pending Tariffs
-            </h2>
-          )} */}
           {tariffAnnouncements.map((tariff, index) => (
             <div
               key={index}
-              className="group bg-base-100 rounded-xl shadow-lg hover:shadow-2xl hover:bg-base-200/50 transition-all duration-100 p-6 border border-base-content/10 hover:border-base-content/20"
+              className="group bg-base-100 hover:bg-base-200 rounded-xl shadow-md hover:shadow-lg transition-all duration-100 p-6 border border-base-content/20"
             >
               {/* Header Section */}
               <div className="mb-6">
-                <h3 className="md:text-xl font-bold text-gray-100 leading-tight mb-3 transition-colors">
+                <h3 className="md:text-xl font-bold text-base-content leading-tight mb-3 transition-colors">
                   {tariff.name}
                 </h3>
                 <div className="flex items-center justify-between">

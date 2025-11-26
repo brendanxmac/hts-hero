@@ -5,23 +5,21 @@ import Link from "next/link";
 const ClassifierHero = () => {
   return (
     <>
-      <section className="bg-none w-full mx-auto bg-base-300 flex flex-col items-center justify-center gap-6 pt-4 px-8 pb-8">
-        <div className="flex flex-col gap-4 items-center justify-center text-center">
+      <section className="bg-none w-full mx-auto bg-base-100 flex flex-col items-center justify-center gap-6 sm:gap-10 pt-4 px-8 pb-8">
+        <div className="flex flex-col gap-4 sm:gap-6 items-center justify-center text-center">
           <div className="flex flex-col gap-5 md:gap-8 mt-8">
-            <h1 className="text-white font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-tight md:-mb-4">
+            <h1 className="font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-tight md:-mb-4">
               Classify Anything in{" "}
-              <span className="bg-yellow-400 px-2 text-base-300 rounded-sm inline-block mt-2">
-                Minutes
-              </span>
+              <span className="underline decoration-primary">Minutes</span>
             </h1>
-            <p className="text-sm sm:text-lg text-neutral-300 leading-relaxed">
-              Turn product descriptions into polished classification reports,
-              insanely fast
+            <p className="text-sm sm:text-lg leading-relaxed font-medium">
+              Quickly turn product descriptions into polished classification
+              reports
             </p>
           </div>
 
           <Link
-            className="btn btn-wide btn-sm sm:btn-md bg-yellow-400 text-base-300 hover:bg-yellow-500"
+            className="btn btn-wide btn-sm btn-primary sm:btn-md"
             href="/signin"
           >
             Try it Now!
@@ -29,7 +27,7 @@ const ClassifierHero = () => {
 
           {/* <TestimonialsAvatars priority={true} /> */}
         </div>
-        <div className="flex justify-center sm:rounded-2xl overflow-hidden -mx-5 md:mx-0">
+        <div className="flex justify-center sm:rounded-2xl overflow-hidden">
           <video
             className="w-full max-h-[55vh] border border-neutral-content/20 rounded-md md:rounded-2xl"
             autoPlay

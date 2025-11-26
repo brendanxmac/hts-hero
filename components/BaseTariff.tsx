@@ -34,7 +34,7 @@ export const BaseTariff = ({
       <div
         key={`${htsElement.htsno}-${tariff.raw}-${index}`}
         className={classNames(
-          "text-white flex gap-2 justify-between items-end border-b border-base-content/20"
+          "flex gap-2 justify-between items-end border-b border-base-content/20"
         )}
       >
         <div className="flex flex-col gap-2 items-start">
@@ -70,9 +70,7 @@ export const BaseTariff = ({
           <p
             className={classNames(
               "shrink-0 min-w-32 text-right text-base",
-              active
-                ? "text-white font-bold"
-                : "line-through text-neutral-content"
+              active ? "font-bold" : "line-through text-neutral-content"
             )}
           >
             {valueText}

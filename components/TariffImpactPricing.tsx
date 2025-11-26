@@ -81,13 +81,14 @@ export const getFeatureIcon = (feature: PricingFeatureI) => {
 const getPricingHeadline = () => {
   return (
     <div className="flex flex-col gap-2">
+      <p className="font-medium text-base-content/60 mb-6">Pricing</p>
       <div className="flex gap-4 mx-auto max-w-6xl">
-        <h2 className="text-white font-extrabold text-3xl sm:text-4xl md:text-5xl">
-          <span className="text-yellow-400">Master</span> Tariffs & Discover{" "}
-          <span className="text-yellow-400">Savings</span>
+        <h2 className="font-extrabold text-3xl sm:text-4xl lg:text-5xl">
+          <span className="underline decoration-primary">Master</span> Tariffs &
+          Discover <span className="underline decoration-primary">Savings</span>
         </h2>
       </div>
-      <p className="text-sm md:text-lg text-neutral-300 font-medium mt-2">
+      <p className="text-sm md:text-lg font-medium mt-2">
         Join 200+ importers & customs brokers who are conquering tariff chaos
         with HTS Hero
       </p>
@@ -147,14 +148,13 @@ const TariffImpactPricing = () => {
   }, [user]);
 
   return (
-    <section className="bg-base-300 overflow-hidden" id="pricing">
+    <section className="bg-base-100 overflow-hidden" id="pricing">
       <div className="px-8 max-w-7xl mx-auto pt-10 pb-20">
         <div className="flex flex-col text-center w-full my-10">
-          {/* <p className="font-medium mb-8">Pricing</p> */}
           {getPricingHeadline()}
         </div>
 
-        <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8 text-white">
+        <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8">
           {config.stripe.tariffImpactPlans.map((plan, index) => {
             const defaultTierIndex = plan.prices.length - 1;
             const currentTierIndex =
@@ -170,32 +170,22 @@ const TariffImpactPricing = () => {
               <div
                 key={index}
                 className={classNames(
-                  "relative w-full max-w-xl",
-                  plan.isFeatured && "border-2 border-primary rounded-lg",
-                  !plan.isFeatured &&
-                    "border-2 border-base-content/20 rounded-lg"
+                  "relative w-full max-w-xl border-2 border-base-content/20 rounded-lg",
+                  plan.isFeatured && "border-primary"
                 )}
               >
                 {plan.isFeatured && (
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
                     <span
-                      className={`badge text-xs text-black font-semibold border-0 bg-primary`}
+                      className={`badge text-xs text-base-100 font-semibold border-0 bg-primary`}
                     >
                       Most Popular
                     </span>
                   </div>
                 )}
 
-                {plan.isFeatured && (
-                  <div
-                    className={`absolute -inset-[1px] rounded-[9px] bg-primary z-10`}
-                  ></div>
-                )}
-
                 <div
-                  className={`relative flex flex-col h-full gap-4 lg:gap-8 z-10 bg-base-300 p-8 rounded-lg ${
-                    plan.isCompetitor && "bg-red-500/20"
-                  }`}
+                  className={`relative flex flex-col h-full gap-4 lg:gap-8 z-10 bg-base-100 p-8 rounded-lg shadow-lg`}
                 >
                   <div className="flex justify-between items-center gap-4">
                     <div className="flex flex-col">
@@ -230,7 +220,7 @@ const TariffImpactPricing = () => {
                       ) : (
                         <div className="flex items-end">
                           <p
-                            className={`${plan.isCompetitor ? "text-red-600" : "text-white"} text-5xl text-base-content tracking-tight font-extrabold`}
+                            className={`${plan.isCompetitor && "text-red-600"} text-5xl text-base-content tracking-tight font-extrabold`}
                           >
                             ${currentPrice}
                           </p>
@@ -250,7 +240,7 @@ const TariffImpactPricing = () => {
                         onChange={(e) =>
                           handleTierChange(index, parseInt(e.target.value))
                         }
-                        className="select select-bordered select-sm bg-base-100 text-white font-semibold"
+                        className="select select-bordered select-sm bg-base-100 font-semibold"
                       >
                         {plan.priceTiers!.map((tier, i) => (
                           <option key={i} value={i}>
@@ -299,16 +289,16 @@ const TariffImpactPricing = () => {
         </div>
 
         {/* Enterprise Plan -- aka lets talk */}
-        <div className="bg-base-300 flex flex-col md:flex-row justify-between md:items-center gap-3 w-full max-w-xl lg:max-w-7xl mx-auto border-2 border-base-content/20 rounded-lg mt-4 p-6">
+        <div className="bg-base-100 flex flex-col md:flex-row justify-between md:items-center gap-3 w-full max-w-xl lg:max-w-7xl mx-auto border-2 border-base-content/20 rounded-lg mt-4 p-6 shadow-lg">
           <div className="flex flex-col">
-            <p className="text-2xl text-white font-bold">Enterprise</p>
+            <p className="text-2xl font-bold">Tariff Pro for Teams</p>
             <p className="text-base-content/80">Get Pro for your whole team</p>
           </div>
           <button
             onClick={handleEnterpriseClick}
-            className="btn btn-primary md:btn-wide w-full text-white"
+            className="btn btn-primary md:btn-wide w-full"
           >
-            Request Demo
+            Book Demo
           </button>
         </div>
       </div>

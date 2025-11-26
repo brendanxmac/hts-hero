@@ -38,17 +38,14 @@ const AboutHeader = () => {
   }, [searchParams]);
 
   return (
-    <header className="bg-base-100">
+    <header className="bg-base-100 border-b">
       <nav
         className="container flex items-center justify-between px-8 py-4 mx-auto"
         aria-label="Global"
       >
         {/* Your logo/name on large screens */}
         <div className="flex lg:flex-1">
-          <Link
-            className="text-white flex items-center gap-2 shrink-0 "
-            href="/"
-          >
+          <Link className="flex items-center gap-2 shrink-0 " href="/">
             <Image
               src={logo}
               alt={`${config.appName} logo`}

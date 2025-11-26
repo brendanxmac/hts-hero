@@ -150,8 +150,8 @@ export const Chapter = ({ chapter }: Props) => {
           {parentSection && (
             <div key={`breadcrumb-${chapter.number}`}>
               <b className="text-accent">Section {parentSection.number}: </b>
-              <span className="text-white">{parentSection.description}</span>
-              <span className="text-white mx-2">›</span>
+              <span>{parentSection.description}</span>
+              <span className="mx-2">›</span>
             </div>
           )}
         </div>
@@ -223,7 +223,7 @@ export const Chapter = ({ chapter }: Props) => {
                                     : note.title}
                                 </span>
                               </div>
-                              <span className={"text-white/80 text-sm"}>
+                              <span className={"text-sm"}>
                                 {note.description}
                               </span>
                             </div>
@@ -256,9 +256,7 @@ export const Chapter = ({ chapter }: Props) => {
             )}
           </div>
         </div>
-        <h2 className="text-xl md:text-3xl font-bold text-white">
-          {description}
-        </h2>
+        <h2 className="text-xl md:text-3xl font-bold">{description}</h2>
       </div>
 
       <div className="flex flex-col gap-2 bg-base-100">

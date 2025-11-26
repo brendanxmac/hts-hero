@@ -80,8 +80,8 @@ export default function Home() {
           subtitle="A quick demo so you know exactly what you'll get"
           demoUrl="https://www.youtube.com/embed/izlXZvC-O7I?si=o6G0z0ZDhEbvIMqg"
         />
+        {/* <ClassifierCTA /> */}
         <FAQ faqItems={classifierFaqList} />
-        <ClassifierCTA />
       </main>
       <ClassifierFooter />
     </>

@@ -109,7 +109,7 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
       <div className="px-8 py-6 flex-1 flex flex-col gap-6 overflow-y-auto">
         <div className="flex flex-col gap-1">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl md:text-2xl font-bold text-white">
+            <h2 className="text-xl md:text-2xl font-bold">
               Classification Overview
             </h2>
             <div className="flex gap-2 items-center">
@@ -278,7 +278,7 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
         <div className="w-full flex flex-col gap-2">
           <SecondaryLabel value="Basis for Classification" />
           <textarea
-            className="min-h-36 textarea textarea-bordered text-white placeholder:text-white/20 text-base w-full"
+            className="min-h-36 textarea textarea-bordered text-base w-full"
             placeholder="Add any notes about your classification here. They will be included in your classification advisory."
             value={classification.notes || ""}
             disabled={!canUpdateDetails}

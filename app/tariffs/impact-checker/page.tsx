@@ -496,7 +496,7 @@ export default function Home() {
                   <div className="flex items-center">
                     <PrimaryLabel value="HTS Codes" />
                     <button
-                      className="btn btn-circle btn-xs bg-base-content/30 hover:bg-base-content/70 text-white ml-2 text-sm flex items-center justify-center"
+                      className="btn btn-circle btn-xs bg-base-content/30 hover:bg-base-content/70 ml-2 text-sm flex items-center justify-center"
                       onClick={() => setShowHelpModal(true)}
                       title="Help with HTS code formats"
                     >

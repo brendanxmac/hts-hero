@@ -37,7 +37,7 @@ const features: {
         isKey: true,
       },
     ],
-    svg: <LightningSVG color="#facc15" fill size={8} viewBox="0 0 24 24" />,
+    svg: <LightningSVG color="primary" size={8} viewBox="0 0 24 24" />,
     image: { src: "/candidates.png", alt: "Candidates HS headings" },
   },
   {
@@ -59,7 +59,7 @@ const features: {
         isKey: true,
       },
     ],
-    svg: <LightBulbSVG color="#facc15" fill size={8} viewBox="0 0 24 24" />,
+    svg: <LightBulbSVG color="primary" size={8} viewBox="0 0 24 24" />,
     image: {
       src: "/analysis.png",
       alt: "Analyze candidates and choose confidently",
@@ -80,7 +80,7 @@ const features: {
         isKey: true,
       },
     ],
-    svg: <ScaleSVG color="#facc15" size={8} fill viewBox="0 0 24 24" />,
+    svg: <ScaleSVG color="primary" size={8} viewBox="0 0 24 24" />,
     image: { src: "/cross.png", alt: "Relevant CROSS rulings" },
   },
   {
@@ -102,7 +102,7 @@ const features: {
         isKey: true,
       },
     ],
-    svg: <DocumentTextSVG color="#facc15" size={8} viewBox="0 0 24 24" />,
+    svg: <DocumentTextSVG color="primary" size={8} viewBox="0 0 24 24" />,
     image: {
       src: "/report.png",
       alt: "One-click classification reports",
@@ -123,7 +123,7 @@ const features: {
         isKey: true,
       },
     ],
-    svg: <PuzzlePieceSVG color="#facc15" fill size={8} viewBox="0 0 24 24" />,
+    svg: <PuzzlePieceSVG color="primary" size={8} viewBox="0 0 24 24" />,
     image: {
       src: "/tariffs.png",
       alt: "Tariff insights and savings",
@@ -147,7 +147,7 @@ const features: {
         isKey: true,
       },
     ],
-    svg: <UsersSVG color="#facc15" size={8} fill viewBox="0 0 24 24" />,
+    svg: <UsersSVG color="primary" size={8} viewBox="0 0 24 24" />,
     image: {
       src: "/teams.png",
       alt: "One-click classification reports",
@@ -157,15 +157,15 @@ const features: {
 
 const FeaturesListicle = () => {
   return (
-    <section className="py-24 bg-base-100" id="features">
+    <section className="py-24 bg-base-200" id="features">
       <div className="max-w-6xl mx-auto">
         <div className="text-center max-md:px-8 mb-12 md:px-12">
-          <h2 className="text-white font-black text-4xl md:text-5xl lg:text-6xl tracking-tight mb-5">
-            The <span className="text-yellow-400">Smarter</span> Way to Classify
+          <h2 className="text-base-content font-black text-4xl md:text-5xl lg:text-6xl tracking-tight mb-5">
+            The <span className="underline decoration-primary">Smarter</span>{" "}
+            Way to Classify
           </h2>
-          <p className="text-neutral-300 leading-relaxed mb-3 lg:text-lg">
-            HTS Hero automates the time-consuming & tedious parts of
-            classification
+          <p className="text-base-content leading-relaxed mb-3 lg:text-xl">
+            Automate the time-consuming & tedious parts of classification
           </p>
         </div>
       </div>
@@ -184,7 +184,7 @@ const FeaturesListicle = () => {
                   >
                     <div className="flex items-center gap-3 mb-8">
                       <span className="text-primary">{feature.svg}</span>
-                      <h3 className="text-white text-2xl md:text-4xl font-extrabold tracking-tight">
+                      <h3 className="text-base-content text-2xl md:text-4xl font-extrabold tracking-tight">
                         {feature.name}
                       </h3>
                     </div>
@@ -193,7 +193,7 @@ const FeaturesListicle = () => {
                   <div
                     className={`order-1 ${mediaLeft ? "lg:order-1" : "lg:order-2"}`}
                   >
-                    <div className="w-full h-full flex justify-center p-4 bg-primary rounded-2xl md:rounded-3xl border-2 border-gray-700">
+                    <div className="w-full h-full flex justify-center p-4 bg-gradient-to-br from-primary/80 via-primary/50 to-transparent rounded-2xl md:rounded-3xl border-2 border-primary/20">
                       <Image
                         src={feature.image.src}
                         alt={feature.image.alt}

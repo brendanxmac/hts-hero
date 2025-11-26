@@ -77,9 +77,7 @@ const UnauthenticatedHeader = () => {
               width={32}
               height={32}
             />
-            <span className="text-white font-extrabold text-lg">
-              {config.appName}
-            </span>
+            <span className="font-extrabold text-lg">{config.appName}</span>
           </Link>
           <div className="hidden md:flex items-center justify-start gap-4">
             <Link href="/about/tariffs">

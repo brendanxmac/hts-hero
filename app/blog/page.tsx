@@ -20,7 +20,7 @@ export default async function Blog() {
   return (
     <>
       <section className="text-center max-w-xl mx-auto mt-6 mb-12">
-        <h1 className="text-white font-extrabold text-3xl lg:text-5xl tracking-tight mb-6">
+        <h1 className="font-extrabold text-3xl lg:text-5xl tracking-tight mb-6">
           Stay Up to Date on The{" "}
           <span className="text-primary">Latest HTS Updates</span>
         </h1>
