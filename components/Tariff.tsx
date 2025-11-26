@@ -126,8 +126,7 @@ export const Tariff = ({
       <div
         key={`${tariff.code}-${exceptionLevel}`}
         className={classNames(
-          "text-white flex gap-2 justify-between items-end border-b border-base-content/20"
-          // !tariff.isActive && !showInactive && "hidden"
+          "flex gap-2 justify-between items-end border-b border-base-content/20"
         )}
       >
         <div className="flex gap-2 items-center">
@@ -151,14 +150,14 @@ export const Tariff = ({
               <Link
                 href={`/explore?code=${tariff.code}`}
                 target="_blank"
-                className="link link-primary no-underline font-medium"
+                className="link link-primary font-semibold"
               >
                 {tariff.code}
               </Link>
               -
               <TertiaryLabel
                 value={tariff.name}
-                color={tariff.isActive ? Color.WHITE : Color.NEUTRAL_CONTENT}
+                color={tariff.isActive ? Color.BASE_CONTENT : Color.SECONDARY}
               />
             </div>
           </div>
@@ -167,7 +166,7 @@ export const Tariff = ({
           className={classNames(
             "shrink-0 min-w-32 text-right text-base",
             tariff.isActive
-              ? "text-white font-bold"
+              ? "font-bold"
               : tariff[column] === null
                 ? "text-neutral-content"
                 : "line-through text-neutral-content"

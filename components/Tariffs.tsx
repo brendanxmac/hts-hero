@@ -327,11 +327,9 @@ export const Tariffs = ({
               >
                 <SecondaryLabel
                   value={`${contentRequirement} Value Percentage`}
-                  color={Color.WHITE}
                 />
                 <TertiaryText
                   value={`What percent of the articles value is ${contentRequirement}?`}
-                  color={Color.NEUTRAL_CONTENT}
                 />
                 <div className="flex gap-2 items-center mt-3">
                   <input
@@ -355,7 +353,6 @@ export const Tariffs = ({
                         (c) => c.name === contentRequirement
                       )?.value || 0
                     }%`}
-                    color={Color.NEUTRAL_CONTENT}
                   />
                 </div>
               </div>
@@ -403,7 +400,7 @@ export const Tariffs = ({
             setSelectedCountries={setSelectedCountries}
           />
 
-          <div className="w-full flex flex-col overflow-x-auto border border-base-content/40 rounded-lg">
+          <div className="w-full flex flex-col overflow-x-auto border border-base-content/50 rounded-lg">
             <table className="table table-sm table-pin-cols">
               <thead>
                 <tr>
@@ -505,7 +502,7 @@ export const Tariffs = ({
                     <React.Fragment key={`${country.code}-${i}`}>
                       <tr
                         className={classNames(
-                          "w-full cursor-pointer transition-all duration-200 hover:bg-base-content/10 bg-base-100",
+                          "w-full cursor-pointer transition-all duration-200 hover:bg-base-300 bg-base-100",
                           !isExpanded &&
                             "not-last:border-b border-base-content/40",
                           isExpanded && "hover:bg-base-200 border-b-0"
@@ -522,15 +519,17 @@ export const Tariffs = ({
                       >
                         <td className="w-6">
                           <ChevronDownIcon
-                            className={`h-4 w-4 text-white transition-transform duration-300 ease-in-out ${
+                            className={`h-4 w-4 transition-transform duration-300 ease-in-out ${
                               isExpanded ? "rotate-0" : "-rotate-180"
                             }`}
                           />
                         </td>
                         <td>
                           <div className="flex gap-3 items-center text-sm md:text-base">
-                            <h2 className="text-white">{country.flag}</h2>
-                            <h2 className="text-white">{country.name}</h2>
+                            <h2 className="md:text-lg">{country.flag}</h2>
+                            <h2 className="md:text-lg font-medium">
+                              {country.name}
+                            </h2>
                           </div>
                         </td>
                         <td>
@@ -539,7 +538,7 @@ export const Tariffs = ({
                               <Link
                                 href="/about/tariffs"
                                 target="_blank"
-                                className="link link-primary no-underline text-base-content hover:text-primary hover:underline"
+                                className="link link-primary text-base-content hover:text-primary hover:underline"
                               >
                                 🔒 Get Pro to Unlock
                               </Link>
@@ -552,16 +551,16 @@ export const Tariffs = ({
                                   <div className="flex gap-1">
                                     {cappedBy15PercentRule ? null : countryAmounts &&
                                       countryAmounts.length > 0 ? (
-                                      <p className="text-white">
+                                      <p className="font-medium">
                                         {countryAmounts} +
                                       </p>
                                     ) : null}
-                                    {<p className="text-white">{sum}%</p>}
+                                    {<p className="font-medium">{sum}%</p>}
                                     {i > 0 &&
                                       codeBasedContentRequirements &&
                                       codeBasedContentRequirements.length > 0 &&
                                       uiContentPercentages[i - 1].name && (
-                                        <p className="text-white">
+                                        <p className="">
                                           for {uiContentPercentages[i - 1].name}
                                         </p>
                                       )}

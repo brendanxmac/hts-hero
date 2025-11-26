@@ -107,7 +107,7 @@ export const CandidateElement = ({
         !isLevelSelection &&
           `${disabled ? "cursor-not-allowed" : "hover:cursor-pointer"} hover:bg-base-300 ${disabled && "shadow-[inset_0_0_0_1px_oklch(var(--bc))]"}`,
         disabled &&
-          "bg-base-200/70 cursor-not-allowed border-base-300/60 hover:bg-base-200/70"
+          "bg-base-200/70 cursor-not-allowed border-base-content hover:bg-base-200/70"
       )}
       onClick={() => {
         if (isLevelSelection || disabled) {
@@ -173,10 +173,7 @@ export const CandidateElement = ({
 
         <div className="flex flex-col gap-1">
           <div className="flex justify-between items-center">
-            <TertiaryLabel
-              value={htsno ? `${htsno}` : "Prequalifier"}
-              color={Color.NEUTRAL_CONTENT}
-            />
+            <TertiaryLabel value={htsno ? `${htsno}` : "Prequalifier"} />
             <div className="flex gap-2">
               <SquareIconButton
                 transparent
@@ -268,9 +265,9 @@ export const CandidateElement = ({
             </div>
           </div>
           {isLevelSelection ? (
-            <SecondaryLabel value={description} color={Color.WHITE} />
+            <SecondaryLabel value={description} />
           ) : (
-            <SecondaryText value={description} color={Color.WHITE} />
+            <SecondaryText value={description} />
           )}
         </div>
 
@@ -282,7 +279,7 @@ export const CandidateElement = ({
             </div>
 
             <div className="flex flex-col gap-2 ml-1">
-              <TertiaryText color={Color.WHITE} value={recommendedReason} />
+              <TertiaryText value={recommendedReason} />
 
               <p className="text-xs text-gray-400">
                 HTS Hero can make mistakes. Always exercise your own judgement

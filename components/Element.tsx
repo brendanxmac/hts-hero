@@ -137,22 +137,20 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
     getTariffElement(element, htsElements, breadcrumbs) || element;
 
   return (
-    <div className="card bg-base-100 p-4 rounded-xl border border-base-content/10 w-full flex flex-col items-start justify-between gap-4 pt-2 sm:pt-6">
+    <div className="card bg-base-100 p-4 rounded-xl border-2 border-base-content w-full flex flex-col items-start justify-between gap-4 pt-2 sm:pt-6">
       <div className="w-full flex flex-col gap-4">
         <div className="flex flex-col gap-3 text-sm">
           <div className="flex flex-wrap text-xs gap-y-2">
             {getBreadCrumbsForElement(element, sections, htsElements).map(
               (breadcrumb, i) => (
                 <div key={`breadcrumb-${i}`}>
-                  {breadcrumb.label && (
-                    <b className="text-white">{breadcrumb.label} </b>
-                  )}
+                  {breadcrumb.label && <b>{breadcrumb.label} </b>}
                   <span
                     className={`${!breadcrumb.label ? "font-bold italic" : "text-base-content"}`}
                   >
                     {breadcrumb.value}
                   </span>
-                  <span className="text-white mx-2">›</span>
+                  <span className="mx-2">›</span>
                 </div>
               )
             )}
@@ -163,7 +161,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
 
         <div className="flex flex-col gap-1">
           <div className="w-full flex flex-col-reverse sm:flex-row justify-between items-start gap-2">
-            <PrimaryLabel value={getHtsnoLabel()} color={Color.ACCENT} />
+            <PrimaryLabel value={getHtsnoLabel()} color={Color.PRIMARY} />
 
             <div className="flex gap-2">
               <ButtonWithIcon
@@ -192,7 +190,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
               )}
               {htsno && (
                 <button
-                  className="btn btn-xs btn-primary"
+                  className="btn btn-xs btn-neutral"
                   onClick={() => {
                     const htsCode = isFullHTSCode(htsno)
                       ? htsno.slice(0, -3)
@@ -212,7 +210,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
             </div>
           </div>
 
-          <h1 className="text-2xl md:text-3xl lg:text-4xl text-white font-bold">
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">
             {description}
           </h1>
         </div>
@@ -381,23 +379,17 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
           {htsno && htsno.replaceAll(".", "").length === 10 && (
             <div className="w-full flex flex-col mt-4">
               <div className="w-full flex justify-between flex-col">
-                <div className="flex items-center">
+                <div className="flex items-center gap-3">
                   <div className="flex gap-2 items-center">
-                    <PrimaryLabel
-                      value="📊 Tariff Finder"
-                      color={Color.WHITE}
-                    />
-                    <div className="text-xs text-base-300 font-bold bg-accent px-2 py-0.5 rounded-md">
-                      Beta
-                    </div>
+                    <PrimaryLabel value="📊 Tariff Finder" />
                   </div>
 
                   <Link
                     href="/tariffs/coverage"
                     target="_blank"
-                    className="btn btn-link btn-xs text-neutral-content hover:text-primary/80 md:mb-0.5"
+                    className="link"
                   >
-                    <QuestionMarkCircleIcon className="w-5 h-5 md:w-6 md:h-6" />
+                    <QuestionMarkCircleIcon className="w-5 h-5 md:w-6 md:h-6 text-base-content" />
                   </Link>
                 </div>
                 <TertiaryText value="Simulate tariff scenarios for any country of origin and find potential exemptions. Not all tariffs are included and we do not guarantee correct calculations for the ones that are supported." />

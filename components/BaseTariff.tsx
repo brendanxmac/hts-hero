@@ -48,12 +48,12 @@ export const BaseTariff = ({
             <div className="flex gap-2 items-center">
               <TertiaryText
                 value={htsElement.htsno}
-                color={active ? Color.WHITE : Color.NEUTRAL_CONTENT}
+                color={active ? Color.BASE_CONTENT : Color.NEUTRAL_CONTENT}
               />
               -
               <TertiaryLabel
                 value={`General Duty: ${primaryText}`}
-                color={active ? Color.WHITE : Color.NEUTRAL_CONTENT}
+                color={active ? Color.BASE_CONTENT : Color.NEUTRAL_CONTENT}
               />
             </div>
           </div>

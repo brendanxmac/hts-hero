@@ -1,3 +1,5 @@
+import { DaisyUIColor } from "./svg/SVG";
+
 interface Props {
   icon: JSX.Element;
   label: string;
@@ -5,17 +7,10 @@ interface Props {
   transparent?: boolean;
 }
 
-export const ButtonWithIcon = ({
-  icon,
-  label,
-  onClick,
-  transparent,
-}: Props) => {
+export const ButtonWithIcon = ({ icon, label, onClick }: Props) => {
   return (
     <button
-      className={`flex btn btn-xs gap-1 hover:bg-primary shrink-0 btn-primary hover:shadow-md transition-all duration-100 border-none hover:cursor-pointer ${
-        transparent ? "bg-primary/10" : "bg-primary/90"
-      }`}
+      className={`flex btn btn-xs btn-neutral gap-1 shrink-0 hover:cursor-pointer`}
       onClick={() => onClick()}
     >
       {icon}

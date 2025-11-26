@@ -66,12 +66,9 @@ export const DescriptionStep = ({
         )}
         <div className="flex flex-col gap-2">
           <div className="flex justify-between items-center">
-            <TertiaryLabel
-              value="Item Description"
-              color={Color.NEUTRAL_CONTENT}
-            />
+            <TertiaryLabel value="Item Description" />
           </div>
-          <h2 className={`text-white font-bold text-2xl`}>
+          <h2 className={`font-bold text-2xl`}>
             Enter a detailed description of your item
           </h2>
         </div>
@@ -140,21 +137,21 @@ export const DescriptionStep = ({
         <div className="flex flex-col">
           <SecondaryLabel
             value="Tips for Best Assistance:"
-            color={Color.NEUTRAL_CONTENT}
+            color={Color.BASE_CONTENT}
           />
           <ul className="pl-2">
             <div className="flex gap-3">
               <p>👉</p>
               <TertiaryText
                 value={`Include details like size, material, weight, color, etc.`}
-                color={Color.NEUTRAL_CONTENT}
+                color={Color.BASE_CONTENT}
               />
             </div>
             <div className="flex gap-3">
               <p>👉</p>
               <TertiaryText
                 value="Describe each component / material and mention which one is dominant."
-                color={Color.NEUTRAL_CONTENT}
+                color={Color.BASE_CONTENT}
               />
             </div>
             <div className="flex gap-3">
@@ -162,7 +159,7 @@ export const DescriptionStep = ({
 
               <TertiaryText
                 value="Include the intended audience -> 'for children / dogs /  firefighters / etc...'"
-                color={Color.NEUTRAL_CONTENT}
+                color={Color.BASE_CONTENT}
               />
             </div>
             <div className="flex gap-3">
@@ -170,7 +167,7 @@ export const DescriptionStep = ({
 
               <TertiaryText
                 value="Include the intended use -> 'for consumption / commercial use / personal use / etc...'"
-                color={Color.NEUTRAL_CONTENT}
+                color={Color.BASE_CONTENT}
               />
             </div>
           </ul>

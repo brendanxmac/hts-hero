@@ -287,19 +287,13 @@ export const ClassificationStep = ({
         {/* HEADER */}
         <div className="flex flex-col gap-2">
           <div className="flex justify-between items-center">
-            <TertiaryLabel
-              value={`Level ${classificationLevel + 1}`}
-              color={Color.NEUTRAL_CONTENT}
-            />
+            <TertiaryLabel value={`Level ${classificationLevel + 1}`} />
             {loading.isLoading && <LoadingIndicator text={loading.text} />}
           </div>
 
           <div className="w-full flex justify-between items-end">
             <div className="w-full flex flex-col gap-2">
-              <PrimaryLabel
-                value={getStepDescription(classificationLevel)}
-                color={Color.WHITE}
-              />
+              <PrimaryLabel value={getStepDescription(classificationLevel)} />
             </div>
           </div>
         </div>
@@ -313,7 +307,6 @@ export const ClassificationStep = ({
                   ? `Candidates (${optionsForLevel})`
                   : "Candidates"
               }
-              color={Color.WHITE}
             />
 
             <div className="flex gap-2 justify-between">
@@ -386,10 +379,7 @@ export const ClassificationStep = ({
           <div className="w-full flex flex-col gap-2">
             <div className="flex flex-col">
               <div className="flex items-center justify-between gap-1">
-                <SecondaryLabel
-                  value="Classification Advisory Notes"
-                  color={Color.WHITE}
-                />
+                <SecondaryLabel value="Classification Advisory Notes" />
                 <button
                   className="btn btn-xs btn-primary"
                   onClick={() => {
@@ -407,7 +397,7 @@ export const ClassificationStep = ({
             </div>
 
             <textarea
-              className="min-h-36 textarea textarea-bordered border-2 focus:outline-none text-white placeholder:text-white/20 placeholder:italic text-base w-full"
+              className="min-h-36 textarea textarea-bordered border-2 focus:outline-none placeholder:italic text-base w-full"
               placeholder="Notes added are saved and will be included in advisory reports you generate."
               disabled={loading.isLoading || !isUsersClassification}
               value={levels[classificationLevel]?.notes || ""}

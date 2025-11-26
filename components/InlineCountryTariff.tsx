@@ -279,7 +279,7 @@ export const InlineCountryTariff = ({
             >
               <div className="flex-1 flex items-center">
                 {selectedSpecialProgram ? (
-                  <p className="text-white font-semibold">
+                  <p className="font-semibold">
                     {selectedSpecialProgram.name}
                     {selectedSpecialProgram.symbol &&
                       selectedSpecialProgram.symbol !== "none" && (
@@ -502,12 +502,12 @@ export const InlineCountryTariff = ({
                             })
                         )}
                       </p>
-                      <p className="text-base font-bold text-primary transition duration-100">
+                      <p className="font-bold text-primary transition duration-100">
                         +
                       </p>
                     </div>
                   )}
-                  <p className="text-base font-bold text-primary transition duration-100">
+                  <p className="font-bold text-primary transition duration-100">
                     {getAdValoremRate(
                       tariffColumn,
                       tariffSet.tariffs,
@@ -532,7 +532,7 @@ export const InlineCountryTariff = ({
             </div>
             {baseTariffs.flatMap((t) => t.parsingFailures).length > 0 && (
               <div className="flex flex-col gap-2 p-4 border-2 border-red-500 rounded-md">
-                <h2 className="text-white font-bold">
+                <h2 className=" font-bold">
                   {`Error Parsing ${tariffElement.htsno}'s Base Tariff(s):`}
                 </h2>
                 <ul className="flex flex-col gap-2 list-disc list-outside">

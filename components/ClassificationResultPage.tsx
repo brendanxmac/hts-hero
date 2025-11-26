@@ -116,7 +116,7 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
               {classificationRecord && (
                 <div className="relative">
                   <select
-                    className="select select-sm"
+                    className="select select-sm select-bordered"
                     value={classificationRecord.status}
                     disabled={updatingClassificationStatus || !canUpdateDetails}
                     onChange={async (e) => {
@@ -146,11 +146,9 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
                 </div>
               )}
               <button
-                className="btn btn-xs btn-primary"
+                className="btn btn-xs btn-neutral"
                 disabled={loading || isLoadingImporters}
                 onClick={async () => {
-                  console.log("importers", importers);
-                  console.log("selectedImporterId", selectedImporterId);
                   setLoading(true);
                   const importer = importers.find(
                     (i) => i.id === selectedImporterId
@@ -192,11 +190,11 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
           <div className="flex flex-col gap-2 flex-1">
             <div className="flex flex-col gap-1">
               <SecondaryLabel value="Importer" />
-              <TertiaryText value="Select the importer or client that you are providing this advisory to" />
+              <TertiaryText value="Select the importer or client that you are providing this advisory to (optional)" />
             </div>
             <div className="flex gap-2">
               <select
-                className="select w-full flex-1"
+                className="select select-bordered w-full flex-1"
                 value={selectedImporterId}
                 disabled={isLoadingImporters || !canUpdateDetails}
                 onChange={(e) => {
@@ -243,34 +241,6 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
                 </button>
               )}
             </div>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="Create new importer"
-                value={newImporter}
-                disabled={!canUpdateDetails}
-                className="input input-sm input-bordered flex-1"
-                onChange={(e) => setNewImporter(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    handleAddImporter();
-                  }
-                }}
-              />
-              <button
-                className="btn btn-primary btn-sm"
-                onClick={handleAddImporter}
-                disabled={
-                  isCreatingImporter || !newImporter.trim() || !canUpdateDetails
-                }
-              >
-                {isCreatingImporter ? (
-                  <span className="loading loading-spinner loading-xs"></span>
-                ) : (
-                  "Create"
-                )}
-              </button>
-            </div>
           </div>
         </div>
 
@@ -278,7 +248,7 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
         <div className="w-full flex flex-col gap-2">
           <SecondaryLabel value="Basis for Classification" />
           <textarea
-            className="min-h-36 textarea textarea-bordered text-base w-full"
+            className="min-h-36 textarea textarea-bordered w-full"
             placeholder="Add any notes about your classification here. They will be included in your classification advisory."
             value={classification.notes || ""}
             disabled={!canUpdateDetails}

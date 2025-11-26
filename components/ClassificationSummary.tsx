@@ -55,7 +55,7 @@ export const ClassificationSummary = ({
 
   return (
     <div
-      className="bg-base-100 p-3 rounded-lg cursor-pointer flex flex-col gap-1 border-2 border-base-content transition-all duration-100 relative shadow-sm hover:shadow-md hover:scale-[1.01]"
+      className="bg-base-100 p-3 rounded-lg cursor-pointer flex flex-col gap-1 border border-base-content transition-all duration-100 relative shadow-sm hover:shadow-md hover:scale-[1.01]"
       onClick={async () => {
         // Get the classifications revision and see if we need to use useHts to fetch the elements
         const classificationRevision = classificationRecord.revision;
