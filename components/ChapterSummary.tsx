@@ -4,6 +4,8 @@ import { SecondaryText } from "./SecondaryText";
 import { NavigatableElement } from "./Elements";
 import { Color } from "../enums/style";
 import { TertiaryLabel } from "./TertiaryLabel";
+import { SecondaryLabel } from "./SecondaryLabel";
+import { TertiaryText } from "./TertiaryText";
 
 interface Props {
   chapter: HtsSectionAndChapterBase;
@@ -33,17 +35,18 @@ export const ChapterSummary = ({
           },
         ]);
       }}
-      className="flex flex-col gap-2 w-full rounded-md bg-base-300 border-2 border-base-content/20 hover:bg-neutral cursor-pointer"
+      className="card flex flex-col gap-2 w-full rounded-md border-2 border-base-content/40 hover:border-primary cursor-pointer hover:shadow-md transition-all duration-100 ease-in-out"
     >
       <div className="flex items-start justify-between gap-3 p-4">
         <div className="flex flex-col gap-1">
           <div className="shrink-0">
-            <TertiaryLabel
+            <TertiaryText
+              uppercase
               value={`Chapter ${number.toString()}`}
-              color={Color.PRIMARY}
+              color={Color.BASE_CONTENT_70}
             />
           </div>
-          <SecondaryText value={description} color={Color.WHITE} />
+          <SecondaryLabel value={description} />
         </div>
 
         <ChevronRightIcon className="self-center shrink-0 w-5 h-5 text-primary" />

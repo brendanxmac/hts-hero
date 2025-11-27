@@ -9,8 +9,7 @@ import { PlusIcon } from "@heroicons/react/24/solid";
 import { TertiaryText } from "./TertiaryText";
 import { useClassification } from "../contexts/ClassificationContext";
 import { Color } from "../enums/style";
-import { SecondaryText } from "./SecondaryText";
-import { TertiaryLabel } from "./TertiaryLabel";
+import { SecondaryLabel } from "./SecondaryLabel";
 
 interface Props {
   element: HtsElement;
@@ -39,7 +38,7 @@ export const ElementSummary = ({ element, onClick }: Props) => {
     indent === "0" && classification && classification.levels[0];
 
   return (
-    <div className="flex flex-col gap-2 w-full bg-base-300 rounded-md border-2 border-base-content/20 hover:bg-black/50 cursor-pointer">
+    <div className="flex flex-col gap-2 w-full rounded-md border-2 border-base-content/40 cursor-pointer hover:border-primary hover:shadow-md transition-all duration-100 ease-in-out">
       <div className="flex">
         {isHeading && element.chapter != 98 && element.chapter != 99 && (
           <div className="flex items-center justify-center">
@@ -95,21 +94,28 @@ export const ElementSummary = ({ element, onClick }: Props) => {
           <div className="w-full flex flex-col items-start justify-between gap-1 px-4 py-2">
             {htsno && (
               <div className="min-w-20 md:min-w-32">
-                <TertiaryLabel value={htsno} color={Color.ACCENT} />
+                <TertiaryText
+                  uppercase
+                  value={htsno}
+                  color={Color.BASE_CONTENT_70}
+                />
               </div>
             )}
 
             <div className="w-full flex items-center justify-between gap-2">
-              <SecondaryText value={description} color={Color.WHITE} />
+              <SecondaryLabel value={description} />
             </div>
 
             {isRecommended && (
-              <div className="flex flex-col gap-2 bg-base-300 rounded-md p-2">
-                <div className="flex gap-2 text-accent">
+              <div className="flex flex-col gap-2 rounded-md p-2">
+                <div className="flex gap-2 text-primary">
                   <SparklesIcon className="h-4 w-4" />
-                  <TertiaryText value="HTS Hero Analysis" />
+                  <TertiaryText
+                    value="HTS Hero Analysis"
+                    color={Color.PRIMARY}
+                  />
                 </div>
-                <p className="text-sm text-white/90">{recommendedReason}</p>
+                <p className="text-sm">{recommendedReason}</p>
               </div>
             )}
           </div>

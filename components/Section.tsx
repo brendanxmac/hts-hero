@@ -12,6 +12,7 @@ import { PrimaryLabel } from "./PrimaryLabel";
 import { Color } from "../enums/style";
 import { ButtonWithIcon } from "./ButtonWithIcon";
 import { SupabaseBuckets } from "../constants/supabase";
+import { TertiaryLabel } from "./TertiaryLabel";
 interface Props {
   section: HtsSection;
   breadcrumbs: NavigatableElement[];
@@ -52,8 +53,8 @@ export const Section = ({
   return (
     <div
       className={classNames(
-        !isExpanded && "hover:bg-neutral",
-        "bg-base-100 border-2 border-base-content/40 w-full flex flex-col gap-6 py-6 px-4 rounded-md transition duration-100 ease-in-out"
+        !isExpanded && "hover:border-primary hover:shadow-lg",
+        "card border-2 border-base-content/40 w-full flex flex-col gap-6 py-6 px-4 rounded-xl transition-all duration-100 ease-in-out hover:cursor-pointer"
       )}
       onClick={(e) => {
         e.preventDefault();
@@ -67,9 +68,10 @@ export const Section = ({
         <div className="flex gap-4">
           <div className="grow flex flex-col gap-3">
             <div className="w-full flex gap-4 items-center justify-between">
-              <SecondaryLabel
+              <TertiaryText
+                uppercase
                 value={`Section ${number.toString()}`}
-                color={Color.PRIMARY}
+                color={Color.BASE_CONTENT_70}
               />
               {notesPath && (
                 <ButtonWithIcon
@@ -81,11 +83,7 @@ export const Section = ({
             </div>
 
             <div className="flex flex-col items-start">
-              <PrimaryLabel
-                value={description}
-                // color={disabled ? Color.BASE_CONTENT : Color.WHITE}
-                color={Color.WHITE}
-              />
+              <PrimaryLabel value={description} />
               <TertiaryText value={getChapterRange(section)} />
             </div>
           </div>

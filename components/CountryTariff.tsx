@@ -50,7 +50,7 @@ export const CountryTariff = ({
       ? TariffColumn.OTHER
       : TariffColumn.GENERAL
   );
-  const [showInactive, setShowInactive] = useState<boolean>(false);
+  const [showInactive, setShowInactive] = useState<boolean>(true);
   const [isSpecialProgramOpen, setIsSpecialProgramOpen] =
     useState<boolean>(false);
   const [isCopied, setIsCopied] = useState<boolean>(false);
@@ -269,7 +269,7 @@ export const CountryTariff = ({
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-3">
               <div className="flex flex-col">
-                <span className="text-sm font-semibold text-base-content/60 uppercase tracking-wide">
+                <span className="text-sm font-semibold text-base-content/80 uppercase tracking-wide">
                   Import Duties For{" "}
                   <span className="text-primary">{tariffElement.htsno}</span>{" "}
                   From
@@ -337,7 +337,7 @@ export const CountryTariff = ({
             {isModal && onClose && (
               <button
                 onClick={onClose}
-                className="btn btn-sm btn-circle btn-ghost hover:bg-base-300"
+                className="btn btn-sm btn-circle btn-ghost hover:bg-base-200"
                 aria-label="Close modal"
               >
                 <svg
@@ -360,14 +360,19 @@ export const CountryTariff = ({
       </div>
 
       {/* Special Trade Programs Section */}
-      <div className="bg-base-100 rounded-xl border border-base-300 shadow-sm p-6">
-        <div className="w-full flex flex-col gap-3">
-          <label className="text-sm font-semibold text-base-content/70 uppercase tracking-wide">
-            Special Trade Programs
-          </label>
+      <div className="bg-base-200 rounded-xl border-2 border-base-300 shadow-sm">
+        {/* Special Trade Programs Header */}
+        <div className="bg-base-300 px-6 py-3 border-b-2 border-base-content/10 rounded-t-xl">
+          <h3 className="text-lg sm:text-xl font-bold">
+            Special Trade Program
+          </h3>
+        </div>
+
+        {/* Special Trade Programs Content */}
+        <div className="p-4">
           <div className="relative w-full" ref={specialProgramDropdownRef}>
             <div
-              className="w-full px-4 py-3 border border-base-300 rounded-lg cursor-pointer bg-base-100 flex gap-3 items-center justify-between hover:border-primary/50 hover:shadow-md transition-all duration-200 min-h-[48px]"
+              className="w-full px-4 py-3 border-2 border-base-content/20 rounded-lg cursor-pointer bg-base-100 flex gap-3 items-center justify-between hover:border-primary hover:shadow-md transition-all duration-200 min-h-[48px]"
               onClick={() => setIsSpecialProgramOpen(!isSpecialProgramOpen)}
             >
               <div className="flex-1 flex items-center">
@@ -382,13 +387,13 @@ export const CountryTariff = ({
                       )}
                   </p>
                 ) : (
-                  <span className="text-sm text-base-content/60">
+                  <span className="text-sm text-base-content/80">
                     Select Special Tariff Program
                   </span>
                 )}
               </div>
               <svg
-                className={`w-5 h-5 transition-transform text-base-content/50 ${isSpecialProgramOpen ? "rotate-180" : ""}`}
+                className={`w-5 h-5 transition-transform text-base-content/70 ${isSpecialProgramOpen ? "rotate-180" : ""}`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -403,7 +408,7 @@ export const CountryTariff = ({
             </div>
 
             {isSpecialProgramOpen && (
-              <div className="absolute z-10 w-full mt-2 bg-base-100 border border-base-300 rounded-lg shadow-2xl max-h-80 overflow-hidden">
+              <div className="absolute z-10 w-full mt-2 bg-base-100 border-2 border-primary rounded-lg shadow-2xl max-h-80 overflow-hidden">
                 <div className="max-h-80 overflow-y-auto">
                   {[
                     {
@@ -417,7 +422,7 @@ export const CountryTariff = ({
                       key={index}
                       className={`px-4 py-3 cursor-pointer flex items-center justify-between transition-colors ${
                         selectedSpecialProgram?.symbol === program.symbol
-                          ? "bg-primary/10 border-l-4 border-primary"
+                          ? "bg-primary/20 border-primary"
                           : "hover:bg-base-200"
                       }`}
                       onClick={() => {
@@ -443,7 +448,7 @@ export const CountryTariff = ({
                           )}
                         </span>
                         {"description" in program && program.description && (
-                          <span className="text-sm text-base-content/60">
+                          <span className="text-sm text-base-content/80">
                             {program.description}
                           </span>
                         )}
@@ -500,7 +505,7 @@ export const CountryTariff = ({
                   {country.code === "BR" ? " and the Brazil 40% IEEPA" : ""}
                 </span>
               </p>
-              <p className="text-base-content/70 text-sm">
+              <p className="text-base-content/90 text-sm">
                 If applicable to your import, be sure to apply this to the
                 calculations below
               </p>
@@ -514,11 +519,11 @@ export const CountryTariff = ({
         {tariffSets.map((tariffSet, i) => (
           <div
             key={`tariff-set-${i}`}
-            className="bg-base-100 rounded-xl border border-base-300 shadow-sm overflow-hidden"
+            className="bg-base-200 rounded-xl border-2 border-base-300 shadow-sm overflow-hidden"
           >
             {/* Tariff Set Header */}
-            <div className="bg-gradient-to-r from-primary/5 to-primary/10 px-6 py-2 border-b border-base-300 flex justify-between items-center">
-              <h3 className="text-lg font-bold text-base-content">
+            <div className="bg-base-300 px-6 py-3 border-b-2 border-base-content/10 rounded-t-xl flex justify-between items-center">
+              <h3 className="text-lg sm:text-xl font-bold">
                 {tariffSet.name} Tariffs
               </h3>
               {is15PercentCapCountry &&
@@ -527,7 +532,7 @@ export const CountryTariff = ({
                 customsValue,
                 units
               ) < 15 ? (
-                <p className="text-2xl font-bold text-primary">
+                <p className="text-2xl font-bold">
                   {getAdValoremRate(tariffColumn, tariffSet.tariffs)}%
                 </p>
               ) : (
@@ -547,7 +552,7 @@ export const CountryTariff = ({
                     })
                     .filter((t) => t.type === "amount").length > 0 && (
                     <>
-                      <p className="text-2xl font-bold text-primary">
+                      <p className="text-2xl font-bold">
                         {getAmountRatesString(
                           baseTariffs
                             .flatMap((t) => t.tariffs)
@@ -564,10 +569,10 @@ export const CountryTariff = ({
                             })
                         )}
                       </p>
-                      <p className="text-xl font-bold text-primary">+</p>
+                      <p className="text-xl font-bold">+</p>
                     </>
                   )}
-                  <p className="text-2xl font-bold text-primary">
+                  <p className="text-2xl font-bold">
                     {getAdValoremRate(
                       tariffColumn,
                       tariffSet.tariffs,
@@ -688,21 +693,16 @@ export const CountryTariff = ({
       </div>
 
       {/* Additional Fees Section */}
-      <div className="bg-base-100 rounded-xl border border-base-300 shadow-sm overflow-hidden">
-        <div className="bg-gradient-to-r from-primary/5 to-primary/10 px-6 py-4 border-b border-base-300 flex justify-between items-center">
+      <div className="bg-base-200 rounded-xl border-2 border-base-300 shadow-sm overflow-hidden">
+        <div className="bg-base-300 px-6 py-3 border-b-2 border-base-content/10 rounded-t-xl flex justify-between items-center">
           <div className="flex flex-col">
-            <h3 className="text-lg font-bold text-base-content">
-              Additional Fees
-            </h3>
-            <p className="text-xs text-primary/70 uppercase tracking-tight font-bold">
-              On Total Value
-            </p>
+            <h3 className="text-lg sm:text-xl font-bold">Additional Fees</h3>
           </div>
-          <p className="text-2xl font-bold text-primary">{0.125 + 0.3464}%</p>
+          <p className="text-2xl font-bold">{0.125 + 0.3464}%</p>
         </div>
         <div className="p-6 flex flex-col gap-4">
           {/* Harbor Maintenance Fee */}
-          <div className="flex justify-between items-center pb-3 border-b border-base-300">
+          <div className="flex justify-between items-center pb-3 border-b border-base-content/20">
             <div className="flex items-center gap-2">
               <svg
                 className="w-5 h-5 text-primary/70"
@@ -721,7 +721,12 @@ export const CountryTariff = ({
                 Harbor Maintenance Fee
               </span>
             </div>
-            <span className="text-xl font-bold text-primary">0.125%</span>
+            <div className="flex flex-col text-right">
+              <p className="text-xl font-bold text-primary">0.125%</p>
+              <p className="text-xs text-base-content/80 uppercase tracking-tight font-semibold">
+                On Total Customs Value
+              </p>
+            </div>
           </div>
           {/* Merchandise Processing Fee */}
           <div className="flex justify-between items-center">
@@ -743,7 +748,12 @@ export const CountryTariff = ({
                 Merchandise Processing Fee
               </span>
             </div>
-            <span className="text-xl font-bold text-primary">0.3464%</span>
+            <div className="flex flex-col text-right">
+              <p className="text-xl font-bold text-primary">0.3464%</p>
+              <p className="text-xs text-base-content/80 uppercase tracking-tight font-semibold">
+                On Total Customs Value
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -762,7 +772,7 @@ export const CountryTariff = ({
         {/* Modal */}
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
           <div
-            className="bg-base-100 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto pointer-events-auto animate-slideUp"
+            className="bg-base-100 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto pointer-events-auto animate-slideUp border-2 border-base-300"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="px-6 py-6">{content}</div>

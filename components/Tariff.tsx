@@ -128,7 +128,7 @@ export const Tariff = ({
         className={classNames(
           "flex gap-3 justify-between items-center py-2 px-4 rounded-lg transition-all duration-200",
           tariff.isActive
-            ? "bg-primary/5 hover:bg-primary/10 border border-primary/20"
+            ? "bg-primary/5 hover:bg-primary/20 border border-primary/20"
             : "border border-base-300"
         )}
       >
@@ -150,17 +150,19 @@ export const Tariff = ({
 
           <div className="flex flex-col gap-1 min-w-0 flex-1">
             <div className="flex gap-2 items-center flex-wrap">
-              <Link
-                href={`/explore?code=${tariff.code}`}
-                target="_blank"
-                className="link link-primary font-semibold text-sm hover:text-primary-focus transition-colors"
-              >
-                {tariff.code}
-              </Link>
-              <span className="text-base-content">•</span>
-              <span className={classNames("text-sm font-medium")}>
+              <div className="flex gap-2 items-center shrink-0">
+                <Link
+                  href={`/explore?code=${tariff.code}`}
+                  target="_blank"
+                  className="link link-primary font-semibold hover:text-primary-focus transition-colors"
+                >
+                  {tariff.code}
+                </Link>
+                <p className="text-base-content">•</p>
+              </div>
+              <p className={classNames("font-medium min-w-0 flex-1")}>
                 {tariff.name}
-              </span>
+              </p>
             </div>
           </div>
         </div>
@@ -168,7 +170,7 @@ export const Tariff = ({
         <div className="shrink-0 min-w-[120px] text-right">
           <p
             className={classNames(
-              "text-base font-semibold",
+              "text-base sm:text-lg md:text-xl font-semibold",
               tariff.isActive
                 ? "text-primary"
                 : tariff[column] === null

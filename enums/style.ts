@@ -4,6 +4,8 @@ export enum Color {
   TERTIARY = "tertiary",
   ACCENT = "accent",
   BASE_CONTENT = "base-content",
+  BASE_CONTENT_50 = "base-content/50",
+  BASE_CONTENT_70 = "base-content/70",
   NEUTRAL_CONTENT = "neutral-content",
   WHITE = "white",
   BLACK = "black",

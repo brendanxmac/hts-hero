@@ -251,7 +251,7 @@ export const Explore = () => {
 
   const getSearchPlaceholder = () => {
     if (activeTab === ExploreTab.ELEMENTS) {
-      return "Search HTS code or description";
+      return "Search HTS Code or Description";
     } else if (activeTab === ExploreTab.NOTES) {
       return "Search all notes...";
     }
@@ -284,7 +284,7 @@ export const Explore = () => {
 
               <div
                 role="tablist"
-                className="tabs tabs-boxed tabs-sm md:tabs-md bg-primary/30 rounded-xl"
+                className="tabs tabs-boxed tabs-sm md:tabs-md rounded-xl"
               >
                 {ExploreTabs.map((tab) => (
                   <a
@@ -292,7 +292,7 @@ export const Explore = () => {
                     role="tab"
                     onClick={() => setActiveTab(tab.value)}
                     className={classNames(
-                      "tab transition-all duration-200 ease-in text-white font-semibold",
+                      "tab transition-all duration-200 ease-in font-semibold",
                       tab.value === activeTab && "tab-active"
                     )}
                   >
@@ -309,13 +309,13 @@ export const Explore = () => {
                   placeholder={getSearchPlaceholder()}
                   value={searchValue}
                   onChange={handleSearchChange}
-                  className="input input-bordered input-md h-10 w-full focus:ring-0 focus:outline-none pr-8"
+                  className="input input-bordered border-2 input-md h-10 w-full pr-8"
                 />
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
                   {searchValue && !searching && (
                     <button
                       onClick={handleClearSearch}
-                      className="btn btn-link p-1 btn-sm text-xs hover:text-secondary no-underline"
+                      className="btn btn-link p-1 btn-sm text-xs no-underline"
                       title="Clear search"
                     >
                       clear

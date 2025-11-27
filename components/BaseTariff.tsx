@@ -51,7 +51,7 @@ export const BaseTariff = ({
             <div className="flex gap-2 items-center flex-wrap">
               <span
                 className={classNames(
-                  "text-sm font-semibold",
+                  "font-semibold",
                   active ? "text-base-content" : "text-base-content/50"
                 )}
               >
@@ -60,7 +60,7 @@ export const BaseTariff = ({
               <span className="text-base-content/40">•</span>
               <span
                 className={classNames(
-                  "text-sm font-medium",
+                  "font-medium",
                   active ? "text-base-content" : "text-base-content/50"
                 )}
               >
@@ -78,13 +78,13 @@ export const BaseTariff = ({
 
         <div className="shrink-0 min-w-[120px] text-right">
           {reviewText ? (
-            <span className="text-sm font-semibold text-warning bg-warning/10 px-3 py-1 rounded-full">
+            <span className="font-semibold text-warning bg-warning/10 px-3 py-1 rounded-full">
               {reviewText}
             </span>
           ) : (
             <p
               className={classNames(
-                "text-base font-semibold",
+                "text-base sm:text-lg md:text-xl font-semibold",
                 active ? "text-primary" : "line-through text-base-content/40"
               )}
             >

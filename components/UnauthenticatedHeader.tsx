@@ -61,7 +61,7 @@ const UnauthenticatedHeader = () => {
   }, [searchParams]);
 
   return (
-    <header className="w-full h-16 z-10 bg-base-300 flex items-center justify-between p-4 border-b border-base-content/20">
+    <header className="w-full h-16 z-10 bg-base-100 flex items-center justify-between p-4 border-b border-base-content/20">
       <nav
         className="w-full flex items-center justify-between"
         aria-label="Global"

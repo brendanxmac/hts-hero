@@ -50,7 +50,7 @@ export const ElementSearchSummary = ({
     indent === "0" && classification && classification.levels[0];
 
   return (
-    <div className="flex flex-col gap-2 w-full bg-base-100 rounded-md border-2 border-base-content/40 hover:cursor-pointer hover:bg-neutral">
+    <div className="flex flex-col gap-2 w-full bg-primary/5 rounded-md border-2 border-primary/40 hover:cursor-pointer hover:bg-primary/10">
       <div className="flex">
         {isHeading && element.chapter != 98 && element.chapter != 99 && (
           <div className="flex items-center justify-center">
@@ -105,14 +105,12 @@ export const ElementSearchSummary = ({
         >
           <div className="w-full flex flex-col items-start justify-between gap-2 px-4 py-2">
             <div className="flex flex-col gap-3 breadcrumbs text-sm py-0 overflow-hidden">
-              <div className="text-xs">
+              <div className="text-sm">
                 {breadcrumbs.map((breadcrumb, i) => (
                   <span key={`breadcrumb-${i}`}>
-                    {breadcrumb.label && (
-                      <b className="text-accent">{breadcrumb.label} </b>
-                    )}
-                    <span className="text-white">{breadcrumb.value}</span>
-                    <span className="text-white mx-2">›</span>
+                    {breadcrumb.label && <b>{breadcrumb.label} </b>}
+                    <span>{breadcrumb.value}</span>
+                    <span className="mx-2">›</span>
                   </span>
                 ))}
               </div>
@@ -120,7 +118,7 @@ export const ElementSearchSummary = ({
 
             <div className="flex flex-col">
               {htsno && <TertiaryLabel value={htsno} />}
-              <PrimaryLabel value={description} color={Color.WHITE} />
+              <PrimaryLabel value={description} color={Color.PRIMARY} />
             </div>
           </div>
           <div className="flex items-center justify-center pr-3">
