@@ -107,12 +107,18 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
   return (
     <div className="h-full w-full max-w-6xl mx-auto flex flex-col">
       <div className="px-8 py-6 flex-1 flex flex-col gap-6 overflow-y-auto">
-        <div className="flex flex-col gap-1">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl md:text-2xl font-bold">
-              Classification Overview
-            </h2>
-            <div className="flex gap-2 items-center">
+        {/* Header Section */}
+        <div className="flex flex-col gap-4">
+          <div className="flex justify-between items-start gap-4">
+            <div className="flex flex-col gap-2">
+              <h1 className="text-2xl md:text-3xl font-bold text-base-content">
+                Classification Overview
+              </h1>
+              <p className="text-sm text-base-content/60">
+                Add context and supporting information for your classification
+              </p>
+            </div>
+            <div className="flex gap-2 items-center flex-shrink-0">
               {classificationRecord && (
                 <div className="relative">
                   <select
@@ -146,7 +152,7 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
                 </div>
               )}
               <button
-                className="btn btn-xs btn-neutral"
+                className="btn btn-sm btn-primary"
                 disabled={loading || isLoadingImporters}
                 onClick={async () => {
                   setLoading(true);
@@ -175,95 +181,105 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
               </button>
             </div>
           </div>
-        </div>
-
-        {/* <div className="flex flex-col gap-2">
-          <SecondaryLabel value="Item Description" />
-          <input
-            className="input input-bordered w-full disabled:text-gray-300"
-            value={classification.articleDescription}
-            disabled
-          />
-        </div> */}
-
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex flex-col gap-2 flex-1">
-            <div className="flex flex-col gap-1">
-              <SecondaryLabel value="Importer" />
-              <TertiaryText value="Select the importer or client that you are providing this advisory to (optional)" />
-            </div>
-            <div className="flex gap-2">
-              <select
-                className="select select-bordered w-full flex-1"
-                value={selectedImporterId}
-                disabled={isLoadingImporters || !canUpdateDetails}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setSelectedImporterId(value);
-                  updateClassification(
-                    classificationId,
-                    undefined,
-                    value || null,
-                    undefined
-                  );
-                }}
-              >
-                <option value="">
-                  {isLoadingImporters
-                    ? "Loading importers..."
-                    : importers.length === 0
-                      ? "No importers available"
-                      : "Select importer"}
-                </option>
-                {!isLoadingImporters &&
-                  importers.map((importer) => (
-                    <option key={importer.id} value={importer.id}>
-                      {importer.name}
+          {/* Classification Details Card */}
+          <div className="flex flex-col gap-4">
+            <div className="bg-base-200/50 border border-base-content/10 rounded-xl p-6 flex flex-col gap-6">
+              {/* Importer Section */}
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-1">
+                  <SecondaryLabel value="Importer" />
+                  <TertiaryText value="Select the importer or client that you are providing this advisory to (optional)" />
+                </div>
+                <div className="flex gap-2">
+                  <select
+                    className="select select-bordered w-full flex-1 bg-base-100"
+                    value={selectedImporterId}
+                    disabled={isLoadingImporters || !canUpdateDetails}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setSelectedImporterId(value);
+                      updateClassification(
+                        classificationId,
+                        undefined,
+                        value || null,
+                        undefined
+                      );
+                    }}
+                  >
+                    <option value="">
+                      {isLoadingImporters
+                        ? "Loading importers..."
+                        : importers.length === 0
+                          ? "No importers available"
+                          : "Select importer"}
                     </option>
-                  ))}
-              </select>
-              {selectedImporterId && (
-                <button
-                  className="btn btn-outline"
-                  onClick={() => {
-                    setSelectedImporterId("");
-                    updateClassification(
-                      classificationId,
-                      undefined,
-                      null,
-                      undefined
-                    );
+                    {!isLoadingImporters &&
+                      importers.map((importer) => (
+                        <option key={importer.id} value={importer.id}>
+                          {importer.name}
+                        </option>
+                      ))}
+                  </select>
+                  {selectedImporterId && (
+                    <button
+                      className="btn btn-outline"
+                      onClick={() => {
+                        setSelectedImporterId("");
+                        updateClassification(
+                          classificationId,
+                          undefined,
+                          null,
+                          undefined
+                        );
+                      }}
+                      disabled={isLoadingImporters || !canUpdateDetails}
+                      title="Clear selected importer"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="w-full h-px bg-base-content/10" />
+
+              {/* Notes Section */}
+              <div className="w-full flex flex-col gap-3">
+                <div className="flex flex-col gap-1">
+                  <SecondaryLabel value="Basis for Classification" />
+                  <TertiaryText value="Add any notes about your classification here. They will be included in your classification advisory." />
+                </div>
+                <textarea
+                  className="min-h-36 textarea textarea-bordered w-full bg-base-100"
+                  placeholder="Add any notes about your classification here. They will be included in your classification advisory."
+                  value={classification.notes || ""}
+                  disabled={!canUpdateDetails}
+                  onChange={(e) => {
+                    setClassification({
+                      ...classification,
+                      notes: e.target.value,
+                    });
                   }}
-                  disabled={isLoadingImporters || !canUpdateDetails}
-                  title="Clear selected importer"
-                >
-                  Clear
-                </button>
-              )}
+                />
+              </div>
             </div>
           </div>
         </div>
 
-        {/* NOTES */}
-        <div className="w-full flex flex-col gap-2">
-          <SecondaryLabel value="Basis for Classification" />
-          <textarea
-            className="min-h-36 textarea textarea-bordered w-full"
-            placeholder="Add any notes about your classification here. They will be included in your classification advisory."
-            value={classification.notes || ""}
-            disabled={!canUpdateDetails}
-            onChange={(e) => {
-              setClassification({
-                ...classification,
-                notes: e.target.value,
-              });
-            }}
-          />
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <SecondaryLabel value="HTS Code & Tariff Details" />
-          <Element element={element} />
+        {/* HTS Code Section */}
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1">
+            <h2 className="text-2xl md:text-3xl font-bold text-base-content">
+              HTS Code & Tariff Details
+            </h2>
+            <p className="text-sm text-base-content/60">
+              Complete tariff information for your classified item
+            </p>
+          </div>
+          <div className="bg-base-200/50 border border-base-content/10 rounded-xl p-6">
+            <Element element={element} />
+          </div>
         </div>
       </div>
       {showPDF && (

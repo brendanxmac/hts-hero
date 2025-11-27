@@ -33,6 +33,7 @@ import { PrimaryLabel } from "./PrimaryLabel";
 import Link from "next/link";
 import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import { fetchUser, updateUserProfile } from "../libs/supabase/user";
+import { SecondaryText } from "./SecondaryText";
 
 interface Props {
   summaryOnly?: boolean;
@@ -159,7 +160,9 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
 
         <div className="flex flex-col gap-1">
           <div className="w-full flex flex-col-reverse sm:flex-row justify-between items-start gap-2">
-            <PrimaryLabel value={getHtsnoLabel()} color={Color.PRIMARY} />
+            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-primary">
+              {getHtsnoLabel()}
+            </h1>
 
             <div className="flex gap-2">
               <ButtonWithIcon
@@ -208,9 +211,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
             </div>
           </div>
 
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">
-            {description}
-          </h1>
+          <PrimaryLabel value={description} />
         </div>
       </div>
 
