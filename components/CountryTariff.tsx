@@ -372,7 +372,7 @@ export const CountryTariff = ({
         <div className="p-4">
           <div className="relative w-full" ref={specialProgramDropdownRef}>
             <div
-              className="w-full px-4 py-3 border-2 border-base-content/20 rounded-lg cursor-pointer bg-base-100 flex gap-3 items-center justify-between hover:border-primary hover:shadow-md transition-all duration-200 min-h-[48px]"
+              className="w-full px-4 py-3 border-2 border-base-content/20 rounded-xl cursor-pointer bg-base-100 flex gap-3 items-center justify-between hover:border-primary hover:shadow-md transition-all duration-200 min-h-[48px]"
               onClick={() => setIsSpecialProgramOpen(!isSpecialProgramOpen)}
             >
               <div className="flex-1 flex items-center">
@@ -408,7 +408,7 @@ export const CountryTariff = ({
             </div>
 
             {isSpecialProgramOpen && (
-              <div className="absolute z-10 w-full mt-2 bg-base-100 border-2 border-primary rounded-lg shadow-2xl max-h-80 overflow-hidden">
+              <div className="absolute z-10 w-full mt-2 bg-base-100 border-2 border-primary rounded-xl shadow-2xl max-h-80 overflow-hidden">
                 <div className="max-h-80 overflow-y-auto">
                   {[
                     {

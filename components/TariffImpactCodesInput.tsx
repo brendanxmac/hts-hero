@@ -89,7 +89,7 @@ export default function TariffImpactCodesInput({
   return (
     <div
       className={classNames(
-        "w-full min-w-0 flex flex-col gap-2 bg-base-100 border border-base-content/20 rounded-md relative",
+        "w-full min-w-0 flex flex-col gap-2 border border-base-content/60 rounded-md relative",
         value.length > CHARACTER_LIMIT ? "border-warning" : undefined
       )}
       onClick={(e) => {
@@ -108,7 +108,7 @@ export default function TariffImpactCodesInput({
             rows={1}
             onChange={handleInputChange}
             onScroll={handleScroll}
-            className="textarea text-sm sm:text-base w-full max-h-48 min-h-10 rounded-none resize-none bg-inherit text-white placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-1 overflow-y-auto"
+            className="textarea text-sm sm:text-base w-full max-h-48 min-h-10 rounded-none resize-none bg-inherit placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-1 overflow-y-auto"
           ></textarea>
 
           {/* Top fade overlay */}
@@ -127,7 +127,7 @@ export default function TariffImpactCodesInput({
           <div className="flex gap-1 sm:gap-2 items-center bg-base-100/90 backdrop-blur-sm px-1 sm:px-2 py-1 rounded-md border border-base-content/80 w-fit">
             <p
               className={classNames(
-                "text-white text-xs whitespace-nowrap",
+                "text-xs whitespace-nowrap",
                 value.length >= CHARACTER_LIMIT ? "font-bold" : undefined
               )}
             >
