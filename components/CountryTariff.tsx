@@ -261,7 +261,7 @@ export const CountryTariff = ({
   };
 
   const content = (
-    <div className="flex flex-col gap-8 pb-6">
+    <div className="flex flex-col gap-4 pb-6">
       {/* Country Header with Actions */}
       <div className="bg-base-100">
         <div className="w-full flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
@@ -364,7 +364,7 @@ export const CountryTariff = ({
         {/* Special Trade Programs Header */}
         <div className="bg-base-300 px-6 py-3 border-b-2 border-base-content/10 rounded-t-xl">
           <h3 className="text-lg sm:text-xl font-bold">
-            Special Trade Program
+            Special Trade Programs
           </h3>
         </div>
 

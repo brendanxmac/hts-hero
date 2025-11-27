@@ -177,14 +177,14 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2">
+        {/* <div className="flex flex-col gap-2">
           <SecondaryLabel value="Item Description" />
           <input
             className="input input-bordered w-full disabled:text-gray-300"
             value={classification.articleDescription}
             disabled
           />
-        </div>
+        </div> */}
 
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex flex-col gap-2 flex-1">

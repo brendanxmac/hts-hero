@@ -55,7 +55,7 @@ export const ClassificationSummary = ({
 
   return (
     <div
-      className="bg-base-100 p-3 rounded-lg cursor-pointer flex flex-col gap-1 border border-base-content transition-all duration-100 relative shadow-sm hover:shadow-md hover:scale-[1.01]"
+      className="bg-base-100 p-4 rounded-xl cursor-pointer flex flex-col gap-3 border border-primary/70 transition-all duration-200 relative shadow-sm hover:shadow-lg hover:border-primary hover:bg-primary/[0.05]"
       onClick={async () => {
         // Get the classifications revision and see if we need to use useHts to fetch the elements
         const classificationRevision = classificationRecord.revision;
@@ -73,36 +73,36 @@ export const ClassificationSummary = ({
       }}
     >
       {isLoading && (
-        <div className="absolute inset-0 bg-base-300/80 flex items-center justify-center rounded-lg z-10">
+        <div className="absolute inset-0 bg-base-300/80 flex items-center justify-center rounded-xl z-10">
           <LoadingIndicator text="Loading..." />
         </div>
       )}
 
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-2">
         <div className="flex items-center gap-3 justify-between">
-          <TertiaryText
-            value={
-              getFinalClassificationElement(classification.levels)
-                ? getFinalClassificationElement(classification.levels).htsno
-                : "Incomplete"
-            }
-          />
+          <div className="text-sm font-semibold text-primary">
+            {getFinalClassificationElement(classification.levels)
+              ? getFinalClassificationElement(classification.levels).htsno
+              : "Incomplete"}
+          </div>
           {classificationRecord.status === ClassificationStatus.REVIEW && (
-            <div className="flex items-center gap-1">
-              <FlagIcon className="h-4 w-4 text-warning" />
-              <p className="text-xs font-bold text-warning">Needs Review</p>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-warning/10">
+              <FlagIcon className="h-3.5 w-3.5 text-warning" />
+              <p className="text-xs font-semibold text-warning">Needs Review</p>
             </div>
           )}
           {classificationRecord.status === ClassificationStatus.FINAL && (
-            <div className="flex items-center gap-1">
-              <CheckCircleIcon className="h-5 w-5 text-success" />
-              <p className="text-xs font-bold text-success">Finalized</p>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success/10">
+              <CheckCircleIcon className="h-4 w-4 text-success" />
+              <p className="text-xs font-semibold text-success">Finalized</p>
             </div>
           )}
           {classificationRecord.status === ClassificationStatus.DRAFT && (
-            <div className="flex items-center gap-1">
-              <DocumentTextIcon className="h-4 w-4" />
-              <p className="text-xs font-bold">Draft</p>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-base-content/5">
+              <DocumentTextIcon className="h-3.5 w-3.5 text-base-content/60" />
+              <p className="text-xs font-semibold text-base-content/60">
+                Draft
+              </p>
             </div>
           )}
         </div>
@@ -111,20 +111,11 @@ export const ClassificationSummary = ({
       </div>
 
       {/* Metadata - Less prominent but clear */}
-      <div className="flex flex-wrap justify-between gap-x-3 gap-y-2 text-sm pt-1 border-t border-base-content/20 text-base-content/60">
+      <div className="flex flex-wrap justify-between gap-x-3 gap-y-2 text-sm pt-2 border-t border-base-content/10 text-base-content/60">
         <div className="flex flex-wrap gap-3">
           {user && user.team_id && (
-            <div className="flex items-center gap-1">
-              <UserIcon className="h-4 w-4" />
-              {/* <SquareIconButton
-                onClick={() => {}}
-                transparent
-                iconOnly
-                icon={<UserIcon className="h-4 w-4" />}
-                tooltip="Classifier"
-              /> */}
-              {/* <UserIcon className="h-4 w-4" /> */}
-              {/* <TertiaryText value="Classifier:" color={Color.DARK_GRAY} /> */}
+            <div className="flex items-center gap-1.5">
+              <UserIcon className="h-3.5 w-3.5 text-base-content/40" />
               <TertiaryText
                 value={
                   classificationRecord.classifier
@@ -136,16 +127,8 @@ export const ClassificationSummary = ({
             </div>
           )}
 
-          <div className="flex items-center gap-1">
-            <TagIcon className="h-4 w-4" />
-            {/* <SquareIconButton
-              onClick={() => {}}
-              transparent
-              iconOnly
-              icon={<TagIcon className="h-4 w-4" />}
-              tooltip="Importer"
-            /> */}
-            {/* <TertiaryText value="Importer:" color={Color.DARK_GRAY} /> */}
+          <div className="flex items-center gap-1.5">
+            <TagIcon className="h-3.5 w-3.5 text-base-content/40" />
             <TertiaryText
               value={
                 classificationRecord.importer

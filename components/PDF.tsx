@@ -143,7 +143,7 @@ export default function PDF({
     <Transition appear show={isOpen}>
       <Dialog as="div" onClose={() => setIsOpen(false)}>
         <Transition.Child
-          className="fixed inset-0 bg-slate-900 bg-opacity-70 z-50 transition-opacity"
+          className="fixed inset-0 bg-base-100 bg-opacity-80 z-50 transition-opacity"
           enter="transition ease-out duration-200"
           enterFrom="opacity-0"
           enterTo="opacity-100"
@@ -161,19 +161,17 @@ export default function PDF({
           leaveFrom="opacity-100 translate-y-0"
           leaveTo="opacity-0 translate-y-4"
         >
-          <Dialog.Panel className="rounded border-2 border-base-100 overflow-auto max-w-7xl w-full h-full">
+          <Dialog.Panel className="rounded-xl border-2 border-base-content/30 overflow-auto max-w-7xl w-full h-full">
             <div className="bg-base-100 z-10 sticky top-0 p-2 sm:px-5 sm:py-4 sm:bg-base-300 border-b border-base-300 w-full">
               <div className="flex justify-between items-center max-w-full ">
                 <div className="shrink-0 hidden sm:flex items-center gap-4">
-                  <Dialog.Title className="font-semibold text-gray-100">
-                    {title}
-                  </Dialog.Title>
+                  <Dialog.Title className="font-semibold">{title}</Dialog.Title>
 
                   <div className="text-center">
                     <a
                       download
                       href={pdfUrl || filePath}
-                      className="btn btn-xs cursor-pointer focus:outline-none text-white bg-primary hover:bg-primary/80 shrink-0"
+                      className="btn btn-xs btn-primary cursor-pointer shrink-0"
                       target="_blank"
                       rel="noreferrer"
                     >

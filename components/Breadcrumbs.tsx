@@ -14,7 +14,7 @@ export const Breadcrumbs = ({
   if (breadcrumbs.length === 0) return null;
 
   return (
-    <div className="flex gap-3 items-start justify-start">
+    <div className="flex gap-3 items-start justify-start pb-3 border-b border-base-content/30">
       <div
         className="btn btn-xs btn-square btn-primary shrink-0 flex items-center gap-2"
         onClick={() => {

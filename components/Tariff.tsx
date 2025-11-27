@@ -126,11 +126,16 @@ export const Tariff = ({
       <div
         key={`${tariff.code}-${exceptionLevel}`}
         className={classNames(
-          "flex gap-3 justify-between items-center py-2 px-4 rounded-lg transition-all duration-200",
+          "flex gap-3 justify-between items-center py-2 px-4 rounded-lg transition-all hover:bg-primary/20 hover:cursor-pointer",
           tariff.isActive
-            ? "bg-primary/5 hover:bg-primary/20 border border-primary/20"
+            ? "bg-primary/5 border border-primary/20"
             : "border border-base-300"
         )}
+        onClick={() => {
+          if (tariff.requiresReview) {
+            toggleTariff(tariff);
+          }
+        }}
       >
         <div className="flex gap-3 items-center flex-1 min-w-0">
           <input
@@ -154,7 +159,7 @@ export const Tariff = ({
                 <Link
                   href={`/explore?code=${tariff.code}`}
                   target="_blank"
-                  className="link link-primary font-semibold hover:text-primary-focus transition-colors"
+                  className="link link-primary font-semibold transition-colors"
                 >
                   {tariff.code}
                 </Link>

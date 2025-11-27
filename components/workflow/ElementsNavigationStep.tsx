@@ -33,10 +33,10 @@ export const ElementsNavigationStep = ({
   return (
     <div
       className={classNames(
-        "bg-base-100 border-2 flex flex-col rounded-md p-4 gap-2 transition-all duration-200 ease-in-out hover:cursor-pointer shadow-sm",
+        "bg-base-100 border flex flex-col rounded-md p-4 gap-2 transition-all duration-200 ease-in-out hover:cursor-pointer shadow-sm",
         active
           ? "bg-primary/10 border-primary"
-          : "border-base-content/50 hover:bg-base-300"
+          : "border-base-content/80 hover:bg-primary/5"
       )}
       onClick={onClick}
     >

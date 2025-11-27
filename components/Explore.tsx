@@ -265,7 +265,7 @@ export const Explore = () => {
           <LoadingIndicator text={loadingText} />
         </div>
       ) : (
-        <div className="w-full h-full grow flex flex-col gap-4">
+        <div className="w-full h-full grow flex flex-col gap-2">
           <div className="flex gap-4 items-center justify-between flex-col md:flex-row">
             <div className="w-full flex gap-4 items-center justify-between md:justify-normal">
               <div className="flex flex-col -space-y-1">
@@ -309,7 +309,7 @@ export const Explore = () => {
                   placeholder={getSearchPlaceholder()}
                   value={searchValue}
                   onChange={handleSearchChange}
-                  className="input input-bordered border-2 input-md h-10 w-full pr-8"
+                  className="input input-primary border-2 input-md h-10 w-full pr-8"
                 />
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
                   {searchValue && !searching && (

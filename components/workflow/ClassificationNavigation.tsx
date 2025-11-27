@@ -179,10 +179,10 @@ export const ClassificationNavigation = ({
             <SecondaryLabel value="Result & Tariff" />
             <div
               className={classNames(
-                "flex flex-col gap-1 p-4 rounded-md border-2 border-base-content/50 transition-all duration-200 ease-in-out hover:cursor-pointer",
+                "flex flex-col gap-1 p-4 rounded-md border border-base-content/80 transition-all duration-200 ease-in-out hover:cursor-pointer",
                 workflowStep === WorkflowStep.RESULT
                   ? "bg-primary/10 border-primary"
-                  : "border-base-content/50 hover:bg-base-300"
+                  : "border-base-content/80 hover:bg-primary/5"
               )}
               onClick={() => {
                 if (activeTab !== ClassifyTab.CLASSIFY) {

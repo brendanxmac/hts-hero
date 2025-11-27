@@ -35,7 +35,7 @@ export const ChapterSummary = ({
           },
         ]);
       }}
-      className="card flex flex-col gap-2 w-full rounded-md border-2 border-base-content/40 hover:border-primary cursor-pointer hover:shadow-md transition-all duration-100 ease-in-out"
+      className="card flex flex-col gap-2 w-full rounded-xl border-2 border-base-content/40 hover:border-primary cursor-pointer hover:shadow-md transition-all duration-100 ease-in-out"
     >
       <div className="flex items-start justify-between gap-3 p-4">
         <div className="flex flex-col gap-1">
@@ -43,7 +43,7 @@ export const ChapterSummary = ({
             <TertiaryText
               uppercase
               value={`Chapter ${number.toString()}`}
-              color={Color.BASE_CONTENT_70}
+              color={Color.PRIMARY}
             />
           </div>
           <SecondaryLabel value={description} />

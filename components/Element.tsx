@@ -133,7 +133,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
     getTariffElement(element, htsElements, breadcrumbs) || element;
 
   return (
-    <div className="card p-6 rounded-xl border-2 border-base-content/40 w-full flex flex-col items-start justify-between gap-4 pt-2 sm:pt-6">
+    <div className="card w-full flex flex-col items-start justify-between gap-4">
       <div className="w-full flex flex-col gap-4">
         {/* <div className="flex flex-col gap-3 text-sm">
           <div className="flex flex-wrap gap-y-2">
@@ -218,10 +218,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
         <div className="w-full flex flex-col gap-8">
           {children.length > 0 && (
             <div className="w-full flex flex-col gap-2">
-              <SecondaryLabel
-                value="Options for Next Level"
-                color={Color.WHITE}
-              />
+              <SecondaryLabel value="Options for Next Level" />
               <div className="flex flex-col gap-2">
                 {children.map((child, i) => {
                   return (
@@ -375,8 +372,8 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
           )}
 
           {htsno && htsno.replaceAll(".", "").length === 10 && (
-            <div className="w-full flex flex-col mt-4">
-              <div className="w-full flex justify-between flex-col mb-2">
+            <div className="w-full flex flex-col gap-4 p-4 sm:p-6 bg-base-200/50 border-2 border-base-content/20 rounded-xl">
+              <div className="w-full flex justify-between flex-col gap-2">
                 <div className="flex items-center gap-3">
                   <div className="flex gap-2 items-center">
                     <PrimaryLabel value="📊 Tariff Finder" />
@@ -390,7 +387,10 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                     <QuestionMarkCircleIcon className="w-5 h-5 md:w-6 md:h-6 text-base-content" />
                   </Link>
                 </div>
-                {/* <TertiaryText value="Simulate tariff scenarios for any country of origin and find potential exemptions. Not all tariffs are included and we do not guarantee correct calculations for the ones that are supported." /> */}
+                <p className="text-sm text-base-content/70">
+                  Simulate tariff scenarios for any country of origin and find
+                  potential exemptions
+                </p>
               </div>
               <Tariffs
                 isPayingUser={isPayingUser}
@@ -402,7 +402,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                   breadcrumbs
                 )}
               />
-              <p className="text-sm text-base-content/80">
+              <p className="text-sm text-base-content/60">
                 <sup>
                   We can make mistakes and do not guarantee complete nor correct
                   calculations. If you see any issues please{" "}

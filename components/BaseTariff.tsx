@@ -84,7 +84,7 @@ export const BaseTariff = ({
           ) : (
             <p
               className={classNames(
-                "text-base sm:text-lg md:text-xl font-semibold",
+                "text-base sm:text-lg font-semibold",
                 active ? "text-primary" : "line-through text-base-content/40"
               )}
             >

@@ -394,12 +394,12 @@ export const Tariffs = ({
           />
 
           <div className="w-full flex flex-col overflow-x-auto border border-base-content/50 rounded-lg">
-            <table className="table table-sm table-pin-cols">
+            <table className="table table-sm table-pin-cols bg-base-200">
               <thead>
                 <tr>
-                  <th></th>
-                  <th>Country of Origin</th>
-                  <th className="w-auto min-w-48">
+                  <th className="bg-base-200"></th>
+                  <th className="bg-base-200">Country of Origin</th>
+                  <th className="w-auto min-w-48 bg-base-200">
                     <div className="flex gap-2 items-center">
                       <h3>Tariff Rates</h3>
                       <button
@@ -432,7 +432,7 @@ export const Tariffs = ({
                       </button>
                     </div>
                   </th>
-                  <th className="hidden md:table-cell max-w-48">
+                  <th className="hidden md:table-cell max-w-48 bg-base-200">
                     Special Trade Program(s)
                   </th>
                 </tr>
@@ -493,7 +493,7 @@ export const Tariffs = ({
                   return (
                     <tr
                       key={`${country.code}-${i}`}
-                      className="w-full cursor-pointer transition-all duration-200 hover:bg-base-300 bg-base-100 border-b border-base-content/40"
+                      className="w-full cursor-pointer hover:bg-primary/80 hover:text-base-100 border-b border-base-content/40"
                       onClick={() => handleRowClick(country)}
                     >
                       <td className="w-6"></td>

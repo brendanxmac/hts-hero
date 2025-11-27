@@ -38,7 +38,7 @@ export const ElementSummary = ({ element, onClick }: Props) => {
     indent === "0" && classification && classification.levels[0];
 
   return (
-    <div className="flex flex-col gap-2 w-full rounded-md border-2 border-base-content/40 cursor-pointer hover:border-primary hover:shadow-md transition-all duration-100 ease-in-out">
+    <div className="flex flex-col gap-2 w-full rounded-xl border-2 border-base-content/80 cursor-pointer hover:border-primary hover:shadow-md transition-all duration-100 ease-in-out">
       <div className="flex">
         {isHeading && element.chapter != 98 && element.chapter != 99 && (
           <div className="flex items-center justify-center">
@@ -94,11 +94,7 @@ export const ElementSummary = ({ element, onClick }: Props) => {
           <div className="w-full flex flex-col items-start justify-between gap-1 px-4 py-2">
             {htsno && (
               <div className="min-w-20 md:min-w-32">
-                <TertiaryText
-                  uppercase
-                  value={htsno}
-                  color={Color.BASE_CONTENT_70}
-                />
+                <TertiaryText uppercase value={htsno} color={Color.PRIMARY} />
               </div>
             )}
 

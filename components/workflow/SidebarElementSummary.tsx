@@ -21,10 +21,10 @@ export const SidebarElementSummary = ({
   return (
     <div
       className={classNames(
-        "w-full flex justify-between items-center rounded-md bg-base-100 border-2 px-4 py-2 hover:cursor-pointer shadow-sm",
+        "w-full flex justify-between items-center rounded-md bg-base-100 border px-4 py-2 hover:cursor-pointer shadow-sm",
         isActive
           ? "bg-primary/10 border-primary"
-          : "border-base-content hover:bg-base-300"
+          : "border-base-content/80 hover:bg-primary/5"
       )}
       onClick={onClick}
     >
