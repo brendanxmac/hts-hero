@@ -1,18 +1,15 @@
 import { Color } from "../enums/style";
-import { TextCopyButton } from "./Copy";
 import { classNames } from "../utilities/style";
 
 interface Props {
   value: string;
   uppercase?: boolean;
   color?: Color;
-  copyable?: boolean;
   capitalize?: boolean;
 }
 
 export const TertiaryText = ({
   value,
-  copyable,
   uppercase = false,
   color = Color.BASE_CONTENT,
   capitalize = false,
@@ -27,7 +24,6 @@ export const TertiaryText = ({
       >
         {capitalize ? value.toUpperCase() : value}
       </h3>
-      {copyable && <TextCopyButton value={value} />}
     </div>
   );
 };

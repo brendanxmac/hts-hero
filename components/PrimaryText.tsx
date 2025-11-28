@@ -1,18 +1,15 @@
 import { Color } from "../enums/style";
-import { TextCopyButton } from "./Copy";
 import { classNames } from "../utilities/style";
 
 interface Props {
   value: string;
   uppercase?: boolean;
-  copyable?: boolean;
   color?: Color;
 }
 
 export const PrimaryText = ({
   value,
   color = Color.BASE_CONTENT,
-  copyable = false,
   uppercase = false,
 }: Props) => {
   return (
@@ -25,7 +22,6 @@ export const PrimaryText = ({
       >
         {value}
       </h2>
-      {copyable && <TextCopyButton value={value} />}
     </div>
   );
 };
