@@ -18,7 +18,7 @@ export default function ProductCard({
   cta,
 }: ProductCardI) {
   return (
-    <div className="group h-auto py-6 px-4 bg-primary/5 border-2 border-primary/10 rounded-2xl shadow-xl backdrop-blur-sm transition-all duration-300">
+    <div className="group h-auto py-6 px-4 bg-primary/5 border-2 border-primary/10 rounded-2xl shadow-md backdrop-blur-sm transition-all duration-300">
       <div className="flex flex-col items-center gap-4">
         <div className="text-4xl">{emoji}</div>
         <div className="flex flex-col gap-1">

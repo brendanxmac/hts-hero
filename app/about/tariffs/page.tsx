@@ -69,18 +69,8 @@ export default function Home() {
       </Suspense>
       <main>
         <TariffFeaturesGrid />
-
         <TrustedBy />
-
         <TariffFeaturesListicle />
-        {/* <WithWithout
-          subject="Tariffs"
-          title="Keeping up with Tariff Changes is a Nightmare"
-          withoutKeyPoint={{
-            title: "Error-Prone & Time-Consuming",
-          }}
-          withoutList={withoutTariffImpact}
-        /> */}
         <TariffImpactPricing />
         <ProductDemoSection
           title="See How it Works"

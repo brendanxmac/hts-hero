@@ -7,6 +7,7 @@ import Image from "next/image";
 import logo from "@/app/logo.svg";
 import config from "@/config";
 import ButtonSignin from "./ButtonSignin";
+import ThemeToggle from "./ThemeToggle";
 
 const links = [
   {
@@ -89,7 +90,12 @@ const TariffAboutHeader = () => {
               {link.text}
             </Link>
           ))}
+        </div>
+
+        {/* CTA on large screens */}
+        <div className="hidden lg:flex lg:justify-end lg:flex-1 lg:gap-2 lg:items-center">
           <ButtonSignin text="Check your Imports" />
+          <ThemeToggle />
         </div>
       </nav>
 
@@ -147,8 +153,13 @@ const TariffAboutHeader = () => {
                     {link.text}
                   </Link>
                 ))}
-                <ButtonSignin text="Check your Imports" />
               </div>
+            </div>
+            <div className="divider"></div>
+            {/* CTA on mobile */}
+            <div className="flex gap-2 items-center">
+              <ButtonSignin text="Check your Imports" />
+              <ThemeToggle />
             </div>
           </div>
         </div>

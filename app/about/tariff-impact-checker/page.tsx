@@ -2,7 +2,6 @@
 
 import { Suspense } from "react";
 import ClassifierFooter from "@/components/ClassifierFooter";
-import WithWithout, { Task } from "@/components/WithWithout";
 import TariffImpactFeaturesGrid from "@/components/TariffImpactFeaturesGrid";
 import Demo from "@/components/Demo";
 import { FAQ } from "@/components/FAQ";
@@ -12,56 +11,6 @@ import { PendingTariffsList } from "../../../components/UpcomingTariffsList";
 import TariffImpactPricing from "../../../components/TariffImpactPricing";
 import TrustedBy from "../../../components/TrustedBy";
 
-const withoutTariffImpact: Task[] = [
-  {
-    title: "Tracking & Understanding Changes",
-    time: "1 hour / change",
-  },
-  {
-    title: "Finding Out What's Affected",
-    time: "30 min / change",
-  },
-  {
-    title: "Checking Imports",
-    time: "~20 min / catalog",
-  },
-  {
-    title: "Finding Latest Tariffs & Exemptions",
-    time: "20 min / import",
-  },
-  {
-    title: "Applying Current Tariff Stacking Rules",
-    time: "10 min / import",
-  },
-];
-
-// const withTariffImpact: Task[] = [
-//   {
-//     title: "Get Notified When New Tariffs Affect your Imports",
-//     time: "0 min",
-//   },
-//   {
-//     title: "Instantly see which imports are affected",
-//     time: "0 min",
-//   },
-//   {
-//     title: "Save lists of codes for future checks",
-//     time: "0 min",
-//   },
-//   {
-//     title: "Find all Tariffs & Exemptions",
-//     time: "0 min",
-//   },
-//   {
-//     title: "Applies Stacking Rules Automatically",
-//     time: "0 min",
-//   },
-//   {
-//     title: "Finds Rates for Every Country",
-//     time: "0 min",
-//   },
-// ];
-
 export default function Home() {
   return (
     <>
@@ -70,7 +19,6 @@ export default function Home() {
       </Suspense>
       <main>
         <TariffImpactFeaturesGrid />
-
         <TrustedBy showTestimonials={false} />
         <div className="h-10 bg-base-200"></div>
 
@@ -144,20 +92,8 @@ export default function Home() {
             altText: "Tariff Impacts",
           }}
         />
-
-        {/* <WithWithout
-          subject="Tariffs"
-          title="Keeping up with Tariff Changes is a Nightmare"
-          withoutKeyPoint={{
-            title: "Error-Prone & Time-Consuming",
-          }}
-          withoutList={withoutTariffImpact}
-        /> */}
-
         <TariffImpactPricing />
-
         <FAQ faqItems={tariffImpactFaqList} />
-
         <PendingTariffsList />
       </main>
       <ClassifierFooter />
