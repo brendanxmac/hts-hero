@@ -197,7 +197,7 @@ export const PendingTariffsList = ({ hideHeading }: Props) => {
           {tariffAnnouncements.map((tariff, index) => (
             <div
               key={index}
-              className="group bg-base-100 hover:bg-base-200 rounded-xl shadow-md hover:shadow-lg transition-all duration-100 p-6 border border-base-content/20"
+              className="group bg-base-100 rounded-xl shadow-md hover:shadow-lg hover:border hover:border-primary/80 transition-all duration-100 p-6 border border-base-content/20"
             >
               {/* Header Section */}
               <div className="mb-6">

@@ -54,25 +54,23 @@ export const DescriptionStep = ({
   return (
     <div className="h-full flex flex-col">
       {/* Content */}
-      <div className="grow w-full max-w-3xl mx-auto flex flex-col px-8 justify-center gap-5">
+      <div className="grow w-full max-w-3xl mx-auto flex flex-col px-8 justify-center gap-4">
         {/* Add a button to go back to classifications */}
         {(!classification || !classification?.articleDescription) && (
           <button
-            className="w-fit btn btn-sm btn-square p-2"
+            className="flex w-fit gap-1 btn btn-link no-underline p-2 items-center"
             onClick={() => setPage(ClassifyPage.CLASSIFICATIONS)}
           >
             <ArrowLeftIcon className="w-4 h-4" />
+            Back
           </button>
         )}
-        <div className="flex flex-col gap-2">
-          <div className="flex justify-between items-center">
-            <TertiaryLabel value="Item Description" />
-          </div>
-          <h2 className={`font-bold text-2xl`}>
-            Enter a detailed description of your item
-          </h2>
+        <div className="flex flex-col">
+          <h2 className={`font-bold text-2xl md:text-3xl`}>Item Description</h2>
+          <TertiaryText value="Enter a detailed description of the item you are classifying" />
         </div>
         <TextAreaInput
+          buttonText="Start Classification"
           placeholder="e.g. Men's 100% cotton denim jeans, dyed blue & pre-washed for an athletic figure"
           defaultValue={classification?.articleDescription || ""}
           onChange={(value) => {
@@ -134,7 +132,7 @@ export const DescriptionStep = ({
           loading={loading}
         />
 
-        <div className="flex flex-col">
+        {/* <div className="flex flex-col">
           <SecondaryLabel
             value="Tips for Best Assistance:"
             color={Color.BASE_CONTENT}
@@ -171,7 +169,7 @@ export const DescriptionStep = ({
               />
             </div>
           </ul>
-        </div>
+        </div> */}
       </div>
     </div>
   );

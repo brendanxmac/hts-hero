@@ -86,9 +86,11 @@ export const ClassificationSummary = ({
               : "Incomplete"}
           </div>
           {classificationRecord.status === ClassificationStatus.REVIEW && (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-warning/10">
-              <FlagIcon className="h-3.5 w-3.5 text-warning" />
-              <p className="text-xs font-semibold text-warning">Needs Review</p>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary">
+              <FlagIcon className="h-3.5 w-3.5 text-base-300" />
+              <p className="text-xs font-semibold text-base-300">
+                Needs Review
+              </p>
             </div>
           )}
           {classificationRecord.status === ClassificationStatus.FINAL && (

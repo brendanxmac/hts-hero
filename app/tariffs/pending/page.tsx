@@ -9,7 +9,7 @@ export const metadata = getSEOTags({
 
 export default function Home() {
   return (
-    <main className="h-full bg-base-300 overflow-hidden">
+    <main className="h-full bg-base-100 overflow-hidden">
       <div className="h-full overflow-y-auto">
         {/* Header Section */}
         <div className="flex flex-col w-full max-w-7xl mx-auto px-6 pt-10">

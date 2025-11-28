@@ -410,9 +410,7 @@ export const Classifications = ({ page, setPage }: Props) => {
                     <a
                       role="tab"
                       className={`tab transition-all duration-200 ease-in font-semibold ${
-                        activeTab === "all"
-                          ? "tab-active"
-                          : "hover:bg-primary/5 hover:text-base-content"
+                        activeTab === "all" && "tab-active"
                       }`}
                       onClick={() => setActiveTab("all")}
                     >
@@ -421,9 +419,7 @@ export const Classifications = ({ page, setPage }: Props) => {
                     <a
                       role="tab"
                       className={`tab transition-all duration-200 ease-in font-semibold ${
-                        activeTab === "final"
-                          ? "tab-active"
-                          : "hover:bg-primary/5 hover:text-black"
+                        activeTab === "final" && "tab-active"
                       }`}
                       onClick={() => setActiveTab("final")}
                     >
@@ -432,9 +428,7 @@ export const Classifications = ({ page, setPage }: Props) => {
                     <a
                       role="tab"
                       className={`tab transition-all duration-200 ease-in font-semibold ${
-                        activeTab === "review"
-                          ? "tab-active"
-                          : "hover:bg-primary/5 hover:text-black"
+                        activeTab === "review" && "tab-active"
                       }`}
                       onClick={() => setActiveTab("review")}
                     >
@@ -443,9 +437,7 @@ export const Classifications = ({ page, setPage }: Props) => {
                     <a
                       role="tab"
                       className={`tab transition-all duration-200 ease-in font-semibold ${
-                        activeTab === "draft"
-                          ? "tab-active"
-                          : "hover:bg-primary/5 hover:text-black"
+                        activeTab === "draft" && "tab-active"
                       }`}
                       onClick={() => setActiveTab("draft")}
                     >

@@ -73,12 +73,12 @@ export default function SquareIconButton({
       ref={buttonRef}
       disabled={disabled}
       className={classNames(
-        `btn btn-sm btn-square shrink-0 border-none hover:cursor-pointer`,
+        `btn btn-sm btn-square btn-primary shrink-0 border-none hover:cursor-pointer`,
         iconOnly
           ? "bg-transparent hover:bg-transparent shadow-none"
           : transparent
             ? `bg-none hover:bg-${color}/80`
-            : `bg-${color} hover:btn-secondary`
+            : `bg-${color}`
       )}
       onClick={(e) => {
         e.preventDefault();

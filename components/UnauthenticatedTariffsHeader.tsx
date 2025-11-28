@@ -46,9 +46,7 @@ const UnauthenticatedTariffsHeader = () => {
               width={32}
               height={32}
             />
-            <span className="text-white font-extrabold text-lg">
-              {config.appName}
-            </span>
+            <span className="font-extrabold text-lg">{config.appName}</span>
             {/* <span className="bg-white px-2 py-1 rounded-md text-black font-semibold text-xs">
               Beta
             </span> */}
