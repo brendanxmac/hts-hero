@@ -2,11 +2,11 @@
 
 import Image from "next/image";
 import { Suspense, useState } from "react";
-import { useUser } from "../contexts/UserContext";
 import { AuthenticatedHeader } from "../components/AuthenticatedHeader";
-import UnauthenticatedHeader from "../components/UnauthenticatedHeader";
-import ProductCard, { ProductCardI } from "../components/ProductCard";
 import LetsTalkModal from "../components/LetsTalkModal";
+import ProductCard, { ProductCardI } from "../components/ProductCard";
+import UnauthenticatedHeader from "../components/UnauthenticatedHeader";
+import { useUser } from "../contexts/UserContext";
 import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
 
 const products: ProductCardI[] = [
@@ -86,7 +86,8 @@ export default function Home() {
             </div>
 
             <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold tracking-tight mb-8 md:mb-12">
-              Quicker Classifications. Effortless Tariffs
+              <span className="text-primary">Smarter</span> Classifications,{" "}
+              <span className="text-primary">Effortless</span> Tariffs
             </h1>
           </div>
 
