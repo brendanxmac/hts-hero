@@ -311,7 +311,7 @@ export const ClassificationStep = ({
             <div className="flex gap-2 justify-between">
               {classificationLevel === 0 && (
                 <button
-                  className="grow btn btn-xs btn-primary"
+                  className="grow btn btn-xs btn-neutral"
                   onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
                   disabled={
                     loading.isLoading ||
@@ -325,7 +325,7 @@ export const ClassificationStep = ({
                 </button>
               )}
               <button
-                className="grow btn btn-xs btn-primary"
+                className="grow btn btn-xs btn-neutral"
                 onClick={() => {
                   setShowCrossRulingsModal(true);
                 }}
@@ -336,7 +336,7 @@ export const ClassificationStep = ({
               </button>
               {!showNotes && (
                 <button
-                  className="mx-auto btn btn-xs btn-primary"
+                  className="mx-auto btn btn-xs btn-neutral"
                   onClick={() => {
                     setShowNotes(true);
                   }}

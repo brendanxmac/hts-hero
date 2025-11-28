@@ -1,7 +1,6 @@
 "use client";
 
 import { UserProfile } from "../libs/supabase/user";
-import { TertiaryText } from "./TertiaryText";
 import { useEffect, useState } from "react";
 import { Tab } from "../interfaces/tab";
 import { classNames } from "../utilities/style";

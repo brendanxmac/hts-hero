@@ -249,7 +249,7 @@ export default function PDF({
             >
               {loading && (
                 <div className="flex items-center justify-center h-full">
-                  <LoadingIndicator text="Loading PDF..." color={Color.WHITE} />
+                  <LoadingIndicator text="Loading PDF..." />
                 </div>
               )}
 

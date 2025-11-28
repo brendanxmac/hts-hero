@@ -309,7 +309,7 @@ export const Explore = () => {
                   placeholder={getSearchPlaceholder()}
                   value={searchValue}
                   onChange={handleSearchChange}
-                  className="input input-primary border-2 input-md h-10 w-full pr-8"
+                  className="input input-bordered input-md h-10 w-full pr-8"
                 />
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
                   {searchValue && !searching && (

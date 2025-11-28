@@ -24,7 +24,7 @@ export const SearchCrossRulings = ({ searchTerm }: Props) => {
     <div className="w-full max-w-lg mx-auto flex flex-col gap-2">
       <div className="w-full bg-base-100 rounded-lg p-6 flex flex-col gap-6">
         <div className="flex flex-col">
-          <PrimaryLabel value="Search CROSS Rulings" color={Color.WHITE} />
+          <PrimaryLabel value="Search CROSS Rulings" />
           <TertiaryText value="Search for customs rulings and interpretations from The U.S. Customs and Border Protection (CBP)" />
         </div>
 

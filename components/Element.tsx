@@ -14,7 +14,6 @@ import {
 } from "@heroicons/react/16/solid";
 import PDF from "./PDF";
 import { SecondaryLabel } from "./SecondaryLabel";
-import { Color } from "../enums/style";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { ButtonWithIcon } from "./ButtonWithIcon";
 import { TertiaryLabel } from "./TertiaryLabel";

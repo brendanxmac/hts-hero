@@ -103,9 +103,9 @@ export const CandidateElement = ({
       className={classNames(
         "flex w-full rounded-md bg-base-100 p-4 gap-4 transition-all border-2",
         isLevelSelection &&
-          "shadow-[inset_0_0_0_4px_oklch(var(--p))] border-transparent",
+          "shadow-[inset_0_0_0_2px_oklch(var(--p))] border-transparent border-none bg-primary/10",
         !isLevelSelection &&
-          `${disabled ? "cursor-not-allowed" : "hover:cursor-pointer"} hover:bg-base-300 ${disabled && "shadow-[inset_0_0_0_1px_oklch(var(--bc))]"}`,
+          `${disabled ? "cursor-not-allowed" : "hover:cursor-pointer"} hover:bg-primary/10 ${disabled && "shadow-[inset_0_0_0_1px_oklch(var(--bc))]"}`,
         disabled &&
           "bg-base-200/70 cursor-not-allowed border-base-content hover:bg-base-200/70"
       )}
@@ -176,7 +176,7 @@ export const CandidateElement = ({
             <TertiaryLabel value={htsno ? `${htsno}` : "Prequalifier"} />
             <div className="flex gap-2">
               <SquareIconButton
-                transparent
+                variant="ghost"
                 disabled={disabled}
                 tooltip={`Chapter ${chapter} Notes`}
                 icon={<DocumentTextIcon className="h-4 w-4" />}
@@ -190,7 +190,7 @@ export const CandidateElement = ({
               />
 
               <SquareIconButton
-                transparent
+                variant="ghost"
                 disabled={disabled}
                 icon={<MagnifyingGlassIcon className="h-4 w-4" />}
                 tooltip={`View Element`}
@@ -217,7 +217,8 @@ export const CandidateElement = ({
 
               {indent === "0" && (
                 <SquareIconButton
-                  transparent
+                  variant="ghost"
+                  color="error"
                   disabled={disabled}
                   icon={<TrashIcon className="h-4 w-4" />}
                   tooltip={`Remove`}

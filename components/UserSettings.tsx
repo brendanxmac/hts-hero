@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Color } from "../enums/style";
 import { updateUserProfile, UserProfile } from "../libs/supabase/user";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { TertiaryLabel } from "./TertiaryLabel";

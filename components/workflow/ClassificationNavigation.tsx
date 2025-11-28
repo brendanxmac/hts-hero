@@ -73,7 +73,7 @@ export const ClassificationNavigation = ({
   }, [workflowStep, classificationLevel]);
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col bg-base-200">
       {/* Header */}
       <div className="flex flex-col p-4 gap-2 border-b border-base-content/10">
         <div className="z-10 flex justify-between items-center">
@@ -179,7 +179,7 @@ export const ClassificationNavigation = ({
             <SecondaryLabel value="Result & Tariff" />
             <div
               className={classNames(
-                "flex flex-col gap-1 p-4 rounded-md border border-base-content/80 transition-all duration-200 ease-in-out hover:cursor-pointer",
+                "flex flex-col gap-1 p-4 bg-base-100 rounded-md border border-base-content/80 transition-all duration-200 ease-in-out hover:cursor-pointer",
                 workflowStep === WorkflowStep.RESULT
                   ? "bg-primary/10 border-primary"
                   : "border-base-content/80 hover:bg-primary/5"

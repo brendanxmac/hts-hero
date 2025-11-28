@@ -473,30 +473,28 @@ export default function Home() {
                 />
               </div>
 
-              {htsCodeSets.length > 0 && (
-                <HtsCodeSetDropdown
-                  htsCodeSets={htsCodeSets}
-                  onCreateSelected={() =>
-                    setSaveCodesModal({ show: true, codes: [] })
-                  }
-                  selectedIndex={
-                    selectedHtsCodeSetId
-                      ? htsCodeSets.findIndex(
-                          (set) => set.id === selectedHtsCodeSetId
-                        )
-                      : null
-                  }
-                  onSelectionChange={(index) => {
-                    setLastActionWasSubmit(false);
+              <HtsCodeSetDropdown
+                htsCodeSets={htsCodeSets}
+                onCreateSelected={() =>
+                  setSaveCodesModal({ show: true, codes: [] })
+                }
+                selectedIndex={
+                  selectedHtsCodeSetId
+                    ? htsCodeSets.findIndex(
+                        (set) => set.id === selectedHtsCodeSetId
+                      )
+                    : null
+                }
+                onSelectionChange={(index) => {
+                  setLastActionWasSubmit(false);
 
-                    if (index === null) {
-                      handleHtsCodeSetSelection(null);
-                    } else {
-                      handleHtsCodeSetSelection(htsCodeSets[index].id);
-                    }
-                  }}
-                />
-              )}
+                  if (index === null) {
+                    handleHtsCodeSetSelection(null);
+                  } else {
+                    handleHtsCodeSetSelection(htsCodeSets[index].id);
+                  }
+                }}
+              />
             </div>
             <TariffImpactCodesInput
               value={inputValue}

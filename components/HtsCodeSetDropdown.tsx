@@ -19,7 +19,7 @@ export default function HtsCodeSetDropdown({
   selectedIndex,
   onSelectionChange,
   onCreateSelected,
-  placeholder = "Select from your Lists",
+  placeholder = "Select or Create HTS Code List",
 }: HtsCodeSetDropdownProps) {
   const formatDate = (date: Date) => {
     return date.toLocaleDateString("en-US", {

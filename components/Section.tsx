@@ -70,7 +70,7 @@ export const Section = ({
               <TertiaryText
                 uppercase
                 value={`Section ${number.toString()}`}
-                color={Color.BASE_CONTENT_70}
+                color={Color.PRIMARY}
               />
               {notesPath && (
                 <ButtonWithIcon

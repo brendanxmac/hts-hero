@@ -1,215 +1,222 @@
 export const TariffImpactInputHelp = () => (
-  <div className="flex flex-col p-6 max-w-4xl mx-auto">
-    {/* Header */}
-    <div className="text-center pb-4">
-      <h2 className="text-2xl md:text-3xl text-white font-bold mb-2">
-        📋 How to Enter HTS Codes into this Tool
+  <div className="container mx-auto max-w-6xl px-4 py-8">
+    {/* Header Section */}
+    <header className="text-center mb-8">
+      <h2 className="text-3xl md:text-4xl font-bold mb-3">
+        How to Enter HTS Codes
       </h2>
-      <p className="text-sm text-base-content/70">
-        A quick guide on how to get the most out of this tool
+      <p className="text-base-content/70">
+        A comprehensive guide to using the HTS code input tool
       </p>
-    </div>
+    </header>
 
-    {/* Single Code Formats */}
-    <div className="space-y-4">
-      <div className="divider">
-        <span className="text-sm font-semibold">
-          What HTS Code Formats are Supported?
-        </span>
-      </div>
-      <div className="alert alert-info">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          className="stroke-current shrink-0 w-6 h-6"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          ></path>
-        </svg>
-        <span className="font-bold">
-          Both 8 & 10 digit HTS codes are supported with or without decimal
-          points
-        </span>
+    {/* Supported Formats Section */}
+    <section className="mb-10">
+      <div className="divider divider-start">
+        <span className="text-lg font-semibold">Supported Formats</span>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-4">
-        {/* 8 Digit Codes */}
-        <div className="card bg-base-200 border border-base-300">
-          <div className="card-body p-4">
-            <h3 className="card-title text-base flex items-center gap-2">
-              8-Digit Codes
-            </h3>
-            <div className="space-y-2">
-              <div className="bg-base-100 rounded-lg p-3">
-                <code className="text-sm font-mono text-accent">38089410</code>
-                <span className="text-xs text-base-content/60 ml-2">
-                  (no decimals)
-                </span>
+      <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 mb-6 shadow-sm">
+        <div className="flex items-start gap-3">
+          <p className="text-base-content leading-relaxed">
+            Both <span className="font-semibold text-primary">8-digit</span> and{" "}
+            <span className="font-semibold text-primary">10-digit</span> HTS
+            codes are supported, with or without decimal points
+          </p>
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* 8-Digit Codes Card */}
+        <div className="card bg-base-200 shadow-sm">
+          <div className="card-body">
+            <h3 className="card-title text-lg">8-Digit Codes</h3>
+            <div className="space-y-3">
+              <div className="mockup-code bg-base-100 text-base-content/80">
+                <pre data-prefix=">" className="text-primary">
+                  <code>38089410</code>
+                </pre>
+                <pre data-prefix="" className="text-base-content/60 text-xs">
+                  <code> Without decimals</code>
+                </pre>
               </div>
-              <div className="bg-base-100 rounded-lg p-3">
-                <code className="text-sm font-mono text-accent">
-                  3808.94.10
-                </code>
-                <span className="text-xs text-base-content/60 ml-2">
-                  (with decimals)
-                </span>
+              <div className="mockup-code bg-base-100 text-base-content/80">
+                <pre data-prefix=">" className="text-primary">
+                  <code>3808.94.10</code>
+                </pre>
+                <pre data-prefix="" className="text-base-content/60 text-xs">
+                  <code> With decimals</code>
+                </pre>
               </div>
             </div>
           </div>
         </div>
 
-        {/* 10 Digit Codes */}
-        <div className="card bg-base-200 border border-base-300">
-          <div className="card-body p-4">
-            <h3 className="card-title text-base flex items-center gap-2">
-              10-Digit Codes
-            </h3>
-            <div className="space-y-2">
-              <div className="bg-base-100 rounded-lg p-3">
-                <code className="text-sm text-accent">3808941000</code>
-                <span className="text-xs text-base-content/60 ml-2">
-                  (no decimals)
-                </span>
+        {/* 10-Digit Codes Card */}
+        <div className="card bg-base-200 shadow-sm">
+          <div className="card-body">
+            <h3 className="card-title text-lg">10-Digit Codes</h3>
+            <div className="space-y-3">
+              <div className="mockup-code bg-base-100 text-base-content/80">
+                <pre data-prefix=">" className="text-secondary">
+                  <code>3808941000</code>
+                </pre>
+                <pre data-prefix="" className="text-base-content/60 text-xs">
+                  <code> Without decimals</code>
+                </pre>
               </div>
-              <div className="bg-base-100 rounded-lg p-3">
-                <code className="text-sm text-accent">3808.94.10.00</code>
-                <span className="text-xs text-base-content/60 ml-2">
-                  (with decimals)
-                </span>
+              <div className="mockup-code bg-base-100 text-base-content/80">
+                <pre data-prefix=">" className="text-secondary">
+                  <code>3808.94.10.00</code>
+                </pre>
+                <pre data-prefix="" className="text-base-content/60 text-xs">
+                  <code> With decimals</code>
+                </pre>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
     {/* Multiple Codes Section */}
-    <div className="mt-8">
-      <div className="divider">
-        <span className="text-sm font-semibold">
-          How can I Enter Multiple Codes at Once?
-        </span>
+    <section className="mb-10">
+      <div className="divider divider-start">
+        <span className="text-lg font-semibold">Multiple Code Entry</span>
       </div>
 
-      <div className="alert alert-info">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          className="stroke-current shrink-0 w-6 h-6"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          ></path>
-        </svg>
-        <div className="flex flex-col">
-          <p className="font-bold">
-            You can enter multiple codes using any of the following separators,{" "}
-            <span className="underline">
-              or by copy and pasting cells directly from a spreadsheet column.
+      <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 mb-6 shadow-sm">
+        <div className="flex items-start gap-3">
+          <p className="text-base-content leading-relaxed">
+            Enter multiple codes using any separator below, or{" "}
+            <span className="font-semibold text-primary">
+              paste directly from spreadsheet columns
             </span>
           </p>
         </div>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         {/* Comma Separated */}
-        <div className="collapse collapse-arrow bg-base-200 border border-base-300">
-          <input type="checkbox" defaultChecked />
-          <div className="collapse-title text-sm font-medium flex items-center gap-2">
-            <span className="badge badge-outline">CSV</span>
-            Comma Separated List
-          </div>
-          <div className="collapse-content">
-            <div className="bg-base-100 rounded-lg p-3 mt-2">
-              <code className="text-sm text-success break-all">
-                3808.94.10.00, 0202.20.80.00, 1204.00.00
-              </code>
+        <div className="card bg-base-200 shadow-sm">
+          <div className="card-body p-4">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="badge badge-primary badge-outline">CSV</span>
+              <span className="font-medium">Comma Separated</span>
+            </div>
+            <div className="mockup-code bg-base-100 text-base-content/80">
+              <pre data-prefix="$">
+                <code>3808.94.10.00, 0202.20.80.00, 1204.00.00</code>
+              </pre>
             </div>
           </div>
         </div>
 
         {/* Newline Separated */}
-        <div className="collapse collapse-arrow bg-base-200 border border-base-300">
-          <input type="checkbox" defaultChecked />
-          <div className="collapse-title text-sm font-medium flex items-center gap-2">
-            <span className="badge badge-outline">NEWLINE</span>
-            Newline Separated List
-          </div>
-          <div className="collapse-content">
-            <div className="bg-base-100 rounded-lg p-3 mt-2">
-              <code className="text-sm text-success whitespace-pre-line">
-                {`3808.94.10.00
-                  0202.20.80.00
-                  1204.00.00`}
-              </code>
+        <div className="card bg-base-200 shadow-sm">
+          <div className="card-body p-4">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="badge badge-secondary badge-outline">
+                NEWLINE
+              </span>
+              <span className="font-medium">Newline Separated</span>
+            </div>
+            <div className="mockup-code bg-base-100 text-base-content/80">
+              <pre data-prefix="1">
+                <code>3808.94.10.00</code>
+              </pre>
+              <pre data-prefix="2">
+                <code>0202.20.80.00</code>
+              </pre>
+              <pre data-prefix="3">
+                <code>1204.00.00</code>
+              </pre>
             </div>
           </div>
         </div>
 
         {/* Space Separated */}
-        <div className="collapse collapse-arrow bg-base-200 border border-base-300">
-          <input type="checkbox" defaultChecked />
-          <div className="collapse-title text-sm font-medium flex items-center gap-2">
-            <span className="badge badge-outline">SPACE</span>
-            Space Separated List
-          </div>
-          <div className="collapse-content">
-            <div className="bg-base-100 rounded-lg p-3 mt-2">
-              <code className="text-sm text-success break-all">
-                3808.94.10.00 0202.20.80.00 1204.00.00
-              </code>
+        <div className="card bg-base-200 shadow-sm">
+          <div className="card-body p-4">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="badge badge-accent badge-outline">SPACE</span>
+              <span className="font-medium">Space Separated</span>
+            </div>
+            <div className="mockup-code bg-base-100 text-base-content/80">
+              <pre data-prefix="$">
+                <code>3808.94.10.00 0202.20.80.00 1204.00.00</code>
+              </pre>
             </div>
           </div>
         </div>
 
         {/* Mixed Separated */}
-        <div className="collapse collapse-arrow bg-base-200 border border-base-300">
-          <input type="checkbox" defaultChecked />
-          <div className="collapse-title text-sm font-medium flex items-center gap-2">
-            <span className="badge badge-outline">MIX</span>
-            Mixed Separated List
-          </div>
-          <div className="collapse-content">
-            <div className="bg-base-100 rounded-lg p-3 mt-2">
-              <code className="text-sm text-success whitespace-pre-line">
-                {`3808.94.10.00, 0202.20.80.00
-                  1204.00.00 0804.50.80.10`}
-              </code>
+        <div className="card bg-base-200 shadow-sm">
+          <div className="card-body p-4">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="badge badge-neutral badge-outline">MIXED</span>
+              <span className="font-medium">Mixed Separators</span>
+            </div>
+            <div className="mockup-code bg-base-100 text-base-content/80">
+              <pre data-prefix="1">
+                <code>3808.94.10.00, 0202.20.80.00</code>
+              </pre>
+              <pre data-prefix="2">
+                <code>1204.00.00 0804.50.80.10</code>
+              </pre>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    {/* Footer Tips */}
-    <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg p-4 border border-primary/20 mt-8">
-      <div className="flex items-start gap-3">
-        <div className="text-primary">💡</div>
-        <div>
-          <h4 className="font-semibold mb-1 text-white">Pro Tips:</h4>
-          <ul className="text-sm text-base-content/70 text-white space-y-1">
-            <li>• You can copy & paste cells directly from spreadsheets</li>
-            <li>
-              • See the full HTS & Tariff details for any element by clicking it
-              in results table
-            </li>
-            <li>
-              • You can mix and match any separator formats in the same input
-            </li>
-            <li>• Decimal points are optional but help with readability</li>
-            <li>• Invalid codes will be clearly marked in the results</li>
-          </ul>
+    {/* Pro Tips Section */}
+    <section>
+      <div className="bg-primary/10 border border-primary/20 rounded-xl p-5 shadow-sm">
+        <div className="flex items-start gap-4">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            className="stroke-primary shrink-0 w-7 h-7 mt-0.5"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+            />
+          </svg>
+          <div className="flex-1">
+            <h4 className="font-bold text-lg mb-3 text-primary">Pro Tips</h4>
+            <ul className="space-y-2 text-sm text-base-content/80">
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-0.5">•</span>
+                <span>Copy and paste cells directly from spreadsheets</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-0.5">•</span>
+                <span>
+                  Click any code in the results table to view full HTS and
+                  tariff details
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-0.5">•</span>
+                <span>Mix and match separator formats in the same input</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-0.5">•</span>
+                <span>Decimal points are optional but improve readability</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-0.5">•</span>
+                <span>Invalid codes will be clearly marked in the results</span>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 );

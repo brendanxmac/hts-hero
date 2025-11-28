@@ -30,7 +30,7 @@ export const TextNavigationStep = ({
   return (
     <div
       className={classNames(
-        "flex flex-col rounded-md gap-2 p-3 border hover:cursor-pointer shadow-sm",
+        "flex flex-col rounded-md gap-2 p-3 border hover:cursor-pointer shadow-sm bg-base-100",
         active ? "bg-primary/10 border-primary" : "border-base-content/80",
         !text && "py-4",
         !active && "hover:bg-primary/5"

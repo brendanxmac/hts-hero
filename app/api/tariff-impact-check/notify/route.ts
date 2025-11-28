@@ -12,7 +12,7 @@ import { sendTariffImpactCheckResultsEmail } from "../../../../emails/tariff-imp
 import { sendEmails } from "../../../../libs/resend";
 import { CreateEmailOptions } from "resend";
 import config from "../../../../config";
-import ImpactedByNewTariffsEmail from "../../../../emails/ImpactedByNewTariffs";
+import ImpactedByNewTariffsEmail from "../../../../emails/ImpactedByNewTariffsEmail";
 import React from "react";
 
 const requesterIsAdmin = (req: NextRequest) => {

@@ -70,7 +70,9 @@ export const ElementSearchSummary = ({
                       candidates: newClassificationProgression[0].candidates,
                     });
                   }}
+                  variant="ghost"
                   color="error"
+                  tooltip="Remove from candidates"
                 />
               ) : (
                 <SquareIconButton
@@ -91,6 +93,9 @@ export const ElementSearchSummary = ({
                       candidates: newClassificationProgression[0].candidates,
                     });
                   }}
+                  variant="ghost"
+                  color="success"
+                  tooltip="Add to candidates"
                 />
               )}
             </div>
