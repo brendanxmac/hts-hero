@@ -8,24 +8,17 @@ export const dynamic = "force-dynamic";
 interface DemoRequestConfirmationParams {
   name: string;
   email: string;
-  productType: "classify" | "tariff" | "both";
 }
 
 const sendDemoRequestConfirmationEmail = async ({
   name,
-  productType,
   email,
 }: DemoRequestConfirmationParams) => {
-  const productName =
-    productType === "both"
-      ? "HTS Hero"
-      : productType === "tariff"
-        ? "Tariff Pro"
-        : "Classify Pro";
+  const productName = "HTS Hero";
 
   await sendEmailFromComponent({
     to: email,
-    subject: `${productName} Demo Confirmed!`,
+    subject: `HTS Hero Demo Confirmed!`,
     emailComponent: React.createElement(DemoRequestConfirmationEmail, {
       name,
       productName,
@@ -39,17 +32,11 @@ interface DemoRequestDto {
   email: string;
   name: string;
   notes?: string;
-  productType?: "classify" | "tariff" | "both";
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const {
-      email,
-      name,
-      notes,
-      productType = "classify",
-    }: DemoRequestDto = await req.json();
+    const { email, name, notes }: DemoRequestDto = await req.json();
 
     if (!email || !name) {
       return NextResponse.json({ error: "Bad Request" }, { status: 400 });
@@ -64,29 +51,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Determine product name and emoji based on productType
-    const productName =
-      productType === "both"
-        ? "HTS Hero"
-        : productType === "tariff"
-          ? "Tariff Pro"
-          : "Classify Pro";
-    const emoji =
-      productType === "both" ? "🚀" : productType === "tariff" ? "📊" : "🎯";
-
     // Send enterprise request email to Brendan
-    const subject = `${emoji} New ${productName} Demo Request!`;
-    const text = `${name} (${email}) has requested a demo for ${productName} plan!\n\nNotes: ${notes || "None provided"}`;
+    const subject = `🚀 New HTS Hero Demo Request!`;
+    const text = `${name} (${email}) has requested a demo of HTS Hero!\n\nNotes: ${notes || "None provided"}`;
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #f59e0b;">${emoji} New ${productName} Demo Request!</h2>
+        <h2 style="color: #f59e0b;">🚀 New HTS Hero Demo Request!</h2>
         <p style="font-size: 16px; line-height: 1.5;">
-          <strong>${name}</strong> has requested info about the <strong>${productName}</strong> plan!
+          <strong>${name}</strong> has requested a demo of <strong>HTS Hero</strong>!
         </p>
         <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
           <p style="margin: 8px 0;"><strong>Name:</strong> ${name}</p>
           <p style="margin: 8px 0;"><strong>Email:</strong> ${email}</p>
-          <p style="margin: 8px 0;"><strong>Plan:</strong> ${productName}</p>
           <p style="margin: 8px 0;"><strong>Time:</strong> ${new Date().toLocaleString()}</p>
           ${
             notes
@@ -115,13 +91,12 @@ export async function POST(req: NextRequest) {
       }),
       sendDemoRequestConfirmationEmail({
         name,
-        productType,
         email,
       }),
     ]);
 
     return NextResponse.json(
-      { message: `${productName} Demo request sent successfully!` },
+      { message: `HTS Hero Demo request sent successfully!` },
       { status: 200 }
     );
   } catch (e) {

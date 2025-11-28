@@ -49,16 +49,14 @@ export default function SettingsPage({ user }: Props) {
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between gap-4">
             <div className="flex flex-col gap-1">
-              <h1 className="text-2xl sm:text-4xl font-bold text-white">
-                Settings
-              </h1>
-              <TertiaryText value="View & manage account information and preferences" />
+              <h1 className="text-2xl sm:text-4xl font-bold">Settings</h1>
+              {/* <TertiaryText value="View & manage account information and preferences" /> */}
             </div>
           </div>
           {user.team_id && (
             <div
               role="tablist"
-              className="tabs tabs-boxed tabs-sm md:tabs-md bg-primary/30 rounded-xl gap-1"
+              className="tabs tabs-boxed tabs-sm md:tabs-md rounded-xl gap-1"
             >
               {ProfileTabs.map((tab) => (
                 <a
@@ -66,7 +64,7 @@ export default function SettingsPage({ user }: Props) {
                   role="tab"
                   onClick={() => setActiveTab(tab.value)}
                   className={classNames(
-                    "tab transition-all duration-200 ease-in text-white font-semibold",
+                    "tab transition-all duration-200 ease-in font-semibold",
                     tab.value === activeTab && "tab-active"
                   )}
                 >

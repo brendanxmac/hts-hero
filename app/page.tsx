@@ -125,7 +125,6 @@ export default function Home() {
       <LetsTalkModal
         isOpen={isBookDemoModalOpen}
         onClose={() => setIsBookDemoModalOpen(false)}
-        showProductSelector={true}
       />
     </div>
   );

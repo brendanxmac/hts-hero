@@ -18,10 +18,7 @@ export default function ProductCard({
   cta,
 }: ProductCardI) {
   return (
-    <Link
-      href={appUrl}
-      className="w-full h-auto py-6 px-4 max-w-lg lg:max-w-none mx-auto lg:mx-0 bg-primary/5 border-2 border-primary/10 rounded-2xl shadow-md backdrop-blur-sm transition-all duration-200"
-    >
+    <div className="w-full h-auto py-6 px-4 max-w-lg lg:max-w-none mx-auto lg:mx-0 bg-primary/5 border-2 border-primary/10 rounded-2xl shadow-md backdrop-blur-sm transition-all duration-200">
       <div className="flex flex-col items-center gap-4">
         <div className="text-4xl">{emoji}</div>
         <div className="flex flex-col gap-1">
@@ -40,6 +37,6 @@ export default function ProductCard({
           </Link>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }

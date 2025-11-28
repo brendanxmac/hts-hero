@@ -252,13 +252,8 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div className="flex flex-col gap-3 p-3 bg-base-100 border border-base-content/30 rounded-md min-w-24">
                   <div>
-                    <TertiaryLabel
-                      value={"General Rate"}
-                      color={Color.NEUTRAL_CONTENT}
-                    />
-                    <h2 className="text-white">
-                      {tariffElement.general || "-"}
-                    </h2>
+                    <TertiaryLabel value={"General Rate"} />
+                    <h2>{tariffElement.general || "-"}</h2>
                   </div>
                   {getTemporaryTariffTextElement(
                     tariffElement,
@@ -267,12 +262,9 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                 </div>
 
                 <div className="flex flex-col p-3 bg-base-100 border border-base-content/30 rounded-md min-w-24 gap-3">
-                  <TertiaryLabel
-                    value={"Special Rate"}
-                    color={Color.NEUTRAL_CONTENT}
-                  />
+                  <TertiaryLabel value={"Special Rate"} />
                   <div className="flex flex-col">
-                    <h2 className="text-white">
+                    <h2>
                       {getStringBeforeOpeningParenthesis(
                         tariffElement.special
                       ) || "-"}
@@ -281,7 +273,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                       getStringBeforeOpeningParenthesis(
                         tariffElement.special
                       ) && (
-                        <span className="text-xs italic text-white">
+                        <span className="text-xs italic">
                           If qualified based on the acts/agreemnts below
                         </span>
                       )}
@@ -334,11 +326,8 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
 
                 <div className="flex flex-col gap-3 p-3 bg-base-100 border border-base-content/30 rounded-md min-w-24">
                   <div>
-                    <TertiaryLabel
-                      value={"Other Rate"}
-                      color={Color.NEUTRAL_CONTENT}
-                    />
-                    <h2 className="text-white">{tariffElement.other || "-"}</h2>
+                    <TertiaryLabel value={"Other Rate"} />
+                    <h2>{tariffElement.other || "-"}</h2>
                   </div>
                   {getTemporaryTariffTextElement(
                     tariffElement,
@@ -347,22 +336,14 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                 </div>
 
                 <div className="flex flex-col gap-1 p-3 bg-base-100 border border-base-content/30 rounded-md min-w-24">
-                  <TertiaryLabel
-                    value={`Units`}
-                    color={Color.NEUTRAL_CONTENT}
-                  />
-                  <h2 className="text-white">
-                    {tariffElement.units.join(", ") || "-"}
-                  </h2>
+                  <TertiaryLabel value={`Units`} />
+                  <h2>{tariffElement.units.join(", ") || "-"}</h2>
                 </div>
 
                 {tariffElement.additionalDuties && (
                   <div className="flex flex-col gap-1 p-3 bg-base-100 border border-base-content/30 rounded-md min-w-24">
-                    <TertiaryLabel
-                      value={`Additional Duties`}
-                      color={Color.NEUTRAL_CONTENT}
-                    />
-                    <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
+                    <TertiaryLabel value={`Additional Duties`} />
+                    <h2 className="text-xl md:text-2xl lg:text-3xl font-bold">
                       {tariffElement.additionalDuties || "-"}
                     </h2>
                   </div>

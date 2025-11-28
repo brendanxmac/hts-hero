@@ -30,7 +30,6 @@ export const getFeatureSupportingLabel = (feature: PricingFeatureI) => {
 
 export const getFeatureIcon = (feature: PricingFeatureI) => {
   if (feature.comingSoon) {
-    d;
     return (
       <svg
         xmlns="http://www.w3.org/2000/svg"

@@ -306,7 +306,6 @@ const TariffImpactPricing = () => {
       <LetsTalkModal
         isOpen={isEnterpriseModalOpen}
         onClose={() => setIsEnterpriseModalOpen(false)}
-        productType="tariff"
       />
     </section>
   );
