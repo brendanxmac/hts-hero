@@ -4,28 +4,16 @@ import { useState, useEffect } from "react";
 import { useUser } from "../contexts/UserContext";
 import apiClient from "@/libs/api";
 import toast from "react-hot-toast";
-
-export type ProductType = "classify" | "tariff" | "both";
+import { ArrowRightIcon } from "@heroicons/react/16/solid";
 
 interface ClassifyTeamModalProps {
   isOpen: boolean;
   onClose: () => void;
-  productType?: ProductType;
-  showProductSelector?: boolean;
-  isTeamRequest?: boolean;
 }
 
-const LetsTalkModal = ({
-  isOpen,
-  onClose,
-  productType = "both",
-  showProductSelector = false,
-  isTeamRequest = false,
-}: ClassifyTeamModalProps) => {
+const LetsTalkModal = ({ isOpen, onClose }: ClassifyTeamModalProps) => {
   const { user } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedProduct, setSelectedProduct] =
-    useState<ProductType>(productType);
   const [formData, setFormData] = useState({
     email: "",
     name: "",
@@ -41,21 +29,7 @@ const LetsTalkModal = ({
         notes: "",
       });
     }
-    // Reset selected product when modal opens
-    if (isOpen) {
-      setSelectedProduct(productType);
-    }
-  }, [isOpen, user, productType]);
-
-  const getProductName = () => {
-    if (showProductSelector) {
-      if (selectedProduct === "both") {
-        return "Classify Pro & Tariff Pro";
-      }
-      return selectedProduct === "classify" ? "Classify Pro" : "Tariff Pro";
-    }
-    return productType === "classify" ? "Classify Pro" : "Tariff Pro";
-  };
+  }, [isOpen, user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,15 +42,10 @@ const LetsTalkModal = ({
     setIsSubmitting(true);
 
     try {
-      const finalProductType = showProductSelector
-        ? selectedProduct
-        : productType;
-
       await apiClient.post("/lead", {
         email: formData.email,
         name: formData.name,
         notes: formData.notes,
-        productType: finalProductType,
       });
 
       toast.success(
@@ -107,16 +76,11 @@ const LetsTalkModal = ({
     }
   };
 
-  const handleCopyEmail = () => {
-    navigator.clipboard.writeText("brendan@htshero.com");
-    toast.success("Email copied to clipboard!", { duration: 3000 });
-  };
-
   if (!isOpen) return null;
 
   return (
-    <div className="modal modal-open z-50">
-      <div className="modal-box w-11/12 max-w-2xl p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
+    <div className="modal modal-open !m-0 z-50">
+      <div className="modal-box w-11/12 max-w-2xl p-4 sm:p-6 max-h-[95vh] overflow-y-auto">
         {/* Header Section */}
         <div className="flex flex-col gap-3 mb-4">
           <h3 className="font-bold text-lg sm:text-xl md:text-2xl leading-tight flex-1">
@@ -135,55 +99,6 @@ const LetsTalkModal = ({
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {showProductSelector && (
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text text-sm sm:text-base font-medium">
-                  What would you like a demo of?{" "}
-                  <span className="text-error">*</span>
-                </span>
-              </label>
-              <div className="flex flex-col sm:flex-row gap-2">
-                <button
-                  type="button"
-                  onClick={() => setSelectedProduct("classify")}
-                  className={`btn flex-1 ${
-                    selectedProduct === "classify"
-                      ? "btn-primary text-white"
-                      : "btn-outline"
-                  }`}
-                  disabled={isSubmitting}
-                >
-                  Quicker Classifications
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSelectedProduct("tariff")}
-                  className={`btn flex-1 ${
-                    selectedProduct === "tariff"
-                      ? "btn-primary text-white"
-                      : "btn-outline"
-                  }`}
-                  disabled={isSubmitting}
-                >
-                  Effortless Tariffs
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSelectedProduct("both")}
-                  className={`btn flex-1 ${
-                    selectedProduct === "both"
-                      ? "btn-primary text-white"
-                      : "btn-outline"
-                  }`}
-                  disabled={isSubmitting}
-                >
-                  Both
-                </button>
-              </div>
-            </div>
-          )}
-
           <div className="form-control">
             <label className="label">
               <span className="label-text text-sm sm:text-base font-medium">
@@ -254,7 +169,7 @@ const LetsTalkModal = ({
             </button>
             <button
               type="submit"
-              className="btn bg-primary hover:bg-primary/80 text-white w-full sm:w-auto sm:flex-1"
+              className="btn btn-primary w-full sm:w-auto sm:flex-1"
               disabled={isSubmitting || !formData.email || !formData.name}
             >
               {isSubmitting ? (
@@ -263,23 +178,14 @@ const LetsTalkModal = ({
                   <span className="text-sm sm:text-base">Submitting...</span>
                 </>
               ) : (
-                <span className="text-sm sm:text-base">Submit</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm sm:text-base">Select Time</span>
+                  <ArrowRightIcon className="h-5 w-5" />
+                </div>
               )}
             </button>
           </div>
         </form>
-        {/* Divider */}
-        {/* <div className="divider mt-8">OR</div>
-
-        <button
-          type="button"
-          onClick={handleCopyEmail}
-          className="group btn btn-outline btn-primary w-full my-3"
-          disabled={isSubmitting}
-        >
-          <EnvelopeIcon className="w-4 h-4 sm:w-5 sm:h-5 text-primary group-hover:text-base-100" />
-          <span className="text-sm sm:text-base">Send Us An Email</span>
-        </button> */}
       </div>
       <div className="modal-backdrop bg-black/50" onClick={handleClose}></div>
     </div>

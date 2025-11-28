@@ -7,6 +7,7 @@ import Image from "next/image";
 import logo from "@/app/logo.svg";
 import config from "@/config";
 import ButtonSignin from "./ButtonSignin";
+import ThemeToggle from "./ThemeToggle";
 
 const links = [
   {
@@ -33,17 +34,14 @@ const TariffAboutHeader = () => {
   }, [searchParams]);
 
   return (
-    <header className="bg-base-100">
+    <header className="bg-base-100 border-b border-base-content/10">
       <nav
         className="container flex items-center justify-between px-8 py-4 mx-auto"
         aria-label="Global"
       >
         {/* Logo on the left */}
         <div className="flex lg:flex-1">
-          <Link
-            className="text-white flex items-center gap-2 shrink-0 "
-            href="/"
-          >
+          <Link className="flex items-center gap-2 shrink-0 " href="/">
             <Image
               src={logo}
               alt={`${config.appName} logo`}
@@ -92,7 +90,12 @@ const TariffAboutHeader = () => {
               {link.text}
             </Link>
           ))}
+        </div>
+
+        {/* CTA on large screens */}
+        <div className="hidden lg:flex lg:justify-end lg:flex-1 lg:gap-2 lg:items-center">
           <ButtonSignin text="Check your Imports" />
+          <ThemeToggle />
         </div>
       </nav>
 
@@ -150,8 +153,13 @@ const TariffAboutHeader = () => {
                     {link.text}
                   </Link>
                 ))}
-                <ButtonSignin text="Check your Imports" />
               </div>
+            </div>
+            <div className="divider"></div>
+            {/* CTA on mobile */}
+            <div className="flex gap-2 items-center">
+              <ButtonSignin text="Check your Imports" />
+              <ThemeToggle />
             </div>
           </div>
         </div>

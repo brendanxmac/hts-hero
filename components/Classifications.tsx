@@ -6,7 +6,12 @@ import { useEffect, useState, useMemo } from "react";
 import { Loader } from "../interfaces/ui";
 import { useHts } from "../contexts/HtsContext";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
-import { PlusIcon } from "@heroicons/react/16/solid";
+import {
+  DocumentTextIcon,
+  PlusIcon,
+  TagIcon,
+  UserIcon,
+} from "@heroicons/react/16/solid";
 import { BoltIcon } from "@heroicons/react/16/solid";
 import Fuse, { IFuseOptions } from "fuse.js";
 import { LoadingIndicator } from "./LoadingIndicator";
@@ -393,21 +398,19 @@ export const Classifications = ({ page, setPage }: Props) => {
         <div className="w-full flex flex-col gap-3 items-start justify-between">
           <div className="w-full flex flex-col md:flex-row md:justify-between gap-4 md:gap-2 items-start md:items-center">
             <div className="flex flex-col gap-2 sm:flex-row sm:gap-4 items-start md:items-center">
-              <h2 className="text-2xl lg:text-3xl font-bold text-neutral-content">
+              <h2 className="text-2xl lg:text-3xl font-bold">
                 Classifications
               </h2>
               <div className="flex gap-2">
                 {!loader.isLoading && (
                   <div
                     role="tablist"
-                    className="tabs tabs-boxed tabs-sm bg-primary/30 rounded-xl gap-1"
+                    className="tabs tabs-boxed tabs-sm rounded-xl gap-1"
                   >
                     <a
                       role="tab"
-                      className={`tab transition-all duration-200 ease-in text-white font-semibold ${
-                        activeTab === "all"
-                          ? "tab-active"
-                          : "hover:bg-primary/70 hover:text-black"
+                      className={`tab transition-all duration-200 ease-in font-semibold ${
+                        activeTab === "all" && "tab-active"
                       }`}
                       onClick={() => setActiveTab("all")}
                     >
@@ -415,10 +418,8 @@ export const Classifications = ({ page, setPage }: Props) => {
                     </a>
                     <a
                       role="tab"
-                      className={`tab transition-all duration-200 ease-in text-white font-semibold ${
-                        activeTab === "final"
-                          ? "tab-active"
-                          : "hover:bg-primary/70 hover:text-black"
+                      className={`tab transition-all duration-200 ease-in font-semibold ${
+                        activeTab === "final" && "tab-active"
                       }`}
                       onClick={() => setActiveTab("final")}
                     >
@@ -426,10 +427,8 @@ export const Classifications = ({ page, setPage }: Props) => {
                     </a>
                     <a
                       role="tab"
-                      className={`tab transition-all duration-200 ease-in text-white font-semibold ${
-                        activeTab === "review"
-                          ? "tab-active"
-                          : "hover:bg-primary/70 hover:text-black"
+                      className={`tab transition-all duration-200 ease-in font-semibold ${
+                        activeTab === "review" && "tab-active"
                       }`}
                       onClick={() => setActiveTab("review")}
                     >
@@ -437,10 +436,8 @@ export const Classifications = ({ page, setPage }: Props) => {
                     </a>
                     <a
                       role="tab"
-                      className={`tab transition-all duration-200 ease-in text-white font-semibold ${
-                        activeTab === "draft"
-                          ? "tab-active"
-                          : "hover:bg-primary/70 hover:text-black"
+                      className={`tab transition-all duration-200 ease-in font-semibold ${
+                        activeTab === "draft" && "tab-active"
                       }`}
                       onClick={() => setActiveTab("draft")}
                     >
@@ -515,9 +512,13 @@ export const Classifications = ({ page, setPage }: Props) => {
             {/* Filter Bar */}
             <div className="grow flex-1 flex flex-col gap-1">
               <div className="flex justify-between items-center">
-                <label className="text-xs font-medium text-neutral-content">
-                  Description or Code
-                </label>
+                <div className="flex gap-1">
+                  <DocumentTextIcon className="h-4 w-4" />
+
+                  <label className="text-xs font-semibold ">
+                    Description or Code
+                  </label>
+                </div>
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
@@ -530,10 +531,10 @@ export const Classifications = ({ page, setPage }: Props) => {
 
               <input
                 type="text"
-                placeholder="Filter by description, code"
+                placeholder="Filter by description or code"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full input input-sm pr-4 py-1 bg-base-100 border-2 border-base-content/20 rounded-lg text-neutral-200 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full input input-sm input-bordered pr-4 py-1 bg-base-100 border-2"
               />
             </div>
 
@@ -541,9 +542,10 @@ export const Classifications = ({ page, setPage }: Props) => {
             {teamUsers.length > 0 && (
               <div className="flex flex-col gap-1 min-w-[250px]">
                 <div className="flex justify-between items-center">
-                  <label className="text-xs font-medium text-neutral-content">
-                    Classifier
-                  </label>
+                  <div className="flex gap-1 items-center">
+                    <UserIcon className="h-4 w-4" />
+                    <label className="text-xs font-semibold ">Classifier</label>
+                  </div>
                   {selectedUserId && (
                     <button
                       onClick={() => setSelectedUserId("")}
@@ -556,7 +558,7 @@ export const Classifications = ({ page, setPage }: Props) => {
                 <select
                   value={selectedUserId}
                   onChange={(e) => setSelectedUserId(e.target.value)}
-                  className="select select-sm bg-base-100 border-2 border-base-content/20 text-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="select select-sm input-bordered border-2"
                 >
                   <option value="">All Users</option>
                   {teamUsers.map((user) => (
@@ -571,9 +573,10 @@ export const Classifications = ({ page, setPage }: Props) => {
             {/* Filter By Importer */}
             <div className="flex flex-col gap-1 min-w-[250px]">
               <div className="flex justify-between items-center">
-                <label className="text-xs font-medium text-neutral-content">
-                  Importer
-                </label>
+                <div className="flex gap-1">
+                  <TagIcon className="h-4 w-4" />
+                  <label className="text-xs font-semibold ">Importer</label>
+                </div>
                 {selectedImporterId && (
                   <button
                     onClick={() => setSelectedImporterId("")}
@@ -586,7 +589,7 @@ export const Classifications = ({ page, setPage }: Props) => {
               <select
                 value={selectedImporterId}
                 onChange={(e) => setSelectedImporterId(e.target.value)}
-                className="select select-sm bg-base-100 border-2 border-base-content/20 text-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="select select-sm input-bordered border-2"
               >
                 <option value="">All Importers</option>
                 <option value={UNASSIGNED_IMPORTER_VALUE}>Unassigned</option>
@@ -605,17 +608,15 @@ export const Classifications = ({ page, setPage }: Props) => {
         <>
           {/* Results Counter */}
           <div className="pt-2 pb-1">
-            <p className="text-sm text-neutral-content">
-              <span className="font-semibold">
-                {filteredClassifications.length}
-              </span>{" "}
+            <p className="text-sm font-semibold">
+              {filteredClassifications.length}{" "}
               {filteredClassifications.length === 1
-                ? "classification"
-                : "classifications"}
+                ? "Classification"
+                : "Classifications"}
             </p>
           </div>
 
-          <div className="flex flex-col gap-2 pb-6">
+          <div className="flex flex-col gap-4 pb-6">
             {filteredClassifications.map((classification, index) => (
               <ClassificationSummary
                 key={`classification-${index}`}

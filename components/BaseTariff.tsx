@@ -1,10 +1,7 @@
 import { HtsElement } from "../interfaces/hts";
 import { BaseTariffI } from "../libs/hts";
 import { classNames } from "../utilities/style";
-import { TertiaryLabel } from "./TertiaryLabel";
 import { SpecialPrograms } from "./SpecialPrograms";
-import { TertiaryText } from "./TertiaryText";
-import { Color } from "../enums/style";
 
 interface Props {
   index: number;
@@ -30,54 +27,68 @@ export const BaseTariff = ({
   const valueText = tariff.type === "percent" ? `${tariff.value}%` : tariff.raw;
 
   return (
-    <div className="w-full flex flex-col gap-2">
+    <div className="w-full">
       <div
         key={`${htsElement.htsno}-${tariff.raw}-${index}`}
         className={classNames(
-          "text-white flex gap-2 justify-between items-end border-b border-base-content/20"
+          "flex gap-3 justify-between items-center py-3 px-4 rounded-lg transition-all duration-200",
+          active
+            ? "bg-primary/5 hover:bg-primary/10 border border-primary/20"
+            : "bg-base-200/30 border border-transparent opacity-60"
         )}
       >
-        <div className="flex flex-col gap-2 items-start">
-          <div className="flex gap-2 items-center">
+        <div className="flex flex-col gap-2 items-start flex-1 min-w-0">
+          <div className="flex gap-3 items-center flex-wrap">
             <input
               type="checkbox"
               checked
               disabled
-              className="checkbox checkbox-primary checkbox-xs"
+              className="checkbox checkbox-primary checkbox-sm shrink-0"
             />
-            <div className="flex gap-2 items-center">
-              <TertiaryText
-                value={htsElement.htsno}
-                color={active ? Color.WHITE : Color.NEUTRAL_CONTENT}
-              />
-              -
-              <TertiaryLabel
-                value={`General Duty: ${primaryText}`}
-                color={active ? Color.WHITE : Color.NEUTRAL_CONTENT}
-              />
+            <div className="flex gap-2 items-center flex-wrap">
+              <span
+                className={classNames(
+                  "font-semibold",
+                  active ? "text-base-content" : "text-base-content/50"
+                )}
+              >
+                {htsElement.htsno}
+              </span>
+              <span className="text-base-content/40">•</span>
+              <span
+                className={classNames(
+                  "font-medium",
+                  active ? "text-base-content" : "text-base-content/50"
+                )}
+              >
+                General Duty: {primaryText}
+              </span>
             </div>
           </div>
 
-          <div className="flex gap-2">
-            {tariff.programs && tariff.programs.length > 0 && (
+          {tariff.programs && tariff.programs.length > 0 && (
+            <div className="ml-9">
               <SpecialPrograms programs={tariff.programs} />
-            )}
-          </div>
+            </div>
+          )}
         </div>
-        {reviewText ? (
-          <TertiaryLabel value={reviewText} color={Color.WHITE} />
-        ) : (
-          <p
-            className={classNames(
-              "shrink-0 min-w-32 text-right text-base",
-              active
-                ? "text-white font-bold"
-                : "line-through text-neutral-content"
-            )}
-          >
-            {valueText}
-          </p>
-        )}
+
+        <div className="shrink-0 min-w-[120px] text-right">
+          {reviewText ? (
+            <span className="font-semibold text-warning bg-warning/10 px-3 py-1 rounded-full">
+              {reviewText}
+            </span>
+          ) : (
+            <p
+              className={classNames(
+                "text-base sm:text-lg font-semibold",
+                active ? "text-primary" : "line-through text-base-content/40"
+              )}
+            >
+              {valueText}
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );

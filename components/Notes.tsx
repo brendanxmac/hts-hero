@@ -5,7 +5,6 @@ import { NoteI, notes, NoteType } from "../public/notes/notes";
 import { Tab } from "../interfaces/tab";
 import { classNames } from "../utilities/style";
 import { useState } from "react";
-import { TertiaryLabel } from "./TertiaryLabel";
 
 interface NotesProps {
   filteredNotes?: NoteI[];
@@ -48,18 +47,24 @@ export const Notes = ({ filteredNotes, searchValue }: NotesProps) => {
 
   if (searchValue && filteredNotes.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500">
-        No notes found matching &quot;{searchValue}&quot;
+      <div className="text-center py-12 px-4">
+        <p className="text-base text-base-content/70">
+          No notes found matching{" "}
+          <span className="font-semibold text-base-content">
+            &quot;{searchValue}&quot;
+          </span>
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-2 pb-4">
-      <div className="flex gap-2 items-center">
+    <div className="flex flex-col gap-5 pb-4">
+      {/* Filter tabs and count */}
+      <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
         <div
           role="tablist"
-          className="w-full max-w-sm tabs tabs-xs tabs-boxed bg-primary/30 rounded-xl"
+          className="tabs tabs-boxed rounded-lg bg-base-200 p-1 w-fit"
         >
           {NoteTabs.map((tab) => (
             <a
@@ -67,18 +72,24 @@ export const Notes = ({ filteredNotes, searchValue }: NotesProps) => {
               role="tab"
               onClick={() => setActiveTab(tab.value as NoteType)}
               className={classNames(
-                "tab transition-all duration-200 ease-in text-white font-semibold",
-                tab.value === activeTab && "tab-active"
+                "tab transition-all duration-200 ease-in-out font-medium text-sm px-4 py-2 rounded-md",
+                tab.value === activeTab
+                  ? "tab-active bg-base-100 shadow-sm"
+                  : "hover:text-base-content"
               )}
             >
               {tab.label}
             </a>
           ))}
         </div>
-        <TertiaryLabel value={`${notesToDisplay.length} notes`} />
+        <div className="badge badge-lg badge-ghost font-medium">
+          {notesToDisplay.length}{" "}
+          {notesToDisplay.length === 1 ? "note" : "notes"}
+        </div>
       </div>
 
-      <div className="flex flex-col sm:grid sm:grid-cols-2 gap-2">
+      {/* Notes grid */}
+      <div className="flex flex-col sm:grid sm:grid-cols-2 gap-4">
         {notesToDisplay.map((note) => {
           return <Note key={`note-${note.title}`} note={note} />;
         })}

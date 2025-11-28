@@ -73,13 +73,13 @@ export const ClassificationNavigation = ({
   }, [workflowStep, classificationLevel]);
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col bg-base-200">
       {/* Header */}
       <div className="flex flex-col p-4 gap-2 border-b border-base-content/10">
         <div className="z-10 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <button
-              className="btn btn-xs btn-primary gap-1"
+              className="btn btn-xs btn-neutral gap-1"
               onClick={() => {
                 setActiveTab(ClassifyTab.CLASSIFY);
                 setPage(ClassifyPage.CLASSIFICATIONS);
@@ -93,7 +93,7 @@ export const ClassificationNavigation = ({
           <div className="flex items-center justify-center gap-4">
             <div
               role="tablist"
-              className="tabs tabs-sm gap-1 tabs-boxed bg-primary/30 rounded-xl"
+              className="tabs tabs-sm gap-1 tabs-boxed rounded-xl"
             >
               {ClassifyTabs.map((tab) => (
                 <button
@@ -102,7 +102,7 @@ export const ClassificationNavigation = ({
                   disabled={fetchingOptionsOrSuggestions}
                   onClick={() => setActiveTab(tab.value as ClassifyTab)}
                   className={classNames(
-                    "tab transition-all duration-200 ease-in text-white font-semibold",
+                    "tab transition-all duration-200 ease-in font-semibold",
                     tab.value === activeTab && "tab-active",
                     fetchingOptionsOrSuggestions && "tab-disabled",
                     tab.value === ClassifyTab.CLASSIFY &&
@@ -111,7 +111,6 @@ export const ClassificationNavigation = ({
                   )}
                 >
                   {tab.icon}
-                  {/* {tab.text && tab.text} */}
                 </button>
               ))}
             </div>
@@ -124,7 +123,7 @@ export const ClassificationNavigation = ({
         className="h-full flex flex-col gap-6 py-2 px-4 overflow-y-auto"
       >
         <div className="flex flex-col gap-3">
-          <SecondaryLabel value="Item" color={Color.WHITE} />
+          <SecondaryLabel value="Item" />
           <div ref={descriptionRef}>
             <TextNavigationStep
               title="Description"
@@ -144,7 +143,7 @@ export const ClassificationNavigation = ({
         </div>
 
         <div className="flex flex-col gap-3">
-          <SecondaryLabel value="Your Selections" color={Color.WHITE} />
+          <SecondaryLabel value="Your Selections" />
           <div className="flex flex-col gap-3">
             {levels &&
               levels.map((level, index) => (
@@ -177,12 +176,13 @@ export const ClassificationNavigation = ({
 
         {classification?.isComplete && (
           <div ref={resultRef} className="flex flex-col gap-3 pb-4">
-            <SecondaryLabel value="Result & Tariff" color={Color.WHITE} />
+            <SecondaryLabel value="Result & Tariff" />
             <div
               className={classNames(
-                "flex flex-col gap-1 p-4 rounded-md border-2 border-neutral-content/40 hover:scale-[1.02] transition-all duration-200 ease-in-out hover:cursor-pointer hover:bg-base-300",
-                workflowStep === WorkflowStep.RESULT &&
-                  "bg-primary border border-primary hover:bg-primary"
+                "flex flex-col gap-1 p-4 bg-base-100 rounded-md border border-base-content/80 transition-all duration-200 ease-in-out hover:cursor-pointer",
+                workflowStep === WorkflowStep.RESULT
+                  ? "bg-primary/10 border-primary"
+                  : "border-base-content/80 hover:bg-primary/5"
               )}
               onClick={() => {
                 if (activeTab !== ClassifyTab.CLASSIFY) {
@@ -191,22 +191,8 @@ export const ClassificationNavigation = ({
                 setWorkflowStep(WorkflowStep.RESULT);
               }}
             >
-              <TertiaryLabel
-                value="HTS Code"
-                color={
-                  workflowStep === WorkflowStep.RESULT
-                    ? Color.BLACK
-                    : Color.WHITE
-                }
-              />
-              <h2
-                className={classNames(
-                  "text-xl md:text-2xl font-extrabold",
-                  workflowStep === WorkflowStep.RESULT
-                    ? "text-black"
-                    : "text-white"
-                )}
-              >
+              <TertiaryLabel value="HTS Code" color={Color.BASE_CONTENT} />
+              <h2 className="text-xl md:text-2xl font-extrabold">
                 {classification?.levels[levels.length - 1]?.selection?.htsno}
               </h2>
             </div>

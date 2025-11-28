@@ -27,13 +27,13 @@ const Demo = ({
   const getHeadline = () => {
     if (standoutPlacement === "start") {
       return (
-        <h1 className="text-white font-black text-3xl sm:text-4xl md:text-5xl max-w-3xl">
+        <h1 className="font-black text-3xl sm:text-4xl md:text-5xl max-w-5xl">
           <span className="text-primary">{titleStandout}</span> {title}
         </h1>
       );
     } else {
       return (
-        <h1 className="text-white font-black text-3xl sm:text-4xl md:text-5xl max-w-3xl">
+        <h1 className="font-black text-3xl sm:text-4xl md:text-5xl max-w-5xl">
           {title} <span className="text-primary">{titleStandout}</span>
         </h1>
       );
@@ -41,29 +41,19 @@ const Demo = ({
   };
 
   return (
-    <section className="bg-none max-w-6xl mx-auto md:min-h-[90vh] bg-base-100 px-4 sm:px-6 md:px-8 lg:px-12 py-12 flex flex-col items-center justify-center">
+    <section className="bg-none mx-auto md:min-h-[70vh] bg-base-200 px-4 sm:px-6 md:px-8 lg:px-12 py-12 lg:py-16 flex flex-col items-center justify-center">
       <div className="flex flex-col items-center justify-center gap-4 md:gap-8">
         {/* Hero Text */}
         <div className="flex flex-col gap-4 text-center">
           {getHeadline()}
-          <p className="sm:text-lg text-neutral-300 leading-relaxed">
-            {subtitle}
-          </p>
-
-          {/* <div className="flex justify-center">
-            <Link className="btn btn-wide btn-primary" href={ctaLink}>
-              {ctaText}
-            </Link>
-          </div> */}
-
-          {/* <TestimonialsAvatars priority={true} /> */}
+          <p className="sm:text-lg leading-relaxed">{subtitle}</p>
         </div>
 
         {/* Hero Video */}
         <div className="w-full flex justify-center sm:rounded-md overflow-hidden -mx-5 md:mx-0">
           {media.mediaType === "video" ? (
             <video
-              className="w-full border-2 border-neutral-content/20 rounded-md md:rounded-2xl"
+              className="w-full max-h-[75vh] object-contain border-2 border-neutral-content/20 rounded-md md:rounded-2xl"
               autoPlay
               muted
               loop
@@ -77,7 +67,7 @@ const Demo = ({
               src={media.mediaPath}
               alt={media.altText}
               width={1000}
-              height={1000}
+              height={600}
             />
           )}
         </div>

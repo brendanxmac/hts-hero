@@ -17,11 +17,10 @@ import {
   getBaseAmountTariffsText,
   get15PercentCountryTotalBaseRate,
 } from "../tariffs/tariffs";
-import { Color } from "../enums/style";
 import { TertiaryText } from "./TertiaryText";
 import { classNames } from "../utilities/style";
 import React from "react";
-import { InlineCountryTariff } from "./InlineCountryTariff";
+import { CountryTariff } from "./CountryTariff";
 import { SecondaryLabel } from "./SecondaryLabel";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { CountrySelection } from "./CountrySelection";
@@ -48,8 +47,10 @@ export const Tariffs = ({
   // Calculation states - update after debounce for expensive operations
   const [units, setUnits] = useState<number>(1000);
   const [customsValue, setCustomsValue] = useState<number>(10000);
-  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [selectedCountries, setSelectedCountries] = useState<Country[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [selectedCountry, setSelectedCountry] =
+    useState<CountryWithTariffs | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const unitsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const customsValueTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -82,16 +83,13 @@ export const Tariffs = ({
       }))
     );
 
-  const toggleRow = (countryCode: string) => {
-    const updatedRows = new Set(expandedRows);
-
-    if (updatedRows.has(countryCode)) {
-      updatedRows.delete(countryCode);
+  const handleRowClick = (country: CountryWithTariffs) => {
+    if (isPayingUser || isTariffImpactTrialUser) {
+      setSelectedCountry(country);
+      setIsModalOpen(true);
     } else {
-      updatedRows.add(countryCode);
+      toast.error("Please upgrade to view all tariff rates & exemptions");
     }
-
-    setExpandedRows(updatedRows);
   };
 
   const handleSliderChange = (
@@ -293,29 +291,24 @@ export const Tariffs = ({
 
   return (
     <>
-      <style jsx>{`
-        @keyframes slideDown {
-          from {
-            opacity: 0;
-            transform: translateY(-5px);
-            max-height: 0;
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-            max-height: 1000px;
-          }
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-      `}</style>
+      {isModalOpen && selectedCountry && (
+        <CountryTariff
+          key={`tariff-modal-${selectedCountry.code}`}
+          country={selectedCountry}
+          htsElement={htsElement}
+          tariffElement={tariffElement}
+          contentRequirements={uiContentPercentages}
+          countryIndex={countries.findIndex(
+            (c) => c.code === selectedCountry.code
+          )}
+          countries={countries}
+          setCountries={setCountries}
+          units={units}
+          customsValue={customsValue}
+          isModal={true}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
       <div className="flex flex-col gap-2 md:gap-8 my-2">
         {/* Show inputs for any content requirements based */}
         {codeBasedContentRequirements.length > 0 && (
@@ -327,11 +320,9 @@ export const Tariffs = ({
               >
                 <SecondaryLabel
                   value={`${contentRequirement} Value Percentage`}
-                  color={Color.WHITE}
                 />
                 <TertiaryText
                   value={`What percent of the articles value is ${contentRequirement}?`}
-                  color={Color.NEUTRAL_CONTENT}
                 />
                 <div className="flex gap-2 items-center mt-3">
                   <input
@@ -355,7 +346,6 @@ export const Tariffs = ({
                         (c) => c.name === contentRequirement
                       )?.value || 0
                     }%`}
-                    color={Color.NEUTRAL_CONTENT}
                   />
                 </div>
               </div>
@@ -403,13 +393,13 @@ export const Tariffs = ({
             setSelectedCountries={setSelectedCountries}
           />
 
-          <div className="w-full flex flex-col overflow-x-auto border border-base-content/40 rounded-lg">
-            <table className="table table-sm table-pin-cols">
+          <div className="w-full flex flex-col overflow-x-auto border border-base-content/50 rounded-lg">
+            <table className="table table-sm table-pin-cols bg-base-200">
               <thead>
                 <tr>
-                  <th></th>
-                  <th>Country of Origin</th>
-                  <th className="w-auto min-w-48">
+                  <th className="bg-base-200"></th>
+                  <th className="bg-base-200">Country of Origin</th>
+                  <th className="w-auto min-w-48 bg-base-200">
                     <div className="flex gap-2 items-center">
                       <h3>Tariff Rates</h3>
                       <button
@@ -442,14 +432,13 @@ export const Tariffs = ({
                       </button>
                     </div>
                   </th>
-                  <th className="hidden md:table-cell max-w-48">
+                  <th className="hidden md:table-cell max-w-48 bg-base-200">
                     Special Trade Program(s)
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {sortedCountries.map((country, i) => {
-                  const isExpanded = expandedRows.has(country.code);
                   const adValoremEquivalentRate =
                     get15PercentCountryTotalBaseRate(
                       country.baseTariffs
@@ -502,123 +491,68 @@ export const Tariffs = ({
                   );
 
                   return (
-                    <React.Fragment key={`${country.code}-${i}`}>
-                      <tr
-                        className={classNames(
-                          "w-full cursor-pointer transition-all duration-200 hover:bg-base-content/10 bg-base-100",
-                          !isExpanded &&
-                            "not-last:border-b border-base-content/40",
-                          isExpanded && "hover:bg-base-200 border-b-0"
-                        )}
-                        onClick={() => {
-                          if (isPayingUser || isTariffImpactTrialUser) {
-                            toggleRow(country.code);
-                          } else {
-                            toast.error(
-                              "Please upgrade to view all tariff rates & exemptions"
-                            );
-                          }
-                        }}
-                      >
-                        <td className="w-6">
-                          <ChevronDownIcon
-                            className={`h-4 w-4 text-white transition-transform duration-300 ease-in-out ${
-                              isExpanded ? "rotate-0" : "-rotate-180"
-                            }`}
-                          />
-                        </td>
-                        <td>
-                          <div className="flex gap-3 items-center text-sm md:text-base">
-                            <h2 className="text-white">{country.flag}</h2>
-                            <h2 className="text-white">{country.name}</h2>
-                          </div>
-                        </td>
-                        <td>
-                          <div className="flex gap-2">
-                            {!isPayingUser && !isTariffImpactTrialUser ? (
-                              <Link
-                                href="/about/tariffs"
-                                target="_blank"
-                                className="link link-primary no-underline text-base-content hover:text-primary hover:underline"
-                              >
-                                🔒 Get Pro to Unlock
-                              </Link>
-                            ) : (
-                              countryPercentTariffsSums.map((sum, i) => (
-                                <div
-                                  key={`${country.code}-${i}-percent-sum-${i}`}
-                                  className="flex gap-2 text-sm md:text-base"
-                                >
-                                  <div className="flex gap-1">
-                                    {cappedBy15PercentRule ? null : countryAmounts &&
-                                      countryAmounts.length > 0 ? (
-                                      <p className="text-white">
-                                        {countryAmounts} +
-                                      </p>
-                                    ) : null}
-                                    {<p className="text-white">{sum}%</p>}
-                                    {i > 0 &&
-                                      codeBasedContentRequirements &&
-                                      codeBasedContentRequirements.length > 0 &&
-                                      uiContentPercentages[i - 1].name && (
-                                        <p className="text-white">
-                                          for {uiContentPercentages[i - 1].name}
-                                        </p>
-                                      )}
-                                  </div>
-                                  {countryPercentTariffsSums.length !== i + 1
-                                    ? "|"
-                                    : null}
-                                </div>
-                              ))
-                            )}
-                          </div>
-                        </td>
-                        <td className="hidden md:table-cell align-middle">
-                          <p className="text-lg">
-                            {country.specialTradePrograms.length > 0
-                              ? "✅"
-                              : "−"}
-                          </p>
-                        </td>
-                      </tr>
-                      {isExpanded && (
-                        <tr
-                          className={classNames(
-                            "w-full bg-base-100 transition-all duration-300 ease-in-out",
-                            isExpanded &&
-                              "not-last:border-b border-b-4 border-b-gray-500"
-                          )}
-                          style={{
-                            animation: "slideDown 0.3s ease-in-out",
-                          }}
-                        >
-                          <td colSpan={4} className="p-4">
-                            <div
-                              className="transition-all duration-300 ease-in-out"
-                              style={{
-                                animation: "fadeIn 0.3s ease-in-out",
-                              }}
+                    <tr
+                      key={`${country.code}-${i}`}
+                      className="w-full cursor-pointer hover:bg-primary/80 hover:text-base-100 border-b border-base-content/40"
+                      onClick={() => handleRowClick(country)}
+                    >
+                      <td className="w-6"></td>
+                      <td>
+                        <div className="flex gap-3 items-center text-sm md:text-base">
+                          <h2 className="md:text-lg">{country.flag}</h2>
+                          <h2 className="md:text-lg font-medium">
+                            {country.name}
+                          </h2>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="flex gap-2">
+                          {!isPayingUser && !isTariffImpactTrialUser ? (
+                            <Link
+                              href="/about/tariffs"
+                              target="_blank"
+                              className="link link-primary text-base-content hover:text-primary hover:underline"
+                              onClick={(e) => e.stopPropagation()}
                             >
-                              <InlineCountryTariff
-                                key={`tariff-${country.code}-${i}`}
-                                country={country}
-                                htsElement={htsElement}
-                                tariffElement={tariffElement}
-                                contentRequirements={uiContentPercentages}
-                                countryIndex={countries.findIndex(
-                                  (c) => c.code === country.code
-                                )}
-                                countries={countries}
-                                setCountries={setCountries}
-                                units={units}
-                                customsValue={customsValue}
-                              />
-                            </div>
-                          </td>
-                        </tr>
-                      )}
-                    </React.Fragment>
+                              🔒 Get Pro to Unlock
+                            </Link>
+                          ) : (
+                            countryPercentTariffsSums.map((sum, i) => (
+                              <div
+                                key={`${country.code}-${i}-percent-sum-${i}`}
+                                className="flex gap-2 text-sm md:text-base"
+                              >
+                                <div className="flex gap-1">
+                                  {cappedBy15PercentRule ? null : countryAmounts &&
+                                    countryAmounts.length > 0 ? (
+                                    <p className="font-medium">
+                                      {countryAmounts} +
+                                    </p>
+                                  ) : null}
+                                  {<p className="font-medium">{sum}%</p>}
+                                  {i > 0 &&
+                                    codeBasedContentRequirements &&
+                                    codeBasedContentRequirements.length > 0 &&
+                                    uiContentPercentages[i - 1].name && (
+                                      <p className="">
+                                        for {uiContentPercentages[i - 1].name}
+                                      </p>
+                                    )}
+                                </div>
+                                {countryPercentTariffsSums.length !== i + 1
+                                  ? "|"
+                                  : null}
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </td>
+                      <td className="hidden md:table-cell align-middle">
+                        <p className="text-lg">
+                          {country.specialTradePrograms.length > 0 ? "✅" : "−"}
+                        </p>
+                      </td>
+                    </tr>
                   );
                 })}
               </tbody>

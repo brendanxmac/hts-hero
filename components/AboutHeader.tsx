@@ -7,6 +7,7 @@ import Image from "next/image";
 import logo from "@/app/logo.svg";
 import config from "@/config";
 import ButtonSignin from "./ButtonSignin";
+import ThemeToggle from "./ThemeToggle";
 
 // A header with a logo on the left, links in the center (like Pricing, etc...), and a CTA (like Get Started or Login) on the right.
 // The header is responsive, and on mobile, the links are hidden behind a burger button.
@@ -38,17 +39,14 @@ const AboutHeader = () => {
   }, [searchParams]);
 
   return (
-    <header className="bg-base-100">
+    <header className="bg-base-100 border-b border-base-content/10">
       <nav
         className="container flex items-center justify-between px-8 py-4 mx-auto"
         aria-label="Global"
       >
         {/* Your logo/name on large screens */}
         <div className="flex lg:flex-1">
-          <Link
-            className="text-white flex items-center gap-2 shrink-0 "
-            href="/"
-          >
+          <Link className="flex items-center gap-2 shrink-0 " href="/">
             <Image
               src={logo}
               alt={`${config.appName} logo`}
@@ -96,11 +94,13 @@ const AboutHeader = () => {
               {link.label}
             </Link>
           ))}
-          <ButtonSignin />
         </div>
 
         {/* CTA on large screens */}
-        {/* <div className="hidden lg:flex lg:justify-end lg:flex-1">{cta}</div> */}
+        <div className="hidden lg:flex lg:justify-end lg:flex-1 lg:gap-2 lg:items-center">
+          <ButtonSignin />
+          <ThemeToggle />
+        </div>
       </nav>
 
       {/* Mobile menu, show/hide based on menu state. */}
@@ -157,12 +157,14 @@ const AboutHeader = () => {
                     {link.label}
                   </Link>
                 ))}
-                <ButtonSignin />
               </div>
             </div>
             <div className="divider"></div>
             {/* Your CTA on small screens */}
-            {/* <div className="flex flex-col">{cta}</div> */}
+            <div className="flex gap-2 items-center">
+              <ButtonSignin />
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       </div>

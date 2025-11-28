@@ -25,7 +25,7 @@ export default function Home() {
   }, [user]);
 
   return (
-    <main className="h-full w-full bg-base-300 overflow-hidden">
+    <main className="h-full w-full bg-base-200 overflow-hidden">
       {isLoading ? (
         <div className="flex justify-center items-center h-full">
           <LoadingIndicator />

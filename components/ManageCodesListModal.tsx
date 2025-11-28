@@ -122,7 +122,7 @@ export const ManageCodeListModal = ({
     <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
       <div className="w-full px-8 pt-8 pb-4 max-w-3xl">
         <div className="mb-6">
-          <h2 className="text-2xl font-semibold text-white">
+          <h2 className="text-2xl font-semibold">
             Create Tariff Notifications List
           </h2>
           <p className="text-base-content/70">

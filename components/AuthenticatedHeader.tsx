@@ -10,6 +10,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getTutorialFromPathname, Tutorial, TutorialI } from "./Tutorial";
 import { PlayIcon } from "@heroicons/react/16/solid";
+import ThemeToggle from "./ThemeToggle";
 
 export const AuthenticatedHeader = () => {
   const pathname = usePathname();
@@ -45,9 +46,7 @@ export const AuthenticatedHeader = () => {
               width={32}
               height={32}
             />
-            <span className="text-white font-extrabold text-lg">
-              {config.appName}
-            </span>
+            <span className="font-extrabold text-lg">{config.appName}</span>
           </Link>
 
           <div className="hidden md:flex items-center justify-start gap-4">
@@ -126,9 +125,10 @@ export const AuthenticatedHeader = () => {
           </div>
 
           {/* CTA on large screens */}
-          <div className="hidden md:flex md:justify-end md:flex-1 gap-4 items-center">
+          <div className="hidden md:flex md:justify-end md:flex-1 gap-2 items-center">
             <ButtonSupport />
             <ButtonAccount />
+            <ThemeToggle />
           </div>
         </div>
       </nav>
@@ -226,6 +226,7 @@ export const AuthenticatedHeader = () => {
                 )}
                 <ButtonSupport />
                 <ButtonAccount />
+                <ThemeToggle />
               </div>
             </div>
           </div>

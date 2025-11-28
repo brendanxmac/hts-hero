@@ -21,7 +21,7 @@ export const Sections = ({
   if (sections.length === 0) return null;
 
   return (
-    <div className="h-full flex flex-col gap-2">
+    <div className="h-full flex flex-col gap-4">
       <button
         className="btn btn-link btn-primary p-0 btn-xs w-fit self-end"
         onClick={() => setAllExpanded(!allExpanded)}

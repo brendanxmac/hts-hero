@@ -30,18 +30,20 @@ const ConversionPricing = () => {
   };
 
   return (
-    <section className="bg-base-300 overflow-hidden" id="pricing">
+    <section className="bg-base-100 overflow-hidden" id="pricing">
       <div className="py-12 px-4 sm:px-8 max-w-7xl mx-auto flex flex-col gap-4 md:gap-8 items-center justify-center">
         <div className="flex flex-col gap-2">
-          <h3 className="text-center mb-4">Your Free Trial has Ended</h3>
-          <h2 className="text-white text-3xl md:text-4xl font-extrabold text-center">
-            Upgrade to <span className="text-primary">Pro</span> to Continue
+          <h3 className="text-center mb-4 uppercase text-sm text-primary font-medium">
+            Your Free Trial has Ended
+          </h3>
+          <h2 className="text-3xl md:text-4xl font-extrabold text-center">
+            Upgrade to Continue <span className="text-primary">Boosting</span>
             <br />
-            <span className="text-primary">Boosting</span> Your Classifications
+            Your Classifications & Tariff Checks
           </h2>
         </div>
 
-        <div className="w-full relative flex justify-evenly flex-col lg:flex-row items-center lg:items-stretch gap-8 text-white">
+        <div className="w-full relative flex justify-evenly flex-col lg:flex-row items-center lg:items-stretch gap-8">
           {config.stripe.classifierConversionPlans.map((plan, index) => {
             const defaultTierIndex = plan.prices.length - 1;
             const currentTierIndex =
@@ -64,9 +66,9 @@ const ConversionPricing = () => {
                 )}
               >
                 {plan.isFeatured && (
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
                     <span
-                      className={`badge text-xs text-black font-semibold border-0 bg-primary`}
+                      className={`badge text-xs text-base-100 font-semibold border-0 bg-primary`}
                     >
                       Limited Time Offer
                     </span>
@@ -75,12 +77,12 @@ const ConversionPricing = () => {
 
                 {plan.isFeatured && (
                   <div
-                    className={`absolute -inset-[1px] rounded-[9px] bg-primary z-10`}
+                    className={`absolute -inset-[1px] rounded-[9px] bg-primary`}
                   ></div>
                 )}
 
                 <div
-                  className={`relative flex flex-col h-full gap-4 lg:gap-8 z-10 bg-base-100 p-8 rounded-lg ${
+                  className={`relative flex flex-col h-full gap-4 lg:gap-8 bg-base-100 p-8 rounded-lg ${
                     plan.isCompetitor && "bg-red-500/20"
                   }`}
                 >
@@ -117,11 +119,11 @@ const ConversionPricing = () => {
                         ) : (
                           <div className="flex items-end">
                             <p
-                              className={`${plan.isCompetitor ? "text-red-600" : "text-white"} text-5xl text-base-content tracking-tight font-extrabold`}
+                              className={`${plan.isCompetitor && "text-red-600"} text-5xl text-base-content tracking-tight font-extrabold`}
                             >
                               ${currentPrice}
                             </p>
-                            <p className="pl-1 pb-1 text-sm text-white font-bold">
+                            <p className="pl-1 pb-1 text-sm font-bold">
                               {plan.mode === StripePaymentMode.SUBSCRIPTION
                                 ? "/ user / month"
                                 : ""}
@@ -135,7 +137,7 @@ const ConversionPricing = () => {
                           onChange={(e) =>
                             handleTierChange(index, parseInt(e.target.value))
                           }
-                          className="select select-bordered select-sm bg-base-100 text-white font-semibold"
+                          className="select select-bordered select-sm bg-base-100 font-semibold"
                         >
                           {plan.priceTiers!.map((tier, i) => (
                             <option key={i} value={i}>
@@ -196,40 +198,6 @@ const ConversionPricing = () => {
             </button>
           </div>
         )}
-
-        {/* <div className="mt-4">
-          <TertiaryText value="One-time purchase. No Subscriptions. Instant access." />
-        </div> */}
-
-        {/* <Link
-          href="/about/importer"
-          className="mt-2 text-base-content/80 text-sm hover:underline"
-        >
-          Learn More
-        </Link> */}
-
-        {/* {customerType === "importer" && (
-          <div className="mt-16 flex flex-col gap-2 justify-center items-center">
-            <div className="flex gap-1 items-center">
-              <ShieldCheckIcon className="w-6 h-6 text-secondary" />
-              <h3 className="text-lg font-extrabold text-secondary">
-                Customs Code Approval Guarantee
-              </h3>
-            </div>
-            <p className="text-white">
-              We guarantee codes that customs will accept or you get a full
-              refund!
-            </p>
-            <p className="text-sm text-base-content/80">
-              <sup>
-                See{" "}
-                <Link href="/terms" className="hover:underline">
-                  terms and conditions
-                </Link>
-              </sup>{" "}
-            </p>
-          </div>
-        )} */}
       </div>
     </section>
   );

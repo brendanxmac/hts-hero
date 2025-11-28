@@ -1,23 +1,27 @@
-import { TextCopyButton } from "./Copy";
 import { Color } from "../enums/style";
+import { classNames } from "../utilities/style";
 
 interface Props {
   value: string;
+  uppercase?: boolean;
   color?: Color;
-  copyable?: boolean;
 }
 
 export const SecondaryText = ({
   value,
-  copyable,
-  color = Color.NEUTRAL_CONTENT,
+  uppercase = false,
+  color = Color.BASE_CONTENT,
 }: Props) => {
   return (
     <div className="flex gap-2 items-center">
-      <h3 className={`text-${color} text-sm md:text-base whitespace-pre-wrap`}>
+      <h3
+        className={classNames(
+          `text-${color} text-sm md:text-base whitespace-pre-wrap`,
+          uppercase && "uppercase"
+        )}
+      >
         {value}
       </h3>
-      {copyable && <TextCopyButton value={value} />}
     </div>
   );
 };

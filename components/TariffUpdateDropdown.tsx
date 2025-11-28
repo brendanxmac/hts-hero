@@ -38,8 +38,8 @@ export default function TariffUpdateDropdown({
         disabled={disabled}
       >
         <div className="relative">
-          <Listbox.Button className="relative w-full cursor-default rounded-lg border border-base-content/20 bg-base-100 py-3 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-primary-300 sm:text-sm">
-            <p className="text-sm md:text-base text-white">
+          <Listbox.Button className="relative w-full cursor-default rounded-lg border border-base-content/60 bg-base-100 py-3 pl-3 pr-10 text-left shadow-md sm:text-sm">
+            <p className="text-sm md:text-base text-base-content font-medium">
               {selectedUpdate
                 ? `${selectedUpdate.name} | ${formatDate(selectedUpdate.effective_at)}`
                 : "Select a Tariff Announcement"}
@@ -47,7 +47,7 @@ export default function TariffUpdateDropdown({
 
             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
               <ChevronUpDownIcon
-                className="h-5 w-5 text-gray-400"
+                className="h-5 w-5 text-base-content/70"
                 aria-hidden="true"
               />
             </span>
@@ -64,33 +64,45 @@ export default function TariffUpdateDropdown({
                   <Listbox.Option
                     key={index}
                     className={({ active, selected }) =>
-                      `relative hover:cursor-pointer select-none py-3 px-4 text-white transition-colors duration-200 border-b border-base-content/20 ${
-                        active ? "bg-base-300" : selected ? "bg-base-300" : ""
+                      `relative hover:cursor-pointer select-none py-3 px-4 transition-colors duration-200 border-b border-base-content/20 ${
+                        active
+                          ? "bg-primary text-primary-content"
+                          : selected
+                            ? "bg-primary/10"
+                            : ""
                       }`
                     }
                     value={index}
                   >
-                    {({ selected }) => (
+                    {({ selected, active }) => (
                       <div className="flex items-start justify-between">
                         <div className="w-full flex flex-wrap gap-x-3 items-center justify-between">
                           {/* Name - largest, clearest text */}
-                          <p className="text-sm">{update.name}</p>
+                          <p
+                            className={`text-sm font-medium ${active ? "text-primary-content" : "text-base-content"}`}
+                          >
+                            {update.name}
+                          </p>
 
                           <div className="flex gap-x-3 flex-wrap">
                             {/* Date Released - clearly displayed */}
-                            <p className="text-xs text-gray-400">
+                            <p
+                              className={`text-xs ${active ? "text-primary-content/80" : "text-base-content/70"}`}
+                            >
                               <span className="">
                                 {formatDate(update.effective_at)}
                               </span>
                             </p>
 
                             {/* Source Name - smaller beneath name */}
-                            <p className="text-xs text-gray-400">
+                            <p
+                              className={`text-xs ${active ? "text-primary-content/80" : "text-base-content/70"}`}
+                            >
                               <a
                                 href={update.source}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="link"
+                                className={`link ${active ? "link-primary-content" : ""}`}
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 {update.source_name}
@@ -101,8 +113,10 @@ export default function TariffUpdateDropdown({
 
                         {/* Check icon for selected item */}
                         {selected ? (
-                          <span className="flex items-center justify-center text-primary ml-2 flex-shrink-0">
-                            <CheckIcon className="h-6 w-6" aria-hidden="true" />
+                          <span
+                            className={`flex items-center justify-center ml-2 flex-shrink-0 ${active ? "text-primary-content" : "text-primary"}`}
+                          >
+                            <CheckIcon className="h-5 w-5" aria-hidden="true" />
                           </span>
                         ) : null}
                       </div>

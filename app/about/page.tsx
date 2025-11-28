@@ -2,7 +2,6 @@
 
 import { Suspense } from "react";
 import AboutHeader from "../../components/AboutHeader";
-import ClassifierCTA from "../../components/ClassifierCTA";
 import ClassifierFooter from "../../components/ClassifierFooter";
 import Pricing from "../../components/Pricing";
 import { FAQ } from "../../components/FAQ";
@@ -80,8 +79,8 @@ export default function Home() {
           subtitle="A quick demo so you know exactly what you'll get"
           demoUrl="https://www.youtube.com/embed/izlXZvC-O7I?si=o6G0z0ZDhEbvIMqg"
         />
+        {/* <ClassifierCTA /> */}
         <FAQ faqItems={classifierFaqList} />
-        <ClassifierCTA />
       </main>
       <ClassifierFooter />
     </>

@@ -33,21 +33,23 @@ export const ElementsNavigationStep = ({
   return (
     <div
       className={classNames(
-        "bg-base-100 border-2 border-neutral-content/40 hover:bg-base-200 flex flex-col rounded-md p-4 gap-2 transition-all duration-200 ease-in-out hover:cursor-pointer",
-        active && "bg-primary border border-neutral hover:bg-primary"
+        "bg-base-100 border flex flex-col rounded-md p-4 gap-2 transition-all duration-200 ease-in-out hover:cursor-pointer shadow-sm",
+        active
+          ? "bg-primary/10 border-primary"
+          : "border-base-content/80 hover:bg-primary/5"
       )}
       onClick={onClick}
     >
       <div className="flex justify-between items-center">
         <TertiaryLabel
           value={`Level ${index + 1}`}
-          color={active ? Color.WHITE : Color.NEUTRAL_CONTENT}
+          color={Color.BASE_CONTENT}
         />
         <TertiaryLabel
           value={`${candidates.length} ${
             candidates.length === 1 ? "candidate" : "candidates"
           }`}
-          color={active ? Color.WHITE : Color.NEUTRAL_CONTENT}
+          color={Color.BASE_CONTENT}
         />
       </div>
     </div>

@@ -144,7 +144,7 @@ export const CountrySelection = ({
   return (
     <div className="relative" ref={dropdownRef}>
       <div
-        className="w-full p-1 pr-2 border border-base-content/50 rounded-md cursor-pointer flex gap-3 items-center justify-between hover:bg-base-content/10 transition-colors min-h-10"
+        className="w-full p-1 pr-2 border border-base-content/50 rounded-md cursor-pointer flex gap-3 items-center justify-between hover:bg-base-content/5 transition-colors min-h-10"
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="flex-1 flex flex-wrap gap-2 items-center">
@@ -152,7 +152,7 @@ export const CountrySelection = ({
             selectedCountries.map((country) => (
               <div
                 key={`country-selection-option-${country.name}`}
-                className="flex items-center gap-1 bg-primary/20 border border-primary/20 rounded-md px-1 py-0"
+                className="flex items-center gap-1 bg-primary rounded-md px-1 py-0"
               >
                 <div className="flex gap-2 items-center">
                   <p className="text-lg">{country.flag}</p>
@@ -162,7 +162,7 @@ export const CountrySelection = ({
                 </div>
                 <button
                   onClick={(e) => handleRemoveCountry(country, e)}
-                  className="ml-1 p-0.5 hover:bg-primary/20 rounded transition-colors"
+                  className="ml-1 p-0.5 hover:bg-white/20 rounded transition-colors"
                   title={`Remove ${country.name}`}
                 >
                   <svg
@@ -189,7 +189,7 @@ export const CountrySelection = ({
           {selectedCountries.length > 0 ? (
             <button
               onClick={handleClearAll}
-              className="btn btn-link p-1 btn-sm hover:text-secondary no-underline"
+              className="text-xs text-base-content/60 hover:text-error transition-colors px-2 py-1"
               title="Clear all selections"
             >
               clear
@@ -228,50 +228,54 @@ export const CountrySelection = ({
 
           <div className="max-h-48 overflow-y-auto" ref={scrollContainerRef}>
             {filteredCountries.length > 0 ? (
-              filteredCountries.map((country, index) => (
-                <div
-                  key={index}
-                  className={`px-3 py-2 hover:cursor-pointer flex items-center justify-between ${
-                    index === highlightedIndex
-                      ? "bg-primary/30 hover:bg-primary/30"
-                      : isCountrySelected(country)
-                        ? "bg-primary/20 hover:bg-primary/30"
-                        : "hover:bg-base-100"
-                  }`}
-                  onClick={() => handleCountrySelect(country)}
-                  onMouseEnter={() => setHighlightedIndex(index)}
-                >
-                  <div className="flex items-center">
-                    <span className="mr-2">{country.flag}</span>
-                    <span
-                      className={
-                        index === highlightedIndex
-                          ? "text-white"
-                          : isCountrySelected(country)
-                            ? "text-white"
-                            : "text-base-content"
-                      }
-                    >
-                      {country.name}
-                    </span>
+              filteredCountries.map((country, index) => {
+                const isSelected = isCountrySelected(country);
+                const isHighlighted = index === highlightedIndex;
+
+                // State priority: highlighted > selected > default
+                let bgClass = "bg-base-100 hover:bg-base-200";
+                let textClass = "text-base-content";
+                let checkClass = "text-white";
+
+                if (isSelected && !isHighlighted) {
+                  bgClass = "bg-primary/20 hover:bg-primary/30";
+                  textClass = "text-base-content";
+                  checkClass = "text-primary";
+                } else if (isHighlighted) {
+                  bgClass = "bg-primary";
+                  textClass = "text-white";
+                  checkClass = "text-white";
+                }
+
+                return (
+                  <div
+                    key={index}
+                    className={`px-3 py-2 cursor-pointer flex items-center justify-between transition-colors ${bgClass}`}
+                    onClick={() => handleCountrySelect(country)}
+                    onMouseEnter={() => setHighlightedIndex(index)}
+                  >
+                    <div className="flex items-center">
+                      <span className="mr-2">{country.flag}</span>
+                      <span className={textClass}>{country.name}</span>
+                    </div>
+                    {isSelected && (
+                      <svg
+                        className={`w-5 h-5 ${checkClass}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    )}
                   </div>
-                  {isCountrySelected(country) && (
-                    <svg
-                      className="w-5 h-5 text-primary"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                  )}
-                </div>
-              ))
+                );
+              })
             ) : (
               <div className="px-3 py-2 text-base-content/60">
                 No countries found

@@ -922,16 +922,12 @@ export const getTemporaryTariffTextElement = (
 
   return (
     <div className="flex flex-col gap-1">
-      <TertiaryLabel
-        value={"Temporary or Special Adjustments"}
-        color={Color.NEUTRAL_CONTENT}
-      />
+      <TertiaryLabel value={"Temporary or Special Adjustments"} />
       <SecondaryText
         key={`${tariffColumn}-tariff-footnotes`}
         value={footnotes
           .map((footnote) => footnote.value.trim().replace(/\.*$/g, ""))
           .join(", ")}
-        color={Color.WHITE}
       />
     </div>
   );

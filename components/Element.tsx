@@ -2,7 +2,6 @@ import { HtsElement, Navigatable } from "../interfaces/hts";
 import { useEffect, useState } from "react";
 import {
   getDirectChildrenElements,
-  getBreadCrumbsForElement,
   isFullHTSCode,
   getTariffElement,
   getGeneralNoteFromSpecialTariffSymbol,
@@ -15,12 +14,10 @@ import {
 } from "@heroicons/react/16/solid";
 import PDF from "./PDF";
 import { SecondaryLabel } from "./SecondaryLabel";
-import { Color } from "../enums/style";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { ButtonWithIcon } from "./ButtonWithIcon";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { useHts } from "../contexts/HtsContext";
-import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { PDFProps } from "../interfaces/ui";
 import { SupabaseBuckets } from "../constants/supabase";
 import { Tariffs } from "./Tariffs";
@@ -34,7 +31,6 @@ import { userHasActivePurchase } from "../libs/supabase/purchase";
 import { PrimaryLabel } from "./PrimaryLabel";
 import Link from "next/link";
 import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
-import { TertiaryText } from "./TertiaryText";
 import { fetchUser, updateUserProfile } from "../libs/supabase/user";
 
 interface Props {
@@ -54,7 +50,6 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { htsElements } = useHts();
-  const { sections } = useHtsSections();
   const [isPayingUser, setIsPayingUser] = useState<boolean>(false);
   const [isTariffImpactTrialUser, setIsTariffImpactTrialUser] =
     useState<boolean>(false);
@@ -137,33 +132,35 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
     getTariffElement(element, htsElements, breadcrumbs) || element;
 
   return (
-    <div className="card bg-base-100 p-4 rounded-xl border border-base-content/10 w-full flex flex-col items-start justify-between gap-4 pt-2 sm:pt-6">
+    <div className="card w-full flex flex-col items-start justify-between gap-4">
       <div className="w-full flex flex-col gap-4">
-        <div className="flex flex-col gap-3 text-sm">
-          <div className="flex flex-wrap text-xs gap-y-2">
+        {/* <div className="flex flex-col gap-3 text-sm">
+          <div className="flex flex-wrap gap-y-2">
             {getBreadCrumbsForElement(element, sections, htsElements).map(
               (breadcrumb, i) => (
                 <div key={`breadcrumb-${i}`}>
                   {breadcrumb.label && (
-                    <b className="text-white">{breadcrumb.label} </b>
+                    <b className="text-primary">{breadcrumb.label} </b>
                   )}
                   <span
                     className={`${!breadcrumb.label ? "font-bold italic" : "text-base-content"}`}
                   >
                     {breadcrumb.value}
                   </span>
-                  <span className="text-white mx-2">›</span>
+                  <span className="mx-2">›</span>
                 </div>
               )
             )}
           </div>
-        </div>
+        </div> */}
 
-        <div className="w-full h-[1px] bg-base-content/10" />
+        {/* <div className="w-full h-[1px] bg-base-content/10" /> */}
 
         <div className="flex flex-col gap-1">
           <div className="w-full flex flex-col-reverse sm:flex-row justify-between items-start gap-2">
-            <PrimaryLabel value={getHtsnoLabel()} color={Color.ACCENT} />
+            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-primary">
+              {getHtsnoLabel()}
+            </h1>
 
             <div className="flex gap-2">
               <ButtonWithIcon
@@ -192,7 +189,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
               )}
               {htsno && (
                 <button
-                  className="btn btn-xs btn-primary"
+                  className="btn btn-xs btn-neutral"
                   onClick={() => {
                     const htsCode = isFullHTSCode(htsno)
                       ? htsno.slice(0, -3)
@@ -212,9 +209,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
             </div>
           </div>
 
-          <h1 className="text-2xl md:text-3xl lg:text-4xl text-white font-bold">
-            {description}
-          </h1>
+          <PrimaryLabel value={description} />
         </div>
       </div>
 
@@ -222,10 +217,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
         <div className="w-full flex flex-col gap-8">
           {children.length > 0 && (
             <div className="w-full flex flex-col gap-2">
-              <SecondaryLabel
-                value="Options for Next Level"
-                color={Color.WHITE}
-              />
+              <SecondaryLabel value="Options for Next Level" />
               <div className="flex flex-col gap-2">
                 {children.map((child, i) => {
                   return (
@@ -259,13 +251,8 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div className="flex flex-col gap-3 p-3 bg-base-100 border border-base-content/30 rounded-md min-w-24">
                   <div>
-                    <TertiaryLabel
-                      value={"General Rate"}
-                      color={Color.NEUTRAL_CONTENT}
-                    />
-                    <h2 className="text-white">
-                      {tariffElement.general || "-"}
-                    </h2>
+                    <TertiaryLabel value={"General Rate"} />
+                    <h2>{tariffElement.general || "-"}</h2>
                   </div>
                   {getTemporaryTariffTextElement(
                     tariffElement,
@@ -274,12 +261,9 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                 </div>
 
                 <div className="flex flex-col p-3 bg-base-100 border border-base-content/30 rounded-md min-w-24 gap-3">
-                  <TertiaryLabel
-                    value={"Special Rate"}
-                    color={Color.NEUTRAL_CONTENT}
-                  />
+                  <TertiaryLabel value={"Special Rate"} />
                   <div className="flex flex-col">
-                    <h2 className="text-white">
+                    <h2>
                       {getStringBeforeOpeningParenthesis(
                         tariffElement.special
                       ) || "-"}
@@ -288,7 +272,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                       getStringBeforeOpeningParenthesis(
                         tariffElement.special
                       ) && (
-                        <span className="text-xs italic text-white">
+                        <span className="text-xs italic">
                           If qualified based on the acts/agreemnts below
                         </span>
                       )}
@@ -341,11 +325,8 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
 
                 <div className="flex flex-col gap-3 p-3 bg-base-100 border border-base-content/30 rounded-md min-w-24">
                   <div>
-                    <TertiaryLabel
-                      value={"Other Rate"}
-                      color={Color.NEUTRAL_CONTENT}
-                    />
-                    <h2 className="text-white">{tariffElement.other || "-"}</h2>
+                    <TertiaryLabel value={"Other Rate"} />
+                    <h2>{tariffElement.other || "-"}</h2>
                   </div>
                   {getTemporaryTariffTextElement(
                     tariffElement,
@@ -354,22 +335,14 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                 </div>
 
                 <div className="flex flex-col gap-1 p-3 bg-base-100 border border-base-content/30 rounded-md min-w-24">
-                  <TertiaryLabel
-                    value={`Units`}
-                    color={Color.NEUTRAL_CONTENT}
-                  />
-                  <h2 className="text-white">
-                    {tariffElement.units.join(", ") || "-"}
-                  </h2>
+                  <TertiaryLabel value={`Units`} />
+                  <h2>{tariffElement.units.join(", ") || "-"}</h2>
                 </div>
 
                 {tariffElement.additionalDuties && (
                   <div className="flex flex-col gap-1 p-3 bg-base-100 border border-base-content/30 rounded-md min-w-24">
-                    <TertiaryLabel
-                      value={`Additional Duties`}
-                      color={Color.NEUTRAL_CONTENT}
-                    />
-                    <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
+                    <TertiaryLabel value={`Additional Duties`} />
+                    <h2 className="text-xl md:text-2xl lg:text-3xl font-bold">
                       {tariffElement.additionalDuties || "-"}
                     </h2>
                   </div>
@@ -379,28 +352,25 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
           )}
 
           {htsno && htsno.replaceAll(".", "").length === 10 && (
-            <div className="w-full flex flex-col mt-4">
-              <div className="w-full flex justify-between flex-col">
-                <div className="flex items-center">
+            <div className="w-full flex flex-col gap-4 p-4 sm:p-6 bg-base-200/50 border-2 border-base-content/20 rounded-xl">
+              <div className="w-full flex justify-between flex-col gap-2">
+                <div className="flex items-center gap-3">
                   <div className="flex gap-2 items-center">
-                    <PrimaryLabel
-                      value="📊 Tariff Finder"
-                      color={Color.WHITE}
-                    />
-                    <div className="text-xs text-base-300 font-bold bg-accent px-2 py-0.5 rounded-md">
-                      Beta
-                    </div>
+                    <PrimaryLabel value="📊 Tariff Finder" />
                   </div>
 
                   <Link
                     href="/tariffs/coverage"
                     target="_blank"
-                    className="btn btn-link btn-xs text-neutral-content hover:text-primary/80 md:mb-0.5"
+                    className="link"
                   >
-                    <QuestionMarkCircleIcon className="w-5 h-5 md:w-6 md:h-6" />
+                    <QuestionMarkCircleIcon className="w-5 h-5 md:w-6 md:h-6 text-base-content" />
                   </Link>
                 </div>
-                <TertiaryText value="Simulate tariff scenarios for any country of origin and find potential exemptions. Not all tariffs are included and we do not guarantee correct calculations for the ones that are supported." />
+                <p className="text-sm text-base-content/70">
+                  Simulate tariff scenarios for any country of origin and find
+                  potential exemptions
+                </p>
               </div>
               <Tariffs
                 isPayingUser={isPayingUser}
@@ -412,7 +382,7 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                   breadcrumbs
                 )}
               />
-              <p className="text-sm text-base-content/80">
+              <p className="text-sm text-base-content/60">
                 <sup>
                   We can make mistakes and do not guarantee complete nor correct
                   calculations. If you see any issues please{" "}

@@ -1,13 +1,25 @@
 import { Color } from "../enums/style";
+import { classNames } from "../utilities/style";
 
 interface Props {
   value: string;
+  uppercase?: boolean;
   color?: Color;
 }
 
 export const PrimaryLabel = ({
   value,
-  color = Color.NEUTRAL_CONTENT,
+  color = Color.BASE_CONTENT,
+  uppercase = false,
 }: Props) => {
-  return <h2 className={`text-${color} font-bold md:text-xl`}>{value}</h2>;
+  return (
+    <h2
+      className={classNames(
+        `text-${color} font-bold md:text-xl`,
+        uppercase && "uppercase"
+      )}
+    >
+      {value}
+    </h2>
+  );
 };

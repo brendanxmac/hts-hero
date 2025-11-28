@@ -214,7 +214,7 @@ function LoginContent() {
   };
 
   return (
-    <main className="p-8 md:p-24" data-theme={config.colors.theme}>
+    <main className="p-8 md:p-24 h-screen" data-theme={config.colors.theme}>
       <div className="text-center mb-4">
         <Link href="/" className="btn btn-ghost btn-sm">
           <svg

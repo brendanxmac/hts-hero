@@ -9,8 +9,6 @@ import {
 import { classNames } from "../utilities/style";
 import { TariffColumn } from "../enums/tariff";
 import Link from "next/link";
-import { TertiaryLabel } from "./TertiaryLabel";
-import { Color } from "../enums/style";
 
 interface Props {
   showInactive: boolean;
@@ -122,15 +120,22 @@ export const Tariff = ({
       .some((e) => tariffIsActive(e, tariffSets[setIndex].tariffs));
 
   return (
-    <div className="w-full flex flex-col gap-2">
+    <div className="w-full">
       <div
         key={`${tariff.code}-${exceptionLevel}`}
         className={classNames(
-          "text-white flex gap-2 justify-between items-end border-b border-base-content/20"
-          // !tariff.isActive && !showInactive && "hidden"
+          "flex gap-3 justify-between items-center py-2 px-4 rounded-lg transition-all hover:bg-primary/20 hover:cursor-pointer",
+          tariff.isActive
+            ? "bg-primary/5 border border-primary/20"
+            : "border border-base-300"
         )}
+        onClick={() => {
+          if (tariff.requiresReview) {
+            toggleTariff(tariff);
+          }
+        }}
       >
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-3 items-center flex-1 min-w-0">
           <input
             type="checkbox"
             checked={tariff.isActive}
@@ -138,7 +143,7 @@ export const Tariff = ({
               !tariff.requiresReview ||
               hasExceptionTariffThatDoesNotNeedReviewThatIsActive
             }
-            className="checkbox checkbox-primary checkbox-xs"
+            className="checkbox checkbox-primary checkbox-sm shrink-0"
             onChange={() => {
               if (tariff.requiresReview) {
                 toggleTariff(tariff);
@@ -146,35 +151,39 @@ export const Tariff = ({
             }}
           />
 
-          <div className="flex flex-col gap-1 py-0.5">
-            <div className="flex gap-2 items-center">
-              <Link
-                href={`/explore?code=${tariff.code}`}
-                target="_blank"
-                className="link link-primary no-underline font-medium"
-              >
-                {tariff.code}
-              </Link>
-              -
-              <TertiaryLabel
-                value={tariff.name}
-                color={tariff.isActive ? Color.WHITE : Color.NEUTRAL_CONTENT}
-              />
+          <div className="flex flex-col gap-1 min-w-0 flex-1">
+            <div className="flex gap-2 items-center flex-wrap">
+              <div className="flex gap-2 items-center shrink-0">
+                <Link
+                  href={`/explore?code=${tariff.code}`}
+                  target="_blank"
+                  className="link link-primary font-semibold transition-colors"
+                >
+                  {tariff.code}
+                </Link>
+                <p className="text-base-content">•</p>
+              </div>
+              <p className={classNames("font-medium min-w-0 flex-1")}>
+                {tariff.name}
+              </p>
             </div>
           </div>
         </div>
-        <p
-          className={classNames(
-            "shrink-0 min-w-32 text-right text-base",
-            tariff.isActive
-              ? "text-white font-bold"
-              : tariff[column] === null
-                ? "text-neutral-content"
-                : "line-through text-neutral-content"
-          )}
-        >
-          {tariff[column] === null ? "Needs Review" : `${tariff[column]}%`}
-        </p>
+
+        <div className="shrink-0 min-w-[120px] text-right">
+          <p
+            className={classNames(
+              "text-base sm:text-lg md:text-xl font-semibold",
+              tariff.isActive
+                ? "text-primary"
+                : tariff[column] === null
+                  ? "text-base-content/40"
+                  : "line-through text-base-content/40"
+            )}
+          >
+            {tariff[column] === null ? "Needs Review" : `${tariff[column]}%`}
+          </p>
+        </div>
       </div>
 
       {/* {tariff.exceptions?.length > 0 &&

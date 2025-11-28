@@ -35,10 +35,10 @@ export const tariffImpactFeatures = [
     title: "Select Tariff Update",
     description:
       "Select the tariff update / announcement you want to check against.",
-    styles: "md:col-span-6 lg:col-span-2 bg-base-300 text-white",
+    styles: "md:col-span-6 lg:col-span-2 bg-base-300 ",
     demo: (
       <div className="overflow-hidden h-full flex items-stretch">
-        <div className="w-full bg-base-200 rounded-t-box h-full py-4 px-6">
+        <div className="w-full bg-base-100 rounded-t-box h-full py-4 px-6">
           <div className="flex flex-col">
             <label
               htmlFor="hts-codes"
@@ -56,7 +56,7 @@ export const tariffImpactFeatures = [
               <li className="p-3 rounded-sm truncate">
                 <p>Russian Oil Exemptions</p>
               </li>
-              <li className="p-3 bg-base-300 rounded-lg">
+              <li className="p-3 bg-primary/10 rounded-lg">
                 <div className="w-full flex justify-between items-center">
                   <p className="truncate">
                     Additional Steel & Aluminum Articles
@@ -76,13 +76,13 @@ export const tariffImpactFeatures = [
     title: "Enter Codes",
     description:
       "Grab your codes from anywhere and paste them directly into the app.",
-    styles: "md:col-span-3 lg:col-span-2 bg-base-200 text-white",
+    styles: "md:col-span-3 lg:col-span-2 bg-base-300 ",
   },
   {
     title: "See What's Affected",
     description:
       "Instantly see which HTS Codes are affected by the tariff updates",
-    styles: "md:col-span-3 lg:col-span-2 bg-base-200 text-white",
+    styles: "md:col-span-3 lg:col-span-2 bg-base-300 ",
   },
 ];
 const TariffImpactFeaturesGrid = () => {
@@ -139,23 +139,21 @@ const TariffImpactFeaturesGrid = () => {
   }, [currentCharIndex, currentCodeIndex, isTyping, dummyTariffImpactResults]);
 
   return (
-    <section className="flex justify-center items-center w-full bg-base-300 text-base-content px-6 pt-10 lg:pt-16">
+    <section className="flex justify-center items-center w-full bg-base-100 text-base-content px-6 pt-10 lg:pt-16">
       <div className="w-full flex flex-col max-w-7xl lg:min-w-5xl gap-4 sm:gap-8">
         <div className="flex flex-col gap-2 md:gap-4 text-center lg:text-left lg:flex-1 items-center">
-          <h1 className="text-white font-extrabold text-3xl sm:text-4xl md:text-6xl tracking-tight max-w-4xl text-center mx-auto">
-            <span className="bg-yellow-400 px-2 py-0.5 text-base-300 rounded-sm inline-block mt-2">
-              Instantly
-            </span>{" "}
-            See If New Tariffs Affect Your Imports
+          <h1 className="font-extrabold text-3xl sm:text-4xl md:text-6xl tracking-tight max-w-4xl text-center mx-auto">
+            <span className="underline decoration-primary">Instantly</span> See
+            If New Tariffs Affect Your Imports
           </h1>
-          <p className="text-sm md:text-lg lg:text-xl text-neutral-300 leading-relaxed max-w-5xl mx-auto md:my-4">
+          <p className="text-sm md:text-lg lg:text-xl leading-relaxed max-w-5xl mx-auto md:my-2">
             Get notified, see what&apos;s affected, and discover potential
             savings
           </p>
 
           <div className="flex justify-center lg:justify-start">
             <Link
-              className="btn btn-wide bg-yellow-400 text-base-300 hover:bg-yellow-500"
+              className="btn btn-wide btn-primary"
               href="/tariffs/impact-checker"
             >
               Check your Imports!
@@ -170,25 +168,25 @@ const TariffImpactFeaturesGrid = () => {
             {tariffImpactFeatures.map((feature, index) => (
               <div
                 key={feature.title}
-                className={`${feature.styles} rounded-3xl flex flex-col gap-2 sm:gap-6 w-full h-[22rem] lg:h-[25rem] pt-6 overflow-hidden border-2 border-base-content/30`}
+                className={`${feature.styles} rounded-3xl flex flex-col gap-2 sm:gap-6 w-full h-[22rem] lg:h-[25rem] pt-6 overflow-hidden bg-base-100 border-2 border-base-content/10`}
               >
                 <div className="px-6 flex items-center gap-3">
                   <div className="rounded-full h-6 w-6 md:h-7 md:w-7 bg-primary text-base-300 text-sm md:text-base font-semibold flex items-center justify-center">
                     {index + 1}
                   </div>
-                  <h3 className="text-lg sm:text-xl tracking-tight text-white font-semibold">
+                  <h3 className="text-lg sm:text-xl tracking-tight  font-semibold">
                     {feature.title}
                   </h3>
                 </div>
                 {index === 1 ? (
                   // First feature - typing animation
                   <div className="overflow-hidden h-full flex items-stretch">
-                    <div className="w-full bg-base-200 rounded-t-box h-full py-4 px-6">
+                    <div className="w-full bg-base-100 rounded-t-box h-full py-4 px-6">
                       <p className="font-medium uppercase tracking-wide text-base-content/60 text-sm mb-3">
                         HTS Codes:
                       </p>
                       <div className="relative textarea py-4 h-full bg-base-100 border-base-content/10 text-base-content mr-2">
-                        <div className="text-base md:text-lg font-medium text-white">
+                        <div className="text-base md:text-lg font-medium ">
                           {/* Show completed codes */}
                           {completedCodes.map((code, i) => (
                             <span key={i}>
@@ -218,7 +216,7 @@ const TariffImpactFeaturesGrid = () => {
                 ) : index === 2 ? (
                   // Second feature - opacity-based transition with purple pulse
                   <div className="overflow-hidden h-full flex items-stretch">
-                    <div className="w-full bg-base-200 rounded-t-box h-full py-4 px-6">
+                    <div className="w-full bg-base-100 rounded-t-box h-full py-4 px-6">
                       <p className="font-medium uppercase tracking-wide text-base-content/60 text-sm mb-3">
                         Results:
                       </p>

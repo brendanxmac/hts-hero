@@ -52,7 +52,7 @@ export const AccordionItem = ({
 
         {isOpen ? (
           <ChevronDownIcon
-            className={"text-white h-6 w-6"}
+            className={"h-6 w-6"}
             onClick={(e) => {
               e.preventDefault();
               setFeatureSelected();
@@ -60,7 +60,7 @@ export const AccordionItem = ({
           />
         ) : (
           <ChevronRightIcon
-            className={"text-white h-6 w-6"}
+            className={" h-6 w-6"}
             onClick={(e) => {
               e.preventDefault();
               setFeatureSelected();

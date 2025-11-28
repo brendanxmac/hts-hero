@@ -1,106 +1,86 @@
 import { classNames } from "../utilities/style";
-import { useRef, useState, useLayoutEffect } from "react";
-import ReactDOM from "react-dom";
 
 interface Props {
   icon: React.ReactNode;
   disabled?: boolean;
   onClick: () => void;
   tooltip?: string;
-  color?: "primary" | "secondary" | "accent" | "error";
-  transparent?: boolean;
-  iconOnly?: boolean;
+  color?:
+    | "primary"
+    | "secondary"
+    | "accent"
+    | "error"
+    | "success"
+    | "warning"
+    | "info";
+  variant?: "solid" | "ghost" | "outline";
+  size?: "xs" | "sm" | "md" | "lg";
 }
 
 export default function SquareIconButton({
   icon,
-  disabled,
+  disabled = false,
   onClick,
   color = "primary",
-  transparent = false,
+  variant = "ghost",
   tooltip,
-  iconOnly = false,
+  size = "sm",
 }: Props) {
-  // TooltipPortal implementation
-  function TooltipPortal({
-    children,
-    anchorRef,
-  }: {
-    children: React.ReactNode;
-    anchorRef: React.RefObject<HTMLElement>;
-  }) {
-    const [coords, setCoords] = useState<{
-      top: number;
-      left: number;
-      width: number;
-    } | null>(null);
+  // Build DaisyUI classes
+  const getColorClass = () => {
+    if (variant === "ghost") {
+      return `btn-ghost hover:btn-${color}`;
+    }
+    if (variant === "outline") {
+      return `btn-outline btn-${color}`;
+    }
+    return `btn-${color}`;
+  };
 
-    useLayoutEffect(() => {
-      if (anchorRef.current) {
-        const rect = anchorRef.current.getBoundingClientRect();
-        setCoords({
-          top: rect.top - rect.height - window.scrollY - 25, // 6px below the button
-          left: rect.left + window.scrollX + rect.width / 2,
-          width: rect.width,
-        });
-      }
-    }, [anchorRef.current]);
+  const getSizeClass = () => {
+    switch (size) {
+      case "xs":
+        return "btn-xs";
+      case "sm":
+        return "btn-sm";
+      case "md":
+        return "btn-md";
+      case "lg":
+        return "btn-lg";
+      default:
+        return "btn-sm";
+    }
+  };
 
-    if (!coords) return null;
-    return ReactDOM.createPortal(
-      <div
-        style={{
-          position: "absolute",
-          top: coords.top,
-          left: coords.left,
-          transform: "translateX(-50%)",
-          zIndex: 9999,
-          pointerEvents: "none",
-        }}
-        className="bg-primary text-xs text-white px-2 py-1 rounded-md shadow-lg border border-base-300"
-      >
-        {children}
-      </div>,
-      document.body
-    );
-  }
-
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const [showTooltip, setShowTooltip] = useState(false);
+  const buttonClasses = classNames(
+    "btn btn-square shrink-0",
+    getSizeClass(),
+    getColorClass(),
+    disabled && "btn-disabled",
+    "transition-all duration-200 ease-in-out"
+  );
 
   const button = (
     <button
-      ref={buttonRef}
+      type="button"
       disabled={disabled}
-      className={classNames(
-        `btn btn-sm btn-square shrink-0 text-white hover:text-white hover:shadow-md border-none hover:cursor-pointer`,
-        iconOnly
-          ? "bg-none hover:bg-none"
-          : transparent
-            ? `bg-none hover:bg-${color}/80`
-            : `bg-${color} hover:btn-secondary`
-      )}
+      className={buttonClasses}
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
         onClick();
       }}
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
-      onFocus={() => setShowTooltip(true)}
-      onBlur={() => setShowTooltip(false)}
+      aria-label={tooltip}
     >
       {icon}
     </button>
   );
 
+  // Use DaisyUI's built-in tooltip
   if (tooltip) {
     return (
-      <div>
+      <div className="tooltip tooltip-top" data-tip={tooltip}>
         {button}
-        {showTooltip && (
-          <TooltipPortal anchorRef={buttonRef}>{tooltip}</TooltipPortal>
-        )}
       </div>
     );
   }

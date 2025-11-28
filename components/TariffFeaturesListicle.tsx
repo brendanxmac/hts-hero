@@ -14,7 +14,7 @@ const features: {
   image: { src: string; alt: string };
 }[] = [
   {
-    name: "Check Tariff Rates",
+    name: "See Tariff Rates",
     points: [
       {
         point: "See tariffs rates for any import from ~200 countries",
@@ -34,11 +34,11 @@ const features: {
       //   isKey: true,
       // },
     ],
-    svg: <LightningSVG color="#facc15" size={7} fill viewBox="0 0 24 24" />,
-    image: { src: "/tariffs.png", alt: "Check Tariff Rates" },
+    svg: <LightningSVG color="primary" size={7} viewBox="0 0 24 24" />,
+    image: { src: "/tariffs.png", alt: "See Tariff Rates" },
   },
   {
-    name: "Find Savings",
+    name: "Discover Savings",
     points: [
       {
         point: "See all the tariff exemptions that might apply",
@@ -47,14 +47,14 @@ const features: {
         point: "Apply free trade programs you may be eligible for",
       },
     ],
-    svg: <RocketSVG color="#facc15" size={7} fill viewBox="0 0 24 24" />,
+    svg: <RocketSVG color="primary" size={7} viewBox="0 0 24 24" />,
     image: {
       src: "/finds-savings.png",
       alt: "Finds Savings",
     },
   },
   {
-    name: "Avoid Surprises",
+    name: "Avoid Tariff Surprises",
     points: [
       {
         point:
@@ -67,20 +67,21 @@ const features: {
         point: "Know the latest tariff rate before your next purchase order",
       },
     ],
-    svg: <LightBulbSVG color="#facc15" size={7} fill viewBox="0 0 24 24" />,
+    svg: <LightBulbSVG color="primary" size={7} viewBox="0 0 24 24" />,
     image: { src: "/avoid-surprises.png", alt: "Avoid Surprises" },
   },
 ];
 
 const TariffFeaturesListicle = () => {
   return (
-    <section className="py-24 bg-base-100" id="features">
+    <section className="py-24 bg-base-200" id="features">
       <div className="max-w-6xl mx-auto">
         <div className="text-center max-md:px-8 mb-12 md:px-12">
-          <h2 className="text-white font-black text-4xl md:text-5xl lg:text-6xl tracking-tight mb-5">
-            <span className="text-yellow-400">Conquer</span> Tariff Chaos
+          <h2 className="font-black text-4xl md:text-5xl lg:text-6xl tracking-tight mb-5">
+            <span className="underline decoration-primary">Conquer</span> Tariff
+            Chaos
           </h2>
-          <p className="text-neutral-300 leading-relaxed mb-3 lg:text-lg">
+          <p className="leading-relaxed mb-3 lg:text-lg">
             No more guessing, surprises, or overpaying on tariffs
           </p>
         </div>
@@ -98,7 +99,7 @@ const TariffFeaturesListicle = () => {
                   <div className={`${mediaLeft ? "lg:order-2" : "lg:order-1"}`}>
                     <div className="flex items-center gap-3 mb-8">
                       <span className="text-primary">{feature.svg}</span>
-                      <h3 className="text-white text-2xl md:text-4xl font-extrabold tracking-tight">
+                      <h3 className="text-2xl md:text-4xl font-extrabold tracking-tight">
                         {feature.name}
                       </h3>
                     </div>
@@ -114,7 +115,7 @@ const TariffFeaturesListicle = () => {
                         alt={feature.image.alt}
                         width={900}
                         height={600}
-                        className="w-full max-w-2xl rounded-2xl md:rounded-3xl border-2 border-white/10 object-cover"
+                        className="w-full max-w-2xl rounded-2xl md:rounded-3xl border-2 border-base-content/10 object-cover"
                       />
                     </div>
                   </div>

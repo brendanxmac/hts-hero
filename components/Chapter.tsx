@@ -31,11 +31,11 @@ export const Chapter = ({ chapter }: Props) => {
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
 
   // Find the section that contains this chapter
-  const parentSection = useMemo(() => {
-    return sections.find((section) =>
-      section.chapters.some((ch) => ch.number === chapter.number)
-    );
-  }, [sections, chapter.number]);
+  // const parentSection = useMemo(() => {
+  //   return sections.find((section) =>
+  //     section.chapters.some((ch) => ch.number === chapter.number)
+  //   );
+  // }, [sections, chapter.number]);
 
   const chapterElements = getElementsInChapter(htsElements, number);
   const elementsAtIndentLevel = chapterElements
@@ -144,28 +144,28 @@ export const Chapter = ({ chapter }: Props) => {
   };
 
   return (
-    <div className="card flex flex-col w-full gap-4 md:gap-4 rounded-xl bg-base-100 border border-base-content/10 p-4 pt-2 sm:pt-6 transition duration-100 ease-in-out">
-      <div className="flex flex-col gap-3 text-sm">
+    <div className="card flex flex-col w-full gap-4 md:gap-4 transition duration-100 ease-in-out">
+      {/* <div className="flex flex-col gap-3 text-sm">
         <div className="flex flex-col gap-2 text-xs">
           {parentSection && (
             <div key={`breadcrumb-${chapter.number}`}>
-              <b className="text-accent">Section {parentSection.number}: </b>
-              <span className="text-white">{parentSection.description}</span>
-              <span className="text-white mx-2">›</span>
+              <b className="text-primary">Section {parentSection.number}: </b>
+              <span>{parentSection.description}</span>
+              <span className="mx-2">›</span>
             </div>
           )}
         </div>
-      </div>
+      </div> */}
 
-      <div className="w-full h-[1px] bg-base-content/10" />
+      {/* <div className="w-full h-[1px] bg-base-content/10" /> */}
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between gap-3">
           <SecondaryLabel
             value={`Chapter ${number.toString()}`}
-            color={Color.ACCENT}
+            color={Color.PRIMARY}
           />
-          <div className="w-full flex gap-4 justify-end">
+          <div className="flex gap-4 justify-end">
             {chapter.number === 98 || chapter.number === 99 ? (
               <div
                 className="w-full min-w-sm max-w-sm relative"
@@ -223,7 +223,7 @@ export const Chapter = ({ chapter }: Props) => {
                                     : note.title}
                                 </span>
                               </div>
-                              <span className={"text-white/80 text-sm"}>
+                              <span className={"text-sm"}>
                                 {note.description}
                               </span>
                             </div>
@@ -231,7 +231,7 @@ export const Chapter = ({ chapter }: Props) => {
                         ))
                       ) : (
                         <div className="px-3 py-2 text-base-content/60">
-                          No notes foundf
+                          No notes found
                         </div>
                       )}
                     </div>
@@ -256,27 +256,25 @@ export const Chapter = ({ chapter }: Props) => {
             )}
           </div>
         </div>
-        <h2 className="text-xl md:text-3xl font-bold text-white">
-          {description}
-        </h2>
+        <h2 className="text-xl md:text-3xl font-bold">{description}</h2>
       </div>
 
       <div className="flex flex-col gap-2 bg-base-100">
         <div className="w-full flex sm:justify-between sm:items-end gap-1 sm:gap-4 flex-col sm:flex-row">
           <SecondaryLabel
-            value={`Headings${(chapter.number === 98 || chapter.number === 99) && ` (${filteredElements.length})`}`}
+            value={`Headings (${filteredElements ? filteredElements.length : elementsWithChildrenAdded.length})`}
           />
           {/* Filter Bar */}
           <div className="flex-1 relative sm:max-w-xs w-full">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <FunnelIcon className="h-5 w-5 text-neutral-400" />
+              <FunnelIcon className="h-5 w-5 text-base-content/70" />
             </div>
             <input
               type="text"
               placeholder="Filter by description or code"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-1 text-sm bg-base-100 border-2 border-base-content/20 rounded-lg text-neutral-200 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full pl-10 pr-4 py-1 text-sm bg-base-100 border-2 border-base-content/80 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
             {searchQuery && (
               <div className="absolute inset-y-0 right-0 flex items-center pr-3">
@@ -290,7 +288,7 @@ export const Chapter = ({ chapter }: Props) => {
             )}
           </div>
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3">
           {filteredElements.map((element, i) => {
             return (
               <ElementSummary

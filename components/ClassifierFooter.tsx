@@ -25,7 +25,7 @@ const ClassifierFooter = () => {
                 width={24}
                 height={24}
               />
-              <strong className="text-white font-extrabold tracking-tight text-base md:text-lg">
+              <strong className="font-extrabold tracking-tight text-base md:text-lg">
                 {config.appName}
               </strong>
             </Link>

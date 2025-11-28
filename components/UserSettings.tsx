@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Color } from "../enums/style";
 import { updateUserProfile, UserProfile } from "../libs/supabase/user";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { TertiaryLabel } from "./TertiaryLabel";
@@ -128,7 +127,6 @@ export const UserSettings = ({ user, team }: Props) => {
         <div className="flex gap-2 justify-between items-center h-8">
           <PrimaryLabel
             value={user.team_id ? "Personal Settings" : "Account Settings"}
-            color={Color.WHITE}
           />
           {hasChanges && (
             <button
@@ -169,7 +167,7 @@ export const UserSettings = ({ user, team }: Props) => {
 
       {!team && (
         <div className="flex flex-col gap-8">
-          <PrimaryLabel value="Company Details" color={Color.WHITE} />
+          <PrimaryLabel value="Company Details" />
 
           {/* Logo Section */}
           <div className="w-full flex flex-col gap-4">
@@ -222,7 +220,7 @@ export const UserSettings = ({ user, team }: Props) => {
         <div className="w-full flex flex-col gap-4">
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
-              <PrimaryLabel value="Importers" color={Color.WHITE} />
+              <PrimaryLabel value="Importers" />
               <div
                 className="tooltip tooltip-bottom"
                 data-tip="This feature is experimental"

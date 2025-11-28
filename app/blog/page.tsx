@@ -19,14 +19,12 @@ export default async function Blog() {
     .slice(0, 6);
   return (
     <>
-      <section className="text-center max-w-xl mx-auto mt-6 mb-12">
-        <h1 className="text-white font-extrabold text-3xl lg:text-5xl tracking-tight mb-6">
-          Stay Up to Date on The{" "}
-          <span className="text-primary">Latest HTS Updates</span>
+      <section className="text-center max-w-3xl mx-auto mt-6 mb-12">
+        <h1 className="font-extrabold text-3xl lg:text-5xl tracking-tight mb-6">
+          HTS Hero Blog
         </h1>
         <p className="text-lg opacity-80 leading-relaxed">
-          The latest updates on HTS codes, tariffs, and all of {config.appName}
-          &apos;s product updates & deals.
+          The latest updates on product features, deals, and tariffs.
         </p>
       </section>
 

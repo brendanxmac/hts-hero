@@ -9,6 +9,7 @@ import config from "@/config";
 import { usePathname, useSearchParams } from "next/navigation";
 import { PlayIcon } from "@heroicons/react/24/solid";
 import { getTutorialFromPathname, Tutorial, TutorialI } from "./Tutorial";
+import ThemeToggle from "./ThemeToggle";
 
 const cta: JSX.Element = <ButtonSignin text="Sign In" />;
 
@@ -77,9 +78,7 @@ const UnauthenticatedHeader = () => {
               width={32}
               height={32}
             />
-            <span className="text-white font-extrabold text-lg">
-              {config.appName}
-            </span>
+            <span className="font-extrabold text-lg">{config.appName}</span>
           </Link>
           <div className="hidden md:flex items-center justify-start gap-4">
             <Link href="/about/tariffs">
@@ -167,7 +166,10 @@ const UnauthenticatedHeader = () => {
           </div>
 
           {/* CTA on large screens */}
-          <div className="hidden md:flex md:justify-end md:flex-1">{cta}</div>
+          <div className="hidden md:flex md:justify-end md:flex-1 gap-2 items-center">
+            {cta}
+            <ThemeToggle />
+          </div>
         </div>
       </nav>
 
@@ -244,7 +246,10 @@ const UnauthenticatedHeader = () => {
               </div>
               <div className="divider"></div>
               {/* Your CTA on small screens */}
-              <div className="flex flex-col">{cta}</div>
+              <div className="flex gap-2 items-center">
+                {cta}
+                <ThemeToggle />
+              </div>
             </div>
           </div>
         </div>

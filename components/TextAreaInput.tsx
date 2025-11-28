@@ -3,10 +3,10 @@
 import { useRef, ChangeEvent, useState, useEffect } from "react";
 import { classNames } from "../utilities/style";
 import { TertiaryText } from "./TertiaryText";
-import SquareIconButton from "./SqaureIconButton";
-import { ArrowUpIcon } from "@heroicons/react/16/solid";
+import { LoadingIndicator } from "./LoadingIndicator";
 
 interface Props {
+  buttonText?: string;
   label?: string;
   placeholder: string;
   defaultValue?: string;
@@ -19,6 +19,7 @@ interface Props {
 }
 
 export default function TextAreaInput({
+  buttonText,
   label,
   placeholder,
   defaultValue,
@@ -56,7 +57,7 @@ export default function TextAreaInput({
 
   return (
     <div
-      className="w-full flex flex-col gap-2 border-2 border-base-content/50 rounded-md"
+      className="w-full flex flex-col gap-2 border border-base-content/80 rounded-md shadow-sm"
       onClick={(e) => {
         e.stopPropagation();
         e.preventDefault();
@@ -85,7 +86,7 @@ export default function TextAreaInput({
               onSubmit && onSubmit(localProductDescription);
             }
           }}
-          className="textarea text-base max-h-96 min-h-12 rounded-none resize-none bg-inherit text-white placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-0"
+          className="textarea textarea-primary text-base max-h-96 min-h-12 rounded-none resize-none bg-inherit placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-0"
         ></textarea>
 
         {(showCharacterCount || onSubmit) && (
@@ -93,7 +94,7 @@ export default function TextAreaInput({
             {showCharacterCount && (
               <p
                 className={classNames(
-                  "text-neutral-500 text-xs",
+                  "text-base-content/60 text-xs",
                   localProductDescription.length > characterLimit
                     ? "font-bold"
                     : undefined
@@ -112,19 +113,23 @@ export default function TextAreaInput({
               </p>
             )}
             {onSubmit && (
-              <SquareIconButton
+              <button
                 disabled={!canSubmit || loading}
-                icon={
-                  loading ? (
-                    <span className="loading loading-spinner loading-xs"></span>
-                  ) : (
-                    <ArrowUpIcon className="h-4 w-4" />
-                  )
-                }
+                className="btn btn-primary btn-sm"
                 onClick={() => {
                   onSubmit(localProductDescription);
                 }}
-              />
+              >
+                {loading ? (
+                  <div>
+                    <LoadingIndicator />
+                  </div>
+                ) : buttonText ? (
+                  buttonText
+                ) : (
+                  "Submit"
+                )}
+              </button>
             )}
           </div>
         )}

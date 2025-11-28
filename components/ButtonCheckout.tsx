@@ -11,6 +11,7 @@ import {
 import toast from "react-hot-toast";
 import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
 import LetsTalkModal from "./LetsTalkModal";
+import LightningSVG from "./svg/LightningSVG";
 
 interface Props {
   plan: PricingPlanI;
@@ -27,7 +28,7 @@ const getBuyButtonText = (plan: PricingPlanI) => {
     case PricingPlan.TARIFF_IMPACT_PRO:
       return `Go ${plan.name}!`;
     case PricingPlan.CLASSIFY_TEAM:
-      return "Request Demo";
+      return "Book Demo";
     default:
       return "Buy Now!";
   }
@@ -153,27 +154,19 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
   return (
     <>
       <button
-        className="btn bg-primary/80 hover:bg-white hover:text-primary text-white rounded-md w-full group"
+        className="btn btn-primary rounded-md w-full group"
         onClick={() => handlePayment()}
       >
         {isLoading ? (
           <span className="loading loading-spinner loading-xs"></span>
         ) : (
           plan.planIdentifier !== PricingPlan.CLASSIFY_TEAM && (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
+            <LightningSVG
+              color="base-100"
+              size={5}
               viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              className="w-5 h-5 fill-white group-hover:fill-primary group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-200"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"
-              />
-            </svg>
+              fill={true}
+            />
           )
         )}
         {getBuyButtonText(plan)}

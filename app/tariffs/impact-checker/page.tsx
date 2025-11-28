@@ -392,42 +392,6 @@ export default function Home() {
     }
   };
 
-  // const getPlanStyles = (purchase?: Purchase | null) => {
-  //   if (!purchase) {
-  //     if (isTrialUser) {
-  //       return "text-warning border-warning";
-  //     } else {
-  //       return "text-accent border-accent";
-  //     }
-  //   }
-
-  //   if (purchase.product_name === PricingPlan.TARIFF_IMPACT_STANDARD) {
-  //     return "text-primary border-primary";
-  //   }
-
-  //   if (purchase.product_name === PricingPlan.TARIFF_IMPACT_PRO) {
-  //     return "text-secondary border-secondary";
-  //   }
-  // };
-
-  // const getPlanText = (purchase?: Purchase | null) => {
-  //   if (!purchase) {
-  //     if (isTrialUser) {
-  //       return "Free Trial";
-  //     } else {
-  //       return "Starter";
-  //     }
-  //   }
-
-  //   if (purchase.product_name === PricingPlan.TARIFF_IMPACT_STANDARD) {
-  //     return "Standard";
-  //   }
-
-  //   if (purchase.product_name === PricingPlan.TARIFF_IMPACT_PRO) {
-  //     return "Pro";
-  //   }
-  // };
-
   if (loadingPage) {
     return (
       <main className="w-screen h-screen flex items-center justify-center bg-base-300">
@@ -437,14 +401,14 @@ export default function Home() {
   }
 
   return (
-    <main className="w-screen h-full flex flex-col bg-base-300 py-6">
+    <main className="w-screen h-full flex flex-col bg-base-100 py-6">
       <div className="w-full max-w-5xl mx-auto flex flex-col px-4 sm:px-6 gap-6 pb-6">
         {/* Header */}
         <div className="flex justify-between md:items-center flex-col-reverse md:flex-row gap-4">
           <div className="w-full flex flex-col">
             <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="flex gap-4 items-center">
-                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-100">
+                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">
                   Tariff Impact Checker
                 </h1>
                 {/* {!fetchingPurchases && (
@@ -466,7 +430,7 @@ export default function Home() {
                   PricingPlan.TARIFF_IMPACT_PRO) && (
                 <div className="w-full sm:w-auto justify-between sm:justify-normal flex items-center gap-4">
                   <button
-                    className="w-full sm:w-fit btn btn-sm btn-secondary"
+                    className="w-full sm:w-fit btn btn-sm btn-primary"
                     onClick={() => {
                       setShowPricingModal(true);
                       try {
@@ -496,7 +460,7 @@ export default function Home() {
                   <div className="flex items-center">
                     <PrimaryLabel value="HTS Codes" />
                     <button
-                      className="btn btn-circle btn-xs bg-base-content/30 hover:bg-base-content/70 text-white ml-2 text-sm flex items-center justify-center"
+                      className="btn btn-circle btn-xs bg-base-content/30 hover:bg-base-content/70 ml-2 text-sm flex items-center justify-center"
                       onClick={() => setShowHelpModal(true)}
                       title="Help with HTS code formats"
                     >
@@ -509,30 +473,28 @@ export default function Home() {
                 />
               </div>
 
-              {htsCodeSets.length > 0 && (
-                <HtsCodeSetDropdown
-                  htsCodeSets={htsCodeSets}
-                  onCreateSelected={() =>
-                    setSaveCodesModal({ show: true, codes: [] })
-                  }
-                  selectedIndex={
-                    selectedHtsCodeSetId
-                      ? htsCodeSets.findIndex(
-                          (set) => set.id === selectedHtsCodeSetId
-                        )
-                      : null
-                  }
-                  onSelectionChange={(index) => {
-                    setLastActionWasSubmit(false);
+              <HtsCodeSetDropdown
+                htsCodeSets={htsCodeSets}
+                onCreateSelected={() =>
+                  setSaveCodesModal({ show: true, codes: [] })
+                }
+                selectedIndex={
+                  selectedHtsCodeSetId
+                    ? htsCodeSets.findIndex(
+                        (set) => set.id === selectedHtsCodeSetId
+                      )
+                    : null
+                }
+                onSelectionChange={(index) => {
+                  setLastActionWasSubmit(false);
 
-                    if (index === null) {
-                      handleHtsCodeSetSelection(null);
-                    } else {
-                      handleHtsCodeSetSelection(htsCodeSets[index].id);
-                    }
-                  }}
-                />
-              )}
+                  if (index === null) {
+                    handleHtsCodeSetSelection(null);
+                  } else {
+                    handleHtsCodeSetSelection(htsCodeSets[index].id);
+                  }
+                }}
+              />
             </div>
             <TariffImpactCodesInput
               value={inputValue}
@@ -615,13 +577,13 @@ export default function Home() {
                       }}
                     >
                       {user
-                        ? "Save your Codes for Future Checks"
+                        ? "Save Codes"
                         : `Sign Up to Save Your ${results.length > 1 ? "codes" : "code"} for Future Checks`}
                     </button>
                   )}
               </div>
               <div
-                className={`border border-base-content/20 rounded-md ${
+                className={`border border-base-content/40 rounded-md ${
                   results.length > 0 ? "p-0" : "p-4"
                 }`}
               >

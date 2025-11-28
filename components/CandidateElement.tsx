@@ -103,11 +103,11 @@ export const CandidateElement = ({
       className={classNames(
         "flex w-full rounded-md bg-base-100 p-4 gap-4 transition-all border-2",
         isLevelSelection &&
-          "shadow-[inset_0_0_0_4px_oklch(var(--p))] border-transparent",
+          "shadow-[inset_0_0_0_2px_oklch(var(--p))] border-transparent border-none bg-primary/10",
         !isLevelSelection &&
-          `${disabled ? "cursor-not-allowed" : "hover:cursor-pointer"} hover:bg-base-300 ${disabled && "shadow-[inset_0_0_0_1px_oklch(var(--bc))]"}`,
+          `${disabled ? "cursor-not-allowed" : "hover:cursor-pointer"} hover:bg-primary/10 ${disabled && "shadow-[inset_0_0_0_1px_oklch(var(--bc))]"}`,
         disabled &&
-          "bg-base-200/70 cursor-not-allowed border-base-300/60 hover:bg-base-200/70"
+          "bg-base-200/70 cursor-not-allowed border-base-content hover:bg-base-200/70"
       )}
       onClick={() => {
         if (isLevelSelection || disabled) {
@@ -173,13 +173,10 @@ export const CandidateElement = ({
 
         <div className="flex flex-col gap-1">
           <div className="flex justify-between items-center">
-            <TertiaryLabel
-              value={htsno ? `${htsno}` : "Prequalifier"}
-              color={Color.NEUTRAL_CONTENT}
-            />
+            <TertiaryLabel value={htsno ? `${htsno}` : "Prequalifier"} />
             <div className="flex gap-2">
               <SquareIconButton
-                transparent
+                variant="ghost"
                 disabled={disabled}
                 tooltip={`Chapter ${chapter} Notes`}
                 icon={<DocumentTextIcon className="h-4 w-4" />}
@@ -193,7 +190,7 @@ export const CandidateElement = ({
               />
 
               <SquareIconButton
-                transparent
+                variant="ghost"
                 disabled={disabled}
                 icon={<MagnifyingGlassIcon className="h-4 w-4" />}
                 tooltip={`View Element`}
@@ -220,7 +217,8 @@ export const CandidateElement = ({
 
               {indent === "0" && (
                 <SquareIconButton
-                  transparent
+                  variant="ghost"
+                  color="error"
                   disabled={disabled}
                   icon={<TrashIcon className="h-4 w-4" />}
                   tooltip={`Remove`}
@@ -268,9 +266,9 @@ export const CandidateElement = ({
             </div>
           </div>
           {isLevelSelection ? (
-            <SecondaryLabel value={description} color={Color.WHITE} />
+            <SecondaryLabel value={description} />
           ) : (
-            <SecondaryText value={description} color={Color.WHITE} />
+            <SecondaryText value={description} />
           )}
         </div>
 
@@ -282,7 +280,7 @@ export const CandidateElement = ({
             </div>
 
             <div className="flex flex-col gap-2 ml-1">
-              <TertiaryText color={Color.WHITE} value={recommendedReason} />
+              <TertiaryText value={recommendedReason} />
 
               <p className="text-xs text-gray-400">
                 HTS Hero can make mistakes. Always exercise your own judgement

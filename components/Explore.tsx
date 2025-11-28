@@ -251,7 +251,7 @@ export const Explore = () => {
 
   const getSearchPlaceholder = () => {
     if (activeTab === ExploreTab.ELEMENTS) {
-      return "Search HTS code or description";
+      return "Search HTS Code or Description";
     } else if (activeTab === ExploreTab.NOTES) {
       return "Search all notes...";
     }
@@ -265,12 +265,12 @@ export const Explore = () => {
           <LoadingIndicator text={loadingText} />
         </div>
       ) : (
-        <div className="w-full h-full grow flex flex-col gap-4">
+        <div className="w-full h-full grow flex flex-col gap-2">
           <div className="flex gap-4 items-center justify-between flex-col md:flex-row">
             <div className="w-full flex gap-4 items-center justify-between md:justify-normal">
               <div className="flex flex-col -space-y-1">
                 <div className="flex gap-2 items-start">
-                  <h1 className="shrink-0 text-2xl md:text-3xl font-bold text-white">
+                  <h1 className="shrink-0 text-2xl md:text-3xl font-bold">
                     HTS {revision?.split("-")[0]}
                   </h1>
                   <div className="mb-0.5">
@@ -284,7 +284,7 @@ export const Explore = () => {
 
               <div
                 role="tablist"
-                className="tabs tabs-boxed tabs-sm md:tabs-md bg-primary/30 rounded-xl"
+                className="tabs tabs-boxed tabs-sm md:tabs-md rounded-xl"
               >
                 {ExploreTabs.map((tab) => (
                   <a
@@ -292,7 +292,7 @@ export const Explore = () => {
                     role="tab"
                     onClick={() => setActiveTab(tab.value)}
                     className={classNames(
-                      "tab transition-all duration-200 ease-in text-white font-semibold",
+                      "tab transition-all duration-200 ease-in font-semibold",
                       tab.value === activeTab && "tab-active"
                     )}
                   >
@@ -309,13 +309,13 @@ export const Explore = () => {
                   placeholder={getSearchPlaceholder()}
                   value={searchValue}
                   onChange={handleSearchChange}
-                  className="input input-bordered input-md h-10 w-full focus:ring-0 focus:outline-none pr-8"
+                  className="input input-bordered input-md h-10 w-full pr-8"
                 />
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
                   {searchValue && !searching && (
                     <button
                       onClick={handleClearSearch}
-                      className="btn btn-link p-1 btn-sm text-xs hover:text-secondary no-underline"
+                      className="btn btn-link p-1 btn-sm text-xs no-underline"
                       title="Clear search"
                     >
                       clear

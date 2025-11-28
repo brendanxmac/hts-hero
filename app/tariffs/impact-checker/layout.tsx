@@ -11,7 +11,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
   } = await supabase.auth.getUser();
 
   return (
-    <div className="h-screen flex flex-col max-h-svh bg-base-300 overflow-y-auto">
+    <div className="h-screen flex flex-col max-h-svh bg-base-100 overflow-y-auto">
       {user ? <AuthenticatedHeader /> : <UnauthenticatedHeader />}
       {children}
     </div>

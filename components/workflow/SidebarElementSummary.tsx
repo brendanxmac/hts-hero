@@ -21,26 +21,22 @@ export const SidebarElementSummary = ({
   return (
     <div
       className={classNames(
-        "w-full flex justify-between items-center rounded-md bg-base-100 border-2 border-neutral-content/40 px-4 py-2 hover:bg-base-300 hover:cursor-pointer",
-        isActive && "bg-primary border border-primary hover:bg-primary"
+        "w-full flex justify-between items-center rounded-md bg-base-100 border px-4 py-2 hover:cursor-pointer shadow-sm",
+        isActive
+          ? "bg-primary/10 border-primary"
+          : "border-base-content/80 hover:bg-primary/5"
       )}
       onClick={onClick}
     >
       <div className="w-full flex flex-col items-start justify-between gap-1">
         {htsno && (
           <div className="min-w-20 md:min-w-32">
-            <TertiaryLabel
-              value={htsno}
-              color={isActive ? Color.BLACK : Color.NEUTRAL_CONTENT}
-            />
+            <TertiaryLabel value={htsno} color={Color.BASE_CONTENT} />
           </div>
         )}
 
         <div className="w-full flex items-center justify-between gap-2">
-          <SecondaryText
-            value={description}
-            color={isActive ? Color.BLACK : Color.WHITE}
-          />
+          <SecondaryText value={description} color={Color.BASE_CONTENT} />
         </div>
       </div>
     </div>

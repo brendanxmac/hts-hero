@@ -2,11 +2,11 @@
 
 import Image from "next/image";
 import { Suspense, useState } from "react";
-import { useUser } from "../contexts/UserContext";
 import { AuthenticatedHeader } from "../components/AuthenticatedHeader";
-import UnauthenticatedHeader from "../components/UnauthenticatedHeader";
-import ProductCard, { ProductCardI } from "../components/ProductCard";
 import LetsTalkModal from "../components/LetsTalkModal";
+import ProductCard, { ProductCardI } from "../components/ProductCard";
+import UnauthenticatedHeader from "../components/UnauthenticatedHeader";
+import { useUser } from "../contexts/UserContext";
 import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
 
 const products: ProductCardI[] = [
@@ -68,7 +68,7 @@ export default function Home() {
       >
         {user ? <AuthenticatedHeader /> : <UnauthenticatedHeader />}
       </Suspense>
-      <div className="flex-1 bg-base-300 flex items-center justify-center p-4">
+      <div className="flex-1 flex items-center justify-center p-4">
         <div className="text-center max-w-7xl w-full">
           <div className="mb-8">
             {/* Logo and HTS Hero text */}
@@ -80,13 +80,14 @@ export default function Home() {
                 height={50}
                 className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 object-contain"
               />
-              <span className="px-2 sm:px-3 py-1 sm:py-2 text-white text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight">
+              <span className="px-2 sm:px-3 py-1 sm:py-2 text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight">
                 HTS Hero
               </span>
             </div>
 
-            <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-white font-semibold tracking-tight mb-8 md:mb-12">
-              Quicker Classifications. Effortless Tariffs
+            <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold tracking-tight mb-8 md:mb-12">
+              <span className="text-primary">Smarter</span> Classifications,{" "}
+              <span className="text-primary">Effortless</span> Tariffs
             </h1>
           </div>
 
@@ -106,19 +107,17 @@ export default function Home() {
           </div>
 
           {/* CTA Section */}
-          <div className="mt-8">
-            <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 rounded-2xl p-6 shadow-xl backdrop-blur-sm">
-              <h2 className="text-lg sm:text-xl font-semibold text-white mb-6">
-                Want quicker classifications or effortless tariffs for you or
-                your team?
-              </h2>
-              <button
-                onClick={handleBookDemoClick}
-                className="btn btn-primary btn-wide"
-              >
-                Book Demo
-              </button>
-            </div>
+          <div className="mt-8 py-6 px-14 w-fit mx-auto bg-secondary/5 border border-secondary/20 rounded-2xl shadow-xl">
+            <h2 className="text-lg sm:text-xl font-semibold mb-6">
+              Want quicker classifications & effortless tariffs for you or your
+              team?
+            </h2>
+            <button
+              onClick={handleBookDemoClick}
+              className="btn btn-secondary btn-wide"
+            >
+              Book Demo
+            </button>
           </div>
         </div>
       </div>
@@ -126,7 +125,6 @@ export default function Home() {
       <LetsTalkModal
         isOpen={isBookDemoModalOpen}
         onClose={() => setIsBookDemoModalOpen(false)}
-        showProductSelector={true}
       />
     </div>
   );

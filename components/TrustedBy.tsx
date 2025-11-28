@@ -13,7 +13,7 @@ const companies = [
 // Company name component
 const CompanyName = ({ company }: { company: (typeof companies)[0] }) => (
   <div className="flex items-center justify-center">
-    <div className="text-neutral-400 text-center border border-neutral-500/50 rounded-md whitespace-nowrap px-3 py-1.5 transition-all duration-300 cursor-default">
+    <div className="text-base-content/80 font-medium text-center border border-base-content/20 bg-base-200/50 rounded-lg whitespace-nowrap px-4 py-2 transition-all duration-300 cursor-default hover:border-base-content/40 hover:bg-base-200">
       {company}
     </div>
   </div>
@@ -46,11 +46,11 @@ const IndividualTestimonial = ({
 }: {
   testimonial: (typeof individualTestimonials)[0];
 }) => (
-  <div className="flex flex-col items-center text-center w-full sm:flex-1 sm:max-w-sm lg:max-w-md bg-neutral-800/40 backdrop-blur-sm rounded-xl p-4 border border-neutral-500/50 transition-all duration-300">
-    <blockquote className="sm:text-lg text-gray-100 mb-3">
+  <div className="flex flex-col items-center text-center w-full sm:flex-1 sm:max-w-sm lg:max-w-md bg-base-200/30 backdrop-blur-sm rounded-xl p-6 border border-base-content/20 transition-all duration-300 hover:border-base-content/30 hover:shadow-lg">
+    <blockquote className="sm:text-lg text-base text-base-content/90 mb-4 font-bold leading-relaxed">
       &quot;{testimonial.quote}&quot;
     </blockquote>
-    <div className="text-neutral-400 text-xs font-medium">
+    <div className="text-primary/80 text-xs font-semibold uppercase tracking-wide">
       {testimonial.role}, {testimonial.company}
     </div>
   </div>
@@ -62,17 +62,20 @@ interface Props {
 
 const TrustedBy = ({ showTestimonials = true }: Props) => {
   return (
-    <section className="py-8 md:py-14 bg-base-300">
+    <section className="py-8 md:py-14 bg-base-100">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <div className="text-center flex flex-col gap-6">
-          <div className="flex flex-col gap-2">
-            <h2 className="text-lg sm:text-2xl md:text-3xl font-bold text-white">
-              Trusted by Industry Leaders
+          <div className="flex flex-col gap-3">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">
+              Trusted by{" "}
+              <span className="underline decoration-primary">
+                Industry Leaders
+              </span>
             </h2>
-            <p className="text-sm sm:text-base text-neutral-300 max-w-7xl mx-auto">
-              Join hundreds of customs brokers & importers who use HTS Hero to
-              make tariffs & classification a breeze
+            <p className="text-base sm:text-lg max-w-7xl mx-auto leading-relaxed">
+              Join hundreds of trade professionals who use HTS Hero to make
+              tariffs & classification a breeze
             </p>
           </div>
           <div className="relative overflow-hidden">
@@ -83,23 +86,22 @@ const TrustedBy = ({ showTestimonials = true }: Props) => {
               ))}
             </div>
           </div>
-        </div>
-
-        {/* Individual Testimonials Section - Full width below other content */}
-        {showTestimonials && (
-          <section className="w-full py-10">
-            <div className="max-w-7xl mx-auto">
-              <div className="flex flex-wrap justify-center items-stretch gap-6 md:gap-8">
-                {individualTestimonials.map((testimonial, index) => (
-                  <IndividualTestimonial
-                    key={index}
-                    testimonial={testimonial}
-                  />
-                ))}
+          {/* Individual Testimonials Section - Full width below other content */}
+          {showTestimonials && (
+            <section className="w-full">
+              <div className="max-w-7xl mx-auto">
+                <div className="flex flex-wrap justify-center items-stretch gap-6 md:gap-8">
+                  {individualTestimonials.map((testimonial, index) => (
+                    <IndividualTestimonial
+                      key={index}
+                      testimonial={testimonial}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
-          </section>
-        )}
+            </section>
+          )}
+        </div>
       </div>
 
       <style jsx>{`

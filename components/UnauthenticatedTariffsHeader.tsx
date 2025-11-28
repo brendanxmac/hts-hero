@@ -6,6 +6,7 @@ import Image from "next/image";
 import logo from "@/app/logo.svg";
 import config from "@/config";
 import { usePathname, useSearchParams } from "next/navigation";
+import ThemeToggle from "./ThemeToggle";
 
 // A header with a logo on the left, links in the center (like Pricing, etc...), and a CTA (like Get Started or Login) on the right.
 // The header is responsive, and on mobile, the links are hidden behind a burger button.
@@ -46,9 +47,7 @@ const UnauthenticatedTariffsHeader = () => {
               width={32}
               height={32}
             />
-            <span className="text-white font-extrabold text-lg">
-              {config.appName}
-            </span>
+            <span className="font-extrabold text-lg">{config.appName}</span>
             {/* <span className="bg-white px-2 py-1 rounded-md text-black font-semibold text-xs">
               Beta
             </span> */}
@@ -109,7 +108,7 @@ const UnauthenticatedTariffsHeader = () => {
 
         <div className="hidden sm:flex items-center gap-2">
           {/* Your links on large screens */}
-          <div className="hidden sm:flex sm:justify-center sm:gap-4 sm:items-center">
+          <div className="hidden sm:flex sm:justify-center sm:gap-2 sm:items-center">
             {links.map((link) => (
               <Link
                 href={link.href}
@@ -119,6 +118,7 @@ const UnauthenticatedTariffsHeader = () => {
                 {link.label}
               </Link>
             ))}
+            <ThemeToggle />
           </div>
         </div>
       </nav>
@@ -181,6 +181,9 @@ const UnauthenticatedTariffsHeader = () => {
                 </div>
               </div>
               <div className="divider"></div>
+              <div className="flex gap-2 items-center justify-end">
+                <ThemeToggle />
+              </div>
             </div>
           </div>
         </div>

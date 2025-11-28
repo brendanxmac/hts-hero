@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Color } from "../enums/style";
 import { UserProfile, UserRole } from "../libs/supabase/user";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { TertiaryLabel } from "./TertiaryLabel";
@@ -127,7 +126,7 @@ export const TeamSettings = ({ user, team }: Props) => {
       {/* Team Details Section */}
       <div className="flex flex-col gap-4">
         <div className="flex gap-2 justify-between items-center h-8">
-          <PrimaryLabel value="Team Settings" color={Color.WHITE} />
+          <PrimaryLabel value="Team Settings" />
           {hasChanges && (
             <button
               onClick={handleSaveChanges}
@@ -141,7 +140,7 @@ export const TeamSettings = ({ user, team }: Props) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Name Section */}
           <div className="flex flex-col gap-2">
-            <TertiaryLabel value="Name" color={Color.WHITE} />
+            <TertiaryLabel value="Name" />
             <input
               type="text"
               placeholder="Enter team name"
@@ -154,7 +153,7 @@ export const TeamSettings = ({ user, team }: Props) => {
 
           {/* Company Address Section */}
           <div className="w-full flex flex-col gap-2">
-            <TertiaryLabel value="Address" color={Color.WHITE} />
+            <TertiaryLabel value="Address" />
             <input
               type="text"
               placeholder="Enter your company address"
@@ -170,7 +169,7 @@ export const TeamSettings = ({ user, team }: Props) => {
       {/* Logo Section */}
       <div className="w-full flex flex-col gap-4">
         <div className="flex flex-col">
-          <SecondaryLabel value="Logo" color={Color.WHITE} />
+          <SecondaryLabel value="Logo" />
           <TertiaryText value="This logo will be displayed on classification advisory reports" />
         </div>
         <div className="w-full flex items-center gap-4">
@@ -183,10 +182,7 @@ export const TeamSettings = ({ user, team }: Props) => {
       {/* Company Disclaimer Section */}
       <div className="w-full flex flex-col gap-4">
         <div className="flex flex-col">
-          <SecondaryLabel
-            value="Classification Disclaimer"
-            color={Color.WHITE}
-          />
+          <SecondaryLabel value="Classification Disclaimer" />
           <TertiaryText value="This disclaimer will be displayed on classification advisory reports" />
         </div>
         <div className="w-full flex flex-col gap-3">
@@ -205,13 +201,13 @@ export const TeamSettings = ({ user, team }: Props) => {
       <div className="w-full flex flex-col gap-4">
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
-            <SecondaryLabel value="Importers" color={Color.WHITE} />
+            <SecondaryLabel value="Importers" />
             <div
               className="tooltip tooltip-bottom"
               data-tip="This feature is experimental"
             >
-              <div className="rounded-sm bg-accent p-0.5 text-xs text-base-300">
-                <BeakerIcon className="w-4 h-4" />
+              <div className="rounded-sm bg-primary p-0.5 text-xs text-base-300">
+                <BeakerIcon className="w-4 h-4 text-base-100" />
               </div>
             </div>
           </div>

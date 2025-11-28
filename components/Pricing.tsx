@@ -71,7 +71,7 @@ export const getFeatureIcon = (feature: PricingFeatureI) => {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 20 20"
       fill="currentColor"
-      className="w-[18px] h-[18px] opacity-80 shrink-0"
+      className="w-[18px] h-[18px] text-primary shrink-0"
     >
       <path
         fillRule="evenodd"
@@ -92,21 +92,15 @@ const getPricingPlans = (customerType: AboutPage) => {
 
 const getPricingHeadline = () => {
   return (
-    <div className="flex flex-col gap-4 lg:gap-6">
-      <div className="flex flex-col gap-2">
-        <h2 className="text-white font-black text-3xl md:text-4xl lg:text-5xl max-w-4xl mx-auto leading-relaxed md:[&>span]:inline-block md:[&>span]:mb-2">
-          <span className="text-yellow-400">Quicker</span> Classifications{", "}
-          <span className="text-yellow-400">Effortless</span> Tariffs{", "}
-          <span className="text-yellow-400">Happier</span> Clients
+    <div className="flex flex-col gap-4 lg:gap-6 md:my-2">
+      <div className="flex flex-col gap-1">
+        <h2 className="font-black text-3xl md:text-4xl lg:text-5xl max-w-5xl mx-auto md:[&>span]:inline-block md:[&>span]:mb-2">
+          <span className="underline decoration-primary">Smarter</span>{" "}
+          Classifications,{" "}
+          <span className="underline decoration-primary">Effortless</span>{" "}
+          Tariffs
         </h2>
-        {/* <h2 className="text-white font-black text-3xl md:text-4xl lg:text-5xl max-w-4xl mx-auto tracking-relaxed">
-          <span className="text-yellow-400">Effortless</span> Tariffs
-        </h2>
-        <h2 className="text-white font-black text-3xl md:text-4xl lg:text-5xl max-w-4xl mx-auto tracking-relaxed">
-          <span className="text-yellow-400">Happier</span> Clients
-        </h2> */}
       </div>
-      {/* <h3 className="lg:text-lg">For less than $3 per day!</h3> */}
     </div>
   );
 };
@@ -125,13 +119,13 @@ const Pricing = ({ customerType }: PricingProps) => {
   };
 
   return (
-    <section className="bg-base-300 overflow-hidden">
+    <section className="bg-gradient-to-t from-primary/70 via-primary/10 to-transparent overflow-hidden">
       <div className="py-16 px-8 max-w-7xl mx-auto" id="pricing">
         <div className="flex flex-col text-center w-full">
-          <p className="font-medium text-gray-400 mb-8">Pricing</p>
+          <p className="font-medium text-base-content mb-4">Pricing</p>
           {getPricingHeadline()}
         </div>
-        <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8 text-white mt-10">
+        <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8 text-base-content mt-10">
           {getPricingPlans(customerType).map((plan, index) => {
             const defaultTierIndex = plan.prices.length - 1;
             const currentTierIndex =
@@ -147,30 +141,24 @@ const Pricing = ({ customerType }: PricingProps) => {
               <div
                 key={index}
                 className={classNames(
-                  "relative w-full max-w-lg",
-                  plan.isFeatured && "border-2 border-primary rounded-lg",
-                  !plan.isFeatured &&
-                    "border-2 border-base-content/20 rounded-lg"
+                  "relative w-full max-w-lg border-2 border-base-content/10 rounded-lg shadow-md",
+                  plan.isFeatured && "border-primary rounded-lg"
+                  // !plan.isFeatured &&
+                  //   "border-2 border-base-content/20 rounded-lg"
                 )}
               >
                 {plan.isFeatured && (
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
                     <span
-                      className={`badge text-xs text-black font-semibold border-0 bg-primary`}
+                      className={`badge text-xs text-base-100 font-semibold border-0 bg-primary`}
                     >
                       Best Value
                     </span>
                   </div>
                 )}
 
-                {plan.isFeatured && (
-                  <div
-                    className={`absolute -inset-[1px] rounded-[9px] bg-primary`}
-                  ></div>
-                )}
-
                 <div
-                  className={`relative flex flex-col h-full gap-4 lg:gap-6 bg-base-300 p-6 rounded-lg ${
+                  className={`relative flex flex-col h-full gap-4 lg:gap-6 bg-base-100 p-6 rounded-lg ${
                     plan.isCompetitor && "bg-red-500/20"
                   }`}
                 >
@@ -207,7 +195,7 @@ const Pricing = ({ customerType }: PricingProps) => {
                       ) : (
                         <div className="flex items-end">
                           <p
-                            className={`${plan.isCompetitor ? "text-red-600" : "text-white"} text-5xl text-base-content tracking-tight font-extrabold`}
+                            className={`${plan.isCompetitor ? "text-error" : "text-base-content"} text-5xl tracking-tight font-extrabold`}
                           >
                             ${currentPrice}
                           </p>
@@ -227,7 +215,7 @@ const Pricing = ({ customerType }: PricingProps) => {
                         onChange={(e) =>
                           handleTierChange(index, parseInt(e.target.value))
                         }
-                        className="select select-bordered select-sm bg-base-100 text-white font-semibold"
+                        className="select select-bordered select-sm bg-base-100 text-base-content font-semibold"
                       >
                         {plan.priceTiers!.map((tier, i) => (
                           <option key={i} value={i}>
@@ -251,12 +239,12 @@ const Pricing = ({ customerType }: PricingProps) => {
                             >
                               <p>{feature.name} </p>
                               {(feature.comingSoon || feature.roadmap) && (
-                                <span className="bg-neutral-700 px-2 py-1 rounded-md text-stone-300 font-semibold text-xs">
+                                <span className="bg-base-200 px-2 py-1 rounded-md text-base-content/70 font-semibold text-xs">
                                   {getFeatureSupportingLabel(feature)}
                                 </span>
                               )}
                             </div>
-                            <p className="text-xs text-gray-400">
+                            <p className="text-xs text-base-content/60">
                               {feature.details}
                             </p>
                           </div>
@@ -275,21 +263,16 @@ const Pricing = ({ customerType }: PricingProps) => {
           })}
         </div>
 
-        <div className="mt-10 flex flex-col gap-2 justify-center text-center items-center bg-base-100 p-4 max-w-2xl mx-auto rounded-lg border-2 border-base-content/20">
+        <div className="mt-10 flex flex-col gap-2 justify-center text-center items-center p-4 max-w-4xl mx-auto bg-base-100 rounded-full border-2 border-base-content/10">
           <div className="flex gap-2 items-center">
-            <ShieldCheckIcon className="w-6 h-6 text-yellow-400" />
-            <h3 className="text-lg sm:text-2xl font-bold text-yellow-400">
+            <ShieldCheckIcon className="w-6 h-6 text-primary" />
+            <h3 className="text-lg sm:text-xl font-semibold text-primary">
               Smarter Classifications Guarantee
             </h3>
           </div>
-          {/* <p className="text-white">
-            We know trying a new tool can feel risky, so here&apos;s our
-            promise:
-          </p> */}
-          <p className="text-white font-medium text-sm sm:text-lg">
-            If you complete onboarding and 20 classifications and are still
-            unsatisfied with your purchase after 30 days, we&apos;ll give you a
-            full refund!
+          <p className="font-medium text-sm sm:text-base">
+            Get a full refund if you complete 20 classifications and are
+            unsatisfied with your purchase after 30 days!
           </p>
         </div>
       </div>
