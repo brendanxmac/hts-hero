@@ -13,7 +13,6 @@ interface ClassifyTeamModalProps {
   onClose: () => void;
   productType?: ProductType;
   showProductSelector?: boolean;
-  isTeamRequest?: boolean;
 }
 
 const LetsTalkModal = ({
@@ -21,7 +20,6 @@ const LetsTalkModal = ({
   onClose,
   productType = "both",
   showProductSelector = false,
-  isTeamRequest = false,
 }: ClassifyTeamModalProps) => {
   const { user } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,16 +45,6 @@ const LetsTalkModal = ({
       setSelectedProduct(productType);
     }
   }, [isOpen, user, productType]);
-
-  const getProductName = () => {
-    if (showProductSelector) {
-      if (selectedProduct === "both") {
-        return "Classify Pro & Tariff Pro";
-      }
-      return selectedProduct === "classify" ? "Classify Pro" : "Tariff Pro";
-    }
-    return productType === "classify" ? "Classify Pro" : "Tariff Pro";
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

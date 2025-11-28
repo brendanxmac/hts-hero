@@ -1,11 +1,8 @@
 import { useClassification } from "../../contexts/ClassificationContext";
 import { WorkflowStep } from "../../enums/hts";
-import { Color } from "../../enums/style";
 import { TertiaryText } from "../TertiaryText";
 import TextAreaInput from "../TextAreaInput";
 import { useEffect, useState } from "react";
-import { TertiaryLabel } from "../TertiaryLabel";
-import { SecondaryLabel } from "../SecondaryLabel";
 import {
   Product,
   userHasActivePurchaseForProduct,

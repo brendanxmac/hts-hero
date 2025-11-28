@@ -1,7 +1,6 @@
 import type { JSX } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import BadgeCategory from "./BadgeCategory";
 import Avatar from "./Avatar";
 import { ArticleI } from "../content";
 

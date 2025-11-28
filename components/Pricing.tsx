@@ -30,6 +30,7 @@ export const getFeatureSupportingLabel = (feature: PricingFeatureI) => {
 
 export const getFeatureIcon = (feature: PricingFeatureI) => {
   if (feature.comingSoon) {
+    d;
     return (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -71,7 +72,7 @@ export const getFeatureIcon = (feature: PricingFeatureI) => {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 20 20"
       fill="currentColor"
-      className="w-[18px] h-[18px] opacity-80 shrink-0"
+      className="w-[18px] h-[18px] text-primary shrink-0"
     >
       <path
         fillRule="evenodd"

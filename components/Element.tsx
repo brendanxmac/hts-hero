@@ -33,7 +33,6 @@ import { PrimaryLabel } from "./PrimaryLabel";
 import Link from "next/link";
 import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import { fetchUser, updateUserProfile } from "../libs/supabase/user";
-import { SecondaryText } from "./SecondaryText";
 
 interface Props {
   summaryOnly?: boolean;

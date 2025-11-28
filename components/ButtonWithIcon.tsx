@@ -1,5 +1,3 @@
-import { DaisyUIColor } from "./svg/SVG";
-
 interface Props {
   icon: JSX.Element;
   label: string;

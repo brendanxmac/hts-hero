@@ -9,7 +9,6 @@ import { LoadingIndicator } from "./LoadingIndicator";
 import { Element } from "./Element";
 import {
   fetchImportersForUser,
-  createImporter,
   fetchImportersForTeam,
 } from "../libs/supabase/importers";
 import { ClassificationStatus, Importer } from "../interfaces/hts";
@@ -45,8 +44,6 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
   const [importers, setImporters] = useState<Importer[]>([]);
   const [selectedImporterId, setSelectedImporterId] = useState<string>("");
   const [isLoadingImporters, setIsLoadingImporters] = useState(true);
-  const [newImporter, setNewImporter] = useState("");
-  const [isCreatingImporter, setIsCreatingImporter] = useState(false);
 
   // Fetch classifiers and importers on component mount
   useEffect(() => {
@@ -80,29 +77,6 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
       }, 1500);
     }
   }, [copied]);
-
-  const handleAddImporter = async () => {
-    if (!newImporter.trim()) return;
-
-    setIsCreatingImporter(true);
-    try {
-      const newImporterData = await createImporter(newImporter.trim());
-      setImporters((prev) => [...prev, newImporterData]);
-      setNewImporter("");
-      // Automatically select the newly created importer
-      setSelectedImporterId(newImporterData.id);
-      updateClassification(
-        classificationId,
-        undefined,
-        newImporterData.id,
-        undefined
-      );
-    } catch (error) {
-      console.error("Failed to create importer:", error);
-    } finally {
-      setIsCreatingImporter(false);
-    }
-  };
 
   return (
     <div className="h-full w-full max-w-6xl mx-auto flex flex-col">

@@ -1,9 +1,7 @@
 import { ChevronRightIcon } from "@heroicons/react/16/solid";
 import { Navigatable, HtsSectionAndChapterBase } from "../interfaces/hts";
-import { SecondaryText } from "./SecondaryText";
 import { NavigatableElement } from "./Elements";
 import { Color } from "../enums/style";
-import { TertiaryLabel } from "./TertiaryLabel";
 import { SecondaryLabel } from "./SecondaryLabel";
 import { TertiaryText } from "./TertiaryText";
 

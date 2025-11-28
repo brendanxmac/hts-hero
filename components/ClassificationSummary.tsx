@@ -16,7 +16,6 @@ import { CheckCircleIcon } from "@heroicons/react/20/solid";
 import { SecondaryLabel } from "./SecondaryLabel";
 import { DocumentTextIcon, FlagIcon } from "@heroicons/react/24/solid";
 import { TagIcon, UserIcon } from "@heroicons/react/16/solid";
-import SquareIconButton from "./SqaureIconButton";
 
 interface Props {
   classificationRecord: ClassificationRecord;

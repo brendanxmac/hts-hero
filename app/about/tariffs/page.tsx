@@ -2,7 +2,6 @@
 
 import { Suspense } from "react";
 import ClassifierFooter from "@/components/ClassifierFooter";
-import WithWithout, { Task } from "@/components/WithWithout";
 import TariffAboutHeader from "@/components/TariffAboutHeader";
 import { PendingTariffsList } from "../../../components/UpcomingTariffsList";
 import TariffImpactPricing from "../../../components/TariffImpactPricing";
@@ -10,56 +9,6 @@ import TrustedBy from "../../../components/TrustedBy";
 import TariffFeaturesGrid from "../../../components/TariffHero";
 import TariffFeaturesListicle from "../../../components/TariffFeaturesListicle";
 import ProductDemoSection from "../../../components/ProductDemoSection";
-
-const withoutTariffImpact: Task[] = [
-  {
-    title: "Tracking & Understanding Changes",
-    time: "📚",
-  },
-  {
-    title: "Finding Out What's Affected",
-    time: "🔎",
-  },
-  {
-    title: "Checking Imports",
-    time: "😵‍💫",
-  },
-  {
-    title: "Finding Latest Tariffs & Exemptions",
-    time: "🙃",
-  },
-  {
-    title: "Applying Current Tariff Stacking Rules",
-    time: "😫",
-  },
-];
-
-// const withTariffImpact: Task[] = [
-//   {
-//     title: "Get Notified When New Tariffs Affect your Imports",
-//     time: "0 min",
-//   },
-//   {
-//     title: "Instantly see which imports are affected",
-//     time: "0 min",
-//   },
-//   {
-//     title: "Save lists of codes for future checks",
-//     time: "0 min",
-//   },
-//   {
-//     title: "Find all Tariffs & Exemptions",
-//     time: "0 min",
-//   },
-//   {
-//     title: "Applies Stacking Rules Automatically",
-//     time: "0 min",
-//   },
-//   {
-//     title: "Finds Rates for Every Country",
-//     time: "0 min",
-//   },
-// ];
 
 export default function Home() {
   return (

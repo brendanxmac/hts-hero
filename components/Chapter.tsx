@@ -31,11 +31,11 @@ export const Chapter = ({ chapter }: Props) => {
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
 
   // Find the section that contains this chapter
-  const parentSection = useMemo(() => {
-    return sections.find((section) =>
-      section.chapters.some((ch) => ch.number === chapter.number)
-    );
-  }, [sections, chapter.number]);
+  // const parentSection = useMemo(() => {
+  //   return sections.find((section) =>
+  //     section.chapters.some((ch) => ch.number === chapter.number)
+  //   );
+  // }, [sections, chapter.number]);
 
   const chapterElements = getElementsInChapter(htsElements, number);
   const elementsAtIndentLevel = chapterElements

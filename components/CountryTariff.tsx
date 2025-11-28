@@ -658,7 +658,7 @@ export const CountryTariff = ({
                   </svg>
                   <div className="flex flex-col gap-2">
                     <h4 className="font-bold text-error">
-                      Error Parsing {tariffElement.htsno}'s Base Tariff(s)
+                      Error Parsing {tariffElement.htsno}&apos;s Base Tariff(s)
                     </h4>
                     <ul className="flex flex-col gap-1 list-disc list-inside">
                       {baseTariffs

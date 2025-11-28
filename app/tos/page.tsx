@@ -25,7 +25,7 @@ import config from "@/config";
 
 // Please write a simple Terms & Services for my site. Add the current date. Do not add or explain your reasoning.
 
-const neww = `Hive Works LLC (Wyoming)
+const current = `Hive Works LLC (Wyoming)
 Last Updated: November 25, 2025
 
 Welcome to HTS Hero, a software platform operated by Hive Works LLC, a Wyoming limited liability company (“Provider,” “we,” “us,” or “our”).
@@ -161,72 +161,6 @@ Hive Works LLC
 Email: support@htshero.com
 `;
 
-const current = `Effective Date: June 18, 2025
-
-Welcome to HTS Hero ("we," "us," or "our"). By accessing and using our website (https://htshero.com), you agree to comply with the following Terms & Services. Please read these terms carefully.
-
-1. Use of Service
-
-HTS Hero provides tools that simplify tariffs and HTS classification.
-Users are welcome to use the platform and the assitance and information it provides at their discretion.
-HTS Hero does not guarantee the accuracy or completeness of the results provided.
-Any analysis or suggestions provided are for informational purposes only and should be verified by the user before making any decisions.
-We do not classify anything for you, we provide you with information that may help you with your own classifications.
-
-
-2. Payments
-
-- All purchases are final and cannot be reimbursed or refunded.
-- If you believe you have encountered an error, please contact us at support@htshero.com.
-- Please ensure you review your purchase before completing the transaction.
-
-
-3. User Responsibilities
-
-By using our website, you agree to:
-- Provide accurate information when creating an account or making a purchase (if applicable).
-- Refrain from any unlawful use of our services.
-- Use all information at your own discretion, and make all decisions based on your own research and judgement
-
-
-4. Data Collection
-
-We collect and process personal and non-personal data as outlined in our [Privacy Policy](https://htshero.com/privacy-policy). This includes:
-- Personal Information: name and email.
-- Purchase Information: What was purchased & when.
-- Non-Personal Information via browser cookies
-None of this data is shared with third parties.
-
-5. Ownership of Content
-
-HTS Hero retains ownership over all content and materials it creates and provides on the platform.
-This includes all tools, their outputs, and any proprietary algorithms, systems, or databases used to generate results.
-All content provided by HTS Hero, including classification suggestions, remains the intellectual property of HTS Hero.
-
-Your Use Rights:
-Users may use the suggestions at their discretion for their personal or business purposes, such as applying an HTS code to a product.
-This does not grant users ownership of the platform, its systems, or its methodologies.
-
-Limits of Use:
-
-Users may not:
-- Reproduce, redistribute, or repurpose the HTS Hero platform, its data, or its content for commercial use without explicit permission from HTS Hero.
-- Reverse-engineer, decompile, or attempt to extract proprietary elements of the platform.
-
-
-6. Updates to Terms
-We reserve the right to update these Terms & Services at any time. If changes are made, users will be notified via the email address provided.
-
-
-7. Governing Law
-These Terms & Services are governed by the laws of the United States of America. Any disputes arising from these terms will be resolved under U.S. jurisdiction.
-
-
-8. Contact Us
-If you have any questions about these Terms & Services, please contact us at: support@htshero.com
-
-Thank you for using HTS Hero.`;
-
 export const metadata = getSEOTags({
   title: `Terms of Service | ${config.appName}`,
   canonicalUrlRelative: "/tos",
@@ -259,7 +193,7 @@ const TOS = () => {
           className="leading-relaxed whitespace-pre-wrap"
           style={{ fontFamily: "sans-serif" }}
         >
-          {neww}
+          {current}
         </pre>
       </div>
     </main>

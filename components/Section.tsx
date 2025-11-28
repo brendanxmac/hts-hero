@@ -6,13 +6,12 @@ import { ChapterSummary } from "./ChapterSummary";
 import { classNames } from "../utilities/style";
 import PDF from "./PDF";
 import { NavigatableElement } from "./Elements";
-import { SecondaryLabel } from "./SecondaryLabel";
 import { TertiaryText } from "./TertiaryText";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { Color } from "../enums/style";
 import { ButtonWithIcon } from "./ButtonWithIcon";
 import { SupabaseBuckets } from "../constants/supabase";
-import { TertiaryLabel } from "./TertiaryLabel";
+
 interface Props {
   section: HtsSection;
   breadcrumbs: NavigatableElement[];

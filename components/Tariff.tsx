@@ -9,8 +9,6 @@ import {
 import { classNames } from "../utilities/style";
 import { TariffColumn } from "../enums/tariff";
 import Link from "next/link";
-import { TertiaryLabel } from "./TertiaryLabel";
-import { Color } from "../enums/style";
 
 interface Props {
   showInactive: boolean;

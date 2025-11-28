@@ -1,10 +1,7 @@
 import { HtsElement } from "../interfaces/hts";
 import { BaseTariffI } from "../libs/hts";
 import { classNames } from "../utilities/style";
-import { TertiaryLabel } from "./TertiaryLabel";
 import { SpecialPrograms } from "./SpecialPrograms";
-import { TertiaryText } from "./TertiaryText";
-import { Color } from "../enums/style";
 
 interface Props {
   index: number;
