@@ -89,7 +89,10 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
 
     setIsCreatingImporter(true);
     try {
-      const newImporterData = await createImporter(newImporter.trim());
+      const newImporterData = await createImporter(
+        newImporter.trim(),
+        userProfile.team_id || undefined
+      );
       setImporters((prev) => [...prev, newImporterData]);
       setNewImporter("");
       // Automatically select the newly created importer
