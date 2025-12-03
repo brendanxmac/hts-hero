@@ -100,6 +100,14 @@ module.exports = {
       // "dim",
       // "nord",
       // "sunset",
+      {
+        light: {
+          ...require("daisyui/src/theming/themes")["light"],
+          "primary-content": "#FFFFFF", // text on primary button
+          "secondary-content": "#FFFFFF",
+          "accent-content": "#FFFFFF",
+        },
+      },
     ],
     darkTheme: "dark",
     base: true,
