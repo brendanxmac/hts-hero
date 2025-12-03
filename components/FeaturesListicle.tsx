@@ -14,7 +14,7 @@ const features: {
   name: string;
   points: FeaturePoint[];
   svg: JSX.Element;
-  image: { src: string; alt: string };
+  media: { src: string; alt: string; type: "image" | "video" };
 }[] = [
   {
     name: "Quickly See Candidates for Any Product",
@@ -38,7 +38,11 @@ const features: {
       },
     ],
     svg: <LightningSVG color="primary" size={8} viewBox="0 0 24 24" />,
-    image: { src: "/candidates.png", alt: "Candidates HS headings" },
+    media: {
+      src: "/candidates.png",
+      alt: "Candidates HS headings",
+      type: "image",
+    },
   },
   {
     name: "Get GRI Analysis of All Candidates",
@@ -60,9 +64,10 @@ const features: {
       },
     ],
     svg: <LightBulbSVG color="primary" size={8} viewBox="0 0 24 24" />,
-    image: {
+    media: {
       src: "/analysis.png",
       alt: "Analyze candidates and choose confidently",
+      type: "image",
     },
   },
   {
@@ -81,7 +86,7 @@ const features: {
       },
     ],
     svg: <ScaleSVG color="primary" size={8} viewBox="0 0 24 24" />,
-    image: { src: "/cross.png", alt: "Relevant CROSS rulings" },
+    media: { src: "/cross.png", alt: "Relevant CROSS rulings", type: "image" },
   },
   {
     name: "Generate Client-Ready Advisory Reports",
@@ -103,9 +108,10 @@ const features: {
       },
     ],
     svg: <DocumentTextSVG color="primary" size={8} viewBox="0 0 24 24" />,
-    image: {
+    media: {
       src: "/report.png",
       alt: "One-click classification reports",
+      type: "image",
     },
   },
   {
@@ -113,6 +119,10 @@ const features: {
     points: [
       {
         point: "Discover ways to save with exemptions & trade programs",
+      },
+      {
+        point:
+          "Get notified when any of your imports are affected by new tariffs",
       },
       {
         point: "Constantly updated with the latest tariff annoucements",
@@ -124,9 +134,10 @@ const features: {
       },
     ],
     svg: <PuzzlePieceSVG color="primary" size={8} viewBox="0 0 24 24" />,
-    image: {
-      src: "/tariffs.png",
+    media: {
+      src: "/tariffs-hero.mp4",
       alt: "Tariff insights and savings",
+      type: "video",
     },
   },
   {
@@ -148,9 +159,10 @@ const features: {
       },
     ],
     svg: <UsersSVG color="primary" size={8} viewBox="0 0 24 24" />,
-    image: {
+    media: {
       src: "/teams.png",
       alt: "One-click classification reports",
+      type: "image",
     },
   },
 ];
@@ -194,13 +206,25 @@ const FeaturesListicle = () => {
                     className={`order-1 ${mediaLeft ? "lg:order-1" : "lg:order-2"}`}
                   >
                     <div className="w-full h-full flex justify-center p-4 bg-gradient-to-br from-primary/80 via-primary/50 to-transparent rounded-2xl md:rounded-3xl border-2 border-primary/20">
-                      <Image
-                        src={feature.image.src}
-                        alt={feature.image.alt}
-                        width={900}
-                        height={600}
-                        className="w-full max-w-2xl rounded-md object-cover"
-                      />
+                      {feature.media.type === "image" ? (
+                        <Image
+                          src={feature.media.src}
+                          alt={feature.media.alt}
+                          width={900}
+                          height={600}
+                          className="w-full max-w-2xl rounded-md object-cover"
+                        />
+                      ) : (
+                        <video
+                          src={feature.media.src}
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                          className="w-full max-w-2xl rounded-md object-cover"
+                          aria-label={feature.media.alt}
+                        />
+                      )}
                     </div>
                   </div>
                 </div>

@@ -10,12 +10,15 @@ import { Element } from "./Element";
 import {
   fetchImportersForUser,
   fetchImportersForTeam,
+  createImporter,
 } from "../libs/supabase/importers";
 import { ClassificationStatus, Importer } from "../interfaces/hts";
 import { useClassifications } from "../contexts/ClassificationsContext";
 import { updateClassification } from "../libs/classification";
 import { SecondaryLabel } from "./SecondaryLabel";
 import { TertiaryText } from "./TertiaryText";
+import Modal from "./Modal";
+import ImporterDropdown from "./ImporterDropdown";
 
 interface Props {
   userProfile: UserProfile;
@@ -44,6 +47,9 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
   const [importers, setImporters] = useState<Importer[]>([]);
   const [selectedImporterId, setSelectedImporterId] = useState<string>("");
   const [isLoadingImporters, setIsLoadingImporters] = useState(true);
+  const [newImporter, setNewImporter] = useState("");
+  const [isCreatingImporter, setIsCreatingImporter] = useState(false);
+  const [showCreateImporterModal, setShowCreateImporterModal] = useState(false);
 
   // Fetch classifiers and importers on component mount
   useEffect(() => {
@@ -77,6 +83,29 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
       }, 1500);
     }
   }, [copied]);
+
+  const handleAddImporter = async () => {
+    if (!newImporter.trim()) return;
+
+    setIsCreatingImporter(true);
+    try {
+      const newImporterData = await createImporter(newImporter.trim());
+      setImporters((prev) => [...prev, newImporterData]);
+      setNewImporter("");
+      // Automatically select the newly created importer
+      setSelectedImporterId(newImporterData.id);
+      updateClassification(
+        classificationId,
+        undefined,
+        newImporterData.id,
+        undefined
+      );
+    } catch (error) {
+      console.error("Failed to create importer:", error);
+    } finally {
+      setIsCreatingImporter(false);
+    }
+  };
 
   return (
     <div className="h-full w-full max-w-6xl mx-auto flex flex-col">
@@ -165,12 +194,10 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
                   <TertiaryText value="Select the importer or client that you are providing this advisory to (optional)" />
                 </div>
                 <div className="flex gap-2">
-                  <select
-                    className="select select-bordered w-full flex-1 bg-base-100"
-                    value={selectedImporterId}
-                    disabled={isLoadingImporters || !canUpdateDetails}
-                    onChange={(e) => {
-                      const value = e.target.value;
+                  <ImporterDropdown
+                    importers={importers}
+                    selectedImporterId={selectedImporterId}
+                    onSelectionChange={(value) => {
                       setSelectedImporterId(value);
                       updateClassification(
                         classificationId,
@@ -179,21 +206,11 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
                         undefined
                       );
                     }}
-                  >
-                    <option value="">
-                      {isLoadingImporters
-                        ? "Loading importers..."
-                        : importers.length === 0
-                          ? "No importers available"
-                          : "Select importer"}
-                    </option>
-                    {!isLoadingImporters &&
-                      importers.map((importer) => (
-                        <option key={importer.id} value={importer.id}>
-                          {importer.name}
-                        </option>
-                      ))}
-                  </select>
+                    onCreateSelected={() => setShowCreateImporterModal(true)}
+                    isLoading={isLoadingImporters}
+                    disabled={!canUpdateDetails}
+                    showCreateOption={canUpdateDetails}
+                  />
                   {selectedImporterId && (
                     <button
                       className="btn btn-outline"
@@ -269,6 +286,55 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
           }}
         />
       )}
+      <Modal
+        isOpen={showCreateImporterModal}
+        setIsOpen={setShowCreateImporterModal}
+      >
+        <div className="p-6 flex flex-col gap-4 min-w-80">
+          <h3 className="text-lg font-semibold">Create New Importer</h3>
+          <input
+            type="text"
+            placeholder="Importer name"
+            value={newImporter}
+            className="input input-bordered w-full"
+            onChange={(e) => setNewImporter(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && newImporter.trim()) {
+                handleAddImporter();
+                setShowCreateImporterModal(false);
+                setNewImporter("");
+              }
+            }}
+            autoFocus
+          />
+          <div className="flex gap-2 justify-end">
+            <button
+              className="btn btn-ghost"
+              onClick={() => {
+                setShowCreateImporterModal(false);
+                setNewImporter("");
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={() => {
+                handleAddImporter();
+                setShowCreateImporterModal(false);
+                setNewImporter("");
+              }}
+              disabled={isCreatingImporter || !newImporter.trim()}
+            >
+              {isCreatingImporter ? (
+                <span className="loading loading-spinner loading-xs"></span>
+              ) : (
+                "Create"
+              )}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

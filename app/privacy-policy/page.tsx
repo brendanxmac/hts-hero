@@ -2,66 +2,91 @@ import Link from "next/link";
 import { getSEOTags } from "@/libs/seo";
 import config from "@/config";
 
-// CHATGPT PROMPT TO GENERATE YOUR PRIVACY POLICY — replace with your own data 👇
+const current = `Hive Works LLC (Wyoming)
+Last Updated: November 29, 2025
 
-// 1. Go to https://chat.openai.com/
-// 2. Copy paste bellow
-// 3. Replace the data with your own (if needed)
-// 4. Paste the answer from ChatGPT directly in the <pre> tag below
+This Privacy Policy explains how Hive Works LLC (“Provider,” “we,” “us,” or “our”) collects, uses, and protects your information when you use the HTS Hero platform (“Service”).
+By using the Service, you consent to the practices described in this Policy.
 
-// You are an excellent lawyer.
+1. Who This Policy Covers
+This Privacy Policy applies to:
+* Visitors to our website
+* Individual users
+* Business users
+* Business teams using the platform
 
-// I need your help to write a simple privacy policy for my website. Here is some context:
-// - Website: https://htshero.com
-// - Name: HTS Hero
-// - Description: An HTS code lookup tool to help people find the right HTS code any product
-// - User data collected: name, email and payment information
-// - Non-personal data collection: web cookies
-// - Purpose of Data Collection: Order processing
-// - Data sharing: we do not share the data with any other parties
-// - Children's Privacy: we do not collect any data from children
-// - Updates to the Privacy Policy: users will be updated by email
-// - Contact information: brendan@htshero.com
+2. Information We Collect
+We collect three categories of information:
 
-// Please write a simple privacy policy for my site. Add the current date.  Do not add or explain your reasoning. Answer:
+2.1 Information You Provide
+* Account information (name, email)
+* Profile Information (address, disclaimers, logo, etc...)
+* Classification attempts and inputs (item descriptions, selections, notes, etc...)
+* Billing information (Not stored by us and only used by our payment provider)
+* Team / Company Profile Information (address, disclaimer, logo, etc...)
+*   Only for team / company users, not individual users
 
-const current = `Effective Date: June 18, 2025
+2.2 Automatically Collected Information
+* IP address
+* Browser/device type
+* Usage logs
+* Authentication metadata
 
-At HTS Hero ("we," "us," or "our"), we value your privacy and are committed to protecting your personal information.
-This Privacy Policy explains how we collect, use, and safeguard your data when you visit our website (https://htshero.com).
+2.3 Information from Business Customers
+* Seat assignments
+* Billing contacts
 
-1. Information We Collect
+3. How We Use Your Information
+We use information to:
+* Operate the Service
+* Improve the platform
+* Provide customer support
+* Enforce security and prevent fraud
+* Comply with legal obligations
+We may use anonymized or aggregated data for analytics or product improvement.
 
-Personal Information:
-We may collect the following personal information when you interact with our site:
-- Name
-- Email address
-- Payment information
+4. How We Use AI / LLMs
+Our Classify tool uses Large Language Models (“LLMs”) to assist you with yours classifications.
+The primary use is providing analysis of HTS elements at each level.
+All LLM results are purely for informational purposes and should not be used as legal, customs, regulatory, or compliance advice.
+You consent to this processing by using the Service.
 
-Non-Personal Information:
-We also collect non-personal information to improve our services, including:
-- Cookies for core website functionality
-- Usage data when website features are used
+5. Data Storage & Security
+Your data is encrypted in transit and at rest.
+We use best-effort industry practices to safeguard data, but no system is perfectly secure.
 
-2. How We Use Your Information
-We use the information collected for the following purposes:
-- To process & support orders (if applicable)
-- To communicate with you regarding your account or transactions (if applicable)
-- To improve our website and services
+6. Sharing of Information
+We do not sell your data.
+We may share data with:
+* Infrastructure providers (hosting, storage, etc...)
+* Payment processors
+* Email service providers
+We may also share information if required by law.
 
-3. Data Sharing
-We do not share personal or non-personal information with any third parties.
+7. Data Retention
+We retain your data while your account is active.
+Upon account deletion, we delete or anonymize your data within 90 days, except where retention is required by law.
 
-4. Children's Privacy
-Our website is not intended for children under the age of 13, and we do not knowingly collect personal information from children.
+8. Children’s Privacy
+HTS Hero is not intended for children under 18.
+We do not knowingly collect data from minors.
 
-5. Updates to This Privacy Policy
-We may update this Privacy Policy from time to time. If we make changes, we will notify you via the email address provided.
+9. Business Customers
+For Business Users who sign a SaaS Agreement, that Agreement may include additional privacy and data handling terms.
+If there is a conflict, the SaaS Agreement controls for that Business User.
 
-6. Contact Us
-If you have any questions about this Privacy Policy, please contact us at: support@htshero.com
+10. International Transfers
+We may process data in the United States or other countries.
+By using the Service, you consent to such transfers.
 
-By using HTS Hero, you consent to the terms of this Privacy Policy.`;
+11. Changes to This Policy
+We may update this Privacy Policy from time to time.
+Material changes will be posted with a new “Last Updated” date.
+
+12. Contact
+Hive Works LLC
+Email: support@htshero.com
+`;
 
 export const metadata = getSEOTags({
   title: `Privacy Policy | ${config.appName}`,
