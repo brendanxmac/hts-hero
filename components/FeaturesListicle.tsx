@@ -17,7 +17,7 @@ const features: {
   media: { src: string; alt: string; type: "image" | "video" };
 }[] = [
   {
-    name: "Quickly See Candidates for Any Product",
+    name: "Candidates for Any Product",
     points: [
       {
         point: "Jump-Start Classifications with AI Suggestions",
@@ -45,7 +45,7 @@ const features: {
     },
   },
   {
-    name: "Get Best-Fit Analysis for All Candidates",
+    name: "Best-Fit Analysis",
     points: [
       {
         point: "Provides a GRI Analysis of Candidates at Every Level",
@@ -70,7 +70,7 @@ const features: {
     },
   },
   {
-    name: "See The Latest Tariffs for Any Import",
+    name: "The Latest Tariffs for Any Import",
     points: [
       {
         point: "Discover ways to save with exemptions & trade programs",
@@ -96,7 +96,7 @@ const features: {
     },
   },
   {
-    name: "Quickly Validate Against Government Rulings",
+    name: "Validate Against Government Rulings",
     points: [
       {
         point: "See CROSS Rulings Related to your Item",
@@ -118,7 +118,7 @@ const features: {
     },
   },
   {
-    name: "Generate Branded Reports, In One Click",
+    name: "Branded Reports, In A Single Click",
     points: [
       {
         point: "Generate polished classification reports, in a single click",
