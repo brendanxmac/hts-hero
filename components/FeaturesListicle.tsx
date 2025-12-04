@@ -39,13 +39,13 @@ const features: {
     ],
     svg: <LightningSVG color="primary" size={8} viewBox="0 0 24 24" />,
     media: {
-      src: "/candidates.png",
-      alt: "Candidates HS headings",
-      type: "image",
+      src: "/get-candidates.mp4",
+      alt: "See Candidate HS Headings",
+      type: "video",
     },
   },
   {
-    name: "Get GRI Analysis of All Candidates",
+    name: "Get Best-Fit Analysis for All Candidates",
     points: [
       {
         point: "Provides a GRI Analysis of Candidates at Every Level",
@@ -55,7 +55,6 @@ const features: {
       },
       {
         point: "Easily Add Your Own Notes",
-        detail: "Which will be included in your reports automatically",
       },
       {
         point: "~10 minutes saved",
@@ -65,57 +64,13 @@ const features: {
     ],
     svg: <LightBulbSVG color="primary" size={8} viewBox="0 0 24 24" />,
     media: {
-      src: "/analysis.png",
+      src: "/candidate-analysis.png",
       alt: "Analyze candidates and choose confidently",
       type: "image",
     },
   },
   {
-    name: "Discover Relevant CROSS Rulings",
-    points: [
-      {
-        point: "Automatically Finds CROSS Rulings For You",
-      },
-      {
-        point: "Helps You Quickly See If You're On The Right Track",
-      },
-      {
-        point: "~10 minutes saved",
-        detail: "per classification",
-        isKey: true,
-      },
-    ],
-    svg: <ScaleSVG color="primary" size={8} viewBox="0 0 24 24" />,
-    media: { src: "/cross.png", alt: "Relevant CROSS rulings", type: "image" },
-  },
-  {
-    name: "Generate Client-Ready Advisory Reports",
-    points: [
-      {
-        point: "Generate polished classification reports, in a single click",
-      },
-      {
-        point:
-          "Automatically includes your notes, branding, disclaimers, contact info, & more",
-      },
-      {
-        point: "Easily export & share with your clients",
-      },
-      {
-        point: "~20 minutes saved",
-        detail: "per classification",
-        isKey: true,
-      },
-    ],
-    svg: <DocumentTextSVG color="primary" size={8} viewBox="0 0 24 24" />,
-    media: {
-      src: "/report.png",
-      alt: "One-click classification reports",
-      type: "image",
-    },
-  },
-  {
-    name: "See The Latest Tariffs for Any Import from Any Country",
+    name: "See The Latest Tariffs for Any Import",
     points: [
       {
         point: "Discover ways to save with exemptions & trade programs",
@@ -138,6 +93,54 @@ const features: {
       src: "/tariffs-hero.mp4",
       alt: "Tariff insights and savings",
       type: "video",
+    },
+  },
+  {
+    name: "Quickly Validate Against Government Rulings",
+    points: [
+      {
+        point: "See CROSS Rulings Related to your Item",
+      },
+      {
+        point: "Find Out If CBP Agrees with your Classification",
+      },
+      {
+        point: "~10 minutes saved",
+        detail: "per classification",
+        isKey: true,
+      },
+    ],
+    svg: <ScaleSVG color="primary" size={8} viewBox="0 0 24 24" />,
+    media: {
+      src: "/cross-rulings.mp4",
+      alt: "Relevant CROSS rulings",
+      type: "video",
+    },
+  },
+  {
+    name: "Generate Branded Reports, In One Click",
+    points: [
+      {
+        point: "Generate polished classification reports, in a single click",
+      },
+      {
+        point:
+          "Automatically includes your notes, branding, disclaimers, contact info, & more",
+      },
+      {
+        point: "Effortless record keeping and sharing with clients",
+      },
+      {
+        point: "~20 minutes saved",
+        detail: "per classification",
+        isKey: true,
+      },
+    ],
+    svg: <DocumentTextSVG color="primary" size={8} viewBox="0 0 24 24" />,
+    media: {
+      src: "/report.png",
+      alt: "One-click classification reports",
+      type: "image",
     },
   },
   {
