@@ -30,7 +30,7 @@ export const FeaturePoints = ({ points }: Props) => {
               viewBox="0 0 24 24"
               strokeWidth={1.5}
               stroke="currentColor"
-              className="shrink-0 size-5"
+              className="text-primary shrink-0 size-5"
             >
               <path
                 strokeLinecap="round"
@@ -60,7 +60,9 @@ export const FeaturePoints = ({ points }: Props) => {
           <div className="flex flex-col gap-1 -mt-1 md:text-lg">
             <span>{point}</span>
 
-            {detail && <span className="text-xs text-base-content/60">{detail}</span>}
+            {detail && (
+              <span className="text-xs text-base-content/60">{detail}</span>
+            )}
           </div>
         </li>
       ))}
