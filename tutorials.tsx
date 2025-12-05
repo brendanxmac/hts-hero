@@ -30,6 +30,6 @@ export const tutorials: TutorialI[] = [
   {
     name: TutorialName.CLASSIFY,
     element: classifyTutorial,
-    paths: ["/app"],
+    paths: ["/classifications"],
   },
 ];

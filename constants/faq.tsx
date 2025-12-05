@@ -157,8 +157,8 @@ export const classifierFaqList: FAQItem[] = [
         </button>{" "}
         <p>
           If you just want to use the{" "}
-          <Link href={"/about/explore"} className="text-secondary underline">
-            explorer
+          <Link href={"/explore"} className="text-secondary underline">
+            HTS Explorer
           </Link>{" "}
           tool, you can access it for free without an account.
         </p>

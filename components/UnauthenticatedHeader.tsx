@@ -32,11 +32,11 @@ const UnauthenticatedHeader = () => {
     label: string;
   }[] = [
     {
-      href: "/explore",
+      href: "/tariff-finder",
       label: "Tariff Finder",
     },
     {
-      href: "/app",
+      href: "/classifications",
       label: "Classification Assistant",
     },
     {
@@ -44,15 +44,22 @@ const UnauthenticatedHeader = () => {
       label: "Tariff Impact Checker",
     },
     {
+      href: "/explore",
+      label: "HTS Explorer",
+    },
+    {
       href: "/about/tariffs",
       label:
-        pathname === "/explore"
+        pathname === "/tariff-finder"
           ? "Learn More"
           : "Want to Find the Best Tariff Rates?",
     },
     {
       href: "/about",
-      label: pathname === "/app" ? "Learn More" : "Want to Classify Quicker?",
+      label:
+        pathname === "/classifications"
+          ? "Learn More"
+          : "Want to Classify Quicker?",
     },
   ];
 
@@ -84,7 +91,7 @@ const UnauthenticatedHeader = () => {
             <Link href="/about/tariffs">
               <button
                 className={`btn btn-link px-0 gap-0 ${
-                  pathname === "/explore"
+                  pathname === "/tariff-finder"
                     ? "text-primary underline"
                     : "text-base-content no-underline"
                 }`}
@@ -95,7 +102,7 @@ const UnauthenticatedHeader = () => {
             <Link href="/about">
               <button
                 className={`btn btn-link px-0 gap-0 ${
-                  pathname === "/app"
+                  pathname === "/classifications"
                     ? "text-primary underline"
                     : "text-base-content no-underline"
                 }`}
@@ -112,6 +119,17 @@ const UnauthenticatedHeader = () => {
                 }`}
               >
                 Tariff Impact Checker
+              </button>
+            </Link>
+            <Link href="/explore">
+              <button
+                className={`btn btn-link px-0 gap-0 ${
+                  pathname === "/explore"
+                    ? "text-primary underline"
+                    : "text-base-content no-underline"
+                }`}
+              >
+                HTS Explorer
               </button>
             </Link>
           </div>
@@ -157,9 +175,9 @@ const UnauthenticatedHeader = () => {
             )}
             <Link
               className="btn btn-sm btn-primary font-semibold link link-hover"
-              href="/about"
+              href={pathname === "/tariff-finder" ? "/about/tariffs" : "/about"}
             >
-              {pathname === "/explore"
+              {pathname === "/tariff-finder"
                 ? "Want Effortless Tariffs?"
                 : "Want Quicker Classifications?"}
             </Link>

@@ -46,7 +46,7 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
   const getCheckoutSuccessEndpoint = (plan: PricingPlan) => {
     switch (plan) {
       case PricingPlan.CLASSIFY_PRO:
-        return "/app";
+        return "/classifications";
       case PricingPlan.TARIFF_IMPACT_STANDARD:
       case PricingPlan.TARIFF_IMPACT_PRO:
         return "/tariffs/impact-checker";

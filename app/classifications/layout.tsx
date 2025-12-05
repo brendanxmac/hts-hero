@@ -19,7 +19,7 @@ export default async function LayoutPrivate({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/signin?redirect=/app");
+    redirect("/signin?redirect=/classifications");
   }
 
   return (

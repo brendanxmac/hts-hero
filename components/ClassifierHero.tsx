@@ -20,7 +20,7 @@ const ClassifierHero = () => {
 
           <Link
             className="btn btn-wide btn-sm btn-primary sm:btn-md"
-            href="/app"
+            href="/classifications"
           >
             Try it Now!
           </Link>

@@ -150,7 +150,7 @@ export const guides: Guide[] = [
   {
     name: GuideName.CLASSIFY,
     steps: classifyGuideSteps,
-    routes: ["/app"],
+    routes: ["/classifications"],
     daysUntilShowAgain: 3,
   },
 ];

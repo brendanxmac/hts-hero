@@ -114,7 +114,7 @@ What's next?
 
 Otherwise after logging in (if not already) you'll be able to access all the features of the app that you purchased!
 
-To access the app, go to: https://htshero.com/app
+To access the app, go to: https://htshero.com/classifications
 
 If you have any questions or need assistance, our support team is here to help (support@htshero.com)!
 

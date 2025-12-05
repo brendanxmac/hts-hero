@@ -16,7 +16,7 @@ const ClassifierCTA = () => {
             Quicker classifications, effortless tariffs, and happier clients.
           </p>
 
-          <Link className="btn btn-primary btn-wide" href="/app">
+          <Link className="btn btn-primary btn-wide" href="/classifications">
             Try {config.appName}!
           </Link>
         </div>
