@@ -514,11 +514,11 @@ export const CountryTariff = ({
           </div>
 
           {/* Breakdown Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 mb-4">
             {dutyEstimates.map((estimate, i) => (
               <div
                 key={i}
-                className="flex flex-col p-4 bg-base-200/50 rounded-xl"
+                className="flex flex-col p-4 bg-base-200/50 rounded-xl sm:flex-1 sm:min-w-[calc(50%-0.5rem)] lg:min-w-[calc(33.333%-0.667rem)]"
               >
                 <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1">
                   {estimate.tariffSetName} Duty
@@ -553,7 +553,7 @@ export const CountryTariff = ({
                 </div>
               </div>
             ))}
-            <div className="flex flex-col p-4 bg-base-200/50 rounded-xl">
+            <div className="flex flex-col p-4 bg-base-200/50 rounded-xl sm:flex-1 sm:min-w-[calc(50%-0.5rem)] lg:min-w-[calc(33.333%-0.667rem)]">
               <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1">
                 Additional Fees
               </span>
@@ -573,11 +573,11 @@ export const CountryTariff = ({
             </div>
           </div>
           {/* Tariff Rates */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4">
             {summaryTotals.map((total, i) => (
               <div
                 key={i}
-                className="flex flex-col items-center justify-center p-4 bg-base-200/50 rounded-xl"
+                className="flex flex-col items-center justify-center p-4 bg-base-200/50 rounded-xl sm:flex-1 sm:min-w-[calc(50%-0.5rem)] lg:min-w-[calc(33.333%-0.667rem)]"
               >
                 <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1">
                   {total.name} Tariff Rate
@@ -592,7 +592,7 @@ export const CountryTariff = ({
                 </div>
               </div>
             ))}
-            <div className="flex flex-col items-center justify-center p-4 bg-base-200/50 rounded-xl">
+            <div className="flex flex-col items-center justify-center p-4 bg-base-200/50 rounded-xl sm:flex-1 sm:min-w-[calc(50%-0.5rem)] lg:min-w-[calc(33.333%-0.667rem)]">
               <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1">
                 Additional Fees
               </span>
@@ -901,6 +901,7 @@ export const CountryTariff = ({
             <span className="text-base-content/60 font-semibold">
               {additionalFeesTotal}%
             </span>
+            <span className="text-base-content/50">|</span>
             <span className="text-lg font-bold text-primary">
               {formatCurrency(totalFees)}
             </span>

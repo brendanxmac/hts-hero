@@ -121,6 +121,17 @@ const UnauthenticatedHeader = () => {
                 Tariff Impact Checker
               </button>
             </Link>
+            <Link href="/explore">
+              <button
+                className={`btn btn-link px-0 gap-0 ${
+                  pathname === "/explore"
+                    ? "text-primary underline"
+                    : "text-base-content no-underline"
+                }`}
+              >
+                HTS Explorer
+              </button>
+            </Link>
           </div>
         </div>
 
