@@ -45,15 +45,14 @@ export const PercentageInput = ({
         inputMode="numeric"
         pattern="[0-9]*"
         value={value}
-        className="input input-bordered w-full pr-10 text-right tabular-nums"
+        className="w-full h-[45px] px-3 bg-base-200/50 rounded-xl border border-base-content/10 transition-all duration-200 pr-10 text-right tabular-nums font-semibold placeholder:text-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 hover:border-primary/30 hover:bg-base-200/70"
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         onBlur={handleBlur}
       />
-      <span className="absolute right-4 text-base-content/50 font-medium pointer-events-none">
+      <span className="absolute right-3 text-base-content/50 font-semibold pointer-events-none">
         %
       </span>
     </div>
   );
 };
-

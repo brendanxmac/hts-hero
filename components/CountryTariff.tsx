@@ -20,13 +20,12 @@ import { SubheadingsConditionallyExemptFromReciprocal } from "../tariffs/exclusi
 import { Listbox, Transition } from "@headlessui/react";
 import {
   CheckIcon,
+  ChevronDownIcon,
   ChevronUpDownIcon,
   ClipboardDocumentCheckIcon,
   ClipboardDocumentIcon,
   ExclamationCircleIcon,
   ExclamationTriangleIcon,
-  EyeIcon,
-  EyeSlashIcon,
   XMarkIcon,
 } from "@heroicons/react/24/solid";
 
@@ -100,7 +99,7 @@ export const CountryTariff = ({
   const [tariffColumn, setTariffColumn] = useState<TariffColumn>(
     isOtherColumnCountry ? TariffColumn.OTHER : TariffColumn.GENERAL
   );
-  const [showInactive, setShowInactive] = useState(false);
+  const [expandedSets, setExpandedSets] = useState<Record<number, boolean>>({});
   const [isCopied, setIsCopied] = useState(false);
   const [selectedSpecialProgram, setSelectedSpecialProgram] = useState<any>(
     selectedTradeProgram || DEFAULT_PROGRAM
@@ -373,7 +372,7 @@ export const CountryTariff = ({
       }
 
       estimates.push({
-        tariffSetName: tariffSet.name || "Tariffs",
+        tariffSetName: tariffSet.name || "Article",
         percentRate: adValoremRate,
         amountDuty,
         adValoremDuty,
@@ -437,190 +436,178 @@ export const CountryTariff = ({
   };
 
   const content = (
-    <div className="flex flex-col gap-4">
-      {/* Total Import Duty Summary */}
-      <div className="card border-2 border-base-300 bg-base-200 shadow-xl">
-        <div className="card-body p-0">
-          <div className="px-4 py-3 bg-base-100 dark:bg-base-300 flex justify-between items-center rounded-t-xl border-b-2 border-base-200 dark:border-base-100">
-            <h3 className="card-title text-lg font-bold">
-              Total Estimated Import Duty
-            </h3>
-            <div className="flex gap-2 items-center">
-              {selectedSpecialProgram?.symbol !== "none" && (
-                <div className="badge badge-success badge-outline font-semibold">
-                  {selectedSpecialProgram.name}
-                </div>
-              )}
-              <button
-                className="btn btn-sm btn-outline gap-1.5"
-                onClick={() => setShowInactive(!showInactive)}
-              >
-                {showInactive ? (
-                  <EyeSlashIcon className="w-4 h-4" />
-                ) : (
-                  <EyeIcon className="w-4 h-4" />
-                )}
-                <span className="hidden sm:inline">
-                  {showInactive ? "Hide Inactive" : "Show All"}
+    <div className="flex flex-col gap-5">
+      {/* Component Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <span className="text-4xl">{country.flag}</span>
+            <div>
+              <h2 className="text-2xl font-bold text-base-content">
+                {country.name}
+              </h2>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="font-mono text-primary font-semibold">
+                  {tariffElement.htsno}
                 </span>
-              </button>
-              <button
-                className={`btn btn-sm gap-1.5 ${isCopied ? "btn-success" : "btn-primary"}`}
-                onClick={handleCopyClick}
-              >
-                {isCopied ? (
-                  <ClipboardDocumentCheckIcon className="w-4 h-4" />
-                ) : (
-                  <ClipboardDocumentIcon className="w-4 h-4" />
+                {selectedSpecialProgram?.symbol !== "none" && (
+                  <span className="badge badge-success badge-sm font-semibold">
+                    {selectedSpecialProgram.symbol}
+                  </span>
                 )}
-                {isCopied ? "Copied" : "Copy"}
-              </button>
-              {isModal && onClose && (
-                <button
-                  onClick={onClose}
-                  className="btn btn-sm btn-ghost btn-circle"
-                  aria-label="Close"
-                >
-                  <XMarkIcon className="w-5 h-5" />
-                </button>
-              )}
+              </div>
             </div>
           </div>
-          <div className="p-6">
-            <div className="flex md:flex-row flex-col gap-4">
-              {/* Grand Total */}
-              <div className="grow flex flex-col items-center justify-center p-6 bg-secondary/10 rounded-xl border-2 border-secondary/30 mb-6">
-                <span className="text-sm font-semibold text-base-content/80 uppercase tracking-wide mb-2">
-                  Duty & Fees
-                </span>
-                <h2 className="text-5xl font-black text-secondary">
-                  {formatCurrency(totalImportDuty)}
-                </h2>
-                <div className="text-sm text-base-content/60 mt-2">
-                  on {formatCurrency(customsValue)} customs value
-                </div>
-              </div>
-              {/* Grand Total */}
-              <div className="grow flex flex-col items-center justify-center p-6 bg-accent/10 rounded-xl border-2 border-accent/30 mb-6">
-                <span className="text-sm font-semibold text-base-content/80 uppercase tracking-wide mb-2">
-                  Landed Cost
-                </span>
-                <h2 className="text-5xl font-black text-accent">
-                  {formatCurrency(totalImportDuty + customsValue)}
-                </h2>
+        </div>
+        <div className="flex gap-2 items-center flex-wrap">
+          <button
+            className={`btn btn-sm gap-1.5 ${isCopied ? "btn-success" : "btn-primary"}`}
+            onClick={handleCopyClick}
+          >
+            {isCopied ? (
+              <ClipboardDocumentCheckIcon className="w-4 h-4" />
+            ) : (
+              <ClipboardDocumentIcon className="w-4 h-4" />
+            )}
+            {isCopied ? "Copied" : "Copy Tariff Details"}
+          </button>
+          {isModal && onClose && (
+            <button
+              onClick={onClose}
+              className="btn btn-sm btn-ghost btn-circle"
+              aria-label="Close"
+            >
+              <XMarkIcon className="w-5 h-5" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Total Import Duty Summary */}
+      <div className="card bg-base-100 border border-base-300 shadow-lg rounded-xl">
+        <div className="px-5 py-4 bg-base-200/50 border-b border-base-300 rounded-t-xl">
+          <h3 className="text-lg font-bold text-base-content">
+            Total Estimated Costs
+          </h3>
+        </div>
+        <div className="p-5">
+          <div className="flex md:flex-row flex-col gap-4 mb-5">
+            {/* Duty & Fees */}
+            <div className="grow flex flex-col items-center justify-center p-6 bg-secondary/10 rounded-xl">
+              <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-2">
+                Duty & Fees
+              </span>
+              <h2 className="text-4xl sm:text-5xl font-black text-secondary">
+                {formatCurrency(totalImportDuty)}
+              </h2>
+              <div className="text-sm text-base-content/50 mt-2">
+                on {formatCurrency(customsValue)} customs value
               </div>
             </div>
+            {/* Landed Cost */}
+            <div className="grow flex flex-col items-center justify-center p-6 bg-accent/10 rounded-xl">
+              <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-2">
+                Landed Cost
+              </span>
+              <h2 className="text-4xl sm:text-5xl font-black text-accent">
+                {formatCurrency(totalImportDuty + customsValue)}
+              </h2>
+            </div>
+          </div>
 
-            {/* Breakdown Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {dutyEstimates.map((estimate, i) => (
-                <div
-                  key={i}
-                  className="flex flex-col p-4 bg-base-200/50 rounded-xl border-2 border-base-300"
-                >
-                  <span className="text-sm font-semibold text-base-content/70 uppercase tracking-wide mb-1">
-                    {estimate.tariffSetName} Tariffs
-                  </span>
-                  <div className="text-3xl font-black text-primary mb-2">
-                    {formatCurrency(estimate.totalDuty)}
-                  </div>
-                  <div className="text-xs text-base-content/60 space-y-1">
-                    {estimate.amountDuty > 0 && (
-                      <div className="flex justify-between">
-                        <span>Amount-based:</span>
-                        <span className="font-medium">
-                          {formatCurrency(estimate.amountDuty)}
-                        </span>
-                      </div>
-                    )}
+          {/* Breakdown Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {dutyEstimates.map((estimate, i) => (
+              <div
+                key={i}
+                className="flex flex-col p-4 bg-base-200/50 rounded-xl"
+              >
+                <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1">
+                  {estimate.tariffSetName} Duty
+                </span>
+                <div className="text-2xl font-black text-primary mb-2">
+                  {formatCurrency(estimate.totalDuty)}
+                </div>
+                <div className="text-xs text-base-content/50 space-y-1">
+                  {estimate.amountDuty > 0 && (
                     <div className="flex justify-between">
-                      <span>Ad valorem ({estimate.percentRate}%):</span>
+                      <span>Amount-based:</span>
                       <span className="font-medium">
-                        {formatCurrency(estimate.adValoremDuty)}
+                        {formatCurrency(estimate.amountDuty)}
                       </span>
                     </div>
-                    {contentRequirements.length > 0 && (
-                      <div className="flex justify-between border-t border-base-300 pt-1 mt-1">
-                        <span>Applied to:</span>
-                        <span className="font-medium">
-                          {estimate.contentPercentage}% (
-                          {formatCurrency(estimate.applicableValue)})
-                        </span>
-                      </div>
-                    )}
+                  )}
+                  <div className="flex justify-between">
+                    <span>Ad valorem ({estimate.percentRate}%):</span>
+                    <span className="font-medium">
+                      {formatCurrency(estimate.adValoremDuty)}
+                    </span>
                   </div>
-                </div>
-              ))}
-              <div className="flex flex-col p-4 bg-base-200/50 rounded-xl border border-base-300">
-                <span className="text-sm font-semibold text-base-content/70 uppercase tracking-wide mb-1">
-                  Additional Fees
-                </span>
-                <div className="text-3xl font-black text-primary mb-2">
-                  {formatCurrency(totalFees)}
-                </div>
-                <div className="text-xs text-base-content/60 space-y-1">
-                  {feeEstimates.map((fee, i) => (
-                    <div key={i} className="flex justify-between">
-                      <span>{fee.name}:</span>
+                  {contentRequirements.length > 0 && (
+                    <div className="flex justify-between border-t border-base-300 pt-1 mt-1">
+                      <span>Applied to:</span>
                       <span className="font-medium">
-                        {formatCurrency(fee.amount)}
+                        {estimate.contentPercentage}% (
+                        {formatCurrency(estimate.applicableValue)})
                       </span>
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
-            </div>
-
-            <div className="mt-4 pt-4 border-t border-base-300 flex flex-col sm:flex-row items-center justify-between gap-2">
-              <div className="text-sm text-base-content/70 flex gap-1 items-center">
-                <p className="font-semibold">HTS Code:</p>{" "}
-                <p className="text-primary font-bold">{tariffElement.htsno}</p>
+            ))}
+            <div className="flex flex-col p-4 bg-base-200/50 rounded-xl">
+              <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1">
+                Additional Fees
+              </span>
+              <div className="text-2xl font-black text-primary mb-2">
+                {formatCurrency(totalFees)}
               </div>
-              <div className="text-sm text-base-content/70 flex gap-1 items-center">
-                <p className="font-semibold">Origin:</p>{" "}
-                <p className="text-lg">{country.flag}</p>{" "}
-                <p className="font-bold">{country.name}</p>
+              <div className="text-xs text-base-content/50 space-y-1">
+                {feeEstimates.map((fee, i) => (
+                  <div key={i} className="flex justify-between">
+                    <span>{fee.name}:</span>
+                    <span className="font-medium">
+                      {formatCurrency(fee.amount)}
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Rates Summary (existing) */}
-      <div className="card bg-gradient-to-br from-primary/10 via-base-100 to-secondary/10 border-2 border-primary/30 shadow-lg">
-        <div className="card-body p-0">
-          <div className="px-4 py-3 bg-primary/20 flex justify-between items-center rounded-t-xl border-b-2 border-primary/30">
-            <h3 className="card-title text-primary text-lg font-bold">
-              Tariff Rates
-            </h3>
-          </div>
-          <div className="p-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {summaryTotals.map((total, i) => (
-                <div
-                  key={i}
-                  className="flex flex-col items-center justify-center p-4 bg-base-200/50 rounded-xl border border-base-300"
-                >
-                  <span className="text-sm font-semibold text-base-content/70 uppercase tracking-wide mb-1">
-                    {total.name} Tariffs
-                  </span>
-                  <div className="text-4xl font-black text-primary">
-                    {total.hasAmountTariffs && total.amountRatesString && (
-                      <span className="text-2xl">
-                        {total.amountRatesString} +{" "}
-                      </span>
-                    )}
-                    {total.rate}%
-                  </div>
-                </div>
-              ))}
-              <div className="flex flex-col items-center justify-center p-4 bg-base-200/50 rounded-xl border border-base-300">
-                <span className="text-sm font-semibold text-base-content/70 uppercase tracking-wide mb-1">
-                  Additional Fees
+      {/* Tariff Rates Summary */}
+      <div className="card bg-base-100 border border-base-300 shadow-lg rounded-xl">
+        <div className="px-5 py-4 bg-base-200/50 border-b border-base-300 rounded-t-xl">
+          <h3 className="text-lg font-bold text-base-content">Tariff Rates</h3>
+        </div>
+        <div className="p-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {summaryTotals.map((total, i) => (
+              <div
+                key={i}
+                className="flex flex-col items-center justify-center p-4 bg-base-200/50 rounded-xl"
+              >
+                <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1">
+                  {total.name} Tariff Rate
                 </span>
-                <div className="text-4xl font-black text-primary">
-                  {additionalFeesTotal}%
+                <div className="text-3xl font-black text-primary">
+                  {total.hasAmountTariffs && total.amountRatesString && (
+                    <span className="text-xl">
+                      {total.amountRatesString} +{" "}
+                    </span>
+                  )}
+                  {total.rate}%
                 </div>
+              </div>
+            ))}
+            <div className="flex flex-col items-center justify-center p-4 bg-base-200/50 rounded-xl">
+              <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1">
+                Additional Fees
+              </span>
+              <div className="text-3xl font-black text-primary">
+                {additionalFeesTotal}%
               </div>
             </div>
           </div>
@@ -628,105 +615,103 @@ export const CountryTariff = ({
       </div>
 
       {/* Trade Programs Dropdown */}
-      <div className="card bg-base-100 dark:bg-base-300 border-2 border-base-300 shadow-sm">
-        <div className="card-body p-0">
-          <div className="px-4 py-3 bg-base-100 dark:bg-base-300 flex justify-between items-center rounded-t-xl border-b-2 border-base-200">
-            <h3 className="card-title text-base-content text-lg">
-              Special Trade Program
-            </h3>
-          </div>
-          <div className="p-4">
-            <Listbox
-              value={selectedSpecialProgram}
-              onChange={setSelectedSpecialProgram}
-            >
-              <div className="relative">
-                <Listbox.Button className="relative w-full cursor-default rounded-lg border border-base-content/20 bg-base-100 py-3 pl-4 pr-10 text-left shadow-sm focus:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100">
-                  <span className="block truncate font-medium">
-                    {selectedSpecialProgram?.name}
-                    {selectedSpecialProgram?.symbol !== "none" && (
-                      <span className="text-primary font-bold ml-2">
-                        ({selectedSpecialProgram.symbol})
-                      </span>
-                    )}
-                  </span>
-                  <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                    <ChevronUpDownIcon
-                      className="h-5 w-5 text-base-content/40"
-                      aria-hidden="true"
-                    />
-                  </span>
-                </Listbox.Button>
-                <Transition
-                  as={Fragment}
-                  leave="transition ease-in duration-100"
-                  leaveFrom="opacity-100"
-                  leaveTo="opacity-0"
-                >
-                  <Listbox.Options className="absolute z-20 mt-1 max-h-64 w-full overflow-auto rounded-lg bg-base-100 border-2 border-base-300 py-1 shadow-xl focus:outline-none">
-                    {[DEFAULT_PROGRAM, ...specialTradePrograms].map(
-                      (program, i) => (
-                        <Listbox.Option
-                          key={i}
-                          className={({ active }) =>
-                            `relative cursor-pointer select-none py-3 px-4 transition-colors duration-200 ${
-                              active
-                                ? "bg-primary text-primary-content"
-                                : "text-base-content"
-                            }`
-                          }
-                          value={program}
-                        >
-                          {({ selected, active }) => (
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <span
-                                  className={`block ${selected ? "font-semibold" : "font-medium"}`}
-                                >
-                                  {program.name}
-                                  {program.symbol !== "none" && (
-                                    <span
-                                      className={`font-bold ml-2 ${active ? "text-primary-content" : "text-primary"}`}
-                                    >
-                                      ({program.symbol})
-                                    </span>
-                                  )}
-                                </span>
-                                {"description" in program &&
-                                  program.description && (
-                                    <p
-                                      className={`text-sm mt-0.5 ${active ? "text-primary-content/80" : "text-base-content/70"}`}
-                                    >
-                                      {program.description}
-                                    </p>
-                                  )}
-                              </div>
-                              {selected && (
-                                <CheckIcon
-                                  className={`h-5 w-5 flex-shrink-0 ${active ? "text-primary-content" : "text-primary"}`}
-                                  aria-hidden="true"
-                                />
-                              )}
+      <div className="card bg-base-100 border border-base-300 shadow-lg rounded-xl">
+        <div className="px-5 py-4 bg-base-200/50 border-b border-base-300 rounded-t-xl">
+          <h3 className="text-lg font-bold text-base-content">
+            Special Trade Program
+          </h3>
+        </div>
+        <div className="p-5">
+          <Listbox
+            value={selectedSpecialProgram}
+            onChange={setSelectedSpecialProgram}
+          >
+            <div className="relative">
+              <Listbox.Button className="relative w-full cursor-pointer rounded-xl bg-base-200/50 py-3.5 pl-4 pr-10 text-left transition-colors hover:bg-base-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50">
+                <span className="block truncate font-medium">
+                  {selectedSpecialProgram?.name}
+                  {selectedSpecialProgram?.symbol !== "none" && (
+                    <span className="text-primary font-bold ml-2">
+                      ({selectedSpecialProgram.symbol})
+                    </span>
+                  )}
+                </span>
+                <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                  <ChevronUpDownIcon
+                    className="h-5 w-5 text-base-content/40"
+                    aria-hidden="true"
+                  />
+                </span>
+              </Listbox.Button>
+              <Transition
+                as={Fragment}
+                leave="transition ease-in duration-100"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+              >
+                <Listbox.Options className="absolute z-50 mt-2 max-h-64 w-full overflow-auto rounded-xl bg-base-100 border border-base-300 py-1 shadow-xl focus:outline-none">
+                  {[DEFAULT_PROGRAM, ...specialTradePrograms].map(
+                    (program, i) => (
+                      <Listbox.Option
+                        key={i}
+                        className={({ active }) =>
+                          `relative cursor-pointer select-none py-3 px-4 transition-colors ${
+                            active
+                              ? "bg-primary text-primary-content"
+                              : "text-base-content"
+                          }`
+                        }
+                        value={program}
+                      >
+                        {({ selected, active }) => (
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span
+                                className={`block ${selected ? "font-semibold" : "font-medium"}`}
+                              >
+                                {program.name}
+                                {program.symbol !== "none" && (
+                                  <span
+                                    className={`font-bold ml-2 ${active ? "text-primary-content" : "text-primary"}`}
+                                  >
+                                    ({program.symbol})
+                                  </span>
+                                )}
+                              </span>
+                              {"description" in program &&
+                                program.description && (
+                                  <p
+                                    className={`text-sm mt-0.5 ${active ? "text-primary-content/80" : "text-base-content/60"}`}
+                                  >
+                                    {program.description}
+                                  </p>
+                                )}
                             </div>
-                          )}
-                        </Listbox.Option>
-                      )
-                    )}
-                  </Listbox.Options>
-                </Transition>
-              </div>
-            </Listbox>
-          </div>
+                            {selected && (
+                              <CheckIcon
+                                className={`h-5 w-5 flex-shrink-0 ${active ? "text-primary-content" : "text-primary"}`}
+                                aria-hidden="true"
+                              />
+                            )}
+                          </div>
+                        )}
+                      </Listbox.Option>
+                    )
+                  )}
+                </Listbox.Options>
+              </Transition>
+            </div>
+          </Listbox>
         </div>
       </div>
 
       {/* Exemption Notice */}
       {exemptionNote && (
-        <div className="alert alert-warning shadow-md">
-          <ExclamationTriangleIcon className="w-6 h-6 shrink-0" />
+        <div className="alert alert-warning shadow-lg">
+          <ExclamationTriangleIcon className="w-5 h-5 shrink-0" />
           <div>
-            <h3 className="font-bold text-warning-content">Important Notice</h3>
-            <p className="text-warning-content/90">
+            <h3 className="font-bold">Important Notice</h3>
+            <p className="text-sm">
               {exemptionNote}{" "}
               <span className="font-bold">
                 is/are EXEMPT from reciprocal tariffs
@@ -738,143 +723,157 @@ export const CountryTariff = ({
       )}
 
       {/* Tariff Sets */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-5">
         {tariffSets.map((tariffSet, i) => {
           const estimate = dutyEstimates[i];
+          const isExpanded = expandedSets[i] ?? false;
+          const inactiveTariffs = tariffSet.tariffs.filter((t) => !t.isActive);
+          const hasInactiveTariffs = inactiveTariffs.length > 0;
+
           return (
             <div
               key={i}
-              className="card bg-base-100 dark:bg-base-300 border-2 border-base-300 shadow-sm"
+              className="card bg-base-100 border border-base-300 shadow-lg rounded-xl"
             >
               {/* Set Header */}
-              <div className="card-body p-0">
-                <div className="px-4 py-3 bg-base-100 dark:bg-base-300 flex justify-between items-center rounded-t-xl border-b-2 border-base-200">
-                  <h3 className="card-title text-base-content text-lg">
+              <div
+                className={`px-5 py-4 bg-base-200/50 flex flex-wrap justify-between items-center gap-3 border-b border-base-300 rounded-t-xl ${hasInactiveTariffs ? "cursor-pointer hover:bg-base-300 transition-colors" : ""}`}
+                onClick={() => {
+                  if (hasInactiveTariffs) {
+                    setExpandedSets((prev) => ({ ...prev, [i]: !prev[i] }));
+                  }
+                }}
+              >
+                <div className="flex items-center gap-2">
+                  <h3 className="text-lg font-bold text-base-content">
                     {tariffSet.name} Tariffs
                   </h3>
-                  <div className="flex items-center gap-2">
-                    <div className="badge badge-outline badge-lg text-base font-semibold px-3 py-3">
-                      {renderTariffRate(tariffSet)}
-                    </div>
-                    {estimate && (
-                      <div className="badge badge-primary badge-lg text-lg font-bold px-4 py-3">
-                        {formatCurrency(estimate.totalDuty)}
-                      </div>
-                    )}
-                  </div>
                 </div>
-
-                {/* Tariff Items */}
-                <div className="p-4 flex flex-col gap-2">
-                  {getFilteredBaseTariffs()
-                    .flatMap((t) => t.tariffs)
-                    .map((t, j) => (
-                      <BaseTariff
-                        key={`${htsElement.htsno}-${t.raw}-${j}`}
-                        index={j}
-                        htsElement={tariffElement}
-                        tariff={t}
-                        active={!below15PercentRuleApplies}
-                      />
-                    ))}
-                  {tariffSet.tariffs
-                    .filter((t) => t.isActive || showInactive)
-                    .map((tariff) => (
-                      <Tariff
-                        key={tariff.code}
-                        showInactive={showInactive}
-                        tariff={tariff}
-                        setIndex={i}
-                        tariffSets={tariffSets}
-                        countryIndex={countryIndex}
-                        setCountries={setCountries}
-                        countries={countries}
-                        column={tariffColumn}
-                      />
-                    ))}
+                <div className="flex items-center gap-3">
+                  <span className="text-base-content/60 font-semibold">
+                    {renderTariffRate(tariffSet)}
+                  </span>
+                  {estimate && (
+                    <span className="text-lg font-bold text-primary">
+                      {formatCurrency(estimate.totalDuty)}
+                    </span>
+                  )}
+                  {hasInactiveTariffs && (
+                    <ChevronDownIcon
+                      className={`w-5 h-5 text-base-content/60 transition-transform duration-200 ${isExpanded ? "" : "-rotate-180"}`}
+                    />
+                  )}
                 </div>
-
-                {/* Parsing Errors */}
-                {i === 0 && parsingErrors.length > 0 && (
-                  <div className="mx-4 mb-4">
-                    <div className="alert alert-error shadow-md">
-                      <ExclamationCircleIcon className="w-6 h-6 shrink-0" />
-                      <div>
-                        <h3 className="font-bold">
-                          Error parsing base tariff(s)
-                        </h3>
-                        <ul className="list-disc list-inside mt-1">
-                          {parsingErrors.map((err, j) => (
-                            <li key={j}>{err}</li>
-                          ))}
-                        </ul>
-                        <p className="mt-2">
-                          Please contact{" "}
-                          <a
-                            href="mailto:support@htshero.com"
-                            className="link link-primary font-semibold"
-                          >
-                            support
-                          </a>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
+
+              {/* Tariff Items */}
+              <div className="p-5 flex flex-col gap-2">
+                {getFilteredBaseTariffs()
+                  .flatMap((t) => t.tariffs)
+                  .map((t, j) => (
+                    <BaseTariff
+                      key={`${htsElement.htsno}-${t.raw}-${j}`}
+                      index={j}
+                      htsElement={tariffElement}
+                      tariff={t}
+                      active={!below15PercentRuleApplies}
+                    />
+                  ))}
+                {tariffSet.tariffs
+                  .filter((t) => t.isActive || isExpanded)
+                  .map((tariff) => (
+                    <Tariff
+                      key={tariff.code}
+                      showInactive={isExpanded}
+                      tariff={tariff}
+                      setIndex={i}
+                      tariffSets={tariffSets}
+                      countryIndex={countryIndex}
+                      setCountries={setCountries}
+                      countries={countries}
+                      column={tariffColumn}
+                    />
+                  ))}
+              </div>
+
+              {/* Parsing Errors */}
+              {i === 0 && parsingErrors.length > 0 && (
+                <div className="mx-5 mb-5">
+                  <div className="alert alert-error shadow-lg">
+                    <ExclamationCircleIcon className="w-5 h-5 shrink-0" />
+                    <div>
+                      <h3 className="font-bold">
+                        Error parsing base tariff(s)
+                      </h3>
+                      <ul className="list-disc list-inside mt-1 text-sm">
+                        {parsingErrors.map((err, j) => (
+                          <li key={j}>{err}</li>
+                        ))}
+                      </ul>
+                      <p className="mt-2 text-sm">
+                        Please contact{" "}
+                        <a
+                          href="mailto:support@htshero.com"
+                          className="link font-semibold"
+                        >
+                          support
+                        </a>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           );
         })}
       </div>
 
       {/* Additional Fees */}
-      <div className="card bg-base-100 dark:bg-base-300 border-2 border-base-300 shadow-sm">
-        <div className="card-body p-0">
-          <div className="px-4 py-3 bg-base-100 dark:bg-base-300 flex justify-between items-center rounded-t-xl border-b-2 border-base-200">
-            <h3 className="card-title text-base-content text-lg">
-              Additional Fees
-            </h3>
-            <div className="flex items-center gap-2">
-              <div className="badge badge-outline badge-lg text-base font-semibold px-3 py-3">
-                {additionalFeesTotal}%
+      <div className="card bg-base-100 border border-base-300 shadow-lg rounded-xl">
+        <div className="px-5 py-4 bg-base-200/50 flex flex-wrap justify-between items-center gap-3 border-b border-base-300 rounded-t-xl">
+          <h3 className="text-lg font-bold text-base-content">
+            Additional Fees
+          </h3>
+          <div className="flex items-center gap-3">
+            <span className="text-base-content/60 font-semibold">
+              {additionalFeesTotal}%
+            </span>
+            <span className="text-lg font-bold text-primary">
+              {formatCurrency(totalFees)}
+            </span>
+          </div>
+        </div>
+        <div className="p-5 flex flex-col gap-3">
+          {feeEstimates.map((fee, i) => (
+            <div
+              key={i}
+              className="flex justify-between items-center py-3 px-4 bg-base-200/50 rounded-xl"
+            >
+              <div>
+                <span className="font-medium text-base-content">
+                  {fee.name}
+                </span>
+                {fee.name === "Merchandise Processing Fee" && (
+                  <p className="text-xs text-base-content/50 mt-0.5">
+                    Min: $33.58 / Max: $651.50
+                  </p>
+                )}
+                {fee.note && (
+                  <p className="text-xs text-warning font-medium mt-0.5">
+                    {fee.note}
+                  </p>
+                )}
               </div>
-              <div className="badge badge-primary badge-lg text-lg font-bold px-4 py-3">
-                {formatCurrency(totalFees)}
+              <div className="flex flex-col items-end">
+                <span className="font-bold text-primary text-lg">
+                  {formatCurrency(fee.amount)}
+                </span>
+                <span className="text-xs text-base-content/50">
+                  {fee.rate}%
+                </span>
               </div>
             </div>
-          </div>
-          <div className="p-4 space-y-3">
-            {feeEstimates.map((fee, i) => (
-              <div
-                key={i}
-                className={`flex justify-between items-center py-2 ${i < feeEstimates.length - 1 ? "border-b-2 border-base-200" : ""}`}
-              >
-                <div>
-                  <span className="font-medium text-base-content">
-                    {fee.name}
-                  </span>
-                  {fee.name === "Merchandise Processing Fee" && (
-                    <p className="text-sm text-base-content/70 mt-0.5">
-                      Min: $33.58 / Max: $651.50
-                    </p>
-                  )}
-                  {fee.note && (
-                    <p className="text-sm text-warning font-medium mt-0.5">
-                      {fee.note}
-                    </p>
-                  )}
-                </div>
-                <div className="flex flex-col items-end gap-1">
-                  <span className="font-bold text-primary text-lg">
-                    {formatCurrency(fee.amount)}
-                  </span>
-                  <span className="text-sm text-base-content/60">
-                    {fee.rate}%
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
+          ))}
         </div>
       </div>
     </div>

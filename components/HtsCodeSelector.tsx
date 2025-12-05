@@ -256,21 +256,21 @@ export const HtsCodeSelector = ({
             onPaste={handlePaste}
             onFocus={handleFocus}
             onBlur={handleBlur}
-            className={`input input-bordered w-full pr-16 ${
-              selectedElement ? "text-primary font-semibold" : ""
+            className={`w-full h-[45px] px-3 bg-base-200/50 rounded-xl border border-base-content/10 transition-all duration-200 pr-12 placeholder:text-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 hover:border-primary/30 hover:bg-base-200/70 ${
+              selectedElement ? "font-semibold text-primary" : ""
             }`}
             displayValue={() => inputValue}
           />
-          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
+          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
             {(searchValue || selectedElement) && !searching && (
               <button
                 onClick={handleClear}
-                className="btn btn-ghost btn-xs p-1"
+                className="p-1.5 rounded-lg hover:bg-base-content/10 transition-colors"
                 title="Clear"
                 type="button"
               >
                 <svg
-                  className="w-4 h-4"
+                  className="w-4 h-4 text-base-content/50"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -300,13 +300,13 @@ export const HtsCodeSelector = ({
           >
             <Combobox.Options
               static
-              className="absolute z-20 w-full mt-1 bg-base-100 border border-base-content/20 rounded-lg shadow-xl max-h-80 overflow-y-auto focus:outline-none"
+              className="absolute z-20 w-full mt-2 bg-base-100 border border-base-content/10 rounded-xl shadow-2xl max-h-80 overflow-y-auto focus:outline-none"
             >
               {searching ? (
-                <div className="p-4">
-                  <div className="flex items-center justify-center gap-2">
+                <div className="p-6">
+                  <div className="flex items-center justify-center gap-3">
                     <LoadingIndicator spinnerOnly />
-                    <span className="text-sm text-base-content/70">
+                    <span className="text-sm text-base-content/60 font-medium">
                       Searching...
                     </span>
                   </div>
@@ -321,42 +321,52 @@ export const HtsCodeSelector = ({
                       key={`search-result-${index}`}
                       value={element}
                       className={({ active }) =>
-                        `px-4 py-3 cursor-pointer border-b border-base-content/10 last:border-b-0 transition-all duration-150 ${
+                        `px-4 py-3.5 cursor-pointer border-b border-base-content/5 last:border-b-0 transition-all duration-150 ${
                           active
-                            ? "bg-primary/10 border-l-4 border-l-primary pl-3"
-                            : "border-l-4 border-l-transparent"
+                            ? "bg-primary text-primary-content"
+                            : "hover:bg-base-200/70"
                         }`
                       }
                     >
-                      <div className="flex flex-col gap-1">
-                        <p className="font-bold text-primary">
-                          {element.htsno}
-                        </p>
-                        <p className="text-sm line-clamp-2 font-semibold">
-                          {element.description}
-                        </p>
-                        {parents.length > 0 && (
-                          <p className="text-xs text-base-content/50 truncate">
-                            {parents
-                              .filter((p) => p.htsno)
-                              .map((p) => p.htsno)
-                              .join(" → ")}
-                            {element.htsno && (
-                              <>
-                                {parents.some((p) => p.htsno) && " → "}
-                                {element.htsno}
-                              </>
-                            )}
+                      {({ active }) => (
+                        <div className="flex flex-col gap-1.5">
+                          <p
+                            className={`font-bold ${active ? "text-primary-content" : "text-primary"}`}
+                          >
+                            {element.htsno}
                           </p>
-                        )}
-                      </div>
+                          <p
+                            className={`text-sm line-clamp-2 font-medium ${active ? "text-primary-content/90" : "text-base-content"}`}
+                          >
+                            {element.description}
+                          </p>
+                          {parents.length > 0 && (
+                            <p
+                              className={`text-xs truncate ${active ? "text-primary-content/60" : "text-base-content/50"}`}
+                            >
+                              {parents
+                                .filter((p) => p.htsno)
+                                .map((p) => p.htsno)
+                                .join(" → ")}
+                              {element.htsno && (
+                                <>
+                                  {parents.some((p) => p.htsno) && " → "}
+                                  {element.htsno}
+                                </>
+                              )}
+                            </p>
+                          )}
+                        </div>
+                      )}
                     </Combobox.Option>
                   );
                 })
               ) : (
-                <div className="p-4">
-                  <div className="flex items-center justify-center gap-2">
-                    <TertiaryLabel value="No HTS codes found matching your search" />
+                <div className="p-6">
+                  <div className="flex items-center justify-center">
+                    <span className="text-sm text-base-content/50 font-medium">
+                      No HTS codes found matching your search
+                    </span>
                   </div>
                 </div>
               )}

@@ -27,66 +27,64 @@ export const BaseTariff = ({
   const valueText = tariff.type === "percent" ? `${tariff.value}%` : tariff.raw;
 
   return (
-    <div className="w-full">
-      <div
-        key={`${htsElement.htsno}-${tariff.raw}-${index}`}
-        className={classNames(
-          "flex gap-3 justify-between items-center py-3 px-4 rounded-lg transition-all duration-200 border-2 hover:bg-base-300",
-          active ? "border-primary" : "border-base-300 opacity-70"
-        )}
-      >
-        <div className="flex flex-col gap-2 items-start flex-1 min-w-0">
-          <div className="flex gap-3 items-center flex-wrap">
-            <input
-              type="checkbox"
-              checked
-              disabled
-              className="checkbox checkbox-primary checkbox-sm shrink-0"
-            />
-            <div className="flex gap-2 items-center flex-wrap">
-              <span
-                className={classNames(
-                  "font-bold",
-                  active ? "text-base-content" : "text-base-content/60"
-                )}
-              >
-                {htsElement.htsno}
-              </span>
-              <span className="text-base-content/50 font-bold">•</span>
-              <span
-                className={classNames(
-                  "font-semibold",
-                  active ? "text-base-content" : "text-base-content/60"
-                )}
-              >
-                General Duty: {primaryText}
-              </span>
-            </div>
-          </div>
-
-          {tariff.programs && tariff.programs.length > 0 && (
-            <div className="ml-9">
-              <SpecialPrograms programs={tariff.programs} />
-            </div>
-          )}
-        </div>
-
-        <div className="shrink-0 min-w-[120px] text-right">
-          {reviewText ? (
-            <span className="badge badge-warning badge-lg font-bold px-3 py-3">
-              {reviewText}
-            </span>
-          ) : (
-            <p
+    <div
+      key={`${htsElement.htsno}-${tariff.raw}-${index}`}
+      className={classNames(
+        "flex gap-3 justify-between items-center py-3 px-4 rounded-xl transition-colors bg-base-200/50",
+        active ? "" : "opacity-60"
+      )}
+    >
+      <div className="flex flex-col gap-2 items-start flex-1 min-w-0">
+        <div className="flex gap-3 items-center flex-wrap">
+          <input
+            type="checkbox"
+            checked
+            disabled
+            className="checkbox checkbox-primary checkbox-sm shrink-0"
+          />
+          <div className="flex gap-2 items-center flex-wrap">
+            <span
               className={classNames(
-                "text-base sm:text-lg md:text-xl font-bold",
-                active ? "text-primary" : "line-through text-base-content/50"
+                "font-bold",
+                active ? "text-base-content" : "text-base-content/60"
               )}
             >
-              {valueText}
-            </p>
-          )}
+              {htsElement.htsno}
+            </span>
+            <span className="text-base-content/30">•</span>
+            <span
+              className={classNames(
+                "font-medium text-base-content/70",
+                !active && "text-base-content/50"
+              )}
+            >
+              General Duty: {primaryText}
+            </span>
+          </div>
         </div>
+
+        {tariff.programs && tariff.programs.length > 0 && (
+          <div className="ml-9">
+            <SpecialPrograms programs={tariff.programs} />
+          </div>
+        )}
+      </div>
+
+      <div className="shrink-0 min-w-[100px] text-right">
+        {reviewText ? (
+          <span className="badge badge-warning font-semibold">
+            {reviewText}
+          </span>
+        ) : (
+          <span
+            className={classNames(
+              "text-lg font-bold",
+              active ? "text-primary" : "line-through text-base-content/40"
+            )}
+          >
+            {valueText}
+          </span>
+        )}
       </div>
     </div>
   );

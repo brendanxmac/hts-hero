@@ -157,29 +157,29 @@ export const CountrySelection = ({
   return (
     <div className="relative" ref={dropdownRef}>
       <div
-        className="w-full p-1 pr-2 input input-bordered rounded-md cursor-pointer flex gap-3 items-center justify-between hover:bg-base-content/5 transition-colors min-h-10"
+        className={`w-full h-[45px] px-3 bg-base-200/50 rounded-xl cursor-pointer flex gap-2 items-center justify-between transition-all duration-200 border border-base-content/10 hover:border-primary/30 hover:bg-base-200/70 ${isOpen ? "ring-2 ring-primary/50 border-primary/30" : ""}`}
         onClick={() => setIsOpen(!isOpen)}
       >
-        <div className="flex-1 flex flex-wrap gap-2 items-center">
+        <div className="flex-1 flex flex-wrap gap-1.5 items-center">
           {selectedCountries.length > 0 ? (
             selectedCountries.map((country) => (
               <div
                 key={`country-selection-option-${country.name}`}
-                className="flex items-center gap-1 bg-primary rounded-md px-1 py-0"
+                className="flex items-center gap-1.5 bg-primary/10 border border-primary/20 rounded-md px-2 py-0.5"
               >
-                <div className="flex gap-2 items-center">
-                  <p className="text-lg">{country.flag}</p>
-                  <p className="text-sm text-white font-semibold">
+                <div className="flex gap-1.5 items-center">
+                  <p className="text-base">{country.flag}</p>
+                  <p className="text-sm text-base-content font-semibold">
                     {country.name}
                   </p>
                 </div>
                 <button
                   onClick={(e) => handleRemoveCountry(country, e)}
-                  className="ml-1 p-0.5 hover:bg-white/20 rounded transition-colors"
+                  className="p-0.5 hover:bg-primary/20 rounded transition-colors"
                   title={`Remove ${country.name}`}
                 >
                   <svg
-                    className="w-3 h-3 text-white"
+                    className="w-3 h-3 text-base-content/60"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -195,7 +195,7 @@ export const CountrySelection = ({
               </div>
             ))
           ) : (
-            <span className="text-sm ml-2 text-base-content/50">
+            <span className="text-sm text-base-content/50 font-medium ml-1">
               {singleSelect
                 ? "Select Country of Origin"
                 : "Select Countries of Origin"}
@@ -206,14 +206,14 @@ export const CountrySelection = ({
           {selectedCountries.length > 0 ? (
             <button
               onClick={handleClearAll}
-              className="text-xs text-base-content/60 hover:text-error transition-colors px-2 py-1"
+              className="text-xs font-medium text-base-content/50 hover:text-error transition-colors px-1.5 py-0.5 rounded hover:bg-error/10"
               title="Clear all selections"
             >
               clear
             </button>
           ) : (
             <svg
-              className={`w-4 h-4 transition-transform text-base-content/70 ${isOpen ? "" : "rotate-180"}`}
+              className={`w-4 h-4 transition-transform duration-200 text-base-content/40 ${isOpen ? "rotate-180" : ""}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -230,49 +230,49 @@ export const CountrySelection = ({
       </div>
 
       {isOpen && (
-        <div className="absolute z-10 w-full mt-1 bg-base-100 border border-base-content/20 rounded-lg shadow-xl max-h-96 overflow-hidden">
-          <div className="p-2 border-b border-base-300">
+        <div className="absolute z-50 w-full mt-2 bg-base-100 border border-base-content/10 rounded-xl shadow-2xl max-h-96 overflow-hidden">
+          <div className="p-3 border-b border-base-content/10 bg-base-200/30">
             <input
               type="text"
               placeholder="Search countries..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="input input-bordered w-full p-2 rounded-md bg-base-100 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-4 py-2.5 bg-base-100 rounded-lg border border-base-content/10 placeholder:text-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 transition-all duration-200"
               autoFocus
             />
           </div>
 
-          <div className="max-h-48 overflow-y-auto" ref={scrollContainerRef}>
+          <div className="max-h-56 overflow-y-auto" ref={scrollContainerRef}>
             {filteredCountries.length > 0 ? (
               filteredCountries.map((country, index) => {
                 const isSelected = isCountrySelected(country);
                 const isHighlighted = index === highlightedIndex;
 
                 // State priority: highlighted > selected > default
-                let bgClass = "bg-base-100 hover:bg-base-200";
+                let bgClass = "bg-transparent hover:bg-base-200/70";
                 let textClass = "text-base-content";
-                let checkClass = "text-white";
+                let checkClass = "text-primary";
 
                 if (isSelected && !isHighlighted) {
-                  bgClass = "bg-primary/20 hover:bg-primary/30";
-                  textClass = "text-base-content";
+                  bgClass = "bg-primary/10 hover:bg-primary/15";
+                  textClass = "text-base-content font-medium";
                   checkClass = "text-primary";
                 } else if (isHighlighted) {
-                  bgClass = "bg-primary";
-                  textClass = "text-white";
-                  checkClass = "text-white";
+                  bgClass = "bg-primary text-primary-content";
+                  textClass = "text-primary-content font-medium";
+                  checkClass = "text-primary-content";
                 }
 
                 return (
                   <div
                     key={index}
-                    className={`px-3 py-2 cursor-pointer flex items-center justify-between transition-colors ${bgClass}`}
+                    className={`px-4 py-3 cursor-pointer flex items-center justify-between transition-all duration-150 ${bgClass}`}
                     onClick={() => handleCountrySelect(country)}
                     onMouseEnter={() => setHighlightedIndex(index)}
                   >
-                    <div className="flex items-center">
-                      <span className="mr-2">{country.flag}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-xl">{country.flag}</span>
                       <span className={textClass}>{country.name}</span>
                     </div>
                     {isSelected && (
@@ -285,7 +285,7 @@ export const CountrySelection = ({
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          strokeWidth={2}
+                          strokeWidth={2.5}
                           d="M5 13l4 4L19 7"
                         />
                       </svg>
@@ -294,7 +294,7 @@ export const CountrySelection = ({
                 );
               })
             ) : (
-              <div className="px-3 py-2 text-base-content/60">
+              <div className="px-4 py-6 text-center text-base-content/50 font-medium">
                 No countries found
               </div>
             )}
