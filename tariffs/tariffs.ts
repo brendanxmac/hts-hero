@@ -191,8 +191,6 @@ export const addTariffsToCountry = (
     existingTariffSets
   );
 
-  console.log;
-
   const specialTradePrograms = getSpecialTradePrograms(country, tariffElement);
 
   return {

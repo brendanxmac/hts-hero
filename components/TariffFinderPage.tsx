@@ -7,9 +7,6 @@ import { HtsElement } from "../interfaces/hts";
 import { useHts } from "../contexts/HtsContext";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { PrimaryLabel } from "./PrimaryLabel";
-import { SecondaryText } from "./SecondaryText";
-import { SecondaryLabel } from "./SecondaryLabel";
-import { TertiaryText } from "./TertiaryText";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { CountryTariff } from "./CountryTariff";
 import {
@@ -25,6 +22,7 @@ import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import { HtsCodeSelector } from "./HtsCodeSelector";
 import { NumberInput } from "./NumberInput";
+import { PercentageInput } from "./PercentageInput";
 
 export const TariffFinderPage = () => {
   // Context
@@ -233,15 +231,12 @@ export const TariffFinderPage = () => {
     );
   }
 
-  console.log("countryWithTariffs:");
-  console.log(countryWithTariffs && countryWithTariffs.baseTariffs);
-
   return (
     <main className="w-screen h-full flex flex-col bg-base-100 py-6">
       <div className="w-full max-w-5xl mx-auto flex flex-col px-4 sm:px-6 gap-6 pb-6">
         {/* Header */}
         <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">
-          Tariff Finder
+          United States Import Tariff Finder
         </h1>
 
         {/* Inputs */}
@@ -288,68 +283,57 @@ export const TariffFinderPage = () => {
               min={0}
             />
           </div>
-          {/* Content Percentage Sliders and Units/Customs Value Inputs */}
+          {/* Units and Customs Value Inputs */}
+          {countryWithTariffs &&
+            countryWithTariffs.baseTariffs
+              ?.flatMap((t) => t.tariffs)
+              ?.some((t) => t.type === "amount") && (
+              <div className="col-span-1 flex flex-col gap-2">
+                <div className="flex flex-col">
+                  <PrimaryLabel value="Amount / Units / Weight" />
+                </div>
+                <NumberInput
+                  value={uiUnits}
+                  setValue={handleUnitsChange}
+                  min={0}
+                  subtext={
+                    selectedElement &&
+                    tariffElement &&
+                    (selectedElement.units.length > 0 ||
+                      tariffElement.units.length > 0)
+                      ? `${[...selectedElement.units, ...tariffElement.units]
+                          .reduce((acc: string[], unit: string) => {
+                            if (!acc.includes(unit)) {
+                              acc.push(unit);
+                            }
+                            return acc;
+                          }, [])
+                          .join(",")}`
+                      : ""
+                  }
+                />
+              </div>
+            )}
+          {/* Content Percentage Inputs */}
           {countryWithTariffs && uiContentPercentages.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Content Percentage Sliders */}
+            <div className="flex flex-col gap-4 col-span-1">
               {uiContentPercentages.map((contentPercentage) => (
                 <div
                   key={`${contentPercentage.name}-content-requirement`}
-                  className="col-span-1 flex flex-col"
+                  className="flex flex-col gap-2"
                 >
                   <PrimaryLabel
                     value={`${contentPercentage.name} Value Percentage`}
                   />
-                  {/* <TertiaryText
-                    value={`What percent of the articles value is ${contentPercentage.name}?`}
-                  /> */}
-                  <div className="flex gap-2 items-center mt-3">
-                    <input
-                      type="range"
-                      min={0}
-                      max="100"
-                      value={contentPercentage.value}
-                      className="range range-primary range-sm p-1"
-                      onChange={(e) => {
-                        const value = parseInt(e.target.value);
-                        handleSliderChange(contentPercentage.name, value);
-                      }}
-                    />
-                    <TertiaryLabel value={`${contentPercentage.value}%`} />
-                  </div>
+                  <PercentageInput
+                    value={contentPercentage.value}
+                    onChange={(value) =>
+                      handleSliderChange(contentPercentage.name, value)
+                    }
+                    className="max-w-48"
+                  />
                 </div>
               ))}
-            </div>
-          )}
-          {/* Units and Customs Value Inputs */}
-          {countryWithTariffs && (
-            // countryWithTariffs.baseTariffs
-            //   ?.flatMap((t) => t.tariffs)
-            //   ?.some((t) => t.type === "amount") && (
-            <div className="col-span-1 flex flex-col gap-2">
-              <div className="flex flex-col">
-                <PrimaryLabel value="Amount / Units / Weight" />
-              </div>
-              <NumberInput
-                value={uiUnits}
-                setValue={handleUnitsChange}
-                min={0}
-                subtext={
-                  selectedElement &&
-                  tariffElement &&
-                  (selectedElement.units.length > 0 ||
-                    tariffElement.units.length > 0)
-                    ? `${[...selectedElement.units, ...tariffElement.units]
-                        .reduce((acc: string[], unit: string) => {
-                          if (!acc.includes(unit)) {
-                            acc.push(unit);
-                          }
-                          return acc;
-                        }, [])
-                        .join(",")}`
-                    : ""
-                }
-              />
             </div>
           )}
         </div>
