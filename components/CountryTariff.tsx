@@ -767,20 +767,32 @@ export const CountryTariff = ({
               </div>
 
               {/* Tariff Items */}
-              <div className="p-5 flex flex-col gap-2">
-                {getFilteredBaseTariffs()
-                  .flatMap((t) => t.tariffs)
-                  .map((t, j) => (
-                    <BaseTariff
-                      key={`${htsElement.htsno}-${t.raw}-${j}`}
-                      index={j}
-                      htsElement={tariffElement}
-                      tariff={t}
-                      active={!below15PercentRuleApplies}
-                    />
-                  ))}
+              <div className="p-5 flex flex-col gap-4">
+                {/* Base Tariffs */}
+                {getFilteredBaseTariffs().flatMap((t) => t.tariffs).length >
+                  0 && (
+                  <div className="flex flex-col gap-2">
+                    {getFilteredBaseTariffs()
+                      .flatMap((t) => t.tariffs)
+                      .map((t, j) => (
+                        <BaseTariff
+                          key={`${htsElement.htsno}-${t.raw}-${j}`}
+                          index={j}
+                          htsElement={tariffElement}
+                          tariff={t}
+                          active={!below15PercentRuleApplies}
+                        />
+                      ))}
+                  </div>
+                )}
+
+                {/* Standard Tariffs (no label) */}
                 {tariffSet.tariffs
-                  .filter((t) => t.isActive || isExpanded)
+                  .filter(
+                    (t) =>
+                      !tariffSet.exceptionCodes.has(t.code) &&
+                      (t.isActive || isExpanded)
+                  )
                   .map((tariff) => (
                     <Tariff
                       key={tariff.code}
@@ -794,6 +806,57 @@ export const CountryTariff = ({
                       column={tariffColumn}
                     />
                   ))}
+
+                {/* Exception/Exemption Tariffs */}
+                {(() => {
+                  const visibleExceptionTariffs = tariffSet.tariffs.filter(
+                    (t) =>
+                      tariffSet.exceptionCodes.has(t.code) &&
+                      (t.isActive || isExpanded)
+                  );
+
+                  if (visibleExceptionTariffs.length === 0) return null;
+
+                  return (
+                    <div className="flex flex-col gap-2 mt-2">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-semibold text-success uppercase tracking-wider flex items-center gap-1.5">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            className="w-3.5 h-3.5"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                          Exemptions & Exceptions
+                        </span>
+                        <div className="flex-1 h-px bg-success/30" />
+                      </div>
+                      <p className="text-xs text-base-content/50 -mt-1 mb-1">
+                        These may reduce or eliminate tariffs above if your
+                        product qualifies
+                      </p>
+                      {visibleExceptionTariffs.map((tariff) => (
+                        <Tariff
+                          key={tariff.code}
+                          showInactive={isExpanded}
+                          tariff={tariff}
+                          setIndex={i}
+                          tariffSets={tariffSets}
+                          countryIndex={countryIndex}
+                          setCountries={setCountries}
+                          countries={countries}
+                          column={tariffColumn}
+                        />
+                      ))}
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Parsing Errors */}

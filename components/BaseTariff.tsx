@@ -30,8 +30,8 @@ export const BaseTariff = ({
     <div
       key={`${htsElement.htsno}-${tariff.raw}-${index}`}
       className={classNames(
-        "flex gap-3 justify-between items-center py-3 px-4 rounded-xl transition-colors bg-base-200/50",
-        active ? "" : "opacity-60"
+        "flex gap-3 justify-between items-center py-3 px-4 rounded-xl transition-colors",
+        active ? "bg-primary/10" : "bg-base-200/50 opacity-60"
       )}
     >
       <div className="flex flex-col gap-2 items-start flex-1 min-w-0">
@@ -54,7 +54,7 @@ export const BaseTariff = ({
             <span className="text-base-content/30">•</span>
             <span
               className={classNames(
-                "font-medium text-base-content/70",
+                "font-medium text-base-content",
                 !active && "text-base-content/50"
               )}
             >

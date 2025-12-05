@@ -163,8 +163,7 @@ export const Tariff = ({
             </div>
             <span
               className={classNames(
-                "font-medium min-w-0 flex-1",
-                tariff.isActive ? "text-base-content" : "text-base-content/70"
+                "font-medium min-w-0 flex-1 text-base-content"
               )}
             >
               {tariff.name}
