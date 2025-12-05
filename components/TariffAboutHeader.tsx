@@ -11,6 +11,10 @@ import ThemeToggle from "./ThemeToggle";
 
 const links = [
   {
+    href: "/tariff-finder",
+    text: "Tariff Finder",
+  },
+  {
     href: "#pending-tariffs",
     text: "Pending Tariffs",
   },

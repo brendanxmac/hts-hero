@@ -32,7 +32,7 @@ const UnauthenticatedHeader = () => {
     label: string;
   }[] = [
     {
-      href: "/explore",
+      href: "/tariff-finder",
       label: "Tariff Finder",
     },
     {
@@ -44,9 +44,13 @@ const UnauthenticatedHeader = () => {
       label: "Tariff Impact Checker",
     },
     {
+      href: "/explore",
+      label: "HTS Explorer",
+    },
+    {
       href: "/about/tariffs",
       label:
-        pathname === "/explore"
+        pathname === "/tariff-finder"
           ? "Learn More"
           : "Want to Find the Best Tariff Rates?",
     },
@@ -87,7 +91,7 @@ const UnauthenticatedHeader = () => {
             <Link href="/about/tariffs">
               <button
                 className={`btn btn-link px-0 gap-0 ${
-                  pathname === "/explore"
+                  pathname === "/tariff-finder"
                     ? "text-primary underline"
                     : "text-base-content no-underline"
                 }`}
@@ -160,9 +164,9 @@ const UnauthenticatedHeader = () => {
             )}
             <Link
               className="btn btn-sm btn-primary font-semibold link link-hover"
-              href="/about"
+              href={pathname === "/tariff-finder" ? "/about/tariffs" : "/about"}
             >
-              {pathname === "/explore"
+              {pathname === "/tariff-finder"
                 ? "Want Effortless Tariffs?"
                 : "Want Quicker Classifications?"}
             </Link>

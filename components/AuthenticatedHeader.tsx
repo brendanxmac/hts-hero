@@ -51,9 +51,9 @@ export const AuthenticatedHeader = () => {
 
           <div className="hidden md:flex items-center justify-start gap-4">
             <Link
-              href="/explore"
+              href="/tariff-finder"
               className={`btn btn-link px-0 gap-0 ${
-                pathname === "/explore"
+                pathname === "/tariff-finder"
                   ? "text-primary underline"
                   : "text-base-content no-underline"
               }`}
@@ -79,6 +79,17 @@ export const AuthenticatedHeader = () => {
                 }`}
               >
                 Tariff Impact Checker
+              </button>
+            </Link>
+            <Link href="/explore">
+              <button
+                className={`btn btn-link px-0 gap-0 ${
+                  pathname === "/explore"
+                    ? "text-primary underline"
+                    : "text-base-content no-underline"
+                }`}
+              >
+                HTS Explorer
               </button>
             </Link>
           </div>
@@ -180,9 +191,9 @@ export const AuthenticatedHeader = () => {
               <div className="py-4">
                 <div className="flex flex-col gap-y-4 items-start">
                   <Link
-                    href="/explore"
+                    href="/tariff-finder"
                     className={`font-semibold link link-hover ${
-                      pathname === "/explore"
+                      pathname === "/tariff-finder"
                         ? "text-primary underline"
                         : "text-base-content no-underline"
                     }`}

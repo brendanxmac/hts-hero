@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useState, Fragment } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { EuropeanUnionCountries } from "../constants/countries";
 import { Tariff } from "./Tariff";
 import { ContentRequirementI } from "./Element";
@@ -16,12 +16,10 @@ import {
 import { TradePrograms } from "../public/trade-programs";
 import { copyToClipboard } from "../utilities/data";
 import { TariffSet } from "../interfaces/tariffs";
+import { classNames } from "../utilities/style";
 import { SubheadingsConditionallyExemptFromReciprocal } from "../tariffs/exclusion-lists.ts/reciprocal-tariff-exlcusions";
-import { Listbox, Transition } from "@headlessui/react";
 import {
-  CheckIcon,
   ChevronDownIcon,
-  ChevronUpDownIcon,
   ClipboardDocumentCheckIcon,
   ClipboardDocumentIcon,
   ExclamationCircleIcon,
@@ -516,7 +514,7 @@ export const CountryTariff = ({
           </div>
 
           {/* Breakdown Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
             {dutyEstimates.map((estimate, i) => (
               <div
                 key={i}
@@ -574,11 +572,40 @@ export const CountryTariff = ({
               </div>
             </div>
           </div>
+          {/* Tariff Rates */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {summaryTotals.map((total, i) => (
+              <div
+                key={i}
+                className="flex flex-col items-center justify-center p-4 bg-base-200/50 rounded-xl"
+              >
+                <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1">
+                  {total.name} Tariff Rate
+                </span>
+                <div className="text-3xl font-black text-primary">
+                  {total.hasAmountTariffs && total.amountRatesString && (
+                    <span className="text-xl">
+                      {total.amountRatesString} +{" "}
+                    </span>
+                  )}
+                  {total.rate}%
+                </div>
+              </div>
+            ))}
+            <div className="flex flex-col items-center justify-center p-4 bg-base-200/50 rounded-xl">
+              <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1">
+                Additional Fees
+              </span>
+              <div className="text-3xl font-black text-primary">
+                {additionalFeesTotal}%
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Tariff Rates Summary */}
-      <div className="card bg-base-100 border border-base-300 shadow-lg rounded-xl">
+      {/* <div className="card bg-base-100 border border-base-300 shadow-lg rounded-xl">
         <div className="px-5 py-4 bg-base-200/50 border-b border-base-300 rounded-t-xl">
           <h3 className="text-lg font-bold text-base-content">Tariff Rates</h3>
         </div>
@@ -612,96 +639,60 @@ export const CountryTariff = ({
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
-      {/* Trade Programs Dropdown */}
+      {/* Trade Programs */}
       <div className="card bg-base-100 border border-base-300 shadow-lg rounded-xl">
         <div className="px-5 py-4 bg-base-200/50 border-b border-base-300 rounded-t-xl">
           <h3 className="text-lg font-bold text-base-content">
-            Special Trade Program
+            Special Trade Programs
           </h3>
         </div>
-        <div className="p-5">
-          <Listbox
-            value={selectedSpecialProgram}
-            onChange={setSelectedSpecialProgram}
-          >
-            <div className="relative">
-              <Listbox.Button className="relative w-full cursor-pointer rounded-xl bg-base-200/50 py-3.5 pl-4 pr-10 text-left transition-colors hover:bg-base-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50">
-                <span className="block truncate font-medium">
-                  {selectedSpecialProgram?.name}
-                  {selectedSpecialProgram?.symbol !== "none" && (
-                    <span className="text-primary font-bold ml-2">
-                      ({selectedSpecialProgram.symbol})
-                    </span>
-                  )}
-                </span>
-                <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                  <ChevronUpDownIcon
-                    className="h-5 w-5 text-base-content/40"
-                    aria-hidden="true"
-                  />
-                </span>
-              </Listbox.Button>
-              <Transition
-                as={Fragment}
-                leave="transition ease-in duration-100"
-                leaveFrom="opacity-100"
-                leaveTo="opacity-0"
+        <div className="p-5 flex flex-col gap-3">
+          {[DEFAULT_PROGRAM, ...specialTradePrograms].map((program, i) => {
+            const isSelected =
+              selectedSpecialProgram?.symbol === program.symbol;
+            return (
+              <div
+                key={i}
+                className={classNames(
+                  "flex gap-3 justify-between items-center py-3 px-4 rounded-xl transition-colors hover:bg-base-200 cursor-pointer",
+                  isSelected ? "bg-primary/10" : "bg-base-200/50"
+                )}
+                onClick={() => setSelectedSpecialProgram(program)}
               >
-                <Listbox.Options className="absolute z-50 mt-2 max-h-64 w-full overflow-auto rounded-xl bg-base-100 border border-base-300 py-1 shadow-xl focus:outline-none">
-                  {[DEFAULT_PROGRAM, ...specialTradePrograms].map(
-                    (program, i) => (
-                      <Listbox.Option
-                        key={i}
-                        className={({ active }) =>
-                          `relative cursor-pointer select-none py-3 px-4 transition-colors ${
-                            active
-                              ? "bg-primary text-primary-content"
-                              : "text-base-content"
-                          }`
-                        }
-                        value={program}
-                      >
-                        {({ selected, active }) => (
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <span
-                                className={`block ${selected ? "font-semibold" : "font-medium"}`}
-                              >
-                                {program.name}
-                                {program.symbol !== "none" && (
-                                  <span
-                                    className={`font-bold ml-2 ${active ? "text-primary-content" : "text-primary"}`}
-                                  >
-                                    ({program.symbol})
-                                  </span>
-                                )}
-                              </span>
-                              {"description" in program &&
-                                program.description && (
-                                  <p
-                                    className={`text-sm mt-0.5 ${active ? "text-primary-content/80" : "text-base-content/60"}`}
-                                  >
-                                    {program.description}
-                                  </p>
-                                )}
-                            </div>
-                            {selected && (
-                              <CheckIcon
-                                className={`h-5 w-5 flex-shrink-0 ${active ? "text-primary-content" : "text-primary"}`}
-                                aria-hidden="true"
-                              />
-                            )}
-                          </div>
-                        )}
-                      </Listbox.Option>
-                    )
-                  )}
-                </Listbox.Options>
-              </Transition>
-            </div>
-          </Listbox>
+                <div className="flex gap-3 items-center flex-1 min-w-0">
+                  <input
+                    type="radio"
+                    name="trade-program"
+                    checked={isSelected}
+                    onChange={() => setSelectedSpecialProgram(program)}
+                    className="radio radio-primary radio-sm shrink-0"
+                  />
+                  <div className="flex flex-col gap-1 min-w-0 flex-1">
+                    <div className="flex gap-2 items-center flex-wrap">
+                      {program.symbol !== "none" && (
+                        <div className="flex gap-2 items-center shrink-0">
+                          <span className="font-bold text-primary">
+                            {program.symbol}
+                          </span>
+                          <span className="text-base-content/30">•</span>
+                        </div>
+                      )}
+                      <span className="font-medium min-w-0 flex-1 text-base-content">
+                        {program.name}
+                      </span>
+                    </div>
+                    {"description" in program && program.description && (
+                      <p className="text-sm text-base-content/60">
+                        {program.description}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -736,14 +727,7 @@ export const CountryTariff = ({
               className="card bg-base-100 border border-base-300 shadow-lg rounded-xl"
             >
               {/* Set Header */}
-              <div
-                className={`px-5 py-4 bg-base-200/50 flex flex-wrap justify-between items-center gap-3 border-b border-base-300 rounded-t-xl ${hasInactiveTariffs ? "cursor-pointer hover:bg-base-300 transition-colors" : ""}`}
-                onClick={() => {
-                  if (hasInactiveTariffs) {
-                    setExpandedSets((prev) => ({ ...prev, [i]: !prev[i] }));
-                  }
-                }}
-              >
+              <div className="px-5 py-4 bg-base-200/50 flex flex-wrap justify-between items-center gap-3 border-b border-base-300 rounded-t-xl">
                 <div className="flex items-center gap-2">
                   <h3 className="text-lg font-bold text-base-content">
                     {tariffSet.name} Tariffs
@@ -753,15 +737,11 @@ export const CountryTariff = ({
                   <span className="text-base-content/60 font-semibold">
                     {renderTariffRate(tariffSet)}
                   </span>
+                  <span className="text-base-content/50">|</span>
                   {estimate && (
                     <span className="text-lg font-bold text-primary">
                       {formatCurrency(estimate.totalDuty)}
                     </span>
-                  )}
-                  {hasInactiveTariffs && (
-                    <ChevronDownIcon
-                      className={`w-5 h-5 text-base-content/60 transition-transform duration-200 ${isExpanded ? "" : "-rotate-180"}`}
-                    />
                   )}
                 </div>
               </div>
@@ -884,6 +864,26 @@ export const CountryTariff = ({
                       </p>
                     </div>
                   </div>
+                </div>
+              )}
+
+              {/* Show/Hide Inactive Tariffs Button */}
+              {hasInactiveTariffs && (
+                <div className="px-5 pb-5 flex justify-center">
+                  <button
+                    className="btn btn-sm btn-ghost gap-2"
+                    onClick={() =>
+                      setExpandedSets((prev) => ({ ...prev, [i]: !prev[i] }))
+                    }
+                  >
+                    <ChevronDownIcon
+                      className={`w-5 h-5 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                    />
+                    {isExpanded ? "Hide Inactive Tariffs" : "Show All Tariffs"}
+                    <ChevronDownIcon
+                      className={`w-5 h-5 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                    />
+                  </button>
                 </div>
               )}
             </div>

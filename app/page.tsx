@@ -15,7 +15,7 @@ const products: ProductCardI[] = [
     title: "Tariff Finder",
     description: "Find the Best Tariff Rate for Any Item",
     aboutUrl: "/about/tariffs",
-    appUrl: "/explore",
+    appUrl: "/tariff-finder",
     cta: "Find Tariffs",
   },
   {

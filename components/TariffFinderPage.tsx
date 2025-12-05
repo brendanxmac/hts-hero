@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import { Country } from "../constants/countries";
+import { useSearchParams } from "next/navigation";
+import { Countries, Country } from "../constants/countries";
 import { CountrySelection } from "./CountrySelection";
 import { HtsElement } from "../interfaces/hts";
 import { useHts } from "../contexts/HtsContext";
@@ -23,7 +24,29 @@ import { HtsCodeSelector } from "./HtsCodeSelector";
 import { NumberInput } from "./NumberInput";
 import { PercentageInput } from "./PercentageInput";
 
+// Helper to normalize HTS code format (add dots if missing)
+const normalizeHtsCode = (str: string): string => {
+  const digitsOnly = str.replace(/\./g, "");
+  if (digitsOnly.length === 8) {
+    return `${digitsOnly.slice(0, 4)}.${digitsOnly.slice(4, 6)}.${digitsOnly.slice(6, 8)}`;
+  }
+  if (digitsOnly.length === 10) {
+    return `${digitsOnly.slice(0, 4)}.${digitsOnly.slice(4, 6)}.${digitsOnly.slice(6, 8)}.${digitsOnly.slice(8, 10)}`;
+  }
+  return str;
+};
+
+// Helper to validate country code
+const getCountryByCode = (code: string): Country | null => {
+  if (!code || code.length !== 2) return null;
+  const upperCode = code.toUpperCase();
+  return Countries.find((c) => c.code === upperCode) || null;
+};
+
 export const TariffFinderPage = () => {
+  // URL params
+  const searchParams = useSearchParams();
+
   // Context
   const { htsElements, fetchElements } = useHts();
   const { sections, getSections } = useHtsSections();
@@ -37,13 +60,30 @@ export const TariffFinderPage = () => {
   const [countryWithTariffs, setCountryWithTariffs] =
     useState<CountryWithTariffs | null>(null);
   const [loadingPage, setLoadingPage] = useState(true);
+  const [urlParamsProcessed, setUrlParamsProcessed] = useState(false);
+
+  // Parse initial customs value from URL params
+  const getInitialCustomsValue = (): number => {
+    const valueParam = searchParams.get("value");
+    if (valueParam) {
+      const parsed = parseFloat(valueParam);
+      if (!isNaN(parsed) && parsed >= 0) {
+        return parsed;
+      }
+    }
+    return 10000;
+  };
 
   // UI states - update immediately for responsive feedback
   const [uiUnits, setUiUnits] = useState<number>(1000);
-  const [uiCustomsValue, setUiCustomsValue] = useState<number>(10000);
+  const [uiCustomsValue, setUiCustomsValue] = useState<number>(
+    getInitialCustomsValue
+  );
   // Calculation states - update after debounce for expensive operations
   const [units, setUnits] = useState<number>(1000);
-  const [customsValue, setCustomsValue] = useState<number>(10000);
+  const [customsValue, setCustomsValue] = useState<number>(
+    getInitialCustomsValue
+  );
 
   // Timeout refs for debouncing
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -169,6 +209,34 @@ export const TariffFinderPage = () => {
       setLoadingPage(false);
     }
   }, []);
+
+  // Process URL params after data is loaded
+  useEffect(() => {
+    if (loadingPage || urlParamsProcessed || htsElements.length === 0) return;
+
+    // Process country param
+    const countryParam = searchParams.get("country");
+    if (countryParam) {
+      const country = getCountryByCode(countryParam);
+      if (country) {
+        setSelectedCountry(country);
+      }
+    }
+
+    // Process HTS code param
+    const codeParam = searchParams.get("code");
+    if (codeParam) {
+      const normalizedCode = normalizeHtsCode(codeParam.trim());
+      const matchingElement = htsElements.find(
+        (el) => el.htsno === normalizedCode
+      );
+      if (matchingElement) {
+        setSelectedElement(matchingElement);
+      }
+    }
+
+    setUrlParamsProcessed(true);
+  }, [loadingPage, urlParamsProcessed, htsElements, searchParams]);
 
   // Find the tariff element (the element with actual tariff data)
   const findTariffElement = useCallback(
