@@ -4,11 +4,13 @@ import { Countries, Country } from "../constants/countries";
 interface Props {
   selectedCountries: Country[];
   setSelectedCountries: (countries: Country[]) => void;
+  singleSelect?: boolean;
 }
 
 export const CountrySelection = ({
   selectedCountries,
   setSelectedCountries,
+  singleSelect = false,
 }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -75,14 +77,25 @@ export const CountrySelection = ({
       (selected) => selected.name === country.name
     );
 
-    if (isAlreadySelected) {
-      // Remove country if already selected
-      setSelectedCountries(
-        selectedCountries.filter((selected) => selected.name !== country.name)
-      );
+    if (singleSelect) {
+      // Single select mode: select the country and close dropdown
+      if (isAlreadySelected) {
+        setSelectedCountries([]);
+      } else {
+        setSelectedCountries([country]);
+      }
+      setIsOpen(false);
     } else {
-      // Add country if not selected
-      setSelectedCountries([...selectedCountries, country]);
+      // Multi-select mode
+      if (isAlreadySelected) {
+        // Remove country if already selected
+        setSelectedCountries(
+          selectedCountries.filter((selected) => selected.name !== country.name)
+        );
+      } else {
+        // Add country if not selected
+        setSelectedCountries([...selectedCountries, country]);
+      }
     }
 
     setSearchTerm("");
@@ -144,7 +157,7 @@ export const CountrySelection = ({
   return (
     <div className="relative" ref={dropdownRef}>
       <div
-        className="w-full p-1 pr-2 border border-base-content/50 rounded-md cursor-pointer flex gap-3 items-center justify-between hover:bg-base-content/5 transition-colors min-h-10"
+        className="w-full p-1 pr-2 input input-bordered rounded-md cursor-pointer flex gap-3 items-center justify-between hover:bg-base-content/5 transition-colors min-h-10"
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="flex-1 flex flex-wrap gap-2 items-center">
@@ -182,7 +195,11 @@ export const CountrySelection = ({
               </div>
             ))
           ) : (
-            <span className="text-sm ml-2">Select Countries of Origin</span>
+            <span className="text-sm ml-2 text-base-content/50">
+              {singleSelect
+                ? "Select Country of Origin"
+                : "Select Countries of Origin"}
+            </span>
           )}
         </div>
         <div className="flex items-center gap-1">
@@ -221,7 +238,7 @@ export const CountrySelection = ({
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="w-full p-2 border border-base-content/20 rounded-md bg-base-100 text-base-content placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="input input-bordered w-full p-2 rounded-md bg-base-100 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary"
               autoFocus
             />
           </div>

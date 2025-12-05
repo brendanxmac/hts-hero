@@ -32,7 +32,7 @@ const ButtonSignin = ({ text, extraStyle }: Props) => {
     }
 
     if (pathname === "/about") {
-      return "/app";
+      return "/classifications";
     }
 
     if (user) {

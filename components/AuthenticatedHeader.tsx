@@ -61,9 +61,9 @@ export const AuthenticatedHeader = () => {
               Tariff Finder
             </Link>
             <Link
-              href="/app"
+              href="/classifications"
               className={`btn btn-link px-0 gap-0 ${
-                pathname === "/app"
+                pathname === "/classifications"
                   ? "text-primary underline"
                   : "text-base-content no-underline"
               }`}
@@ -190,9 +190,9 @@ export const AuthenticatedHeader = () => {
                     Tariff Finder
                   </Link>
                   <Link
-                    href="/app"
+                    href="/classifications"
                     className={`font-semibold link link-hover ${
-                      pathname === "/app"
+                      pathname === "/classifications"
                         ? "text-primary underline"
                         : "text-base-content no-underline"
                     }`}

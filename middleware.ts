@@ -10,6 +10,12 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/explore", req.url));
   }
 
+  const isOldClassifyPath = pathname === "/app";
+
+  if (isOldClassifyPath) {
+    return NextResponse.redirect(new URL("/classifications", req.url));
+  }
+
   const IS_TEST_ENV = process.env.APP_ENV === "test";
   const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 

@@ -36,7 +36,7 @@ const UnauthenticatedHeader = () => {
       label: "Tariff Finder",
     },
     {
-      href: "/app",
+      href: "/classifications",
       label: "Classification Assistant",
     },
     {
@@ -52,7 +52,10 @@ const UnauthenticatedHeader = () => {
     },
     {
       href: "/about",
-      label: pathname === "/app" ? "Learn More" : "Want to Classify Quicker?",
+      label:
+        pathname === "/classifications"
+          ? "Learn More"
+          : "Want to Classify Quicker?",
     },
   ];
 
@@ -95,7 +98,7 @@ const UnauthenticatedHeader = () => {
             <Link href="/about">
               <button
                 className={`btn btn-link px-0 gap-0 ${
-                  pathname === "/app"
+                  pathname === "/classifications"
                     ? "text-primary underline"
                     : "text-base-content no-underline"
                 }`}

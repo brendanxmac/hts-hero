@@ -23,7 +23,7 @@ const products: ProductCardI[] = [
     title: "Classification Assistant",
     description: "Turbocharge Your Classifications",
     aboutUrl: "/about",
-    appUrl: "/app",
+    appUrl: "/classifications",
     cta: "Classify",
   },
   {

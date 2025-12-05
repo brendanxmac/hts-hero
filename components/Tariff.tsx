@@ -124,10 +124,10 @@ export const Tariff = ({
       <div
         key={`${tariff.code}-${exceptionLevel}`}
         className={classNames(
-          "flex gap-3 justify-between items-center py-2 px-4 rounded-lg transition-all hover:bg-primary/20 hover:cursor-pointer",
+          "flex gap-3 justify-between items-center py-3 px-4 rounded-lg transition-all hover:bg-base-300 hover:cursor-pointer",
           tariff.isActive
-            ? "bg-primary/5 border border-primary/20"
-            : "border border-base-300"
+            ? "border-2 border-primary"
+            : "border-2 border-base-300"
         )}
         onClick={() => {
           if (tariff.requiresReview) {
@@ -157,13 +157,17 @@ export const Tariff = ({
                 <Link
                   href={`/explore?code=${tariff.code}`}
                   target="_blank"
-                  className="link link-primary font-semibold transition-colors"
+                  className="link link-primary font-bold transition-colors"
                 >
                   {tariff.code}
                 </Link>
-                <p className="text-base-content">•</p>
+                <p className="text-base-content/50 font-bold">•</p>
               </div>
-              <p className={classNames("font-medium min-w-0 flex-1")}>
+              <p
+                className={classNames(
+                  "font-semibold text-base-content min-w-0 flex-1"
+                )}
+              >
                 {tariff.name}
               </p>
             </div>
@@ -173,12 +177,12 @@ export const Tariff = ({
         <div className="shrink-0 min-w-[120px] text-right">
           <p
             className={classNames(
-              "text-base sm:text-lg md:text-xl font-semibold",
+              "text-base sm:text-lg md:text-xl font-bold",
               tariff.isActive
                 ? "text-primary"
                 : tariff[column] === null
-                  ? "text-base-content/40"
-                  : "line-through text-base-content/40"
+                  ? "text-base-content/50"
+                  : "line-through text-base-content/50"
             )}
           >
             {tariff[column] === null ? "Needs Review" : `${tariff[column]}%`}

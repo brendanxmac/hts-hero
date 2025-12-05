@@ -467,7 +467,7 @@ export const Classifications = ({ page, setPage }: Props) => {
                         "/stripe/create-checkout",
                         {
                           itemId: classifyPro.planIdentifier,
-                          successEndpoint: "/app",
+                          successEndpoint: "/classifications",
                           cancelUrl: window.location.href,
                         }
                       );

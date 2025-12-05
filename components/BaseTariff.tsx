@@ -31,10 +31,8 @@ export const BaseTariff = ({
       <div
         key={`${htsElement.htsno}-${tariff.raw}-${index}`}
         className={classNames(
-          "flex gap-3 justify-between items-center py-3 px-4 rounded-lg transition-all duration-200",
-          active
-            ? "bg-primary/5 hover:bg-primary/10 border border-primary/20"
-            : "bg-base-200/30 border border-transparent opacity-60"
+          "flex gap-3 justify-between items-center py-3 px-4 rounded-lg transition-all duration-200 border-2 hover:bg-base-300",
+          active ? "border-primary" : "border-base-300 opacity-70"
         )}
       >
         <div className="flex flex-col gap-2 items-start flex-1 min-w-0">
@@ -48,17 +46,17 @@ export const BaseTariff = ({
             <div className="flex gap-2 items-center flex-wrap">
               <span
                 className={classNames(
-                  "font-semibold",
-                  active ? "text-base-content" : "text-base-content/50"
+                  "font-bold",
+                  active ? "text-base-content" : "text-base-content/60"
                 )}
               >
                 {htsElement.htsno}
               </span>
-              <span className="text-base-content/40">•</span>
+              <span className="text-base-content/50 font-bold">•</span>
               <span
                 className={classNames(
-                  "font-medium",
-                  active ? "text-base-content" : "text-base-content/50"
+                  "font-semibold",
+                  active ? "text-base-content" : "text-base-content/60"
                 )}
               >
                 General Duty: {primaryText}
@@ -75,14 +73,14 @@ export const BaseTariff = ({
 
         <div className="shrink-0 min-w-[120px] text-right">
           {reviewText ? (
-            <span className="font-semibold text-warning bg-warning/10 px-3 py-1 rounded-full">
+            <span className="badge badge-warning badge-lg font-bold px-3 py-3">
               {reviewText}
             </span>
           ) : (
             <p
               className={classNames(
-                "text-base sm:text-lg font-semibold",
-                active ? "text-primary" : "line-through text-base-content/40"
+                "text-base sm:text-lg md:text-xl font-bold",
+                active ? "text-primary" : "line-through text-base-content/50"
               )}
             >
               {valueText}

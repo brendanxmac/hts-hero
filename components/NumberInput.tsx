@@ -1,5 +1,5 @@
 interface Props {
-  label: string;
+  label?: string;
   value: number;
   setValue: (value: number) => void;
   min?: number;
@@ -17,7 +17,7 @@ export const NumberInput = ({
 }: Props) => {
   return (
     <div className="flex flex-col">
-      <label className="label label-text">{label}</label>
+      {label && <label className="label label-text">{label}</label>}
       <div className="relative w-full max-w-xs">
         <input
           type="number"
