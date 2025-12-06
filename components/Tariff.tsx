@@ -125,7 +125,8 @@ export const Tariff = ({
       className={classNames(
         "flex gap-3 justify-between items-center py-3 px-4 rounded-xl transition-colors",
         tariff.isActive ? "bg-primary/10" : "bg-base-200/50",
-        tariff.requiresReview && "hover:bg-base-200 cursor-pointer"
+        tariff.requiresReview && !tariff.isActive && "hover:bg-base-200",
+        tariff.requiresReview && "cursor-pointer"
       )}
       onClick={() => {
         if (tariff.requiresReview) {
@@ -135,18 +136,28 @@ export const Tariff = ({
     >
       <div className="flex gap-3 items-center flex-1 min-w-0">
         <input
-          type="checkbox"
+          type="radio"
           checked={tariff.isActive}
           disabled={
             !tariff.requiresReview ||
             hasExceptionTariffThatDoesNotNeedReviewThatIsActive
           }
-          className="checkbox checkbox-primary checkbox-sm shrink-0"
-          onChange={() => {
-            if (tariff.requiresReview) {
+          className={classNames(
+            "radio radio-primary radio-sm shrink-0",
+            tariff.requiresReview &&
+              !hasExceptionTariffThatDoesNotNeedReviewThatIsActive &&
+              "cursor-pointer"
+          )}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (
+              tariff.requiresReview &&
+              !hasExceptionTariffThatDoesNotNeedReviewThatIsActive
+            ) {
               toggleTariff(tariff);
             }
           }}
+          onChange={() => {}}
         />
 
         <div className="flex flex-col gap-1 min-w-0 flex-1">

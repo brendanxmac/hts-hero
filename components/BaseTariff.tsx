@@ -37,10 +37,10 @@ export const BaseTariff = ({
       <div className="flex flex-col gap-2 items-start flex-1 min-w-0">
         <div className="flex gap-3 items-center flex-wrap">
           <input
-            type="checkbox"
+            type="radio"
             checked
             disabled
-            className="checkbox checkbox-primary checkbox-sm shrink-0"
+            className="radio radio-primary radio-sm shrink-0"
           />
           <div className="flex gap-2 items-center flex-wrap">
             <span

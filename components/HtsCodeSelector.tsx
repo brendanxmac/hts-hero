@@ -35,11 +35,13 @@ const normalizeHtsCode = (str: string): string => {
 interface HtsCodeSelectorProps {
   selectedElement: HtsElement | null;
   onSelectionChange: (element: HtsElement | null) => void;
+  autoFocus?: boolean;
 }
 
 export const HtsCodeSelector = ({
   selectedElement,
   onSelectionChange,
+  autoFocus = false,
 }: HtsCodeSelectorProps) => {
   // Context
   const { htsElements } = useHts();
@@ -57,6 +59,13 @@ export const HtsCodeSelector = ({
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isSearchingRef = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Autofocus the input on mount if autoFocus is true
+  useEffect(() => {
+    if (autoFocus && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [autoFocus]);
 
   // Compute the display value for the input
   const inputValue = selectedElement ? selectedElement.htsno : searchValue;
