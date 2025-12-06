@@ -1,18 +1,14 @@
 "use client";
 
-import { ArrowLeftIcon } from "@heroicons/react/16/solid";
+import { ArrowLeftIcon, CheckCircleIcon } from "@heroicons/react/16/solid";
 import { WorkflowStep } from "../../enums/hts";
-import { classNames } from "../../utilities/style";
 import { useClassification } from "../../contexts/ClassificationContext";
 import { TextNavigationStep } from "./TextNavigationStep";
 import { ElementsNavigationStep } from "./ElementsNavigationStep";
-import { Color } from "../../enums/style";
 import { useClassifyTab } from "../../contexts/ClassifyTabContext";
 import { ClassifyPage, ClassifyTab } from "../../enums/classify";
 import { ClassifyTabs } from "../../constants/classify";
 import { useRef, useEffect } from "react";
-import { TertiaryLabel } from "../TertiaryLabel";
-import { SecondaryLabel } from "../SecondaryLabel";
 
 export interface ClassificationNavigationProps {
   setPage: (page: ClassifyPage) => void;
@@ -59,7 +55,6 @@ export const ClassificationNavigation = ({
       const containerRect = containerRef.current.getBoundingClientRect();
       const elementRect = elementToScrollTo.getBoundingClientRect();
 
-      // Calculate if the element is outside the visible area
       const isAbove = elementRect.top < containerRect.top;
       const isBelow = elementRect.bottom > containerRect.bottom;
 
@@ -73,42 +68,43 @@ export const ClassificationNavigation = ({
   }, [workflowStep, classificationLevel]);
 
   return (
-    <div className="h-full flex flex-col bg-base-200">
+    <div className="h-full flex flex-col bg-gradient-to-b from-base-200 via-base-200 to-base-300/50">
       {/* Header */}
-      <div className="flex flex-col p-4 gap-2 border-b border-base-content/10">
-        <div className="z-10 flex justify-between items-center">
-          <div className="flex items-center gap-2">
+      <div className="relative overflow-hidden border-b border-base-content/5">
+        {/* Subtle background decoration */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/5 rounded-full blur-2xl" />
+        </div>
+
+        <div className="relative z-10 flex flex-col p-4 gap-3">
+          <div className="flex justify-between items-center">
             <button
-              className="btn btn-xs btn-neutral gap-1"
+              className="group flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium text-base-content/70 hover:text-base-content hover:bg-base-content/5 transition-all duration-200"
               onClick={() => {
                 setActiveTab(ClassifyTab.CLASSIFY);
                 setPage(ClassifyPage.CLASSIFICATIONS);
               }}
             >
-              <ArrowLeftIcon className="w-4 h-4" />
-              &nbsp;Classifications
+              <ArrowLeftIcon className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+              <span>Classifications</span>
             </button>
-          </div>
 
-          <div className="flex items-center justify-center gap-4">
-            <div
-              role="tablist"
-              className="tabs tabs-sm gap-1 tabs-boxed rounded-xl"
-            >
+            <div className="flex p-1 gap-1 bg-base-100/60 rounded-xl border border-base-content/5">
               {ClassifyTabs.map((tab) => (
                 <button
                   key={tab.value}
-                  role="tab"
                   disabled={fetchingOptionsOrSuggestions}
                   onClick={() => setActiveTab(tab.value as ClassifyTab)}
-                  className={classNames(
-                    "tab transition-all duration-200 ease-in font-semibold",
-                    tab.value === activeTab && "tab-active",
-                    fetchingOptionsOrSuggestions && "tab-disabled",
+                  className={`p-2 rounded-lg transition-all duration-200 ${
+                    tab.value === activeTab
+                      ? "bg-base-100 text-primary shadow-sm"
+                      : "text-base-content/50 hover:text-base-content hover:bg-base-100/50"
+                  } ${fetchingOptionsOrSuggestions ? "opacity-50 cursor-not-allowed" : ""} ${
                     tab.value === ClassifyTab.CLASSIFY &&
-                      activeTab !== ClassifyTab.CLASSIFY &&
-                      "animate-pulse bg-warning"
-                  )}
+                    activeTab !== ClassifyTab.CLASSIFY
+                      ? "animate-pulse bg-warning/20 text-warning"
+                      : ""
+                  }`}
                 >
                   {tab.icon}
                 </button>
@@ -118,12 +114,19 @@ export const ClassificationNavigation = ({
         </div>
       </div>
 
+      {/* Scrollable Content */}
       <div
         ref={containerRef}
-        className="h-full flex flex-col gap-6 py-2 px-4 overflow-y-auto"
+        className="flex-1 flex flex-col gap-5 py-4 px-4 overflow-y-auto"
       >
-        <div className="flex flex-col gap-3">
-          <SecondaryLabel value="Item" />
+        {/* Item Section */}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <span className="inline-block w-6 h-px bg-primary/40" />
+            <span className="text-xs font-semibold uppercase tracking-widest text-primary/80">
+              Item
+            </span>
+          </div>
           <div ref={descriptionRef}>
             <TextNavigationStep
               title="Description"
@@ -142,9 +145,15 @@ export const ClassificationNavigation = ({
           </div>
         </div>
 
-        <div className="flex flex-col gap-3">
-          <SecondaryLabel value="Your Selections" />
-          <div className="flex flex-col gap-3">
+        {/* Selections Section */}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <span className="inline-block w-6 h-px bg-primary/40" />
+            <span className="text-xs font-semibold uppercase tracking-widest text-primary/80">
+              Your Selections
+            </span>
+          </div>
+          <div className="flex flex-col gap-2">
             {levels &&
               levels.map((level, index) => (
                 <div
@@ -174,16 +183,21 @@ export const ClassificationNavigation = ({
           </div>
         </div>
 
+        {/* Result Section */}
         {classification?.isComplete && (
-          <div ref={resultRef} className="flex flex-col gap-3 pb-4">
-            <SecondaryLabel value="Result & Tariff" />
+          <div ref={resultRef} className="flex flex-col gap-2 pb-4">
+            <div className="flex items-center gap-2">
+              <span className="inline-block w-6 h-px bg-success/40" />
+              <span className="text-xs font-semibold uppercase tracking-widest text-success/80">
+                Result & Tariff
+              </span>
+            </div>
             <div
-              className={classNames(
-                "flex flex-col gap-1 p-4 bg-base-100 rounded-md border border-base-content/80 transition-all duration-200 ease-in-out hover:cursor-pointer",
+              className={`group relative overflow-hidden rounded-xl cursor-pointer transition-all duration-200 ${
                 workflowStep === WorkflowStep.RESULT
-                  ? "bg-primary/10 border-primary"
-                  : "border-base-content/80 hover:bg-primary/5"
-              )}
+                  ? "bg-gradient-to-br from-success/15 to-success/5 border-2 border-success/40 shadow-lg shadow-success/10"
+                  : "bg-base-100 border border-base-content/10 hover:border-success/30 hover:shadow-md"
+              }`}
               onClick={() => {
                 if (activeTab !== ClassifyTab.CLASSIFY) {
                   setActiveTab(ClassifyTab.CLASSIFY);
@@ -191,10 +205,17 @@ export const ClassificationNavigation = ({
                 setWorkflowStep(WorkflowStep.RESULT);
               }}
             >
-              <TertiaryLabel value="HTS Code" color={Color.BASE_CONTENT} />
-              <h2 className="text-xl md:text-2xl font-extrabold">
-                {classification?.levels[levels.length - 1]?.selection?.htsno}
-              </h2>
+              <div className="p-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <CheckCircleIcon className="w-4 h-4 text-success" />
+                  <span className="text-xs font-semibold uppercase tracking-wider text-success">
+                    HTS Code
+                  </span>
+                </div>
+                <h2 className="text-xl md:text-2xl font-extrabold text-base-content">
+                  {classification?.levels[levels.length - 1]?.selection?.htsno}
+                </h2>
+              </div>
             </div>
           </div>
         )}

@@ -1,9 +1,7 @@
 "use client";
 
 import { useRef, ChangeEvent, useState, useEffect } from "react";
-import { classNames } from "../utilities/style";
-import { TertiaryText } from "./TertiaryText";
-import { LoadingIndicator } from "./LoadingIndicator";
+import { ArrowRightIcon } from "@heroicons/react/16/solid";
 
 interface Props {
   buttonText?: string;
@@ -34,13 +32,14 @@ export default function TextAreaInput({
   const [localProductDescription, setLocalProductDescription] = useState(
     defaultValue || ""
   );
+  const [isFocused, setIsFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const adjustTextAreaHeight = (): void => {
     const textarea = textareaRef.current;
 
     if (textarea) {
-      textarea.style.height = "auto"; // Reset height to calculate new height
+      textarea.style.height = "auto";
       textarea.style.height = `${textarea.scrollHeight}px`;
     }
   };
@@ -55,22 +54,32 @@ export default function TextAreaInput({
     adjustTextAreaHeight();
   }, []);
 
+  const isOverLimit = localProductDescription.length > characterLimit;
+
   return (
     <div
-      className="w-full flex flex-col gap-2 border border-base-content/80 rounded-md shadow-sm"
+      className={`w-full flex flex-col gap-3 rounded-2xl transition-all duration-200 ${
+        disabled
+          ? "bg-base-200/50"
+          : isFocused
+            ? "bg-base-100 ring-2 ring-primary/50 border-primary/30"
+            : "bg-base-100/80 hover:bg-base-100"
+      } border border-base-content/10 hover:border-primary/30`}
       onClick={(e) => {
         e.stopPropagation();
         e.preventDefault();
         textareaRef.current?.focus();
       }}
     >
-      {label && <TertiaryText value={label} />}
-      <div
-        className={classNames(
-          "w-full flex flex-col gap-2 bg-base-100 rounded-md px-4 py-3",
-          disabled ? "bg-base-200" : "bg-base-100"
-        )}
-      >
+      {label && (
+        <div className="px-4 pt-4">
+          <span className="text-xs font-semibold uppercase tracking-wider text-base-content/60">
+            {label}
+          </span>
+        </div>
+      )}
+
+      <div className="w-full flex flex-col gap-3 px-4 py-4">
         <textarea
           ref={textareaRef}
           autoFocus
@@ -79,56 +88,63 @@ export default function TextAreaInput({
           disabled={disabled}
           value={localProductDescription}
           onChange={handleInputChange}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
           onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
+            if (e.key === "Enter" && !e.shiftKey && canSubmit) {
               e.preventDefault();
               e.stopPropagation();
               onSubmit && onSubmit(localProductDescription);
             }
           }}
-          className="textarea textarea-primary text-base max-h-96 min-h-12 rounded-none resize-none bg-inherit placeholder-base-content/30 focus:ring-0 focus:outline-none border-none p-0"
-        ></textarea>
+          className="w-full text-base max-h-96 min-h-16 resize-none bg-transparent placeholder-base-content/40 focus:outline-none leading-relaxed"
+        />
 
         {(showCharacterCount || onSubmit) && (
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center pt-2 border-t border-base-content/5">
             {showCharacterCount && (
-              <p
-                className={classNames(
-                  "text-base-content/60 text-xs",
-                  localProductDescription.length > characterLimit
-                    ? "font-bold"
-                    : undefined
-                )}
-              >
+              <div className="flex items-center gap-2">
+                <div className="h-1.5 w-24 bg-base-content/10 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full transition-all duration-300 rounded-full ${
+                      isOverLimit ? "bg-error" : "bg-primary"
+                    }`}
+                    style={{
+                      width: `${Math.min((localProductDescription.length / characterLimit) * 100, 100)}%`,
+                    }}
+                  />
+                </div>
                 <span
-                  className={
-                    localProductDescription.length > characterLimit
-                      ? "text-red-600"
-                      : undefined
-                  }
+                  className={`text-xs font-medium ${
+                    isOverLimit ? "text-error" : "text-base-content/50"
+                  }`}
                 >
-                  {localProductDescription.length}
+                  {localProductDescription.length}/{characterLimit}
                 </span>
-                {` / ${characterLimit}`}
-              </p>
+              </div>
             )}
             {onSubmit && (
               <button
                 disabled={!canSubmit || loading}
-                className="btn btn-primary btn-sm"
+                className={`group relative overflow-hidden px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 ${
+                  canSubmit && !loading
+                    ? "bg-gradient-to-r from-primary to-primary/90 text-primary-content hover:shadow-lg hover:shadow-primary/25 hover:scale-[1.02]"
+                    : "bg-base-content/10 text-base-content/40 cursor-not-allowed"
+                }`}
                 onClick={() => {
                   onSubmit(localProductDescription);
                 }}
               >
-                {loading ? (
-                  <div>
-                    <LoadingIndicator />
-                  </div>
-                ) : buttonText ? (
-                  buttonText
-                ) : (
-                  "Submit"
-                )}
+                <span className="relative z-10 flex items-center gap-2">
+                  {loading ? (
+                    <span className="loading loading-spinner loading-sm"></span>
+                  ) : (
+                    <>
+                      {buttonText || "Submit"}
+                      <ArrowRightIcon className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                    </>
+                  )}
+                </span>
               </button>
             )}
           </div>
