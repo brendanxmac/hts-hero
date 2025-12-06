@@ -30,6 +30,8 @@ import {
 } from "../libs/supabase/importers";
 import { ClassificationStatus, Importer } from "../interfaces/hts";
 import { EmptyResults, EmptyResultsConfig } from "./EmptyResults";
+import { deleteClassification } from "../libs/classification";
+import toast from "react-hot-toast";
 
 interface Props {
   page: ClassifyPage;
@@ -71,7 +73,21 @@ export const Classifications = ({ page, setPage }: Props) => {
   const [importers, setImporters] = useState<Importer[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<string>("");
   const [selectedImporterId, setSelectedImporterId] = useState<string>("");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const UNASSIGNED_IMPORTER_VALUE = "unassigned";
+
+  const handleDeleteClassification = async (id: string) => {
+    try {
+      setDeletingId(id);
+      await deleteClassification(id);
+      toast.success("Classification deleted");
+      await refreshClassifications();
+    } catch (error) {
+      // Error is already handled by apiClient
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   // Helper function to get the appropriate empty state configuration
   const getEmptyStateConfig = (): EmptyResultsConfig | null => {
@@ -623,6 +639,8 @@ export const Classifications = ({ page, setPage }: Props) => {
                 classificationRecord={classification}
                 setPage={setPage}
                 user={userProfile}
+                onDelete={handleDeleteClassification}
+                isDeleting={deletingId === classification.id}
               />
             ))}
           </div>

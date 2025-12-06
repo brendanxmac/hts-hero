@@ -56,6 +56,10 @@ export const fetchClassifications = async (): Promise<
   return classifications;
 };
 
+export const deleteClassification = async (id: string): Promise<void> => {
+  await apiClient.post("/classification/delete", { id });
+};
+
 const getImageFormatFromFilename = (filename: string): string => {
   const extension = filename.split(".").pop();
 
