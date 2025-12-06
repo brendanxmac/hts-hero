@@ -154,11 +154,56 @@ export const CountrySelection = ({
     return selectedCountries.some((selected) => selected.name === country.name);
   };
 
+  const isMouseDownRef = useRef(false);
+
+  const handleTriggerKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      setIsOpen(true);
+    }
+  };
+
+  const handleTriggerFocus = () => {
+    // Only open on focus if it wasn't triggered by a mouse click
+    // Mouse clicks will be handled by onClick
+    if (!isMouseDownRef.current) {
+      setIsOpen(true);
+    }
+  };
+
+  const handleTriggerMouseDown = () => {
+    isMouseDownRef.current = true;
+  };
+
+  const handleTriggerClick = () => {
+    setIsOpen(!isOpen);
+    // Reset the flag after click is processed
+    isMouseDownRef.current = false;
+  };
+
+  const handleBlur = () => {
+    // Use setTimeout to allow focus to settle before checking
+    // This handles the case where clicking inside the component causes a brief blur
+    setTimeout(() => {
+      if (!dropdownRef.current?.contains(document.activeElement)) {
+        setIsOpen(false);
+        setHighlightedIndex(-1);
+      }
+    }, 0);
+  };
+
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative" ref={dropdownRef} onBlur={handleBlur}>
       <div
-        className={`w-full h-[45px] px-3 bg-base-200/50 rounded-xl cursor-pointer flex gap-2 items-center justify-between transition-all duration-200 border border-base-content/10 hover:border-primary/30 hover:bg-base-200/70 ${isOpen ? "ring-2 ring-primary/50 border-primary/30" : ""}`}
-        onClick={() => setIsOpen(!isOpen)}
+        tabIndex={0}
+        role="combobox"
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
+        className={`w-full h-[45px] px-3 bg-base-200/50 rounded-xl cursor-pointer flex gap-2 items-center justify-between transition-all duration-200 border border-base-content/10 hover:border-primary/30 hover:bg-base-200/70 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 ${isOpen ? "ring-2 ring-primary/50 border-primary/30" : ""}`}
+        onMouseDown={handleTriggerMouseDown}
+        onClick={handleTriggerClick}
+        onFocus={handleTriggerFocus}
+        onKeyDown={handleTriggerKeyDown}
       >
         <div className="flex-1 flex flex-wrap gap-1.5 items-center">
           {selectedCountries.length > 0 ? (

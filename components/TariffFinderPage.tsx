@@ -23,6 +23,23 @@ import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import { HtsCodeSelector } from "./HtsCodeSelector";
 import { NumberInput } from "./NumberInput";
 import { PercentageInput } from "./PercentageInput";
+import { Explore } from "./Explore";
+import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
+import {
+  generateBreadcrumbsForHtsElement,
+  getSectionAndChapterFromChapterNumber,
+} from "../libs/hts";
+
+// Helper to count digits in an HTS code (ignoring dots)
+const getHtsCodeDigitCount = (htsno: string): number => {
+  if (!htsno) return 0;
+  return htsno.replace(/\./g, "").length;
+};
+
+// Check if an HTS code has 8 or more digits (tariff-level)
+const isTariffLevelCode = (htsno: string): boolean => {
+  return getHtsCodeDigitCount(htsno) >= 8;
+};
 
 // Helper to normalize HTS code format (add dots if missing)
 const normalizeHtsCode = (str: string): string => {
@@ -50,6 +67,7 @@ export const TariffFinderPage = () => {
   // Context
   const { htsElements, fetchElements } = useHts();
   const { sections, getSections } = useHtsSections();
+  const { setBreadcrumbs } = useBreadcrumbs();
 
   // State
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
@@ -97,6 +115,59 @@ export const TariffFinderPage = () => {
   const [uiContentPercentages, setUiContentPercentages] = useState<
     ContentRequirementI<ContentRequirements>[]
   >([]);
+  const [showExploreModal, setShowExploreModal] = useState(false);
+
+  // Handle element selection - only show tariffs for 8+ digit codes
+  const handleElementSelection = useCallback(
+    (element: HtsElement | null) => {
+      if (!element) {
+        setSelectedElement(null);
+        return;
+      }
+
+      // Check if the code has 8 or more digits
+      if (isTariffLevelCode(element.htsno)) {
+        // Tariff-level code - show tariffs normally
+        setSelectedElement(element);
+      } else {
+        // Sub-tariff level code - open explore modal and navigate to this element
+        setSelectedElement(null);
+
+        // Generate breadcrumbs to navigate to this element in the explorer
+        if (sections.length > 0) {
+          const sectionAndChapter = getSectionAndChapterFromChapterNumber(
+            sections,
+            Number(element.chapter)
+          );
+
+          if (sectionAndChapter) {
+            const parents = getHtsElementParents(element, htsElements);
+            const breadcrumbs = generateBreadcrumbsForHtsElement(
+              sections,
+              sectionAndChapter.chapter,
+              [...parents, element]
+            );
+            setBreadcrumbs(breadcrumbs);
+          }
+        }
+
+        setShowExploreModal(true);
+      }
+    },
+    [sections, htsElements, setBreadcrumbs]
+  );
+
+  // Close explore modal on Escape key
+  useEffect(() => {
+    const handleEscapeKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && showExploreModal) {
+        setShowExploreModal(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleEscapeKey);
+    return () => document.removeEventListener("keydown", handleEscapeKey);
+  }, [showExploreModal]);
 
   useEffect(() => {
     if (tariffElement) {
@@ -231,12 +302,44 @@ export const TariffFinderPage = () => {
         (el) => el.htsno === normalizedCode
       );
       if (matchingElement) {
-        setSelectedElement(matchingElement);
+        // Use the same logic as handleElementSelection
+        if (isTariffLevelCode(matchingElement.htsno)) {
+          setSelectedElement(matchingElement);
+        } else {
+          // Sub-tariff level code - open explore modal and navigate to this element
+          if (sections.length > 0) {
+            const sectionAndChapter = getSectionAndChapterFromChapterNumber(
+              sections,
+              Number(matchingElement.chapter)
+            );
+
+            if (sectionAndChapter) {
+              const parents = getHtsElementParents(
+                matchingElement,
+                htsElements
+              );
+              const breadcrumbs = generateBreadcrumbsForHtsElement(
+                sections,
+                sectionAndChapter.chapter,
+                [...parents, matchingElement]
+              );
+              setBreadcrumbs(breadcrumbs);
+            }
+          }
+          setShowExploreModal(true);
+        }
       }
     }
 
     setUrlParamsProcessed(true);
-  }, [loadingPage, urlParamsProcessed, htsElements, searchParams]);
+  }, [
+    loadingPage,
+    urlParamsProcessed,
+    htsElements,
+    searchParams,
+    sections,
+    setBreadcrumbs,
+  ]);
 
   // Find the tariff element (the element with actual tariff data)
   const findTariffElement = useCallback(
@@ -360,15 +463,22 @@ export const TariffFinderPage = () => {
         {/* Inputs */}
         <div className="w-full flex flex-col md:flex-row gap-3">
           {/* HTS Code Search */}
-          <div className="grow flex flex-col gap-2">
-            <div className="flex flex-col">
+          <div className="grow flex flex-col gap-1">
+            <div className="flex gap-2 justify-between items-end">
               <SecondaryLabel value="HTS Code" />
-              {/* <SecondaryText value="Enter or paste an HTS code to find applicable tariffs" /> */}
+              <button
+                type="button"
+                onClick={() => setShowExploreModal(true)}
+                className="text-xs font-medium text-primary hover:text-primary/80 transition-colors"
+              >
+                Search HTS
+              </button>
             </div>
 
             <HtsCodeSelector
               selectedElement={selectedElement}
-              onSelectionChange={setSelectedElement}
+              onSelectionChange={handleElementSelection}
+              autoFocus={!searchParams.get("code")}
             />
           </div>
           {/* Country Selection */}
@@ -462,6 +572,8 @@ export const TariffFinderPage = () => {
             </div>
           )}
         </div>
+
+        {/* Element Ancestry Display */}
 
         {/* Separator */}
         {(selectedElement || selectedCountry) && (
@@ -581,6 +693,151 @@ export const TariffFinderPage = () => {
           </div>
         )}
       </div>
+
+      {/* Explore HTS Modal */}
+      {showExploreModal && (
+        <dialog className="modal modal-open">
+          <div className="modal-box w-11/12 max-w-7xl h-[90vh] p-0 flex flex-col">
+            <div className="flex items-center justify-between p-4 border-b border-base-content/10">
+              <h3 className="font-bold text-lg">Explore HTS Codes</h3>
+              <button
+                type="button"
+                onClick={() => setShowExploreModal(false)}
+                className="btn btn-sm btn-circle btn-ghost"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              <Explore />
+            </div>
+          </div>
+          <form method="dialog" className="modal-backdrop">
+            <button type="button" onClick={() => setShowExploreModal(false)}>
+              close
+            </button>
+          </form>
+        </dialog>
+      )}
     </main>
   );
 };
+
+// {
+//   selectedElement && sections.length > 0 && (
+//     <div className="mt-6 mb-2">
+//       {(() => {
+//         const sectionAndChapter = getSectionAndChapterFromChapterNumber(
+//           sections,
+//           Number(selectedElement.chapter)
+//         );
+//         const parents = getHtsElementParents(selectedElement, htsElements);
+
+//         if (!sectionAndChapter) return null;
+
+//         const ancestryItems: {
+//           label: string | null;
+//           value: string;
+//           type: "section" | "chapter" | "parent";
+//         }[] = [
+//           {
+//             label: `Section ${sectionAndChapter.section.number}`,
+//             value: sectionAndChapter.section.description,
+//             type: "section",
+//           },
+//           {
+//             label: `Chapter ${sectionAndChapter.chapter.number}`,
+//             value: sectionAndChapter.chapter.description,
+//             type: "chapter",
+//           },
+//           ...parents.map((parent) => ({
+//             label: parent.htsno || null,
+//             value: parent.description,
+//             type: "parent" as const,
+//           })),
+//         ];
+
+//         return (
+//           <div className="relative overflow-hidden rounded-2xl border border-base-content/10 bg-gradient-to-br from-base-200/60 via-base-100 to-base-200/40">
+//             {/* Subtle decorative elements */}
+//             <div className="absolute inset-0 pointer-events-none">
+//               <div className="absolute -top-16 -right-16 w-48 h-48 bg-primary/5 rounded-full blur-3xl" />
+//               <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-secondary/5 rounded-full blur-3xl" />
+//             </div>
+
+//             <div className="relative z-10 p-5">
+//               {/* Header with code badge */}
+//               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+//                 <div className="flex items-center gap-3">
+//                   <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/20">
+//                     <span className="text-primary font-bold text-sm">#</span>
+//                   </div>
+//                   <div className="flex flex-col">
+//                     <span className="text-xs font-semibold uppercase tracking-widest text-primary/70">
+//                       Selected Code
+//                     </span>
+//                     <span className="text-lg font-bold text-base-content">
+//                       {selectedElement.htsno || "—"}
+//                     </span>
+//                   </div>
+//                 </div>
+//               </div>
+
+//               {/* Main description */}
+//               <div className="mb-5 p-4 rounded-xl bg-base-100/80 border border-base-content/5">
+//                 <p className="text-base-content font-medium leading-relaxed">
+//                   {selectedElement.description}
+//                 </p>
+//               </div>
+
+//               {/* Ancestry breadcrumb trail */}
+//               <div className="flex flex-col gap-2">
+//                 <span className="text-xs font-semibold uppercase tracking-widest text-base-content/40 mb-1">
+//                   Classification Path
+//                 </span>
+//                 <div className="flex flex-wrap items-center gap-1.5">
+//                   {ancestryItems.map((item, index) => (
+//                     <div key={index} className="flex items-center gap-1.5">
+//                       <div
+//                         className={`group relative flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-75 ${
+//                           item.type === "section"
+//                             ? "bg-gradient-to-r from-amber-500/15 to-amber-500/5 border border-amber-500/20 hover:border-amber-500/40"
+//                             : item.type === "chapter"
+//                               ? "bg-gradient-to-r from-emerald-500/15 to-emerald-500/5 border border-emerald-500/20 hover:border-emerald-500/40"
+//                               : "bg-base-content/5 border border-base-content/10 hover:border-base-content/20"
+//                         }`}
+//                       >
+//                         {item.label && (
+//                           <span
+//                             className={`text-xs font-bold shrink-0 ${
+//                               item.type === "section"
+//                                 ? "text-amber-600 dark:text-amber-400"
+//                                 : item.type === "chapter"
+//                                   ? "text-emerald-600 dark:text-emerald-400"
+//                                   : "text-primary"
+//                             }`}
+//                           >
+//                             {item.label}
+//                           </span>
+//                         )}
+//                         <span
+//                           className="text-xs text-base-content/70 line-clamp-1 max-w-[200px]"
+//                           title={item.value}
+//                         >
+//                           {item.value}
+//                         </span>
+//                       </div>
+//                       {index < ancestryItems.length - 1 && (
+//                         <ChevronRightIcon className="w-3.5 h-3.5 text-base-content/30 shrink-0" />
+//                       )}
+//                     </div>
+//                   ))}
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+//         );
+//       })()}
+//     </div>
+//   );
+// }
