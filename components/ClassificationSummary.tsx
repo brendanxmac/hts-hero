@@ -3,7 +3,6 @@ import { useClassification } from "../contexts/ClassificationContext";
 import { useHts } from "../contexts/HtsContext";
 import { useUser } from "../contexts/UserContext";
 import { ClassifyPage } from "../enums/classify";
-import { Color } from "../enums/style";
 import {
   ClassificationProgression,
   ClassificationRecord,
@@ -11,14 +10,13 @@ import {
 } from "../interfaces/hts";
 import { formatHumanReadableDate } from "../libs/date";
 import { LoadingIndicator } from "./LoadingIndicator";
-import { TertiaryText } from "./TertiaryText";
 import { UserProfile } from "../libs/supabase/user";
-import { CheckCircleIcon } from "@heroicons/react/20/solid";
-import { SecondaryLabel } from "./SecondaryLabel";
+import { CheckCircleIcon, ClockIcon } from "@heroicons/react/20/solid";
 import {
   DocumentTextIcon,
   FlagIcon,
   TrashIcon,
+  ChevronRightIcon,
 } from "@heroicons/react/24/solid";
 import { TagIcon, UserIcon } from "@heroicons/react/16/solid";
 
@@ -68,11 +66,12 @@ export const ClassificationSummary = ({
     currentUser?.id === classificationRecord.user_id &&
     classificationRecord.status === ClassificationStatus.DRAFT;
 
+  const finalElement = getFinalClassificationElement(classification.levels);
+
   return (
     <div
-      className="bg-base-100 p-4 rounded-xl cursor-pointer flex flex-col gap-3 border border-base-content/40 transition-all duration-200 relative shadow-sm hover:shadow-lg hover:border-primary hover:bg-primary/[0.05]"
+      className="group relative overflow-hidden rounded-2xl cursor-pointer transition-all duration-300 bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 border border-base-content/10 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 hover:scale-[1.01]"
       onClick={async () => {
-        // Get the classifications revision and see if we need to use useHts to fetch the elements
         const classificationRevision = classificationRecord.revision;
 
         if (classificationRevision !== revision) {
@@ -87,144 +86,194 @@ export const ClassificationSummary = ({
         setPage(ClassifyPage.CLASSIFY);
       }}
     >
+      {/* Subtle gradient overlay on hover */}
+      <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+      {/* Loading overlay */}
       {isLoading && (
-        <div className="absolute inset-0 bg-base-300/80 flex items-center justify-center rounded-xl z-10">
+        <div className="absolute inset-0 bg-base-100/90 backdrop-blur-sm flex items-center justify-center rounded-2xl z-10">
           <LoadingIndicator text="Loading..." />
         </div>
       )}
 
+      {/* Deleting overlay */}
       {isDeleting && (
-        <div className="absolute inset-0 bg-error/10 flex items-center justify-center rounded-xl z-10 animate-pulse">
-          <div className="flex items-center gap-2 text-error">
-            <span className="loading loading-spinner loading-sm"></span>
-            <span className="text-sm font-medium">Deleting...</span>
+        <div className="absolute inset-0 bg-error/10 backdrop-blur-sm flex items-center justify-center rounded-2xl z-10">
+          <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-base-100 shadow-lg">
+            <span className="loading loading-spinner loading-sm text-error"></span>
+            <span className="text-sm font-semibold text-error">
+              Deleting...
+            </span>
           </div>
         </div>
       )}
 
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-3 justify-between">
-          <div className="text-sm font-semibold text-primary">
-            {getFinalClassificationElement(classification.levels)
-              ? getFinalClassificationElement(classification.levels).htsno
-              : "Incomplete"}
+      <div className="relative z-[1] p-5">
+        {/* Top Row: HTS Code + Status Badges */}
+        <div className="flex items-start justify-between gap-4 mb-3">
+          <div className="flex items-center gap-3">
+            {/* HTS Code Badge */}
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gradient-to-r from-primary/15 to-primary/5 border border-primary/20">
+              <span className="text-sm font-bold text-primary">
+                {finalElement ? finalElement.htsno : "Incomplete"}
+              </span>
+            </div>
+
+            {/* Incomplete indicator */}
+            {!finalElement && (
+              <span className="text-xs font-medium text-base-content/50 italic">
+                Incomplete
+              </span>
+            )}
           </div>
+
           <div className="flex items-center gap-2">
+            {/* Status Badges */}
             {classificationRecord.status === ClassificationStatus.REVIEW && (
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary">
-                <FlagIcon className="h-3.5 w-3.5 text-base-300" />
-                <p className="text-xs font-semibold text-base-300">
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-warning/20 to-warning/10 border border-warning/30">
+                <FlagIcon className="h-3.5 w-3.5 text-warning" />
+                <span className="text-xs font-semibold text-warning">
                   Needs Review
-                </p>
+                </span>
               </div>
             )}
             {classificationRecord.status === ClassificationStatus.FINAL && (
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success/10">
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-success/20 to-success/10 border border-success/30">
                 <CheckCircleIcon className="h-4 w-4 text-success" />
-                <p className="text-xs font-semibold text-success">Finalized</p>
+                <span className="text-xs font-semibold text-success">
+                  Finalized
+                </span>
               </div>
             )}
             {classificationRecord.status === ClassificationStatus.DRAFT && (
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-base-content/5">
-                <DocumentTextIcon className="h-3.5 w-3.5 text-base-content/60" />
-                <p className="text-xs font-semibold text-base-content/60">
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-base-content/5 border border-base-content/10">
+                <DocumentTextIcon className="h-3.5 w-3.5 text-base-content/50" />
+                <span className="text-xs font-semibold text-base-content/50">
                   Draft
-                </p>
+                </span>
               </div>
             )}
+
+            {/* Delete Button */}
             {canDelete && onDelete && (
               <button
-                className="p-1.5 rounded-lg hover:bg-error/10 transition-colors group"
+                className="p-2 rounded-lg bg-base-content/5 hover:bg-error/15 border border-transparent hover:border-error/30 transition-all duration-200 group/delete"
                 onClick={(e) => {
                   e.stopPropagation();
                   setShowDeleteModal(true);
                 }}
                 title="Delete classification"
               >
-                <TrashIcon className="h-4 w-4 text-base-content/40 group-hover:text-error transition-colors" />
+                <TrashIcon className="h-4 w-4 text-base-content/40 group-hover/delete:text-error transition-colors" />
               </button>
             )}
+
+            {/* Chevron indicator */}
+            <ChevronRightIcon className="h-5 w-5 text-base-content/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-200" />
           </div>
         </div>
-        {/* Article Description - Most prominent */}
-        <SecondaryLabel value={classification.articleDescription} />
-      </div>
 
-      {/* Metadata - Less prominent but clear */}
-      <div className="flex flex-wrap justify-between gap-x-3 gap-y-2 text-sm pt-2 border-t border-base-content/10 text-base-content/60">
-        <div className="flex flex-wrap gap-3">
-          {user && user.team_id && (
-            <div className="flex items-center gap-1.5">
-              <UserIcon className="h-3.5 w-3.5 text-base-content/40" />
-              <TertiaryText
-                value={
-                  classificationRecord.classifier
+        {/* Article Description */}
+        <div className="mb-4">
+          <p className="text-base font-semibold text-base-content leading-relaxed line-clamp-2 group-hover:text-base-content/90 transition-colors">
+            {classification.articleDescription}
+          </p>
+        </div>
+
+        {/* Metadata Row */}
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-base-content/5">
+          <div className="flex flex-wrap items-center gap-4">
+            {/* Classifier */}
+            {user && user.team_id && (
+              <div className="flex items-center gap-2">
+                <div className="flex items-center justify-center w-6 h-6 rounded-full bg-base-content/5">
+                  <UserIcon className="h-3 w-3 text-base-content/50" />
+                </div>
+                <span className="text-xs font-medium text-base-content/60">
+                  {classificationRecord.classifier
                     ? classificationRecord.classifier?.name ||
                       classificationRecord.classifier.email
-                    : "Unknown"
-                }
-              />
-            </div>
-          )}
+                    : "Unknown"}
+                </span>
+              </div>
+            )}
 
-          <div className="flex items-center gap-1.5">
-            <TagIcon className="h-3.5 w-3.5 text-base-content/40" />
-            <TertiaryText
-              value={
-                classificationRecord.importer
+            {/* Importer */}
+            <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center w-6 h-6 rounded-full bg-base-content/5">
+                <TagIcon className="h-3 w-3 text-base-content/50" />
+              </div>
+              <span className="text-xs font-medium text-base-content/60">
+                {classificationRecord.importer
                   ? classificationRecord.importer.name
-                  : "Unassigned"
-              }
-            />
+                  : "Unassigned"}
+              </span>
+            </div>
           </div>
-        </div>
 
-        <div className="flex items-center gap-1">
-          <TertiaryText value="Last updated:" color={Color.DARK_GRAY} />
-          <TertiaryText
-            value={formatHumanReadableDate(classificationRecord.updated_at)}
-          />
+          {/* Last Updated */}
+          <div className="flex items-center gap-2 text-xs text-base-content/40">
+            <ClockIcon className="h-3.5 w-3.5" />
+            <span>
+              Updated {formatHumanReadableDate(classificationRecord.updated_at)}
+            </span>
+          </div>
         </div>
       </div>
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
           onClick={(e) => {
             e.stopPropagation();
             setShowDeleteModal(false);
           }}
         >
           <div
-            className="bg-base-100 rounded-xl p-6 max-w-md w-full mx-4 shadow-xl"
+            className="relative overflow-hidden bg-base-100 rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl border border-base-content/10"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-lg font-bold mb-2">Delete Classification</h3>
-            <p className="text-base-content/70 mb-6">
-              Are you sure you want to delete this classification? This action
-              cannot be undone.
-            </p>
-            <div className="flex justify-end gap-3">
-              <button
-                className="btn btn-ghost btn-sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowDeleteModal(false);
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                className="btn btn-error btn-sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowDeleteModal(false);
-                  onDelete?.(classificationRecord.id);
-                }}
-              >
-                Delete
-              </button>
+            {/* Decorative background */}
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute -top-20 -right-20 w-40 h-40 bg-error/10 rounded-full blur-3xl" />
+            </div>
+
+            <div className="relative z-10">
+              {/* Icon */}
+              <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-error/10 border border-error/20 mb-4">
+                <TrashIcon className="h-6 w-6 text-error" />
+              </div>
+
+              <h3 className="text-xl font-bold text-base-content mb-2">
+                Delete Classification
+              </h3>
+              <p className="text-base-content/60 mb-6 leading-relaxed">
+                Are you sure you want to delete this classification? This action
+                cannot be undone.
+              </p>
+
+              <div className="flex justify-end gap-3">
+                <button
+                  className="px-4 py-2 rounded-xl font-semibold text-sm text-base-content/70 hover:text-base-content hover:bg-base-content/5 transition-all duration-200"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowDeleteModal(false);
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="px-4 py-2 rounded-xl font-semibold text-sm bg-error text-error-content hover:bg-error/90 hover:shadow-lg hover:shadow-error/25 transition-all duration-200"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowDeleteModal(false);
+                    onDelete?.(classificationRecord.id);
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         </div>
