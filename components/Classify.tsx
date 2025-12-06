@@ -141,7 +141,7 @@ export const Classify = ({ setPage }: Props) => {
               />
             )}
             {workflowStep === WorkflowStep.RESULT && (
-              <ClassificationResultPage userProfile={userProfile} />
+              <ClassificationResultPage userProfile={userProfile} setPage={setPage} />
             )}
           </>
         )}

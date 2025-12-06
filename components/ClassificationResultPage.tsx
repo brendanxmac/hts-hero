@@ -3,7 +3,7 @@ import { useClassification } from "../contexts/ClassificationContext";
 import { downloadClassificationReport } from "../libs/hts";
 import { PDFProps } from "../interfaces/ui";
 import PDF from "./PDF";
-import { ArrowDownTrayIcon } from "@heroicons/react/16/solid";
+import { ArrowDownTrayIcon, TrashIcon } from "@heroicons/react/16/solid";
 import { UserProfile, UserRole } from "../libs/supabase/user";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { Element } from "./Element";
@@ -14,17 +14,23 @@ import {
 } from "../libs/supabase/importers";
 import { ClassificationStatus, Importer } from "../interfaces/hts";
 import { useClassifications } from "../contexts/ClassificationsContext";
-import { updateClassification } from "../libs/classification";
+import {
+  updateClassification,
+  deleteClassification,
+} from "../libs/classification";
 import { SecondaryLabel } from "./SecondaryLabel";
 import { TertiaryText } from "./TertiaryText";
 import Modal from "./Modal";
 import ImporterDropdown from "./ImporterDropdown";
+import toast from "react-hot-toast";
+import { ClassifyPage } from "../enums/classify";
 
 interface Props {
   userProfile: UserProfile;
+  setPage: (page: ClassifyPage) => void;
 }
 
-export const ClassificationResultPage = ({ userProfile }: Props) => {
+export const ClassificationResultPage = ({ userProfile, setPage }: Props) => {
   const { classification, setClassification, classificationId } =
     useClassification();
   const { classifications, refreshClassifications } = useClassifications();
@@ -50,6 +56,29 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
   const [newImporter, setNewImporter] = useState("");
   const [isCreatingImporter, setIsCreatingImporter] = useState(false);
   const [showCreateImporterModal, setShowCreateImporterModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // User can delete if they are the owner and the classification is in draft status
+  const canDelete =
+    userProfile.id === classificationRecord?.user_id &&
+    classificationRecord?.status === ClassificationStatus.DRAFT;
+
+  const handleDeleteClassification = async () => {
+    if (!classificationRecord) return;
+    try {
+      setIsDeleting(true);
+      await deleteClassification(classificationRecord.id);
+      toast.success("Classification deleted");
+      await refreshClassifications();
+      setPage(ClassifyPage.CLASSIFICATIONS);
+    } catch (error) {
+      // Error is already handled by apiClient
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+    }
+  };
 
   // Fetch classifiers and importers on component mount
   useEffect(() => {
@@ -185,6 +214,26 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
                   </>
                 )}
               </button>
+              {canDelete && (
+                <button
+                  className="btn btn-sm btn-error"
+                  onClick={() => setShowDeleteModal(true)}
+                  disabled={isDeleting}
+                  title="Delete classification"
+                >
+                  {isDeleting ? (
+                    <div className="flex gap-1 items-center">
+                      <span className="loading loading-spinner loading-xs"></span>
+                      Deleting...
+                    </div>
+                  ) : (
+                    <div className="flex gap-1 items-center">
+                      <TrashIcon className="w-4 h-4" />
+                      Delete
+                    </div>
+                  )}
+                </button>
+              )}
             </div>
           </div>
           {/* Classification Details Card */}
@@ -338,6 +387,45 @@ export const ClassificationResultPage = ({ userProfile }: Props) => {
           </div>
         </div>
       </Modal>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          onClick={() => setShowDeleteModal(false)}
+        >
+          <div
+            className="bg-base-100 rounded-xl p-6 max-w-md w-full mx-4 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-lg font-bold mb-2">Delete Classification</h3>
+            <p className="text-base-content/70 mb-6">
+              Are you sure you want to delete this classification? This action
+              cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                className="btn btn-ghost btn-sm"
+                onClick={() => setShowDeleteModal(false)}
+                disabled={isDeleting}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn btn-error btn-sm"
+                onClick={handleDeleteClassification}
+                disabled={isDeleting}
+              >
+                {isDeleting ? (
+                  <span className="loading loading-spinner loading-xs"></span>
+                ) : (
+                  "Delete"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
