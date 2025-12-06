@@ -30,31 +30,31 @@ export const BaseTariff = ({
     <div
       key={`${htsElement.htsno}-${tariff.raw}-${index}`}
       className={classNames(
-        "flex gap-3 justify-between items-center py-3 px-4 rounded-xl transition-colors",
+        "flex gap-2 sm:gap-3 justify-between items-start sm:items-center py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl transition-colors",
         active ? "bg-primary/10" : "bg-base-200/50 opacity-60"
       )}
     >
-      <div className="flex flex-col gap-2 items-start flex-1 min-w-0">
-        <div className="flex gap-3 items-center flex-wrap">
+      <div className="flex flex-col gap-1.5 sm:gap-2 items-start flex-1 min-w-0">
+        <div className="flex gap-2 sm:gap-3 items-start sm:items-center flex-wrap">
           <input
             type="radio"
             checked
             disabled
-            className="radio radio-primary radio-sm shrink-0"
+            className="radio radio-primary radio-sm shrink-0 mt-0.5 sm:mt-0"
           />
-          <div className="flex gap-2 items-center flex-wrap">
+          <div className="flex flex-col sm:flex-row gap-0.5 sm:gap-2 items-start sm:items-center flex-wrap">
             <span
               className={classNames(
-                "font-bold",
+                "font-bold text-sm sm:text-base",
                 active ? "text-base-content" : "text-base-content/60"
               )}
             >
               {htsElement.htsno}
             </span>
-            <span className="text-base-content/30">•</span>
+            <span className="text-base-content/30 hidden sm:inline">•</span>
             <span
               className={classNames(
-                "font-medium text-base-content",
+                "font-medium text-sm sm:text-base text-base-content",
                 !active && "text-base-content/50"
               )}
             >
@@ -64,21 +64,21 @@ export const BaseTariff = ({
         </div>
 
         {tariff.programs && tariff.programs.length > 0 && (
-          <div className="ml-9">
+          <div className="ml-7 sm:ml-9">
             <SpecialPrograms programs={tariff.programs} />
           </div>
         )}
       </div>
 
-      <div className="shrink-0 min-w-[100px] text-right">
+      <div className="shrink-0 text-right">
         {reviewText ? (
-          <span className="badge badge-warning font-semibold">
+          <span className="badge badge-warning badge-sm sm:badge-md font-semibold">
             {reviewText}
           </span>
         ) : (
           <span
             className={classNames(
-              "text-lg font-bold",
+              "text-base sm:text-lg font-bold",
               active ? "text-primary" : "line-through text-base-content/40"
             )}
           >

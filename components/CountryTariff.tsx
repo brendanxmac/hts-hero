@@ -632,28 +632,28 @@ export const CountryTariff = ({
   const content = (
     <div className="flex flex-col gap-5">
       {/* Component Header */}
-      <div className="flex flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3">
-            <span className="text-4xl">{country.flag}</span>
-            <div>
-              <h2 className="text-2xl font-bold text-base-content">
-                {country.name}
-              </h2>
-              <div className="flex items-center gap-2 mt-0.5">
-                <span className="font-mono text-primary font-semibold">
-                  {tariffElement.htsno}
-                </span>
-                {selectedSpecialProgram?.symbol !== "none" && (
-                  <span className="badge badge-success badge-sm font-semibold">
-                    {selectedSpecialProgram.symbol}
-                  </span>
-                )}
-              </div>
-            </div>
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0 flex-1">
+          <p className="uppercase text-base-content/60 font-bold text-sm sm:text-base">
+            Duty for{" "}
+            <span className="text-primary font-semibold uppercase text-base sm:text-lg">
+              {tariffElement.htsno}
+            </span>{" "}
+            from
+          </p>
+          <div className="flex items-center gap-2 sm:gap-4">
+            <h2 className="text-4xl sm:text-5xl">{country.flag}</h2>
+            <h2 className="text-2xl sm:text-4xl font-bold text-base-content truncate">
+              {country.name}
+            </h2>
           </div>
+          {selectedSpecialProgram?.symbol !== "none" && (
+            <span className="badge badge-success badge-sm font-semibold mt-1">
+              {selectedSpecialProgram.symbol}
+            </span>
+          )}
         </div>
-        <div className="flex gap-2 items-center flex-wrap">
+        <div className="flex gap-2 items-center shrink-0">
           <button
             className={`btn btn-sm gap-1.5 btn-primary`}
             onClick={handleShareClick}
@@ -663,7 +663,10 @@ export const CountryTariff = ({
             ) : (
               <LinkIcon className="w-4 h-4" />
             )}
-            {isLinkCopied ? "Results Link Copied!" : "Share Results"}
+            <span>{isLinkCopied ? "Copied!" : "Share"}</span>
+            {/* <span className="inline xs:hidden">
+              {isLinkCopied ? "Copied!" : "Share"}
+            </span> */}
           </button>
           {isModal && onClose && (
             <button
@@ -678,12 +681,12 @@ export const CountryTariff = ({
       </div>
 
       {/* Estimated Costs Header */}
-      <div className="flex justify-between items-center pt-4">
-        <h2 className="text-3xl font-black text-base-content">
+      <div className="flex justify-between items-center gap-3 pt-4">
+        <h2 className="text-2xl sm:text-3xl font-black text-base-content">
           Estimated Costs
         </h2>
         <button
-          className={`btn btn-sm gap-1.5 btn-outline btn-primary`}
+          className={`btn btn-sm gap-1.5 btn-outline btn-primary shrink-0`}
           onClick={handleCopyCostClick}
         >
           {isCostCopied ? (
@@ -697,61 +700,61 @@ export const CountryTariff = ({
 
       {/* Total Import Duty Summary */}
       <div className="card bg-base-100 border border-base-300 shadow-lg rounded-xl">
-        <div className="p-5">
-          <div className="flex md:flex-row flex-col gap-4 mb-5">
+        <div className="p-3 sm:p-5">
+          <div className="flex md:flex-row flex-col gap-3 sm:gap-4 mb-4 sm:mb-5">
             {/* Duty & Fees */}
-            <div className="flex-1 basis-0 flex flex-col items-center justify-center p-6 bg-secondary/10 rounded-xl">
-              <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-2">
+            <div className="flex-1 basis-0 flex flex-col items-center justify-center p-4 sm:p-6 bg-secondary/10 rounded-xl">
+              <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 sm:mb-2">
                 Duty & Fees
               </span>
-              <h2 className="text-4xl sm:text-5xl font-black text-secondary">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-secondary break-all text-center">
                 {formatCurrency(totalImportDuty)}
               </h2>
-              <div className="text-sm text-base-content/50 mt-2">
+              <div className="text-xs sm:text-sm text-base-content/50 mt-1 sm:mt-2 text-center">
                 on {formatCurrency(customsValue)} customs value
               </div>
             </div>
             {/* Landed Cost */}
-            <div className="flex-1 basis-0 flex flex-col items-center justify-center p-6 bg-accent/10 rounded-xl">
-              <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-2">
+            <div className="flex-1 basis-0 flex flex-col items-center justify-center p-4 sm:p-6 bg-accent/10 rounded-xl">
+              <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 sm:mb-2">
                 Landed Cost
               </span>
-              <h2 className="text-4xl sm:text-5xl font-black text-accent">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-accent break-all text-center">
                 {formatCurrency(totalImportDuty + customsValue)}
               </h2>
             </div>
           </div>
 
           {/* Breakdown Grid */}
-          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-3 sm:mb-4">
             {dutyEstimates.map((estimate, i) => (
               <div
                 key={i}
-                className="flex flex-col items-center justify-center p-4 bg-base-200/50 rounded-xl sm:flex-1 sm:min-w-[calc(50%-0.5rem)] lg:min-w-[calc(33.333%-0.667rem)]"
+                className="flex flex-col items-center justify-center p-3 sm:p-4 bg-base-200/50 rounded-xl"
               >
-                <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1">
+                <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 text-center">
                   {estimate.tariffSetName} Duty
                 </span>
-                <div className="text-3xl font-black text-primary mb-2">
+                <div className="text-2xl sm:text-3xl font-black text-primary mb-2 break-all text-center">
                   {formatCurrency(estimate.totalDuty)}
                 </div>
-                <div className="text-xs text-base-content/50 space-y-1 text-center">
+                <div className="text-xs text-base-content/50 space-y-1 text-center w-full">
                   {estimate.amountDuty > 0 && (
-                    <div className="flex justify-center gap-2">
+                    <div className="flex flex-col xs:flex-row justify-center gap-0.5 xs:gap-2">
                       <span>Amount-based:</span>
                       <span className="font-medium">
                         {formatCurrency(estimate.amountDuty)}
                       </span>
                     </div>
                   )}
-                  <div className="flex justify-center gap-2">
+                  <div className="flex flex-col xs:flex-row justify-center gap-0.5 xs:gap-2">
                     <span>Ad valorem ({estimate.percentRate}%):</span>
                     <span className="font-medium">
                       {formatCurrency(estimate.adValoremDuty)}
                     </span>
                   </div>
                   {contentRequirements.length > 0 && (
-                    <div className="flex justify-center">
+                    <div className="flex flex-col xs:flex-row justify-center gap-0.5 xs:gap-2">
                       <span>Applied to:</span>
                       <span className="font-medium">
                         {estimate.contentPercentage}% (
@@ -762,17 +765,17 @@ export const CountryTariff = ({
                 </div>
               </div>
             ))}
-            <div className="flex flex-col items-center justify-center p-4 bg-base-200/50 rounded-xl sm:flex-1 sm:min-w-[calc(50%-0.5rem)] lg:min-w-[calc(33.333%-0.667rem)]">
-              <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1">
+            <div className="flex flex-col items-center justify-center p-3 sm:p-4 bg-base-200/50 rounded-xl">
+              <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 text-center">
                 Additional Fees
               </span>
-              <div className="text-3xl font-black text-primary mb-2">
+              <div className="text-2xl sm:text-3xl font-black text-primary mb-2 break-all text-center">
                 {formatCurrency(totalFees)}
               </div>
-              <div className="text-xs text-base-content/50 space-y-1 text-center">
+              <div className="text-xs text-base-content/50 space-y-1 text-center w-full">
                 {feeEstimates.map((fee, i) => (
-                  <div key={i} className="flex justify-center gap-2">
-                    <span>{fee.name}:</span>
+                  <div key={i} className="flex flex-row justify-center gap-2">
+                    <span className="truncate">{fee.name}:</span>
                     <span className="font-medium">
                       {formatCurrency(fee.amount)}
                     </span>
@@ -782,18 +785,18 @@ export const CountryTariff = ({
             </div>
           </div>
           {/* Tariff Rates */}
-          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {summaryTotals.map((total, i) => (
               <div
                 key={i}
-                className="flex flex-col items-center justify-center p-4 bg-base-200/50 rounded-xl sm:flex-1 sm:min-w-[calc(50%-0.5rem)] lg:min-w-[calc(33.333%-0.667rem)]"
+                className="flex flex-col items-center justify-center p-3 sm:p-4 bg-base-200/50 rounded-xl"
               >
-                <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1">
+                <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 text-center">
                   {total.name} Tariff Rate
                 </span>
-                <div className="text-3xl font-black text-primary">
+                <div className="text-2xl sm:text-3xl font-black text-primary text-center">
                   {total.hasAmountTariffs && total.amountRatesString && (
-                    <span className="text-3xl">
+                    <span className="text-xl sm:text-2xl lg:text-3xl">
                       {total.amountRatesString} +{" "}
                     </span>
                   )}
@@ -801,11 +804,11 @@ export const CountryTariff = ({
                 </div>
               </div>
             ))}
-            <div className="flex flex-col items-center justify-center p-4 bg-base-200/50 rounded-xl sm:flex-1 sm:min-w-[calc(50%-0.5rem)] lg:min-w-[calc(33.333%-0.667rem)]">
-              <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1">
+            <div className="flex flex-col items-center justify-center p-3 sm:p-4 bg-base-200/50 rounded-xl">
+              <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 text-center">
                 Additional Fee Rate
               </span>
-              <div className="text-3xl font-black text-primary">
+              <div className="text-2xl sm:text-3xl font-black text-primary">
                 {additionalFeesTotal}%
               </div>
             </div>
@@ -814,12 +817,12 @@ export const CountryTariff = ({
       </div>
 
       {/* Tariff Details Header */}
-      <div className="flex justify-between items-center pt-4">
-        <h2 className="text-3xl font-black text-base-content">
+      <div className="flex justify-between items-center gap-3 pt-4">
+        <h2 className="text-2xl sm:text-3xl font-black text-base-content">
           Tariff Details
         </h2>
         <button
-          className={`btn btn-sm gap-1.5 btn-outline btn-primary`}
+          className={`btn btn-sm gap-1.5 btn-outline btn-primary shrink-0`}
           onClick={handleCopyTariffDetailsClick}
         >
           {isTariffDetailsCopied ? (
@@ -833,12 +836,12 @@ export const CountryTariff = ({
 
       {/* Trade Programs */}
       <div className="card bg-base-100 border border-base-300 shadow-lg rounded-xl">
-        <div className="px-5 py-4 bg-base-200/50 border-b border-base-300 rounded-t-xl">
-          <h3 className="text-lg font-bold text-base-content">
+        <div className="px-3 sm:px-5 py-3 sm:py-4 bg-base-200/50 border-b border-base-300 rounded-t-xl">
+          <h3 className="text-base sm:text-lg font-bold text-base-content">
             Special Trade Programs
           </h3>
         </div>
-        <div className="p-5 flex flex-col gap-3">
+        <div className="p-3 sm:p-5 flex flex-col gap-2 sm:gap-3">
           {[DEFAULT_PROGRAM, ...specialTradePrograms].map((program, i) => {
             const isSelected =
               selectedSpecialProgram?.symbol === program.symbol;
@@ -846,12 +849,12 @@ export const CountryTariff = ({
               <div
                 key={i}
                 className={classNames(
-                  "flex gap-3 justify-between items-center py-3 px-4 rounded-xl transition-colors hover:bg-base-200 cursor-pointer",
+                  "flex gap-2 sm:gap-3 justify-between items-center py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl transition-colors hover:bg-base-200 cursor-pointer",
                   isSelected ? "bg-primary/10" : "bg-base-200/50"
                 )}
                 onClick={() => setSelectedSpecialProgram(program)}
               >
-                <div className="flex gap-3 items-center flex-1 min-w-0">
+                <div className="flex gap-2 sm:gap-3 items-center flex-1 min-w-0">
                   <input
                     type="radio"
                     name="trade-program"
@@ -859,22 +862,22 @@ export const CountryTariff = ({
                     onChange={() => setSelectedSpecialProgram(program)}
                     className="radio radio-primary radio-sm shrink-0"
                   />
-                  <div className="flex flex-col gap-1 min-w-0 flex-1">
-                    <div className="flex gap-2 items-center flex-wrap">
+                  <div className="flex flex-col gap-0.5 sm:gap-1 min-w-0 flex-1">
+                    <div className="flex gap-1.5 sm:gap-2 items-center flex-wrap">
                       {program.symbol !== "none" && (
-                        <div className="flex gap-2 items-center shrink-0">
-                          <span className="font-bold text-primary">
+                        <div className="flex gap-1.5 sm:gap-2 items-center shrink-0">
+                          <span className="font-bold text-primary text-sm sm:text-base">
                             {program.symbol}
                           </span>
                           <span className="text-base-content/30">•</span>
                         </div>
                       )}
-                      <span className="font-medium min-w-0 flex-1 text-base-content">
+                      <span className="font-medium min-w-0 flex-1 text-base-content text-sm sm:text-base">
                         {program.name}
                       </span>
                     </div>
                     {"description" in program && program.description && (
-                      <p className="text-sm text-base-content/60">
+                      <p className="text-xs sm:text-sm text-base-content/60">
                         {program.description}
                       </p>
                     )}
@@ -888,11 +891,11 @@ export const CountryTariff = ({
 
       {/* Exemption Notice */}
       {exemptionNote && (
-        <div className="alert alert-warning shadow-lg">
+        <div className="alert alert-warning shadow-lg flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
           <ExclamationTriangleIcon className="w-5 h-5 shrink-0" />
-          <div>
-            <h3 className="font-bold">Important Notice</h3>
-            <p className="text-sm">
+          <div className="min-w-0 flex-1">
+            <h3 className="font-bold text-sm sm:text-base">Important Notice</h3>
+            <p className="text-xs sm:text-sm">
               {exemptionNote}{" "}
               <span className="font-bold">
                 is/are EXEMPT from reciprocal tariffs
@@ -904,7 +907,7 @@ export const CountryTariff = ({
       )}
 
       {/* Tariff Sets */}
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-4 sm:gap-5">
         {tariffSets.map((tariffSet, i) => {
           const estimate = dutyEstimates[i];
           const isExpanded = expandedSets[i] ?? false;
@@ -917,19 +920,19 @@ export const CountryTariff = ({
               className="card bg-base-100 border border-base-300 shadow-lg rounded-xl"
             >
               {/* Set Header */}
-              <div className="px-5 py-4 bg-base-200/50 flex flex-wrap justify-between items-center gap-3 border-b border-base-300 rounded-t-xl">
+              <div className="px-3 sm:px-5 py-3 sm:py-4 bg-base-200/50 flex flex-wrap justify-between items-center gap-2 sm:gap-3 border-b border-base-300 rounded-t-xl">
                 <div className="flex items-center gap-2">
-                  <h3 className="text-lg font-bold text-base-content">
+                  <h3 className="text-base sm:text-lg font-bold text-base-content">
                     {tariffSet.name} Tariffs
                   </h3>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-base-content/60 font-semibold">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <span className="text-sm sm:text-base text-base-content/60 font-semibold">
                     {renderTariffRate(tariffSet)}
                   </span>
                   <span className="text-base-content/50">|</span>
                   {estimate && (
-                    <span className="text-lg font-bold text-primary">
+                    <span className="text-base sm:text-lg font-bold text-primary">
                       {formatCurrency(estimate.totalDuty)}
                     </span>
                   )}
@@ -937,7 +940,7 @@ export const CountryTariff = ({
               </div>
 
               {/* Tariff Items */}
-              <div className="p-5 flex flex-col gap-4">
+              <div className="p-3 sm:p-5 flex flex-col gap-3 sm:gap-4">
                 {/* Base Tariffs */}
                 {getFilteredBaseTariffs().flatMap((t) => t.tariffs).length >
                   0 && (
@@ -990,12 +993,12 @@ export const CountryTariff = ({
                   return (
                     <div className="flex flex-col gap-2 mt-2">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-semibold text-success uppercase tracking-wider flex items-center gap-1.5">
+                        <span className="text-xs font-semibold text-success uppercase tracking-wider flex items-center gap-1 sm:gap-1.5 shrink-0">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 20 20"
                             fill="currentColor"
-                            className="w-3.5 h-3.5"
+                            className="w-3 h-3 sm:w-3.5 sm:h-3.5"
                           >
                             <path
                               fillRule="evenodd"
@@ -1003,7 +1006,10 @@ export const CountryTariff = ({
                               clipRule="evenodd"
                             />
                           </svg>
-                          Exemptions & Exceptions
+                          <span className="hidden sm:inline">
+                            Exemptions & Exceptions
+                          </span>
+                          <span className="inline sm:hidden">Exemptions</span>
                         </span>
                         <div className="flex-1 h-px bg-success/30" />
                       </div>
@@ -1031,19 +1037,21 @@ export const CountryTariff = ({
 
               {/* Parsing Errors */}
               {i === 0 && parsingErrors.length > 0 && (
-                <div className="mx-5 mb-5">
+                <div className="mx-3 sm:mx-5 mb-3 sm:mb-5">
                   <div className="alert alert-error shadow-lg">
                     <ExclamationCircleIcon className="w-5 h-5 shrink-0" />
-                    <div>
-                      <h3 className="font-bold">
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-bold text-sm sm:text-base">
                         Error parsing base tariff(s)
                       </h3>
-                      <ul className="list-disc list-inside mt-1 text-sm">
+                      <ul className="list-disc list-inside mt-1 text-xs sm:text-sm">
                         {parsingErrors.map((err, j) => (
-                          <li key={j}>{err}</li>
+                          <li key={j} className="break-words">
+                            {err}
+                          </li>
                         ))}
                       </ul>
-                      <p className="mt-2 text-sm">
+                      <p className="mt-2 text-xs sm:text-sm">
                         Please contact{" "}
                         <a
                           href="mailto:support@htshero.com"
@@ -1059,19 +1067,26 @@ export const CountryTariff = ({
 
               {/* Show/Hide Inactive Tariffs Button */}
               {hasInactiveTariffs && (
-                <div className="px-5 pb-5 flex justify-center">
+                <div className="px-3 sm:px-5 pb-3 sm:pb-5 flex justify-center">
                   <button
-                    className="btn btn-sm btn-ghost gap-2"
+                    className="btn btn-sm btn-ghost gap-1 sm:gap-2 text-xs sm:text-sm"
                     onClick={() =>
                       setExpandedSets((prev) => ({ ...prev, [i]: !prev[i] }))
                     }
                   >
                     <ChevronDownIcon
-                      className={`w-5 h-5 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                      className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform ${isExpanded ? "rotate-180" : ""}`}
                     />
-                    {isExpanded ? "Hide Inactive Tariffs" : "Show All Tariffs"}
+                    <span className="hidden sm:inline">
+                      {isExpanded
+                        ? "Hide Inactive Tariffs"
+                        : "Show All Tariffs"}
+                    </span>
+                    <span className="inline sm:hidden">
+                      {isExpanded ? "Hide Inactive" : "Show All"}
+                    </span>
                     <ChevronDownIcon
-                      className={`w-5 h-5 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                      className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform ${isExpanded ? "rotate-180" : ""}`}
                     />
                   </button>
                 </div>
@@ -1083,28 +1098,28 @@ export const CountryTariff = ({
 
       {/* Additional Fees */}
       <div className="card bg-base-100 border border-base-300 shadow-lg rounded-xl">
-        <div className="px-5 py-4 bg-base-200/50 flex flex-wrap justify-between items-center gap-3 border-b border-base-300 rounded-t-xl">
-          <h3 className="text-lg font-bold text-base-content">
+        <div className="px-3 sm:px-5 py-3 sm:py-4 bg-base-200/50 flex flex-wrap justify-between items-center gap-2 sm:gap-3 border-b border-base-300 rounded-t-xl">
+          <h3 className="text-base sm:text-lg font-bold text-base-content">
             Additional Fees
           </h3>
-          <div className="flex items-center gap-3">
-            <span className="text-base-content/60 font-semibold">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className="text-sm sm:text-base text-base-content/60 font-semibold">
               {additionalFeesTotal}%
             </span>
             <span className="text-base-content/50">|</span>
-            <span className="text-lg font-bold text-primary">
+            <span className="text-base sm:text-lg font-bold text-primary">
               {formatCurrency(totalFees)}
             </span>
           </div>
         </div>
-        <div className="p-5 flex flex-col gap-3">
+        <div className="p-3 sm:p-5 flex flex-col gap-2 sm:gap-3">
           {feeEstimates.map((fee, i) => (
             <div
               key={i}
-              className="flex justify-between items-center py-3 px-4 bg-base-200/50 rounded-xl"
+              className="flex justify-between items-start sm:items-center gap-3 py-2.5 sm:py-3 px-3 sm:px-4 bg-base-200/50 rounded-xl"
             >
-              <div>
-                <span className="font-medium text-base-content">
+              <div className="min-w-0 flex-1">
+                <span className="font-medium text-base-content text-sm sm:text-base">
                   {fee.name}
                 </span>
                 {fee.name === "Merchandise Processing Fee" && (
@@ -1118,8 +1133,8 @@ export const CountryTariff = ({
                   </p>
                 )}
               </div>
-              <div className="flex flex-col items-end">
-                <span className="font-bold text-primary text-lg">
+              <div className="flex flex-col items-end shrink-0">
+                <span className="font-bold text-primary text-base sm:text-lg">
                   {formatCurrency(fee.amount)}
                 </span>
                 <span className="text-xs text-base-content/50">
@@ -1140,9 +1155,9 @@ export const CountryTariff = ({
           className="fixed inset-0 bg-black/60 z-40 animate-fade-in backdrop-blur-sm"
           onClick={onClose}
         />
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 pointer-events-none">
           <div
-            className="bg-base-100 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[85vh] overflow-y-auto pointer-events-auto animate-slide-up p-6 border-2 border-base-300"
+            className="bg-base-100 rounded-xl sm:rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] sm:max-h-[85vh] overflow-y-auto pointer-events-auto animate-slide-up p-3 sm:p-6 border-2 border-base-300"
             onClick={(e) => e.stopPropagation()}
           >
             {content}

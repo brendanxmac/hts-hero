@@ -123,7 +123,7 @@ export const Tariff = ({
     <div
       key={`${tariff.code}-${exceptionLevel}`}
       className={classNames(
-        "flex gap-3 justify-between items-center py-3 px-4 rounded-xl transition-colors",
+        "flex gap-2 sm:gap-3 justify-between items-start sm:items-center py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl transition-colors",
         tariff.isActive ? "bg-primary/10" : "bg-base-200/50",
         tariff.requiresReview && !tariff.isActive && "hover:bg-base-200",
         tariff.requiresReview && "cursor-pointer"
@@ -134,7 +134,7 @@ export const Tariff = ({
         }
       }}
     >
-      <div className="flex gap-3 items-center flex-1 min-w-0">
+      <div className="flex gap-2 sm:gap-3 items-start sm:items-center flex-1 min-w-0">
         <input
           type="radio"
           checked={tariff.isActive}
@@ -143,7 +143,7 @@ export const Tariff = ({
             hasExceptionTariffThatDoesNotNeedReviewThatIsActive
           }
           className={classNames(
-            "radio radio-primary radio-sm shrink-0",
+            "radio radio-primary radio-sm shrink-0 mt-0.5 sm:mt-0",
             tariff.requiresReview &&
               !hasExceptionTariffThatDoesNotNeedReviewThatIsActive &&
               "cursor-pointer"
@@ -160,21 +160,21 @@ export const Tariff = ({
           onChange={() => {}}
         />
 
-        <div className="flex flex-col gap-1 min-w-0 flex-1">
-          <div className="flex gap-2 items-center flex-wrap">
-            <div className="flex gap-2 items-center shrink-0">
+        <div className="flex flex-col gap-0.5 sm:gap-1 min-w-0 flex-1">
+          <div className="flex gap-1.5 sm:gap-2 items-start sm:items-center flex-wrap">
+            <div className="flex gap-1.5 sm:gap-2 items-center shrink-0">
               <Link
                 href={`/explore?code=${tariff.code}`}
                 target="_blank"
-                className="link link-primary font-bold transition-colors"
+                className="link link-primary font-bold text-sm sm:text-base transition-colors"
               >
                 {tariff.code}
               </Link>
-              <span className="text-base-content/30">•</span>
+              <span className="text-base-content/30 hidden sm:inline">•</span>
             </div>
             <span
               className={classNames(
-                "font-medium min-w-0 flex-1 text-base-content"
+                "font-medium min-w-0 text-sm sm:text-base text-base-content"
               )}
             >
               {tariff.name}
@@ -183,15 +183,15 @@ export const Tariff = ({
         </div>
       </div>
 
-      <div className="shrink-0 min-w-[100px] text-right">
+      <div className="shrink-0 text-right">
         {tariff[column] === null ? (
-          <span className="badge badge-warning font-semibold">
+          <span className="badge badge-warning badge-sm sm:badge-md font-semibold">
             Needs Review
           </span>
         ) : (
           <span
             className={classNames(
-              "text-lg font-bold",
+              "text-base sm:text-lg font-bold",
               tariff.isActive
                 ? "text-primary"
                 : "line-through text-base-content/40"
