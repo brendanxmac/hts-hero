@@ -406,14 +406,14 @@ export const Classifications = ({ page, setPage }: Props) => {
   return (
     <main className="w-full min-h-full flex flex-col bg-base-100">
       {/* Hero Header Section */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-base-200 via-base-100 to-base-200 border-b border-base-content/5">
+      <div className="relative overflow-hidden bg-gradient-to-br from-base-200/80 via-base-100 to-base-200/60 border-b border-base-content/10">
         {/* Subtle animated background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-32 -right-32 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-          <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
+          <div className="absolute -top-32 -right-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+          <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-secondary/10 rounded-full blur-3xl" />
           {/* Subtle grid pattern */}
           <div
-            className="absolute inset-0 opacity-[0.02]"
+            className="absolute inset-0 opacity-[0.03]"
             style={{
               backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`,
               backgroundSize: "32px 32px",
@@ -425,16 +425,16 @@ export const Classifications = ({ page, setPage }: Props) => {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             {/* Left side - Main headline */}
             <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary/80">
-                <span className="inline-block w-8 h-px bg-primary/40" />
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary">
+                <span className="inline-block w-8 h-px bg-primary/60" />
                 Your Classification History
               </div>
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight">
-                <span className="bg-gradient-to-r from-base-content via-base-content to-base-content/80 bg-clip-text">
+                <span className="text-base-content">
                   Classifications
                 </span>
               </h1>
-              <p className="text-base-content/60 text-sm md:text-base max-w-lg mt-1">
+              <p className="text-base-content/70 text-sm md:text-base max-w-lg mt-1">
                 View, manage, and track your classifications.
               </p>
             </div>
@@ -443,7 +443,7 @@ export const Classifications = ({ page, setPage }: Props) => {
             <div className="flex flex-row gap-3 md:items-end">
               {!activeClassifyPlan && (
                 <button
-                  className="group relative overflow-hidden px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 bg-gradient-to-r from-secondary/10 to-secondary/5 border border-secondary/20 hover:border-secondary/40 hover:shadow-lg hover:shadow-secondary/10"
+                  className="group relative overflow-hidden px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 bg-secondary/15 border border-secondary/30 hover:border-secondary/50 hover:bg-secondary/25 hover:shadow-lg hover:shadow-secondary/20"
                   disabled={loadingUpgrade}
                   onClick={async () => {
                     try {
@@ -468,12 +468,12 @@ export const Classifications = ({ page, setPage }: Props) => {
                     ) : (
                       <BoltIcon className="h-4 w-4 text-secondary" />
                     )}
-                    <span className="text-secondary">Upgrade</span>
+                    <span className="text-secondary font-bold">Upgrade</span>
                   </span>
                 </button>
               )}
               <button
-                className="group relative overflow-hidden px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 bg-gradient-to-r from-primary to-primary/90 text-primary-content hover:shadow-lg hover:shadow-primary/25 hover:scale-[1.02]"
+                className="group relative overflow-hidden px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 bg-primary text-primary-content hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02]"
                 onClick={async () => {
                   setLoadingNewClassification(true);
                   await fetchElements("latest");
@@ -533,10 +533,10 @@ export const Classifications = ({ page, setPage }: Props) => {
         </div>
 
         {/* Filtering Section */}
-        <div className="relative overflow-hidden rounded-2xl border border-base-content/10 bg-gradient-to-br from-base-200/60 via-base-100 to-base-200/40 p-4">
+        <div className="relative overflow-hidden rounded-2xl border border-base-content/15 bg-base-200/50 p-4">
           {/* Subtle decorative elements */}
           <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute -top-16 -right-16 w-48 h-48 bg-primary/5 rounded-full blur-3xl" />
+            <div className="absolute -top-16 -right-16 w-48 h-48 bg-primary/10 rounded-full blur-3xl" />
           </div>
 
           <div className="relative z-10 flex flex-col md:flex-row gap-4">
@@ -544,15 +544,15 @@ export const Classifications = ({ page, setPage }: Props) => {
             <div className="grow flex-1 flex flex-col gap-2">
               <div className="flex justify-between items-center">
                 <div className="flex gap-1.5 items-center">
-                  <DocumentTextIcon className="h-4 w-4 text-primary/70" />
-                  <label className="text-xs font-semibold uppercase tracking-wider text-base-content/70">
+                  <DocumentTextIcon className="h-4 w-4 text-primary" />
+                  <label className="text-xs font-semibold uppercase tracking-wider text-base-content/80">
                     Description or Code
                   </label>
                 </div>
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="text-xs font-semibold text-primary hover:text-primary/70 transition-colors"
+                    className="text-xs font-bold text-primary hover:text-primary/80 transition-colors"
                   >
                     Clear
                   </button>
@@ -563,7 +563,7 @@ export const Classifications = ({ page, setPage }: Props) => {
                 placeholder="Filter by description or code..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-[42px] px-4 bg-base-100/80 rounded-xl border border-base-content/10 transition-all duration-200 placeholder:text-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 hover:border-primary/30 hover:bg-base-100"
+                className="w-full h-[42px] px-4 bg-base-100 rounded-xl border border-base-content/15 transition-all duration-200 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40"
               />
             </div>
 
@@ -572,15 +572,15 @@ export const Classifications = ({ page, setPage }: Props) => {
               <div className="flex flex-col gap-2 min-w-[200px]">
                 <div className="flex justify-between items-center">
                   <div className="flex gap-1.5 items-center">
-                    <UserIcon className="h-4 w-4 text-primary/70" />
-                    <label className="text-xs font-semibold uppercase tracking-wider text-base-content/70">
+                    <UserIcon className="h-4 w-4 text-primary" />
+                    <label className="text-xs font-semibold uppercase tracking-wider text-base-content/80">
                       Classifier
                     </label>
                   </div>
                   {selectedUserId && (
                     <button
                       onClick={() => setSelectedUserId("")}
-                      className="text-xs font-semibold text-primary hover:text-primary/70 transition-colors"
+                      className="text-xs font-bold text-primary hover:text-primary/80 transition-colors"
                     >
                       Clear
                     </button>
@@ -589,7 +589,7 @@ export const Classifications = ({ page, setPage }: Props) => {
                 <select
                   value={selectedUserId}
                   onChange={(e) => setSelectedUserId(e.target.value)}
-                  className="h-[42px] px-4 bg-base-100/80 rounded-xl border border-base-content/10 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 hover:border-primary/30 hover:bg-base-100 cursor-pointer"
+                  className="h-[42px] px-4 bg-base-100 rounded-xl border border-base-content/15 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40 cursor-pointer"
                 >
                   <option value="">All Users</option>
                   {teamUsers.map((user) => (
@@ -605,15 +605,15 @@ export const Classifications = ({ page, setPage }: Props) => {
             <div className="flex flex-col gap-2 min-w-[200px]">
               <div className="flex justify-between items-center">
                 <div className="flex gap-1.5 items-center">
-                  <TagIcon className="h-4 w-4 text-primary/70" />
-                  <label className="text-xs font-semibold uppercase tracking-wider text-base-content/70">
+                  <TagIcon className="h-4 w-4 text-primary" />
+                  <label className="text-xs font-semibold uppercase tracking-wider text-base-content/80">
                     Importer
                   </label>
                 </div>
                 {selectedImporterId && (
                   <button
                     onClick={() => setSelectedImporterId("")}
-                    className="text-xs font-semibold text-primary hover:text-primary/70 transition-colors"
+                    className="text-xs font-bold text-primary hover:text-primary/80 transition-colors"
                   >
                     Clear
                   </button>
@@ -622,7 +622,7 @@ export const Classifications = ({ page, setPage }: Props) => {
               <select
                 value={selectedImporterId}
                 onChange={(e) => setSelectedImporterId(e.target.value)}
-                className="h-[42px] px-4 bg-base-100/80 rounded-xl border border-base-content/10 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 hover:border-primary/30 hover:bg-base-100 cursor-pointer"
+                className="h-[42px] px-4 bg-base-100 rounded-xl border border-base-content/15 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40 cursor-pointer"
               >
                 <option value="">All Importers</option>
                 <option value={UNASSIGNED_IMPORTER_VALUE}>Unassigned</option>
@@ -640,14 +640,14 @@ export const Classifications = ({ page, setPage }: Props) => {
           <>
             {/* Results Separator */}
             <div className="flex items-center gap-4 my-2">
-              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-base-content/20 to-base-content/20"></div>
-              <span className="text-xs font-medium uppercase tracking-widest text-base-content/40">
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-base-content/30 to-base-content/30"></div>
+              <span className="text-xs font-semibold uppercase tracking-widest text-base-content/60">
                 {filteredClassifications.length}{" "}
                 {filteredClassifications.length === 1
                   ? "Classification"
                   : "Classifications"}
               </span>
-              <div className="flex-1 h-px bg-gradient-to-l from-transparent via-base-content/20 to-base-content/20"></div>
+              <div className="flex-1 h-px bg-gradient-to-l from-transparent via-base-content/30 to-base-content/30"></div>
             </div>
 
             <div className="flex flex-col gap-3 pb-6">
@@ -673,15 +673,15 @@ export const Classifications = ({ page, setPage }: Props) => {
             if (!emptyStateConfig) return null;
 
             return (
-              <div className="relative overflow-hidden flex flex-col items-center justify-center py-16 px-6 rounded-2xl border border-base-content/10 bg-gradient-to-br from-base-200/80 via-base-100 to-base-200/80">
+              <div className="relative overflow-hidden flex flex-col items-center justify-center py-16 px-6 rounded-2xl border border-base-content/15 bg-base-200/50">
                 {/* Animated background elements */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                  <div className="absolute -top-20 -left-20 w-64 h-64 bg-primary/10 rounded-full blur-3xl animate-pulse" />
-                  <div className="absolute -bottom-20 -right-20 w-72 h-72 bg-secondary/10 rounded-full blur-3xl animate-pulse [animation-delay:1s]" />
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-accent/5 rounded-full blur-3xl animate-pulse [animation-delay:2s]" />
+                  <div className="absolute -top-20 -left-20 w-64 h-64 bg-primary/15 rounded-full blur-3xl animate-pulse" />
+                  <div className="absolute -bottom-20 -right-20 w-72 h-72 bg-secondary/15 rounded-full blur-3xl animate-pulse [animation-delay:1s]" />
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-pulse [animation-delay:2s]" />
                   {/* Grid pattern overlay */}
                   <div
-                    className="absolute inset-0 opacity-[0.03]"
+                    className="absolute inset-0 opacity-[0.04]"
                     style={{
                       backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
                       backgroundSize: "40px 40px",
@@ -693,9 +693,9 @@ export const Classifications = ({ page, setPage }: Props) => {
                 <div className="relative z-10 flex flex-col items-center gap-6">
                   {/* Icon with animated ring */}
                   <div className="relative">
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary via-secondary to-accent opacity-20 blur-xl animate-pulse" />
-                    <div className="relative p-5 rounded-full bg-base-100 shadow-lg border border-base-content/5">
-                      <div className="p-4 rounded-full bg-gradient-to-br from-primary/10 to-secondary/10">
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary via-secondary to-accent opacity-30 blur-xl animate-pulse" />
+                    <div className="relative p-5 rounded-full bg-base-100 shadow-lg border border-base-content/10">
+                      <div className="p-4 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
@@ -712,17 +712,17 @@ export const Classifications = ({ page, setPage }: Props) => {
                         </svg>
                       </div>
                     </div>
-                    <div className="absolute inset-0 rounded-full border-2 border-primary/20 animate-ping [animation-duration:3s]" />
+                    <div className="absolute inset-0 rounded-full border-2 border-primary/30 animate-ping [animation-duration:3s]" />
                   </div>
 
                   {/* Text content */}
                   <div
                     className={`text-center ${emptyStateConfig.maxWidth || "max-w-xl"}`}
                   >
-                    <h3 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-base-content via-base-content/90 to-base-content bg-clip-text">
+                    <h3 className="text-2xl md:text-3xl font-bold text-base-content">
                       {emptyStateConfig.title}
                     </h3>
-                    <div className="text-base-content/60 mt-3 text-base leading-relaxed">
+                    <div className="text-base-content/70 mt-3 text-base leading-relaxed">
                       {emptyStateConfig.descriptions.map((desc, index) => (
                         <p key={index}>{desc}</p>
                       ))}
@@ -731,7 +731,7 @@ export const Classifications = ({ page, setPage }: Props) => {
 
                   {/* Button */}
                   <button
-                    className="group relative overflow-hidden px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300 bg-gradient-to-r from-primary to-primary/90 text-primary-content hover:shadow-lg hover:shadow-primary/25 hover:scale-[1.02]"
+                    className="group relative overflow-hidden px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300 bg-primary text-primary-content hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02]"
                     onClick={emptyStateConfig.onButtonClick}
                   >
                     <span className="relative z-10 flex items-center gap-2">
