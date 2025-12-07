@@ -580,7 +580,7 @@ export const TariffFinderPage = () => {
           <div className="flex items-center gap-4 my-4">
             <div className="flex-1 h-px bg-gradient-to-r from-transparent via-base-content/20 to-base-content/20"></div>
             <span className="text-xs font-medium uppercase tracking-widest text-base-content/40">
-              Results
+              Duty & Tariff Results
             </span>
             <div className="flex-1 h-px bg-gradient-to-l from-transparent via-base-content/20 to-base-content/20"></div>
           </div>

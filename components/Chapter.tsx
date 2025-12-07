@@ -6,18 +6,18 @@ import {
   getElementsInChapter,
 } from "../libs/hts";
 import { ElementSummary } from "./ElementSummary";
-import { DocumentTextIcon, FunnelIcon } from "@heroicons/react/24/solid";
+import {
+  DocumentTextIcon,
+  MagnifyingGlassIcon,
+  ChevronDownIcon,
+} from "@heroicons/react/16/solid";
 import PDF from "./PDF";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
-import { ButtonWithIcon } from "./ButtonWithIcon";
-import { SecondaryLabel } from "./SecondaryLabel";
 import { useHts } from "../contexts/HtsContext";
 import { SupabaseBuckets } from "../constants/supabase";
 import Fuse, { IFuseOptions } from "fuse.js";
 import { NoteI, notes, NoteType } from "../public/notes/notes";
 import toast from "react-hot-toast";
-import { Color } from "../enums/style";
-import { useHtsSections } from "../contexts/HtsSectionsContext";
 
 interface Props {
   chapter: HtsSectionAndChapterBase;
@@ -26,16 +26,8 @@ interface Props {
 export const Chapter = ({ chapter }: Props) => {
   const { number, description } = chapter;
   const { htsElements } = useHts();
-  const { sections } = useHtsSections();
   const [showNote, setShowNote] = useState<NoteI | null>(null);
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
-
-  // Find the section that contains this chapter
-  // const parentSection = useMemo(() => {
-  //   return sections.find((section) =>
-  //     section.chapters.some((ch) => ch.number === chapter.number)
-  //   );
-  // }, [sections, chapter.number]);
 
   const chapterElements = getElementsInChapter(htsElements, number);
   const elementsAtIndentLevel = chapterElements
@@ -144,151 +136,155 @@ export const Chapter = ({ chapter }: Props) => {
   };
 
   return (
-    <div className="card flex flex-col w-full gap-4 md:gap-4 transition duration-100 ease-in-out">
-      {/* <div className="flex flex-col gap-3 text-sm">
-        <div className="flex flex-col gap-2 text-xs">
-          {parentSection && (
-            <div key={`breadcrumb-${chapter.number}`}>
-              <b className="text-primary">Section {parentSection.number}: </b>
-              <span>{parentSection.description}</span>
-              <span className="mx-2">›</span>
+    <div className="flex flex-col w-full gap-6">
+      {/* Chapter Header Card */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 border border-base-content/10 p-5">
+        {/* Subtle background decoration */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+            {/* Chapter Badge */}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 border border-primary/20">
+                <span className="text-lg font-bold text-primary">{number}</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-semibold uppercase tracking-widest text-primary/70">
+                  Chapter
+                </span>
+                <h2 className="text-xl md:text-2xl font-bold text-base-content leading-tight">
+                  {description}
+                </h2>
+              </div>
             </div>
-          )}
-        </div>
-      </div> */}
 
-      {/* <div className="w-full h-[1px] bg-base-content/10" /> */}
-
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between gap-3">
-          <SecondaryLabel
-            value={`Chapter ${number.toString()}`}
-            color={Color.PRIMARY}
-          />
-          <div className="flex gap-4 justify-end">
-            {chapter.number === 98 || chapter.number === 99 ? (
-              <div
-                className="w-full min-w-sm max-w-sm relative"
-                ref={notesDropdownRef}
-              >
+            {/* Notes Button/Dropdown */}
+            <div className="flex gap-2">
+              {chapter.number === 98 || chapter.number === 99 ? (
                 <div
-                  className="px-3 py-1 border-2 border-base-content/10 rounded-lg cursor-pointer bg-base-100 flex gap-3 items-center justify-between hover:bg-primary/20 transition-colors min-h-10"
-                  onClick={() => setIsNotesDropdownOpen(!isNotesDropdownOpen)}
+                  className="relative min-w-[200px] max-w-sm"
+                  ref={notesDropdownRef}
                 >
-                  <div className="flex-1 flex items-center">
-                    <span className="text-sm">Select Note to View</span>
-                  </div>
-                  <svg
-                    className={`w-4 h-4 transition-transform text-base-content/70 ${isNotesDropdownOpen ? "" : "rotate-180"}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                  <button
+                    className="w-full flex items-center justify-between gap-2 px-4 py-2.5 rounded-xl bg-base-content/5 hover:bg-primary/10 border border-base-content/10 hover:border-primary/20 transition-all duration-200"
+                    onClick={() => setIsNotesDropdownOpen(!isNotesDropdownOpen)}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
+                    <div className="flex items-center gap-2">
+                      <DocumentTextIcon className="h-4 w-4 text-primary/70" />
+                      <span className="text-sm font-medium">Select Notes</span>
+                    </div>
+                    <ChevronDownIcon
+                      className={`w-4 h-4 text-base-content/50 transition-transform duration-200 ${isNotesDropdownOpen ? "rotate-180" : ""}`}
                     />
-                  </svg>
-                </div>
+                  </button>
 
-                {isNotesDropdownOpen && (
-                  <div className="absolute z-10 w-full mt-1 bg-base-100 border-2 border-base-content/40 rounded-lg shadow-xl max-h-64 overflow-hidden">
-                    <div
-                      className="max-h-60 overflow-y-auto pb-1"
-                      ref={scrollContainerRef}
-                    >
-                      {chapterNotes.length > 0 ? (
-                        chapterNotes.map((note: NoteI, index: number) => (
-                          <div
-                            key={index}
-                            className={`px-3 py-2 cursor-pointer flex items-center justify-between ${
-                              index === highlightedNoteIndex
-                                ? "bg-base-300 text-primary-content"
-                                : "hover:bg-base-200"
-                            }`}
-                            onClick={() => handleNoteSelect(note)}
-                            onMouseEnter={() => {
-                              setIsKeyboardNavigation(false);
-                              setHighlightedNoteIndex(index);
-                            }}
-                          >
-                            <div className="flex flex-col">
-                              <div className="flex gap-2 items-center">
+                  {isNotesDropdownOpen && (
+                    <div className="absolute z-20 w-full mt-2 bg-base-100 border border-base-content/10 rounded-xl shadow-2xl shadow-black/10 overflow-hidden">
+                      <div
+                        className="max-h-60 overflow-y-auto"
+                        ref={scrollContainerRef}
+                      >
+                        {chapterNotes.length > 0 ? (
+                          chapterNotes.map((note: NoteI, index: number) => (
+                            <div
+                              key={index}
+                              className={`px-4 py-3 cursor-pointer transition-colors ${
+                                index === highlightedNoteIndex
+                                  ? "bg-primary/10"
+                                  : "hover:bg-base-200/60"
+                              }`}
+                              onClick={() => handleNoteSelect(note)}
+                              onMouseEnter={() => {
+                                setIsKeyboardNavigation(false);
+                                setHighlightedNoteIndex(index);
+                              }}
+                            >
+                              <div className="flex items-center gap-2">
                                 <DocumentTextIcon className="shrink-0 h-4 w-4 text-primary" />
-                                <span className={"text-primary font-medium"}>
+                                <span className="font-medium text-base-content">
                                   {note.title.includes("Subchapter")
                                     ? note.title.split(" - ")[1]
                                     : note.title}
                                 </span>
                               </div>
-                              <span className={"text-sm"}>
+                              <p className="text-xs text-base-content/60 mt-1 ml-6">
                                 {note.description}
-                              </span>
+                              </p>
                             </div>
+                          ))
+                        ) : (
+                          <div className="px-4 py-3 text-sm text-base-content/50">
+                            No notes found
                           </div>
-                        ))
-                      ) : (
-                        <div className="px-3 py-2 text-base-content/60">
-                          No notes found
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <ButtonWithIcon
-                icon={<DocumentTextIcon className="h-4 w-4" />}
-                label={`Chapter ${number.toString()} Notes`}
-                onClick={() => {
-                  const note = notes.find(
-                    (note) => note.title === `Chapter ${number.toString()}`
-                  );
-                  if (note) {
-                    setShowNote(note);
-                  } else {
-                    toast.error("No notes found for this chapter");
-                  }
-                }}
-              />
-            )}
+                  )}
+                </div>
+              ) : (
+                <button
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-base-content/5 hover:bg-primary/10 border border-base-content/10 hover:border-primary/20 transition-all duration-200"
+                  onClick={() => {
+                    const note = notes.find(
+                      (note) => note.title === `Chapter ${number.toString()}`
+                    );
+                    if (note) {
+                      setShowNote(note);
+                    } else {
+                      toast.error("No notes found for this chapter");
+                    }
+                  }}
+                >
+                  <DocumentTextIcon className="h-4 w-4 text-primary/70" />
+                  <span className="text-sm font-medium">Chapter Notes</span>
+                </button>
+              )}
+            </div>
           </div>
         </div>
-        <h2 className="text-xl md:text-3xl font-bold">{description}</h2>
       </div>
 
-      <div className="flex flex-col gap-2 bg-base-100">
-        <div className="w-full flex sm:justify-between sm:items-end gap-1 sm:gap-4 flex-col sm:flex-row">
-          <SecondaryLabel
-            value={`Headings (${filteredElements ? filteredElements.length : elementsWithChildrenAdded.length})`}
-          />
-          {/* Filter Bar */}
-          <div className="flex-1 relative sm:max-w-xs w-full">
+      {/* Headings Section */}
+      <div className="flex flex-col gap-4">
+        {/* Section Header with Filter */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold uppercase tracking-widest text-base-content/50">
+              Headings
+            </span>
+            <span className="px-2 py-0.5 rounded-lg bg-base-content/5 text-xs font-bold text-base-content/60">
+              {filteredElements
+                ? filteredElements.length
+                : elementsWithChildrenAdded.length}
+            </span>
+          </div>
+
+          {/* Filter Input */}
+          <div className="relative w-full sm:max-w-xs">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <FunnelIcon className="h-5 w-5 text-base-content/70" />
+              <MagnifyingGlassIcon className="h-4 w-4 text-base-content/40" />
             </div>
             <input
               type="text"
-              placeholder="Filter by description or code"
+              placeholder="Filter headings..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-1 text-sm bg-base-100 border-2 border-base-content/80 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full h-10 pl-10 pr-16 bg-base-100 rounded-xl border border-base-content/10 transition-all duration-200 placeholder:text-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 hover:border-primary/30 text-sm"
             />
             {searchQuery && (
-              <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="btn btn-link btn-sm text-xs hover:text-secondary no-underline"
-                >
-                  clear
-                </button>
-              </div>
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-xs font-semibold text-primary hover:text-primary/70 transition-colors"
+              >
+                Clear
+              </button>
             )}
           </div>
         </div>
-        <div className="flex flex-col gap-3">
+
+        {/* Elements List */}
+        <div className="flex flex-col gap-2">
           {filteredElements.map((element, i) => {
             return (
               <ElementSummary
@@ -311,6 +307,7 @@ export const Chapter = ({ chapter }: Props) => {
           })}
         </div>
       </div>
+
       {showNote && (
         <PDF
           title={`${showNote.title} Notes`}

@@ -259,7 +259,7 @@ export const HtsCodeSelector = ({
         <div className="relative">
           <Combobox.Input
             ref={inputRef}
-            placeholder="Enter 8 or 10 digit HTS Code"
+            placeholder="Enter 8 or 10 Digit HTS Code"
             value={inputValue}
             onChange={handleSearchChange}
             onPaste={handlePaste}

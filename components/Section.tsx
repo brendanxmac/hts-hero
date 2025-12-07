@@ -1,15 +1,9 @@
-import { ChevronUpIcon } from "@heroicons/react/16/solid";
-import { DocumentTextIcon } from "@heroicons/react/24/solid";
+import { ChevronUpIcon, DocumentTextIcon } from "@heroicons/react/16/solid";
 import { HtsSection } from "../interfaces/hts";
 import { useState } from "react";
 import { ChapterSummary } from "./ChapterSummary";
-import { classNames } from "../utilities/style";
 import PDF from "./PDF";
 import { NavigatableElement } from "./Elements";
-import { TertiaryText } from "./TertiaryText";
-import { PrimaryLabel } from "./PrimaryLabel";
-import { Color } from "../enums/style";
-import { ButtonWithIcon } from "./ButtonWithIcon";
 import { SupabaseBuckets } from "../constants/supabase";
 
 interface Props {
@@ -51,10 +45,11 @@ export const Section = ({
 
   return (
     <div
-      className={classNames(
-        !isExpanded && "hover:border-primary hover:shadow-lg",
-        "card border-2 border-base-content/40 w-full flex flex-col gap-6 py-6 px-4 rounded-xl transition-all duration-100 ease-in-out hover:cursor-pointer"
-      )}
+      className={`group relative overflow-hidden rounded-2xl transition-all duration-300 cursor-pointer ${
+        isExpanded
+          ? "bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 border border-primary/20 shadow-lg"
+          : "bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 border border-base-content/10 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5"
+      }`}
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -63,49 +58,64 @@ export const Section = ({
         setShowDetails(newExpanded);
       }}
     >
-      <div className={"flex flex-col gap-4"}>
-        <div className="flex gap-4">
-          <div className="grow flex flex-col gap-3">
-            <div className="w-full flex gap-4 items-center justify-between">
-              <TertiaryText
-                uppercase
-                value={`Section ${number.toString()}`}
-                color={Color.PRIMARY}
-              />
+      {/* Subtle hover gradient */}
+      <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+      <div className="relative z-10 p-5">
+        {/* Header */}
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1 flex flex-col gap-2">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2 px-2.5 py-1 rounded-lg bg-primary/10 border border-primary/20">
+                <span className="text-xs font-bold text-primary">
+                  Section {number}
+                </span>
+              </div>
               {notesPath && (
-                <ButtonWithIcon
-                  icon={<DocumentTextIcon className="h-4 w-4" />}
-                  label="Notes"
-                  onClick={() => setShowNotes(!showNotes)}
-                />
+                <button
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-base-content/5 hover:bg-primary/10 border border-base-content/10 hover:border-primary/20 transition-all duration-200"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowNotes(!showNotes);
+                  }}
+                >
+                  <DocumentTextIcon className="h-3.5 w-3.5 text-primary/70" />
+                  Notes
+                </button>
               )}
             </div>
 
-            <div className="flex flex-col items-start">
-              <PrimaryLabel value={description} />
-              <TertiaryText value={getChapterRange(section)} />
-            </div>
+            <h3 className="text-lg font-bold text-base-content leading-snug">
+              {description}
+            </h3>
+
+            <span className="text-sm text-base-content/50">
+              {getChapterRange(section)}
+            </span>
           </div>
 
           <ChevronUpIcon
-            className={classNames(
-              "shrink-0 w-6 h-6 text-primary transition-transform duration-200 ease-in-out",
-              isExpanded && "rotate-180"
-            )}
+            className={`shrink-0 w-6 h-6 text-primary transition-transform duration-300 ${
+              isExpanded ? "rotate-180" : ""
+            }`}
           />
         </div>
+
+        {/* Chapters List */}
         {isExpanded && (
-          <div className="flex flex-col gap-2">
-            {section.chapters.map((chapter) => {
-              return (
-                <ChapterSummary
-                  key={chapter.number}
-                  chapter={chapter}
-                  breadcrumbs={breadcrumbs}
-                  setBreadcrumbs={setBreadcrumbs}
-                />
-              );
-            })}
+          <div className="mt-4 pt-4 border-t border-base-content/10">
+            <div className="flex flex-col gap-2">
+              {section.chapters.map((chapter) => {
+                return (
+                  <ChapterSummary
+                    key={chapter.number}
+                    chapter={chapter}
+                    breadcrumbs={breadcrumbs}
+                    setBreadcrumbs={setBreadcrumbs}
+                  />
+                );
+              })}
+            </div>
           </div>
         )}
       </div>

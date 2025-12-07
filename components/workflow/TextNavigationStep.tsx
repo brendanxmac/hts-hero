@@ -38,7 +38,7 @@ export const TextNavigationStep = ({
 
       <div className="relative z-10 p-3">
         <div className="flex items-center gap-2 mb-1">
-          {icon || <DocumentTextIcon className="w-3.5 h-3.5 text-primary/70" />}
+          {/* {icon || <DocumentTextIcon className="w-3.5 h-3.5 text-primary/70" />} */}
           <span className="text-xs font-semibold uppercase tracking-wider text-base-content/60">
             {title}
           </span>

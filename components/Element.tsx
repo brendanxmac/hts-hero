@@ -11,12 +11,10 @@ import { ElementSummary } from "./ElementSummary";
 import {
   DocumentTextIcon,
   MagnifyingGlassIcon,
+  ChevronRightIcon,
 } from "@heroicons/react/16/solid";
 import PDF from "./PDF";
-import { SecondaryLabel } from "./SecondaryLabel";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
-import { ButtonWithIcon } from "./ButtonWithIcon";
-import { TertiaryLabel } from "./TertiaryLabel";
 import { useHts } from "../contexts/HtsContext";
 import { PDFProps } from "../interfaces/ui";
 import { SupabaseBuckets } from "../constants/supabase";
@@ -28,7 +26,6 @@ import {
 } from "../utilities/hts";
 import { useUser } from "../contexts/UserContext";
 import { userHasActivePurchase } from "../libs/supabase/purchase";
-import { PrimaryLabel } from "./PrimaryLabel";
 import Link from "next/link";
 import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import { fetchUser, updateUserProfile } from "../libs/supabase/user";
@@ -132,40 +129,27 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
     getTariffElement(element, htsElements, breadcrumbs) || element;
 
   return (
-    <div className="card w-full flex flex-col items-start justify-between gap-4">
-      <div className="w-full flex flex-col gap-4">
-        {/* <div className="flex flex-col gap-3 text-sm">
-          <div className="flex flex-wrap gap-y-2">
-            {getBreadCrumbsForElement(element, sections, htsElements).map(
-              (breadcrumb, i) => (
-                <div key={`breadcrumb-${i}`}>
-                  {breadcrumb.label && (
-                    <b className="text-primary">{breadcrumb.label} </b>
-                  )}
-                  <span
-                    className={`${!breadcrumb.label ? "font-bold italic" : "text-base-content"}`}
-                  >
-                    {breadcrumb.value}
-                  </span>
-                  <span className="mx-2">›</span>
-                </div>
-              )
-            )}
-          </div>
-        </div> */}
+    <div className="w-full flex flex-col gap-6">
+      {/* Element Header Card */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 border border-base-content/10 p-5">
+        {/* Subtle background decoration */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
 
-        {/* <div className="w-full h-[1px] bg-base-content/10" /> */}
+        <div className="relative z-10 flex flex-col gap-4">
+          {/* HTS Code Badge and Actions */}
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="px-4 py-2 rounded-xl bg-primary/10 border border-primary/20">
+                <span className="text-lg md:text-xl font-bold text-primary">
+                  {getHtsnoLabel()}
+                </span>
+              </div>
+            </div>
 
-        <div className="flex flex-col gap-1">
-          <div className="w-full flex flex-col-reverse sm:flex-row justify-between items-start gap-2">
-            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-primary">
-              {getHtsnoLabel()}
-            </h1>
-
-            <div className="flex gap-2">
-              <ButtonWithIcon
-                icon={<DocumentTextIcon className="h-4 w-4" />}
-                label={`Chapter ${chapter} Notes`}
+            {/* Action Buttons */}
+            <div className="flex flex-wrap gap-2">
+              <button
+                className="flex items-center gap-2 px-3 py-2 rounded-xl bg-base-content/5 hover:bg-primary/10 border border-base-content/10 hover:border-primary/20 transition-all duration-200"
                 onClick={() =>
                   setShowPDF({
                     title: `Chapter ${chapter} Notes`,
@@ -173,11 +157,14 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                     filePath: `/chapters/Chapter ${chapter}.pdf`,
                   })
                 }
-              />
+              >
+                <DocumentTextIcon className="h-4 w-4 text-primary/70" />
+                <span className="text-xs font-medium">Ch. {chapter} Notes</span>
+              </button>
+
               {(chapter == 98 || chapter == 99) && (
-                <ButtonWithIcon
-                  icon={<DocumentTextIcon className="h-4 w-4" />}
-                  label={`Subchapter ${htsno.slice(2, 4).replace(/^0+/, "")} Notes`}
+                <button
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl bg-base-content/5 hover:bg-primary/10 border border-base-content/10 hover:border-primary/20 transition-all duration-200"
                   onClick={() => {
                     setShowPDF({
                       title: `Chapter ${chapter} - Subchapter ${htsno.slice(2, 4).replace(/^0+/, "")} Notes`,
@@ -185,11 +172,17 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                       filePath: `/chapters/Chapter ${chapter}-${htsno.slice(2, 4).replace(/^0+/, "")}.pdf`,
                     });
                   }}
-                />
+                >
+                  <DocumentTextIcon className="h-4 w-4 text-primary/70" />
+                  <span className="text-xs font-medium">
+                    Subch. {htsno.slice(2, 4).replace(/^0+/, "")} Notes
+                  </span>
+                </button>
               )}
+
               {htsno && (
                 <button
-                  className="btn btn-xs btn-neutral"
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl bg-base-content/5 hover:bg-secondary/10 border border-base-content/10 hover:border-secondary/20 transition-all duration-200"
                   onClick={() => {
                     const htsCode = isFullHTSCode(htsno)
                       ? htsno.slice(0, -3)
@@ -202,22 +195,34 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                     );
                   }}
                 >
-                  <MagnifyingGlassIcon className="w-4 h-4" />
-                  Search CROSS
+                  <MagnifyingGlassIcon className="w-4 h-4 text-secondary/70" />
+                  <span className="text-xs font-medium">Search CROSS</span>
                 </button>
               )}
             </div>
           </div>
 
-          <PrimaryLabel value={description} />
+          {/* Description */}
+          <p className="text-base md:text-lg text-base-content leading-relaxed">
+            {description}
+          </p>
         </div>
       </div>
 
       {!summaryOnly && (
-        <div className="w-full flex flex-col gap-8">
+        <div className="w-full flex flex-col gap-6">
+          {/* Children Elements */}
           {children.length > 0 && (
-            <div className="w-full flex flex-col gap-2">
-              <SecondaryLabel value="Options for Next Level" />
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-2">
+                <ChevronRightIcon className="w-4 h-4 text-primary/60" />
+                <span className="text-xs font-semibold uppercase tracking-widest text-base-content/50">
+                  Next Level
+                </span>
+                <span className="px-2 py-0.5 rounded-lg bg-base-content/5 text-xs font-bold text-base-content/60">
+                  {children.length}
+                </span>
+              </div>
               <div className="flex flex-col gap-2">
                 {children.map((child, i) => {
                   return (
@@ -243,78 +248,84 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
             </div>
           )}
 
-          {/* FIXME: I think there are cases where additional duties come from outside the element */}
+          {/* Basic Duty Rates */}
           {shouldShowBasicDutyRates && (
-            <div className="w-full flex flex-col gap-2">
-              <SecondaryLabel value="Basic Duty Rates" />
+            <div className="flex flex-col gap-4">
+              <span className="text-xs font-semibold uppercase tracking-widest text-base-content/50">
+                Basic Duty Rates
+              </span>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <div className="flex flex-col gap-3 p-3 bg-base-100 border border-base-content/30 rounded-md min-w-24">
-                  <div>
-                    <TertiaryLabel value={"General Rate"} />
-                    <h2>{tariffElement.general || "-"}</h2>
-                  </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* General Rate */}
+                <div className="flex flex-col gap-2 p-4 rounded-xl bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 border border-base-content/10">
+                  <span className="text-xs font-semibold uppercase tracking-widest text-base-content/50">
+                    General Rate
+                  </span>
+                  <span className="text-lg font-bold text-base-content">
+                    {tariffElement.general || "-"}
+                  </span>
                   {getTemporaryTariffTextElement(
                     tariffElement,
                     TariffColumn.GENERAL
                   )}
                 </div>
 
-                <div className="flex flex-col p-3 bg-base-100 border border-base-content/30 rounded-md min-w-24 gap-3">
-                  <TertiaryLabel value={"Special Rate"} />
-                  <div className="flex flex-col">
-                    <h2>
+                {/* Special Rate */}
+                <div className="flex flex-col gap-2 p-4 rounded-xl bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 border border-base-content/10">
+                  <span className="text-xs font-semibold uppercase tracking-widest text-base-content/50">
+                    Special Rate
+                  </span>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-lg font-bold text-base-content">
                       {getStringBeforeOpeningParenthesis(
                         tariffElement.special
                       ) || "-"}
-                    </h2>
+                    </span>
                     {getStringBetweenParenthesis(tariffElement.special) &&
                       getStringBeforeOpeningParenthesis(
                         tariffElement.special
                       ) && (
-                        <span className="text-xs italic">
-                          If qualified based on the acts/agreemnts below
+                        <span className="text-xs text-base-content/50 italic">
+                          If qualified based on the acts/agreements below
                         </span>
                       )}
                   </div>
 
                   {getStringBetweenParenthesis(tariffElement.special) && (
-                    <div className="flex flex-col">
-                      <div className="flex flex-wrap gap-x-1">
-                        {getStringBetweenParenthesis(tariffElement.special)
-                          .split(",")
-                          .map((specialTariffSymbol, index) => {
-                            const note = getGeneralNoteFromSpecialTariffSymbol(
-                              specialTariffSymbol.trim()
-                            );
-                            return (
-                              <div
-                                key={`${specialTariffSymbol}-${index}`}
-                                className="tooltip tooltip-primary tooltip-bottom"
-                                data-tip={
-                                  note?.description || note?.title || null
-                                }
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {getStringBetweenParenthesis(tariffElement.special)
+                        .split(",")
+                        .map((specialTariffSymbol, index) => {
+                          const note = getGeneralNoteFromSpecialTariffSymbol(
+                            specialTariffSymbol.trim()
+                          );
+                          return (
+                            <div
+                              key={`${specialTariffSymbol}-${index}`}
+                              className="tooltip tooltip-primary tooltip-bottom"
+                              data-tip={
+                                note?.description || note?.title || null
+                              }
+                            >
+                              <button
+                                className="px-2 py-1 text-xs font-semibold text-primary bg-primary/10 rounded-lg hover:bg-primary/20 transition-colors"
+                                onClick={() => {
+                                  const note =
+                                    getGeneralNoteFromSpecialTariffSymbol(
+                                      specialTariffSymbol.trim()
+                                    );
+                                  setShowPDF({
+                                    title: note?.title || "",
+                                    bucket: SupabaseBuckets.NOTES,
+                                    filePath: note?.filePath || "",
+                                  });
+                                }}
                               >
-                                <button
-                                  className="btn btn-link btn-xs text-xs p-0 hover:text-secondary"
-                                  onClick={() => {
-                                    const note =
-                                      getGeneralNoteFromSpecialTariffSymbol(
-                                        specialTariffSymbol.trim()
-                                      );
-                                    setShowPDF({
-                                      title: note?.title || "",
-                                      bucket: SupabaseBuckets.NOTES,
-                                      filePath: note?.filePath || "",
-                                    });
-                                  }}
-                                >
-                                  {specialTariffSymbol}
-                                </button>
-                              </div>
-                            );
-                          })}
-                      </div>
+                                {specialTariffSymbol}
+                              </button>
+                            </div>
+                          );
+                        })}
                     </div>
                   )}
                   {getTemporaryTariffTextElement(
@@ -323,75 +334,97 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
                   )}
                 </div>
 
-                <div className="flex flex-col gap-3 p-3 bg-base-100 border border-base-content/30 rounded-md min-w-24">
-                  <div>
-                    <TertiaryLabel value={"Other Rate"} />
-                    <h2>{tariffElement.other || "-"}</h2>
-                  </div>
+                {/* Other Rate */}
+                <div className="flex flex-col gap-2 p-4 rounded-xl bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 border border-base-content/10">
+                  <span className="text-xs font-semibold uppercase tracking-widest text-base-content/50">
+                    Other Rate
+                  </span>
+                  <span className="text-lg font-bold text-base-content">
+                    {tariffElement.other || "-"}
+                  </span>
                   {getTemporaryTariffTextElement(
                     tariffElement,
                     TariffColumn.OTHER
                   )}
                 </div>
 
-                <div className="flex flex-col gap-1 p-3 bg-base-100 border border-base-content/30 rounded-md min-w-24">
-                  <TertiaryLabel value={`Units`} />
-                  <h2>{tariffElement.units.join(", ") || "-"}</h2>
+                {/* Units */}
+                <div className="flex flex-col gap-2 p-4 rounded-xl bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 border border-base-content/10">
+                  <span className="text-xs font-semibold uppercase tracking-widest text-base-content/50">
+                    Units
+                  </span>
+                  <span className="text-lg font-bold text-base-content">
+                    {tariffElement.units.join(", ") || "-"}
+                  </span>
                 </div>
 
+                {/* Additional Duties */}
                 {tariffElement.additionalDuties && (
-                  <div className="flex flex-col gap-1 p-3 bg-base-100 border border-base-content/30 rounded-md min-w-24">
-                    <TertiaryLabel value={`Additional Duties`} />
-                    <h2 className="text-xl md:text-2xl lg:text-3xl font-bold">
+                  <div className="sm:col-span-2 flex flex-col gap-2 p-4 rounded-xl bg-gradient-to-br from-warning/5 via-base-100 to-base-200/30 border border-warning/20">
+                    <span className="text-xs font-semibold uppercase tracking-widest text-warning/70">
+                      Additional Duties
+                    </span>
+                    <span className="text-xl font-bold text-base-content">
                       {tariffElement.additionalDuties || "-"}
-                    </h2>
+                    </span>
                   </div>
                 )}
               </div>
             </div>
           )}
 
+          {/* Tariff Finder Section */}
           {htsno && htsno.replaceAll(".", "").length === 10 && (
-            <div className="w-full flex flex-col gap-4 p-4 sm:p-6 bg-base-200/50 border-2 border-base-content/20 rounded-xl">
-              <div className="w-full flex justify-between flex-col gap-2">
-                <div className="flex items-center gap-3">
-                  <div className="flex gap-2 items-center">
-                    <PrimaryLabel value="📊 Tariff Finder" />
-                  </div>
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-base-200/50 via-base-100 to-base-200/30 border border-base-content/10 p-5 sm:p-6">
+              {/* Background decoration */}
+              <div className="absolute -top-16 -right-16 w-48 h-48 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
 
-                  <Link
-                    href="/tariffs/coverage"
-                    target="_blank"
-                    className="link"
-                  >
-                    <QuestionMarkCircleIcon className="w-5 h-5 md:w-6 md:h-6 text-base-content" />
-                  </Link>
+              <div className="relative z-10 flex flex-col gap-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">📊</span>
+                      <span className="text-lg font-bold text-base-content">
+                        Tariff Finder
+                      </span>
+                      <Link
+                        href="/tariffs/coverage"
+                        target="_blank"
+                        className="hover:opacity-70 transition-opacity"
+                      >
+                        <QuestionMarkCircleIcon className="w-5 h-5 text-base-content/40" />
+                      </Link>
+                    </div>
+                    <p className="text-sm text-base-content/60">
+                      Simulate tariff scenarios for any country of origin and
+                      find potential exemptions
+                    </p>
+                  </div>
                 </div>
-                <p className="text-sm text-base-content/70">
-                  Simulate tariff scenarios for any country of origin and find
-                  potential exemptions
-                </p>
-              </div>
-              <Tariffs
-                isPayingUser={isPayingUser}
-                isTariffImpactTrialUser={isTariffImpactTrialUser}
-                htsElement={element}
-                tariffElement={getTariffElement(
-                  element,
-                  htsElements,
-                  breadcrumbs
-                )}
-              />
-              <p className="text-sm text-base-content/60">
-                <sup>
+
+                <Tariffs
+                  isPayingUser={isPayingUser}
+                  isTariffImpactTrialUser={isTariffImpactTrialUser}
+                  htsElement={element}
+                  tariffElement={getTariffElement(
+                    element,
+                    htsElements,
+                    breadcrumbs
+                  )}
+                />
+
+                <p className="text-xs text-base-content/40">
                   We can make mistakes and do not guarantee complete nor correct
                   calculations. If you see any issues please{" "}
-                  <a href="mailto:support@htshero.com" className="text-primary">
+                  <a
+                    href="mailto:support@htshero.com"
+                    className="text-primary hover:underline"
+                  >
                     notify us
                   </a>{" "}
                   and we will quickly correct them for everyone&apos;s benefit.
-                </sup>
-              </p>
+                </p>
+              </div>
             </div>
           )}
         </div>

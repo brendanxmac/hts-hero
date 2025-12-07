@@ -726,11 +726,11 @@ export const CountryTariff = ({
           </div>
 
           {/* Breakdown Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-3 sm:mb-4">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 mb-3 sm:mb-4">
             {dutyEstimates.map((estimate, i) => (
               <div
                 key={i}
-                className="flex flex-col items-center justify-center p-3 sm:p-4 bg-base-200/50 rounded-xl"
+                className="flex flex-col items-center justify-center p-3 sm:p-4 bg-base-200/50 rounded-xl flex-1 min-w-0"
               >
                 <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 text-center">
                   {estimate.tariffSetName} Duty
@@ -765,7 +765,7 @@ export const CountryTariff = ({
                 </div>
               </div>
             ))}
-            <div className="flex flex-col items-center justify-center p-3 sm:p-4 bg-base-200/50 rounded-xl">
+            <div className="flex flex-col items-center justify-center p-3 sm:p-4 bg-base-200/50 rounded-xl flex-1 min-w-0">
               <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 text-center">
                 Additional Fees
               </span>
@@ -785,11 +785,11 @@ export const CountryTariff = ({
             </div>
           </div>
           {/* Tariff Rates */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
             {summaryTotals.map((total, i) => (
               <div
                 key={i}
-                className="flex flex-col items-center justify-center p-3 sm:p-4 bg-base-200/50 rounded-xl"
+                className="flex flex-col items-center justify-center p-3 sm:p-4 bg-base-200/50 rounded-xl flex-1 min-w-0"
               >
                 <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 text-center">
                   {total.name} Tariff Rate
@@ -804,7 +804,7 @@ export const CountryTariff = ({
                 </div>
               </div>
             ))}
-            <div className="flex flex-col items-center justify-center p-3 sm:p-4 bg-base-200/50 rounded-xl">
+            <div className="flex flex-col items-center justify-center p-3 sm:p-4 bg-base-200/50 rounded-xl flex-1 min-w-0">
               <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 text-center">
                 Additional Fee Rate
               </span>

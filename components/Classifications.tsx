@@ -435,7 +435,7 @@ export const Classifications = ({ page, setPage }: Props) => {
                 </span>
               </h1>
               <p className="text-base-content/60 text-sm md:text-base max-w-lg mt-1">
-                View, manage, and track all your product classifications.
+                View, manage, and track your classifications.
               </p>
             </div>
 

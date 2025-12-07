@@ -1,9 +1,6 @@
 import { ChevronRightIcon } from "@heroicons/react/16/solid";
 import { Navigatable, HtsSectionAndChapterBase } from "../interfaces/hts";
 import { NavigatableElement } from "./Elements";
-import { Color } from "../enums/style";
-import { SecondaryLabel } from "./SecondaryLabel";
-import { TertiaryText } from "./TertiaryText";
 
 interface Props {
   chapter: HtsSectionAndChapterBase;
@@ -33,22 +30,18 @@ export const ChapterSummary = ({
           },
         ]);
       }}
-      className="card flex flex-col gap-2 w-full rounded-xl border-2 border-base-content/40 hover:border-primary cursor-pointer hover:shadow-md transition-all duration-100 ease-in-out"
+      className="group flex items-center justify-between gap-3 p-3 rounded-xl bg-base-200/40 border border-base-content/5 hover:bg-base-200/80 hover:border-primary/20 cursor-pointer transition-all duration-200"
     >
-      <div className="flex items-start justify-between gap-3 p-4">
-        <div className="flex flex-col gap-1">
-          <div className="shrink-0">
-            <TertiaryText
-              uppercase
-              value={`Chapter ${number.toString()}`}
-              color={Color.PRIMARY}
-            />
-          </div>
-          <SecondaryLabel value={description} />
-        </div>
-
-        <ChevronRightIcon className="self-center shrink-0 w-5 h-5 text-primary" />
+      <div className="flex items-center gap-3">
+        <span className="shrink-0 flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 text-primary font-bold text-sm">
+          {number}
+        </span>
+        <span className="text-sm font-medium text-base-content/80 group-hover:text-base-content transition-colors">
+          {description}
+        </span>
       </div>
+
+      <ChevronRightIcon className="shrink-0 w-5 h-5 text-base-content/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-200" />
     </div>
   );
 };

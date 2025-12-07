@@ -7,9 +7,7 @@ import { LoadingIndicator } from "../../../components/LoadingIndicator";
 import Link from "next/link";
 import Modal from "../../../components/Modal";
 import { TariffImpactInputHelp } from "../../../components/TariffImpactInputHelp";
-import { TertiaryText } from "../../../components/TertiaryText";
 import TariffUpdateDropdown from "../../../components/TariffUpdateDropdown";
-import { PrimaryLabel } from "../../../components/PrimaryLabel";
 import { MixpanelEvent, trackEvent } from "../../../libs/mixpanel";
 import {
   fetchHtsCodeSetsForUser,
@@ -31,12 +29,15 @@ import {
   Purchase,
 } from "../../../libs/supabase/purchase";
 import { PricingPlan } from "../../../types";
-import { classNames } from "../../../utilities/style";
 import { ManageCodeListModal } from "../../../components/ManageCodesListModal";
 import { codeSetMatchesString } from "../../../utilities/hts";
 import { fetchTariffCodeSets } from "../../../libs/tariff-code-set";
-import { ArrowRightIcon } from "@heroicons/react/16/solid";
-import { SecondaryText } from "../../../components/SecondaryText";
+import {
+  ArrowRightIcon,
+  QuestionMarkCircleIcon,
+  SparklesIcon,
+  BookmarkIcon,
+} from "@heroicons/react/16/solid";
 import TariffImpactCodesInput from "../../../components/TariffImpactCodesInput";
 import { fetchUser } from "../../../libs/supabase/user";
 import TariffImpactPricing from "../../../components/TariffImpactPricing";
@@ -224,7 +225,9 @@ export default function Home() {
     if (impacted === null) {
       return (
         <td className="hidden sm:table-cell">
-          <TertiaryText value={error || "Code Unsupported"} />
+          <span className="text-xs text-base-content/50">
+            {error || "Code Unsupported"}
+          </span>
         </td>
       );
     }
@@ -232,12 +235,18 @@ export default function Home() {
     if (!codeExists) {
       return (
         <td className="hidden sm:table-cell">
-          <TertiaryText value="Code Does Not Exist" />
+          <span className="text-xs text-base-content/50">
+            Code Does Not Exist
+          </span>
         </td>
       );
     }
 
-    return <td className="hidden sm:table-cell">{note || "-"}</td>;
+    return (
+      <td className="hidden sm:table-cell text-sm text-base-content/70">
+        {note || "-"}
+      </td>
+    );
   };
 
   const getImpactIndicator = (result: TariffImpactResult) => {
@@ -394,83 +403,98 @@ export default function Home() {
 
   if (loadingPage) {
     return (
-      <main className="w-screen h-screen flex items-center justify-center bg-base-300">
+      <main className="w-full h-full flex items-center justify-center bg-base-100">
         <LoadingIndicator />
       </main>
     );
   }
 
   return (
-    <main className="w-screen h-full flex flex-col bg-base-100 py-6">
-      <div className="w-full max-w-5xl mx-auto flex flex-col px-4 sm:px-6 gap-6 pb-6">
-        {/* Header */}
-        <div className="flex justify-between md:items-center flex-col-reverse md:flex-row gap-4">
-          <div className="w-full flex flex-col">
-            <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div className="flex gap-4 items-center">
-                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">
-                  Tariff Impact Checker
-                </h1>
-                {/* {!fetchingPurchases && (
-                  <div className="flex items-center gap-4">
-                    <span
-                      className={classNames(
-                        "h-fit px-2 py-0.5 rounded-md font-semibold text-xs border",
-                        getPlanStyles(activeTariffImpactPurchase)
-                      )}
-                    >
-                      {getPlanText(activeTariffImpactPurchase)}
-                    </span>
-                  </div>
-                )} */}
-              </div>
-
-              {(!activeTariffImpactPurchase ||
-                activeTariffImpactPurchase.product_name !==
-                  PricingPlan.TARIFF_IMPACT_PRO) && (
-                <div className="w-full sm:w-auto justify-between sm:justify-normal flex items-center gap-4">
-                  <button
-                    className="w-full sm:w-fit btn btn-sm btn-primary"
-                    onClick={() => {
-                      setShowPricingModal(true);
-                      try {
-                        trackEvent(MixpanelEvent.CLICKED_TARIFF_IMPACT_UPGRADE);
-                      } catch (e) {
-                        console.error("Error tracking tariff impact upgrade");
-                        console.error(e);
-                      }
-                    }}
-                  >
-                    Master Tariffs & Discover Savings{" "}
-                    <ArrowRightIcon className="w-4 h-4" />
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
+    <main className="w-full h-full flex flex-col bg-base-100 overflow-y-auto">
+      {/* Hero Header */}
+      <div className="shrink-0 relative overflow-hidden bg-gradient-to-br from-base-200 via-base-100 to-base-200 border-b border-base-content/5">
+        {/* Subtle animated background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-32 -right-32 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+          <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
+          <div
+            className="absolute inset-0 opacity-[0.02]"
+            style={{
+              backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`,
+              backgroundSize: "32px 32px",
+            }}
+          />
         </div>
 
-        {/* Inputs */}
-        <div className="flex flex-col gap-4 sm:gap-8">
-          {/* HTS Code Selection */}
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-col gap-1">
-              <div className="flex flex-col">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center">
-                    <PrimaryLabel value="HTS Codes" />
+        <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 py-6 md:py-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            {/* Left side - Title */}
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary/80">
+                <span className="inline-block w-8 h-px bg-primary/40" />
+                Tariff Analysis Tool
+              </div>
+              <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
+                <span className="bg-gradient-to-r from-base-content via-base-content to-base-content/80 bg-clip-text">
+                  Tariff Impact Checker
+                </span>
+              </h1>
+              <p className="text-base-content/60 text-sm md:text-base max-w-lg mt-1">
+                Instantly see if new tariffs affect your imports, and get
+                notified when they do
+              </p>
+            </div>
+
+            {/* Right side - Upgrade Button */}
+            {(!activeTariffImpactPurchase ||
+              activeTariffImpactPurchase.product_name !==
+                PricingPlan.TARIFF_IMPACT_PRO) && (
+              <button
+                className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-primary to-primary/90 text-primary-content font-semibold shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-200"
+                onClick={() => {
+                  setShowPricingModal(true);
+                  try {
+                    trackEvent(MixpanelEvent.CLICKED_TARIFF_IMPACT_UPGRADE);
+                  } catch (e) {
+                    console.error("Error tracking tariff impact upgrade");
+                    console.error(e);
+                  }
+                }}
+              >
+                <SparklesIcon className="w-4 h-4" />
+                Master Tariffs & Discover Savings
+                <ArrowRightIcon className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-6">
+        <div className="flex flex-col gap-6">
+          {/* HTS Code Selection Card */}
+          <div className="relative rounded-2xl bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 border border-base-content/10 p-5">
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base font-bold text-base-content">
+                      HTS Codes
+                    </span>
                     <button
-                      className="btn btn-circle btn-xs bg-base-content/30 hover:bg-base-content/70 ml-2 text-sm flex items-center justify-center"
+                      className="w-5 h-5 rounded-full bg-base-content/10 hover:bg-primary/20 flex items-center justify-center transition-colors"
                       onClick={() => setShowHelpModal(true)}
                       title="Help with HTS code formats"
                     >
-                      ?
+                      <QuestionMarkCircleIcon className="w-4 h-4 text-base-content/50" />
                     </button>
                   </div>
+                  <span className="text-sm text-base-content/60">
+                    {htsCodeSets.length > 0 ? "Select or enter" : "Enter"} the
+                    HTS codes you want to check
+                  </span>
                 </div>
-                <SecondaryText
-                  value={`${htsCodeSets.length > 0 ? "Select or enter" : "Enter"} the HTS codes you want to check`}
-                />
               </div>
 
               <HtsCodeSetDropdown
@@ -495,65 +519,84 @@ export default function Home() {
                   }
                 }}
               />
+
+              <TariffImpactCodesInput
+                value={inputValue}
+                placeholder="3808.94.10.00, 0202.20.80.00, 9701.21.00.00, 2825.80.00.00, etc..."
+                onChange={handleInputChange}
+                isValid={inputValue.length >= 8}
+              />
             </div>
-            <TariffImpactCodesInput
-              value={inputValue}
-              placeholder="3808.94.10.00, 0202.20.80.00, 9701.21.00.00, 2825.80.00.00, etc..."
-              onChange={handleInputChange}
-              isValid={inputValue.length >= 8}
-            />
           </div>
-          {/* Tariff Announcement Selection */}
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-col">
-              <PrimaryLabel value="Tariff Announcement" />
-              <SecondaryText value="Select the tariff announcement you want to see the impacts of" />
+
+          {/* Tariff Announcement Selection Card */}
+          <div className="relative rounded-2xl bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 border border-base-content/10 p-5">
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-1">
+                <span className="text-base font-bold text-base-content">
+                  Tariff Announcement
+                </span>
+                <span className="text-sm text-base-content/60">
+                  Select the tariff announcement you want to see the impacts of
+                </span>
+              </div>
+
+              <TariffUpdateDropdown
+                tariffCodeSets={tariffCodeSets}
+                selectedIndex={selectedTariffAnnouncementIndex}
+                onSelectionChange={setSelectedTariffAnnouncementIndex}
+              />
+
+              {tariffCodeSets.length > 0 &&
+                tariffCodeSets[selectedTariffAnnouncementIndex].note && (
+                  <div className="flex items-start gap-2 p-3 rounded-xl bg-warning/10 border border-warning/20">
+                    <span className="text-xs font-medium text-warning">
+                      Note:{" "}
+                      {tariffCodeSets[selectedTariffAnnouncementIndex].note}
+                    </span>
+                  </div>
+                )}
             </div>
+          </div>
 
-            <TariffUpdateDropdown
-              tariffCodeSets={tariffCodeSets}
-              selectedIndex={selectedTariffAnnouncementIndex}
-              onSelectionChange={setSelectedTariffAnnouncementIndex}
-            />
-
-            {tariffCodeSets.length > 0 &&
-              tariffCodeSets[selectedTariffAnnouncementIndex].note && (
-                <p className="text-xs font-semibold">
-                  Note: {tariffCodeSets[selectedTariffAnnouncementIndex].note}
-                </p>
+          {/* Check Button */}
+          {!lastActionWasSubmit && (
+            <button
+              className={`w-full py-4 rounded-xl font-semibold text-base transition-all duration-200 ${
+                checkingTariffImpacts
+                  ? "bg-base-content/10 text-base-content/50"
+                  : "bg-gradient-to-r from-primary to-primary/90 text-primary-content shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30"
+              }`}
+              disabled={
+                lastActionWasSubmit ||
+                loadingPage ||
+                (!inputValue &&
+                  (selectedHtsCodeSetId === null ||
+                    selectedTariffAnnouncementIndex === null))
+              }
+              onClick={() => handleSubmit()}
+            >
+              {checkingTariffImpacts ? (
+                <span className="loading loading-spinner loading-sm"></span>
+              ) : (
+                "Check Impacts"
               )}
-          </div>
-        </div>
+            </button>
+          )}
 
-        {!lastActionWasSubmit && (
-          <button
-            className={classNames(
-              "w-full btn",
-              checkingTariffImpacts ? "btn-neutral" : "btn-primary"
-            )}
-            disabled={
-              lastActionWasSubmit ||
-              loadingPage ||
-              (!inputValue &&
-                (selectedHtsCodeSetId === null ||
-                  selectedTariffAnnouncementIndex === null))
-            }
-            onClick={() => handleSubmit()}
-          >
-            {checkingTariffImpacts ? (
-              <LoadingIndicator spinnerOnly />
-            ) : (
-              "Check Impacts"
-            )}
-          </button>
-        )}
-
-        {/* Results */}
-        {results && results.length > 0 && (
-          <div>
-            <div className="flex flex-col gap-2 bg-base-100 bg-transparent">
-              <div className="w-full flex justify-between items-end sm:items-end gap-2">
-                <PrimaryLabel value="Impact Check Results" />
+          {/* Results */}
+          {results && results.length > 0 && (
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 border border-base-content/10">
+              {/* Results Header */}
+              <div className="flex items-center justify-between p-5 border-b border-base-content/10">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold uppercase tracking-widest text-base-content/50">
+                    Impact Check Results
+                  </span>
+                  <span className="px-2 py-0.5 rounded-lg bg-primary/10 border border-primary/20 text-xs font-bold text-primary">
+                    {results.length}
+                  </span>
+                </div>
 
                 {results.length > 0 &&
                   (!htsCodeSets.length ||
@@ -564,7 +607,7 @@ export default function Home() {
                       )
                     )) && (
                     <button
-                      className="hidden sm:block btn btn-sm btn-primary"
+                      className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 hover:bg-primary/20 border border-primary/20 text-sm font-semibold text-primary transition-colors"
                       onClick={async () => {
                         if (user) {
                           setSaveCodesModal({
@@ -576,76 +619,91 @@ export default function Home() {
                         }
                       }}
                     >
-                      {user
-                        ? "Save Codes"
-                        : `Sign Up to Save Your ${results.length > 1 ? "codes" : "code"} for Future Checks`}
+                      <BookmarkIcon className="w-4 h-4" />
+                      {user ? "Save Codes" : "Sign Up to Save"}
                     </button>
                   )}
               </div>
-              <div
-                className={`border border-base-content/40 rounded-md ${
-                  results.length > 0 ? "p-0" : "p-4"
-                }`}
-              >
-                {results.length > 0 ? (
-                  <div className="overflow-x-auto rounded-md">
-                    <table className="table table-zebra table-sm table-pin-cols w-full">
-                      <thead>
-                        <tr>
-                          <th className="w-4"></th>
-                          <th>HTS Code</th>
-                          <th>Impacted</th>
-                          <th className="hidden sm:table-cell">Notes</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {results.map((result, i) => {
-                          const htsElementForCode = htsElements.find(
-                            (element) => element.htsno === result.code
-                          );
-                          const impactIndicator = getImpactIndicator(result);
-                          const notes = getNotes(
-                            result,
-                            tariffCodeSets[selectedTariffAnnouncementIndex]
-                              ?.note
-                          );
 
-                          return (
-                            <tr key={`${result.code}-${i}`} className="py-1">
-                              <td>{i + 1}</td>
-                              {htsElementForCode ? (
-                                <td className="truncate min-w-32 lg:min-w-64">
-                                  <Link
-                                    href={`/explore?code=${result.code}`}
-                                    target="_blank"
-                                    className="link link-primary font-bold"
-                                  >
-                                    {result.code}
-                                  </Link>
-                                </td>
-                              ) : (
-                                <td className="truncate min-w-32 lg:min-w-64">
-                                  {result.code}
-                                </td>
-                              )}
-                              {impactIndicator}
-                              {notes}
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-500">
-                    No results yet, enter code(s) to see if they are impacted by
-                    the selected tariff change list.
-                  </p>
-                )}
+              {/* Results Table */}
+              <div className="overflow-x-auto">
+                <table className="table table-sm w-full">
+                  <thead>
+                    <tr className="border-b border-base-content/10">
+                      <th className="w-12 text-xs font-semibold uppercase tracking-widest text-base-content/50 bg-base-200/30">
+                        #
+                      </th>
+                      <th className="text-xs font-semibold uppercase tracking-widest text-base-content/50 bg-base-200/30">
+                        HTS Code
+                      </th>
+                      <th className="text-xs font-semibold uppercase tracking-widest text-base-content/50 bg-base-200/30">
+                        Impacted
+                      </th>
+                      <th className="hidden sm:table-cell text-xs font-semibold uppercase tracking-widest text-base-content/50 bg-base-200/30">
+                        Notes
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {results.map((result, i) => {
+                      const htsElementForCode = htsElements.find(
+                        (element) => element.htsno === result.code
+                      );
+                      const impactIndicator = getImpactIndicator(result);
+                      const notes = getNotes(
+                        result,
+                        tariffCodeSets[selectedTariffAnnouncementIndex]?.note
+                      );
+
+                      return (
+                        <tr
+                          key={`${result.code}-${i}`}
+                          className="border-b border-base-content/5 hover:bg-base-200/30 transition-colors"
+                        >
+                          <td className="text-base-content/50 font-medium">
+                            {i + 1}
+                          </td>
+                          {htsElementForCode ? (
+                            <td className="min-w-32 lg:min-w-64">
+                              <Link
+                                href={`/explore?code=${result.code}`}
+                                target="_blank"
+                                className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary/80 underline underline-offset-2 decoration-primary/30 hover:decoration-primary/60 transition-all"
+                              >
+                                {result.code}
+                                <svg
+                                  className="w-3.5 h-3.5 opacity-60"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                  />
+                                </svg>
+                              </Link>
+                            </td>
+                          ) : (
+                            <td className="min-w-32 lg:min-w-64">
+                              <span className="inline-flex px-2.5 py-1 rounded-lg bg-base-content/5 border border-base-content/10 text-xs font-medium text-base-content/60">
+                                {result.code}
+                              </span>
+                            </td>
+                          )}
+                          {impactIndicator}
+                          {notes}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       <Modal isOpen={showHelpModal} setIsOpen={setShowHelpModal}>
