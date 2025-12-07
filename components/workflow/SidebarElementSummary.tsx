@@ -30,10 +30,7 @@ export const SidebarElementSummary = ({
       <div className="relative z-10 p-3">
         {htsno && (
           <div className="flex items-center gap-2 mb-1">
-            <CheckCircleIcon className="w-3.5 h-3.5 text-success" />
-            <span className="text-xs font-bold text-primary">
-              {htsno}
-            </span>
+            <span className="text-xs font-bold text-primary">{htsno}</span>
           </div>
         )}
         <p className="text-sm text-base-content/80 leading-relaxed line-clamp-2">

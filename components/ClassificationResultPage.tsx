@@ -164,10 +164,6 @@ export const ClassificationResultPage = ({ userProfile, setPage }: Props) => {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             {/* Left side - Main headline */}
             <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-success/80">
-                <CheckCircleIcon className="w-4 h-4" />
-                Classification Complete
-              </div>
               <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
                 <span className="bg-gradient-to-r from-base-content via-base-content to-base-content/80 bg-clip-text">
                   Classification Overview

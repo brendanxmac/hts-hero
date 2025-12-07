@@ -187,9 +187,9 @@ export const ClassificationNavigation = ({
         {classification?.isComplete && (
           <div ref={resultRef} className="flex flex-col gap-2 pb-4">
             <div className="flex items-center gap-2">
-              <span className="inline-block w-6 h-px bg-success/40" />
-              <span className="text-xs font-semibold uppercase tracking-widest text-success/80">
-                Result & Tariff
+              <span className="inline-block w-6 h-px bg-primary/40" />
+              <span className="text-xs font-semibold uppercase tracking-widest text-primary/80">
+                Final Classification
               </span>
             </div>
             <div
@@ -207,7 +207,6 @@ export const ClassificationNavigation = ({
             >
               <div className="p-4">
                 <div className="flex items-center gap-2 mb-1">
-                  <CheckCircleIcon className="w-4 h-4 text-success" />
                   <span className="text-xs font-semibold uppercase tracking-wider text-success">
                     HTS Code
                   </span>
