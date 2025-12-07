@@ -48,8 +48,8 @@ export default function HtsCodeSetDropdown({
             <div className="flex items-center gap-3">
               <span
                 className={`truncate text-sm sm:text-base ${selectedSet ? "text-base-content font-medium" : "text-base-content/50"}`}
-              >
-                {getSelectedSetsTitle(selectedSet)}
+            >
+              {getSelectedSetsTitle(selectedSet)}
               </span>
               {selectedSet && (
                 <span className="px-2 py-0.5 rounded-lg bg-primary/10 border border-primary/20 text-xs font-bold text-primary">
@@ -94,19 +94,19 @@ export default function HtsCodeSetDropdown({
                 </div>
               ) : (
                 htsCodeSets.map((htsCodeSet, index) => (
-                  <Listbox.Option
-                    key={index}
+                <Listbox.Option
+                  key={index}
                     className={({ active, selected }) =>
                       `relative hover:cursor-pointer select-none py-3 px-4 transition-colors duration-150 ${
-                        active
+                      active
                           ? "bg-primary/10"
                           : selected
                             ? "bg-primary/5"
                             : ""
-                      }`
-                    }
-                    value={index}
-                  >
+                    }`
+                  }
+                  value={index}
+                >
                     {({ selected }) => (
                       <div className="flex items-center justify-between gap-3">
                         <div className="flex-1 flex flex-col gap-1 min-w-0">
@@ -115,32 +115,32 @@ export default function HtsCodeSetDropdown({
                               selected ? "text-primary" : "text-base-content"
                             }`}
                           >
-                            {htsCodeSet.name || "Untitled List"}
+                          {htsCodeSet.name || "Untitled List"}
                           </span>
 
                           <div className="flex items-center gap-3">
                             <span className="px-2 py-0.5 rounded-md bg-base-content/5 text-xs font-medium text-base-content/60">
-                              {htsCodeSet.codes.length} codes
+                            {htsCodeSet.codes.length} codes
                             </span>
                             <span className="flex items-center gap-1 text-xs text-base-content/40">
                               <CalendarIcon className="w-3 h-3" />
-                              {formatDate(new Date(htsCodeSet.created_at))}
+                            {formatDate(new Date(htsCodeSet.created_at))}
                             </span>
-                          </div>
                         </div>
+                      </div>
 
-                        {/* Check icon for selected item */}
-                        {selected && (
+                      {/* Check icon for selected item */}
+                      {selected && (
                           <span className="flex items-center justify-center flex-shrink-0 w-6 h-6 rounded-full bg-primary/10">
                             <CheckIcon
                               className="h-4 w-4 text-primary"
                               aria-hidden="true"
                             />
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </Listbox.Option>
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </Listbox.Option>
                 ))
               )}
             </Listbox.Options>

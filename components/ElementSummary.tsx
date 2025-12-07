@@ -57,28 +57,28 @@ export const ElementSummary = ({ element, onClick }: Props) => {
               onClick={(e) => {
                 e.stopPropagation();
                 if (isHeadingCandidate) {
-                  const newClassificationProgression =
-                    classification.levels.slice(0, 1);
-                  newClassificationProgression[0].candidates =
-                    newClassificationProgression[0].candidates.filter(
-                      (candidate) => candidate.uuid !== element.uuid
-                    );
-                  updateLevel(0, {
-                    candidates: newClassificationProgression[0].candidates,
-                  });
+                    const newClassificationProgression =
+                      classification.levels.slice(0, 1);
+                    newClassificationProgression[0].candidates =
+                      newClassificationProgression[0].candidates.filter(
+                        (candidate) => candidate.uuid !== element.uuid
+                      );
+                    updateLevel(0, {
+                      candidates: newClassificationProgression[0].candidates,
+                    });
                 } else {
-                  const newClassificationProgression =
-                    classification.levels.slice(
-                      0,
-                      classification.levels.length
-                    );
-                  newClassificationProgression[0].candidates = [
-                    ...newClassificationProgression[0].candidates,
-                    element,
-                  ];
-                  updateLevel(0, {
-                    candidates: newClassificationProgression[0].candidates,
-                  });
+                    const newClassificationProgression =
+                      classification.levels.slice(
+                        0,
+                        classification.levels.length
+                      );
+                    newClassificationProgression[0].candidates = [
+                      ...newClassificationProgression[0].candidates,
+                      element,
+                    ];
+                    updateLevel(0, {
+                      candidates: newClassificationProgression[0].candidates,
+                    });
                 }
               }}
               title={

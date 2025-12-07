@@ -296,7 +296,7 @@ export const ClassificationStep = ({
               backgroundSize: "32px 32px",
             }}
           />
-        </div>
+          </div>
 
         <div className="relative z-10 w-full max-w-4xl mx-auto px-6 py-6 md:py-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -317,51 +317,51 @@ export const ClassificationStep = ({
                 <LoadingIndicator text={loading.text} />
               </div>
             )}
+            </div>
           </div>
         </div>
-      </div>
 
       {/* Main Content */}
       <div className="flex-1 w-full max-w-4xl mx-auto px-6 py-6 flex flex-col gap-6">
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-2">
-          {classificationLevel === 0 && (
-            <button
+              {classificationLevel === 0 && (
+                <button
               className="group flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 bg-base-200/60 border border-base-content/10 hover:border-primary/30 hover:bg-primary/5 disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
-              disabled={
-                loading.isLoading ||
+                  onClick={() => setActiveTab(ClassifyTab.EXPLORE)}
+                  disabled={
+                    loading.isLoading ||
                 classificationRecord?.status === ClassificationStatus.FINAL ||
-                !isUsersClassification
-              }
-            >
+                    !isUsersClassification
+                  }
+                >
               <MagnifyingGlassIcon className="w-4 h-4 text-primary/70" />
               <span>Find Headings</span>
-            </button>
-          )}
-          <button
+                </button>
+              )}
+              <button
             className="group flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 bg-base-200/60 border border-base-content/10 hover:border-primary/30 hover:bg-primary/5 disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={() => setShowCrossRulingsModal(true)}
-            disabled={loading.isLoading}
-          >
+                disabled={loading.isLoading}
+              >
             <MagnifyingGlassIcon className="w-4 h-4 text-primary/70" />
             <span>Search CROSS</span>
-          </button>
-          {!showNotes && (
-            <button
+              </button>
+              {!showNotes && (
+                <button
               className="group flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 bg-base-200/60 border border-base-content/10 hover:border-primary/30 hover:bg-primary/5 disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={() => setShowNotes(true)}
-              disabled={
-                loading.isLoading ||
+                  disabled={
+                    loading.isLoading ||
                 classificationRecord?.status === ClassificationStatus.FINAL ||
-                !isUsersClassification
-              }
-            >
+                    !isUsersClassification
+                  }
+                >
               <PencilSquareIcon className="w-4 h-4 text-primary/70" />
               <span>Add Notes</span>
-            </button>
-          )}
-        </div>
+                </button>
+              )}
+            </div>
 
         {/* Candidates Section */}
         <div className="flex flex-col gap-4">
@@ -376,18 +376,18 @@ export const ClassificationStep = ({
 
           {levels[classificationLevel] &&
             levels[classificationLevel].candidates.length > 0 && (
-              <CandidateElements
-                key={`classification-level-${classificationLevel}`}
-                classificationLevel={classificationLevel}
-                setClassificationLevel={setClassificationLevel}
-                setLoading={setLoading}
-                setWorkflowStep={setWorkflowStep}
-                disabled={
-                  !isUsersClassification ||
+                <CandidateElements
+                  key={`classification-level-${classificationLevel}`}
+                  classificationLevel={classificationLevel}
+                  setClassificationLevel={setClassificationLevel}
+                  setLoading={setLoading}
+                  setWorkflowStep={setWorkflowStep}
+                  disabled={
+                    !isUsersClassification ||
                   classificationRecord?.status === ClassificationStatus.FINAL ||
-                  !isUsersClassification
-                }
-              />
+                    !isUsersClassification
+                  }
+                />
             )}
         </div>
 
@@ -417,17 +417,17 @@ export const ClassificationStep = ({
                   <XMarkIcon className="w-4 h-4" />
                   Remove
                 </button>
-              </div>
+            </div>
 
-              <textarea
+            <textarea
                 className="min-h-36 w-full px-4 py-3 rounded-xl bg-base-100/80 border border-base-content/10 transition-all duration-200 placeholder:text-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 hover:border-primary/30 hover:bg-base-100 resize-none text-base"
-                placeholder="Notes added are saved and will be included in advisory reports you generate."
-                disabled={loading.isLoading || !isUsersClassification}
-                value={levels[classificationLevel]?.notes || ""}
-                onChange={(e) => {
+              placeholder="Notes added are saved and will be included in advisory reports you generate."
+              disabled={loading.isLoading || !isUsersClassification}
+              value={levels[classificationLevel]?.notes || ""}
+              onChange={(e) => {
                   updateLevel(classificationLevel, { notes: e.target.value });
-                }}
-              />
+              }}
+            />
             </div>
           </div>
         )}

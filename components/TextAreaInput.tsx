@@ -136,7 +136,7 @@ export default function TextAreaInput({
                 }}
               >
                 <span className="relative z-10 flex items-center gap-2">
-                  {loading ? (
+                {loading ? (
                     <span className="loading loading-spinner loading-sm"></span>
                   ) : (
                     <>

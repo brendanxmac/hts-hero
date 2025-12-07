@@ -1,0 +1,401 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+import { useBreadcrumbs } from "../../contexts/BreadcrumbsContext";
+import { HtsElement } from "../../interfaces/hts";
+import {
+  TrashIcon,
+  DocumentTextIcon,
+  SparklesIcon,
+  CheckCircleIcon,
+} from "@heroicons/react/24/solid";
+import {
+  MagnifyingGlassIcon,
+  ChevronRightIcon,
+} from "@heroicons/react/16/solid";
+import PDF from "../PDF";
+import { useHtsSections } from "../../contexts/HtsSectionsContext";
+import { useClassification } from "../../contexts/ClassificationContext";
+import {
+  generateBreadcrumbsForHtsElement,
+  getBestClassificationProgression,
+  getChapterFromHtsElement,
+  getDirectChildrenElements,
+  getElementsInChapter,
+  getHtsElementParents,
+  getProgressionDescriptionWithArrows,
+  getSectionAndChapterFromChapterNumber,
+} from "../../libs/hts";
+import { useHts } from "../../contexts/HtsContext";
+import { PDFProps, Loader } from "../../interfaces/ui";
+import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
+import {
+  Product,
+  userHasActivePurchaseForProduct,
+} from "../../libs/supabase/purchase";
+import { isWithinPastNDays } from "../../utilities/time";
+import { useUser } from "../../contexts/UserContext";
+import { SupabaseBuckets } from "../../constants/supabase";
+
+interface Props {
+  element: HtsElement;
+  classificationLevel: number;
+  disabled: boolean;
+  setLoading: (loading: Loader) => void;
+  onOpenExplore: () => void;
+}
+
+export const VerticalCandidateElement = ({
+  element,
+  classificationLevel,
+  disabled = false,
+  setLoading,
+  onOpenExplore,
+}: Props) => {
+  const { user } = useUser();
+  const { htsno, chapter, description, indent } = element;
+  const { clearBreadcrumbs, setBreadcrumbs } = useBreadcrumbs();
+  const { sections } = useHtsSections();
+  const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
+  const { classification, updateLevel, setClassification } =
+    useClassification();
+  const { htsElements } = useHts();
+  const {
+    levels,
+    progressionDescription,
+    articleDescription,
+    articleAnalysis,
+  } = classification;
+  const isMountedRef = useRef(true);
+
+  const currentLevel = levels[classificationLevel];
+  const isRecommended = currentLevel?.analysisElement?.uuid === element.uuid;
+  const recommendedReason = currentLevel?.analysisReason;
+
+  const isLevelSelection = Boolean(
+    levels.some(
+      (level) => level.selection && level.selection.uuid === element.uuid
+    )
+  );
+
+  // Fetch AI analysis when candidates are loaded and no analysis exists yet
+  useEffect(() => {
+    isMountedRef.current = true;
+
+    const fetchAnalysis = async () => {
+      if (
+        currentLevel?.candidates?.length > 0 &&
+        !currentLevel?.analysisElement &&
+        !disabled
+      ) {
+        setLoading({
+          isLoading: true,
+          text: "Analyzing Candidates",
+        });
+
+        const simplifiedCandidates = currentLevel.candidates.map((e) => ({
+          code: e.htsno,
+          description: e.description,
+        }));
+
+        try {
+          const {
+            index: suggestedCandidateIndex,
+            logic: suggestionReason,
+            questions: suggestionQuestions,
+          } = await getBestClassificationProgression(
+            simplifiedCandidates,
+            getProgressionDescriptionWithArrows(levels),
+            articleDescription + "\n" + articleAnalysis
+          );
+
+          if (!isMountedRef.current) return;
+
+          const bestCandidate =
+            currentLevel.candidates[suggestedCandidateIndex - 1];
+
+          updateLevel(classificationLevel, {
+            analysisElement: bestCandidate,
+            analysisReason: suggestionReason,
+            analysisQuestions: suggestionQuestions,
+          });
+        } catch (error) {
+          console.error("Error analyzing candidates:", error);
+        } finally {
+          if (isMountedRef.current) {
+            setLoading({ isLoading: false, text: "" });
+          }
+        }
+      }
+    };
+
+    // Only run analysis for the first candidate in the list to avoid duplicate calls
+    if (currentLevel?.candidates?.[0]?.uuid === element.uuid) {
+      fetchAnalysis();
+    }
+
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, [currentLevel?.candidates?.length]);
+
+  const handleClassificationCompleted = async () => {
+    const userCreatedDate = user ? new Date(user.created_at) : null;
+    const isClassifyTrialUser = userCreatedDate
+      ? isWithinPastNDays(userCreatedDate, 7)
+      : false;
+
+    const isPayingUser = user
+      ? await userHasActivePurchaseForProduct(user.id, Product.CLASSIFY)
+      : false;
+
+    trackEvent(MixpanelEvent.CLASSIFICATION_COMPLETED, {
+      hts_code: element.htsno,
+      item: classification.articleDescription,
+      is_paying_user: isPayingUser,
+      is_trial_user: isClassifyTrialUser,
+    });
+  };
+
+  const handleSelect = () => {
+    if (isLevelSelection || disabled) {
+      return;
+    }
+
+    // Truncate levels after the current one (invalidate future steps)
+    const newProgressionLevels = levels.slice(0, classificationLevel + 1);
+    newProgressionLevels[classificationLevel].selection = element;
+
+    const childrenOfSelectedElement = getDirectChildrenElements(
+      element,
+      getElementsInChapter(htsElements, element.chapter)
+    );
+
+    if (childrenOfSelectedElement.length > 0) {
+      // Not complete - add next level with children as candidates
+      setClassification({
+        ...classification,
+        isComplete: false,
+        progressionDescription:
+          progressionDescription + " > " + element.description,
+        levels: [
+          ...newProgressionLevels,
+          {
+            candidates: childrenOfSelectedElement,
+          },
+        ],
+      });
+    } else {
+      // Complete - no more children
+      setClassification({
+        ...classification,
+        isComplete: true,
+        progressionDescription:
+          progressionDescription + " > " + element.description,
+        levels: newProgressionLevels,
+      });
+
+      handleClassificationCompleted();
+    }
+  };
+
+  const handleViewElement = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    clearBreadcrumbs();
+    const sectionAndChapter = getSectionAndChapterFromChapterNumber(
+      sections,
+      Number(getChapterFromHtsElement(element, htsElements))
+    );
+
+    const parents = getHtsElementParents(element, htsElements);
+    const breadcrumbs = generateBreadcrumbsForHtsElement(
+      sections,
+      sectionAndChapter.chapter,
+      [...parents, element]
+    );
+
+    setBreadcrumbs(breadcrumbs);
+    onOpenExplore();
+    // Note: In the vertical flow, this would open the Explore modal
+    // The parent component handles this via onOpenExplore
+  };
+
+  const handleRemove = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isLevelSelection) {
+      // If this is the selected element, clear selection and invalidate future levels
+      const newClassificationProgression = levels.slice(
+        0,
+        classificationLevel + 1
+      );
+      newClassificationProgression[classificationLevel].selection = null;
+      newClassificationProgression[classificationLevel].candidates =
+        newClassificationProgression[classificationLevel].candidates.filter(
+          (candidate) => candidate.uuid !== element.uuid
+        );
+      setClassification({
+        ...classification,
+        isComplete: false,
+        levels: newClassificationProgression,
+      });
+    } else {
+      // Just remove from candidates
+      const newClassificationProgression = levels.slice(
+        0,
+        classificationLevel + 1
+      );
+      newClassificationProgression[classificationLevel].candidates =
+        newClassificationProgression[classificationLevel].candidates.filter(
+          (candidate) => candidate.uuid !== element.uuid
+        );
+      updateLevel(classificationLevel, {
+        candidates:
+          newClassificationProgression[classificationLevel].candidates,
+      });
+    }
+  };
+
+  return (
+    <div
+      className={`group relative overflow-hidden rounded-2xl transition-all duration-300 ${
+        isLevelSelection
+          ? "bg-success/15 border-2 border-success/40 shadow-lg shadow-success/10"
+          : disabled
+            ? "bg-base-100 border border-base-content/10 cursor-not-allowed opacity-70"
+            : "bg-base-100 border border-base-content/15 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10 hover:scale-[1.01] cursor-pointer"
+      }`}
+      onClick={handleSelect}
+    >
+      {/* Subtle hover gradient */}
+      {!isLevelSelection && !disabled && (
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+      )}
+
+      <div className="relative z-10 p-5">
+        {/* Header Row */}
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-center gap-3">
+            {/* HTS Code Badge */}
+            <div
+              className={`flex items-center gap-2 ${
+                isLevelSelection
+                  ? "bg-success/25 border border-success/40 px-3 py-1.5 rounded-lg"
+                  : ""
+              }`}
+            >
+              {isLevelSelection && (
+                <CheckCircleIcon className="w-4 h-4 text-success" />
+              )}
+              <span
+                className={`text-sm ${isLevelSelection ? "text-success" : "text-base-content/60"}`}
+              >
+                {htsno || "Prequalifier"}
+              </span>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-1">
+            <button
+              className="p-1 rounded-lg bg-base-content/10 hover:bg-primary/15 border border-transparent hover:border-primary/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={disabled}
+              title={`Chapter ${chapter} Notes`}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowPDF({
+                  title: `Chapter ${chapter} Notes`,
+                  bucket: SupabaseBuckets.NOTES,
+                  filePath: `/chapters/Chapter ${chapter}.pdf`,
+                });
+              }}
+            >
+              <DocumentTextIcon className="h-4 w-4 text-base-content/60" />
+            </button>
+
+            <button
+              className="p-1 rounded-lg bg-base-content/10 hover:bg-primary/15 border border-transparent hover:border-primary/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={disabled}
+              title="View Element"
+              onClick={handleViewElement}
+            >
+              <MagnifyingGlassIcon className="h-4 w-4 text-base-content/60" />
+            </button>
+
+            {indent === "0" && (
+              <button
+                className="p-1 rounded-lg bg-base-content/10 hover:bg-error/15 border border-transparent hover:border-error/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={disabled}
+                title="Remove"
+                onClick={handleRemove}
+              >
+                <TrashIcon className="h-4 w-4 text-base-content/60 hover:text-error" />
+              </button>
+            )}
+
+            {/* Chevron indicator */}
+            {!isLevelSelection && !disabled && (
+              <ChevronRightIcon className="h-5 w-5 text-base-content/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-200 ml-1" />
+            )}
+          </div>
+        </div>
+
+        {/* Description */}
+        <p className="text-base leading-relaxed font-bold">{description}</p>
+
+        {/* AI Analysis Section - animated entry */}
+        <div
+          className={`grid transition-all duration-500 ease-out ${
+            isRecommended
+              ? "grid-rows-[1fr] opacity-100 mt-4"
+              : "grid-rows-[0fr] opacity-0 mt-0"
+          }`}
+        >
+          <div className="overflow-hidden">
+            <div className="border-t border-base-content/10 pt-4">
+              <div className="relative overflow-hidden rounded-xl bg-base-100 border border-primary/20 p-4">
+                <div className="absolute inset-0 pointer-events-none">
+                  <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
+                </div>
+
+                <div className="relative z-10">
+                  <div className="flex items-center gap-1 mb-3">
+                    <div className="flex items-center justify-center w-6 h-6">
+                      <SparklesIcon className="h-3.5 w-3.5 text-primary" />
+                    </div>
+                    <span className="text-xs font-bold uppercase tracking-wider text-primary">
+                      HTS Hero Analysis
+                    </span>
+                  </div>
+
+                  <p className="text-base leading-relaxed text-base-content font-medium mb-3">
+                    {recommendedReason}
+                  </p>
+
+                  <p className="text-xs text-base-content/60">
+                    Analysis is for information purposes only and may not be
+                    correct. Always exercise your own judgement as the
+                    classifier.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {showPDF && (
+        <PDF
+          title={showPDF.title}
+          bucket={showPDF.bucket}
+          filePath={showPDF.filePath}
+          isOpen={showPDF !== null}
+          setIsOpen={(isOpen) => {
+            if (!isOpen) {
+              setShowPDF(null);
+            }
+          }}
+        />
+      )}
+    </div>
+  );
+};

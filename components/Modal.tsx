@@ -9,11 +9,17 @@ interface ModalProps {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   children: JSX.Element;
+  size?: "default" | "full";
 }
 
 // A simple modal component which can be shown/hidden with a boolean and a function
 // Because of the setIsModalOpen function, you can't use it in a server component.
-const Modal = ({ isOpen, setIsOpen, children }: ModalProps) => {
+const Modal = ({ isOpen, setIsOpen, children, size = "default" }: ModalProps) => {
+  const sizeClasses = {
+    default: "max-w-7xl",
+    full: "max-w-[95vw] w-full",
+  };
+
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog
@@ -30,7 +36,7 @@ const Modal = ({ isOpen, setIsOpen, children }: ModalProps) => {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black bg-opacity-50" />
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto">
@@ -44,9 +50,9 @@ const Modal = ({ isOpen, setIsOpen, children }: ModalProps) => {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="border border-base-content/30 relative max-w-7xl max-h-full overflow-auto transform text-left align-middle shadow-xl transition-all rounded-xl bg-base-100">
+              <Dialog.Panel className={`border border-base-content/15 relative ${sizeClasses[size]} max-h-full overflow-auto transform text-left align-middle shadow-xl transition-all rounded-xl bg-base-100`}>
                 <button
-                  className="z-50 absolute top-4 right-4 btn btn-square btn-ghost btn-sm hover:bg-white hover:text-black"
+                  className="z-50 absolute top-4 right-4 btn btn-square btn-ghost btn-sm hover:bg-base-content/10"
                   onClick={() => setIsOpen(false)}
                 >
                   <svg

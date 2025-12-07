@@ -61,34 +61,34 @@ export const SearchResults = ({
 
       {/* Results List */}
       <div className="flex flex-col gap-2">
-        {results.map((result, index) => {
-          const { item: element } = result;
-          const sectionAndChapter = getSectionAndChapterFromChapterNumber(
-            sections,
-            Number(element.chapter)
-          );
-          const parents = getHtsElementParents(element, htsElements);
-          const breadcrumbs = generateBreadcrumbsForHtsElement(
-            sections,
-            sectionAndChapter.chapter,
-            [...parents, element]
-          );
+      {results.map((result, index) => {
+        const { item: element } = result;
+        const sectionAndChapter = getSectionAndChapterFromChapterNumber(
+          sections,
+          Number(element.chapter)
+        );
+        const parents = getHtsElementParents(element, htsElements);
+        const breadcrumbs = generateBreadcrumbsForHtsElement(
+          sections,
+          sectionAndChapter.chapter,
+          [...parents, element]
+        );
 
-          return (
-            <ElementSearchSummary
-              key={`search-result-${index}`}
-              element={element}
-              sectionAndChapter={sectionAndChapter}
-              parents={parents}
-              onClick={() => {
-                setSearchResults([]);
-                setSearchValue("");
-                setBreadcrumbs(breadcrumbs);
-                setActiveTab(ExploreTab.ELEMENTS);
-              }}
-            />
-          );
-        })}
+        return (
+          <ElementSearchSummary
+            key={`search-result-${index}`}
+            element={element}
+            sectionAndChapter={sectionAndChapter}
+            parents={parents}
+            onClick={() => {
+              setSearchResults([]);
+              setSearchValue("");
+              setBreadcrumbs(breadcrumbs);
+              setActiveTab(ExploreTab.ELEMENTS);
+            }}
+          />
+        );
+      })}
       </div>
     </div>
   );

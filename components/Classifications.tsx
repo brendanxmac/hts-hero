@@ -398,7 +398,7 @@ export const Classifications = ({ page, setPage }: Props) => {
   if (loader.isLoading) {
     return (
       <main className="w-full h-full flex items-center justify-center bg-base-300">
-        <LoadingIndicator />
+            <LoadingIndicator />
       </main>
     );
   }
@@ -419,7 +419,7 @@ export const Classifications = ({ page, setPage }: Props) => {
               backgroundSize: "32px 32px",
             }}
           />
-        </div>
+                  </div>
 
         <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 py-8 md:py-10">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -463,11 +463,11 @@ export const Classifications = ({ page, setPage }: Props) => {
                   }}
                 >
                   <span className="relative z-10 flex items-center gap-2">
-                    {loadingUpgrade ? (
+                  {loadingUpgrade ? (
                       <span className="loading loading-spinner loading-sm"></span>
-                    ) : (
+                  ) : (
                       <BoltIcon className="h-4 w-4 text-secondary" />
-                    )}
+                  )}
                     <span className="text-secondary font-bold">Upgrade</span>
                   </span>
                 </button>
@@ -482,12 +482,12 @@ export const Classifications = ({ page, setPage }: Props) => {
                 }}
               >
                 <span className="relative z-10 flex items-center gap-2">
-                  {loadingNewClassification ? (
+                {loadingNewClassification ? (
                     <span className="loading loading-spinner loading-sm"></span>
-                  ) : (
-                    <PlusIcon className="h-5 w-5" />
-                  )}
-                  New Classification
+                ) : (
+                  <PlusIcon className="h-5 w-5" />
+                )}
+                New Classification
                 </span>
               </button>
             </div>
@@ -632,44 +632,44 @@ export const Classifications = ({ page, setPage }: Props) => {
                   </option>
                 ))}
               </select>
-            </div>
           </div>
         </div>
+      </div>
 
-        {filteredClassifications && filteredClassifications.length > 0 && (
-          <>
+      {filteredClassifications && filteredClassifications.length > 0 && (
+        <>
             {/* Results Separator */}
             <div className="flex items-center gap-4 my-2">
               <div className="flex-1 h-px bg-gradient-to-r from-transparent via-base-content/30 to-base-content/30"></div>
               <span className="text-xs font-semibold uppercase tracking-widest text-base-content/60">
-                {filteredClassifications.length}{" "}
-                {filteredClassifications.length === 1
-                  ? "Classification"
-                  : "Classifications"}
+              {filteredClassifications.length}{" "}
+              {filteredClassifications.length === 1
+                ? "Classification"
+                : "Classifications"}
               </span>
               <div className="flex-1 h-px bg-gradient-to-l from-transparent via-base-content/30 to-base-content/30"></div>
-            </div>
+          </div>
 
             <div className="flex flex-col gap-3 pb-6">
-              {filteredClassifications.map((classification, index) => (
-                <ClassificationSummary
-                  key={`classification-${index}`}
-                  classificationRecord={classification}
-                  setPage={setPage}
-                  user={userProfile}
-                  onDelete={handleDeleteClassification}
-                  isDeleting={deletingId === classification.id}
-                />
-              ))}
-            </div>
-          </>
-        )}
+            {filteredClassifications.map((classification, index) => (
+              <ClassificationSummary
+                key={`classification-${index}`}
+                classificationRecord={classification}
+                setPage={setPage}
+                user={userProfile}
+                onDelete={handleDeleteClassification}
+                isDeleting={deletingId === classification.id}
+              />
+            ))}
+          </div>
+        </>
+      )}
 
         {/* Empty State */}
-        {!loader.isLoading &&
-          !classificationsLoading &&
-          (() => {
-            const emptyStateConfig = getEmptyStateConfig();
+      {!loader.isLoading &&
+        !classificationsLoading &&
+        (() => {
+          const emptyStateConfig = getEmptyStateConfig();
             if (!emptyStateConfig) return null;
 
             return (
@@ -742,8 +742,8 @@ export const Classifications = ({ page, setPage }: Props) => {
                 </div>
               </div>
             );
-          })()}
-      </div>
+        })()}
+    </div>
     </main>
   );
 };

@@ -167,14 +167,14 @@ export const CandidateElement = ({
           <div className="flex items-center gap-1">
             <button
               className="p-2 rounded-lg bg-base-content/5 hover:bg-primary/10 border border-transparent hover:border-primary/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={disabled}
+                disabled={disabled}
               title={`Chapter ${chapter} Notes`}
               onClick={(e) => {
                 e.stopPropagation();
-                setShowPDF({
-                  title: `Chapter ${chapter} Notes`,
-                  bucket: SupabaseBuckets.NOTES,
-                  filePath: `/chapters/Chapter ${chapter}.pdf`,
+                  setShowPDF({
+                    title: `Chapter ${chapter} Notes`,
+                    bucket: SupabaseBuckets.NOTES,
+                    filePath: `/chapters/Chapter ${chapter}.pdf`,
                 });
               }}
             >
@@ -183,40 +183,40 @@ export const CandidateElement = ({
 
             <button
               className="p-2 rounded-lg bg-base-content/5 hover:bg-primary/10 border border-transparent hover:border-primary/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={disabled}
+                disabled={disabled}
               title="View Element"
               onClick={(e) => {
                 e.stopPropagation();
-                clearBreadcrumbs();
+                  clearBreadcrumbs();
                 const sectionAndChapter = getSectionAndChapterFromChapterNumber(
-                  sections,
-                  Number(getChapterFromHtsElement(element, htsElements))
-                );
+                      sections,
+                      Number(getChapterFromHtsElement(element, htsElements))
+                    );
 
-                const parents = getHtsElementParents(element, htsElements);
-                const breadcrumbs = generateBreadcrumbsForHtsElement(
-                  sections,
-                  sectionAndChapter.chapter,
-                  [...parents, element]
-                );
+                  const parents = getHtsElementParents(element, htsElements);
+                  const breadcrumbs = generateBreadcrumbsForHtsElement(
+                    sections,
+                    sectionAndChapter.chapter,
+                    [...parents, element]
+                  );
 
-                setBreadcrumbs(breadcrumbs);
-                setActiveTab(ClassifyTab.EXPLORE);
-              }}
+                  setBreadcrumbs(breadcrumbs);
+                  setActiveTab(ClassifyTab.EXPLORE);
+                }}
             >
               <MagnifyingGlassIcon className="h-4 w-4 text-base-content/60" />
             </button>
 
-            {indent === "0" && (
+              {indent === "0" && (
               <button
                 className="p-2 rounded-lg bg-base-content/5 hover:bg-error/10 border border-transparent hover:border-error/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={disabled}
+                  disabled={disabled}
                 title="Remove"
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (isLevelSelection) {
-                    const newClassificationProgression =
-                      classification.levels.slice(0, classificationLevel + 1);
+                    if (isLevelSelection) {
+                      const newClassificationProgression =
+                        classification.levels.slice(0, classificationLevel + 1);
                     newClassificationProgression[classificationLevel].selection =
                       null;
                     newClassificationProgression[classificationLevel].candidates =
@@ -225,26 +225,26 @@ export const CandidateElement = ({
                       ].candidates.filter(
                         (candidate) => candidate.uuid !== element.uuid
                       );
-                    setClassification({
-                      ...classification,
-                      levels: newClassificationProgression,
-                    });
-                  } else {
-                    const newClassificationProgression =
-                      classification.levels.slice(0, classificationLevel + 1);
+                      setClassification({
+                        ...classification,
+                        levels: newClassificationProgression,
+                      });
+                    } else {
+                      const newClassificationProgression =
+                        classification.levels.slice(0, classificationLevel + 1);
                     newClassificationProgression[classificationLevel].candidates =
                       newClassificationProgression[
                         classificationLevel
                       ].candidates.filter(
                         (candidate) => candidate.uuid !== element.uuid
                       );
-                    updateLevel(classificationLevel, {
-                      candidates:
-                        newClassificationProgression[classificationLevel]
-                          .candidates,
-                    });
-                  }
-                }}
+                      updateLevel(classificationLevel, {
+                        candidates:
+                          newClassificationProgression[classificationLevel]
+                            .candidates,
+                      });
+                    }
+                  }}
               >
                 <TrashIcon className="h-4 w-4 text-base-content/60 hover:text-error" />
               </button>
@@ -253,7 +253,7 @@ export const CandidateElement = ({
             {/* Chevron indicator */}
             {!isLevelSelection && !disabled && (
               <ChevronRightIcon className="h-5 w-5 text-base-content/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-200 ml-1" />
-            )}
+              )}
           </div>
         </div>
 
@@ -272,7 +272,7 @@ export const CandidateElement = ({
             <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-primary/10 to-secondary/5 border border-primary/20 p-4">
               <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
-              </div>
+            </div>
 
               <div className="relative z-10">
                 <div className="flex items-center gap-2 mb-2">

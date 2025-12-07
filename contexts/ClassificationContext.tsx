@@ -37,7 +37,10 @@ interface ClassificationContextType {
     updates: Partial<ClassificationProgression>
   ) => void;
   clearClassification: (keepArticleDescription?: boolean) => void;
-  startNewClassification: (articleDescription?: string) => void;
+  startNewClassification: (
+    articleDescription: string,
+    includeFirstLevel?: boolean
+  ) => Promise<void>;
   saveClassification: () => Promise<void>;
 }
 
@@ -161,18 +164,26 @@ export const ClassificationProvider = ({
   };
 
   // This creates a record in the DB and sets up the context record for local changes
-  const startNewClassification = async (articleDescription: string) => {
+  // includeFirstLevel: if true, adds an empty first level to trigger candidate fetching
+  const startNewClassification = async (
+    articleDescription: string,
+    includeFirstLevel: boolean = false
+  ) => {
     const newClassification: Classification = {
       articleDescription,
       articleAnalysis: "",
       progressionDescription: "",
-      levels: [],
+      levels: includeFirstLevel ? [{ candidates: [] }] : [],
       isComplete: false,
       notes: "",
     };
+
+    // Set the classification state immediately so UI can transition
+    setClassification(newClassification);
+
+    // Create the DB record
     const classificationRecord = await createClassification(newClassification);
     setClassificationId(classificationRecord.id);
-    setClassification(newClassification);
   };
 
   return (

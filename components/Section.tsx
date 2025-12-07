@@ -104,17 +104,17 @@ export const Section = ({
         {/* Chapters List */}
         {isExpanded && (
           <div className="mt-4 pt-4 border-t border-base-content/10">
-            <div className="flex flex-col gap-2">
-              {section.chapters.map((chapter) => {
-                return (
-                  <ChapterSummary
-                    key={chapter.number}
-                    chapter={chapter}
-                    breadcrumbs={breadcrumbs}
-                    setBreadcrumbs={setBreadcrumbs}
-                  />
-                );
-              })}
+          <div className="flex flex-col gap-2">
+            {section.chapters.map((chapter) => {
+              return (
+                <ChapterSummary
+                  key={chapter.number}
+                  chapter={chapter}
+                  breadcrumbs={breadcrumbs}
+                  setBreadcrumbs={setBreadcrumbs}
+                />
+              );
+            })}
             </div>
           </div>
         )}
