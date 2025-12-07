@@ -240,7 +240,7 @@ export const CountrySelection = ({
               </div>
             ))
           ) : (
-            <span className="text-sm text-base-content/50 font-medium ml-1">
+            <span className="text-base-content/50 ml-1">
               {singleSelect
                 ? "Select Country of Origin"
                 : "Select Countries of Origin"}

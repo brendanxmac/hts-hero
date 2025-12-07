@@ -425,7 +425,7 @@ export const TariffFinderPage = () => {
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary/80">
                 <span className="inline-block w-8 h-px bg-primary/40" />
-                Trusted & Loved By Customs Brokers
+                Trusted By Brokers, Importers, and Manufacturers
               </div>
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight">
                 <span className="bg-gradient-to-r from-base-content via-base-content to-base-content/80 bg-clip-text">
@@ -463,7 +463,7 @@ export const TariffFinderPage = () => {
         {/* Inputs */}
         <div className="w-full flex flex-col md:flex-row gap-3">
           {/* HTS Code Search */}
-          <div className="grow flex flex-col gap-1">
+          <div className="grow flex flex-col gap-2">
             <div className="flex gap-2 justify-between items-end">
               <SecondaryLabel value="HTS Code" />
               <button
@@ -471,7 +471,7 @@ export const TariffFinderPage = () => {
                 onClick={() => setShowExploreModal(true)}
                 className="text-xs font-medium text-primary hover:text-primary/80 transition-colors"
               >
-                Search HTS
+                Search by Description
               </button>
             </div>
 
