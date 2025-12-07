@@ -18,6 +18,7 @@ import {
 interface ClassificationContextType {
   classification?: Classification;
   classificationId?: string;
+  isCreatingClassification: boolean;
   setClassificationId: (id: string | null) => void;
   setClassification: (
     classification: Classification | ((prev: Classification) => Classification)
@@ -42,6 +43,7 @@ interface ClassificationContextType {
     includeFirstLevel?: boolean
   ) => Promise<void>;
   saveClassification: () => Promise<void>;
+  saveAndClear: () => Promise<void>;
 }
 
 const ClassificationContext = createContext<
@@ -55,7 +57,10 @@ export const ClassificationProvider = ({
 }) => {
   const [classificationId, setClassificationId] = useState<string | null>(null);
   const [classification, setClassification] = useState<Classification>(null);
+  const [isCreatingClassification, setIsCreatingClassification] =
+    useState(false);
   const lastClassificationIdRef = useRef<string | null>(null);
+  const pendingClassificationRef = useRef<Promise<void> | null>(null);
 
   useEffect(() => {
     if (!classification || !classificationId) {
@@ -180,10 +185,40 @@ export const ClassificationProvider = ({
 
     // Set the classification state immediately so UI can transition
     setClassification(newClassification);
+    setIsCreatingClassification(true);
 
-    // Create the DB record
-    const classificationRecord = await createClassification(newClassification);
-    setClassificationId(classificationRecord.id);
+    // Create the DB record and track the promise
+    const createPromise = (async () => {
+      try {
+        const classificationRecord =
+          await createClassification(newClassification);
+        setClassificationId(classificationRecord.id);
+      } finally {
+        setIsCreatingClassification(false);
+        pendingClassificationRef.current = null;
+      }
+    })();
+
+    pendingClassificationRef.current = createPromise;
+    await createPromise;
+  };
+
+  // Save current state and clear - waits for any pending creation first
+  const saveAndClear = async () => {
+    // Wait for any pending classification creation to complete
+    if (pendingClassificationRef.current) {
+      await pendingClassificationRef.current;
+    }
+
+    // Save current state if we have a classification ID
+    if (classificationId && classification) {
+      await updateClassification(classificationId, classification);
+    }
+
+    // Clear state
+    setClassification(null);
+    setClassificationId(null);
+    lastClassificationIdRef.current = null;
   };
 
   return (
@@ -191,6 +226,7 @@ export const ClassificationProvider = ({
       value={{
         classification,
         classificationId,
+        isCreatingClassification,
         setClassificationId,
         setClassification,
         setArticleDescription,
@@ -201,6 +237,7 @@ export const ClassificationProvider = ({
         clearClassification,
         startNewClassification,
         saveClassification,
+        saveAndClear,
       }}
     >
       {children}

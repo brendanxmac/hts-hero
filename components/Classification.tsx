@@ -41,6 +41,7 @@ export const Classification = ({ setPage }: Props) => {
     setClassification,
     setClassificationId,
     classificationId,
+    saveAndClear,
   } = useClassification();
   const { classifications } = useClassifications();
   const { user } = useUser();
@@ -88,8 +89,8 @@ export const Classification = ({ setPage }: Props) => {
 
   useEffect(() => {
     return () => {
-      setClassification(null);
-      setClassificationId(null);
+      // Save any pending changes and clear state when leaving the page
+      saveAndClear();
     };
   }, []);
 
