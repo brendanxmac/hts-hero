@@ -10,7 +10,8 @@ interface Props {
   iconBgClass?: string;
   iconTextClass?: string;
   defaultExpanded?: boolean; // defaults to false
-  summaryContent?: ReactNode;
+  summaryContent?: ReactNode; // Simple inline summary (shown next to chevron)
+  collapsedContent?: ReactNode; // Rich collapsed content (shown below header when collapsed)
   children: ReactNode;
   badge?: ReactNode;
 }
@@ -23,6 +24,7 @@ export const CollapsibleSection = ({
   iconTextClass = "text-primary",
   defaultExpanded = false,
   summaryContent,
+  collapsedContent,
   children,
   badge,
 }: Props) => {
@@ -38,7 +40,9 @@ export const CollapsibleSection = ({
 
       {/* Header - Always visible */}
       <button
-        className="relative z-10 w-full p-5 flex items-center justify-between gap-4 hover:bg-base-content/[0.02] transition-colors"
+        className={`relative z-10 w-full p-5 flex items-center justify-between gap-4 hover:bg-base-content/[0.02] transition-colors ${
+          !isExpanded && collapsedContent ? "pb-3" : ""
+        }`}
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-3 min-w-0">
@@ -53,13 +57,15 @@ export const CollapsibleSection = ({
               {badge}
             </div>
             {subtitle && (
-              <p className="text-sm text-base-content/60 truncate">{subtitle}</p>
+              <p className="text-sm text-base-content/60 truncate">
+                {subtitle}
+              </p>
             )}
           </div>
         </div>
 
         <div className="flex items-center gap-3 shrink-0">
-          {/* Summary content when collapsed */}
+          {/* Simple inline summary content when collapsed */}
           {!isExpanded && summaryContent && (
             <div className="hidden sm:flex items-center gap-2 text-sm text-base-content/70">
               {summaryContent}
@@ -67,13 +73,23 @@ export const CollapsibleSection = ({
           )}
           <div
             className={`flex items-center justify-center w-8 h-8 rounded-lg bg-base-content/5 transition-transform duration-200 ${
-              isExpanded ? "rotate-180" : ""
+              isExpanded ? "" : "-rotate-180"
             }`}
           >
             <ChevronDownIcon className="w-4 h-4 text-base-content/60" />
           </div>
         </div>
       </button>
+
+      {/* Rich collapsed content - shown below header when collapsed */}
+      {!isExpanded && collapsedContent && (
+        <div
+          className="relative z-10 px-5 pb-5 pt-0"
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          <div className="cursor-pointer">{collapsedContent}</div>
+        </div>
+      )}
 
       {/* Expandable Content */}
       <div
@@ -89,4 +105,3 @@ export const CollapsibleSection = ({
     </div>
   );
 };
-

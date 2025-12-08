@@ -28,3 +28,8 @@ export type { AnimatedBackgroundProps } from "./AnimatedBackground";
 export { LevelConnector } from "./LevelConnector";
 export type { LevelConnectorProps } from "./LevelConnector";
 
+// Collapsed section summaries
+export { ClassificationDetailsSummary } from "./ClassificationDetailsSummary";
+export { ImporterNotesSummary } from "./ImporterNotesSummary";
+export { TariffDutiesSummary } from "./TariffDutiesSummary";
+

@@ -38,7 +38,13 @@ import {
   CountryWithTariffs,
   TariffsList,
   tariffIsApplicableToCode,
+  getAdValoremRate,
+  getAmountRatesString,
+  get15PercentCountryTotalBaseRate,
 } from "../../tariffs/tariffs";
+import { TariffColumn } from "../../enums/tariff";
+import { EuropeanUnionCountries } from "../../constants/countries";
+import { Column2CountryCodes } from "../../tariffs/tariff-columns";
 import { ContentRequirementI } from "../Element";
 import { ContentRequirements } from "../../enums/tariff";
 import { getHtsElementParents } from "../../libs/hts";
@@ -46,6 +52,11 @@ import { NumberInput } from "../NumberInput";
 import { PercentageInput } from "../PercentageInput";
 import { SecondaryLabel } from "../SecondaryLabel";
 import { VerticalClassificationStep } from "./VerticalClassificationStep";
+import {
+  ClassificationDetailsSummary,
+  ImporterNotesSummary,
+  TariffDutiesSummary,
+} from "../classification-ui";
 
 interface Props {
   userProfile: UserProfile;
@@ -282,168 +293,77 @@ export const VerticalClassificationResult = ({
       : classification.notes;
   }, [classification.notes]);
 
+  // Tariff summary rates for collapsed view - derived from countryWithTariffs
+  const tariffSummaryRates = useMemo(() => {
+    if (!selectedCountry || !countryWithTariffs || !tariffElement) {
+      return [];
+    }
+
+    const { baseTariffs, tariffSets } = countryWithTariffs;
+    const isOtherColumnCountry = Column2CountryCodes.includes(
+      selectedCountry.code
+    );
+    const is15PercentCapCountry =
+      EuropeanUnionCountries.includes(selectedCountry.code) ||
+      selectedCountry.code === "JP";
+
+    const tariffColumn = isOtherColumnCountry
+      ? TariffColumn.OTHER
+      : TariffColumn.GENERAL;
+
+    const adValoremEquivalentRate = get15PercentCountryTotalBaseRate(
+      baseTariffs.flatMap((t) => t.tariffs),
+      customsValue,
+      units
+    );
+
+    const filteredBase = baseTariffs.flatMap((t) => t.tariffs);
+
+    // Calculate rates for each tariff set
+    return tariffSets.map((tariffSet) => {
+      const isArticleSet =
+        tariffSet.name === "Article" || tariffSet.name === "";
+      const shouldIncludeBaseTariffs =
+        isArticleSet &&
+        !(is15PercentCapCountry && adValoremEquivalentRate < 15);
+
+      const adValoremRate = shouldIncludeBaseTariffs
+        ? getAdValoremRate(tariffColumn, tariffSet.tariffs, filteredBase)
+        : getAdValoremRate(tariffColumn, tariffSet.tariffs);
+
+      const hasAmountTariffs =
+        shouldIncludeBaseTariffs &&
+        filteredBase.some((t) => t.type === "amount");
+
+      return {
+        name: tariffSet.name || "Article",
+        rate: adValoremRate,
+        hasAmountTariffs,
+        amountRatesString: hasAmountTariffs
+          ? getAmountRatesString(filteredBase)
+          : null,
+      };
+    });
+  }, [selectedCountry, countryWithTariffs, tariffElement, customsValue, units]);
+
   if (!element) {
     return null;
   }
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Classification Complete Section - Contains all levels */}
-      <CollapsibleSection
-        title="Classification Decisions"
-        subtitle="See each classification level and your decisions"
-        icon={<CheckCircleIcon className="w-5 h-5" />}
-        iconBgClass="bg-success/20"
-        iconTextClass="text-success"
-        summaryContent={
-          <span className="flex items-center gap-2 text-success font-semibold">
-            Complete
-          </span>
-        }
-        badge={
-          <span className="px-2 py-0.5 rounded-md text-xs font-semibold bg-success/20 text-success border border-success/30">
-            {levels.length} {levels.length === 1 ? "level" : "levels"}
-          </span>
-        }
-      >
-        <div className="flex flex-col">
-          {/* Classification Levels */}
-          {levels.map((level, index) => (
-            <div key={`level-${index}`}>
-              {/* Flow Connector - shows between levels */}
-              {index > 0 && (
-                <div className="flex flex-col items-center py-3">
-                  <div className="w-px h-3 bg-gradient-to-b from-success/30 to-success/20" />
-                  <div className="flex items-center justify-center w-6 h-6 rounded-full bg-success/15 border border-success/25">
-                    <ChevronDownIcon className="w-3 h-3 text-success/70" />
-                  </div>
-                  <div className="w-px h-3 bg-gradient-to-b from-success/20 to-transparent" />
-                </div>
-              )}
-
-              <VerticalClassificationStep
-                classificationLevel={index}
-                classificationRecord={classificationRecord}
-                onOpenExplore={onOpenExplore}
-              />
-            </div>
-          ))}
-        </div>
-      </CollapsibleSection>
-
-      {/* Classification Details Section */}
-      <CollapsibleSection
-        title="Importer & Notes"
-        subtitle="Select the importer and add notes"
-        icon={<DocumentTextIcon className="w-5 h-5" />}
-        iconBgClass="bg-primary/20"
-        iconTextClass="text-primary"
-        summaryContent={
-          <span className="flex items-center gap-2">
-            <TagIcon className="w-3.5 h-3.5" />
-            {importerName}
-          </span>
-        }
-      >
-        <div className="flex flex-col gap-6">
-          {/* Importer Section */}
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2">
-              <TagIcon className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold uppercase tracking-wider text-base-content/80">
-                Importer
-              </span>
-            </div>
-            <p className="text-sm text-base-content/60">
-              Select the importer or client that you are providing this advisory
-              to (optional)
-            </p>
-            <div className="flex gap-2">
-              <ImporterDropdown
-                importers={importers}
-                selectedImporterId={selectedImporterId}
-                onSelectionChange={(value) => {
-                  setSelectedImporterId(value);
-                  updateClassification(
-                    classificationId,
-                    undefined,
-                    value || null,
-                    undefined
-                  );
-                }}
-                onCreateSelected={() => setShowCreateImporterModal(true)}
-                isLoading={isLoadingImporters}
-                disabled={!canUpdateDetails}
-                showCreateOption={canUpdateDetails}
-              />
-              {selectedImporterId && (
-                <button
-                  className="px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 bg-base-content/10 border border-base-content/15 hover:border-primary/40 hover:bg-primary/10 disabled:opacity-50"
-                  onClick={() => {
-                    setSelectedImporterId("");
-                    updateClassification(
-                      classificationId,
-                      undefined,
-                      null,
-                      undefined
-                    );
-                  }}
-                  disabled={isLoadingImporters || !canUpdateDetails}
-                  title="Clear selected importer"
-                >
-                  Clear
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Divider */}
-          <div className="h-px bg-gradient-to-r from-transparent via-base-content/15 to-base-content/15" />
-
-          {/* Notes Section */}
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2">
-              <DocumentTextIcon className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold uppercase tracking-wider text-base-content/80">
-                Basis for Classification
-              </span>
-            </div>
-            <p className="text-sm text-base-content/60">
-              Add any notes about your classification here. They will be
-              included in your classification advisory.
-            </p>
-            <textarea
-              className="min-h-36 w-full px-4 py-3 rounded-xl bg-base-200/50 border border-base-content/15 transition-all duration-200 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40 resize-none text-base"
-              placeholder="Add any notes about your classification here..."
-              value={classification.notes || ""}
-              disabled={!canUpdateDetails}
-              onChange={(e) => {
-                setClassification({
-                  ...classification,
-                  notes: e.target.value,
-                });
-              }}
-            />
-          </div>
-        </div>
-      </CollapsibleSection>
-
       {/* Tariffs & Duties Section */}
       <CollapsibleSection
         title="Tariffs & Duties"
-        subtitle="See import cost estimates for any country of origin"
+        // subtitle="See import cost estimates for any country of origin"
         icon={<CurrencyDollarIcon className="w-5 h-5" />}
         iconBgClass="bg-secondary/20"
         iconTextClass="text-secondary"
-        summaryContent={
-          selectedCountry ? (
-            <span className="flex items-center gap-2">
-              <span className="text-lg">{selectedCountry.flag}</span>
-              {selectedCountry.name}
-            </span>
-          ) : (
-            <span className="text-base-content/50">No country selected</span>
-          )
+        collapsedContent={
+          <TariffDutiesSummary
+            selectedCountry={selectedCountry}
+            tariffRates={tariffSummaryRates}
+          />
         }
       >
         <div className="flex flex-col gap-5">
@@ -600,6 +520,144 @@ export const VerticalClassificationResult = ({
               </div>
             </div>
           )}
+        </div>
+      </CollapsibleSection>
+
+      {/* Imporer & Notes Section */}
+      <CollapsibleSection
+        title="Importer & Notes"
+        // subtitle="Select the importer and add notes"
+        icon={<DocumentTextIcon className="w-5 h-5" />}
+        iconBgClass="bg-primary/20"
+        iconTextClass="text-primary"
+        collapsedContent={
+          <ImporterNotesSummary
+            importerName={importerName}
+            notes={classification.notes}
+          />
+        }
+      >
+        <div className="flex flex-col gap-6">
+          {/* Importer Section */}
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-2">
+              <TagIcon className="w-4 h-4 text-primary" />
+              <span className="text-sm font-semibold uppercase tracking-wider text-base-content/80">
+                Importer
+              </span>
+            </div>
+            {/* <p className="text-sm text-base-content/60">
+              Select the importer or client that you are providing this advisory
+              to (optional)
+            </p> */}
+            <div className="flex gap-2">
+              <ImporterDropdown
+                importers={importers}
+                selectedImporterId={selectedImporterId}
+                onSelectionChange={(value) => {
+                  setSelectedImporterId(value);
+                  updateClassification(
+                    classificationId,
+                    undefined,
+                    value || null,
+                    undefined
+                  );
+                }}
+                onCreateSelected={() => setShowCreateImporterModal(true)}
+                isLoading={isLoadingImporters}
+                disabled={!canUpdateDetails}
+                showCreateOption={canUpdateDetails}
+              />
+              {selectedImporterId && (
+                <button
+                  className="px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 bg-base-content/10 border border-base-content/15 hover:border-primary/40 hover:bg-primary/10 disabled:opacity-50"
+                  onClick={() => {
+                    setSelectedImporterId("");
+                    updateClassification(
+                      classificationId,
+                      undefined,
+                      null,
+                      undefined
+                    );
+                  }}
+                  disabled={isLoadingImporters || !canUpdateDetails}
+                  title="Clear selected importer"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Notes Section */}
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-2">
+              <DocumentTextIcon className="w-4 h-4 text-primary" />
+              <span className="text-sm font-semibold uppercase tracking-wider text-base-content/80">
+                Basis for Classification
+              </span>
+            </div>
+            {/* <p className="text-sm text-base-content/60">
+              Add any notes about your classification here. They will be
+              included in your classification advisory.
+            </p> */}
+            <textarea
+              className="min-h-36 w-full px-4 py-3 rounded-xl bg-base-200/50 border border-base-content/15 transition-all duration-200 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40 resize-none text-base"
+              placeholder="Add any notes about your classification here"
+              value={classification.notes || ""}
+              disabled={!canUpdateDetails}
+              onChange={(e) => {
+                setClassification({
+                  ...classification,
+                  notes: e.target.value,
+                });
+              }}
+            />
+          </div>
+        </div>
+      </CollapsibleSection>
+
+      {/* Classification Complete Section - Contains all levels */}
+      <CollapsibleSection
+        title="Classification Decisions"
+        // subtitle="See each classification level and your decisions"
+        icon={<CheckCircleIcon className="w-5 h-5" />}
+        iconBgClass="bg-success/20"
+        iconTextClass="text-success"
+        summaryContent={
+          <span className="flex items-center gap-2 text-success font-semibold">
+            Complete
+          </span>
+        }
+        badge={
+          <span className="px-2 py-0.5 rounded-md text-xs font-semibold bg-success/20 text-success border border-success/30">
+            {levels.length} {levels.length === 1 ? "level" : "levels"}
+          </span>
+        }
+        collapsedContent={<ClassificationDetailsSummary levels={levels} />}
+      >
+        <div className="flex flex-col">
+          {/* Classification Levels */}
+          {levels.map((level, index) => (
+            <div key={`level-${index}`}>
+              {/* Flow Connector - shows between levels */}
+              {index > 0 && (
+                <div className="flex flex-col items-center py-3">
+                  <div className="w-px h-3 bg-gradient-to-b from-success/30 to-success/20" />
+                  <div className="flex items-center justify-center w-6 h-6 rounded-full bg-success/15 border border-success/25">
+                    <ChevronDownIcon className="w-3 h-3 text-success/70" />
+                  </div>
+                  <div className="w-px h-3 bg-gradient-to-b from-success/20 to-transparent" />
+                </div>
+              )}
+
+              <VerticalClassificationStep
+                classificationLevel={index}
+                classificationRecord={classificationRecord}
+                onOpenExplore={onOpenExplore}
+              />
+            </div>
+          ))}
         </div>
       </CollapsibleSection>
 
