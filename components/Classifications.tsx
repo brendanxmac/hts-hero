@@ -397,8 +397,8 @@ export const Classifications = ({ page, setPage }: Props) => {
   // Show full screen loading when data is being loaded
   if (loader.isLoading) {
     return (
-      <main className="w-full h-full flex items-center justify-center bg-base-300">
-            <LoadingIndicator />
+      <main className="w-full min-h-[calc(100vh-4rem)] flex items-center justify-center bg-base-100">
+        <LoadingIndicator />
       </main>
     );
   }
@@ -419,7 +419,7 @@ export const Classifications = ({ page, setPage }: Props) => {
               backgroundSize: "32px 32px",
             }}
           />
-                  </div>
+        </div>
 
         <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 py-8 md:py-10">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -430,9 +430,7 @@ export const Classifications = ({ page, setPage }: Props) => {
                 Your Classification History
               </div>
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight">
-                <span className="text-base-content">
-                  Classifications
-                </span>
+                <span className="text-base-content">Classifications</span>
               </h1>
               <p className="text-base-content/70 text-sm md:text-base max-w-lg mt-1">
                 View, manage, and track your classifications.
@@ -463,11 +461,11 @@ export const Classifications = ({ page, setPage }: Props) => {
                   }}
                 >
                   <span className="relative z-10 flex items-center gap-2">
-                  {loadingUpgrade ? (
+                    {loadingUpgrade ? (
                       <span className="loading loading-spinner loading-sm"></span>
-                  ) : (
+                    ) : (
                       <BoltIcon className="h-4 w-4 text-secondary" />
-                  )}
+                    )}
                     <span className="text-secondary font-bold">Upgrade</span>
                   </span>
                 </button>
@@ -482,12 +480,12 @@ export const Classifications = ({ page, setPage }: Props) => {
                 }}
               >
                 <span className="relative z-10 flex items-center gap-2">
-                {loadingNewClassification ? (
+                  {loadingNewClassification ? (
                     <span className="loading loading-spinner loading-sm"></span>
-                ) : (
-                  <PlusIcon className="h-5 w-5" />
-                )}
-                New Classification
+                  ) : (
+                    <PlusIcon className="h-5 w-5" />
+                  )}
+                  New Classification
                 </span>
               </button>
             </div>
@@ -589,7 +587,7 @@ export const Classifications = ({ page, setPage }: Props) => {
                 <select
                   value={selectedUserId}
                   onChange={(e) => setSelectedUserId(e.target.value)}
-                  className="h-[42px] px-4 bg-base-100 rounded-xl border border-base-content/15 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40 cursor-pointer"
+                  className="select select-sm h-[42px] px-4 bg-base-100 rounded-xl border border-base-content/15 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40 cursor-pointer"
                 >
                   <option value="">All Users</option>
                   {teamUsers.map((user) => (
@@ -622,7 +620,7 @@ export const Classifications = ({ page, setPage }: Props) => {
               <select
                 value={selectedImporterId}
                 onChange={(e) => setSelectedImporterId(e.target.value)}
-                className="h-[42px] px-4 bg-base-100 rounded-xl border border-base-content/15 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40 cursor-pointer"
+                className="select select-sm h-[42px] px-4 bg-base-100 rounded-xl border border-base-content/15 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40 cursor-pointer"
               >
                 <option value="">All Importers</option>
                 <option value={UNASSIGNED_IMPORTER_VALUE}>Unassigned</option>
@@ -632,44 +630,44 @@ export const Classifications = ({ page, setPage }: Props) => {
                   </option>
                 ))}
               </select>
+            </div>
           </div>
         </div>
-      </div>
 
-      {filteredClassifications && filteredClassifications.length > 0 && (
-        <>
+        {filteredClassifications && filteredClassifications.length > 0 && (
+          <>
             {/* Results Separator */}
             <div className="flex items-center gap-4 my-2">
               <div className="flex-1 h-px bg-gradient-to-r from-transparent via-base-content/30 to-base-content/30"></div>
               <span className="text-xs font-semibold uppercase tracking-widest text-base-content/60">
-              {filteredClassifications.length}{" "}
-              {filteredClassifications.length === 1
-                ? "Classification"
-                : "Classifications"}
+                {filteredClassifications.length}{" "}
+                {filteredClassifications.length === 1
+                  ? "Classification"
+                  : "Classifications"}
               </span>
               <div className="flex-1 h-px bg-gradient-to-l from-transparent via-base-content/30 to-base-content/30"></div>
-          </div>
+            </div>
 
             <div className="flex flex-col gap-3 pb-6">
-            {filteredClassifications.map((classification, index) => (
-              <ClassificationSummary
-                key={`classification-${index}`}
-                classificationRecord={classification}
-                setPage={setPage}
-                user={userProfile}
-                onDelete={handleDeleteClassification}
-                isDeleting={deletingId === classification.id}
-              />
-            ))}
-          </div>
-        </>
-      )}
+              {filteredClassifications.map((classification, index) => (
+                <ClassificationSummary
+                  key={`classification-${index}`}
+                  classificationRecord={classification}
+                  setPage={setPage}
+                  user={userProfile}
+                  onDelete={handleDeleteClassification}
+                  isDeleting={deletingId === classification.id}
+                />
+              ))}
+            </div>
+          </>
+        )}
 
         {/* Empty State */}
-      {!loader.isLoading &&
-        !classificationsLoading &&
-        (() => {
-          const emptyStateConfig = getEmptyStateConfig();
+        {!loader.isLoading &&
+          !classificationsLoading &&
+          (() => {
+            const emptyStateConfig = getEmptyStateConfig();
             if (!emptyStateConfig) return null;
 
             return (
@@ -742,8 +740,8 @@ export const Classifications = ({ page, setPage }: Props) => {
                 </div>
               </div>
             );
-        })()}
-    </div>
+          })()}
+      </div>
     </main>
   );
 };

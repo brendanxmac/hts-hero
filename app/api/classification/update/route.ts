@@ -14,6 +14,7 @@ interface UpdateClassificationDto {
   importer_id?: string;
   classifier_id?: string;
   status?: ClassificationStatus;
+  country_of_origin?: string;
 }
 
 export async function POST(req: NextRequest) {
@@ -36,6 +37,7 @@ export async function POST(req: NextRequest) {
       importer_id,
       classifier_id,
       status,
+      country_of_origin,
     }: UpdateClassificationDto = await req.json();
 
     if (!id) {
@@ -51,7 +53,11 @@ export async function POST(req: NextRequest) {
     const updateData: Partial<
       Pick<
         ClassificationRecord,
-        "classification" | "importer_id" | "classifier_id" | "status"
+        | "classification"
+        | "importer_id"
+        | "classifier_id"
+        | "status"
+        | "country_of_origin"
       >
     > = {};
 
@@ -66,6 +72,9 @@ export async function POST(req: NextRequest) {
     }
     if (status !== undefined) {
       updateData.status = status;
+    }
+    if (country_of_origin !== undefined) {
+      updateData.country_of_origin = country_of_origin;
     }
     // Don't proceed if no fields to update
     if (Object.keys(updateData).length === 0) {

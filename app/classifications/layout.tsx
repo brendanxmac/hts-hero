@@ -24,7 +24,7 @@ export default async function LayoutPrivate({
 
   return (
     <ClassifyTabProvider>
-      <div className="h-screen flex flex-col">
+      <div className="h-screen overflow-y-auto">
         {user ? <AuthenticatedHeader /> : <UnauthenticatedHeader />}
         {children}
       </div>

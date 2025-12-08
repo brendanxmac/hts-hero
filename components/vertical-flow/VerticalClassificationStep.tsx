@@ -288,9 +288,9 @@ export const VerticalClassificationStep = ({
 
   const getStepDescription = (level: number) => {
     if (level === 0) {
-      return "Find & select the most suitable heading for the item";
+      return "Find & select the most suitable candidate for the item";
     } else {
-      return "Which child of your previous selection best fits the item description?";
+      return "Which next candidate best fits the item description?";
     }
   };
 

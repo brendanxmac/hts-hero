@@ -1,56 +1,72 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useClassification } from "../../contexts/ClassificationContext";
-import { downloadClassificationReport } from "../../libs/hts";
+import { useClassifications } from "../../contexts/ClassificationsContext";
+import { useHts } from "../../contexts/HtsContext";
 import { PDFProps } from "../../interfaces/ui";
 import PDF from "../PDF";
 import {
-  ArrowDownTrayIcon,
-  TrashIcon,
   CheckCircleIcon,
   TagIcon,
   DocumentTextIcon,
+  GlobeAltIcon,
+  CurrencyDollarIcon,
+  ChevronDownIcon,
 } from "@heroicons/react/16/solid";
 import { UserProfile, UserRole } from "../../libs/supabase/user";
-import { Element } from "../Element";
 import {
   fetchImportersForUser,
   fetchImportersForTeam,
   createImporter,
 } from "../../libs/supabase/importers";
-import { ClassificationStatus, Importer } from "../../interfaces/hts";
-import { useClassifications } from "../../contexts/ClassificationsContext";
 import {
-  updateClassification,
-  deleteClassification,
-} from "../../libs/classification";
+  ClassificationRecord,
+  HtsElement,
+  Importer,
+} from "../../interfaces/hts";
+import { updateClassification } from "../../libs/classification";
 import Modal from "../Modal";
 import ImporterDropdown from "../ImporterDropdown";
-import toast from "react-hot-toast";
 import { ClassifyPage } from "../../enums/classify";
+import { CollapsibleSection } from "../CollapsibleSection";
+import { CountrySelection } from "../CountrySelection";
+import { Countries, Country } from "../../constants/countries";
+import { CountryTariff } from "../CountryTariff";
+import {
+  addTariffsToCountry,
+  CountryWithTariffs,
+  TariffsList,
+  tariffIsApplicableToCode,
+} from "../../tariffs/tariffs";
+import { ContentRequirementI } from "../Element";
+import { ContentRequirements } from "../../enums/tariff";
+import { getHtsElementParents } from "../../libs/hts";
+import { NumberInput } from "../NumberInput";
+import { PercentageInput } from "../PercentageInput";
+import { SecondaryLabel } from "../SecondaryLabel";
+import { VerticalClassificationStep } from "./VerticalClassificationStep";
 
 interface Props {
   userProfile: UserProfile;
   setPage: (page: ClassifyPage) => void;
+  classificationRecord?: ClassificationRecord;
+  onOpenExplore: () => void;
 }
 
 export const VerticalClassificationResult = ({
   userProfile,
   setPage,
+  classificationRecord,
+  onOpenExplore,
 }: Props) => {
   const { classification, setClassification, classificationId } =
     useClassification();
-  const { classifications, refreshClassifications } = useClassifications();
+  const { refreshClassifications } = useClassifications();
+  const { htsElements } = useHts();
   const { levels } = classification;
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
   const element = classification.levels[levels.length - 1]?.selection;
-  const [loading, setLoading] = useState(false);
-  const [updatingClassificationStatus, setUpdatingClassificationStatus] =
-    useState(false);
-  let classificationRecord = classifications.find(
-    (c) => c.id === classificationId
-  );
 
   const canUpdateDetails =
     userProfile.role === UserRole.ADMIN ||
@@ -63,29 +79,35 @@ export const VerticalClassificationResult = ({
   const [newImporter, setNewImporter] = useState("");
   const [isCreatingImporter, setIsCreatingImporter] = useState(false);
   const [showCreateImporterModal, setShowCreateImporterModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
 
-  // User can delete if they are the owner and the classification is in draft status
-  const canDelete =
-    userProfile.id === classificationRecord?.user_id &&
-    classificationRecord?.status === ClassificationStatus.DRAFT;
-
-  const handleDeleteClassification = async () => {
-    if (!classificationRecord) return;
-    try {
-      setIsDeleting(true);
-      await deleteClassification(classificationRecord.id);
-      toast.success("Classification deleted");
-      await refreshClassifications();
-      setPage(ClassifyPage.CLASSIFICATIONS);
-    } catch (error) {
-      // Error is already handled by apiClient
-    } finally {
-      setIsDeleting(false);
-      setShowDeleteModal(false);
+  // Tariff calculation state - initialize from classificationRecord if available
+  const [selectedCountry, setSelectedCountry] = useState<Country | null>(() => {
+    if (classificationRecord?.country_of_origin) {
+      return (
+        Countries.find(
+          (c) => c.code === classificationRecord.country_of_origin
+        ) || null
+      );
     }
-  };
+    return null;
+  });
+  const [countryWithTariffs, setCountryWithTariffs] =
+    useState<CountryWithTariffs | null>(null);
+  const [tariffElement, setTariffElement] = useState<HtsElement | null>(null);
+  const [customsValue, setCustomsValue] = useState<number>(10000);
+  const [uiCustomsValue, setUiCustomsValue] = useState<number>(10000);
+  const [units, setUnits] = useState<number>(1000);
+  const [uiUnits, setUiUnits] = useState<number>(1000);
+  const [contentRequirements, setContentRequirements] = useState<
+    ContentRequirementI<ContentRequirements>[]
+  >([]);
+  const [uiContentPercentages, setUiContentPercentages] = useState<
+    ContentRequirementI<ContentRequirements>[]
+  >([]);
+
+  // Debounce refs
+  const customsValueTimeoutRef = useState<NodeJS.Timeout | null>(null);
+  const unitsTimeoutRef = useState<NodeJS.Timeout | null>(null);
 
   // Fetch importers on component mount
   useEffect(() => {
@@ -112,6 +134,79 @@ export const VerticalClassificationResult = ({
     fetchData();
   }, []);
 
+  // Find the tariff element (the element with actual tariff data)
+  const findTariffElement = useCallback(
+    (el: HtsElement): HtsElement => {
+      if (el.general || el.special || el.other) {
+        return el;
+      }
+      const parents = getHtsElementParents(el, htsElements);
+      for (let i = parents.length - 1; i >= 0; i--) {
+        const parent = parents[i];
+        if (parent.general || parent.special || parent.other) {
+          return parent;
+        }
+      }
+      return el;
+    },
+    [htsElements]
+  );
+
+  // Update content requirements when tariff element changes
+  useEffect(() => {
+    if (tariffElement) {
+      const codeBasedContentRequirements = Array.from(
+        TariffsList.filter((t) =>
+          tariffIsApplicableToCode(t, tariffElement.htsno)
+        ).reduce((acc, t) => {
+          if (t.contentRequirement) {
+            acc.add(t.contentRequirement.content);
+          }
+          return acc;
+        }, new Set<ContentRequirements>())
+      );
+
+      const newContentRequirements = codeBasedContentRequirements.map(
+        (contentRequirement) => ({
+          name: contentRequirement,
+          value: 80,
+        })
+      );
+      setContentRequirements(newContentRequirements);
+      setUiContentPercentages(newContentRequirements);
+    }
+  }, [tariffElement]);
+
+  // Update tariffs when element or country changes
+  useEffect(() => {
+    if (element && selectedCountry) {
+      const tariffEl = findTariffElement(element);
+      setTariffElement(tariffEl);
+
+      const newCountryWithTariffs = addTariffsToCountry(
+        selectedCountry,
+        element,
+        tariffEl,
+        contentRequirements,
+        undefined,
+        units,
+        customsValue
+      );
+      setCountryWithTariffs(newCountryWithTariffs);
+    } else {
+      setCountryWithTariffs(null);
+      setTariffElement(null);
+    }
+  }, [
+    element,
+    selectedCountry,
+    contentRequirements,
+    units,
+    customsValue,
+    findTariffElement,
+  ]);
+
+  // Handlers
   const handleAddImporter = async () => {
     if (!newImporter.trim()) return;
 
@@ -137,220 +232,376 @@ export const VerticalClassificationResult = ({
     }
   };
 
+  const handleCustomsValueChange = (value: number) => {
+    setUiCustomsValue(value);
+    if (customsValueTimeoutRef[0]) {
+      clearTimeout(customsValueTimeoutRef[0]);
+    }
+    const timeout = setTimeout(() => {
+      setCustomsValue(value);
+    }, 300);
+    customsValueTimeoutRef[1](timeout);
+  };
+
+  const handleUnitsChange = (value: number) => {
+    setUiUnits(value);
+    if (unitsTimeoutRef[0]) {
+      clearTimeout(unitsTimeoutRef[0]);
+    }
+    const timeout = setTimeout(() => {
+      setUnits(value);
+    }, 300);
+    unitsTimeoutRef[1](timeout);
+  };
+
+  const handleSliderChange = (
+    contentRequirement: ContentRequirements,
+    value: number
+  ) => {
+    setUiContentPercentages((prev) =>
+      prev.map((c) => (c.name === contentRequirement ? { ...c, value } : c))
+    );
+    setTimeout(() => {
+      setContentRequirements((prev) =>
+        prev.map((c) => (c.name === contentRequirement ? { ...c, value } : c))
+      );
+    }, 300);
+  };
+
+  // Get summary info for collapsed sections
+  const importerName = useMemo(() => {
+    if (!selectedImporterId) return "Not assigned";
+    const importer = importers.find((i) => i.id === selectedImporterId);
+    return importer?.name || "Not assigned";
+  }, [selectedImporterId, importers]);
+
+  const notesPreview = useMemo(() => {
+    if (!classification.notes) return "No notes";
+    return classification.notes.length > 50
+      ? classification.notes.substring(0, 50) + "..."
+      : classification.notes;
+  }, [classification.notes]);
+
   if (!element) {
     return null;
   }
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border-2 border-success/40 bg-success/10">
-      {/* Decorative background */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute -top-20 -right-20 w-64 h-64 bg-success/15 rounded-full blur-3xl" />
-        <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
-      </div>
+    <div className="flex flex-col gap-6">
+      {/* Classification Complete Section - Contains all levels */}
+      <CollapsibleSection
+        title="Classification Decisions"
+        subtitle="See each classification level and your decisions"
+        icon={<CheckCircleIcon className="w-5 h-5" />}
+        iconBgClass="bg-success/20"
+        iconTextClass="text-success"
+        summaryContent={
+          <span className="flex items-center gap-2 text-success font-semibold">
+            Complete
+          </span>
+        }
+        badge={
+          <span className="px-2 py-0.5 rounded-md text-xs font-semibold bg-success/20 text-success border border-success/30">
+            {levels.length} {levels.length === 1 ? "level" : "levels"}
+          </span>
+        }
+      >
+        <div className="flex flex-col">
+          {/* Classification Levels */}
+          {levels.map((level, index) => (
+            <div key={`level-${index}`}>
+              {/* Flow Connector - shows between levels */}
+              {index > 0 && (
+                <div className="flex flex-col items-center py-3">
+                  <div className="w-px h-3 bg-gradient-to-b from-success/30 to-success/20" />
+                  <div className="flex items-center justify-center w-6 h-6 rounded-full bg-success/15 border border-success/25">
+                    <ChevronDownIcon className="w-3 h-3 text-success/70" />
+                  </div>
+                  <div className="w-px h-3 bg-gradient-to-b from-success/20 to-transparent" />
+                </div>
+              )}
 
-      <div className="relative z-10 p-6">
-        {/* Step Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-success/25 border border-success/40">
-              <CheckCircleIcon className="w-5 h-5 text-success" />
+              <VerticalClassificationStep
+                classificationLevel={index}
+                classificationRecord={classificationRecord}
+                onOpenExplore={onOpenExplore}
+              />
             </div>
-            <div className="flex flex-col">
-              <span className="text-xs font-semibold uppercase tracking-widest text-success">
-                Classification Complete
-              </span>
-              <h2 className="text-xl font-bold text-base-content">
-                Final HTS Code: {element.htsno}
-              </h2>
-            </div>
-          </div>
-
-          {/* Status & Actions */}
-          <div className="flex flex-wrap gap-2 items-center">
-            {classificationRecord && (
-              <div className="relative">
-                <select
-                  className="h-[42px] px-4 bg-base-100 rounded-xl border border-base-content/15 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40 cursor-pointer font-semibold text-sm"
-                  value={classificationRecord.status}
-                  disabled={updatingClassificationStatus || !canUpdateDetails}
-                  onChange={async (e) => {
-                    const newStatus = e.target.value as ClassificationStatus;
-                    setUpdatingClassificationStatus(true);
-                    await updateClassification(
-                      classificationId,
-                      undefined,
-                      undefined,
-                      undefined,
-                      newStatus
-                    );
-                    await refreshClassifications();
-                    classificationRecord = classifications.find(
-                      (c) => c.id === classificationId
-                    );
-                    setUpdatingClassificationStatus(false);
-                  }}
-                >
-                  <option value={ClassificationStatus.DRAFT}>Draft</option>
-                  <option value={ClassificationStatus.REVIEW}>Review</option>
-                  <option value={ClassificationStatus.FINAL}>Final</option>
-                </select>
-                {updatingClassificationStatus && (
-                  <span className="loading loading-spinner loading-xs absolute right-10 top-1/2 -translate-y-1/2 text-primary"></span>
-                )}
-              </div>
-            )}
-            <button
-              className="group relative overflow-hidden px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 bg-primary text-primary-content hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={loading || isLoadingImporters}
-              onClick={async () => {
-                setLoading(true);
-                const importer = importers.find(
-                  (i) => i.id === selectedImporterId
-                );
-
-                await downloadClassificationReport(
-                  classificationRecord,
-                  userProfile,
-                  importer
-                );
-                setLoading(false);
-              }}
-            >
-              <span className="relative z-10 flex items-center gap-2">
-                {loading || isLoadingImporters ? (
-                  <span className="loading loading-spinner loading-sm"></span>
-                ) : (
-                  <ArrowDownTrayIcon className="w-4 h-4" />
-                )}
-                {loading ? "Downloading..." : "Download Report"}
-              </span>
-            </button>
-            {canDelete && (
-              <button
-                className="group flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 bg-error/15 border border-error/30 text-error hover:bg-error/25 hover:border-error/40 disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={() => setShowDeleteModal(true)}
-                disabled={isDeleting}
-                title="Delete classification"
-              >
-                {isDeleting ? (
-                  <span className="loading loading-spinner loading-sm"></span>
-                ) : (
-                  <TrashIcon className="w-4 h-4" />
-                )}
-                {isDeleting ? "Deleting..." : "Delete"}
-              </button>
-            )}
-          </div>
+          ))}
         </div>
+      </CollapsibleSection>
 
-        {/* Classification Details Card */}
-        <div className="rounded-xl border border-base-content/15 bg-base-100 p-6 mb-6">
-          <div className="flex flex-col gap-6">
-            {/* Importer Section */}
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-2">
-                <TagIcon className="w-5 h-5 text-primary" />
-                <span className="text-sm font-semibold uppercase tracking-wider text-base-content/80">
-                  Importer
-                </span>
-              </div>
-              <p className="text-sm text-base-content/60">
-                Select the importer or client that you are providing this
-                advisory to (optional)
-              </p>
-              <div className="flex gap-2">
-                <ImporterDropdown
-                  importers={importers}
-                  selectedImporterId={selectedImporterId}
-                  onSelectionChange={(value) => {
-                    setSelectedImporterId(value);
+      {/* Classification Details Section */}
+      <CollapsibleSection
+        title="Importer & Notes"
+        subtitle="Select the importer and add notes"
+        icon={<DocumentTextIcon className="w-5 h-5" />}
+        iconBgClass="bg-primary/20"
+        iconTextClass="text-primary"
+        summaryContent={
+          <span className="flex items-center gap-2">
+            <TagIcon className="w-3.5 h-3.5" />
+            {importerName}
+          </span>
+        }
+      >
+        <div className="flex flex-col gap-6">
+          {/* Importer Section */}
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-2">
+              <TagIcon className="w-4 h-4 text-primary" />
+              <span className="text-sm font-semibold uppercase tracking-wider text-base-content/80">
+                Importer
+              </span>
+            </div>
+            <p className="text-sm text-base-content/60">
+              Select the importer or client that you are providing this advisory
+              to (optional)
+            </p>
+            <div className="flex gap-2">
+              <ImporterDropdown
+                importers={importers}
+                selectedImporterId={selectedImporterId}
+                onSelectionChange={(value) => {
+                  setSelectedImporterId(value);
+                  updateClassification(
+                    classificationId,
+                    undefined,
+                    value || null,
+                    undefined
+                  );
+                }}
+                onCreateSelected={() => setShowCreateImporterModal(true)}
+                isLoading={isLoadingImporters}
+                disabled={!canUpdateDetails}
+                showCreateOption={canUpdateDetails}
+              />
+              {selectedImporterId && (
+                <button
+                  className="px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 bg-base-content/10 border border-base-content/15 hover:border-primary/40 hover:bg-primary/10 disabled:opacity-50"
+                  onClick={() => {
+                    setSelectedImporterId("");
                     updateClassification(
                       classificationId,
                       undefined,
-                      value || null,
+                      null,
                       undefined
                     );
                   }}
-                  onCreateSelected={() => setShowCreateImporterModal(true)}
-                  isLoading={isLoadingImporters}
-                  disabled={!canUpdateDetails}
-                  showCreateOption={canUpdateDetails}
-                />
-                {selectedImporterId && (
-                  <button
-                    className="px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 bg-base-content/10 border border-base-content/15 hover:border-primary/40 hover:bg-primary/10 disabled:opacity-50"
-                    onClick={() => {
-                      setSelectedImporterId("");
-                      updateClassification(
-                        classificationId,
-                        undefined,
-                        null,
-                        undefined
-                      );
-                    }}
-                    disabled={isLoadingImporters || !canUpdateDetails}
-                    title="Clear selected importer"
-                  >
-                    Clear
-                  </button>
-                )}
-              </div>
+                  disabled={isLoadingImporters || !canUpdateDetails}
+                  title="Clear selected importer"
+                >
+                  Clear
+                </button>
+              )}
             </div>
+          </div>
 
-            {/* Divider */}
-            <div className="flex items-center gap-4">
-              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-base-content/15 to-base-content/15"></div>
+          {/* Divider */}
+          <div className="h-px bg-gradient-to-r from-transparent via-base-content/15 to-base-content/15" />
+
+          {/* Notes Section */}
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-2">
+              <DocumentTextIcon className="w-4 h-4 text-primary" />
+              <span className="text-sm font-semibold uppercase tracking-wider text-base-content/80">
+                Basis for Classification
+              </span>
             </div>
+            <p className="text-sm text-base-content/60">
+              Add any notes about your classification here. They will be
+              included in your classification advisory.
+            </p>
+            <textarea
+              className="min-h-36 w-full px-4 py-3 rounded-xl bg-base-200/50 border border-base-content/15 transition-all duration-200 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40 resize-none text-base"
+              placeholder="Add any notes about your classification here..."
+              value={classification.notes || ""}
+              disabled={!canUpdateDetails}
+              onChange={(e) => {
+                setClassification({
+                  ...classification,
+                  notes: e.target.value,
+                });
+              }}
+            />
+          </div>
+        </div>
+      </CollapsibleSection>
 
-            {/* Notes Section */}
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-2">
-                <DocumentTextIcon className="w-5 h-5 text-primary" />
-                <span className="text-sm font-semibold uppercase tracking-wider text-base-content/80">
-                  Basis for Classification
-                </span>
-              </div>
-              <p className="text-sm text-base-content/60">
-                Add any notes about your classification here. They will be
-                included in your classification advisory.
-              </p>
-              <textarea
-                className="min-h-36 w-full px-4 py-3 rounded-xl bg-base-200/50 border border-base-content/15 transition-all duration-200 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40 resize-none text-base"
-                placeholder="Add any notes about your classification here..."
-                value={classification.notes || ""}
-                disabled={!canUpdateDetails}
-                onChange={(e) => {
-                  setClassification({
-                    ...classification,
-                    notes: e.target.value,
-                  });
+      {/* Tariffs & Duties Section */}
+      <CollapsibleSection
+        title="Tariffs & Duties"
+        subtitle="See import cost estimates for any country of origin"
+        icon={<CurrencyDollarIcon className="w-5 h-5" />}
+        iconBgClass="bg-secondary/20"
+        iconTextClass="text-secondary"
+        summaryContent={
+          selectedCountry ? (
+            <span className="flex items-center gap-2">
+              <span className="text-lg">{selectedCountry.flag}</span>
+              {selectedCountry.name}
+            </span>
+          ) : (
+            <span className="text-base-content/50">No country selected</span>
+          )
+        }
+      >
+        <div className="flex flex-col gap-5">
+          {/* Country & Value Inputs */}
+          <div className="flex flex-col md:flex-row gap-4">
+            {/* Country Selection */}
+            <div className="flex-1 flex flex-col gap-2">
+              <SecondaryLabel value="Country of Origin" />
+              <CountrySelection
+                singleSelect
+                selectedCountries={selectedCountry ? [selectedCountry] : []}
+                setSelectedCountries={(countries) => {
+                  const country = countries[0] || null;
+                  setSelectedCountry(country);
+                  // Save country_of_origin to the classification record
+                  if (classificationId) {
+                    updateClassification(
+                      classificationId,
+                      undefined,
+                      undefined,
+                      undefined,
+                      undefined,
+                      country?.code || undefined
+                    );
+                  }
                 }}
               />
             </div>
-          </div>
-        </div>
 
-        {/* HTS Code Section */}
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-2">
-            <span className="inline-block w-8 h-px bg-primary/60" />
-            <span className="text-xs font-semibold uppercase tracking-widest text-primary">
-              HTS Code & Tariff Details
-            </span>
+            {/* Customs Value */}
+            <div className="flex-1 flex flex-col gap-2">
+              <SecondaryLabel value="Customs Value (USD)" />
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-base-content/50 font-semibold pointer-events-none">
+                  $
+                </span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  className="w-full h-[45px] pl-7 pr-3 bg-base-200/50 rounded-xl border border-base-content/10 transition-all duration-200 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield] placeholder:text-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 hover:border-primary/30 hover:bg-base-200/70 font-semibold"
+                  value={uiCustomsValue}
+                  onChange={(e) => {
+                    const rawValue = e.target.value;
+                    // Only allow numeric characters and decimal point
+                    if (rawValue !== "" && !/^\d*\.?\d*$/.test(rawValue))
+                      return;
+                    const numValue = rawValue === "" ? 0 : Number(rawValue);
+                    handleCustomsValueChange(numValue);
+                  }}
+                />
+              </div>
+            </div>
           </div>
-          <h3 className="text-xl font-bold text-base-content">
-            Complete Tariff Information
-          </h3>
-          <p className="text-base-content/70 text-sm max-w-lg">
-            View the complete tariff information for your classified item
-          </p>
 
-          <div className="rounded-xl border border-base-content/15 bg-base-100 p-6">
-            <Element element={element} />
-          </div>
+          {/* Units and Content Requirements (conditional) */}
+          {countryWithTariffs &&
+            (countryWithTariffs.baseTariffs
+              ?.flatMap((t) => t.tariffs)
+              ?.some((t) => t.type === "amount") ||
+              uiContentPercentages.length > 0) && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Units Input */}
+                {countryWithTariffs.baseTariffs
+                  ?.flatMap((t) => t.tariffs)
+                  ?.some((t) => t.type === "amount") && (
+                  <div className="flex flex-col gap-2">
+                    <SecondaryLabel value="Amount / Units / Weight" />
+                    <NumberInput
+                      value={uiUnits}
+                      setValue={handleUnitsChange}
+                      min={0}
+                      subtext={
+                        element &&
+                        tariffElement &&
+                        (element.units.length > 0 ||
+                          tariffElement.units.length > 0)
+                          ? `${[...element.units, ...tariffElement.units]
+                              .reduce((acc: string[], unit: string) => {
+                                if (!acc.includes(unit)) {
+                                  acc.push(unit);
+                                }
+                                return acc;
+                              }, [])
+                              .join(",")}`
+                          : ""
+                      }
+                    />
+                  </div>
+                )}
+
+                {/* Content Percentage Inputs */}
+                {uiContentPercentages.map((contentPercentage) => (
+                  <div
+                    key={`${contentPercentage.name}-content-requirement`}
+                    className="flex flex-col gap-2"
+                  >
+                    <SecondaryLabel
+                      value={`${contentPercentage.name} Value Percentage`}
+                    />
+                    <PercentageInput
+                      value={contentPercentage.value}
+                      onChange={(value) =>
+                        handleSliderChange(contentPercentage.name, value)
+                      }
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+
+          {/* Tariff Results */}
+          {selectedCountry && countryWithTariffs && tariffElement ? (
+            <div className="mt-2">
+              <CountryTariff
+                units={units}
+                customsValue={customsValue}
+                country={countryWithTariffs}
+                htsElement={element}
+                tariffElement={tariffElement}
+                contentRequirements={contentRequirements}
+                countryIndex={0}
+                countries={[countryWithTariffs]}
+                setCountries={(updater) => {
+                  const updated =
+                    typeof updater === "function"
+                      ? updater([countryWithTariffs])
+                      : updater;
+                  setCountryWithTariffs(updated[0] || null);
+                }}
+                isModal={false}
+              />
+            </div>
+          ) : (
+            /* Empty state - prompt to select country */
+            <div className="relative overflow-hidden flex flex-col items-center justify-center py-12 px-6 rounded-xl border border-base-content/10 bg-gradient-to-br from-base-200/60 via-base-100 to-base-200/60">
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute -top-16 -left-16 w-48 h-48 bg-secondary/10 rounded-full blur-3xl" />
+                <div className="absolute -bottom-16 -right-16 w-48 h-48 bg-primary/10 rounded-full blur-3xl" />
+              </div>
+
+              <div className="relative z-10 flex flex-col items-center gap-4">
+                <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-secondary/15 border border-secondary/25">
+                  <GlobeAltIcon className="w-7 h-7 text-secondary" />
+                </div>
+                <div className="text-center">
+                  <h4 className="text-lg font-bold text-base-content">
+                    Select a Country of Origin
+                  </h4>
+                  <p className="text-sm text-base-content/60 mt-1 max-w-sm">
+                    Select the country of origin for this item to see applicable
+                    tariffs and import duties.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-      </div>
+      </CollapsibleSection>
 
       {showPDF && (
         <PDF
@@ -415,62 +666,6 @@ export const VerticalClassificationResult = ({
           </div>
         </div>
       </Modal>
-
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && (
-        <div
-          className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50"
-          onClick={() => setShowDeleteModal(false)}
-        >
-          <div
-            className="relative overflow-hidden bg-base-100 rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl border border-base-content/15"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Decorative background */}
-            <div className="absolute inset-0 pointer-events-none">
-              <div className="absolute -top-20 -right-20 w-40 h-40 bg-error/15 rounded-full blur-3xl" />
-            </div>
-
-            <div className="relative z-10">
-              {/* Icon */}
-              <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-error/20 border border-error/30 mb-4">
-                <TrashIcon className="h-6 w-6 text-error" />
-              </div>
-
-              <h3 className="text-xl font-bold text-base-content mb-2">
-                Delete Classification
-              </h3>
-              <p className="text-base-content/70 mb-6 leading-relaxed">
-                Are you sure you want to delete this classification? This action
-                cannot be undone.
-              </p>
-
-              <div className="flex justify-end gap-3">
-                <button
-                  className="px-4 py-2 rounded-xl font-semibold text-sm text-base-content/80 hover:text-base-content hover:bg-base-content/10 transition-all duration-200"
-                  onClick={() => setShowDeleteModal(false)}
-                  disabled={isDeleting}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="px-4 py-2 rounded-xl font-semibold text-sm bg-error text-error-content hover:bg-error/90 hover:shadow-lg hover:shadow-error/30 transition-all duration-200"
-                  onClick={handleDeleteClassification}
-                  disabled={isDeleting}
-                >
-                  {isDeleting ? (
-                    <span className="loading loading-spinner loading-xs"></span>
-                  ) : (
-                    "Delete"
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
-
-

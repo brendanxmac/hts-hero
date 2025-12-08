@@ -25,16 +25,12 @@ export const ClassifyController = () => {
   return (
     <UserProvider>
       <ClassificationsProvider>
-        <div className="h-full w-full bg-base-100">
-          <div className="h-full w-full bg-base-100 overflow-hidden">
-            {page === ClassifyPage.CLASSIFICATIONS ? (
-              <div className="h-full w-full overflow-y-scroll">
-                <Classifications page={page} setPage={setPage} />
-              </div>
-            ) : (
-              <Classify key={`classify-${page}`} setPage={setPage} />
-            )}
-          </div>
+        <div className="w-full bg-base-100">
+          {page === ClassifyPage.CLASSIFICATIONS ? (
+            <Classifications page={page} setPage={setPage} />
+          ) : (
+            <Classify key={`classify-${page}`} setPage={setPage} />
+          )}
         </div>
       </ClassificationsProvider>
     </UserProvider>

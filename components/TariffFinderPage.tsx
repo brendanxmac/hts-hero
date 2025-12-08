@@ -447,12 +447,6 @@ export const TariffFinderPage = () => {
                 <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
                 <span className="text-base-content/70">Updated Dec 2025</span>
               </div>
-              {/* <div className="flex items-center gap-2 text-sm">
-                <div className="w-2 h-2 rounded-full bg-primary" />
-                <span className="text-base-content/70">
-                  All tariffs included
-                </span>
-              </div> */}
             </div>
           </div>
         </div>
@@ -505,13 +499,17 @@ export const TariffFinderPage = () => {
                 $
               </span>
               <input
-                type="number"
+                type="text"
+                inputMode="numeric"
                 className="w-full h-[45px] pl-7 pr-3 bg-base-200/50 rounded-xl border border-base-content/10 transition-all duration-200 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield] placeholder:text-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 hover:border-primary/30 hover:bg-base-200/70 font-semibold"
                 value={uiCustomsValue}
-                onChange={(e) =>
-                  handleCustomsValueChange(Number(e.target.value))
-                }
-                min={0}
+                onChange={(e) => {
+                  const rawValue = e.target.value;
+                  // Only allow numeric characters and decimal point
+                  if (rawValue !== "" && !/^\d*\.?\d*$/.test(rawValue)) return;
+                  const numValue = rawValue === "" ? 0 : Number(rawValue);
+                  handleCustomsValueChange(numValue);
+                }}
               />
             </div>
           </div>

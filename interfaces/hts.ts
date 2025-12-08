@@ -155,6 +155,7 @@ export interface ClassificationRecord {
   updated_at: string;
   revision: string;
   status: ClassificationStatus;
+  country_of_origin?: string;
 }
 
 export interface Classification {

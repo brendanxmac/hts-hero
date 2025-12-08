@@ -9,6 +9,7 @@ import {
   ClassificationRecord,
   ClassificationStatus,
 } from "../interfaces/hts";
+import { Countries } from "../constants/countries";
 import { formatHumanReadableDate } from "../libs/date";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { UserProfile } from "../libs/supabase/user";
@@ -29,23 +30,22 @@ interface Props {
   isDeleting?: boolean;
 }
 
-const getLastDecision = (decisions: ClassificationProgression[]) => {
-  return decisions[decisions.length - 1];
+const getLatestHtsNo = (levels: ClassificationProgression[]): string | null => {
+  // Iterate from the end to find the latest level with a valid htsno
+  for (let i = levels.length - 1; i >= 0; i--) {
+    const selection = levels[i].selection;
+    if (selection?.htsno) {
+      return selection.htsno;
+    }
+  }
+  return null;
 };
 
-const getFinalClassificationElement = (
-  decisions: ClassificationProgression[]
-) => {
-  if (decisions.length === 0) {
-    return null;
-  }
-
-  const lastDecision = getLastDecision(decisions);
-
-  if (!lastDecision) {
-    return null;
-  }
-  return lastDecision.selection;
+const isFull10DigitHtsNo = (htsno: string | null): boolean => {
+  if (!htsno) return false;
+  // Remove periods and check if we have 10 digits
+  const digitsOnly = htsno.replace(/\./g, "");
+  return digitsOnly.length === 10;
 };
 
 export const ClassificationSummary = ({
@@ -67,7 +67,12 @@ export const ClassificationSummary = ({
     currentUser?.id === classificationRecord.user_id &&
     classificationRecord.status === ClassificationStatus.DRAFT;
 
-  const finalElement = getFinalClassificationElement(classification.levels);
+  const latestHtsNo = getLatestHtsNo(classification.levels);
+
+  // Get country of origin info
+  const countryOfOrigin = classificationRecord.country_of_origin
+    ? Countries.find((c) => c.code === classificationRecord.country_of_origin)
+    : null;
 
   return (
     <>
@@ -113,16 +118,26 @@ export const ClassificationSummary = ({
         <div className="relative z-[1] p-5">
           {/* Top Row: HTS Code + Status Badges */}
           <div className="flex items-start justify-between gap-4 mb-3">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center">
               {/* HTS Code Badge */}
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/20 border border-primary/30">
-                <span className="text-sm font-bold text-primary">
-                  {finalElement ? finalElement.htsno : "Incomplete"}
-                </span>
-              </div>
+
+              <p className="text-sm font-bold text-primary">
+                {latestHtsNo ?? "Not Started"}
+              </p>
+
+              {/* Country of Origin Badge */}
+              {countryOfOrigin && (
+                <div className="flex items-center gap-1.5 px-2 py-1">
+                  <p className="text-xs text-base-content/40">|</p>
+                  <p className="text-base">{countryOfOrigin.flag}</p>
+                  <p className="text-sm font-semibold">
+                    {countryOfOrigin.name}
+                  </p>
+                </div>
+              )}
 
               {/* Incomplete indicator */}
-              {!finalElement && (
+              {!isFull10DigitHtsNo(latestHtsNo) && (
                 <span className="text-xs font-medium text-base-content/60 italic">
                   Incomplete
                 </span>
