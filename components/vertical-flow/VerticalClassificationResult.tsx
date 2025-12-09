@@ -653,7 +653,6 @@ export const VerticalClassificationResult = ({
                 classificationLevel={index}
                 classificationRecord={classificationRecord}
                 onOpenExplore={onOpenExplore}
-                isClassificationComplete={classification.isComplete}
               />
             </div>
           ))}

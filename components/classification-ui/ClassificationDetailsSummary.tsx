@@ -11,12 +11,13 @@ interface Props {
  * Shows the HTS code path with each selected code and full description
  */
 export function ClassificationDetailsSummary({ levels }: Props) {
-  // Filter to only levels that have a selection
+  // Filter to only levels that have a selection (with or without htsno)
   const selectionsWithData = levels
-    .filter((level) => level.selection?.htsno)
-    .map((level) => ({
-      htsno: level.selection!.htsno,
+    .filter((level) => level.selection)
+    .map((level, index) => ({
+      htsno: level.selection!.htsno || "-",
       description: level.selection!.description,
+      key: level.selection!.htsno || `level-${index}`,
     }));
 
   if (selectionsWithData.length === 0) {
@@ -30,7 +31,7 @@ export function ClassificationDetailsSummary({ levels }: Props) {
   return (
     <div className="flex flex-col gap-3">
       {selectionsWithData.map((selection) => (
-        <div key={selection.htsno} className="flex items-start gap-3">
+        <div key={selection.key} className="flex items-start gap-3">
           {/* HTS Code */}
           <span className="shrink-0 font-mono text-sm font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-lg">
             {selection.htsno}

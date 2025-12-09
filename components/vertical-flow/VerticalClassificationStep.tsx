@@ -1,7 +1,6 @@
 "use client";
 
 import { useClassification } from "../../contexts/ClassificationContext";
-import { LoadingIndicator } from "../LoadingIndicator";
 import { useEffect, useRef, useState } from "react";
 import { Loader } from "../../interfaces/ui";
 import {
@@ -37,14 +36,12 @@ export interface VerticalClassificationStepProps {
   classificationLevel: number;
   classificationRecord: ClassificationRecord;
   onOpenExplore: () => void;
-  isClassificationComplete?: boolean;
 }
 
 export const VerticalClassificationStep = ({
   classificationLevel,
   classificationRecord,
   onOpenExplore,
-  isClassificationComplete = false,
 }: VerticalClassificationStepProps) => {
   const [loading, setLoading] = useState<Loader>({
     isLoading: false,
