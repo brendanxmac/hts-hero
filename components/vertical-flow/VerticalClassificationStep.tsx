@@ -37,12 +37,14 @@ export interface VerticalClassificationStepProps {
   classificationLevel: number;
   classificationRecord: ClassificationRecord;
   onOpenExplore: () => void;
+  isClassificationComplete?: boolean;
 }
 
 export const VerticalClassificationStep = ({
   classificationLevel,
   classificationRecord,
   onOpenExplore,
+  isClassificationComplete = false,
 }: VerticalClassificationStepProps) => {
   const [loading, setLoading] = useState<Loader>({
     isLoading: false,

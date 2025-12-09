@@ -632,12 +632,14 @@ export const VerticalClassificationResult = ({
         }
         collapsedContent={<ClassificationDetailsSummary levels={levels} />}
       >
-        <div className="flex flex-col">
+        <div
+          className={`flex flex-col ${classification.isComplete ? "gap-2" : ""}`}
+        >
           {/* Classification Levels */}
           {levels.map((level, index) => (
             <div key={`level-${index}`}>
-              {/* Flow Connector - shows between levels */}
-              {index > 0 && (
+              {/* Flow Connector - shows between levels only when classification is not complete */}
+              {index > 0 && !classification.isComplete && (
                 <div className="flex flex-col items-center py-3">
                   <div className="w-px h-3 bg-gradient-to-b from-success/30 to-success/20" />
                   <div className="flex items-center justify-center w-6 h-6 rounded-full bg-success/15 border border-success/25">
@@ -651,6 +653,7 @@ export const VerticalClassificationResult = ({
                 classificationLevel={index}
                 classificationRecord={classificationRecord}
                 onOpenExplore={onOpenExplore}
+                isClassificationComplete={classification.isComplete}
               />
             </div>
           ))}
