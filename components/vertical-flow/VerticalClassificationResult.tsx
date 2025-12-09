@@ -396,25 +396,12 @@ export const VerticalClassificationResult = ({
             {/* Customs Value */}
             <div className="flex-1 flex flex-col gap-2">
               <SecondaryLabel value="Customs Value (USD)" />
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-base-content/50 font-semibold pointer-events-none">
-                  $
-                </span>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  className="w-full h-[45px] pl-7 pr-3 bg-base-200/50 rounded-xl border border-base-content/10 transition-all duration-200 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield] placeholder:text-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 hover:border-primary/30 hover:bg-base-200/70 font-semibold"
-                  value={uiCustomsValue}
-                  onChange={(e) => {
-                    const rawValue = e.target.value;
-                    // Only allow numeric characters and decimal point
-                    if (rawValue !== "" && !/^\d*\.?\d*$/.test(rawValue))
-                      return;
-                    const numValue = rawValue === "" ? 0 : Number(rawValue);
-                    handleCustomsValueChange(numValue);
-                  }}
-                />
-              </div>
+              <NumberInput
+                value={uiCustomsValue}
+                setValue={handleCustomsValueChange}
+                min={0}
+                prefix="$"
+              />
             </div>
           </div>
 
