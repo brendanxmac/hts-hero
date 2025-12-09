@@ -95,7 +95,7 @@ export const classifyPro: PricingPlanI = {
     { name: "Get Candidates for any Item" },
     { name: "GRI Analysis of all Candidates" },
     { name: "Discover Relevant CROSS Rulings" },
-    { name: "See the Latest Tariffs for any Import from any Country" },
+    { name: "See the Latest Tariffs for any Import" },
     { name: "Generate Client-Ready Advisory Reports" },
   ],
 };
@@ -113,7 +113,7 @@ export const classifyTeam: PricingPlanI = {
     { name: "Get Candidates for any Item" },
     { name: "GRI Analysis of all Candidates" },
     { name: "Discover Relevant CROSS Rulings" },
-    { name: "See the Latest Tariffs for any Import from any Country" },
+    { name: "See the Latest Tariffs for any Import" },
     { name: "Generate Client-Ready Advisory Reports" },
     { name: "See, Review, & Approve Your Team's Classifications" },
   ],

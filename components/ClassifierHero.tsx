@@ -13,8 +13,7 @@ const ClassifierHero = () => {
               <span className="underline decoration-primary">Minutes</span>
             </h1>
             <p className="text-sm sm:text-lg leading-relaxed font-medium">
-              Quickly turn product descriptions into polished classification
-              reports
+              Turn product descriptions into HTS Codes, insanely fast
             </p>
           </div>
 
