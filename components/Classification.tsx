@@ -207,7 +207,7 @@ export const Classification = ({ setPage }: ClassificationProps) => {
     <div className="min-h-full w-full bg-base-100">
       {/* Sticky Hero Header */}
       <div
-        className={`sticky top-0 z-50 transition-all duration-200 shadow-lg shadow-base-content/5 ${
+        className={`sticky top-0 z-40 transition-all duration-200 shadow-lg shadow-base-content/5 ${
           isScrolled
             ? "bg-base-100/95 backdrop-blur-md"
             : "bg-gradient-to-br from-base-200 via-base-100 to-base-200"
@@ -216,7 +216,7 @@ export const Classification = ({ setPage }: ClassificationProps) => {
         <AnimatedBackground isScrolled={isScrolled} />
 
         <div
-          className={`relative z-10 w-full max-w-4xl mx-auto px-6 transition-all duration-200 ${
+          className={`relative z-0 w-full max-w-4xl mx-auto px-6 transition-all duration-200 ${
             isScrolled ? "py-3" : "py-6 md:py-8"
           }`}
         >

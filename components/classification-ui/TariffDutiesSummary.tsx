@@ -43,18 +43,24 @@ export function TariffDutiesSummary({ selectedCountry, tariffRates }: Props) {
       <div className="flex items-center gap-2 flex-wrap">
         {tariffRates.map((rate, index) => (
           <div
-            key={rate.name}
+            key={rate.name || `rate-${index}`}
             className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-secondary/10 border border-secondary/20"
           >
-            <span className="text-xs md:text-sm font-medium text-base-content/60">
-              {rate.name}:
-            </span>
+            {rate.name && (
+              <span className="text-xs md:text-sm font-medium text-base-content/60">
+                {rate.name}:
+              </span>
+            )}
             <span className="text-sm md:text-base font-bold text-secondary">
               {rate.hasAmountTariffs && rate.amountRatesString && (
-                <span>{rate.amountRatesString} </span>
+                <span>{rate.amountRatesString}</span>
               )}
-              {rate.hasAmountTariffs && rate.rate > 0 && "+ "}
-              {rate.rate}%
+              {(rate.rate > 0 || !rate.hasAmountTariffs) && (
+                <span>
+                  {rate.hasAmountTariffs && rate.amountRatesString && "+ "}
+                  {rate.rate}%
+                </span>
+              )}
             </span>
           </div>
         ))}

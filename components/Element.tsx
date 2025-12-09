@@ -33,6 +33,7 @@ import { fetchUser, updateUserProfile } from "../libs/supabase/user";
 interface Props {
   summaryOnly?: boolean;
   element: HtsElement;
+  isModal?: boolean;
 }
 
 export interface ContentRequirementI<T> {
@@ -40,7 +41,11 @@ export interface ContentRequirementI<T> {
   value: number;
 }
 
-export const Element = ({ element, summaryOnly = false }: Props) => {
+export const Element = ({
+  element,
+  summaryOnly = false,
+  isModal = false,
+}: Props) => {
   const { user } = useUser();
   const { description, chapter, htsno } = element;
   const [children, setChildren] = useState<HtsElement[]>([]);
@@ -373,8 +378,8 @@ export const Element = ({ element, summaryOnly = false }: Props) => {
             </div>
           )}
 
-          {/* Tariff Finder Section */}
-          {htsno && htsno.replaceAll(".", "").length === 10 && (
+          {/* Tariff Finder Section - hidden when in modal */}
+          {!isModal && htsno && htsno.replaceAll(".", "").length === 10 && (
             <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-base-200/50 via-base-100 to-base-200/30 border border-base-content/10 p-5 sm:p-6">
               {/* Background decoration */}
               <div className="absolute -top-16 -right-16 w-48 h-48 bg-primary/5 rounded-full blur-3xl pointer-events-none" />

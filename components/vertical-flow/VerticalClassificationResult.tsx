@@ -335,8 +335,16 @@ export const VerticalClassificationResult = ({
         shouldIncludeBaseTariffs &&
         filteredBase.some((t) => t.type === "amount");
 
+      // For display name:
+      // - "Article" or empty -> empty string (no label prefix)
+      // - Content names -> remove " Content" suffix if present (e.g., "Aluminum Content" -> "Aluminum")
+      let displayName = "";
+      if (!isArticleSet) {
+        displayName = tariffSet.name.replace(/ Content$/i, "");
+      }
+
       return {
-        name: tariffSet.name || "Article",
+        name: displayName,
         rate: adValoremRate,
         hasAmountTariffs,
         amountRatesString: hasAmountTariffs
@@ -365,6 +373,7 @@ export const VerticalClassificationResult = ({
             tariffRates={tariffSummaryRates}
           />
         }
+        collapsedContentInline
       >
         <div className="flex flex-col gap-5">
           {/* Country & Value Inputs */}
@@ -417,7 +426,7 @@ export const VerticalClassificationResult = ({
                   ?.flatMap((t) => t.tariffs)
                   ?.some((t) => t.type === "amount") && (
                   <div className="flex flex-col gap-2">
-                    <SecondaryLabel value="Amount / Units / Weight" />
+                    <SecondaryLabel value="Units / Weight" />
                     <NumberInput
                       value={uiUnits}
                       setValue={handleUnitsChange}
@@ -584,12 +593,12 @@ export const VerticalClassificationResult = ({
                 Basis for Classification
               </span>
             </div>
-            {/* <p className="text-sm text-base-content/60">
-              Add any notes about your classification here. They will be
-              included in your classification advisory.
-            </p> */}
             <textarea
-              className="min-h-36 w-full px-4 py-3 rounded-xl bg-base-200/50 border border-base-content/15 transition-all duration-200 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40 resize-none text-base"
+              className={`min-h-36 w-full px-4 py-3 rounded-xl border transition-all duration-200 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 resize-none text-base ${
+                canUpdateDetails
+                  ? "bg-base-100 border-base-content/20 hover:border-primary/40"
+                  : "bg-base-200/50 border-base-content/15 cursor-not-allowed opacity-60"
+              }`}
               placeholder="Add any notes about your classification here"
               value={classification.notes || ""}
               disabled={!canUpdateDetails}

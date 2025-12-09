@@ -1,5 +1,11 @@
 import { useEffect, useState, useRef } from "react";
-import { ChevronDownIcon } from "@heroicons/react/16/solid";
+import {
+  ChevronDownIcon,
+  ChevronRightIcon,
+  LockClosedIcon,
+  GlobeAltIcon,
+  CheckCircleIcon,
+} from "@heroicons/react/16/solid";
 import {
   Countries,
   Country,
@@ -17,16 +23,14 @@ import {
   getBaseAmountTariffsText,
   get15PercentCountryTotalBaseRate,
 } from "../tariffs/tariffs";
-import { TertiaryText } from "./TertiaryText";
 import { classNames } from "../utilities/style";
 import React from "react";
 import { CountryTariff } from "./CountryTariff";
-import { SecondaryLabel } from "./SecondaryLabel";
-import { TertiaryLabel } from "./TertiaryLabel";
 import { CountrySelection } from "./CountrySelection";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import { NumberInput } from "./NumberInput";
+import { PercentageInput } from "./PercentageInput";
 
 interface Props {
   isPayingUser: boolean;
@@ -309,254 +313,309 @@ export const Tariffs = ({
           onClose={() => setIsModalOpen(false)}
         />
       )}
-      <div className="flex flex-col gap-2 md:gap-8 my-2">
-        {/* Show inputs for any content requirements based */}
-        {codeBasedContentRequirements.length > 0 && (
-          <div className="grow w-full flex flex-col md:flex-row gap-4">
-            {codeBasedContentRequirements.map((contentRequirement) => (
-              <div
-                key={`${contentRequirement}-content-requirement`}
-                className="w-full flex flex-col"
-              >
-                <SecondaryLabel
-                  value={`${contentRequirement} Value Percentage`}
-                />
-                <TertiaryText
-                  value={`What percent of the articles value is ${contentRequirement}?`}
-                />
-                <div className="flex gap-2 items-center mt-3">
-                  <input
-                    type="range"
-                    min={0}
-                    max="100"
-                    value={
-                      uiContentPercentages?.find(
-                        (c) => c.name === contentRequirement
-                      )?.value || 0
-                    }
-                    className="range range-primary range-sm p-1"
-                    onChange={(e) => {
-                      const value = parseInt(e.target.value);
-                      handleSliderChange(contentRequirement, value);
-                    }}
-                  />
-                  <TertiaryLabel
-                    value={`${
-                      uiContentPercentages?.find(
-                        (c) => c.name === contentRequirement
-                      )?.value || 0
-                    }%`}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
 
-        {sortedCountries.some(
-          (c) =>
-            c.baseTariffs
-              .flatMap((t) => t.tariffs)
-              .filter((t) => t.type === "amount").length > 0
-        ) && (
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <NumberInput
-              label="Amount / Units / Weight"
-              value={uiUnits}
-              setValue={handleUnitsChange}
-              min={0}
-              subtext={
-                htsElement.units.length > 0 || tariffElement.units.length > 0
-                  ? `${[...htsElement.units, ...tariffElement.units]
-                      .reduce((acc, unit) => {
-                        if (!acc.includes(unit)) {
-                          acc.push(unit);
+      <div className="flex flex-col gap-4">
+        {/* Inputs Section */}
+        {(codeBasedContentRequirements.length > 0 ||
+          sortedCountries.some(
+            (c) =>
+              c.baseTariffs
+                .flatMap((t) => t.tariffs)
+                .filter((t) => t.type === "amount").length > 0
+          )) && (
+          <div className="p-4 rounded-xl bg-base-200/50 border border-base-content/10">
+            <div className="flex flex-col gap-4">
+              {/* Content Requirements */}
+              {codeBasedContentRequirements.length > 0 && (
+                <div className="flex flex-col md:flex-row gap-4">
+                  {codeBasedContentRequirements.map((contentRequirement) => (
+                    <div
+                      key={`${contentRequirement}-content-requirement`}
+                      className="flex-1 flex flex-col gap-2"
+                    >
+                      <label className="text-xs font-semibold uppercase tracking-wider text-base-content/70">
+                        {contentRequirement} Value Percentage
+                      </label>
+                      <p className="text-xs text-base-content/50 -mt-1">
+                        What percent of the article&apos;s value is{" "}
+                        {contentRequirement}?
+                      </p>
+                      <PercentageInput
+                        value={
+                          uiContentPercentages?.find(
+                            (c) => c.name === contentRequirement
+                          )?.value || 0
                         }
-                        return acc;
-                      }, [])
-                      .join(",")}`
-                  : ""
-              }
-            />
-            <NumberInput
-              label="Customs Value (USD)"
-              value={uiCustomsValue}
-              setValue={handleCustomsValueChange}
-              min={0}
-            />
+                        onChange={(value) =>
+                          handleSliderChange(contentRequirement, value)
+                        }
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Units and Customs Value */}
+              {sortedCountries.some(
+                (c) =>
+                  c.baseTariffs
+                    .flatMap((t) => t.tariffs)
+                    .filter((t) => t.type === "amount").length > 0
+              ) && (
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="flex-1">
+                    <NumberInput
+                      label="Amount / Units / Weight"
+                      value={uiUnits}
+                      setValue={handleUnitsChange}
+                      min={0}
+                      subtext={
+                        htsElement.units.length > 0 ||
+                        tariffElement.units.length > 0
+                          ? `${[...htsElement.units, ...tariffElement.units]
+                              .reduce((acc, unit) => {
+                                if (!acc.includes(unit)) {
+                                  acc.push(unit);
+                                }
+                                return acc;
+                              }, [])
+                              .join(",")}`
+                          : ""
+                      }
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <NumberInput
+                      label="Customs Value (USD)"
+                      value={uiCustomsValue}
+                      setValue={handleCustomsValueChange}
+                      min={0}
+                      prefix="$"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
-        <div className="flex flex-col gap-2">
-          <CountrySelection
-            selectedCountries={selectedCountries}
-            setSelectedCountries={setSelectedCountries}
-          />
+        {/* Country Selection & Results */}
+        <div className="flex flex-col gap-3">
+          {/* Country Filter */}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <GlobeAltIcon className="h-4 w-4 text-primary/70" />
+              <span className="text-xs font-semibold uppercase tracking-wider text-base-content/70">
+                Filter by Country
+              </span>
+            </div>
+            <CountrySelection
+              selectedCountries={selectedCountries}
+              setSelectedCountries={setSelectedCountries}
+            />
+          </div>
 
-          <div className="w-full flex flex-col overflow-x-auto border border-base-content/50 rounded-lg">
-            <table className="table table-sm table-pin-cols bg-base-200">
-              <thead>
-                <tr>
-                  <th className="bg-base-200"></th>
-                  <th className="bg-base-200">Country of Origin</th>
-                  <th className="w-auto min-w-48 bg-base-200">
-                    <div className="flex gap-2 items-center">
-                      <h3>Tariff Rates</h3>
-                      <button
-                        className={classNames(
-                          `btn btn-xs p-0.5`,
-                          (sortBy === TariffsTableSortOption.RATE_ASC ||
-                            sortBy === TariffsTableSortOption.RATE_DESC) &&
-                            "btn-primary",
-                          !sortBy && "btn-ghost"
-                        )}
-                        onClick={() => {
-                          if (!sortBy) {
-                            setSortBy(TariffsTableSortOption.RATE_ASC);
-                          }
-                          if (sortBy === TariffsTableSortOption.RATE_ASC) {
-                            setSortBy(TariffsTableSortOption.RATE_DESC);
-                          }
-                          if (sortBy === TariffsTableSortOption.RATE_DESC) {
-                            setSortBy(null);
-                          }
-                        }}
-                      >
-                        <ChevronDownIcon
-                          className={classNames(
-                            "w-4 h-4",
-                            sortBy === TariffsTableSortOption.RATE_ASC &&
-                              "rotate-180"
-                          )}
-                        />
-                      </button>
-                    </div>
-                  </th>
-                  <th className="hidden md:table-cell max-w-48 bg-base-200">
-                    Special Trade Program(s)
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {sortedCountries.map((country, i) => {
-                  const adValoremEquivalentRate =
-                    get15PercentCountryTotalBaseRate(
-                      country.baseTariffs
-                        .flatMap((t) => t.tariffs)
-                        .filter((t) => {
-                          if (
-                            country.selectedTradeProgram &&
-                            country.selectedTradeProgram.symbol !== "none"
-                          ) {
-                            return t.programs?.includes(
-                              country.selectedTradeProgram.symbol
-                            );
-                          }
-                          return true;
-                        }),
-                      customsValue,
-                      units
-                    );
-                  const is15PercentCapCountry =
-                    EuropeanUnionCountries.includes(country.code) ||
-                    country.code === "JP";
+          {/* Results Header */}
+          <div className="flex items-center gap-4 mt-2">
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-base-content/20 to-base-content/20"></div>
+            <span className="text-xs font-semibold uppercase tracking-widest text-base-content/50">
+              {sortedCountries.length}{" "}
+              {sortedCountries.length === 1 ? "Country" : "Countries"}
+            </span>
+            <div className="flex-1 h-px bg-gradient-to-l from-transparent via-base-content/20 to-base-content/20"></div>
+          </div>
 
-                  const cappedBy15PercentRule =
-                    is15PercentCapCountry && adValoremEquivalentRate < 15;
+          {/* Sort Controls */}
+          <div className="flex items-center justify-end gap-2">
+            <span className="text-xs text-base-content/50">Sort:</span>
+            <button
+              className={classNames(
+                "flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200",
+                sortBy === TariffsTableSortOption.RATE_ASC ||
+                  sortBy === TariffsTableSortOption.RATE_DESC
+                  ? "bg-primary/15 text-primary border border-primary/30"
+                  : "bg-base-content/5 text-base-content/60 border border-base-content/10 hover:border-base-content/20"
+              )}
+              onClick={() => {
+                if (!sortBy) {
+                  setSortBy(TariffsTableSortOption.RATE_ASC);
+                }
+                if (sortBy === TariffsTableSortOption.RATE_ASC) {
+                  setSortBy(TariffsTableSortOption.RATE_DESC);
+                }
+                if (sortBy === TariffsTableSortOption.RATE_DESC) {
+                  setSortBy(null);
+                }
+              }}
+            >
+              {sortBy === TariffsTableSortOption.RATE_ASC
+                ? "Rate (Low to High)"
+                : sortBy === TariffsTableSortOption.RATE_DESC
+                  ? "Rate (High to Low)"
+                  : "Alphabetical"}
+              <ChevronDownIcon
+                className={classNames(
+                  "w-3.5 h-3.5 transition-transform duration-200",
+                  sortBy === TariffsTableSortOption.RATE_ASC && "rotate-180"
+                )}
+              />
+            </button>
+          </div>
 
-                  const countryBaseTariffs = country.baseTariffs.filter((t) => {
+          {/* Country Cards */}
+          <div className="flex flex-col gap-2">
+            {sortedCountries.map((country, i) => {
+              const adValoremEquivalentRate = get15PercentCountryTotalBaseRate(
+                country.baseTariffs
+                  .flatMap((t) => t.tariffs)
+                  .filter((t) => {
                     if (
                       country.selectedTradeProgram &&
                       country.selectedTradeProgram.symbol !== "none"
                     ) {
-                      return t.tariffs.some((t) =>
-                        t.programs?.includes(
-                          country.selectedTradeProgram.symbol
-                        )
+                      return t.programs?.includes(
+                        country.selectedTradeProgram.symbol
                       );
                     }
                     return true;
-                  });
+                  }),
+                customsValue,
+                units
+              );
+              const is15PercentCapCountry =
+                EuropeanUnionCountries.includes(country.code) ||
+                country.code === "JP";
 
-                  const countryAmounts =
-                    getBaseAmountTariffsText(countryBaseTariffs);
+              const cappedBy15PercentRule =
+                is15PercentCapCountry && adValoremEquivalentRate < 15;
 
-                  const countryPercentTariffsSums = country.tariffSets.map(
-                    (tariffSet) =>
-                      getTotalPercentTariffsSum(
-                        tariffSet,
-                        countryBaseTariffs,
-                        cappedBy15PercentRule
-                      )
+              const countryBaseTariffs = country.baseTariffs.filter((t) => {
+                if (
+                  country.selectedTradeProgram &&
+                  country.selectedTradeProgram.symbol !== "none"
+                ) {
+                  return t.tariffs.some((t) =>
+                    t.programs?.includes(country.selectedTradeProgram.symbol)
                   );
+                }
+                return true;
+              });
 
-                  return (
-                    <tr
-                      key={`${country.code}-${i}`}
-                      className="w-full cursor-pointer hover:bg-primary/80 hover:text-base-100 border-b border-base-content/40"
-                      onClick={() => handleRowClick(country)}
-                    >
-                      <td className="w-6"></td>
-                      <td>
-                        <div className="flex gap-3 items-center text-sm md:text-base">
-                          <h2 className="md:text-lg">{country.flag}</h2>
-                          <h2 className="md:text-lg font-medium">
-                            {country.name}
-                          </h2>
+              const countryAmounts =
+                getBaseAmountTariffsText(countryBaseTariffs);
+
+              const countryPercentTariffsSums = country.tariffSets.map(
+                (tariffSet) =>
+                  getTotalPercentTariffsSum(
+                    tariffSet,
+                    countryBaseTariffs,
+                    cappedBy15PercentRule
+                  )
+              );
+
+              return (
+                <div
+                  key={`${country.code}-${i}`}
+                  className="group relative overflow-hidden rounded-xl cursor-pointer transition-all duration-300 bg-base-100 border border-base-content/15 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 hover:scale-[1.01]"
+                  onClick={() => handleRowClick(country)}
+                >
+                  {/* Subtle gradient overlay on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+                  <div className="relative z-[1] p-3">
+                    <div className="flex items-center justify-between gap-4">
+                      {/* Country Info */}
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">{country.flag}</span>
+                        <div className="flex flex-col">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-base-content">
+                              {country.name}
+                            </span>
+                            {country.specialTradePrograms.length > 0 && (
+                              <>
+                                {/* Mobile: just show check icon */}
+                                <CheckCircleIcon className="sm:hidden h-4 w-4 text-success shrink-0" />
+                                {/* Desktop: show separator and text */}
+                                <span className="hidden sm:inline text-base-content/30">
+                                  |
+                                </span>
+                                <span className="hidden sm:inline text-xs text-success font-medium">
+                                  Trade Programs Available
+                                </span>
+                              </>
+                            )}
+                          </div>
                         </div>
-                      </td>
-                      <td>
-                        <div className="flex gap-2">
-                          {!isPayingUser && !isTariffImpactTrialUser ? (
-                            <Link
-                              href="/about/tariffs"
-                              target="_blank"
-                              className="link link-primary text-base-content hover:text-primary hover:underline"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              🔒 Get Pro to Unlock
-                            </Link>
-                          ) : (
-                            countryPercentTariffsSums.map((sum, i) => (
-                              <div
-                                key={`${country.code}-${i}-percent-sum-${i}`}
-                                className="flex gap-2 text-sm md:text-base"
-                              >
-                                <div className="flex gap-1">
-                                  {cappedBy15PercentRule ? null : countryAmounts &&
-                                    countryAmounts.length > 0 ? (
-                                    <p className="font-medium">
-                                      {countryAmounts} +
-                                    </p>
-                                  ) : null}
-                                  {<p className="font-medium">{sum}%</p>}
-                                  {i > 0 &&
-                                    codeBasedContentRequirements &&
-                                    codeBasedContentRequirements.length > 0 &&
-                                    uiContentPercentages[i - 1].name && (
-                                      <p className="">
-                                        for {uiContentPercentages[i - 1].name}
-                                      </p>
+                      </div>
+
+                      {/* Tariff Rate */}
+                      <div className="flex items-center gap-3">
+                        {!isPayingUser && !isTariffImpactTrialUser ? (
+                          <Link
+                            href="/about/tariffs"
+                            target="_blank"
+                            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-base-content/5 border border-base-content/10 hover:border-primary/30 hover:bg-primary/10 transition-all duration-200"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <LockClosedIcon className="h-4 w-4 text-primary" />
+                            <span className="text-sm font-semibold text-primary">
+                              Unlock
+                            </span>
+                          </Link>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            {countryPercentTariffsSums.map((sum, i) => {
+                              const rawName = country.tariffSets[i]?.name || "";
+                              const isArticle =
+                                rawName === "Article" || rawName === "";
+                              // Remove "Content" suffix and trim for content-based tariffs
+                              const displayName = isArticle
+                                ? null
+                                : rawName.replace(" Content", "");
+                              return (
+                                <div
+                                  key={`${country.code}-${i}-percent-sum-${i}`}
+                                  className="flex items-center gap-2"
+                                >
+                                  {i > 0 && (
+                                    <span className="text-base-content/30">
+                                      |
+                                    </span>
+                                  )}
+                                  <div className="flex items-center gap-1">
+                                    {displayName && (
+                                      <span className="text-xs text-base-content/50 font-medium">
+                                        {displayName}:
+                                      </span>
                                     )}
+                                    <span className="font-bold text-base-content">
+                                      {cappedBy15PercentRule
+                                        ? null
+                                        : countryAmounts &&
+                                          countryAmounts.length > 0 &&
+                                          i === 0 && (
+                                            <span className="text-sm">
+                                              {countryAmounts} +{" "}
+                                            </span>
+                                          )}
+                                      {sum}%
+                                    </span>
+                                  </div>
                                 </div>
-                                {countryPercentTariffsSums.length !== i + 1
-                                  ? "|"
-                                  : null}
-                              </div>
-                            ))
-                          )}
-                        </div>
-                      </td>
-                      <td className="hidden md:table-cell align-middle">
-                        <p className="text-lg">
-                          {country.specialTradePrograms.length > 0 ? "✅" : "−"}
-                        </p>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                              );
+                            })}
+                          </div>
+                        )}
+
+                        {/* Chevron */}
+                        <ChevronRightIcon className="h-5 w-5 text-base-content/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-200" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

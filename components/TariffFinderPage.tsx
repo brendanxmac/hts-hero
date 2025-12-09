@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { Countries, Country } from "../constants/countries";
 import { CountrySelection } from "./CountrySelection";
@@ -92,15 +92,58 @@ export const TariffFinderPage = () => {
     return 10000;
   };
 
+  // Parse initial units from URL params
+  const getInitialUnits = (): number => {
+    const unitsParam = searchParams.get("units");
+    if (unitsParam) {
+      const parsed = parseFloat(unitsParam);
+      if (!isNaN(parsed) && parsed >= 0) {
+        return parsed;
+      }
+    }
+    return 1000;
+  };
+
+  // Parse content percentages from URL params
+  // Maps URL-friendly keys back to ContentRequirements names
+  const getContentPercentagesFromUrl = (): Map<string, number> => {
+    const contentMap = new Map<string, number>();
+
+    // Check for each possible content type
+    const contentMappings: { urlKey: string; contentName: string }[] = [
+      { urlKey: "steel", contentName: "Steel" },
+      { urlKey: "aluminum", contentName: "Aluminum" },
+      { urlKey: "copper", contentName: "Copper" },
+      { urlKey: "uscontent", contentName: "U.S. Content" },
+    ];
+
+    contentMappings.forEach(({ urlKey, contentName }) => {
+      const value = searchParams.get(urlKey);
+      if (value) {
+        const parsed = parseFloat(value);
+        if (!isNaN(parsed) && parsed >= 0 && parsed <= 100) {
+          contentMap.set(contentName, parsed);
+        }
+      }
+    });
+
+    return contentMap;
+  };
+
   // UI states - update immediately for responsive feedback
-  const [uiUnits, setUiUnits] = useState<number>(1000);
+  const [uiUnits, setUiUnits] = useState<number>(getInitialUnits);
   const [uiCustomsValue, setUiCustomsValue] = useState<number>(
     getInitialCustomsValue
   );
   // Calculation states - update after debounce for expensive operations
-  const [units, setUnits] = useState<number>(1000);
+  const [units, setUnits] = useState<number>(getInitialUnits);
   const [customsValue, setCustomsValue] = useState<number>(
     getInitialCustomsValue
+  );
+
+  // Store URL-provided content percentages to apply after content requirements are determined
+  const [urlContentPercentages] = useState<Map<string, number>>(
+    getContentPercentagesFromUrl
   );
 
   // Timeout refs for debouncing
@@ -116,6 +159,9 @@ export const TariffFinderPage = () => {
     ContentRequirementI<ContentRequirements>[]
   >([]);
   const [showExploreModal, setShowExploreModal] = useState(false);
+
+  // Ref for scrolling to results section
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   // Handle element selection - only show tariffs for 8+ digit codes
   const handleElementSelection = useCallback(
@@ -185,13 +231,14 @@ export const TariffFinderPage = () => {
       const newContentRequirements = codeBasedContentRequirements.map(
         (contentRequirement) => ({
           name: contentRequirement,
-          value: 80,
+          // Use URL param value if available, otherwise default to 80
+          value: urlContentPercentages.get(contentRequirement) ?? 80,
         })
       );
       setContentRequirements(newContentRequirements);
       setUiContentPercentages(newContentRequirements);
     }
-  }, [selectedCountry, tariffElement]);
+  }, [selectedCountry, tariffElement, urlContentPercentages]);
 
   // Handlers with debouncing
   const handleSliderChange = (
@@ -363,6 +410,9 @@ export const TariffFinderPage = () => {
     [htsElements]
   );
 
+  // Track previous state to detect when results become available
+  const prevHadResults = useRef(false);
+
   // Update tariffs when element or country changes
   useEffect(() => {
     if (selectedElement && selectedCountry && sections.length > 0) {
@@ -393,6 +443,29 @@ export const TariffFinderPage = () => {
     findTariffElement,
   ]);
 
+  // Scroll to results when they first become available
+  useEffect(() => {
+    const hasResults = !!(
+      selectedElement &&
+      selectedCountry &&
+      countryWithTariffs &&
+      tariffElement
+    );
+
+    // Only scroll when transitioning from no results to having results
+    if (hasResults && !prevHadResults.current) {
+      // Small delay to ensure the DOM has updated
+      setTimeout(() => {
+        resultsRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    }
+
+    prevHadResults.current = hasResults;
+  }, [selectedElement, selectedCountry, countryWithTariffs, tariffElement]);
+
   if (loadingPage) {
     return (
       <main className="w-screen h-screen flex items-center justify-center bg-base-300">
@@ -419,7 +492,7 @@ export const TariffFinderPage = () => {
           />
         </div>
 
-        <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 py-8 md:py-10">
+        <div className="relative z-0 w-full max-w-5xl mx-auto px-4 sm:px-6 py-8 md:py-10">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             {/* Left side - Main headline */}
             <div className="flex flex-col gap-2">
@@ -511,7 +584,7 @@ export const TariffFinderPage = () => {
               ?.some((t) => t.type === "amount") && (
               <div className="col-span-1 flex flex-col gap-2">
                 <div className="flex flex-col">
-                  <SecondaryLabel value="Amount / Units / Weight" />
+                  <SecondaryLabel value="Units / Weight" />
                 </div>
                 <NumberInput
                   value={uiUnits}
@@ -559,14 +632,12 @@ export const TariffFinderPage = () => {
           )}
         </div>
 
-        {/* Element Ancestry Display */}
-
         {/* Separator */}
         {(selectedElement || selectedCountry) && (
-          <div className="flex items-center gap-4 my-4">
+          <div className="flex items-center gap-4 mt-8 mb-2">
             <div className="flex-1 h-px bg-gradient-to-r from-transparent via-base-content/20 to-base-content/20"></div>
             <span className="text-xs font-medium uppercase tracking-widest text-base-content/40">
-              Duty & Tariff Results
+              Duty & Tariffs
             </span>
             <div className="flex-1 h-px bg-gradient-to-l from-transparent via-base-content/20 to-base-content/20"></div>
           </div>
@@ -577,7 +648,7 @@ export const TariffFinderPage = () => {
           selectedCountry &&
           countryWithTariffs &&
           tariffElement && (
-            <div className="mt-4">
+            <div ref={resultsRef} className="mt-4 scroll-mt-4">
               <CountryTariff
                 units={units}
                 customsValue={customsValue}
@@ -620,7 +691,7 @@ export const TariffFinderPage = () => {
             </div>
 
             {/* Content */}
-            <div className="relative z-10 flex flex-col items-center gap-6">
+            <div className="relative z-0 flex flex-col items-center gap-6">
               {/* Icon with animated ring */}
               <div className="relative">
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary via-secondary to-accent opacity-20 blur-xl animate-pulse" />
@@ -685,7 +756,7 @@ export const TariffFinderPage = () => {
         <dialog className="modal modal-open">
           <div className="modal-box w-11/12 max-w-7xl h-[90vh] p-0 flex flex-col">
             <div className="flex items-center justify-between p-4 border-b border-base-content/10">
-              <h3 className="font-bold text-lg">Explore HTS Codes</h3>
+              <h3 className="font-bold text-lg">Search HTS Codes</h3>
               <button
                 type="button"
                 onClick={() => setShowExploreModal(false)}
@@ -695,7 +766,7 @@ export const TariffFinderPage = () => {
               </button>
             </div>
             <div className="flex-1 overflow-y-auto">
-              <Explore />
+              <Explore isModal />
             </div>
           </div>
           <form method="dialog" className="modal-backdrop">
