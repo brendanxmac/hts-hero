@@ -20,8 +20,8 @@ const AboutHeader = () => {
     label: string;
   }[] = [
     {
-      href: "/tariff-finder",
-      label: "Tariff Finder",
+      href: "/tariff-calculator",
+      label: "Tariff Calculator",
     },
     {
       href: `#features`,

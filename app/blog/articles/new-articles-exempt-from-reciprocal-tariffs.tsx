@@ -121,7 +121,7 @@ const Article = (
         To find the latest correct tariffs for any import from any country,
         checkout our{" "}
         <Link href="/about/tariffs" className="link link-primary font-bold">
-          Tariff Finder
+          Tariff Calculator
         </Link>
         . All you need to do is plug in your HTS code and you will see every
         tariff that could apply to that item.

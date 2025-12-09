@@ -53,15 +53,15 @@ const UnauthenticatedTariffsHeader = () => {
             </span> */}
           </Link>
           <div className="flex items-center justify-start gap-4">
-            <Link href="/tariff-finder">
+            <Link href="/tariff-calculator">
               <button
                 className={`btn btn-link px-0 gap-0 ${
-                  pathname === "/tariff-finder"
+                  pathname === "/tariff-calculator"
                     ? "text-primary underline"
                     : "text-base-content no-underline"
                 }`}
               >
-                Tariff Finder
+                Tariff Calculator
               </button>
             </Link>
             <Link href="/about">

@@ -2,12 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import LetsTalkModal from "../components/LetsTalkModal";
 import Pricing from "../components/Pricing";
 import { useUser } from "../contexts/UserContext";
 import { AboutPage } from "../enums/classify";
 import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
+import { AuthenticatedHeader } from "../components/AuthenticatedHeader";
+import UnauthenticatedHeader from "../components/UnauthenticatedHeader";
 
 interface ProductCardI {
   emoji: string;
@@ -42,37 +44,44 @@ interface ProductSectionData {
 const productSections: ProductSectionData[] = [
   {
     emoji: "💰",
-    title: "Tariff Finder",
-    tagline: "Find the Best Rate",
+    title: "Tariff Calculator",
+    tagline: "Master Tariffs & Discover Savings",
     description:
-      "Stop guessing at tariff rates. Instantly see the complete tariff breakdown for any HTS code from nearly 200 countries—including automatic tariff stacking, exemptions, and trade programs.",
+      "See the complete tariff breakdown for any US import and discover ways to save with exemptions and special trade programs.",
     features: [
       {
         icon: "🌍",
-        title: "Global Coverage",
+        title: "Know your Costs",
         description:
-          "See tariff rates for imports from ~200 countries with a single search",
+          "See the landed cost, duty rates, and itemized tariffs for any import from any country",
       },
-      {
-        icon: "📊",
-        title: "Smart Stacking",
-        description:
-          "Automatically calculates cumulative tariffs from all applicable programs",
-      },
+      // {
+      //   icon: "📊",
+      //   title: "Smart Stacking",
+      //   description:
+      //     "Skip the math & see the final tariff rates with tariff stacking rules applied",
+      // },
       {
         icon: "💡",
         title: "Discover Savings",
         description:
-          "Surface exemptions and trade programs you might be eligible for",
+          "Find exemptions and trade programs you might be eligible for",
+      },
+      {
+        icon: "💡",
+        title: "Share Your Results",
+        description:
+          "Share your tariff & duty details with clients and colleagues in a single click",
       },
       {
         icon: "⚡",
-        title: "Always Current",
-        description: "Updated with the latest tariff announcements and changes",
+        title: "Stay Up to Date",
+        description:
+          "Updated with the latest tariff announcements, changes, and rules",
       },
     ],
     aboutUrl: "/about/tariffs",
-    appUrl: "/tariff-finder",
+    appUrl: "/tariff-calculator",
     cta: "Find Tariffs",
     accentColor: "primary",
     media: {
@@ -83,21 +92,20 @@ const productSections: ProductSectionData[] = [
   {
     emoji: "🎯",
     title: "Classification Assistant",
-    tagline: "Classify Smarter, Not Harder",
+    tagline: "Classify Quicker, Without Cutting Corners",
     description:
-      "Turbocharge your HTS classifications with AI-powered candidate suggestions, GRI analysis, cross-rulings validation, and one-click professional reports.",
+      "Turbocharge your HTS classifications with AI-powered candidate suggestions, GRI analysis, cross-rulings validation, and branded reports.",
     features: [
       {
         icon: "🤖",
-        title: "AI Candidates",
+        title: "Quick Candidates",
         description:
-          "Get intelligent HS heading suggestions for any product description",
+          "See likely candidate suggestions for any product description",
       },
       {
         icon: "📋",
-        title: "GRI Analysis",
-        description:
-          "Automatic best-fit analysis at every classification level",
+        title: "Best-Fit Analysis",
+        description: "Get a GRI analysis of all candidates, in seconds",
       },
       {
         icon: "⚖️",
@@ -109,7 +117,12 @@ const productSections: ProductSectionData[] = [
         icon: "📄",
         title: "One-Click Reports",
         description:
-          "Generate branded, professional classification reports instantly",
+          "Instantly generate branded, professional classification reports",
+      },
+      {
+        icon: "📄",
+        title: "Bring your Team",
+        description: "See, Review, & Approve Each Others Classifications",
       },
     ],
     aboutUrl: "/about",
@@ -124,21 +137,20 @@ const productSections: ProductSectionData[] = [
   {
     emoji: "✅",
     title: "Tariff Impact Checker",
-    tagline: "Never Be Surprised Again",
+    tagline: "No More Tariff Surprises",
     description:
-      "Paste your HTS codes and instantly see which imports are affected by the latest tariff announcements. Get notified before changes hit your bottom line.",
+      "Instantly see which of your imports are affected by the latest tariff announcements. Get notified before changes hit your bottom line.",
     features: [
-      {
-        icon: "🔔",
-        title: "Instant Alerts",
-        description:
-          "Get notified when new tariffs affect any of your tracked codes",
-      },
       {
         icon: "📦",
         title: "Bulk Checking",
         description:
-          "Check hundreds of HTS codes against any tariff announcement at once",
+          "Check your entire product catalog against any tariff announcement, all at once",
+      },
+      {
+        icon: "🔔",
+        title: "Intelligent Alerts",
+        description: "Get notified when new tariffs affect any of your imports",
       },
       {
         icon: "📈",
@@ -156,7 +168,7 @@ const productSections: ProductSectionData[] = [
     aboutUrl: "/about/tariff-impact-checker",
     appUrl: "/tariffs/impact-checker",
     cta: "Check Your Imports",
-    accentColor: "accent",
+    accentColor: "primary",
     media: {
       src: "/tariff-impact-demo.mp4",
       type: "video",
@@ -167,10 +179,10 @@ const productSections: ProductSectionData[] = [
 const products: ProductCardI[] = [
   {
     emoji: "💰",
-    title: "Tariff Finder",
+    title: "Tariff Calculator",
     description: "Find the Best Tariff Rate for Any Item",
     aboutUrl: "/about/tariffs",
-    appUrl: "/tariff-finder",
+    appUrl: "/tariff-calculator",
     cta: "Find Tariffs",
   },
   {
@@ -327,134 +339,105 @@ function ProductSection({
 }) {
   const isEven = index % 2 === 0;
 
-  // Dynamic accent colors based on product
+  // Simplified color scheme - use primary for all, keep it clean
   const accentColorClasses = {
     primary: {
-      gradient: "from-primary/10 via-primary/5 to-transparent",
-      border: "border-primary/20",
       bg: "bg-primary",
       text: "text-primary",
-      hoverBorder: "hover:border-primary/40",
-      featureBg: "from-primary/20 to-primary/5",
-      featureBorder: "border-primary/20",
-      orb1: "bg-primary/10",
-      orb2: "bg-primary/5",
+      border: "border-primary/20",
+      hoverBorder: "hover:border-primary/30",
     },
     secondary: {
-      gradient: "from-secondary/10 via-secondary/5 to-transparent",
-      border: "border-secondary/20",
       bg: "bg-secondary",
       text: "text-secondary",
-      hoverBorder: "hover:border-secondary/40",
-      featureBg: "from-secondary/20 to-secondary/5",
-      featureBorder: "border-secondary/20",
-      orb1: "bg-secondary/10",
-      orb2: "bg-secondary/5",
+      border: "border-secondary/20",
+      hoverBorder: "hover:border-secondary/30",
     },
     accent: {
-      gradient: "from-accent/10 via-accent/5 to-transparent",
-      border: "border-accent/20",
       bg: "bg-accent",
       text: "text-accent",
-      hoverBorder: "hover:border-accent/40",
-      featureBg: "from-accent/20 to-accent/5",
-      featureBorder: "border-accent/20",
-      orb1: "bg-accent/10",
-      orb2: "bg-accent/5",
+      border: "border-accent/20",
+      hoverBorder: "hover:border-accent/30",
     },
   };
 
   const colors = accentColorClasses[product.accentColor];
 
   return (
-    <section className={`relative overflow-hidden py-20 md:py-28 bg-base-100`}>
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <section
+      className={`relative py-16 md:py-24 ${
+        isEven ? "bg-base-100" : "bg-base-200/50"
+      }`}
+    >
+      <div className="max-w-6xl mx-auto px-6">
         <div
-          className={`absolute ${
-            isEven ? "-top-40 -right-40" : "-top-40 -left-40"
-          } w-80 h-80 ${colors.orb1} rounded-full blur-3xl`}
-        />
-        <div
-          className={`absolute ${
-            isEven ? "-bottom-40 -left-40" : "-bottom-40 -right-40"
-          } w-80 h-80 ${colors.orb2} rounded-full blur-3xl`}
-        />
-        {/* Subtle pattern */}
-        <div
-          className="absolute inset-0 opacity-[0.015]"
-          style={{
-            backgroundImage: `radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)`,
-            backgroundSize: "48px 48px",
-          }}
-        />
-      </div>
-
-      <div className="relative z-10 max-w-7xl mx-auto px-6">
-        <div
-          className={`grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center`}
+          className={`grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center`}
         >
           {/* Content Side */}
           <div className={`${isEven ? "lg:order-1" : "lg:order-2"}`}>
-            {/* Emoji badge */}
-            <div
-              className={`inline-flex items-center gap-3 px-4 py-2 rounded-full bg-gradient-to-r ${colors.gradient} border ${colors.border} mb-6`}
-            >
-              <span className="text-2xl">{product.emoji}</span>
+            {/* Section label */}
+            <div className="flex items-center gap-2 mb-4">
+              <span className={`inline-block w-8 h-px ${colors.bg}`} />
               <span
-                className={`text-sm font-semibold ${colors.text} uppercase tracking-wider`}
+                className={`text-xs font-semibold ${colors.text} uppercase tracking-widest`}
               >
                 {product.tagline}
               </span>
             </div>
 
             {/* Title */}
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-base-content mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-base-content mb-4">
               {product.title}
             </h2>
 
             {/* Description */}
-            <p className="text-base md:text-lg text-base-content/70 leading-relaxed mb-8">
+            <p className="text-base text-base-content/60 leading-relaxed mb-6">
               {product.description}
             </p>
 
-            {/* Features Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+            {/* Features List - cleaner vertical list */}
+            <ul className="space-y-3 mb-8">
               {product.features.map((feature) => (
-                <div
-                  key={feature.title}
-                  className={`group p-4 rounded-xl bg-gradient-to-br ${colors.featureBg} border ${colors.featureBorder} transition-all duration-300 ${colors.hoverBorder}`}
-                >
-                  <div className="flex items-start gap-3">
-                    <span className="text-2xl flex-shrink-0">
-                      {feature.icon}
+                <li key={feature.title} className="flex items-start gap-3">
+                  <svg
+                    className={`w-5 h-5 ${colors.text} flex-shrink-0 mt-0.5`}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  <div>
+                    <span className="font-medium text-base-content">
+                      {feature.title}
                     </span>
-                    <div>
-                      <h4 className="font-bold text-base-content mb-1">
-                        {feature.title}
-                      </h4>
-                      <p className="text-sm text-base-content/60 leading-relaxed">
-                        {feature.description}
-                      </p>
-                    </div>
+                    <span className="text-base-content/50"> — </span>
+                    <span className="text-base-content/60">
+                      {feature.description}
+                    </span>
                   </div>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
 
             {/* CTA Buttons */}
-            <div className="flex flex-wrap items-center gap-4">
+            <div className="flex flex-wrap items-center gap-3">
               <Link
                 href={product.appUrl}
-                className={`group inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-base ${colors.bg} text-white hover:opacity-90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl`}
+                className={`group inline-flex items-center gap-2 px-6 py-2.5 rounded-lg font-semibold text-sm ${colors.bg} text-white hover:opacity-90 transition-all duration-200 shadow-sm hover:shadow-md`}
               >
                 <span>{product.cta}</span>
                 <svg
-                  className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-0.5"
+                  className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
-                  strokeWidth={2.5}
+                  strokeWidth={2}
                 >
                   <path
                     strokeLinecap="round"
@@ -465,7 +448,7 @@ function ProductSection({
               </Link>
               <Link
                 href={product.aboutUrl}
-                className={`inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-base ${colors.text} border-2 ${colors.border} ${colors.hoverBorder} hover:bg-base-200/50 transition-all duration-200`}
+                className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium text-sm ${colors.text} hover:bg-base-200 transition-colors duration-200`}
               >
                 Learn More
               </Link>
@@ -475,12 +458,8 @@ function ProductSection({
           {/* Media/Visual Side */}
           <div className={`${isEven ? "lg:order-2" : "lg:order-1"}`}>
             <div
-              className={`relative rounded-2xl overflow-hidden border-2 ${colors.border} shadow-2xl`}
+              className={`relative rounded-xl overflow-hidden border ${colors.border} shadow-lg bg-base-200`}
             >
-              {/* Gradient overlay */}
-              <div
-                className={`absolute inset-0 bg-gradient-to-tr ${colors.gradient} opacity-40 z-10 pointer-events-none`}
-              />
               {product.media.type === "video" ? (
                 <video
                   src={product.media.src}
@@ -533,13 +512,13 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-base-100">
-      {/* <Suspense
+      <Suspense
         fallback={
           <div className="h-16 bg-base-100 border-b border-base-content/20" />
         }
       >
         {user ? <AuthenticatedHeader /> : <UnauthenticatedHeader />}
-      </Suspense> */}
+      </Suspense>
 
       {/* Hero Section */}
       <div className="relative overflow-hidden bg-gradient-to-b from-base-200 via-base-100 to-base-100">
@@ -573,8 +552,8 @@ export default function Home() {
             </h1>
 
             <p className="text-base-content/60 text-base md:text-lg lg:text-xl max-w-2xl mx-auto mb-10">
-              The all-in-one platform for trade professionals to master HTS
-              classifications and navigate tariffs with confidence.
+              The all-in-one platform for trade professionals to breeze through
+              HTS classifications and navigate tariffs with ease.
             </p>
 
             {/* CTA Buttons */}

@@ -378,7 +378,7 @@ export const Element = ({
             </div>
           )}
 
-          {/* Tariff Finder Section - hidden when in modal */}
+          {/* Tariff Calculator Section - hidden when in modal */}
           {!isModal && htsno && htsno.replaceAll(".", "").length === 10 && (
             <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-base-200/50 via-base-100 to-base-200/30 border border-base-content/10 p-5 sm:p-6">
               {/* Background decoration */}
@@ -390,7 +390,7 @@ export const Element = ({
                     <div className="flex items-center gap-2">
                       <span className="text-lg">📊</span>
                       <span className="text-lg font-bold text-base-content">
-                        Tariff Finder
+                        Tariff Calculator
                       </span>
                       <Link
                         href="/tariffs/coverage"

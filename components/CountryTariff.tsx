@@ -261,7 +261,7 @@ export const CountryTariff = ({
   const generateShareLink = () => {
     // Get Base Url
     const baseUrl = window.location.origin;
-    const path = "/tariff-finder";
+    const path = "/tariff-calculator";
     const params = new URLSearchParams({
       code: tariffElement.htsno,
       country: country.code,
