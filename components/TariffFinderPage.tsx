@@ -161,9 +161,6 @@ export const TariffFinderPage = () => {
   >([]);
   const [showExploreModal, setShowExploreModal] = useState(false);
 
-  // Ref for scrolling to results section
-  const resultsRef = useRef<HTMLDivElement>(null);
-
   // Handle element selection - only show tariffs for 8+ digit codes
   const handleElementSelection = useCallback(
     (element: HtsElement | null) => {
@@ -239,7 +236,7 @@ export const TariffFinderPage = () => {
       setContentRequirements(newContentRequirements);
       setUiContentPercentages(newContentRequirements);
     }
-  }, [selectedCountry, tariffElement, urlContentPercentages]);
+  }, [tariffElement, urlContentPercentages]);
 
   // Handlers with debouncing
   const handleSliderChange = (
@@ -411,9 +408,6 @@ export const TariffFinderPage = () => {
     [htsElements]
   );
 
-  // Track previous state to detect when results become available
-  const prevHadResults = useRef(false);
-
   // Update tariffs when element or country changes
   useEffect(() => {
     if (selectedElement && selectedCountry && sections.length > 0) {
@@ -444,28 +438,28 @@ export const TariffFinderPage = () => {
     findTariffElement,
   ]);
 
-  // Scroll to results when they first become available
-  useEffect(() => {
-    const hasResults = !!(
-      selectedElement &&
-      selectedCountry &&
-      countryWithTariffs &&
-      tariffElement
-    );
+  // // Scroll to results when they first become available
+  // useEffect(() => {
+  //   const hasResults = !!(
+  //     selectedElement &&
+  //     selectedCountry &&
+  //     countryWithTariffs &&
+  //     tariffElement
+  //   );
 
-    // Only scroll when transitioning from no results to having results
-    if (hasResults && !prevHadResults.current) {
-      // Small delay to ensure the DOM has updated
-      setTimeout(() => {
-        resultsRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }, 100);
-    }
+  //   // Only scroll when transitioning from no results to having results
+  //   if (hasResults && !prevHadResults.current) {
+  //     // Small delay to ensure the DOM has updated
+  //     setTimeout(() => {
+  //       resultsRef.current?.scrollIntoView({
+  //         behavior: "smooth",
+  //         block: "start",
+  //       });
+  //     }, 100);
+  //   }
 
-    prevHadResults.current = hasResults;
-  }, [selectedElement, selectedCountry, countryWithTariffs, tariffElement]);
+  //   prevHadResults.current = hasResults;
+  // }, [selectedElement, selectedCountry, countryWithTariffs, tariffElement]);
 
   if (loadingPage) {
     return (
@@ -499,11 +493,11 @@ export const TariffFinderPage = () => {
             <div className="flex flex-col gap-2">
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight">
                 <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
-                  US Duty Calculator
+                  Duty Calculator
                 </span>
               </h1>
               <p className="text-base-content/60 text-sm md:text-base max-w-lg mt-1">
-                Find the duty cost for any import and find ways to save.
+                Find the duty cost for any US import and discoverf ways to save.
               </p>
             </div>
 
@@ -647,7 +641,7 @@ export const TariffFinderPage = () => {
           selectedCountry &&
           countryWithTariffs &&
           tariffElement && (
-            <div ref={resultsRef} className="mt-4 scroll-mt-4">
+            <div className="mt-4 scroll-mt-4">
               <CountryTariff
                 units={units}
                 customsValue={customsValue}
@@ -748,6 +742,24 @@ export const TariffFinderPage = () => {
             </div>
           </div>
         )}
+
+        {/* Disclaimer Section */}
+        <div className="flex flex-col items-center justify-center mb-2">
+          <span className="text-xs text-base-content/60 text-center max-w-5xl">
+            We can make mistakes and do not guarantee complete nor correct
+            calculations. See an issue?{" "}
+            <a
+              href="mailto:support@htshero.com"
+              className="link link-hover underline font-medium transition-colors"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Notify us
+            </a>{" "}
+            and we will sort it out.
+          </span>
+        </div>
+
         {/* CTA Section */}
         <div className="my-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-gradient-to-r from-transparent via-primary/10 to-secondary/10 border border-primary/10">
           <div className="flex items-center gap-3">
