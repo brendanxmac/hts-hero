@@ -8,12 +8,13 @@ const ClassifierHero = () => {
       <section className="bg-none w-full mx-auto bg-base-100 flex flex-col items-center justify-center gap-6 sm:gap-10 pt-4 px-8 pb-8">
         <div className="flex flex-col gap-4 sm:gap-6 items-center justify-center text-center">
           <div className="flex flex-col gap-5 md:gap-8 mt-8">
-            <h1 className="font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-tight md:-mb-4">
-              Classify Anything in{" "}
-              <span className="underline decoration-primary">Minutes</span>
+            <h1 className="font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-tight md:-mb-4 max-w-4xl">
+              Turn Product Descriptions <br />
+              into HTS Codes,{" "}
+              <span className="underline decoration-primary">Fast</span>
             </h1>
             <p className="text-sm sm:text-lg leading-relaxed font-medium">
-              Turn product descriptions into HTS Codes, insanely fast
+              Save hours every week and avoid misclassification fees.
             </p>
           </div>
 

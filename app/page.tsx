@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { Suspense, useState } from "react";
 import LetsTalkModal from "../components/LetsTalkModal";
@@ -10,27 +9,11 @@ import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
 import LandingHeader from "../components/LandingHeader";
 import Pricing from "../components/Pricing";
 import { BoltIcon } from "@heroicons/react/24/solid";
-
-// Extended product data for full-page sections
-interface ProductSectionData {
-  emoji: string;
-  title: string;
-  tagline: string;
-  description: string;
-  features: {
-    icon: string;
-    title: string;
-    description: string;
-  }[];
-  aboutUrl: string;
-  appUrl: string;
-  cta: string;
-  accentColor: "primary" | "secondary" | "accent";
-  media: {
-    src: string;
-    type: "image" | "video";
-  };
-}
+import {
+  ProductSection,
+  ProductSectionData,
+} from "../components/ProductSection";
+import TestimonialsStrip from "../components/TestimonialsStrip";
 
 const productSections: ProductSectionData[] = [
   {
@@ -118,7 +101,7 @@ const productSections: ProductSectionData[] = [
     ],
     aboutUrl: "/about",
     appUrl: "/classifications",
-    cta: "Start Classifying",
+    cta: "Classify Now",
     accentColor: "secondary",
     media: {
       src: "/new-hero-demo.mp4",
@@ -166,253 +149,6 @@ const productSections: ProductSectionData[] = [
     },
   },
 ];
-
-// Company names data
-const companies = [
-  "Amazon",
-  "Kuehne + Nagel",
-  "DSV",
-  "Border Brokers",
-  "Harren Group",
-  "JORI Logistics",
-  "Ingersoll Rand",
-  "True North Brokerage",
-];
-
-// Individual testimonials
-const testimonials = [
-  {
-    role: "Vice President, LCB",
-    company: "DEX Globfal",
-    quote: "I don't know how you do it, but I am glad I have my HTS Hero!",
-  },
-  {
-    role: "Director of Operations & Compliance, LCB",
-    company: "Harren Group",
-    quote:
-      "I was really pleased with the AI recommendation – it was very intuitive and caught something I hadn't seen earlier",
-  },
-  {
-    role: "VP Forwarding & Customs Brokerage",
-    company: "Logisteed America",
-    quote:
-      "Been loving using htshero. Excellent tool and fun watching you develop this.",
-  },
-];
-
-// Product Card Component
-// function ProductCard({
-//   emoji,
-//   title,
-//   description,
-//   aboutUrl,
-//   appUrl,
-//   cta,
-// }: ProductCardI) {
-//   return (
-//     <div className="group relative overflow-hidden w-full h-auto py-8 px-6 max-w-lg lg:max-w-none mx-auto lg:mx-0 bg-gradient-to-br from-base-200/80 via-base-100 to-base-200/60 border border-base-content/10 rounded-2xl shadow-lg backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:shadow-xl hover:-translate-y-1">
-//       {/* Decorative gradient orb */}
-//       <div className="absolute -top-12 -right-12 w-32 h-32 bg-primary/10 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-//       <div className="relative z-10 flex flex-col items-center gap-5">
-//         <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 text-4xl shadow-sm">
-//           {emoji}
-//         </div>
-//         <div className="flex flex-col gap-2 text-center">
-//           <h3 className="text-xl font-bold text-base-content">{title}</h3>
-//           <p className="text-sm text-base-content/60 leading-relaxed">
-//             {description}
-//           </p>
-//         </div>
-//         <div className="flex flex-col gap-4 mt-2 w-full items-center">
-//           <Link
-//             href={appUrl}
-//             className="group/btn inline-flex items-center justify-center gap-2 w-full max-w-xs px-6 py-3 rounded-xl font-semibold text-sm bg-primary text-white hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-md hover:shadow-lg"
-//           >
-//             <span>{cta}</span>
-//             <svg
-//               className="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-0.5"
-//               fill="none"
-//               viewBox="0 0 24 24"
-//               stroke="currentColor"
-//               strokeWidth={2.5}
-//             >
-//               <path
-//                 strokeLinecap="round"
-//                 strokeLinejoin="round"
-//                 d="M13 7l5 5m0 0l-5 5m5-5H6"
-//               />
-//             </svg>
-//           </Link>
-//           <Link
-//             href={aboutUrl}
-//             className="text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
-//           >
-//             Learn More
-//           </Link>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// Full-page Product Section Component
-function ProductSection({
-  product,
-  index,
-}: {
-  product: ProductSectionData;
-  index: number;
-}) {
-  const isEven = index % 2 === 0;
-
-  // Simplified color scheme - use primary for all, keep it clean
-  const accentColorClasses = {
-    primary: {
-      bg: "bg-primary",
-      text: "text-primary",
-      border: "border-primary/20",
-      hoverBorder: "hover:border-primary/30",
-    },
-    secondary: {
-      bg: "bg-secondary",
-      text: "text-secondary",
-      border: "border-secondary/20",
-      hoverBorder: "hover:border-secondary/30",
-    },
-    accent: {
-      bg: "bg-accent",
-      text: "text-accent",
-      border: "border-accent/20",
-      hoverBorder: "hover:border-accent/30",
-    },
-  };
-
-  const colors = accentColorClasses[product.accentColor];
-
-  return (
-    <section
-      className={`relative py-16 md:py-24 ${
-        isEven ? "bg-base-100" : "bg-base-200/50"
-      }`}
-    >
-      <div className="max-w-6xl mx-auto px-6">
-        <div
-          className={`grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center`}
-        >
-          {/* Content Side */}
-          <div className={`${isEven ? "lg:order-1" : "lg:order-2"}`}>
-            {/* Section label */}
-            <div className="flex items-center gap-2 mb-4">
-              <span className={`inline-block w-8 h-px ${colors.bg}`} />
-              <span
-                className={`text-xs font-semibold ${colors.text} uppercase tracking-widest`}
-              >
-                {product.tagline}
-              </span>
-            </div>
-
-            {/* Title */}
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-base-content mb-4">
-              {product.title}
-            </h2>
-
-            {/* Description */}
-            <p className="text-base text-base-content/60 leading-relaxed mb-6">
-              {product.description}
-            </p>
-
-            {/* Features List - cleaner vertical list */}
-            <ul className="space-y-3 mb-8">
-              {product.features.map((feature) => (
-                <li key={feature.title} className="flex items-start gap-3">
-                  <svg
-                    className={`w-5 h-5 ${colors.text} flex-shrink-0 mt-0.5`}
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  <div>
-                    <span className="font-medium text-base-content">
-                      {feature.title}
-                    </span>
-                    <span className="text-base-content/50"> — </span>
-                    <span className="text-base-content/60">
-                      {feature.description}
-                    </span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-
-            {/* CTA Buttons */}
-            <div className="flex flex-wrap items-center gap-3">
-              <Link
-                href={product.appUrl}
-                className={`group inline-flex items-center gap-2 px-6 py-2.5 rounded-lg font-semibold text-sm ${colors.bg} text-white hover:opacity-90 transition-all duration-200 shadow-sm hover:shadow-md`}
-              >
-                <span>{product.cta}</span>
-                <svg
-                  className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M13 7l5 5m0 0l-5 5m5-5H6"
-                  />
-                </svg>
-              </Link>
-              <Link
-                href={product.aboutUrl}
-                className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium text-sm ${colors.text} hover:bg-base-200 transition-colors duration-200`}
-              >
-                Learn More
-              </Link>
-            </div>
-          </div>
-
-          {/* Media/Visual Side */}
-          <div className={`${isEven ? "lg:order-2" : "lg:order-1"}`}>
-            <div
-              className={`relative rounded-xl overflow-hidden border ${colors.border} shadow-lg bg-base-200`}
-            >
-              {product.media.type === "video" ? (
-                <video
-                  src={product.media.src}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="w-full h-auto object-cover"
-                  aria-label={product.title}
-                />
-              ) : (
-                <Image
-                  src={product.media.src}
-                  alt={product.title}
-                  width={800}
-                  height={600}
-                  className="w-full h-auto object-cover"
-                />
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
 
 export default function Home() {
   const { user } = useUser();
@@ -596,46 +332,7 @@ export default function Home() {
           </div>
 
           {/* Integrated Testimonials Strip */}
-          <div className="w-full max-w-6xl">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {testimonials.map((testimonial, index) => (
-                <div
-                  key={index}
-                  className="group relative bg-gradient-to-br from-primary/5 to-base-100 backdrop-blur-sm rounded-lg px-4 py-3 border border-base-content/5 hover:border-primary/20 transition-all duration-300"
-                >
-                  <blockquote className="text-sm text-base-content/80 leading-relaxed mb-2">
-                    &ldquo;{testimonial.quote}&rdquo;
-                  </blockquote>
-                  <div className="flex items-center gap-2">
-                    <div className="text-[10px] font-semibold text-base-content/50 truncate">
-                      {testimonial.role}
-                    </div>
-                    <span className="text-base-content/30">·</span>
-                    <div className="text-[10px] text-primary/60">
-                      {testimonial.company}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Company Logos Strip */}
-            <div className="mt-8 pt-6 border-t border-base-content/5">
-              <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
-                <span className="text-xs font-medium text-base-content/40 uppercase tracking-wider">
-                  Trusted by Trade Professionals At
-                </span>
-                {companies.slice(0, 6).map((company, index) => (
-                  <span
-                    key={`hero-company-${index}`}
-                    className="text-sm font-medium text-base-content/50 hover:text-base-content/70 transition-colors"
-                  >
-                    {company}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
+          <TestimonialsStrip />
         </div>
       </div>
 
