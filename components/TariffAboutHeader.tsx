@@ -11,20 +11,12 @@ import ThemeToggle from "./ThemeToggle";
 
 const links = [
   {
-    href: "/duty-calculator",
-    text: "Duty Calculator",
-  },
-  {
-    href: "#pending-tariffs",
-    text: "Pending Tariffs",
-  },
-  {
     href: "#pricing",
     text: "Pricing",
   },
   {
-    href: "#faq",
-    text: "FAQ",
+    href: "#pending-tariffs",
+    text: "Pending Tariffs",
   },
 ];
 

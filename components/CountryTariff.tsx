@@ -110,7 +110,6 @@ export const CountryTariff = ({
     isOtherColumnCountry ? TariffColumn.OTHER : TariffColumn.GENERAL
   );
   const [expandedSets, setExpandedSets] = useState<Record<number, boolean>>({});
-  const [isCopied, setIsCopied] = useState(false);
   const [isCostCopied, setIsCostCopied] = useState(false);
   const [isTariffDetailsCopied, setIsTariffDetailsCopied] = useState(false);
   const [isLinkCopied, setIsLinkCopied] = useState(false);
@@ -235,27 +234,21 @@ export const CountryTariff = ({
     return `${tariffSet.name} Tariffs: ${setTotal}\n${baseTariffsText}\n${tariffSetText}\n`;
   };
 
-  const copyTariffDetails = () => {
-    const lines = [
-      `Import Tariffs & Fees for ${country.name}:`,
-      "",
-      selectedTradeProgram?.name
-        ? `Trade Program: ${selectedTradeProgram.name}\n`
-        : "",
-      ...tariffSets.map(getTariffSetText),
-      "Harbor Maintenance Fee: 0.125%",
-      "",
-      "Merchandise Processing Fee: 0.3464%",
-      "   Min: $33.58 / Max: $651.50",
-    ];
-    return lines.filter(Boolean).join("\n");
-  };
-
-  const handleCopyClick = () => {
-    copyToClipboard(copyTariffDetails());
-    setIsCopied(true);
-    setTimeout(() => setIsCopied(false), 2000);
-  };
+  // const copyTariffDetails = () => {
+  //   const lines = [
+  //     `Import Tariffs & Fees for ${country.name}:`,
+  //     "",
+  //     selectedTradeProgram?.name
+  //       ? `Trade Program: ${selectedTradeProgram.name}\n`
+  //       : "",
+  //     ...tariffSets.map(getTariffSetText),
+  //     "Harbor Maintenance Fee: 0.125%",
+  //     "",
+  //     "Merchandise Processing Fee: 0.3464%",
+  //     "   Min: $33.58 / Max: $651.50",
+  //   ];
+  //   return lines.filter(Boolean).join("\n");
+  // };
 
   // Generate shareable link
   const generateShareLink = () => {
@@ -821,42 +814,49 @@ export const CountryTariff = ({
 
       {/* Total Import Duty Summary */}
       <div className="card bg-base-100 border border-base-300 shadow-lg rounded-xl">
-        <div className="p-3 sm:p-5">
-          <div className="flex md:flex-row flex-col gap-3 sm:gap-4 mb-4 sm:mb-5">
+        <div className="flex flex-col gap-4 p-3 sm:p-4">
+          <div className="flex md:flex-row flex-col gap-3 sm:gap-4">
             {/* Duty & Fees */}
+            <div className="flex-1 basis-0 flex flex-col items-center justify-center p-4 sm:p-6 bg-primary/10 rounded-xl">
+              <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 sm:mb-2">
+                Customs Value
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-black text-primary break-all text-center">
+                {formatCurrency(customsValue)}
+              </h2>
+            </div>
             <div className="flex-1 basis-0 flex flex-col items-center justify-center p-4 sm:p-6 bg-secondary/10 rounded-xl">
               <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 sm:mb-2">
-                Duty & Fees
+                Total Duty & Fees
               </span>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-secondary break-all text-center">
+              <h2 className="text-3xl sm:text-4xl font-black text-secondary break-all text-center">
                 {formatCurrency(totalImportDuty)}
               </h2>
-              <div className="text-xs sm:text-sm text-base-content/50 mt-1 sm:mt-2 text-center">
+              {/* <div className="text-xs sm:text-sm text-base-content/50 mt-1 sm:mt-2 text-center">
                 on {formatCurrency(customsValue)} customs value
-              </div>
+              </div> */}
             </div>
             {/* Landed Cost */}
             <div className="flex-1 basis-0 flex flex-col items-center justify-center p-4 sm:p-6 bg-accent/10 rounded-xl">
               <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 sm:mb-2">
                 Landed Cost
               </span>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-accent break-all text-center">
+              <h2 className="text-3xl sm:text-4xl font-black text-accent break-all text-center">
                 {formatCurrency(totalImportDuty + customsValue)}
               </h2>
             </div>
           </div>
-
           {/* Breakdown Grid */}
-          <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 mb-3 sm:mb-4">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
             {dutyEstimates.map((estimate, i) => (
               <div
                 key={i}
-                className="flex flex-col items-center justify-center p-3 sm:p-4 bg-base-200/50 rounded-xl flex-1 min-w-0"
+                className="flex flex-col items-center justify-center p-3 sm:p-4 bg-secondary/10 rounded-xl flex-1 min-w-0"
               >
                 <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 text-center">
                   {estimate.tariffSetName} Duty
                 </span>
-                <div className="text-2xl sm:text-3xl font-black text-primary mb-2 break-all text-center">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-black text-secondary mb-2 break-all text-center">
                   {formatCurrency(estimate.totalDuty)}
                 </div>
                 <div className="text-xs text-base-content/50 space-y-1 text-center w-full">
@@ -886,11 +886,11 @@ export const CountryTariff = ({
                 </div>
               </div>
             ))}
-            <div className="flex flex-col items-center justify-center p-3 sm:p-4 bg-base-200/50 rounded-xl flex-1 min-w-0">
+            <div className="flex flex-col items-center justify-center p-3 sm:p-4 bg-secondary/10 rounded-xl flex-1 min-w-0">
               <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 text-center">
                 Additional Fees
               </span>
-              <div className="text-2xl sm:text-3xl font-black text-primary mb-2 break-all text-center">
+              <div className="text-2xl sm:text-3xl md:text-4xl font-black text-secondary mb-2 break-all text-center">
                 {formatCurrency(totalFees)}
               </div>
               <div className="text-xs text-base-content/50 space-y-1 text-center w-full">
@@ -915,7 +915,7 @@ export const CountryTariff = ({
                 <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 text-center">
                   {total.name} Tariff Rate
                 </span>
-                <div className="text-2xl sm:text-3xl font-black text-primary text-center">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-black text-primary text-center">
                   {total.hasAmountTariffs && total.amountRatesString && (
                     <span className="text-xl sm:text-2xl lg:text-3xl">
                       {total.amountRatesString} +{" "}
@@ -929,7 +929,7 @@ export const CountryTariff = ({
               <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 text-center">
                 Additional Fee Rate
               </span>
-              <div className="text-2xl sm:text-3xl font-black text-primary">
+              <div className="text-2xl sm:text-3xl md:text-4xl font-black text-primary">
                 {additionalFeesTotal}%
               </div>
             </div>
@@ -1031,7 +1031,7 @@ export const CountryTariff = ({
       <div className="flex flex-col gap-4 sm:gap-5">
         {tariffSets.map((tariffSet, i) => {
           const estimate = dutyEstimates[i];
-          const isExpanded = expandedSets[i] ?? false;
+          const isExpanded = expandedSets[i] ?? true;
           const inactiveTariffs = tariffSet.tariffs.filter((t) => !t.isActive);
           const hasInactiveTariffs = inactiveTariffs.length > 0;
 
@@ -1192,7 +1192,10 @@ export const CountryTariff = ({
                   <button
                     className="btn btn-sm btn-ghost gap-1 sm:gap-2 text-xs sm:text-sm"
                     onClick={() =>
-                      setExpandedSets((prev) => ({ ...prev, [i]: !prev[i] }))
+                      setExpandedSets((prev) => ({
+                        ...prev,
+                        [i]: !(prev[i] ?? true),
+                      }))
                     }
                   >
                     <ChevronDownIcon
@@ -1278,7 +1281,7 @@ export const CountryTariff = ({
         />
         <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 pointer-events-none">
           <div
-            className="bg-base-100 rounded-xl sm:rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] sm:max-h-[85vh] overflow-y-auto pointer-events-auto animate-slide-up p-3 sm:p-6 border-2 border-base-300"
+            className="bg-base-100 rounded-xl sm:rounded-2xl shadow-2xl w-full max-w-7xl max-h-[90vh] sm:max-h-[85vh] overflow-y-auto pointer-events-auto animate-slide-up p-3 sm:p-6 border-2 border-base-300"
             onClick={(e) => e.stopPropagation()}
           >
             {content}
