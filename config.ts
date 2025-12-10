@@ -68,7 +68,7 @@ export const tariffImpactPro: PricingPlanI = {
       details: "Get notified when your imports are affected by new tariffs",
     },
     {
-      name: "Tariff Calculator",
+      name: "Duty Calculator",
       details:
         "See the tariffs, duty rates, & exemptions for any item from any country",
     },
@@ -84,6 +84,37 @@ export const tariffImpactPro: PricingPlanI = {
 //   price: 0,
 //   features: [{ name: "All features of Classify Pro, for 7 Days" }],
 // };
+
+export const pro: PricingPlanI = {
+  name: "Pro",
+  planIdentifier: PricingPlan.PRO,
+  description: "Smarter Classifications, Effortless Tariffs",
+  mode: StripePaymentMode.SUBSCRIPTION,
+  prices: [99],
+  priceAnchors: [149],
+  features: [
+    { name: "Duty Calculator" },
+    { name: "Classification Assistant" },
+    { name: "Tariff Impact Checker" },
+  ],
+};
+
+export const proTeams: PricingPlanI = {
+  name: "Pro for Teams",
+  planIdentifier: PricingPlan.PRO_TEAM,
+  description: "Streamline Imports with your Entire Team",
+  mode: StripePaymentMode.SUBSCRIPTION,
+  prices: [99, 89, 79],
+  priceAnchors: [149, 149, 149],
+  priceTiers: ["2-5 users", "6-10 users", "11+ users"],
+  features: [
+    { name: "Duty Calculator" },
+    { name: "Classification Assistant" },
+    { name: "Tariff Impact Checker" },
+    { name: "Collaborate with your Team" },
+    { name: "Product Training Sessions" },
+  ],
+};
 
 export const classifyPro: PricingPlanI = {
   name: "Pro",
@@ -135,6 +166,7 @@ const config: ConfigProps = {
   },
   stripe: {
     // Create multiple plans in your Stripe dashboard, then add them here. You can add as many plans as you want, just make sure to add the priceId
+    bundlePlans: [pro, proTeams],
     classifierPlans: [classifyPro, classifyTeam],
     classifierConversionPlans: [classifyPro, classifyTeam],
     tariffImpactPlans: [

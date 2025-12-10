@@ -68,6 +68,8 @@ export type Theme = "black" | "light" | "dark" | "";
 // | "";
 
 export enum PricingPlan {
+  PRO = "Pro",
+  PRO_TEAM = "Pro for Teams",
   CLASSIFY_PRO = "Classify Pro",
   CLASSIFY_TEAM = "Classify for Teams",
   TARIFF_IMPACT_STARTER = "Tariff Impact Starter",
@@ -107,6 +109,7 @@ export interface ConfigProps {
   };
   stripe: {
     // importerPlans: PricingPlanI[];
+    bundlePlans: PricingPlanI[];
     classifierPlans: PricingPlanI[];
     classifierConversionPlans: PricingPlanI[];
     tariffImpactPlans: PricingPlanI[];

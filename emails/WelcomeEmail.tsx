@@ -102,7 +102,7 @@ export default function WelcomeEmail() {
 
             <Section className="bg-[#617BFF]/10 rounded-lg p-6 text-center mb-6">
               <Text className="font-bold text-xl mb-3 text-gray-900">
-                📊 Tariff Calculator
+                📊 Duty Calculator
               </Text>
               <Text className="leading-relaxed text-lg text-gray-600">
                 See the tariffs, duty rates, and possible savings for any

@@ -32,8 +32,8 @@ const UnauthenticatedHeader = () => {
     label: string;
   }[] = [
     {
-      href: "/tariff-calculator",
-      label: "Tariff Calculator",
+      href: "/duty-calculator",
+      label: "Duty Calculator",
     },
     {
       href: "/classifications",
@@ -50,7 +50,7 @@ const UnauthenticatedHeader = () => {
     {
       href: "/about/tariffs",
       label:
-        pathname === "/tariff-calculator"
+        pathname === "/duty-calculator"
           ? "Learn More"
           : "Want to Find the Best Tariff Rates?",
     },
@@ -91,12 +91,12 @@ const UnauthenticatedHeader = () => {
             <Link href="/about/tariffs">
               <button
                 className={`btn btn-link px-0 gap-0 ${
-                  pathname === "/tariff-calculator"
+                  pathname === "/duty-calculator"
                     ? "text-primary underline"
                     : "text-base-content no-underline"
                 }`}
               >
-                Tariff Calculator
+                Duty Calculator
               </button>
             </Link>
             <Link href="/about">
@@ -176,10 +176,10 @@ const UnauthenticatedHeader = () => {
             <Link
               className="btn btn-sm btn-primary font-semibold link link-hover"
               href={
-                pathname === "/tariff-calculator" ? "/about/tariffs" : "/about"
+                pathname === "/duty-calculator" ? "/about/tariffs" : "/about"
               }
             >
-              {pathname === "/tariff-calculator"
+              {pathname === "/duty-calculator"
                 ? "Want Effortless Tariffs?"
                 : "Want Quicker Classifications?"}
             </Link>

@@ -51,14 +51,14 @@ export const AuthenticatedHeader = () => {
 
           <div className="hidden md:flex items-center justify-start gap-4">
             <Link
-              href="/tariff-calculator"
+              href="/duty-calculator"
               className={`btn btn-link px-0 gap-0 ${
-                pathname === "/tariff-calculator"
+                pathname === "/duty-calculator"
                   ? "text-primary underline"
                   : "text-base-content no-underline"
               }`}
             >
-              Tariff Calculator
+              Duty Calculator
             </Link>
             <Link
               href="/classifications"
@@ -191,14 +191,14 @@ export const AuthenticatedHeader = () => {
               <div className="py-4">
                 <div className="flex flex-col gap-y-4 items-start">
                   <Link
-                    href="/tariff-calculator"
+                    href="/duty-calculator"
                     className={`font-semibold link link-hover ${
-                      pathname === "/tariff-calculator"
+                      pathname === "/duty-calculator"
                         ? "text-primary underline"
                         : "text-base-content no-underline"
                     }`}
                   >
-                    Tariff Calculator
+                    Duty Calculator
                   </Link>
                   <Link
                     href="/classifications"

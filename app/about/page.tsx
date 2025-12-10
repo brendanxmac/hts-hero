@@ -3,7 +3,7 @@
 import { Suspense } from "react";
 import AboutHeader from "../../components/AboutHeader";
 import ClassifierFooter from "../../components/ClassifierFooter";
-import Pricing from "../../components/Pricing";
+import ClassifyPricing from "../../components/ClassifyPricing";
 import { FAQ } from "../../components/FAQ";
 import { classifierFaqList } from "../../constants/faq";
 import { AboutPage } from "../../enums/classify";
@@ -73,7 +73,7 @@ export default function Home() {
         <ClassifierHero />
         <TrustedBy />
         <FeaturesListicle />
-        <Pricing customerType={AboutPage.CLASSIFIER} />
+        <ClassifyPricing customerType={AboutPage.CLASSIFIER} />
         <ProductDemoSection
           title="See How it Works"
           subtitle="A quick demo so you know exactly what you'll get"

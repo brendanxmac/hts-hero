@@ -11,8 +11,8 @@ import ThemeToggle from "./ThemeToggle";
 
 const links = [
   {
-    href: "/tariff-calculator",
-    text: "Tariff Calculator",
+    href: "/duty-calculator",
+    text: "Duty Calculator",
   },
   {
     href: "#pending-tariffs",

@@ -5,16 +5,15 @@ import ButtonCheckout from "./ButtonCheckout";
 import { AboutPage } from "../enums/classify";
 import { StripePaymentMode } from "../libs/stripe";
 import { useState } from "react";
-import { ShieldCheckIcon } from "@heroicons/react/24/solid";
-
-// <Pricing/> displays the pricing plans for your app
-// It's your Stripe config in config.js.stripe.plans[] that will be used to display the plans
-// <ButtonCheckout /> renders a button that will redirect the user to Stripe checkout called the /api/stripe/create-checkout API endpoint with the correct priceId
+import {
+  ShieldCheckIcon,
+  CheckIcon,
+  SparklesIcon,
+  UserGroupIcon,
+} from "@heroicons/react/24/solid";
 
 interface PricingProps {
   customerType: AboutPage;
-  // setBuyAttempt?: (buyAttempt: BuyAttempt) => void;
-  // setShowItsFree?: (show: boolean) => void;
 }
 
 export const getFeatureSupportingLabel = (feature: PricingFeatureI) => {
@@ -66,43 +65,11 @@ export const getFeatureIcon = (feature: PricingFeatureI) => {
     );
   }
 
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 20 20"
-      fill="currentColor"
-      className="w-[18px] h-[18px] text-primary shrink-0"
-    >
-      <path
-        fillRule="evenodd"
-        d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-        clipRule="evenodd"
-      />
-    </svg>
-  );
+  return <CheckIcon className="w-5 h-5 text-primary shrink-0" />;
 };
 
-const getPricingPlans = (customerType: AboutPage) => {
-  if (customerType === AboutPage.CLASSIFIER) {
-    return config.stripe.classifierPlans;
-  }
-
-  return [];
-};
-
-const getPricingHeadline = () => {
-  return (
-    <div className="flex flex-col gap-4 lg:gap-6 md:my-2">
-      <div className="flex flex-col gap-1">
-        <h2 className="font-black text-3xl md:text-4xl lg:text-5xl max-w-5xl mx-auto md:[&>span]:inline-block md:[&>span]:mb-2">
-          <span className="underline decoration-primary">Smarter</span>{" "}
-          Classifications,{" "}
-          <span className="underline decoration-primary">Effortless</span>{" "}
-          Tariffs
-        </h2>
-      </div>
-    </div>
-  );
+const getPricingPlans = () => {
+  return config.stripe.bundlePlans;
 };
 
 const Pricing = ({ customerType }: PricingProps) => {
@@ -119,14 +86,62 @@ const Pricing = ({ customerType }: PricingProps) => {
   };
 
   return (
-    <section className="bg-gradient-to-t from-primary/70 via-primary/10 to-transparent overflow-hidden">
-      <div className="py-16 px-8 max-w-7xl mx-auto" id="pricing">
-        <div className="flex flex-col text-center w-full">
-          <p className="font-medium text-base-content mb-4">Pricing</p>
-          {getPricingHeadline()}
+    <section className="relative overflow-hidden bg-base-100 border-t border-base-content/5">
+      {/* Background decorations */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-secondary/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-primary/5 to-transparent rounded-full blur-3xl" />
+        {/* Subtle grid pattern */}
+        <div
+          className="absolute inset-0 opacity-[0.02]"
+          style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`,
+            backgroundSize: "32px 32px",
+          }}
+        />
+      </div>
+
+      <div
+        className="relative z-10 py-20 md:py-28 px-6 max-w-6xl mx-auto"
+        id="pricing"
+      >
+        {/* Header */}
+        <div className="text-center mb-16">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <span className="w-8 h-px bg-primary/40" />
+            <span className="text-xs font-semibold uppercase tracking-widest text-primary">
+              Pricing
+            </span>
+            <span className="w-8 h-px bg-primary/40" />
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 max-w-3xl mx-auto">
+            {/* Quicker Classifications, Instant Duty Estimates, and Zero Tariff
+            Surprises */}
+            {/* Save hours on classification, Get Instant Duty Estimates, and Never
+            Miss a Tariff Change */}
+            <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
+              Quicker
+            </span>{" "}
+            Classifications,{" "}
+            <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
+              Instant
+            </span>{" "}
+            Duty Quotes and{" "}
+            <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
+              Zero
+            </span>{" "}
+            Tariff Surprises
+          </h2>
+          <p className="text-base-content/60 text-base md:text-lg max-w-2xl mx-auto">
+            Everything you need to streamline HTS classifications and master
+            tariffs
+          </p>
         </div>
-        <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8 text-base-content mt-10">
-          {getPricingPlans(customerType).map((plan, index) => {
+
+        {/* Pricing Cards */}
+        <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8 max-w-4xl mx-auto">
+          {getPricingPlans().map((plan, index) => {
             const defaultTierIndex = plan.prices.length - 1;
             const currentTierIndex =
               selectedTierIndices[index] ?? defaultTierIndex;
@@ -136,124 +151,174 @@ const Pricing = ({ customerType }: PricingProps) => {
               plan.prices.length > 1 &&
               plan.priceTiers &&
               plan.priceTiers.length > 1;
+            const isTeamPlan = plan.planIdentifier
+              .toLowerCase()
+              .includes("team");
 
             return (
               <div
                 key={index}
                 className={classNames(
-                  "relative w-full max-w-lg border-2 border-base-content/10 rounded-lg shadow-md",
-                  plan.isFeatured && "border-primary rounded-lg"
-                  // !plan.isFeatured &&
-                  //   "border-2 border-base-content/20 rounded-lg"
+                  "group relative w-full max-w-md overflow-hidden",
+                  "bg-gradient-to-br from-base-200/80 via-base-100 to-base-200/60",
+                  "backdrop-blur-sm rounded-2xl border transition-all duration-300",
+                  plan.isFeatured
+                    ? "border-primary/40 shadow-xl shadow-primary/10 hover:shadow-2xl hover:shadow-primary/20 scale-[1.02] lg:scale-105"
+                    : "border-base-content/10 shadow-lg hover:shadow-xl hover:border-primary/20"
                 )}
               >
+                {/* Featured badge */}
                 {plan.isFeatured && (
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-                    <span
-                      className={`badge text-xs text-base-100 font-semibold border-0 bg-primary`}
-                    >
+                  <div className="absolute -top-px left-1/2 -translate-x-1/2">
+                    <div className="flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-primary to-secondary rounded-b-xl text-white text-xs font-semibold shadow-lg">
+                      <SparklesIcon className="w-3.5 h-3.5" />
                       Best Value
-                    </span>
+                    </div>
                   </div>
                 )}
 
-                <div
-                  className={`relative flex flex-col h-full gap-4 lg:gap-6 bg-base-100 p-6 rounded-lg ${
-                    plan.isCompetitor && "bg-red-500/20"
-                  }`}
-                >
-                  <div className="flex justify-between items-center gap-4">
-                    <div className="flex flex-col">
-                      <p className="text-2xl font-bold">
-                        {plan.planIdentifier}
-                      </p>
+                {/* Decorative gradient orb */}
+                <div className="absolute -top-20 -right-20 w-40 h-40 bg-primary/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-                      {plan.description && (
-                        <p className="text-base-content/80">
-                          {plan.description}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-end gap-4">
-                    <div className="flex gap-2 items-center">
-                      {currentPriceAnchor && (
-                        <div className="flex flex-col justify-end mb-[4px] text-lg ">
-                          <p className="text-xs text-base-content/40">USD</p>
-                          <p className="relative">
-                            <span className="absolute bg-neutral-500 h-[2px] inset-x-0 top-[45%]"></span>
-                            <span className="text-base-content/50 text-xl font-bold">
-                              ${currentPriceAnchor}
-                            </span>
-                          </p>
-                        </div>
-                      )}
-                      {currentPrice === 0 ? (
-                        <p className={`text-4xl tracking-tight font-extrabold`}>
-                          Free
-                        </p>
-                      ) : (
-                        <div className="flex items-end">
-                          <p
-                            className={`${plan.isCompetitor ? "text-error" : "text-base-content"} text-5xl tracking-tight font-extrabold`}
-                          >
-                            ${currentPrice}
-                          </p>
-                          {plan.mode === StripePaymentMode.SUBSCRIPTION && (
-                            <div className="flex flex-col">
-                              <p className="pl-1 pb-1 text-sm text-base-content/80 font-semibold">
-                                / user / month
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                    {hasMultipleTiers && (
-                      <select
-                        value={currentTierIndex}
-                        onChange={(e) =>
-                          handleTierChange(index, parseInt(e.target.value))
-                        }
-                        className="select select-bordered select-sm bg-base-100 text-base-content font-semibold"
+                <div className="relative p-8 flex flex-col h-full">
+                  {/* Plan header */}
+                  <div className="mb-6">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div
+                        className={classNames(
+                          "flex items-center justify-center w-10 h-10 rounded-xl",
+                          plan.isFeatured
+                            ? "bg-gradient-to-br from-primary/20 to-secondary/20 border border-primary/20"
+                            : "bg-base-200 border border-base-content/10"
+                        )}
                       >
-                        {plan.priceTiers!.map((tier, i) => (
-                          <option key={i} value={i}>
-                            {tier}
-                          </option>
-                        ))}
-                      </select>
+                        {isTeamPlan ? (
+                          <UserGroupIcon
+                            className={classNames(
+                              "w-5 h-5",
+                              plan.isFeatured
+                                ? "text-primary"
+                                : "text-base-content/70"
+                            )}
+                          />
+                        ) : (
+                          <SparklesIcon
+                            className={classNames(
+                              "w-5 h-5",
+                              plan.isFeatured
+                                ? "text-primary"
+                                : "text-base-content/70"
+                            )}
+                          />
+                        )}
+                      </div>
+                      <div className="w-full flex justify-between items-center">
+                        <h3 className="text-xl font-bold text-base-content">
+                          {plan.planIdentifier}
+                        </h3>
+                        {/* Tier selector - inline with price */}
+                        {hasMultipleTiers && (
+                          <select
+                            value={currentTierIndex}
+                            onChange={(e) =>
+                              handleTierChange(index, parseInt(e.target.value))
+                            }
+                            className="select select-sm ml-auto bg-base-200/50 text-base-content text-xs font-medium border border-base-content/10 focus:border-primary focus:outline-none"
+                          >
+                            {plan.priceTiers!.map((tier, i) => (
+                              <option key={i} value={i}>
+                                {tier}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+                      </div>
+                    </div>
+                    {plan.description && (
+                      <p className="text-sm text-base-content/60">
+                        {plan.description}
+                      </p>
                     )}
                   </div>
+
+                  {/* Price */}
+                  <div className="flex items-baseline gap-2 mb-6">
+                    {currentPriceAnchor && (
+                      <div className="flex flex-col">
+                        <span className="relative text-2xl font-bold text-base-content/40">
+                          <span className="absolute inset-0 flex items-center">
+                            <span className="w-full h-0.5 bg-base-content/30" />
+                          </span>
+                          ${currentPriceAnchor}
+                        </span>
+                      </div>
+                    )}
+                    {currentPrice === 0 ? (
+                      <span className="text-5xl font-extrabold text-base-content">
+                        Free
+                      </span>
+                    ) : (
+                      <>
+                        <span
+                          className={classNames(
+                            "text-5xl font-extrabold tracking-tight",
+                            plan.isFeatured
+                              ? "bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
+                              : "text-base-content"
+                          )}
+                        >
+                          ${currentPrice}
+                        </span>
+                        {plan.mode === StripePaymentMode.SUBSCRIPTION && (
+                          <span className="text-base-content/50 text-sm font-medium">
+                            / user / month
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </div>
+
+                  {/* Divider */}
+                  <div className="h-px bg-gradient-to-r from-transparent via-base-content/10 to-transparent mb-6" />
+
+                  {/* Features */}
                   {plan.features && (
-                    <ul className="space-y-4 leading-relaxed text-base flex-1">
+                    <ul className="space-y-4 mb-8 flex-1">
                       {plan.features.map((feature, i) => (
-                        <li key={i} className="flex items-start gap-2">
-                          {getFeatureIcon(feature)}
-                          <div className="flex flex-col -mt-1">
-                            <div
-                              className={classNames(
-                                "flex items-center gap-2 w-full",
-                                feature.comingSoon && "mb-1"
-                              )}
-                            >
-                              <p>{feature.name} </p>
+                        <li key={i} className="flex items-start gap-3">
+                          <div
+                            className={classNames(
+                              "flex items-center justify-center w-5 h-5 rounded-full mt-0.5 shrink-0",
+                              plan.isFeatured ? "bg-primary/10" : "bg-base-200"
+                            )}
+                          >
+                            {getFeatureIcon(feature)}
+                          </div>
+                          <div className="flex flex-col">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-sm font-medium text-base-content">
+                                {feature.name}
+                              </span>
                               {(feature.comingSoon || feature.roadmap) && (
-                                <span className="bg-base-200 px-2 py-1 rounded-md text-base-content/70 font-semibold text-xs">
+                                <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-base-200 text-base-content/60">
                                   {getFeatureSupportingLabel(feature)}
                                 </span>
                               )}
                             </div>
-                            <p className="text-xs text-base-content/60">
-                              {feature.details}
-                            </p>
+                            {feature.details && (
+                              <p className="text-xs text-base-content/50 mt-0.5">
+                                {feature.details}
+                              </p>
+                            )}
                           </div>
                         </li>
                       ))}
                     </ul>
                   )}
+
+                  {/* CTA - always at bottom */}
                   {!plan.isCompetitor && (
-                    <div className="space-y-2">
+                    <div className="mt-auto pt-4">
                       <ButtonCheckout plan={plan} />
                     </div>
                   )}
@@ -263,17 +328,48 @@ const Pricing = ({ customerType }: PricingProps) => {
           })}
         </div>
 
-        <div className="mt-10 flex flex-col gap-2 justify-center text-center items-center p-4 max-w-4xl mx-auto bg-base-100 rounded-full border-2 border-base-content/10">
-          <div className="flex gap-2 items-center">
-            <ShieldCheckIcon className="w-6 h-6 text-primary" />
-            <h3 className="text-lg sm:text-xl font-semibold text-primary">
-              Smarter Classifications Guarantee
-            </h3>
+        {/* Guarantee section */}
+        <div className="mt-16 max-w-3xl mx-auto">
+          <div className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-base-100 to-secondary/5 rounded-2xl border border-primary/20 p-8 md:p-10">
+            {/* Decorative elements */}
+            <div className="absolute -top-12 -left-12 w-24 h-24 bg-primary/20 rounded-full blur-2xl" />
+            <div className="absolute -bottom-12 -right-12 w-24 h-24 bg-secondary/20 rounded-full blur-2xl" />
+
+            <div className="relative flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
+              <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 border border-primary/20 shrink-0">
+                <ShieldCheckIcon className="w-8 h-8 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-xl md:text-2xl font-bold text-base-content mb-2">
+                  Smarter Classifications{" "}
+                  <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                    Guarantee
+                  </span>
+                </h3>
+                <p className="text-base-content/60 text-sm md:text-base leading-relaxed">
+                  Complete 20 classifications within 30 days. If you&apos;re not
+                  completely satisfied with your experience, we&apos;ll refund
+                  your purchase in full.
+                </p>
+              </div>
+            </div>
           </div>
-          <p className="font-medium text-sm sm:text-base">
-            Get a full refund if you complete 20 classifications and are
-            unsatisfied with your purchase after 30 days!
-          </p>
+        </div>
+
+        {/* Additional value props */}
+        <div className="mt-12 flex flex-wrap justify-center gap-6 md:gap-10 text-center">
+          <div className="flex items-center gap-2 text-sm text-base-content/60">
+            <CheckIcon className="w-4 h-4 text-primary" />
+            <span>Cancel anytime</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-base-content/60">
+            <CheckIcon className="w-4 h-4 text-primary" />
+            <span>In-App Support</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-base-content/60">
+            <CheckIcon className="w-4 h-4 text-primary" />
+            <span>Video Tutorials</span>
+          </div>
         </div>
       </div>
     </section>
