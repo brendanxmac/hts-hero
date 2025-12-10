@@ -7,6 +7,7 @@ import logo from "@/app/logo.svg";
 import config from "@/config";
 import { usePathname, useSearchParams } from "next/navigation";
 import ThemeToggle from "./ThemeToggle";
+import ButtonSignin from "./ButtonSignin";
 
 // A header with a logo on the left, links in the center (like Pricing, etc...), and a CTA (like Get Started or Login) on the right.
 // The header is responsive, and on mobile, the links are hidden behind a burger button.
@@ -14,16 +15,16 @@ const UnauthenticatedTariffsHeader = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [scrolled, setScrolled] = useState(false);
 
-  const links: {
-    href: string;
-    label: string;
-  }[] = [
-    {
-      href: "/about/tariffs",
-      label: "See if you're Impacted by New Tariffs",
-    },
-  ];
+  // Add scroll listener for header background
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // setIsOpen(false) when the route changes (i.e: when the user clicks on a link on mobile)
   useEffect(() => {
@@ -31,14 +32,20 @@ const UnauthenticatedTariffsHeader = () => {
   }, [searchParams]);
 
   return (
-    <header className="w-full h-16 z-10 bg-base-100 flex items-center justify-between p-4 border-b border-base-content/20">
+    <header
+      className={`sticky top-0 w-full h-16 z-50 flex items-center justify-between px-4 sm:px-6 transition-all duration-300 ${
+        scrolled
+          ? "bg-base-100/95 backdrop-blur-md border-b border-base-content/10 shadow-sm"
+          : "bg-base-100 border-b border-base-content/10"
+      }`}
+    >
       <nav
-        className="w-full flex items-center justify-between"
+        className="w-full max-w-7xl mx-auto flex items-center justify-between"
         aria-label="Global"
       >
-        {/* Your logo/name on large screens */}
-        <div className="flex gap-6 lg:flex-1">
-          <Link className="flex items-center gap-2 shrink-0 " href="/">
+        {/* Logo and nav links */}
+        <div className="flex items-center gap-8">
+          <Link className="flex items-center gap-2 shrink-0" href="/">
             <Image
               src={logo}
               alt={`${config.appName} logo`}
@@ -48,48 +55,55 @@ const UnauthenticatedTariffsHeader = () => {
               height={32}
             />
             <span className="font-extrabold text-lg">{config.appName}</span>
-            {/* <span className="bg-white px-2 py-1 rounded-md text-black font-semibold text-xs">
-              Beta
-            </span> */}
           </Link>
-          <div className="flex items-center justify-start gap-4">
-            <Link href="/duty-calculator">
-              <button
-                className={`btn btn-link px-0 gap-0 ${
-                  pathname === "/duty-calculator"
-                    ? "text-primary underline"
-                    : "text-base-content no-underline"
-                }`}
-              >
-                Duty Calculator
-              </button>
+
+          {/* Desktop Navigation Links */}
+          <div className="hidden md:flex items-center gap-6">
+            <Link
+              href="/duty-calculator"
+              className={`text-sm font-medium transition-colors ${
+                pathname === "/duty-calculator"
+                  ? "text-primary"
+                  : "text-base-content/70 hover:text-primary"
+              }`}
+            >
+              Duty Calculator
             </Link>
-            <Link href="/about">
-              <button
-                className={`btn btn-link px-0 gap-0 text-base-content no-underline`}
-              >
-                Classify
-              </button>
+            <Link
+              href="/about"
+              className={`text-sm font-medium transition-colors ${
+                pathname === "/about"
+                  ? "text-primary"
+                  : "text-base-content/70 hover:text-primary"
+              }`}
+            >
+              Classification Assistant
             </Link>
-            <Link href="/about/tariff-impact-checker">
-              <button
-                className={`btn btn-link px-0 gap-0 text-base-content no-underline`}
-              >
-                Tariff Impact Checker
-              </button>
+            <Link
+              href="/tariffs/impact-checker"
+              className={`text-sm font-medium transition-colors ${
+                pathname === "/tariffs/impact-checker"
+                  ? "text-primary"
+                  : "text-base-content/70 hover:text-primary"
+              }`}
+            >
+              Tariff Impact Checker
             </Link>
-            <Link href="/explore">
-              <button
-                className={`btn btn-link px-0 gap-0 text-base-content no-underline`}
-              >
-                HTS Explorer
-              </button>
+            <Link
+              href="/explore"
+              className={`text-sm font-medium transition-colors ${
+                pathname === "/explore"
+                  ? "text-primary"
+                  : "text-base-content/70 hover:text-primary"
+              }`}
+            >
+              HTS Explorer
             </Link>
           </div>
         </div>
 
-        {/* Burger button to open menu on mobile */}
-        <div className="flex sm:hidden">
+        {/* Mobile Burger Button */}
+        <div className="flex md:hidden">
           <button
             type="button"
             className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5"
@@ -113,36 +127,41 @@ const UnauthenticatedTariffsHeader = () => {
           </button>
         </div>
 
-        <div className="hidden sm:flex items-center gap-2">
-          {/* Your links on large screens */}
-          <div className="hidden sm:flex sm:justify-center sm:gap-2 sm:items-center">
-            {links.map((link) => (
-              <Link
-                href={link.href}
-                key={link.href}
-                className="btn btn-primary btn-sm font-semibold link link-hover"
-              >
-                {link.label}
-              </Link>
-            ))}
-            <ThemeToggle />
-          </div>
+        {/* Desktop Right Side - CTA & Theme Toggle */}
+        <div className="hidden md:flex items-center gap-3">
+          <Link
+            href="/about/tariffs"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm bg-primary text-white hover:bg-primary/90 transition-all duration-200 shadow-sm hover:shadow-md"
+          >
+            Check Your Tariff Impact
+          </Link>
+          <ButtonSignin text="Sign In" />
+          <ThemeToggle />
         </div>
       </nav>
 
-      {/* Mobile menu, show/hide based on menu state. */}
+      {/* Mobile Menu */}
       {isOpen && (
-        <div className="relative z-50">
+        <div className="fixed inset-0 z-50 md:hidden">
+          {/* Backdrop */}
           <div
-            className={`fixed inset-y-0 right-0 z-[60] w-full px-8 py-4 overflow-y-auto bg-base-200 sm:max-w-sm sm:ring-1 sm:ring-neutral/10 transform origin-right transition ease-in-out duration-300`}
-          >
-            {/* Your logo/name on small screens */}
-            <div className="flex items-center justify-between">
-              <Link className="flex items-center gap-2 shrink-0 " href="/">
+            className="fixed inset-0 bg-base-content/20 backdrop-blur-sm"
+            onClick={() => setIsOpen(false)}
+          />
+
+          {/* Menu Panel */}
+          <div className="fixed inset-y-0 right-0 w-full max-w-xs px-6 py-4 overflow-y-auto bg-base-100 shadow-xl">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-8">
+              <Link
+                className="flex items-center gap-2 shrink-0"
+                href="/"
+                onClick={() => setIsOpen(false)}
+              >
                 <Image
                   src={logo}
                   alt={`${config.appName} logo`}
-                  className="w-8"
+                  className="w-6"
                   priority={true}
                   width={32}
                   height={32}
@@ -172,23 +191,67 @@ const UnauthenticatedTariffsHeader = () => {
               </button>
             </div>
 
-            {/* Your links on small screens */}
-            <div className="flow-root mt-6">
-              <div className="py-4">
-                <div className="flex flex-col gap-y-4 items-start">
-                  {links.map((link) => (
-                    <Link
-                      href={link.href}
-                      key={link.href}
-                      className="font-semibold link link-hover"
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-              <div className="divider"></div>
-              <div className="flex gap-2 items-center justify-end">
+            {/* Navigation Links */}
+            <div className="flex flex-col gap-4 mb-8">
+              <Link
+                href="/duty-calculator"
+                onClick={() => setIsOpen(false)}
+                className={`text-base font-semibold transition-colors ${
+                  pathname === "/duty-calculator"
+                    ? "text-primary"
+                    : "text-base-content hover:text-primary"
+                }`}
+              >
+                Duty Calculator
+              </Link>
+              <Link
+                href="/about"
+                onClick={() => setIsOpen(false)}
+                className={`text-base font-semibold transition-colors ${
+                  pathname === "/about"
+                    ? "text-primary"
+                    : "text-base-content hover:text-primary"
+                }`}
+              >
+                Classification Assistant
+              </Link>
+              <Link
+                href="/tariffs/impact-checker"
+                onClick={() => setIsOpen(false)}
+                className={`text-base font-semibold transition-colors ${
+                  pathname === "/tariffs/impact-checker"
+                    ? "text-primary"
+                    : "text-base-content hover:text-primary"
+                }`}
+              >
+                Tariff Impact Checker
+              </Link>
+              <Link
+                href="/explore"
+                onClick={() => setIsOpen(false)}
+                className={`text-base font-semibold transition-colors ${
+                  pathname === "/explore"
+                    ? "text-primary"
+                    : "text-base-content hover:text-primary"
+                }`}
+              >
+                HTS Explorer
+              </Link>
+            </div>
+
+            <div className="divider" />
+
+            {/* CTA & Theme Toggle */}
+            <div className="flex flex-col gap-4">
+              <Link
+                href="/about/tariffs"
+                onClick={() => setIsOpen(false)}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm bg-primary text-white hover:bg-primary/90 transition-all duration-200"
+              >
+                Check Your Tariff Impact
+              </Link>
+              <div className="flex items-center gap-3">
+                <ButtonSignin text="Sign In" />
                 <ThemeToggle />
               </div>
             </div>

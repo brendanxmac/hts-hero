@@ -167,33 +167,6 @@ const productSections: ProductSectionData[] = [
   },
 ];
 
-const products: ProductCardI[] = [
-  {
-    emoji: "💰",
-    title: "Duty Calculator",
-    description: "Find the Best Tariff Rate for Any Item",
-    aboutUrl: "/about/tariffs",
-    appUrl: "/duty-calculator",
-    cta: "Find Tariffs",
-  },
-  {
-    emoji: "🎯",
-    title: "Classification Assistant",
-    description: "Turbocharge Your Classifications",
-    aboutUrl: "/about",
-    appUrl: "/classifications",
-    cta: "Classify",
-  },
-  {
-    emoji: "✅",
-    title: "Tariff Impact Checker",
-    description: "See If new tariffs affect your imports",
-    aboutUrl: "/about/tariff-impact-checker",
-    appUrl: "/tariffs/impact-checker",
-    cta: "Check Your Imports",
-  },
-];
-
 // Company names data
 const companies = [
   "Amazon",

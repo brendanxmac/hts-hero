@@ -48,7 +48,7 @@ const UnauthenticatedHeader = () => {
       label: "HTS Explorer",
     },
     {
-      href: "/about/tariffs",
+      href: "/about",
       label:
         pathname === "/duty-calculator"
           ? "Learn More"
@@ -88,7 +88,7 @@ const UnauthenticatedHeader = () => {
             <span className="font-extrabold text-lg">{config.appName}</span>
           </Link>
           <div className="hidden md:flex items-center justify-start gap-4">
-            <Link href="/about/tariffs">
+            <Link href="/duty-calculator">
               <button
                 className={`btn btn-link px-0 gap-0 ${
                   pathname === "/duty-calculator"
@@ -107,10 +107,10 @@ const UnauthenticatedHeader = () => {
                     : "text-base-content no-underline"
                 }`}
               >
-                Classify
+                Classification Assistant
               </button>
             </Link>
-            <Link href="/about/tariff-impact-checker">
+            <Link href="/tariffs/impact-checker">
               <button
                 className={`btn btn-link px-0 gap-0 ${
                   pathname === "/tariffs/impact-checker"

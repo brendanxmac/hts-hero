@@ -9,10 +9,10 @@ export default async function LayoutPrivate({
   children: ReactNode;
 }) {
   return (
-    <div className="h-screen flex flex-col bg-base-300 overflow-hidden">
+    <div className="min-h-screen flex flex-col bg-base-100 overflow-hidden">
       <Suspense
         fallback={
-          <div className="w-full h-16 bg-base-100 border-b border-base-content/20" />
+          <div className="w-full h-16 bg-base-100/95 backdrop-blur-md border-b border-base-content/10" />
         }
       >
         <UnauthenticatedTariffsHeader />

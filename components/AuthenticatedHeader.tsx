@@ -68,7 +68,7 @@ export const AuthenticatedHeader = () => {
                   : "text-base-content no-underline"
               }`}
             >
-              Classify
+              Classification Assistant
             </Link>
             <Link href="/tariffs/impact-checker">
               <button
@@ -208,7 +208,7 @@ export const AuthenticatedHeader = () => {
                         : "text-base-content no-underline"
                     }`}
                   >
-                    Classify
+                    Classification Assistant
                   </Link>
                   <Link
                     href="/tariffs/impact-checker"

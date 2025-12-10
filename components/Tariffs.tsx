@@ -88,12 +88,12 @@ export const Tariffs = ({
     );
 
   const handleRowClick = (country: CountryWithTariffs) => {
-    if (isPayingUser || isTariffImpactTrialUser) {
-      setSelectedCountry(country);
-      setIsModalOpen(true);
-    } else {
-      toast.error("Please upgrade to view all tariff rates & exemptions");
-    }
+    // if (isPayingUser || isTariffImpactTrialUser) {
+    setSelectedCountry(country);
+    setIsModalOpen(true);
+    // } else {
+    // toast.error("Please upgrade to view all tariff rates & exemptions");
+    // }
   };
 
   const handleSliderChange = (
@@ -551,7 +551,7 @@ export const Tariffs = ({
 
                       {/* Tariff Rate */}
                       <div className="flex items-center gap-3">
-                        {!isPayingUser && !isTariffImpactTrialUser ? (
+                        {/* {!isPayingUser && !isTariffImpactTrialUser ? (
                           <Link
                             href="/about/tariffs"
                             target="_blank"
@@ -563,50 +563,50 @@ export const Tariffs = ({
                               Unlock
                             </span>
                           </Link>
-                        ) : (
-                          <div className="flex items-center gap-2">
-                            {countryPercentTariffsSums.map((sum, i) => {
-                              const rawName = country.tariffSets[i]?.name || "";
-                              const isArticle =
-                                rawName === "Article" || rawName === "";
-                              // Remove "Content" suffix and trim for content-based tariffs
-                              const displayName = isArticle
-                                ? null
-                                : rawName.replace(" Content", "");
-                              return (
-                                <div
-                                  key={`${country.code}-${i}-percent-sum-${i}`}
-                                  className="flex items-center gap-2"
-                                >
-                                  {i > 0 && (
-                                    <span className="text-base-content/30">
-                                      |
+                        ) : ( */}
+                        <div className="flex items-center gap-2">
+                          {countryPercentTariffsSums.map((sum, i) => {
+                            const rawName = country.tariffSets[i]?.name || "";
+                            const isArticle =
+                              rawName === "Article" || rawName === "";
+                            // Remove "Content" suffix and trim for content-based tariffs
+                            const displayName = isArticle
+                              ? null
+                              : rawName.replace(" Content", "");
+                            return (
+                              <div
+                                key={`${country.code}-${i}-percent-sum-${i}`}
+                                className="flex items-center gap-2"
+                              >
+                                {i > 0 && (
+                                  <span className="text-base-content/30">
+                                    |
+                                  </span>
+                                )}
+                                <div className="flex items-center gap-1">
+                                  {displayName && (
+                                    <span className="text-xs text-base-content/50 font-medium">
+                                      {displayName}:
                                     </span>
                                   )}
-                                  <div className="flex items-center gap-1">
-                                    {displayName && (
-                                      <span className="text-xs text-base-content/50 font-medium">
-                                        {displayName}:
-                                      </span>
-                                    )}
-                                    <span className="font-bold text-base-content">
-                                      {cappedBy15PercentRule
-                                        ? null
-                                        : countryAmounts &&
-                                          countryAmounts.length > 0 &&
-                                          i === 0 && (
-                                            <span className="text-sm">
-                                              {countryAmounts} +{" "}
-                                            </span>
-                                          )}
-                                      {sum}%
-                                    </span>
-                                  </div>
+                                  <span className="font-bold text-base-content">
+                                    {cappedBy15PercentRule
+                                      ? null
+                                      : countryAmounts &&
+                                        countryAmounts.length > 0 &&
+                                        i === 0 && (
+                                          <span className="text-base">
+                                            {countryAmounts} +{" "}
+                                          </span>
+                                        )}
+                                    {sum}%
+                                  </span>
                                 </div>
-                              );
-                            })}
-                          </div>
-                        )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                        {/* )} */}
 
                         {/* Chevron */}
                         <ChevronRightIcon className="h-5 w-5 text-base-content/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-200" />

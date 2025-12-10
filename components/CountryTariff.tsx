@@ -13,7 +13,7 @@ import {
   CountryWithTariffs,
   addTariffsToCountry,
 } from "../tariffs/tariffs";
-import { TradePrograms } from "../public/trade-programs";
+import { TradeProgram, TradePrograms } from "../public/trade-programs";
 import { copyToClipboard } from "../utilities/data";
 import { TariffSet } from "../interfaces/tariffs";
 import { classNames } from "../utilities/style";
@@ -72,10 +72,14 @@ interface FeeEstimate {
   note?: string;
 }
 
-const DEFAULT_PROGRAM = {
+interface TradeProgramDisplayable {
+  name: string;
+  symbol: string;
+}
+
+const DEFAULT_PROGRAM: TradeProgramDisplayable = {
   symbol: "none",
   name: "None",
-  description: "No special program",
 };
 
 export const CountryTariff = ({
@@ -113,9 +117,8 @@ export const CountryTariff = ({
   const [isCostCopied, setIsCostCopied] = useState(false);
   const [isTariffDetailsCopied, setIsTariffDetailsCopied] = useState(false);
   const [isLinkCopied, setIsLinkCopied] = useState(false);
-  const [selectedSpecialProgram, setSelectedSpecialProgram] = useState<any>(
-    selectedTradeProgram || DEFAULT_PROGRAM
-  );
+  const [selectedSpecialProgram, setSelectedSpecialProgram] =
+    useState<TradeProgramDisplayable>(selectedTradeProgram || DEFAULT_PROGRAM);
   const [showClassificationPath, setShowClassificationPath] = useState(false);
 
   // Build classification path items
@@ -762,8 +765,8 @@ export const CountryTariff = ({
             </h2>
           </div>
           {selectedSpecialProgram?.symbol !== "none" && (
-            <span className="badge badge-success badge-sm font-semibold mt-1">
-              {selectedSpecialProgram.symbol}
+            <span className="badge badge-primary text-base-100 badge-sm font-semibold mt-1">
+              {selectedSpecialProgram.name} Applied
             </span>
           )}
         </div>
@@ -917,7 +920,7 @@ export const CountryTariff = ({
                 </span>
                 <div className="text-2xl sm:text-3xl md:text-4xl font-black text-primary text-center">
                   {total.hasAmountTariffs && total.amountRatesString && (
-                    <span className="text-xl sm:text-2xl lg:text-3xl">
+                    <span className="text-2xl sm:text-3xl md:text-4xl">
                       {total.amountRatesString} +{" "}
                     </span>
                   )}
@@ -997,11 +1000,6 @@ export const CountryTariff = ({
                         {program.name}
                       </span>
                     </div>
-                    {"description" in program && program.description && (
-                      <p className="text-xs sm:text-sm text-base-content/60">
-                        {program.description}
-                      </p>
-                    )}
                   </div>
                 </div>
               </div>

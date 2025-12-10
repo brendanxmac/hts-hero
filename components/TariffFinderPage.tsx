@@ -71,7 +71,9 @@ export const TariffFinderPage = () => {
   const { setBreadcrumbs } = useBreadcrumbs();
 
   // State
-  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState<Country | null>(
+    Countries.find((c) => c.code === "CN") || null
+  );
   const [selectedElement, setSelectedElement] = useState<HtsElement | null>(
     null
   );
@@ -497,7 +499,7 @@ export const TariffFinderPage = () => {
                 </span>
               </h1>
               <p className="text-base-content/60 text-sm md:text-base max-w-lg mt-1">
-                Find the duty cost for any US import and discoverf ways to save.
+                Find the duty cost for any US import and discover ways to save.
               </p>
             </div>
 
@@ -519,7 +521,7 @@ export const TariffFinderPage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="w-full max-w-6xl mx-auto flex flex-col p-4 gap-2">
+      <div className="w-full max-w-6xl mx-auto flex flex-col p-4 gap-3">
         {/* Inputs */}
         <div className="w-full flex flex-col md:flex-row gap-3">
           {/* HTS Code Search */}
@@ -545,7 +547,6 @@ export const TariffFinderPage = () => {
           <div className="grow flex flex-col gap-2">
             <div className="flex flex-col">
               <SecondaryLabel value="Country of Origin" />
-              {/* <SecondaryText value="Select the country your goods are imported from" /> */}
             </div>
             <CountrySelection
               singleSelect
@@ -569,13 +570,13 @@ export const TariffFinderPage = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-x-3 gap-y-2">
+        <div className="flex gap-3">
           {/* Units and Customs Value Inputs */}
           {countryWithTariffs &&
             countryWithTariffs.baseTariffs
               ?.flatMap((t) => t.tariffs)
               ?.some((t) => t.type === "amount") && (
-              <div className="col-span-1 flex flex-col gap-2">
+              <div className="flex flex-col gap-2 max-w-64">
                 <div className="flex flex-col">
                   <SecondaryLabel value="Units / Weight" />
                 </div>
@@ -617,7 +618,7 @@ export const TariffFinderPage = () => {
                     onChange={(value) =>
                       handleSliderChange(contentPercentage.name, value)
                     }
-                    className="max-w-48"
+                    className="max-w-64"
                   />
                 </div>
               ))}
