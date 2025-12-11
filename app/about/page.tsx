@@ -219,7 +219,7 @@ export default function Home() {
           <div className="absolute -top-24 -right-24 w-72 h-72 bg-primary/10 md:bg-primary/20 rounded-full blur-3xl" />
         </div>
 
-        <div className="relative z-10 flex flex-col items-center px-4 sm:px-6 py-4 md:pt-20 lg:pt-24">
+        <div className="relative z-10 flex flex-col items-center px-4 sm:px-6 py-4 pt-8 md:pt-12 lg:pt-16">
           {/* Main Hero Content */}
           <div className="text-center max-w-4xl w-full mb-4">
             {/* Compact Trust Indicator */}
@@ -238,11 +238,12 @@ export default function Home() {
             </h1>
 
             <p className="text-base-content/80 text-base md:text-lg max-w-4xl mx-auto mb-8">
-              Save hours every week and avoid misclassification fees
+              Save hours on classification, avoid mistakes, and work together
+              with your entire team
             </p>
 
             {/* CTA Button */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12 w-full">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6 w-full">
               <Link
                 href="/classifications"
                 className="group inline-flex items-center justify-center gap-2 px-16 py-3.5 rounded-xl font-semibold text-base bg-secondary text-white hover:bg-secondary/90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl"

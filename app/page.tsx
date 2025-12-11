@@ -14,6 +14,7 @@ import {
   ProductSectionData,
 } from "../components/ProductSection";
 import TestimonialsStrip from "../components/TestimonialsStrip";
+import ProductStepsVisual from "../components/ProductStepsVisual";
 
 const productSections: ProductSectionData[] = [
   {
@@ -193,16 +194,20 @@ export default function Home() {
           {/* <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary/5 rounded-full blur-3xl" /> */}
         </div>
 
-        <div className="relative z-10 flex flex-col items-center px-4 sm:px-6 py-4 md:pt-20 lg:pt-24">
+        <div className="relative z-10 flex flex-col items-center px-4 sm:px-6 py-4 pt-8 md:pt-12 lg:pt-16">
           {/* Main Hero Content */}
           <div className="text-center max-w-4xl w-full mb-4">
             {/* Compact Trust Indicator */}
             <div className="flex items-center justify-center gap-2 mb-12">
-              <BoltIcon className="w-4 h-4 text-primary" />
-              <p className="text-sm font-medium">
+              <BoltIcon className="sm:w-4 sm:h-4 w-3 h-3 text-primary" />
+              <p className="text-sm font-medium sm:hidden px-4 sm:px-0">
+                Saving Manufacturers, Brokerages,
+                <br /> & 3PL's Hours Every Week
+              </p>
+              <p className="text-sm font-medium hidden sm:block">
                 Saving Manufacturers, Brokerages, & 3PL's Hours Every Week
               </p>
-              <BoltIcon className="w-4 h-4 text-primary" />
+              <BoltIcon className="sm:w-4 sm:h-4 w-3 h-3 text-primary" />
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-5">
               <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
@@ -217,8 +222,8 @@ export default function Home() {
             </h1>
 
             <p className="text-base-content/80 text-base md:text-lg max-w-4xl mx-auto mb-8">
-              Classify anything in minutes, find the duty cost for any import,
-              and avoid surprise fees
+              Classify incredibly fast, see the latest duty & tariffs for any
+              import, and avoid surprise fees
             </p>
 
             {/* CTA Buttons */}
@@ -266,16 +271,16 @@ export default function Home() {
                         <Link
                           href="/classifications"
                           onClick={() => setIsToolMenuOpen(false)}
-                          className="flex items-start gap-3 p-3 rounded-xl hover:bg-secondary/10 transition-colors group"
+                          className="flex items-center gap-3 p-3 rounded-xl hover:bg-secondary/10 transition-colors group"
                         >
                           <div className="w-10 h-10 rounded-lg bg-secondary/20 flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
                             🎯
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="font-semibold text-base-content group-hover:text-secondary transition-colors">
+                          <div className="flex flex-col">
+                            <div className="text-left font-semibold text-base-content group-hover:text-secondary transition-colors">
                               Classification Assistant
                             </div>
-                            <div className="text-xs text-base-content/60">
+                            <div className="text-left text-xs text-base-content/60">
                               AI-powered classification assistance
                             </div>
                           </div>
@@ -284,16 +289,16 @@ export default function Home() {
                         <Link
                           href="/duty-calculator"
                           onClick={() => setIsToolMenuOpen(false)}
-                          className="flex items-start gap-3 p-3 rounded-xl hover:bg-primary/10 transition-colors group"
+                          className="flex items-center gap-3 p-3 rounded-xl hover:bg-primary/10 transition-colors group"
                         >
                           <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
                             💰
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="font-semibold text-base-content group-hover:text-primary transition-colors">
+                          <div className="flex flex-col">
+                            <div className="text-left font-semibold text-base-content group-hover:text-primary transition-colors">
                               Duty Calculator
                             </div>
-                            <div className="text-xs text-base-content/60">
+                            <div className="text-left text-xs text-base-content/60">
                               Duties & tariffs for any import
                             </div>
                           </div>
@@ -302,16 +307,16 @@ export default function Home() {
                         <Link
                           href="/tariffs/impact-checker"
                           onClick={() => setIsToolMenuOpen(false)}
-                          className="flex items-start gap-3 p-3 rounded-xl hover:bg-accent/10 transition-colors group"
+                          className="flex items-center gap-3 p-3 rounded-xl hover:bg-accent/10 transition-colors group"
                         >
                           <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
                             ✓
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="font-semibold text-base-content">
+                          <div className="flex flex-col">
+                            <div className="text-left font-semibold text-base-content">
                               Tariff Impact Checker
                             </div>
-                            <div className="text-xs text-base-content/60">
+                            <div className="text-left text-xs text-base-content/60">
                               Check if new tariffs affect your imports
                             </div>
                           </div>
@@ -330,6 +335,9 @@ export default function Home() {
               </button>
             </div>
           </div>
+
+          {/* Product Steps Visual */}
+          <ProductStepsVisual products={productSections} />
 
           {/* Integrated Testimonials Strip */}
           <TestimonialsStrip />

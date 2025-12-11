@@ -157,7 +157,7 @@ const TariffImpactPricing = () => {
               Savings
             </span>
           </h2>
-          <p className="text-base-content/60 text-base md:text-lg max-w-2xl mx-auto">
+          <p className="text-base-content/60 text-base md:text-lg max-w-4xl mx-auto">
             Join 200+ importers & customs brokers who are conquering tariff
             chaos with HTS Hero
           </p>
@@ -392,33 +392,6 @@ const TariffImpactPricing = () => {
                   />
                 </svg>
               </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Guarantee section */}
-        <div className="mt-12 max-w-3xl mx-auto">
-          <div className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-base-100 to-secondary/5 rounded-2xl border border-primary/20 p-8 md:p-10">
-            {/* Decorative elements */}
-            <div className="absolute -top-12 -left-12 w-24 h-24 bg-primary/20 rounded-full blur-2xl" />
-            <div className="absolute -bottom-12 -right-12 w-24 h-24 bg-secondary/20 rounded-full blur-2xl" />
-
-            <div className="relative flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
-              <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 border border-primary/20 shrink-0">
-                <ShieldCheckIcon className="w-8 h-8 text-primary" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl md:text-2xl font-bold text-base-content mb-2">
-                  Satisfaction{" "}
-                  <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                    Guarantee
-                  </span>
-                </h3>
-                <p className="text-base-content/60 text-sm md:text-base leading-relaxed">
-                  Try it for 30 days. If you&apos;re not completely satisfied
-                  with your experience, we&apos;ll refund your purchase in full.
-                </p>
-              </div>
             </div>
           </div>
         </div>

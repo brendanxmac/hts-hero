@@ -41,7 +41,7 @@ const Demo = ({
   };
 
   return (
-    <section className="bg-none mx-auto md:min-h-[70vh] bg-base-200 px-4 sm:px-6 md:px-8 lg:px-12 py-12 lg:py-16 flex flex-col items-center justify-center">
+    <section className="bg-none mx-auto md:min-h-[70vh] px-4 sm:px-6 md:px-8 lg:px-12 py-12 lg:py-16 flex flex-col items-center justify-center">
       <div className="flex flex-col items-center justify-center gap-4 md:gap-8">
         {/* Hero Text */}
         <div className="flex flex-col gap-4 text-center">

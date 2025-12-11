@@ -45,26 +45,47 @@ export function TestimonialsStrip({
   return (
     <div className="w-full max-w-6xl mx-auto">
       {showTestimonials && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {testimonials.map((testimonial, index) => (
-            <div
-              key={index}
-              className="group relative bg-gradient-to-br from-primary/5 to-base-100 backdrop-blur-sm rounded-lg px-4 py-3 border border-base-content/5 hover:border-primary/20 transition-all duration-300"
+        <div className="w-full flex flex-col">
+          {/* Title Section */}
+          <div className="self-center flex items-center gap-1.5 sm:gap-2 mb-3 sm:mb-4">
+            <span className={`inline-block w-8 sm:w-12 h-px bg-primary`} />
+            <span
+              className={`text-xs font-semibold text-primary uppercase tracking-widest`}
             >
-              <blockquote className="text-sm text-base-content/80 leading-relaxed mb-2">
-                &ldquo;{testimonial.quote}&rdquo;
-              </blockquote>
-              <div className="flex items-center gap-2">
-                <div className="text-[10px] font-semibold text-base-content/50 truncate">
-                  {testimonial.role}
+              Trusted by Trade Professionals
+            </span>
+            <span className={`inline-block w-8 sm:w-12 h-px bg-primary`} />
+          </div>
+
+          {/* Testimonials Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+            {testimonials.map((testimonial, index) => (
+              <div
+                key={index}
+                className="group relative bg-gradient-to-br from-base-100 via-base-100 to-primary/5 backdrop-blur-sm rounded-xl px-4 py-3 sm:px-6 sm:py-5 border-2 border-base-content/10 hover:border-secondary/40 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+              >
+                {/* Decorative quote mark */}
+                <div className="absolute top-3 left-3 sm:top-4 sm:left-4 text-2xl sm:text-4xl font-serif text-secondary/20 leading-none">
+                  &ldquo;
                 </div>
-                <span className="text-base-content/30">·</span>
-                <div className="text-[10px] text-primary/60">
-                  {testimonial.company}
+
+                <blockquote className="text-sm sm:text-base text-base-content leading-relaxed mb-3 sm:mb-4 relative z-10 pt-1 sm:pt-2">
+                  {testimonial.quote}
+                </blockquote>
+
+                <div className="flex items-center gap-2 pt-2 sm:pt-3 border-t border-base-content/10">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs font-semibold text-base-content/70 truncate">
+                      {testimonial.role}
+                    </div>
+                    <div className="text-xs font-medium text-primary mt-0.5">
+                      {testimonial.company}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 
