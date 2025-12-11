@@ -337,7 +337,7 @@ export default function Home() {
           </div>
 
           {/* Product Steps Visual */}
-          <ProductStepsVisual products={productSections} />
+          {/* <ProductStepsVisual products={productSections} /> */}
 
           {/* Integrated Testimonials Strip */}
           <TestimonialsStrip />

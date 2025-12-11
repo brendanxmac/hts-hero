@@ -118,7 +118,7 @@ export const ClassificationSummary = ({
         <div className="relative z-[1] p-5">
           {/* Top Row: HTS Code + Status Badges */}
           <div className="flex items-start justify-between gap-4 mb-3">
-            <div className="flex items-center">
+            <div className="flex items-center gap-2">
               {/* HTS Code Badge */}
 
               <p className="text-sm font-bold text-primary">
@@ -127,7 +127,7 @@ export const ClassificationSummary = ({
 
               {/* Country of Origin Badge */}
               {countryOfOrigin && (
-                <div className="flex items-center gap-1.5 px-2 py-1">
+                <div className="flex items-center gap-1.5 py-1">
                   <p className="text-xs text-base-content/40">|</p>
                   <p className="text-base">{countryOfOrigin.flag}</p>
                   <p className="text-sm font-semibold">
@@ -138,24 +138,22 @@ export const ClassificationSummary = ({
 
               {/* Incomplete indicator */}
               {!isFull10DigitHtsNo(latestHtsNo) && (
-                <span className="text-xs font-medium text-base-content/60 italic">
-                  Incomplete
-                </span>
+                <p className="badge badge-sm badge-neutral">Incomplete</p>
               )}
             </div>
 
             <div className="flex items-center gap-2">
               {/* Status Badges */}
               {classificationRecord.status === ClassificationStatus.REVIEW && (
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-warning/25 border border-warning/40">
-                  <FlagIcon className="h-3.5 w-3.5 text-warning" />
-                  <span className="text-xs font-bold text-warning">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary/10 border border-secondary/40">
+                  <FlagIcon className="h-3.5 w-3.5 text-secondary" />
+                  <span className="text-xs font-bold text-secondary">
                     Needs Review
                   </span>
                 </div>
               )}
               {classificationRecord.status === ClassificationStatus.FINAL && (
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-success/25 border border-success/40">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-success/10 border border-success/40">
                   <CheckCircleIcon className="h-4 w-4 text-success" />
                   <span className="text-xs font-bold text-success">
                     Finalized

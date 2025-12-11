@@ -47,8 +47,7 @@ export const VerticalClassificationStep = ({
 
   const { user } = useUser();
   const [showCrossRulingsModal, setShowCrossRulingsModal] = useState(false);
-  const { classification, addLevel, updateLevel, setClassification } =
-    useClassification();
+  const { classification, updateLevel } = useClassification();
   const { articleDescription, levels } = classification;
   // const [showNotes, setShowNotes] = useState(
   //   Boolean(levels[classificationLevel]?.notes)
