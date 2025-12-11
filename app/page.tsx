@@ -264,7 +264,7 @@ export default function Home() {
                         </p>
 
                         <Link
-                          href="/classify"
+                          href="/classifications"
                           onClick={() => setIsToolMenuOpen(false)}
                           className="flex items-start gap-3 p-3 rounded-xl hover:bg-secondary/10 transition-colors group"
                         >
