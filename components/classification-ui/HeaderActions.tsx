@@ -1,12 +1,16 @@
 "use client";
 
-import { ClassificationRecord, ClassificationStatus } from "../../interfaces/hts";
+import {
+  ClassificationRecord,
+  ClassificationStatus,
+} from "../../interfaces/hts";
 import { StatusDropdown } from "./StatusDropdown";
 import { DownloadReportButton } from "./DownloadReportButton";
 import { DeleteButton } from "./DeleteButton";
 
 export interface HeaderActionsProps {
   classificationRecord: ClassificationRecord;
+  refreshingClassifications: boolean;
   isComplete: boolean;
   canUpdateDetails: boolean;
   canDelete: boolean;
@@ -21,6 +25,7 @@ export interface HeaderActionsProps {
 
 export function HeaderActions({
   classificationRecord,
+  refreshingClassifications,
   isComplete,
   canUpdateDetails,
   canDelete,
@@ -44,7 +49,11 @@ export function HeaderActions({
           />
           <DownloadReportButton
             isDownloading={downloadingReport}
-            disabled={downloadingReport || isLoadingImporters}
+            disabled={
+              downloadingReport ||
+              isLoadingImporters ||
+              refreshingClassifications
+            }
             onClick={onDownloadReport}
           />
         </>
@@ -57,4 +66,3 @@ export function HeaderActions({
     </div>
   );
 }
-

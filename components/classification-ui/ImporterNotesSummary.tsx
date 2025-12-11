@@ -15,7 +15,7 @@ export function ImporterNotesSummary({ importerName, notes }: Props) {
   const hasNotes = notes && notes.trim().length > 0;
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 mt-3 ml-1">
       {/* Importer row */}
       <div className="flex items-center gap-2.5">
         <div className="flex items-center justify-center w-6 h-6 md:w-7 md:h-7 rounded-lg bg-primary/15">

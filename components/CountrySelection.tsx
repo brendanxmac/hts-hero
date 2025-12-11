@@ -313,6 +313,7 @@ export const CountrySelection = ({
                   <div
                     key={index}
                     className={`px-4 py-3 cursor-pointer flex items-center justify-between transition-all duration-150 ${bgClass}`}
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => handleCountrySelect(country)}
                     onMouseEnter={() => setHighlightedIndex(index)}
                   >

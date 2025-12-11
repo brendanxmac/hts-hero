@@ -113,7 +113,7 @@ const productSections: ProductSectionData[] = [
       {
         icon: "📧",
         title: "Instant Alerts",
-        description: "Get notified the moment new tariffs impact your codes",
+        description: "Get notified when new tariffs affect your imports",
       },
       {
         icon: "📋",
@@ -122,8 +122,8 @@ const productSections: ProductSectionData[] = [
       },
       {
         icon: "⚡",
-        title: "Proactive Planning",
-        description: "React before tariffs go into effect",
+        title: "Plan Ahead",
+        description: "Know your costs and navigate changes with confidence",
       },
     ],
     aboutUrl: "/about/tariff-impact-checker",

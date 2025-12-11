@@ -29,7 +29,7 @@ export function ClassificationDetailsSummary({ levels }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 mt-3">
       {selectionsWithData.map((selection) => (
         <div key={selection.key} className="flex items-start gap-3">
           {/* HTS Code */}

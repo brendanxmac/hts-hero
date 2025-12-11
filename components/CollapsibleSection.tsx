@@ -37,7 +37,9 @@ export const CollapsibleSection = ({
     !isExpanded && collapsedContent && !collapsedContentInline;
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-base-content/15 bg-base-100">
+    <div
+      className={`relative rounded-2xl border border-base-content/15 bg-base-100 ${isExpanded ? "overflow-visible" : "overflow-hidden"}`}
+    >
       {/* Decorative background */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute -top-16 -right-16 w-48 h-48 bg-primary/5 rounded-full blur-3xl" />
@@ -83,8 +85,12 @@ export const CollapsibleSection = ({
             </div>
 
             {/* Inline collapsed content - shown on desktop when collapsedContentInline is true */}
-            {!isExpanded && collapsedContent && collapsedContentInline && (
-              <div className="hidden md:flex md:justify-end flex-1 min-w-0">
+            {collapsedContent && collapsedContentInline && (
+              <div
+                className={`hidden md:flex md:justify-end flex-1 min-w-0 transition-opacity duration-300 ${
+                  !isExpanded ? "opacity-100" : "opacity-0"
+                }`}
+              >
                 {collapsedContent}
               </div>
             )}
@@ -93,27 +99,29 @@ export const CollapsibleSection = ({
 
         <div className="flex items-center gap-3 shrink-0">
           {/* Simple inline summary content when collapsed */}
-          {!isExpanded && summaryContent && (
-            <div className="hidden sm:flex items-center gap-2 text-sm text-base-content/70">
-              {summaryContent}
-            </div>
-          )}
           <div
-            className={`flex items-center justify-center w-8 h-8 rounded-lg bg-base-content/5 transition-transform duration-200 ${
-              isExpanded ? "" : "-rotate-180"
+            className={`hidden sm:flex items-center gap-2 text-sm text-base-content/70 transition-opacity duration-300 ${
+              !isExpanded && summaryContent ? "opacity-100" : "opacity-0"
             }`}
           >
-            <ChevronDownIcon className="w-4 h-4 text-base-content/60" />
+            {summaryContent}
+          </div>
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-base-content/5">
+            <ChevronDownIcon
+              className={`w-4 h-4 text-base-content/60 transition-transform duration-300 ease-in-out ${
+                isExpanded ? "" : "-rotate-180"
+              }`}
+            />
           </div>
         </div>
       </button>
 
       {/* Rich collapsed content below header - for mobile when inline, or always when not inline */}
-      {!isExpanded && collapsedContent && (
+      {collapsedContent && (
         <div
-          className={`relative z-10 px-5 pb-5 pt-0 ${
+          className={`relative z-10 transition-all duration-300 ease-in-out ${
             collapsedContentInline ? "md:hidden" : ""
-          }`}
+          } ${!isExpanded ? "opacity-100 px-5 pb-5 pt-0" : "opacity-0 h-0 overflow-hidden"}`}
           onClick={() => setIsExpanded(!isExpanded)}
         >
           <div className="cursor-pointer">{collapsedContent}</div>
@@ -122,8 +130,8 @@ export const CollapsibleSection = ({
 
       {/* Expandable Content */}
       <div
-        className={`relative z-10 overflow-hidden transition-all duration-300 ease-in-out ${
-          isExpanded ? "max-h-[5000px] opacity-100" : "max-h-0 opacity-0"
+        className={`relative z-10 transition-all duration-300 ease-in-out ${
+          isExpanded ? "opacity-100" : "opacity-0 h-0 overflow-hidden"
         }`}
       >
         <div className="px-5 pb-5 pt-0">

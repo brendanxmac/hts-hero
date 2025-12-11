@@ -15,7 +15,7 @@ export function DownloadReportButton({
 }: DownloadReportButtonProps) {
   return (
     <button
-      className="group flex items-center gap-1.5 h-9 px-3 rounded-lg font-semibold text-xs transition-all duration-200 bg-primary text-primary-content hover:bg-primary/90 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+      className="group flex items-center gap-1.5 h-9 px-3 rounded-lg font-semibold text-xs transition-all duration-200 bg-primary text-primary-content hover:bg-primary/90 hover:shadow-md disabled:bg-neutral disabled:opacity-30 disabled:cursor-not-allowed"
       disabled={disabled}
       onClick={onClick}
       title="Download classification report"
@@ -29,4 +29,3 @@ export function DownloadReportButton({
     </button>
   );
 }
-

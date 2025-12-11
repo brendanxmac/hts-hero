@@ -34,6 +34,7 @@ import {
   getHtsElementParents,
   getSectionAndChapterFromChapterNumber,
 } from "../libs/hts";
+import { CheckCircleIcon } from "@heroicons/react/16/solid";
 
 interface Props {
   units: number;
@@ -285,7 +286,7 @@ export const CountryTariff = ({
   const handleShareClick = () => {
     copyToClipboard(generateShareLink());
     setIsLinkCopied(true);
-    setTimeout(() => setIsLinkCopied(false), 2000);
+    setTimeout(() => setIsLinkCopied(false), 2500);
   };
 
   // Copy cost details as beautifully formatted text
@@ -772,18 +773,18 @@ export const CountryTariff = ({
         </div>
         <div className="flex gap-2 items-center shrink-0">
           <button
-            className={`btn btn-sm gap-1.5 btn-primary`}
+            className={classNames(
+              `btn btn-sm gap-1.5`,
+              isLinkCopied ? "btn-success text-white" : "btn-primary"
+            )}
             onClick={handleShareClick}
           >
             {isLinkCopied ? (
-              <ClipboardDocumentCheckIcon className="w-4 h-4" />
+              <CheckCircleIcon className="w-4 h-4" />
             ) : (
               <LinkIcon className="w-4 h-4" />
             )}
-            <span>{isLinkCopied ? "Copied!" : "Share"}</span>
-            {/* <span className="inline xs:hidden">
-              {isLinkCopied ? "Copied!" : "Share"}
-            </span> */}
+            <span>{isLinkCopied ? "Link Copied!" : "Share Results"}</span>
           </button>
           {isModal && onClose && (
             <button
@@ -803,11 +804,11 @@ export const CountryTariff = ({
           Estimated Costs
         </h2>
         <button
-          className={`btn btn-sm gap-1.5 btn-outline btn-primary shrink-0`}
+          className={`btn btn-sm gap-1.5 btn-neutral shrink-0`}
           onClick={handleCopyCostClick}
         >
           {isCostCopied ? (
-            <ClipboardDocumentCheckIcon className="w-4 h-4" />
+            <CheckCircleIcon className="w-4 h-4" />
           ) : (
             <ClipboardDocumentIcon className="w-4 h-4" />
           )}
@@ -820,14 +821,14 @@ export const CountryTariff = ({
         <div className="flex flex-col gap-4 p-3 sm:p-4">
           <div className="flex md:flex-row flex-col gap-3 sm:gap-4">
             {/* Duty & Fees */}
-            <div className="flex-1 basis-0 flex flex-col items-center justify-center p-4 sm:p-6 bg-primary/10 rounded-xl">
+            {/* <div className="flex-1 basis-0 flex flex-col items-center justify-center p-4 sm:p-6 bg-primary/10 rounded-xl">
               <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 sm:mb-2">
                 Customs Value
               </span>
               <h2 className="text-3xl sm:text-4xl font-black text-primary break-all text-center">
                 {formatCurrency(customsValue)}
               </h2>
-            </div>
+            </div> */}
             <div className="flex-1 basis-0 flex flex-col items-center justify-center p-4 sm:p-6 bg-secondary/10 rounded-xl">
               <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 sm:mb-2">
                 Total Duty & Fees
@@ -835,9 +836,9 @@ export const CountryTariff = ({
               <h2 className="text-3xl sm:text-4xl font-black text-secondary break-all text-center">
                 {formatCurrency(totalImportDuty)}
               </h2>
-              {/* <div className="text-xs sm:text-sm text-base-content/50 mt-1 sm:mt-2 text-center">
+              <div className="text-xs sm:text-sm text-base-content/50 mt-1 sm:mt-2 text-center">
                 on {formatCurrency(customsValue)} customs value
-              </div> */}
+              </div>
             </div>
             {/* Landed Cost */}
             <div className="flex-1 basis-0 flex flex-col items-center justify-center p-4 sm:p-6 bg-accent/10 rounded-xl">
@@ -913,7 +914,7 @@ export const CountryTariff = ({
             {summaryTotals.map((total, i) => (
               <div
                 key={i}
-                className="flex flex-col items-center justify-center p-3 sm:p-4 bg-base-200/50 rounded-xl flex-1 min-w-0"
+                className="flex flex-col items-center justify-center p-3 sm:p-4 bg-primary/10 rounded-xl flex-1 min-w-0"
               >
                 <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 text-center">
                   {total.name} Tariff Rate
@@ -928,7 +929,7 @@ export const CountryTariff = ({
                 </div>
               </div>
             ))}
-            <div className="flex flex-col items-center justify-center p-3 sm:p-4 bg-base-200/50 rounded-xl flex-1 min-w-0">
+            <div className="flex flex-col items-center justify-center p-3 sm:p-4 bg-primary/10 rounded-xl flex-1 min-w-0">
               <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 text-center">
                 Additional Fee Rate
               </span>
@@ -946,11 +947,11 @@ export const CountryTariff = ({
           Tariff Details
         </h2>
         <button
-          className={`btn btn-sm gap-1.5 btn-outline btn-primary shrink-0`}
+          className={`btn btn-sm gap-1.5 btn-neutral shrink-0`}
           onClick={handleCopyTariffDetailsClick}
         >
           {isTariffDetailsCopied ? (
-            <ClipboardDocumentCheckIcon className="w-4 h-4" />
+            <CheckCircleIcon className="w-4 h-4" />
           ) : (
             <ClipboardDocumentIcon className="w-4 h-4" />
           )}

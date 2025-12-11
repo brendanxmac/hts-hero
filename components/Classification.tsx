@@ -49,7 +49,11 @@ export const Classification = ({ setPage }: ClassificationProps) => {
   const { user } = useUser();
   const { classification, classificationId, saveAndClear } =
     useClassification();
-  const { classifications, refreshClassifications } = useClassifications();
+  const {
+    classifications,
+    refreshClassifications,
+    isLoading: refreshingClassifications,
+  } = useClassifications();
   const [showPricing, setShowPricing] = useState(false);
   const [showExploreModal, setShowExploreModal] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
@@ -216,7 +220,7 @@ export const Classification = ({ setPage }: ClassificationProps) => {
         <AnimatedBackground isScrolled={isScrolled} />
 
         <div
-          className={`relative z-0 w-full max-w-4xl mx-auto px-6 transition-all duration-200 ${
+          className={`relative z-0 w-full max-w-5xl mx-auto px-6 transition-all duration-200 ${
             isScrolled ? "py-3" : "py-6 md:py-8"
           }`}
         >
@@ -239,6 +243,7 @@ export const Classification = ({ setPage }: ClassificationProps) => {
                   isComplete={classification?.isComplete ?? false}
                   canUpdateDetails={canUpdateDetails}
                   canDelete={canDelete}
+                  refreshingClassifications={refreshingClassifications}
                   updatingStatus={updatingStatus}
                   downloadingReport={downloadingReport}
                   isLoadingImporters={isLoadingImporters}
@@ -291,7 +296,7 @@ export const Classification = ({ setPage }: ClassificationProps) => {
       </div>
 
       {/* Classification Flow Content */}
-      <div className="w-full max-w-4xl mx-auto px-6 py-8 flex flex-col">
+      <div className="w-full max-w-5xl mx-auto px-6 py-8 flex flex-col">
         {!classification?.isComplete ? (
           // In-progress classification levels
           <>
@@ -324,7 +329,6 @@ export const Classification = ({ setPage }: ClassificationProps) => {
           // Completed classification result
           <VerticalClassificationResult
             userProfile={userProfile}
-            setPage={setPage}
             classificationRecord={classificationRecord}
             onOpenExplore={handleOpenExplore}
           />
