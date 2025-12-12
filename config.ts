@@ -76,22 +76,13 @@ export const tariffImpactPro: PricingPlanI = {
   ],
 };
 
-// const classifyTrial: PricingPlanI = {
-//   name: "Free Trial",
-//   planIdentifier: PricingPlan.CLASSIFY_TRIAL,
-//   description: "Try Classify Pro for 7 Days",
-//   mode: StripePaymentMode.SUBSCRIPTION,
-//   price: 0,
-//   features: [{ name: "All features of Classify Pro, for 7 Days" }],
-// };
-
 export const pro: PricingPlanI = {
   name: "Pro",
-  planIdentifier: PricingPlan.PRO,
+  planIdentifier: PricingPlan.CLASSIFY_PRO,
   description: "Smarter Classifications, Effortless Tariffs",
   mode: StripePaymentMode.SUBSCRIPTION,
-  prices: [99],
-  priceAnchors: [149],
+  prices: [89],
+  priceAnchors: [129],
   features: [
     { name: "Duty Calculator" },
     { name: "Classification Assistant" },
@@ -101,12 +92,13 @@ export const pro: PricingPlanI = {
 
 export const proTeams: PricingPlanI = {
   name: "Pro for Teams",
-  planIdentifier: PricingPlan.PRO_TEAM,
+  planIdentifier: PricingPlan.CLASSIFY_TEAM,
   description: "Streamline Imports with your Entire Team",
   mode: StripePaymentMode.SUBSCRIPTION,
   prices: [99, 89, 79],
   priceAnchors: [149, 149, 149],
-  priceTiers: ["2-5 users", "6-10 users", "11+ users"],
+  priceTiers: ["2-4 users", "5-9 users", "10+ users"],
+  isFeatured: true,
   features: [
     { name: "Duty Calculator" },
     { name: "Classification Assistant" },
@@ -119,10 +111,10 @@ export const proTeams: PricingPlanI = {
 export const classifyPro: PricingPlanI = {
   name: "Pro",
   planIdentifier: PricingPlan.CLASSIFY_PRO,
-  description: "The Smarter Way to Classify",
+  description: "Smarter Classifications, Effortless Tariffs",
   mode: StripePaymentMode.SUBSCRIPTION,
-  prices: [80],
-  priceAnchors: [120],
+  prices: [89],
+  priceAnchors: [129],
   features: [
     { name: "Quick Candidates" },
     { name: "Best-Fit Analysis" },
@@ -144,8 +136,8 @@ export const classifyTeam: PricingPlanI = {
   planIdentifier: PricingPlan.CLASSIFY_TEAM,
   description: "The Classification Workspace for Teams",
   mode: StripePaymentMode.SUBSCRIPTION,
-  prices: [80, 70, 60],
-  priceAnchors: [120, 120, 120],
+  prices: [99, 89, 79],
+  priceAnchors: [149, 149, 149],
   priceTiers: ["2-4 users", "5-9 users", "10+ users"],
   isFeatured: true,
   features: [

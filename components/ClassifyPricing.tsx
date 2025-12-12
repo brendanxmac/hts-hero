@@ -119,15 +119,19 @@ const ClassifyPricing = ({ customerType }: PricingProps) => {
             </span>
             <span className="w-8 h-px bg-secondary/40" />
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 max-w-3xl mx-auto">
-            <span className="bg-gradient-to-r from-secondary via-secondary to-primary bg-clip-text text-transparent">
-              Save Hours
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 max-w-2xl mx-auto">
+            <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
+              Quicker
             </span>{" "}
-            on Classifications, and{" "}
-            <span className="bg-gradient-to-r from-secondary via-secondary to-primary bg-clip-text text-transparent">
-              Insantly See
+            Classifications,{" "}
+            <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
+              Instant
             </span>{" "}
-            the Tariffs & Duties for Any Import
+            Duty Quotes, and{" "}
+            <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
+              Zero
+            </span>{" "}
+            Tariff Surprises
           </h2>
           <p className="text-base-content/60 text-base md:text-lg max-w-2xl mx-auto">
             Everything you need to streamline HTS classifications
@@ -326,8 +330,8 @@ const ClassifyPricing = ({ customerType }: PricingProps) => {
         </div>
 
         {/* Guarantee section */}
-        <div className="mt-16 max-w-3xl mx-auto">
-          <div className="relative overflow-hidden bg-gradient-to-br from-secondary/5 via-base-100 to-primary/5 rounded-2xl border border-secondary/20 p-8 md:p-10">
+        <div className="mt-8 max-w-4xl mx-auto">
+          <div className="relative overflow-hidden bg-gradient-to-br from-secondary/5 via-base-100 to-primary/5 rounded-2xl border border-secondary/20 p-4">
             {/* Decorative elements */}
             <div className="absolute -top-12 -left-12 w-24 h-24 bg-secondary/20 rounded-full blur-2xl" />
             <div className="absolute -bottom-12 -right-12 w-24 h-24 bg-primary/20 rounded-full blur-2xl" />

@@ -14,6 +14,8 @@ import ThemeToggle from "./ThemeToggle";
 const navLinks = [
   { href: "#tools", label: "Tools" },
   { href: "#pricing", label: "Pricing" },
+  { href: "#use-cases", label: "Use Cases" },
+  { href: "#faq", label: "FAQ" },
 ];
 
 const LandingHeader = () => {

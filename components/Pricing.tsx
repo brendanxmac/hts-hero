@@ -130,7 +130,7 @@ const Pricing = ({ customerType }: PricingProps) => {
             Tariff Surprises
           </h2>
           <p className="text-base-content/60 text-base md:text-lg max-w-2xl mx-auto">
-            Streamline classifications and conquer tariff chaos!
+            Premium tools that don&apos;t break the bank.
           </p>
         </div>
 
@@ -158,14 +158,14 @@ const Pricing = ({ customerType }: PricingProps) => {
                   "bg-gradient-to-br from-base-200/80 via-base-100 to-base-200/60",
                   "backdrop-blur-sm rounded-2xl border transition-all duration-300",
                   plan.isFeatured
-                    ? "border-primary/40 shadow-xl shadow-primary/10 hover:shadow-2xl hover:shadow-primary/20 scale-[1.02] lg:scale-105"
-                    : "border-base-content/10 shadow-lg hover:shadow-xl hover:border-primary/20"
+                    ? "border-secondary/40 shadow-xl shadow-secondary/10 hover:shadow-2xl hover:shadow-secondary/20"
+                    : "border-base-content/10 shadow-lg hover:shadow-xl hover:border-secondary/20"
                 )}
               >
                 {/* Featured badge */}
                 {plan.isFeatured && (
                   <div className="absolute -top-px left-1/2 -translate-x-1/2">
-                    <div className="flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-primary to-secondary rounded-b-xl text-white text-xs font-semibold shadow-lg">
+                    <div className="flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-secondary to-primary rounded-b-xl text-white text-xs font-semibold shadow-lg">
                       <SparklesIcon className="w-3.5 h-3.5" />
                       Best Value
                     </div>
@@ -173,7 +173,7 @@ const Pricing = ({ customerType }: PricingProps) => {
                 )}
 
                 {/* Decorative gradient orb */}
-                <div className="absolute -top-20 -right-20 w-40 h-40 bg-primary/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute -top-20 -right-20 w-40 h-40 bg-secondary/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                 <div className="relative p-8 flex flex-col h-full">
                   {/* Plan header */}
@@ -183,7 +183,7 @@ const Pricing = ({ customerType }: PricingProps) => {
                         className={classNames(
                           "flex items-center justify-center w-10 h-10 rounded-xl",
                           plan.isFeatured
-                            ? "bg-gradient-to-br from-primary/20 to-secondary/20 border border-primary/20"
+                            ? "bg-gradient-to-br from-secondary/20 to-primary/20 border border-secondary/20"
                             : "bg-base-200 border border-base-content/10"
                         )}
                       >
@@ -192,7 +192,7 @@ const Pricing = ({ customerType }: PricingProps) => {
                             className={classNames(
                               "w-5 h-5",
                               plan.isFeatured
-                                ? "text-primary"
+                                ? "text-secondary"
                                 : "text-base-content/70"
                             )}
                           />
@@ -201,7 +201,7 @@ const Pricing = ({ customerType }: PricingProps) => {
                             className={classNames(
                               "w-5 h-5",
                               plan.isFeatured
-                                ? "text-primary"
+                                ? "text-secondary"
                                 : "text-base-content/70"
                             )}
                           />
@@ -218,7 +218,7 @@ const Pricing = ({ customerType }: PricingProps) => {
                             onChange={(e) =>
                               handleTierChange(index, parseInt(e.target.value))
                             }
-                            className="select select-sm ml-auto bg-base-200/50 text-base-content text-xs font-medium border border-base-content/10 focus:border-primary focus:outline-none"
+                            className="select select-sm ml-auto bg-base-200/50 text-base-content text-xs font-medium border border-base-content/10 focus:border-secondary focus:outline-none"
                           >
                             {plan.priceTiers!.map((tier, i) => (
                               <option key={i} value={i}>
@@ -258,7 +258,7 @@ const Pricing = ({ customerType }: PricingProps) => {
                           className={classNames(
                             "text-5xl font-extrabold tracking-tight",
                             plan.isFeatured
-                              ? "bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
+                              ? "bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent"
                               : "text-base-content"
                           )}
                         >
@@ -284,7 +284,9 @@ const Pricing = ({ customerType }: PricingProps) => {
                           <div
                             className={classNames(
                               "flex items-center justify-center w-5 h-5 rounded-full mt-0.5 shrink-0",
-                              plan.isFeatured ? "bg-primary/10" : "bg-base-200"
+                              plan.isFeatured
+                                ? "bg-secondary/10"
+                                : "bg-base-200"
                             )}
                           >
                             {getFeatureIcon(feature)}
@@ -324,7 +326,7 @@ const Pricing = ({ customerType }: PricingProps) => {
         </div>
 
         {/* Guarantee section */}
-        <div className="mt-10 max-w-3xl mx-auto">
+        <div className="mt-6 max-w-3xl mx-auto">
           <div className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-base-100 to-secondary/5 rounded-2xl border border-primary/20 p-4">
             {/* Decorative elements */}
             <div className="absolute -top-12 -left-12 w-24 h-24 bg-primary/20 rounded-full blur-2xl" />

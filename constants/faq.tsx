@@ -4,16 +4,29 @@ import { FAQItem } from "../components/FAQItem";
 
 export const bundleFaqList: FAQItem[] = [
   {
-    question: "I only need one tool, do I have to buy all three?",
+    question: "Can I get a demo?",
+    answer: (
+      <div className="pt-2">
+        <p>
+          Absolutely, you can{" "}
+          <Link href="#" className="link link-primary">
+            book a quick demo here.
+          </Link>
+        </p>
+      </div>
+    ),
+  },
+  {
+    question: "Can I buy just a single tool?",
     answer: (
       <div className="space-y-2 leading-relaxed pt-2">
+        <p>HTS Hero has 2 main offerings: Classify Pro & Tariff Pro.</p>
+        <br />
         <p>
-          You can purchase the bundle at a discount, or purchase each tool
-          separately.
-        </p>
-        <p>
-          To learn more about each tool or purchase just one, checkout the links
-          below:
+          <Link href="#pricing" className="link link-primary">
+            Classify Pro
+          </Link>{" "}
+          is our flagship offering, which includes:
         </p>
         <ul className="list-disc list-inside">
           <li>
@@ -37,6 +50,36 @@ export const bundleFaqList: FAQItem[] = [
         </ul>
         <br />
         <p>
+          <Link href="/about/tariffs" className="link link-primary">
+            Tariff Pro
+          </Link>{" "}
+          is purely tariff focused, which includes:
+        </p>
+        <ul className="list-disc list-inside">
+          <li>
+            <Link href="/about/tariffs" className="link link-primary">
+              Duty & Tariff Calculator
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/about/tariff-impact-checker"
+              className="link link-primary"
+            >
+              Tariff Impact Checker
+            </Link>
+          </li>
+        </ul>
+        <br />
+        <p>
+          If Tariff help is all you&apos;re looking for you can buy Tariff Pro{" "}
+          <Link href="/about/tariffs#pricing" className="link link-primary">
+            here.
+          </Link>
+        </p>
+
+        <br />
+        <p>
           If you're not sure which tool you need, you can always contact us at{" "}
           <Link
             href={`mailto:${config.resend.supportEmail}`}
@@ -49,23 +92,25 @@ export const bundleFaqList: FAQItem[] = [
     ),
   },
   {
-    question: "Can I get a demo?",
+    question: "Does HTS Hero Work for Teams?",
     answer: (
       <div className="pt-2">
         <p>
-          Absolutely, you can{" "}
-          <Link href="#" className="link link-primary">
-            book a quick demo here.
+          Absolutely, and we even offer{" "}
+          <Link href="#pricing" className="link link-primary">
+            discounts for teams!
           </Link>
         </p>
-      </div>
-    ),
-  },
-  {
-    question: "Can I buy for my whole team?",
-    answer: (
-      <div className="pt-2">
-        <p>Absolutely, and we even offer discounts for teams!</p>
+        <br />
+        <p>HTS Hero was specifically designed to work great for teams.</p>
+        <p>
+          We have a dedicated{" "}
+          <Link href="#pricing" className="link link-primary">
+            team plan
+          </Link>{" "}
+          that allows your entire team cruise through their import tasks.
+        </p>
+        <br />
         <p>
           You can{" "}
           <Link href="#pricing" className="link link-primary">
@@ -77,16 +122,39 @@ export const bundleFaqList: FAQItem[] = [
     ),
   },
   {
-    question: "",
+    question: "Can I try it before buying?",
     answer: (
       <div className="pt-2">
-        <p>Absolutely, and we even offer discounts for teams!</p>
+        <p>Yes!, HTS Hero offers a 10 day free trial for all paid plans!</p>
         <p>
-          You can{" "}
-          <Link href="#pricing" className="link link-primary">
-            book a quick demo
+          No credit card required, just{" "}
+          <Link href={config.auth.loginUrl} className="link link-primary">
+            sign up
           </Link>{" "}
-          to learn more about about how HTS Hero can help your team.
+          and start using the tool!
+        </p>
+      </div>
+    ),
+  },
+  {
+    question: "What if I don't like it?",
+    answer: (
+      <div className="pt-2">
+        <p>No problem!</p>
+        <br />
+        <p>
+          Our Smarter Classifications Guarantee lets you get a full refund if
+          you do 20 classifications and the onboarding session but are still not
+          completely satisfied with your experience after 30 days.
+        </p>
+        <p>
+          You can cancel your subscription at any time and you will continue to
+          have access until the end of your current billing period.
+        </p>
+        <br />
+        <p>
+          Just log in to your account, click "Billing" in the profile dropdown,
+          and you&apos;ll be able to cancel your subscription.
         </p>
       </div>
     ),
