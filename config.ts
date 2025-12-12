@@ -112,7 +112,7 @@ export const proTeams: PricingPlanI = {
     { name: "Classification Assistant" },
     { name: "Tariff Impact Checker" },
     { name: "Collaborate with your Team" },
-    { name: "Product Training Sessions" },
+    { name: "Team Onboarding & Training" },
   ],
 };
 

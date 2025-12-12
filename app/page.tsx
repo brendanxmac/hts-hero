@@ -14,15 +14,17 @@ import {
   ProductSectionData,
 } from "../components/ProductSection";
 import TestimonialsStrip from "../components/TestimonialsStrip";
-import ProductStepsVisual from "../components/ProductStepsVisual";
+import { FAQ } from "../components/FAQ";
+import { classifierFaqList, tariffImpactFaqList } from "../constants/faq";
+import Footer from "../components/Footer";
 
 const productSections: ProductSectionData[] = [
   {
     emoji: "💰",
-    title: "Duty Calculator",
-    tagline: "Master Tariffs & Discover Savings",
+    title: "Duty & Tariff Calculator",
+    tagline: "Master Tariffs, Discover Savings",
     description:
-      "See the complete tariff & fees breakdown for any US import and discover ways to save with exemptions and special trade programs.",
+      "See the complete tariff & cost breakdown for any US import and discover ways to save with exemptions and special trade programs.",
     features: [
       {
         icon: "🌍",
@@ -30,12 +32,6 @@ const productSections: ProductSectionData[] = [
         description:
           "See the landed cost, duty rates, and itemized tariffs for any import from any country",
       },
-      // {
-      //   icon: "📊",
-      //   title: "Smart Stacking",
-      //   description:
-      //     "Skip the math & see the final tariff rates with tariff stacking rules applied",
-      // },
       {
         icon: "💡",
         title: "Discover Savings",
@@ -201,11 +197,11 @@ export default function Home() {
             <div className="flex items-center justify-center gap-2 mb-12">
               <BoltIcon className="sm:w-4 sm:h-4 w-3 h-3 text-primary" />
               <p className="text-sm font-medium sm:hidden px-4 sm:px-0">
-                Saving Manufacturers, Brokerages,
-                <br /> & 3PL's Hours Every Week
+                Save Hours On Classifications,
+                <br /> Duty Quotes, & Tariff Checks
               </p>
               <p className="text-sm font-medium hidden sm:block">
-                Saving Manufacturers, Brokerages, & 3PL's Hours Every Week
+                Save Hours On Classifications, Duty Quotes, & Tariff Checks
               </p>
               <BoltIcon className="sm:w-4 sm:h-4 w-3 h-3 text-primary" />
             </div>
@@ -221,9 +217,9 @@ export default function Home() {
               <span className="text-base-content">Tariffs</span>
             </h1>
 
-            <p className="text-base-content/80 text-base md:text-lg max-w-4xl mx-auto mb-8">
-              Classify incredibly fast, see the latest duty & tariffs for any
-              import, and avoid surprise fees
+            <p className="text-base text-base-content/80 md:text-lg max-w-3xl mx-auto mb-8">
+              Classify quicker, see the latest duty & tariffs for any import,
+              and avoid surprise fees
             </p>
 
             {/* CTA Buttons */}
@@ -296,7 +292,7 @@ export default function Home() {
                           </div>
                           <div className="flex flex-col">
                             <div className="text-left font-semibold text-base-content group-hover:text-primary transition-colors">
-                              Duty Calculator
+                              Duty & Tariff Calculator
                             </div>
                             <div className="text-left text-xs text-base-content/60">
                               Duties & tariffs for any import
@@ -345,14 +341,85 @@ export default function Home() {
       </div>
 
       {/* Full-Page Product Sections */}
-      <div id="tools">
+      <div
+        id="tools"
+        className="w-full flex flex-col bg-gradient-to-br from-primary/10 via-transparent to-secondary/5"
+      >
+        {/* Header */}
+        <div className="w-full flex flex-col max-w-5xl mx-auto text-center gap-6 py-12 md:py-24 px-4">
+          {/* Audience Pills */}
+          <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3">
+            <span className="inline-flex items-center px-3 py-1 sm:py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs sm:text-sm font-medium text-primary">
+              Customs Brokerages
+            </span>
+            <span className="inline-flex items-center px-3 py-1 sm:py-1.5 rounded-full bg-secondary/10 border border-secondary/20 text-xs sm:text-sm font-medium text-secondary">
+              Manufacturers
+            </span>
+            <span className="inline-flex items-center px-3 py-1 sm:py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs sm:text-sm font-medium text-primary">
+              Freight Forwarders
+            </span>
+            <span className="inline-flex items-center px-3 py-1 sm:py-1.5 rounded-full bg-secondary/10 border border-secondary/20 text-xs sm:text-sm font-medium text-secondary">
+              Logistic Teams
+            </span>
+            <span className="inline-flex items-center px-3 py-1 sm:py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs sm:text-sm font-medium text-primary">
+              Ecommerce Brands
+            </span>
+          </div>
+
+          {/* Main Headline */}
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-center leading-tight">
+            The{" "}
+            <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
+              Simpler Imports Toolkit
+            </span>{" "}
+          </h2>
+
+          {/* Value Proposition */}
+          <p className="text-base-content/70 text-base md:text-lg lg:text-xl max-w-2xl mx-auto leading-relaxed">
+            Designed to save time and unlock savings for trade professionals
+            {/* Cut classification time, get instant duty quotes, and stay ahead of tariff changes—all
+            designed for trade professionals. */}
+          </p>
+
+          {/* Scroll hint */}
+          <div className="flex items-center justify-center gap-4 text-base-content/40 pt-4">
+            <svg
+              className="w-4 h-4 animate-bounce"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M19 14l-7 7m0 0l-7-7m7 7V3"
+              />
+            </svg>
+            <span className="text-sm font-medium">Explore Our Tools</span>
+            <svg
+              className="w-4 h-4 animate-bounce"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M19 14l-7 7m0 0l-7-7m7 7V3"
+              />
+            </svg>
+          </div>
+        </div>
         {productSections.map((product, index) => (
           <ProductSection key={product.title} product={product} index={index} />
         ))}
       </div>
 
-      {/* Pricing Section */}
       <Pricing customerType={AboutPage.BUNDLE} />
+      <FAQ faqItems={[...classifierFaqList, ...tariffImpactFaqList]} />
+      <Footer />
 
       <LetsTalkModal
         isOpen={isBookDemoModalOpen}

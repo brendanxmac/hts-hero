@@ -127,7 +127,7 @@ const Pricing = ({ customerType }: PricingProps) => {
             <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
               Instant
             </span>{" "}
-            Duty Quotes and{" "}
+            Duty Quotes, and{" "}
             <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
               Zero
             </span>{" "}
