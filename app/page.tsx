@@ -15,7 +15,11 @@ import {
 } from "../components/ProductSection";
 import TestimonialsStrip from "../components/TestimonialsStrip";
 import { FAQ } from "../components/FAQ";
-import { classifierFaqList, tariffImpactFaqList } from "../constants/faq";
+import {
+  bundleFaqList,
+  classifierFaqList,
+  tariffImpactFaqList,
+} from "../constants/faq";
 import Footer from "../components/Footer";
 
 const productSections: ProductSectionData[] = [
@@ -65,7 +69,7 @@ const productSections: ProductSectionData[] = [
     title: "Classification Assistant",
     tagline: "Classify Quicker, Without Cutting Corners",
     description:
-      "Turbocharge your HTS classifications with AI-powered candidate discovery, GRI analysis, cross-rulings validation, and branded reports.",
+      "Turbocharge your HTS classifications with AI-powered candidate discovery, GRI analysis, cross-rulings validation, and branded advisory reports.",
     features: [
       {
         icon: "🤖",
@@ -418,7 +422,7 @@ export default function Home() {
       </div>
 
       <Pricing customerType={AboutPage.BUNDLE} />
-      <FAQ faqItems={[...classifierFaqList, ...tariffImpactFaqList]} />
+      <FAQ faqItems={bundleFaqList} />
       <Footer />
 
       <LetsTalkModal

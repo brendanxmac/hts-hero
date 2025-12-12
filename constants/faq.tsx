@@ -2,6 +2,97 @@ import Link from "next/link";
 import config from "../config";
 import { FAQItem } from "../components/FAQItem";
 
+export const bundleFaqList: FAQItem[] = [
+  {
+    question: "I only need one tool, do I have to buy all three?",
+    answer: (
+      <div className="space-y-2 leading-relaxed pt-2">
+        <p>
+          You can purchase the bundle at a discount, or purchase each tool
+          separately.
+        </p>
+        <p>
+          To learn more about each tool or purchase just one, checkout the links
+          below:
+        </p>
+        <ul className="list-disc list-inside">
+          <li>
+            <Link href="/about/classify" className="link link-primary">
+              Classification Assistant
+            </Link>
+          </li>
+          <li>
+            <Link href="/about/duty-calculator" className="link link-primary">
+              Duty & Tariff Calculator
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/about/tariff-impact-checker"
+              className="link link-primary"
+            >
+              Tariff Impact Checker
+            </Link>
+          </li>
+        </ul>
+        <br />
+        <p>
+          If you're not sure which tool you need, you can always contact us at{" "}
+          <Link
+            href={`mailto:${config.resend.supportEmail}`}
+            className="text-secondary underline"
+          >
+            {config.resend.supportEmail}
+          </Link>
+        </p>
+      </div>
+    ),
+  },
+  {
+    question: "Can I get a demo?",
+    answer: (
+      <div className="pt-2">
+        <p>
+          Absolutely, you can{" "}
+          <Link href="#" className="link link-primary">
+            book a quick demo here.
+          </Link>
+        </p>
+      </div>
+    ),
+  },
+  {
+    question: "Can I buy for my whole team?",
+    answer: (
+      <div className="pt-2">
+        <p>Absolutely, and we even offer discounts for teams!</p>
+        <p>
+          You can{" "}
+          <Link href="#pricing" className="link link-primary">
+            book a quick demo
+          </Link>{" "}
+          to learn more about about how HTS Hero can help your team.
+        </p>
+      </div>
+    ),
+  },
+  {
+    question: "",
+    answer: (
+      <div className="pt-2">
+        <p>Absolutely, and we even offer discounts for teams!</p>
+        <p>
+          You can{" "}
+          <Link href="#pricing" className="link link-primary">
+            book a quick demo
+          </Link>{" "}
+          to learn more about about how HTS Hero can help your team.
+        </p>
+      </div>
+    ),
+  },
+];
+
 export const tariffImpactFaqList: FAQItem[] = [
   {
     question: "Which tariff announcements or updates do you support?",

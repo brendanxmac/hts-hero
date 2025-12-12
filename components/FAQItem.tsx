@@ -61,7 +61,7 @@ export const FaqItem = ({ item }: Props) => {
             : { maxHeight: 0, opacity: 0 }
         }
       >
-        <div className="px-6 pb-6 pl-[4.5rem]">
+        <div className="px-6 pb-6">
           <div className="text-base-content/70 leading-relaxed prose prose-sm max-w-none">
             {answer}
           </div>
