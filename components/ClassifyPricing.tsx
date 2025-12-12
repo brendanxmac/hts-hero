@@ -121,13 +121,13 @@ const ClassifyPricing = ({ customerType }: PricingProps) => {
           </div>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 max-w-3xl mx-auto">
             <span className="bg-gradient-to-r from-secondary via-secondary to-primary bg-clip-text text-transparent">
-              Smarter
+              Save Hours
             </span>{" "}
-            Classifications,{" "}
+            on Classifications, and{" "}
             <span className="bg-gradient-to-r from-secondary via-secondary to-primary bg-clip-text text-transparent">
-              Effortless
+              Insantly See
             </span>{" "}
-            Tariffs
+            the Tariffs & Duties for Any Import
           </h2>
           <p className="text-base-content/60 text-base md:text-lg max-w-2xl mx-auto">
             Everything you need to streamline HTS classifications
@@ -158,7 +158,7 @@ const ClassifyPricing = ({ customerType }: PricingProps) => {
                   "bg-gradient-to-br from-base-200/80 via-base-100 to-base-200/60",
                   "backdrop-blur-sm rounded-2xl border transition-all duration-300",
                   plan.isFeatured
-                    ? "border-secondary/40 shadow-xl shadow-secondary/10 hover:shadow-2xl hover:shadow-secondary/20 scale-[1.02] lg:scale-105"
+                    ? "border-secondary/40 shadow-xl shadow-secondary/10 hover:shadow-2xl hover:shadow-secondary/20"
                     : "border-base-content/10 shadow-lg hover:shadow-xl hover:border-secondary/20"
                 )}
               >
@@ -358,6 +358,10 @@ const ClassifyPricing = ({ customerType }: PricingProps) => {
           <div className="flex items-center gap-2 text-sm text-base-content/60">
             <CheckIcon className="w-4 h-4 text-secondary" />
             <span>Cancel anytime</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-base-content/60">
+            <CheckIcon className="w-4 h-4 text-primary" />
+            <span>Request Features</span>
           </div>
           <div className="flex items-center gap-2 text-sm text-base-content/60">
             <CheckIcon className="w-4 h-4 text-secondary" />

@@ -112,7 +112,7 @@ export const proTeams: PricingPlanI = {
     { name: "Classification Assistant" },
     { name: "Tariff Impact Checker" },
     { name: "Collaborate with your Team" },
-    { name: "Team Onboarding & Training" },
+    { name: "Comprehensive Team Training" },
   ],
 };
 
@@ -124,11 +124,18 @@ export const classifyPro: PricingPlanI = {
   prices: [80],
   priceAnchors: [120],
   features: [
-    { name: "Get Candidates for any Item" },
-    { name: "GRI Analysis of all Candidates" },
-    { name: "Discover Relevant CROSS Rulings" },
-    { name: "See the Latest Tariffs for any Import" },
-    { name: "Generate Client-Ready Advisory Reports" },
+    { name: "Quick Candidates" },
+    { name: "Best-Fit Analysis" },
+    { name: "CROSS Ruling Validation" },
+    { name: "Client-Ready Reports" },
+    {
+      name: "Duty & Tariff Calculator",
+      details: "See the Latest Tariffs & Duties for any Import",
+    },
+    {
+      name: "Tariff Impact Checker",
+      details: "Instantly know when new tariffs affect you",
+    },
   ],
 };
 
@@ -142,12 +149,18 @@ export const classifyTeam: PricingPlanI = {
   priceTiers: ["2-4 users", "5-9 users", "10+ users"],
   isFeatured: true,
   features: [
-    { name: "Get Candidates for any Item" },
-    { name: "GRI Analysis of all Candidates" },
-    { name: "Discover Relevant CROSS Rulings" },
-    { name: "See the Latest Tariffs for any Import" },
-    { name: "Generate Client-Ready Advisory Reports" },
-    { name: "See, Review, & Approve Your Team's Classifications" },
+    { name: "Everything in Pro, plus:" },
+    { name: "See Your Teams Classifications" },
+    { name: "Request Classification Reviews" },
+    { name: "Approve Each Others Classifications" },
+    {
+      name: "Share Links to Classifications",
+      details: "Get the job done quicker with shareable links",
+    },
+    {
+      name: "Team Training",
+      details: "Boost your teams productivity with personalized training",
+    },
   ],
 };
 

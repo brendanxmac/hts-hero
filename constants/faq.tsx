@@ -17,12 +17,12 @@ export const bundleFaqList: FAQItem[] = [
         </p>
         <ul className="list-disc list-inside">
           <li>
-            <Link href="/about/classify" className="link link-primary">
+            <Link href="/about" className="link link-primary">
               Classification Assistant
             </Link>
           </li>
           <li>
-            <Link href="/about/duty-calculator" className="link link-primary">
+            <Link href="/about/tariffs" className="link link-primary">
               Duty & Tariff Calculator
             </Link>
           </li>

@@ -107,7 +107,7 @@ const Pricing = ({ customerType }: PricingProps) => {
         id="pricing"
       >
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-10">
           <div className="flex items-center justify-center gap-2 mb-4">
             <span className="w-8 h-px bg-primary/40" />
             <span className="text-xs font-semibold uppercase tracking-widest text-primary">
@@ -115,11 +115,7 @@ const Pricing = ({ customerType }: PricingProps) => {
             </span>
             <span className="w-8 h-px bg-primary/40" />
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 max-w-3xl mx-auto">
-            {/* Quicker Classifications, Instant Duty Estimates, and Zero Tariff
-            Surprises */}
-            {/* Save hours on classification, Get Instant Duty Estimates, and Never
-            Miss a Tariff Change */}
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 max-w-2xl mx-auto">
             <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
               Quicker
             </span>{" "}
@@ -134,8 +130,7 @@ const Pricing = ({ customerType }: PricingProps) => {
             Tariff Surprises
           </h2>
           <p className="text-base-content/60 text-base md:text-lg max-w-2xl mx-auto">
-            Everything you need to streamline HTS classifications and master
-            tariffs
+            Streamline classifications and conquer tariff chaos!
           </p>
         </div>
 
@@ -329,8 +324,8 @@ const Pricing = ({ customerType }: PricingProps) => {
         </div>
 
         {/* Guarantee section */}
-        <div className="mt-16 max-w-3xl mx-auto">
-          <div className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-base-100 to-secondary/5 rounded-2xl border border-primary/20 p-8 md:p-10">
+        <div className="mt-10 max-w-3xl mx-auto">
+          <div className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-base-100 to-secondary/5 rounded-2xl border border-primary/20 p-4">
             {/* Decorative elements */}
             <div className="absolute -top-12 -left-12 w-24 h-24 bg-primary/20 rounded-full blur-2xl" />
             <div className="absolute -bottom-12 -right-12 w-24 h-24 bg-secondary/20 rounded-full blur-2xl" />
@@ -364,6 +359,10 @@ const Pricing = ({ customerType }: PricingProps) => {
           </div>
           <div className="flex items-center gap-2 text-sm text-base-content/60">
             <CheckIcon className="w-4 h-4 text-primary" />
+            <span>Request Features</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-base-content/60">
+            <CheckIcon className="w-4 h-4 text-primary" />
             <span>In-App Support</span>
           </div>
           <div className="flex items-center gap-2 text-sm text-base-content/60">
@@ -377,3 +376,41 @@ const Pricing = ({ customerType }: PricingProps) => {
 };
 
 export default Pricing;
+
+{
+  /* Billing Period Toggle */
+}
+{
+  /* <div className="flex flex-col gap-3 mt-6 items-center justify-center">
+  <div className="flex items-center gap-1 px-2.5 py-1 bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 rounded-full text-xs font-semibold text-primary">
+    <SparklesIcon className="w-3 h-3" />
+    Save 20% with Annual
+  </div>
+  <div className="flex items-center justify-center gap-3">
+    <div className="relative inline-flex items-center p-1 bg-base-200/80 rounded-xl border border-base-content/10">
+      <button
+        onClick={() => setBillingPeriod("monthly")}
+        className={classNames(
+          "relative px-16 md:px-24 py-2 text-sm font-medium rounded-lg transition-all duration-200",
+          billingPeriod === "monthly"
+            ? "bg-primary text-white shadow-sm"
+            : "text-base-content/60 hover:text-base-content"
+        )}
+      >
+        Monthly
+      </button>
+      <button
+        onClick={() => setBillingPeriod("annual")}
+        className={classNames(
+          "relative px-16 md:px-24 py-2 text-sm font-medium rounded-lg transition-all duration-200",
+          billingPeriod === "annual"
+            ? "bg-primary text-white shadow-sm"
+            : "text-base-content/60 hover:text-base-content"
+        )}
+      >
+        Annual
+      </button>
+    </div>
+  </div>
+</div>; */
+}

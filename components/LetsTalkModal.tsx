@@ -177,7 +177,7 @@ const LetsTalkModal = ({ isOpen, onClose }: ClassifyTeamModalProps) => {
               </span>
             </label>
             <textarea
-              placeholder="Tell us about your team size, needs, or any questions you have..."
+              placeholder="Why are you intested in HTS Hero?"
               className="textarea textarea-bordered w-full h-24 sm:h-32 text-sm sm:text-base resize-none"
               value={formData.notes}
               onChange={(e) =>

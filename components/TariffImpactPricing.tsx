@@ -164,7 +164,7 @@ const TariffImpactPricing = () => {
         </div>
 
         {/* Pricing Cards */}
-        <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8 max-w-5xl mx-auto">
+        <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8 max-w-7xl mx-auto">
           {config.stripe.tariffImpactPlans.map((plan, index) => {
             const defaultTierIndex = plan.prices.length - 1;
             const currentTierIndex =
@@ -185,7 +185,7 @@ const TariffImpactPricing = () => {
                   "bg-gradient-to-br from-base-200/80 via-base-100 to-base-200/60",
                   "backdrop-blur-sm rounded-2xl border transition-all duration-300",
                   plan.isFeatured
-                    ? "border-primary/40 shadow-xl shadow-primary/10 hover:shadow-2xl hover:shadow-primary/20 scale-[1.02] lg:scale-105"
+                    ? "border-primary/40 shadow-xl shadow-primary/10 hover:shadow-2xl hover:shadow-primary/20"
                     : "border-base-content/10 shadow-lg hover:shadow-xl hover:border-primary/20"
                 )}
               >
@@ -352,7 +352,7 @@ const TariffImpactPricing = () => {
 
         {/* Enterprise/Team Plan CTA */}
         <div className="mt-12 max-w-3xl mx-auto">
-          <div className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-base-100 to-secondary/5 rounded-2xl border border-primary/20 p-8 md:p-10">
+          <div className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-base-100 to-secondary/5 rounded-2xl border border-primary/20 p-4">
             {/* Decorative elements */}
             <div className="absolute -top-12 -left-12 w-24 h-24 bg-primary/20 rounded-full blur-2xl" />
             <div className="absolute -bottom-12 -right-12 w-24 h-24 bg-secondary/20 rounded-full blur-2xl" />
@@ -401,6 +401,10 @@ const TariffImpactPricing = () => {
           <div className="flex items-center gap-2 text-sm text-base-content/60">
             <CheckIcon className="w-4 h-4 text-primary" />
             <span>Cancel anytime</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-base-content/60">
+            <CheckIcon className="w-4 h-4 text-primary" />
+            <span>Request Features</span>
           </div>
           <div className="flex items-center gap-2 text-sm text-base-content/60">
             <CheckIcon className="w-4 h-4 text-primary" />
