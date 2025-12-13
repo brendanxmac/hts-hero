@@ -392,9 +392,9 @@ export const VerticalClassificationResult = ({
       </CollapsibleSection>
 
       {/* Importer Section */}
-      <div className="relative rounded-2xl border border-base-content/15 bg-base-100 overflow-hidden">
+      <div className="relative z-20 rounded-2xl border border-base-content/15 bg-base-100">
         {/* Decorative background */}
-        <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute -top-16 -right-16 w-48 h-48 bg-primary/5 rounded-full blur-3xl" />
           <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-secondary/5 rounded-full blur-3xl" />
         </div>

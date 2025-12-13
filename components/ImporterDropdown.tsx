@@ -68,7 +68,7 @@ export default function ImporterDropdown({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <Listbox.Options className="absolute z-10 mt-1 max-h-64 w-full overflow-auto rounded-md bg-base-100 border border-base-content/20 py-1 text-base shadow-lg ring-1 ring-base-content/5 focus:outline-none sm:text-sm">
+          <Listbox.Options className="absolute z-50 mt-1 max-h-64 w-full overflow-auto rounded-md bg-base-100 border border-base-content/20 py-1 text-base shadow-lg ring-1 ring-base-content/5 focus:outline-none sm:text-sm">
             {/* Create New Option */}
             {showCreateOption && (
               <>
