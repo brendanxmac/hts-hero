@@ -13,21 +13,19 @@ import {
   CountryWithTariffs,
   addTariffsToCountry,
 } from "../tariffs/tariffs";
-import { TradeProgram, TradePrograms } from "../public/trade-programs";
+import { TradePrograms } from "../public/trade-programs";
 import { copyToClipboard } from "../utilities/data";
 import { TariffSet } from "../interfaces/tariffs";
 import { classNames } from "../utilities/style";
 import { SubheadingsConditionallyExemptFromReciprocal } from "../tariffs/exclusion-lists.ts/reciprocal-tariff-exlcusions";
 import {
   ChevronDownIcon,
-  ClipboardDocumentCheckIcon,
   ClipboardDocumentIcon,
   ExclamationCircleIcon,
   ExclamationTriangleIcon,
   LinkIcon,
   XMarkIcon,
 } from "@heroicons/react/24/solid";
-import config from "../config";
 import { useHts } from "../contexts/HtsContext";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
 import {
@@ -214,29 +212,29 @@ export const CountryTariff = ({
       .join("\n");
   };
 
-  const getTariffSetText = (tariffSet: TariffSet) => {
-    const baseTariffsText = getBaseTariffsText();
-    const tariffSetText = tariffSet.tariffs
-      .filter((t) => t.isActive)
-      .map(
-        (tariff) =>
-          `   ${tariff[tariffColumn] === null ? "Needs Review" : `${tariff[tariffColumn]}% - ${tariff.name} - ${tariff.code}`}`
-      )
-      .join("\n");
+  // const getTariffSetText = (tariffSet: TariffSet) => {
+  //   const baseTariffsText = getBaseTariffsText();
+  //   const tariffSetText = tariffSet.tariffs
+  //     .filter((t) => t.isActive)
+  //     .map(
+  //       (tariff) =>
+  //         `   ${tariff[tariffColumn] === null ? "Needs Review" : `${tariff[tariffColumn]}% - ${tariff.name} - ${tariff.code}`}`
+  //     )
+  //     .join("\n");
 
-    const filteredBase = filterByProgram(baseTariffs.flatMap((t) => t.tariffs));
-    const hasAmountTariffs = filteredBase.some((t) => t.type === "amount");
-    const cappedRate = `${getAdValoremRate(tariffColumn, tariffSet.tariffs)}%`;
-    const adValoremRate = `${getAdValoremRate(tariffColumn, tariffSet.tariffs, filteredBase)}%`;
-    const setTotal =
-      is15PercentCapCountry && adValoremEquivalentRate < 15
-        ? cappedRate
-        : hasAmountTariffs
-          ? `${getAmountRatesString(filteredBase)} + ${adValoremRate}`
-          : adValoremRate;
+  //   const filteredBase = filterByProgram(baseTariffs.flatMap((t) => t.tariffs));
+  //   const hasAmountTariffs = filteredBase.some((t) => t.type === "amount");
+  //   const cappedRate = `${getAdValoremRate(tariffColumn, tariffSet.tariffs)}%`;
+  //   const adValoremRate = `${getAdValoremRate(tariffColumn, tariffSet.tariffs, filteredBase)}%`;
+  //   const setTotal =
+  //     is15PercentCapCountry && adValoremEquivalentRate < 15
+  //       ? cappedRate
+  //       : hasAmountTariffs
+  //         ? `${getAmountRatesString(filteredBase)} + ${adValoremRate}`
+  //         : adValoremRate;
 
-    return `${tariffSet.name} Tariffs: ${setTotal}\n${baseTariffsText}\n${tariffSetText}\n`;
-  };
+  //   return `${tariffSet.name} Tariffs: ${setTotal}\n${baseTariffsText}\n${tariffSetText}\n`;
+  // };
 
   // const copyTariffDetails = () => {
   //   const lines = [

@@ -24,12 +24,10 @@ const getBuyButtonText = (plan: PricingPlanI) => {
       return `Launch App!`;
     case PricingPlan.TARIFF_IMPACT_STANDARD:
       return `Get Standard!`;
-    case PricingPlan.PRO:
     case PricingPlan.CLASSIFY_PRO:
     case PricingPlan.TARIFF_IMPACT_PRO:
       return `Go ${plan.name}!`;
     case PricingPlan.CLASSIFY_TEAM:
-    case PricingPlan.PRO_TEAM:
       return "Book Demo";
     default:
       return "Buy Now!";
@@ -48,7 +46,6 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
   const getCheckoutSuccessEndpoint = (plan: PricingPlan) => {
     switch (plan) {
       case PricingPlan.CLASSIFY_PRO:
-      case PricingPlan.PRO:
         return "/classifications";
       case PricingPlan.TARIFF_IMPACT_STANDARD:
       case PricingPlan.TARIFF_IMPACT_PRO:
@@ -67,11 +64,8 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
           break;
         case PricingPlan.CLASSIFY_PRO:
           trackEvent(MixpanelEvent.INITIATED_CLASSIFY_PRO_CHECKOUT);
-        case PricingPlan.PRO:
-          trackEvent(MixpanelEvent.INITIATED_PRO_CHECKOUT);
           break;
-        case PricingPlan.PRO_TEAM:
-          trackEvent(MixpanelEvent.INITIATED_PRO_TEAM_CHECKOUT);
+        default:
           break;
       }
     } catch (e) {
@@ -105,10 +99,7 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
 
   const handlePayment = async () => {
     try {
-      if (
-        plan.planIdentifier === PricingPlan.CLASSIFY_TEAM ||
-        plan.planIdentifier === PricingPlan.PRO_TEAM
-      ) {
+      if (plan.planIdentifier === PricingPlan.CLASSIFY_TEAM) {
         await handleTeamClick(plan);
         return;
       }
