@@ -150,7 +150,9 @@ const UseCases = ({
 }: {
   handleBookDemoClick: () => void;
 }) => {
-  const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserType | null>(
+    "customs-broker"
+  );
 
   const filteredJobs = selectedUser
     ? jobItems.filter((job) => job.users.includes(selectedUser))
@@ -159,7 +161,7 @@ const UseCases = ({
   const selectedAvatar = userAvatars.find((a) => a.id === selectedUser);
 
   return (
-    <section className="relative overflow-hidden bg-base-100">
+    <section id="use-cases" className="relative overflow-hidden bg-base-100">
       {/* Background decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-secondary/10 rounded-full blur-3xl" />
@@ -186,9 +188,9 @@ const UseCases = ({
             <span className="w-8 h-px bg-secondary/40" />
           </div>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4">
-            Get The Job Done Right,{" "}
+            Get Your Job Done,{" "}
             <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
-              Quickly
+              Quick
             </span>{" "}
           </h2>
           {/* <p className="text-base-content/60 text-base md:text-lg max-w-2xl mx-auto">
@@ -363,7 +365,7 @@ const UseCases = ({
         </div>
 
         {/* Bottom CTA */}
-        <div className="mt-12 flex flex-col items-center gap-4">
+        {/* <div className="mt-12 flex flex-col items-center gap-4">
           <p className="text-base-content/60 text-sm md:text-base">
             Want to see how HTS Hero can help you or your team?
           </p>
@@ -386,7 +388,7 @@ const UseCases = ({
               />
             </svg>
           </button>
-        </div>
+        </div> */}
       </div>
     </section>
   );

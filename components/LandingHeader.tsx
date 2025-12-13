@@ -13,8 +13,8 @@ import ThemeToggle from "./ThemeToggle";
 // Navigation links for the landing page sections
 const navLinks = [
   { href: "#tools", label: "Tools" },
-  { href: "#pricing", label: "Pricing" },
   { href: "#use-cases", label: "Use Cases" },
+  { href: "#pricing", label: "Pricing" },
   { href: "#faq", label: "FAQ" },
 ];
 

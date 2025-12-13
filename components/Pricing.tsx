@@ -86,7 +86,7 @@ const Pricing = ({ customerType }: PricingProps) => {
   };
 
   return (
-    <section className="relative overflow-hidden bg-base-100 border-t border-base-content/5">
+    <section className="relative overflow-hidden bg-base-100">
       {/* Background decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
@@ -344,9 +344,9 @@ const Pricing = ({ customerType }: PricingProps) => {
                   </span>
                 </h3>
                 <p className="text-base-content/60 text-sm md:text-base leading-relaxed">
-                  Complete 20 classifications within 30 days. If you&apos;re not
-                  completely satisfied with your experience, we&apos;ll refund
-                  your purchase in full.
+                  If you complete an onboarding session & 20 classifications
+                  within 30 days, but are still not satisfied with your
+                  experience, we&apos;ll refund your purchase in full.
                 </p>
               </div>
             </div>
@@ -354,7 +354,7 @@ const Pricing = ({ customerType }: PricingProps) => {
         </div>
 
         {/* Additional value props */}
-        <div className="mt-12 flex flex-wrap justify-center gap-6 md:gap-10 text-center">
+        <div className="mt-8 flex flex-wrap justify-center gap-6 md:gap-10 text-center">
           <div className="flex items-center gap-2 text-sm text-base-content/60">
             <CheckIcon className="w-4 h-4 text-primary" />
             <span>Cancel anytime</span>

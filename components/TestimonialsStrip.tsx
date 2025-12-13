@@ -20,8 +20,7 @@ const testimonials = [
   {
     role: "Director of Operations & Compliance, LCB",
     company: "Harren Group",
-    quote:
-      "I was really pleased with the AI recommendation – it was very intuitive and caught something I hadn't seen earlier",
+    quote: "It was very intuitive and caught something I hadn't seen earlier",
   },
   {
     role: "VP Forwarding & Customs Brokerage",
@@ -47,10 +46,10 @@ export function TestimonialsStrip({
       {showTestimonials && (
         <div className="w-full flex flex-col">
           {/* Title Section */}
-          <div className="self-center flex items-center gap-1.5 sm:gap-2 mb-3 sm:mb-4">
+          <div className="self-center text-center flex items-center gap-1.5 sm:gap-2 mb-3 sm:mb-8">
             <span className={`inline-block w-8 sm:w-12 h-px bg-primary`} />
             <span
-              className={`text-xs font-semibold text-primary uppercase tracking-widest`}
+              className={`text-sm md:text-base font-semibold text-primary uppercase tracking-widest`}
             >
               Loved by Manufacturers, Brokerages, & Logistics Teams
             </span>
@@ -58,7 +57,7 @@ export function TestimonialsStrip({
           </div>
 
           {/* Testimonials Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6 items-center">
             {testimonials.map((testimonial, index) => (
               <div
                 key={index}
@@ -69,15 +68,15 @@ export function TestimonialsStrip({
                   &ldquo;
                 </div>
 
-                <blockquote className="text-sm sm:text-base text-base-content leading-relaxed mb-3 sm:mb-4 relative z-10 pt-1 sm:pt-2">
+                <blockquote className="text-base-content leading-relaxed mb-3 sm:mb-4 relative z-10 pt-1 sm:pt-2">
                   {testimonial.quote}
                 </blockquote>
 
                 <div className="flex items-center gap-2 pt-2 sm:pt-3 border-t border-base-content/10">
                   <div className="flex-1 min-w-0">
-                    <div className="text-xs font-semibold text-base-content/70 truncate">
+                    {/* <div className="text-xs font-semibold text-base-content/70 truncate">
                       {testimonial.role}
-                    </div>
+                    </div> */}
                     <div className="text-xs font-medium text-primary mt-0.5">
                       {testimonial.company}
                     </div>
@@ -98,7 +97,7 @@ export function TestimonialsStrip({
               : undefined
           }
         >
-          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
+          {/* <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
             <span className="text-xs font-medium text-base-content/40 uppercase tracking-wider">
               Trusted by Trade Professionals At
             </span>
@@ -110,6 +109,20 @@ export function TestimonialsStrip({
                 {company}
               </span>
             ))}
+          </div> */}
+          {/* Social Credibility */}
+          <div className="flex items-center justify-center gap-2 mb-10 text-base-content/60">
+            <span className="text-amber-400 text-lg">★</span>
+            <p className="text-sm">
+              Trusted by professionals at teams like{" "}
+              <span className="font-semibold text-base-content/80">K+N</span>,{" "}
+              <span className="font-semibold text-base-content/80">DSV</span>,{" "}
+              <span className="font-semibold text-base-content/80">
+                Amazon,
+              </span>{" "}
+              and many more...
+            </p>
+            <span className="text-amber-400 text-lg">★</span>
           </div>
         </div>
       )}
