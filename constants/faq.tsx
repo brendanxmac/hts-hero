@@ -159,6 +159,99 @@ export const bundleFaqList: FAQItem[] = [
       </div>
     ),
   },
+  {
+    question: "How does Classification Assistant work?",
+    answer: (
+      <div className="pt-2">
+        <p>
+          Classification Assistant helps you classify products dramatically
+          faster, without sacrificing reasonable care or compliance
+          requirements.
+        </p>
+        <p>
+          We do this through a process we call{" "}
+          <strong>Coordinated Handoff</strong>, where AI and human work together
+          to quickly get the job done right.
+        </p>
+        <p>
+          The system guides you step-by-step through the HTS hierarchy, surfaces
+          the most relevant classification candidates at every level, and
+          provides clear, structured GRI analysis along the way.
+        </p>
+        <p>
+          You stay in control of the final decision, with full visibility into
+          the reasoning — so nothing is guessed, automated blindly, or cut
+          short.
+        </p>
+        <p>
+          Customs brokers and high-volume importers rely on Classification
+          Assistant to catch edge cases, reduce risk, and classify with
+          confidence — even when the answer isn’t obvious.
+        </p>
+      </div>
+    ),
+  },
+  {
+    question: "How does Duty & Tariff Calculator work?",
+    answer: (
+      <div className="pt-2">
+        <p>
+          Duty & Tariff Calculator instantly shows you the duty rates and
+          applicable tariffs for any U.S. import.
+        </p>
+        <p>
+          Enter an HTS code and country of origin, and we automatically surface
+          the relevant duties, tariffs, and trade programs.
+        </p>
+        <p>
+          No more jumping between spreadsheets, PDFs, and government websites
+          trying to piece together which tariffs apply, if they stack, and what
+          the landed cost is.
+        </p>
+        <p>
+          You get a clear, itemized breakdown of duties and tariffs so you can
+          price accurately, spot savings opportunities, and avoid surprises at
+          the border.
+        </p>
+        <p>
+          You can also share any results with your clients and colleagues in a
+          single click.
+        </p>
+        <p>
+          Importers, brokers, and logistics teams use the calculator to validate
+          costs fast, discover savings, and make confident decisions before
+          goods ever ship.
+        </p>
+      </div>
+    ),
+  },
+  {
+    question: "How does Tariff Impact Checker work?",
+    answer: (
+      <div className="pt-2">
+        <p>
+          Tariff Impact Checker instantly tells you instantly whether new tariff
+          changes affect you or your clients imports.
+        </p>
+        <p>
+          We continuously monitor tariff announcements then match them against
+          your HTS codes and countries of origin.
+        </p>
+        <p>
+          When a change impacts your imports, you’re alerted automatically, with
+          a clear explanation of what changed and why it matters.
+        </p>
+        <p>
+          This lets you react early — adjusting pricing, sourcing, or
+          classifications before higher duties hit your bottom line.
+        </p>
+        <p>
+          Instead of discovering tariff increases after the fact, businesses use
+          Tariff Impact Checker to stay ahead of risk and protect margins.
+        </p>
+      </div>
+    ),
+  },
 ];
 
 export const tariffImpactFaqList: FAQItem[] = [

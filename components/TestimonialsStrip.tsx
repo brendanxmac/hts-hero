@@ -114,7 +114,7 @@ export function TestimonialsStrip({
           <div className="flex items-center justify-center gap-2 mb-10 text-base-content/60">
             <span className="text-amber-400 text-lg">★</span>
             <p className="text-sm">
-              Trusted by professionals at teams like{" "}
+              Trusted by professionals at{" "}
               <span className="font-semibold text-base-content/80">K+N</span>,{" "}
               <span className="font-semibold text-base-content/80">DSV</span>,{" "}
               <span className="font-semibold text-base-content/80">

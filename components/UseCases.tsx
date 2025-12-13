@@ -123,25 +123,25 @@ const jobItems: JobItem[] = [
     id: "verify-catalog",
     title: "Verify HTS Codes for Your Entire Catalog",
     icon: <ClipboardDocumentCheckIcon className="w-5 h-5" />,
-    users: ["customs-broker", "importer"],
+    users: ["customs-broker", "manufacturer", "importer"],
   },
   {
     id: "bulk-classify",
     title: "Classify Thousands of Products Easily",
     icon: <SparklesIcon className="w-5 h-5" />,
-    users: ["customs-broker", "importer"],
+    users: ["customs-broker", "manufacturer", "importer"],
   },
   {
     id: "review-approve",
     title: "Review & Approve Team Classifications",
     icon: <CheckBadgeIcon className="w-5 h-5" />,
-    users: ["customs-broker"],
+    users: ["customs-broker", "manufacturer", "importer"],
   },
   {
     id: "share",
     title: "Share Classifications with Teammates & Clients",
     icon: <ShareIcon className="w-5 h-5" />,
-    users: ["customs-broker", "freight-forwarder"],
+    users: ["customs-broker", "freight-forwarder", "manufacturer", "importer"],
   },
 ];
 
@@ -351,44 +351,57 @@ const UseCases = ({
             ))}
           </div>
 
-          {/* Show All Prompt */}
-          {selectedUser && (
-            <div className="mt-6 text-center">
-              <button
-                onClick={() => setSelectedUser(null)}
-                className="text-sm text-base-content/50 hover:text-base-content transition-colors underline underline-offset-2"
-              >
-                Show all {jobItems.length} jobs →
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Bottom CTA */}
-        {/* <div className="mt-12 flex flex-col items-center gap-4">
-          <p className="text-base-content/60 text-sm md:text-base">
-            Want to see how HTS Hero can help you or your team?
-          </p>
-          <button
-            onClick={handleBookDemoClick}
-            className="group inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-base bg-primary text-white hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl"
-          >
-            <span>Book a Demo</span>
-            <svg
-              className="w-4 h-4 transition-transform group-hover:translate-x-0.5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2.5}
+          {/* Bottom CTA */}
+          {/* <div className="mt-12 flex flex-col items-center gap-4">
+            <p className="text-base-content/60 text-sm md:text-base">
+              Want to see how HTS Hero can help you or your team?
+            </p>
+            <button
+              onClick={handleBookDemoClick}
+              className="group inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-base bg-primary text-white hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-              />
-            </svg>
-          </button>
-        </div> */}
+              <span>Book a Demo</span>
+              <svg
+                className="w-4 h-4 transition-transform group-hover:translate-x-0.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+                />
+              </svg>
+            </button>
+          </div> */}
+
+          {/* Show All Prompt */}
+
+          <div className="flex gap-3 mt-6 text-center mx-auto items-center justify-center">
+            Want to see how we can help you or your team?
+            <button
+              onClick={handleBookDemoClick}
+              className="btn btn-sm btn-primary"
+            >
+              Book a Demo
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
     </section>
   );

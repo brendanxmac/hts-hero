@@ -273,11 +273,11 @@ export default function Home() {
               <div className="relative w-full sm:w-auto">
                 <button
                   onClick={() => setIsToolMenuOpen(!isToolMenuOpen)}
-                  className="group inline-flex items-center justify-center gap-2 px-16 sm:px-28 py-2.5 sm:py-3.5 rounded-xl font-semibold text-base bg-primary text-white hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl"
+                  className="group inline-flex items-center justify-center gap-2 px-16 sm:px-28 py-2.5 sm:py-3.5 rounded-xl font-semibold text-base bg-primary text-white hover:bg-primary/90 transition-all duration-200 hover:scale-[1.01] active:scale-[0.98] shadow-lg hover:shadow-xl"
                 >
                   <span>Try Now</span>
                   <svg
-                    className={`w-5 h-5 transition-transform duration-300 ${isToolMenuOpen ? "" : "-rotate-180"}`}
+                    className={`w-5 h-5 transition-transform duration-Fs,p200 ${isToolMenuOpen ? "" : "-rotate-180"}`}
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -470,15 +470,17 @@ export default function Home() {
           </div>
           {/* Main Headline */}
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight">
-            <span className="text-base-content">Your</span>{" "}
             <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
-              Toolkit
+              Tools
             </span>{" "}
-            For Smooth Imports
-          </h2>{" "}
+            That Make Imports{" "}
+            <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
+              Easy
+            </span>
+          </h2>
           {/* Subtext */}
           <p className="text-base-content/60 text-sm sm:text-base max-w-xl mx-auto">
-            From classification to duty calculation and tarrifs — we&apos;ve got
+            From classification to duty and tarrif calculation — we&apos;ve got
             you covered
           </p>
           {/* Audience Pills */}
