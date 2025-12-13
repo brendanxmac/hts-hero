@@ -14,11 +14,7 @@ if (typeof window !== "undefined" && MIXPANEL_TOKEN) {
 }
 
 export enum MixpanelEvent {
-  CLICKED_PRO_LETS_TALK = "Pro Let's Talk Clicked",
-  CLICKED_PRO_TEAM_LETS_TALK = "Pro Team Let's Talk Clicked",
   CLICKED_TARIFF_IMPACT_UPGRADE = "Tariff Impact Upgrade Clicked",
-  INITIATED_PRO_CHECKOUT = "Pro Checkout Clicked",
-  INITIATED_PRO_TEAM_CHECKOUT = "Pro Team Checkout Clicked",
   INITIATED_IMPACT_STANDARD_CHECKOUT = "Impact Standard Checkout Clicked",
   INITIATED_IMPACT_PRO_CHECKOUT = "Impact Pro Checkout Clicked",
   INITIATED_CLASSIFY_PRO_CHECKOUT = "Classify Pro Checkout Clicked",

@@ -29,7 +29,7 @@ import {
   fetchImportersForUser,
 } from "../libs/supabase/importers";
 import { ClassificationStatus, Importer } from "../interfaces/hts";
-import { EmptyResults, EmptyResultsConfig } from "./EmptyResults";
+import { EmptyResultsConfig } from "./EmptyResults";
 import { deleteClassification } from "../libs/classification";
 import toast from "react-hot-toast";
 

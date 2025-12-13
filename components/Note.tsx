@@ -3,7 +3,6 @@ import { NoteI as NoteType } from "../public/notes/notes";
 import PDF from "./PDF";
 import { SupabaseBuckets } from "../constants/supabase";
 import {
-  DocumentTextIcon,
   ChevronRightIcon,
   ExclamationCircleIcon,
 } from "@heroicons/react/16/solid";

@@ -6,12 +6,10 @@ import PDF from "./PDF";
 import {
   ArrowDownTrayIcon,
   TrashIcon,
-  CheckCircleIcon,
   TagIcon,
   DocumentTextIcon,
 } from "@heroicons/react/16/solid";
 import { UserProfile, UserRole } from "../libs/supabase/user";
-import { LoadingIndicator } from "./LoadingIndicator";
 import { Element } from "./Element";
 import {
   fetchImportersForUser,
