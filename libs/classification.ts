@@ -33,7 +33,8 @@ export const updateClassification = async (
   classification?: Classification,
   importer_id?: string,
   classifier_id?: string,
-  status?: ClassificationStatus
+  status?: ClassificationStatus,
+  country_of_origin?: string
 ) => {
   const response = await apiClient.post("/classification/update", {
     id,
@@ -41,6 +42,7 @@ export const updateClassification = async (
     importer_id,
     classifier_id,
     status,
+    country_of_origin,
   });
 
   return response.data;
@@ -54,6 +56,10 @@ export const fetchClassifications = async (): Promise<
   );
 
   return classifications;
+};
+
+export const deleteClassification = async (id: string): Promise<void> => {
+  await apiClient.post("/classification/delete", { id });
 };
 
 const getImageFormatFromFilename = (filename: string): string => {

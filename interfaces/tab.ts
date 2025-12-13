@@ -1,6 +1,7 @@
 export interface Tab {
   label: string;
   value: string;
+  icon?: React.ReactNode;
 }
 
 export interface IconTab<T> {

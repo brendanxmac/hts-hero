@@ -28,7 +28,7 @@ const ButtonSignin = ({ text, extraStyle }: Props) => {
     }
 
     if (pathname === "/about/tariffs") {
-      return "/tariff-finder";
+      return "/duty-calculator";
     }
 
     if (pathname === "/about") {

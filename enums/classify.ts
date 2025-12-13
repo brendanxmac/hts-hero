@@ -9,6 +9,7 @@ export enum ClassifyPage {
 }
 
 export enum AboutPage {
+  BUNDLE = "bundle",
   IMPORTER = "importer",
   CLASSIFIER = "classifier",
   PARTNER = "partner",

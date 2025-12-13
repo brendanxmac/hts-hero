@@ -122,30 +122,30 @@ export const PendingTariffsList = ({ hideHeading }: Props) => {
     switch (status) {
       case TariffStatus.MENTIONED:
         return {
-          bg: "bg-info/20",
+          bg: "bg-info/10",
           text: "text-info",
-          border: "border-info/30",
+          border: "border-info/20",
           dot: "bg-info",
         };
       case TariffStatus.INVESTIGATION:
         return {
-          bg: "bg-warning/20",
+          bg: "bg-warning/10",
           text: "text-warning",
-          border: "border-warning/30",
+          border: "border-warning/20",
           dot: "bg-warning",
         };
       case TariffStatus.PENDING_PUBLICATION:
         return {
-          bg: "bg-orange-500/20",
+          bg: "bg-orange-500/10",
           text: "text-orange-500",
-          border: "border-orange-500/30",
+          border: "border-orange-500/20",
           dot: "bg-orange-500",
         };
       case TariffStatus.PUBLISHED:
         return {
-          bg: "bg-success/20",
+          bg: "bg-success/10",
           text: "text-success",
-          border: "border-success/30",
+          border: "border-success/20",
           dot: "bg-success",
         };
     }
@@ -156,9 +156,9 @@ export const PendingTariffsList = ({ hideHeading }: Props) => {
 
     return (
       <div
-        className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold ${style.bg} ${style.text} ${style.border} border`}
+        className={`inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-medium ${style.bg} ${style.text} ${style.border} border`}
       >
-        <div className={`w-2 h-2 rounded-full ${style.dot}`}></div>
+        <div className={`w-1.5 h-1.5 rounded-full ${style.dot}`}></div>
         {status}
       </div>
     );
@@ -167,86 +167,109 @@ export const PendingTariffsList = ({ hideHeading }: Props) => {
   return (
     <section
       id="pending-tariffs"
-      className={`flex justify-center items-center w-full bg-base-100 text-base-content px-6  ${
-        hideHeading ? "" : "lg:py-16"
+      className={`flex justify-center items-center w-full bg-base-100 text-base-content px-6 ${
+        hideHeading ? "py-2" : "py-12 lg:py-20"
       }`}
     >
-      <div className="w-full flex flex-col max-w-7xl lg:min-w-5xl gap-2 sm:gap-4">
+      <div className="w-full flex flex-col max-w-7xl gap-4 sm:gap-6">
         {!hideHeading && (
-          <div className="text-center">
-            <div className="flex flex-col -space-y-4 md:space-y-0">
-              <h1 className="font-extrabold text-2xl sm:text-3xl md:text-5xl lg:text-6xl tracking-tight max-w-5xl mx-auto leading-loose">
-                More Tariffs are Coming
-              </h1>
+          <div className="text-center mb-8">
+            {/* Section label */}
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <span className="inline-block w-8 h-px bg-primary" />
+              <span className="text-xs font-semibold text-primary uppercase tracking-widest">
+                Stay Informed
+              </span>
+              <span className="inline-block w-8 h-px bg-primary" />
             </div>
-            <p className="text-sm md:text-lg max-w-5xl mx-auto mt-2 md:mt-4">
+
+            <h2 className="font-bold text-3xl sm:text-4xl md:text-5xl tracking-tight text-base-content mb-4">
+              More Tariffs are Coming
+            </h2>
+            <p className="text-base md:text-lg text-base-content/70 max-w-2xl mx-auto mb-6">
               Quickly knowing your impacts can mean big savings
             </p>
-            <div className="flex justify-center mt-4">
-              <Link
-                className="btn btn-wide btn-primary"
-                href={"/about/tariffs#pricing"}
+            <Link
+              href="/about/tariffs#pricing"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg font-semibold text-sm bg-primary text-white hover:bg-primary/90 transition-all duration-200 shadow-sm hover:shadow-md"
+            >
+              <span>Be Prepared Today</span>
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
               >
-                Be Prepared Today!
-              </Link>
-            </div>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"
+                />
+              </svg>
+            </Link>
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 mt-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {tariffAnnouncements.map((tariff, index) => (
             <div
               key={index}
-              className="group bg-base-100 rounded-xl shadow-md hover:shadow-lg hover:border hover:border-primary/80 transition-all duration-100 p-6 border border-base-content/20"
+              className="group relative bg-gradient-to-br from-base-100 to-base-200/50 rounded-xl p-5 border border-base-content/10 hover:border-primary/30 transition-all duration-200 hover:shadow-lg"
             >
-              {/* Header Section */}
-              <div className="mb-6">
-                <h3 className="md:text-xl font-bold text-base-content leading-tight mb-3 transition-colors">
-                  {tariff.name}
-                </h3>
-                <div className="flex items-center justify-between">
-                  {getStatusBadge(tariff.status)}
-                  <div className="flex items-center text-sm text-base-content/60">
-                    <svg
-                      className="w-4 h-4 mr-2"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
-                    </svg>
-                    <span className="font-medium">
-                      {tariff.date.toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </span>
+              {/* Decorative gradient on hover */}
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none" />
+
+              <div className="relative z-10">
+                {/* Header Section */}
+                <div className="mb-4">
+                  <h3 className="text-base md:text-lg font-semibold text-base-content leading-snug mb-3 group-hover:text-primary transition-colors">
+                    {tariff.name}
+                  </h3>
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    {getStatusBadge(tariff.status)}
+                    <div className="flex items-center text-xs text-base-content/50">
+                      <svg
+                        className="w-3.5 h-3.5 mr-1.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
+                      <span className="font-medium">
+                        {tariff.date.toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Rate Section */}
-              <div className="pt-4 border-t border-base-content/10">
-                <div className="flex items-center justify-between">
-                  <span className="text-base-content/60 text-sm font-medium">
-                    Possible Tariff Rate
-                  </span>
-                  <div className="text-right">
-                    {tariff.rate ? (
-                      <span className="text-lg font-bold text-base-content group-hover:text-secondary transition-colors">
-                        {tariff.rate}
-                      </span>
-                    ) : (
-                      <span className="font-semibold text-base-content/50">
-                        TBD
-                      </span>
-                    )}
+                {/* Rate Section */}
+                <div className="pt-3 border-t border-base-content/5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-base-content/50 text-xs font-medium">
+                      Possible Rate
+                    </span>
+                    <div className="text-right">
+                      {tariff.rate ? (
+                        <span className="text-base font-bold text-base-content group-hover:text-primary transition-colors">
+                          {tariff.rate}
+                        </span>
+                      ) : (
+                        <span className="text-sm font-medium text-base-content/40">
+                          TBD
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -255,16 +278,16 @@ export const PendingTariffsList = ({ hideHeading }: Props) => {
         </div>
 
         {hideHeading && (
-          <div className="text-center mt-4">
-            <p className="text-sm text-base-content/60 max-w-3xl mx-auto">
+          <div className="text-center mt-6 pt-6 border-t border-base-content/5">
+            <p className="text-sm text-base-content/50 max-w-3xl mx-auto mb-2">
               Tariff announcements are subject to change. &quot;TBD&quot;
               indicates rates are unknown or being determined.
             </p>
             <a
               href="https://www.tradecomplianceresourcehub.com/2025/08/25/trump-2-0-tariff-tracker/"
-              className="text-xs link link-primary text-base-content/70"
+              className="text-xs font-medium text-primary hover:underline"
             >
-              See source / all tariff announcements
+              See source / all tariff announcements →
             </a>
           </div>
         )}

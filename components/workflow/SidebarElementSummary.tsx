@@ -1,8 +1,5 @@
 import { HtsElement } from "../../interfaces/hts";
-import { Color } from "../../enums/style";
-import { classNames } from "../../utilities/style";
-import { SecondaryText } from "../SecondaryText";
-import { TertiaryLabel } from "../TertiaryLabel";
+import { CheckCircleIcon } from "@heroicons/react/16/solid";
 
 interface Props {
   isActive: boolean;
@@ -20,24 +17,25 @@ export const SidebarElementSummary = ({
 
   return (
     <div
-      className={classNames(
-        "w-full flex justify-between items-center rounded-md bg-base-100 border px-4 py-2 hover:cursor-pointer shadow-sm",
+      className={`group relative overflow-hidden rounded-xl cursor-pointer transition-all duration-200 ${
         isActive
-          ? "bg-primary/10 border-primary"
-          : "border-base-content/80 hover:bg-primary/5"
-      )}
+          ? "bg-gradient-to-br from-primary/15 to-primary/5 border-2 border-primary/40 shadow-lg shadow-primary/10"
+          : "bg-base-100 border border-base-content/10 hover:border-primary/30 hover:shadow-md"
+      }`}
       onClick={onClick}
     >
-      <div className="w-full flex flex-col items-start justify-between gap-1">
+      {/* Subtle hover gradient */}
+      <div className="absolute inset-0 bg-gradient-to-r from-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none" />
+
+      <div className="relative z-10 p-3">
         {htsno && (
-          <div className="min-w-20 md:min-w-32">
-            <TertiaryLabel value={htsno} color={Color.BASE_CONTENT} />
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-xs font-bold text-primary">{htsno}</span>
           </div>
         )}
-
-        <div className="w-full flex items-center justify-between gap-2">
-          <SecondaryText value={description} color={Color.BASE_CONTENT} />
-        </div>
+        <p className="text-sm text-base-content/80 leading-relaxed line-clamp-2">
+          {description}
+        </p>
       </div>
     </div>
   );

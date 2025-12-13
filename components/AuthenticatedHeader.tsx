@@ -51,14 +51,14 @@ export const AuthenticatedHeader = () => {
 
           <div className="hidden md:flex items-center justify-start gap-4">
             <Link
-              href="/tariff-finder"
+              href="/duty-calculator"
               className={`btn btn-link px-0 gap-0 ${
-                pathname === "/tariff-finder"
+                pathname === "/duty-calculator"
                   ? "text-primary underline"
                   : "text-base-content no-underline"
               }`}
             >
-              Tariff Finder
+              Duty Calculator
             </Link>
             <Link
               href="/classifications"
@@ -68,7 +68,7 @@ export const AuthenticatedHeader = () => {
                   : "text-base-content no-underline"
               }`}
             >
-              Classify
+              Classification Assistant
             </Link>
             <Link href="/tariffs/impact-checker">
               <button
@@ -148,7 +148,7 @@ export const AuthenticatedHeader = () => {
       {isOpen && (
         <div className="relative z-50">
           <div
-            className={`fixed inset-y-0 right-0 z-10 w-full px-8 py-4 overflow-y-auto bg-base-200 md:max-w-sm md:ring-1 md:ring-neutral/10 transform origin-right transition ease-in-out duration-300`}
+            className={`fixed inset-y-0 right-0 z-[60] w-full px-8 py-4 overflow-y-auto bg-base-200 md:max-w-sm md:ring-1 md:ring-neutral/10 transform origin-right transition ease-in-out duration-300`}
           >
             {/* Your logo/name on small screens */}
             <div className="flex items-center justify-between">
@@ -191,14 +191,14 @@ export const AuthenticatedHeader = () => {
               <div className="py-4">
                 <div className="flex flex-col gap-y-4 items-start">
                   <Link
-                    href="/tariff-finder"
+                    href="/duty-calculator"
                     className={`font-semibold link link-hover ${
-                      pathname === "/tariff-finder"
+                      pathname === "/duty-calculator"
                         ? "text-primary underline"
                         : "text-base-content no-underline"
                     }`}
                   >
-                    Tariff Finder
+                    Duty Calculator
                   </Link>
                   <Link
                     href="/classifications"
@@ -208,7 +208,7 @@ export const AuthenticatedHeader = () => {
                         : "text-base-content no-underline"
                     }`}
                   >
-                    Classify
+                    Classification Assistant
                   </Link>
                   <Link
                     href="/tariffs/impact-checker"

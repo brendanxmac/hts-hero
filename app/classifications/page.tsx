@@ -3,7 +3,7 @@ import { BreadcrumbsProvider } from "../../contexts/BreadcrumbsContext";
 
 export default function Home() {
   return (
-    <main className="h-full w-full bg-base-300 overflow-hidden">
+    <main className="w-full bg-base-300">
       <BreadcrumbsProvider>
         <ClassifyController />
       </BreadcrumbsProvider>

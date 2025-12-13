@@ -21,8 +21,8 @@ const ThemeToggle = () => {
       setTheme("light");
       document.documentElement.setAttribute("data-theme", "light");
     } else {
-      setTheme("dark");
-      document.documentElement.setAttribute("data-theme", "dark");
+      setTheme("light");
+      document.documentElement.setAttribute("data-theme", "light");
     }
   }, []);
 

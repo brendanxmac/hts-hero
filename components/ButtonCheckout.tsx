@@ -24,10 +24,12 @@ const getBuyButtonText = (plan: PricingPlanI) => {
       return `Launch App!`;
     case PricingPlan.TARIFF_IMPACT_STANDARD:
       return `Get Standard!`;
+    case PricingPlan.PRO:
     case PricingPlan.CLASSIFY_PRO:
     case PricingPlan.TARIFF_IMPACT_PRO:
       return `Go ${plan.name}!`;
     case PricingPlan.CLASSIFY_TEAM:
+    case PricingPlan.PRO_TEAM:
       return "Book Demo";
     default:
       return "Buy Now!";
@@ -46,10 +48,11 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
   const getCheckoutSuccessEndpoint = (plan: PricingPlan) => {
     switch (plan) {
       case PricingPlan.CLASSIFY_PRO:
+      case PricingPlan.PRO:
         return "/classifications";
       case PricingPlan.TARIFF_IMPACT_STANDARD:
       case PricingPlan.TARIFF_IMPACT_PRO:
-        return "/tariffs/impact-checker";
+        return "/tariffs/duty-calculator";
     }
   };
 
@@ -64,6 +67,11 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
           break;
         case PricingPlan.CLASSIFY_PRO:
           trackEvent(MixpanelEvent.INITIATED_CLASSIFY_PRO_CHECKOUT);
+        case PricingPlan.PRO:
+          trackEvent(MixpanelEvent.INITIATED_PRO_CHECKOUT);
+          break;
+        case PricingPlan.PRO_TEAM:
+          trackEvent(MixpanelEvent.INITIATED_PRO_TEAM_CHECKOUT);
           break;
       }
     } catch (e) {
@@ -72,13 +80,17 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
     }
   };
 
-  const handleClassifyTeamClick = async () => {
+  const handleTeamClick = async (plan: PricingPlanI) => {
     const userEmail = user?.email || "";
     const userName = user?.user_metadata?.full_name || "";
 
     // Track the event
     try {
-      trackEvent(MixpanelEvent.CLICKED_CLASSIFY_TEAM_LETS_TALK, {
+      const event =
+        plan.planIdentifier === PricingPlan.CLASSIFY_TEAM
+          ? MixpanelEvent.CLICKED_CLASSIFY_TEAM_LETS_TALK
+          : MixpanelEvent.CLICKED_TARIFF_TEAM_LETS_TALK;
+      trackEvent(event, {
         userEmail,
         userName,
         isLoggedIn: !!user,
@@ -93,8 +105,11 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
 
   const handlePayment = async () => {
     try {
-      if (plan.planIdentifier === PricingPlan.CLASSIFY_TEAM) {
-        await handleClassifyTeamClick();
+      if (
+        plan.planIdentifier === PricingPlan.CLASSIFY_TEAM ||
+        plan.planIdentifier === PricingPlan.PRO_TEAM
+      ) {
+        await handleTeamClick(plan);
         return;
       }
 

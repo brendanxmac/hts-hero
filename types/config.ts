@@ -107,6 +107,7 @@ export interface ConfigProps {
   };
   stripe: {
     // importerPlans: PricingPlanI[];
+    bundlePlans: PricingPlanI[];
     classifierPlans: PricingPlanI[];
     classifierConversionPlans: PricingPlanI[];
     tariffImpactPlans: PricingPlanI[];

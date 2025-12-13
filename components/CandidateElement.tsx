@@ -1,21 +1,18 @@
 import { useState } from "react";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { HtsElement } from "../interfaces/hts";
-import SquareIconButton from "./SqaureIconButton";
 import {
   TrashIcon,
   DocumentTextIcon,
   SparklesIcon,
+  CheckCircleIcon,
 } from "@heroicons/react/24/solid";
-import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
+import { MagnifyingGlassIcon, ChevronRightIcon } from "@heroicons/react/16/solid";
 import PDF from "./PDF";
-import { classNames } from "../utilities/style";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { useClassification } from "../contexts/ClassificationContext";
-import { Color } from "../enums/style";
 import { useClassifyTab } from "../contexts/ClassifyTabContext";
 import { ClassifyTab } from "../enums/classify";
-import { TertiaryLabel } from "./TertiaryLabel";
 import {
   generateBreadcrumbsForHtsElement,
   getChapterFromHtsElement,
@@ -34,10 +31,7 @@ import {
 } from "../libs/supabase/purchase";
 import { isWithinPastNDays } from "../utilities/time";
 import { useUser } from "../contexts/UserContext";
-import { SecondaryText } from "./SecondaryText";
 import { SupabaseBuckets } from "../constants/supabase";
-import { TertiaryText } from "./TertiaryText";
-import { SecondaryLabel } from "./SecondaryLabel";
 
 interface Props {
   element: HtsElement;
@@ -69,10 +63,7 @@ export const CandidateElement = ({
     element.uuid;
   const recommendedReason =
     classification.levels[classificationLevel]?.analysisReason;
-  // const suggestedQuestions =
-  //   classification.levels[classificationLevel]?.analysisQuestions;
 
-  // Check all progression levels to see if this element is selected in any of them
   const isLevelSelection = Boolean(
     classification.levels.some(
       (level) => level.selection && level.selection.uuid === element.uuid
@@ -89,7 +80,6 @@ export const CandidateElement = ({
       ? await userHasActivePurchaseForProduct(user.id, Product.CLASSIFY)
       : false;
 
-    // Track classification completed event
     trackEvent(MixpanelEvent.CLASSIFICATION_COMPLETED, {
       hts_code: element.htsno,
       item: classification.articleDescription,
@@ -100,15 +90,13 @@ export const CandidateElement = ({
 
   return (
     <div
-      className={classNames(
-        "flex w-full rounded-md bg-base-100 p-4 gap-4 transition-all border-2",
-        isLevelSelection &&
-          "shadow-[inset_0_0_0_2px_oklch(var(--p))] border-transparent border-none bg-primary/10",
-        !isLevelSelection &&
-          `${disabled ? "cursor-not-allowed" : "hover:cursor-pointer"} hover:bg-primary/10 ${disabled && "shadow-[inset_0_0_0_1px_oklch(var(--bc))]"}`,
-        disabled &&
-          "bg-base-200/70 cursor-not-allowed border-base-content hover:bg-base-200/70"
-      )}
+      className={`group relative overflow-hidden rounded-2xl transition-all duration-300 ${
+        isLevelSelection
+          ? "bg-gradient-to-br from-success/15 to-success/5 border-2 border-success/40 shadow-lg shadow-success/10"
+          : disabled
+            ? "bg-base-200/50 border border-base-content/10 cursor-not-allowed opacity-70"
+            : "bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 border border-base-content/10 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 hover:scale-[1.01] cursor-pointer"
+      }`}
       onClick={() => {
         if (isLevelSelection || disabled) {
           return;
@@ -149,55 +137,58 @@ export const CandidateElement = ({
         }
       }}
     >
-      <div className="flex flex-col w-full gap-5">
-        {/* {indent === "0" && (
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-wrap">
-              {getBreadCrumbsForElement(element, sections, htsElements).map(
-                (breadcrumb, i) => (
-                  <span key={`breadcrumb-${i}`} className="text-xs">
-                    {breadcrumb.label && <b>{breadcrumb.label} </b>}
-                    <span
-                      className={`${!breadcrumb.value ? "font-bold" : "text-white"}`}
-                    >
-                      {breadcrumb.value}
-                    </span>
-                    <span className="text-white mx-2">›</span>
-                  </span>
-                )
-              )}
-            </div>
-            <div className="w-full h-[1px] bg-base-content/10" />
-          </div>
-        )} */}
+      {/* Subtle hover gradient */}
+      {!isLevelSelection && !disabled && (
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+      )}
 
-        <div className="flex flex-col gap-1">
-          <div className="flex justify-between items-center">
-            <TertiaryLabel value={htsno ? `${htsno}` : "Prequalifier"} />
-            <div className="flex gap-2">
-              <SquareIconButton
-                variant="ghost"
+      <div className="relative z-10 p-5">
+        {/* Header Row */}
+        <div className="flex items-start justify-between gap-4 mb-3">
+          <div className="flex items-center gap-3">
+            {/* HTS Code Badge */}
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${
+              isLevelSelection
+                ? "bg-success/20 border border-success/30"
+                : "bg-gradient-to-r from-primary/15 to-primary/5 border border-primary/20"
+            }`}>
+              {isLevelSelection && (
+                <CheckCircleIcon className="w-4 h-4 text-success" />
+              )}
+              <span className={`text-sm font-bold ${
+                isLevelSelection ? "text-success" : "text-primary"
+              }`}>
+                {htsno || "Prequalifier"}
+              </span>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-1">
+            <button
+              className="p-2 rounded-lg bg-base-content/5 hover:bg-primary/10 border border-transparent hover:border-primary/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={disabled}
-                tooltip={`Chapter ${chapter} Notes`}
-                icon={<DocumentTextIcon className="h-4 w-4" />}
-                onClick={() =>
+              title={`Chapter ${chapter} Notes`}
+              onClick={(e) => {
+                e.stopPropagation();
                   setShowPDF({
                     title: `Chapter ${chapter} Notes`,
                     bucket: SupabaseBuckets.NOTES,
                     filePath: `/chapters/Chapter ${chapter}.pdf`,
-                  })
-                }
-              />
+                });
+              }}
+            >
+              <DocumentTextIcon className="h-4 w-4 text-base-content/60" />
+            </button>
 
-              <SquareIconButton
-                variant="ghost"
+            <button
+              className="p-2 rounded-lg bg-base-content/5 hover:bg-primary/10 border border-transparent hover:border-primary/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={disabled}
-                icon={<MagnifyingGlassIcon className="h-4 w-4" />}
-                tooltip={`View Element`}
-                onClick={() => {
+              title="View Element"
+              onClick={(e) => {
+                e.stopPropagation();
                   clearBreadcrumbs();
-                  const sectionAndChapter =
-                    getSectionAndChapterFromChapterNumber(
+                const sectionAndChapter = getSectionAndChapterFromChapterNumber(
                       sections,
                       Number(getChapterFromHtsElement(element, htsElements))
                     );
@@ -210,35 +201,30 @@ export const CandidateElement = ({
                   );
 
                   setBreadcrumbs(breadcrumbs);
-
                   setActiveTab(ClassifyTab.EXPLORE);
                 }}
-              />
+            >
+              <MagnifyingGlassIcon className="h-4 w-4 text-base-content/60" />
+            </button>
 
               {indent === "0" && (
-                <SquareIconButton
-                  variant="ghost"
-                  color="error"
+              <button
+                className="p-2 rounded-lg bg-base-content/5 hover:bg-error/10 border border-transparent hover:border-error/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={disabled}
-                  icon={<TrashIcon className="h-4 w-4" />}
-                  tooltip={`Remove`}
-                  onClick={() => {
+                title="Remove"
+                onClick={(e) => {
+                  e.stopPropagation();
                     if (isLevelSelection) {
                       const newClassificationProgression =
                         classification.levels.slice(0, classificationLevel + 1);
+                    newClassificationProgression[classificationLevel].selection =
+                      null;
+                    newClassificationProgression[classificationLevel].candidates =
                       newClassificationProgression[
-                        classificationLevel
-                      ].selection = null;
-
-                      // remove this element from the candidates of this level
-                      newClassificationProgression[
-                        classificationLevel
-                      ].candidates = newClassificationProgression[
                         classificationLevel
                       ].candidates.filter(
                         (candidate) => candidate.uuid !== element.uuid
                       );
-
                       setClassification({
                         ...classification,
                         levels: newClassificationProgression,
@@ -246,10 +232,8 @@ export const CandidateElement = ({
                     } else {
                       const newClassificationProgression =
                         classification.levels.slice(0, classificationLevel + 1);
-
+                    newClassificationProgression[classificationLevel].candidates =
                       newClassificationProgression[
-                        classificationLevel
-                      ].candidates = newClassificationProgression[
                         classificationLevel
                       ].candidates.filter(
                         (candidate) => candidate.uuid !== element.uuid
@@ -261,48 +245,52 @@ export const CandidateElement = ({
                       });
                     }
                   }}
-                />
+              >
+                <TrashIcon className="h-4 w-4 text-base-content/60 hover:text-error" />
+              </button>
+            )}
+
+            {/* Chevron indicator */}
+            {!isLevelSelection && !disabled && (
+              <ChevronRightIcon className="h-5 w-5 text-base-content/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-200 ml-1" />
               )}
-            </div>
           </div>
-          {isLevelSelection ? (
-            <SecondaryLabel value={description} />
-          ) : (
-            <SecondaryText value={description} />
-          )}
         </div>
 
+        {/* Description */}
+        <p className={`text-base leading-relaxed ${
+          isLevelSelection
+            ? "font-semibold text-base-content"
+            : "text-base-content/80"
+        }`}>
+          {description}
+        </p>
+
+        {/* AI Analysis Section */}
         {isRecommended && (
-          <div className="flex flex-col gap-2 mt-2">
-            <div className="flex gap-1 text-accent items-center">
-              <SparklesIcon className="h-4 w-4 text-primary" />
-              <TertiaryLabel value="HTS Hero Analysis" color={Color.PRIMARY} />
+          <div className="mt-4 pt-4 border-t border-base-content/10">
+            <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-primary/10 to-secondary/5 border border-primary/20 p-4">
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
             </div>
 
-            <div className="flex flex-col gap-2 ml-1">
-              <TertiaryText value={recommendedReason} />
-
-              <p className="text-xs text-gray-400">
-                HTS Hero can make mistakes. Always exercise your own judgement
-                as the classifier.
-              </p>
-            </div>
-
-            {/* {suggestedQuestions && suggestedQuestions.length > 0 && (
-              <div className="flex flex-col gap-2">
-                <TertiaryLabel value="Potential Clarifications:" />
-                <div className="flex flex-col gap-1 ml-2">
-                  {suggestedQuestions.map((question, i) => (
-                    <p
-                      key={`suggested-question-${i}`}
-                      className="text-sm dark:text-white/90"
-                    >
-                      {question}
-                    </p>
-                  ))}
+              <div className="relative z-10">
+                <div className="flex items-center gap-2 mb-2">
+                  <SparklesIcon className="h-4 w-4 text-primary" />
+                  <span className="text-xs font-semibold uppercase tracking-wider text-primary">
+                    HTS Hero Analysis
+                  </span>
                 </div>
+
+                <p className="text-sm text-base-content/80 leading-relaxed mb-2">
+                  {recommendedReason}
+                </p>
+
+                <p className="text-xs text-base-content/50 italic">
+                  HTS Hero can make mistakes. Always exercise your own judgement as the classifier.
+                </p>
               </div>
-            )} */}
+            </div>
           </div>
         )}
       </div>

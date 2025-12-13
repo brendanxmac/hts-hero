@@ -32,8 +32,8 @@ const UnauthenticatedHeader = () => {
     label: string;
   }[] = [
     {
-      href: "/tariff-finder",
-      label: "Tariff Finder",
+      href: "/duty-calculator",
+      label: "Duty Calculator",
     },
     {
       href: "/classifications",
@@ -48,9 +48,9 @@ const UnauthenticatedHeader = () => {
       label: "HTS Explorer",
     },
     {
-      href: "/about/tariffs",
+      href: "/about",
       label:
-        pathname === "/tariff-finder"
+        pathname === "/duty-calculator"
           ? "Learn More"
           : "Want to Find the Best Tariff Rates?",
     },
@@ -88,15 +88,15 @@ const UnauthenticatedHeader = () => {
             <span className="font-extrabold text-lg">{config.appName}</span>
           </Link>
           <div className="hidden md:flex items-center justify-start gap-4">
-            <Link href="/about/tariffs">
+            <Link href="/duty-calculator">
               <button
                 className={`btn btn-link px-0 gap-0 ${
-                  pathname === "/tariff-finder"
+                  pathname === "/duty-calculator"
                     ? "text-primary underline"
                     : "text-base-content no-underline"
                 }`}
               >
-                Tariff Finder
+                Duty Calculator
               </button>
             </Link>
             <Link href="/about">
@@ -107,10 +107,10 @@ const UnauthenticatedHeader = () => {
                     : "text-base-content no-underline"
                 }`}
               >
-                Classify
+                Classification Assistant
               </button>
             </Link>
-            <Link href="/about/tariff-impact-checker">
+            <Link href="/tariffs/impact-checker">
               <button
                 className={`btn btn-link px-0 gap-0 ${
                   pathname === "/tariffs/impact-checker"
@@ -175,9 +175,11 @@ const UnauthenticatedHeader = () => {
             )}
             <Link
               className="btn btn-sm btn-primary font-semibold link link-hover"
-              href={pathname === "/tariff-finder" ? "/about/tariffs" : "/about"}
+              href={
+                pathname === "/duty-calculator" ? "/about/tariffs" : "/about"
+              }
             >
-              {pathname === "/tariff-finder"
+              {pathname === "/duty-calculator"
                 ? "Want Effortless Tariffs?"
                 : "Want Quicker Classifications?"}
             </Link>
@@ -195,7 +197,7 @@ const UnauthenticatedHeader = () => {
       {isOpen && (
         <div className="relative z-50">
           <div
-            className={`fixed inset-y-0 right-0 z-10 w-full px-8 py-4 overflow-y-auto bg-base-200 md:max-w-sm md:ring-1 md:ring-neutral/10 transform origin-right transition ease-in-out duration-300`}
+            className={`fixed inset-y-0 right-0 z-[60] w-full px-8 py-4 overflow-y-auto bg-base-200 md:max-w-sm md:ring-1 md:ring-neutral/10 transform origin-right transition ease-in-out duration-300`}
           >
             {/* Your logo/name on small screens */}
             <div className="flex items-center justify-between">

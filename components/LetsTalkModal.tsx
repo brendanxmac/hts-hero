@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useUser } from "../contexts/UserContext";
 import apiClient from "@/libs/api";
 import toast from "react-hot-toast";
-import { ArrowRightIcon } from "@heroicons/react/16/solid";
+import { ArrowRightIcon, XMarkIcon } from "@heroicons/react/16/solid";
 
 interface ClassifyTeamModalProps {
   isOpen: boolean;
@@ -14,11 +15,17 @@ interface ClassifyTeamModalProps {
 const LetsTalkModal = ({ isOpen, onClose }: ClassifyTeamModalProps) => {
   const { user } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     name: "",
     notes: "",
   });
+
+  // Set mounted state for portal
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Prefill form data when modal opens and user is logged in
   useEffect(() => {
@@ -30,6 +37,18 @@ const LetsTalkModal = ({ isOpen, onClose }: ClassifyTeamModalProps) => {
       });
     }
   }, [isOpen, user]);
+
+  // Handle escape key to close modal
+  useEffect(() => {
+    const handleEscapeKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen && !isSubmitting) {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscapeKey);
+    return () => document.removeEventListener("keydown", handleEscapeKey);
+  }, [isOpen, isSubmitting, onClose]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,13 +95,24 @@ const LetsTalkModal = ({ isOpen, onClose }: ClassifyTeamModalProps) => {
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
-  return (
-    <div className="modal modal-open !m-0 z-50">
-      <div className="modal-box w-11/12 max-w-2xl p-4 sm:p-6 max-h-[95vh] overflow-y-auto">
+  const modalContent = (
+    <div className="modal modal-open !m-0 z-50 fixed inset-0">
+      <div className="modal-box w-11/12 max-w-2xl p-4 sm:p-6 max-h-[95vh] overflow-y-auto relative">
+        {/* Close button */}
+        <button
+          type="button"
+          className="btn btn-sm btn-circle btn-ghost absolute right-3 top-3"
+          onClick={handleClose}
+          disabled={isSubmitting}
+          aria-label="Close modal"
+        >
+          <XMarkIcon className="h-5 w-5" />
+        </button>
+
         {/* Header Section */}
-        <div className="flex flex-col gap-3 mb-4">
+        <div className="flex flex-col gap-3 mb-4 pr-8">
           <h3 className="font-bold text-lg sm:text-xl md:text-2xl leading-tight flex-1">
             Book Your Demo
           </h3>
@@ -147,7 +177,7 @@ const LetsTalkModal = ({ isOpen, onClose }: ClassifyTeamModalProps) => {
               </span>
             </label>
             <textarea
-              placeholder="Tell us about your team size, needs, or any questions you have..."
+              placeholder="Why are you intested in HTS Hero?"
               className="textarea textarea-bordered w-full h-24 sm:h-32 text-sm sm:text-base resize-none"
               value={formData.notes}
               onChange={(e) =>
@@ -190,6 +220,8 @@ const LetsTalkModal = ({ isOpen, onClose }: ClassifyTeamModalProps) => {
       <div className="modal-backdrop bg-black/50" onClick={handleClose}></div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 };
 
 export default LetsTalkModal;

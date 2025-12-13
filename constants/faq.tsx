@@ -2,6 +2,258 @@ import Link from "next/link";
 import config from "../config";
 import { FAQItem } from "../components/FAQItem";
 
+export const bundleFaqList: FAQItem[] = [
+  {
+    question: "Can I get a demo?",
+    answer: (
+      <div className="pt-2">
+        <p>
+          Absolutely, you can{" "}
+          <Link href="#" className="link link-primary">
+            book a quick demo here.
+          </Link>
+        </p>
+      </div>
+    ),
+  },
+  {
+    question: "Can I buy just a single tool?",
+    answer: (
+      <div className="space-y-2 leading-relaxed pt-2">
+        <p>HTS Hero has 2 main offerings: Classify Pro & Tariff Pro.</p>
+        <br />
+        <p>
+          <Link href="#pricing" className="link link-primary">
+            Classify Pro
+          </Link>{" "}
+          is our flagship offering, which includes:
+        </p>
+        <ul className="list-disc list-inside">
+          <li>
+            <Link href="/about" className="link link-primary">
+              Classification Assistant
+            </Link>
+          </li>
+          <li>
+            <Link href="/about/tariffs" className="link link-primary">
+              Duty & Tariff Calculator
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/about/tariff-impact-checker"
+              className="link link-primary"
+            >
+              Tariff Impact Checker
+            </Link>
+          </li>
+        </ul>
+        <br />
+        <p>
+          <Link href="/about/tariffs" className="link link-primary">
+            Tariff Pro
+          </Link>{" "}
+          is purely tariff focused, which includes:
+        </p>
+        <ul className="list-disc list-inside">
+          <li>
+            <Link href="/about/tariffs" className="link link-primary">
+              Duty & Tariff Calculator
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/about/tariff-impact-checker"
+              className="link link-primary"
+            >
+              Tariff Impact Checker
+            </Link>
+          </li>
+        </ul>
+        <br />
+        <p>
+          If Tariff help is all you&apos;re looking for you can buy Tariff Pro{" "}
+          <Link href="/about/tariffs#pricing" className="link link-primary">
+            here.
+          </Link>
+        </p>
+
+        <br />
+        <p>
+          If you're not sure which tool you need, you can always contact us at{" "}
+          <Link
+            href={`mailto:${config.resend.supportEmail}`}
+            className="text-secondary underline"
+          >
+            {config.resend.supportEmail}
+          </Link>
+        </p>
+      </div>
+    ),
+  },
+  {
+    question: "Does HTS Hero Work for Teams?",
+    answer: (
+      <div className="pt-2">
+        <p>
+          Absolutely, and we even offer{" "}
+          <Link href="#pricing" className="link link-primary">
+            discounts for teams!
+          </Link>
+        </p>
+        <br />
+        <p>HTS Hero was specifically designed to work great for teams.</p>
+        <p>
+          We have a dedicated{" "}
+          <Link href="#pricing" className="link link-primary">
+            team plan
+          </Link>{" "}
+          that allows your entire team cruise through their import tasks.
+        </p>
+        <br />
+        <p>
+          You can{" "}
+          <Link href="#pricing" className="link link-primary">
+            book a quick demo
+          </Link>{" "}
+          to learn more about about how HTS Hero can help your team.
+        </p>
+      </div>
+    ),
+  },
+  {
+    question: "Can I try it before buying?",
+    answer: (
+      <div className="pt-2">
+        <p>Yes!, HTS Hero offers a 10 day free trial for all paid plans!</p>
+        <p>
+          No credit card required, just{" "}
+          <Link href={config.auth.loginUrl} className="link link-primary">
+            sign up
+          </Link>{" "}
+          and start using the tool!
+        </p>
+      </div>
+    ),
+  },
+  {
+    question: "What if I don't like it?",
+    answer: (
+      <div className="pt-2">
+        <p>No problem!</p>
+        <br />
+        <p>
+          Our Smarter Classifications Guarantee lets you get a full refund if
+          you do 20 classifications and the onboarding session but are still not
+          completely satisfied with your experience after 30 days.
+        </p>
+        <p>
+          You can cancel your subscription at any time and you will continue to
+          have access until the end of your current billing period.
+        </p>
+        <br />
+        <p>
+          Just log in to your account, click "Billing" in the profile dropdown,
+          and you&apos;ll be able to cancel your subscription.
+        </p>
+      </div>
+    ),
+  },
+  {
+    question: "How does Classification Assistant work?",
+    answer: (
+      <div className="pt-2">
+        <p>
+          Classification Assistant helps you classify products dramatically
+          faster, without sacrificing reasonable care or compliance
+          requirements.
+        </p>
+        <p>
+          We do this through a process we call{" "}
+          <strong>Coordinated Handoff</strong>, where AI and human work together
+          to quickly get the job done right.
+        </p>
+        <p>
+          The system guides you step-by-step through the HTS hierarchy, surfaces
+          the most relevant classification candidates at every level, and
+          provides clear, structured GRI analysis along the way.
+        </p>
+        <p>
+          You stay in control of the final decision, with full visibility into
+          the reasoning — so nothing is guessed, automated blindly, or cut
+          short.
+        </p>
+        <p>
+          Customs brokers and high-volume importers rely on Classification
+          Assistant to catch edge cases, reduce risk, and classify with
+          confidence — even when the answer isn’t obvious.
+        </p>
+      </div>
+    ),
+  },
+  {
+    question: "How does Duty & Tariff Calculator work?",
+    answer: (
+      <div className="pt-2">
+        <p>
+          Duty & Tariff Calculator instantly shows you the duty rates and
+          applicable tariffs for any U.S. import.
+        </p>
+        <p>
+          Enter an HTS code and country of origin, and we automatically surface
+          the relevant duties, tariffs, and trade programs.
+        </p>
+        <p>
+          No more jumping between spreadsheets, PDFs, and government websites
+          trying to piece together which tariffs apply, if they stack, and what
+          the landed cost is.
+        </p>
+        <p>
+          You get a clear, itemized breakdown of duties and tariffs so you can
+          price accurately, spot savings opportunities, and avoid surprises at
+          the border.
+        </p>
+        <p>
+          You can also share any results with your clients and colleagues in a
+          single click.
+        </p>
+        <p>
+          Importers, brokers, and logistics teams use the calculator to validate
+          costs fast, discover savings, and make confident decisions before
+          goods ever ship.
+        </p>
+      </div>
+    ),
+  },
+  {
+    question: "How does Tariff Impact Checker work?",
+    answer: (
+      <div className="pt-2">
+        <p>
+          Tariff Impact Checker instantly tells you instantly whether new tariff
+          changes affect you or your clients imports.
+        </p>
+        <p>
+          We continuously monitor tariff announcements then match them against
+          your HTS codes and countries of origin.
+        </p>
+        <p>
+          When a change impacts your imports, you’re alerted automatically, with
+          a clear explanation of what changed and why it matters.
+        </p>
+        <p>
+          This lets you react early — adjusting pricing, sourcing, or
+          classifications before higher duties hit your bottom line.
+        </p>
+        <p>
+          Instead of discovering tariff increases after the fact, businesses use
+          Tariff Impact Checker to stay ahead of risk and protect margins.
+        </p>
+      </div>
+    ),
+  },
+];
+
 export const tariffImpactFaqList: FAQItem[] = [
   {
     question: "Which tariff announcements or updates do you support?",

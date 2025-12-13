@@ -2,7 +2,7 @@ import config from "@/config";
 import { classNames } from "../utilities/style";
 import ButtonCheckout from "./ButtonCheckout";
 import { StripePaymentMode } from "../libs/stripe";
-import { getFeatureIcon, getFeatureSupportingLabel } from "./Pricing";
+import { getFeatureIcon, getFeatureSupportingLabel } from "./ClassifyPricing";
 import router from "next/router";
 import { useUser } from "../contexts/UserContext";
 import { useState } from "react";

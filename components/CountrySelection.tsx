@@ -199,7 +199,7 @@ export const CountrySelection = ({
         role="combobox"
         aria-expanded={isOpen}
         aria-haspopup="listbox"
-        className={`w-full h-[45px] px-3 bg-base-200/50 rounded-xl cursor-pointer flex gap-2 items-center justify-between transition-all duration-200 border border-base-content/10 hover:border-primary/30 hover:bg-base-200/70 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 ${isOpen ? "ring-2 ring-primary/50 border-primary/30" : ""}`}
+        className={`w-full px-3 py-2 bg-base-200/50 rounded-xl cursor-pointer flex gap-2 items-center justify-between transition-all duration-200 border border-base-content/10 hover:border-primary/30 hover:bg-base-200/70 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 ${singleSelect ? "h-[45px]" : "min-h-[45px]"} ${isOpen ? "ring-2 ring-primary/50 border-primary/30" : ""}`}
         onMouseDown={handleTriggerMouseDown}
         onClick={handleTriggerClick}
         onFocus={handleTriggerFocus}
@@ -240,7 +240,7 @@ export const CountrySelection = ({
               </div>
             ))
           ) : (
-            <span className="text-sm text-base-content/50 font-medium ml-1">
+            <span className="text-base-content/50 ml-1">
               {singleSelect
                 ? "Select Country of Origin"
                 : "Select Countries of Origin"}
@@ -258,7 +258,7 @@ export const CountrySelection = ({
             </button>
           ) : (
             <svg
-              className={`w-4 h-4 transition-transform duration-200 text-base-content/40 ${isOpen ? "rotate-180" : ""}`}
+              className={`w-4 h-4 transition-transform duration-200 text-base-content/40 ${isOpen ? "" : "-rotate-180"}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -313,6 +313,7 @@ export const CountrySelection = ({
                   <div
                     key={index}
                     className={`px-4 py-3 cursor-pointer flex items-center justify-between transition-all duration-150 ${bgClass}`}
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => handleCountrySelect(country)}
                     onMouseEnter={() => setHighlightedIndex(index)}
                   >

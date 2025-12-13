@@ -35,7 +35,6 @@ export async function GET() {
     let query = supabase
       .from("classifications")
       .select("*, classifier:users(name, email), importer:importers(name)")
-      .order("updated_at", { ascending: false })
       .order("created_at", { ascending: false });
 
     if (userIsOnTeam) {

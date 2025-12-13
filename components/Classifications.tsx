@@ -30,6 +30,8 @@ import {
 } from "../libs/supabase/importers";
 import { ClassificationStatus, Importer } from "../interfaces/hts";
 import { EmptyResults, EmptyResultsConfig } from "./EmptyResults";
+import { deleteClassification } from "../libs/classification";
+import toast from "react-hot-toast";
 
 interface Props {
   page: ClassifyPage;
@@ -71,7 +73,21 @@ export const Classifications = ({ page, setPage }: Props) => {
   const [importers, setImporters] = useState<Importer[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<string>("");
   const [selectedImporterId, setSelectedImporterId] = useState<string>("");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const UNASSIGNED_IMPORTER_VALUE = "unassigned";
+
+  const handleDeleteClassification = async (id: string) => {
+    try {
+      setDeletingId(id);
+      await deleteClassification(id);
+      toast.success("Classification deleted");
+      await refreshClassifications();
+    } catch (error) {
+      // Error is already handled by apiClient
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   // Helper function to get the appropriate empty state configuration
   const getEmptyStateConfig = (): EmptyResultsConfig | null => {
@@ -93,7 +109,7 @@ export const Classifications = ({ page, setPage }: Props) => {
           "M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z",
         title: "No Classifications Yet",
         descriptions: [
-          "You haven't started or completed any classifications yet, but can start one now.",
+          "You haven't started or completed any classifications yet, but can start your first one now.",
         ],
         buttonText: "Start First Classification",
         onButtonClick: () => setPage(ClassifyPage.CLASSIFY),
@@ -368,101 +384,68 @@ export const Classifications = ({ page, setPage }: Props) => {
 
   if (classificationsError || userError) {
     return (
-      <div className="h-full w-full max-w-3xl mx-auto pt-12 flex flex-col gap-8">
-        <div className="text-error">
+      <main className="w-full h-full flex items-center justify-center bg-base-100">
+        <div className="text-error p-6 rounded-2xl bg-error/10 border border-error/20">
           {classificationsError &&
             `Error loading classifications: ${classificationsError.message}`}
           {userError && `Error loading user: ${userError.message}`}
         </div>
-      </div>
+      </main>
     );
   }
 
   // Show full screen loading when data is being loaded
   if (loader.isLoading) {
     return (
-      <div className="h-full w-full flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="text-center">
-            <LoadingIndicator />
-          </div>
-        </div>
-      </div>
+      <main className="w-full min-h-[calc(100vh-4rem)] flex items-center justify-center bg-base-100">
+        <LoadingIndicator />
+      </main>
     );
   }
 
   return (
-    <div className="h-full w-full max-w-5xl mx-auto p-4 flex flex-col">
-      <div className="flex flex-col gap-4 py-2">
-        {/* Search and Actions Row */}
-        <div className="w-full flex flex-col gap-3 items-start justify-between">
-          <div className="w-full flex flex-col md:flex-row md:justify-between gap-4 md:gap-2 items-start md:items-center">
-            <div className="flex flex-col gap-2 sm:flex-row sm:gap-4 items-start md:items-center">
-              <h2 className="text-2xl lg:text-3xl font-bold">
-                Classifications
-              </h2>
-              <div className="flex gap-2">
-                {!loader.isLoading && (
-                  <div
-                    role="tablist"
-                    className="tabs tabs-boxed tabs-sm rounded-xl gap-1"
-                  >
-                    <a
-                      role="tab"
-                      className={`tab transition-all duration-200 ease-in font-semibold ${
-                        activeTab === "all" && "tab-active"
-                      }`}
-                      onClick={() => setActiveTab("all")}
-                    >
-                      All
-                    </a>
-                    <a
-                      role="tab"
-                      className={`tab transition-all duration-200 ease-in font-semibold ${
-                        activeTab === "final" && "tab-active"
-                      }`}
-                      onClick={() => setActiveTab("final")}
-                    >
-                      Final
-                    </a>
-                    <a
-                      role="tab"
-                      className={`tab transition-all duration-200 ease-in font-semibold ${
-                        activeTab === "review" && "tab-active"
-                      }`}
-                      onClick={() => setActiveTab("review")}
-                    >
-                      Needs Review
-                    </a>
-                    <a
-                      role="tab"
-                      className={`tab transition-all duration-200 ease-in font-semibold ${
-                        activeTab === "draft" && "tab-active"
-                      }`}
-                      onClick={() => setActiveTab("draft")}
-                    >
-                      Drafts
-                    </a>
-                  </div>
-                )}
-                {loader.isLoading ||
-                  (classificationsLoading && (
-                    <span
-                      className={`loading loading-spinner loading-sm`}
-                    ></span>
-                  ))}
+    <main className="w-full min-h-full flex flex-col bg-base-100">
+      {/* Hero Header Section */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-base-200/80 via-base-100 to-base-200/60 border-b border-base-content/10">
+        {/* Subtle animated background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-32 -right-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+          <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-secondary/10 rounded-full blur-3xl" />
+          {/* Subtle grid pattern */}
+          <div
+            className="absolute inset-0 opacity-[0.03]"
+            style={{
+              backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`,
+              backgroundSize: "32px 32px",
+            }}
+          />
+        </div>
+
+        <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 py-8 md:py-10">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            {/* Left side - Main headline */}
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary">
+                <span className="inline-block w-8 h-px bg-primary/60" />
+                Your Classification History
               </div>
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight">
+                <span className="text-base-content">Classifications</span>
+              </h1>
+              <p className="text-base-content/70 text-sm md:text-base max-w-lg mt-1">
+                View and manage your classifications.
+              </p>
             </div>
-            {/* Action Buttons */}
-            <div className="flex gap-2 w-full sm:w-auto items-center">
+
+            {/* Right side - Action buttons */}
+            <div className="flex flex-row gap-3 md:items-end">
               {!activeClassifyPlan && (
                 <button
-                  className="btn btn-secondary btn-sm flex gap-2 grow md:grow-0"
+                  className="group relative overflow-hidden px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 bg-secondary/15 border border-secondary/30 hover:border-secondary/50 hover:bg-secondary/25 hover:shadow-lg hover:shadow-secondary/20"
                   disabled={loadingUpgrade}
                   onClick={async () => {
                     try {
                       setLoadingUpgrade(true);
-                      // Send them to checkout page
                       const { url }: { url: string } = await apiClient.post(
                         "/stripe/create-checkout",
                         {
@@ -471,25 +454,24 @@ export const Classifications = ({ page, setPage }: Props) => {
                           cancelUrl: window.location.href,
                         }
                       );
-
                       window.location.href = url;
                     } catch (error) {
                       setLoadingUpgrade(false);
                     }
                   }}
                 >
-                  {loadingUpgrade ? (
-                    <span
-                      className={`loading loading-spinner loading-sm`}
-                    ></span>
-                  ) : (
-                    <BoltIcon className="h-4 w-4" />
-                  )}
-                  Upgrade
+                  <span className="relative z-10 flex items-center gap-2">
+                    {loadingUpgrade ? (
+                      <span className="loading loading-spinner loading-sm"></span>
+                    ) : (
+                      <BoltIcon className="h-4 w-4 text-secondary" />
+                    )}
+                    <span className="text-secondary font-bold">Upgrade</span>
+                  </span>
                 </button>
               )}
               <button
-                className="btn btn-primary btn-sm grow md:grow-0"
+                className="group relative overflow-hidden px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 bg-primary text-primary-content hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02]"
                 onClick={async () => {
                   setLoadingNewClassification(true);
                   await fetchElements("latest");
@@ -497,59 +479,106 @@ export const Classifications = ({ page, setPage }: Props) => {
                   setLoadingNewClassification(false);
                 }}
               >
-                {loadingNewClassification ? (
-                  <span className={`loading loading-spinner loading-sm`}></span>
-                ) : (
-                  <PlusIcon className="h-5 w-5" />
-                )}
-                New Classification
+                <span className="relative z-10 flex items-center gap-2">
+                  {loadingNewClassification ? (
+                    <span className="loading loading-spinner loading-sm"></span>
+                  ) : (
+                    <PlusIcon className="h-5 w-5" />
+                  )}
+                  New Classification
+                </span>
               </button>
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* Filtering */}
-          <div className="w-full flex flex-col md:flex-row gap-2">
+      {/* Main Content */}
+      <div className="w-full max-w-5xl mx-auto flex flex-col px-4 sm:px-6 gap-4 py-6">
+        {/* Tab Navigation */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center gap-3">
+            {!loader.isLoading && (
+              <div className="flex p-1 gap-1 bg-base-200/60 rounded-xl border border-base-content/5">
+                {[
+                  { key: "all", label: "All" },
+                  { key: "final", label: "Final" },
+                  { key: "review", label: "Needs Review" },
+                  { key: "draft", label: "Drafts" },
+                ].map((tab) => (
+                  <button
+                    key={tab.key}
+                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                      activeTab === tab.key
+                        ? "bg-base-100 text-base-content shadow-sm"
+                        : "text-base-content/60 hover:text-base-content hover:bg-base-100/50"
+                    }`}
+                    onClick={() =>
+                      setActiveTab(
+                        tab.key as "all" | "final" | "review" | "draft"
+                      )
+                    }
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            )}
+            {(loader.isLoading || classificationsLoading) && (
+              <span className="loading loading-spinner loading-sm text-primary"></span>
+            )}
+          </div>
+        </div>
+
+        {/* Filtering Section */}
+        <div className="relative overflow-hidden rounded-2xl border border-base-content/15 bg-base-200/50 p-4">
+          {/* Subtle decorative elements */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute -top-16 -right-16 w-48 h-48 bg-primary/10 rounded-full blur-3xl" />
+          </div>
+
+          <div className="relative z-10 flex flex-col md:flex-row gap-4">
             {/* Filter Bar */}
-            <div className="grow flex-1 flex flex-col gap-1">
+            <div className="grow flex-1 flex flex-col gap-2">
               <div className="flex justify-between items-center">
-                <div className="flex gap-1">
-                  <DocumentTextIcon className="h-4 w-4" />
-
-                  <label className="text-xs font-semibold ">
+                <div className="flex gap-1.5 items-center">
+                  <DocumentTextIcon className="h-4 w-4 text-primary" />
+                  <label className="text-xs font-semibold uppercase tracking-wider text-base-content/80">
                     Description or Code
                   </label>
                 </div>
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="text-xs text-primary font-bold hover:text-primary/80 transition-colors"
+                    className="text-xs font-bold text-primary hover:text-primary/80 transition-colors"
                   >
                     Clear
                   </button>
                 )}
               </div>
-
               <input
                 type="text"
-                placeholder="Filter by description or code"
+                placeholder="Filter by description or code..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full input input-sm input-bordered pr-4 py-1 bg-base-100 border-2"
+                className="w-full h-[42px] px-4 bg-base-100 rounded-xl border border-base-content/15 transition-all duration-200 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40"
               />
             </div>
 
             {/* Filter By User/Classifier */}
             {teamUsers.length > 0 && (
-              <div className="flex flex-col gap-1 min-w-[250px]">
+              <div className="flex flex-col gap-2 min-w-[200px]">
                 <div className="flex justify-between items-center">
-                  <div className="flex gap-1 items-center">
-                    <UserIcon className="h-4 w-4" />
-                    <label className="text-xs font-semibold ">Classifier</label>
+                  <div className="flex gap-1.5 items-center">
+                    <UserIcon className="h-4 w-4 text-primary" />
+                    <label className="text-xs font-semibold uppercase tracking-wider text-base-content/80">
+                      Classifier
+                    </label>
                   </div>
                   {selectedUserId && (
                     <button
                       onClick={() => setSelectedUserId("")}
-                      className="text-xs text-primary font-bold hover:text-primary/80 transition-colors"
+                      className="text-xs font-bold text-primary hover:text-primary/80 transition-colors"
                     >
                       Clear
                     </button>
@@ -558,7 +587,7 @@ export const Classifications = ({ page, setPage }: Props) => {
                 <select
                   value={selectedUserId}
                   onChange={(e) => setSelectedUserId(e.target.value)}
-                  className="select select-sm input-bordered border-2"
+                  className="select select-sm h-[42px] px-4 bg-base-100 rounded-xl border border-base-content/15 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40 cursor-pointer"
                 >
                   <option value="">All Users</option>
                   {teamUsers.map((user) => (
@@ -571,16 +600,18 @@ export const Classifications = ({ page, setPage }: Props) => {
             )}
 
             {/* Filter By Importer */}
-            <div className="flex flex-col gap-1 min-w-[250px]">
+            <div className="flex flex-col gap-2 min-w-[200px]">
               <div className="flex justify-between items-center">
-                <div className="flex gap-1">
-                  <TagIcon className="h-4 w-4" />
-                  <label className="text-xs font-semibold ">Importer</label>
+                <div className="flex gap-1.5 items-center">
+                  <TagIcon className="h-4 w-4 text-primary" />
+                  <label className="text-xs font-semibold uppercase tracking-wider text-base-content/80">
+                    Importer
+                  </label>
                 </div>
                 {selectedImporterId && (
                   <button
                     onClick={() => setSelectedImporterId("")}
-                    className="text-xs text-primary font-bold hover:text-primary/80 transition-colors"
+                    className="text-xs font-bold text-primary hover:text-primary/80 transition-colors"
                   >
                     Clear
                   </button>
@@ -589,7 +620,7 @@ export const Classifications = ({ page, setPage }: Props) => {
               <select
                 value={selectedImporterId}
                 onChange={(e) => setSelectedImporterId(e.target.value)}
-                className="select select-sm input-bordered border-2"
+                className="select select-sm h-[42px] px-4 bg-base-100 rounded-xl border border-base-content/15 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40 cursor-pointer"
               >
                 <option value="">All Importers</option>
                 <option value={UNASSIGNED_IMPORTER_VALUE}>Unassigned</option>
@@ -602,42 +633,115 @@ export const Classifications = ({ page, setPage }: Props) => {
             </div>
           </div>
         </div>
+
+        {filteredClassifications && filteredClassifications.length > 0 && (
+          <>
+            {/* Results Separator */}
+            <div className="flex items-center gap-4 my-2">
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-base-content/30 to-base-content/30"></div>
+              <span className="text-xs font-semibold uppercase tracking-widest text-base-content/60">
+                {filteredClassifications.length}{" "}
+                {filteredClassifications.length === 1
+                  ? "Classification"
+                  : "Classifications"}
+              </span>
+              <div className="flex-1 h-px bg-gradient-to-l from-transparent via-base-content/30 to-base-content/30"></div>
+            </div>
+
+            <div className="flex flex-col gap-3 pb-6">
+              {filteredClassifications.map((classification, index) => (
+                <ClassificationSummary
+                  key={`classification-${index}`}
+                  classificationRecord={classification}
+                  setPage={setPage}
+                  user={userProfile}
+                  onDelete={handleDeleteClassification}
+                  isDeleting={deletingId === classification.id}
+                />
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* Empty State */}
+        {!loader.isLoading &&
+          !classificationsLoading &&
+          (() => {
+            const emptyStateConfig = getEmptyStateConfig();
+            if (!emptyStateConfig) return null;
+
+            return (
+              <div className="relative overflow-hidden flex flex-col items-center justify-center py-16 px-6 rounded-2xl border border-base-content/15 bg-base-200/50">
+                {/* Animated background elements */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                  <div className="absolute -top-20 -left-20 w-64 h-64 bg-primary/15 rounded-full blur-3xl animate-pulse" />
+                  <div className="absolute -bottom-20 -right-20 w-72 h-72 bg-secondary/15 rounded-full blur-3xl animate-pulse [animation-delay:1s]" />
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-pulse [animation-delay:2s]" />
+                  {/* Grid pattern overlay */}
+                  <div
+                    className="absolute inset-0 opacity-[0.04]"
+                    style={{
+                      backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
+                      backgroundSize: "40px 40px",
+                    }}
+                  />
+                </div>
+
+                {/* Content */}
+                <div className="relative z-10 flex flex-col items-center gap-6">
+                  {/* Icon with animated ring */}
+                  <div className="relative">
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary via-secondary to-accent opacity-30 blur-xl animate-pulse" />
+                    <div className="relative p-5 rounded-full bg-base-100 shadow-lg border border-base-content/10">
+                      <div className="p-4 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-10 h-10 text-primary"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d={emptyStateConfig.iconPath}
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="absolute inset-0 rounded-full border-2 border-primary/30 animate-ping [animation-duration:3s]" />
+                  </div>
+
+                  {/* Text content */}
+                  <div
+                    className={`text-center ${emptyStateConfig.maxWidth || "max-w-xl"}`}
+                  >
+                    <h3 className="text-2xl md:text-3xl font-bold text-base-content">
+                      {emptyStateConfig.title}
+                    </h3>
+                    <div className="text-base-content/70 mt-3 text-base leading-relaxed">
+                      {emptyStateConfig.descriptions.map((desc, index) => (
+                        <p key={index}>{desc}</p>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Button */}
+                  <button
+                    className="group relative overflow-hidden px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300 bg-primary text-primary-content hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02]"
+                    onClick={emptyStateConfig.onButtonClick}
+                  >
+                    <span className="relative z-10 flex items-center gap-2">
+                      {emptyStateConfig.buttonIcon}
+                      {emptyStateConfig.buttonText}
+                    </span>
+                  </button>
+                </div>
+              </div>
+            );
+          })()}
       </div>
-
-      {filteredClassifications && filteredClassifications.length > 0 && (
-        <>
-          {/* Results Counter */}
-          <div className="pt-2 pb-1">
-            <p className="text-sm font-semibold">
-              {filteredClassifications.length}{" "}
-              {filteredClassifications.length === 1
-                ? "Classification"
-                : "Classifications"}
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-4 pb-6">
-            {filteredClassifications.map((classification, index) => (
-              <ClassificationSummary
-                key={`classification-${index}`}
-                classificationRecord={classification}
-                setPage={setPage}
-                user={userProfile}
-              />
-            ))}
-          </div>
-        </>
-      )}
-
-      {/* Unified empty state rendering */}
-      {!loader.isLoading &&
-        !classificationsLoading &&
-        (() => {
-          const emptyStateConfig = getEmptyStateConfig();
-          return emptyStateConfig ? (
-            <EmptyResults config={emptyStateConfig} />
-          ) : null;
-        })()}
-    </div>
+    </main>
   );
 };

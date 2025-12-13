@@ -13,9 +13,6 @@ import Fuse, { FuseResult } from "fuse.js";
 import { Loader } from "../interfaces/ui";
 import { SearchResults } from "./SearchResults";
 import { useHts } from "../contexts/HtsContext";
-import { classNames } from "../utilities/style";
-import { Color } from "../enums/style";
-import { SecondaryLabel } from "./SecondaryLabel";
 import { notes } from "../public/notes/notes";
 import { useSearchParams } from "next/navigation";
 import {
@@ -23,30 +20,46 @@ import {
   getHtsElementParents,
   getSectionAndChapterFromChapterNumber,
 } from "../libs/hts";
+import {
+  MagnifyingGlassIcon,
+  BookOpenIcon,
+  DocumentTextIcon,
+} from "@heroicons/react/16/solid";
 
 const ExploreTabs: Tab[] = [
   {
     label: "Codes",
     value: ExploreTab.ELEMENTS,
+    icon: <BookOpenIcon className="w-4 h-4" />,
   },
   {
     label: "Notes",
     value: ExploreTab.NOTES,
+    icon: <DocumentTextIcon className="w-4 h-4" />,
   },
 ];
 
-export const Explore = () => {
+interface ExploreProps {
+  isModal?: boolean;
+}
+
+export const Explore = ({ isModal = false }: ExploreProps) => {
   const searchParams = useSearchParams();
+  const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const [{ isLoading, text: loadingText }, setLoading] = useState<Loader>({
     isLoading: true,
     text: "Loading",
   });
   const [searching, setSearching] = useState(false);
+  // Only use URL params for search value if breadcrumbs haven't been set externally (e.g., from TariffFinderPage)
   const [searchValue, setSearchValue] = useState(() => {
+    // If breadcrumbs are already set (more than 1, meaning navigation has occurred), don't use URL params
+    if (breadcrumbs.length > 1) {
+      return "";
+    }
     return searchParams.get("code") || searchParams.get("search") || "";
   });
   const [activeTab, setActiveTab] = useState(ExploreTabs[0].value);
-  const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { sections, getSections } = useHtsSections();
   const [htsFuse, setHtsFuse] = useState<Fuse<HtsElement> | null>(null);
   const [searchResults, setSearchResults] = useState<FuseResult<HtsElement>[]>(
@@ -57,6 +70,7 @@ export const Explore = () => {
   const { htsElements, fetchElements, revision } = useHts();
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isSearchingRef = useRef(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Configure Fuse.js for notes searching
   const notesFuse = useMemo(() => {
@@ -86,9 +100,15 @@ export const Explore = () => {
     };
 
     if (!sections.length || !htsElements.length) {
-      loadAllData();
+      loadAllData().then(() => {
+        searchInputRef.current?.focus();
+      });
     } else {
       setLoading({ isLoading: false, text: "" });
+      // Focus search input after initial render when data is already loaded
+      setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 0);
     }
 
     if (breadcrumbs.length === 0) {
@@ -156,19 +176,24 @@ export const Explore = () => {
         // Use setTimeout to move the search to the next tick and prevent UI blocking
         setTimeout(() => {
           const results = htsFuse.search(query.trim());
-          const searchParamExactHtsCodeMatch = results.find(
-            (r) => r.item.htsno === query.trim() && searchParams.get("code")
-          );
+          // Only do direct navigation from URL params if breadcrumbs haven't been set externally
+          // (breadcrumbs.length > 1 means navigation has already occurred from outside)
+          const shouldDoDirectNavigation =
+            searchParams.get("code") &&
+            !completedDirectNavigation &&
+            breadcrumbs.length <= 1;
+          const searchParamExactHtsCodeMatch = shouldDoDirectNavigation
+            ? results.find((r) => r.item.htsno === query.trim())
+            : null;
 
-          if (searchParamExactHtsCodeMatch && !completedDirectNavigation) {
+          if (searchParamExactHtsCodeMatch) {
             const matchedElement = searchParamExactHtsCodeMatch.item;
             const sectionAndChapter = getSectionAndChapterFromChapterNumber(
               sections,
               Number(matchedElement.chapter)
-              // Number(getChapterFromHtsElement(element, htsElements))
             );
             const parents = getHtsElementParents(matchedElement, htsElements);
-            const breadcrumbs = generateBreadcrumbsForHtsElement(
+            const newBreadcrumbs = generateBreadcrumbsForHtsElement(
               sections,
               sectionAndChapter.chapter,
               [...parents, matchedElement]
@@ -176,7 +201,7 @@ export const Explore = () => {
             setSearchValue("");
             setActiveTab(ExploreTab.ELEMENTS);
             setSearchResults([]);
-            setBreadcrumbs(breadcrumbs);
+            setBreadcrumbs(newBreadcrumbs);
             setCompletedDirectNavigation(true);
           } else {
             const topResults = results.slice(0, 30);
@@ -192,7 +217,15 @@ export const Explore = () => {
         isSearchingRef.current = false;
       }
     },
-    [htsFuse]
+    [
+      htsFuse,
+      breadcrumbs.length,
+      completedDirectNavigation,
+      searchParams,
+      sections,
+      htsElements,
+      setBreadcrumbs,
+    ]
   );
 
   const debouncedSearch = useCallback(
@@ -259,100 +292,141 @@ export const Explore = () => {
   };
 
   return (
-    <div className="w-full h-full p-4 flex flex-col gap-2">
+    <div className="w-full h-full flex flex-col bg-base-100 overflow-y-auto">
       {isLoading ? (
-        <div className="w-full h-full flex items-center justify-center">
+        <div className="w-full flex-1 flex items-center justify-center py-20">
           <LoadingIndicator text={loadingText} />
         </div>
       ) : (
-        <div className="w-full h-full grow flex flex-col gap-2">
-          <div className="flex gap-4 items-center justify-between flex-col md:flex-row">
-            <div className="w-full flex gap-4 items-center justify-between md:justify-normal">
-              <div className="flex flex-col -space-y-1">
-                <div className="flex gap-2 items-start">
-                  <h1 className="shrink-0 text-2xl md:text-3xl font-bold">
-                    HTS {revision?.split("-")[0]}
-                  </h1>
-                  <div className="mb-0.5">
-                    <SecondaryLabel
-                      value={`v${revision?.split("-")[1]}`}
-                      color={Color.PRIMARY}
-                    />
+        <>
+          {/* Hero Header */}
+          <div
+            className={`shrink-0 relative overflow-hidden border-b border-base-content/5 ${isModal ? "bg-base-100" : "bg-gradient-to-br from-base-200 via-base-100 to-base-200"}`}
+          >
+            {/* Subtle animated background - only show when not in modal */}
+            {!isModal && (
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute -top-32 -right-32 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+                <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
+                <div
+                  className="absolute inset-0 opacity-[0.02]"
+                  style={{
+                    backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`,
+                    backgroundSize: "32px 32px",
+                  }}
+                />
+              </div>
+            )}
+
+            <div
+              className={`relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 ${isModal ? "py-4" : "py-6 md:py-8"}`}
+            >
+              {/* Title and version - only show when not in modal */}
+              {!isModal && (
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  {/* Left side - Title and version */}
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary/80">
+                      <span className="inline-block w-8 h-px bg-primary/40" />
+                      Harmonized Tariff Schedule
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
+                        <span className="bg-gradient-to-r from-base-content via-base-content to-base-content/80 bg-clip-text">
+                          HTS {revision?.split("-")[0]}
+                        </span>
+                      </h1>
+                      <span className="px-2.5 py-1 rounded-lg bg-primary/10 border border-primary/20 text-xs font-bold text-primary">
+                        v{revision?.split("-")[1]}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Right side - Tabs */}
+                  <div className="flex p-1 gap-1 bg-base-200/60 rounded-xl border border-base-content/5">
+                    {ExploreTabs.map((tab) => (
+                      <button
+                        key={tab.value}
+                        onClick={() => setActiveTab(tab.value)}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                          tab.value === activeTab
+                            ? "bg-base-100 text-base-content shadow-sm"
+                            : "text-base-content/60 hover:text-base-content hover:bg-base-100/50"
+                        }`}
+                      >
+                        {tab.icon}
+                        {tab.label}
+                      </button>
+                    ))}
                   </div>
                 </div>
-              </div>
+              )}
 
-              <div
-                role="tablist"
-                className="tabs tabs-boxed tabs-sm md:tabs-md rounded-xl"
-              >
-                {ExploreTabs.map((tab) => (
-                  <a
-                    key={tab.value}
-                    role="tab"
-                    onClick={() => setActiveTab(tab.value)}
-                    className={classNames(
-                      "tab transition-all duration-200 ease-in font-semibold",
-                      tab.value === activeTab && "tab-active"
+              {/* Search Bar */}
+              <div className={isModal ? "" : "mt-6"}>
+                <div className={`relative ${isModal ? "w-full" : "max-w-xl"}`}>
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <MagnifyingGlassIcon className="h-5 w-5 text-base-content/40" />
+                  </div>
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    placeholder={getSearchPlaceholder()}
+                    value={searchValue}
+                    onChange={handleSearchChange}
+                    className="w-full h-12 pl-12 pr-20 bg-base-100/80 rounded-xl border border-base-content/10 transition-all duration-200 placeholder:text-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 hover:border-primary/30 hover:bg-base-100 text-base"
+                  />
+                  <div className="absolute inset-y-0 right-0 pr-4 flex items-center gap-2">
+                    {searchValue && !searching && (
+                      <button
+                        onClick={handleClearSearch}
+                        className="text-xs font-semibold text-primary hover:text-primary/70 transition-colors"
+                        title="Clear search"
+                      >
+                        Clear
+                      </button>
                     )}
-                  >
-                    {tab.label}
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            <div className="w-full md:max-w-[350px] lg:max-w-[400px]">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder={getSearchPlaceholder()}
-                  value={searchValue}
-                  onChange={handleSearchChange}
-                  className="input input-bordered input-md h-10 w-full pr-8"
-                />
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
-                  {searchValue && !searching && (
-                    <button
-                      onClick={handleClearSearch}
-                      className="btn btn-link p-1 btn-sm text-xs no-underline"
-                      title="Clear search"
-                    >
-                      clear
-                    </button>
-                  )}
-                  {searching && <LoadingIndicator spinnerOnly />}
+                    {searching && (
+                      <span className="loading loading-spinner loading-sm text-primary"></span>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {activeTab === ExploreTab.ELEMENTS && (
-            <>
-              {searchValue ? (
-                searching ? (
-                  <div className="flex items-center justify-center py-8">
-                    <div className="flex items-center gap-2">
-                      <LoadingIndicator text="Searching..." />
+          {/* Main Content */}
+          <div className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-6">
+            {activeTab === ExploreTab.ELEMENTS && (
+              <>
+                {searchValue ? (
+                  searching ? (
+                    <div className="flex items-center justify-center py-16">
+                      <div className="flex flex-col items-center gap-4">
+                        <span className="loading loading-spinner loading-lg text-primary"></span>
+                        <span className="text-sm text-base-content/60">
+                          Searching...
+                        </span>
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <SearchResults
+                      results={searchResults}
+                      setActiveTab={setActiveTab}
+                      setSearchResults={setSearchResults}
+                      setSearchValue={setSearchValue}
+                    />
+                  )
                 ) : (
-                  <SearchResults
-                    results={searchResults}
-                    setActiveTab={setActiveTab}
-                    setSearchResults={setSearchResults}
-                    setSearchValue={setSearchValue}
-                  />
-                )
-              ) : (
-                <Elements sections={sections} />
-              )}
-            </>
-          )}
-          {activeTab === ExploreTab.NOTES && (
-            <Notes filteredNotes={filteredNotes} searchValue={searchValue} />
-          )}
-        </div>
+                  <Elements sections={sections} isModal={isModal} />
+                )}
+              </>
+            )}
+            {activeTab === ExploreTab.NOTES && (
+              <Notes filteredNotes={filteredNotes} searchValue={searchValue} />
+            )}
+          </div>
+        </>
       )}
     </div>
   );

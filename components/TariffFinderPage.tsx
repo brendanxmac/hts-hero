@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { Countries, Country } from "../constants/countries";
 import { CountrySelection } from "./CountrySelection";
@@ -29,6 +29,7 @@ import {
   generateBreadcrumbsForHtsElement,
   getSectionAndChapterFromChapterNumber,
 } from "../libs/hts";
+import Link from "next/link";
 
 // Helper to count digits in an HTS code (ignoring dots)
 const getHtsCodeDigitCount = (htsno: string): number => {
@@ -70,7 +71,9 @@ export const TariffFinderPage = () => {
   const { setBreadcrumbs } = useBreadcrumbs();
 
   // State
-  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState<Country | null>(
+    Countries.find((c) => c.code === "CN") || null
+  );
   const [selectedElement, setSelectedElement] = useState<HtsElement | null>(
     null
   );
@@ -92,15 +95,58 @@ export const TariffFinderPage = () => {
     return 10000;
   };
 
+  // Parse initial units from URL params
+  const getInitialUnits = (): number => {
+    const unitsParam = searchParams.get("units");
+    if (unitsParam) {
+      const parsed = parseFloat(unitsParam);
+      if (!isNaN(parsed) && parsed >= 0) {
+        return parsed;
+      }
+    }
+    return 1000;
+  };
+
+  // Parse content percentages from URL params
+  // Maps URL-friendly keys back to ContentRequirements names
+  const getContentPercentagesFromUrl = (): Map<string, number> => {
+    const contentMap = new Map<string, number>();
+
+    // Check for each possible content type
+    const contentMappings: { urlKey: string; contentName: string }[] = [
+      { urlKey: "steel", contentName: "Steel" },
+      { urlKey: "aluminum", contentName: "Aluminum" },
+      { urlKey: "copper", contentName: "Copper" },
+      { urlKey: "uscontent", contentName: "U.S. Content" },
+    ];
+
+    contentMappings.forEach(({ urlKey, contentName }) => {
+      const value = searchParams.get(urlKey);
+      if (value) {
+        const parsed = parseFloat(value);
+        if (!isNaN(parsed) && parsed >= 0 && parsed <= 100) {
+          contentMap.set(contentName, parsed);
+        }
+      }
+    });
+
+    return contentMap;
+  };
+
   // UI states - update immediately for responsive feedback
-  const [uiUnits, setUiUnits] = useState<number>(1000);
+  const [uiUnits, setUiUnits] = useState<number>(getInitialUnits);
   const [uiCustomsValue, setUiCustomsValue] = useState<number>(
     getInitialCustomsValue
   );
   // Calculation states - update after debounce for expensive operations
-  const [units, setUnits] = useState<number>(1000);
+  const [units, setUnits] = useState<number>(getInitialUnits);
   const [customsValue, setCustomsValue] = useState<number>(
     getInitialCustomsValue
+  );
+
+  // Store URL-provided content percentages to apply after content requirements are determined
+  const [urlContentPercentages] = useState<Map<string, number>>(
+    getContentPercentagesFromUrl
   );
 
   // Timeout refs for debouncing
@@ -185,13 +231,14 @@ export const TariffFinderPage = () => {
       const newContentRequirements = codeBasedContentRequirements.map(
         (contentRequirement) => ({
           name: contentRequirement,
-          value: 80,
+          // Use URL param value if available, otherwise default to 80
+          value: urlContentPercentages.get(contentRequirement) ?? 80,
         })
       );
       setContentRequirements(newContentRequirements);
       setUiContentPercentages(newContentRequirements);
     }
-  }, [selectedCountry, tariffElement]);
+  }, [tariffElement, urlContentPercentages]);
 
   // Handlers with debouncing
   const handleSliderChange = (
@@ -393,6 +440,29 @@ export const TariffFinderPage = () => {
     findTariffElement,
   ]);
 
+  // // Scroll to results when they first become available
+  // useEffect(() => {
+  //   const hasResults = !!(
+  //     selectedElement &&
+  //     selectedCountry &&
+  //     countryWithTariffs &&
+  //     tariffElement
+  //   );
+
+  //   // Only scroll when transitioning from no results to having results
+  //   if (hasResults && !prevHadResults.current) {
+  //     // Small delay to ensure the DOM has updated
+  //     setTimeout(() => {
+  //       resultsRef.current?.scrollIntoView({
+  //         behavior: "smooth",
+  //         block: "start",
+  //       });
+  //     }, 100);
+  //   }
+
+  //   prevHadResults.current = hasResults;
+  // }, [selectedElement, selectedCountry, countryWithTariffs, tariffElement]);
+
   if (loadingPage) {
     return (
       <main className="w-screen h-screen flex items-center justify-center bg-base-300">
@@ -419,51 +489,43 @@ export const TariffFinderPage = () => {
           />
         </div>
 
-        <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 py-8 md:py-10">
+        <div className="relative z-0 w-full max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-10 md:pb-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             {/* Left side - Main headline */}
             <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary/80">
-                <span className="inline-block w-8 h-px bg-primary/40" />
-                Trusted & Loved By Customs Brokers
-              </div>
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight">
-                <span className="bg-gradient-to-r from-base-content via-base-content to-base-content/80 bg-clip-text">
-                  Instant Tariffs.
-                </span>
-                <br />
                 <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
-                  Effortless Savings.
+                  Duty Calculator
                 </span>
               </h1>
               <p className="text-base-content/60 text-sm md:text-base max-w-lg mt-1">
-                Discover the import cost for any product, and find ways to save.
+                Find the duty cost for any US import and discover ways to save.
               </p>
             </div>
 
-            {/* Right side - Quick stats/trust indicators */}
-            <div className="flex flex-row md:flex-col gap-4 md:gap-3 md:items-end">
-              <div className="flex items-center gap-2 text-sm">
-                <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
-                <span className="text-base-content/70">Updated Dec 2025</span>
+            {/* Right side - Trust indicators */}
+            <div className="flex flex-col gap-2 md:items-end">
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary/80">
+                <span className="hidden md:inline-block w-8 h-px bg-primary/40" />
+                Trusted By Brokers, Importers, and Manufacturers
               </div>
-              {/* <div className="flex items-center gap-2 text-sm">
-                <div className="w-2 h-2 rounded-full bg-primary" />
-                <span className="text-base-content/70">
-                  All tariffs included
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success/10 border border-success/20 w-fit">
+                <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+                <span className="text-xs font-medium text-success">
+                  Updated: Dec 2025
                 </span>
-              </div> */}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="w-full max-w-5xl mx-auto flex flex-col px-4 sm:px-6 gap-2 py-6">
+      <div className="w-full max-w-6xl mx-auto flex flex-col p-4 gap-3">
         {/* Inputs */}
         <div className="w-full flex flex-col md:flex-row gap-3">
           {/* HTS Code Search */}
-          <div className="grow flex flex-col gap-1">
+          <div className="grow flex flex-col gap-2">
             <div className="flex gap-2 justify-between items-end">
               <SecondaryLabel value="HTS Code" />
               <button
@@ -471,7 +533,7 @@ export const TariffFinderPage = () => {
                 onClick={() => setShowExploreModal(true)}
                 className="text-xs font-medium text-primary hover:text-primary/80 transition-colors"
               >
-                Search HTS
+                Search by Description
               </button>
             </div>
 
@@ -485,7 +547,6 @@ export const TariffFinderPage = () => {
           <div className="grow flex flex-col gap-2">
             <div className="flex flex-col">
               <SecondaryLabel value="Country of Origin" />
-              {/* <SecondaryText value="Select the country your goods are imported from" /> */}
             </div>
             <CountrySelection
               singleSelect
@@ -500,32 +561,24 @@ export const TariffFinderPage = () => {
             <div className="flex flex-col">
               <SecondaryLabel value="Customs Value (USD)" />
             </div>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-base-content/50 font-semibold pointer-events-none">
-                $
-              </span>
-              <input
-                type="number"
-                className="w-full h-[45px] pl-7 pr-3 bg-base-200/50 rounded-xl border border-base-content/10 transition-all duration-200 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield] placeholder:text-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 hover:border-primary/30 hover:bg-base-200/70 font-semibold"
-                value={uiCustomsValue}
-                onChange={(e) =>
-                  handleCustomsValueChange(Number(e.target.value))
-                }
-                min={0}
-              />
-            </div>
+            <NumberInput
+              value={uiCustomsValue}
+              setValue={handleCustomsValueChange}
+              min={0}
+              prefix="$"
+            />
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-x-3 gap-y-2">
+        <div className="flex gap-3">
           {/* Units and Customs Value Inputs */}
           {countryWithTariffs &&
             countryWithTariffs.baseTariffs
               ?.flatMap((t) => t.tariffs)
               ?.some((t) => t.type === "amount") && (
-              <div className="col-span-1 flex flex-col gap-2">
+              <div className="flex flex-col gap-2 max-w-64">
                 <div className="flex flex-col">
-                  <SecondaryLabel value="Amount / Units / Weight" />
+                  <SecondaryLabel value="Units / Weight" />
                 </div>
                 <NumberInput
                   value={uiUnits}
@@ -565,7 +618,7 @@ export const TariffFinderPage = () => {
                     onChange={(value) =>
                       handleSliderChange(contentPercentage.name, value)
                     }
-                    className="max-w-48"
+                    className="max-w-64"
                   />
                 </div>
               ))}
@@ -573,14 +626,12 @@ export const TariffFinderPage = () => {
           )}
         </div>
 
-        {/* Element Ancestry Display */}
-
-        {/* Separator */}
-        {(selectedElement || selectedCountry) && (
-          <div className="flex items-center gap-4 my-4">
+        {/* Duty & Tariffs Separator */}
+        {selectedElement && selectedCountry && (
+          <div className="flex items-center gap-4 my-2">
             <div className="flex-1 h-px bg-gradient-to-r from-transparent via-base-content/20 to-base-content/20"></div>
             <span className="text-xs font-medium uppercase tracking-widest text-base-content/40">
-              Results
+              Duty & Tariffs
             </span>
             <div className="flex-1 h-px bg-gradient-to-l from-transparent via-base-content/20 to-base-content/20"></div>
           </div>
@@ -591,7 +642,7 @@ export const TariffFinderPage = () => {
           selectedCountry &&
           countryWithTariffs &&
           tariffElement && (
-            <div className="mt-4">
+            <div className="mt-4 scroll-mt-4">
               <CountryTariff
                 units={units}
                 customsValue={customsValue}
@@ -634,7 +685,7 @@ export const TariffFinderPage = () => {
             </div>
 
             {/* Content */}
-            <div className="relative z-10 flex flex-col items-center gap-6">
+            <div className="relative z-0 flex flex-col items-center gap-6">
               {/* Icon with animated ring */}
               <div className="relative">
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary via-secondary to-accent opacity-20 blur-xl animate-pulse" />
@@ -692,6 +743,72 @@ export const TariffFinderPage = () => {
             </div>
           </div>
         )}
+
+        {/* Disclaimer Section */}
+        <div className="flex flex-col items-center justify-center mb-2">
+          <span className="text-xs text-base-content/60 text-center max-w-5xl">
+            We can make mistakes and do not guarantee complete nor correct
+            calculations. See an issue?{" "}
+            <a
+              href="mailto:support@htshero.com"
+              className="link link-hover underline font-medium transition-colors"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Notify us
+            </a>{" "}
+            and we will sort it out.
+          </span>
+        </div>
+
+        {/* CTA Section */}
+        <div className="my-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-gradient-to-r from-transparent via-primary/10 to-secondary/10 border border-primary/10">
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 shrink-0 mt-0.5">
+              <svg
+                className="w-5 h-5 text-primary"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                />
+              </svg>
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <span className="text-base md:text-lg font-bold text-base-content">
+                Avoid Tariff Surprises
+              </span>
+              <span className="text-sm text-base-content/60">
+                Wrong Code, Wrong Duty. Verify your HTS Codes with our
+                classification assistant.
+              </span>
+            </div>
+          </div>
+          <Link
+            href="/classifications"
+            className="group inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm bg-primary text-white hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-md hover:shadow-lg whitespace-nowrap"
+          >
+            <span>Verify Your HTS Codes</span>
+            <svg
+              className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M13 7l5 5m0 0l-5 5m5-5H6"
+              />
+            </svg>
+          </Link>
+        </div>
       </div>
 
       {/* Explore HTS Modal */}
@@ -699,7 +816,7 @@ export const TariffFinderPage = () => {
         <dialog className="modal modal-open">
           <div className="modal-box w-11/12 max-w-7xl h-[90vh] p-0 flex flex-col">
             <div className="flex items-center justify-between p-4 border-b border-base-content/10">
-              <h3 className="font-bold text-lg">Explore HTS Codes</h3>
+              <h3 className="font-bold text-lg">Search HTS Codes</h3>
               <button
                 type="button"
                 onClick={() => setShowExploreModal(false)}
@@ -709,7 +826,7 @@ export const TariffFinderPage = () => {
               </button>
             </div>
             <div className="flex-1 overflow-y-auto">
-              <Explore />
+              <Explore isModal />
             </div>
           </div>
           <form method="dialog" className="modal-backdrop">
