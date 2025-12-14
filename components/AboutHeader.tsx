@@ -20,10 +20,6 @@ const AboutHeader = () => {
     label: string;
   }[] = [
     {
-      href: "/duty-calculator",
-      label: "Duty Calculator",
-    },
-    {
       href: `#features`,
       label: "Features",
     },

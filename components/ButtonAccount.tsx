@@ -45,10 +45,15 @@ const ButtonAccount = () => {
     setIsLoading(false);
   };
 
+  // Get display name - prefer full name, fall back to email
+  const displayName =
+    user?.user_metadata?.full_name || user?.user_metadata?.name;
+  const displayEmail = user?.email;
+
   return (
-    <Popover>
+    <Popover className="relative">
       {() => (
-        <div>
+        <>
           <Popover.Button className="overflow-clip focus:outline-none border border-base-content/50 rounded-full">
             {user?.user_metadata?.avatar_url ? (
               <img
@@ -63,25 +68,34 @@ const ButtonAccount = () => {
               </span>
             )}
 
-            {/* TODO: consider adding this back in */}
-            {/* {user?.user_metadata?.name ||
-              user?.email?.split("@")[0] ||
-              "Account"} */}
-
             {isLoading && (
               <span className="loading loading-spinner loading-xs"></span>
             )}
           </Popover.Button>
           <Transition
-            enter="transition duration-100 ease-out"
-            enterFrom="transform scale-95 opacity-0"
-            enterTo="transform scale-100 opacity-100"
-            leave="transition duration-75 ease-out"
-            leaveFrom="transform scale-100 opacity-100"
-            leaveTo="transform scale-95 opacity-0"
+            enter="transition duration-150 ease-out"
+            enterFrom="opacity-0 translate-y-1"
+            enterTo="opacity-100 translate-y-0"
+            leave="transition duration-100 ease-in"
+            leaveFrom="opacity-100 translate-y-0"
+            leaveTo="opacity-0 translate-y-1"
           >
-            <Popover.Panel className="rounded-xl border border-base-content/50 absolute z-30 right-5 top-14 w-screen max-w-[8rem]">
-              <div className="w-full rounded-xl shadow-xl ring-1 ring-base-content ring-opacity-5 bg-base-100 p-1">
+            <Popover.Panel className="absolute z-[100] right-0 mt-2 w-56 origin-top-right">
+              <div className="w-full rounded-xl shadow-xl border border-base-content/20 bg-base-100 p-1">
+                {/* User info section */}
+                <div className="px-3 py-2 border-b border-base-content/10 mb-1">
+                  {displayName && (
+                    <p className="text-sm font-semibold truncate">
+                      {displayName}
+                    </p>
+                  )}
+                  {displayEmail && (
+                    <p className="text-xs text-base-content/60 truncate">
+                      {displayEmail}
+                    </p>
+                  )}
+                </div>
+
                 <div className="space-y-0.5 text-sm flex flex-col w-full">
                   <button
                     className="flex items-center gap-2 hover:bg-base-300 duration-200 py-1.5 px-4 w-full rounded-lg font-medium"
@@ -148,7 +162,7 @@ const ButtonAccount = () => {
               </div>
             </Popover.Panel>
           </Transition>
-        </div>
+        </>
       )}
     </Popover>
   );
