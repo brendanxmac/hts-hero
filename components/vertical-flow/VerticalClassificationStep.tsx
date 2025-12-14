@@ -49,9 +49,6 @@ export const VerticalClassificationStep = ({
   const [showCrossRulingsModal, setShowCrossRulingsModal] = useState(false);
   const { classification, updateLevel } = useClassification();
   const { articleDescription, levels } = classification;
-  // const [showNotes, setShowNotes] = useState(
-  //   Boolean(levels[classificationLevel]?.notes)
-  // );
   const [isExpanded, setIsExpanded] = useState(true);
   const previousArticleDescriptionRef = useRef<string>(articleDescription);
   const isMountedRef = useRef(true);
@@ -320,19 +317,16 @@ export const VerticalClassificationStep = ({
             Level {classificationLevel + 1}
           </span>
 
-          {/* Toggle arrow - only show when there's a selection and user can edit */}
-          {hasSelection && isUsersClassification && !isDisabled && (
-            <button
-              className="flex items-center justify-center w-8 h-8 rounded-lg bg-base-content/5 hover:bg-base-content/10 transition-all duration-200"
-              onClick={() => setIsExpanded(!isExpanded)}
-            >
-              <ChevronDownIcon
-                className={`w-4 h-4 text-base-content/60 transition-transform duration-300 ease-in-out ${
-                  isCollapsed ? "-rotate-180" : ""
-                }`}
-              />
-            </button>
-          )}
+          <button
+            className="flex items-center justify-center w-8 h-8 rounded-lg bg-base-content/5 hover:bg-base-content/10 transition-all duration-200"
+            onClick={() => setIsExpanded(!isExpanded)}
+          >
+            <ChevronDownIcon
+              className={`w-4 h-4 text-base-content/60 transition-transform duration-300 ease-in-out ${
+                isCollapsed ? "-rotate-180" : ""
+              }`}
+            />
+          </button>
         </div>
 
         {/* Selected Element Summary - shown when collapsed */}

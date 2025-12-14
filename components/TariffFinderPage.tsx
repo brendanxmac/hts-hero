@@ -781,11 +781,11 @@ export const TariffFinderPage = () => {
             </div>
             <div className="flex flex-col gap-0.5">
               <span className="text-base md:text-lg font-bold text-base-content">
-                Avoid Tariff Surprises
+                Wrong Code, Wrong Duty
               </span>
               <span className="text-sm text-base-content/60">
-                Wrong Code, Wrong Duty. Verify your HTS Codes with our
-                classification assistant.
+                Verify your HTS Codes with our classification assistant, and
+                avoid tariff surprises.
               </span>
             </div>
           </div>
