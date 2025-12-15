@@ -1,5 +1,6 @@
 "use client";
 
+import { CheckCircleIcon } from "@heroicons/react/16/solid";
 import { Country } from "../../constants/countries";
 import { CountryOfOriginDisplay } from "./CountryOfOriginDisplay";
 
@@ -27,18 +28,21 @@ export function HtsCodeDisplay({
   if (isComplete) {
     return (
       <div
-        className={`flex flex-col items-end transition-all duration-200 ${
+        className={`relative flex flex-col items-end transition-all duration-200 ${
           isScrolled ? "gap-0" : "gap-1"
         }`}
       >
         <span className="text-xs font-semibold uppercase tracking-widest text-base-content/70">
           HTS Code
         </span>
-        <span
-          className={`font-bold text-primary transition-all duration-200 ${completedTextSizeClass}`}
-        >
-          {latestHtsCode}
-        </span>
+        {/* HTS Code with checkmark */}
+        <div className="flex items-center gap-2">
+          <span
+            className={`font-bold text-success transition-all duration-200 ${completedTextSizeClass}`}
+          >
+            {latestHtsCode}
+          </span>
+        </div>
         {countryOfOrigin && (
           <CountryOfOriginDisplay
             country={countryOfOrigin}
@@ -85,4 +89,3 @@ export function HtsCodeDisplay({
     </div>
   );
 }
-

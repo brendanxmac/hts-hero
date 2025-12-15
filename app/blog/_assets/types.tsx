@@ -31,19 +31,17 @@ export const articleCategories: categoryType[] = [
     // A short version of the title above, display in small components like badges. 1 or 2 words
     titleShort: "Features",
     // The description of the category to display in the category page. Up to 160 characters.
-    description:
-      "Here are the latest features we've added to ShipFast. I'm constantly improving our product to help you ship faster.",
+    description: "Here are the latest features we've added to HTS Hero.",
     // A short version of the description above, only displayed in the <Header /> on mobile. Up to 60 characters.
-    descriptionShort: "Latest features added to ShipFast.",
+    descriptionShort: "Latest features added to HTS Hero.",
   },
   {
     slug: articleCategorySlugs.tutorial,
     title: "How To's & Tutorials",
     titleShort: "Tutorials",
-    description:
-      "Learn how to use ShipFast with these step-by-step tutorials. I'll show you how to ship faster and save time.",
+    description: "Learn how to use HTS Hero with these step-by-step tutorials.",
     descriptionShort:
-      "Learn how to use ShipFast with these step-by-step tutorials.",
+      "Learn how to use HTS Hero with these step-by-step tutorials.",
   },
   {
     slug: articleCategorySlugs.tariffs,

@@ -345,6 +345,164 @@ export const VerticalClassificationResult = ({
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Tariffs & Duties Section */}
+      <CollapsibleSection
+        title="Tariffs & Duties"
+        // subtitle="See import cost estimates for any country of origin"
+        icon={<CurrencyDollarIcon className="w-5 h-5" />}
+        iconBgClass="bg-secondary/20"
+        iconTextClass="text-secondary"
+        collapsedContent={
+          <TariffDutiesSummary
+            selectedCountry={selectedCountry}
+            tariffRates={tariffSummaryRates}
+          />
+        }
+        collapsedContentInline
+      >
+        <div className="flex flex-col gap-5">
+          {/* Country & Value Inputs */}
+          <div className="flex flex-col md:flex-row gap-4">
+            {/* Country Selection */}
+            <div className="flex-1 flex flex-col gap-2">
+              <SecondaryLabel value="Country of Origin" />
+              <CountrySelection
+                singleSelect
+                selectedCountries={selectedCountry ? [selectedCountry] : []}
+                setSelectedCountries={(countries) => {
+                  const country = countries[0] || null;
+                  setSelectedCountry(country);
+                  // Save country_of_origin to the classification record
+                  if (classificationId) {
+                    updateClassification(
+                      classificationId,
+                      undefined,
+                      undefined,
+                      undefined,
+                      undefined,
+                      country?.code || undefined
+                    ).then(() => refreshClassifications());
+                  }
+                }}
+              />
+            </div>
+
+            {/* Customs Value */}
+            <div className="flex-1 flex flex-col gap-2">
+              <SecondaryLabel value="Customs Value (USD)" />
+              <NumberInput
+                value={uiCustomsValue}
+                setValue={handleCustomsValueChange}
+                min={0}
+                prefix="$"
+              />
+            </div>
+          </div>
+
+          {/* Units and Content Requirements (conditional) */}
+          {countryWithTariffs &&
+            (countryWithTariffs.baseTariffs
+              ?.flatMap((t) => t.tariffs)
+              ?.some((t) => t.type === "amount") ||
+              uiContentPercentages.length > 0) && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Units Input */}
+                {countryWithTariffs.baseTariffs
+                  ?.flatMap((t) => t.tariffs)
+                  ?.some((t) => t.type === "amount") && (
+                  <div className="flex flex-col gap-2">
+                    <SecondaryLabel value="Units / Weight" />
+                    <NumberInput
+                      value={uiUnits}
+                      setValue={handleUnitsChange}
+                      min={0}
+                      subtext={
+                        element &&
+                        tariffElement &&
+                        (element.units.length > 0 ||
+                          tariffElement.units.length > 0)
+                          ? `${[...element.units, ...tariffElement.units]
+                              .reduce((acc: string[], unit: string) => {
+                                if (!acc.includes(unit)) {
+                                  acc.push(unit);
+                                }
+                                return acc;
+                              }, [])
+                              .join(",")}`
+                          : ""
+                      }
+                    />
+                  </div>
+                )}
+
+                {/* Content Percentage Inputs */}
+                {uiContentPercentages.map((contentPercentage) => (
+                  <div
+                    key={`${contentPercentage.name}-content-requirement`}
+                    className="flex flex-col gap-2"
+                  >
+                    <SecondaryLabel
+                      value={`${contentPercentage.name} Value Percentage`}
+                    />
+                    <PercentageInput
+                      value={contentPercentage.value}
+                      onChange={(value) =>
+                        handleSliderChange(contentPercentage.name, value)
+                      }
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+
+          {/* Tariff Results */}
+          {selectedCountry && countryWithTariffs && tariffElement ? (
+            <div className="mt-2">
+              <CountryTariff
+                units={units}
+                customsValue={customsValue}
+                country={countryWithTariffs}
+                htsElement={element}
+                tariffElement={tariffElement}
+                contentRequirements={contentRequirements}
+                countryIndex={0}
+                countries={[countryWithTariffs]}
+                setCountries={(updater) => {
+                  const updated =
+                    typeof updater === "function"
+                      ? updater([countryWithTariffs])
+                      : updater;
+                  setCountryWithTariffs(updated[0] || null);
+                }}
+                isModal={false}
+              />
+            </div>
+          ) : (
+            /* Empty state - prompt to select country */
+            <div className="relative overflow-hidden flex flex-col items-center justify-center py-12 px-6 rounded-xl border border-base-content/10 bg-gradient-to-br from-base-200/60 via-base-100 to-base-200/60">
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute -top-16 -left-16 w-48 h-48 bg-secondary/10 rounded-full blur-3xl" />
+                <div className="absolute -bottom-16 -right-16 w-48 h-48 bg-primary/10 rounded-full blur-3xl" />
+              </div>
+
+              <div className="relative z-10 flex flex-col items-center gap-4">
+                <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-secondary/15 border border-secondary/25">
+                  <GlobeAltIcon className="w-7 h-7 text-secondary" />
+                </div>
+                <div className="text-center">
+                  <h4 className="text-lg font-bold text-base-content">
+                    Select a Country of Origin
+                  </h4>
+                  <p className="text-sm text-base-content/60 mt-1 max-w-sm">
+                    Select the country of origin for this item to see applicable
+                    tariffs and import duties.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </CollapsibleSection>
       {/* Classification Complete Section - Contains all levels */}
       <CollapsibleSection
         title="Classification Decisions"
@@ -509,165 +667,6 @@ export const VerticalClassificationResult = ({
           />
         </div>
       </div>
-
-      {/* Tariffs & Duties Section */}
-      <CollapsibleSection
-        title="Tariffs & Duties"
-        // subtitle="See import cost estimates for any country of origin"
-        icon={<CurrencyDollarIcon className="w-5 h-5" />}
-        iconBgClass="bg-secondary/20"
-        iconTextClass="text-secondary"
-        collapsedContent={
-          <TariffDutiesSummary
-            selectedCountry={selectedCountry}
-            tariffRates={tariffSummaryRates}
-          />
-        }
-        collapsedContentInline
-      >
-        <div className="flex flex-col gap-5">
-          {/* Country & Value Inputs */}
-          <div className="flex flex-col md:flex-row gap-4">
-            {/* Country Selection */}
-            <div className="flex-1 flex flex-col gap-2">
-              <SecondaryLabel value="Country of Origin" />
-              <CountrySelection
-                singleSelect
-                selectedCountries={selectedCountry ? [selectedCountry] : []}
-                setSelectedCountries={(countries) => {
-                  const country = countries[0] || null;
-                  setSelectedCountry(country);
-                  // Save country_of_origin to the classification record
-                  if (classificationId) {
-                    updateClassification(
-                      classificationId,
-                      undefined,
-                      undefined,
-                      undefined,
-                      undefined,
-                      country?.code || undefined
-                    ).then(() => refreshClassifications());
-                  }
-                }}
-              />
-            </div>
-
-            {/* Customs Value */}
-            <div className="flex-1 flex flex-col gap-2">
-              <SecondaryLabel value="Customs Value (USD)" />
-              <NumberInput
-                value={uiCustomsValue}
-                setValue={handleCustomsValueChange}
-                min={0}
-                prefix="$"
-              />
-            </div>
-          </div>
-
-          {/* Units and Content Requirements (conditional) */}
-          {countryWithTariffs &&
-            (countryWithTariffs.baseTariffs
-              ?.flatMap((t) => t.tariffs)
-              ?.some((t) => t.type === "amount") ||
-              uiContentPercentages.length > 0) && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Units Input */}
-                {countryWithTariffs.baseTariffs
-                  ?.flatMap((t) => t.tariffs)
-                  ?.some((t) => t.type === "amount") && (
-                  <div className="flex flex-col gap-2">
-                    <SecondaryLabel value="Units / Weight" />
-                    <NumberInput
-                      value={uiUnits}
-                      setValue={handleUnitsChange}
-                      min={0}
-                      subtext={
-                        element &&
-                        tariffElement &&
-                        (element.units.length > 0 ||
-                          tariffElement.units.length > 0)
-                          ? `${[...element.units, ...tariffElement.units]
-                              .reduce((acc: string[], unit: string) => {
-                                if (!acc.includes(unit)) {
-                                  acc.push(unit);
-                                }
-                                return acc;
-                              }, [])
-                              .join(",")}`
-                          : ""
-                      }
-                    />
-                  </div>
-                )}
-
-                {/* Content Percentage Inputs */}
-                {uiContentPercentages.map((contentPercentage) => (
-                  <div
-                    key={`${contentPercentage.name}-content-requirement`}
-                    className="flex flex-col gap-2"
-                  >
-                    <SecondaryLabel
-                      value={`${contentPercentage.name} Value Percentage`}
-                    />
-                    <PercentageInput
-                      value={contentPercentage.value}
-                      onChange={(value) =>
-                        handleSliderChange(contentPercentage.name, value)
-                      }
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-
-          {/* Tariff Results */}
-          {selectedCountry && countryWithTariffs && tariffElement ? (
-            <div className="mt-2">
-              <CountryTariff
-                units={units}
-                customsValue={customsValue}
-                country={countryWithTariffs}
-                htsElement={element}
-                tariffElement={tariffElement}
-                contentRequirements={contentRequirements}
-                countryIndex={0}
-                countries={[countryWithTariffs]}
-                setCountries={(updater) => {
-                  const updated =
-                    typeof updater === "function"
-                      ? updater([countryWithTariffs])
-                      : updater;
-                  setCountryWithTariffs(updated[0] || null);
-                }}
-                isModal={false}
-              />
-            </div>
-          ) : (
-            /* Empty state - prompt to select country */
-            <div className="relative overflow-hidden flex flex-col items-center justify-center py-12 px-6 rounded-xl border border-base-content/10 bg-gradient-to-br from-base-200/60 via-base-100 to-base-200/60">
-              <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-16 -left-16 w-48 h-48 bg-secondary/10 rounded-full blur-3xl" />
-                <div className="absolute -bottom-16 -right-16 w-48 h-48 bg-primary/10 rounded-full blur-3xl" />
-              </div>
-
-              <div className="relative z-10 flex flex-col items-center gap-4">
-                <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-secondary/15 border border-secondary/25">
-                  <GlobeAltIcon className="w-7 h-7 text-secondary" />
-                </div>
-                <div className="text-center">
-                  <h4 className="text-lg font-bold text-base-content">
-                    Select a Country of Origin
-                  </h4>
-                  <p className="text-sm text-base-content/60 mt-1 max-w-sm">
-                    Select the country of origin for this item to see applicable
-                    tariffs and import duties.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </CollapsibleSection>
 
       {showPDF && (
         <PDF
