@@ -62,6 +62,19 @@ export const ClassificationProvider = ({
   const lastClassificationIdRef = useRef<string | null>(null);
   const pendingClassificationRef = useRef<Promise<void> | null>(null);
 
+  // Refs to always have access to current values (avoids stale closures)
+  const classificationRef = useRef<Classification>(null);
+  const classificationIdRef = useRef<string | null>(null);
+
+  // Keep refs in sync with state
+  useEffect(() => {
+    classificationRef.current = classification;
+  }, [classification]);
+
+  useEffect(() => {
+    classificationIdRef.current = classificationId;
+  }, [classificationId]);
+
   useEffect(() => {
     if (!classification || !classificationId) {
       return;
@@ -73,8 +86,17 @@ export const ClassificationProvider = ({
       return;
     }
 
-    const timeoutId = setTimeout(() => {
-      saveClassification();
+    const timeoutId = setTimeout(async () => {
+      // Use refs to get current values, avoiding stale closures
+      const currentClassification = classificationRef.current;
+      const currentClassificationId = classificationIdRef.current;
+
+      if (currentClassificationId && currentClassification) {
+        await updateClassification(
+          currentClassificationId,
+          currentClassification
+        );
+      }
     }, 300);
 
     return () => {
@@ -161,11 +183,20 @@ export const ClassificationProvider = ({
   };
 
   const saveClassification = async () => {
-    if (!classificationId) {
+    // Use refs to get current values, avoiding stale closures
+    const currentClassification = classificationRef.current;
+    const currentClassificationId = classificationIdRef.current;
+
+    if (!currentClassificationId) {
       throw new Error("Classification ID is not set");
     }
 
-    await updateClassification(classificationId, classification);
+    if (currentClassification) {
+      await updateClassification(
+        currentClassificationId,
+        currentClassification
+      );
+    }
   };
 
   // This creates a record in the DB and sets up the context record for local changes
@@ -210,15 +241,24 @@ export const ClassificationProvider = ({
       await pendingClassificationRef.current;
     }
 
+    // Use refs to get current values, avoiding stale closures
+    const currentClassification = classificationRef.current;
+    const currentClassificationId = classificationIdRef.current;
+
     // Save current state if we have a classification ID
-    if (classificationId && classification) {
-      await updateClassification(classificationId, classification);
+    if (currentClassificationId && currentClassification) {
+      await updateClassification(
+        currentClassificationId,
+        currentClassification
+      );
     }
 
     // Clear state
     setClassification(null);
     setClassificationId(null);
     lastClassificationIdRef.current = null;
+    classificationRef.current = null;
+    classificationIdRef.current = null;
   };
 
   return (

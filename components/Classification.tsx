@@ -124,8 +124,13 @@ export const Classification = ({ setPage }: ClassificationProps) => {
       const importer = importers.find(
         (i) => i.id === classificationRecord.importer_id
       );
+      // Merge current classification from context (has latest notes) with classificationRecord
+      const recordWithCurrentClassification = {
+        ...classificationRecord,
+        classification: classification || classificationRecord.classification,
+      };
       await downloadClassificationReport(
-        classificationRecord,
+        recordWithCurrentClassification,
         userProfile,
         importer
       );
@@ -134,7 +139,7 @@ export const Classification = ({ setPage }: ClassificationProps) => {
     } finally {
       setDownloadingReport(false);
     }
-  }, [classificationRecord, userProfile, importers]);
+  }, [classificationRecord, userProfile, importers, classification]);
 
   const handleDeleteClassification = useCallback(async () => {
     if (!classificationRecord) return;

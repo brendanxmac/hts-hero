@@ -116,7 +116,6 @@ export const VerticalClassificationResult = ({
   // Debounce refs
   const customsValueTimeoutRef = useState<NodeJS.Timeout | null>(null);
   const unitsTimeoutRef = useState<NodeJS.Timeout | null>(null);
-  const notesTimeoutRef = useState<NodeJS.Timeout | null>(null);
 
   // Fetch importers on component mount
   useEffect(() => {
@@ -643,26 +642,11 @@ export const VerticalClassificationResult = ({
             value={classification.notes || ""}
             disabled={!canUpdateDetails}
             onChange={(e) => {
-              const newNotes = e.target.value;
               setClassification({
                 ...classification,
-                notes: newNotes,
+                notes: e.target.value,
               });
-              // Debounce saving notes to database
-              if (notesTimeoutRef[0]) {
-                clearTimeout(notesTimeoutRef[0]);
-              }
-              const timeout = setTimeout(() => {
-                if (classificationId) {
-                  updateClassification(
-                    classificationId,
-                    { ...classification, notes: newNotes },
-                    undefined,
-                    undefined
-                  ).then(() => refreshClassifications());
-                }
-              }, 350);
-              notesTimeoutRef[1](timeout);
+              // The context's auto-save useEffect will debounce and save the classification
             }}
           />
         </div>
