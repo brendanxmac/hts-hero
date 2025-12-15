@@ -19,6 +19,7 @@ interface ClassificationContextType {
   classification?: Classification;
   classificationId?: string;
   isCreatingClassification: boolean;
+  isSaving: boolean;
   setClassificationId: (id: string | null) => void;
   setClassification: (
     classification: Classification | ((prev: Classification) => Classification)
@@ -38,12 +39,12 @@ interface ClassificationContextType {
     updates: Partial<ClassificationProgression>
   ) => void;
   clearClassification: (keepArticleDescription?: boolean) => void;
+  resetClassificationState: () => void;
   startNewClassification: (
     articleDescription: string,
     includeFirstLevel?: boolean
   ) => Promise<void>;
   saveClassification: () => Promise<void>;
-  saveAndClear: () => Promise<void>;
 }
 
 const ClassificationContext = createContext<
@@ -59,8 +60,11 @@ export const ClassificationProvider = ({
   const [classification, setClassification] = useState<Classification>(null);
   const [isCreatingClassification, setIsCreatingClassification] =
     useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const lastClassificationIdRef = useRef<string | null>(null);
   const pendingClassificationRef = useRef<Promise<void> | null>(null);
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isSavingRef = useRef(false);
 
   // Refs to always have access to current values (avoids stale closures)
   const classificationRef = useRef<Classification>(null);
@@ -75,6 +79,7 @@ export const ClassificationProvider = ({
     classificationIdRef.current = classificationId;
   }, [classificationId]);
 
+  // Debounced auto-save effect with saving state tracking
   useEffect(() => {
     if (!classification || !classificationId) {
       return;
@@ -86,21 +91,41 @@ export const ClassificationProvider = ({
       return;
     }
 
-    const timeoutId = setTimeout(async () => {
+    // Clear any existing debounce timer
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
+    // Set saving state immediately when changes are detected
+    isSavingRef.current = true;
+    setIsSaving(true);
+
+    debounceTimeoutRef.current = setTimeout(async () => {
       // Use refs to get current values, avoiding stale closures
       const currentClassification = classificationRef.current;
       const currentClassificationId = classificationIdRef.current;
 
       if (currentClassificationId && currentClassification) {
-        await updateClassification(
-          currentClassificationId,
-          currentClassification
-        );
+        try {
+          await updateClassification(
+            currentClassificationId,
+            currentClassification
+          );
+        } finally {
+          isSavingRef.current = false;
+          setIsSaving(false);
+          debounceTimeoutRef.current = null;
+        }
+      } else {
+        isSavingRef.current = false;
+        setIsSaving(false);
+        debounceTimeoutRef.current = null;
       }
-    }, 300);
+    }, 200);
 
     return () => {
-      clearTimeout(timeoutId);
+      // Cleanup only clears the timer, doesn't reset saving state
+      // The saving state will be reset when the save completes or state is reset
     };
   }, [classification, classificationId]);
 
@@ -234,28 +259,17 @@ export const ClassificationProvider = ({
     await createPromise;
   };
 
-  // Save current state and clear - waits for any pending creation first
-  const saveAndClear = async () => {
-    // Wait for any pending classification creation to complete
-    if (pendingClassificationRef.current) {
-      await pendingClassificationRef.current;
+  // Reset classification state without saving (auto-save handles saves)
+  const resetClassificationState = () => {
+    // Clear any pending debounce timer
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+      debounceTimeoutRef.current = null;
     }
-
-    // Use refs to get current values, avoiding stale closures
-    const currentClassification = classificationRef.current;
-    const currentClassificationId = classificationIdRef.current;
-
-    // Save current state if we have a classification ID
-    if (currentClassificationId && currentClassification) {
-      await updateClassification(
-        currentClassificationId,
-        currentClassification
-      );
-    }
-
-    // Clear state
     setClassification(null);
     setClassificationId(null);
+    isSavingRef.current = false;
+    setIsSaving(false);
     lastClassificationIdRef.current = null;
     classificationRef.current = null;
     classificationIdRef.current = null;
@@ -267,6 +281,7 @@ export const ClassificationProvider = ({
         classification,
         classificationId,
         isCreatingClassification,
+        isSaving,
         setClassificationId,
         setClassification,
         setArticleDescription,
@@ -275,9 +290,9 @@ export const ClassificationProvider = ({
         addLevel,
         updateLevel,
         clearClassification,
+        resetClassificationState,
         startNewClassification,
         saveClassification,
-        saveAndClear,
       }}
     >
       {children}

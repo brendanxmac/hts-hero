@@ -47,8 +47,12 @@ interface ClassificationProps {
 export const Classification = ({ setPage }: ClassificationProps) => {
   const { isFetching } = useHts();
   const { user } = useUser();
-  const { classification, classificationId, saveAndClear } =
-    useClassification();
+  const {
+    classification,
+    classificationId,
+    isSaving,
+    resetClassificationState,
+  } = useClassification();
   const {
     classifications,
     refreshClassifications,
@@ -158,16 +162,10 @@ export const Classification = ({ setPage }: ClassificationProps) => {
   }, [classificationRecord, refreshClassifications, setPage]);
 
   const handleOpenExplore = useCallback(() => setShowExploreModal(true), []);
-  const handleNavigateBack = useCallback(
-    () => setPage(ClassifyPage.CLASSIFICATIONS),
-    [setPage]
-  );
-
-  useEffect(() => {
-    return () => {
-      saveAndClear();
-    };
-  }, []);
+  const handleNavigateBack = useCallback(() => {
+    setPage(ClassifyPage.CLASSIFICATIONS);
+    resetClassificationState();
+  }, [setPage, resetClassificationState]);
 
   // ---------------------------------------------------------------------------
   // Render: Loading State
@@ -188,7 +186,10 @@ export const Classification = ({ setPage }: ClassificationProps) => {
       <div className="min-h-full w-full bg-base-100">
         <div className="bg-base-100/95 backdrop-blur-sm">
           <div className="w-full max-w-4xl mx-auto px-6 py-4">
-            <BackButton onClick={handleNavigateBack} />
+            <BackButton
+              onClick={handleNavigateBack}
+              isSaving={isSaving || refreshingClassifications}
+            />
           </div>
         </div>
 
@@ -241,6 +242,7 @@ export const Classification = ({ setPage }: ClassificationProps) => {
               <BackButton
                 onClick={handleNavigateBack}
                 label="Classifications"
+                isSaving={isSaving || refreshingClassifications}
               />
               {classificationRecord && (
                 <HeaderActions
