@@ -9,10 +9,11 @@ import { useUser } from "../contexts/UserContext";
 import ButtonAccount from "./ButtonAccount";
 import ButtonSignin from "./ButtonSignin";
 import ThemeToggle from "./ThemeToggle";
+import { ToolsDropdown, MobileToolsMenu } from "./ToolsDropdown";
 
 // Navigation links for the landing page sections
 const navLinks = [
-  { href: "#tools", label: "Tools" },
+  { href: "#tools", label: "Why HTS Hero?" },
   { href: "#use-cases", label: "Use Cases" },
   { href: "#pricing", label: "Pricing" },
   { href: "#faq", label: "FAQ" },
@@ -32,13 +33,6 @@ const LandingHeader = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu on route change or scroll
-  useEffect(() => {
-    const handleClose = () => setIsOpen(false);
-    window.addEventListener("scroll", handleClose);
-    return () => window.removeEventListener("scroll", handleClose);
-  }, []);
-
   const handleSmoothScroll = (
     e: React.MouseEvent<HTMLAnchorElement>,
     href: string
@@ -52,81 +46,92 @@ const LandingHeader = () => {
   };
 
   return (
-    <header
-      className={`sticky top-0 w-full h-16 z-50 flex items-center justify-between px-4 sm:px-6 transition-all duration-300 ${
-        scrolled
-          ? "bg-base-100/95 backdrop-blur-md border-b border-base-content/10 shadow-sm"
-          : "bg-transparent"
-      }`}
-    >
-      <nav
-        className="w-full max-w-7xl mx-auto flex items-center justify-between"
-        aria-label="Global"
+    <>
+      <header
+        className={`sticky top-0 w-full h-16 z-50 flex items-center justify-between px-4 sm:px-6 transition-all duration-300 ${
+          scrolled
+            ? "bg-base-100/95 backdrop-blur-md border-b border-base-content/10 shadow-sm"
+            : "bg-base-100/80 backdrop-blur-sm md:bg-transparent md:backdrop-blur-none"
+        }`}
       >
-        {/* Logo */}
-        <div className="flex items-center gap-8">
-          <Link className="flex items-center gap-2 shrink-0" href="/">
-            <Image
-              src={logo}
-              alt={`${config.appName} logo`}
-              className="w-6"
-              priority={true}
-              width={32}
-              height={32}
-            />
-            <span className="font-extrabold text-lg">{config.appName}</span>
-          </Link>
+        <nav
+          className="w-full max-w-7xl mx-auto flex items-center justify-between"
+          aria-label="Global"
+        >
+          {/* Logo */}
+          <div className="flex items-center gap-8">
+            <Link className="flex items-center gap-2 shrink-0" href="/">
+              <Image
+                src={logo}
+                alt={`${config.appName} logo`}
+                className="w-6"
+                priority={true}
+                width={32}
+                height={32}
+              />
+              <span className="font-extrabold text-lg">{config.appName}</span>
+            </Link>
 
-          {/* Desktop Navigation Links */}
-          <div className="hidden md:flex items-center gap-6">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={(e) => handleSmoothScroll(e, link.href)}
+            {/* Desktop Navigation Links */}
+            <div className="hidden md:flex items-center gap-6">
+              <ToolsDropdown />
+
+              {navLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={(e) => handleSmoothScroll(e, link.href)}
+                  className="text-sm font-medium text-base-content/70 hover:text-primary transition-colors"
+                >
+                  {link.label}
+                </a>
+              ))}
+
+              <Link
+                href="/blog"
                 className="text-sm font-medium text-base-content/70 hover:text-primary transition-colors"
               >
-                {link.label}
-              </a>
-            ))}
+                Blog
+              </Link>
+            </div>
           </div>
-        </div>
 
-        {/* Mobile Burger Button */}
-        <div className="flex md:hidden">
-          <button
-            type="button"
-            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5"
-            onClick={() => setIsOpen(true)}
-          >
-            <span className="sr-only">Open main menu</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-6 h-6 text-base-content"
+          {/* Mobile Burger Button */}
+          <div className="flex md:hidden">
+            <button
+              type="button"
+              className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5"
+              onClick={() => setIsOpen(true)}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-              />
-            </svg>
-          </button>
-        </div>
+              <span className="sr-only">Open main menu</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-6 h-6 text-base-content"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                />
+              </svg>
+            </button>
+          </div>
 
-        {/* Desktop Right Side - Auth & Theme Toggle */}
-        <div className="hidden md:flex items-center gap-3">
-          {user ? <ButtonAccount /> : <ButtonSignin text="Sign In" />}
-          <ThemeToggle />
-        </div>
-      </nav>
+          {/* Desktop Right Side - Auth & Theme Toggle */}
+          <div className="hidden md:flex items-center gap-3">
+            {user ? <ButtonAccount /> : <ButtonSignin text="Sign In" />}
+            <ThemeToggle />
+          </div>
+        </nav>
+      </header>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu - Rendered outside header to avoid sticky/fixed conflicts */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 md:hidden">
+        <div className="fixed inset-0 z-[100] md:hidden">
           {/* Backdrop */}
           <div
             className="fixed inset-0 bg-base-content/20 backdrop-blur-sm"
@@ -175,6 +180,9 @@ const LandingHeader = () => {
               </button>
             </div>
 
+            {/* Tools Section */}
+            <MobileToolsMenu onLinkClick={() => setIsOpen(false)} />
+
             {/* Navigation Links */}
             <div className="flex flex-col gap-4 mb-8">
               {navLinks.map((link) => (
@@ -187,6 +195,13 @@ const LandingHeader = () => {
                   {link.label}
                 </a>
               ))}
+              <Link
+                href="/blog"
+                onClick={() => setIsOpen(false)}
+                className="text-base font-semibold text-base-content hover:text-primary transition-colors"
+              >
+                Blog
+              </Link>
             </div>
 
             <div className="divider" />
@@ -199,7 +214,7 @@ const LandingHeader = () => {
           </div>
         </div>
       )}
-    </header>
+    </>
   );
 };
 

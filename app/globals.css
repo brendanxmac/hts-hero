@@ -24,6 +24,21 @@ progress::-webkit-progress-value {
   }
 }
 
+/* Success border animation for completed classifications */
+@keyframes success-border-pulse {
+  0%,
+  100% {
+    border-color: rgba(34, 197, 94, 0.4);
+  }
+  50% {
+    border-color: rgba(34, 197, 94, 0.7);
+  }
+}
+
+.animate-success-border {
+  animation: success-border-pulse 2s ease-in-out infinite;
+}
+
 @layer base {
   .btn-gradient {
     @apply !bg-gradient !bg-[length:300%_300%] hover:saturate-[1.2] shadow duration-100 !border-0 !border-transparent !bg-transparent animate-shimmer disabled:!bg-none disabled:!bg-gray-500/30  !text-white;
@@ -32,3 +47,4 @@ progress::-webkit-progress-value {
     @apply !capitalize;
   }
 }
+

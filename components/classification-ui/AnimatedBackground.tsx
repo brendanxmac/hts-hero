@@ -2,6 +2,7 @@
 
 export interface AnimatedBackgroundProps {
   isScrolled: boolean;
+  isComplete?: boolean;
 }
 
 export function AnimatedBackground({ isScrolled }: AnimatedBackgroundProps) {
@@ -9,8 +10,8 @@ export function AnimatedBackground({ isScrolled }: AnimatedBackgroundProps) {
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      <div className="absolute -top-32 -right-32 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-      <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
+      <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full blur-3xl transition-colors duration-500 bg-primary/5" />
+      <div className="absolute -bottom-32 -left-32 w-96 h-96 rounded-full blur-3xl transition-colors duration-500 bg-secondary/5" />
       <div
         className="absolute inset-0 opacity-[0.02]"
         style={{
@@ -21,4 +22,3 @@ export function AnimatedBackground({ isScrolled }: AnimatedBackgroundProps) {
     </div>
   );
 }
-
