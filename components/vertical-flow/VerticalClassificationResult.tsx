@@ -68,7 +68,7 @@ export const VerticalClassificationResult = ({
   classificationRecord,
   onOpenExplore,
 }: Props) => {
-  const { classification, setClassification, classificationId } =
+  const { classification, setClassification, classificationId, flushAndSave } =
     useClassification();
   const { refreshClassifications } = useClassifications();
   const { htsElements } = useHts();
@@ -646,7 +646,10 @@ export const VerticalClassificationResult = ({
                 ...classification,
                 notes: e.target.value,
               });
-              // The context's auto-save useEffect will debounce and save the classification
+            }}
+            onBlur={() => {
+              // Immediately save when user leaves the textarea
+              flushAndSave();
             }}
           />
         </div>

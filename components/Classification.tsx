@@ -52,6 +52,7 @@ export const Classification = ({ setPage }: ClassificationProps) => {
     classificationId,
     isSaving,
     resetClassificationState,
+    flushAndSave,
   } = useClassification();
   const {
     classifications,
@@ -162,10 +163,12 @@ export const Classification = ({ setPage }: ClassificationProps) => {
   }, [classificationRecord, refreshClassifications, setPage]);
 
   const handleOpenExplore = useCallback(() => setShowExploreModal(true), []);
-  const handleNavigateBack = useCallback(() => {
+  const handleNavigateBack = useCallback(async () => {
+    // Flush any pending changes and save before navigating
+    await flushAndSave();
     setPage(ClassifyPage.CLASSIFICATIONS);
     resetClassificationState();
-  }, [setPage, resetClassificationState]);
+  }, [setPage, resetClassificationState, flushAndSave]);
 
   // ---------------------------------------------------------------------------
   // Render: Loading State

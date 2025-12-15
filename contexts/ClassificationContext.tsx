@@ -45,6 +45,8 @@ interface ClassificationContextType {
     includeFirstLevel?: boolean
   ) => Promise<void>;
   saveClassification: () => Promise<void>;
+  // Flush any pending debounce and save immediately - use before navigation
+  flushAndSave: () => Promise<void>;
 }
 
 const ClassificationContext = createContext<
@@ -224,6 +226,34 @@ export const ClassificationProvider = ({
     }
   };
 
+  // Flush any pending debounce and save immediately
+  // Call this before navigation to ensure all changes are saved
+  const flushAndSave = async () => {
+    // Clear any pending debounce timer
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+      debounceTimeoutRef.current = null;
+    }
+
+    const currentClassification = classificationRef.current;
+    const currentClassificationId = classificationIdRef.current;
+
+    // Only save if we have both ID and classification data
+    if (currentClassificationId && currentClassification) {
+      setIsSaving(true);
+      isSavingRef.current = true;
+      try {
+        await updateClassification(
+          currentClassificationId,
+          currentClassification
+        );
+      } finally {
+        setIsSaving(false);
+        isSavingRef.current = false;
+      }
+    }
+  };
+
   // This creates a record in the DB and sets up the context record for local changes
   // includeFirstLevel: if true, adds an empty first level to trigger candidate fetching
   const startNewClassification = async (
@@ -293,6 +323,7 @@ export const ClassificationProvider = ({
         resetClassificationState,
         startNewClassification,
         saveClassification,
+        flushAndSave,
       }}
     >
       {children}
