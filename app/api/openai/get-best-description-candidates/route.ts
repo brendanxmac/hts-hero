@@ -88,6 +88,35 @@ export async function POST(req: NextRequest) {
           responseFormatOptions
         );
 
+    const payload = {
+      temperature: 0.2,
+      model: OpenAIModel.FIVE_ONE,
+      response_format: responseFormat,
+      messages: [
+        {
+          role: "system",
+          content: `You are a United States Harmonized Tariff System Expert who follows the General Rules of Interpretation (GRI) for the Harmonized System perfectly.\n
+            Your job is to take an item description and a list of options, and figure out which options(s) from the list are similar to the item description (${minMaxRangeText}).\n
+            ${
+              isSectionOrChapter
+                ? ""
+                : "You must use the GRI rules sequentially (as needed) and consider all options in the list to shape your decision making logic.\n"
+            }
+            Note: The use of semicolons (;) in the descriptions should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".\n
+            If there are no good candidates, return an empty array.
+            `,
+        },
+        {
+          role: "user",
+          content: `Item Description: ${productDescription}\n
+         Options: ${labelledDescriptions.join("\n")}`,
+        },
+      ],
+    };
+
+    console.log(`Open AI Payload:`);
+    console.log(payload);
+
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const gptResponse = await openai.chat.completions.create({
       temperature: 0.2,
@@ -113,6 +142,12 @@ export async function POST(req: NextRequest) {
          Options: ${labelledDescriptions.join("\n")}`,
         },
       ],
+    });
+
+    console.log({
+      promptTokens: gptResponse.usage?.prompt_tokens,
+      completionTokens: gptResponse.usage?.completion_tokens,
+      totalTokens: gptResponse.usage?.total_tokens,
     });
 
     //     ${
