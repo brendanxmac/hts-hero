@@ -101,8 +101,9 @@ export const VerticalClassificationStep = ({
         [],
         articleDescription,
         true,
-        1,
-        3,
+        0.5,
+        2,
+        null,
         sections.map((s) => s.description)
       );
 
@@ -133,14 +134,17 @@ export const VerticalClassificationStep = ({
 
       const candidatesForChapter: CandidateSelection[] = [];
 
+      console.log(`Section: ${candidateSections.length}`);
+
       await Promise.all(
         candidateSections.map(async (section) => {
           const bestChapterCandidates = await getBestDescriptionCandidates(
             [],
             articleDescription,
             true,
+            0.4,
             1,
-            3,
+            null,
             section.chapters.map((c) => c.description)
           );
 
@@ -167,6 +171,8 @@ export const VerticalClassificationStep = ({
     setLoading({ isLoading: true, text: "Looking for Candidates" });
     const candidatesForHeading: HtsElement[] = [];
 
+    console.log(`Chapters: ${chapterCandidates.length}`);
+
     try {
       await Promise.all(
         chapterCandidates.map(async (chapter) => {
@@ -185,7 +191,8 @@ export const VerticalClassificationStep = ({
             elementsAtLevel,
             articleDescription,
             false,
-            1,
+            0.3,
+            null,
             3,
             elementsAtLevel.map((e) => e.description)
           );

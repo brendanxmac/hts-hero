@@ -12,6 +12,7 @@ interface GetBestDescriptionMatchDto {
   descriptions: string[];
   productDescription: string;
   isSectionOrChapter?: boolean;
+  temperature: number;
   minMatches?: number;
   maxMatches?: number;
 }
@@ -44,6 +45,7 @@ export async function POST(req: NextRequest) {
       descriptions,
       productDescription,
       isSectionOrChapter = false,
+      temperature = 0.4,
       minMatches,
       maxMatches,
     }: GetBestDescriptionMatchDto = await req.json();
@@ -68,6 +70,8 @@ export async function POST(req: NextRequest) {
 
     const minMaxRangeText = getMinMaxRangeText(minMatches, maxMatches);
 
+    console.log("Min Max Range Text: ", minMaxRangeText);
+
     const labelledDescriptions = descriptions.map(
       (description, index) => `${index}. ${description}`
     );
@@ -88,53 +92,32 @@ export async function POST(req: NextRequest) {
           responseFormatOptions
         );
 
-    const payload = {
-      temperature: 0.2,
-      model: OpenAIModel.FIVE_ONE,
-      response_format: responseFormat,
-      messages: [
-        {
-          role: "system",
-          content: `You are a United States Harmonized Tariff System Expert who follows the General Rules of Interpretation (GRI) for the Harmonized System perfectly.\n
-            Your job is to take an item description and a list of options, and figure out which options(s) from the list are similar to the item description (${minMaxRangeText}).\n
-            ${
-              isSectionOrChapter
-                ? ""
-                : "You must use the GRI rules sequentially (as needed) and consider all options in the list to shape your decision making logic.\n"
-            }
-            Note: The use of semicolons (;) in the descriptions should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".\n
-            If there are no good candidates, return an empty array.
-            `,
-        },
-        {
-          role: "user",
-          content: `Item Description: ${productDescription}\n
-         Options: ${labelledDescriptions.join("\n")}`,
-        },
-      ],
-    };
-
-    console.log(`Open AI Payload:`);
-    console.log(payload);
+    // You are a United States Harmonized Tariff System Expert who follows the General Rules of Interpretation (GRI) for the Harmonized System perfectly.\n
+    //     Your job is to take an item description and a list of options, and figure out which options from the list are similar to the item description (${minMaxRangeText}).\n
+    //     You must consider all options in the list to shape your decision making logic.\n
+    //     When comparing semantic similarity, consider indirect, functional, and industry-based relationships, not only literal word overlap.
+    //     Note: The use of semicolons (;) in the descriptions should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".\n
+    //     If no options are clearly relevant, return the most plausible options with low confidence.
 
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const gptResponse = await openai.chat.completions.create({
-      temperature: 0.2,
+      temperature,
       model: OpenAIModel.FIVE_ONE,
       response_format: responseFormat,
       messages: [
         {
           role: "system",
-          content: `You are a United States Harmonized Tariff System Expert who follows the General Rules of Interpretation (GRI) for the Harmonized System perfectly.\n
-            Your job is to take an item description and a list of options, and figure out which options(s) from the list are similar to the item description (${minMaxRangeText}).\n
-            ${
-              isSectionOrChapter
-                ? ""
-                : "You must use the GRI rules sequentially (as needed) and consider all options in the list to shape your decision making logic.\n"
-            }
-            Note: The use of semicolons (;) in the descriptions should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".\n
-            If there are no good candidates, return an empty array.
-            `,
+          content: `You are a United States Harmonized Tariff System expert who follows the General Rules of Interpretation (GRI).
+          Your task is to evaluate semantic similarity between an item description and a list of HTS options.
+          You are optimizing for recall, not precision, at this stage.
+          False negatives are worse than false positives.
+          You must consider ALL options in the list.
+          When comparing similarity, consider indirect, functional, material, industry-based, and end-use relationships, not only literal word overlap.
+          Some options may be weak or borderline matches but still plausible.
+          If no options are clearly relevant, return the most plausible options rather than excluding everything.
+          Pick ${minMaxRangeText} options.
+          Note: Semicolons (;) in descriptions mean "or" (e.g., "mangoes;mangosteens" = "mangoes or mangosteens").
+`,
         },
         {
           role: "user",

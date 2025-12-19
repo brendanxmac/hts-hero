@@ -490,6 +490,7 @@ export const getBestDescriptionCandidates = async (
   elementsAtLevel: HtsElement[] | HtsElementWithParentReference[],
   productDescription: string,
   isSectionOrChapter: boolean,
+  temperature: number,
   minMatches?: number,
   maxMatches?: number,
   descs?: string[]
@@ -500,6 +501,7 @@ export const getBestDescriptionCandidates = async (
       descriptions,
       productDescription,
       isSectionOrChapter,
+      temperature,
       minMatches,
       maxMatches,
     });
