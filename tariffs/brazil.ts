@@ -79,7 +79,7 @@ export const brazilTariffs: TariffI[] = [
   {
     code: "9903.01.81",
     description:
-      "Articles the product of Brazil, classified in the subheadings enumerated in subdivision (x)(iii) of U.S. note 2 to this subchapter",
+      "Articles the product of Brazil, classified in the subheadings enumerated in subdivision (x)(iii)(a) of U.S. note 2 to this subchapter",
     name: "Articles from Brazil Exempt from 40% IEEPA",
     general: 0,
     special: 0,
@@ -1084,7 +1084,7 @@ export const brazilTariffs: TariffI[] = [
     code: "9903.01.90",
     description:
       "Articles the product of any country, as provided for in subdivision (v)(iii)(b) of U.S. note 2 to this subchapter",
-    name: "Argicultural Products or Brazil Exempt from Brazil 40% IEEPA Tariff",
+    name: "Argicultural Products of Brazil Exempt from Brazil 40% IEEPA Tariff",
     general: 0,
     special: 0,
     other: 0,
