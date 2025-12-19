@@ -198,4 +198,21 @@ export const woodTariffs: TariffI[] = [
     },
     exceptions: ["9903.94.01", "9903.94.03", "9903.94.05"],
   },
+  {
+    code: "9903.76.23",
+    description:
+      "Wood products of South Korea as provided for in subdivisions (d) and (f) of U.S. note 37 of this subchapter",
+    name: "Upholstered Wooden Furniture Products & Completed Cabinets & Vanities and their parts from South Korea",
+    general: 15,
+    special: 15,
+    other: 0,
+    inclusions: {
+      countries: ["KR"],
+      codes: [
+        ...upholsteredWoodenProducts,
+        ...completedKitchenCabinetsAndVanities,
+      ],
+    },
+    exceptions: ["9903.94.01", "9903.94.03", "9903.94.05"],
+  },
 ];

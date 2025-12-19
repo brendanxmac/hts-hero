@@ -94,6 +94,8 @@ export const copperTariffs: TariffI[] = [
     other: 50,
     contentRequirement: { content: "Copper" },
     exceptions: [
+      // Automobiles
+      "9903.94.01",
       // Auto Parts
       "9903.94.05",
       // Auto Parts Certified for the production or repair of automobiles in the United States
@@ -126,6 +128,28 @@ export const copperTariffs: TariffI[] = [
       "9903.94.54",
       // Auto Parts of Japan <=15%
       "9903.94.55",
+      // South Korea Civil Aircraft
+      "9903.02.81",
+      // South Korea Auto Parts
+      "9903.94.64",
+      "9903.94.65",
+      // Auto's of EU
+      "9903.94.50",
+      "9903.94.51",
+      // Auto Parts of EU
+      "9903.94.52",
+      "9903.94.53",
+      // Passenger Vehicles & Light Trucks of South Korea
+      "9903.94.60", // >=15%
+      "9903.94.61", // <15%
+      // South Korea Auto Parts
+      "9903.94.62",
+      "9903.94.63",
+      "9903.94.64",
+      "9903.94.65",
+      // Autos & Light Trucks of the UK
+      "9903.94.31",
+      "9903.94.32",
     ],
     inclusions: {
       countries: ["*"],

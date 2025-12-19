@@ -86,6 +86,25 @@ export const recriprocalTariffExemptions = [
   "9903.94.55",
   // Argicultural Exceptions
   "9903.02.78",
+  // NOTE: Removed because these both reference this element, causing recursion
+  // South Korea >= 15%
+  // "9903.02.79",
+  // South Korea < 15%
+  // "9903.02.80",
+  // South Korea Civil Aircraft
+  "9903.02.81",
+  // South Korea Autos >= 15%
+  "9903.94.60",
+  // South Korea Autos < 15%
+  "9903.94.61",
+  // South Korea Auto Parts >= 15%
+  "9903.94.62",
+  // South Korea Auto Parts < 15%
+  "9903.94.63",
+  // South Korea Parts Not elsewhere specified >= 15%
+  "9903.94.64",
+  // South Korea Parts Not elsewhere specified < 15%
+  "9903.94.65 ",
 ];
 
 export const worldwideReciprocalTariff: TariffI[] = [
@@ -287,7 +306,7 @@ export const worldwideReciprocalTariff: TariffI[] = [
       "9903.02.53",
       "9903.02.54",
       "9903.02.55",
-      "9903.02.56",
+      // "9903.02.56", Replaced by US-Korea Trade deal tariffs
       "9903.02.57",
       "9903.02.58",
       "9903.02.59",
@@ -1069,19 +1088,20 @@ export const worldwideReciprocalTariff: TariffI[] = [
       countries: ["ZA"],
     },
   },
-  {
-    code: "9903.02.56",
-    description:
-      "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of South Korea, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
-    name: "South Korea Reciprocal Tariff",
-    general: 15,
-    special: 15,
-    other: 15,
-    exceptions: recriprocalTariffExemptions,
-    inclusions: {
-      countries: ["KR"],
-    },
-  },
+  // NOTE: Replaced by US/Korea Trade Deal
+  // {
+  //   code: "9903.02.56",
+  //   description:
+  //     "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of South Korea, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
+  //   name: "South Korea Reciprocal Tariff",
+  //   general: 15,
+  //   special: 15,
+  //   other: 15,
+  //   exceptions: recriprocalTariffExemptions,
+  //   inclusions: {
+  //     countries: ["KR"],
+  //   },
+  // },
   {
     code: "9903.02.57",
     description:

@@ -32,6 +32,8 @@ export const automobileTariffs: TariffI[] = [
       "9903.94.41",
       "9903.94.50",
       "9903.94.51",
+      "9903.94.60",
+      "9903.94.61",
     ],
   },
   {
@@ -112,7 +114,7 @@ export const automobileTariffs: TariffI[] = [
   {
     code: "9903.94.05",
     description:
-      "Except for products described in headings 9903.94.06, 9903.94.32, 9903.94.33, 9903.94.42, 9903.94.43, 9903.94.44, 9903.94.45, 9903.94.52, 9903.94.53, 9903.94.54, 9903.94.55, automobile parts, as provided for in subdivision (g) of U.S. note 33 to this subchapter",
+      "Except for products described in headings 9903.94.06, 9903.94.32, 9903.94.33, 9903.94.42, 9903.94.43, 9903.94.44, 9903.94.45, 9903.94.52, 9903.94.53, 9903.94.54, 9903.94.55, 9903.94.62, and 9903.94.63, automobile parts, as provided for in subdivision (g) of U.S. note 33 to this subchapter",
     name: "Auto Parts",
     general: 25,
     special: 25,
@@ -129,6 +131,10 @@ export const automobileTariffs: TariffI[] = [
       "9903.94.53",
       "9903.94.54",
       "9903.94.55",
+      "9903.94.62",
+      "9903.94.63",
+      // The two below are for MHDV parts.
+      // They're included to avoid doubling up for car & MHDV parts
       "9903.74.08",
       "9903.74.09",
     ],
@@ -154,7 +160,7 @@ export const automobileTariffs: TariffI[] = [
     // https://www.federalregister.gov/d/2025-09066/p-18
     code: "9903.94.07",
     description:
-      "Except as provided for in headings 9903.94.33, 9903.94.44, 9903.94.45, 9903.94.54 and 9903.94.55, automobile parts as provided for in subdivision (p) of U.S. note 33 to this subchapter.",
+      "Except as provided for in headings 9903.94.33, 9903.94.44, 9903.94.45, 9903.94.54, 9903.94.55, 9903.94.64, and 9903.94.65, automobile parts as provided for in subdivision (p) of U.S. note 33 to this subchapter.",
     name: "Parts for Production or Repair of Automobiles in the US",
     general: 25,
     special: 25,
@@ -169,12 +175,19 @@ export const automobileTariffs: TariffI[] = [
       "9903.94.45",
       "9903.94.54",
       "9903.94.55",
+      // is not an auto part
       "9903.94.06",
+      // Of UK
       "9903.94.32",
-      "9903.94.42",
-      "9903.94.43",
+      // of EU
       "9903.94.52",
       "9903.94.53",
+      // Of Japan
+      "9903.94.42",
+      "9903.94.43",
+      // Of South Korea
+      "9903.94.64",
+      "9903.94.65",
     ],
     exclusions: {
       codes: [
@@ -259,7 +272,7 @@ export const automobileTariffs: TariffI[] = [
     code: "9903.94.54",
     description:
       "Automobile parts the product of Japan with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 15 percent, as provided for in subdivision (r) of U.S. note 33 to this subchapter.",
-    name: "Automobile parts of the Japan with Column 1 Duty >=15%",
+    name: "Automobile parts of the Japan from 33(r), with Column 1 Duty >=15%",
     general: 0,
     special: 0,
     other: 0,
@@ -282,7 +295,7 @@ export const automobileTariffs: TariffI[] = [
     code: "9903.94.55",
     description:
       "Automobile parts the product of Japan with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 15 percent, as provided for in subdivision (r) of U.S. note 33 to this subchapter.",
-    name: "Automobile parts of Japan with Column 1 Duty <15%",
+    name: "Automobile parts of Japan from 33(r), with Column 1 Duty <15%",
     general: 15,
     special: 15,
     other: 0,
@@ -299,6 +312,66 @@ export const automobileTariffs: TariffI[] = [
         ...ch73Headings,
         ...ch76Headings,
       ],
+    },
+  },
+  {
+    code: "9903.94.64",
+    description:
+      "Parts of passenger vehicles and light trucks that are products of South Korea as specified in subdivisions (r) and (t) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special equal to or greater than 15 percent",
+    name: "Parts of Vehicles & Light Trucks of South Korea from 33(r) & 33(t), with Column 1 Duty >=15%",
+    general: 0,
+    special: 0,
+    other: 0,
+    requiresReview: true,
+    inclusions: {
+      countries: ["KR"],
+      codes: ["*"],
+    },
+    exclusions: {
+      codes: [
+        ...partsOfMHDVs38i,
+        ...automobileParts33G,
+        ...ch72Headings,
+        ...ch73Headings,
+        ...ch76Headings,
+      ],
+    },
+  },
+  {
+    code: "9903.94.65",
+    description:
+      "Parts of passenger vehicles and light trucks that are products of South Korea as specified in subdivisions (r) and (t) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special less than 15 percent",
+    name: "Parts of Vehicles & Light Trucks of South Korea from 33(r) & 33(t), with Column 1 Duty <15%",
+    general: 15,
+    special: 15,
+    other: 0,
+    requiresReview: true,
+    inclusions: {
+      countries: ["KR"],
+      codes: ["*"],
+    },
+    exclusions: {
+      codes: [
+        ...partsOfMHDVs38i,
+        ...automobileParts33G,
+        ...ch72Headings,
+        ...ch73Headings,
+        ...ch76Headings,
+      ],
+    },
+  },
+  {
+    code: "9903.94.32",
+    description:
+      "Effective with respect to entries on or after [ ], parts of passenger vehicles and light trucks of the United Kingdom, classified in the subheadings enumerated in subdivision (j) of U.S. note 33 to this subchapter. [Compilers note: This heading is effective on or after June 30, 2025. For more information, see 90 Fed. Reg. 27851.]",
+    name: "Parts of Vehicles & Light Trucks of the United Kingdom",
+    general: 10,
+    special: 10,
+    other: 0,
+    requiresReview: true,
+    inclusions: {
+      countries: ["GB"],
+      codes: autoPartsOfUK33J,
     },
   },
 ];
