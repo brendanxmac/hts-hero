@@ -16,6 +16,7 @@ import {
 import PDF from "./PDF";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { useHts } from "../contexts/HtsContext";
+import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { PDFProps } from "../interfaces/ui";
 import { SupabaseBuckets } from "../constants/supabase";
 import { Tariffs } from "./Tariffs";
@@ -29,6 +30,7 @@ import { userHasActivePurchase } from "../libs/supabase/purchase";
 import Link from "next/link";
 import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import { fetchUser, updateUserProfile } from "../libs/supabase/user";
+import { HtsElementDetailsPopover } from "./HtsElementDetailsPopover";
 
 interface Props {
   summaryOnly?: boolean;
@@ -52,6 +54,7 @@ export const Element = ({
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { htsElements } = useHts();
+  const { sections } = useHtsSections();
   const [isPayingUser, setIsPayingUser] = useState<boolean>(false);
   const [isTariffImpactTrialUser, setIsTariffImpactTrialUser] =
     useState<boolean>(false);
@@ -144,11 +147,18 @@ export const Element = ({
           {/* HTS Code Badge and Actions */}
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="px-4 py-2 rounded-xl bg-primary/10 border border-primary/20">
-                <span className="text-lg md:text-xl font-bold text-primary">
-                  {getHtsnoLabel()}
-                </span>
-              </div>
+              <HtsElementDetailsPopover
+                htsElement={element}
+                htsElements={htsElements}
+                sections={sections}
+                largeText
+              >
+                <div className="px-4 py-2 rounded-xl bg-primary/10 border border-primary/20 cursor-help hover:bg-primary/15 transition-colors">
+                  <span className="text-lg md:text-xl font-bold text-primary underline decoration-dotted decoration-primary/40 underline-offset-2">
+                    {getHtsnoLabel()}
+                  </span>
+                </div>
+              </HtsElementDetailsPopover>
             </div>
 
             {/* Action Buttons */}
