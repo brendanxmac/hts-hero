@@ -464,7 +464,7 @@ export const CountryTariff = ({
       SubheadingsConditionallyExemptFromReciprocal
     ).find((s) => tariffElement.htsno.includes(s));
     return subheading
-      ? SubheadingsConditionallyExemptFromReciprocal[subheading]
+      ? `${SubheadingsConditionallyExemptFromReciprocal[subheading]}`
       : null;
   };
 
@@ -1013,12 +1013,10 @@ export const CountryTariff = ({
           <ExclamationTriangleIcon className="w-5 h-5 shrink-0" />
           <div className="min-w-0 flex-1">
             <h3 className="font-bold text-sm sm:text-base">Important Notice</h3>
-            <p className="text-xs sm:text-sm">
-              {exemptionNote}{" "}
-              <span className="font-bold">
-                is/are EXEMPT from reciprocal tariffs
-                {country.code === "BR" && " and the Brazil 40% IEEPA"}
-              </span>
+            <p className="sm:text-lg">
+              {exemptionNote} is/are EXEMPT from reciprocal tariffs via
+              9903.02.78
+              {country.code === "BR" && " and the Brazil 40% IEEPA"}
             </p>
           </div>
         </div>
