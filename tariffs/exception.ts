@@ -187,7 +187,7 @@ export const exceptionTariffs: TariffI[] = [
   {
     code: "9903.01.32",
     description:
-      "Articles the product of any country, classified in the subheadings enumerated in subdivision (v)(iii) of U.S. note 2 to this subchapter",
+      "Articles the product of any country, classified in the subheadings enumerated in subdivision (v)(iii)(a) of U.S. note 2 to this subchapter",
     name: "Excluded Reciprocal Tariff Subheadings",
     inclusions: {
       countries: ["*"],

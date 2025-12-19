@@ -1085,6 +1085,7 @@ export const reciprocalTariffExemptionsList = [
   "3105.90.00",
 ];
 
+// Currently ALL Agricultural via HTS 2025 Revision 29 -- Aricultural Exemptions
 export const SubheadingsConditionallyExemptFromReciprocal: Record<
   string,
   string

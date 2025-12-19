@@ -84,6 +84,8 @@ export const recriprocalTariffExemptions = [
   "9903.94.54",
   // Auto Parts of Japan <=15%
   "9903.94.55",
+  // Argicultural Exceptions
+  "9903.02.78",
 ];
 
 export const worldwideReciprocalTariff: TariffI[] = [
