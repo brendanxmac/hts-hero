@@ -10291,7 +10291,7 @@ export const chinaTariffs: TariffI[] = [
     code: "9903.88.69", // referenced by 9903.88.01, 9903.88.03, 9903.88.15
     description:
       "Effective with respect to entries on or after June 15, 2024 and through November 29, 2025, articles the product of China, as provided for in U.S. note 20(vvv) to this subchapter, each covered by an exclusion granted by the U.S. Trade Representative",
-    name: "Articles of China from Ch.99, III, 20(vvv) [Expires November 29, 2025]",
+    name: "Articles of China from Ch.99, III, 20(vvv) [Expires November 9, 2026]",
     general: 0,
     special: 0,
     other: 0,
@@ -10454,7 +10454,7 @@ export const chinaTariffs: TariffI[] = [
     code: "9903.88.70",
     description:
       "Effective with respect to entries on or after January 1, 2024, and through November 29, 2025, articles the product of China, as provided in U.S. note 20(www) to this subchapter, each covered by an exclusion granted by the U.S. Trade Representative",
-    name: "Articles of China from Ch.99, III, 20(www) [Expires November 29, 2025]",
+    name: "Articles of China from Ch.99, III, 20(www) [Expires November 9, 2026]",
     general: 0,
     special: 0,
     other: 0,
