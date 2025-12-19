@@ -28,11 +28,8 @@ import {
 } from "@heroicons/react/24/solid";
 import { useHts } from "../contexts/HtsContext";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
-import {
-  getHtsElementParents,
-  getSectionAndChapterFromChapterNumber,
-} from "../libs/hts";
 import { CheckCircleIcon } from "@heroicons/react/16/solid";
+import { HtsElementDetailsPopover } from "./HtsElementDetailsPopover";
 
 interface Props {
   units: number;
@@ -118,43 +115,6 @@ export const CountryTariff = ({
   const [isLinkCopied, setIsLinkCopied] = useState(false);
   const [selectedSpecialProgram, setSelectedSpecialProgram] =
     useState<TradeProgramDisplayable>(selectedTradeProgram || DEFAULT_PROGRAM);
-  const [showClassificationPath, setShowClassificationPath] = useState(false);
-
-  // Build classification path items
-  const getClassificationPathItems = () => {
-    if (!htsElement || sections.length === 0) return [];
-
-    const sectionAndChapter = getSectionAndChapterFromChapterNumber(
-      sections,
-      Number(htsElement.chapter)
-    );
-    const parents = getHtsElementParents(htsElement, htsElements);
-
-    if (!sectionAndChapter) return [];
-
-    return [
-      {
-        htsno: `Section ${sectionAndChapter.section.number}`,
-        description: sectionAndChapter.section.description,
-        type: "section" as const,
-      },
-      {
-        htsno: `Chapter ${sectionAndChapter.chapter.number}`,
-        description: sectionAndChapter.chapter.description,
-        type: "chapter" as const,
-      },
-      ...parents.map((parent) => ({
-        htsno: parent.htsno || "—",
-        description: parent.description,
-        type: "parent" as const,
-      })),
-      {
-        htsno: htsElement.htsno || "—",
-        description: htsElement.description,
-        type: "selected" as const,
-      },
-    ];
-  };
 
   const adValoremEquivalentRate = get15PercentCountryTotalBaseRate(
     baseTariffs.flatMap((t) => t.tariffs),
@@ -687,8 +647,6 @@ export const CountryTariff = ({
     }).format(amount);
   };
 
-  const classificationPathItems = getClassificationPathItems();
-
   const content = (
     <div className="flex flex-col gap-5">
       {/* Component Header */}
@@ -696,65 +654,15 @@ export const CountryTariff = ({
         <div className="min-w-0 flex-1">
           <p className="text-base-content/60 font-bold text-sm sm:text-base">
             Duty for{" "}
-            <span
-              className="relative inline-block"
-              onMouseEnter={() => setShowClassificationPath(true)}
-              onMouseLeave={() => setShowClassificationPath(false)}
+            <HtsElementDetailsPopover
+              htsElement={htsElement}
+              htsElements={htsElements}
+              sections={sections}
             >
               <span className="text-primary font-semibold uppercase text-base sm:text-lg cursor-help underline decoration-dotted decoration-primary/40 underline-offset-2">
                 {tariffElement.htsno}
               </span>
-              {/* Classification Path Popover */}
-              {showClassificationPath && classificationPathItems.length > 0 && (
-                <>
-                  {/* Invisible bridge to prevent gap between trigger and popover */}
-                  <div className="absolute left-0 top-full w-full h-2" />
-                  <div
-                    className="absolute left-0 top-full mt-2 z-50 min-w-[700px] max-w-[90vw] p-5 rounded-xl bg-base-100 border border-base-content/20 shadow-2xl"
-                    style={{
-                      animation: "fadeIn 0.15s ease-out",
-                      boxShadow:
-                        "0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 12px 24px -8px rgba(0, 0, 0, 0.15)",
-                    }}
-                  >
-                    <div className="flex flex-col gap-3">
-                      <span className="text-xs font-semibold uppercase tracking-widest text-base-content/50">
-                        HTS Element Details
-                      </span>
-                      <div className="flex flex-col gap-2.5">
-                        {classificationPathItems.map((item, index) => (
-                          <div
-                            key={`${item.htsno}-${index}`}
-                            className="flex items-start gap-4"
-                          >
-                            {/* HTS Code / Label - fixed width column */}
-                            <div className="w-32 shrink-0">
-                              <span
-                                className={`inline-block font-mono text-xs font-bold px-2 py-1 rounded-md ${
-                                  item.type === "section"
-                                    ? "text-amber-600 dark:text-amber-400 bg-amber-500/10"
-                                    : item.type === "chapter"
-                                      ? "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10"
-                                      : item.type === "selected"
-                                        ? "text-primary bg-primary/10"
-                                        : "text-base-content/70 bg-base-content/5"
-                                }`}
-                              >
-                                {item.htsno}
-                              </span>
-                            </div>
-                            {/* Description */}
-                            <span className="flex-1 text-sm text-base-content font-medium leading-relaxed pt-0.5">
-                              {item.description}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </>
-              )}
-            </span>{" "}
+            </HtsElementDetailsPopover>{" "}
             from
           </p>
           <div className="flex items-center gap-2 sm:gap-4">
@@ -1312,21 +1220,5 @@ export const CountryTariff = ({
     );
   }
 
-  return (
-    <>
-      {content}
-      <style jsx global>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(-4px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
-    </>
-  );
+  return <>{content}</>;
 };

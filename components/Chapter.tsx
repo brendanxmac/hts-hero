@@ -143,10 +143,10 @@ export const Chapter = ({ chapter }: Props) => {
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col gap-4">
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
             {/* Chapter Badge */}
             <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 border border-primary/20">
+              <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 px-3">
                 <span className="text-lg font-bold text-primary">{number}</span>
               </div>
               <div className="flex flex-col">
@@ -236,7 +236,7 @@ export const Chapter = ({ chapter }: Props) => {
                     }
                   }}
                 >
-                  <DocumentTextIcon className="h-4 w-4 text-primary/70" />
+                  <DocumentTextIcon className="shrink-0 h-4 w-4 text-primary/70" />
                   <span className="text-sm font-medium">Chapter Notes</span>
                 </button>
               )}
