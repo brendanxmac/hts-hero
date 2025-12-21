@@ -26,7 +26,7 @@ export const japanTariffs: TariffI[] = [
       // "9903.01.33", ^
       // "9903.01.34", ^
       // "9903.02.01", ^
-      "9903.96.02",
+      "9903.96.02", // Japan Civil Aircraft
     ],
   },
   {

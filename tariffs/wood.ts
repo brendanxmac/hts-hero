@@ -77,7 +77,7 @@ export const woodTariffs: TariffI[] = [
     special: 25,
     other: 25,
     exclusions: {
-      countries: ["GB", "JP", ...EuropeanUnionCountries],
+      countries: ["GB", "JP", "KR", ...EuropeanUnionCountries],
     },
     inclusions: {
       codes: upholsteredWoodenProducts,
@@ -119,7 +119,7 @@ export const woodTariffs: TariffI[] = [
     other: 25,
     // requiresReview: true,
     exclusions: {
-      countries: ["GB", "JP", ...EuropeanUnionCountries],
+      countries: ["GB", "JP", "KR", ...EuropeanUnionCountries],
     },
     inclusions: {
       codes: completedKitchenCabinetsAndVanities,

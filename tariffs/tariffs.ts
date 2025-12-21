@@ -230,8 +230,6 @@ export const getAssociatedTariffsSum = (tariffSet: TariffSet) => {
 };
 
 export const getBasePercentTariffsSum = (baseTariffs: ParsedBaseTariff[]) => {
-  // console.log("baseTariffs:");
-  // console.log(baseTariffs[0]);
   const basePercentTariffs = getBasePercentTariffs(baseTariffs);
   return basePercentTariffs.reduce((acc, t) => acc + t.value, 0);
 };
