@@ -289,7 +289,8 @@ export const VerticalClassificationResult = ({
     );
     const is15PercentCapCountry =
       EuropeanUnionCountries.includes(selectedCountry.code) ||
-      selectedCountry.code === "JP";
+      selectedCountry.code === "JP" ||
+      selectedCountry.code === "KR";
 
     const tariffColumn = isOtherColumnCountry
       ? TariffColumn.OTHER

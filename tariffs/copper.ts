@@ -1,4 +1,5 @@
 import { TariffI } from "../interfaces/tariffs";
+import { tariffsExemptFromMetalTariffs } from "./lists";
 
 const copperAndCopperDerivatives = [
   "7406.10.00",
@@ -93,40 +94,7 @@ export const copperTariffs: TariffI[] = [
     special: 50,
     other: 50,
     contentRequirement: { content: "Copper" },
-    exceptions: [
-      // Auto Parts
-      "9903.94.05",
-      // Auto Parts Certified for the production or repair of automobiles in the United States
-      "9903.94.07",
-      // Japan Vehicles & Light Trucks
-      "9903.94.40",
-      "9903.94.41",
-      // Japan Auto Parts
-      "9903.94.42",
-      "9903.94.43",
-      // Japan Civil Aircraft
-      "9903.96.02",
-      // EU Civil Aircraft
-      "9903.02.76",
-      // Heavy Duty Vehicles
-      "9903.74.01",
-      // Buses & Similar Vehicles
-      "9903.74.02",
-      // Medium & Heavy Duty Vehicle Parts
-      "9903.74.08",
-      // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
-      "9903.74.09",
-      // Auto Parts of UK
-      "9903.94.33",
-      // Auto Parts of EU >15%
-      "9903.94.44",
-      // Auto Parts of EU <=15%
-      "9903.94.45",
-      // Auto Parts of Japan >15%
-      "9903.94.54",
-      // Auto Parts of Japan <=15%
-      "9903.94.55",
-    ],
+    exceptions: tariffsExemptFromMetalTariffs,
     inclusions: {
       countries: ["*"],
       codes: copperAndCopperDerivatives,

@@ -162,9 +162,13 @@ export const Tariffs = ({
   const sortByRateAsc = () => {
     return [...countries].sort((a, b) => {
       const aIs15CapCountry =
-        EuropeanUnionCountries.includes(a.code) || a.code === "JP";
+        EuropeanUnionCountries.includes(a.code) ||
+        a.code === "JP" ||
+        a.code === "KR";
       const bIs15CapCountry =
-        EuropeanUnionCountries.includes(b.code) || b.code === "JP";
+        EuropeanUnionCountries.includes(b.code) ||
+        b.code === "JP" ||
+        b.code === "KR";
       const adValoremEquivalentRateA = get15PercentCountryTotalBaseRate(
         a.baseTariffs.flatMap((t) => t.tariffs),
         customsValue,
@@ -198,9 +202,13 @@ export const Tariffs = ({
   const sortByRateDesc = () => {
     return [...countries].sort((a, b) => {
       const aIs15CapCountry =
-        EuropeanUnionCountries.includes(a.code) || a.code === "JP";
+        EuropeanUnionCountries.includes(a.code) ||
+        a.code === "JP" ||
+        a.code === "KR";
       const bIs15CapCountry =
-        EuropeanUnionCountries.includes(b.code) || b.code === "JP";
+        EuropeanUnionCountries.includes(b.code) ||
+        b.code === "JP" ||
+        b.code === "KR";
       const adValoremEquivalentRateA = get15PercentCountryTotalBaseRate(
         a.baseTariffs.flatMap((t) => t.tariffs),
         customsValue,
@@ -484,7 +492,8 @@ export const Tariffs = ({
               );
               const is15PercentCapCountry =
                 EuropeanUnionCountries.includes(country.code) ||
-                country.code === "JP";
+                country.code === "JP" ||
+                country.code === "KR";
 
               const cappedBy15PercentRule =
                 is15PercentCapCountry && adValoremEquivalentRate < 15;

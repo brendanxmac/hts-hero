@@ -32,6 +32,8 @@ export const brazilTariffs: TariffI[] = [
       "9903.94.07",
       // Argicultural Exceptions
       "9903.01.90",
+      // Copper
+      "9903.78.01",
     ],
     inclusions: {
       countries: ["BR"],

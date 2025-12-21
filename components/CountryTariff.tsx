@@ -104,7 +104,9 @@ export const CountryTariff = ({
 
   const isOtherColumnCountry = Column2CountryCodes.includes(country.code);
   const is15PercentCapCountry =
-    EuropeanUnionCountries.includes(country.code) || country.code === "JP";
+    EuropeanUnionCountries.includes(country.code) ||
+    country.code === "JP" ||
+    country.code === "KR";
 
   const [tariffColumn, setTariffColumn] = useState<TariffColumn>(
     isOtherColumnCountry ? TariffColumn.OTHER : TariffColumn.GENERAL
@@ -935,6 +937,8 @@ export const CountryTariff = ({
         {tariffSets.map((tariffSet, i) => {
           const estimate = dutyEstimates[i];
           const isExpanded = expandedSets[i] ?? true;
+          console.log("tariffSets:");
+          console.log(tariffSets);
           const inactiveTariffs = tariffSet.tariffs.filter((t) => !t.isActive);
           const hasInactiveTariffs = inactiveTariffs.length > 0;
 

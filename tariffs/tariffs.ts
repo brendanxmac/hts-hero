@@ -36,6 +36,7 @@ import { europeanUnionTariffs } from "./european-union";
 import { woodTariffs } from "./wood";
 import { heavyVehicleTariffs } from "./heavy-vehicles";
 import { argiculturalTariffs } from "./argicultural";
+import { southKoreaTariffs } from "./south-korea";
 
 export interface CountryWithTariffs extends Country {
   selectedTradeProgram: TradeProgram | null;
@@ -229,8 +230,6 @@ export const getAssociatedTariffsSum = (tariffSet: TariffSet) => {
 };
 
 export const getBasePercentTariffsSum = (baseTariffs: ParsedBaseTariff[]) => {
-  // console.log("baseTariffs:");
-  // console.log(baseTariffs[0]);
   const basePercentTariffs = getBasePercentTariffs(baseTariffs);
   return basePercentTariffs.reduce((acc, t) => acc + t.value, 0);
 };
@@ -272,8 +271,9 @@ export const filterCountryTariffsFor15PercentExeption = (
 ) => {
   const isEUCountry = EuropeanUnionCountries.includes(country.code);
   const isJapan = country.code === "JP";
+  const isSouthKorea = country.code === "KR";
 
-  if (!isEUCountry && !isJapan) {
+  if (!isEUCountry && !isJapan && !isSouthKorea) {
     return tariffs;
   }
 
@@ -316,6 +316,24 @@ export const filterCountryTariffsFor15PercentExeption = (
           t.code !== "9903.94.40" &&
           t.code !== "9903.94.42" &&
           t.code !== "9903.94.54"
+        );
+      }
+    }
+
+    if (isSouthKorea) {
+      if (totalBaseRate >= 15) {
+        return (
+          t.code !== "9903.02.80" &&
+          t.code !== "9903.94.61" &&
+          t.code !== "9903.94.63" &&
+          t.code !== "9903.94.65"
+        );
+      } else {
+        return (
+          t.code !== "9903.02.79" &&
+          t.code !== "9903.94.60" &&
+          t.code !== "9903.94.62" &&
+          t.code !== "9903.94.64"
         );
       }
     }
@@ -904,4 +922,5 @@ export const TariffsList: TariffI[] = [
   ...woodTariffs,
   ...heavyVehicleTariffs,
   ...argiculturalTariffs,
+  ...southKoreaTariffs,
 ];

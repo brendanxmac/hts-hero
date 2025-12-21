@@ -27,6 +27,8 @@ export const aluminumTariffs: TariffI[] = [
       "9903.96.02",
       // EU Civil Aircraft
       "9903.02.76",
+      // South Korea Civil Aircraft
+      "9903.02.81",
       // Heavy Duty Vehicles
       "9903.74.01",
       // Buses & Similar Vehicles
@@ -45,6 +47,14 @@ export const aluminumTariffs: TariffI[] = [
       "9903.94.54",
       // Auto Parts of Japan <=15%
       "9903.94.55",
+      // South Korea Automobiles
+      "9903.94.60", // >=15%
+      "9903.94.61", // <15%
+      // South Korea Auto Parts
+      "9903.94.62",
+      "9903.94.63",
+      "9903.94.64",
+      "9903.94.65",
     ],
     contentRequirement: { content: "Aluminum" },
     exclusions: {
@@ -174,6 +184,16 @@ export const aluminumTariffs: TariffI[] = [
       "9903.94.54",
       // Auto Parts of Japan <=15%
       "9903.94.55",
+      // South Korea Automobiles
+      "9903.94.60", // >=15%
+      "9903.94.61", // <15%
+      // South Korea Auto Parts
+      "9903.94.62",
+      "9903.94.63",
+      "9903.94.64",
+      "9903.94.65",
+      // South Korea Civil Aircraft
+      "9903.02.81",
     ],
     inclusions: {
       countries: ["GB"],
@@ -235,6 +255,16 @@ export const aluminumTariffs: TariffI[] = [
       "9903.94.54",
       // Auto Parts of Japan <=15%
       "9903.94.55",
+      // South Korea Automobiles
+      "9903.94.60", // >=15%
+      "9903.94.61", // <15%
+      // South Korea Auto Parts
+      "9903.94.62",
+      "9903.94.63",
+      "9903.94.64",
+      "9903.94.65",
+      // South Korea Civil Aircraft
+      "9903.02.81",
     ],
     inclusions: {
       countries: ["GB"],
@@ -277,6 +307,8 @@ export const aluminumTariffs: TariffI[] = [
       "9903.96.02",
       // EU Civil Aircraft
       "9903.02.76",
+      // South Korea Civil Aircraft
+      "9903.02.81",
       // Heavy Duty Vehicles
       "9903.74.01",
       // Buses & Similar Vehicles
@@ -298,6 +330,14 @@ export const aluminumTariffs: TariffI[] = [
       "9903.94.54",
       // Auto Parts of Japan <=15%
       "9903.94.55",
+      // South Korea Automobiles
+      "9903.94.60", // >=15%
+      "9903.94.61", // <15%
+      // South Korea Auto Parts
+      "9903.94.62",
+      "9903.94.63",
+      "9903.94.64",
+      "9903.94.65",
     ],
     inclusions: {
       codes: [
@@ -520,6 +560,8 @@ export const aluminumTariffs: TariffI[] = [
       "9903.96.02",
       // EU Civil Aircraft
       "9903.02.76",
+      // South Korea Civil Aircraft
+      "9903.02.81",
       // Heavy Duty Vehicles
       "9903.74.01",
       // Buses & Similar Vehicles
@@ -538,6 +580,14 @@ export const aluminumTariffs: TariffI[] = [
       "9903.94.54",
       // Auto Parts of Japan <=15%
       "9903.94.55",
+      // South Korea Automobiles
+      "9903.94.60", // >=15%
+      "9903.94.61", // <15%
+      // South Korea Auto Parts
+      "9903.94.62",
+      "9903.94.63",
+      "9903.94.64",
+      "9903.94.65",
     ],
     inclusions: {
       codes: [
@@ -976,6 +1026,16 @@ export const aluminumTariffs: TariffI[] = [
       "9903.94.54",
       // Auto Parts of Japan <=15%
       "9903.94.55",
+      // South Korea Automobiles
+      "9903.94.60", // >=15%
+      "9903.94.61", // <15%
+      // South Korea Auto Parts
+      "9903.94.62",
+      "9903.94.63",
+      "9903.94.64",
+      "9903.94.65",
+      // South Korea Civil Aircraft
+      "9903.02.81",
     ],
     inclusions: {
       countries: ["GB"],
@@ -1053,6 +1113,16 @@ export const aluminumTariffs: TariffI[] = [
       "9903.94.54",
       // Auto Parts of Japan <=15%
       "9903.94.55",
+      // South Korea Automobiles
+      "9903.94.60", // >=15%
+      "9903.94.61", // <15%
+      // South Korea Auto Parts
+      "9903.94.62",
+      "9903.94.63",
+      "9903.94.64",
+      "9903.94.65",
+      // South Korea Civil Aircraft
+      "9903.02.81",
     ],
     inclusions: {
       countries: ["GB"],
@@ -1593,6 +1663,8 @@ export const aluminumTariffs: TariffI[] = [
       "9903.96.02",
       // EU Civil Aircraft
       "9903.02.76",
+      // South Korea Civil Aircraft
+      "9903.02.81",
       // Heavy Duty Vehicles
       "9903.74.01",
       // Buses & Similar Vehicles
@@ -1611,6 +1683,14 @@ export const aluminumTariffs: TariffI[] = [
       "9903.94.54",
       // Auto Parts of Japan <=15%
       "9903.94.55",
+      // South Korea Automobiles
+      "9903.94.60", // >=15%
+      "9903.94.61", // <15%
+      // South Korea Auto Parts
+      "9903.94.62",
+      "9903.94.63",
+      "9903.94.64",
+      "9903.94.65",
     ],
     inclusions: {
       codes: [

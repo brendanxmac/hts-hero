@@ -829,6 +829,7 @@ export const europeanUnionTariffs: TariffI[] = [
     inclusions: {
       countries: EuropeanUnionCountries,
       codes: [
+        // could be civilAircraftAndPartsOf, but doesn't include "4504.90.00" -- maybe HTS mistake
         "2804.10.00",
         "2804.29.00",
         "2804.30.00",
