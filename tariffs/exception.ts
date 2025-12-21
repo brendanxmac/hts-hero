@@ -245,6 +245,7 @@ export const exceptionTariffs: TariffI[] = [
         "9903.76.20",
         "9903.76.21",
         "9903.76.22",
+        "9903.76.23", // South Korea
       ],
     },
     general: 0,

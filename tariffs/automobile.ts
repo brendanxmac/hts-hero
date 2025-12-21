@@ -32,6 +32,7 @@ export const automobileTariffs: TariffI[] = [
       "9903.94.41",
       "9903.94.50",
       "9903.94.51",
+      // South Korea Automobiles
       "9903.94.60",
       "9903.94.61",
     ],

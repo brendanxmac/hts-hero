@@ -1341,8 +1341,8 @@ export const tariffsExemptFromMetalTariffs = [
   "9903.94.32",
   // Automobile Parts of UK
   "9903.94.33",
-  // FIXME: Where is auto parts?
-  // FIXME: Where is Civil aircraft?
+  // Civil Aircraft
+  "9903.96.01",
 
   // South Korea=================
   // South Korea Auto Parts

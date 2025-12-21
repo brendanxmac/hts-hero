@@ -54,7 +54,7 @@ export const recriprocalTariffExemptions = [
   // EU Articles
   "9903.02.74",
   "9903.02.75",
-  "9903.02.76", // Civil Aircraft
+  "9903.02.76", // EU Civil Aircraft
   "9903.02.77",
   // Wood
   "9903.76.01",
@@ -63,6 +63,7 @@ export const recriprocalTariffExemptions = [
   "9903.76.20",
   "9903.76.21",
   "9903.76.22",
+  "9903.76.23",
   // Medium & Heavy Duty Vehicles
   "9903.74.01",
   // Buses & Similar Vehicles

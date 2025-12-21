@@ -62,6 +62,11 @@ export const woodTariffs: TariffI[] = [
       "9903.94.54",
       // Auto Parts of Japan <=15%
       "9903.94.55",
+      // South Korea Auto Parts
+      "9903.94.62",
+      "9903.94.63",
+      "9903.94.64",
+      "9903.94.65",
     ],
   },
   {
@@ -98,6 +103,11 @@ export const woodTariffs: TariffI[] = [
       "9903.94.54",
       // Auto Parts of Japan <=15%
       "9903.94.55",
+      // South Korea Auto Parts
+      "9903.94.62",
+      "9903.94.63",
+      "9903.94.64",
+      "9903.94.65",
     ],
   },
   {
@@ -117,6 +127,7 @@ export const woodTariffs: TariffI[] = [
     exceptions: [
       "9903.94.01",
       "9903.94.03",
+      // Is not completed kitchen cabinets & vanities or its parts
       "9903.76.04",
       // Auto Parts
       "9903.94.05",
@@ -136,11 +147,16 @@ export const woodTariffs: TariffI[] = [
       "9903.94.54",
       // Auto Parts of Japan <=15%
       "9903.94.55",
+      // South Korea Auto Parts
+      "9903.94.62",
+      "9903.94.63",
+      "9903.94.64",
+      "9903.94.65",
     ],
   },
   {
     code: "9903.76.04",
-    name: "Not Completed Kitchen Cabinets & Vanities (and parts thereof)",
+    name: "Is Not a Completed Kitchen Cabinets & Vanities or its parts)",
     description: "TODO",
     general: 0,
     special: 0,
@@ -164,7 +180,7 @@ export const woodTariffs: TariffI[] = [
         ...completedKitchenCabinetsAndVanities,
       ],
     },
-    exceptions: ["9903.94.01", "9903.94.03", "9903.94.05"],
+    exceptions: ["9903.94.01", "9903.94.03", "9903.76.04", "9903.94.05"],
   },
   {
     code: "9903.76.21",
@@ -180,7 +196,7 @@ export const woodTariffs: TariffI[] = [
         ...completedKitchenCabinetsAndVanities,
       ],
     },
-    exceptions: ["9903.94.01", "9903.94.03", "9903.94.05"],
+    exceptions: ["9903.94.01", "9903.94.03", "9903.76.04", "9903.94.05"],
   },
   {
     code: "9903.76.22",
@@ -196,7 +212,7 @@ export const woodTariffs: TariffI[] = [
         ...completedKitchenCabinetsAndVanities,
       ],
     },
-    exceptions: ["9903.94.01", "9903.94.03", "9903.94.05"],
+    exceptions: ["9903.94.01", "9903.94.03", "9903.76.04", "9903.94.05"],
   },
   {
     code: "9903.76.23",
@@ -213,6 +229,18 @@ export const woodTariffs: TariffI[] = [
         ...completedKitchenCabinetsAndVanities,
       ],
     },
-    exceptions: ["9903.94.01", "9903.94.03", "9903.94.05"],
+    exceptions: [
+      // Automobiles
+      "9903.94.01",
+      "9903.94.03",
+      "9903.76.04",
+      // Auto Parts
+      "9903.94.05",
+      // South Korean Automobiles & Auto Parts
+      "9903.94.62",
+      "9903.94.63",
+      "9903.94.64",
+      "9903.94.65",
+    ],
   },
 ];

@@ -51,6 +51,14 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.94.54",
       // Auto Parts of Japan <=15%
       "9903.94.55",
+      // South Korea Automobiles
+      "9903.94.60", // >=15%
+      "9903.94.61", // <15%
+      // South Korea Auto Parts
+      "9903.94.62",
+      "9903.94.63",
+      "9903.94.64",
+      "9903.94.65",
     ],
     exclusions: {
       // 16(j)
@@ -142,6 +150,14 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.94.54",
       // Auto Parts of Japan <=15%
       "9903.94.55",
+      // South Korea Automobiles
+      "9903.94.60", // >=15%
+      "9903.94.61", // <15%
+      // South Korea Auto Parts
+      "9903.94.62",
+      "9903.94.63",
+      "9903.94.64",
+      "9903.94.65",
     ],
     exclusions: {
       countries: ["GB"],
@@ -356,6 +372,16 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.94.54",
       // Auto Parts of Japan <=15%
       "9903.94.55",
+      // South Korea Automobiles
+      "9903.94.60", // >=15%
+      "9903.94.61", // <15%
+      // South Korea Auto Parts
+      "9903.94.62",
+      "9903.94.63",
+      "9903.94.64",
+      "9903.94.65",
+      // South Korea Civil Aircraft
+      "9903.02.81",
     ],
 
     exclusions: {
@@ -440,6 +466,16 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.94.54",
       // Auto Parts of Japan <=15%
       "9903.94.55",
+      // South Korea Automobiles
+      "9903.94.60", // >=15%
+      "9903.94.61", // <15%
+      // South Korea Auto Parts
+      "9903.94.62",
+      "9903.94.63",
+      "9903.94.64",
+      "9903.94.65",
+      // South Korea Civil Aircraft
+      "9903.02.81",
     ],
     inclusions: {
       countries: ["GB"],
@@ -660,6 +696,14 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.94.54",
       // Auto Parts of Japan <=15%
       "9903.94.55",
+      // South Korea Automobiles
+      "9903.94.60", // >=15%
+      "9903.94.61", // <15%
+      // South Korea Auto Parts
+      "9903.94.62",
+      "9903.94.63",
+      "9903.94.64",
+      "9903.94.65",
     ],
     exclusions: {
       countries: ["GB"],
@@ -748,6 +792,14 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.94.54",
       // Auto Parts of Japan <=15%
       "9903.94.55",
+      // South Korea Automobiles
+      "9903.94.60", // >=15%
+      "9903.94.61", // <15%
+      // South Korea Auto Parts
+      "9903.94.62",
+      "9903.94.63",
+      "9903.94.64",
+      "9903.94.65",
     ],
     exclusions: {
       countries: ["GB"],
@@ -812,6 +864,14 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.94.54",
       // Auto Parts of Japan <=15%
       "9903.94.55",
+      // South Korea Automobiles
+      "9903.94.60", // >=15%
+      "9903.94.61", // <15%
+      // South Korea Auto Parts
+      "9903.94.62",
+      "9903.94.63",
+      "9903.94.64",
+      "9903.94.65",
     ],
     exclusions: {
       countries: ["GB"],
@@ -1026,6 +1086,14 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.94.54",
       // Auto Parts of Japan <=15%
       "9903.94.55",
+      // South Korea Automobiles
+      "9903.94.60", // >=15%
+      "9903.94.61", // <15%
+      // South Korea Auto Parts
+      "9903.94.62",
+      "9903.94.63",
+      "9903.94.64",
+      "9903.94.65",
     ],
     exclusions: {
       countries: ["GB"],
@@ -1867,6 +1935,16 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.94.54",
       // Auto Parts of Japan <=15%
       "9903.94.55",
+      // South Korea Automobiles
+      "9903.94.60", // >=15%
+      "9903.94.61", // <15%
+      // South Korea Auto Parts
+      "9903.94.62",
+      "9903.94.63",
+      "9903.94.64",
+      "9903.94.65",
+      // South Korea Civil Aircraft
+      "9903.02.81",
     ],
     inclusions: {
       countries: ["GB"],
@@ -2075,6 +2153,16 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.94.54",
       // Auto Parts of Japan <=15%
       "9903.94.55",
+      // South Korea Automobiles
+      "9903.94.60", // >=15%
+      "9903.94.61", // <15%
+      // South Korea Auto Parts
+      "9903.94.62",
+      "9903.94.63",
+      "9903.94.64",
+      "9903.94.65",
+      // South Korea Civil Aircraft
+      "9903.02.81",
     ],
     inclusions: {
       countries: ["GB"],
@@ -2541,6 +2629,16 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.94.54",
       // Auto Parts of Japan <=15%
       "9903.94.55",
+      // South Korea Automobiles
+      "9903.94.60", // >=15%
+      "9903.94.61", // <15%
+      // South Korea Auto Parts
+      "9903.94.62",
+      "9903.94.63",
+      "9903.94.64",
+      "9903.94.65",
+      // South Korea Civil Aircraft
+      "9903.02.81",
     ],
     exclusions: {
       codes: ["7216.61.00", "7216.69.00", "7216.91.00"],
@@ -2623,6 +2721,16 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.94.54",
       // Auto Parts of Japan <=15%
       "9903.94.55",
+      // South Korea Automobiles
+      "9903.94.60", // >=15%
+      "9903.94.61", // <15%
+      // South Korea Auto Parts
+      "9903.94.62",
+      "9903.94.63",
+      "9903.94.64",
+      "9903.94.65",
+      // South Korea Civil Aircraft
+      "9903.02.81",
     ],
     inclusions: {
       countries: ["GB"],
