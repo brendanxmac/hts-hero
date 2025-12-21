@@ -1290,3 +1290,72 @@ export const civilAircraftAndPartsOf = [
   "9620.00.60",
   "9802.00.80",
 ];
+
+export const tariffsExemptFromMetalTariffs = [
+  // Automobiles
+  "9903.94.01",
+  // Auto Parts
+  "9903.94.05",
+  // Auto Parts Certified for the production or repair of automobiles in the United States
+  "9903.94.07",
+  // Heavy Duty Vehicles
+  "9903.74.01",
+  // Buses & Similar Vehicles
+  "9903.74.02",
+  // Medium & Heavy Duty Vehicle Parts
+  "9903.74.08",
+  // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
+  "9903.74.09",
+
+  // ========== Japan ==========
+  // Automobiles
+  "9903.94.40",
+  "9903.94.41",
+  // Auto Parts
+  "9903.94.42",
+  "9903.94.43",
+  // Auto Parts >15%
+  "9903.94.54",
+  // Auto Parts <=15%
+  "9903.94.55",
+  // Civil Aircraft
+  "9903.96.02",
+
+  // ========== EU ==========
+  // Auto Parts >15%
+  "9903.94.44",
+  // Auto Parts <=15%
+  "9903.94.45",
+  // Auto's
+  "9903.94.50",
+  "9903.94.51",
+  // Auto Parts
+  "9903.94.52",
+  "9903.94.53",
+  // Civil Aircraft
+  "9903.02.76",
+
+  // ========== UK ==========
+  // Automobiles
+  "9903.94.31",
+  "9903.94.32",
+  // Automobile Parts of UK
+  "9903.94.33",
+  // FIXME: Where is auto parts?
+  // FIXME: Where is Civil aircraft?
+
+  // South Korea=================
+  // South Korea Auto Parts
+  "9903.94.64",
+  "9903.94.65",
+  // South Korea Automobiles
+  "9903.94.60", // >=15%
+  "9903.94.61", // <15%
+  // South Korea Auto Parts
+  "9903.94.62",
+  "9903.94.63",
+  "9903.94.64",
+  "9903.94.65",
+  // South Korea Civil Aircraft
+  "9903.02.81",
+];

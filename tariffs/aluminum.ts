@@ -27,6 +27,8 @@ export const aluminumTariffs: TariffI[] = [
       "9903.96.02",
       // EU Civil Aircraft
       "9903.02.76",
+      // South Korea Civil Aircraft
+      "9903.02.81",
       // Heavy Duty Vehicles
       "9903.74.01",
       // Buses & Similar Vehicles
@@ -277,6 +279,8 @@ export const aluminumTariffs: TariffI[] = [
       "9903.96.02",
       // EU Civil Aircraft
       "9903.02.76",
+      // South Korea Civil Aircraft
+      "9903.02.81",
       // Heavy Duty Vehicles
       "9903.74.01",
       // Buses & Similar Vehicles
@@ -520,6 +524,8 @@ export const aluminumTariffs: TariffI[] = [
       "9903.96.02",
       // EU Civil Aircraft
       "9903.02.76",
+      // South Korea Civil Aircraft
+      "9903.02.81",
       // Heavy Duty Vehicles
       "9903.74.01",
       // Buses & Similar Vehicles
@@ -1593,6 +1599,8 @@ export const aluminumTariffs: TariffI[] = [
       "9903.96.02",
       // EU Civil Aircraft
       "9903.02.76",
+      // South Korea Civil Aircraft
+      "9903.02.81",
       // Heavy Duty Vehicles
       "9903.74.01",
       // Buses & Similar Vehicles

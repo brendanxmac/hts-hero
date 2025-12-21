@@ -29,6 +29,8 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.96.02",
       // EU Civil Aircraft
       "9903.02.76",
+      // South Korea Civil Aircraft
+      "9903.02.81",
       // Heavy Duty Vehicles
       "9903.74.01",
       // Buses & Similar Vehicles
@@ -52,7 +54,7 @@ export const ironAndSteelTariffs: TariffI[] = [
     ],
     exclusions: {
       // 16(j)
-      countries: ["GB"],
+      countries: ["GB"], // this makes it so 9903.81.94 and 95 don't need to be listed as exceptions
       codes: ["7216.61.00", "7216.69.00", "7216.91.00"],
     },
     inclusions: {
@@ -120,6 +122,8 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.96.02",
       // EU Civil Aircraft
       "9903.02.76",
+      // South Korea Civil Aircraft
+      "9903.02.81",
       // Heavy Duty Vehicles
       "9903.74.01",
       // Buses & Similar Vehicles
@@ -634,6 +638,8 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.96.02",
       // EU Civil Aircraft
       "9903.02.76",
+      // South Korea Civil Aircraft
+      "9903.02.81",
       // Heavy Duty Vehicles
       "9903.74.01",
       // Buses & Similar Vehicles
@@ -722,6 +728,8 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.96.02",
       // EU Civil Aircraft
       "9903.02.76",
+      // South Korea Civil Aircraft
+      "9903.02.81",
       // Heavy Duty Vehicles
       "9903.74.01",
       // Buses & Similar Vehicles
@@ -784,6 +792,8 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.96.02",
       // EU Civil Aircraft
       "9903.02.76",
+      // South Korea Civil Aircraft
+      "9903.02.81",
       // Heavy Duty Vehicles
       "9903.74.01",
       // Buses & Similar Vehicles
@@ -996,6 +1006,8 @@ export const ironAndSteelTariffs: TariffI[] = [
       "9903.96.02",
       // EU Civil Aircraft
       "9903.02.76",
+      // South Korea Civil Aircraft
+      "9903.02.81",
       // Heavy Duty Vehicles
       "9903.74.01",
       // Buses & Similar Vehicles
