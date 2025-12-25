@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { createSupabaseClient } from "@/libs/supabase/client";
 import toast from "react-hot-toast";
 import config from "@/config";
@@ -10,7 +10,7 @@ import PasswordRequirements from "@/components/PasswordRequirements";
 import { useUser } from "../../contexts/UserContext";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
-export default function ResetPassword() {
+function ResetPasswordContent() {
   const { signOut } = useUser();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -329,5 +329,21 @@ export default function ResetPassword() {
         </form>
       </div>
     </main>
+  );
+}
+
+export default function ResetPassword() {
+  return (
+    <Suspense
+      fallback={
+        <main className="p-8 md:p-24" data-theme={config.colors.theme}>
+          <div className="flex justify-center items-center min-h-[50vh]">
+            <span className="loading loading-spinner loading-lg"></span>
+          </div>
+        </main>
+      }
+    >
+      <ResetPasswordContent />
+    </Suspense>
   );
 }
