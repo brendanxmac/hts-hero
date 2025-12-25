@@ -134,14 +134,17 @@ export const CountryTariff = ({
         : true
     );
 
-  const getFilteredBaseTariffs = () =>
-    baseTariffs.filter((t) =>
+  const getFilteredBaseTariffs = () => {
+    console.log("baseTariffs:");
+    console.log(baseTariffs);
+    return baseTariffs.filter((t) =>
       selectedSpecialProgram?.symbol !== "none"
         ? t.tariffs.some((tariff) =>
             tariff.programs?.includes(selectedSpecialProgram.symbol)
           )
         : true
     );
+  };
 
   const getTariffColumn = () => {
     if (!selectedSpecialProgram || selectedSpecialProgram.symbol === "none") {
@@ -937,8 +940,6 @@ export const CountryTariff = ({
         {tariffSets.map((tariffSet, i) => {
           const estimate = dutyEstimates[i];
           const isExpanded = expandedSets[i] ?? true;
-          console.log("tariffSets:");
-          console.log(tariffSets);
           const inactiveTariffs = tariffSet.tariffs.filter((t) => !t.isActive);
           const hasInactiveTariffs = inactiveTariffs.length > 0;
 

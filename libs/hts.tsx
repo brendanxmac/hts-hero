@@ -893,6 +893,7 @@ export function getBaseTariffs(input: string): ParsedBaseTariff {
         type: "amount",
         unit: unit1?.trim(),
         raw: trimmed,
+        programs,
       };
 
       if (unit2) {

@@ -34,6 +34,7 @@ export const HtsElementDetailsPopover = ({
   const [isTouchDevice, setIsTouchDevice] = useState(false);
   const triggerRef = useRef<HTMLSpanElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Detect touch device
   useEffect(() => {
@@ -90,6 +91,33 @@ export const HtsElementDetailsPopover = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showPopover, isTouchDevice]);
+
+  // Clean up timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleMouseEnter = useCallback(() => {
+    if (isTouchDevice) return;
+    // Cancel any pending close timeout
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+    setShowPopover(true);
+  }, [isTouchDevice]);
+
+  const handleMouseLeave = useCallback(() => {
+    if (isTouchDevice) return;
+    // Add a small delay before closing to allow mouse to move to popover
+    closeTimeoutRef.current = setTimeout(() => {
+      setShowPopover(false);
+    }, 150); // 150ms delay gives enough time to reach the popover
+  }, [isTouchDevice]);
 
   const handleTriggerClick = useCallback(() => {
     if (isTouchDevice) {
@@ -149,8 +177,8 @@ export const HtsElementDetailsPopover = ({
         boxShadow:
           "0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 12px 24px -8px rgba(0, 0, 0, 0.15)",
       }}
-      onMouseEnter={() => !isTouchDevice && setShowPopover(true)}
-      onMouseLeave={() => !isTouchDevice && setShowPopover(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <div className="flex flex-col gap-3 sm:gap-4">
         <div className="flex items-center justify-between gap-2">
@@ -215,8 +243,8 @@ export const HtsElementDetailsPopover = ({
         ref={triggerRef}
         className="inline-block"
         onClick={handleTriggerClick}
-        onMouseEnter={() => !isTouchDevice && setShowPopover(true)}
-        onMouseLeave={() => !isTouchDevice && setShowPopover(false)}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         {children}
       </span>
