@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { createSupabaseClient } from "@/libs/supabase/client";
 import toast from "react-hot-toast";
 import config from "@/config";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import PasswordRequirements from "@/components/PasswordRequirements";
 import { useUser } from "../../contexts/UserContext";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
@@ -13,29 +13,59 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 export default function ResetPassword() {
   const { signOut } = useUser();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createSupabaseClient();
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isValidToken, setIsValidToken] = useState<boolean>(false);
-  const [isCheckingToken, setIsCheckingToken] = useState<boolean>(true);
+  const [hasConfirmed, setHasConfirmed] = useState<boolean>(false);
+  const [tokenError, setTokenError] = useState<string | null>(null);
   const [canSubmit, setCanSubmit] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
     useState<boolean>(false);
 
-  useEffect(() => {
-    // Check if user has a valid session (from reset link)
-    const checkSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      setIsValidToken(!!session);
-      setIsCheckingToken(false);
-    };
+  const handleConfirmReset = async () => {
+    setIsLoading(true);
+    setTokenError(null);
 
-    checkSession();
-  }, [supabase.auth]);
+    try {
+      const token = searchParams.get("token");
+      const email = searchParams.get("email");
+
+      if (!token || !email) {
+        setTokenError(
+          "Missing token or email. Please use the link from your email."
+        );
+        setHasConfirmed(true);
+        setIsLoading(false);
+        return;
+      }
+
+      const { error } = await supabase.auth.verifyOtp({
+        email,
+        token,
+        type: "recovery",
+      });
+
+      if (error) {
+        setTokenError(error.message);
+        setIsValidToken(false);
+      } else {
+        setIsValidToken(true);
+      }
+    } catch (error) {
+      console.error(error);
+      setTokenError(
+        "An error occurred while verifying the reset link. Please try again."
+      );
+      setIsValidToken(false);
+    } finally {
+      setHasConfirmed(true);
+      setIsLoading(false);
+    }
+  };
 
   const handleValidationChange = (
     isPasswordValid: boolean,
@@ -77,17 +107,64 @@ export default function ResetPassword() {
     }
   };
 
-  if (isCheckingToken) {
+  // Step 1: Show confirmation button before verifying token
+  if (!hasConfirmed) {
     return (
       <main className="p-8 md:p-24" data-theme={config.colors.theme}>
-        <div className="flex justify-center items-center min-h-[50vh]">
-          <span className="loading loading-spinner loading-lg"></span>
+        <div className="text-center mb-4">
+          <Link href="/" className="btn btn-ghost btn-sm">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="w-5 h-5"
+            >
+              <path
+                fillRule="evenodd"
+                d="M15 10a.75.75 0 01-.75.75H7.612l2.158 1.96a.75.75 0 11-1.04 1.08l-3.5-3.25a.75.75 0 010-1.08l3.5-3.25a.75.75 0 111.04 1.08L7.612 9.25h6.638A.75.75 0 0115 10z"
+                clipRule="evenodd"
+              />
+            </svg>
+            Home
+          </Link>
+        </div>
+        <div className="max-w-xl mx-auto text-center space-y-6">
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
+            Password Reset Confirmation
+          </h1>
+          <p className="text-base-content/70">
+            Click the button below to confirm you want to reset your password.
+          </p>
+          <button
+            className="btn btn-primary btn-lg"
+            onClick={handleConfirmReset}
+            disabled={isLoading}
+          >
+            {isLoading && (
+              <span className="loading loading-spinner loading-xs"></span>
+            )}
+            Continue to Reset Password
+          </button>
+          <div>
+            <button
+              className="btn btn-link btn-sm"
+              onClick={async () => {
+                setIsLoading(true);
+                await signOut();
+                router.push("/signin");
+              }}
+              disabled={isLoading}
+            >
+              Back to Sign In
+            </button>
+          </div>
         </div>
       </main>
     );
   }
 
-  if (!isValidToken) {
+  // Step 2: Show error if token validation failed
+  if (hasConfirmed && (!isValidToken || tokenError)) {
     return (
       <main className="p-8 md:p-24" data-theme={config.colors.theme}>
         <div className="text-center mb-4">
@@ -112,8 +189,8 @@ export default function ResetPassword() {
             Invalid or Expired Link
           </h1>
           <p className="text-base-content/70">
-            This password reset link is invalid or has expired. Please request a
-            new password reset link.
+            {tokenError ||
+              "This password reset link is invalid or has expired. Please request a new password reset link."}
           </p>
           <button
             className="btn btn-link btn-sm"
