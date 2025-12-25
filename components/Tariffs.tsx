@@ -301,6 +301,19 @@ export const Tariffs = ({
     };
   }, []);
 
+  // Sync selectedCountry with the countries array when it updates
+  // This ensures the modal shows updated data when trade program changes
+  useEffect(() => {
+    if (selectedCountry && isModalOpen) {
+      const updatedCountry = countries.find(
+        (c) => c.code === selectedCountry.code
+      );
+      if (updatedCountry) {
+        setSelectedCountry(updatedCountry);
+      }
+    }
+  }, [countries]);
+
   return (
     <>
       {isModalOpen && selectedCountry && (
