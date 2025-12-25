@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, ReactNode } from "react";
 import { HtsElement } from "../interfaces/hts";
-import { getHtsData } from "../libs/hts";
+import { getHtsData, getCachedHtsData } from "../libs/hts";
 
 interface HtsContextType {
   htsElements: HtsElement[];
@@ -21,6 +21,17 @@ export const HtsProvider = ({ children }: { children: ReactNode }) => {
   const fetchElements = async (revision: string) => {
     setIsFetching(true);
     try {
+      // For "latest" revision, check localStorage cache first
+      if (revision === "latest") {
+        const cached = getCachedHtsData();
+        if (cached) {
+          setHtsElements(cached.data);
+          setRevision(cached.revisionName);
+          return;
+        }
+      }
+
+      // Cache miss or specific revision - fetch from network
       const { data: elements, revisionName } = await getHtsData(revision);
       setHtsElements(elements);
       setRevision(revisionName);

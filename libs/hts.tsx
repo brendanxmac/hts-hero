@@ -626,6 +626,99 @@ export const getHtsSectionsAndChapters = (): Promise<{
   return apiClient.get("/hts/get-sections-and-chapters", {});
 };
 
+const HTS_CACHE_KEY = "hts-latest-cache";
+const HTS_CACHE_REVISION_KEY = "hts-latest-cache-revision";
+const HTS_CACHE_TIMESTAMP_KEY = "hts-latest-cache-timestamp";
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+// Helper to convert ArrayBuffer to base64 string for localStorage
+const arrayBufferToBase64 = (buffer: ArrayBuffer): string => {
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+};
+
+// Helper to convert base64 string back to Uint8Array
+const base64ToUint8Array = (base64: string): Uint8Array => {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+};
+
+// Get cached HTS data from localStorage (only for latest revision)
+export const getCachedHtsData = (): {
+  data: HtsElement[];
+  revisionName: string;
+} | null => {
+  try {
+    if (typeof window === "undefined") return null;
+
+    const cachedRevision = localStorage.getItem(HTS_CACHE_REVISION_KEY);
+    const cachedData = localStorage.getItem(HTS_CACHE_KEY);
+    const cachedTimestamp = localStorage.getItem(HTS_CACHE_TIMESTAMP_KEY);
+
+    if (!cachedRevision || !cachedData || !cachedTimestamp) return null;
+
+    // Check if cache has expired (older than 24 hours)
+    const cacheAge = Date.now() - parseInt(cachedTimestamp, 10);
+    if (cacheAge > CACHE_TTL_MS) {
+      clearHtsCache();
+      return null;
+    }
+
+    // Decompress the cached data
+    const compressedBytes = base64ToUint8Array(cachedData);
+    const decompressedData = inflate(compressedBytes, { to: "string" });
+
+    return {
+      data: JSON.parse(decompressedData),
+      revisionName: cachedRevision,
+    };
+  } catch (e) {
+    console.error("Error reading HTS cache:", e);
+    // Clear corrupted cache
+    clearHtsCache();
+    return null;
+  }
+};
+
+// Cache HTS data to localStorage
+export const cacheHtsData = (
+  compressedData: ArrayBuffer,
+  revisionName: string
+): void => {
+  try {
+    if (typeof window === "undefined") return;
+
+    const base64Data = arrayBufferToBase64(compressedData);
+    localStorage.setItem(HTS_CACHE_KEY, base64Data);
+    localStorage.setItem(HTS_CACHE_REVISION_KEY, revisionName);
+    localStorage.setItem(HTS_CACHE_TIMESTAMP_KEY, Date.now().toString());
+  } catch (e) {
+    console.error("Error caching HTS data:", e);
+    // If storage is full, clear and don't cache
+    clearHtsCache();
+  }
+};
+
+// Clear HTS cache from localStorage
+export const clearHtsCache = (): void => {
+  try {
+    if (typeof window === "undefined") return;
+    localStorage.removeItem(HTS_CACHE_KEY);
+    localStorage.removeItem(HTS_CACHE_REVISION_KEY);
+    localStorage.removeItem(HTS_CACHE_TIMESTAMP_KEY);
+  } catch (e) {
+    console.error("Error clearing HTS cache:", e);
+  }
+};
+
 export const getHtsData = async (
   revision: string
 ): Promise<{ data: HtsElement[]; revisionName: string }> => {
@@ -641,6 +734,12 @@ export const getHtsData = async (
   // Convert Blob to ArrayBuffer and decompress the gzipped JSON
   const htsData = await response.blob();
   const arrayBuffer = await htsData.arrayBuffer();
+
+  // Cache the compressed data for the latest revision
+  if (revision === "latest") {
+    cacheHtsData(arrayBuffer, revisionName);
+  }
+
   const decompressedData = inflate(new Uint8Array(arrayBuffer), {
     to: "string",
   });

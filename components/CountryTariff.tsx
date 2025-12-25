@@ -135,8 +135,6 @@ export const CountryTariff = ({
     );
 
   const getFilteredBaseTariffs = () => {
-    console.log("baseTariffs:");
-    console.log(baseTariffs);
     return baseTariffs.filter((t) =>
       selectedSpecialProgram?.symbol !== "none"
         ? t.tariffs.some((tariff) =>

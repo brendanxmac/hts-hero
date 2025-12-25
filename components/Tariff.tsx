@@ -167,6 +167,9 @@ export const Tariff = ({
                 href={`/explore?code=${tariff.code}`}
                 target="_blank"
                 className="link link-primary font-bold text-sm sm:text-base transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
               >
                 {tariff.code}
               </Link>
