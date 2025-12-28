@@ -211,7 +211,8 @@ Imports under these provisions require import licenses, in accordance with terms
 
 Imports under these provisions require import licenses, in accordance with terms and conditions provided in regulations issued by the Secretary of Agriculture, subject to the approval of the United States Trade Representative (USTR). The regulations may provide for the reallocation among supplying countries or areas of unfilled quantities, subject to USTR approval.
 
-18. (a) The aggregate quantity of Cheddar cheese and cheese and substitutes for cheese containing, or processed from Cheddar cheese, the foregoing goods entered under subheadings 0406.10.24, 0406.20.31, 0406.20.65, 0406.30.24, 0406.30.65, 0406.90.08 and 0406.90.76 in any calendar year shall not exceed the quantities specified in this note (articles the product of Mexico shall not be permitted or included under the aforementioned quantitative limitation and no such articles shall be classifiable therein).
+18.
+(a) The aggregate quantity of Cheddar cheese and cheese and substitutes for cheese containing, or processed from Cheddar cheese, the foregoing goods entered under subheadings 0406.10.24, 0406.20.31, 0406.20.65, 0406.30.24, 0406.30.65, 0406.90.08 and 0406.90.76 in any calendar year shall not exceed the quantities specified in this note (articles the product of Mexico shall not be permitted or included under the aforementioned quantitative limitation and no such articles shall be classifiable therein).
 
 |                          | Quantity<br>(kg) |
 | ------------------------ | ---------------- |
@@ -324,7 +325,8 @@ Imports under these provisions require import licenses, in accordance with terms
 
 ### Additional U.S. Notes:
 
-1. (a) Except as provided in paragraphs (b) and (c) of this note, the importation of the feathers or skin of any bird is hereby prohibited. Such prohibition shall apply to the feathers or skin of any bird:
+1.
+(a) Except as provided in paragraphs (b) and (c) of this note, the importation of the feathers or skin of any bird is hereby prohibited. Such prohibition shall apply to the feathers or skin of any bird:
    (i) Whether raw or processed;
    (ii) Whether the whole plumage or skin or any part of either;
    (iii) Whether or not attached to a whole bird or any part thereof; and
@@ -463,7 +465,8 @@ Australia, Canada, Chile, Costa Rica, Dominican Republic, El Salvador, Guatemala
 
 ### Notes
 
-1. (a) The products specified in the headings of this chapter are to be classified in those headings only if grains are present, whether or not in the ear or on the stalk.
+1.
+(a) The products specified in the headings of this chapter are to be classified in those headings only if grains are present, whether or not in the ear or on the stalk.
    (b) This chapter does not cover grains which have been hulled or otherwise worked. However, rice, husked, milled, polished, glazed, parboiled, or broken remains classified in heading 1006. Similarly, quinoa from which the pericarp has been wholly or partly removed in order to separate the saponin, but which has not undergone any other processes, remains classified in heading 1008.
 
 2. Heading 1005 does not cover sweet corn (chapter 7).
@@ -494,7 +497,8 @@ Australia, Canada, Chile, Costa Rica, Dominican Republic, El Salvador, Guatemala
    (e) Pharmaceutical products (chapter 30); or
    (f) Starches having the character of perfumery, cosmetic or toilet preparations (chapter 33).
 
-2. (A) Products from the milling of the cereals listed in the table below fall within this chapter if they have, by weight on the dry product:
+2.
+(A) Products from the milling of the cereals listed in the table below fall within this chapter if they have, by weight on the dry product:
    (a) A starch content (determined by the modified Ewers polarimetric method) exceeding that indicated in column (2); and
    (b) An ash content (after deduction of any added minerals) not exceeding that indicated in column (3).
 
@@ -698,7 +702,8 @@ Imports of peanuts under this note are subject to such regulations as may be iss
 2. For the purposes of this schedule, the term "articles containing over 65 percent by dry weight of sugar described in additional U.S. note 2 to chapter 17" means articles containing over 65 percent by dry weight of sugars derived from sugar cane or sugar beets, whether or not mixed with other ingredients, capable of being further processed or mixed with similar or other ingredients, and not prepared for marketing to the ultimate consumer in the identical form and package in which imported.
 3. For the purposes of this schedule, the term "articles containing over 10 percent by dry weight of sugar described in additional U.S. note 3 to chapter 17" means articles containing over 10 percent by dry weight of sugars derived from sugar cane or sugar beets, whether or not mixed with other ingredients, except (a) articles not principally of crystalline structure or not in dry amorphous form, the foregoing that are prepared for marketing to the ultimate consumer in the identical form and package in which imported; (b) blended syrups containing sugars derived from sugar cane or sugar beets, capable of being further processed or mixed with similar or other ingredients, and not prepared for marketing to the ultimate consumer in the identical form and package in which imported; (c) articles containing over 65 percent by dry weight of sugars derived from sugar cane or sugar beets, whether or not mixed with other ingredients, capable of being further processed or mixed with similar or other ingredients, and not prepared for marketing to the ultimate consumer in the identical form and package in which imported; or (d) cake decorations and similar products to be used in the same condition as imported without any further processing other than the direct application to individual pastries or confections, finely ground or masticated coconut meat or juice thereof mixed with those sugars, and sauces and preparations therefor.
 4. For the purposes of this schedule, the term "blended syrups described in additional U.S. note 4 to chapter 17" means blended syrups containing sugars derived from sugar cane or sugar beets, capable of being further processed or mixed with similar or other ingredients, and not prepared for marketing to the ultimate consumer in the identical form and package in which imported.
-5. (a):
+5.
+(a):
    (i) The aggregate quantity of raw cane sugar entered, or withdrawn from warehouse for consumption, under subheading 1701.13.10 and 1701.14.10 during any fiscal year, shall not exceed in the aggregate an amount (expressed in terms of raw value), not less than 1,117,195 metric tons, as shall be established by the Secretary of Agriculture (hereinafter referred to as "the Secretary"), and the aggregate quantity of sugars, syrups and molasses entered, or withdrawn from warehouse for consumption, under subheadings 1701.12.10, 1701.91.10, 1701.99.10, 1702.90.10 and 2106.90.44 (under the terms of subheadings 9903.17.01 through 9903.18.10 and applicable note thereto), during any fiscal year, shall not exceed in the aggregate an amount (expressed in terms of raw value), not less than 22,000 metric tons, as shall be established by the Secretary. With either the aggregate quantity for raw cane sugar or the aggregate quantity for sugars, syrups and molasses other than raw cane sugar, the Secretary may reserve a quota quantity for the importation of specialty sugars as defined by the United States Trade Representative.
    (ii) Whenever the Secretary believes that domestic supplies of sugars may be inadequate to meet domestic demand at reasonable prices, the Secretary may modify any quantitative limitations which have previously been established under this note but may not reduce the total amounts below the amounts provided for in subdivision (i) hereof.
    (iii) The Secretary shall inform the Secretary of the Treasury of any determination made under this note. Notice of such determinations shall be published in the Federal Register.
@@ -1049,7 +1054,8 @@ Of the quantitative limitations provided for in this note, the countries listed 
 2. The percentage of wrapper tobacco in a bale, box, package or other shipping unit is the ratio of the number of leaves of wrapper tobacco in such unit to the total number of leaves therein. In determining such percentage for classification purposes, the district director of customs shall examine at least 10 hands, and shall count the leaves in at least 2 hands, from each shipping unit designated for examination.
 3. The dutiable weight of cigars and cigarettes includes the weight of all materials which are integral parts thereof.
 4. Certain samples of tobacco products provided for in this chapter are entitled to duty-free treatment (chapter 98).
-5. (a) The aggregate quantity of tobacco entered, or withdrawn from warehouse, for consumption under subheadings 2401.10.63, 2401.20.33, 2401.20.85, 2401.30.33, 2401.30.35, 2401.30.37, 2403.19.60, 2403.91.45 and 2403.99.60 during the period from September 13 in any year to the following September 12, inclusive, shall not exceed the quantities specified below.
+5.
+(a) The aggregate quantity of tobacco entered, or withdrawn from warehouse, for consumption under subheadings 2401.10.63, 2401.20.33, 2401.20.85, 2401.30.33, 2401.30.35, 2401.30.37, 2403.19.60, 2403.91.45 and 2403.99.60 during the period from September 13 in any year to the following September 12, inclusive, shall not exceed the quantities specified below.
 
 |                                                                                                                                                                                                 | Quantity<br>(metric<br>tons) |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
@@ -1189,7 +1195,8 @@ However, the references do not include liquid synthetic polyolefins of which les
 
 ### Additional U.S. Notes
 
-1. (a) Crude petroleum oils, crude oils obtained from bituminous minerals and reconstituted crude petroleum shall, if products of Canada, be admitted free of duty and any entry therefor shall be liquidated or reliquated accordingly if, on or before the 180th day after the date of entry, documentation is filed with the customs officer concerned establishing that, pursuant to a commercial exchange agreement between the United States and Canadian refiners which has been approved by the Secretary of Energy:
+1.
+(a) Crude petroleum oils, crude oils obtained from bituminous minerals and reconstituted crude petroleum shall, if products of Canada, be admitted free of duty and any entry therefor shall be liquidated or reliquated accordingly if, on or before the 180th day after the date of entry, documentation is filed with the customs officer concerned establishing that, pursuant to a commercial exchange agreement between the United States and Canadian refiners which has been approved by the Secretary of Energy:
    (i) An import license for the products covered by such entry has been issued by the Secretary; and
    (ii) An equivalent amount of domestic or duty-paid foreign crude petroleum oils, crude oils obtained from bituminous minerals or reconstituted crude petroleum have, pursuant to such commercial exchange agreement and to an export license issued by the Secretary of Commerce, been exported from the United States to Canada and have not previously been used to effect the duty-free entry of like Canadian products under this U.S. note.
 
@@ -1225,7 +1232,8 @@ However, the references do not include liquid synthetic polyolefins of which les
 
 ### Notes
 
-1. (a) Goods (other than radioactive ores) answering to a description in heading 2844 or 2845 are to be classified in those headings and in no other heading of the tariff schedule.
+1.
+(a) Goods (other than radioactive ores) answering to a description in heading 2844 or 2845 are to be classified in those headings and in no other heading of the tariff schedule.
    (b) Subject to paragraph (a) above, goods answering to a description in heading 2843, 2846 or 2852 are to be classified in those headings and in no other heading of this section.
 
 2. Subject to note 1 above, goods classifiable in heading 3004, 3005, 3006, 3212, 3303, 3304, 3305, 3306, 3307, 3506, 3707 or 3808 by reason of being put up in measured doses or for retail sale are to be classified in those headings and in no other heading of the tariff schedule.
@@ -1343,7 +1351,8 @@ Nitro or nitroso groups are not to be taken as "nitrogen-functions" for the purp
 
 For the purposes of headings 2911, 2912, 2914, 2918 and 2922, "oxygen function", the characteristic organic oxygen-containing group of those respective headings, is restricted to the oxygen-functions referred to in headings 2905 to 2920.
 
-5. (A) The esters of acid-function organic compounds of subchapters I to VII with organic compounds of these subchapters are to be classified with that compound which is classified in the heading placed last in numerical order in these subchapters.
+5.
+(A) The esters of acid-function organic compounds of subchapters I to VII with organic compounds of these subchapters are to be classified with that compound which is classified in the heading placed last in numerical order in these subchapters.
 
 (B) Esters of ethyl alcohol with acid-function organic compounds of subchapters I to VII are to be classified in the same heading as the corresponding acid-function compounds.
 
@@ -1610,7 +1619,8 @@ Such products with a reducing sugar content exceeding 10 percent fall in heading
 
    (f) Spent catalysts of a kind used for the extraction of base metals or for the manufacture of chemical compounds of base metals, spent catalysts of a kind used principally for the recovery of precious metal (heading 7112) or catalysts consisting of metals or metal alloys in the form of, for example, finely divided powder or woven gauze (section XIV or XV).
 
-2. (a) For the purposes of heading 3822, the expression "certified reference materials" means reference materials which are accompanied by a certificate which indicates the values of the certified properties, the methods used to determine these values and the degree of certainty associated with each value and which are suitable for analytical, calibrating or referencing purposes.
+2.
+(a) For the purposes of heading 3822, the expression "certified reference materials" means reference materials which are accompanied by a certificate which indicates the values of the certified properties, the methods used to determine these values and the degree of certainty associated with each value and which are suitable for analytical, calibrating or referencing purposes.
    (b) With the exception of the products of chapter 28 or 29, for the classification of certified reference materials, heading 3822 shall take precedence over any other heading in the tariff schedule.
 
 3. Heading 3824 includes the following goods which are not to be classified in any other heading of the tariff schedule:
@@ -1796,7 +1806,8 @@ Polymer blends are to be classified in the same subheading as polymers of the sa
    (a) Unsaturated synthetic substances which can be irreversibly transformed by vulcanization with sulfur into non-thermoplastic substances which, at a temperature between 18°C and 29°C, will not break on being extended to three times their original length and will return, after being extended to twice their original length, within a period of 5 minutes, to a length not greater than 1-1/2 times their original length. For the purposes of this test, substances necessary for the cross-linking, such as vulcanizing activators or accelerators, may be added; the presence of substances as provided for by note 5(b)(ii) and (iii) is also permitted. However, the presence of any substances not necessary for the cross-linking, such as extenders, plasticizers and fillers, is not permitted;
    (b) Thioplasts (TM); and
    (c) Natural rubber modified by grafting or mixing with plastics, depolymerized natural rubber, mixtures of unsaturated synthetic substances with saturated synthetic high polymers provided that all the above-mentioned products comply with the requirements concerning vulcanization, elongation and recovery in (a) above.
-5. (a) Headings 4001 and 4002 do not apply to any rubber or mixture of rubbers which has been compounded, before or after coagulation, with:
+5.
+(a) Headings 4001 and 4002 do not apply to any rubber or mixture of rubbers which has been compounded, before or after coagulation, with:
    (i) Vulcanizing agents, accelerators, retarders or activators (other than those added for the preparation of prevulcanized rubber latex);
    (ii) Pigments or other coloring matter other than those added solely for the purpose of identification;
    (iii) Plasticizers or extenders (except mineral oil in the case of oil-extended rubber), fillers, reinforcing agents, organic solvents or any other substances, except those permitted under (b);
@@ -1836,7 +1847,8 @@ In heading 4008 the expressions "rods" and "profile shapes" apply only to such p
    (a) Parings or similar waste, of raw hides or skins (heading 0511);
    (b) Birdskins or parts of birdskins, with their feathers or down, of heading 0505 or 6701; or
    (c) Hides or skins, with the hair or wool on, raw, tanned or dressed (chapter 43); the following are, however, to be classified in chapter 41, namely, raw hides and skins with the hair or wool on, of bovine animals (including buffalo), of equine animals, of sheep or lambs (except Astrakhan, Broadtail, Caracul, Persian or similar lambs, Indian, Chinese, Mongolian or Tibetan lambs), of goats or kids (except Yemen, Mongolian or Tibetan goats and kids), of swine (including peccary), of chamois, of gazelle, of camels (including dromedaries), of reindeer, of elk, of deer, of roebucks or of dogs.
-2. (a) Headings 4104 to 4106 do not cover hides and skins which have undergone a tanning (including pre-tanning) process which is reversible (headings 4101 to 4103, as the case may be).
+2.
+(a) Headings 4104 to 4106 do not cover hides and skins which have undergone a tanning (including pre-tanning) process which is reversible (headings 4101 to 4103, as the case may be).
    (b) For the purposes of headings 4104 to 4106, the term "crust" includes hides and skins that have been retanned, colored or fat-liquored (stuffed) prior to drying.
 3. Throughout the tariff schedule the expression "composition leather" means only substances of the kind referred to in heading 4115.
 
@@ -1864,7 +1876,8 @@ In heading 4008 the expressions "rods" and "profile shapes" apply only to such p
    (k) Articles of chapter 94 (for example, furniture, luminaires and lighting fittings);
    (l) Articles of chapter 95 (for example, toys, games, sports equipment); or
    (m) Buttons, press-fasteners, snap-fasteners, press-studs, button molds or other parts of these articles, button blanks, of heading 9606.
-3. (A) In addition to the provisions of note 2, above, heading 4202 does not cover:
+3.
+(A) In addition to the provisions of note 2, above, heading 4202 does not cover:
    (a) Bags made of sheeting of plastics, whether or not printed, with handles, not designed for prolonged use (heading 3923);
    (a) Articles of plaiting materials (heading 4602).
    (B) Articles of headings 4202 and 4203 which have parts of precious metal or metal clad with precious metal, of natural or cultured pearls, of precious or semiprecious stones (natural, synthetic or reconstructed) remain classified in those headings even if such parts constitute more than minor fittings or minor ornamentation, provided that these parts do not give the articles their essential character. If, on the other hand, the parts give the articles their essential character, the articles are to be classified in chapter 71.
@@ -2215,7 +2228,8 @@ Color and Finish: White; or tinted shades of pink, peach or green in rolls; not 
    (u) Articles of Chapter 96 (for example, brushes, travel sets for sewing, slide fasteners, typewriter ribbons, sanitary pads (towels) and tampons, diapers (napkins) and diaper liners); or
    (v) Articles of chapter 97.
 
-2. (A) Goods classifiable in chapters 50 to 55 or in heading 5809 or 5902 and of a mixture of two or more textile materials are to be classified as if consisting wholly of that one textile material which predominates by weight over each other single textile material.
+2.
+(A) Goods classifiable in chapters 50 to 55 or in heading 5809 or 5902 and of a mixture of two or more textile materials are to be classified as if consisting wholly of that one textile material which predominates by weight over each other single textile material.
 
 When no one textile material predominates by weight, the goods are to be classified as if consisting wholly of that one textile material which is covered by the heading which occurs last in numerical order among those which equally merit consideration.
 
@@ -2227,7 +2241,8 @@ When no one textile material predominates by weight, the goods are to be classif
 
 (C) The provisions of paragraphs (A) and (B) above apply also to the yarns referred to in notes 3, 4, 5 or 6 below.
 
-3. (A) For the purposes of this section, and subject to the exceptions in paragraph (B) below, yarns (single, multiple (folded) or cabled) of the following descriptions are to be treated as "twine, cordage, ropes and cables":
+3.
+(A) For the purposes of this section, and subject to the exceptions in paragraph (B) below, yarns (single, multiple (folded) or cabled) of the following descriptions are to be treated as "twine, cordage, ropes and cables":
    (a) Of silk or waste silk, measuring more than 20,000 decitex;
    (b) Of man-made fibers (including yarn of two or more monofilaments of chapter 54), measuring more than 10,000 decitex;
    (c) Of true hemp or flax:
@@ -2245,7 +2260,8 @@ When no one textile material predominates by weight, the goods are to be classif
 (d) Metalized yarn of heading 5605; yarn reinforced with metal thread is subject to paragraph (A)(f) above; and
 (e) Chenille yarn, gimped yarn and loop wale-yarn of heading 5606.
 
-4. (A) For the purposes of chapters 50, 51, 52, 54 and 55, the expression "put up for retail sale" in relation to yarn means, subject to the exceptions in paragraph (B) below, yarn (single, multiple (folded) or cabled) put up:
+4.
+(A) For the purposes of chapters 50, 51, 52, 54 and 55, the expression "put up for retail sale" in relation to yarn means, subject to the exceptions in paragraph (B) below, yarn (single, multiple (folded) or cabled) put up:
    (a) On cards, reels, tubes or similar supports, of a weight (including support) not exceeding:
    (i) 85 g in the case of silk, waste silk or man-made filament yarn; or
    (ii) 125 g in other cases;
@@ -2394,7 +2410,8 @@ A fabric construction in which each yarn of the weft passes alternately over and
 
 The definitions at (d) to (h) above apply, _mutatis mutandis_, to knitted or crocheted fabrics.
 
-2. (A) Products of chapters 56 to 63 containing two or more textile materials are to be regarded as consisting wholly of that textile material which would be selected under note 2 to this section for the classification of a product of chapters 50 to 55 or of heading 5809 consisting of the same textile materials.
+2.
+(A) Products of chapters 56 to 63 containing two or more textile materials are to be regarded as consisting wholly of that textile material which would be selected under note 2 to this section for the classification of a product of chapters 50 to 55 or of heading 5809 consisting of the same textile materials.
 
 (B) For the application of this rule:
 
@@ -2447,7 +2464,8 @@ For the application of this note, where appropriate, only the part of the produc
    (a) The term "clean kg" in the rate columns means kilogram of clean yield;
    (b) The term "clean yield," except for purposes of carbonized fibers, means the absolute clean content (i.e., all that portion of the merchandise which consists exclusively of wool or hair free of all vegetable and other foreign material, containing by weight 12 percent of moisture and 1.5 percent of material removable from the wool or hair by extraction with alcohol, and having an ash content of not over 0.5 percent by weight), less an allowance, equal by weight to 0.5 percent of the absolute clean content plus 60 percent of the vegetable matter present, but not exceeding 15 percent by weight of the absolute clean content, for wool or hair that would ordinarily be lost during commercial cleaning operations;
    (c) For purposes of carbonized fibers, the term "clean yield" means in the condition as entered;
-   (d) (i) The term "wool for special uses" means unimproved wool and other wool of whatever blood or origin not finer than 46s entered by a dealer, manufacturer or processor, and certified for use only in the manufacture of felt or knit boots, floor coverings, heavy fulled lumbermen's socks, press cloth, papermakers' felts or pressed felt for polishing plate and mirror glass;
+   (d)
+   (i) The term "wool for special uses" means unimproved wool and other wool of whatever blood or origin not finer than 46s entered by a dealer, manufacturer or processor, and certified for use only in the manufacture of felt or knit boots, floor coverings, heavy fulled lumbermen's socks, press cloth, papermakers' felts or pressed felt for polishing plate and mirror glass;
    (ii) Wool for special uses shall not be released from customs custody unless the dealer, manufacturer or processor files a bond to insure that any wool entered as wool for special uses shall be used only (except as provided below) in the manufacture of the articles enumerated in subparagraph (i) above;
    (iii) A dealer, manufacturer or processor may be relieved of liability under his or her bond with respect to any wool entered as wool for special uses which is transferred in its imported or any other form to another dealer, manufacturer or processor who has filed a bond to insure that the merchandise so transferred shall be used only (except as provided below) in the manufacture of the articles enumerated in subparagraph (i) above;
    (iv) When wool entered as wool for special uses is used, or transferred for use, otherwise than in the manufacture of the articles enumerated in subparagraph (i) above:
@@ -3150,7 +3168,8 @@ Garments which cannot be identified as either men's or boys' garments or as wome
 
 2. For the purposes of subheadings 6201.30.40, 6201.30.70, 6201.40.45, 6201.40.70, 6202.30.40, 6202.30.70, 6202.40.45, 6202.40.70, 6203.41.01, 6203.41.25, 6203.43.03, 6203.43.11, 6203.43.55, 6203.43.75, 6204.61.05, 6204.61.60, 6204.63.02, 6204.63.09, 6204.63.55, 6204.63.75 and 6211.20.15, the term "water resistant" means that garments classifiable in those subheadings must have a water resistance (see current version of ASTM D7017) such that, under a head pressure of 600 millimeters, not more than 1.0 gram of water penetrates after two minutes when tested in accordance with the current version of AATCC Test Method 35. This water resistance must be the result of a rubber or plastics application to the outer shell, lining or inner lining.
 
-3. (a) When used in a subheading of this chapter or immediate superior text thereto, the term 'recreational performance outerwear' means trousers (including, but not limited to, ski or snowboard pants, and ski or snowboard pants intended for sale as parts of ski-suits), coveralls, bib and brace overalls, jackets (including, but not limited to, full zip jackets, ski jackets and ski jackets intended for sale as parts of ski-suits), windbreakers and similar articles (including padded, sleeveless jackets), the foregoing of fabrics of cotton, wool, hemp, bamboo, silk or manmade fibers, or a combination of such fibers; that are either water resistant within the meaning of additional U.S. note 2 to this chapter or treated with plastics, or both; with critically sealed seams, and with 5 or more of the following features (as further provided herein):
+3.
+(a) When used in a subheading of this chapter or immediate superior text thereto, the term 'recreational performance outerwear' means trousers (including, but not limited to, ski or snowboard pants, and ski or snowboard pants intended for sale as parts of ski-suits), coveralls, bib and brace overalls, jackets (including, but not limited to, full zip jackets, ski jackets and ski jackets intended for sale as parts of ski-suits), windbreakers and similar articles (including padded, sleeveless jackets), the foregoing of fabrics of cotton, wool, hemp, bamboo, silk or manmade fibers, or a combination of such fibers; that are either water resistant within the meaning of additional U.S. note 2 to this chapter or treated with plastics, or both; with critically sealed seams, and with 5 or more of the following features (as further provided herein):
    (i) insulated for cold weather protection;
    (ii) pockets, at least one of which has a zippered, hook and loop, or other type of closure;
    (iii) elastic, draw cord or other means of tightening around the waist or leg hems, including hidden leg sleeves with a means of tightening at the ankle for trousers and tightening around the waist or bottom hem for jackets;
@@ -3520,7 +3539,8 @@ If either soups or fruits are not sold or offered for sale, 12 cereals of the si
 
 (b) Of precious metal or of metal clad with precious metal, are to be classified in this chapter.
 
-2. (a) Headings 7113, 7114 and 7115 do not cover articles in which precious metal or metal clad with precious metal is present as minor constituents only, such as minor fittings or minor ornamentation (for example, monograms, ferrules and rims), and paragraph (b) of the foregoing note does not apply to such articles.
+2.
+(a) Headings 7113, 7114 and 7115 do not cover articles in which precious metal or metal clad with precious metal is present as minor constituents only, such as minor fittings or minor ornamentation (for example, monograms, ferrules and rims), and paragraph (b) of the foregoing note does not apply to such articles.
 
 (b) Heading 7116 does not cover articles containing precious metal or metal clad with precious metal (other than as minor constituents).
 
@@ -3556,7 +3576,8 @@ If either soups or fruits are not sold or offered for sale, 12 cereals of the si
 
 (p) Original sculptures or statuary (heading 9703), collectors' pieces (heading 9705) or antiques of an age exceeding one hundred years (heading 9706), other than natural or cultured pearls or precious or semiprecious stones.
 
-4. (a) The expression "precious metal" means silver, gold and platinum.
+4.
+(a) The expression "precious metal" means silver, gold and platinum.
 
 (b) The expression "platinum" means platinum, iridium, osmium, palladium, rhodium and ruthenium.
 
@@ -3605,7 +3626,8 @@ These articles may be combined or set, for example, with natural or cultured pea
 
 2. Coin provided for in heading 7118 which is currently in circulation in any country and is imported for monetary purposes shall be admitted without formal customs consumption entry or the payment of duty. This does not affect any requirements under other provisions of law to the effect that transfers of coin into or through the United States, in an amount exceeding \$10,000 on any one occasion, shall be reported as described therein.
 
-3. (a) Notwithstanding any provision in additional U.S. note 5 to chapter 91, any article of jewelry provided for in heading 7113 which is the product of the Virgin Islands, Guam, or American Samoa (including any such article which contains any foreign component) shall be eligible for the benefits provided in paragraph (h) of additional U.S. note 5 to chapter 91, subject to the provisions and limitations of that note and of paragraphs (b), (c), and (d) of this note.
+3.
+(a) Notwithstanding any provision in additional U.S. note 5 to chapter 91, any article of jewelry provided for in heading 7113 which is the product of the Virgin Islands, Guam, or American Samoa (including any such article which contains any foreign component) shall be eligible for the benefits provided in paragraph (h) of additional U.S. note 5 to chapter 91, subject to the provisions and limitations of that note and of paragraphs (b), (c), and (d) of this note.
 
 (b) Notwithstanding additional U.S. Note 5(h)(ii)(B) to chapter 91, articles of jewelry subject to this note shall be subject to a limitation of 10,000,000 units.
 
@@ -4012,7 +4034,8 @@ Shredded clippings (ISRI number 212); and shredded automobile scrap (ISRI number
 
 Billet, bloom and forge crops (ISRI number 229); bar crops, punchings and plate scrap (ISRI numbers 230 and 234); plate and structural (ISRI numbers 231, 232, 236, 237 and 238); chargeable ingots and ingot butts (ISRI number 241); and chargeable slab crops (ISRI number 249).
 
-4. (a) "Advanced" high strength steel refers to flat-rolled products of a thickness of less than 3 mm that meet the definition of high-strength steel in Additional U.S. Note 1(a) to chapter 72 and have a minimum tensile strength of 590 MPa or more but less than 980 MPa. "Ultra" high-strength steel refers to flat-rolled products of a thickness of less than 3 mm that meet the definition of high-strength steel in Additional U.S. Note 1(a) to chapter 72 and have a minimum tensile strength of 980 MPa or more.
+4.
+(a) "Advanced" high strength steel refers to flat-rolled products of a thickness of less than 3 mm that meet the definition of high-strength steel in Additional U.S. Note 1(a) to chapter 72 and have a minimum tensile strength of 590 MPa or more but less than 980 MPa. "Ultra" high-strength steel refers to flat-rolled products of a thickness of less than 3 mm that meet the definition of high-strength steel in Additional U.S. Note 1(a) to chapter 72 and have a minimum tensile strength of 980 MPa or more.
 
 (b) "Other" high-strength steel refers to flat-rolled products of a thickness of less than 3 mm that meet the definition of high-strength steel in Additional U.S. Note 1(a) to chapter 72 and have a minimum tensile strength of less than 590 MPa.
 
@@ -4430,7 +4453,8 @@ Metallic substances in which tin predominates by weight over each of the other e
 
 5. For the purposes of these notes, the expression "machine" means any machine, machinery, plant, equipment, apparatus or appliance cited in the headings of chapter 84 or 85.
 
-6. (A) Throughout the tariff schedule, "electrical and electronic waste and scrap" means electrical and electronic assemblies, printed circuit boards, and electrical or electronic articles that:
+6.
+(A) Throughout the tariff schedule, "electrical and electronic waste and scrap" means electrical and electronic assemblies, printed circuit boards, and electrical or electronic articles that:
 
 (a) have been rendered unusable for their original purposes by breakage, cutting-up or other processes or are economically unsuitable for repair, refurbishment or renovation to render them fit for their original purposes; and
 
@@ -4585,7 +4609,8 @@ Metallic substances in which tin predominates by weight over each of the other e
 
 5. For the purposes of heading 8462, a "slitting line" for flat products is a processing line composed of an uncoiler, a coil flattener, a slitter and a recoiler. A "cut-to-length line" for flat products is a processing line composed of an uncoiler, a coil flattener, and a shear.
 
-6. (A) For the purposes of heading 8471, the expression "automatic data processing machines" means machines capable of :
+6.
+(A) For the purposes of heading 8471, the expression "automatic data processing machines" means machines capable of :
 
 (i) Storing the processing program or programs and at least the data immediately necessary for the execution of the program;
 
@@ -4635,7 +4660,8 @@ Subject to note 2 to this chapter and note 3 to section XVI, a machine the princ
 
 Subject to note 1 to section XVI and note 1 to chapter 84, machines answering to the description in heading 8485 are to be classified in that heading and in no other heading of the tariff schedule.
 
-11. (A) Notes 12(a) and 12(b) to chapter 85 also apply with respect to the expressions "semiconductor devices" and "electronic integrated circuits", respectively, as used in this Note and in heading 8486. However, for the purposes of this Note and of heading 8486, the expression "semiconductor devices" also covers photosensitive semiconductor devices and light emitting diodes (LED).
+11.
+(A) Notes 12(a) and 12(b) to chapter 85 also apply with respect to the expressions "semiconductor devices" and "electronic integrated circuits", respectively, as used in this Note and in heading 8486. However, for the purposes of this Note and of heading 8486, the expression "semiconductor devices" also covers photosensitive semiconductor devices and light emitting diodes (LED).
     (B) For the purposes of this note and of heading 8486, the expression "manufacture of flat panel displays" covers the fabrication of substrates into a flat panel. It does not cover the manufacture of glass or the assembly of printed circuit boards or other electronic components onto the flat panel. The expression "flat panel display" does not cover cathode-ray tube technology.
 
     (C) Heading 8486 also includes machines and apparatus solely or principally of a kind used for :
@@ -4790,7 +4816,8 @@ Thin- or thick-film circuits comprising passive and active elements obtained dur
 
 12. For the purposes of headings 8541 and 8542:
 
-(a) (i) "Semiconductor devices" are semiconductor devices the operation of which depends on variations in resistivity on the application of an electric field or semiconductor-based transducers.
+(a)
+(i) "Semiconductor devices" are semiconductor devices the operation of which depends on variations in resistivity on the application of an electric field or semiconductor-based transducers.
 
 Semiconductor devices may also include assembly of plural elements, whether or not equipped with active and passive device ancillary functions.
 
@@ -4832,7 +4859,8 @@ For the purpose of this definition:
 
 2. "Silicon-based" means built on a silicon substrate, or made of silicon materials, or manufactured onto integrated circuit die.
 
-3. (a) "Silicon-based sensors" consist of microelectronic or mechanical structures that are created in the mass or on the surface of a semiconductor and that have the function of detecting physical or chemical phenomena and transducing these into electric signals, caused by resulting variations in electric properties or displacement of a mechanical structure. "Physical or chemical phenomena" relates to phenomena, such as pressure, acoustic waves, acceleration, vibration, movement, orientation, strain, magnetic field strength, electric field strength, light, radioactivity, humidity, flow, chemicals concentration, etc.
+3.
+(a) "Silicon-based sensors" consist of microelectronic or mechanical structures that are created in the mass or on the surface of a semiconductor and that have the function of detecting physical or chemical phenomena and transducing these into electric signals, caused by resulting variations in electric properties or displacement of a mechanical structure. "Physical or chemical phenomena" relates to phenomena, such as pressure, acoustic waves, acceleration, vibration, movement, orientation, strain, magnetic field strength, electric field strength, light, radioactivity, humidity, flow, chemicals concentration, etc.
 
 (b) "Silicon-based actuators" consist of microelectronic and mechanical structures that are created in the mass or on the surface of a semiconductor and that have the function of converting electrical signals into physical movement.
 
@@ -5220,7 +5248,8 @@ Orthopedic appliances include footwear and special insoles designed to correct o
 
 (c) Notwithstanding the provisions of paragraph (b) of this note, the provisions of this note and the benefits thereunder shall not apply to any article containing any material which is the product of any country with respect to which column 2 rates of duty apply.
 
-(d) (i) In calendar year 1983 the total quantity of such articles which may be entered free of duty shall not exceed 4,800,000 units.
+(d)
+(i) In calendar year 1983 the total quantity of such articles which may be entered free of duty shall not exceed 4,800,000 units.
 
 (ii) In subsequent calendar years, the Secretary of Commerce and the Secretary of the Interior (hereinafter referred to as the "Secretaries"), acting jointly, shall establish a limit on the quantity which may be entered free of duty during the calendar year, and shall consider whether such limit is in the best interest of the insular possessions and not inconsistent with domestic or international trade policy considerations. The quantity the Secretaries establish in any calendar year under this paragraph shall not--
 
@@ -5232,7 +5261,8 @@ Orthopedic appliances include footwear and special insoles designed to correct o
 
 (e) On or before April 1 of each calendar year (beginning with the first year in which watch imports from the United States insular possessions exceed 9,000,000 units), the International Trade Commission shall determine the apparent United States consumption of watches and watch movements during the preceding calendar year, shall report such determination to the Secretaries, and shall publish such determination in the Federal Register.
 
-(f) (i) In calendar year 1983, not more than 3,000,000 units of the total quantity of articles described in paragraph (d) which may be entered free of duty shall be the product of the Virgin Islands, not more than 1,200,000 units shall be the product of Guam, and not more than 600,000 units shall be the product of American Samoa.
+(f)
+(i) In calendar year 1983, not more than 3,000,000 units of the total quantity of articles described in paragraph (d) which may be entered free of duty shall be the product of the Virgin Islands, not more than 1,200,000 units shall be the product of Guam, and not more than 600,000 units shall be the product of American Samoa.
 
 (ii) For calendar year 1984 and thereafter, the Secretaries may establish new territorial shares of the total amount which may be entered free of duty, taking into account the capacity of each territory to produce and ship its assigned amounts. A territory's share in any year shall not be reduced:
 
@@ -5242,7 +5272,8 @@ Orthopedic appliances include footwear and special insoles designed to correct o
 
 (g) The Secretaries, acting jointly, shall allocate the calendar year duty exemptions provided by paragraphs (b), (d) and (f) of this note on a fair and equitable basis among producers located in the insular possessions, and shall issue appropriate licenses thereof. Allocations made by the Secretaries shall be final. In making the allocations, the Secretaries shall consider the potential impact of territorial production on domestic production of like articles and shall establish allocation criteria (including minimum assembly requirements) that will reasonably maximize the net amount of direct economic benefits to the insular possessions.
 
-(h) (i) In the case of each of calendar years 2003 through 2015, the Secretaries jointly, shall--
+(h)
+(i) In the case of each of calendar years 2003 through 2015, the Secretaries jointly, shall--
 
 (A) verify--
 
@@ -5266,7 +5297,8 @@ Orthopedic appliances include footwear and special insoles designed to correct o
 
 (B) the gross national product of the United States (as so determined) for 1982.
 
-(iv) (A) Subject to the provision of clause (B), if the amount of the certificates issued under subparagraph (I) would exceed the limit under subparagraph (iii), the applicable amount of each producer's certificate shall be reduced proportionately by the amount of such excess.
+(iv)
+(A) Subject to the provision of clause (B), if the amount of the certificates issued under subparagraph (I) would exceed the limit under subparagraph (iii), the applicable amount of each producer's certificate shall be reduced proportionately by the amount of such excess.
 
 (B) The applicable amount of any producer's certificate shall not be reduced below the amount determined under subparagraph (ii)(A), except that if the application of this clause would result in the aggregate amount of the certificates exceeding the limit under subparagraph (iii), the applicable amount of each producer's certificate shall again be reduced proportionately by the amount of the excess determined after application of this clause.
 
@@ -5525,7 +5557,8 @@ Cards, discs and rolls of heading 9209 entered with an instrument are to be trea
    (a) Cupboards, bookcases, other shelved furniture (including single shelves presented with supports for fixing them to the wall) and unit furniture;
    (b) Seats and beds.
 
-3. (a) In headings 9401 to 9403 references to parts of goods do not include references to sheets or slabs (whether or not cut to shape but not combined with other parts) of glass (including mirrors), marble or other stone or of any other material referred to in chapter 68 or 69.
+3.
+(a) In headings 9401 to 9403 references to parts of goods do not include references to sheets or slabs (whether or not cut to shape but not combined with other parts) of glass (including mirrors), marble or other stone or of any other material referred to in chapter 68 or 69.
 
    (b) Goods described in heading 9404, entered separately, are not to be classified in heading 9401, 9402 or 9403 as parts of goods.
 
@@ -5667,7 +5700,8 @@ This subheading does not cover video game consoles or machines operated by coins
 
 4. Heading 9703 does not apply to mass-produced reproductions or works of conventional craftsmanship of a commercial character, even if these articles are designed or created by artists.
 
-5. (a) Subject to notes 1 to 4 above, articles of this chapter are to be classified in this chapter and not in any other chapter of the tariff schedule.
+5.
+(a) Subject to notes 1 to 4 above, articles of this chapter are to be classified in this chapter and not in any other chapter of the tariff schedule.
    (b) Heading 9706 does not apply to articles of the preceding headings of this chapter.
 
 6. Frames around paintings, drawings, pastels, collages or similar decorative plaques, engravings, prints or lithographs are to be classified with those articles, provided they are of a kind and of a value normal to those articles. Frames which are not of a kind or of a value normal to the articles referred to in this note are to be classified separately.
@@ -5735,7 +5769,8 @@ The statistical reporting numbers contained in this chapter apply only to import
    (b) With benefit of drawback;
    (c) To comply with any law of the United States or regulation of any Federal agency requiring exportation; or
    (d) After manufacture or production in the United States under heading 9813.00.05.
-2. (a) Except as provided in paragraph (b), any product of the United States which is returned after having been advanced in value or improved in condition abroad by any process of manufacture or other means, or any imported article which has been assembled abroad in whole or in part of products of the United States, shall be treated for the purposes of this Act as a foreign article, and, if subject to a duty which is wholly or partly ad valorem, shall be dutiable, except as otherwise prescribed in this part, on its full value determined in accordance with section 402 of the Tariff Act of 1930, as amended. If such product or such article is dutiable at a rate dependent upon its value, the value for the purpose of determining the rate shall be its full value under the said section 402.
+2.
+(a) Except as provided in paragraph (b), any product of the United States which is returned after having been advanced in value or improved in condition abroad by any process of manufacture or other means, or any imported article which has been assembled abroad in whole or in part of products of the United States, shall be treated for the purposes of this Act as a foreign article, and, if subject to a duty which is wholly or partly ad valorem, shall be dutiable, except as otherwise prescribed in this part, on its full value determined in accordance with section 402 of the Tariff Act of 1930, as amended. If such product or such article is dutiable at a rate dependent upon its value, the value for the purpose of determining the rate shall be its full value under the said section 402.
    (b) No article (except a textile article, apparel article, or petroleum, or any product derived from petroleum, provided for in heading 2709 or 2710) may be treated as a foreign article, or as subject to duty, if--
    (i) the article is--
    (A) assembled or processed in whole of fabricated components that are a product of the United States, or
@@ -5758,7 +5793,8 @@ As used in this paragraph, the term "beneficiary country" means a country listed
 
 (e) For purposes of subheading 9802.00.60, the term "metal" covers (1) the base metals enumerated in note 3 to section XV; (2) arsenic, barium, boron, calcium, mercury, selenium, silicon, strontium, tellurium, thorium, uranium and the rare-earth elements; and (3) alloys of any of the foregoing.
 
-(f) (i) For purposes of subheadings 9802.00.40 and 9802.00.50, fungible articles exported from the United States for the purposes described in such subheadings--
+(f)
+(i) For purposes of subheadings 9802.00.40 and 9802.00.50, fungible articles exported from the United States for the purposes described in such subheadings--
 
 (A) may be commingled; and
 
@@ -5788,11 +5824,13 @@ as set out in the invoice and entry papers; except that, if the appraiser conclu
 
 6. Notwithstanding the partial exemption from ordinary customs duties on the value of the metal product exported from the United States provided under subheading 9802.00.60, articles imported under subheading 9802.00.60 are subject to all other duties, and any other restrictions or limitations, imposed pursuant to title VII of the Tariff Act of 1930 (19 U.S.C. 1671 et seq.), or chapter 1 of title II or chapter 1 of title III of the Trade Act of 1974 (19 U.S.C. 2251 et seq., 19 U.S.C. 2411 et seq.).
 
-7. (a) **[Compiler's note: The AGOA program expired on September 30, 2025. See section 103 of the Trade Preferences Extension Act of 2015 (P.L. 114-27).]** For purposes of the special tariff treatment authorized by the African Growth and Opportunity Act (AGOA) (title I of Pub.L. No. 106-200) for certain goods of heading 9802.00.80 imported directly from those beneficiary sub-Saharan African countries previously designated by proclamation that are subsequently enumerated in a notice published in the Federal Register by the United States Trade Representative (USTR) as having been determined to have satisfied the requirements of the AGOA and therefore to be afforded such tariff treatment, the duty-free treatment indicated for such heading shall apply only to apparel articles sewn or otherwise assembled in one or more such beneficiary countries from fabrics wholly formed and cut, or from components knit-to-shape, in the United States, from yarns wholly formed in the United States, or both (including fabrics not formed from yarns, if such fabrics are classifiable under heading 5602 or 5603 of chapter 56 and are wholly formed and cut in the United States). Articles otherwise eligible to enter under this heading, and which satisfy the conditions set forth in U.S. note 3 to subchapter XIX of this chapter, shall not be ineligible to enter under this heading. Such countries shall be enumerated in this note whenever the USTR issues a Federal Register notice as described herein. Articles covered by the provisions of this note shall be eligible to enter the customs territory of the United States free of quantitative limitations. The USTR has determined that the following countries have adopted an effective visa system and related procedures and have satisfied the customs requirements of the AGOA and, therefore, are to be afforded the tariff treatment provided for in this note:
+7.
+(a) **[Compiler's note: The AGOA program expired on September 30, 2025. See section 103 of the Trade Preferences Extension Act of 2015 (P.L. 114-27).]** For purposes of the special tariff treatment authorized by the African Growth and Opportunity Act (AGOA) (title I of Pub.L. No. 106-200) for certain goods of heading 9802.00.80 imported directly from those beneficiary sub-Saharan African countries previously designated by proclamation that are subsequently enumerated in a notice published in the Federal Register by the United States Trade Representative (USTR) as having been determined to have satisfied the requirements of the AGOA and therefore to be afforded such tariff treatment, the duty-free treatment indicated for such heading shall apply only to apparel articles sewn or otherwise assembled in one or more such beneficiary countries from fabrics wholly formed and cut, or from components knit-to-shape, in the United States, from yarns wholly formed in the United States, or both (including fabrics not formed from yarns, if such fabrics are classifiable under heading 5602 or 5603 of chapter 56 and are wholly formed and cut in the United States). Articles otherwise eligible to enter under this heading, and which satisfy the conditions set forth in U.S. note 3 to subchapter XIX of this chapter, shall not be ineligible to enter under this heading. Such countries shall be enumerated in this note whenever the USTR issues a Federal Register notice as described herein. Articles covered by the provisions of this note shall be eligible to enter the customs territory of the United States free of quantitative limitations. The USTR has determined that the following countries have adopted an effective visa system and related procedures and have satisfied the customs requirements of the AGOA and, therefore, are to be afforded the tariff treatment provided for in this note:
 
 Benin, Botswana, Cape Verde, Chad, Cote d'Ivoire, Eswatini, Ghana, Kenya, Lesotho, Republic of Liberia, Madagascar, Malawi, Mauritius, Mozambique, Namibia, Nigeria, Rwanda, Senegal, Sierra Leone, South Africa, Tanzania, Togo, Zambia
 
-(b) (i) For purposes of heading 9802.00.80, duty-free treatment shall be accorded to the following articles imported directly from a beneficiary United States-Caribbean Basin Trade Partnership Act (CBTPA) country previously designated by the President in a proclamation issued pursuant to such Act and enumerated in general note 17(a) to the tariff schedule--
+(b)
+(i) For purposes of heading 9802.00.80, duty-free treatment shall be accorded to the following articles imported directly from a beneficiary United States-Caribbean Basin Trade Partnership Act (CBTPA) country previously designated by the President in a proclamation issued pursuant to such Act and enumerated in general note 17(a) to the tariff schedule--
 
 (A) apparel articles sewn or otherwise assembled in one or more such beneficiary countries from fabrics wholly formed and cut, or from components knit-to-shape, in the United States, from yarns wholly formed in the United States, or both (including fabrics not formed from yarns, if such fabrics are classifiable under heading 5602 or 5603 of chapter 56 and are wholly formed and cut in the United States) provided they otherwise comply with the provisions of this note; or
 
@@ -5816,7 +5854,8 @@ if the article, or a good used in the production of the article, undergoes produ
 
 (C) Notwithstanding subdivisions (e)(ii)(A) and (e)(ii)(B), an article that is a good of a former CBTPA beneficiary country for purposes of section 304 of the Tariff Act of 1930 (19 U.S.C. 1304) or section 334 of the Uruguay Round Agreements Act (19 U.S.C. 3592), as the case may be, shall not be eligible for preferential treatment under this note.
 
-(D) (1) The term "former CBTPA beneficiary country" means a country that ceases to be designated as a CBTPA beneficiary country under this note because the country has become a party to a free trade agreement with the United States.
+(D)
+(1) The term "former CBTPA beneficiary country" means a country that ceases to be designated as a CBTPA beneficiary country under this note because the country has become a party to a free trade agreement with the United States.
 
 (2) For the purposes of this subdivision, the following countries are former CBTPA beneficiary countries:
 
@@ -5969,7 +6008,8 @@ shall not be entitled to the exemptions provided for in this subchapter (other t
 3. Architectural, engineering, industrial or commercial drawings and plans, and reproductions thereof, are not covered by this subchapter unless they are intended solely for exhibition or for educational use under subheading 9810.00.30 (see chapter 49).
 4. Painted, colored or stained glass windows, and parts thereof, not covered by subheading 9810.00.10 are provided for in chapter 70.
 5. Subchapter XII of this chapter contains provisions under which certain institutions may import articles free of duty for permanent exhibition under bond.
-6. (a) The term "instruments and apparatus" (subheading 9810.00.60) embraces only instruments and apparatus which are both provided for and dutiable in:
+6.
+(a) The term "instruments and apparatus" (subheading 9810.00.60) embraces only instruments and apparatus which are both provided for and dutiable in:
    (i) Chapter 39: heading 3914;
    (ii) Chapter 69: subheadings 6909.11 through 6909.90, and subheadings 6914.10 and 6914.90;
    (iii) Chapter 70: subheadings 7017.10 through 7017.90, and heading 7020.00;
@@ -5996,7 +6036,8 @@ but the term does not include materials or supplies, nor does it include ordinar
 
 (c) Upon receipt of the application, the Secretary of Commerce shall, by publication in the Federal Register, afford interested persons and other Government agencies reasonable opportunity to present their views with respect to the question whether an instrument or apparatus of equivalent scientific value for the purposes for which the article is intended to be used is being manufactured in the United States. After considering any views presented pursuant to this paragraph, including any written advice from the Secretary of Health and Human Services, the Secretary of Commerce shall determine whether an instrument or apparatus of equivalent scientific value to such article, for the purposes for which the instrument or apparatus is intended to be used, is being manufactured in the United States. Each finding by the Secretary of Commerce under this paragraph shall be promptly reported to the Secretary of the Treasury and to the applicant institution. Each such finding shall be published in the Federal Register, with a statement of the reasons therefor, on or before the ninetieth day following the date on which the application was made to the Secretary of the Treasury in accordance with applicable regulations.
 
-(d) (i) If the Secretary of Commerce determines under this U.S. note that an instrument or apparatus is being manufactured in the United States that is of equivalent scientific value to a foreign-origin instrument or apparatus for which application is made (but which, due to its size, cannot be feasibly imported in its assembled state), the Secretary shall report the findings to the Secretary of the Treasury and to the applicant institution, and all components of such foreign-origin instrument or apparatus shall remain dutiable.
+(d)
+(i) If the Secretary of Commerce determines under this U.S. note that an instrument or apparatus is being manufactured in the United States that is of equivalent scientific value to a foreign-origin instrument or apparatus for which application is made (but which, due to its size, cannot be feasibly imported in its assembled state), the Secretary shall report the findings to the Secretary of the Treasury and to the applicant institution, and all components of such foreign-origin instrument or apparatus shall remain dutiable.
 
 (ii) If the Secretary of Commerce determines that the instrument or apparatus for which application is made is not being manufactured in the United States, the Secretary is authorized to determine further whether any component of such instrument or apparatus of a type that may be purchased, obtained, or imported separately is being manufactured in the United States and shall report the findings to the Secretary of the Treasury and to the applicant institution, and any component found to be domestically available shall remain dutiable.
 
@@ -6042,7 +6083,8 @@ Any appeal under this paragraph shall receive a preference over all other matter
 
 ### U.S. Notes
 
-1. (a) The articles described in the provisions of this subchapter, when not imported for sale or for sale on approval, may be admitted into the United States without the payment of duty, under bond for their exportation within 1 year from the date of importation, which period, in the discretion of the Secretary of the Treasury, may be extended, upon application, for one or more further periods which, when added to the initial 1 year, shall not exceed a total of 3 years, except that (1) articles imported under heading 9813.00.75 shall be admitted under bond for their exportation within 6 months from the date of importation and such a 6-month period shall not be extended, and (2) in the case of professional equipment and tools of trade admitted into the United States under heading 9813.00.50 which have been seized (other than by seizure made at the suit of private persons), the requirement of reexportation shall be suspended for the duration of the seizure. For purposes of this note, an aircraft engine or propeller, or any part or accessory of either, imported under heading 9813.00.05, which is removed physically from the United States as part of an aircraft departing from the United States in international traffic shall be treated as exported
+1.
+(a) The articles described in the provisions of this subchapter, when not imported for sale or for sale on approval, may be admitted into the United States without the payment of duty, under bond for their exportation within 1 year from the date of importation, which period, in the discretion of the Secretary of the Treasury, may be extended, upon application, for one or more further periods which, when added to the initial 1 year, shall not exceed a total of 3 years, except that (1) articles imported under heading 9813.00.75 shall be admitted under bond for their exportation within 6 months from the date of importation and such a 6-month period shall not be extended, and (2) in the case of professional equipment and tools of trade admitted into the United States under heading 9813.00.50 which have been seized (other than by seizure made at the suit of private persons), the requirement of reexportation shall be suspended for the duration of the seizure. For purposes of this note, an aircraft engine or propeller, or any part or accessory of either, imported under heading 9813.00.05, which is removed physically from the United States as part of an aircraft departing from the United States in international traffic shall be treated as exported
 
 (b) For articles admitted into the United States under heading 9813.00.50, entry shall be made by the nonresident importing the articles or by an organization represented by the nonresident which is established under the laws of a foreign country or has its principal place of business in a foreign country.
 
@@ -6101,7 +6143,8 @@ Any appeal under this paragraph shall receive a preference over all other matter
 
 ### U.S. Notes
 
-1. (a) No article shall be exempted from duty under heading 9817.00.40 unless either --
+1.
+(a) No article shall be exempted from duty under heading 9817.00.40 unless either --
 
    (i) a Federal agency (or agencies) designated by the President determines that such article is visual or auditory material of an educational, scientific or cultural character within the meaning of the Agreement for Facilitating the International Circulation of Visual and Auditory Materials of an Educational, Scientific, and Cultural Character (17 UST (pt. 2) 1578; Beirut Agreement), or
    (ii) such article --
@@ -6143,7 +6186,8 @@ Any appeal under this paragraph shall receive a preference over all other matter
    (ad) articles provided for in subheading 9603.50.00, headings 9604.00.00 and 9605.00.00 and subheading 9616.10.00; or
    (ae) articles provided for in heading 9705.
 
-3. (a) Subheading 9817.00.80 does not apply when the market price of copper is under \$1.12 per kilogram.
+3.
+(a) Subheading 9817.00.80 does not apply when the market price of copper is under \$1.12 per kilogram.
 
 (b) For purposes of subparagraph (a), the market price of copper is the average market price per kilogram for one calendar month of electrolytic copper in standard shapes and sizes, delivered Connecticut Valley, as determined by the United States International Trade Commission and reported to the Secretary of the Treasury in accordance with procedures set forth below.
 
@@ -6151,7 +6195,8 @@ Any appeal under this paragraph shall receive a preference over all other matter
 
 (d) Determinations by the said Commission of the market price of electrolytic copper shall be based upon sources commonly resorted to by the buyers of copper in the usual channels of commerce, including, but not limited to, quotations of the market price for electrolytic copper, in standard shapes and sizes, delivered Connecticut Valley, reported by the Engineering and Mining Journal's "Metal and Mineral Markets".
 
-4. (a) For purposes of subheadings 9817.00.92, 9817.00.94 and 9817.00.96, the term "blind or other physically or mentally handicapped persons" includes any person suffering from a permanent or chronic physical or mental impairment which substantially limits one or more major life activities, such as caring for one's self, performing manual tasks, walking, seeing, hearing, speaking, breathing, learning, or working.
+4.
+(a) For purposes of subheadings 9817.00.92, 9817.00.94 and 9817.00.96, the term "blind or other physically or mentally handicapped persons" includes any person suffering from a permanent or chronic physical or mental impairment which substantially limits one or more major life activities, such as caring for one's self, performing manual tasks, walking, seeing, hearing, speaking, breathing, learning, or working.
 
 (b) Subheadings 9817.00.92, 9817.00.94 and 9817.00.96 do not cover --
 
@@ -6185,7 +6230,8 @@ Any appeal under this paragraph shall receive a preference over all other matter
 
 For purposes of clause (i), automobile racing for purse, prize, or commercial competition shall not be considered to be "development, testing, product evaluation, or quality control."
 
-(b) (i) Prototypes may be imported only in limited noncommercial quantities in accordance with industry practice.
+(b)
+(i) Prototypes may be imported only in limited noncommercial quantities in accordance with industry practice.
 
 (ii) Except as provided for by the Secretary of the Treasury, prototypes or parts of prototypes may not be sold after importation into the United States or be incorporated into other products that are sold.
 
@@ -6226,7 +6272,8 @@ For purposes of clause (i), automobile racing for purse, prize, or commercial co
 
 Benin, Botswana, Cape Verde, Chad, Cote d'Ivoire, Eswatini, Ghana, Kenya, Lesotho, Republic of Liberia, Madagascar, Malawi, Mauritius, Mozambique, Namibia, Nigeria, Rwanda, Senegal, Sierra Leone, South Africa, Tanzania, Togo, Zambia
 
-2. (a) Imports of apparel articles under subheadings 9819.11.09 and 9819.11.12 which may be applicable to imported apparel articles from eligible beneficiary sub-Saharan African countries pursuant to determinations of the United States International Trade Commission, shall be limited during each 1-year period enumerated in subdivision (b) of this note to the applicable percentage, in aggregate square meter equivalents, of all apparel articles imported into the United States in the preceding 12-month period for which data are available.
+2.
+(a) Imports of apparel articles under subheadings 9819.11.09 and 9819.11.12 which may be applicable to imported apparel articles from eligible beneficiary sub-Saharan African countries pursuant to determinations of the United States International Trade Commission, shall be limited during each 1-year period enumerated in subdivision (b) of this note to the applicable percentage, in aggregate square meter equivalents, of all apparel articles imported into the United States in the preceding 12-month period for which data are available.
 
 (b) Such imports of apparel articles under subheading 9819.11.09 and 9819.15.10, which may be applicable to imported apparel articles from eligible beneficiary sub-Saharan African countries pursuant to determinations of the United States International Trade Commission, shall be limited, in each of the one-year periods beginning on October 1, 2003, to an aggregate quantity not to exceed the applicable percentage set forth herein of aggregate square meter equivalents of all apparel articles imported into the United States in the preceding 12-month period for which data are available:
 
@@ -6259,7 +6306,8 @@ Republic of Benin; Republic of Botswana; Republic of Cape Verde; Republic of Cha
 
 (e) For purposes of subheading 9819.11.09 and 9819.11.12 which may be applicable to imported apparel articles from eligible beneficiary sub-Saharan African countries pursuant to determinations of the United States International Trade Commission, an apparel article imported thereunder may contain fabrics, fabric components formed, or components knit-to-shape that are specified as being of a type required in the apparel articles of subheadings 9819.11.03 or 9819.11.06.
 
-3. (a) An article otherwise eligible for preferential treatment under any provision of this subchapter shall not be ineligible for such treatment because the article contains--
+3.
+(a) An article otherwise eligible for preferential treatment under any provision of this subchapter shall not be ineligible for such treatment because the article contains--
    (i) findings or trimmings of foreign origin, if the value of such findings and trimmings does not exceed 25 percent of the cost of the components of the assembled article; or
    (ii) certain interlinings of foreign origin, if the value of such interlinings (and any findings and trimmings of foreign origin) does not exceed 25 percent of the cost of the components of the assembled article; or
    (iii) fibers or yarns not wholly formed in the United States or in one or more designated beneficiary countries enumerated in U.S. note 1 to this subchapter, provided that the total weight of all such fibers and yarns is not more than 10 percent of the total weight of the article; or
@@ -6271,7 +6319,8 @@ Republic of Benin; Republic of Botswana; Republic of Cape Verde; Republic of Cha
 
 (d) For purposes of this subchapter, a "former beneficiary sub-Saharan African country" is a country that, after being designated as a beneficiary sub-Saharan African country under the AGOA and enumerated in subdivision (a) of this note, ceased to be designated as such a country by reason of its entering into a free trade agreement with the United States.
 
-4. (a) For purposes of subheading 9819.11.27, goods entered under this provision must be certified, by a competent authority of a designated beneficiary country enumerated in U.S. note 1 to this subchapter, as eligible products of such country, in accordance with any requirements established by the appropriate U.S. government authority.
+4.
+(a) For purposes of subheading 9819.11.27, goods entered under this provision must be certified, by a competent authority of a designated beneficiary country enumerated in U.S. note 1 to this subchapter, as eligible products of such country, in accordance with any requirements established by the appropriate U.S. government authority.
 
 (b) For purposes of such subheading, the phrase "ethnic printed fabrics" refers to fabrics that are--
 
@@ -6303,7 +6352,8 @@ Republic of Benin; Republic of Botswana; Republic of Cape Verde; Republic of Cha
 
 Barbados, Belize, Curaçao, Guyana, Haiti, Jamaica, Saint Lucia, Trinidad and Tobago
 
-2. (a) Except as provided in this note, textile and apparel articles described in subheadings 9820.11.03 through 9820.11.33, inclusive, of this subchapter that are imported directly into the customs territory of the United States from a designated beneficiary CBTPA country enumerated in general note 17(a) to the tariff schedule shall be eligible to enter free of duty and free of any quantitative limitations, except as provided in this subchapter, under the terms of the provisions set forth in such subheadings and applicable legal notes, as indicated by the rate of duty of "Free" in the Special rates of duty subcolumn for such provisions. For purposes of subheadings 9820.11.03, 9820.11.06, 9820.11.18, and 9820.11.33, apparel articles entered on or after September 1, 2002, that are assembled in a beneficiary CBTPA country from knitted or crocheted fabrics or from woven fabrics shall be eligible to receive the duty treatment provided for in this note only if all dyeing, printing and finishing of such fabrics from which the articles are assembled is carried out in the United States.
+2.
+(a) Except as provided in this note, textile and apparel articles described in subheadings 9820.11.03 through 9820.11.33, inclusive, of this subchapter that are imported directly into the customs territory of the United States from a designated beneficiary CBTPA country enumerated in general note 17(a) to the tariff schedule shall be eligible to enter free of duty and free of any quantitative limitations, except as provided in this subchapter, under the terms of the provisions set forth in such subheadings and applicable legal notes, as indicated by the rate of duty of "Free" in the Special rates of duty subcolumn for such provisions. For purposes of subheadings 9820.11.03, 9820.11.06, 9820.11.18, and 9820.11.33, apparel articles entered on or after September 1, 2002, that are assembled in a beneficiary CBTPA country from knitted or crocheted fabrics or from woven fabrics shall be eligible to receive the duty treatment provided for in this note only if all dyeing, printing and finishing of such fabrics from which the articles are assembled is carried out in the United States.
 
 (b) Imports of apparel articles under subheading 9820.11.09 shall be limited, in the period beginning on October 2, 2000 and continuing through the close of September 30, 2001, to an aggregate quantity not to exceed 250,000,000 square meter equivalents. Such imports of apparel articles shall be limited, during each of the one-year periods provided for herein, to the following aggregate quantity of square meter equivalents:
 
@@ -6327,7 +6377,8 @@ Barbados, Belize, Curaçao, Guyana, Haiti, Jamaica, Saint Lucia, Trinidad and To
 
 (d) For purposes of subheading 9820.11.15, imports of brassieres of a producer or an entity controlling production, during the period beginning on October 1, 2001, and during each of the six succeeding 1-year periods, shall be eligible for preferential treatment only if the aggregate cost of fabrics (exclusive of all findings and trimmings) formed in the United States that are used in the production of all such articles of that producer or entity that are entered and eligible under subheading 9820.11.15 during the preceding 1-year period is at least 75 percent of the aggregate declared customs value of the fabric (exclusive of all findings and trimmings) contained in all such articles of that producer or entity that are entered and eligible under subheading 9820.11.15 during any succeeding 1-year period until the aggregate cost of fabrics (exclusive of all findings and trimmings) formed in the United States used in the production of such articles of that producer or entity entered during the preceding 12-month period is at least 85 percent of the aggregate declared customs value of the fabric (exclusive of all findings and trimmings) contained in all such articles of that producer or entity that are entered and eligible under subheading 9820.11.15 during the preceding 1-year period.
 
-3. (a) An article otherwise eligible for preferential treatment under any provision of this subchapter shall not be ineligible for such treatment because the article contains--
+3.
+(a) An article otherwise eligible for preferential treatment under any provision of this subchapter shall not be ineligible for such treatment because the article contains--
    (i) findings or trimmings of foreign origin, if the value of such findings and trimmings does not exceed 25 percent of the cost of the components of the assembled article; or
    (ii) certain interlinings of foreign origin, if the value of such interlinings (and any findings and trimmings of foreign origin) does not exceed 25 percent of the cost of the components of the assembled article; or
    (iii) fibers or yarns not wholly formed in the United States or in one or more designated beneficiary countries enumerated in general note 17(a) to the tariff schedule, provided that the total weight of all such fibers and yarns is not more than 7 percent of the total weight of the article; or
@@ -6360,7 +6411,8 @@ if the article, or a good used in the production of the article, undergoes produ
 (1) the article is a good of Dominican Republic for purposes of section 304 of the Tariff Act of 1930 (19 U.S.C. 1304) or section 334 of the Uruguay Round Agreements Act (19 U.S.C. 3592), as the case may be, and
 (2) the article, or a good used in the production of the article, undergoes production in Haiti.
 
-(e) (i) For the purposes of this subchapter, the term "former CBTPA beneficiary country" means a country that ceases to be designated as a CBTPA beneficiary country under U.S. note 1 to this subchapter because the country has become a party to a free trade agreement with the United States.
+(e)
+(i) For the purposes of this subchapter, the term "former CBTPA beneficiary country" means a country that ceases to be designated as a CBTPA beneficiary country under U.S. note 1 to this subchapter because the country has become a party to a free trade agreement with the United States.
 
 (ii) For the purposes of this note, the following countries are former CBTPA beneficiary countries:
 
@@ -6378,7 +6430,8 @@ if the article, or a good used in the production of the article, undergoes produ
 
 is not less than 50 percent of the declared customs value of such product.
 
-(b) (i) For purposes of subdivisions (a)(i) and (c) of this note, the countries included are the United States, Israel, Canada, Mexico, Jordan, Singapore, Chile, Australia, Morocco, Bahrain, El Salvador, Honduras, Nicaragua, Guatemala, Dominican Republic, Costa Rica, Peru, Oman, Korea, Colombia, Panama and designated beneficiary countries enumerated in general notes 11, 16 or 17 to the tariff schedule.
+(b)
+(i) For purposes of subdivisions (a)(i) and (c) of this note, the countries included are the United States, Israel, Canada, Mexico, Jordan, Singapore, Chile, Australia, Morocco, Bahrain, El Salvador, Honduras, Nicaragua, Guatemala, Dominican Republic, Costa Rica, Peru, Oman, Korea, Colombia, Panama and designated beneficiary countries enumerated in general notes 11, 16 or 17 to the tariff schedule.
 
 (ii) For purposes of this note, an applicable 1-year period shall comprise the time period starting on December 20 of a calendar year from 2006 through 2017, inclusive, and ending on December 19 in the subsequent calendar year. <sup>1/</sup>
 
@@ -6452,7 +6505,8 @@ of all apparel articles for that producer or entity controlling production that 
 
 without regard to the source of the fabrics or yarns.
 
-(g) (i) The preferential treatment accorded under headings 9820.61.25 and 9820.61.30 shall be extended, during each of the applicable 1-year periods set forth in the table below, to not more than the corresponding percentage of the aggregate square meter equivalents of all apparel articles imported into the United States in the most recent 12-month period for which data are available and published in the _Federal Register_ by the Committee for the Implementation of Textile Agreements:
+(g)
+(i) The preferential treatment accorded under headings 9820.61.25 and 9820.61.30 shall be extended, during each of the applicable 1-year periods set forth in the table below, to not more than the corresponding percentage of the aggregate square meter equivalents of all apparel articles imported into the United States in the most recent 12-month period for which data are available and published in the _Federal Register_ by the Committee for the Implementation of Textile Agreements:
 
 | Applicable 1-year period                                                                                                 | Percentage    |
 | ------------------------------------------------------------------------------------------------------------------------ | ------------- |
@@ -6463,15 +6517,18 @@ No preferential treatment shall be provided under this subdivision after the clo
 
 (ii) Any apparel article that qualifies for preferential treatment under subdivisions (h) through (p), inclusive, of this note or any other provision of the tariff schedule shall not be subject to, or included in the calculation of, the quantitative limitations under subdivision (g)(i) of this note.
 
-(h) (i) The preferential treatment provided under heading 9820.62.05 shall be extended to any apparel article classifiable under chapter 62 of the tariff schedule that is wholly assembled, or knit-to-shape, in Haiti from any combination of fabrics, fabric components, components knit-to-shape or yarns and is imported directly from Haiti or the Dominican Republic, subject to subdivisions (h)(ii) and (h)(iii) of this note, without regard to the source of the fabric, fabric components, components knit-to-shape or yarns from which the article is made.
+(h)
+(i) The preferential treatment provided under heading 9820.62.05 shall be extended to any apparel article classifiable under chapter 62 of the tariff schedule that is wholly assembled, or knit-to-shape, in Haiti from any combination of fabrics, fabric components, components knit-to-shape or yarns and is imported directly from Haiti or the Dominican Republic, subject to subdivisions (h)(ii) and (h)(iii) of this note, without regard to the source of the fabric, fabric components, components knit-to-shape or yarns from which the article is made.
 
 (ii) Except as provided in subdivision (h)(iv) of this note, the preferential treatment provided under subdivision (h)(i) of this note shall be extended, in the 1-year period beginning October 1, 2008, and in each of the eleven succeeding 1-year periods, to not more than 70,000,000 square meter equivalents of apparel articles described in such subdivision.
 
 (iii) Any apparel article that qualifies for preferential treatment under subdivision (g) or subdivisions (i) through (p), inclusive, of this note or any other provision of the tariff schedule shall not be subject to, or included in the calculation of, the quantitative limitation under subdivision (ii) of this note.
 
-(iv) (A) Except as provided in subdivisions (h)(iv)(B) and (h)(iv)(C) of this note and subject to subdivision (h)(iv)(D), if 52,000,000 square meter equivalents of apparel articles described in subdivision (h)(i) or (j)(i) of this note enter the United States during the 1-year period beginning October 1, 2009, or any of the succeeding 1-year periods, the preferential treatment described in such subdivision (h)(i) or (j)(i) of this note (as the case may be) to not more than 200,000,000 square meter equivalents of apparel articles described in such subdivision (h)(i) or (j)(i) of this note (as the case may be) during that 1-year period in a notice of the extension published in the _Federal Register_.
+(iv)
+(A) Except as provided in subdivisions (h)(iv)(B) and (h)(iv)(C) of this note and subject to subdivision (h)(iv)(D), if 52,000,000 square meter equivalents of apparel articles described in subdivision (h)(i) or (j)(i) of this note enter the United States during the 1-year period beginning October 1, 2009, or any of the succeeding 1-year periods, the preferential treatment described in such subdivision (h)(i) or (j)(i) of this note (as the case may be) to not more than 200,000,000 square meter equivalents of apparel articles described in such subdivision (h)(i) or (j)(i) of this note (as the case may be) during that 1-year period in a notice of the extension published in the _Federal Register_.
 
-(B) (I) In the case of apparel articles described in subdivision (h)(iv)(B)(II) of this note, subdivision (h)(iv)(B)(I) shall be applied by substituting "70,000,000" for "200,000,000".
+(B)
+(I) In the case of apparel articles described in subdivision (h)(iv)(B)(II) of this note, subdivision (h)(iv)(B)(I) shall be applied by substituting "70,000,000" for "200,000,000".
 
 <sup>1/</sup> The Trade Preferences Extension Act of 2015 extended the preferences under HOPE (and HOPE II and HELP) until the close of December 19, 2025,
 
@@ -6479,13 +6536,15 @@ No preferential treatment shall be provided under this subdivision after the clo
 
 6203.19.1020, 6203.19.9020, 6203.22.3020, 6203.22.3030, 6203.23.0060, 6203.23.0070, 6203.29.2030, 6203.29.2035, 6203.42.4003, 6203.42.4006, 6203.42.4011, 6203.42.4016, 6203.42.4026, 6203.42.4036, 6203.42.4046, 6203.42.4051, 6203.42.4061, 6203.43.2500, 6203.43.3510, 6203.43.3590, 6203.43.4010, 6203.43.4020, 6203.43.4030, 6203.43.4040, 6203.49.1500, 6203.49.2015, 6203.49.2030, 6203.49.2045, 6203.49.2060, 6203.49.8020, 6203.49.8030, 6204.12.0030, 6204.19.8030, 6204.22.3040, 6204.22.3050, 6204.23.0040, 6204.23.0045, 6204.29.2020, 6204.29.2025, 6204.29.4034, 6204.29.4038, 6204.62.3000, 6204.62.4003, 6204.62.4006, 6204.62.4011, 6204.62.4021, 6204.62.4031, 6204.62.4041, 6204.62.4051, 6204.62.4056, 6204.62.4066, 6204.63.2000, 6204.63.3010, 6204.63.3090, 6204.63.3510, 6204.63.3530, 6204.63.3532, 6204.63.3540, 6204.69.2510, 6204.69.2530, 6204.69.2540, 6204.69.2560, 6204.69.6010, 6204.69.6030, 6204.69.9010, 6204.69.9030, 6210.40.5031, 6210.40.5039, 6210.40.9033, 6210.50.5031, 6210.50.5039, 6210.50.9060, 6211.20.1520, 6211.20.1525, 6211.20.1550, 6211.20.1555, 6211.20.3810, 6211.20.3820, 6211.20.6810, 6211.20.6820, 6211.32.0040, 6211.33.0030, 6211.42.0030, 6211.43.0040, 6217.90.9050 or 6217.90.9060.
 
-(C) (I) In the case of apparel articles described in subdivision (h)(iv)(C)(II) of this note, subdivision (h)(iv)(B)(I) shall be applied by substituting "85,000,000" for "200,000,000".
+(C)
+(I) In the case of apparel articles described in subdivision (h)(iv)(C)(II) of this note, subdivision (h)(iv)(B)(I) shall be applied by substituting "85,000,000" for "200,000,000".
 
 (II) Apparel articles described in this subdivision are apparel articles described below that fall within the statistical reporting numbers of the tariff schedule (as in effect on May 23, 2010), enumerated below:
 
 6105.10.0010, 6209.10.0018, 6109.10.0027, 6109.10.0040, 6109.10.0045, 6110.20.2079, 6110.30.3053 or 6110.30.3059.
 
-(D) (I) Not later than April 1, July 1, October 1 and January 1 of each year, the Commissioner responsible for United States Customs and Border Protection shall verify that apparel articles imported into the United States under subdivision (h)(iv) of this note are not being unlawfully transshipped (within the meaning of 19 U.S.C. 2703a(f)(2)) into the United States.
+(D)
+(I) Not later than April 1, July 1, October 1 and January 1 of each year, the Commissioner responsible for United States Customs and Border Protection shall verify that apparel articles imported into the United States under subdivision (h)(iv) of this note are not being unlawfully transshipped (within the meaning of 19 U.S.C. 2703a(f)(2)) into the United States.
 
 (II) If the Commissioner determines pursuant to subdivision (h)(iv)(D)(I) of this note that apparel articles imported into the United States under subdivision (h)(iv) of this note are being unlawfully transshipped into the United States, the Commissioner shall report that determination to the President.
 
@@ -6497,7 +6556,8 @@ No preferential treatment shall be provided under this subdivision after the clo
 
 (i) The preferential treatment provided under heading 9820.62.12 shall be extended to any article classifiable in subheading 6212.10 of the tariff schedule, if the article is wholly assembled, or knit-to-shape, in Haiti from any combination of fabrics, fabric components, components knit-to-shape or yarns and is imported directly from Haiti or the Dominican Republic, without regard to the source of the fabric, fabric components, components knit-to-shape or yarns from which the article is made.
 
-(j) (i) The preferential treatment provided in heading 9820.61.35 shall be extended to any apparel article classifiable under chapter 61 of the tariff schedule that is wholly assembled, or knit-to-shape, in Haiti from any combination of fabrics, fabric components, components knit-to-shape or yarns and is imported directly from Haiti or the Dominican Republic, subject to subdivisions (j)(ii), (j)(iii) and (j)(iv) of this note, without regard to the source of the fabric, fabric components, components knit-to-shape or yarns from which the article is made.
+(j)
+(i) The preferential treatment provided in heading 9820.61.35 shall be extended to any apparel article classifiable under chapter 61 of the tariff schedule that is wholly assembled, or knit-to-shape, in Haiti from any combination of fabrics, fabric components, components knit-to-shape or yarns and is imported directly from Haiti or the Dominican Republic, subject to subdivisions (j)(ii), (j)(iii) and (j)(iv) of this note, without regard to the source of the fabric, fabric components, components knit-to-shape or yarns from which the article is made.
 
 (ii) The preferential treatment described in subdivision (j)(i) of this note shall not apply to the following:
 
@@ -6557,7 +6617,8 @@ No preferential treatment shall be provided under this subdivision after the clo
 
 without regard to the source of the fabrics or yarns.
 
-(q) (i) For purposes of heading 9820.61.45, any of the apparel articles described in subdivision (q)(ii) of this note that is wholly assembled, or knit-to-shape, in Haiti from any combination of fabrics, fabrics components, components knit-to-shape or yarns and is imported directly from Haiti or the Dominican Republic shall enter the United States free of duty, without regard to the source of the fabric, fabric components, components knit-to-shape or yarns from which the article is made.
+(q)
+(i) For purposes of heading 9820.61.45, any of the apparel articles described in subdivision (q)(ii) of this note that is wholly assembled, or knit-to-shape, in Haiti from any combination of fabrics, fabrics components, components knit-to-shape or yarns and is imported directly from Haiti or the Dominican Republic shall enter the United States free of duty, without regard to the source of the fabric, fabric components, components knit-to-shape or yarns from which the article is made.
 
 (ii) The apparel articles that are eligible for the treatment provided under subdivision (q)(i) of this note are apparel articles that are described in the following statistical reporting numbers of the tariff schedule, as in effect on May 23, 2010:
 
@@ -6579,7 +6640,8 @@ without regard to the source of the fabrics or yarns.
 6112.12.0040, 6112.19.1010, 6112.19.1020, 6112.19.1030, 6112.19.1040, 6112.20.1010, 6112.20.1020,
 6112.20.1030, 6112.20.1040, 6113.00.9015, 6113.00.9025 or 6113.00.9030.
 
-(r) (i) For purposes of heading 9820.63.05, any made-up textile article described in subdivision (r)(ii) of this note that is wholly assembled, or knit-to-shape, in Haiti from any combination of fabrics, fabric components, components knit-to-shape or yarns and is imported directly from Haiti or the Dominican Republic shall enter the United States free of duty, without regard to the source of the fabric, fabric components, components knit-to-shape or yarns from which the article is made.
+(r)
+(i) For purposes of heading 9820.63.05, any made-up textile article described in subdivision (r)(ii) of this note that is wholly assembled, or knit-to-shape, in Haiti from any combination of fabrics, fabric components, components knit-to-shape or yarns and is imported directly from Haiti or the Dominican Republic shall enter the United States free of duty, without regard to the source of the fabric, fabric components, components knit-to-shape or yarns from which the article is made.
 
 (ii) The made-up textile articles that are eligible for the treatment provided under subdivision (r)(i) of this note are the made-up textile articles that are described in the following statistical reporting numbers of the tariff schedule, as in effect on May 23, 2010:
 
@@ -6615,7 +6677,8 @@ without regard to the source of the fabrics or yarns.
 
 ### U.S. Notes
 
-1. (a) This subchapter contains modifications of the provisions of the tariff schedule established pursuant to free trade agreements between the United States and one or more other countries, as implemented under the general notes to the tariff schedule. Goods entered under this subchapter and described in the provisions of this subchapter for which a rate of duty followed by a symbol in parentheses is herein provided, are subject to duty at the rate set forth in this subchapter in lieu of the rate provided therefor in chapters 1 through 97.
+1.
+(a) This subchapter contains modifications of the provisions of the tariff schedule established pursuant to free trade agreements between the United States and one or more other countries, as implemented under the general notes to the tariff schedule. Goods entered under this subchapter and described in the provisions of this subchapter for which a rate of duty followed by a symbol in parentheses is herein provided, are subject to duty at the rate set forth in this subchapter in lieu of the rate provided therefor in chapters 1 through 97.
    (b) For purposes of heading 9822.01.05, the duty-free temporary admission of goods under such heading shall be accorded only to goods enumerated as eligible therefor in--
 
    (i) article 2.5 of the United States-Singapore Free Trade Agreement,
@@ -6650,7 +6713,8 @@ without regard to the source of the fabrics or yarns.
 
 under the terms of the pertinent Agreement article and on such basis as may be prescribed in regulations issued by the Secretary of the Treasury. Such duty-free entry shall be available whether or not the repairs or alterations could be performed in the United States.
 
-2. (a) Unless otherwise provided, this note and heading 9822.01.25 are effective as to imports from Singapore described therein and entered on or after January 1, 2014. The rate of duty for heading 9822.01.25 in the "Special" subcolumn of rates of duty column 1 followed by the symbol "SG" in parentheses shall apply to imports from Singapore of apparel goods of chapter 61 or 62 if such goods are both cut (or knit to shape) and sewn or otherwise assembled in the territory of Singapore or of the United States, or both, from fabric or yarn, regardless of origin, designated by the appropriate U.S. government authority as fabric or yarn not available in commercial quantities in a timely manner in the United States. Such designations must have been made in a notice published in the Federal Register identifying apparel goods made from such fabric or yarn as eligible for entry into the United States under subheading 9819.11.24 or 9820.11.27 as of November 15, 2002. For purposes of this note, reference in such a notice to yarn or fabric formed in the United States shall be deemed to include yarns or fabric formed in the territory of Singapore or of the United States, or both.
+2.
+(a) Unless otherwise provided, this note and heading 9822.01.25 are effective as to imports from Singapore described therein and entered on or after January 1, 2014. The rate of duty for heading 9822.01.25 in the "Special" subcolumn of rates of duty column 1 followed by the symbol "SG" in parentheses shall apply to imports from Singapore of apparel goods of chapter 61 or 62 if such goods are both cut (or knit to shape) and sewn or otherwise assembled in the territory of Singapore or of the United States, or both, from fabric or yarn, regardless of origin, designated by the appropriate U.S. government authority as fabric or yarn not available in commercial quantities in a timely manner in the United States. Such designations must have been made in a notice published in the Federal Register identifying apparel goods made from such fabric or yarn as eligible for entry into the United States under subheading 9819.11.24 or 9820.11.27 as of November 15, 2002. For purposes of this note, reference in such a notice to yarn or fabric formed in the United States shall be deemed to include yarns or fabric formed in the territory of Singapore or of the United States, or both.
 
 (b) For purposes of this note and heading 9822.01.25, in addition to any goods otherwise eligible for entry under such heading, the following goods that are imported from Singapore shall be eligible for entry under such heading on or after August 1, 2006:
 
@@ -6678,7 +6742,8 @@ under the terms of the pertinent Agreement article and on such basis as may be p
 
 (vii) shirts, trousers, nightwear, robes, dressing gowns or woven underwear of chapters 61 or 62, the foregoing cut (or knit to shape) and sewn or otherwise assembled in the territory of Singapore or of the United States, or both, from 100 percent cotton woven double-napped fabrics (such fabrics classifiable in subheading 5209.31.60).
 
-3. (a) Unless otherwise provided, this note and heading 9822.02.01 are effective as to originating goods of Chile entered under the terms of general note 26 to the tariff schedule on or after January 1, 2016. In 2016 and in successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the amount of Chile's trade surplus, by volume, from all sources for goods in the following subheadings: 1701.12, 1701.13, 1701.14, 1701.91, 1701.99, 1702.20, 1702.30, 1702.40, 1702.60, 1702.90, 1806.10, 2101.12, 2101.20 and 2106.90, except that Chile's imports of originating goods of the United States under subheadings 1702.40 and 1702.60 shall not be included in the calculation of Chile's trade surplus.
+3.
+(a) Unless otherwise provided, this note and heading 9822.02.01 are effective as to originating goods of Chile entered under the terms of general note 26 to the tariff schedule on or after January 1, 2016. In 2016 and in successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the amount of Chile's trade surplus, by volume, from all sources for goods in the following subheadings: 1701.12, 1701.13, 1701.14, 1701.91, 1701.99, 1702.20, 1702.30, 1702.40, 1702.60, 1702.90, 1806.10, 2101.12, 2101.20 and 2106.90, except that Chile's imports of originating goods of the United States under subheadings 1702.40 and 1702.60 shall not be included in the calculation of Chile's trade surplus.
 
 (b) The aggregate quantity of originating goods of Chile entered under heading 9822.02.01 in any calendar year shall be the quantity of goods equal to the amount of Chile's trade surplus in subdivision (a) of this note.
 
@@ -6690,11 +6755,13 @@ under the terms of the pertinent Agreement article and on such basis as may be p
 
 5. Unless otherwise provided, this note and heading 9822.02.03 are effective as to imports from Chile entered on or after January 1, 2016. The Free rate of duty for heading 9822.02.03 in the "Special" subcolumn of rates of duty column 1 followed by the symbol "(CL)" shall apply to imports from Chile in an aggregate annual quantity not to exceed 1,000,000 SME, of cotton or of man-made fiber apparel goods or apparel goods subject to cotton or man-made fiber restraints, the foregoing that are both cut (or knit to shape) and sewn or otherwise assembled in Chile from fabric or yarn produced or obtained outside the territory of Chile or of the United States, when such goods are provided for in the following subheadings: 6101.20.00, 6101.30.10, 6101.30.20, 6102.20.00, 6102.30.05, 6102.30.20, 6103.10.30, 6103.10.60, 6103.22.00, 6103.23.00, 6103.29.10, 6103.32.00, 6103.33.20, 6103.39.10, 6103.42.10, 6103.42.20, 6103.43.15, 6103.43.20, 6103.49.10, 6103.49.20, 6104.12.00, 6104.13.20, 6104.22.00, 6104.23.00, 6104.29.10, 6104.32.00, 6104.33.20, 6104.39.10, 6104.42.00, 6104.43.20, 6104.44.20, 6104.52.00, 6104.53.20, 6104.59.10, 6104.62.10, 6104.62.20, 6104.63.10, 6104.63.20, 6104.69.10, 6104.69.20, 6105.10.00, 6105.20.20, 6106.10.00, 6106.20.20, 6107.11.00, 6107.12.00, 6107.21.00, 6107.22.00, 6107.91.00, 6107.99.70, 6108.11.00, 6108.19.90, 6108.21.00, 6108.22.90, 6108.31.00, 6108.32.00, 6108.91.00, 6108.92.00, 6109.10.00, 6109.90.10, 6110.20.10, 6110.20.20, 6110.30.10, 6110.30.20, 6110.30.30, 6111.20.10, 6111.20.20, 6111.20.30, 6111.20.40, 6111.20.50, 6111.20.60, 6111.30.10, 6111.30.20, 6111.30.30, 6111.30.40, 6111.30.50, 6111.90.10, 6111.90.20, 6111.90.40, 6111.90.50, 6112.11.00, 6112.12.00, 6112.19.10, 6112.20.10, 6112.20.20, 6112.31.00, 6112.39.00, 6112.41.00, 6112.49.00, 6113.00.90, 6114.20.00, 6114.30.10, 6114.30.20, 6114.30.30, 6115.21.00, 6115.29.80, 6115.20.90, 6115.95.60, 6115.95.90, 6115.96.60, 6115.96.90, 6115.99.14, 6115.99.18, 6116.10.17, 6116.10.48, 6116.10.55, 6116.10.75, 6116.92.64, 6116.92.74, 6116.92.88, 6116.93.88, 6116.93.94, 6116.99.48, 6116.99.54, 6117.10.20, 6117.10.60, 6117.80.30, 6117.80.87, 6117.80.95, 6117.90.90, 6201.30.12, 6201.30.20, 6201.40.10, 6201.40.20, 6202.40.65, 6201.92.10, 6201.92.15, 6201.92.20, 6201.93.10, 6201.93.20, 6201.93.30, 6201.93.35, 6202.30.12, 6202.30.20, 6202.40.10, 6202.40.20, 6202.92.10, 6202.92.15, 6202.92.20, 6202.93.10, 6202.93.20, 6202.93.50, 6203.12.20, 6203.19.10, 6203.19.30, 6203.22.10, 6203.22.30, 6203.23.00, 6203.29.20, 6203.32.10, 6203.32.20, 6203.33.20, 6203.39.20, 6203.42.20, 6203.42.40, 6203.43.15, 6203.43.20, 6203.43.25, 6203.43.35, 6203.43.40, 6203.49.10, 6203.49.15, 6203.49.20, 6204.12.00, 6204.13.20, 6204.19.20, 6204.22.10, 6204.22.30, 6204.23.00, 6204.29.20, 6204.32.10, 6204.32.20, 6204.33.10, 6204.33.20, 6204.33.50, 6204.39.30, 6204.42.20, 6204.42.30, 6204.43.10, 6204.43.20, 6204.43.40, 6204.44.20, 6204.44.40, 6204.52.20, 6204.53.10, 6204.53.30, 6204.59.10, 6204.59.30, 6204.62.20, 6204.62.30, 6204.62.40, 6204.63.12, 6204.63.15, 6204.63.20, 6204.63.30, 6204.63.35, 6204.69.10, 6204.69.25, 6205.20.10, 6205.20.20, 6205.30.10, 6205.30.20, 6206.30.10, 6206.30.20, 6206.30.30, 6206.40.10, 6206.40.20, 6206.40.30, 6207.11.00, 6207.19.90, 6207.21.00, 6207.22.00, 6207.91.10, 6207.91.30, 6207.99.75, 6207.99.85, 6208.11.00, 6208.19.20, 6208.21.00, 6208.22.00, 6208.91.10, 6208.91.30, 6208.92.00, 6209.20.10, 6209.20.20, 6209.20.30, 6209.20.50, 6209.30.10, 6209.30.20, 6209.30.30, 6209.90.10, 6209.90.20, 6209.90.30, 6210.10.90, 6210.20.50, 6210.20.90, 6210.30.50, 6210.30.90, 6210.40.50, 6210.40.90, 6210.50.50, 6210.50.90, 6211.11.10, 6211.11.80, 6211.12.10, 6211.12.80, 6211.20.04, 6211.20.15, 6211.20.28, 6211.20.38, 6211.20.48, 6211.20.58, 6211.20.68, 6211.20.78, 6211.32.00, 6211.33.00, 6211.42.00, 6211.43.00, 6212.10.50, 6212.10.90, 6212.20.00, 6212.30.00, 6212.90.00, 6213.20.10, 6213.20.20, 6213.90.10, 6214.30.00, 6214.40.00, 6214.90.00, 6215.20.00, 6215.90.00, 6216.00.17, 6216.00.21, 6216.00.24, 6216.00.29, 6216.00.38, 6216.00.41, 6216.00.54, 6216.00.58, 6217.10.95 or 6217.90.90.
 
-6. (a) Unless otherwise provided, this note and heading 9822.03.01 are effective as to originating goods of Morocco entered under the terms of general note 27 to the tariff schedule on or after January 1, 2021. In 2021 and in successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the amount of Morocco's trade surplus, by volume, from all sources for goods in the following subheadings: 1701.12, 1701.13, 1701.14, 1701.91, 1701.99, 1702.40 and 1702.60, except that Morocco's imports of originating goods of the United States under subheadings 1702.40 and 1702.60 shall not be included in the calculation of Morocco's trade surplus.
+6.
+(a) Unless otherwise provided, this note and heading 9822.03.01 are effective as to originating goods of Morocco entered under the terms of general note 27 to the tariff schedule on or after January 1, 2021. In 2021 and in successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the amount of Morocco's trade surplus, by volume, from all sources for goods in the following subheadings: 1701.12, 1701.13, 1701.14, 1701.91, 1701.99, 1702.40 and 1702.60, except that Morocco's imports of originating goods of the United States under subheadings 1702.40 and 1702.60 shall not be included in the calculation of Morocco's trade surplus.
 
 (b) The aggregate quantity of originating goods of Morocco entered under heading 9822.03.01 in any calendar year shall be the quantity of goods equal to the amount of Morocco's trade surplus in subdivision (a) of this note.
 
-7. (a) Unless otherwise provided, this note and heading 9822.03.02 are effective as to originating goods of Morocco entered under the terms of general note 27 to the tariff schedule on or after January 1, 2021. In 2021 and in successive years thereafter, the Free rate of duty for heading 9822.03.02 in the "Special" subcolumn of rates of duty column 1 followed by the symbol "(MA)" shall apply to imports from Morocco in an aggregate quantity not to exceed 1,067,257 kilograms, of a textile or apparel good if the cotton fibers, classified in heading 5201, used in the production of the good originate in one or more of the least-developed beneficiary sub-Saharan countries designated in (b) of this note, and provided the cotton fibers are carded or combed in the territory of Morocco or the territory of the United States or of a least-developed country listed in (b) of this note.
+7.
+(a) Unless otherwise provided, this note and heading 9822.03.02 are effective as to originating goods of Morocco entered under the terms of general note 27 to the tariff schedule on or after January 1, 2021. In 2021 and in successive years thereafter, the Free rate of duty for heading 9822.03.02 in the "Special" subcolumn of rates of duty column 1 followed by the symbol "(MA)" shall apply to imports from Morocco in an aggregate quantity not to exceed 1,067,257 kilograms, of a textile or apparel good if the cotton fibers, classified in heading 5201, used in the production of the good originate in one or more of the least-developed beneficiary sub-Saharan countries designated in (b) of this note, and provided the cotton fibers are carded or combed in the territory of Morocco or the territory of the United States or of a least-developed country listed in (b) of this note.
 
 (b) The following countries for the purposes of this note are least-developed beneficiary sub-Saharan countries as designated in Article 6 of the _Bulletin Officiel, No. 4861 bis-chaoual 1421 (1.1.2001), Exonération du droit d'importation en faveur des produits originaires et en provenance de certains pays d'Afrique_, as of January 1, 2005:
 
@@ -6717,7 +6784,8 @@ under the terms of the pertinent Agreement article and on such basis as may be p
 | Guinea-Bissau                | Zambia                |
 | Lesotho                      |                       |
 
-8. (a) Unless otherwise provided, this note is effective as to originating goods of Australia entered under the terms of general note 28 to the tariff schedule on or after January 1, 2023. For 2023, and for successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the aggregate quantity applicable to originating goods of Australia.
+8.
+(a) Unless otherwise provided, this note is effective as to originating goods of Australia entered under the terms of general note 28 to the tariff schedule on or after January 1, 2023. For 2023, and for successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the aggregate quantity applicable to originating goods of Australia.
 
 (b) The aggregate quantity of originating goods of Australia entered under subheading 9822.04.01 in any calendar year shall not exceed the quantity specified in (a) of this note.
 
@@ -6732,73 +6800,85 @@ The Office of the United States Trade Representative shall publish in the Federa
 
 For purposes of this note the term "monthly average index price" means the monthly average index price for Wholesale Boxed Beef Cut-Out Value Select 1-3 Central U.S. 600-750 lbs., or its equivalent, as reported by the United States Department of Agriculture's Agricultural Marketing Service, and, the term "24-month trigger price" means the price that is 6.5 percent less than the average of the previous 24 monthly average index prices.
 
-9. (a) Unless otherwise provided, this note is effective as to originating goods of Australia entered under the terms of general note 28 to the tariff schedule on or after January 1, 2023. For 2023, and for successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the aggregate quantity applicable to originating goods of Australia. The quantity shall increase at a compounded annual growth rate of 6 percent.
+9.
+(a) Unless otherwise provided, this note is effective as to originating goods of Australia entered under the terms of general note 28 to the tariff schedule on or after January 1, 2023. For 2023, and for successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the aggregate quantity applicable to originating goods of Australia. The quantity shall increase at a compounded annual growth rate of 6 percent.
 
 (b) The aggregate quantity of originating goods of Australia entered under subheading 9822.04.05 in any calendar year shall not exceed the quantity specified in (a) of this note.
 
 The above quantity shall only be those that the U.S. importer makes a declaration to the Bureau of Customs and Border Protection (Customs), in the form and manner determined by Customs, that a valid export certificate issued by the government of Australia is in effect for the goods.
 
-10. (a) Unless otherwise provided, this note is effective as to originating goods of Australia entered under the terms of general note 28 to the tariff schedule on or after January 1, 2023. For 2023, and for successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the aggregate quantity applicable to originating goods of Australia. The quantity shall increase at a compounded annual growth rate of 3 percent.
+10.
+(a) Unless otherwise provided, this note is effective as to originating goods of Australia entered under the terms of general note 28 to the tariff schedule on or after January 1, 2023. For 2023, and for successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the aggregate quantity applicable to originating goods of Australia. The quantity shall increase at a compounded annual growth rate of 3 percent.
 
 (b) The aggregate quantity of originating goods of Australia entered under subheading 9822.04.10 in any calendar year shall not exceed the quantity specified in (a) of this note.
 
 The above quantity shall only be those that the U.S. importer makes a declaration to the Bureau of Customs and Border Protection (Customs), in the form and manner determined by Customs, that a valid export certificate issued by the government of Australia is in effect for the goods.
 
-11. (a) Unless otherwise provided, this note is effective as to originating goods of Australia entered under the terms of general note 28 to the tariff schedule on or after January 1, 2023. For 2023, and for successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the aggregate quantity applicable to originating goods of Australia. The quantity shall increase at a compounded annual growth rate of 3 percent.
+11.
+(a) Unless otherwise provided, this note is effective as to originating goods of Australia entered under the terms of general note 28 to the tariff schedule on or after January 1, 2023. For 2023, and for successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the aggregate quantity applicable to originating goods of Australia. The quantity shall increase at a compounded annual growth rate of 3 percent.
 
 (b) The aggregate quantity of originating goods of Australia entered under subheading 9822.04.15 in any calendar year shall not exceed the quantity specified in (a) of this note.
 
 The above quantity shall only be those that the U.S. importer makes a declaration to the Bureau of Customs and Border Protection (Customs), in the form and manner determined by Customs, that a valid export certificate issued by the government of Australia is in effect for the goods.
 
-12. (a) Unless otherwise provided, this note is effective as to originating goods of Australia entered under the terms of general note 28 to the tariff schedule on or after January 1, 2023. For 2023, and for successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the aggregate quantity applicable to originating goods of Australia. The quantity shall increase at a compounded annual growth rate of 4 percent.
+12.
+(a) Unless otherwise provided, this note is effective as to originating goods of Australia entered under the terms of general note 28 to the tariff schedule on or after January 1, 2023. For 2023, and for successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the aggregate quantity applicable to originating goods of Australia. The quantity shall increase at a compounded annual growth rate of 4 percent.
 
 (b) The aggregate quantity of originating goods of Australia entered under subheading 9822.04.20 in any calendar year shall not exceed the quantity specified in (a) of this note.
 
 The above quantity shall only be those that the U.S. importer makes a declaration to the Bureau of Customs and Border Protection (Customs), in the form and manner determined by Customs, that a valid export certificate issued by the government of Australia is in effect for the goods.
 
-13. (a) Unless otherwise provided, this note is effective as to originating goods of Australia entered under the terms of general note 28 to the tariff schedule on or after January 1, 2023. For 2023, and for successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the aggregate quantity applicable to originating goods of Australia. The quantity shall increase at a compounded annual growth rate of 6 percent.
+13.
+(a) Unless otherwise provided, this note is effective as to originating goods of Australia entered under the terms of general note 28 to the tariff schedule on or after January 1, 2023. For 2023, and for successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the aggregate quantity applicable to originating goods of Australia. The quantity shall increase at a compounded annual growth rate of 6 percent.
 
 (b) The aggregate quantity of originating goods of Australia entered under subheading 9822.04.25 in any calendar year shall not exceed the quantity specified in (a) of this note.
 
 The above quantity shall only be those that the U.S. importer makes a declaration to the Bureau of Customs and Border Protection (Customs), in the form and manner determined by Customs, that a valid export certificate issued by the government of Australia is in effect for the goods.
 
-14. (a) Unless otherwise provided, this note is effective as to originating goods of Australia entered under the terms of general note 28 to the tariff schedule on or after January 1, 2023. For 2023, and for successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the aggregate quantity applicable to originating goods of Australia. The quantity shall increase at a compounded annual growth rate of 6 percent.
+14.
+(a) Unless otherwise provided, this note is effective as to originating goods of Australia entered under the terms of general note 28 to the tariff schedule on or after January 1, 2023. For 2023, and for successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the aggregate quantity applicable to originating goods of Australia. The quantity shall increase at a compounded annual growth rate of 6 percent.
 
 (b) The aggregate quantity of originating goods of Australia entered under subheading 9822.04.30 in any calendar year shall not exceed the quantity specified in (a) of this note.
 
 The above quantity shall only be those that the U.S. importer makes a declaration to the Bureau of Customs and Border Protection (Customs), in the form and manner determined by Customs, that a valid export certificate issued by the government of Australia is in effect for the goods.
 
-15. (a) Unless otherwise provided, this note is effective as to originating goods of Australia entered under the terms of general note 28 to the tariff schedule on or after January 1, 2023. For 2023, and for successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the aggregate quantity applicable to originating goods of Australia. The quantity shall increase at a compounded annual growth rate of 5 percent.
+15.
+(a) Unless otherwise provided, this note is effective as to originating goods of Australia entered under the terms of general note 28 to the tariff schedule on or after January 1, 2023. For 2023, and for successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the aggregate quantity applicable to originating goods of Australia. The quantity shall increase at a compounded annual growth rate of 5 percent.
 
 (b) The aggregate quantity of originating goods of Australia entered under subheading 9822.04.35 in any calendar year shall not exceed the quantity specified in (a) of this note.
 
 The above quantity shall only be those that the U.S. importer makes a declaration to the Bureau of Customs and Border Protection (Customs), in the form and manner determined by Customs, that a valid export certificate issued by the government of Australia is in effect for the goods.
 
-16. (a) Unless otherwise provided, this note is effective as to originating goods of Australia entered under the terms of general note 28 to the tariff schedule on or after January 1, 2023. For 2023, and for successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the aggregate quantity applicable to originating goods of Australia. The quantity shall increase at a compounded annual growth rate of 5 percent.
+16.
+(a) Unless otherwise provided, this note is effective as to originating goods of Australia entered under the terms of general note 28 to the tariff schedule on or after January 1, 2023. For 2023, and for successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the aggregate quantity applicable to originating goods of Australia. The quantity shall increase at a compounded annual growth rate of 5 percent.
 
 (b) The aggregate quantity of originating goods of Australia entered under subheading 9822.04.40 in any calendar year shall not exceed the quantity specified in (a) of this note.
 
 The above quantity shall only be those that the U.S. importer makes a declaration to the Bureau of Customs and Border Protection (Customs), in the form and manner determined by Customs, that a valid export certificate issued by the government of Australia is in effect for the goods.
 
-17. (a) Unless otherwise provided, this note is effective as to originating goods of Australia entered under the terms of general note 28 to the tariff schedule on or after January 1, 2023. For 2023, and for successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the aggregate quantity applicable to originating goods of Australia. The quantity shall increase at a compounded annual growth rate of 3 percent.
+17.
+(a) Unless otherwise provided, this note is effective as to originating goods of Australia entered under the terms of general note 28 to the tariff schedule on or after January 1, 2023. For 2023, and for successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the aggregate quantity applicable to originating goods of Australia. The quantity shall increase at a compounded annual growth rate of 3 percent.
 
 (b) The aggregate quantity of originating goods of Australia entered under subheading 9822.04.45 in any calendar year shall not exceed the quantity specified in (a) of this note.
 
 The above quantity shall only be eligible for duty-free treatment if the U.S. importer makes a declaration to the Bureau of Customs and Border Protection (Customs), in the form and manner determined by Customs, that a valid export certificate issued by the government of Australia is in effect for the goods.
 
-18. (a) Unless otherwise provided, this note is effective as to originating goods of Australia entered under the terms of general note 28 to the tariff schedule on or after January 1, 2023. For 2023, and for successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the aggregate quantity applicable to originating goods of Australia. The quantity shall increase at a compounded annual growth rate of 3 percent.
+18.
+(a) Unless otherwise provided, this note is effective as to originating goods of Australia entered under the terms of general note 28 to the tariff schedule on or after January 1, 2023. For 2023, and for successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the aggregate quantity applicable to originating goods of Australia. The quantity shall increase at a compounded annual growth rate of 3 percent.
 
 (b) The aggregate quantity of originating goods of Australia entered under subheading 9822.04.50 in any calendar year shall not exceed the quantity specified in (a) of this note.
 
 The above quantity shall only be eligible for duty-free treatment if the U.S. importer makes a declaration to the Bureau of Customs and Border Protection (Customs), in the form and manner determined by Customs, that a valid export certificate issued by the government of Australia is in effect for the goods.
 
-19. (a) Unless otherwise provided, this note is effective as to originating goods of Australia entered under the terms of general note 28 to the tariff schedule on or after January 1, 2023. In 2023 and in successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the aggregate quantity applicable to originating goods of Australia. The quantity shall increase at a compounded annual growth rate of 5 percent.
+19.
+(a) Unless otherwise provided, this note is effective as to originating goods of Australia entered under the terms of general note 28 to the tariff schedule on or after January 1, 2023. In 2023 and in successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year of the aggregate quantity applicable to originating goods of Australia. The quantity shall increase at a compounded annual growth rate of 5 percent.
 
 (b) The aggregate quantity of originating goods of Australia entered under subheading 9822.04.65 in any calendar year shall not exceed the quantity specified in (a) of this note.
 
 The above quantity shall only be eligible for duty-free treatment if the U.S. importer makes a declaration to the Bureau of Customs and Border Protection (Customs), in the form and manner determined by Customs, that a valid export certificate issued by the government of Australia is in effect for the goods.
 
-20. (a) Heading 9822.05.01 shall apply to textile or apparel goods of chapters 50 through 63 and subheading 9404.90 that contain any of the fabrics, yarns or fibers set forth herein, are described in general note 29 to the tariff schedule and otherwise meet the requirements of such general note 29:
+20.
+(a) Heading 9822.05.01 shall apply to textile or apparel goods of chapters 50 through 63 and subheading 9404.90 that contain any of the fabrics, yarns or fibers set forth herein, are described in general note 29 to the tariff schedule and otherwise meet the requirements of such general note 29:
     (1) Velveteen fabrics classified in subheading 5801.23;
     (2) Corduroy fabrics classified in subheading 5801.22, containing 85 percent or more by weight of cotton and containing more than 7.5 wales per cm;
     (3) Fabrics classified in subheading 5111.11 or 5111.19, hand-woven, with a loom width of less than 76 cm, woven in the United Kingdom in accordance with the rules and regulations of the Harris Tweed Association, Ltd., and so certified by the association;
@@ -6933,7 +7013,8 @@ The above quantity shall only be eligible for duty-free treatment if the U.S. im
 
 (b) The United States Trade Representative may modify the enumeration of designated fabrics, yarns and fibers set forth in subdivision (a) of this note to reflect CITA determinations described in subdivision (a) of this note, in a notice published in the Federal Register.
 
-21. (a) For purposes of heading 9822.05.11 and 9822.05.13, the treatment provided for in general note 29(d)(vii) to the tariff schedule shall be limited to goods imported into the territory of the United States from a party to the Agreement as defined in general note 29(a), other than Dominican Republic, in aggregate quantities not to exceed the overall limit set forth in subdivisions (b) of this note, except as provided in subdivision (c) of this note. For purposes of determining the quantity of square meter equivalents (SME) to be charged against the overall limit, the conversion factors listed in _Correlation: U.S. Textile and Apparel Category System with the Harmonized Tariff Schedule of the United States of America 2003_, U.S. Department of Commerce, Office of Textiles and Apparel, or successor publication, shall apply.
+21.
+(a) For purposes of heading 9822.05.11 and 9822.05.13, the treatment provided for in general note 29(d)(vii) to the tariff schedule shall be limited to goods imported into the territory of the United States from a party to the Agreement as defined in general note 29(a), other than Dominican Republic, in aggregate quantities not to exceed the overall limit set forth in subdivisions (b) of this note, except as provided in subdivision (c) of this note. For purposes of determining the quantity of square meter equivalents (SME) to be charged against the overall limit, the conversion factors listed in _Correlation: U.S. Textile and Apparel Category System with the Harmonized Tariff Schedule of the United States of America 2003_, U.S. Department of Commerce, Office of Textiles and Apparel, or successor publication, shall apply.
 
 (b) Subject to the sublimits set out below and the exclusion provided in subdivision (c) of this note, the overall limit in the first calendar year that goods qualify for entry under this provision shall not exceed 100,000,000 SME. If this provision enters into force after January 1 of that year, the overall limit and sublimits shall be reduced in proportion to the number of full months of that year that have expired. Subject to the sublimits set out below, the overall limit for each successive calendar year that the Agreement as specified in general note 29(a) is in effect may increase up to a maximum of 200,000,000 SME in any calendar year, and the sublimits may increase so that they represent the same proportion of the overall limit as in the first calendar year that goods qualify for entry under this provision. Each percentage increase of the limits shall correspond to the percentage increase in imports into the territory of the United States from the other parties to the Agreement as defined in general note 29(a), other than Dominican Republic, of originating goods of chapter 62 of the tariff schedule.
 
@@ -6971,7 +7052,8 @@ The above quantity shall only be eligible for duty-free treatment if the U.S. im
 
 24. The aggregate quantity of goods of Costa Rica described in U.S. note 23 to this subchapter that may be entered under subheading 9822.05.15 in calendar year 2009 or in any subsequent calendar year shall not exceed 2,000 metric tons.
 
-25. (a) During the periods specified below, the aggregate quantity of goods described in U.S. note 23 to this subchapter of each party to the Agreement as defined in general note 29(a) that may be entered under subheading 9822.05.20 shall be limited to the aggregate quantity (set forth in metric tons) specified below for the country listed:
+25.
+(a) During the periods specified below, the aggregate quantity of goods described in U.S. note 23 to this subchapter of each party to the Agreement as defined in general note 29(a) that may be entered under subheading 9822.05.20 shall be limited to the aggregate quantity (set forth in metric tons) specified below for the country listed:
 
 | Period                              | Country            | Metric tons |
 | ----------------------------------- | ------------------ | ----------- |
@@ -6983,7 +7065,8 @@ The above quantity shall only be eligible for duty-free treatment if the U.S. im
 | January 1, 2009 - December 31, 2009 | Costa Rica         | 11,660      |
 | June 15, 2010 - December 31, 2010   | Costa Rica         | 11,880      |
 
-(b) (i) Beginning in 2007 and in successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year, using the most recent annual data available, of the amount of the trade surplus (the amount by which a country's exports to all destinations exceeds its imports from all sources), by volume, of each party to the Agreement as defined in general note 29(a) to the tariff schedule for goods classified in the following subheadings:
+(b)
+(i) Beginning in 2007 and in successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year, using the most recent annual data available, of the amount of the trade surplus (the amount by which a country's exports to all destinations exceeds its imports from all sources), by volume, of each party to the Agreement as defined in general note 29(a) to the tariff schedule for goods classified in the following subheadings:
 
 1701.12, 1701.13, 1701.14, 1701.91, 1701.99, 1702.40 and 1702.60,
 
@@ -7045,7 +7128,8 @@ Such goods must be certified as eligible products of such party by the competent
 
 (b) For purposes of subdivision (a) of this note, the term "eligible apparel articles" means the following articles classified in chapter 62 of the tariff schedule (and meeting the requirements of the rules relating to chapter 62 of the tariff schedule contained in general note 29(n) of such schedule) of cotton (but not of denim): trousers, bib and brace overalls, breeches and shorts, skirts and divided skirts and pants.
 
-28. (a) For purposes of this subchapter, notwithstanding any other provisions of the tariff schedule, the term "goods of Peru, under the terms of general note 32 to the tariff schedule" means goods of Peru that satisfy the requirements of general note 32 to the tariff schedule, except that operations performed in, or material obtained from, the United States shall be considered as if the operations were performed in, and the material was obtained from, a country that is not a party to the Agreement as defined in general note 32 to the tariff schedule.
+28.
+(a) For purposes of this subchapter, notwithstanding any other provisions of the tariff schedule, the term "goods of Peru, under the terms of general note 32 to the tariff schedule" means goods of Peru that satisfy the requirements of general note 32 to the tariff schedule, except that operations performed in, or material obtained from, the United States shall be considered as if the operations were performed in, and the material was obtained from, a country that is not a party to the Agreement as defined in general note 32 to the tariff schedule.
 
 (b) The United States Trade Representative (USTR) may promulgate regulations to provide for the entry of goods of Peru under subheading 9822.06.10. Such USTR regulations may, among other things, provide for the issuance of certificates of eligibility to accompany goods of Peru imported under such subheading.
 
@@ -7076,7 +7160,8 @@ In each successive calendar year after 2023, the aggregate quantity for each enu
 
 (2) For articles described in subheading 1702.90.20, by multiplying the number of kilograms of the total sugars thereof (the sum of the sucrose and reducing or invert sugars) by 1.07.
 
-29. (a) Heading 9822.06.20 shall apply to textile or apparel goods of chapters 50 through 63 and subheading 9404.90 that contain any of the fabrics, yarns or fibers set forth herein, are described in general note 32 to the tariff schedule and otherwise meet the requirements of such general note 32:
+29.
+(a) Heading 9822.06.20 shall apply to textile or apparel goods of chapters 50 through 63 and subheading 9404.90 that contain any of the fabrics, yarns or fibers set forth herein, are described in general note 32 to the tariff schedule and otherwise meet the requirements of such general note 32:
 
 (1) 100 percent polyester crushed panné velour fabric, of circular knit construction, weighing not over 271 $\text{g}/\text{m}^2$ , provided for in subheading 6001.92.00;
 
@@ -7118,7 +7203,8 @@ In each successive calendar year after 2023, the aggregate quantity for each enu
 
 (b) The United States Trade Representative may modify the enumeration of designated fabrics, yarns and fibers set forth in subdivision (a) of this note, to reflect CITA determinations described in subdivision (a) of this note, in a notice published in the Federal Register.
 
-30. (a) The tariff treatment provided for in heading 9822.06.25 is limited to goods that have been mutually agreed by Peru and by the United States and determined by CITA to fall within the following provisions:
+30.
+(a) The tariff treatment provided for in heading 9822.06.25 is limited to goods that have been mutually agreed by Peru and by the United States and determined by CITA to fall within the following provisions:
     (1) hand-loomed fabrics of a cottage industry;
     (2) hand-made cottage industry goods made of such hand-loomed fabrics; or
     (3) traditional folklore handicraft goods.
@@ -7128,7 +7214,8 @@ A historical or traditional regional design or motif includes, but is not limite
 
 (b) Such goods must be certified as eligible products of Peru by the competent authority of Peru, in accordance with any requirements established by the Committee for Implementation of Textile Agreements.
 
-31. (a) Subheadings 9822.07.10 through 9822.07.25 and the quantitative limitations set forth in subdivision (b) of this note apply to nonoriginating goods of Korea, provided for in subheading 2402.20 of the tariff schedule. The provisions of this note and such subheadings shall apply to such goods of Korea that contain nonoriginating tobacco of heading 2401, provided that: (a) leaf tobacco of heading 2401 that has been grown and harvested in the United States constitutes not less than 30 percent by weight of the tobacco contained in such goods; or (b) originating leaf tobacco of heading 2401 constitutes not less than 60 percent by weight of the tobacco contained in such goods. Nonoriginating goods of Korea entered in excess of the quantitative limitation set forth herein in any calendar year beginning with 2012 shall receive the column 1-general rate of duty provided for in the appropriate provision in chapter 24. No originating goods of Korea, under the terms of general note 33 to the tariff schedule, shall be permitted or included under these subheadings.
+31.
+(a) Subheadings 9822.07.10 through 9822.07.25 and the quantitative limitations set forth in subdivision (b) of this note apply to nonoriginating goods of Korea, provided for in subheading 2402.20 of the tariff schedule. The provisions of this note and such subheadings shall apply to such goods of Korea that contain nonoriginating tobacco of heading 2401, provided that: (a) leaf tobacco of heading 2401 that has been grown and harvested in the United States constitutes not less than 30 percent by weight of the tobacco contained in such goods; or (b) originating leaf tobacco of heading 2401 constitutes not less than 60 percent by weight of the tobacco contained in such goods. Nonoriginating goods of Korea entered in excess of the quantitative limitation set forth herein in any calendar year beginning with 2012 shall receive the column 1-general rate of duty provided for in the appropriate provision in chapter 24. No originating goods of Korea, under the terms of general note 33 to the tariff schedule, shall be permitted or included under these subheadings.
 
 (b) The aggregate quantity of goods of Korea entered under subheadings 9822.07.10 through 9822.07.25 in any calendar year shall not exceed the quantity specified below for that year.
 
@@ -7139,7 +7226,8 @@ A historical or traditional regional design or motif includes, but is not limite
 | 2014                 | 1,600,000               | 2018 and thereafter | 2,500,000               |
 | 2015                 | 1,850,000               |                     |                         |
 
-32. (a) In the period of May 15, 2012 through December 31, 2012, the aggregate quantity of goods of Colombia, as defined in General Note 34, described in U.S. note 32 to this subchapter, that is entered under subheading 9822.08.01 shall be limited to 50,000 metric tons.
+32.
+(a) In the period of May 15, 2012 through December 31, 2012, the aggregate quantity of goods of Colombia, as defined in General Note 34, described in U.S. note 32 to this subchapter, that is entered under subheading 9822.08.01 shall be limited to 50,000 metric tons.
 
 (b) Beginning in 2013 and in successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year, using the most recent annual data available, of the amount of Colombia's trade surplus (the amount by which Colombia's exports to all destinations exceeds its imports from all sources), by volume, for goods classified in the following subheadings:
 
@@ -7147,7 +7235,8 @@ A historical or traditional regional design or motif includes, but is not limite
 
 except that Colombia's exports to the United States of goods classified under subheadings 1701.12, 1701.13, 1701.14, 1701.91 and 1701.99 and its imports of originating goods of the United States classified under subheadings 1702.40 and 1702.60 shall not be included in the calculation of that country's trade surplus.
 
-(c) (i) The aggregate quantity of goods of Colombia, as defined in such general note 34, that may be entered under subheading 9822.08.01 in any calendar year set forth herein shall be the quantity of goods equal to the lesser of (1) the amount of Colombia's trade surplus determined under subdivision (b) of this note, or (2) the aggregate quantity of goods specified below for Colombia for that year.
+(c)
+(i) The aggregate quantity of goods of Colombia, as defined in such general note 34, that may be entered under subheading 9822.08.01 in any calendar year set forth herein shall be the quantity of goods equal to the lesser of (1) the amount of Colombia's trade surplus determined under subdivision (b) of this note, or (2) the aggregate quantity of goods specified below for Colombia for that year.
 
 | Year | Quantity<br>(metric tons) | Year | Quantity<br>(metric tons) |
 | ---- | ------------------------- | ---- | ------------------------- |
@@ -7169,7 +7258,8 @@ In each successive calendar year after 2026, the aggregate quantity for each enu
 
 (d) For purposes of subheading 9822.08.01, notwithstanding any other provisions of the tariff schedule, the term "goods of Colombia, under the terms of general note 34 to the tariff schedule" means goods of Colombia that satisfy the requirements of general note 34 to the tariff schedule, except that operations performed in, or material obtained from, the United States shall be considered as if the operations were performed in, and the material was obtained from, a country that is not a party to the agreement specified in such general note 34 to the tariff schedule.
 
-33. (a) Heading 9822.08.25 shall apply to textile or apparel goods of Colombia of chapters 42, 50 through 63 and 94 of the tariff schedule that contain any of the fabrics, yarns or fibers set forth herein, are described in general note 34 (m)(vii) to the tariff schedule and that otherwise meet the requirements of such general note 34:
+33.
+(a) Heading 9822.08.25 shall apply to textile or apparel goods of Colombia of chapters 42, 50 through 63 and 94 of the tariff schedule that contain any of the fabrics, yarns or fibers set forth herein, are described in general note 34 (m)(vii) to the tariff schedule and that otherwise meet the requirements of such general note 34:
     (1) Crushed panné velour fabrics classified in subheading 6001.92.00, of circular knit construction, wholly of polyester;
     (2) Cuprammonium rayon filament yarn classified in subheading 5403.39;
     (3) Yarns of combed cashmere, combed cashmere blends or combed camel hair classified in subheading 5108.20.60;
@@ -7197,7 +7287,8 @@ In each successive calendar year after 2026, the aggregate quantity for each enu
 
 (b) The United States Trade Representative may modify the enumeration of designated fabrics, yarns and fibers set forth in this note to reflect CITA determinations described in subdivision (a), above, in a notice published in the Federal Register.
 
-34. (a) The tariff treatment provided for in heading 9822.08.35 is limited to goods that have been mutually agreed by Colombia and by the United States and determined by the Committee for Implementation of Textile Agreements (CITA) to fall within the following provisions:
+34.
+(a) The tariff treatment provided for in heading 9822.08.35 is limited to goods that have been mutually agreed by Colombia and by the United States and determined by the Committee for Implementation of Textile Agreements (CITA) to fall within the following provisions:
 
 (1) hand-loomed fabrics of a cottage industry;
 
@@ -7211,7 +7302,8 @@ A historical or traditional regional design or motif includes, but is not limite
 
 (b) Such goods must be certified as eligible products of Colombia by the competent authority of Colombia, in accordance with any requirements established by CITA.
 
-35. (a) Beginning in 2012 and in successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year, using the most recent annual data available, of the amount of Panama's trade surplus (the amount by which Panama's exports to all destinations exceeds its imports from all sources), by volume, for goods of Panama under the terms of general note 35 to the tariff schedule that are classified in the following subheadings: 1701.12, 1701.13, 1701.14, 1701.91, 1701.99, 1702.40 and 1702.60, except that Panama's exports to the United States of goods classified in subheadings 1701.12, 1701.13, 1701.14, 1701.91 and 1701.99 and its imports of originating goods of the United States classified in subheadings 1702.40 and 1702.60 shall not be included in the calculation of Panama's trade surplus.
+35.
+(a) Beginning in 2012 and in successive years thereafter, the Office of the United States Trade Representative shall publish in the Federal Register a determination for that calendar year, using the most recent annual data available, of the amount of Panama's trade surplus (the amount by which Panama's exports to all destinations exceeds its imports from all sources), by volume, for goods of Panama under the terms of general note 35 to the tariff schedule that are classified in the following subheadings: 1701.12, 1701.13, 1701.14, 1701.91, 1701.99, 1702.40 and 1702.60, except that Panama's exports to the United States of goods classified in subheadings 1701.12, 1701.13, 1701.14, 1701.91 and 1701.99 and its imports of originating goods of the United States classified in subheadings 1702.40 and 1702.60 shall not be included in the calculation of Panama's trade surplus.
 
 (b) During the period from October 31, 2012 through the close of December 31, 2012, the aggregate quantity of originating goods of Panama, under the terms of general note 35 to the tariff schedule, that may be entered under subheading 9822.09.17 shall be zero.
 
@@ -7257,7 +7349,8 @@ The United States may administer the duty-free quantities established in this no
 
 (b) a thread is wholly formed in the United States if all the production processes, starting with the extrusion of filaments, strips, film or sheet, and including slitting a film or sheet into strip, or the spinning of all fibers into thread, or both, and ending with thread, took place in the United States.
 
-40. (a) Heading 9822.09.62 shall apply to textile or apparel goods of Panama of chapters 50 through 63 and subheading 9404.90 of the tariff schedule that contain any of the fabrics, yarns or fibers set forth herein, are described in general note 35(d)(ii) to the tariff schedule and that otherwise meet the requirements of such general note 35:
+40.
+(a) Heading 9822.09.62 shall apply to textile or apparel goods of Panama of chapters 50 through 63 and subheading 9404.90 of the tariff schedule that contain any of the fabrics, yarns or fibers set forth herein, are described in general note 35(d)(ii) to the tariff schedule and that otherwise meet the requirements of such general note 35:
     (1) velvetene fabrics classified in subheading 5801.23;
     (2) corduroy fabrics classified in subheading 5801.22, containing 85 percent or more by weight of cotton and containing more than 7.5 wales per cm;
     (3) fabrics of wool, classified in subheading 5111.11 or 5111.19, hand-woven, with a loom width of less than 76 cm, woven in the United Kingdom in accordance with the rules and regulations of the Harris Tweed Association, Ltd., and so certified by the Association;
@@ -7613,7 +7706,8 @@ For purposes of this note, wool apparel shall have the meaning provided in Annex
 
 (i) Subheadings 9823.53.01 through 9823.53.02 shall apply to apparel goods provided for in chapters 61 and 62 and textile or apparel goods, other than of wadding, of heading 96.19 that are both cut (or knit to shape) and sewn or otherwise assembled in Mexico from fabric or yarn produced or obtained outside the territory of one of the USMCA countries and that meet other applicable conditions for preferential tariff treatment under general note 11 to this tariff schedule except as provided for in subparagraph (A).
 
-(A) (I) blue denim provided for in subheading 5209.42 or 5211.42, U.S. statistical reporting number 5212.24.6020, 5514.30.3210 or 5514.30.3910;
+(A)
+(I) blue denim provided for in subheading 5209.42 or 5211.42, U.S. statistical reporting number 5212.24.6020, 5514.30.3210 or 5514.30.3910;
 
 (II) fabric woven as plain weave where two or more warp ends are woven as one (oxford cloth) of average yarn number less than 135 metric number provided for in subheading 5208.19, 5208.29, 5208.39, 5208.49, 5208.59, 5210.19, 5210.29, 5210.39, 5210.49, 5210.59, 5512.11, 5512.19, 5513.13, 5513.23, 5513.39 or 5513.49;
 
