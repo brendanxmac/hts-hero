@@ -28,6 +28,10 @@ import {
 import toast from "react-hot-toast";
 import { useUser } from "../../contexts/UserContext";
 import { VerticalCandidateElement } from "./VerticalCandidateElement";
+import {
+  fetchHtsNotesBySectionAndChapter,
+  getSectionAndChapterFromHtsCode,
+} from "../../libs/supabase/hts-notes";
 
 export interface VerticalClassificationStepProps {
   classificationLevel: number;
@@ -181,6 +185,7 @@ export const VerticalClassificationStep = ({
             chapterElementsWithParentIndex,
             0
           );
+
           const bestCandidateHeadings = await getBestDescriptionCandidates(
             elementsAtLevel,
             articleDescription,
@@ -209,6 +214,27 @@ export const VerticalClassificationStep = ({
             }));
 
           candidatesForHeading.push(...candidates);
+
+          const sectionAndChaptersForCandidates = candidatesForHeading
+            .map((candidate) =>
+              getSectionAndChapterFromHtsCode(candidate.htsno)
+            )
+            .filter((note) => note !== null);
+
+          console.log("Sections & Chapter for Candidates: ");
+          console.log(sectionAndChaptersForCandidates);
+
+          const notes = await Promise.all(
+            sectionAndChaptersForCandidates.map(async (sectionAndChapter) => {
+              return fetchHtsNotesBySectionAndChapter(
+                sectionAndChapter.section,
+                sectionAndChapter.chapter
+              );
+            })
+          );
+
+          console.log("notes: ");
+          console.log(notes);
         })
       );
 
