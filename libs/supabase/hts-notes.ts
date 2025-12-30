@@ -1,3 +1,4 @@
+import { HTSNote } from "../../interfaces/hts";
 import apiClient from "../api";
 
 /**
@@ -62,33 +63,22 @@ export const getSectionAndChapterFromHtsCode = (
   return { section, chapter };
 };
 
-export interface HtsNote {
-  id: string;
-  section: number | null;
-  chapter: number | null;
-  subchapter: string | null;
-  note_type: string | null;
-  note_number: string | null;
-  note_path: string | null;
-  text: string | null;
-}
-
 export const fetchHtsNotesBySection = async (
   section: number
-): Promise<HtsNote[]> => {
+): Promise<HTSNote[]> => {
   return apiClient.get(`/hts-notes/fetch?section=${section}`);
 };
 
 export const fetchHtsNotesByChapter = async (
   chapter: number
-): Promise<HtsNote[]> => {
+): Promise<HTSNote[]> => {
   return apiClient.get(`/hts-notes/fetch?chapter=${chapter}`);
 };
 
 export const fetchHtsNotesBySectionAndChapter = async (
   section: number,
   chapter: number
-): Promise<HtsNote[]> => {
+): Promise<HTSNote[]> => {
   return apiClient.get(
     `/hts-notes/fetch?section=${section}&chapter=${chapter}`
   );

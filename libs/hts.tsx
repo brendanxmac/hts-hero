@@ -20,6 +20,7 @@ import {
   SelectionWithReason,
   Importer,
   ClassificationRecord,
+  HTSNote,
 } from "../interfaces/hts";
 import {
   elementsAtClassificationLevel,
@@ -1071,3 +1072,43 @@ export const getIndexOfLastElementBeforeIndentLevel = (
 
   return htsElementsChunk.length;
 };
+
+export function buildNoteTree(notes: HTSNote[]) {
+  const map = new Map<string, HTSNote & { nodes: any[] }>();
+
+  for (const note of notes) {
+    map.set(note.id, { ...note, nodes: [] });
+  }
+
+  const roots: (HTSNote & { nodes: any[] })[] = [];
+
+  map.forEach((node) => {
+    if (node.parentId && map.has(node.parentId)) {
+      map.get(node.parentId)!.nodes.push(node);
+    } else {
+      roots.push(node);
+    }
+  });
+
+  map.forEach((node) => {
+    node.nodes.sort((a, b) => a.depth - b.depth);
+  });
+
+  return roots;
+}
+
+export function renderNoteContext(
+  nodes: any[],
+  indent = 0,
+  output: string[] = []
+) {
+  for (const node of nodes) {
+    const prefix = "  ".repeat(indent);
+    output.push(`${prefix}${node.text}`);
+
+    if (node.nodes.length > 0) {
+      renderNoteContext(node.nodes, indent + 1, output);
+    }
+  }
+  return output.join("\n");
+}

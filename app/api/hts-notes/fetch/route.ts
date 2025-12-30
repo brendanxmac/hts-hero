@@ -4,17 +4,6 @@ import { SupabaseTables } from "../../../../constants/supabase";
 
 export const dynamic = "force-dynamic";
 
-export interface HtsNote {
-  id: string;
-  section: number | null;
-  chapter: number | null;
-  subchapter: string | null;
-  note_type: string | null;
-  note_number: string | null;
-  note_path: string | null;
-  text: string | null;
-}
-
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);

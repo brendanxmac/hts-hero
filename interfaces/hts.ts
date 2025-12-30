@@ -1,3 +1,30 @@
+export type RelevanceType =
+  | "exclusion"
+  | "definition"
+  | "inclusion"
+  | "classification"
+  | "scope"
+  | "condition"
+  | "cross_reference"
+  | "administrative"
+  | "measurement";
+
+export interface HTSNote {
+  id: string;
+  section: number;
+  chapter: number | null; // null for section-level notes (before any chapter heading)
+  subchapter: string | null;
+  noteGroup: string;
+  citation: string;
+  depth: number;
+  parentId: string | null;
+  text: string;
+  children: string[];
+  referencedHtsCodes: string[];
+  // Enrichment
+  relevance?: RelevanceType[];
+}
+
 export interface HtsCodeSet {
   id: string;
   user_id: string;
