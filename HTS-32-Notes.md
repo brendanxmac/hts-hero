@@ -953,7 +953,7 @@ Of the quantitative limitations provided for in this note, the countries listed 
 | Netherlands | 104,477                  |
 | New Zealand | 589,312                  |
 
-## Statistical Note
+### Statistical Note
 
 1. The unit of quantity "kg cmsc" (kilograms cows' milk solids content) includes all cows' milk components other than water.
 
@@ -1537,16 +1537,17 @@ These provisions apply only when the ring-position hetero-atoms are those result
    (a) Give a transparent or translucent liquid or stable emulsion without separation of insoluble matter; and
    (b) Reduce the surface tension of water to $4.5 \times 10^{-2}$ N/m (45 dyne/cm) or less.
 4. In heading 3403 the expression "petroleum oils and oils obtained from bituminous minerals" applies to the products defined in note 2 to chapter 27.
-5. In heading 3404, subject to the exclusions provided below, the expression "artificial waxes and prepared waxes" applies only to:
-   (a) Chemically produced organic products of a waxy character, whether or not water-soluble;
-   (b) Products obtained by mixing different waxes;
-   (c) Products of a waxy character with a basis of one or more waxes and containing fats, resins, mineral substances or other materials.
+5. In heading 3404, subject to the exclusions provided below, the expression "artificial waxes and prepared waxes":
+(a) Heading 3404 applies only to:
+   (i) Chemically produced organic products of a waxy character, whether or not water-soluble;
+   (ii) Products obtained by mixing different waxes;
+   (iii) Products of a waxy character with a basis of one or more waxes and containing fats, resins, mineral substances or other materials.
 
-The heading does not apply to:
-(a) Goods of heading 1516, 3402 or 3823 even if having a waxy character;
-(b) Unmixed animal waxes or unmixed vegetable waxes, whether or not refined or colored, of heading 1521;
-(c) Mineral waxes or similar products of heading 2712, whether or not intermixed or merely colored; or
-(d) Waxes mixed with, dispersed in or dissolved in a liquid medium (headings 3405, 3809, etc.).
+(b) Heading 3404 does not apply to:
+(i) Goods of heading 1516, 3402 or 3823 even if having a waxy character;
+(ii) Unmixed animal waxes or unmixed vegetable waxes, whether or not refined or colored, of heading 1521;
+(iii) Mineral waxes or similar products of heading 2712, whether or not intermixed or merely colored; or
+(iv) Waxes mixed with, dispersed in or dissolved in a liquid medium (headings 3405, 3809, etc.).
 
 ## CHAPTER 35
 
@@ -1879,8 +1880,8 @@ In heading 4008 the expressions "rods" and "profile shapes" apply only to such p
 3.
 (A) In addition to the provisions of note 2, above, heading 4202 does not cover:
    (a) Bags made of sheeting of plastics, whether or not printed, with handles, not designed for prolonged use (heading 3923);
-   (a) Articles of plaiting materials (heading 4602).
-   (B) Articles of headings 4202 and 4203 which have parts of precious metal or metal clad with precious metal, of natural or cultured pearls, of precious or semiprecious stones (natural, synthetic or reconstructed) remain classified in those headings even if such parts constitute more than minor fittings or minor ornamentation, provided that these parts do not give the articles their essential character. If, on the other hand, the parts give the articles their essential character, the articles are to be classified in chapter 71.
+   (b) Articles of plaiting materials (heading 4602).
+(B) Articles of headings 4202 and 4203 which have parts of precious metal or metal clad with precious metal, of natural or cultured pearls, of precious or semiprecious stones (natural, synthetic or reconstructed) remain classified in those headings even if such parts constitute more than minor fittings or minor ornamentation, provided that these parts do not give the articles their essential character. If, on the other hand, the parts give the articles their essential character, the articles are to be classified in chapter 71.
 4. For the purposes of heading 4203, the expression "articles of apparel and clothing accessories" applies, _inter alia_, to gloves, mittens and mitts (including those for sport or for protection), aprons and other protective clothing, braces, belts, bandoliers and wrist straps, but excluding watch straps (heading 9113).
 
 ### Additional U.S. Notes
@@ -3085,7 +3086,7 @@ Garments which cannot be identified as either men's or boys' garments or as wome
 
 10. Articles of this chapter may be made of metal thread.
 
-## Additional U.S. Note
+### Additional U.S. Note
 
 1. For the purpose of heading 6111, the term "sets" means two or more different garments of headings 6111, 6209 or 6505 imported together, of corresponding sizes and intended to be worn together by the same person.
 
@@ -5726,7 +5727,7 @@ This subheading does not cover video game consoles or machines operated by coins
 
 ### SPECIAL CLASSIFICATION PROVISIONS
 
-#### U.S. Notes
+### U.S. Notes
 
 1. The provisions of this chapter are not subject to the rule of relative specificity in general rule of interpretation 3(a). Any article which is described in any provision in this chapter is classifiable in said provision if the conditions and requirements thereof and of any applicable regulations are met.
 
@@ -5747,7 +5748,7 @@ The statistical reporting numbers contained in this chapter apply only to import
 
 #### ARTICLES EXPORTED AND RETURNED, NOT ADVANCED OR IMPROVED IN CONDITION; ANIMALS EXPORTED AND RETURNED
 
-## U.S. Notes
+### U.S. Notes
 
 1. The provisions in this subchapter (except subheadings 9801.00.70 and 9801.00.80) shall not apply to any article:
    (a) Exported with benefit of drawback;
@@ -6529,8 +6530,6 @@ No preferential treatment shall be provided under this subdivision after the clo
 
 (B)
 (I) In the case of apparel articles described in subdivision (h)(iv)(B)(II) of this note, subdivision (h)(iv)(B)(I) shall be applied by substituting "70,000,000" for "200,000,000".
-
-<sup>1/</sup> The Trade Preferences Extension Act of 2015 extended the preferences under HOPE (and HOPE II and HELP) until the close of December 19, 2025,
 
 (II) Apparel articles described in this subdivision are apparel articles described below that fall within the statistical reporting numbers of the tariff schedule (as in effect on May 23, 2010), enumerated below:
 
@@ -7717,7 +7716,7 @@ For purposes of this note, wool apparel shall have the meaning provided in Annex
 
 (V) apparel goods provided for in subheading 6108.21 or 6108.22 if composed chiefly of circular knit fabric having yarn number equal to or less than 100 metric number; or
 
-(V) apparel goods described in statistical reporting numbers 6110.30.1010, 6110.30.1020, 6110.30.1510, 6110.30.1520, 6110.30.2010, 6110.30.2020, 6110.30.3010, 6110.30.3015, 6110.30.2020 or 6110.30.3025 or apparel goods of those provisions reported as parts of ensembles under statistical reporting numbers 6103.23.0030, 6103.23.0070, 6104.23.0022 or 6104.23.0040.
+(VI) apparel goods described in statistical reporting numbers 6110.30.1010, 6110.30.1020, 6110.30.1510, 6110.30.1520, 6110.30.2010, 6110.30.2020, 6110.30.3010, 6110.30.3015, 6110.30.2020 or 6110.30.3025 or apparel goods of those provisions reported as parts of ensembles under statistical reporting numbers 6103.23.0030, 6103.23.0070, 6104.23.0022 or 6104.23.0040.
 
 (B) Subheading 9823.53.01 and the rate of duty in the "special" subcolumn of column 1 followed by the symbol "S+" shall apply to apparel of cotton or man-made fiber up to the aggregate quantity of 45,000,000 SME for the period from July 1, 2020 through December 31, 2020 and in each calendar year thereafter.
 
