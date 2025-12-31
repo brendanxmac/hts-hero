@@ -23,6 +23,7 @@ export interface HTSNote {
   referencedHtsCodes: string[];
   // Enrichment
   relevance?: RelevanceType[];
+  sortOrder: number; // Global order within the document for deterministic reconstruction
 }
 
 export interface HtsCodeSet {

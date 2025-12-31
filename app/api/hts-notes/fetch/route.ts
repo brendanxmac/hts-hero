@@ -27,13 +27,23 @@ export async function GET(request: NextRequest) {
 
     let query = supabase.from(SupabaseTables.HTS_NOTES).select("*");
 
-    if (section !== null) {
+    if (section !== null && chapter !== null) {
+      // When both section and chapter are provided, get:
+      // - Section-level notes (chapter is null)
+      // - Chapter-specific notes
+      query = query
+        .eq("section", section)
+        .or(`chapter.is.null,chapter.eq.${chapter}`);
+    } else if (section !== null) {
+      // Section only: get all notes for this section (including all chapters)
       query = query.eq("section", section);
-    }
-
-    if (chapter !== null) {
+    } else if (chapter !== null) {
+      // Chapter only: get notes for this specific chapter
       query = query.eq("chapter", chapter);
     }
+
+    // Order by sort_order for proper global ordering
+    query = query.order("sort_order");
 
     const { data: notes, error } = await query;
 

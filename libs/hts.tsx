@@ -1097,18 +1097,141 @@ export function buildNoteTree(notes: HTSNote[]) {
   return roots;
 }
 
-export function renderNoteContext(
-  nodes: any[],
-  indent = 0,
-  output: string[] = []
-) {
-  for (const node of nodes) {
-    const prefix = "  ".repeat(indent);
-    output.push(`${prefix}${node.text}`);
+/**
+ * Extracts the last segment of a hierarchical citation.
+ * e.g., "6(A)(iii)" → "(iii)", "6(A)" → "(A)", "6" → "6."
+ * Adds a "." after citations that are just numbers.
+ */
+function getLastCitationPart(citation: string): string {
+  if (!citation) return "";
 
-    if (node.nodes.length > 0) {
-      renderNoteContext(node.nodes, indent + 1, output);
+  // Match the last parenthetical group like (A), (i), (ii), etc.
+  const lastParenMatch = citation.match(/\([^()]+\)$/);
+  if (lastParenMatch) {
+    return lastParenMatch[0];
+  }
+
+  // If no parenthetical, return the whole citation
+  // Add "." after if it's just a number (e.g., "6" → "6.")
+  if (/^\d+$/.test(citation)) {
+    return `${citation}.`;
+  }
+
+  return citation;
+}
+
+/**
+ * Converts a number to Roman numerals (for section numbers)
+ */
+function toRomanNumeral(num: number): string {
+  const romanNumerals: [number, string][] = [
+    [1000, "M"],
+    [900, "CM"],
+    [500, "D"],
+    [400, "CD"],
+    [100, "C"],
+    [90, "XC"],
+    [50, "L"],
+    [40, "XL"],
+    [10, "X"],
+    [9, "IX"],
+    [5, "V"],
+    [4, "IV"],
+    [1, "I"],
+  ];
+
+  let result = "";
+  for (const [value, numeral] of romanNumerals) {
+    while (num >= value) {
+      result += numeral;
+      num -= value;
     }
   }
-  return output.join("\n");
+  return result;
+}
+
+interface NoteRenderState {
+  shownSectionHeader: boolean;
+  shownChapterHeader: boolean;
+  currentNoteGroup: string | null;
+  inChapterNotes: boolean;
+}
+
+export function renderNoteContext(
+  notes: (HTSNote & { nodes: any[] })[],
+  indent = 0,
+  output: string[] = [],
+  state: NoteRenderState = {
+    shownSectionHeader: false,
+    shownChapterHeader: false,
+    currentNoteGroup: null,
+    inChapterNotes: false,
+  }
+): string {
+  for (const node of notes) {
+    // Handle both camelCase and snake_case from DB
+    const nodeGroup = node.noteGroup || (node as any).note_group || null;
+    const nodeChapter = node.chapter ?? (node as any).chapter ?? null;
+    const nodeSection = node.section ?? (node as any).section ?? null;
+    const isNodeSectionLevel = nodeChapter === null;
+
+    // At the top level (indent 0), manage headers
+    if (indent === 0) {
+      // Transitioning from section notes to chapter notes
+      if (!isNodeSectionLevel && !state.inChapterNotes) {
+        state.inChapterNotes = true;
+        state.currentNoteGroup = null; // Reset to show new noteGroup headers
+
+        // Add spacing before chapter header
+        if (output.length > 0) {
+          output.push("");
+        }
+
+        // Show "CHAPTER XX" header once
+        if (nodeChapter !== null) {
+          output.push(`CHAPTER ${nodeChapter}`);
+          state.shownChapterHeader = true;
+        }
+      }
+
+      // Show "SECTION XX" header once for section-level notes
+      if (
+        isNodeSectionLevel &&
+        !state.shownSectionHeader &&
+        nodeSection !== null
+      ) {
+        output.push(`SECTION ${toRomanNumeral(nodeSection)}`);
+        state.shownSectionHeader = true;
+      }
+
+      // Show noteGroup header when it changes
+      if (nodeGroup && nodeGroup !== state.currentNoteGroup) {
+        state.currentNoteGroup = nodeGroup;
+
+        // Add spacing before noteGroup header (but not right after section/chapter header)
+        if (output.length > 0) {
+          const lastLine = output[output.length - 1];
+          const isAfterLevelHeader =
+            lastLine.startsWith("SECTION ") || lastLine.startsWith("CHAPTER ");
+          if (!isAfterLevelHeader) {
+            output.push("");
+          }
+        }
+
+        output.push(nodeGroup.toUpperCase());
+      }
+    }
+
+    const prefix = "  ".repeat(indent);
+    // Include only the last part of the citation (e.g., "(iii)" from "6(A)(iii)")
+    const citationPart = node.citation
+      ? `${getLastCitationPart(node.citation)} `
+      : "";
+    output.push(`${prefix}${citationPart}${node.text}`);
+
+    if (node.nodes.length > 0) {
+      renderNoteContext(node.nodes, indent + 1, output, state);
+    }
+  }
+  return output.join("\n\n");
 }
