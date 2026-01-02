@@ -1,3 +1,14 @@
+export interface PreliminaryCandidate {
+  identifier: number; // the number of the candidate (ie, chapter 1, 17, etc..)
+  description: string; // the title that is assigned to the candidate, e.g. "Live Animals"
+}
+
+export interface QualifyCandidatesWithNotesDto {
+  productDescription: string;
+  candidates: PreliminaryCandidate[];
+  candidateType: "section" | "chapter";
+}
+
 export type RelevanceType =
   | "exclusion"
   | "definition"

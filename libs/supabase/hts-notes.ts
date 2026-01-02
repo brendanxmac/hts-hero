@@ -1,3 +1,5 @@
+import { SupabaseClient } from "@supabase/supabase-js";
+import { SupabaseTables } from "../../constants/supabase";
 import { HTSNote } from "../../interfaces/hts";
 import apiClient from "../api";
 
@@ -63,23 +65,76 @@ export const getSectionAndChapterFromHtsCode = (
   return { section, chapter };
 };
 
-export const fetchHtsNotesBySection = async (
-  section: number
-): Promise<HTSNote[]> => {
-  return apiClient.get(`/hts-notes/fetch?section=${section}`);
-};
-
-export const fetchHtsNotesByChapter = async (
-  chapter: number
-): Promise<HTSNote[]> => {
-  return apiClient.get(`/hts-notes/fetch?chapter=${chapter}`);
-};
-
+/**
+ * Client-side function to fetch HTS notes via the API route.
+ * Use this from React components or client-side code.
+ */
 export const fetchHtsNotesBySectionAndChapter = async (
   section: number,
-  chapter: number
+  chapter: number | null,
+  sectionOnly?: boolean
 ): Promise<HTSNote[]> => {
+  if (sectionOnly) {
+    return apiClient.get(
+      `/hts-notes/fetch?section=${section}&sectionOnly=true`
+    );
+  }
   return apiClient.get(
     `/hts-notes/fetch?section=${section}&chapter=${chapter}`
   );
+};
+
+/**
+ * Server-side function to fetch HTS notes directly from Supabase.
+ * Use this from API routes or server components to avoid circular HTTP requests.
+ *
+ * @param supabase - The Supabase client instance (created by the caller)
+ * @param section - The section number to filter by (optional)
+ * @param chapter - The chapter number to filter by (optional)
+ * @param sectionOnly - If true and section is provided, only fetch section-level notes (chapter is null)
+ * @returns Array of HTSNote objects
+ */
+export const fetchHtsNotesFromSupabase = async (
+  supabase: SupabaseClient,
+  section: number | null,
+  chapter: number | null,
+  sectionOnly?: boolean
+): Promise<HTSNote[]> => {
+  if (section === null && chapter === null) {
+    throw new Error(
+      "At least one of 'section' or 'chapter' parameter is required"
+    );
+  }
+
+  let query = supabase.from(SupabaseTables.HTS_NOTES).select("*");
+
+  if (section !== null && sectionOnly) {
+    // Section only mode: get only section-level notes (chapter is null)
+    query = query.eq("section", section).is("chapter", null);
+  } else if (section !== null && chapter !== null) {
+    // When both section and chapter are provided, get:
+    // - Section-level notes (chapter is null)
+    // - Chapter-specific notes
+    query = query
+      .eq("section", section)
+      .or(`chapter.is.null,chapter.eq.${chapter}`);
+  } else if (section !== null) {
+    // Section only: get all notes for this section (including all chapters)
+    query = query.eq("section", section);
+  } else if (chapter !== null) {
+    // Chapter only: get notes for this specific chapter
+    query = query.eq("chapter", chapter);
+  }
+
+  // Order by sort_order for proper global ordering
+  query = query.order("sort_order");
+
+  const { data: notes, error } = await query;
+
+  if (error) {
+    console.error("Error fetching HTS notes:", error);
+    throw new Error(error.message);
+  }
+
+  return notes ?? [];
 };

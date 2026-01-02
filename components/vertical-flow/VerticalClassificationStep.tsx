@@ -4,14 +4,19 @@ import { useClassification } from "../../contexts/ClassificationContext";
 import { useEffect, useRef, useState } from "react";
 import { Loader } from "../../interfaces/ui";
 import {
+  buildNoteTree,
   getBestDescriptionCandidates,
   getElementsInChapter,
+  qualifyCandidatesWithNotes,
+  renderNoteContext,
 } from "../../libs/hts";
 import {
   CandidateSelection,
   ClassificationRecord,
   ClassificationStatus,
   HtsElement,
+  HTSNote,
+  PreliminaryCandidate,
 } from "../../interfaces/hts";
 import { HtsSection } from "../../interfaces/hts";
 import { getHtsSectionsAndChapters } from "../../libs/hts";
@@ -90,7 +95,7 @@ export const VerticalClassificationStep = ({
 
   // Get 2-3 Best Sections
   const getSections = async () => {
-    setLoading({ isLoading: true, text: "Looking for Candidates" });
+    setLoading({ isLoading: true, text: "Looking for Sections" });
 
     let sections = htsSections;
 
@@ -101,12 +106,13 @@ export const VerticalClassificationStep = ({
         sections = sectionsResponse.sections;
       }
 
+      // Consider passing temperature...
       const bestSectionCandidates = await getBestDescriptionCandidates(
         [],
         articleDescription,
         true,
-        1,
-        3,
+        2,
+        undefined,
         sections.map((s) => s.description)
       );
 
@@ -114,6 +120,30 @@ export const VerticalClassificationStep = ({
         bestSectionCandidates.bestCandidates.map((candidateIndex) => ({
           index: sections[candidateIndex].number,
         }));
+
+      const candidateSections: PreliminaryCandidate[] = sections
+        .filter((section) => {
+          return candidates.some((candidate) => {
+            return candidate.index === section.number;
+          });
+        })
+        .map((section) => ({
+          identifier: section.number,
+          description: section.description,
+        }));
+
+      console.log("candidateSections:");
+      console.log(candidateSections);
+
+      // Filter Section Candidates and Provide the reason for selecting or rejecting candidates
+      const qualifiedCandidates = await qualifyCandidatesWithNotes({
+        productDescription: articleDescription,
+        candidates: candidateSections,
+        candidateType: "section",
+      });
+
+      console.log("qualifiedCandidates:");
+      console.log(qualifiedCandidates);
 
       setSectionCandidates(candidates);
     } catch (err) {
@@ -126,7 +156,7 @@ export const VerticalClassificationStep = ({
 
   // Get 2-3 Best Chapters
   const getChapters = async () => {
-    setLoading({ isLoading: true, text: "Looking for Candidates" });
+    setLoading({ isLoading: true, text: "Looking for Chapters" });
 
     try {
       const candidateSections = htsSections.filter((section) => {
@@ -168,7 +198,7 @@ export const VerticalClassificationStep = ({
 
   // Get up to 2 Best Headings Per Chapter
   const getHeadings = async () => {
-    setLoading({ isLoading: true, text: "Looking for Candidates" });
+    setLoading({ isLoading: true, text: "Looking for Headings" });
     const candidatesForHeading: HtsElement[] = [];
 
     try {

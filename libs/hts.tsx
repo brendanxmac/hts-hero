@@ -21,6 +21,8 @@ import {
   Importer,
   ClassificationRecord,
   HTSNote,
+  PreliminaryCandidate,
+  QualifyCandidatesWithNotesDto,
 } from "../interfaces/hts";
 import {
   elementsAtClassificationLevel,
@@ -606,6 +608,18 @@ export const getBestIndentLevelMatch = async (
       selectionProgression
     );
   }
+};
+
+export const qualifyCandidatesWithNotes = async ({
+  productDescription,
+  candidates,
+  candidateType,
+}: QualifyCandidatesWithNotesDto) => {
+  return await apiClient.post("/openai/qualify-candidates-with-notes", {
+    productDescription,
+    candidates,
+    candidateType,
+  });
 };
 
 export const getCodeFromHtsPrimitive = (

@@ -9,9 +9,14 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const sectionParam = searchParams.get("section");
     const chapterParam = searchParams.get("chapter");
+    const sectionOnlyParam = searchParams.get("sectionOnly");
 
-    const section = sectionParam ? parseInt(sectionParam, 10) : null;
-    const chapter = chapterParam ? parseInt(chapterParam, 10) : null;
+    const parsedSection = sectionParam ? parseInt(sectionParam, 10) : NaN;
+    const parsedChapter = chapterParam ? parseInt(chapterParam, 10) : NaN;
+
+    const section = isNaN(parsedSection) ? null : parsedSection;
+    const chapter = isNaN(parsedChapter) ? null : parsedChapter;
+    const sectionOnly = sectionOnlyParam === "true";
 
     if (section === null && chapter === null) {
       return NextResponse.json(
@@ -27,7 +32,10 @@ export async function GET(request: NextRequest) {
 
     let query = supabase.from(SupabaseTables.HTS_NOTES).select("*");
 
-    if (section !== null && chapter !== null) {
+    if (section !== null && sectionOnly) {
+      // Section only mode: get only section-level notes (chapter is null)
+      query = query.eq("section", section).is("chapter", null);
+    } else if (section !== null && chapter !== null) {
       // When both section and chapter are provided, get:
       // - Section-level notes (chapter is null)
       // - Chapter-specific notes

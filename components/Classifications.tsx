@@ -32,8 +32,6 @@ import { ClassificationStatus, Importer } from "../interfaces/hts";
 import { EmptyResultsConfig } from "./EmptyResults";
 import { deleteClassification } from "../libs/classification";
 import toast from "react-hot-toast";
-import { fetchHtsNotesBySectionAndChapter } from "../libs/supabase/hts-notes";
-import { buildNoteTree, renderNoteContext } from "../libs/hts";
 
 interface Props {
   page: ClassifyPage;
@@ -385,30 +383,30 @@ export const Classifications = ({ page, setPage }: Props) => {
   }, []);
 
   // TEMPORARY: Test HTS notes fetching and tree building for chapter 84 (section 16)
-  useEffect(() => {
-    const testNotesFetch = async () => {
-      try {
-        console.log(
-          "🧪 Testing HTS notes fetch for Chapter 84 (Section 16)..."
-        );
-        const notes = await fetchHtsNotesBySectionAndChapter(2, 8);
-        console.log("📝 Fetched notes:", notes);
+  // useEffect(() => {
+  //   const testNotesFetch = async () => {
+  //     try {
+  //       console.log(
+  //         "🧪 Testing HTS notes fetch for Chapter 84 (Section 16)..."
+  //       );
+  //       const notes = await fetchHtsNotesBySectionAndChapter(2, 8);
+  //       console.log("📝 Fetched notes:", notes);
 
-        const noteTree = buildNoteTree(notes);
-        console.log("🌳 Built note tree:", noteTree);
+  //       const noteTree = buildNoteTree(notes);
+  //       console.log("🌳 Built note tree:", noteTree);
 
-        const renderedContext = renderNoteContext(noteTree);
-        console.log("📄 Rendered note context:\n", renderedContext);
-      } catch (error) {
-        console.error("❌ Error testing HTS notes:", error);
-      }
-    };
+  //       const renderedContext = renderNoteContext(noteTree);
+  //       console.log("📄 Rendered note context:\n", renderedContext);
+  //     } catch (error) {
+  //       console.error("❌ Error testing HTS notes:", error);
+  //     }
+  //   };
 
-    // Only run when loading is complete
-    if (!loader.isLoading && !classificationsLoading) {
-      testNotesFetch();
-    }
-  }, [loader.isLoading, classificationsLoading]);
+  //   // Only run when loading is complete
+  //   if (!loader.isLoading && !classificationsLoading) {
+  //     testNotesFetch();
+  //   }
+  // }, [loader.isLoading, classificationsLoading]);
 
   if (classificationsError || userError) {
     return (
