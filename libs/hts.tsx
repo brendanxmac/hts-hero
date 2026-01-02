@@ -23,6 +23,7 @@ import {
   HTSNote,
   PreliminaryCandidate,
   QualifyCandidatesWithNotesDto,
+  CandidateQualificationResponse,
 } from "../interfaces/hts";
 import {
   elementsAtClassificationLevel,
@@ -614,12 +615,21 @@ export const qualifyCandidatesWithNotes = async ({
   productDescription,
   candidates,
   candidateType,
-}: QualifyCandidatesWithNotesDto) => {
-  return await apiClient.post("/openai/qualify-candidates-with-notes", {
-    productDescription,
-    candidates,
-    candidateType,
-  });
+}: QualifyCandidatesWithNotesDto): Promise<CandidateQualificationResponse> => {
+  const qualifiedCandidatesResponse: Array<ChatCompletion.Choice> =
+    await apiClient.post("/openai/qualify-candidates-with-notes", {
+      productDescription,
+      candidates,
+      candidateType,
+    });
+
+  const qualificationResponse = qualifiedCandidatesResponse[0].message.content;
+
+  if (qualificationResponse === null) {
+    throw new Error(`Failed to get qualification analysis`);
+  }
+
+  return JSON.parse(qualificationResponse);
 };
 
 export const getCodeFromHtsPrimitive = (

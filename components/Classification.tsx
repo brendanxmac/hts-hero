@@ -8,8 +8,11 @@ import { useUser } from "../contexts/UserContext";
 import { ClassifyPage } from "../enums/classify";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { VerticalDescriptionStep } from "./vertical-flow/VerticalDescriptionStep";
+import { VerticalSectionDiscovery } from "./vertical-flow/VerticalSectionDiscovery";
+import { VerticalChapterDiscovery } from "./vertical-flow/VerticalChapterDiscovery";
 import { VerticalClassificationStep } from "./vertical-flow/VerticalClassificationStep";
 import { VerticalClassificationResult } from "./vertical-flow/VerticalClassificationResult";
+import { SectionChapterDiscoveryProvider } from "../contexts/SectionChapterDiscoveryContext";
 import Modal from "./Modal";
 import ConversionPricing from "./ConversionPricing";
 import { Explore } from "./Explore";
@@ -306,44 +309,54 @@ export const Classification = ({ setPage }: ClassificationProps) => {
       </div>
 
       {/* Classification Flow Content */}
-      <div className="w-full max-w-5xl mx-auto px-6 py-8 flex flex-col">
-        {!classification?.isComplete ? (
-          // In-progress classification levels
-          <>
-            {classification.levels.map((level, index) => {
-              const isActiveLevel = !level.selection;
-              const previousLevelHasSelection =
-                index > 0 && classification.levels[index - 1]?.selection;
+      <SectionChapterDiscoveryProvider>
+        <div className="w-full max-w-5xl mx-auto px-6 py-8 flex flex-col">
+          {!classification?.isComplete ? (
+            // In-progress classification levels
+            <>
+              {/* Section Discovery Step */}
+              <div className="h-4" />
+              <VerticalSectionDiscovery />
 
-              return (
-                <div key={`level-${index}`}>
-                  {index > 0 ? (
+              {/* Chapter Discovery Step */}
+              <LevelConnector isActive={true} hasPreviousSelection={true} />
+              <VerticalChapterDiscovery />
+
+              {/* Heading and Sub-heading Classification Levels */}
+              {classification.levels.map((level, index) => {
+                const isActiveLevel = !level.selection;
+                const previousLevelHasSelection =
+                  index > 0 && classification.levels[index - 1]?.selection;
+
+                return (
+                  <div key={`level-${index}`}>
+                    {/* Connect from chapter discovery to first level, then between levels */}
                     <LevelConnector
                       isActive={isActiveLevel}
-                      hasPreviousSelection={!!previousLevelHasSelection}
+                      hasPreviousSelection={
+                        index === 0 ? true : !!previousLevelHasSelection
+                      }
                     />
-                  ) : (
-                    <div className="h-4" />
-                  )}
 
-                  <VerticalClassificationStep
-                    classificationLevel={index}
-                    classificationRecord={classificationRecord}
-                    onOpenExplore={handleOpenExplore}
-                  />
-                </div>
-              );
-            })}
-          </>
-        ) : (
-          // Completed classification result
-          <VerticalClassificationResult
-            userProfile={userProfile}
-            classificationRecord={classificationRecord}
-            onOpenExplore={handleOpenExplore}
-          />
-        )}
-      </div>
+                    <VerticalClassificationStep
+                      classificationLevel={index}
+                      classificationRecord={classificationRecord}
+                      onOpenExplore={handleOpenExplore}
+                    />
+                  </div>
+                );
+              })}
+            </>
+          ) : (
+            // Completed classification result
+            <VerticalClassificationResult
+              userProfile={userProfile}
+              classificationRecord={classificationRecord}
+              onOpenExplore={handleOpenExplore}
+            />
+          )}
+        </div>
+      </SectionChapterDiscoveryProvider>
 
       {/* Modals */}
       {showPricing && (

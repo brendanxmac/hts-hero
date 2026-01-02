@@ -11,7 +11,7 @@ import { QualifyCandidatesWithNotesDto } from "../../../../interfaces/hts";
 export const dynamic = "force-dynamic";
 
 const CandidateQualification = z.object({
-  qualification: z.string(),
+  analysis: z.string(),
   unqualifiedCandidates: z.array(z.number()),
 });
 
@@ -32,13 +32,6 @@ export async function POST(req: NextRequest) {
       candidates,
       candidateType,
     }: QualifyCandidatesWithNotesDto = await req.json();
-
-    console.log("productDescription:");
-    console.log(productDescription);
-    console.log("candidates:");
-    console.log(candidates);
-    console.log("candidateType:");
-    console.log(candidateType);
 
     if (
       !candidates ||
@@ -90,8 +83,6 @@ export async function POST(req: NextRequest) {
       .map((note) => renderNoteContext(buildNoteTree(note)))
       .join("\n");
 
-    console.log("Notes for Candidates:", notesMarkdown);
-
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const gptResponse = await openai.chat.completions.create({
       temperature: 0,
@@ -101,12 +92,16 @@ export async function POST(req: NextRequest) {
         {
           role: "system",
           content: `You are a United States Harmonized Tariff Schedule Expert.\n
-          Your job is to qualify each ${candidateType} based on how well it fits the Item Description and is likely to have elements within it that are a good classification of the Item Description.\n
+          Your job is to qualify each ${candidateType} based on how well it fits the Item Description and how likely it is to have elements within it that are a good classification of the Item Description.\n
           You must use the notes to qualify each ${candidateType}.\n
           If there are no notes for a ${candidateType}, you should mention that and provide reasoning as to why it's a good or bad candidate.
           
-          Note: The use of semicolons (;) in the descriptions should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".\n
-          In your response, "qualification" should include your qualification of each ${candidateType}.\n
+          In your response, "analysis" should include a qualification of each ${candidateType}.\n
+          Each qualification should have 3 parts: Title, "Qualification", and "Reasoning from Notes".
+          The "Qualification" should briefly outline candidate strength without strong conclusions.
+          "Reasoning from Notes" should briefly outline which notes, if any, qualify or disqualify the candidate, and why.
+          The response should have generous spacing so its easy to read and well structured.
+          
           If a certain candidate is disqualified based on the notes, you should include the reason in the "qualification" and the "unqualifiedCandidates" array should include the index of the candidate that is disqualified.`,
         },
         {

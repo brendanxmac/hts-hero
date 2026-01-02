@@ -1,25 +1,18 @@
 "use client";
 
 import { useClassification } from "../../contexts/ClassificationContext";
+import { useSectionChapterDiscovery } from "../../contexts/SectionChapterDiscoveryContext";
 import { useEffect, useRef, useState } from "react";
 import { Loader } from "../../interfaces/ui";
 import {
-  buildNoteTree,
   getBestDescriptionCandidates,
   getElementsInChapter,
-  qualifyCandidatesWithNotes,
-  renderNoteContext,
 } from "../../libs/hts";
 import {
-  CandidateSelection,
   ClassificationRecord,
   ClassificationStatus,
   HtsElement,
-  HTSNote,
-  PreliminaryCandidate,
 } from "../../interfaces/hts";
-import { HtsSection } from "../../interfaces/hts";
-import { getHtsSectionsAndChapters } from "../../libs/hts";
 import { setIndexInArray } from "../../utilities/data";
 import { elementsAtClassificationLevel } from "../../utilities/data";
 import { useHts } from "../../contexts/HtsContext";
@@ -61,15 +54,27 @@ export const VerticalClassificationStep = ({
   const [isExpanded, setIsExpanded] = useState(true);
   const previousArticleDescriptionRef = useRef<string>(articleDescription);
   const isMountedRef = useRef(true);
-  const [htsSections, setHtsSections] = useState<HtsSection[]>([]);
-  const [sectionCandidates, setSectionCandidates] = useState<
-    CandidateSelection[]
-  >([]);
-  const [chapterCandidates, setChapterCandidates] = useState<
-    CandidateSelection[]
-  >([]);
+  const containerRef = useRef<HTMLDivElement>(null);
   const { htsElements } = useHts();
   const hasFetchedCandidatesRef = useRef(false);
+
+  // Get chapter candidates from the discovery context
+  const { chapterCandidates, chapterDiscoveryComplete } =
+    useSectionChapterDiscovery();
+
+  // Auto-scroll to this component when chapter discovery completes (for level 0 only)
+  useEffect(() => {
+    if (
+      classificationLevel === 0 &&
+      chapterDiscoveryComplete &&
+      containerRef.current
+    ) {
+      containerRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [classificationLevel, chapterDiscoveryComplete]);
 
   const currentLevel = levels[classificationLevel];
   const optionsForLevel = currentLevel?.candidates?.length || 0;
@@ -93,109 +98,6 @@ export const VerticalClassificationStep = ({
     }
   }, [hasSelection]);
 
-  // Get 2-3 Best Sections
-  const getSections = async () => {
-    setLoading({ isLoading: true, text: "Looking for Sections" });
-
-    let sections = htsSections;
-
-    try {
-      if (sections.length === 0) {
-        const sectionsResponse = await getHtsSectionsAndChapters();
-        setHtsSections(sectionsResponse.sections);
-        sections = sectionsResponse.sections;
-      }
-
-      // Consider passing temperature...
-      const bestSectionCandidates = await getBestDescriptionCandidates(
-        [],
-        articleDescription,
-        true,
-        2,
-        undefined,
-        sections.map((s) => s.description)
-      );
-
-      const candidates: CandidateSelection[] =
-        bestSectionCandidates.bestCandidates.map((candidateIndex) => ({
-          index: sections[candidateIndex].number,
-        }));
-
-      const candidateSections: PreliminaryCandidate[] = sections
-        .filter((section) => {
-          return candidates.some((candidate) => {
-            return candidate.index === section.number;
-          });
-        })
-        .map((section) => ({
-          identifier: section.number,
-          description: section.description,
-        }));
-
-      console.log("candidateSections:");
-      console.log(candidateSections);
-
-      // Filter Section Candidates and Provide the reason for selecting or rejecting candidates
-      const qualifiedCandidates = await qualifyCandidatesWithNotes({
-        productDescription: articleDescription,
-        candidates: candidateSections,
-        candidateType: "section",
-      });
-
-      console.log("qualifiedCandidates:");
-      console.log(qualifiedCandidates);
-
-      setSectionCandidates(candidates);
-    } catch (err) {
-      console.error("Error getting sections", err);
-      toast.error("Failed to find suitable sections. Please try again.");
-    } finally {
-      setLoading({ isLoading: false, text: "" });
-    }
-  };
-
-  // Get 2-3 Best Chapters
-  const getChapters = async () => {
-    setLoading({ isLoading: true, text: "Looking for Chapters" });
-
-    try {
-      const candidateSections = htsSections.filter((section) => {
-        return sectionCandidates.some((candidate) => {
-          return candidate.index === section.number;
-        });
-      });
-
-      const candidatesForChapter: CandidateSelection[] = [];
-
-      await Promise.all(
-        candidateSections.map(async (section) => {
-          const bestChapterCandidates = await getBestDescriptionCandidates(
-            [],
-            articleDescription,
-            true,
-            1,
-            3,
-            section.chapters.map((c) => c.description)
-          );
-
-          const candidates: CandidateSelection[] =
-            bestChapterCandidates.bestCandidates.map((candidateIndex) => ({
-              index: section.chapters[candidateIndex].number,
-            }));
-
-          candidatesForChapter.push(...candidates);
-        })
-      );
-
-      setChapterCandidates(candidatesForChapter);
-    } catch (err) {
-      console.error("Error getting chapters", err);
-      toast.error("Failed to find suitable chapters. Please try again.");
-    } finally {
-      setLoading({ isLoading: false, text: "" });
-    }
-  };
-
   // Get up to 2 Best Headings Per Chapter
   const getHeadings = async () => {
     setLoading({ isLoading: true, text: "Looking for Headings" });
@@ -203,10 +105,10 @@ export const VerticalClassificationStep = ({
 
     try {
       await Promise.all(
-        chapterCandidates.map(async (chapter) => {
+        chapterCandidates.map(async (chapterCandidate) => {
           const chapterElements = getElementsInChapter(
             htsElements,
-            chapter.index
+            chapterCandidate.chapter.number
           );
 
           const chapterElementsWithParentIndex =
@@ -293,46 +195,24 @@ export const VerticalClassificationStep = ({
 
   useEffect(() => {
     if (previousArticleDescriptionRef.current !== articleDescription) {
-      setSectionCandidates([]);
-      setChapterCandidates([]);
       previousArticleDescriptionRef.current = articleDescription;
     }
   }, [articleDescription]);
 
-  // Only fetch candidates for level 0 and only once
+  // Fetch headings once chapter discovery is complete (for level 0 only)
   useEffect(() => {
     if (
       classificationLevel === 0 &&
+      chapterDiscoveryComplete &&
+      chapterCandidates.length > 0 &&
       !hasFetchedCandidatesRef.current &&
       (levels[classificationLevel] === undefined ||
-        (levels[classificationLevel] !== undefined &&
-          levels[classificationLevel].candidates.length === 0))
+        levels[classificationLevel].candidates.length === 0)
     ) {
       hasFetchedCandidatesRef.current = true;
-      getSections();
-    }
-  }, [classificationLevel]);
-
-  useEffect(() => {
-    if (
-      classificationLevel === 0 &&
-      sectionCandidates &&
-      sectionCandidates.length > 0 &&
-      chapterCandidates.length === 0
-    ) {
-      getChapters();
-    }
-  }, [sectionCandidates]);
-
-  useEffect(() => {
-    if (
-      classificationLevel === 0 &&
-      chapterCandidates &&
-      chapterCandidates.length > 0
-    ) {
       getHeadings();
     }
-  }, [chapterCandidates]);
+  }, [classificationLevel, chapterDiscoveryComplete, chapterCandidates]);
 
   const getStepDescription = (level: number) => {
     if (level === 0) {
@@ -344,6 +224,7 @@ export const VerticalClassificationStep = ({
 
   return (
     <div
+      ref={containerRef}
       className={`relative overflow-hidden rounded-2xl border ${
         isCollapsed
           ? "border-success/30 bg-base-200/50"
