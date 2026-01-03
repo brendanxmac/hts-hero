@@ -22,6 +22,7 @@ import {
   MagnifyingGlassIcon,
   QueueListIcon,
   ChevronDownIcon,
+  SparklesIcon,
 } from "@heroicons/react/16/solid";
 import toast from "react-hot-toast";
 import { useUser } from "../../contexts/UserContext";
@@ -49,7 +50,8 @@ export const VerticalClassificationStep = ({
 
   const { user } = useUser();
   const [showCrossRulingsModal, setShowCrossRulingsModal] = useState(false);
-  const { classification, updateLevel } = useClassification();
+  const { classification, updateLevel, classificationTier } =
+    useClassification();
   const { articleDescription, levels } = classification;
   const [isExpanded, setIsExpanded] = useState(true);
   const previousArticleDescriptionRef = useRef<string>(articleDescription);
@@ -385,6 +387,65 @@ export const VerticalClassificationStep = ({
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+          </div>
+
+          {/* Analysis Section */}
+          <div className="mt-6 flex flex-col gap-4">
+            <div className="flex items-center gap-2">
+              <SparklesIcon className="w-5 h-5 text-primary" />
+              <span className="text-sm font-semibold uppercase tracking-wider text-base-content/80">
+                Analysis
+              </span>
+            </div>
+
+            {classificationTier !== "premium" ? (
+              // Upsell for standard tier
+              <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20 p-5">
+                <div className="absolute inset-0 pointer-events-none">
+                  <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/20 rounded-full blur-2xl" />
+                </div>
+                <div className="relative z-10 flex flex-col gap-4">
+                  <p className="text-base leading-relaxed text-base-content">
+                    Upgrade to get in-depth analysis and candidate qualification
+                    based on exact chapter notes and the GRIs.
+                  </p>
+                  <button
+                    className="self-start px-5 py-2.5 rounded-xl text-sm font-semibold bg-primary text-primary-content hover:bg-primary/90 transition-all duration-200 shadow-lg shadow-primary/25"
+                    onClick={() => {
+                      // TODO: Implement upgrade flow
+                    }}
+                  >
+                    Upgrade
+                  </button>
+                </div>
+              </div>
+            ) : currentLevel?.analysisReason ? (
+              <div className="relative overflow-hidden rounded-xl bg-base-100 border border-primary/20 p-4">
+                <div className="absolute inset-0 pointer-events-none">
+                  <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
+                </div>
+                <div className="relative z-10">
+                  <p className="text-base leading-relaxed text-base-content whitespace-pre-line mb-3">
+                    {currentLevel.analysisReason}
+                  </p>
+                  <p className="text-xs text-base-content/60">
+                    Analysis is for information purposes only and may not be
+                    correct. Always exercise your own judgement as the
+                    classifier.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-xl border border-base-content/10 bg-base-100 p-4">
+                <p className="text-sm text-base-content/60 italic">
+                  {loading.isLoading && loading.text === "Analyzing Candidates"
+                    ? "Analyzing candidates..."
+                    : loading.isLoading
+                      ? loading.text
+                      : "Analysis will appear here after candidates are evaluated."}
+                </p>
               </div>
             )}
           </div>

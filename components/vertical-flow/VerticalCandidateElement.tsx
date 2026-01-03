@@ -71,7 +71,6 @@ export const VerticalCandidateElement = ({
 
   const currentLevel = levels[classificationLevel];
   const isRecommended = currentLevel?.analysisElement?.uuid === element.uuid;
-  const recommendedReason = currentLevel?.analysisReason;
 
   const isLevelSelection = Boolean(
     levels.some(
@@ -281,20 +280,35 @@ export const VerticalCandidateElement = ({
             {/* HTS Code Badge */}
             <div
               className={`flex items-center gap-2 ${
-                isLevelSelection
-                  ? "bg-success/25 border border-success/40 px-3 py-1.5 rounded-lg"
-                  : ""
+                isLevelSelection &&
+                "bg-success/25 border border-success/40 px-3 py-1.5 rounded-lg"
               }`}
             >
               {isLevelSelection && (
                 <CheckCircleIcon className="w-4 h-4 text-success" />
               )}
+              {isRecommended && !isLevelSelection && (
+                <SparklesIcon className="w-4 h-4 text-primary" />
+              )}
               <span
-                className={`text-sm ${isLevelSelection ? "text-success" : "text-base-content/60"}`}
+                className={`text-sm ${
+                  isLevelSelection
+                    ? "text-success"
+                    : isRecommended
+                      ? "text-primary font-bold"
+                      : "text-base-content/60"
+                }`}
               >
                 {htsno || "Prequalifier"}
               </span>
             </div>
+
+            {/* Recommended Badge */}
+            {/* {isRecommended && !isLevelSelection && (
+              <span className="px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 rounded-full">
+                Recommended
+              </span>
+            )} */}
           </div>
 
           {/* Action Buttons */}
@@ -344,46 +358,6 @@ export const VerticalCandidateElement = ({
 
         {/* Description */}
         <p className="text-base leading-relaxed font-bold">{description}</p>
-
-        {/* AI Analysis Section - animated entry */}
-        <div
-          className={`grid transition-all duration-500 ease-out ${
-            isRecommended
-              ? "grid-rows-[1fr] opacity-100 mt-4"
-              : "grid-rows-[0fr] opacity-0 mt-0"
-          }`}
-        >
-          <div className="overflow-hidden">
-            <div className="border-t border-base-content/10 pt-4">
-              <div className="relative overflow-hidden rounded-xl bg-base-100 border border-primary/20 p-4">
-                <div className="absolute inset-0 pointer-events-none">
-                  <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
-                </div>
-
-                <div className="relative z-10">
-                  <div className="flex items-center gap-1 mb-3">
-                    <div className="flex items-center justify-center w-6 h-6">
-                      <SparklesIcon className="h-3.5 w-3.5 text-primary" />
-                    </div>
-                    <span className="text-xs font-bold uppercase tracking-wider text-primary">
-                      HTS Hero Analysis
-                    </span>
-                  </div>
-
-                  <p className="text-base leading-relaxed text-base-content font-medium mb-3 whitespace-pre-line">
-                    {recommendedReason}
-                  </p>
-
-                  <p className="text-xs text-base-content/60">
-                    Analysis is for information purposes only and may not be
-                    correct. Always exercise your own judgement as the
-                    classifier.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       {showPDF && (
