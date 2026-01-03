@@ -35,6 +35,9 @@ export const VerticalSectionDiscovery = () => {
     setSectionDiscoveryComplete,
   } = useSectionChapterDiscovery();
 
+  const { classificationTier } = useClassification();
+  const isPremium = classificationTier === "premium";
+
   const [isExpanded, setIsExpanded] = useState(true);
   const [loadingPhase, setLoadingPhase] = useState<
     "finding" | "qualifying" | null
@@ -82,31 +85,34 @@ export const VerticalSectionDiscovery = () => {
 
       setSectionCandidates(candidates);
 
-      // Build preliminary candidates for qualification
-      const preliminaryCandidates: PreliminaryCandidate[] = candidates.map(
-        (c) => ({
-          identifier: c.section.number,
-          description: c.section.description,
-        })
-      );
+      // Only do qualification for premium tier
+      if (isPremium) {
+        // Build preliminary candidates for qualification
+        const preliminaryCandidates: PreliminaryCandidate[] = candidates.map(
+          (c) => ({
+            identifier: c.section.number,
+            description: c.section.description,
+          })
+        );
 
-      console.log("Section candidates:", preliminaryCandidates);
+        console.log("Section candidates:", preliminaryCandidates);
 
-      // Switch to qualifying phase
-      setLoadingPhase("qualifying");
+        // Switch to qualifying phase
+        setLoadingPhase("qualifying");
 
-      // Qualify candidates with notes (for reasoning)
-      const sectionCandidateAnalysis = await qualifyCandidatesWithNotes({
-        productDescription: articleDescription,
-        candidates: preliminaryCandidates,
-        candidateType: "section",
-      });
+        // Qualify candidates with notes (for reasoning)
+        const sectionCandidateAnalysis = await qualifyCandidatesWithNotes({
+          productDescription: articleDescription,
+          candidates: preliminaryCandidates,
+          candidateType: "section",
+        });
 
-      console.log("Section Anaylsis:", sectionCandidateAnalysis);
+        console.log("Section Anaylsis:", sectionCandidateAnalysis);
 
-      // Update reasoning if available
-      if (sectionCandidateAnalysis?.analysis) {
-        setSectionReasoning(sectionCandidateAnalysis.analysis);
+        // Update reasoning if available
+        if (sectionCandidateAnalysis?.analysis) {
+          setSectionReasoning(sectionCandidateAnalysis.analysis);
+        }
       }
 
       setSectionDiscoveryComplete(true);
@@ -289,7 +295,28 @@ export const VerticalSectionDiscovery = () => {
               </span>
             </div>
 
-            {sectionReasoning ? (
+            {!isPremium ? (
+              // Upsell for standard tier
+              <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20 p-5">
+                <div className="absolute inset-0 pointer-events-none">
+                  <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/20 rounded-full blur-2xl" />
+                </div>
+                <div className="relative z-10 flex flex-col gap-4">
+                  <p className="text-base leading-relaxed text-base-content">
+                    Upgrade to get in-depth analysis and candidate qualification
+                    based on exact chapter notes and the GRIs.
+                  </p>
+                  <button
+                    className="self-start px-5 py-2.5 rounded-xl text-sm font-semibold bg-primary text-primary-content hover:bg-primary/90 transition-all duration-200 shadow-lg shadow-primary/25"
+                    onClick={() => {
+                      // TODO: Implement upgrade flow
+                    }}
+                  >
+                    Upgrade
+                  </button>
+                </div>
+              </div>
+            ) : sectionReasoning ? (
               <div className="relative overflow-hidden rounded-xl bg-base-100 border border-primary/20 p-4">
                 <div className="absolute inset-0 pointer-events-none">
                   <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />

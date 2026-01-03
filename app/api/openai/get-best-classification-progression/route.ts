@@ -4,7 +4,12 @@ import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { requesterIsAuthenticated } from "../../supabase/server";
 import { SimplifiedHtsElement } from "../../../../interfaces/hts";
-import { OpenAIModel } from "../../../../libs/openai";
+import {
+  getBestClassificationProgressionPremium,
+  getBestClassificationProgressionStandard,
+  OpenAIModel,
+} from "../../../../libs/openai";
+import { ClassificationTier } from "../../../../contexts/ClassificationContext";
 
 export const dynamic = "force-dynamic";
 
@@ -12,16 +17,13 @@ interface GetBestClassificationProgressionDto {
   elements: SimplifiedHtsElement[];
   productDescription: string;
   htsDescription: string;
+  classificationTier: ClassificationTier;
 }
-
-const TestBestProgression = z.object({
-  index: z.number(),
-});
 
 const BestProgression = z.object({
   index: z.number(),
-  description: z.string(),
-  logic: z.string(),
+  // description: z.string(),
+  analysis: z.string(),
   // questions: z.optional(z.array(z.string())),
 });
 
@@ -41,6 +43,7 @@ export async function POST(req: NextRequest) {
       elements,
       productDescription,
       htsDescription,
+      classificationTier = "standard",
     }: GetBestClassificationProgressionDto = await req.json();
 
     if (!elements || !productDescription) {
@@ -52,28 +55,51 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // TODO: Create the premium prompt
+    // TODO: Create the premium prompt
+    // TODO: Create the premium prompt
+    // TODO: Create the premium prompt
+    // Need to find a way to pass all the right data:
+    // 1. Notes (deduplicated)
+    // 2. GRI Rules
+    // 3. Options that can be referenced and connected to notes
+    // IMPORTANT: need to adjust the new qualify candidates route to only fetch section and chapter notes and
+    // ignore all the others since they really don't matter at that leve... I think??? or it's actaully a
+    // great thing to have them that early on 🤔
+
     const labelledDescriptions = elements.map(
       ({ description }, i) => `${i + 1}: ${description}`
     );
 
-    const isTestEnv = process.env.APP_ENV === "test";
     const responseFormatOptions = {
       description:
         "Used to find the best next classification progression in the Harmonized Tariff System for a product description and the current classification description",
     };
-    const responseFormat = isTestEnv
-      ? zodResponseFormat(
-          TestBestProgression,
-          "test_best_progression",
-          responseFormatOptions
-        )
-      : zodResponseFormat(
-          BestProgression,
-          "best_classification_progression",
-          responseFormatOptions
-        );
 
+    const responseFormat = zodResponseFormat(
+      BestProgression,
+      "best_classification_progression",
+      responseFormatOptions
+    );
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+    const gptResponse =
+      classificationTier === "premium"
+        ? getBestClassificationProgressionPremium(
+            responseFormat,
+            elements,
+            productDescription,
+            htsDescription,
+            notes,
+            griRules
+          )
+        : getBestClassificationProgressionStandard(
+            responseFormat,
+            elements,
+            productDescription,
+            htsDescription
+          );
+
     const gptResponse = await openai.chat.completions.create({
       temperature: 0,
       model: OpenAIModel.FIVE_ONE,

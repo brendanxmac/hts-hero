@@ -45,6 +45,7 @@ import {
   getStringBeforeOpeningParenthesis,
   getStringBetweenParenthesis,
 } from "../utilities/hts";
+import { ClassificationTier } from "../contexts/ClassificationContext";
 
 export const downloadClassificationReport = async (
   classification: ClassificationRecord,
@@ -472,13 +473,15 @@ export const logSearch = async (productDescription: string) => {
 export const getBestClassificationProgression = async (
   elements: SimplifiedHtsElement[],
   htsDescription: string,
-  productDescription: string
+  productDescription: string,
+  classificationTier?: ClassificationTier
 ): Promise<BestProgressionResponse> => {
   const bestCandidatesResponse: Array<ChatCompletion.Choice> =
     await apiClient.post("/openai/get-best-classification-progression", {
       elements,
       productDescription,
       htsDescription,
+      classificationTier,
     });
 
   const bestCandidate = bestCandidatesResponse[0].message.content;

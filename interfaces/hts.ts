@@ -14,6 +14,11 @@ export interface QualifyCandidatesWithNotesDto {
   candidateType: "section" | "chapter";
 }
 
+export interface BestCandidateAnalysisDto {
+  productDescription: string;
+  candidates: SimplifiedHtsElement[];
+}
+
 export type RelevanceType =
   | "exclusion"
   | "definition"
@@ -134,7 +139,7 @@ export interface HsHeading {
 export interface BestProgressionResponse {
   index: number;
   description: string;
-  logic: string;
+  analysis: string;
   questions?: string[];
 }
 

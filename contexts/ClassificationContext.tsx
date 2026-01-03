@@ -15,15 +15,19 @@ import {
   updateClassification,
 } from "../libs/classification";
 
+export type ClassificationTier = "premium" | "standard";
+
 interface ClassificationContextType {
   classification?: Classification;
   classificationId?: string;
+  classificationTier: ClassificationTier;
   isCreatingClassification: boolean;
   isSaving: boolean;
   setClassificationId: (id: string | null) => void;
   setClassification: (
     classification: Classification | ((prev: Classification) => Classification)
   ) => void;
+  setClassificationTier: (tier: ClassificationTier) => void;
   // Helper functions
   setArticleDescription: (description: string) => void;
   setProgressionDescription: (description: string) => void;
@@ -60,6 +64,8 @@ export const ClassificationProvider = ({
 }) => {
   const [classificationId, setClassificationId] = useState<string | null>(null);
   const [classification, setClassification] = useState<Classification>(null);
+  const [classificationTier, setClassificationTier] =
+    useState<ClassificationTier>("standard");
   const [isCreatingClassification, setIsCreatingClassification] =
     useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -310,10 +316,12 @@ export const ClassificationProvider = ({
       value={{
         classification,
         classificationId,
+        classificationTier,
         isCreatingClassification,
         isSaving,
         setClassificationId,
         setClassification,
+        setClassificationTier,
         setArticleDescription,
         setProgressionDescription,
         setArticleAnalysis,

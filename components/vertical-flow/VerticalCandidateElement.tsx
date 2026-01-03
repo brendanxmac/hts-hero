@@ -102,7 +102,7 @@ export const VerticalCandidateElement = ({
         try {
           const {
             index: suggestedCandidateIndex,
-            logic: suggestionReason,
+            analysis: suggestionReason,
             questions: suggestionQuestions,
           } = await getBestClassificationProgression(
             simplifiedCandidates,

@@ -83,12 +83,9 @@ export const SectionChapterDiscoveryProvider = ({
     useState(false);
 
   // Section actions
-  const setSectionCandidates = useCallback(
-    (candidates: SectionCandidate[]) => {
-      setSectionCandidatesState(candidates);
-    },
-    []
-  );
+  const setSectionCandidates = useCallback((candidates: SectionCandidate[]) => {
+    setSectionCandidatesState(candidates);
+  }, []);
 
   const addSectionCandidate = useCallback((candidate: SectionCandidate) => {
     setSectionCandidatesState((prev) => [...prev, candidate]);
@@ -101,12 +98,9 @@ export const SectionChapterDiscoveryProvider = ({
   }, []);
 
   // Chapter actions
-  const setChapterCandidates = useCallback(
-    (candidates: ChapterCandidate[]) => {
-      setChapterCandidatesState(candidates);
-    },
-    []
-  );
+  const setChapterCandidates = useCallback((candidates: ChapterCandidate[]) => {
+    setChapterCandidatesState(candidates);
+  }, []);
 
   const addChapterCandidate = useCallback((candidate: ChapterCandidate) => {
     setChapterCandidatesState((prev) => [...prev, candidate]);
@@ -179,4 +173,3 @@ export const useSectionChapterDiscovery = () => {
   }
   return context;
 };
-

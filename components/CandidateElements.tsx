@@ -58,7 +58,7 @@ export const CandidateElements = ({
 
     const {
       index: suggestedCandidateIndex,
-      logic: suggestionReason,
+      analysis: suggestionReason,
       questions: suggestionQuestions,
     } = await getBestClassificationProgression(
       simplifiedCandidates,
