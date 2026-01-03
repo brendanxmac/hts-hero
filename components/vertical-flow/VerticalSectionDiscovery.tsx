@@ -36,6 +36,9 @@ export const VerticalSectionDiscovery = () => {
   } = useSectionChapterDiscovery();
 
   const [isExpanded, setIsExpanded] = useState(true);
+  const [loadingPhase, setLoadingPhase] = useState<
+    "finding" | "qualifying" | null
+  >(null);
   const hasFetchedRef = useRef(false);
 
   // Fetch section candidates on mount
@@ -49,6 +52,7 @@ export const VerticalSectionDiscovery = () => {
 
   const fetchSectionCandidates = async () => {
     setIsFetchingSections(true);
+    setLoadingPhase("finding");
 
     try {
       // Get sections if not already loaded
@@ -88,6 +92,9 @@ export const VerticalSectionDiscovery = () => {
 
       console.log("Section candidates:", preliminaryCandidates);
 
+      // Switch to qualifying phase
+      setLoadingPhase("qualifying");
+
       // Qualify candidates with notes (for reasoning)
       const sectionCandidateAnalysis = await qualifyCandidatesWithNotes({
         productDescription: articleDescription,
@@ -109,6 +116,7 @@ export const VerticalSectionDiscovery = () => {
       hasFetchedRef.current = false; // Allow retry
     } finally {
       setIsFetchingSections(false);
+      setLoadingPhase(null);
     }
   };
 
@@ -142,7 +150,7 @@ export const VerticalSectionDiscovery = () => {
               sectionDiscoveryComplete ? "text-success" : "text-primary"
             }`}
           >
-            Section Discovery
+            Sections
           </span>
 
           <button
@@ -167,14 +175,23 @@ export const VerticalSectionDiscovery = () => {
           }`}
         >
           {sectionCandidates.length > 0 && (
-            <div className="p-4 rounded-xl bg-base-100 border border-base-content/10">
-              <p className="text-base font-bold text-base-content leading-relaxed">
-                {/* {sectionCandidates.length} section
-                {sectionCandidates.length !== 1 ? "s" : ""} identified:{" "} */}
-                {sectionCandidates
-                  .map((c) => `Section ${c.section.number}`)
-                  .join(", ")}
-              </p>
+            <div className="flex flex-col gap-2">
+              {sectionCandidates.map(({ section }) => (
+                <div
+                  key={`section-${section.number}`}
+                  className="bg-base-100 p-4 flex items-center gap-3 border border-base-content/10 rounded-lg"
+                >
+                  {/* Title */}
+                  <p className="shrink-0 px-2.5 py-1 rounded-lg text-sm font-bold bg-primary/20 text-primary border border-primary/30">
+                    Section {section.number}
+                  </p>
+
+                  {/* Description */}
+                  <p className="text-base leading-relaxed font-bold">
+                    {section.description}
+                  </p>
+                </div>
+              ))}
             </div>
           )}
         </div>
@@ -202,11 +219,13 @@ export const VerticalSectionDiscovery = () => {
                       : "Candidates"}
                   </span>
                 </div>
-                {isFetchingSections && (
+                {isFetchingSections && loadingPhase && (
                   <div className="flex items-center gap-1.5 text-primary/70">
                     <span className="loading loading-spinner loading-xs"></span>
                     <span className="text-xs font-medium">
-                      Finding sections...
+                      {loadingPhase === "finding"
+                        ? "Finding sections..."
+                        : "Analyzing candidates..."}
                     </span>
                   </div>
                 )}
@@ -266,7 +285,7 @@ export const VerticalSectionDiscovery = () => {
             <div className="flex items-center gap-2">
               <SparklesIcon className="w-5 h-5 text-primary" />
               <span className="text-sm font-semibold uppercase tracking-wider text-base-content/80">
-                Reasoning
+                Analysis
               </span>
             </div>
 
@@ -284,9 +303,11 @@ export const VerticalSectionDiscovery = () => {
             ) : (
               <div className="rounded-xl border border-base-content/10 bg-base-100 p-4">
                 <p className="text-sm text-base-content/60 italic">
-                  {isFetchingSections
-                    ? "Analyzing sections..."
-                    : "Reasoning will appear here after analysis."}
+                  {loadingPhase === "qualifying"
+                    ? "Analyzing candidates..."
+                    : loadingPhase === "finding"
+                      ? "Finding sections..."
+                      : "Reasoning will appear here after analysis."}
                 </p>
               </div>
             )}

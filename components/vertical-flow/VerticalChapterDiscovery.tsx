@@ -35,18 +35,21 @@ export const VerticalChapterDiscovery = () => {
   } = useSectionChapterDiscovery();
 
   const [isExpanded, setIsExpanded] = useState(true);
+  const [loadingPhase, setLoadingPhase] = useState<
+    "finding" | "qualifying" | null
+  >(null);
   const hasFetchedRef = useRef(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  // const containerRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to this component when section discovery completes
-  useEffect(() => {
-    if (sectionDiscoveryComplete && containerRef.current) {
-      containerRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
-  }, [sectionDiscoveryComplete]);
+  // useEffect(() => {
+  //   if (sectionDiscoveryComplete && containerRef.current) {
+  //     containerRef.current.scrollIntoView({
+  //       behavior: "smooth",
+  //       block: "start",
+  //     });
+  //   }
+  // }, [sectionDiscoveryComplete]);
 
   // Fetch chapter candidates once section discovery is complete
   useEffect(() => {
@@ -62,6 +65,7 @@ export const VerticalChapterDiscovery = () => {
 
   const fetchChapterCandidates = async () => {
     setIsFetchingChapters(true);
+    setLoadingPhase("finding");
 
     try {
       const allChapterCandidates: ChapterCandidate[] = [];
@@ -94,6 +98,12 @@ export const VerticalChapterDiscovery = () => {
         })
       );
 
+      console.log("Chapter candidates:", allChapterCandidates);
+      setChapterCandidates(allChapterCandidates);
+
+      // Switch to qualifying phase
+      setLoadingPhase("qualifying");
+
       // Qualify candidates with notes (for reasoning)
       const chapterCandidateAnalysis = await qualifyCandidatesWithNotes({
         productDescription: articleDescription,
@@ -104,15 +114,13 @@ export const VerticalChapterDiscovery = () => {
         candidateType: "chapter",
       });
 
-      console.log("Section Anaylsis:", chapterCandidateAnalysis);
+      console.log("Chapter Analysis:", chapterCandidateAnalysis);
 
       // Update reasoning if available
       if (chapterCandidateAnalysis?.analysis) {
         setChapterReasoning(chapterCandidateAnalysis.analysis);
       }
 
-      console.log("Chapter candidates:", allChapterCandidates);
-      setChapterCandidates(allChapterCandidates);
       setChapterDiscoveryComplete(true);
     } catch (err) {
       console.error("Error getting chapters", err);
@@ -120,6 +128,7 @@ export const VerticalChapterDiscovery = () => {
       hasFetchedRef.current = false; // Allow retry
     } finally {
       setIsFetchingChapters(false);
+      setLoadingPhase(null);
     }
   };
 
@@ -132,7 +141,7 @@ export const VerticalChapterDiscovery = () => {
 
   return (
     <div
-      ref={containerRef}
+      // ref={containerRef}
       className={`relative overflow-hidden rounded-2xl border ${
         isCollapsed
           ? "border-success/30 bg-base-200/50"
@@ -159,7 +168,7 @@ export const VerticalChapterDiscovery = () => {
               chapterDiscoveryComplete ? "text-success" : "text-primary"
             }`}
           >
-            Chapter Discovery
+            Chapters
           </span>
 
           <button
@@ -184,14 +193,23 @@ export const VerticalChapterDiscovery = () => {
           }`}
         >
           {chapterCandidates.length > 0 && (
-            <div className="p-4 rounded-xl bg-base-100 border border-base-content/10">
-              <p className="text-base font-bold text-base-content leading-relaxed">
-                {/* {chapterCandidates.length} chapter
-                {chapterCandidates.length !== 1 ? "s" : ""} identified:{" "} */}
-                {chapterCandidates
-                  .map((c) => `Chapter ${c.chapter.number}`)
-                  .join(", ")}
-              </p>
+            <div className="flex flex-col gap-2">
+              {chapterCandidates.map(({ chapter }) => (
+                <div
+                  key={`chapter-${chapter.number}`}
+                  className="bg-base-100 p-4 flex items-center gap-3 border border-base-content/10 rounded-lg"
+                >
+                  {/* Title */}
+                  <p className="shrink-0 px-2.5 py-1 rounded-lg text-sm font-bold bg-primary/20 text-primary border border-primary/30">
+                    Chapter {chapter.number}
+                  </p>
+
+                  {/* Description */}
+                  <p className="text-base leading-relaxed font-bold">
+                    {chapter.description}
+                  </p>
+                </div>
+              ))}
             </div>
           )}
         </div>
@@ -219,11 +237,13 @@ export const VerticalChapterDiscovery = () => {
                       : "Candidates"}
                   </span>
                 </div>
-                {isFetchingChapters && (
+                {isFetchingChapters && loadingPhase && (
                   <div className="flex items-center gap-1.5 text-primary/70">
                     <span className="loading loading-spinner loading-xs"></span>
                     <span className="text-xs font-medium">
-                      Finding chapters...
+                      {loadingPhase === "finding"
+                        ? "Finding chapters..."
+                        : "Analyzing candidates..."}
                     </span>
                   </div>
                 )}
@@ -283,7 +303,7 @@ export const VerticalChapterDiscovery = () => {
             <div className="flex items-center gap-2">
               <SparklesIcon className="w-5 h-5 text-primary" />
               <span className="text-sm font-semibold uppercase tracking-wider text-base-content/80">
-                Reasoning
+                Analysis
               </span>
             </div>
 
@@ -301,9 +321,11 @@ export const VerticalChapterDiscovery = () => {
             ) : (
               <div className="rounded-xl border border-base-content/10 bg-base-100 p-4">
                 <p className="text-sm text-base-content/60 italic">
-                  {isFetchingChapters
-                    ? "Analyzing chapters..."
-                    : "Reasoning will appear here after analysis."}
+                  {loadingPhase === "qualifying"
+                    ? "Analyzing candidates..."
+                    : loadingPhase === "finding"
+                      ? "Finding chapters..."
+                      : "Reasoning will appear here after analysis."}
                 </p>
               </div>
             )}

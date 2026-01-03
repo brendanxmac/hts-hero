@@ -52,20 +52,15 @@ export async function POST(req: NextRequest) {
         `${i + 1}. ${candidateType === "section" ? "Section" : "Chapter"} ${identifier}: ${description}`
     );
 
-    console.log("labelledDescriptions:");
-    console.log(labelledDescriptions);
-
     const responseFormatOptions = {
       description:
-        "Used to determine if a section or chapter is qualified or unqualified as a potential classifier based on the product description and the notes for the candidate",
+        "Used to determine if a section or chapter is qualified or unqualified as a potential classifier of the item description based on the notes for the candidate",
     };
     const responseFormat = zodResponseFormat(
       CandidateQualification,
       "candidate_qualification",
       responseFormatOptions
     );
-
-    console.log("Fetching notes for candidates");
 
     const supabase = createClient();
     const notes = await Promise.all(
@@ -78,6 +73,9 @@ export async function POST(req: NextRequest) {
         )
       )
     );
+
+    const candidateTypeTitle =
+      candidateType === "section" ? "Section" : "Chapter";
 
     const notesMarkdown = notes
       .map((note) => renderNoteContext(buildNoteTree(note)))
@@ -92,17 +90,18 @@ export async function POST(req: NextRequest) {
         {
           role: "system",
           content: `You are a United States Harmonized Tariff Schedule Expert.\n
-          Your job is to qualify each ${candidateType} based on how well it fits the Item Description and how likely it is to have elements within it that are a good classification of the Item Description.\n
-          You must use the notes to qualify each ${candidateType}.\n
-          If there are no notes for a ${candidateType}, you should mention that and provide reasoning as to why it's a good or bad candidate.
+          Your job is to qualify each ${candidateType} candidate based on how well it fits the Item Description and how likely it is to contain children elements within it that properly classify the Item Description.\n
+          You must use the Notes provided to qualify each candidate.\n
+          If there are no notes for a candidate, you should mention that and provide reasoning as to why it's a good or bad candidate.
           
-          In your response, "analysis" should include a qualification of each ${candidateType}.\n
-          Each qualification should have 3 parts: Title, "Qualification", and "Reasoning from Notes".
-          The "Qualification" should briefly outline candidate strength without strong conclusions.
-          "Reasoning from Notes" should briefly outline which notes, if any, qualify or disqualify the candidate, and why.
-          The response should have generous spacing so its easy to read and well structured.
+          In your response, "analysis" should include a "Qualification" and "Reasoning from Notes" section for each candidate.\n
+          Each candidate should be clearly labeled with "Candiate <index>: <newline>${candidateTypeTitle} <candidate number (as number, not roman numeral)> - <candidate description>".\n
+          The "Qualification" should be a single sentance that briefly outlines candidate strength, and be formatted as: "Qualification:<newline><qualification>".\n
+          "Reasoning from Notes" should be a very concise summary of which notes, if any, qualify or disqualify the candidate, and be formatted as: "Reasoning from Notes:<newline><reasoning from notes as bullet points>".\n
+          Only mention notes that have an impact on classification for the provided item description.\n
+          Your "analysis" response should have generous spacing so it is easy to read.\n
           
-          If a certain candidate is disqualified based on the notes, you should include the reason in the "qualification" and the "unqualifiedCandidates" array should include the index of the candidate that is disqualified.`,
+          If there is enough evidence to disqualify a candidate based on the notes, its index should be included in the the "unqualifiedCandidates" property of your response.`,
         },
         {
           role: "user",
