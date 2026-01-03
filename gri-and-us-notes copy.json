@@ -1,4 +1,14 @@
 {
+  "instructions": "Apply these rules sequentially to classify goods under the Harmonized Tariff Schedule. Start with GRI 1 and only proceed to subsequent rules if classification cannot be determined. The US Additional Rules supplement the GRI for US-specific classification requirements.",
+  "classificationProcess": [
+    "1. First, attempt classification using GRI 1 (heading terms and section/chapter notes)",
+    "2. If the article is incomplete, unfinished, or disassembled, apply GRI 2",
+    "3. If classifiable under multiple headings, apply GRI 3 (a, then b, then c)",
+    "4. If still unclassifiable, apply GRI 4 (most akin)",
+    "5. Apply GRI 5 for containers and packing materials",
+    "6. Apply GRI 6 to determine subheading classification",
+    "7. Apply US Additional Rules for use-based classifications and parts provisions"
+  ],
   "generalRulesOfInterpretation": [
     {
       "rule": "GRI 1",
@@ -6,7 +16,7 @@
       "title": "Classification by Heading Terms and Notes",
       "appliesWhen": "Always apply first. This is the primary classification method.",
       "action": "Classify according to the terms of the headings and any relative section or chapter notes.",
-      "guidance": "Ignore table of contents, alphabetical index, and titles of sections/chapters, these are for reference only and have no legal effect.",
+      "guidance": "Ignore table of contents, alphabetical index, and titles of sections/chapters/sub-chapters—these are for reference only and have no legal effect.",
       "legalText": "The table of contents, alphabetical index, and titles of sections, chapters and sub-chapters are provided for ease of reference only; for legal purposes, classification shall be determined according to the terms of the headings and any relative section or chapter notes and, provided such headings or notes do not otherwise require, according to the following provisions."
     },
     {

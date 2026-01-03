@@ -370,7 +370,7 @@ export const VerticalCandidateElement = ({
                     </span>
                   </div>
 
-                  <p className="text-base leading-relaxed text-base-content font-medium mb-3">
+                  <p className="text-base leading-relaxed text-base-content font-medium mb-3 whitespace-pre-line">
                     {recommendedReason}
                   </p>
 

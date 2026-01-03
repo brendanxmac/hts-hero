@@ -1,7 +1,3 @@
-# GENERAL RULES OF INTERPRETATION
-
-Classification of goods in the tariff schedule shall be governed by the following principles:
-
 1. The table of contents, alphabetical index, and titles of sections, chapters and sub-chapters are provided for ease of reference only; for legal purposes, classification shall be determined according to the terms of the headings and any relative section or chapter notes and, provided such headings or notes do not otherwise require, according to the following provisions:
 2. (a) Any reference in a heading to an article shall be taken to include a reference to that article incomplete or unfinished, provided that, as entered, the incomplete or unfinished article has the essential character of the complete or finished article. It shall also include a reference to that article complete or finished (or falling to be classified as complete or finished by virtue of this rule), entered unassembled or disassembled.
    (b) Any reference in a heading to a material or substance shall be taken to include a reference to mixtures or combinations of that material or substance with other materials or substances. Any reference to goods of a given material or substance shall be taken to include a reference to goods consisting wholly or partly of such material or substance. The classification of goods consisting of more than one material or substance shall be according to the principles of rule 3.
