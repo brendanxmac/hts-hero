@@ -114,9 +114,6 @@ export async function POST(req: NextRequest) {
       ],
     };
 
-    console.log(`Open AI Payload:`);
-    console.log(payload);
-
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const gptResponse = await openai.chat.completions.create({
       temperature: 0.2,

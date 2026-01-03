@@ -1,6 +1,17 @@
+import { createClient } from "@supabase/supabase-js";
 import OpenAI from "openai";
 import { APIPromise } from "openai/core";
 import { AutoParseableResponseFormat } from "openai/lib/parser";
+import {
+  PreliminaryCandidateType,
+  SimplifiedHtsElement,
+} from "../interfaces/hts";
+import {
+  fetchHtsNotesForSectionsAndChapters,
+  getSectionAndChapterFromHtsCode,
+} from "./supabase/hts-notes";
+import { buildNoteTree, renderNoteContext } from "./hts";
+import { notes } from "../public/notes/notes";
 
 export enum OpenAIModel {
   FIVE_ONE = "gpt-5.1-2025-11-13",
@@ -107,9 +118,13 @@ export const getBestClassificationProgressionStandard = (
   }>,
   productDescription: string,
   htsDescription: string,
-  labelledDescriptions: string[]
+  candidateElements: SimplifiedHtsElement[]
 ): APIPromise<OpenAI.Chat.Completions.ChatCompletion> => {
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+  const labelledDescriptions = candidateElements.map(
+    ({ description }, i) => `${i + 1}: ${description}`
+  );
 
   return openai.chat.completions.create({
     temperature: 0,
@@ -137,18 +152,110 @@ export const getBestClassificationProgressionStandard = (
   });
 };
 
-export const getBestClassificationProgressionPremium = (
+export const getBestClassificationProgressionPremium = async (
   responseFormat: AutoParseableResponseFormat<{
     index?: number;
     analysis?: string;
   }>,
   productDescription: string,
   htsDescription: string,
-  labelledDescriptions: string[],
-  notes: string[],
-  griRules: string[]
+  candidateElements: SimplifiedHtsElement[]
 ) => {
+  const labelledCandidates = candidateElements.map(
+    ({ code, description }, i) => `${i + 1}: ${description}`
+  );
+
+  // Collect unique sections and chapters from candidates
+  const sections = new Set<number>();
+  const chapters = new Set<number>();
+
+  for (const candidate of candidateElements) {
+    const result = getSectionAndChapterFromHtsCode(candidate.code);
+    if (result) {
+      sections.add(result.section);
+      chapters.add(result.chapter);
+    }
+  }
+
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+
+  // Fetch all notes in a single query, grouped by section and chapter
+  const groupedNotes = await fetchHtsNotesForSectionsAndChapters(
+    supabase,
+    Array.from(sections),
+    Array.from(chapters)
+  );
+
+  console.log("groupedNotes:");
+  console.log(groupedNotes);
+
+  type NoteRecord = {
+    id: string;
+    type: "section" | "chapter";
+    number: number;
+    text: string;
+  };
+
+  // Build notes registry by rendering each section and chapter's notes
+  const notes: NoteRecord[] = [
+    ...Array.from(groupedNotes.sections.entries()).map(
+      ([sectionNum, notes]) => ({
+        id: `Section-${sectionNum}`,
+        type: "section",
+        number: sectionNum,
+        text: renderNoteContext(buildNoteTree(notes)),
+      })
+    ),
+    ...Array.from(groupedNotes.chapters.entries()).map(
+      ([chapterNum, notes]) => ({
+        id: `Chapter-${chapterNum}`,
+        type: "chapter",
+        number: chapterNum,
+        text: renderNoteContext(buildNoteTree(notes)),
+      })
+    ),
+  ];
+
+  console.log(
+    `Fetched notes for ${groupedNotes.sections.size} sections and ${groupedNotes.chapters.size} chapters`
+  );
+
+  console.log(`Notes Registry:`);
+  console.log(notes);
+
+  const candidates = candidateElements.map(
+    (
+      candidateElement
+    ): { code: string; description: string; associatedNotes: string[] } => ({
+      ...candidateElement,
+      associatedNotes: (() => {
+        // Get section and chapter numbers from the candidate element
+        const { section, chapter } = getSectionAndChapterFromHtsCode(
+          candidateElement.code ?? ""
+        );
+        // Compose IDs to match notesRegistry's id pattern
+        const noteIds: string[] = [];
+
+        notes.map((note) => {
+          if (note.type === "section" && note.number === section) {
+            noteIds.push(note.id);
+          }
+          if (note.type === "chapter" && note.number === chapter) {
+            noteIds.push(note.id);
+          }
+        });
+
+        return noteIds;
+      })(),
+    })
+  );
+
+  console.log(`Candidates:`);
+  console.log(candidates);
 
   return openai.chat.completions.create({
     temperature: 0,
@@ -164,13 +271,14 @@ export const getBestClassificationProgressionPremium = (
           Note: The use of semicolons (;) in the descriptions should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".\n
           In your response, "logic" for your selection should explain why the description you picked is the most suitable match.\n
           You should refer to the selected option as "this option" instead of writing out the option description, truncate the descriptions of the others options if beyond 30 characters if mentioned, and the item description itself should be always be referred to as "item description".\n
-          The "index" of the best option must be included in your response\n"}`,
+          The "index" of the best option must be included in your response\n
+          `,
       },
       {
         role: "user",
         content: `Item Description: ${productDescription}\n
           ${htsDescription ? `Current Description: ${htsDescription}\n` : ""}
-          Descriptions:\n ${labelledDescriptions.join("\n")}`,
+          Descriptions:\n ${labelledCandidates.join("\n")}`,
       },
     ],
   });

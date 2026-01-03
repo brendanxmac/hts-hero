@@ -476,6 +476,8 @@ export const getBestClassificationProgression = async (
   productDescription: string,
   classificationTier?: ClassificationTier
 ): Promise<BestProgressionResponse> => {
+  console.log("Classification Tier:");
+  console.log(classificationTier);
   const bestCandidatesResponse: Array<ChatCompletion.Choice> =
     await apiClient.post("/openai/get-best-classification-progression", {
       elements,

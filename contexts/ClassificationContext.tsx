@@ -65,7 +65,7 @@ export const ClassificationProvider = ({
   const [classificationId, setClassificationId] = useState<string | null>(null);
   const [classification, setClassification] = useState<Classification>(null);
   const [classificationTier, setClassificationTier] =
-    useState<ClassificationTier>("standard");
+    useState<ClassificationTier>("premium");
   const [isCreatingClassification, setIsCreatingClassification] =
     useState(false);
   const [isSaving, setIsSaving] = useState(false);

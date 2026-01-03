@@ -138,3 +138,79 @@ export const fetchHtsNotesFromSupabase = async (
 
   return notes ?? [];
 };
+
+/**
+ * Result type for batch fetching HTS notes for multiple sections and chapters.
+ * Notes are grouped by section number (for section-level notes) and chapter number (for chapter-specific notes).
+ */
+export interface GroupedHtsNotes {
+  sections: Map<number, HTSNote[]>;
+  chapters: Map<number, HTSNote[]>;
+}
+
+/**
+ * Server-side function to fetch HTS notes for multiple sections and chapters in a single query.
+ * Returns notes grouped by section and chapter for easy iteration.
+ *
+ * @param supabase - The Supabase client instance
+ * @param sections - Array of section numbers to fetch section-level notes for
+ * @param chapters - Array of chapter numbers to fetch chapter-specific notes for
+ * @returns GroupedHtsNotes with notes organized by section and chapter
+ */
+export const fetchHtsNotesForSectionsAndChapters = async (
+  supabase: SupabaseClient,
+  sections: number[],
+  chapters: number[]
+): Promise<GroupedHtsNotes> => {
+  if (sections.length === 0 && chapters.length === 0) {
+    return { sections: new Map(), chapters: new Map() };
+  }
+
+  // Build OR conditions for the query
+  const orConditions: string[] = [];
+
+  // For sections: fetch section-level notes (chapter is null)
+  for (const section of sections) {
+    orConditions.push(`and(section.eq.${section},chapter.is.null)`);
+  }
+
+  // For chapters: fetch chapter-specific notes
+  for (const chapter of chapters) {
+    orConditions.push(`chapter.eq.${chapter}`);
+  }
+
+  const query = supabase
+    .from(SupabaseTables.HTS_NOTES)
+    .select("*")
+    .or(orConditions.join(","))
+    .order("sort_order");
+
+  const { data: notes, error } = await query;
+
+  if (error) {
+    console.error("Error fetching HTS notes:", error);
+    throw new Error(error.message);
+  }
+
+  // Group notes by section (for section-level) and chapter (for chapter-specific)
+  const result: GroupedHtsNotes = {
+    sections: new Map(),
+    chapters: new Map(),
+  };
+
+  for (const note of notes ?? []) {
+    if (note.chapter === null) {
+      // Section-level note
+      const sectionNotes = result.sections.get(note.section) ?? [];
+      sectionNotes.push(note);
+      result.sections.set(note.section, sectionNotes);
+    } else {
+      // Chapter-specific note
+      const chapterNotes = result.chapters.get(note.chapter) ?? [];
+      chapterNotes.push(note);
+      result.chapters.set(note.chapter, chapterNotes);
+    }
+  }
+
+  return result;
+};

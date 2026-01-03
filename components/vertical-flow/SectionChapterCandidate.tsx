@@ -1,11 +1,12 @@
 "use client";
 
 import { TrashIcon } from "@heroicons/react/24/solid";
+import { PreliminaryCandidateType } from "../../interfaces/hts";
 
 interface SectionChapterCandidateProps {
   number: number;
   description: string;
-  type: "section" | "chapter";
+  type: PreliminaryCandidateType;
   reasoning?: string;
   disabled?: boolean;
   onRemove: () => void;
@@ -54,7 +55,9 @@ export const SectionChapterCandidate = ({
         </div>
 
         {/* Description */}
-        <p className="mt-3 text-base leading-relaxed font-bold">{description}</p>
+        <p className="mt-3 text-base leading-relaxed font-bold">
+          {description}
+        </p>
 
         {/* Reasoning (if provided) */}
         {reasoning && (
@@ -70,4 +73,3 @@ export const SectionChapterCandidate = ({
     </div>
   );
 };
-

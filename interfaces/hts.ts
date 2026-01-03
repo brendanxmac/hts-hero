@@ -8,10 +8,12 @@ export interface PreliminaryCandidate {
   description: string; // the title that is assigned to the candidate, e.g. "Live Animals"
 }
 
+export type PreliminaryCandidateType = "section" | "chapter";
+
 export interface QualifyCandidatesWithNotesDto {
   productDescription: string;
   candidates: PreliminaryCandidate[];
-  candidateType: "section" | "chapter";
+  candidateType: PreliminaryCandidateType;
 }
 
 export interface BestCandidateAnalysisDto {

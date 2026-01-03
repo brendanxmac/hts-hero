@@ -58,7 +58,7 @@ export const VerticalCandidateElement = ({
   const { clearBreadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { sections } = useHtsSections();
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
-  const { classification, updateLevel, setClassification } =
+  const { classification, updateLevel, setClassification, classificationTier } =
     useClassification();
   const { htsElements } = useHts();
   const {
@@ -107,7 +107,8 @@ export const VerticalCandidateElement = ({
           } = await getBestClassificationProgression(
             simplifiedCandidates,
             getProgressionDescriptionWithArrows(levels),
-            articleDescription + "\n" + articleAnalysis
+            articleDescription + "\n" + articleAnalysis,
+            classificationTier
           );
 
           if (!isMountedRef.current) return;
