@@ -8,12 +8,12 @@ export interface PreliminaryCandidate {
   description: string; // the title that is assigned to the candidate, e.g. "Live Animals"
 }
 
-export type PreliminaryCandidateType = "section" | "chapter";
+export type PreliminaryLevelType = "section" | "chapter";
 
 export interface QualifyCandidatesWithNotesDto {
   productDescription: string;
   candidates: PreliminaryCandidate[];
-  candidateType: PreliminaryCandidateType;
+  candidateType: PreliminaryLevelType;
 }
 
 export interface BestCandidateAnalysisDto {
@@ -209,10 +209,17 @@ export interface ClassificationRecord {
   country_of_origin?: string;
 }
 
+export interface PreliminaryClassificationLevel {
+  level: PreliminaryLevelType;
+  candidates: PreliminaryCandidate[];
+  analysis: string;
+}
+
 export interface Classification {
   articleDescription: string;
   articleAnalysis: string;
   progressionDescription: string;
+  preliminaryLevels?: PreliminaryClassificationLevel[];
   levels: ClassificationProgression[];
   isComplete: boolean;
   notes?: string;

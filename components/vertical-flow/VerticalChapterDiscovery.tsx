@@ -8,6 +8,11 @@ import {
   qualifyCandidatesWithNotes,
 } from "../../libs/hts";
 import { ChapterCandidate } from "../../contexts/SectionChapterDiscoveryContext";
+import {
+  PreliminaryCandidate,
+  PreliminaryClassificationLevel,
+  Navigatable,
+} from "../../interfaces/hts";
 import toast from "react-hot-toast";
 import {
   QueueListIcon,
@@ -18,7 +23,8 @@ import {
 import { SectionChapterCandidate } from "./SectionChapterCandidate";
 
 export const VerticalChapterDiscovery = () => {
-  const { classification } = useClassification();
+  const { classification, setClassification, classificationTier } =
+    useClassification();
   const { articleDescription } = classification || {};
   const {
     sectionCandidates,
@@ -34,7 +40,6 @@ export const VerticalChapterDiscovery = () => {
     setChapterDiscoveryComplete,
   } = useSectionChapterDiscovery();
 
-  const { classificationTier } = useClassification();
   const isPremium = classificationTier === "premium";
 
   const [isExpanded, setIsExpanded] = useState(true);
@@ -42,17 +47,68 @@ export const VerticalChapterDiscovery = () => {
     "finding" | "qualifying" | null
   >(null);
   const hasFetchedRef = useRef(false);
-  // const containerRef = useRef<HTMLDivElement>(null);
+  const hasLoadedFromClassificationRef = useRef(false);
 
-  // Auto-scroll to this component when section discovery completes
-  // useEffect(() => {
-  //   if (sectionDiscoveryComplete && containerRef.current) {
-  //     containerRef.current.scrollIntoView({
-  //       behavior: "smooth",
-  //       block: "start",
-  //     });
-  //   }
-  // }, [sectionDiscoveryComplete]);
+  // Helper to update preliminary levels in classification
+  const updateChapterPreliminaryLevel = (
+    candidates: PreliminaryCandidate[],
+    analysis: string
+  ) => {
+    setClassification((prev) => {
+      const existingLevels = prev.preliminaryLevels || [];
+      // Find and update chapter level, or add new one
+      const chapterIndex = existingLevels.findIndex(
+        (l) => l.level === "chapter"
+      );
+      const newLevel: PreliminaryClassificationLevel = {
+        level: "chapter",
+        candidates,
+        analysis,
+      };
+
+      if (chapterIndex >= 0) {
+        const updatedLevels = [...existingLevels];
+        updatedLevels[chapterIndex] = newLevel;
+        return { ...prev, preliminaryLevels: updatedLevels };
+      } else {
+        return { ...prev, preliminaryLevels: [...existingLevels, newLevel] };
+      }
+    });
+  };
+
+  // Load from existing classification preliminaryLevels if available
+  useEffect(() => {
+    if (hasLoadedFromClassificationRef.current) return;
+    if (!classification?.preliminaryLevels) return;
+    if (!sectionDiscoveryComplete) return;
+
+    const chapterLevel = classification.preliminaryLevels.find(
+      (l) => l.level === "chapter"
+    );
+    if (chapterLevel && chapterLevel.candidates.length > 0) {
+      hasLoadedFromClassificationRef.current = true;
+      hasFetchedRef.current = true; // Prevent fetching since we have data
+
+      // Load candidates into discovery context
+      // For chapter candidates, we create minimal objects since we only have identifier/description
+      const loadedCandidates: ChapterCandidate[] = chapterLevel.candidates.map(
+        (c) => ({
+          chapter: {
+            number: c.identifier,
+            description: c.description,
+            type: Navigatable.CHAPTER,
+          },
+          sectionNumber: 0, // We don't have section number stored, but it's not critical for display
+        })
+      );
+
+      setChapterCandidates(loadedCandidates);
+      if (chapterLevel.analysis) {
+        setChapterReasoning(chapterLevel.analysis);
+      }
+      setChapterDiscoveryComplete(true);
+    }
+  }, [classification?.preliminaryLevels, sectionDiscoveryComplete]);
 
   // Fetch chapter candidates once section discovery is complete
   useEffect(() => {
@@ -104,6 +160,15 @@ export const VerticalChapterDiscovery = () => {
       console.log("Chapter candidates:", allChapterCandidates);
       setChapterCandidates(allChapterCandidates);
 
+      // Build preliminary candidates for saving to classification
+      const preliminaryCandidates: PreliminaryCandidate[] =
+        allChapterCandidates.map((candidate) => ({
+          identifier: candidate.chapter.number,
+          description: candidate.chapter.description,
+        }));
+
+      let analysisText = "";
+
       // Only do qualification for premium tier
       if (isPremium) {
         // Switch to qualifying phase
@@ -112,10 +177,7 @@ export const VerticalChapterDiscovery = () => {
         // Qualify candidates with notes (for reasoning)
         const chapterCandidateAnalysis = await qualifyCandidatesWithNotes({
           productDescription: articleDescription,
-          candidates: allChapterCandidates.map((candidate) => ({
-            identifier: candidate.chapter.number,
-            description: candidate.chapter.description,
-          })),
+          candidates: preliminaryCandidates,
           candidateType: "chapter",
         });
 
@@ -124,8 +186,12 @@ export const VerticalChapterDiscovery = () => {
         // Update reasoning if available
         if (chapterCandidateAnalysis?.analysis) {
           setChapterReasoning(chapterCandidateAnalysis.analysis);
+          analysisText = chapterCandidateAnalysis.analysis;
         }
       }
+
+      // Save to classification's preliminaryLevels
+      updateChapterPreliminaryLevel(preliminaryCandidates, analysisText);
 
       setChapterDiscoveryComplete(true);
     } catch (err) {

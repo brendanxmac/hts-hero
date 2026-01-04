@@ -39,12 +39,14 @@ export interface VerticalClassificationStepProps {
   classificationLevel: number;
   classificationRecord: ClassificationRecord;
   onOpenExplore: () => void;
+  disableAutoScroll?: boolean;
 }
 
 export const VerticalClassificationStep = ({
   classificationLevel,
   classificationRecord,
   onOpenExplore,
+  disableAutoScroll = false,
 }: VerticalClassificationStepProps) => {
   const [loading, setLoading] = useState<Loader>({
     isLoading: false,
@@ -84,14 +86,15 @@ export const VerticalClassificationStep = ({
     if (
       classificationLevel === 0 &&
       chapterDiscoveryComplete &&
-      containerRef.current
+      containerRef.current &&
+      !disableAutoScroll
     ) {
       containerRef.current.scrollIntoView({
         behavior: "smooth",
         block: "start",
       });
     }
-  }, [classificationLevel, chapterDiscoveryComplete]);
+  }, [classificationLevel, chapterDiscoveryComplete, disableAutoScroll]);
 
   const currentLevel = levels[classificationLevel];
   const optionsForLevel = currentLevel?.candidates?.length || 0;

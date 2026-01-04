@@ -1129,12 +1129,24 @@ export const generateBasisForClassification = (
   classification: Classification
 ): string => {
   const parts: string[] = [];
+  const separator = "------------------------------";
 
+  // Add preliminary level analysis (section and chapter) if available
+  if (classification.preliminaryLevels) {
+    classification.preliminaryLevels.forEach((level) => {
+      if (level.analysis) {
+        const title =
+          level.level === "section" ? "Section Analysis" : "Chapter Analysis";
+        parts.push(`${title}\n${separator}\n\n${level.analysis}`);
+      }
+    });
+  }
+
+  // Add regular classification level analysis
   classification.levels.forEach((level, index) => {
     if (level.analysisReason) {
       const title =
         index === 0 ? "Heading Selection" : `Subheading ${index} Selection`;
-      const separator = "------------------------------";
       parts.push(`${title}\n${separator}\n\n${level.analysisReason}`);
     }
   });

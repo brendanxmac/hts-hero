@@ -8,7 +8,10 @@ import {
   getBestDescriptionCandidates,
   qualifyCandidatesWithNotes,
 } from "../../libs/hts";
-import { PreliminaryCandidate } from "../../interfaces/hts";
+import {
+  PreliminaryCandidate,
+  PreliminaryClassificationLevel,
+} from "../../interfaces/hts";
 import toast from "react-hot-toast";
 import {
   QueueListIcon,
@@ -20,7 +23,8 @@ import { SectionChapterCandidate } from "./SectionChapterCandidate";
 import { useState } from "react";
 
 export const VerticalSectionDiscovery = () => {
-  const { classification } = useClassification();
+  const { classification, setClassification, classificationTier } =
+    useClassification();
   const { articleDescription } = classification || {};
   const { getSections, sections: htsSections } = useHtsSections();
   const {
@@ -35,7 +39,6 @@ export const VerticalSectionDiscovery = () => {
     setSectionDiscoveryComplete,
   } = useSectionChapterDiscovery();
 
-  const { classificationTier } = useClassification();
   const isPremium = classificationTier === "premium";
 
   const [isExpanded, setIsExpanded] = useState(true);
@@ -43,6 +46,72 @@ export const VerticalSectionDiscovery = () => {
     "finding" | "qualifying" | null
   >(null);
   const hasFetchedRef = useRef(false);
+  const hasLoadedFromClassificationRef = useRef(false);
+
+  // Helper to update preliminary levels in classification
+  const updateSectionPreliminaryLevel = (
+    candidates: PreliminaryCandidate[],
+    analysis: string
+  ) => {
+    setClassification((prev) => {
+      const existingLevels = prev.preliminaryLevels || [];
+      // Find and update section level, or add new one
+      const sectionIndex = existingLevels.findIndex(
+        (l) => l.level === "section"
+      );
+      const newLevel: PreliminaryClassificationLevel = {
+        level: "section",
+        candidates,
+        analysis,
+      };
+
+      if (sectionIndex >= 0) {
+        const updatedLevels = [...existingLevels];
+        updatedLevels[sectionIndex] = newLevel;
+        return { ...prev, preliminaryLevels: updatedLevels };
+      } else {
+        return { ...prev, preliminaryLevels: [...existingLevels, newLevel] };
+      }
+    });
+  };
+
+  // Load from existing classification preliminaryLevels if available
+  useEffect(() => {
+    if (hasLoadedFromClassificationRef.current) return;
+    if (!classification?.preliminaryLevels) return;
+
+    const sectionLevel = classification.preliminaryLevels.find(
+      (l) => l.level === "section"
+    );
+    if (sectionLevel && sectionLevel.candidates.length > 0) {
+      hasLoadedFromClassificationRef.current = true;
+      hasFetchedRef.current = true; // Prevent fetching since we have data
+
+      // Load candidates into discovery context - need to fetch full section data
+      const loadSectionData = async () => {
+        let sections = htsSections;
+        if (sections.length === 0) {
+          sections = await getSections();
+        }
+
+        const loadedCandidates = sectionLevel.candidates
+          .map((c) => {
+            const section = sections.find((s) => s.number === c.identifier);
+            if (!section) return null;
+            return { section };
+          })
+          .filter(Boolean);
+
+        setSectionCandidates(loadedCandidates);
+        if (sectionLevel.analysis) {
+          setSectionReasoning(sectionLevel.analysis);
+        }
+        setSectionDiscoveryComplete(true);
+      };
+
+      loadSectionData();
+    }
+  }, [classification?.preliminaryLevels, htsSections]);
 
   // Fetch section candidates on mount
   useEffect(() => {
@@ -85,16 +154,18 @@ export const VerticalSectionDiscovery = () => {
 
       setSectionCandidates(candidates);
 
+      // Build preliminary candidates for saving to classification
+      const preliminaryCandidates: PreliminaryCandidate[] = candidates.map(
+        (c) => ({
+          identifier: c.section.number,
+          description: c.section.description,
+        })
+      );
+
+      let analysisText = "";
+
       // Only do qualification for premium tier
       if (isPremium) {
-        // Build preliminary candidates for qualification
-        const preliminaryCandidates: PreliminaryCandidate[] = candidates.map(
-          (c) => ({
-            identifier: c.section.number,
-            description: c.section.description,
-          })
-        );
-
         console.log("Section candidates:", preliminaryCandidates);
 
         // Switch to qualifying phase
@@ -112,8 +183,12 @@ export const VerticalSectionDiscovery = () => {
         // Update reasoning if available
         if (sectionCandidateAnalysis?.analysis) {
           setSectionReasoning(sectionCandidateAnalysis.analysis);
+          analysisText = sectionCandidateAnalysis.analysis;
         }
       }
+
+      // Save to classification's preliminaryLevels
+      updateSectionPreliminaryLevel(preliminaryCandidates, analysisText);
 
       setSectionDiscoveryComplete(true);
     } catch (err) {

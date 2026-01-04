@@ -62,9 +62,12 @@ import { NumberInput } from "../NumberInput";
 import { PercentageInput } from "../PercentageInput";
 import { SecondaryLabel } from "../SecondaryLabel";
 import { VerticalClassificationStep } from "./VerticalClassificationStep";
+import { VerticalSectionDiscovery } from "./VerticalSectionDiscovery";
+import { VerticalChapterDiscovery } from "./VerticalChapterDiscovery";
 import {
   ClassificationDetailsSummary,
   TariffDutiesSummary,
+  LevelConnector,
 } from "../classification-ui";
 
 interface Props {
@@ -106,6 +109,19 @@ export const VerticalClassificationResult = ({
   useLayoutEffect(() => {
     resizeBasisTextarea();
   }, [classification.notes, classification.levels, resizeBasisTextarea]);
+
+  // Initialize notes with generated basis when classification is first completed
+  useEffect(() => {
+    if (
+      classification.isComplete &&
+      (classification.notes === undefined || classification.notes === null)
+    ) {
+      setClassification({
+        ...classification,
+        notes: generateBasisForClassification(classification),
+      });
+    }
+  }, [classification.isComplete]);
 
   // State for importers
   const [importers, setImporters] = useState<Importer[]>([]);
@@ -550,13 +566,22 @@ export const VerticalClassificationResult = ({
         }
         collapsedContent={<ClassificationDetailsSummary levels={levels} />}
       >
-        <div
-          className={`flex flex-col ${classification.isComplete ? "gap-2" : ""}`}
-        >
+        <div className="flex flex-col">
+          {/* Section & Chapter Discovery - only show if preliminaryLevels exist */}
+          {classification.preliminaryLevels &&
+            classification.preliminaryLevels.length > 0 && (
+              <>
+                <VerticalSectionDiscovery />
+                <LevelConnector isActive={false} hasPreviousSelection={true} />
+                <VerticalChapterDiscovery />
+                <LevelConnector isActive={false} hasPreviousSelection={true} />
+              </>
+            )}
+
           {/* Classification Levels */}
           {levels.map((level, index) => (
             <div key={`level-${index}`}>
-              {/* Flow Connector - shows between levels only when classification is not complete */}
+              {/* Flow Connector - shows between levels */}
               {index > 0 && (
                 <div className="flex flex-col items-center py-3">
                   <div className="w-px h-3 bg-gradient-to-b from-success/30 to-success/20" />
@@ -571,6 +596,7 @@ export const VerticalClassificationResult = ({
                 classificationLevel={index}
                 classificationRecord={classificationRecord}
                 onOpenExplore={onOpenExplore}
+                disableAutoScroll
               />
             </div>
           ))}
@@ -655,6 +681,32 @@ export const VerticalClassificationResult = ({
             <h3 className="text-lg font-bold text-base-content">
               Basis for Classification
             </h3>
+            {canUpdateDetails && (
+              <div className="ml-auto flex gap-2">
+                <button
+                  className="btn btn-sm gap-1.5 btn-neutral shrink-0"
+                  onClick={() => {
+                    setClassification({
+                      ...classification,
+                      notes: "",
+                    });
+                  }}
+                >
+                  Clear
+                </button>
+                <button
+                  className="btn btn-sm gap-1.5 btn-neutral shrink-0"
+                  onClick={() => {
+                    setClassification({
+                      ...classification,
+                      notes: generateBasisForClassification(classification),
+                    });
+                  }}
+                >
+                  Reset
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -669,10 +721,7 @@ export const VerticalClassificationResult = ({
                 : "bg-base-200/50 border-base-content/15 cursor-not-allowed opacity-60"
             }`}
             placeholder="Add any notes about your classification here"
-            value={
-              classification.notes ||
-              generateBasisForClassification(classification)
-            }
+            value={classification.notes ?? ""}
             disabled={!canUpdateDetails}
             onChange={(e) => {
               setClassification({

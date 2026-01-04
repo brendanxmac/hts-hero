@@ -1,12 +1,12 @@
 "use client";
 
 import { TrashIcon } from "@heroicons/react/24/solid";
-import { PreliminaryCandidateType } from "../../interfaces/hts";
+import { PreliminaryLevelType } from "../../interfaces/hts";
 
 interface SectionChapterCandidateProps {
   number: number;
   description: string;
-  type: PreliminaryCandidateType;
+  type: PreliminaryLevelType;
   reasoning?: string;
   disabled?: boolean;
   onRemove: () => void;
