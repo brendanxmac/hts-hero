@@ -4,17 +4,13 @@ import fs from "fs";
 import path from "path";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { createClient, requesterIsAuthenticated } from "../../supabase/server";
+import { requesterIsAuthenticated } from "../../supabase/server";
 import { SimplifiedHtsElement } from "../../../../interfaces/hts";
 import { OpenAIModel } from "../../../../libs/openai";
 import { ClassificationTier } from "../../../../contexts/ClassificationContext";
 import { APIPromise } from "openai/core";
 import { AutoParseableResponseFormat } from "openai/lib/parser";
-import { renderNoteContext, buildNoteTree } from "../../../../libs/hts";
-import {
-  getSectionAndChapterFromHtsCode,
-  fetchHtsNotesForSectionsAndChapters,
-} from "../../../../libs/supabase/hts-notes";
+import { getSectionAndChapterFromHtsCode } from "../../../../libs/supabase/hts-notes";
 import { NoteRecord } from "../../../../types/hts";
 
 export const dynamic = "force-dynamic";
@@ -24,6 +20,8 @@ interface GetBestClassificationProgressionDto {
   productDescription: string;
   htsDescription: string;
   classificationTier: ClassificationTier;
+  notes?: NoteRecord[]; // Pre-fetched notes from context (optional)
+  level: number;
 }
 
 const BestProgression = z.object({
@@ -50,28 +48,18 @@ export async function POST(req: NextRequest) {
       productDescription,
       htsDescription,
       classificationTier = "standard",
+      notes: providedNotes,
+      level,
     }: GetBestClassificationProgressionDto = await req.json();
 
-    if (!elements || !productDescription) {
+    if (!elements || !productDescription || level == null) {
       return NextResponse.json(
         {
-          error: "Missing descriptions or product description",
+          error: "Missing candidates, product description, or level",
         },
         { status: 400 }
       );
     }
-
-    // TODO: Create the premium prompt
-    // TODO: Create the premium prompt
-    // TODO: Create the premium prompt
-    // TODO: Create the premium prompt
-    // Need to find a way to pass all the right data:
-    // 1. Notes (deduplicated)
-    // 2. GRI Rules
-    // 3. Options that can be referenced and connected to notes
-    // IMPORTANT: need to adjust the new qualify candidates route to only fetch section and chapter notes and
-    // ignore all the others since they really don't matter at that leve... I think??? or it's actaully a
-    // great thing to have them that early on 🤔
 
     const responseFormatOptions = {
       description:
@@ -94,7 +82,9 @@ export async function POST(req: NextRequest) {
             productDescription,
             htsDescription,
             elements,
-            griRules
+            griRules,
+            level,
+            providedNotes
           )
         : await getBestClassificationProgressionStandard(
             responseFormat,
@@ -166,75 +156,18 @@ const getBestClassificationProgressionPremium = async (
   productDescription: string,
   htsDescription: string,
   candidateElements: SimplifiedHtsElement[],
-  griRules: string
+  griRules: string,
+  level: number,
+  providedNotes?: NoteRecord[]
 ) => {
-  // Create a function that will get notes for candidates
-  // First, try to check if the notes exist in context
-  // If not, then go fetch the notes from database & do processing
-
-  // If we are beyond progressionLevel 1
-  // Check if there is a selectedElement for first progressionLevel
-  // If yes, use it to grab the section and chapter, and we won't
-  // have to grab notes for everything thereafter
-
-  // Actually... use context to store fetched notes, stored as NoteRecord
-  // If we are beyond the first level, just fetch the notes for the section and chapter
-  // of the selectedElement, and then do the associations of the candidates to those
-  // notes here below.
-
-  // although, consider the case where there's WAY too many notes, like Ch 84 (i think)
-
-  // Collect unique sections and chapters from candidates
-  const sections = new Set<number>();
-  const chapters = new Set<number>();
-
-  for (const candidate of candidateElements) {
-    const result = getSectionAndChapterFromHtsCode(candidate.code);
-    if (result) {
-      sections.add(result.section);
-      chapters.add(result.chapter);
-    }
+  if (!providedNotes) {
+    throw new Error("No notes provided");
   }
 
+  console.log("Provided Notes:");
+  console.log(providedNotes);
+
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-  const supabase = createClient();
-
-  // Fetch all notes in a single query, grouped by section and chapter
-  const groupedNotes = await fetchHtsNotesForSectionsAndChapters(
-    supabase,
-    Array.from(sections),
-    Array.from(chapters)
-  );
-
-  console.log("groupedNotes:");
-  console.log(groupedNotes);
-
-  // Build notes registry by rendering each section and chapter's notes
-  const notes: NoteRecord[] = [
-    ...Array.from(groupedNotes.sections.entries()).map(
-      ([sectionNum, notes]) => ({
-        id: `Section-${sectionNum}`,
-        type: "section",
-        number: sectionNum,
-        text: renderNoteContext(buildNoteTree(notes)),
-      })
-    ),
-    ...Array.from(groupedNotes.chapters.entries()).map(
-      ([chapterNum, notes]) => ({
-        id: `Chapter-${chapterNum}`,
-        type: "chapter",
-        number: chapterNum,
-        text: renderNoteContext(buildNoteTree(notes)),
-      })
-    ),
-  ];
-
-  console.log(
-    `Fetched notes for ${groupedNotes.sections.size} sections and ${groupedNotes.chapters.size} chapters`
-  );
-
-  console.log(`Notes Registry:`);
-  console.log(notes);
 
   const candidates = candidateElements.map(
     (
@@ -249,14 +182,27 @@ const getBestClassificationProgressionPremium = async (
       index: i + 1,
       ...candidateElement,
       associatedNotes: (() => {
+        // After level 0, all notes will be the same for all candidates
+        if (level > 0) {
+          return providedNotes.map((note) => note.id);
+        }
+
         // Get section and chapter numbers from the candidate element
-        const { section, chapter } = getSectionAndChapterFromHtsCode(
+        const sectionAndChapter = getSectionAndChapterFromHtsCode(
           candidateElement.code ?? ""
         );
+
+        // If we couldn't determine section/chapter, return empty notes
+        if (!sectionAndChapter) {
+          return [];
+        }
+
+        const { section, chapter } = sectionAndChapter;
+
         // Compose IDs to match notesRegistry's id pattern
         const noteIds: string[] = [];
 
-        notes.map((note) => {
+        providedNotes.map((note) => {
           if (note.type === "section" && note.number === section) {
             noteIds.push(note.id);
           }
@@ -296,7 +242,7 @@ const getBestClassificationProgressionPremium = async (
         content: `Item Description: ${productDescription}\n
           ${htsDescription ? `Current Description: ${htsDescription}\n` : ""}
           GRI Rules: ${JSON.stringify(griRules)}\n
-          Legal Notes: ${JSON.stringify(notes, null, 2)}\n
+          Legal Notes: ${JSON.stringify(providedNotes, null, 2)}\n
           Candidates:\n ${JSON.stringify(candidates, null, 2)}\n`,
       },
     ],

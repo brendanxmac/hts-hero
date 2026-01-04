@@ -9,7 +9,10 @@ import {
   getBestDescriptionCandidates,
   getElementsInChapter,
   getProgressionDescriptionWithArrows,
+  getSectionsAndChaptersFromCandidates,
+  fetchNotesForSectionsAndChapters,
 } from "../../libs/hts";
+import { NoteRecord } from "../../types/hts";
 import {
   ClassificationRecord,
   ClassificationStatus,
@@ -48,8 +51,13 @@ export const VerticalClassificationStep = ({
 
   const { user } = useUser();
   const [showCrossRulingsModal, setShowCrossRulingsModal] = useState(false);
-  const { classification, updateLevel, classificationTier } =
-    useClassification();
+  const {
+    classification,
+    updateLevel,
+    classificationTier,
+    addNotes,
+    getNotesForSectionsAndChapters,
+  } = useClassification();
   const { articleDescription, articleAnalysis, levels } = classification;
   const [isExpanded, setIsExpanded] = useState(true);
   const previousArticleDescriptionRef = useRef<string>(articleDescription);
@@ -98,12 +106,53 @@ export const VerticalClassificationStep = ({
     }
   }, [hasSelection]);
 
+  /**
+   * Fetches all relevant notes for the given candidates.
+   * Checks the context cache first, fetches missing notes, and adds them to context.
+   */
+  const getNotesForCandidates = async (
+    simplifiedCandidates: { code: string; description: string }[]
+  ): Promise<NoteRecord[]> => {
+    // Extract sections and chapters from candidates
+    const { sections, chapters } =
+      getSectionsAndChaptersFromCandidates(simplifiedCandidates);
+
+    // Check which notes we already have in context
+    const { existingNotes, missingSections, missingChapters } =
+      getNotesForSectionsAndChapters(sections, chapters);
+
+    // Fetch any missing notes
+    if (missingSections.length > 0 || missingChapters.length > 0) {
+      console.log(
+        `Fetching missing notes: ${missingSections.length} sections, ${missingChapters.length} chapters`
+      );
+      console.log("Fetching Note from Database");
+      const fetchedNotes = await fetchNotesForSectionsAndChapters(
+        missingSections,
+        missingChapters
+      );
+
+      // Add fetched notes to context cache
+      if (fetchedNotes.length > 0) {
+        addNotes(fetchedNotes);
+      }
+
+      // Return all notes (existing + newly fetched)
+      return [...existingNotes, ...fetchedNotes];
+    } else {
+      console.log(" 🚀 All notes were already in context 🚀");
+    }
+
+    // All notes were already in context
+    return existingNotes;
+  };
+
   // Fetch AI analysis when candidates are loaded and no analysis exists yet
   useEffect(() => {
-    console.log("ATTEMPING TO FIND BEST CLASSIFICATION PROGRESSION");
     isMountedRef.current = true;
 
     const findBestClassificationProgression = async () => {
+      console.log("ATTEMPING TO FIND BEST CLASSIFICATION PROGRESSION");
       if (
         currentLevel?.candidates?.length > 0 &&
         !currentLevel?.analysisElement
@@ -119,6 +168,15 @@ export const VerticalClassificationStep = ({
         }));
 
         try {
+          if (!isMountedRef.current) return;
+
+          let relevantNotes: NoteRecord[] = [];
+
+          if (classificationTier === "premium") {
+            // Fetch all relevant notes for the candidates
+            relevantNotes = await getNotesForCandidates(simplifiedCandidates);
+          }
+
           const {
             index: suggestedCandidateIndex,
             analysis: suggestionReason,
@@ -127,7 +185,9 @@ export const VerticalClassificationStep = ({
             simplifiedCandidates,
             getProgressionDescriptionWithArrows(levels),
             articleDescription + "\n" + articleAnalysis,
-            classificationTier
+            classificationLevel,
+            classificationTier,
+            relevantNotes
           );
 
           if (!isMountedRef.current) return;
@@ -149,10 +209,6 @@ export const VerticalClassificationStep = ({
         }
       }
     };
-
-    // TODO: Double check that this handles ONLY fetching once properly
-    // TODO: Double check that this handles ONLY fetching once properly
-    // TODO: Double check that this handles ONLY fetching once properly
 
     if (
       currentLevel?.candidates?.length > 0 &&

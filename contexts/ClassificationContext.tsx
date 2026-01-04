@@ -14,6 +14,7 @@ import {
   createClassification,
   updateClassification,
 } from "../libs/classification";
+import { NoteRecord } from "../types/hts";
 
 export type ClassificationTier = "premium" | "standard";
 
@@ -23,6 +24,8 @@ interface ClassificationContextType {
   classificationTier: ClassificationTier;
   isCreatingClassification: boolean;
   isSaving: boolean;
+  // Notes cache for the current classification
+  notes: NoteRecord[];
   setClassificationId: (id: string | null) => void;
   setClassification: (
     classification: Classification | ((prev: Classification) => Classification)
@@ -51,6 +54,16 @@ interface ClassificationContextType {
   saveClassification: () => Promise<void>;
   // Flush any pending debounce and save immediately - use before navigation
   flushAndSave: () => Promise<void>;
+  // Notes helper functions
+  addNotes: (newNotes: NoteRecord[]) => void;
+  getNotesForSectionsAndChapters: (
+    sections: number[],
+    chapters: number[]
+  ) => {
+    existingNotes: NoteRecord[];
+    missingSections: number[];
+    missingChapters: number[];
+  };
 }
 
 const ClassificationContext = createContext<
@@ -69,6 +82,7 @@ export const ClassificationProvider = ({
   const [isCreatingClassification, setIsCreatingClassification] =
     useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [notes, setNotes] = useState<NoteRecord[]>([]);
   const lastClassificationIdRef = useRef<string | null>(null);
   const pendingClassificationRef = useRef<Promise<void> | null>(null);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -213,6 +227,56 @@ export const ClassificationProvider = ({
       isComplete: false,
       notes: "",
     });
+    setNotes([]);
+  };
+
+  // Add new notes to the cache, avoiding duplicates
+  const addNotes = (newNotes: NoteRecord[]) => {
+    setNotes((prevNotes) => {
+      const existingIds = new Set(prevNotes.map((n) => n.id));
+      const uniqueNewNotes = newNotes.filter((n) => !existingIds.has(n.id));
+      return [...prevNotes, ...uniqueNewNotes];
+    });
+  };
+
+  // Check which notes we already have and which are missing
+  const getNotesForSectionsAndChapters = (
+    sections: number[],
+    chapters: number[]
+  ): {
+    existingNotes: NoteRecord[];
+    missingSections: number[];
+    missingChapters: number[];
+  } => {
+    const existingNotes: NoteRecord[] = [];
+    const missingSections: number[] = [];
+    const missingChapters: number[] = [];
+
+    // Check for each section
+    for (const section of sections) {
+      const sectionNote = notes.find(
+        (n) => n.type === "section" && n.number === section
+      );
+      if (sectionNote) {
+        existingNotes.push(sectionNote);
+      } else {
+        missingSections.push(section);
+      }
+    }
+
+    // Check for each chapter
+    for (const chapter of chapters) {
+      const chapterNote = notes.find(
+        (n) => n.type === "chapter" && n.number === chapter
+      );
+      if (chapterNote) {
+        existingNotes.push(chapterNote);
+      } else {
+        missingChapters.push(chapter);
+      }
+    }
+
+    return { existingNotes, missingSections, missingChapters };
   };
 
   const saveClassification = async () => {
@@ -304,6 +368,7 @@ export const ClassificationProvider = ({
     }
     setClassification(null);
     setClassificationId(null);
+    setNotes([]);
     isSavingRef.current = false;
     setIsSaving(false);
     lastClassificationIdRef.current = null;
@@ -319,6 +384,7 @@ export const ClassificationProvider = ({
         classificationTier,
         isCreatingClassification,
         isSaving,
+        notes,
         setClassificationId,
         setClassification,
         setClassificationTier,
@@ -332,6 +398,8 @@ export const ClassificationProvider = ({
         startNewClassification,
         saveClassification,
         flushAndSave,
+        addNotes,
+        getNotesForSectionsAndChapters,
       }}
     >
       {children}
