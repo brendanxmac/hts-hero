@@ -15,6 +15,7 @@ import {
   getSectionAndChapterFromHtsCode,
   fetchHtsNotesForSectionsAndChapters,
 } from "../../../../libs/supabase/hts-notes";
+import { NoteRecord } from "../../../../types/hts";
 
 export const dynamic = "force-dynamic";
 
@@ -102,6 +103,13 @@ export async function POST(req: NextRequest) {
             elements
           );
 
+    console.log("Best Classification Progress Tokens:");
+    console.log({
+      promptTokens: gptResponse.usage?.prompt_tokens,
+      completionTokens: gptResponse.usage?.completion_tokens,
+      totalTokens: gptResponse.usage?.total_tokens,
+    });
+
     return NextResponse.json(gptResponse.choices);
   } catch (e) {
     console.error(e);
@@ -160,6 +168,22 @@ const getBestClassificationProgressionPremium = async (
   candidateElements: SimplifiedHtsElement[],
   griRules: string
 ) => {
+  // Create a function that will get notes for candidates
+  // First, try to check if the notes exist in context
+  // If not, then go fetch the notes from database & do processing
+
+  // If we are beyond progressionLevel 1
+  // Check if there is a selectedElement for first progressionLevel
+  // If yes, use it to grab the section and chapter, and we won't
+  // have to grab notes for everything thereafter
+
+  // Actually... use context to store fetched notes, stored as NoteRecord
+  // If we are beyond the first level, just fetch the notes for the section and chapter
+  // of the selectedElement, and then do the associations of the candidates to those
+  // notes here below.
+
+  // although, consider the case where there's WAY too many notes, like Ch 84 (i think)
+
   // Collect unique sections and chapters from candidates
   const sections = new Set<number>();
   const chapters = new Set<number>();
@@ -184,13 +208,6 @@ const getBestClassificationProgressionPremium = async (
 
   console.log("groupedNotes:");
   console.log(groupedNotes);
-
-  type NoteRecord = {
-    id: string;
-    type: "section" | "chapter";
-    number: number;
-    text: string;
-  };
 
   // Build notes registry by rendering each section and chapter's notes
   const notes: NoteRecord[] = [
@@ -268,7 +285,8 @@ const getBestClassificationProgressionPremium = async (
         You must follow these rules to find the best candidate and shape your "analysis":\n
         1. Apply the "GRI Rules" sequentially (as needed) and consider all candidates in the list to shape your decision making logic. Start with GRI 1 and only proceed to subsequent rules if classification cannot be determined. The US Additional Rules supplement the GRI for US-specific classification requirements.\n
         2. For each candidate, you must use its "associatedNotes" (which are foreign keys to its associated "Legal Notes") to qualify each candidate and support your final decision.\n
-        3. In your response, "analysis" should explain why the candidate you picked is the most suitable match based on following the GRI rules and the "Legal Notes". It should be logically structued with good titles, and have good spacing.\n
+        3. In your response, "analysis" should explain why the candidate you picked is the most suitable classification for the "Item Description" based on following the "GRI Rules" and the "Legal Notes". 
+        It should be logically structued with good titles (not as a numbered list), should not be markdown, should not reference candidates by index, only by hts code or title, and should have good spacing.\n
         4. In your response, "index" must be the index of the best candidate\n
         
         Note: The use of semicolons (;) in the candidates should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".`,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { useBreadcrumbs } from "../../contexts/BreadcrumbsContext";
 import { HtsElement } from "../../interfaces/hts";
 import {
@@ -18,17 +18,15 @@ import { useHtsSections } from "../../contexts/HtsSectionsContext";
 import { useClassification } from "../../contexts/ClassificationContext";
 import {
   generateBreadcrumbsForHtsElement,
-  getBestClassificationProgression,
   getChapterFromHtsElement,
   getDirectChildrenElements,
   getElementsInChapter,
   getHtsElementParents,
-  getProgressionDescriptionWithArrows,
   getSectionAndChapterFromChapterNumber,
 } from "../../libs/hts";
 import toast from "react-hot-toast";
 import { useHts } from "../../contexts/HtsContext";
-import { PDFProps, Loader } from "../../interfaces/ui";
+import { PDFProps } from "../../interfaces/ui";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 import {
   Product,
@@ -42,7 +40,6 @@ interface Props {
   element: HtsElement;
   classificationLevel: number;
   disabled: boolean;
-  setLoading: (loading: Loader) => void;
   onOpenExplore: () => void;
 }
 
@@ -50,7 +47,6 @@ export const VerticalCandidateElement = ({
   element,
   classificationLevel,
   disabled = false,
-  setLoading,
   onOpenExplore,
 }: Props) => {
   const { user } = useUser();
@@ -58,16 +54,10 @@ export const VerticalCandidateElement = ({
   const { clearBreadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { sections } = useHtsSections();
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
-  const { classification, updateLevel, setClassification, classificationTier } =
+  const { classification, updateLevel, setClassification } =
     useClassification();
   const { htsElements } = useHts();
-  const {
-    levels,
-    progressionDescription,
-    articleDescription,
-    articleAnalysis,
-  } = classification;
-  const isMountedRef = useRef(true);
+  const { levels, progressionDescription } = classification;
 
   const currentLevel = levels[classificationLevel];
   const isRecommended = currentLevel?.analysisElement?.uuid === element.uuid;
@@ -77,68 +67,6 @@ export const VerticalCandidateElement = ({
       (level) => level.selection && level.selection.uuid === element.uuid
     )
   );
-
-  // Fetch AI analysis when candidates are loaded and no analysis exists yet
-  useEffect(() => {
-    isMountedRef.current = true;
-
-    const fetchAnalysis = async () => {
-      if (
-        currentLevel?.candidates?.length > 0 &&
-        !currentLevel?.analysisElement &&
-        !disabled
-      ) {
-        setLoading({
-          isLoading: true,
-          text: "Analyzing Candidates",
-        });
-
-        const simplifiedCandidates = currentLevel.candidates.map((e) => ({
-          code: e.htsno,
-          description: e.description,
-        }));
-
-        try {
-          const {
-            index: suggestedCandidateIndex,
-            analysis: suggestionReason,
-            questions: suggestionQuestions,
-          } = await getBestClassificationProgression(
-            simplifiedCandidates,
-            getProgressionDescriptionWithArrows(levels),
-            articleDescription + "\n" + articleAnalysis,
-            classificationTier
-          );
-
-          if (!isMountedRef.current) return;
-
-          const bestCandidate =
-            currentLevel.candidates[suggestedCandidateIndex - 1];
-
-          updateLevel(classificationLevel, {
-            analysisElement: bestCandidate,
-            analysisReason: suggestionReason,
-            analysisQuestions: suggestionQuestions,
-          });
-        } catch (error) {
-          console.error("Error analyzing candidates:", error);
-        } finally {
-          if (isMountedRef.current) {
-            setLoading({ isLoading: false, text: "" });
-          }
-        }
-      }
-    };
-
-    // Only run analysis for the first candidate in the list to avoid duplicate calls
-    if (currentLevel?.candidates?.[0]?.uuid === element.uuid) {
-      fetchAnalysis();
-    }
-
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, [currentLevel?.candidates?.length]);
 
   const handleClassificationCompleted = async () => {
     const userCreatedDate = user ? new Date(user.created_at) : null;

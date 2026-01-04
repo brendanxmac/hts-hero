@@ -5,8 +5,10 @@ import { useSectionChapterDiscovery } from "../../contexts/SectionChapterDiscove
 import { useEffect, useRef, useState } from "react";
 import { Loader } from "../../interfaces/ui";
 import {
+  getBestClassificationProgression,
   getBestDescriptionCandidates,
   getElementsInChapter,
+  getProgressionDescriptionWithArrows,
 } from "../../libs/hts";
 import {
   ClassificationRecord,
@@ -27,10 +29,6 @@ import {
 import toast from "react-hot-toast";
 import { useUser } from "../../contexts/UserContext";
 import { VerticalCandidateElement } from "./VerticalCandidateElement";
-import {
-  fetchHtsNotesBySectionAndChapter,
-  getSectionAndChapterFromHtsCode,
-} from "../../libs/supabase/hts-notes";
 
 export interface VerticalClassificationStepProps {
   classificationLevel: number;
@@ -52,7 +50,7 @@ export const VerticalClassificationStep = ({
   const [showCrossRulingsModal, setShowCrossRulingsModal] = useState(false);
   const { classification, updateLevel, classificationTier } =
     useClassification();
-  const { articleDescription, levels } = classification;
+  const { articleDescription, articleAnalysis, levels } = classification;
   const [isExpanded, setIsExpanded] = useState(true);
   const previousArticleDescriptionRef = useRef<string>(articleDescription);
   const isMountedRef = useRef(true);
@@ -99,6 +97,74 @@ export const VerticalClassificationStep = ({
       setIsExpanded(false);
     }
   }, [hasSelection]);
+
+  // Fetch AI analysis when candidates are loaded and no analysis exists yet
+  useEffect(() => {
+    console.log("ATTEMPING TO FIND BEST CLASSIFICATION PROGRESSION");
+    isMountedRef.current = true;
+
+    const findBestClassificationProgression = async () => {
+      if (
+        currentLevel?.candidates?.length > 0 &&
+        !currentLevel?.analysisElement
+      ) {
+        setLoading({
+          isLoading: true,
+          text: "Analyzing Candidates",
+        });
+
+        const simplifiedCandidates = currentLevel.candidates.map((e) => ({
+          code: e.htsno,
+          description: e.description,
+        }));
+
+        try {
+          const {
+            index: suggestedCandidateIndex,
+            analysis: suggestionReason,
+            questions: suggestionQuestions,
+          } = await getBestClassificationProgression(
+            simplifiedCandidates,
+            getProgressionDescriptionWithArrows(levels),
+            articleDescription + "\n" + articleAnalysis,
+            classificationTier
+          );
+
+          if (!isMountedRef.current) return;
+
+          const bestCandidate =
+            currentLevel.candidates[suggestedCandidateIndex - 1];
+
+          updateLevel(classificationLevel, {
+            analysisElement: bestCandidate,
+            analysisReason: suggestionReason,
+            analysisQuestions: suggestionQuestions,
+          });
+        } catch (error) {
+          console.error("Error analyzing candidates:", error);
+        } finally {
+          if (isMountedRef.current) {
+            setLoading({ isLoading: false, text: "" });
+          }
+        }
+      }
+    };
+
+    // TODO: Double check that this handles ONLY fetching once properly
+    // TODO: Double check that this handles ONLY fetching once properly
+    // TODO: Double check that this handles ONLY fetching once properly
+
+    if (
+      currentLevel?.candidates?.length > 0 &&
+      !currentLevel?.analysisElement
+    ) {
+      findBestClassificationProgression();
+    }
+
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, [currentLevel?.candidates?.length]);
 
   // Get up to 2 Best Headings Per Chapter
   const getHeadings = async () => {
@@ -148,27 +214,6 @@ export const VerticalClassificationStep = ({
             }));
 
           candidatesForHeading.push(...candidates);
-
-          const sectionAndChaptersForCandidates = candidatesForHeading
-            .map((candidate) =>
-              getSectionAndChapterFromHtsCode(candidate.htsno)
-            )
-            .filter((note) => note !== null);
-
-          console.log("Sections & Chapter for Candidates: ");
-          console.log(sectionAndChaptersForCandidates);
-
-          const notes = await Promise.all(
-            sectionAndChaptersForCandidates.map(async (sectionAndChapter) => {
-              return fetchHtsNotesBySectionAndChapter(
-                sectionAndChapter.section,
-                sectionAndChapter.chapter
-              );
-            })
-          );
-
-          console.log("notes: ");
-          console.log(notes);
         })
       );
 
@@ -361,7 +406,6 @@ export const VerticalClassificationStep = ({
                     element={element}
                     classificationLevel={classificationLevel}
                     disabled={isDisabled}
-                    setLoading={setLoading}
                     onOpenExplore={onOpenExplore}
                   />
                 ))}
@@ -449,45 +493,6 @@ export const VerticalClassificationStep = ({
               </div>
             )}
           </div>
-
-          {/* Notes Section */}
-          {/* {showNotes && (
-            <div className="mt-6 relative overflow-hidden rounded-xl border border-base-content/15 bg-base-100 p-5">
-              <div className="flex flex-col gap-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <PencilSquareIcon className="w-5 h-5 text-primary" />
-                    <span className="text-sm font-semibold uppercase tracking-wider text-base-content/80">
-                      Classification Advisory Notes
-                    </span>
-                  </div>
-                  <button
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-error hover:bg-error/10 transition-colors"
-                    onClick={() => {
-                      setShowNotes(false);
-                      updateLevel(classificationLevel, { notes: "" });
-                    }}
-                    disabled={loading.isLoading || !isUsersClassification}
-                  >
-                    <XMarkIcon className="w-4 h-4" />
-                    Remove
-                  </button>
-                </div>
-
-                <textarea
-                  className="min-h-36 w-full px-4 py-3 rounded-xl bg-base-200/50 border border-base-content/15 transition-all duration-200 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40 resize-none text-base"
-                  placeholder="Notes added are saved and will be included in advisory reports you generate."
-                  disabled={loading.isLoading || !isUsersClassification}
-                  value={levels[classificationLevel]?.notes || ""}
-                  onChange={(e) => {
-                    updateLevel(classificationLevel, {
-                      notes: e.target.value,
-                    });
-                  }}
-                />
-              </div>
-            </div>
-          )} */}
         </div>
       </div>
 

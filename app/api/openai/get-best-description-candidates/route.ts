@@ -141,6 +141,7 @@ export async function POST(req: NextRequest) {
       ],
     });
 
+    console.log("Best Description Candidates Tokens:");
     console.log({
       promptTokens: gptResponse.usage?.prompt_tokens,
       completionTokens: gptResponse.usage?.completion_tokens,

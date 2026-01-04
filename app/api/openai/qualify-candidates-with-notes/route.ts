@@ -112,6 +112,13 @@ export async function POST(req: NextRequest) {
       ],
     });
 
+    console.log("Qualify Candidates with Notes Tokens:");
+    console.log({
+      promptTokens: gptResponse.usage?.prompt_tokens,
+      completionTokens: gptResponse.usage?.completion_tokens,
+      totalTokens: gptResponse.usage?.total_tokens,
+    });
+
     return NextResponse.json(gptResponse.choices);
   } catch (e) {
     console.error(e);
