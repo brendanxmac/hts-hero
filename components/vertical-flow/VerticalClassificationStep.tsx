@@ -18,7 +18,7 @@ import {
   ClassificationStatus,
   HtsElement,
 } from "../../interfaces/hts";
-import { setIndexInArray } from "../../utilities/data";
+import { copyToClipboard, setIndexInArray } from "../../utilities/data";
 import { elementsAtClassificationLevel } from "../../utilities/data";
 import { useHts } from "../../contexts/HtsContext";
 import Modal from "../Modal";
@@ -28,6 +28,8 @@ import {
   QueueListIcon,
   ChevronDownIcon,
   SparklesIcon,
+  CheckCircleIcon,
+  ClipboardDocumentIcon,
 } from "@heroicons/react/16/solid";
 import toast from "react-hot-toast";
 import { useUser } from "../../contexts/UserContext";
@@ -65,10 +67,17 @@ export const VerticalClassificationStep = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const { htsElements } = useHts();
   const hasFetchedCandidatesRef = useRef(false);
+  const [isAnalysisCopied, setIsAnalysisCopied] = useState(false);
 
   // Get chapter candidates from the discovery context
   const { chapterCandidates, chapterDiscoveryComplete } =
     useSectionChapterDiscovery();
+
+  const handleCopyCostClick = () => {
+    copyToClipboard(currentLevel?.analysisReason || "");
+    setIsAnalysisCopied(true);
+    setTimeout(() => setIsAnalysisCopied(false), 2000);
+  };
 
   // Auto-scroll to this component when chapter discovery completes (for level 0 only)
   useEffect(() => {
@@ -492,12 +501,25 @@ export const VerticalClassificationStep = ({
           </div>
 
           {/* Analysis Section */}
-          <div className="mt-6 flex flex-col gap-4">
-            <div className="flex items-center gap-2">
-              <SparklesIcon className="w-5 h-5 text-primary" />
-              <span className="text-sm font-semibold uppercase tracking-wider text-base-content/80">
-                Analysis
-              </span>
+          <div className="w-full mt-6 flex flex-col gap-4">
+            <div className="flex justify-between items-center gap-4">
+              <div className="flex items-center gap-2">
+                <SparklesIcon className="w-5 h-5 text-primary" />
+                <span className="text-sm font-semibold uppercase tracking-wider text-base-content/80">
+                  Analysis
+                </span>
+              </div>
+              <button
+                className={`btn btn-sm gap-1.5 btn-neutral shrink-0`}
+                onClick={handleCopyCostClick}
+              >
+                {isAnalysisCopied ? (
+                  <CheckCircleIcon className="w-4 h-4" />
+                ) : (
+                  <ClipboardDocumentIcon className="w-4 h-4" />
+                )}
+                {isAnalysisCopied ? "Copied!" : "Copy"}
+              </button>
             </div>
 
             {classificationTier !== "premium" ? (

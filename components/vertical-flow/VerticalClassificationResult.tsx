@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback } from "react";
+import {
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+  useLayoutEffect,
+} from "react";
 import { useClassification } from "../../contexts/ClassificationContext";
 import { useClassifications } from "../../contexts/ClassificationsContext";
 import { useHts } from "../../contexts/HtsContext";
@@ -47,7 +54,10 @@ import { EuropeanUnionCountries } from "../../constants/countries";
 import { Column2CountryCodes } from "../../tariffs/tariff-columns";
 import { ContentRequirementI } from "../Element";
 import { ContentRequirements } from "../../enums/tariff";
-import { getHtsElementParents } from "../../libs/hts";
+import {
+  getHtsElementParents,
+  generateBasisForClassification,
+} from "../../libs/hts";
 import { NumberInput } from "../NumberInput";
 import { PercentageInput } from "../PercentageInput";
 import { SecondaryLabel } from "../SecondaryLabel";
@@ -79,6 +89,23 @@ export const VerticalClassificationResult = ({
   const canUpdateDetails =
     userProfile.role === UserRole.ADMIN ||
     userProfile.id === classificationRecord?.user_id;
+
+  // Ref for auto-growing textarea
+  const basisTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auto-resize textarea to fit content
+  const resizeBasisTextarea = useCallback(() => {
+    const textarea = basisTextareaRef.current;
+    if (textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  }, []);
+
+  // Resize on mount and when classification changes
+  useLayoutEffect(() => {
+    resizeBasisTextarea();
+  }, [classification.notes, classification.levels, resizeBasisTextarea]);
 
   // State for importers
   const [importers, setImporters] = useState<Importer[]>([]);
@@ -503,6 +530,7 @@ export const VerticalClassificationResult = ({
           )}
         </div>
       </CollapsibleSection>
+
       {/* Classification Complete Section - Contains all levels */}
       <CollapsibleSection
         title="Classification Decisions"
@@ -634,19 +662,24 @@ export const VerticalClassificationResult = ({
         <div className="relative z-10 px-5 pb-5 pt-0">
           <div className="h-px bg-gradient-to-r from-transparent via-base-content/10 to-transparent mb-5" />
           <textarea
-            className={`min-h-36 w-full px-4 py-3 rounded-xl border transition-all duration-200 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 resize-none text-base ${
+            ref={basisTextareaRef}
+            className={`whitespace-pre-wrap min-h-36 w-full px-4 py-3 rounded-xl border transition-all duration-200 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 resize-none overflow-hidden text-base ${
               canUpdateDetails
                 ? "bg-base-100 border-base-content/20 hover:border-primary/40"
                 : "bg-base-200/50 border-base-content/15 cursor-not-allowed opacity-60"
             }`}
             placeholder="Add any notes about your classification here"
-            value={classification.notes || ""}
+            value={
+              classification.notes ||
+              generateBasisForClassification(classification)
+            }
             disabled={!canUpdateDetails}
             onChange={(e) => {
               setClassification({
                 ...classification,
                 notes: e.target.value,
               });
+              resizeBasisTextarea();
             }}
             onBlur={() => {
               // Immediately save when user leaves the textarea

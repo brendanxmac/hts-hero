@@ -1125,6 +1125,23 @@ export const getTariffElement = (
   return undefined;
 };
 
+export const generateBasisForClassification = (
+  classification: Classification
+): string => {
+  const parts: string[] = [];
+
+  classification.levels.forEach((level, index) => {
+    if (level.analysisReason) {
+      const title =
+        index === 0 ? "Heading Selection" : `Subheading ${index} Selection`;
+      const separator = "------------------------------";
+      parts.push(`${title}\n${separator}\n\n${level.analysisReason}`);
+    }
+  });
+
+  return parts.join("\n\n");
+};
+
 export const getHtsElementParents = (
   element: HtsElement,
   elements: HtsElement[]
