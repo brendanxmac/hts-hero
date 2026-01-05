@@ -7,6 +7,7 @@ import { Classifications } from "./Classifications";
 import { ClassificationsProvider } from "../contexts/ClassificationsContext";
 import { ClassifyPage } from "../enums/classify";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
+import { Classification } from "./Classification";
 
 export const ClassifyController = () => {
   const [page, setPage] = useState<ClassifyPage>(ClassifyPage.CLASSIFICATIONS);
@@ -29,7 +30,7 @@ export const ClassifyController = () => {
           {page === ClassifyPage.CLASSIFICATIONS ? (
             <Classifications page={page} setPage={setPage} />
           ) : (
-            <Classify key={`classify-${page}`} setPage={setPage} />
+            <Classification key={`classify-${page}`} setPage={setPage} />
           )}
         </div>
       </ClassificationsProvider>

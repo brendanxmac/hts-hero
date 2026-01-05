@@ -8,7 +8,7 @@ import {
   useRef,
   ReactNode,
 } from "react";
-import { Classification, ClassificationProgression } from "../interfaces/hts";
+import { ClassificationI, ClassificationProgression } from "../interfaces/hts";
 import { HtsElement } from "../interfaces/hts";
 import {
   createClassification,
@@ -19,7 +19,7 @@ import { NoteRecord } from "../types/hts";
 export type ClassificationTier = "premium" | "standard";
 
 interface ClassificationContextType {
-  classification?: Classification;
+  classification?: ClassificationI;
   classificationId?: string;
   classificationTier: ClassificationTier;
   isCreatingClassification: boolean;
@@ -28,7 +28,9 @@ interface ClassificationContextType {
   notes: NoteRecord[];
   setClassificationId: (id: string | null) => void;
   setClassification: (
-    classification: Classification | ((prev: Classification) => Classification)
+    classification:
+      | ClassificationI
+      | ((prev: ClassificationI) => ClassificationI)
   ) => void;
   setClassificationTier: (tier: ClassificationTier) => void;
   // Helper functions
@@ -76,7 +78,7 @@ export const ClassificationProvider = ({
   children: ReactNode;
 }) => {
   const [classificationId, setClassificationId] = useState<string | null>(null);
-  const [classification, setClassification] = useState<Classification>(null);
+  const [classification, setClassification] = useState<ClassificationI>(null);
   const [classificationTier, setClassificationTier] =
     useState<ClassificationTier>("premium");
   const [isCreatingClassification, setIsCreatingClassification] =
@@ -89,7 +91,7 @@ export const ClassificationProvider = ({
   const isSavingRef = useRef(false);
 
   // Refs to always have access to current values (avoids stale closures)
-  const classificationRef = useRef<Classification>(null);
+  const classificationRef = useRef<ClassificationI>(null);
   const classificationIdRef = useRef<string | null>(null);
 
   // Keep refs in sync with state
@@ -330,10 +332,11 @@ export const ClassificationProvider = ({
     articleDescription: string,
     includeFirstLevel: boolean = false
   ) => {
-    const newClassification: Classification = {
+    const newClassification: ClassificationI = {
       articleDescription,
       articleAnalysis: "",
       progressionDescription: "",
+      preliminaryLevels: [],
       levels: includeFirstLevel ? [{ candidates: [] }] : [],
       isComplete: false,
       notes: "",

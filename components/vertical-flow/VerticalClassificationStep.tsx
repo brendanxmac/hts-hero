@@ -525,28 +525,7 @@ export const VerticalClassificationStep = ({
               </button>
             </div>
 
-            {classificationTier !== "premium" ? (
-              // Upsell for standard tier
-              <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20 p-5">
-                <div className="absolute inset-0 pointer-events-none">
-                  <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/20 rounded-full blur-2xl" />
-                </div>
-                <div className="relative z-10 flex flex-col gap-4">
-                  <p className="text-base leading-relaxed text-base-content">
-                    Upgrade to get in-depth analysis and candidate qualification
-                    based on exact chapter notes and the GRIs.
-                  </p>
-                  <button
-                    className="self-start px-5 py-2.5 rounded-xl text-sm font-semibold bg-primary text-primary-content hover:bg-primary/90 transition-all duration-200 shadow-lg shadow-primary/25"
-                    onClick={() => {
-                      // TODO: Implement upgrade flow
-                    }}
-                  >
-                    Upgrade
-                  </button>
-                </div>
-              </div>
-            ) : currentLevel?.analysisReason ? (
+            {currentLevel?.analysisReason ? (
               <div className="relative overflow-hidden rounded-xl bg-base-100 border border-primary/20 p-4">
                 <div className="absolute inset-0 pointer-events-none">
                   <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useClassification } from "../contexts/ClassificationContext";
 import { useClassifications } from "../contexts/ClassificationsContext";
 import { useHts } from "../contexts/HtsContext";
@@ -19,7 +19,7 @@ import {
 import Modal from "./Modal";
 import ConversionPricing from "./ConversionPricing";
 import { Explore } from "./Explore";
-import { ClassificationStatus } from "../interfaces/hts";
+import { ClassificationI, ClassificationStatus } from "../interfaces/hts";
 import {
   updateClassification,
   deleteClassification,
@@ -45,10 +45,7 @@ import {
   LevelConnector,
   DeleteConfirmationModal,
 } from "./classification-ui";
-import {
-  ClassificationRecord,
-  ClassificationProgression,
-} from "../interfaces/hts";
+import { ClassificationRecord } from "../interfaces/hts";
 
 interface ClassificationProps {
   setPage: (page: ClassifyPage) => void;
@@ -56,11 +53,7 @@ interface ClassificationProps {
 
 // Inner component that can use the SectionChapterDiscovery context
 interface ClassificationFlowContentProps {
-  classification: {
-    isComplete: boolean;
-    levels: ClassificationProgression[];
-    articleDescription: string;
-  };
+  classification: ClassificationI;
   classificationRecord: ClassificationRecord | undefined;
   onOpenExplore: () => void;
   userProfile: any;
@@ -72,8 +65,6 @@ const ClassificationFlowContent = ({
   onOpenExplore,
   userProfile,
 }: ClassificationFlowContentProps) => {
-  const { chapterDiscoveryComplete } = useSectionChapterDiscovery();
-
   if (classification?.isComplete) {
     return (
       <VerticalClassificationResult
@@ -84,18 +75,24 @@ const ClassificationFlowContent = ({
     );
   }
 
+  const { chapterDiscoveryComplete } = useSectionChapterDiscovery();
+
   return (
     <>
-      {/* Section Discovery Step */}
-      <div className="h-4" />
-      <VerticalSectionDiscovery />
+      {classification.preliminaryLevels && (
+        <>
+          {/* Section Discovery Step */}
+          <div className="h-4" />
+          <VerticalSectionDiscovery />
 
-      {/* Chapter Discovery Step */}
-      <LevelConnector isActive={true} hasPreviousSelection={true} />
-      <VerticalChapterDiscovery />
+          {/* Chapter Discovery Step */}
+          <LevelConnector isActive={true} hasPreviousSelection={true} />
+          <VerticalChapterDiscovery />
+        </>
+      )}
 
       {/* Heading and Sub-heading Classification Levels - only show when chapter discovery is complete */}
-      {chapterDiscoveryComplete &&
+      {(chapterDiscoveryComplete || !classification.preliminaryLevels) &&
         classification.levels.map((level, index) => {
           const isActiveLevel = !level.selection;
           const previousLevelHasSelection =
@@ -103,6 +100,7 @@ const ClassificationFlowContent = ({
 
           return (
             <div key={`level-${index}`}>
+              {/* {classification.preliminaryLevels && <></>} */}
               {/* Connect from chapter discovery to first level, then between levels */}
               <LevelConnector
                 isActive={isActiveLevel}
@@ -277,7 +275,6 @@ export const Classification = ({ setPage }: ClassificationProps) => {
 
         <div className="w-full max-w-4xl mx-auto px-6 py-8">
           <VerticalDescriptionStep
-            setPage={setPage}
             setShowPricing={setShowPricing}
             classificationRecord={classificationRecord}
           />

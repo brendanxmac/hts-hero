@@ -561,7 +561,7 @@ export const VerticalClassificationResult = ({
         }
         badge={
           <span className="px-2 py-0.5 rounded-md text-xs font-semibold bg-success/20 text-success border border-success/30">
-            {levels.length} {levels.length === 1 ? "level" : "levels"}
+            {levels.length} {levels.length === 1 ? "Decision" : "Decisions"}
           </span>
         }
         collapsedContent={<ClassificationDetailsSummary levels={levels} />}
@@ -571,9 +571,9 @@ export const VerticalClassificationResult = ({
           {classification.preliminaryLevels &&
             classification.preliminaryLevels.length > 0 && (
               <>
-                <VerticalSectionDiscovery />
+                <VerticalSectionDiscovery startExpanded={false} />
                 <LevelConnector isActive={false} hasPreviousSelection={true} />
-                <VerticalChapterDiscovery />
+                <VerticalChapterDiscovery startExpanded={false} />
                 <LevelConnector isActive={false} hasPreviousSelection={true} />
               </>
             )}

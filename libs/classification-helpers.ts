@@ -1,5 +1,5 @@
 import {
-  Classification as ClassificationType,
+  ClassificationI as ClassificationType,
   ClassificationRecord,
   ClassificationStatus,
 } from "../interfaces/hts";

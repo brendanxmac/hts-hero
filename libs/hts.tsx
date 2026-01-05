@@ -15,7 +15,7 @@ import {
   BestProgressionResponse,
   BestChaptersResponse,
   Navigatable,
-  Classification,
+  ClassificationI,
   SectionAndChapterDetails,
   SelectionWithReason,
   Importer,
@@ -82,7 +82,7 @@ export const downloadClassificationReport = async (
 
 // Create a function that takes a classification and iterates in reverse through the levels to find the first level with tariff data
 export const getElementWithTariffDataFromClassification = (
-  classification: Classification
+  classification: ClassificationI
 ) => {
   for (let i = classification.levels.length - 1; i >= 0; i--) {
     if (
@@ -96,7 +96,7 @@ export const getElementWithTariffDataFromClassification = (
 };
 
 export const getProgressionDescriptions = (
-  classification: Classification,
+  classification: ClassificationI,
   upToLevel?: number
 ) => {
   const stopAtLevel = upToLevel ? upToLevel + 1 : classification.levels.length;
@@ -1126,7 +1126,7 @@ export const getTariffElement = (
 };
 
 export const generateBasisForClassification = (
-  classification: Classification
+  classification: ClassificationI
 ): string => {
   const parts: string[] = [];
   const separator = "------------------------------";
@@ -1137,7 +1137,7 @@ export const generateBasisForClassification = (
       if (level.analysis) {
         const title =
           level.level === "section" ? "Section Analysis" : "Chapter Analysis";
-        parts.push(`${title}\n${separator}\n\n${level.analysis}`);
+        parts.push(`${separator}\n${title}\n${separator}\n\n${level.analysis}`);
       }
     });
   }

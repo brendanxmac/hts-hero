@@ -39,7 +39,7 @@ export const SectionChapterCandidate = ({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-1">
+          {/* <div className="flex items-center gap-1">
             <button
               className="p-1.5 rounded-lg bg-base-content/10 hover:bg-error/15 border border-transparent hover:border-error/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={disabled}
@@ -51,7 +51,7 @@ export const SectionChapterCandidate = ({
             >
               <TrashIcon className="h-4 w-4 text-base-content/60 hover:text-error" />
             </button>
-          </div>
+          </div> */}
         </div>
 
         {/* Description */}

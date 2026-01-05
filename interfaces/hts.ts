@@ -201,7 +201,7 @@ export interface ClassificationRecord {
     name: string;
   };
   classifier_id?: string;
-  classification: Classification;
+  classification: ClassificationI;
   created_at: string;
   updated_at: string;
   revision: string;
@@ -215,7 +215,7 @@ export interface PreliminaryClassificationLevel {
   analysis: string;
 }
 
-export interface Classification {
+export interface ClassificationI {
   articleDescription: string;
   articleAnalysis: string;
   progressionDescription: string;

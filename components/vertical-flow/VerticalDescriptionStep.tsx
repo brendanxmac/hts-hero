@@ -17,14 +17,12 @@ import { useClassifications } from "../../contexts/ClassificationsContext";
 import TextAreaInput from "../TextAreaInput";
 
 interface Props {
-  setPage: (page: ClassifyPage) => void;
   setShowPricing: (show: boolean) => void;
   classificationRecord?: ClassificationRecord | undefined;
   onDescriptionSubmitted?: () => void;
 }
 
 export const VerticalDescriptionStep = ({
-  setPage,
   setShowPricing,
   classificationRecord,
   onDescriptionSubmitted,

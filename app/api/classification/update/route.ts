@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "../../supabase/server";
 import {
-  Classification,
+  ClassificationI,
   ClassificationRecord,
   ClassificationStatus,
 } from "../../../../interfaces/hts";
@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 interface UpdateClassificationDto {
   id: string;
-  classification?: Classification;
+  classification?: ClassificationI;
   importer_id?: string;
   classifier_id?: string;
   status?: ClassificationStatus;

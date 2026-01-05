@@ -1,5 +1,5 @@
 import {
-  Classification,
+  ClassificationI,
   ClassificationRecord,
   ClassificationStatus,
   Importer,
@@ -16,10 +16,10 @@ const formatHtsNumber = (htsno: string | undefined | null): string => {
 };
 
 export const createClassification = async (
-  classification: Classification
+  classification: ClassificationI
 ): Promise<ClassificationRecord> => {
   const classificationRecord = await apiClient.post<
-    Classification,
+    ClassificationI,
     ClassificationRecord
   >("/classification/create", {
     classification,
@@ -30,7 +30,7 @@ export const createClassification = async (
 
 export const updateClassification = async (
   id: string,
-  classification?: Classification,
+  classification?: ClassificationI,
   importer_id?: string,
   classifier_id?: string,
   status?: ClassificationStatus,

@@ -206,37 +206,25 @@ export const VerticalCandidateElement = ({
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3">
             {/* HTS Code Badge */}
-            <div
-              className={`flex items-center gap-2 ${
-                isLevelSelection &&
-                "bg-success/25 border border-success/40 px-3 py-1.5 rounded-lg"
-              }`}
-            >
-              {isLevelSelection && (
-                <CheckCircleIcon className="w-4 h-4 text-success" />
-              )}
+            <div className={`flex items-center gap-1`}>
+              {/* {isLevelSelection && (
+                <CheckCircleIcon className="w-5 h-5 text-success" />
+              )} */}
               {isRecommended && !isLevelSelection && (
                 <SparklesIcon className="w-4 h-4 text-primary" />
               )}
               <span
-                className={`text-sm ${
+                className={`${
                   isLevelSelection
-                    ? "text-success"
+                    ? "text-success font-bold text-base"
                     : isRecommended
-                      ? "text-primary font-bold"
-                      : "text-base-content/60"
+                      ? "text-sm text-primary font-bold"
+                      : "text-sm text-base-content/60"
                 }`}
               >
                 {htsno || "Prequalifier"}
               </span>
             </div>
-
-            {/* Recommended Badge */}
-            {/* {isRecommended && !isLevelSelection && (
-              <span className="px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 rounded-full">
-                Recommended
-              </span>
-            )} */}
           </div>
 
           {/* Action Buttons */}
@@ -278,9 +266,9 @@ export const VerticalCandidateElement = ({
             )}
 
             {/* Chevron indicator */}
-            {!isLevelSelection && !disabled && (
+            {/* {!isLevelSelection && !disabled && (
               <ChevronRightIcon className="h-5 w-5 text-base-content/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-200 ml-1" />
-            )}
+            )} */}
           </div>
         </div>
 

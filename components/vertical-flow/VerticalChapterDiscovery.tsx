@@ -22,7 +22,11 @@ import {
 } from "@heroicons/react/16/solid";
 import { SectionChapterCandidate } from "./SectionChapterCandidate";
 
-export const VerticalChapterDiscovery = () => {
+interface Props {
+  startExpanded?: boolean;
+}
+
+export const VerticalChapterDiscovery = ({ startExpanded = true }: Props) => {
   const { classification, setClassification, classificationTier } =
     useClassification();
   const { articleDescription } = classification || {};
@@ -42,7 +46,7 @@ export const VerticalChapterDiscovery = () => {
 
   const isPremium = classificationTier === "premium";
 
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(startExpanded);
   const [loadingPhase, setLoadingPhase] = useState<
     "finding" | "qualifying" | null
   >(null);

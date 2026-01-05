@@ -22,7 +22,11 @@ import {
 import { SectionChapterCandidate } from "./SectionChapterCandidate";
 import { useState } from "react";
 
-export const VerticalSectionDiscovery = () => {
+interface Props {
+  startExpanded?: boolean;
+}
+
+export const VerticalSectionDiscovery = ({ startExpanded = true }: Props) => {
   const { classification, setClassification, classificationTier } =
     useClassification();
   const { articleDescription } = classification || {};
@@ -41,7 +45,7 @@ export const VerticalSectionDiscovery = () => {
 
   const isPremium = classificationTier === "premium";
 
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(startExpanded);
   const [loadingPhase, setLoadingPhase] = useState<
     "finding" | "qualifying" | null
   >(null);
