@@ -47,6 +47,7 @@ import {
 } from "../utilities/hts";
 import { ClassificationTier } from "../contexts/ClassificationContext";
 import { NoteRecord } from "../types/hts";
+import Fuse from "fuse.js";
 
 export const downloadClassificationReport = async (
   classification: ClassificationRecord,
@@ -1409,3 +1410,134 @@ export function renderNoteContext(
   }
   return output.join("\n\n");
 }
+
+const normalizeHtsCode = (code: string): string => {
+  return code.replace(/\./g, "").padEnd(10, "0");
+};
+
+const expandRange = (
+  start: string,
+  end: string,
+  allElements: HtsElement[]
+): HtsElement[] => {
+  const startKey = normalizeHtsCode(start);
+  const endKey = normalizeHtsCode(end);
+
+  return allElements.filter((el) => {
+    const elKey = normalizeHtsCode(el.htsno);
+    return elKey >= startKey && elKey <= endKey;
+  });
+};
+
+export const findHtsElement = (
+  htsno: string,
+  allElements: HtsElement[],
+  fuse: Fuse<HtsElement>
+): HtsElement | null => {
+  // Try exact match first
+  const exactMatch = allElements.find((e) => e.htsno === htsno);
+  if (exactMatch) return exactMatch;
+
+  // Fall back to Fuse fuzzy search for closest match
+  const fuseResults = fuse.search(htsno);
+  if (fuseResults.length > 0) {
+    return fuseResults[0].item;
+  }
+
+  return null;
+};
+
+const getHtsElementsFromRange = (
+  rangeText: string,
+  allElements: HtsElement[],
+  fuse: Fuse<HtsElement>
+): HtsElement[] => {
+  const matches = Array.from(
+    rangeText.matchAll(HTS_CODE_RANGE_REGEX)
+  ) as RegExpMatchArray[];
+
+  const results: HtsElement[] = [];
+  let htsLevel: string | null = null;
+
+  for (const match of matches) {
+    const start = match[1];
+    const end = match[2];
+
+    // Find start or end element using exact match first, then fuzzy fallback
+    const startElement = findHtsElement(start, allElements, fuse);
+    const endElement = findHtsElement(end, allElements, fuse);
+
+    if (startElement) {
+      htsLevel = startElement.indent;
+    } else if (endElement) {
+      htsLevel = endElement.indent;
+    } else {
+      console.error("🔴🔴 NO START OR END ELEMENT DETECTED 🔴🔴");
+    }
+
+    const expanded = expandRange(start, end, allElements);
+    results.push(...expanded);
+  }
+
+  const resultsAtSameHtsLevel = results.filter((e) => e.indent == htsLevel);
+
+  // Remove duplicates
+  const seen = new Set<string>();
+  return resultsAtSameHtsLevel.filter((e) => {
+    if (seen.has(e.htsno)) return false;
+    seen.add(e.htsno);
+    return true;
+  });
+};
+
+export const getHtsElementsFromString = (
+  text: string,
+  htsElements: HtsElement[],
+  fuse: Fuse<HtsElement>
+): HtsElement[] => {
+  // 1. Use Regex to find all the HTS codes from the text
+  const htsCodesFromText = new Set(
+    Array.from(text.match(HTS_CODE_REGEX) ?? [])
+  );
+
+  if (htsCodesFromText.size === 0) {
+    return [];
+  }
+
+  // 2. Detect if there is a range of HTS codes
+  const htsCodeRange = Array.from(text.match(HTS_CODE_RANGE_REGEX) ?? []);
+
+  if (htsCodeRange.length > 0) {
+    console.log("Detected Range");
+    const htsElementsFromRange = getHtsElementsFromRange(
+      text,
+      htsElements,
+      fuse
+    );
+
+    if (htsElementsFromRange.length > 0) {
+      htsElementsFromRange.map((e) => htsCodesFromText.add(e.htsno));
+    }
+  }
+
+  const seenUuids = new Set<string>();
+
+  // FIXME: We still have one little bug here where if the HTS code
+  // listed in the element description is not a direct match, it will
+  // not be included in the elements array, this is things like:
+  // 9027.81 being listed but only 9027.81.00.00 existing in the HTS
+
+  return htsElements
+    .filter((e) => htsCodesFromText.has(e.htsno))
+    .filter((e) => {
+      if (e === null) return false;
+      if (seenUuids.has(e.uuid)) return false;
+      seenUuids.add(e.uuid);
+      return true;
+    });
+};
+
+export const HTS_CODE_REGEX =
+  /\b\d{4}(?:\.\d{2}(?:\.(?:\d{4}|\d{2}(?:\.\d{2})?))?)?\b/g;
+const HTS_CODE_RANGE_REGEX =
+  /(\b\d{4}(?:\.\d{2}(?:\.(?:\d{4}|\d{2}(?:\.\d{2})?))?)?\b)\s+(?:to|through)\s+(\b\d{4}(?:\.\d{2}(?:\.(?:\d{4}|\d{2}(?:\.\d{2})?))?)?\b)/gi;

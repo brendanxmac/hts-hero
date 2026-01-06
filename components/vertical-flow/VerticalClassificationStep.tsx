@@ -11,6 +11,7 @@ import {
   getProgressionDescriptionWithArrows,
   getSectionsAndChaptersFromCandidates,
   fetchNotesForSectionsAndChapters,
+  getHtsElementsFromString,
 } from "../../libs/hts";
 import { NoteRecord } from "../../types/hts";
 import {
@@ -34,6 +35,7 @@ import {
 import toast from "react-hot-toast";
 import { useUser } from "../../contexts/UserContext";
 import { VerticalCandidateElement } from "./VerticalCandidateElement";
+import Fuse from "fuse.js";
 
 export interface VerticalClassificationStepProps {
   classificationLevel: number;
@@ -253,6 +255,19 @@ export const VerticalClassificationStep = ({
             chapterElementsWithParentIndex,
             0
           );
+
+          const coreElements = htsElements.filter((e) => e.chapter < 98);
+
+          const fuse = new Fuse(coreElements, {
+            keys: ["htsno"],
+            threshold: 0.3,
+            includeScore: true,
+          });
+
+          // TODO: find a way to get the identified hts code, and inject them
+          // into the relevant descriptions...
+          const elementDescriptions = elementsAtLevel.map((e) => e.description);
+          // .map((e) => getHtsElementsFromString(e, htsElements, fuse));
 
           const bestCandidateHeadings = await getBestDescriptionCandidates(
             elementsAtLevel,
