@@ -612,18 +612,71 @@ export const fetchNotesForSectionsAndChapters = async (
   return notes;
 };
 
+/**
+ * Adds referencedCodes property to each element by scanning its description for HTS code references.
+ * This provides context to the LLM about what codes are being referenced in each element's description.
+ *
+ * @param elements - The elements to enrich with referenced codes
+ * @param allHtsElements - All HTS elements to look up codes against
+ * @param fuse - Fuse index for fuzzy matching
+ * @returns The same elements with referencedCodes property attached to each
+ */
+export const addReferenceCodesToElements = <
+  T extends HtsElement | HtsElementWithParentReference,
+>(
+  elements: T[],
+  allHtsElements: HtsElement[],
+  fuse: Fuse<HtsElement>
+): (T & { referencedCodes: Record<string, string> })[] => {
+  return elements.map((element) => {
+    const referencedCodes: Record<string, string> = {};
+
+    // Check if this element's description contains HTS code references
+    if (element.description.match(HTS_CODE_REGEX)) {
+      // Get all elements referenced in this description
+      const referencedElements = getHtsElementsFromString(
+        element.description,
+        allHtsElements,
+        fuse
+      );
+
+      // Add each referenced element to the record
+      for (const refElement of referencedElements) {
+        if (refElement.htsno && !referencedCodes[refElement.htsno]) {
+          referencedCodes[refElement.htsno] = refElement.description;
+        }
+      }
+    }
+
+    return {
+      ...element,
+      referencedCodes,
+    };
+  });
+};
+
 export const getBestDescriptionCandidates = async (
-  elementsAtLevel: HtsElement[] | HtsElementWithParentReference[],
+  elementsAtLevel: ((HtsElement | HtsElementWithParentReference) & {
+    referencedCodes?: Record<string, string>;
+  })[],
   productDescription: string,
   isSectionOrChapter: boolean,
   minMatches?: number,
   maxMatches?: number,
-  descs?: string[]
+  descriptions?: string[] // Optional: for sections/chapters that don't have referencedCodes
 ): Promise<BestCandidatesResponse> => {
-  const descriptions = descs || getHtsElementDescriptions(elementsAtLevel);
+  // If descriptions are provided (for sections/chapters), use those
+  // Otherwise, build candidates from elements with their referencedCodes
+  const candidates = descriptions
+    ? descriptions.map((desc) => ({ description: desc }))
+    : elementsAtLevel.map((element) => ({
+        description: element.description,
+        referencedCodes: element.referencedCodes,
+      }));
+
   const bestCandidatesResponse: Array<ChatCompletion.Choice> =
     await apiClient.post("/openai/get-best-description-candidates", {
-      descriptions,
+      candidates,
       productDescription,
       isSectionOrChapter,
       minMatches,
@@ -1624,3 +1677,203 @@ export const HTS_CODE_REGEX =
   /\b\d{4}(?:\.\d{2}(?:\.(?:\d{4}|\d{2}(?:\.\d{2})?))?)?\b/g;
 const HTS_CODE_RANGE_REGEX =
   /(\b\d{4}(?:\.\d{2}(?:\.(?:\d{4}|\d{2}(?:\.\d{2})?))?)?\b)\s+(?:to|through)\s+(\b\d{4}(?:\.\d{2}(?:\.(?:\d{4}|\d{2}(?:\.\d{2})?))?)?\b)/gi;
+
+// ============================================================================
+// ENRICHED HTS ELEMENTS FROM STRING - For text transformation
+// ============================================================================
+
+/**
+ * Represents a single HTS code found in text with its mapping to the verified element
+ */
+export interface HtsCodeMapping {
+  originalCode: string; // The code as it appeared in the text (e.g., "2905.44")
+  verifiedCode: string; // The normalized/padded code (e.g., "2905.44.00.00")
+  element: HtsElement | null; // The resolved HTS element
+  startIndex: number; // Start position in original text
+  endIndex: number; // End position in original text
+}
+
+/**
+ * Represents a range expression found in text (e.g., "8428.90.03 to 8428.90.10")
+ */
+export interface HtsRangeMapping {
+  originalRangeText: string; // The full range text (e.g., "8428.90.03 to 8428.90.10")
+  startCode: string; // Start of range
+  endCode: string; // End of range
+  elements: HtsElement[]; // All elements within the range
+  startIndex: number; // Start position in original text
+  endIndex: number; // End position in original text
+}
+
+/**
+ * Enriched result from parsing HTS codes from text
+ */
+export interface EnrichedHtsResult {
+  elements: HtsElement[]; // All unique elements found (for backward compatibility)
+  codeMappings: HtsCodeMapping[]; // Individual code mappings (excluding those in ranges)
+  rangeMappings: HtsRangeMapping[]; // Range mappings
+}
+
+/**
+ * Gets enriched HTS element information from a text string, including
+ * original → verified → element mappings and position information.
+ *
+ * This is useful for transforming the original text with HTS descriptions.
+ */
+export const getEnrichedHtsElementsFromString = (
+  text: string,
+  htsElements: HtsElement[],
+  fuse: Fuse<HtsElement>
+): EnrichedHtsResult => {
+  const codeMappings: HtsCodeMapping[] = [];
+  const rangeMappings: HtsRangeMapping[] = [];
+
+  // 1. First, find all range matches and their positions
+  const rangeRegex = new RegExp(HTS_CODE_RANGE_REGEX.source, "gi");
+  let rangeMatch;
+  const rangePositions: Array<{ start: number; end: number }> = [];
+
+  while ((rangeMatch = rangeRegex.exec(text)) !== null) {
+    const fullMatch = rangeMatch[0];
+    const startCode = rangeMatch[1];
+    const endCode = rangeMatch[2];
+    const startIndex = rangeMatch.index;
+    const endIndex = startIndex + fullMatch.length;
+
+    rangePositions.push({ start: startIndex, end: endIndex });
+
+    // Get all elements in this range
+    const rangeElements = getHtsElementsFromRange(text, htsElements, fuse);
+
+    rangeMappings.push({
+      originalRangeText: fullMatch,
+      startCode,
+      endCode,
+      elements: rangeElements,
+      startIndex,
+      endIndex,
+    });
+  }
+
+  // 2. Find all individual HTS codes and their positions
+  const codeRegex = new RegExp(HTS_CODE_REGEX.source, "g");
+  let codeMatch;
+
+  while ((codeMatch = codeRegex.exec(text)) !== null) {
+    const originalCode = codeMatch[0];
+    const startIndex = codeMatch.index;
+    const endIndex = startIndex + originalCode.length;
+
+    // Skip codes that fall within a range expression
+    const isInRange = rangePositions.some(
+      (range) => startIndex >= range.start && endIndex <= range.end
+    );
+
+    if (isInRange) {
+      continue;
+    }
+
+    // Find the element for this code
+    const element = findHtsElement(originalCode, htsElements, fuse);
+    const verifiedCode = element?.htsno ?? normalizeHtsFormat(originalCode);
+
+    codeMappings.push({
+      originalCode,
+      verifiedCode,
+      element,
+      startIndex,
+      endIndex,
+    });
+  }
+
+  // 3. Collect all unique elements
+  const seenUuids = new Set<string>();
+  const allElements: HtsElement[] = [];
+
+  // Add elements from individual codes
+  for (const mapping of codeMappings) {
+    if (mapping.element && !seenUuids.has(mapping.element.uuid)) {
+      seenUuids.add(mapping.element.uuid);
+      allElements.push(mapping.element);
+    }
+  }
+
+  // Add elements from ranges
+  for (const range of rangeMappings) {
+    for (const element of range.elements) {
+      if (!seenUuids.has(element.uuid)) {
+        seenUuids.add(element.uuid);
+        allElements.push(element);
+      }
+    }
+  }
+
+  return {
+    elements: allElements,
+    codeMappings,
+    rangeMappings,
+  };
+};
+
+/**
+ * Transforms text by replacing HTS code references with their verified codes and descriptions.
+ *
+ * - Individual codes: "2905.44" → "2905.44.00.00 (Erythritol)"
+ * - Range expressions: "8428.90.03 to 8428.90.10" → "8428.90.03.00 (desc1), 8428.90.05.00 (desc2), ..."
+ *
+ * @param originalText - The original text containing HTS code references
+ * @param enrichedResult - The result from getEnrichedHtsElementsFromString
+ * @returns The transformed text with HTS descriptions injected
+ */
+export const transformTextWithHtsDescriptions = (
+  originalText: string,
+  enrichedResult: EnrichedHtsResult
+): string => {
+  // Collect all replacements with their positions
+  const replacements: Array<{
+    startIndex: number;
+    endIndex: number;
+    replacement: string;
+  }> = [];
+
+  // Add individual code replacements
+  for (const mapping of enrichedResult.codeMappings) {
+    if (mapping.element) {
+      const replacement = `${mapping.verifiedCode} (${mapping.element.description})`;
+      replacements.push({
+        startIndex: mapping.startIndex,
+        endIndex: mapping.endIndex,
+        replacement,
+      });
+    }
+    // If element is null, we leave the original code as-is (no replacement added)
+  }
+
+  // Add range replacements
+  for (const range of enrichedResult.rangeMappings) {
+    if (range.elements.length > 0) {
+      // Format: "8428.90.03.00 (desc1), 8428.90.05.00 (desc2), ..."
+      const elementDescriptions = range.elements
+        .map((el) => `${el.htsno} (${el.description})`)
+        .join(", ");
+      replacements.push({
+        startIndex: range.startIndex,
+        endIndex: range.endIndex,
+        replacement: elementDescriptions,
+      });
+    }
+    // If no elements found, we leave the original range text as-is
+  }
+
+  // Sort replacements by startIndex in reverse order (so we can replace from end to start)
+  // This ensures that earlier replacements don't shift the indices of later ones
+  replacements.sort((a, b) => b.startIndex - a.startIndex);
+
+  // Apply replacements from end to start
+  let result = originalText;
+  for (const { startIndex, endIndex, replacement } of replacements) {
+    result = result.slice(0, startIndex) + replacement + result.slice(endIndex);
+  }
+
+  return result;
+};

@@ -11,7 +11,7 @@ import {
   getProgressionDescriptionWithArrows,
   getSectionsAndChaptersFromCandidates,
   fetchNotesForSectionsAndChapters,
-  getHtsElementsFromString,
+  addReferenceCodesToElements,
 } from "../../libs/hts";
 import { NoteRecord } from "../../types/hts";
 import {
@@ -176,10 +176,29 @@ export const VerticalClassificationStep = ({
           text: "Analyzing Candidates",
         });
 
-        const simplifiedCandidates = currentLevel.candidates.map((e) => ({
+        const coreElements = htsElements.filter((e) => e.chapter < 98);
+
+        // Create Fuse index ONCE for all lookups (major perf improvement)
+        const fuse = new Fuse(coreElements, {
+          keys: ["htsno"],
+          threshold: 0.3,
+          includeScore: true,
+        });
+
+        const elementsWithReferencedCodes = addReferenceCodesToElements(
+          currentLevel.candidates,
+          coreElements,
+          fuse
+        );
+
+        const simplifiedCandidates = elementsWithReferencedCodes.map((e) => ({
           code: e.htsno,
           description: e.description,
+          referencedCodes: e.referencedCodes,
         }));
+
+        console.log("====== Simplified Candidates ======");
+        console.log(simplifiedCandidates);
 
         try {
           if (!isMountedRef.current) return;
@@ -207,7 +226,7 @@ export const VerticalClassificationStep = ({
           if (!isMountedRef.current) return;
 
           const bestCandidate =
-            currentLevel.candidates[suggestedCandidateIndex - 1];
+            currentLevel.candidates[suggestedCandidateIndex];
 
           updateLevel(classificationLevel, {
             analysisElement: bestCandidate,
@@ -238,8 +257,11 @@ export const VerticalClassificationStep = ({
 
   // Get up to 2 Best Headings Per Chapter
   const getHeadings = async () => {
+    console.log("FINDING HEADINGS");
     setLoading({ isLoading: true, text: "Looking for Headings" });
-    const candidatesForHeading: HtsElement[] = [];
+    const candidatesForHeading: (HtsElement & {
+      referencedCodes: Record<string, string>;
+    })[] = [];
 
     try {
       await Promise.all(
@@ -258,24 +280,33 @@ export const VerticalClassificationStep = ({
 
           const coreElements = htsElements.filter((e) => e.chapter < 98);
 
+          // Create Fuse index ONCE for all lookups (major perf improvement)
           const fuse = new Fuse(coreElements, {
             keys: ["htsno"],
             threshold: 0.3,
             includeScore: true,
           });
 
-          // TODO: find a way to get the identified hts code, and inject them
-          // into the relevant descriptions...
-          const elementDescriptions = elementsAtLevel.map((e) => e.description);
-          // .map((e) => getHtsElementsFromString(e, htsElements, fuse));
+          // Add referencedCodes to each element for LLM context
+          const elementsWithReferencedCodes = addReferenceCodesToElements(
+            elementsAtLevel,
+            coreElements,
+            fuse
+          );
+
+          console.log("Elements with Referenced Codes:");
+          console.log(
+            elementsWithReferencedCodes.filter(
+              (e) => Object.keys(e.referencedCodes).length > 0
+            )
+          );
 
           const bestCandidateHeadings = await getBestDescriptionCandidates(
-            elementsAtLevel,
+            elementsWithReferencedCodes,
             articleDescription,
             false,
             1,
-            3,
-            elementsAtLevel.map((e) => e.description)
+            3
           );
 
           // Handle Empty Case
@@ -290,7 +321,8 @@ export const VerticalClassificationStep = ({
 
           const candidates = bestCandidateHeadings.bestCandidates
             .map((candidateIndex) => {
-              return elementsAtLevel[candidateIndex];
+              // Use elementsWithReferencedCodes to preserve referencedCodes
+              return elementsWithReferencedCodes[candidateIndex];
             })
             .map((candidate) => ({
               ...candidate,

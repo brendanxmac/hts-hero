@@ -103,9 +103,18 @@ export interface HtsElementWithParentReference extends HtsElement {
   indexInParentArray: number; // used to grab window ranges in the parent array
 }
 
+export interface HtsElementWithReferencedCodes extends HtsElement {
+  referencedCodes: Record<string, string>; // HTS codes referenced in description → their descriptions
+}
+
+export interface SimplifiedHtsElementWithIndex extends SimplifiedHtsElement {
+  index: number;
+}
+
 export interface SimplifiedHtsElement {
   code: string;
   description: string;
+  referencedCodes?: Record<string, string>; // Optional referenced codes for LLM context
 }
 
 export interface HtsElement {

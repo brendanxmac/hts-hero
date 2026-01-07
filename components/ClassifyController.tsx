@@ -1,6 +1,5 @@
 "use client";
 
-import { Classify } from "./Classify";
 import { UserProvider } from "../contexts/UserContext";
 import { useState, useEffect } from "react";
 import { Classifications } from "./Classifications";

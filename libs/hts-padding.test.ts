@@ -1,4 +1,13 @@
-import { getPaddedHtsVersions, normalizeHtsFormat } from "./hts";
+import {
+  getPaddedHtsVersions,
+  normalizeHtsFormat,
+  getEnrichedHtsElementsFromString,
+  transformTextWithHtsDescriptions,
+  HtsCodeMapping,
+  HtsRangeMapping,
+} from "./hts";
+import { HtsElement } from "../interfaces/hts";
+import Fuse from "fuse.js";
 
 // Test cases for getPaddedHtsVersions function
 const paddingTestCases = [
@@ -472,13 +481,273 @@ if (normalizedResult === "8428.90.03.10") {
   process.exit(1);
 }
 
+// ============================================================================
+// ENRICHED HTS ELEMENTS & TEXT TRANSFORMATION TESTS
+// ============================================================================
+
+// Create mock HTS elements for testing
+const mockHtsElements: HtsElement[] = [
+  {
+    uuid: "1",
+    htsno: "2905.44.00.00",
+    description: "Erythritol",
+    indent: "0",
+    chapter: 29,
+    footnotes: [],
+  } as HtsElement,
+  {
+    uuid: "2",
+    htsno: "8428.90.03.00",
+    description: "Bucket elevators",
+    indent: "0",
+    chapter: 84,
+    footnotes: [],
+  } as HtsElement,
+  {
+    uuid: "3",
+    htsno: "8428.90.05.00",
+    description: "Belt conveyors",
+    indent: "0",
+    chapter: 84,
+    footnotes: [],
+  } as HtsElement,
+  {
+    uuid: "4",
+    htsno: "8428.90.10.00",
+    description: "Other conveyors",
+    indent: "0",
+    chapter: 84,
+    footnotes: [],
+  } as HtsElement,
+  {
+    uuid: "5",
+    htsno: "9027.81.00.00",
+    description: "Mass spectrometers",
+    indent: "0",
+    chapter: 90,
+    footnotes: [],
+  } as HtsElement,
+];
+
+// Create Fuse index for mock elements
+const mockFuse = new Fuse(mockHtsElements, {
+  keys: ["htsno"],
+  threshold: 0.3,
+  includeScore: true,
+});
+
+console.log();
+console.log("=".repeat(80));
+console.log("TESTS FOR getEnrichedHtsElementsFromString & transformTextWithHtsDescriptions");
+console.log("=".repeat(80));
+console.log();
+
+let enrichedTotalTests = 0;
+let enrichedPassedTests = 0;
+let enrichedFailedTests = 0;
+
+// Test 1: Single code transformation
+(() => {
+  enrichedTotalTests++;
+  const text = "See heading 2905.44 for more details.";
+  const enriched = getEnrichedHtsElementsFromString(text, mockHtsElements, mockFuse);
+  const transformed = transformTextWithHtsDescriptions(text, enriched);
+  
+  const expectedTransformed = "See heading 2905.44.00.00 (Erythritol) for more details.";
+  const passed = transformed === expectedTransformed && enriched.codeMappings.length === 1;
+  
+  if (passed) {
+    enrichedPassedTests++;
+    console.log("✅ TEST 1: Single code transformation");
+    console.log(`   Input: "${text}"`);
+    console.log(`   Output: "${transformed}"`);
+    console.log();
+  } else {
+    enrichedFailedTests++;
+    console.log("❌ TEST 1 FAILED: Single code transformation");
+    console.log(`   Input: "${text}"`);
+    console.log(`   Expected: "${expectedTransformed}"`);
+    console.log(`   Got: "${transformed}"`);
+    console.log();
+  }
+})();
+
+// Test 2: Multiple codes transformation
+(() => {
+  enrichedTotalTests++;
+  const text = "Compare 2905.44 with 9027.81 specifications.";
+  const enriched = getEnrichedHtsElementsFromString(text, mockHtsElements, mockFuse);
+  const transformed = transformTextWithHtsDescriptions(text, enriched);
+  
+  const expectedTransformed = "Compare 2905.44.00.00 (Erythritol) with 9027.81.00.00 (Mass spectrometers) specifications.";
+  const passed = transformed === expectedTransformed && enriched.codeMappings.length === 2;
+  
+  if (passed) {
+    enrichedPassedTests++;
+    console.log("✅ TEST 2: Multiple codes transformation");
+    console.log(`   Input: "${text}"`);
+    console.log(`   Output: "${transformed}"`);
+    console.log();
+  } else {
+    enrichedFailedTests++;
+    console.log("❌ TEST 2 FAILED: Multiple codes transformation");
+    console.log(`   Input: "${text}"`);
+    console.log(`   Expected: "${expectedTransformed}"`);
+    console.log(`   Got: "${transformed}"`);
+    console.log();
+  }
+})();
+
+// Test 3: Code mapping tracks original and verified codes
+(() => {
+  enrichedTotalTests++;
+  const text = "The code 2905.44 maps to something.";
+  const enriched = getEnrichedHtsElementsFromString(text, mockHtsElements, mockFuse);
+  
+  const mapping = enriched.codeMappings[0];
+  const passed = 
+    mapping.originalCode === "2905.44" &&
+    mapping.verifiedCode === "2905.44.00.00" &&
+    mapping.element?.htsno === "2905.44.00.00" &&
+    mapping.startIndex === 9 &&
+    mapping.endIndex === 16;
+  
+  if (passed) {
+    enrichedPassedTests++;
+    console.log("✅ TEST 3: Code mapping tracks original and verified codes");
+    console.log(`   Original: "${mapping.originalCode}" → Verified: "${mapping.verifiedCode}"`);
+    console.log(`   Position: ${mapping.startIndex}-${mapping.endIndex}`);
+    console.log();
+  } else {
+    enrichedFailedTests++;
+    console.log("❌ TEST 3 FAILED: Code mapping tracks original and verified codes");
+    console.log(`   Got mapping:`, mapping);
+    console.log();
+  }
+})();
+
+// Test 4: Malformed code gets normalized and transformed
+(() => {
+  enrichedTotalTests++;
+  const text = "Check code 9027.81.0000 for instruments.";
+  const enriched = getEnrichedHtsElementsFromString(text, mockHtsElements, mockFuse);
+  const transformed = transformTextWithHtsDescriptions(text, enriched);
+  
+  const expectedTransformed = "Check code 9027.81.00.00 (Mass spectrometers) for instruments.";
+  const passed = transformed === expectedTransformed;
+  
+  if (passed) {
+    enrichedPassedTests++;
+    console.log("✅ TEST 4: Malformed code gets normalized and transformed");
+    console.log(`   Input: "${text}"`);
+    console.log(`   Output: "${transformed}"`);
+    console.log();
+  } else {
+    enrichedFailedTests++;
+    console.log("❌ TEST 4 FAILED: Malformed code gets normalized and transformed");
+    console.log(`   Input: "${text}"`);
+    console.log(`   Expected: "${expectedTransformed}"`);
+    console.log(`   Got: "${transformed}"`);
+    console.log();
+  }
+})();
+
+// Test 5: Text with no HTS codes returns unchanged
+(() => {
+  enrichedTotalTests++;
+  const text = "This is regular text with no codes.";
+  const enriched = getEnrichedHtsElementsFromString(text, mockHtsElements, mockFuse);
+  const transformed = transformTextWithHtsDescriptions(text, enriched);
+  
+  const passed = transformed === text && enriched.codeMappings.length === 0;
+  
+  if (passed) {
+    enrichedPassedTests++;
+    console.log("✅ TEST 5: Text with no HTS codes returns unchanged");
+    console.log(`   Input: "${text}"`);
+    console.log(`   Output: "${transformed}"`);
+    console.log();
+  } else {
+    enrichedFailedTests++;
+    console.log("❌ TEST 5 FAILED: Text with no HTS codes returns unchanged");
+    console.log(`   Input: "${text}"`);
+    console.log(`   Got: "${transformed}"`);
+    console.log();
+  }
+})();
+
+// Test 6: Unknown code is left as-is
+(() => {
+  enrichedTotalTests++;
+  const text = "See 1234.56 for unknown items.";
+  const enriched = getEnrichedHtsElementsFromString(text, mockHtsElements, mockFuse);
+  const transformed = transformTextWithHtsDescriptions(text, enriched);
+  
+  // Code 1234.56 doesn't exist in our mock elements, so it should be left unchanged
+  const passed = transformed === text;
+  
+  if (passed) {
+    enrichedPassedTests++;
+    console.log("✅ TEST 6: Unknown code is left as-is");
+    console.log(`   Input: "${text}"`);
+    console.log(`   Output: "${transformed}"`);
+    console.log();
+  } else {
+    enrichedFailedTests++;
+    console.log("❌ TEST 6 FAILED: Unknown code is left as-is");
+    console.log(`   Input: "${text}"`);
+    console.log(`   Expected: "${text}"`);
+    console.log(`   Got: "${transformed}"`);
+    console.log();
+  }
+})();
+
+// Test 7: Enriched result contains all unique elements
+(() => {
+  enrichedTotalTests++;
+  const text = "Items 2905.44 and 9027.81 and 2905.44 again.";
+  const enriched = getEnrichedHtsElementsFromString(text, mockHtsElements, mockFuse);
+  
+  // Should have 3 code mappings but only 2 unique elements
+  const passed = enriched.codeMappings.length === 3 && enriched.elements.length === 2;
+  
+  if (passed) {
+    enrichedPassedTests++;
+    console.log("✅ TEST 7: Enriched result contains all unique elements");
+    console.log(`   Code mappings: ${enriched.codeMappings.length} (includes duplicates)`);
+    console.log(`   Unique elements: ${enriched.elements.length}`);
+    console.log();
+  } else {
+    enrichedFailedTests++;
+    console.log("❌ TEST 7 FAILED: Enriched result contains all unique elements");
+    console.log(`   Expected: 3 mappings, 2 elements`);
+    console.log(`   Got: ${enriched.codeMappings.length} mappings, ${enriched.elements.length} elements`);
+    console.log();
+  }
+})();
+
+console.log("=".repeat(80));
+console.log("ENRICHED/TRANSFORMATION TEST SUMMARY:");
+console.log(`Total Tests: ${enrichedTotalTests}`);
+console.log(`Passed: ${enrichedPassedTests} ✅`);
+console.log(`Failed: ${enrichedFailedTests} ${enrichedFailedTests > 0 ? "❌" : "✅"}`);
+console.log(
+  `Success Rate: ${((enrichedPassedTests / enrichedTotalTests) * 100).toFixed(2)}%`
+);
+console.log("=".repeat(80));
+
+if (enrichedFailedTests > 0) {
+  console.log("⚠️  SOME ENRICHED/TRANSFORMATION TESTS FAILED!");
+  process.exit(1);
+}
+
 // Final summary
 console.log();
 console.log("=".repeat(80));
 console.log("OVERALL TEST SUMMARY:");
 console.log("=".repeat(80));
-const allTestsTotal = totalTests + normTotalTests;
-const allTestsPassed = passedTests + normPassedTests;
+const allTestsTotal = totalTests + normTotalTests + enrichedTotalTests;
+const allTestsPassed = passedTests + normPassedTests + enrichedPassedTests;
 console.log(`Total Tests: ${allTestsTotal}`);
 console.log(`Passed: ${allTestsPassed} ✅`);
 console.log(

@@ -8,21 +8,18 @@ import { OpenAIModel } from "../../../../libs/openai";
 
 export const dynamic = "force-dynamic";
 
+interface CandidateWithReferencedCodes {
+  description: string;
+  referencedCodes?: Record<string, string>;
+}
+
 interface GetBestDescriptionMatchDto {
-  descriptions: string[];
+  candidates: CandidateWithReferencedCodes[];
   productDescription: string;
   isSectionOrChapter?: boolean;
   minMatches?: number;
   maxMatches?: number;
 }
-
-const TestDescriptionMatch = z.object({
-  index: z.number(),
-});
-
-const TestBestDescriptionMatches = z.object({
-  bestCandidates: z.array(TestDescriptionMatch),
-});
 
 const BestDescriptionMatches = z.object({
   bestCandidates: z.array(z.number()),
@@ -41,17 +38,17 @@ export async function POST(req: NextRequest) {
     }
 
     const {
-      descriptions,
+      candidates,
       productDescription,
       isSectionOrChapter = false,
       minMatches,
       maxMatches,
     }: GetBestDescriptionMatchDto = await req.json();
 
-    if (!descriptions || !productDescription) {
+    if (!candidates || !productDescription) {
       return NextResponse.json(
         {
-          error: "Missing classification descriptions or product description",
+          error: "Missing candidates or product description",
         },
         { status: 400 }
       );
@@ -68,67 +65,43 @@ export async function POST(req: NextRequest) {
 
     const minMaxRangeText = getMinMaxRangeText(minMatches, maxMatches);
 
-    const labelledDescriptions = descriptions.map(
-      (description, index) => `${index}. ${description}`
-    );
+    // Build labelled candidates with their referencedCodes inline
+    const labelledCandidates = candidates.map((candidate, index) => {
+      const hasReferencedCodes =
+        candidate.referencedCodes &&
+        Object.keys(candidate.referencedCodes).length > 0;
 
-    const isTestEnv = process.env.APP_ENV === "test";
+      if (hasReferencedCodes) {
+        const refsText = Object.entries(candidate.referencedCodes!)
+          .map(([code, desc]) => `${code}: ${desc}`)
+          .join("; ");
+        return `${index}. ${candidate.description} [Referenced Codes: ${refsText}]`;
+      }
+
+      return `${index}. ${candidate.description}`;
+    });
+
     const responseFormatOptions = {
       description: "Used to get the best description matches from an array",
     };
-    const responseFormat = isTestEnv
-      ? zodResponseFormat(
-          TestBestDescriptionMatches,
-          "test_description_matches",
-          responseFormatOptions
-        )
-      : zodResponseFormat(
-          BestDescriptionMatches,
-          "best_description_matches",
-          responseFormatOptions
-        );
-
-    const payload = {
-      temperature: 0.2,
-      model: OpenAIModel.FIVE_ONE,
-      response_format: responseFormat,
-      messages: [
-        {
-          role: "system",
-          content: `You are a United States Harmonized Tariff System Expert who follows the General Rules of Interpretation (GRI) for the Harmonized System perfectly.\n
-            Your job is to take an item description and a list of options, and figure out which options(s) from the list are similar to the item description (${minMaxRangeText}).\n
-            ${
-              isSectionOrChapter
-                ? ""
-                : "You must use the GRI rules sequentially (as needed) and consider all options in the list to shape your decision making logic.\n"
-            }
-            Note: The use of semicolons (;) in the descriptions should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".\n
-            If there are no good candidates, return an empty array.
-            `,
-        },
-        {
-          role: "user",
-          content: `Item Description: ${productDescription}\n
-         Options: ${labelledDescriptions.join("\n")}`,
-        },
-      ],
-    };
+    const responseFormat = zodResponseFormat(
+      BestDescriptionMatches,
+      "best_description_matches",
+      responseFormatOptions
+    );
 
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const gptResponse = await openai.chat.completions.create({
-      temperature: 0.2,
+      temperature: 0.3,
       model: OpenAIModel.FIVE_ONE,
       response_format: responseFormat,
       messages: [
         {
           role: "system",
-          content: `You are a United States Harmonized Tariff System Expert who follows the General Rules of Interpretation (GRI) for the Harmonized System perfectly.\n
-            Your job is to take an item description and a list of options, and figure out which options(s) from the list are similar to the item description (${minMaxRangeText}).\n
-            ${
-              isSectionOrChapter
-                ? ""
-                : "You must use the GRI rules sequentially (as needed) and consider all options in the list to shape your decision making logic.\n"
-            }
+          content: `You are a United States Harmonized Tariff System Expert.\n
+            Your job is to take an "Item Description" and a list of "Candidates", and figure out which candidates are vaguely related to the "Item Description" (${minMaxRangeText}).\n
+            You must consider all candidates in the list to shape your decision making logic.\n
+            ${isSectionOrChapter ? "" : "Some candidates include 'referenceCodes', which are the HTS codes referenced in the candidate's description. You must use these to help understand what that specific candidate is referring to.\n"}
             Note: The use of semicolons (;) in the descriptions should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".\n
             If there are no good candidates, return an empty array.
             `,
@@ -136,7 +109,7 @@ export async function POST(req: NextRequest) {
         {
           role: "user",
           content: `Item Description: ${productDescription}\n
-         Options: ${labelledDescriptions.join("\n")}`,
+         Candidates: ${labelledCandidates.join("\n")}\n`,
         },
       ],
     });
@@ -147,12 +120,6 @@ export async function POST(req: NextRequest) {
       completionTokens: gptResponse.usage?.completion_tokens,
       totalTokens: gptResponse.usage?.total_tokens,
     });
-
-    //     ${
-    //   isTestEnv
-    //     ? ""
-    //     : "The logic you used to pick an option as a good candidate must be included in your response\n"
-    // }
 
     return NextResponse.json(gptResponse.choices);
   } catch (e) {

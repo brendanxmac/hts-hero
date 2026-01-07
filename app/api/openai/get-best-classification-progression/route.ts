@@ -5,7 +5,10 @@ import path from "path";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { requesterIsAuthenticated } from "../../supabase/server";
-import { SimplifiedHtsElement } from "../../../../interfaces/hts";
+import {
+  SimplifiedHtsElement,
+  SimplifiedHtsElementWithIndex,
+} from "../../../../interfaces/hts";
 import { OpenAIModel } from "../../../../libs/openai";
 import { ClassificationTier } from "../../../../contexts/ClassificationContext";
 import { APIPromise } from "openai/core";
@@ -16,7 +19,7 @@ import { NoteRecord } from "../../../../types/hts";
 export const dynamic = "force-dynamic";
 
 interface GetBestClassificationProgressionDto {
-  elements: SimplifiedHtsElement[];
+  elements: SimplifiedHtsElement[]; // Elements may include referencedCodes
   productDescription: string;
   htsDescription: string;
   classificationTier: ClassificationTier;
@@ -118,9 +121,8 @@ const getBestClassificationProgressionStandard = (
 ): APIPromise<OpenAI.Chat.Completions.ChatCompletion> => {
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-  const labelledDescriptions = candidateElements.map(
-    ({ description, code }, i) => `${i + 1}: ${code} - ${description}`
-  );
+  const indexedCandidates: SimplifiedHtsElementWithIndex[] =
+    candidateElements.map((c, i) => ({ ...c, index: i }));
 
   return openai.chat.completions.create({
     temperature: 0,
@@ -133,6 +135,7 @@ const getBestClassificationProgressionStandard = (
           If the "Current Description" is not provided, determine which description best matches the "Item Description".\n
           If two or more options all sound like they could be a good fit, you should pick the one that is the most specific, for example if the "Item Description" is "jeans" and the options are "cotton fabric" and "trousers", you should pick "trousers" because it is more specific.\n
           You must pick a single description. If no option sounds suitable and "Other" is available as an option, you should pick it.\n
+          Some candidates include "referencedCodes" which are HTS codes referenced in that candidates description. Use these to help understand what the candidate is referring to.\n
           Note: The use of semicolons (;) in the descriptions should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".\n
           In your response, "analysis" for your selection should explain why the description you picked is the most suitable match.\n
           You should refer to each option using its code and description (truncated if beyond 30 characters), not its index.
@@ -142,7 +145,7 @@ const getBestClassificationProgressionStandard = (
         role: "user",
         content: `Item Description: ${productDescription}\n
           ${htsDescription ? `Current Description: ${htsDescription}\n` : ""}
-          Descriptions:\n ${labelledDescriptions.join("\n")}`,
+          Candidates:\n ${JSON.stringify(indexedCandidates, null, 2)}\n`,
       },
     ],
   });
@@ -178,9 +181,12 @@ const getBestClassificationProgressionPremium = async (
       code: string;
       description: string;
       associatedNotes: string[];
+      referencedCodes?: Record<string, string>;
     } => ({
-      index: i + 1,
-      ...candidateElement,
+      index: i,
+      code: candidateElement.code,
+      description: candidateElement.description,
+      referencedCodes: candidateElement.referencedCodes,
       associatedNotes: (() => {
         // After level 0, all notes will be the same for all candidates
         if (level > 0) {
@@ -231,9 +237,10 @@ const getBestClassificationProgressionPremium = async (
         You must follow these rules to find the best candidate and shape your "analysis":\n
         1. Apply the "GRI Rules" sequentially (as needed) and consider all candidates in the list to shape your decision making logic. Start with GRI 1 and only proceed to subsequent rules if classification cannot be determined. The US Additional Rules supplement the GRI for US-specific classification requirements.\n
         2. For each candidate, you must use its "associatedNotes" (which are foreign keys to its associated "Legal Notes") to qualify each candidate and support your final decision.\n
-        3. In your response, "analysis" should explain why the candidate you picked is the most suitable classification for the "Item Description" based on following the "GRI Rules" and the "Legal Notes". 
+        3. Some candidates include "referencedCodes" which are HTS codes referenced in that candidate's description. Use these to help understand what the candidate is referring to.\n
+        4. In your response, "analysis" should explain why the candidate you picked is the most suitable classification for the "Item Description" based on following the "GRI Rules" and the "Legal Notes". 
         It should be logically structued with good titles (not as a numbered list), should not be markdown, should not reference candidates by index, only by hts code or title, and should have good spacing.\n
-        4. In your response, "index" must be the index of the best candidate\n
+        5. In your response, "index" must be the index of the best candidate\n
         
         Note: The use of semicolons (;) in the candidates should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".`,
       },
@@ -241,9 +248,9 @@ const getBestClassificationProgressionPremium = async (
         role: "user",
         content: `Item Description: ${productDescription}\n
           ${htsDescription ? `Current Description: ${htsDescription}\n` : ""}
-          GRI Rules: ${JSON.stringify(griRules)}\n
-          Legal Notes: ${JSON.stringify(providedNotes, null, 2)}\n
-          Candidates:\n ${JSON.stringify(candidates, null, 2)}\n`,
+          GRI Rules:\n ${JSON.stringify(griRules, null)}\n
+          Legal Notes:\n ${JSON.stringify(providedNotes, null, 2)}\n
+          Candidates:\n ${JSON.stringify(candidates, null)}\n`,
       },
     ],
   });
