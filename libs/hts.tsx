@@ -1434,17 +1434,99 @@ export const findHtsElement = (
   allElements: HtsElement[],
   fuse: Fuse<HtsElement>
 ): HtsElement | null => {
-  // Try exact match first
-  const exactMatch = allElements.find((e) => e.htsno === htsno);
+  // Normalize the HTS code first to handle malformed inputs like "8428.90.0310"
+  const normalizedHtsno = normalizeHtsFormat(htsno);
+
+  // Try exact match with normalized code first
+  const exactMatch = allElements.find((e) => e.htsno === normalizedHtsno);
   if (exactMatch) return exactMatch;
 
-  // Fall back to Fuse fuzzy search for closest match
+  // Try padding with zeros and periods to find exact match
+  // HTS formats: 4-digit (xxxx), 6-digit (xxxx.xx), 8-digit (xxxx.xx.xx), 10-digit (xxxx.xx.xx.xx)
+  const paddedVersions = getPaddedHtsVersions(normalizedHtsno);
+  for (const paddedHtsno of paddedVersions) {
+    const paddedMatch = allElements.find((e) => e.htsno === paddedHtsno);
+    if (paddedMatch) return paddedMatch;
+  }
+
+  // Fall back to Fuse fuzzy search for closest match, and only if the first result has htsno as an exact substring
   const fuseResults = fuse.search(htsno);
   if (fuseResults.length > 0) {
-    return fuseResults[0].item;
+    if (fuseResults[0].item.htsno.includes(htsno)) {
+      return fuseResults[0].item;
+    }
   }
 
   return null;
+};
+
+/**
+ * Normalizes an HTS code to proper format with periods in correct positions.
+ * Handles malformed inputs like "8428.90.0310" → "8428.90.03.10"
+ *
+ * HTS format: xxxx.xx.xx.xx (4.2.2.2 digits with periods)
+ * - 4 digits → xxxx
+ * - 6 digits → xxxx.xx
+ * - 8 digits → xxxx.xx.xx
+ * - 10 digits → xxxx.xx.xx.xx
+ *
+ * @param htsno - The potentially malformed HTS code
+ * @returns The properly formatted HTS code, or original if can't normalize
+ */
+export const normalizeHtsFormat = (htsno: string): string => {
+  // Remove all periods to get raw digits
+  const digits = htsno.replace(/\./g, "");
+
+  // Only normalize if we have valid digit counts (4, 6, 8, or 10)
+  switch (digits.length) {
+    case 4:
+      // 4-digit: xxxx
+      return digits;
+    case 6:
+      // 6-digit: xxxx.xx
+      return `${digits.slice(0, 4)}.${digits.slice(4, 6)}`;
+    case 8:
+      // 8-digit: xxxx.xx.xx
+      return `${digits.slice(0, 4)}.${digits.slice(4, 6)}.${digits.slice(6, 8)}`;
+    case 10:
+      // 10-digit: xxxx.xx.xx.xx
+      return `${digits.slice(0, 4)}.${digits.slice(4, 6)}.${digits.slice(6, 8)}.${digits.slice(8, 10)}`;
+    default:
+      // If digit count doesn't match expected, return original
+      return htsno;
+  }
+};
+
+/**
+ * Generates padded versions of an HTS code by adding ".00" segments
+ * HTS format: xxxx.xx.xx.xx (4.2.2.2 digits with periods)
+ * - 4 digit: xxxx (length 4)
+ * - 6 digit: xxxx.xx (length 7)
+ * - 8 digit: xxxx.xx.xx (length 10)
+ * - 10 digit: xxxx.xx.xx.xx (length 13)
+ */
+export const getPaddedHtsVersions = (htsno: string): string[] => {
+  const versions: string[] = [];
+  const len = htsno.length;
+
+  // 4 digit format (xxxx) -> try xxxx.00, xxxx.00.00, xxxx.00.00.00
+  if (len === 4) {
+    versions.push(`${htsno}.00`);
+    versions.push(`${htsno}.00.00`);
+    versions.push(`${htsno}.00.00.00`);
+  }
+  // 6 digit format (xxxx.xx) -> try xxxx.xx.00, xxxx.xx.00.00
+  else if (len === 7 && htsno[4] === ".") {
+    versions.push(`${htsno}.00`);
+    versions.push(`${htsno}.00.00`);
+  }
+  // 8 digit format (xxxx.xx.xx) -> try xxxx.xx.xx.00
+  else if (len === 10 && htsno[4] === "." && htsno[7] === ".") {
+    versions.push(`${htsno}.00`);
+  }
+  // Already 10 digit format (xxxx.xx.xx.xx) - no padding needed
+
+  return versions;
 };
 
 const getHtsElementsFromRange = (
@@ -1473,6 +1555,8 @@ const getHtsElementsFromRange = (
       htsLevel = endElement.indent;
     } else {
       console.error("🔴🔴 NO START OR END ELEMENT DETECTED 🔴🔴");
+      console.error("Start element: ", start);
+      console.error("End element: ", end);
     }
 
     const expanded = expandRange(start, end, allElements);
@@ -1496,11 +1580,16 @@ export const getHtsElementsFromString = (
   fuse: Fuse<HtsElement>
 ): HtsElement[] => {
   // 1. Use Regex to find all the HTS codes from the text
-  const htsCodesFromText = new Set(
-    Array.from(text.match(HTS_CODE_REGEX) ?? [])
+  const htsCodesInText = Array.from(text.match(HTS_CODE_REGEX) ?? []);
+
+  // 2. Try to find the elements for the HTS codes in the text
+  // Specifically attempt to resolve issues where the code referenced
+  // in HTS elements actually doesn't exist, but might with padded 0's
+  const verifiedHtsElementsInText = htsCodesInText.map((htsCode) =>
+    findHtsElement(htsCode, htsElements, fuse)
   );
 
-  if (htsCodesFromText.size === 0) {
+  if (verifiedHtsElementsInText.length === 0) {
     return [];
   }
 
@@ -1516,25 +1605,19 @@ export const getHtsElementsFromString = (
     );
 
     if (htsElementsFromRange.length > 0) {
-      htsElementsFromRange.map((e) => htsCodesFromText.add(e.htsno));
+      verifiedHtsElementsInText.push(...htsElementsFromRange);
     }
   }
 
+  // 3. Map Codes to Elements, & Remove Duplicates
   const seenUuids = new Set<string>();
 
-  // FIXME: We still have one little bug here where if the HTS code
-  // listed in the element description is not a direct match, it will
-  // not be included in the elements array, this is things like:
-  // 9027.81 being listed but only 9027.81.00.00 existing in the HTS
-
-  return htsElements
-    .filter((e) => htsCodesFromText.has(e.htsno))
-    .filter((e) => {
-      if (e === null) return false;
-      if (seenUuids.has(e.uuid)) return false;
-      seenUuids.add(e.uuid);
-      return true;
-    });
+  return verifiedHtsElementsInText.filter((e) => {
+    if (e === null) return false;
+    if (seenUuids.has(e.uuid)) return false;
+    seenUuids.add(e.uuid);
+    return true;
+  });
 };
 
 export const HTS_CODE_REGEX =

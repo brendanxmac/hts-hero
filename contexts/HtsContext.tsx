@@ -44,18 +44,16 @@ export const HtsProvider = ({ children }: { children: ReactNode }) => {
         includeScore: true,
       });
 
-      // const result = getHtsElementsFromString(
-      //   htsElementsWithHtsCodes[0].description,
-      //   coreElements,
-      //   fuse
-      // );
-      // console.log(result);
-
       const elementsForHtsCodesWithHtsCodeReferences =
-        htsElementsWithHtsCodes.map((e) =>
-          getHtsElementsFromString(e.description, coreElements, fuse)
-        );
-      console.log(elementsForHtsCodesWithHtsCodeReferences);
+        htsElementsWithHtsCodes.map((e) => ({
+          text: e.description,
+          elements: getHtsElementsFromString(e.description, coreElements, fuse),
+        }));
+      console.log(
+        elementsForHtsCodesWithHtsCodeReferences.filter(
+          (e) => e.elements.length > 0
+        )
+      );
 
       setHtsElements(elements);
       setRevision(revisionName);
