@@ -124,6 +124,9 @@ const getBestClassificationProgressionStandard = (
   const indexedCandidates: SimplifiedHtsElementWithIndex[] =
     candidateElements.map((c, i) => ({ ...c, index: i }));
 
+  console.log("🔵🔵 CANDIDATES");
+  console.log(indexedCandidates);
+
   return openai.chat.completions.create({
     temperature: 0,
     model: OpenAIModel.FIVE_ONE,
@@ -138,8 +141,8 @@ const getBestClassificationProgressionStandard = (
           Some candidates include "referencedCodes" which are HTS codes referenced in that candidates description. Use these to help understand what the candidate is referring to.\n
           Note: The use of semicolons (;) in the descriptions should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".\n
           In your response, "analysis" for your selection should explain why the description you picked is the most suitable match.\n
-          You should refer to each option using its code and description (truncated if beyond 30 characters), not its index.
-          The "index" of the best option must be included in your response\n"}`,
+          In "analysis" you should refer to each option using its code and description (truncated if beyond 30 characters), never its index.
+          The "index" property of your response is the index of the best option, and must be included.\n"}`,
       },
       {
         role: "user",
@@ -222,7 +225,7 @@ const getBestClassificationProgressionPremium = async (
     })
   );
 
-  console.log(`Candidates:`);
+  console.log("🌱🌱 CANDIDATES");
   console.log(candidates);
 
   return openai.chat.completions.create({
@@ -233,14 +236,14 @@ const getBestClassificationProgressionPremium = async (
       {
         role: "system",
         content: `You are a United States Harmonized Tariff Schedule Expert.\n
-        You must analyze the "Candidates" and select the one that best classifies the "Item Description", and best completes the "Current Description" (if provided).\n
+        You must analyze all the "Candidates" and select the one whose "description" best matches the "Item Description", and best completes the "Current Description" (if provided).\n
         You must follow these rules to find the best candidate and shape your "analysis":\n
-        1. Apply the "GRI Rules" sequentially (as needed) and consider all candidates in the list to shape your decision making logic. Start with GRI 1 and only proceed to subsequent rules if classification cannot be determined. The US Additional Rules supplement the GRI for US-specific classification requirements.\n
-        2. For each candidate, you must use its "associatedNotes" (which are foreign keys to its associated "Legal Notes") to qualify each candidate and support your final decision.\n
+        1. Apply the "GRI Rules" sequentially and consider all candidates to shape your decision making logic. Start with GRI 1 and only proceed to subsequent rules if a candidate cannot be clearly determined. The US Additional Rules supplement the GRI for US-specific classification requirements.\n
+        2. For each candidate, you must use its "associatedNotes" (which are foreign keys to its associated "Legal Notes") to qualify it and support your final decision.\n
         3. Some candidates include "referencedCodes" which are HTS codes referenced in that candidate's description. Use these to help understand what the candidate is referring to.\n
-        4. In your response, "analysis" should explain why the candidate you picked is the most suitable classification for the "Item Description" based on following the "GRI Rules" and the "Legal Notes". 
-        It should be logically structued with good titles (not as a numbered list), should not be markdown, should not reference candidates by index, only by hts code or title, and should have good spacing.\n
-        5. In your response, "index" must be the index of the best candidate\n
+        4. In your response, "analysis" should explain why the candidate you picked is the most suitable description of the "Item Description" based on following the "GRI Rules" and referncing the "Legal Notes".\n
+        "analysis" should be logically structued with good titles (not as a numbered list), should not be markdown, should only reference candidates by code or description (not by index), and should have good spacing.\n
+        5. In your response, "index" is the index of the best candidate, and must be included.\n
         
         Note: The use of semicolons (;) in the candidates should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".`,
       },

@@ -1877,3 +1877,75 @@ export const transformTextWithHtsDescriptions = (
 
   return result;
 };
+
+/**
+ * Transforms text by replacing HTS code references with their verified codes.
+ * Unlike transformTextWithHtsDescriptions, this does NOT inject descriptions.
+ *
+ * - Individual codes: "2905.44" → "2905.44.00.00" (verified code only)
+ * - Range expressions: "8428.90.03 to 8428.90.10" → "8428.90.03.00, 8428.90.05.00, 8428.90.10.00"
+ * - Unverifiable codes are left as-is
+ *
+ * @param originalText - The original text containing HTS code references
+ * @param htsElements - All HTS elements to look up codes against
+ * @param fuse - Fuse index for fuzzy matching
+ * @returns The transformed text with verified HTS codes
+ */
+export const transformTextWithVerifiedHtsCodes = (
+  originalText: string,
+  htsElements: HtsElement[],
+  fuse: Fuse<HtsElement>
+): string => {
+  // Get enriched result with all code and range mappings
+  const enrichedResult = getEnrichedHtsElementsFromString(
+    originalText,
+    htsElements,
+    fuse
+  );
+
+  // Collect all replacements with their positions
+  const replacements: Array<{
+    startIndex: number;
+    endIndex: number;
+    replacement: string;
+  }> = [];
+
+  // Add individual code replacements (verified code only, no description)
+  for (const mapping of enrichedResult.codeMappings) {
+    if (mapping.element) {
+      // Use the verified code from the element
+      replacements.push({
+        startIndex: mapping.startIndex,
+        endIndex: mapping.endIndex,
+        replacement: mapping.verifiedCode,
+      });
+    }
+    // If element is null, we leave the original code as-is (no replacement added)
+  }
+
+  // Add range replacements (comma-separated verified codes, no descriptions)
+  for (const range of enrichedResult.rangeMappings) {
+    if (range.elements.length > 0) {
+      // Format: "8428.90.03.00, 8428.90.05.00, 8428.90.10.00"
+      const verifiedCodes = range.elements.map((el) => el.htsno).join(", ");
+      replacements.push({
+        startIndex: range.startIndex,
+        endIndex: range.endIndex,
+        replacement: verifiedCodes,
+      });
+    }
+    // If no elements found, we leave the original range text as-is
+  }
+
+  // Sort replacements by startIndex in reverse order (so we can replace from end to start)
+  // This ensures that earlier replacements don't shift the indices of later ones
+  replacements.sort((a, b) => b.startIndex - a.startIndex);
+
+  // Apply replacements from end to start
+  let result = originalText;
+  for (const { startIndex, endIndex, replacement } of replacements) {
+    result = result.slice(0, startIndex) + replacement + result.slice(endIndex);
+  }
+
+  return result;
+};

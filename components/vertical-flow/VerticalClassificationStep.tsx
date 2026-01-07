@@ -12,6 +12,8 @@ import {
   getSectionsAndChaptersFromCandidates,
   fetchNotesForSectionsAndChapters,
   addReferenceCodesToElements,
+  transformTextWithVerifiedHtsCodes,
+  HTS_CODE_REGEX,
 } from "../../libs/hts";
 import { NoteRecord } from "../../types/hts";
 import {
@@ -191,11 +193,30 @@ export const VerticalClassificationStep = ({
           fuse
         );
 
-        const simplifiedCandidates = elementsWithReferencedCodes.map((e) => ({
-          code: e.htsno,
-          description: e.description,
-          referencedCodes: e.referencedCodes,
-        }));
+        const simplifiedCandidates = elementsWithReferencedCodes.map((e) => {
+          let finalDescription = e.description;
+
+          if (e.description.match(HTS_CODE_REGEX)) {
+            const enhancedDescription = transformTextWithVerifiedHtsCodes(
+              e.description,
+              coreElements,
+              fuse
+            );
+
+            if (e.description !== enhancedDescription) {
+              console.log("Description Enhanced:");
+              console.log(e.description);
+              console.log(enhancedDescription);
+              finalDescription = enhancedDescription;
+            }
+          }
+
+          return {
+            code: e.htsno,
+            description: finalDescription,
+            referencedCodes: e.referencedCodes,
+          };
+        });
 
         console.log("====== Simplified Candidates ======");
         console.log(simplifiedCandidates);
@@ -294,18 +315,43 @@ export const VerticalClassificationStep = ({
             fuse
           );
 
+          const enrichedCandidates = elementsWithReferencedCodes.map((e) => {
+            let finalDescription = e.description;
+
+            if (e.description.match(HTS_CODE_REGEX)) {
+              const enhancedDescription = transformTextWithVerifiedHtsCodes(
+                e.description,
+                coreElements,
+                fuse
+              );
+
+              if (e.description !== enhancedDescription) {
+                console.log("Enhanced Description:");
+                console.log(e.description);
+                console.log(enhancedDescription);
+
+                finalDescription = enhancedDescription;
+              }
+            }
+
+            return {
+              ...e,
+              description: finalDescription,
+            };
+          });
+
           console.log("Elements with Referenced Codes:");
           console.log(
-            elementsWithReferencedCodes.filter(
+            enrichedCandidates.filter(
               (e) => Object.keys(e.referencedCodes).length > 0
             )
           );
 
           const bestCandidateHeadings = await getBestDescriptionCandidates(
-            elementsWithReferencedCodes,
+            enrichedCandidates,
             articleDescription,
             false,
-            1,
+            null,
             3
           );
 

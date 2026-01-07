@@ -3,8 +3,6 @@ import {
   normalizeHtsFormat,
   getEnrichedHtsElementsFromString,
   transformTextWithHtsDescriptions,
-  HtsCodeMapping,
-  HtsRangeMapping,
 } from "./hts";
 import { HtsElement } from "../interfaces/hts";
 import Fuse from "fuse.js";
@@ -123,32 +121,38 @@ const paddingTestCases = [
   {
     input: "2905.4",
     expected: [],
-    description: "Invalid 6-char format (missing digit) should return empty array",
+    description:
+      "Invalid 6-char format (missing digit) should return empty array",
   },
   {
     input: "2905.444",
     expected: [],
-    description: "Invalid 8-char format (extra digit) should return empty array",
+    description:
+      "Invalid 8-char format (extra digit) should return empty array",
   },
   {
     input: "2905.44.0",
     expected: [],
-    description: "Invalid 9-char format (missing digit) should return empty array",
+    description:
+      "Invalid 9-char format (missing digit) should return empty array",
   },
   {
     input: "2905.44.000",
     expected: [],
-    description: "Invalid 11-char format (extra digit) should return empty array",
+    description:
+      "Invalid 11-char format (extra digit) should return empty array",
   },
   {
     input: "2905.44.00.0",
     expected: [],
-    description: "Invalid 12-char format (missing digit) should return empty array",
+    description:
+      "Invalid 12-char format (missing digit) should return empty array",
   },
   {
     input: "2905.44.00.000",
     expected: [],
-    description: "Invalid 14-char format (extra digit) should return empty array",
+    description:
+      "Invalid 14-char format (extra digit) should return empty array",
   },
 
   // ===== EDGE CASES - WRONG PERIOD PLACEMENT =====
@@ -287,7 +291,8 @@ const normalizationTestCases = [
   {
     input: "8428.90.0310",
     expected: "8428.90.03.10",
-    description: "Missing period in 10-digit code (xxxx.xx.xxxx → xxxx.xx.xx.xx)",
+    description:
+      "Missing period in 10-digit code (xxxx.xx.xxxx → xxxx.xx.xx.xx)",
   },
   {
     input: "8471.30.0100",
@@ -475,7 +480,9 @@ console.log(`Input: "${malformedExample}"`);
 console.log(`Normalized: "${normalizedResult}"`);
 
 if (normalizedResult === "8428.90.03.10") {
-  console.log('✅ VERIFIED: "8428.90.0310" correctly normalizes to "8428.90.03.10"');
+  console.log(
+    '✅ VERIFIED: "8428.90.0310" correctly normalizes to "8428.90.03.10"'
+  );
 } else {
   console.log("❌ FAILED: Normalization verification failed!");
   process.exit(1);
@@ -538,7 +545,9 @@ const mockFuse = new Fuse(mockHtsElements, {
 
 console.log();
 console.log("=".repeat(80));
-console.log("TESTS FOR getEnrichedHtsElementsFromString & transformTextWithHtsDescriptions");
+console.log(
+  "TESTS FOR getEnrichedHtsElementsFromString & transformTextWithHtsDescriptions"
+);
 console.log("=".repeat(80));
 console.log();
 
@@ -550,12 +559,18 @@ let enrichedFailedTests = 0;
 (() => {
   enrichedTotalTests++;
   const text = "See heading 2905.44 for more details.";
-  const enriched = getEnrichedHtsElementsFromString(text, mockHtsElements, mockFuse);
+  const enriched = getEnrichedHtsElementsFromString(
+    text,
+    mockHtsElements,
+    mockFuse
+  );
   const transformed = transformTextWithHtsDescriptions(text, enriched);
-  
-  const expectedTransformed = "See heading 2905.44.00.00 (Erythritol) for more details.";
-  const passed = transformed === expectedTransformed && enriched.codeMappings.length === 1;
-  
+
+  const expectedTransformed =
+    "See heading 2905.44.00.00 (Erythritol) for more details.";
+  const passed =
+    transformed === expectedTransformed && enriched.codeMappings.length === 1;
+
   if (passed) {
     enrichedPassedTests++;
     console.log("✅ TEST 1: Single code transformation");
@@ -576,12 +591,18 @@ let enrichedFailedTests = 0;
 (() => {
   enrichedTotalTests++;
   const text = "Compare 2905.44 with 9027.81 specifications.";
-  const enriched = getEnrichedHtsElementsFromString(text, mockHtsElements, mockFuse);
+  const enriched = getEnrichedHtsElementsFromString(
+    text,
+    mockHtsElements,
+    mockFuse
+  );
   const transformed = transformTextWithHtsDescriptions(text, enriched);
-  
-  const expectedTransformed = "Compare 2905.44.00.00 (Erythritol) with 9027.81.00.00 (Mass spectrometers) specifications.";
-  const passed = transformed === expectedTransformed && enriched.codeMappings.length === 2;
-  
+
+  const expectedTransformed =
+    "Compare 2905.44.00.00 (Erythritol) with 9027.81.00.00 (Mass spectrometers) specifications.";
+  const passed =
+    transformed === expectedTransformed && enriched.codeMappings.length === 2;
+
   if (passed) {
     enrichedPassedTests++;
     console.log("✅ TEST 2: Multiple codes transformation");
@@ -602,25 +623,33 @@ let enrichedFailedTests = 0;
 (() => {
   enrichedTotalTests++;
   const text = "The code 2905.44 maps to something.";
-  const enriched = getEnrichedHtsElementsFromString(text, mockHtsElements, mockFuse);
-  
+  const enriched = getEnrichedHtsElementsFromString(
+    text,
+    mockHtsElements,
+    mockFuse
+  );
+
   const mapping = enriched.codeMappings[0];
-  const passed = 
+  const passed =
     mapping.originalCode === "2905.44" &&
     mapping.verifiedCode === "2905.44.00.00" &&
     mapping.element?.htsno === "2905.44.00.00" &&
     mapping.startIndex === 9 &&
     mapping.endIndex === 16;
-  
+
   if (passed) {
     enrichedPassedTests++;
     console.log("✅ TEST 3: Code mapping tracks original and verified codes");
-    console.log(`   Original: "${mapping.originalCode}" → Verified: "${mapping.verifiedCode}"`);
+    console.log(
+      `   Original: "${mapping.originalCode}" → Verified: "${mapping.verifiedCode}"`
+    );
     console.log(`   Position: ${mapping.startIndex}-${mapping.endIndex}`);
     console.log();
   } else {
     enrichedFailedTests++;
-    console.log("❌ TEST 3 FAILED: Code mapping tracks original and verified codes");
+    console.log(
+      "❌ TEST 3 FAILED: Code mapping tracks original and verified codes"
+    );
     console.log(`   Got mapping:`, mapping);
     console.log();
   }
@@ -630,12 +659,17 @@ let enrichedFailedTests = 0;
 (() => {
   enrichedTotalTests++;
   const text = "Check code 9027.81.0000 for instruments.";
-  const enriched = getEnrichedHtsElementsFromString(text, mockHtsElements, mockFuse);
+  const enriched = getEnrichedHtsElementsFromString(
+    text,
+    mockHtsElements,
+    mockFuse
+  );
   const transformed = transformTextWithHtsDescriptions(text, enriched);
-  
-  const expectedTransformed = "Check code 9027.81.00.00 (Mass spectrometers) for instruments.";
+
+  const expectedTransformed =
+    "Check code 9027.81.00.00 (Mass spectrometers) for instruments.";
   const passed = transformed === expectedTransformed;
-  
+
   if (passed) {
     enrichedPassedTests++;
     console.log("✅ TEST 4: Malformed code gets normalized and transformed");
@@ -644,7 +678,9 @@ let enrichedFailedTests = 0;
     console.log();
   } else {
     enrichedFailedTests++;
-    console.log("❌ TEST 4 FAILED: Malformed code gets normalized and transformed");
+    console.log(
+      "❌ TEST 4 FAILED: Malformed code gets normalized and transformed"
+    );
     console.log(`   Input: "${text}"`);
     console.log(`   Expected: "${expectedTransformed}"`);
     console.log(`   Got: "${transformed}"`);
@@ -656,11 +692,15 @@ let enrichedFailedTests = 0;
 (() => {
   enrichedTotalTests++;
   const text = "This is regular text with no codes.";
-  const enriched = getEnrichedHtsElementsFromString(text, mockHtsElements, mockFuse);
+  const enriched = getEnrichedHtsElementsFromString(
+    text,
+    mockHtsElements,
+    mockFuse
+  );
   const transformed = transformTextWithHtsDescriptions(text, enriched);
-  
+
   const passed = transformed === text && enriched.codeMappings.length === 0;
-  
+
   if (passed) {
     enrichedPassedTests++;
     console.log("✅ TEST 5: Text with no HTS codes returns unchanged");
@@ -680,12 +720,16 @@ let enrichedFailedTests = 0;
 (() => {
   enrichedTotalTests++;
   const text = "See 1234.56 for unknown items.";
-  const enriched = getEnrichedHtsElementsFromString(text, mockHtsElements, mockFuse);
+  const enriched = getEnrichedHtsElementsFromString(
+    text,
+    mockHtsElements,
+    mockFuse
+  );
   const transformed = transformTextWithHtsDescriptions(text, enriched);
-  
+
   // Code 1234.56 doesn't exist in our mock elements, so it should be left unchanged
   const passed = transformed === text;
-  
+
   if (passed) {
     enrichedPassedTests++;
     console.log("✅ TEST 6: Unknown code is left as-is");
@@ -706,22 +750,33 @@ let enrichedFailedTests = 0;
 (() => {
   enrichedTotalTests++;
   const text = "Items 2905.44 and 9027.81 and 2905.44 again.";
-  const enriched = getEnrichedHtsElementsFromString(text, mockHtsElements, mockFuse);
-  
+  const enriched = getEnrichedHtsElementsFromString(
+    text,
+    mockHtsElements,
+    mockFuse
+  );
+
   // Should have 3 code mappings but only 2 unique elements
-  const passed = enriched.codeMappings.length === 3 && enriched.elements.length === 2;
-  
+  const passed =
+    enriched.codeMappings.length === 3 && enriched.elements.length === 2;
+
   if (passed) {
     enrichedPassedTests++;
     console.log("✅ TEST 7: Enriched result contains all unique elements");
-    console.log(`   Code mappings: ${enriched.codeMappings.length} (includes duplicates)`);
+    console.log(
+      `   Code mappings: ${enriched.codeMappings.length} (includes duplicates)`
+    );
     console.log(`   Unique elements: ${enriched.elements.length}`);
     console.log();
   } else {
     enrichedFailedTests++;
-    console.log("❌ TEST 7 FAILED: Enriched result contains all unique elements");
+    console.log(
+      "❌ TEST 7 FAILED: Enriched result contains all unique elements"
+    );
     console.log(`   Expected: 3 mappings, 2 elements`);
-    console.log(`   Got: ${enriched.codeMappings.length} mappings, ${enriched.elements.length} elements`);
+    console.log(
+      `   Got: ${enriched.codeMappings.length} mappings, ${enriched.elements.length} elements`
+    );
     console.log();
   }
 })();
@@ -730,7 +785,9 @@ console.log("=".repeat(80));
 console.log("ENRICHED/TRANSFORMATION TEST SUMMARY:");
 console.log(`Total Tests: ${enrichedTotalTests}`);
 console.log(`Passed: ${enrichedPassedTests} ✅`);
-console.log(`Failed: ${enrichedFailedTests} ${enrichedFailedTests > 0 ? "❌" : "✅"}`);
+console.log(
+  `Failed: ${enrichedFailedTests} ${enrichedFailedTests > 0 ? "❌" : "✅"}`
+);
 console.log(
   `Success Rate: ${((enrichedPassedTests / enrichedTotalTests) * 100).toFixed(2)}%`
 );
@@ -764,4 +821,3 @@ if (allTestsPassed === allTestsTotal) {
 export { paddingTestCases, normalizationTestCases };
 
 // Run using: npx tsx libs/hts-padding.test.ts
-

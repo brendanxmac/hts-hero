@@ -63,6 +63,9 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    console.log("🎯🎯 CANDIDATES");
+    console.log(candidates);
+
     const minMaxRangeText = getMinMaxRangeText(minMatches, maxMatches);
 
     // Build labelled candidates with their referencedCodes inline
