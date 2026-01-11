@@ -92,6 +92,11 @@ export interface HtsSection extends HtsSectionAndChapterBase {
   chapters: HtsSectionAndChapterBase[];
 }
 
+export interface LevelSelection {
+  level: number;
+  description: string;
+}
+
 export interface HtsSectionAndChapterBase {
   number: number;
   description: string;

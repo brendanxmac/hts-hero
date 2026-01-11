@@ -6,6 +6,7 @@ import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { requesterIsAuthenticated } from "../../supabase/server";
 import {
+  LevelSelection,
   SimplifiedHtsElement,
   SimplifiedHtsElementWithIdentifier,
 } from "../../../../interfaces/hts";
@@ -47,7 +48,7 @@ const identifierToIndex = (identifier: string): number => {
 interface GetBestClassificationProgressionDto {
   elements: SimplifiedHtsElement[]; // Elements may include referencedCodes
   productDescription: string;
-  htsDescription: string;
+  selectionPath: LevelSelection[];
   classificationTier: ClassificationTier;
   notes?: NoteRecord[]; // Pre-fetched notes from context (optional)
   level: number;
@@ -73,7 +74,7 @@ export async function POST(req: NextRequest) {
     const {
       elements,
       productDescription,
-      htsDescription,
+      selectionPath,
       classificationTier = "standard",
       notes: providedNotes,
       level,
@@ -110,7 +111,7 @@ export async function POST(req: NextRequest) {
         ? await getBestClassificationProgressionPremium(
             responseFormat,
             productDescription,
-            htsDescription,
+            selectionPath,
             elements,
             griRules,
             level,
@@ -119,7 +120,7 @@ export async function POST(req: NextRequest) {
         : await getBestClassificationProgressionStandard(
             responseFormat,
             productDescription,
-            htsDescription,
+            selectionPath,
             elements
           );
 
@@ -170,7 +171,7 @@ const getBestClassificationProgressionStandard = (
     analysis?: string;
   }>,
   productDescription: string,
-  htsDescription: string,
+  selectionPath: LevelSelection[],
   candidateElements: SimplifiedHtsElement[]
 ): Promise<OpenAI.Chat.Completions.ChatCompletion> => {
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -203,9 +204,9 @@ const getBestClassificationProgressionStandard = (
       },
       {
         role: "user",
-        content: `Item Description: ${productDescription}\n
-          ${htsDescription ? `Current Description: ${htsDescription}\n` : ""}
-          Candidates:\n ${JSON.stringify(labeledCandidates, null, 2)}\n`,
+        content: `Item Description: ${productDescription}
+          ${selectionPath && selectionPath.length > 0 ? `Selection Path:\n${JSON.stringify(selectionPath, null, 2)}\n` : ""}
+          Candidates:\n ${JSON.stringify(labeledCandidates, null, 2)}`,
       },
     ],
   });
@@ -217,7 +218,7 @@ const getBestClassificationProgressionPremium = async (
     analysis?: string;
   }>,
   productDescription: string,
-  htsDescription: string,
+  selectionPath: LevelSelection[],
   candidateElements: SimplifiedHtsElement[],
   griRules: string,
   level: number,
@@ -295,24 +296,32 @@ const getBestClassificationProgressionPremium = async (
     messages: [
       {
         role: "system",
-        content: `You are a United States Harmonized Tariff Schedule Expert.\n
-        Analyze all the Candidates and select the one whose description best matches the Item Description, and best completes the Current Description (if provided).\n
-        You must follow these rules to find the best candidate:\n 
-        1. Apply the Classification Rules below and consider all candidates to shape your decision. Start with GRI 3(a) and only proceed to the next rule if a candidate cannot be clearly determined.\n
-        2. For each candidate, you must use its associatedNotes (which are references to its associated Legal Notes) to qualify it and support your final decision.\n
-        3. Some candidates include "referencedCodes" which are HTS codes referenced in that candidate's description. Use these to help understand what the candidate is referring to.\n
-        4. In your response, "analysis" should explain why the candidate you picked is the most suitable description of the "Item Description" based on following the "GRI Rules" and referncing the "Legal Notes".\n
-        "analysis" should be logically structured with good titles (not as a numbered list), should not be markdown, should only reference candidates by code or description (not by their letter identifier), and should have good spacing.\n
-        5. The "identifier" property of your response must be the exact letter identifier (e.g., "A", "B", "C") of your chosen candidate.\n
-
-        Classification Rules:\n ${JSON.stringify(griRules, null, 2)}\n
+        content: `You are a United States Harmonized Tariff Schedule Classification Expert.
+        Your job is to select which candidate at this classification level best matches the Item Description.
+        You will be provided with the Item Description, list of Candidates, a set of Legal Notes, and the Selection Path to do this.
+        Note: The Selection Path is heading and subheadings selected up to this point for the classification if this is not the first level of classification.
         
-        Note: The use of semicolons (;) in the candidates should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".`,
+        You MUST follow these exact steps to find best candidate:
+        1. Analyze each candidate one by one to determine how well the Item Description matches it.
+           (a) You must use a candidates associatedNotes (which are references to its associated Legal Notes) to qualify its fit with the item description.
+           (b) If provided, use a candidates referencedCodes (which are HTS codes referenced in that candidate's description) to help understand what the candidate is referring to.
+           (c) The use of semicolons (;) in candidates descriptions should be interpreted as "or". For example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".,
+        2. Apply the following Classification Rules sequentailly while considering all candidates to shape your decision. Only proceed to and apply the sequential rules if a winning candidate is not clearly determined based on the current one.
+        Classification Rules:\n${JSON.stringify(griRules, null, 2)}
+
+
+        In your response, "analysis" should:
+        * Provide a concise summary of why the candidate you picked is the most suitable match for the "Item Description" based on the "Classification Rules" and referncing the relevant "Legal Notes".
+        * Have 1 section called "Classification Reasoning", which is a summary of why the candidate you picked is the most suitable match for the "Item Description" based on the "Classification Rules" and the relevant "Legal Notes".
+        * Only elaborate on relevant candidates, and mention that all others are not relevant.
+        * Be logically structured with good titles (not as a numbered list), not be markdown, only reference candidates by code or description (not by their letter identifier), and should have good spacing.
+
+        The "identifier" property of your response must be the exact letter identifier (e.g., "A", "B", "C") of your chosen candidate.`,
       },
       {
         role: "user",
         content: `Item Description: ${productDescription}\n
-          ${htsDescription ? `Current Description: ${htsDescription}\n` : ""}
+          ${selectionPath && selectionPath.length > 0 ? `Selection Path:\n${JSON.stringify(selectionPath, null, 2)}\n` : ""}
           Legal Notes:\n ${JSON.stringify(providedNotes, null, 2)}\n
           Candidates:\n ${JSON.stringify(candidates, null, 2)}\n`,
       },

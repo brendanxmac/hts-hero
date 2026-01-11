@@ -24,6 +24,7 @@ import {
   PreliminaryCandidate,
   QualifyCandidatesWithNotesDto,
   CandidateQualificationResponse,
+  LevelSelection,
 } from "../interfaces/hts";
 import {
   elementsAtClassificationLevel,
@@ -474,7 +475,7 @@ export const logSearch = async (productDescription: string) => {
 
 export const getBestClassificationProgression = async (
   elements: SimplifiedHtsElement[],
-  htsDescription: string,
+  selectionPath: LevelSelection[],
   productDescription: string,
   classificationLevel: number,
   classificationTier?: ClassificationTier,
@@ -486,7 +487,7 @@ export const getBestClassificationProgression = async (
     await apiClient.post("/openai/get-best-classification-progression", {
       elements,
       productDescription,
-      htsDescription,
+      selectionPath,
       classificationTier,
       notes,
       level: classificationLevel,

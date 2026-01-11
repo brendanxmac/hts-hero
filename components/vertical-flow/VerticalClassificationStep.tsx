@@ -20,6 +20,7 @@ import {
   ClassificationRecord,
   ClassificationStatus,
   HtsElement,
+  LevelSelection,
 } from "../../interfaces/hts";
 import { copyToClipboard, setIndexInArray } from "../../utilities/data";
 import { elementsAtClassificationLevel } from "../../utilities/data";
@@ -218,6 +219,24 @@ export const VerticalClassificationStep = ({
           };
         });
 
+        const selectionPath =
+          classificationLevel > 0
+            ? levels
+                .map((level, i): LevelSelection => {
+                  if (level.selection) {
+                    return {
+                      level: i + 1,
+                      description: level.selection.description,
+                    };
+                  }
+                  return null;
+                })
+                .filter((selection) => selection !== null)
+            : [];
+
+        console.log("====== Selection Path ======");
+        console.log(selectionPath);
+
         console.log("====== Simplified Candidates ======");
         console.log(simplifiedCandidates);
 
@@ -237,7 +256,7 @@ export const VerticalClassificationStep = ({
             questions: suggestionQuestions,
           } = await getBestClassificationProgression(
             simplifiedCandidates,
-            getProgressionDescriptionWithArrows(levels),
+            selectionPath,
             articleDescription + "\n" + articleAnalysis,
             classificationLevel,
             classificationTier,
