@@ -107,8 +107,9 @@ export interface HtsElementWithReferencedCodes extends HtsElement {
   referencedCodes: Record<string, string>; // HTS codes referenced in description → their descriptions
 }
 
-export interface SimplifiedHtsElementWithIndex extends SimplifiedHtsElement {
-  index: number;
+export interface SimplifiedHtsElementWithIdentifier
+  extends SimplifiedHtsElement {
+  identifier: string; // Letter-based identifier (A, B, C... AA, AB, etc.) to avoid LLM index confusion
 }
 
 export interface SimplifiedHtsElement {

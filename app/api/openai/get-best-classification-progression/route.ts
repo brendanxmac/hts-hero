@@ -7,16 +7,42 @@ import { zodResponseFormat } from "openai/helpers/zod";
 import { requesterIsAuthenticated } from "../../supabase/server";
 import {
   SimplifiedHtsElement,
-  SimplifiedHtsElementWithIndex,
+  SimplifiedHtsElementWithIdentifier,
 } from "../../../../interfaces/hts";
 import { OpenAIModel } from "../../../../libs/openai";
 import { ClassificationTier } from "../../../../contexts/ClassificationContext";
-import { APIPromise } from "openai/core";
 import { AutoParseableResponseFormat } from "openai/lib/parser";
 import { getSectionAndChapterFromHtsCode } from "../../../../libs/supabase/hts-notes";
 import { NoteRecord } from "../../../../types/hts";
 
 export const dynamic = "force-dynamic";
+
+/**
+ * Converts a 0-based index to a letter identifier (A, B, C... Z, AA, AB, etc.)
+ * Supports unlimited options using Excel-style column naming.
+ */
+const indexToIdentifier = (index: number): string => {
+  let result = "";
+  let num = index;
+
+  do {
+    result = String.fromCharCode(65 + (num % 26)) + result;
+    num = Math.floor(num / 26) - 1;
+  } while (num >= 0);
+
+  return result;
+};
+
+/**
+ * Converts a letter identifier (A, B, C... Z, AA, AB, etc.) back to a 0-based index.
+ */
+const identifierToIndex = (identifier: string): number => {
+  let result = 0;
+  for (let i = 0; i < identifier.length; i++) {
+    result = result * 26 + (identifier.charCodeAt(i) - 64);
+  }
+  return result - 1;
+};
 
 interface GetBestClassificationProgressionDto {
   elements: SimplifiedHtsElement[]; // Elements may include referencedCodes
@@ -28,10 +54,8 @@ interface GetBestClassificationProgressionDto {
 }
 
 const BestProgression = z.object({
-  index: z.number(),
-  // description: z.string(),
+  identifier: z.string(), // Letter identifier (A, B, C, etc.) of the selected candidate
   analysis: z.string(),
-  // questions: z.optional(z.array(z.string())),
 });
 
 export async function POST(req: NextRequest) {
@@ -75,8 +99,11 @@ export async function POST(req: NextRequest) {
       responseFormatOptions
     );
 
-    const griUsNotesPath = path.resolve(process.cwd(), "gri-and-us-notes.json");
-    const griRules = JSON.parse(fs.readFileSync(griUsNotesPath, "utf-8"));
+    const griRulesPath = path.resolve(
+      process.cwd(),
+      "rules-for-classification.json"
+    );
+    const griRules = JSON.parse(fs.readFileSync(griRulesPath, "utf-8"));
 
     const gptResponse =
       classificationTier === "premium"
@@ -103,7 +130,34 @@ export async function POST(req: NextRequest) {
       totalTokens: gptResponse.usage?.total_tokens,
     });
 
-    return NextResponse.json(gptResponse.choices);
+    // Transform the response to include the derived index from the identifier
+    const transformedChoices = gptResponse.choices.map((choice) => {
+      if (choice.message?.content) {
+        try {
+          const parsed = JSON.parse(choice.message.content);
+          const identifier = parsed.identifier as string;
+          const index = identifierToIndex(identifier);
+
+          console.log(`Identifier "${identifier}" resolved to index ${index}`);
+
+          return {
+            ...choice,
+            message: {
+              ...choice.message,
+              content: JSON.stringify({
+                ...parsed,
+                index, // Add the derived index for backward compatibility
+              }),
+            },
+          };
+        } catch {
+          return choice;
+        }
+      }
+      return choice;
+    });
+
+    return NextResponse.json(transformedChoices);
   } catch (e) {
     console.error(e);
     return NextResponse.json({ error: e?.message }, { status: 500 });
@@ -112,20 +166,23 @@ export async function POST(req: NextRequest) {
 
 const getBestClassificationProgressionStandard = (
   responseFormat: AutoParseableResponseFormat<{
-    index?: number;
+    identifier?: string;
     analysis?: string;
   }>,
   productDescription: string,
   htsDescription: string,
   candidateElements: SimplifiedHtsElement[]
-): APIPromise<OpenAI.Chat.Completions.ChatCompletion> => {
+): Promise<OpenAI.Chat.Completions.ChatCompletion> => {
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-  const indexedCandidates: SimplifiedHtsElementWithIndex[] =
-    candidateElements.map((c, i) => ({ ...c, index: i }));
+  const labeledCandidates: SimplifiedHtsElementWithIdentifier[] =
+    candidateElements.map((c, i) => ({
+      ...c,
+      identifier: indexToIdentifier(i),
+    }));
 
   console.log("🔵🔵 CANDIDATES");
-  console.log(indexedCandidates);
+  console.log(labeledCandidates);
 
   return openai.chat.completions.create({
     temperature: 0,
@@ -141,14 +198,14 @@ const getBestClassificationProgressionStandard = (
           Some candidates include "referencedCodes" which are HTS codes referenced in that candidates description. Use these to help understand what the candidate is referring to.\n
           Note: The use of semicolons (;) in the descriptions should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".\n
           In your response, "analysis" for your selection should explain why the description you picked is the most suitable match.\n
-          In "analysis" you should refer to each option using its code and description (truncated if beyond 30 characters), never its index.
-          The "index" property of your response is the index of the best option, and must be included.\n"}`,
+          In "analysis" you should refer to each option using its code and description (truncated if beyond 30 characters), never its identifier letter.
+          The "identifier" property of your response must be the exact letter identifier (e.g., "A", "B", "C") of your chosen candidate.\n`,
       },
       {
         role: "user",
         content: `Item Description: ${productDescription}\n
           ${htsDescription ? `Current Description: ${htsDescription}\n` : ""}
-          Candidates:\n ${JSON.stringify(indexedCandidates, null, 2)}\n`,
+          Candidates:\n ${JSON.stringify(labeledCandidates, null, 2)}\n`,
       },
     ],
   });
@@ -156,7 +213,7 @@ const getBestClassificationProgressionStandard = (
 
 const getBestClassificationProgressionPremium = async (
   responseFormat: AutoParseableResponseFormat<{
-    index?: number;
+    identifier?: string;
     analysis?: string;
   }>,
   productDescription: string,
@@ -165,7 +222,7 @@ const getBestClassificationProgressionPremium = async (
   griRules: string,
   level: number,
   providedNotes?: NoteRecord[]
-) => {
+): Promise<OpenAI.Chat.Completions.ChatCompletion> => {
   if (!providedNotes) {
     throw new Error("No notes provided");
   }
@@ -180,13 +237,13 @@ const getBestClassificationProgressionPremium = async (
       candidateElement,
       i
     ): {
-      index: number;
+      identifier: string;
       code: string;
       description: string;
       associatedNotes: string[];
       referencedCodes?: Record<string, string>;
     } => ({
-      index: i,
+      identifier: indexToIdentifier(i),
       code: candidateElement.code,
       description: candidateElement.description,
       referencedCodes: candidateElement.referencedCodes,
@@ -228,6 +285,9 @@ const getBestClassificationProgressionPremium = async (
   console.log("🌱🌱 CANDIDATES");
   console.log(candidates);
 
+  console.log("GRI RULES:");
+  console.log(griRules);
+
   return openai.chat.completions.create({
     temperature: 0,
     model: OpenAIModel.FIVE_ONE,
@@ -236,14 +296,16 @@ const getBestClassificationProgressionPremium = async (
       {
         role: "system",
         content: `You are a United States Harmonized Tariff Schedule Expert.\n
-        You must analyze all the "Candidates" and select the one whose "description" best matches the "Item Description", and best completes the "Current Description" (if provided).\n
-        You must follow these rules to find the best candidate and shape your "analysis":\n
-        1. Apply the "GRI Rules" sequentially and consider all candidates to shape your decision making logic. Start with GRI 1 and only proceed to subsequent rules if a candidate cannot be clearly determined. The US Additional Rules supplement the GRI for US-specific classification requirements.\n
-        2. For each candidate, you must use its "associatedNotes" (which are foreign keys to its associated "Legal Notes") to qualify it and support your final decision.\n
+        Analyze all the Candidates and select the one whose description best matches the Item Description, and best completes the Current Description (if provided).\n
+        You must follow these rules to find the best candidate:\n 
+        1. Apply the Classification Rules below and consider all candidates to shape your decision. Start with GRI 3(a) and only proceed to the next rule if a candidate cannot be clearly determined.\n
+        2. For each candidate, you must use its associatedNotes (which are references to its associated Legal Notes) to qualify it and support your final decision.\n
         3. Some candidates include "referencedCodes" which are HTS codes referenced in that candidate's description. Use these to help understand what the candidate is referring to.\n
         4. In your response, "analysis" should explain why the candidate you picked is the most suitable description of the "Item Description" based on following the "GRI Rules" and referncing the "Legal Notes".\n
-        "analysis" should be logically structued with good titles (not as a numbered list), should not be markdown, should only reference candidates by code or description (not by index), and should have good spacing.\n
-        5. In your response, "index" is the index of the best candidate, and must be included.\n
+        "analysis" should be logically structured with good titles (not as a numbered list), should not be markdown, should only reference candidates by code or description (not by their letter identifier), and should have good spacing.\n
+        5. The "identifier" property of your response must be the exact letter identifier (e.g., "A", "B", "C") of your chosen candidate.\n
+
+        Classification Rules:\n ${JSON.stringify(griRules, null, 2)}\n
         
         Note: The use of semicolons (;) in the candidates should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".`,
       },
@@ -251,9 +313,8 @@ const getBestClassificationProgressionPremium = async (
         role: "user",
         content: `Item Description: ${productDescription}\n
           ${htsDescription ? `Current Description: ${htsDescription}\n` : ""}
-          GRI Rules:\n ${JSON.stringify(griRules, null)}\n
           Legal Notes:\n ${JSON.stringify(providedNotes, null, 2)}\n
-          Candidates:\n ${JSON.stringify(candidates, null)}\n`,
+          Candidates:\n ${JSON.stringify(candidates, null, 2)}\n`,
       },
     ],
   });

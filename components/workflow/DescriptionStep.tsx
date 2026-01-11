@@ -67,15 +67,15 @@ export const DescriptionStep = ({
 
         <div className="relative z-10 w-full max-w-3xl mx-auto px-6 py-8 md:py-10">
           {/* Back button */}
-        {(!classification || !classification?.articleDescription) && (
-          <button
+          {(!classification || !classification?.articleDescription) && (
+            <button
               className="group flex items-center gap-2 mb-6 text-sm font-medium text-base-content/60 hover:text-base-content transition-colors"
-            onClick={() => setPage(ClassifyPage.CLASSIFICATIONS)}
-          >
+              onClick={() => setPage(ClassifyPage.CLASSIFICATIONS)}
+            >
               <ArrowLeftIcon className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
               Back to Classifications
-          </button>
-        )}
+            </button>
+          )}
 
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary/80">
@@ -88,7 +88,8 @@ export const DescriptionStep = ({
               </span>
             </h1>
             <p className="text-base-content/60 text-sm md:text-base max-w-lg mt-1">
-              Enter a detailed description of the item you are classifying. Include materials, dimensions, and intended use.
+              Enter a detailed description of the item you are classifying.
+              Include materials, dimensions, and intended use.
             </p>
           </div>
         </div>
@@ -111,67 +112,70 @@ export const DescriptionStep = ({
               </span>
             </div>
 
-        <TextAreaInput
-          buttonText="Start Classification"
-          placeholder="e.g. Men's 100% cotton denim jeans, dyed blue & pre-washed for an athletic figure"
-          defaultValue={classification?.articleDescription || ""}
-          onChange={(value) => {
-            setLocalItemDescription(value);
-          }}
-          onSubmit={async () => {
-            setLoading(true);
-            try {
-              const userCreatedDate = user ? new Date(user.created_at) : null;
-              const isTrialUser = userCreatedDate
-                ? isWithinPastNDays(userCreatedDate, 7)
-                : false;
+            <TextAreaInput
+              buttonText="Start Classification"
+              placeholder="e.g. Men's 100% cotton denim jeans, dyed blue & pre-washed for an athletic figure"
+              defaultValue={classification?.articleDescription || ""}
+              onChange={(value) => {
+                setLocalItemDescription(value);
+              }}
+              onSubmit={async () => {
+                setLoading(true);
+                try {
+                  const userCreatedDate = user
+                    ? new Date(user.created_at)
+                    : null;
+                  const isTrialUser = userCreatedDate
+                    ? isWithinPastNDays(userCreatedDate, 7)
+                    : false;
 
-              const isPayingUser = user
-                ? await userHasActivePurchaseForProduct(
-                    user.id,
-                    Product.CLASSIFY
-                  )
-                : false;
+                  const isPayingUser = user
+                    ? await userHasActivePurchaseForProduct(
+                        user.id,
+                        Product.CLASSIFY
+                      )
+                    : false;
 
-              if (isPayingUser || isTrialUser) {
-                if (
-                  localItemDescription !== classification?.articleDescription
-                ) {
-                  await startNewClassification(localItemDescription);
-                  await refreshClassifications();
+                  if (isPayingUser || isTrialUser) {
+                    if (
+                      localItemDescription !==
+                      classification?.articleDescription
+                    ) {
+                      await startNewClassification(localItemDescription);
+                      await refreshClassifications();
 
-                  trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
-                    item: localItemDescription,
-                    is_paying_user: isPayingUser,
-                    is_trial_user: isTrialUser,
-                  });
+                      trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
+                        item: localItemDescription,
+                        is_paying_user: isPayingUser,
+                        is_trial_user: isTrialUser,
+                      });
+                    }
+
+                    setWorkflowStep(WorkflowStep.CLASSIFICATION);
+                    setClassificationLevel(0);
+                  } else {
+                    setArticleDescription(localItemDescription);
+                    setShowPricing(true);
+                  }
+                } catch (error) {
+                  console.error(error);
+                  toast.error(
+                    "Something went wrong. Please try again or contact support."
+                  );
+                } finally {
+                  setLoading(false);
                 }
-
-                setWorkflowStep(WorkflowStep.CLASSIFICATION);
-                setClassificationLevel(0);
-              } else {
-                setArticleDescription(localItemDescription);
-                setShowPricing(true);
+              }}
+              canSubmit={
+                classificationRecord === undefined &&
+                isUsersClassification &&
+                localItemDescription.length > 0
               }
-            } catch (error) {
-              console.error(error);
-              toast.error(
-                "Something went wrong. Please try again or contact support."
-              );
-            } finally {
-              setLoading(false);
-            }
-          }}
-          canSubmit={
-            classificationRecord === undefined &&
-            isUsersClassification &&
-            localItemDescription.length > 0
-          }
-          disabled={classificationRecord !== undefined}
-          loading={loading}
-              />
-            </div>
-            </div>
+              disabled={classificationRecord !== undefined}
+              loading={loading}
+            />
+          </div>
+        </div>
 
         {/* Tips Section */}
         <div className="flex flex-col gap-3">
@@ -182,8 +186,14 @@ export const DescriptionStep = ({
             {[
               { emoji: "📏", text: "Include size, material, weight, color" },
               { emoji: "🧵", text: "Describe components & dominant material" },
-              { emoji: "👥", text: "Mention intended audience (children, professionals)" },
-              { emoji: "🎯", text: "Specify intended use (commercial, personal)" },
+              {
+                emoji: "👥",
+                text: "Mention intended audience (children, professionals)",
+              },
+              {
+                emoji: "🎯",
+                text: "Specify intended use within the United States (commercial, personal, for sports, etc...)",
+              },
             ].map((tip, index) => (
               <div
                 key={index}
@@ -193,8 +203,8 @@ export const DescriptionStep = ({
                 <span className="text-sm text-base-content/70">{tip.text}</span>
               </div>
             ))}
-            </div>
-            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

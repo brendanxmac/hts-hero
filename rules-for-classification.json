@@ -1,0 +1,26 @@
+{
+  "General Rules Of Interpretation": [
+    {
+      "order": 1,
+      "name": "GRI 1",
+      "rule": "Determine which candidate that most specifically describes the item. If no candidate is most specific or the item is primarily a mixed or composite good or a retail set, mention this and go to GRI 3(b) to continue classification.",
+      "exception": "If none of the candidates fairly accurately describe the item or progress the Current Description, mention this and choose 'Other' if it's available."
+    },
+    {
+      "order": 1,
+      "name": "GRI 3(a)",
+      "rule": "Choose the candidate that most specifically describes the item. If no candidate is most specific or the item is primarily a mixed or composite good or a retail set, mention this and go to GRI 3(b) to continue classification.",
+      "exception": "If none of the candidates fairly accurately describe the item or progress the Current Description, mention this and choose 'Other' if it's available."
+    },
+    {
+      "order": 2,
+      "name": "GRI 3(b)",
+      "rule": "Identify which aspect of the item most clearly controls the items identity, such as primary function, dominant material, intended use, or monetary value. Choose the candidate that most closely matches the controlling aspect. If no aspect seems to control the items identity, mention this and go to GRI 3(c) to continue classification."
+    },
+    {
+      "order": 3,
+      "name": "GRI 3(c)",
+      "rule": "Among the candidates that have equal merit based your analysis of 3(a) and 3(b), choose the candidate that occurs last in numerical order."
+    }
+  ]
+}

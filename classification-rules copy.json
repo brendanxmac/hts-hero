@@ -1,0 +1,37 @@
+{
+  "General Rules Of Interpretation": [
+    {
+      "order": 1,
+      "name": "GRI 3(a)",
+      "rule": "Choose the candidate that most specifically describes the item. If no candidate is most specific or the item is primarily a mixed or composite good or a retail set, mention this and go to GRI 3(b) to continue classification."
+    },
+    {
+      "order": 2,
+      "name": "GRI 3(b)",
+      "rule": "Identify which aspect of the item most clearly controls the items identity, such as primary function, dominant material, intended use, or monetary value. Choose the candidate that most closely matches the controlling aspect. If no aspect seems to control the items identity, mention this and go to GRI 3(c) to continue classification."
+    },
+    {
+      "order": 3,
+      "name": "GRI 3(c)",
+      "rule": "Among the candidates that have equal merit based your analysis of 3(a) and 3(b), choose the candidate that occurs last in numerical order."
+    }
+  ],
+  "Additional US Rules Of Interpretation": [
+    {
+      "name": "US Rule 1(a)",
+      "rule": "A tariff classification controlled by use (other than actual use) is to be determined in accordance with the use in the United States at, or immediately prior to, the date of importation, of goods of that class or kind to which the imported goods belong, and the controlling use is the principal use."
+    },
+    {
+      "name": "US Rule 1(b)",
+      "rule": "A tariff classification controlled by the actual use to which the imported goods are put in the United States is satisfied only if such use is intended at the time of importation, the goods are so used and proof thereof is furnished within 3 years after the date the goods are entered."
+    },
+    {
+      "name": "US Rule 1(c)",
+      "rule": "A provision for parts of an article covers products solely or principally used as a part of such articles but a provision for 'parts' or 'parts and accessories' shall not prevail over a specific provision for such part or accessory."
+    },
+    {
+      "name": "US Rule 1(d)",
+      "rule": "The principles of section 11 'XI' regarding mixtures of two or more textile materials shall apply to the classification of goods in any provision in which a textile material is named."
+    }
+  ]
+}

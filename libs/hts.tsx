@@ -667,12 +667,10 @@ export const getBestDescriptionCandidates = async (
 ): Promise<BestCandidatesResponse> => {
   // If descriptions are provided (for sections/chapters), use those
   // Otherwise, build candidates from elements with their referencedCodes
-  const candidates = descriptions
-    ? descriptions.map((desc) => ({ description: desc }))
-    : elementsAtLevel.map((element) => ({
-        description: element.description,
-        referencedCodes: element.referencedCodes,
-      }));
+  const candidates = elementsAtLevel.map((element) => ({
+    description: element.description,
+    referencedCodes: element.referencedCodes,
+  }));
 
   const bestCandidatesResponse: Array<ChatCompletion.Choice> =
     await apiClient.post("/openai/get-best-description-candidates", {
@@ -681,6 +679,7 @@ export const getBestDescriptionCandidates = async (
       isSectionOrChapter,
       minMatches,
       maxMatches,
+      descriptions,
     });
 
   const bestCandidates = bestCandidatesResponse[0].message.content;

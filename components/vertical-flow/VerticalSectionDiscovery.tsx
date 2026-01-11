@@ -137,6 +137,12 @@ export const VerticalSectionDiscovery = ({ startExpanded = true }: Props) => {
         sections = await getSections();
       }
 
+      const classifiableSections = sections.filter((s) => s.number < 22);
+      console.log(
+        "Last Section Number:",
+        classifiableSections[classifiableSections.length - 1].number
+      );
+
       // Get best section candidates
       const bestSectionCandidates = await getBestDescriptionCandidates(
         [],
@@ -144,7 +150,7 @@ export const VerticalSectionDiscovery = ({ startExpanded = true }: Props) => {
         true,
         2,
         undefined,
-        sections.map((s) => s.description)
+        classifiableSections.map((s) => s.description)
       );
 
       // Map to SectionCandidate format
@@ -172,23 +178,23 @@ export const VerticalSectionDiscovery = ({ startExpanded = true }: Props) => {
       if (isPremium) {
         console.log("Section candidates:", preliminaryCandidates);
 
-        // Switch to qualifying phase
-        setLoadingPhase("qualifying");
+        // // Switch to qualifying phase
+        // setLoadingPhase("qualifying");
 
-        // Qualify candidates with notes (for reasoning)
-        const sectionCandidateAnalysis = await qualifyCandidatesWithNotes({
-          productDescription: articleDescription,
-          candidates: preliminaryCandidates,
-          candidateType: "section",
-        });
+        // // Qualify candidates with notes (for reasoning)
+        // const sectionCandidateAnalysis = await qualifyCandidatesWithNotes({
+        //   productDescription: articleDescription,
+        //   candidates: preliminaryCandidates,
+        //   candidateType: "section",
+        // });
 
-        console.log("Section Anaylsis:", sectionCandidateAnalysis);
+        // console.log("Section Anaylsis:", sectionCandidateAnalysis);
 
-        // Update reasoning if available
-        if (sectionCandidateAnalysis?.analysis) {
-          setSectionReasoning(sectionCandidateAnalysis.analysis);
-          analysisText = sectionCandidateAnalysis.analysis;
-        }
+        // // Update reasoning if available
+        // if (sectionCandidateAnalysis?.analysis) {
+        //   setSectionReasoning(sectionCandidateAnalysis.analysis);
+        //   analysisText = sectionCandidateAnalysis.analysis;
+        // }
       }
 
       // Save to classification's preliminaryLevels

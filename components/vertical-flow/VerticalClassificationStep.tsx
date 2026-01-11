@@ -284,6 +284,9 @@ export const VerticalClassificationStep = ({
       referencedCodes: Record<string, string>;
     })[] = [];
 
+    console.log("Chapter Candidates:");
+    console.log(chapterCandidates);
+
     try {
       await Promise.all(
         chapterCandidates.map(async (chapterCandidate) => {
@@ -340,13 +343,6 @@ export const VerticalClassificationStep = ({
             };
           });
 
-          console.log("Elements with Referenced Codes:");
-          console.log(
-            enrichedCandidates.filter(
-              (e) => Object.keys(e.referencedCodes).length > 0
-            )
-          );
-
           const bestCandidateHeadings = await getBestDescriptionCandidates(
             enrichedCandidates,
             articleDescription,
@@ -354,6 +350,11 @@ export const VerticalClassificationStep = ({
             null,
             3
           );
+
+          console.log(
+            `Best Candidate Headings for ${chapterCandidate.chapter.description}:`
+          );
+          console.log(bestCandidateHeadings);
 
           // Handle Empty Case
           if (bestCandidateHeadings.bestCandidates.length === 0) {
@@ -377,6 +378,9 @@ export const VerticalClassificationStep = ({
           candidatesForHeading.push(...candidates);
         })
       );
+
+      console.log("🔵🔵 HEADINGS");
+      console.log(candidatesForHeading);
 
       // Check if component is still mounted before updating state
       if (!isMountedRef.current) {

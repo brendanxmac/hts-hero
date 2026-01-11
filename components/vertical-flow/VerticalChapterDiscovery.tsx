@@ -141,7 +141,7 @@ export const VerticalChapterDiscovery = ({ startExpanded = true }: Props) => {
             [],
             articleDescription,
             true,
-            1,
+            null,
             3,
             section.chapters.map((c) => c.description)
           );
@@ -175,23 +175,20 @@ export const VerticalChapterDiscovery = ({ startExpanded = true }: Props) => {
 
       // Only do qualification for premium tier
       if (isPremium) {
-        // Switch to qualifying phase
-        setLoadingPhase("qualifying");
-
-        // Qualify candidates with notes (for reasoning)
-        const chapterCandidateAnalysis = await qualifyCandidatesWithNotes({
-          productDescription: articleDescription,
-          candidates: preliminaryCandidates,
-          candidateType: "chapter",
-        });
-
-        console.log("Chapter Analysis:", chapterCandidateAnalysis);
-
-        // Update reasoning if available
-        if (chapterCandidateAnalysis?.analysis) {
-          setChapterReasoning(chapterCandidateAnalysis.analysis);
-          analysisText = chapterCandidateAnalysis.analysis;
-        }
+        // // Switch to qualifying phase
+        // setLoadingPhase("qualifying");
+        // // Qualify candidates with notes (for reasoning)
+        // const chapterCandidateAnalysis = await qualifyCandidatesWithNotes({
+        //   productDescription: articleDescription,
+        //   candidates: preliminaryCandidates,
+        //   candidateType: "chapter",
+        // });
+        // console.log("Chapter Analysis:", chapterCandidateAnalysis);
+        // // Update reasoning if available
+        // if (chapterCandidateAnalysis?.analysis) {
+        //   setChapterReasoning(chapterCandidateAnalysis.analysis);
+        //   analysisText = chapterCandidateAnalysis.analysis;
+        // }
       }
 
       // Save to classification's preliminaryLevels

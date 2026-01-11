@@ -19,11 +19,39 @@ interface GetBestDescriptionMatchDto {
   isSectionOrChapter?: boolean;
   minMatches?: number;
   maxMatches?: number;
+  descriptions?: string[];
 }
 
 const BestDescriptionMatches = z.object({
   bestCandidates: z.array(z.number()),
 });
+
+const getSystemPrompt = (
+  isSectionOrChapter: boolean,
+  minMaxRangeText: string
+) => {
+  if (isSectionOrChapter) {
+    return `You are a United States Harmonized Tariff Schedule Expert.
+Select the candidates that are similar to the Item Description (${minMaxRangeText}).\n
+You MUST follow these rules:
+1. Analyze every candidate one by one.
+2. Your response must be an object with a "bestCandidates" property that is an array of the indexs of the best candidates.
+3. If no candidates are reasonable or similar to the Item Description, return an empty array.\n
+Note: The use of semicolons (;) in the descriptions should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".\n
+`;
+  } else {
+    return `You are a United States Harmonized Tariff Schedule Expert.
+Select the candidates that are similar to the Item Description (${minMaxRangeText}).\n
+You MUST follow these rules:
+1. Analyze every candidate one by one.
+2. Some candidates include 'referenceCodes' which are other HTS elements referenced in the candidate's description. You must use these to understand what that specific candidate is referring to.
+3. If the Item Description has the same essential character of the candidate, but is an incomplete, unfinished, or unassembled version of a candidate, it should be selected.
+4. If a candidate refers to a material or substance and that material or substance is likely to be part of the Item described, it should be selected.
+5. Your response must be an object with a "bestCandidates" property that is an array of the indexs of the best candidates.
+6. If no candidates are reasonable or similar to the Item Description, return an empty array.\n
+Note: The use of semicolons (;) in the descriptions should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".`;
+  }
+};
 
 export async function POST(req: NextRequest) {
   try {
@@ -43,9 +71,14 @@ export async function POST(req: NextRequest) {
       isSectionOrChapter = false,
       minMatches,
       maxMatches,
+      descriptions,
     }: GetBestDescriptionMatchDto = await req.json();
 
-    if (!candidates || !productDescription) {
+    if (
+      (!candidates && !isSectionOrChapter) ||
+      !productDescription ||
+      (!descriptions && isSectionOrChapter)
+    ) {
       return NextResponse.json(
         {
           error: "Missing candidates or product description",
@@ -63,26 +96,43 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    console.log("🎯🎯 CANDIDATES");
-    console.log(candidates);
+    // Remove 'referencedCodes' from candidates if it's empty or undefined
+    const cleanedCandidates = candidates.map((candidate, i) => {
+      // If referencedCodes is nullish or an empty object, remove the property
+      if (
+        !candidate.referencedCodes ||
+        (typeof candidate.referencedCodes === "object" &&
+          Object.keys(candidate.referencedCodes).length === 0)
+      ) {
+        // Use object destructuring to omit referencedCodes
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { referencedCodes, ...rest } = candidate;
+        return { ...rest, index: i };
+      }
+
+      return { ...candidate, index: i };
+    });
+
+    if (candidates && candidates.length > 0) {
+      console.log("🎯🎯 CANDIDATES");
+      console.log(candidates);
+    }
+
+    const labelledDescriptions = descriptions?.map(
+      (desc, i) => `${i}. ${desc}`
+    );
+
+    if (descriptions && descriptions.length > 0) {
+      console.log("🎯🎯 DESCRIPTIONS");
+      console.log(labelledDescriptions);
+    }
 
     const minMaxRangeText = getMinMaxRangeText(minMatches, maxMatches);
 
-    // Build labelled candidates with their referencedCodes inline
-    const labelledCandidates = candidates.map((candidate, index) => {
-      const hasReferencedCodes =
-        candidate.referencedCodes &&
-        Object.keys(candidate.referencedCodes).length > 0;
+    const systemPrompt = getSystemPrompt(isSectionOrChapter, minMaxRangeText);
 
-      if (hasReferencedCodes) {
-        const refsText = Object.entries(candidate.referencedCodes!)
-          .map(([code, desc]) => `${code}: ${desc}`)
-          .join("; ");
-        return `${index}. ${candidate.description} [Referenced Codes: ${refsText}]`;
-      }
-
-      return `${index}. ${candidate.description}`;
-    });
+    console.log("Prompt");
+    console.log(systemPrompt);
 
     const responseFormatOptions = {
       description: "Used to get the best description matches from an array",
@@ -101,18 +151,12 @@ export async function POST(req: NextRequest) {
       messages: [
         {
           role: "system",
-          content: `You are a United States Harmonized Tariff System Expert.\n
-            Your job is to take an "Item Description" and a list of "Candidates", and figure out which candidates are vaguely related to the "Item Description" (${minMaxRangeText}).\n
-            You must consider all candidates in the list to shape your decision making logic.\n
-            ${isSectionOrChapter ? "" : "Some candidates include 'referenceCodes', which are the HTS codes referenced in the candidate's description. You must use these to help understand what that specific candidate is referring to.\n"}
-            Note: The use of semicolons (;) in the descriptions should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".\n
-            If there are no good candidates, return an empty array.
-            `,
+          content: systemPrompt,
         },
         {
           role: "user",
           content: `Item Description: ${productDescription}\n
-         Candidates: ${labelledCandidates.join("\n")}\n`,
+         Candidates:\n ${isSectionOrChapter ? labelledDescriptions : JSON.stringify(cleanedCandidates, null, 2)}`,
         },
       ],
     });
