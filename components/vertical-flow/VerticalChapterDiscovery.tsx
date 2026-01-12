@@ -126,6 +126,13 @@ export const VerticalChapterDiscovery = ({ startExpanded = true }: Props) => {
     fetchChapterCandidates();
   }, [sectionDiscoveryComplete, sectionCandidates]);
 
+  // Auto-collapse when chapter discovery is complete
+  useEffect(() => {
+    if (chapterDiscoveryComplete) {
+      setIsExpanded(false);
+    }
+  }, [chapterDiscoveryComplete]);
+
   const fetchChapterCandidates = async () => {
     setIsFetchingChapters(true);
     setLoadingPhase("finding");
@@ -295,7 +302,7 @@ export const VerticalChapterDiscovery = ({ startExpanded = true }: Props) => {
         >
           {/* Description */}
           <h2 className="text-xl font-bold text-base-content mb-6">
-            Which chapters within these sections are most relevant?
+            HTS Chapter Candidates for Your Item Description
           </h2>
 
           {/* Candidates Section */}
@@ -372,7 +379,7 @@ export const VerticalChapterDiscovery = ({ startExpanded = true }: Props) => {
           </div>
 
           {/* Reasoning Section */}
-          <div className="mt-6 flex flex-col gap-4">
+          {/* <div className="mt-6 flex flex-col gap-4">
             <div className="flex items-center gap-2">
               <SparklesIcon className="w-5 h-5 text-primary" />
               <span className="text-sm font-semibold uppercase tracking-wider text-base-content/80">
@@ -381,7 +388,6 @@ export const VerticalChapterDiscovery = ({ startExpanded = true }: Props) => {
             </div>
 
             {!isPremium ? (
-              // Upsell for standard tier
               <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20 p-5">
                 <div className="absolute inset-0 pointer-events-none">
                   <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/20 rounded-full blur-2xl" />
@@ -393,9 +399,7 @@ export const VerticalChapterDiscovery = ({ startExpanded = true }: Props) => {
                   </p>
                   <button
                     className="self-start px-5 py-2.5 rounded-xl text-sm font-semibold bg-primary text-primary-content hover:bg-primary/90 transition-all duration-200 shadow-lg shadow-primary/25"
-                    onClick={() => {
-                      // TODO: Implement upgrade flow
-                    }}
+                    onClick={() => {}}
                   >
                     Upgrade
                   </button>
@@ -423,7 +427,7 @@ export const VerticalChapterDiscovery = ({ startExpanded = true }: Props) => {
                 </p>
               </div>
             )}
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
