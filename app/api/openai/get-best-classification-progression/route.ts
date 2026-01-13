@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
 
     const responseFormatOptions = {
       description:
-        "Used to find the best next classification progression in the Harmonized Tariff System for a product description and the current classification description",
+        "Used to find the best candidate in a given level of the Harmonized Tariff System",
     };
 
     const responseFormat = zodResponseFormat(
@@ -296,24 +296,24 @@ const getBestClassificationProgressionPremium = async (
     messages: [
       {
         role: "system",
-        content: `You are a United States Harmonized Tariff Schedule Classification Expert.
-        Your job is to select which candidate at this classification level best matches the Item Description.
-        You will be provided with the Item Description, list of Candidates, a set of Legal Notes, and the Selection Path to do this.
-        Note: The Selection Path is heading and subheadings selected up to this point for the classification if this is not the first level of classification.
+        content: `You are a United States Harmonized Tariff Schedule Expert.
+        Your job is to select which candidate best matches the Item Description when appended to the end of the Selection Path.
+        You will be provided with the Item Description, a list of Candidates, a set of Legal Notes, and the current Selection Path to do this.
+        The Selection Path contains the HTS parent elements selected prior to this level. If not provided, this is the first level (heading level).
+        All candidates are valid candidates for the given level, NEVER disregard a candidate just because it doesn't a "code".
         
         You MUST follow these exact steps to find best candidate:
-        1. Analyze each candidate one by one to determine how well the Item Description matches it.
+        1. Analyze each candidate one by one to determine how well it matches the Item Description when appended to the end of the Selection Path.
            (a) You must use a candidates associatedNotes (which are references to its associated Legal Notes) to qualify its fit with the item description.
            (b) If provided, use a candidates referencedCodes (which are HTS codes referenced in that candidate's description) to help understand what the candidate is referring to.
            (c) The use of semicolons (;) in candidates descriptions should be interpreted as "or". For example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".,
-        2. Apply the following Classification Rules sequentailly while considering all candidates to shape your decision. Only proceed to and apply the sequential rules if a winning candidate is not clearly determined based on the current one.
-        Classification Rules:\n${JSON.stringify(griRules, null, 2)}
+        2. Apply the following GRI Rules sequentailly while considering all candidates to shape your decision. Only proceed to and apply the sequential rules if a winning candidate is not clearly determined based on the current one.
+        GRI Rules:\n${JSON.stringify(griRules, null, 2)}
 
 
         In your response, "analysis" should:
-        * Provide a concise summary of why the candidate you picked is the most suitable match for the "Item Description" based on the "Classification Rules" and referncing the relevant "Legal Notes".
-        * Have 1 section called "Classification Reasoning", which is a summary of why the candidate you picked is the most suitable match for the "Item Description" based on the "Classification Rules" and the relevant "Legal Notes".
-        * Only elaborate on relevant candidates, and mention that all others are not relevant.
+        * Provide a concise summary of why the candidate you picked is the most suitable match for the "Item Description" based on the "GRI Rules" and referncing the relevant "Legal Notes".
+        * Have 1 section called "Analysis", which is a summary of why the candidate you picked is the most suitable match for the "Item Description" based on the "GRI Rules", the relevant "Legal Notes", and the "Selection Path" (if provided). If no Selection Path is provided, you should not mention it.
         * Be logically structured with good titles (not as a numbered list), not be markdown, only reference candidates by code or description (not by their letter identifier), and should have good spacing.
 
         The "identifier" property of your response must be the exact letter identifier (e.g., "A", "B", "C") of your chosen candidate.`,
