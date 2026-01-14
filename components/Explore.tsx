@@ -187,17 +187,26 @@ export const Explore = ({ isModal = false }: ExploreProps) => {
               sections,
               Number(matchedElement.chapter)
             );
-            const parents = getHtsElementParents(matchedElement, htsElements);
-            const newBreadcrumbs = generateBreadcrumbsForHtsElement(
-              sections,
-              sectionAndChapter.chapter,
-              [...parents, matchedElement]
-            );
-            setSearchValue("");
-            setActiveTab(ExploreTab.ELEMENTS);
-            setSearchResults([]);
-            setBreadcrumbs(newBreadcrumbs);
-            setCompletedDirectNavigation(true);
+
+            // If sections aren't loaded yet (e.g., cached HTS data loaded faster),
+            // fall through to show search results instead of direct navigation
+            if (sectionAndChapter) {
+              const parents = getHtsElementParents(matchedElement, htsElements);
+              const newBreadcrumbs = generateBreadcrumbsForHtsElement(
+                sections,
+                sectionAndChapter.chapter,
+                [...parents, matchedElement]
+              );
+              setSearchValue("");
+              setActiveTab(ExploreTab.ELEMENTS);
+              setSearchResults([]);
+              setBreadcrumbs(newBreadcrumbs);
+              setCompletedDirectNavigation(true);
+            } else {
+              // Sections not loaded yet, show search results as fallback
+              const topResults = results.slice(0, 30);
+              setSearchResults(topResults);
+            }
           } else {
             const topResults = results.slice(0, 30);
             setSearchResults(topResults);
@@ -300,7 +309,7 @@ export const Explore = ({ isModal = false }: ExploreProps) => {
           >
             {/* Subtle animated background - only show when not in modal */}
             {!isModal && (
-              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
                 <div className="absolute -top-32 -right-32 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
                 <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
                 <div
@@ -314,7 +323,7 @@ export const Explore = ({ isModal = false }: ExploreProps) => {
             )}
 
             <div
-              className={`relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 ${isModal ? "py-4" : "py-6 md:py-8"}`}
+              className={`relative w-full max-w-5xl mx-auto px-4 sm:px-6 ${isModal ? "py-4" : "py-6 md:py-8"}`}
             >
               {/* Title and version - only show when not in modal */}
               {!isModal && (
