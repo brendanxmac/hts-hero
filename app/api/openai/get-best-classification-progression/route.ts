@@ -100,12 +100,6 @@ export async function POST(req: NextRequest) {
       responseFormatOptions
     );
 
-    const griRulesPath = path.resolve(
-      process.cwd(),
-      "rules-for-classification.json"
-    );
-    const griRules = JSON.parse(fs.readFileSync(griRulesPath, "utf-8"));
-
     const gptResponse =
       classificationTier === "premium"
         ? await getBestClassificationProgressionPremium(
@@ -113,7 +107,6 @@ export async function POST(req: NextRequest) {
             productDescription,
             selectionPath,
             elements,
-            griRules,
             level,
             providedNotes
           )
@@ -182,9 +175,6 @@ const getBestClassificationProgressionStandard = (
       identifier: indexToIdentifier(i),
     }));
 
-  console.log("🔵🔵 CANDIDATES");
-  console.log(labeledCandidates);
-
   return openai.chat.completions.create({
     temperature: 0,
     model: OpenAIModel.FIVE_ONE,
@@ -220,16 +210,19 @@ const getBestClassificationProgressionPremium = async (
   productDescription: string,
   selectionPath: LevelSelection[],
   candidateElements: SimplifiedHtsElement[],
-  griRules: string,
   level: number,
   providedNotes?: NoteRecord[]
 ): Promise<OpenAI.Chat.Completions.ChatCompletion> => {
+  const griRulesPath = path.resolve(
+    process.cwd(),
+    "rules-for-classification.json"
+  );
+
+  const griRules = JSON.parse(fs.readFileSync(griRulesPath, "utf-8"));
+
   if (!providedNotes) {
     throw new Error("No notes provided");
   }
-
-  console.log("Provided Notes:");
-  console.log(providedNotes);
 
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -282,12 +275,6 @@ const getBestClassificationProgressionPremium = async (
       })(),
     })
   );
-
-  console.log("🌱🌱 CANDIDATES");
-  console.log(candidates);
-
-  console.log("GRI RULES:");
-  console.log(griRules);
 
   return openai.chat.completions.create({
     temperature: 0,

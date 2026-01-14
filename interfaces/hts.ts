@@ -43,9 +43,9 @@ export interface HTSNote {
   parentId: string | null;
   text: string;
   children: string[];
-  referencedHtsCodes: string[];
+  // referencedHtsCodes: string[];
   // Enrichment
-  relevance?: RelevanceType[];
+  // relevance?: RelevanceType[];
   sortOrder: number; // Global order within the document for deterministic reconstruction
 }
 

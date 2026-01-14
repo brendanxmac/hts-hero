@@ -681,7 +681,7 @@ export const VerticalClassificationResult = ({
             <h3 className="text-lg font-bold text-base-content">
               Basis for Classification
             </h3>
-            {canUpdateDetails && (
+            {/* {canUpdateDetails && (
               <div className="ml-auto flex gap-2">
                 <button
                   className="btn btn-sm gap-1.5 btn-neutral shrink-0"
@@ -706,7 +706,7 @@ export const VerticalClassificationResult = ({
                   Reset
                 </button>
               </div>
-            )}
+            )} */}
           </div>
         </div>
 
