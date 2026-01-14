@@ -459,7 +459,7 @@ export const Classifications = ({ page, setPage }: Props) => {
                 <span className="text-base-content">Classifications</span>
               </h1>
               <p className="text-base-content/70 text-sm md:text-base max-w-lg mt-1">
-                View and manage your classifications.
+                View and manage your classifications
               </p>
             </div>
 

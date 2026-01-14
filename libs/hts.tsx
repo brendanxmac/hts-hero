@@ -481,8 +481,6 @@ export const getBestClassificationProgression = async (
   classificationTier?: ClassificationTier,
   notes?: NoteRecord[]
 ): Promise<BestProgressionResponse> => {
-  console.log("Classification Tier:");
-  console.log(classificationTier);
   const bestCandidatesResponse: Array<ChatCompletion.Choice> =
     await apiClient.post("/openai/get-best-classification-progression", {
       elements,
@@ -1749,7 +1747,6 @@ export const getHtsElementsFromString = (
   const htsCodeRange = Array.from(text.match(HTS_CODE_RANGE_REGEX) ?? []);
 
   if (htsCodeRange.length > 0) {
-    console.log("Detected Range");
     const htsElementsFromRange = getHtsElementsFromRange(
       text,
       htsElements,

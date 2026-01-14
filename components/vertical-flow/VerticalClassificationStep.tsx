@@ -169,7 +169,6 @@ export const VerticalClassificationStep = ({
     isMountedRef.current = true;
 
     const findBestClassificationProgression = async () => {
-      console.log("ATTEMPING TO FIND BEST CLASSIFICATION PROGRESSION");
       if (
         currentLevel?.candidates?.length > 0 &&
         !currentLevel?.analysisElement
@@ -205,9 +204,6 @@ export const VerticalClassificationStep = ({
             );
 
             if (e.description !== enhancedDescription) {
-              console.log("Description Enhanced:");
-              console.log(e.description);
-              console.log(enhancedDescription);
               finalDescription = enhancedDescription;
             }
           }
@@ -233,12 +229,6 @@ export const VerticalClassificationStep = ({
                 })
                 .filter((selection) => selection !== null)
             : [];
-
-        console.log("====== Selection Path ======");
-        console.log(selectionPath);
-
-        console.log("====== Simplified Candidates ======");
-        console.log(simplifiedCandidates);
 
         try {
           if (!isMountedRef.current) return;
@@ -397,9 +387,6 @@ export const VerticalClassificationStep = ({
           candidatesForHeading.push(...candidates);
         })
       );
-
-      console.log("🔵🔵 HEADINGS");
-      console.log(candidatesForHeading);
 
       // Check if component is still mounted before updating state
       if (!isMountedRef.current) {

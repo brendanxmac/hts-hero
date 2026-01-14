@@ -1419,7 +1419,7 @@ These provisions apply only when the ring-position hetero-atoms are those result
    (f) Dental cements and other dental fillings; bone reconstruction cements;
    (g) First-aid boxes and kits;
    (h) Chemical contraceptive preparations based on hormones, on other products of heading 2937 or on spermicides;
-   (i) Gel preparations designed to be used in human or veterinary medicine as a lubricant for parts of the body for surgical operations or physical examinations or as a coupling agent between the body and medical instruments;
+   (ij) Gel preparations designed to be used in human or veterinary medicine as a lubricant for parts of the body for surgical operations or physical examinations or as a coupling agent between the body and medical instruments;
    (k) Waste pharmaceuticals, that is, pharmaceutical products which are unfit for their original intended purpose, for example, because of expiry of shelf life; and
    (l) Appliances identifiable for ostomy use, that is, colostomy, ileostomy and urostomy pouches cut to shape and their adhesive wafers or faceplates.
 
@@ -1927,7 +1927,7 @@ In heading 4008 the expressions "rods" and "profile shapes" apply only to such p
    (f) Goods of chapter 46;
    (g) Footwear or parts thereof of chapter 64;
    (h) Goods of chapter 66 (for example, umbrellas and walking-sticks and parts thereof);
-   (i) Goods of heading 6808;
+   (ij) Goods of heading 6808;
    (k) Imitation jewelry of heading 7117;
    (l) Goods of section XVI or section XVII (for example, machine parts, cases, covers, cabinets for machines and apparatus and wheelwrights' wares);
    (m) Goods of section XVIII (for example, clock cases and musical instruments and parts thereof);
@@ -2042,7 +2042,7 @@ Thereupon, and until such prohibition, restriction, export duty or other export 
    (f) Paper impregnated with diagnostic or laboratory reagents (heading 3822);
    (g) Paper-reinforced stratified sheeting of plastics, or one layer of paper or paperboard coated or covered with a layer of plastics, the latter constituting more than half the total thickness, or articles of such materials, other than wallcoverings of heading 4814 (chapter 39);
    (h) Articles of heading 4202 (for example, travel goods);
-   (i) Articles of chapter 46 (manufactures of plaiting material);
+   (ij) Articles of chapter 46 (manufactures of plaiting material);
    (k) Paper yarn or textile articles of paper yarn (section XI);
    (l) Articles of chapter 64 or chapter 65;
    (m) Abrasive paper or paperboard (heading 6805) or paperor paperboard-backed mica (heading 6814) (paper and paperboard coated with mica powder are, however, to be classified in this chapter);
@@ -5546,7 +5546,7 @@ Cards, discs and rolls of heading 9209 entered with an instrument are to be trea
    (f) Lamps or light sources and parts thereof of chapter 85;
    (g) Furniture specially designed as parts of apparatus of heading 8518 (heading 8518), of heading 8519 or 8521 (heading 8522) or of headings 8525 to 8528 (heading 8529);
    (h) Articles of heading 8714;
-   (i) Dentists' chairs incorporating dental appliances of heading 9018 or dentists' spittoons (heading 9018);
+   (ij) Dentists' chairs incorporating dental appliances of heading 9018 or dentists' spittoons (heading 9018);
    (k) Articles of chapter 91 (for example, clocks and clock cases);
    (l) Toy furniture or toy luminaires and lighting fittings (heading 9503), billiard tables or other furniture specially constructed for games (heading 9504), furniture for conjuring tricks or decorations (other than lighting strings) such as Chinese lanterns (heading 9505); or
    (m) Monopods, bipods, tripods and similar articles (heading 9620).
@@ -5602,7 +5602,7 @@ Prefabricated buildings include "modular building units" of steel, normally pres
    (f) Textile flags or bunting, or sails for boats, sailboards or land craft, of chapter 63;
    (g) Sports footwear (other than skating boots with ice or roller skates attached) of chapter 64, or sports headgear of chapter 65;
    (h) Walking-sticks, whips, riding-crops or the like (heading 6602), or parts thereof (heading 6603);
-   (i) Unmounted glass eyes for dolls or other toys, of heading 7018;
+   (ij) Unmounted glass eyes for dolls or other toys, of heading 7018;
    (k) Parts of general use, as defined in note 2 to section XV, of base metal (section XV), or similar goods of plastics (chapter 39);
    (l) Bells, gongs or the like of heading 8306;
    (m) Pumps for liquids (heading 8413), filtering or purifying machinery and apparatus for liquids or gases (heading 8421), electric motors (heading 8501), electric transformers (heading 8504), discs, tapes, solid-state non-volatile storage devices, "smart cards" and other media for the recording of sound or of other phenomena, whether or not recorded (heading 8523), radio remote control apparatus (heading 8526) or cordless infrared remote control devices (heading 8543);
