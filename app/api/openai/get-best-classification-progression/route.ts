@@ -189,7 +189,7 @@ const getBestClassificationProgressionStandard = (
           Some candidates include "referencedCodes" which are HTS codes referenced in that candidates description. Use these to help understand what the candidate is referring to.\n
           Note: The use of semicolons (;) in the descriptions should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".\n
           In your response, "analysis" for your selection should explain why the description you picked is the most suitable match.\n
-          In "analysis" you should refer to each option using its code and description (truncated if beyond 30 characters), never its identifier letter.
+          In "analysis" you should refer to each option by its code or description (truncated if beyond 30 characters), never by its identifier letter.
           The "identifier" property of your response must be the exact letter identifier (e.g., "A", "B", "C") of your chosen candidate.\n`,
       },
       {

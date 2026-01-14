@@ -37,15 +37,13 @@ import {
   canUserUpdateDetails,
   canUserDelete,
 } from "../libs/classification-helpers";
-import {
-  BackButton,
-  HeaderActions,
-  HtsCodeDisplay,
-  AnimatedBackground,
-  LevelConnector,
-  DeleteConfirmationModal,
-} from "./classification-ui";
 import { ClassificationRecord } from "../interfaces/hts";
+import { LevelConnector } from "./classification-ui/LevelConnector";
+import { BackButton } from "./classification-ui/BackButton";
+import { AnimatedBackground } from "./classification-ui/AnimatedBackground";
+import { HeaderActions } from "./classification-ui/HeaderActions";
+import { HtsCodeDisplay } from "./classification-ui/HtsCodeDisplay";
+import { DeleteConfirmationModal } from "./classification-ui/DeleteConfirmationModal";
 
 interface ClassificationProps {
   setPage: (page: ClassifyPage) => void;

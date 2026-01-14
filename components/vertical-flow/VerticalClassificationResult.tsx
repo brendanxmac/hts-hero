@@ -63,11 +63,9 @@ import { SecondaryLabel } from "../SecondaryLabel";
 import { VerticalClassificationStep } from "./VerticalClassificationStep";
 import { VerticalSectionDiscovery } from "./VerticalSectionDiscovery";
 import { VerticalChapterDiscovery } from "./VerticalChapterDiscovery";
-import {
-  ClassificationDetailsSummary,
-  TariffDutiesSummary,
-  LevelConnector,
-} from "../classification-ui";
+import { ClassificationDetailsSummary } from "../classification-ui/ClassificationDetailsSummary";
+import { LevelConnector } from "../classification-ui/LevelConnector";
+import { TariffDutiesSummary } from "../classification-ui/TariffDutiesSummary";
 
 interface Props {
   userProfile: UserProfile;
