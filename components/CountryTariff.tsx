@@ -135,8 +135,6 @@ export const CountryTariff = ({
     );
 
   const getFilteredBaseTariffs = () => {
-    console.log("baseTariffs:");
-    console.log(baseTariffs);
     return baseTariffs.filter((t) =>
       selectedSpecialProgram?.symbol !== "none"
         ? t.tariffs.some((tariff) =>
@@ -153,29 +151,29 @@ export const CountryTariff = ({
     return TariffColumn.SPECIAL;
   };
 
-  const getBaseTariffsText = () => {
-    if (!baseTariffs?.length) return "";
-    const activeBaseTariffs = getFilteredBaseTariffs().flatMap(
-      (t) => t.tariffs
-    );
-    return activeBaseTariffs
-      .map((tariff) => {
-        const primaryText =
-          tariff.value === null && tariff.details
-            ? tariff.details
-            : tariff.type === "percent"
-              ? "Ad Valorem"
-              : "Quantity";
-        const valueText =
-          tariff.value === null
-            ? "Needs Review"
-            : tariff.type === "percent"
-              ? `${tariff.value}%`
-              : tariff.raw;
-        return `   ${valueText} - General Duty (${primaryText}) - ${tariffElement.htsno}`;
-      })
-      .join("\n");
-  };
+  // const getBaseTariffsText = () => {
+  //   if (!baseTariffs?.length) return "";
+  //   const activeBaseTariffs = getFilteredBaseTariffs().flatMap(
+  //     (t) => t.tariffs
+  //   );
+  //   return activeBaseTariffs
+  //     .map((tariff) => {
+  //       const primaryText =
+  //         tariff.value === null && tariff.details
+  //           ? tariff.details
+  //           : tariff.type === "percent"
+  //             ? "Ad Valorem"
+  //             : "Quantity";
+  //       const valueText =
+  //         tariff.value === null
+  //           ? "Needs Review"
+  //           : tariff.type === "percent"
+  //             ? `${tariff.value}%`
+  //             : tariff.raw;
+  //       return `   ${valueText} - General Duty (${primaryText}) - ${tariffElement.htsno}`;
+  //     })
+  //     .join("\n");
+  // };
 
   // const getTariffSetText = (tariffSet: TariffSet) => {
   //   const baseTariffsText = getBaseTariffsText();

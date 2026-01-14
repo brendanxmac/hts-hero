@@ -11,7 +11,6 @@ import {
   getSectionAndChapterFromChapterNumber,
 } from "../libs/hts";
 import { LoadingIndicator } from "./LoadingIndicator";
-import { TertiaryLabel } from "./TertiaryLabel";
 
 // Helper to check if a string is a valid HTS code format (8 or 10 digits with dots)
 const isValidHtsCodeFormat = (str: string): boolean => {

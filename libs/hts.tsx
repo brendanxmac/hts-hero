@@ -15,11 +15,16 @@ import {
   BestProgressionResponse,
   BestChaptersResponse,
   Navigatable,
-  Classification,
+  ClassificationI,
   SectionAndChapterDetails,
   SelectionWithReason,
   Importer,
   ClassificationRecord,
+  HTSNote,
+  PreliminaryCandidate,
+  QualifyCandidatesWithNotesDto,
+  CandidateQualificationResponse,
+  LevelSelection,
 } from "../interfaces/hts";
 import {
   elementsAtClassificationLevel,
@@ -41,6 +46,9 @@ import {
   getStringBeforeOpeningParenthesis,
   getStringBetweenParenthesis,
 } from "../utilities/hts";
+import { ClassificationTier } from "../contexts/ClassificationContext";
+import { NoteRecord } from "../types/hts";
+import Fuse from "fuse.js";
 
 export const downloadClassificationReport = async (
   classification: ClassificationRecord,
@@ -76,7 +84,7 @@ export const downloadClassificationReport = async (
 
 // Create a function that takes a classification and iterates in reverse through the levels to find the first level with tariff data
 export const getElementWithTariffDataFromClassification = (
-  classification: Classification
+  classification: ClassificationI
 ) => {
   for (let i = classification.levels.length - 1; i >= 0; i--) {
     if (
@@ -90,7 +98,7 @@ export const getElementWithTariffDataFromClassification = (
 };
 
 export const getProgressionDescriptions = (
-  classification: Classification,
+  classification: ClassificationI,
   upToLevel?: number
 ) => {
   const stopAtLevel = upToLevel ? upToLevel + 1 : classification.levels.length;
@@ -467,14 +475,20 @@ export const logSearch = async (productDescription: string) => {
 
 export const getBestClassificationProgression = async (
   elements: SimplifiedHtsElement[],
-  htsDescription: string,
-  productDescription: string
+  selectionPath: LevelSelection[],
+  productDescription: string,
+  classificationLevel: number,
+  classificationTier?: ClassificationTier,
+  notes?: NoteRecord[]
 ): Promise<BestProgressionResponse> => {
   const bestCandidatesResponse: Array<ChatCompletion.Choice> =
     await apiClient.post("/openai/get-best-classification-progression", {
       elements,
       productDescription,
-      htsDescription,
+      selectionPath,
+      classificationTier,
+      notes,
+      level: classificationLevel,
     });
 
   const bestCandidate = bestCandidatesResponse[0].message.content;
@@ -486,22 +500,185 @@ export const getBestClassificationProgression = async (
   return JSON.parse(bestCandidate);
 };
 
+/**
+ * Maps each HTS section to the range of chapters it contains.
+ * Key: section number, Value: { start: first chapter, end: last chapter }
+ */
+const SECTION_TO_CHAPTERS: Record<number, { start: number; end: number }> = {
+  1: { start: 1, end: 5 },
+  2: { start: 6, end: 14 },
+  3: { start: 15, end: 15 },
+  4: { start: 16, end: 24 },
+  5: { start: 25, end: 27 },
+  6: { start: 28, end: 38 },
+  7: { start: 39, end: 40 },
+  8: { start: 41, end: 43 },
+  9: { start: 44, end: 46 },
+  10: { start: 47, end: 49 },
+  11: { start: 50, end: 63 },
+  12: { start: 64, end: 67 },
+  13: { start: 68, end: 70 },
+  14: { start: 71, end: 71 },
+  15: { start: 72, end: 83 },
+  16: { start: 84, end: 85 },
+  17: { start: 86, end: 89 },
+  18: { start: 90, end: 92 },
+  19: { start: 93, end: 93 },
+  20: { start: 94, end: 96 },
+  21: { start: 97, end: 97 },
+  22: { start: 98, end: 99 },
+};
+
+const getSectionForChapter = (chapter: number): number | null => {
+  for (const [section, { start, end }] of Object.entries(SECTION_TO_CHAPTERS)) {
+    if (chapter >= start && chapter <= end) {
+      return parseInt(section, 10);
+    }
+  }
+  return null;
+};
+
+/**
+ * Extracts section and chapter numbers from an HTS code.
+ * Client-side version of the function in libs/supabase/hts-notes.ts
+ */
+export const getSectionAndChapterFromHtsCode = (
+  htsCode: string
+): { section: number; chapter: number } | null => {
+  const cleanCode = htsCode.replace(/\./g, "");
+
+  if (cleanCode.length < 2) {
+    return null;
+  }
+
+  const chapter = parseInt(cleanCode.slice(0, 2), 10);
+
+  if (isNaN(chapter) || chapter < 1 || chapter > 99) {
+    return null;
+  }
+
+  const section = getSectionForChapter(chapter);
+
+  if (section === null) {
+    return null;
+  }
+
+  return { section, chapter };
+};
+
+/**
+ * Extracts unique sections and chapters from a list of simplified HTS elements.
+ */
+export const getSectionsAndChaptersFromCandidates = (
+  candidates: SimplifiedHtsElement[]
+): { sections: number[]; chapters: number[] } => {
+  const sections = new Set<number>();
+  const chapters = new Set<number>();
+
+  for (const candidate of candidates) {
+    // Don't fetch notes for elements without an htsno (description only)
+    if (candidate.code) {
+      const result = getSectionAndChapterFromHtsCode(candidate.code);
+      if (result) {
+        sections.add(result.section);
+        chapters.add(result.chapter);
+      }
+    }
+  }
+
+  return {
+    sections: Array.from(sections),
+    chapters: Array.from(chapters),
+  };
+};
+
+/**
+ * Fetches notes for the specified sections and chapters from the API.
+ */
+export const fetchNotesForSectionsAndChapters = async (
+  sections: number[],
+  chapters: number[]
+): Promise<NoteRecord[]> => {
+  if (sections.length === 0 && chapters.length === 0) {
+    return [];
+  }
+
+  const notes: NoteRecord[] = await apiClient.post("/hts-notes/fetch-batch", {
+    sections,
+    chapters,
+  });
+
+  return notes;
+};
+
+/**
+ * Adds referencedCodes property to each element by scanning its description for HTS code references.
+ * This provides context to the LLM about what codes are being referenced in each element's description.
+ *
+ * @param elements - The elements to enrich with referenced codes
+ * @param allHtsElements - All HTS elements to look up codes against
+ * @param fuse - Fuse index for fuzzy matching
+ * @returns The same elements with referencedCodes property attached to each
+ */
+export const addReferenceCodesToElements = <
+  T extends HtsElement | HtsElementWithParentReference,
+>(
+  elements: T[],
+  allHtsElements: HtsElement[],
+  fuse: Fuse<HtsElement>
+): (T & { referencedCodes: Record<string, string> })[] => {
+  return elements.map((element) => {
+    const referencedCodes: Record<string, string> = {};
+
+    // Check if this element's description contains HTS code references
+    if (element.description.match(HTS_CODE_REGEX)) {
+      // Get all elements referenced in this description
+      const referencedElements = getHtsElementsFromString(
+        element.description,
+        allHtsElements,
+        fuse
+      );
+
+      // Add each referenced element to the record
+      for (const refElement of referencedElements) {
+        if (refElement.htsno && !referencedCodes[refElement.htsno]) {
+          referencedCodes[refElement.htsno] = refElement.description;
+        }
+      }
+    }
+
+    return {
+      ...element,
+      referencedCodes,
+    };
+  });
+};
+
 export const getBestDescriptionCandidates = async (
-  elementsAtLevel: HtsElement[] | HtsElementWithParentReference[],
+  elementsAtLevel: ((HtsElement | HtsElementWithParentReference) & {
+    referencedCodes?: Record<string, string>;
+  })[],
   productDescription: string,
   isSectionOrChapter: boolean,
   minMatches?: number,
   maxMatches?: number,
-  descs?: string[]
+  descriptions?: string[] // Optional: for sections/chapters that don't have referencedCodes
 ): Promise<BestCandidatesResponse> => {
-  const descriptions = descs || getHtsElementDescriptions(elementsAtLevel);
+  // If descriptions are provided (for sections/chapters), use those
+  // Otherwise, build candidates from elements with their referencedCodes
+  const candidates = elementsAtLevel.map((element) => ({
+    description: element.description,
+    referencedCodes: element.referencedCodes,
+  }));
+
   const bestCandidatesResponse: Array<ChatCompletion.Choice> =
     await apiClient.post("/openai/get-best-description-candidates", {
-      descriptions,
+      candidates,
       productDescription,
       isSectionOrChapter,
       minMatches,
       maxMatches,
+      descriptions,
     });
 
   const bestCandidates = bestCandidatesResponse[0].message.content;
@@ -607,6 +784,27 @@ export const getBestIndentLevelMatch = async (
   }
 };
 
+export const qualifyCandidatesWithNotes = async ({
+  productDescription,
+  candidates,
+  candidateType,
+}: QualifyCandidatesWithNotesDto): Promise<CandidateQualificationResponse> => {
+  const qualifiedCandidatesResponse: Array<ChatCompletion.Choice> =
+    await apiClient.post("/openai/qualify-candidates-with-notes", {
+      productDescription,
+      candidates,
+      candidateType,
+    });
+
+  const qualificationResponse = qualifiedCandidatesResponse[0].message.content;
+
+  if (qualificationResponse === null) {
+    throw new Error(`Failed to get qualification analysis`);
+  }
+
+  return JSON.parse(qualificationResponse);
+};
+
 export const getCodeFromHtsPrimitive = (
   htsPrimitive: HtsElement | HtsSectionAndChapterBase
 ): string => {
@@ -626,6 +824,99 @@ export const getHtsSectionsAndChapters = (): Promise<{
   return apiClient.get("/hts/get-sections-and-chapters", {});
 };
 
+const HTS_CACHE_KEY = "hts-latest-cache";
+const HTS_CACHE_REVISION_KEY = "hts-latest-cache-revision";
+const HTS_CACHE_TIMESTAMP_KEY = "hts-latest-cache-timestamp";
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+// Helper to convert ArrayBuffer to base64 string for localStorage
+const arrayBufferToBase64 = (buffer: ArrayBuffer): string => {
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+};
+
+// Helper to convert base64 string back to Uint8Array
+const base64ToUint8Array = (base64: string): Uint8Array => {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+};
+
+// Get cached HTS data from localStorage (only for latest revision)
+export const getCachedHtsData = (): {
+  data: HtsElement[];
+  revisionName: string;
+} | null => {
+  try {
+    if (typeof window === "undefined") return null;
+
+    const cachedRevision = localStorage.getItem(HTS_CACHE_REVISION_KEY);
+    const cachedData = localStorage.getItem(HTS_CACHE_KEY);
+    const cachedTimestamp = localStorage.getItem(HTS_CACHE_TIMESTAMP_KEY);
+
+    if (!cachedRevision || !cachedData || !cachedTimestamp) return null;
+
+    // Check if cache has expired (older than 24 hours)
+    const cacheAge = Date.now() - parseInt(cachedTimestamp, 10);
+    if (cacheAge > CACHE_TTL_MS) {
+      clearHtsCache();
+      return null;
+    }
+
+    // Decompress the cached data
+    const compressedBytes = base64ToUint8Array(cachedData);
+    const decompressedData = inflate(compressedBytes, { to: "string" });
+
+    return {
+      data: JSON.parse(decompressedData),
+      revisionName: cachedRevision,
+    };
+  } catch (e) {
+    console.error("Error reading HTS cache:", e);
+    // Clear corrupted cache
+    clearHtsCache();
+    return null;
+  }
+};
+
+// Cache HTS data to localStorage
+export const cacheHtsData = (
+  compressedData: ArrayBuffer,
+  revisionName: string
+): void => {
+  try {
+    if (typeof window === "undefined") return;
+
+    const base64Data = arrayBufferToBase64(compressedData);
+    localStorage.setItem(HTS_CACHE_KEY, base64Data);
+    localStorage.setItem(HTS_CACHE_REVISION_KEY, revisionName);
+    localStorage.setItem(HTS_CACHE_TIMESTAMP_KEY, Date.now().toString());
+  } catch (e) {
+    console.error("Error caching HTS data:", e);
+    // If storage is full, clear and don't cache
+    clearHtsCache();
+  }
+};
+
+// Clear HTS cache from localStorage
+export const clearHtsCache = (): void => {
+  try {
+    if (typeof window === "undefined") return;
+    localStorage.removeItem(HTS_CACHE_KEY);
+    localStorage.removeItem(HTS_CACHE_REVISION_KEY);
+    localStorage.removeItem(HTS_CACHE_TIMESTAMP_KEY);
+  } catch (e) {
+    console.error("Error clearing HTS cache:", e);
+  }
+};
+
 export const getHtsData = async (
   revision: string
 ): Promise<{ data: HtsElement[]; revisionName: string }> => {
@@ -641,6 +932,12 @@ export const getHtsData = async (
   // Convert Blob to ArrayBuffer and decompress the gzipped JSON
   const htsData = await response.blob();
   const arrayBuffer = await htsData.arrayBuffer();
+
+  // Cache the compressed data for the latest revision
+  if (revision === "latest") {
+    cacheHtsData(arrayBuffer, revisionName);
+  }
+
   const decompressedData = inflate(new Uint8Array(arrayBuffer), {
     to: "string",
   });
@@ -979,6 +1276,35 @@ export const getTariffElement = (
   return undefined;
 };
 
+export const generateBasisForClassification = (
+  classification: ClassificationI
+): string => {
+  const parts: string[] = [];
+  const separator = "------------------------------";
+
+  // Add preliminary level analysis (section and chapter) if available
+  if (classification.preliminaryLevels) {
+    classification.preliminaryLevels.forEach((level) => {
+      if (level.analysis) {
+        const title =
+          level.level === "section" ? "Section Analysis" : "Chapter Analysis";
+        parts.push(`${separator}\n${title}\n${separator}\n\n${level.analysis}`);
+      }
+    });
+  }
+
+  // Add regular classification level analysis
+  classification.levels.forEach((level, index) => {
+    if (level.analysisReason) {
+      const title =
+        index === 0 ? "Heading Selection" : `Subheading ${index} Selection`;
+      parts.push(`${title}\n${separator}\n\n${level.analysisReason}`);
+    }
+  });
+
+  return parts.join("\n\n");
+};
+
 export const getHtsElementParents = (
   element: HtsElement,
   elements: HtsElement[]
@@ -1070,4 +1396,652 @@ export const getIndexOfLastElementBeforeIndentLevel = (
   }
 
   return htsElementsChunk.length;
+};
+
+export function buildNoteTree(notes: HTSNote[]) {
+  const map = new Map<string, HTSNote & { nodes: any[] }>();
+
+  for (const note of notes) {
+    map.set(note.id, { ...note, nodes: [] });
+  }
+
+  const roots: (HTSNote & { nodes: any[] })[] = [];
+
+  map.forEach((node) => {
+    if (node.parentId && map.has(node.parentId)) {
+      map.get(node.parentId)!.nodes.push(node);
+    } else {
+      roots.push(node);
+    }
+  });
+
+  map.forEach((node) => {
+    node.nodes.sort((a, b) => a.depth - b.depth);
+  });
+
+  return roots;
+}
+
+/**
+ * Extracts the last segment of a hierarchical citation.
+ * e.g., "6(A)(iii)" → "(iii)", "6(A)" → "(A)", "6" → "6."
+ * Adds a "." after citations that are just numbers.
+ */
+function getLastCitationPart(citation: string): string {
+  if (!citation) return "";
+
+  // Match the last parenthetical group like (A), (i), (ii), etc.
+  const lastParenMatch = citation.match(/\([^()]+\)$/);
+  if (lastParenMatch) {
+    return lastParenMatch[0];
+  }
+
+  // If no parenthetical, return the whole citation
+  // Add "." after if it's just a number (e.g., "6" → "6.")
+  if (/^\d+$/.test(citation)) {
+    return `${citation}.`;
+  }
+
+  return citation;
+}
+
+/**
+ * Converts a number to Roman numerals (for section numbers)
+ */
+function toRomanNumeral(num: number): string {
+  const romanNumerals: [number, string][] = [
+    [1000, "M"],
+    [900, "CM"],
+    [500, "D"],
+    [400, "CD"],
+    [100, "C"],
+    [90, "XC"],
+    [50, "L"],
+    [40, "XL"],
+    [10, "X"],
+    [9, "IX"],
+    [5, "V"],
+    [4, "IV"],
+    [1, "I"],
+  ];
+
+  let result = "";
+  for (const [value, numeral] of romanNumerals) {
+    while (num >= value) {
+      result += numeral;
+      num -= value;
+    }
+  }
+  return result;
+}
+
+interface NoteRenderState {
+  shownSectionHeader: boolean;
+  shownChapterHeader: boolean;
+  currentNoteGroup: string | null;
+  inChapterNotes: boolean;
+}
+
+export function renderNoteContext(
+  notes: (HTSNote & { nodes: any[] })[],
+  indent = 0,
+  output: string[] = [],
+  state: NoteRenderState = {
+    shownSectionHeader: false,
+    shownChapterHeader: false,
+    currentNoteGroup: null,
+    inChapterNotes: false,
+  }
+): string {
+  for (const node of notes) {
+    // Handle both camelCase and snake_case from DB
+    const nodeGroup = node.noteGroup || (node as any).note_group || null;
+    const nodeChapter = node.chapter ?? (node as any).chapter ?? null;
+    const nodeSection = node.section ?? (node as any).section ?? null;
+    const isNodeSectionLevel = nodeChapter === null;
+
+    // At the top level (indent 0), manage headers
+    if (indent === 0) {
+      // Transitioning from section notes to chapter notes
+      if (!isNodeSectionLevel && !state.inChapterNotes) {
+        state.inChapterNotes = true;
+        state.currentNoteGroup = null; // Reset to show new noteGroup headers
+
+        // Add spacing before chapter header
+        if (output.length > 0) {
+          output.push("");
+        }
+
+        // Show "CHAPTER XX" header once
+        if (nodeChapter !== null) {
+          output.push(`CHAPTER ${nodeChapter}`);
+          state.shownChapterHeader = true;
+        }
+      }
+
+      // Show "SECTION XX" header once for section-level notes
+      if (
+        isNodeSectionLevel &&
+        !state.shownSectionHeader &&
+        nodeSection !== null
+      ) {
+        output.push(`SECTION ${toRomanNumeral(nodeSection)}`);
+        state.shownSectionHeader = true;
+      }
+
+      // Show noteGroup header when it changes
+      if (nodeGroup && nodeGroup !== state.currentNoteGroup) {
+        state.currentNoteGroup = nodeGroup;
+
+        // Add spacing before noteGroup header (but not right after section/chapter header)
+        if (output.length > 0) {
+          const lastLine = output[output.length - 1];
+          const isAfterLevelHeader =
+            lastLine.startsWith("SECTION ") || lastLine.startsWith("CHAPTER ");
+          if (!isAfterLevelHeader) {
+            output.push("");
+          }
+        }
+
+        output.push(nodeGroup.toUpperCase());
+      }
+    }
+
+    const prefix = "  ".repeat(indent);
+    // Include only the last part of the citation (e.g., "(iii)" from "6(A)(iii)")
+    const citationPart = node.citation
+      ? `${getLastCitationPart(node.citation)} `
+      : "";
+    output.push(`${prefix}${citationPart}${node.text}`);
+
+    if (node.nodes.length > 0) {
+      renderNoteContext(node.nodes, indent + 1, output, state);
+    }
+  }
+  return output.join("\n\n");
+}
+
+const normalizeHtsCode = (code: string): string => {
+  return code.replace(/\./g, "").padEnd(10, "0");
+};
+
+const expandRange = (
+  start: string,
+  end: string,
+  allElements: HtsElement[]
+): HtsElement[] => {
+  const startKey = normalizeHtsCode(start);
+  const endKey = normalizeHtsCode(end);
+
+  return allElements.filter((el) => {
+    const elKey = normalizeHtsCode(el.htsno);
+    return elKey >= startKey && elKey <= endKey;
+  });
+};
+
+export const findHtsElement = (
+  htsno: string,
+  allElements: HtsElement[],
+  fuse: Fuse<HtsElement>
+): HtsElement | null => {
+  // Normalize the HTS code first to handle malformed inputs like "8428.90.0310"
+  const normalizedHtsno = normalizeHtsFormat(htsno);
+
+  // Try exact match with normalized code first
+  const exactMatch = allElements.find((e) => e.htsno === normalizedHtsno);
+  if (exactMatch) return exactMatch;
+
+  // Try padding with zeros and periods to find exact match
+  // HTS formats: 4-digit (xxxx), 6-digit (xxxx.xx), 8-digit (xxxx.xx.xx), 10-digit (xxxx.xx.xx.xx)
+  const paddedVersions = getPaddedHtsVersions(normalizedHtsno);
+  for (const paddedHtsno of paddedVersions) {
+    const paddedMatch = allElements.find((e) => e.htsno === paddedHtsno);
+    if (paddedMatch) return paddedMatch;
+  }
+
+  // Fall back to Fuse fuzzy search for closest match, and only if the first result has htsno as an exact substring
+  const fuseResults = fuse.search(htsno);
+  if (fuseResults.length > 0) {
+    if (fuseResults[0].item.htsno.includes(htsno)) {
+      return fuseResults[0].item;
+    }
+  }
+
+  return null;
+};
+
+/**
+ * Normalizes an HTS code to proper format with periods in correct positions.
+ * Handles malformed inputs like "8428.90.0310" → "8428.90.03.10"
+ *
+ * HTS format: xxxx.xx.xx.xx (4.2.2.2 digits with periods)
+ * - 4 digits → xxxx
+ * - 6 digits → xxxx.xx
+ * - 8 digits → xxxx.xx.xx
+ * - 10 digits → xxxx.xx.xx.xx
+ *
+ * @param htsno - The potentially malformed HTS code
+ * @returns The properly formatted HTS code, or original if can't normalize
+ */
+export const normalizeHtsFormat = (htsno: string): string => {
+  // Remove all periods to get raw digits
+  const digits = htsno.replace(/\./g, "");
+
+  // Only normalize if we have valid digit counts (4, 6, 8, or 10)
+  switch (digits.length) {
+    case 4:
+      // 4-digit: xxxx
+      return digits;
+    case 6:
+      // 6-digit: xxxx.xx
+      return `${digits.slice(0, 4)}.${digits.slice(4, 6)}`;
+    case 8:
+      // 8-digit: xxxx.xx.xx
+      return `${digits.slice(0, 4)}.${digits.slice(4, 6)}.${digits.slice(6, 8)}`;
+    case 10:
+      // 10-digit: xxxx.xx.xx.xx
+      return `${digits.slice(0, 4)}.${digits.slice(4, 6)}.${digits.slice(6, 8)}.${digits.slice(8, 10)}`;
+    default:
+      // If digit count doesn't match expected, return original
+      return htsno;
+  }
+};
+
+/**
+ * Generates padded versions of an HTS code by adding ".00" segments
+ * HTS format: xxxx.xx.xx.xx (4.2.2.2 digits with periods)
+ * - 4 digit: xxxx (length 4)
+ * - 6 digit: xxxx.xx (length 7)
+ * - 8 digit: xxxx.xx.xx (length 10)
+ * - 10 digit: xxxx.xx.xx.xx (length 13)
+ */
+export const getPaddedHtsVersions = (htsno: string): string[] => {
+  const versions: string[] = [];
+  const len = htsno.length;
+
+  // 4 digit format (xxxx) -> try xxxx.00, xxxx.00.00, xxxx.00.00.00
+  if (len === 4) {
+    versions.push(`${htsno}.00`);
+    versions.push(`${htsno}.00.00`);
+    versions.push(`${htsno}.00.00.00`);
+  }
+  // 6 digit format (xxxx.xx) -> try xxxx.xx.00, xxxx.xx.00.00
+  else if (len === 7 && htsno[4] === ".") {
+    versions.push(`${htsno}.00`);
+    versions.push(`${htsno}.00.00`);
+  }
+  // 8 digit format (xxxx.xx.xx) -> try xxxx.xx.xx.00
+  else if (len === 10 && htsno[4] === "." && htsno[7] === ".") {
+    versions.push(`${htsno}.00`);
+  }
+  // Already 10 digit format (xxxx.xx.xx.xx) - no padding needed
+
+  return versions;
+};
+
+const getHtsElementsFromRange = (
+  rangeText: string,
+  allElements: HtsElement[],
+  fuse: Fuse<HtsElement>
+): HtsElement[] => {
+  const matches = Array.from(
+    rangeText.matchAll(HTS_CODE_RANGE_REGEX)
+  ) as RegExpMatchArray[];
+
+  const results: HtsElement[] = [];
+  let htsLevel: string | null = null;
+
+  for (const match of matches) {
+    const start = match[1];
+    const end = match[2];
+
+    // Find start or end element using exact match first, then fuzzy fallback
+    const startElement = findHtsElement(start, allElements, fuse);
+    const endElement = findHtsElement(end, allElements, fuse);
+
+    if (startElement) {
+      htsLevel = startElement.indent;
+    } else if (endElement) {
+      htsLevel = endElement.indent;
+    } else {
+      console.error("🔴🔴 NO START OR END ELEMENT DETECTED 🔴🔴");
+      console.error("Start element: ", start);
+      console.error("End element: ", end);
+    }
+
+    const expanded = expandRange(start, end, allElements);
+    results.push(...expanded);
+  }
+
+  const resultsAtSameHtsLevel = results.filter((e) => e.indent == htsLevel);
+
+  // Remove duplicates
+  const seen = new Set<string>();
+  return resultsAtSameHtsLevel.filter((e) => {
+    if (seen.has(e.htsno)) return false;
+    seen.add(e.htsno);
+    return true;
+  });
+};
+
+export const getHtsElementsFromString = (
+  text: string,
+  htsElements: HtsElement[],
+  fuse: Fuse<HtsElement>
+): HtsElement[] => {
+  // 1. Use Regex to find all the HTS codes from the text
+  const htsCodesInText = Array.from(text.match(HTS_CODE_REGEX) ?? []);
+
+  // 2. Try to find the elements for the HTS codes in the text
+  // Specifically attempt to resolve issues where the code referenced
+  // in HTS elements actually doesn't exist, but might with padded 0's
+  const verifiedHtsElementsInText = htsCodesInText.map((htsCode) =>
+    findHtsElement(htsCode, htsElements, fuse)
+  );
+
+  if (verifiedHtsElementsInText.length === 0) {
+    return [];
+  }
+
+  // 2. Detect if there is a range of HTS codes
+  const htsCodeRange = Array.from(text.match(HTS_CODE_RANGE_REGEX) ?? []);
+
+  if (htsCodeRange.length > 0) {
+    const htsElementsFromRange = getHtsElementsFromRange(
+      text,
+      htsElements,
+      fuse
+    );
+
+    if (htsElementsFromRange.length > 0) {
+      verifiedHtsElementsInText.push(...htsElementsFromRange);
+    }
+  }
+
+  // 3. Map Codes to Elements, & Remove Duplicates
+  const seenUuids = new Set<string>();
+
+  return verifiedHtsElementsInText.filter((e) => {
+    if (e === null) return false;
+    if (seenUuids.has(e.uuid)) return false;
+    seenUuids.add(e.uuid);
+    return true;
+  });
+};
+
+export const HTS_CODE_REGEX =
+  /\b\d{4}(?:\.\d{2}(?:\.(?:\d{4}|\d{2}(?:\.\d{2})?))?)?\b/g;
+const HTS_CODE_RANGE_REGEX =
+  /(\b\d{4}(?:\.\d{2}(?:\.(?:\d{4}|\d{2}(?:\.\d{2})?))?)?\b)\s+(?:to|through)\s+(\b\d{4}(?:\.\d{2}(?:\.(?:\d{4}|\d{2}(?:\.\d{2})?))?)?\b)/gi;
+
+// ============================================================================
+// ENRICHED HTS ELEMENTS FROM STRING - For text transformation
+// ============================================================================
+
+/**
+ * Represents a single HTS code found in text with its mapping to the verified element
+ */
+export interface HtsCodeMapping {
+  originalCode: string; // The code as it appeared in the text (e.g., "2905.44")
+  verifiedCode: string; // The normalized/padded code (e.g., "2905.44.00.00")
+  element: HtsElement | null; // The resolved HTS element
+  startIndex: number; // Start position in original text
+  endIndex: number; // End position in original text
+}
+
+/**
+ * Represents a range expression found in text (e.g., "8428.90.03 to 8428.90.10")
+ */
+export interface HtsRangeMapping {
+  originalRangeText: string; // The full range text (e.g., "8428.90.03 to 8428.90.10")
+  startCode: string; // Start of range
+  endCode: string; // End of range
+  elements: HtsElement[]; // All elements within the range
+  startIndex: number; // Start position in original text
+  endIndex: number; // End position in original text
+}
+
+/**
+ * Enriched result from parsing HTS codes from text
+ */
+export interface EnrichedHtsResult {
+  elements: HtsElement[]; // All unique elements found (for backward compatibility)
+  codeMappings: HtsCodeMapping[]; // Individual code mappings (excluding those in ranges)
+  rangeMappings: HtsRangeMapping[]; // Range mappings
+}
+
+/**
+ * Gets enriched HTS element information from a text string, including
+ * original → verified → element mappings and position information.
+ *
+ * This is useful for transforming the original text with HTS descriptions.
+ */
+export const getEnrichedHtsElementsFromString = (
+  text: string,
+  htsElements: HtsElement[],
+  fuse: Fuse<HtsElement>
+): EnrichedHtsResult => {
+  const codeMappings: HtsCodeMapping[] = [];
+  const rangeMappings: HtsRangeMapping[] = [];
+
+  // 1. First, find all range matches and their positions
+  const rangeRegex = new RegExp(HTS_CODE_RANGE_REGEX.source, "gi");
+  let rangeMatch;
+  const rangePositions: Array<{ start: number; end: number }> = [];
+
+  while ((rangeMatch = rangeRegex.exec(text)) !== null) {
+    const fullMatch = rangeMatch[0];
+    const startCode = rangeMatch[1];
+    const endCode = rangeMatch[2];
+    const startIndex = rangeMatch.index;
+    const endIndex = startIndex + fullMatch.length;
+
+    rangePositions.push({ start: startIndex, end: endIndex });
+
+    // Get all elements in this range
+    const rangeElements = getHtsElementsFromRange(text, htsElements, fuse);
+
+    rangeMappings.push({
+      originalRangeText: fullMatch,
+      startCode,
+      endCode,
+      elements: rangeElements,
+      startIndex,
+      endIndex,
+    });
+  }
+
+  // 2. Find all individual HTS codes and their positions
+  const codeRegex = new RegExp(HTS_CODE_REGEX.source, "g");
+  let codeMatch;
+
+  while ((codeMatch = codeRegex.exec(text)) !== null) {
+    const originalCode = codeMatch[0];
+    const startIndex = codeMatch.index;
+    const endIndex = startIndex + originalCode.length;
+
+    // Skip codes that fall within a range expression
+    const isInRange = rangePositions.some(
+      (range) => startIndex >= range.start && endIndex <= range.end
+    );
+
+    if (isInRange) {
+      continue;
+    }
+
+    // Find the element for this code
+    const element = findHtsElement(originalCode, htsElements, fuse);
+    const verifiedCode = element?.htsno ?? normalizeHtsFormat(originalCode);
+
+    codeMappings.push({
+      originalCode,
+      verifiedCode,
+      element,
+      startIndex,
+      endIndex,
+    });
+  }
+
+  // 3. Collect all unique elements
+  const seenUuids = new Set<string>();
+  const allElements: HtsElement[] = [];
+
+  // Add elements from individual codes
+  for (const mapping of codeMappings) {
+    if (mapping.element && !seenUuids.has(mapping.element.uuid)) {
+      seenUuids.add(mapping.element.uuid);
+      allElements.push(mapping.element);
+    }
+  }
+
+  // Add elements from ranges
+  for (const range of rangeMappings) {
+    for (const element of range.elements) {
+      if (!seenUuids.has(element.uuid)) {
+        seenUuids.add(element.uuid);
+        allElements.push(element);
+      }
+    }
+  }
+
+  return {
+    elements: allElements,
+    codeMappings,
+    rangeMappings,
+  };
+};
+
+/**
+ * Transforms text by replacing HTS code references with their verified codes and descriptions.
+ *
+ * - Individual codes: "2905.44" → "2905.44.00.00 (Erythritol)"
+ * - Range expressions: "8428.90.03 to 8428.90.10" → "8428.90.03.00 (desc1), 8428.90.05.00 (desc2), ..."
+ *
+ * @param originalText - The original text containing HTS code references
+ * @param enrichedResult - The result from getEnrichedHtsElementsFromString
+ * @returns The transformed text with HTS descriptions injected
+ */
+export const transformTextWithHtsDescriptions = (
+  originalText: string,
+  enrichedResult: EnrichedHtsResult
+): string => {
+  // Collect all replacements with their positions
+  const replacements: Array<{
+    startIndex: number;
+    endIndex: number;
+    replacement: string;
+  }> = [];
+
+  // Add individual code replacements
+  for (const mapping of enrichedResult.codeMappings) {
+    if (mapping.element) {
+      const replacement = `${mapping.verifiedCode} (${mapping.element.description})`;
+      replacements.push({
+        startIndex: mapping.startIndex,
+        endIndex: mapping.endIndex,
+        replacement,
+      });
+    }
+    // If element is null, we leave the original code as-is (no replacement added)
+  }
+
+  // Add range replacements
+  for (const range of enrichedResult.rangeMappings) {
+    if (range.elements.length > 0) {
+      // Format: "8428.90.03.00 (desc1), 8428.90.05.00 (desc2), ..."
+      const elementDescriptions = range.elements
+        .map((el) => `${el.htsno} (${el.description})`)
+        .join(", ");
+      replacements.push({
+        startIndex: range.startIndex,
+        endIndex: range.endIndex,
+        replacement: elementDescriptions,
+      });
+    }
+    // If no elements found, we leave the original range text as-is
+  }
+
+  // Sort replacements by startIndex in reverse order (so we can replace from end to start)
+  // This ensures that earlier replacements don't shift the indices of later ones
+  replacements.sort((a, b) => b.startIndex - a.startIndex);
+
+  // Apply replacements from end to start
+  let result = originalText;
+  for (const { startIndex, endIndex, replacement } of replacements) {
+    result = result.slice(0, startIndex) + replacement + result.slice(endIndex);
+  }
+
+  return result;
+};
+
+/**
+ * Transforms text by replacing HTS code references with their verified codes.
+ * Unlike transformTextWithHtsDescriptions, this does NOT inject descriptions.
+ *
+ * - Individual codes: "2905.44" → "2905.44.00.00" (verified code only)
+ * - Range expressions: "8428.90.03 to 8428.90.10" → "8428.90.03.00, 8428.90.05.00, 8428.90.10.00"
+ * - Unverifiable codes are left as-is
+ *
+ * @param originalText - The original text containing HTS code references
+ * @param htsElements - All HTS elements to look up codes against
+ * @param fuse - Fuse index for fuzzy matching
+ * @returns The transformed text with verified HTS codes
+ */
+export const transformTextWithVerifiedHtsCodes = (
+  originalText: string,
+  htsElements: HtsElement[],
+  fuse: Fuse<HtsElement>
+): string => {
+  // Get enriched result with all code and range mappings
+  const enrichedResult = getEnrichedHtsElementsFromString(
+    originalText,
+    htsElements,
+    fuse
+  );
+
+  // Collect all replacements with their positions
+  const replacements: Array<{
+    startIndex: number;
+    endIndex: number;
+    replacement: string;
+  }> = [];
+
+  // Add individual code replacements (verified code only, no description)
+  for (const mapping of enrichedResult.codeMappings) {
+    if (mapping.element) {
+      // Use the verified code from the element
+      replacements.push({
+        startIndex: mapping.startIndex,
+        endIndex: mapping.endIndex,
+        replacement: mapping.verifiedCode,
+      });
+    }
+    // If element is null, we leave the original code as-is (no replacement added)
+  }
+
+  // Add range replacements (comma-separated verified codes, no descriptions)
+  for (const range of enrichedResult.rangeMappings) {
+    if (range.elements.length > 0) {
+      // Format: "8428.90.03.00, 8428.90.05.00, 8428.90.10.00"
+      const verifiedCodes = range.elements.map((el) => el.htsno).join(", ");
+      replacements.push({
+        startIndex: range.startIndex,
+        endIndex: range.endIndex,
+        replacement: verifiedCodes,
+      });
+    }
+    // If no elements found, we leave the original range text as-is
+  }
+
+  // Sort replacements by startIndex in reverse order (so we can replace from end to start)
+  // This ensures that earlier replacements don't shift the indices of later ones
+  replacements.sort((a, b) => b.startIndex - a.startIndex);
+
+  // Apply replacements from end to start
+  let result = originalText;
+  for (const { startIndex, endIndex, replacement } of replacements) {
+    result = result.slice(0, startIndex) + replacement + result.slice(endIndex);
+  }
+
+  return result;
 };

@@ -6,6 +6,7 @@ export enum SupabaseBuckets {
 
 export enum SupabaseTables {
   HTS_REVISIONS = "hts_revisions",
+  HTS_NOTES = "hts_notes",
   CLASSIFICATIONS = "classifications",
   PURCHASES = "purchases",
   USERS = "users",

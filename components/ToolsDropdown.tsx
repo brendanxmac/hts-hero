@@ -66,7 +66,9 @@ export const ToolsDropdown = ({ className = "" }: ToolsDropdownProps) => {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`flex items-center gap-1 text-sm font-medium transition-colors ${
-          selectedTool ? "text-primary" : "text-base-content/70 hover:text-primary"
+          selectedTool
+            ? "text-primary"
+            : "text-base-content/70 hover:text-primary"
         }`}
       >
         {selectedTool ? selectedTool.title : "Tools"}
@@ -89,11 +91,11 @@ export const ToolsDropdown = ({ className = "" }: ToolsDropdownProps) => {
         <>
           {/* Backdrop to close menu */}
           <div
-            className="fixed inset-0 z-40"
+            className="fixed inset-0 z-[9998]"
             onClick={() => setIsOpen(false)}
           />
           {/* Dropdown Menu */}
-          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 z-50 w-72 sm:w-80 bg-base-100 rounded-2xl shadow-2xl border border-base-content/10 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 z-[9999] w-72 sm:w-80 bg-base-100 rounded-2xl shadow-2xl border border-base-content/10 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
             {/* Arrow */}
             <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-base-100 border-l border-t border-base-content/10 rotate-45" />
 
@@ -119,7 +121,9 @@ export const ToolsDropdown = ({ className = "" }: ToolsDropdownProps) => {
                     <div className="flex flex-col">
                       <div
                         className={`text-left font-semibold ${
-                          isSelected ? "text-primary" : `text-base-content ${tool.hoverText}`
+                          isSelected
+                            ? "text-primary"
+                            : `text-base-content ${tool.hoverText}`
                         } transition-colors`}
                       >
                         {tool.title}
@@ -164,11 +168,15 @@ export const MobileToolsMenu = ({ onLinkClick }: MobileToolsMenuProps) => {
                 isSelected ? selectedBg : ""
               }`}
             >
-              <div className={`w-9 h-9 rounded-lg ${tool.iconBg} flex items-center justify-center text-lg flex-shrink-0`}>
+              <div
+                className={`w-9 h-9 rounded-lg ${tool.iconBg} flex items-center justify-center text-lg flex-shrink-0`}
+              >
                 {tool.emoji}
               </div>
               <div className="flex flex-col">
-                <div className={`text-left font-semibold text-sm ${isSelected ? "text-primary" : "text-base-content"}`}>
+                <div
+                  className={`text-left font-semibold text-sm ${isSelected ? "text-primary" : "text-base-content"}`}
+                >
                   {tool.title}
                 </div>
                 <div className="text-left text-xs text-base-content/60">
@@ -184,4 +192,3 @@ export const MobileToolsMenu = ({ onLinkClick }: MobileToolsMenuProps) => {
 };
 
 export default ToolsDropdown;
-

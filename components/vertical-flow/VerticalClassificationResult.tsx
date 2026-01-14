@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback } from "react";
+import {
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+  useLayoutEffect,
+} from "react";
 import { useClassification } from "../../contexts/ClassificationContext";
 import { useClassifications } from "../../contexts/ClassificationsContext";
 import { useHts } from "../../contexts/HtsContext";
@@ -28,7 +35,6 @@ import {
 import { updateClassification } from "../../libs/classification";
 import Modal from "../Modal";
 import ImporterDropdown from "../ImporterDropdown";
-import { ClassifyPage } from "../../enums/classify";
 import { CollapsibleSection } from "../CollapsibleSection";
 import { CountrySelection } from "../CountrySelection";
 import { Countries, Country } from "../../constants/countries";
@@ -47,15 +53,19 @@ import { EuropeanUnionCountries } from "../../constants/countries";
 import { Column2CountryCodes } from "../../tariffs/tariff-columns";
 import { ContentRequirementI } from "../Element";
 import { ContentRequirements } from "../../enums/tariff";
-import { getHtsElementParents } from "../../libs/hts";
+import {
+  getHtsElementParents,
+  generateBasisForClassification,
+} from "../../libs/hts";
 import { NumberInput } from "../NumberInput";
 import { PercentageInput } from "../PercentageInput";
 import { SecondaryLabel } from "../SecondaryLabel";
 import { VerticalClassificationStep } from "./VerticalClassificationStep";
-import {
-  ClassificationDetailsSummary,
-  TariffDutiesSummary,
-} from "../classification-ui";
+import { VerticalSectionDiscovery } from "./VerticalSectionDiscovery";
+import { VerticalChapterDiscovery } from "./VerticalChapterDiscovery";
+import { ClassificationDetailsSummary } from "../classification-ui/ClassificationDetailsSummary";
+import { LevelConnector } from "../classification-ui/LevelConnector";
+import { TariffDutiesSummary } from "../classification-ui/TariffDutiesSummary";
 
 interface Props {
   userProfile: UserProfile;
@@ -79,6 +89,36 @@ export const VerticalClassificationResult = ({
   const canUpdateDetails =
     userProfile.role === UserRole.ADMIN ||
     userProfile.id === classificationRecord?.user_id;
+
+  // Ref for auto-growing textarea
+  const basisTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auto-resize textarea to fit content
+  const resizeBasisTextarea = useCallback(() => {
+    const textarea = basisTextareaRef.current;
+    if (textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  }, []);
+
+  // Resize on mount and when classification changes
+  useLayoutEffect(() => {
+    resizeBasisTextarea();
+  }, [classification.notes, classification.levels, resizeBasisTextarea]);
+
+  // Initialize notes with generated basis when classification is first completed
+  useEffect(() => {
+    if (
+      classification.isComplete &&
+      (classification.notes === undefined || classification.notes === null)
+    ) {
+      setClassification({
+        ...classification,
+        notes: generateBasisForClassification(classification),
+      });
+    }
+  }, [classification.isComplete]);
 
   // State for importers
   const [importers, setImporters] = useState<Importer[]>([]);
@@ -503,6 +543,7 @@ export const VerticalClassificationResult = ({
           )}
         </div>
       </CollapsibleSection>
+
       {/* Classification Complete Section - Contains all levels */}
       <CollapsibleSection
         title="Classification Decisions"
@@ -517,18 +558,27 @@ export const VerticalClassificationResult = ({
         }
         badge={
           <span className="px-2 py-0.5 rounded-md text-xs font-semibold bg-success/20 text-success border border-success/30">
-            {levels.length} {levels.length === 1 ? "level" : "levels"}
+            {levels.length} {levels.length === 1 ? "Decision" : "Decisions"}
           </span>
         }
         collapsedContent={<ClassificationDetailsSummary levels={levels} />}
       >
-        <div
-          className={`flex flex-col ${classification.isComplete ? "gap-2" : ""}`}
-        >
+        <div className="flex flex-col">
+          {/* Section & Chapter Discovery - only show if preliminaryLevels exist */}
+          {classification.preliminaryLevels &&
+            classification.preliminaryLevels.length > 0 && (
+              <>
+                <VerticalSectionDiscovery startExpanded={false} />
+                <LevelConnector isActive={false} hasPreviousSelection={true} />
+                <VerticalChapterDiscovery startExpanded={false} />
+                <LevelConnector isActive={false} hasPreviousSelection={true} />
+              </>
+            )}
+
           {/* Classification Levels */}
           {levels.map((level, index) => (
             <div key={`level-${index}`}>
-              {/* Flow Connector - shows between levels only when classification is not complete */}
+              {/* Flow Connector - shows between levels */}
               {index > 0 && (
                 <div className="flex flex-col items-center py-3">
                   <div className="w-px h-3 bg-gradient-to-b from-success/30 to-success/20" />
@@ -543,6 +593,7 @@ export const VerticalClassificationResult = ({
                 classificationLevel={index}
                 classificationRecord={classificationRecord}
                 onOpenExplore={onOpenExplore}
+                disableAutoScroll
               />
             </div>
           ))}
@@ -627,6 +678,32 @@ export const VerticalClassificationResult = ({
             <h3 className="text-lg font-bold text-base-content">
               Basis for Classification
             </h3>
+            {/* {canUpdateDetails && (
+              <div className="ml-auto flex gap-2">
+                <button
+                  className="btn btn-sm gap-1.5 btn-neutral shrink-0"
+                  onClick={() => {
+                    setClassification({
+                      ...classification,
+                      notes: "",
+                    });
+                  }}
+                >
+                  Clear
+                </button>
+                <button
+                  className="btn btn-sm gap-1.5 btn-neutral shrink-0"
+                  onClick={() => {
+                    setClassification({
+                      ...classification,
+                      notes: generateBasisForClassification(classification),
+                    });
+                  }}
+                >
+                  Reset
+                </button>
+              </div>
+            )} */}
           </div>
         </div>
 
@@ -634,19 +711,21 @@ export const VerticalClassificationResult = ({
         <div className="relative z-10 px-5 pb-5 pt-0">
           <div className="h-px bg-gradient-to-r from-transparent via-base-content/10 to-transparent mb-5" />
           <textarea
-            className={`min-h-36 w-full px-4 py-3 rounded-xl border transition-all duration-200 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 resize-none text-base ${
+            ref={basisTextareaRef}
+            className={`whitespace-pre-wrap min-h-36 w-full px-4 py-3 rounded-xl border transition-all duration-200 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 resize-none overflow-hidden text-base ${
               canUpdateDetails
                 ? "bg-base-100 border-base-content/20 hover:border-primary/40"
                 : "bg-base-200/50 border-base-content/15 cursor-not-allowed opacity-60"
             }`}
             placeholder="Add any notes about your classification here"
-            value={classification.notes || ""}
+            value={classification.notes ?? ""}
             disabled={!canUpdateDetails}
             onChange={(e) => {
               setClassification({
                 ...classification,
                 notes: e.target.value,
               });
+              resizeBasisTextarea();
             }}
             onBlur={() => {
               // Immediately save when user leaves the textarea

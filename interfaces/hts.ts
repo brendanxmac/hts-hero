@@ -1,3 +1,54 @@
+export interface CandidateQualificationResponse {
+  analysis: string;
+  unqualifiedCandidates: number[];
+}
+
+export interface PreliminaryCandidate {
+  identifier: number; // the number of the candidate (ie, chapter 1, 17, etc..)
+  description: string; // the title that is assigned to the candidate, e.g. "Live Animals"
+}
+
+export type PreliminaryLevelType = "section" | "chapter";
+
+export interface QualifyCandidatesWithNotesDto {
+  productDescription: string;
+  candidates: PreliminaryCandidate[];
+  candidateType: PreliminaryLevelType;
+}
+
+export interface BestCandidateAnalysisDto {
+  productDescription: string;
+  candidates: SimplifiedHtsElement[];
+}
+
+export type RelevanceType =
+  | "exclusion"
+  | "definition"
+  | "inclusion"
+  | "classification"
+  | "scope"
+  | "condition"
+  | "cross_reference"
+  | "administrative"
+  | "measurement";
+
+export interface HTSNote {
+  id: string;
+  section: number;
+  chapter: number | null; // null for section-level notes (before any chapter heading)
+  subchapter: string | null;
+  noteGroup: string;
+  citation: string;
+  depth: number;
+  parentId: string | null;
+  text: string;
+  children: string[];
+  // referencedHtsCodes: string[];
+  // Enrichment
+  // relevance?: RelevanceType[];
+  sortOrder: number; // Global order within the document for deterministic reconstruction
+}
+
 export interface HtsCodeSet {
   id: string;
   user_id: string;
@@ -41,6 +92,11 @@ export interface HtsSection extends HtsSectionAndChapterBase {
   chapters: HtsSectionAndChapterBase[];
 }
 
+export interface LevelSelection {
+  level: number;
+  description: string;
+}
+
 export interface HtsSectionAndChapterBase {
   number: number;
   description: string;
@@ -52,9 +108,19 @@ export interface HtsElementWithParentReference extends HtsElement {
   indexInParentArray: number; // used to grab window ranges in the parent array
 }
 
+export interface HtsElementWithReferencedCodes extends HtsElement {
+  referencedCodes: Record<string, string>; // HTS codes referenced in description → their descriptions
+}
+
+export interface SimplifiedHtsElementWithIdentifier
+  extends SimplifiedHtsElement {
+  identifier: string; // Letter-based identifier (A, B, C... AA, AB, etc.) to avoid LLM index confusion
+}
+
 export interface SimplifiedHtsElement {
   code: string;
   description: string;
+  referencedCodes?: Record<string, string>; // Optional referenced codes for LLM context
 }
 
 export interface HtsElement {
@@ -90,7 +156,7 @@ export interface HsHeading {
 export interface BestProgressionResponse {
   index: number;
   description: string;
-  logic: string;
+  analysis: string;
   questions?: string[];
 }
 
@@ -150,7 +216,7 @@ export interface ClassificationRecord {
     name: string;
   };
   classifier_id?: string;
-  classification: Classification;
+  classification: ClassificationI;
   created_at: string;
   updated_at: string;
   revision: string;
@@ -158,10 +224,17 @@ export interface ClassificationRecord {
   country_of_origin?: string;
 }
 
-export interface Classification {
+export interface PreliminaryClassificationLevel {
+  level: PreliminaryLevelType;
+  candidates: PreliminaryCandidate[];
+  analysis: string;
+}
+
+export interface ClassificationI {
   articleDescription: string;
   articleAnalysis: string;
   progressionDescription: string;
+  preliminaryLevels?: PreliminaryClassificationLevel[];
   levels: ClassificationProgression[];
   isComplete: boolean;
   notes?: string;

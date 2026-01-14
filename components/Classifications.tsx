@@ -382,6 +382,32 @@ export const Classifications = ({ page, setPage }: Props) => {
     }
   }, []);
 
+  // TEMPORARY: Test HTS notes fetching and tree building for chapter 84 (section 16)
+  // useEffect(() => {
+  //   const testNotesFetch = async () => {
+  //     try {
+  //       console.log(
+  //         "🧪 Testing HTS notes fetch for Chapter 84 (Section 16)..."
+  //       );
+  //       const notes = await fetchHtsNotesBySectionAndChapter(2, 8);
+  //       console.log("📝 Fetched notes:", notes);
+
+  //       const noteTree = buildNoteTree(notes);
+  //       console.log("🌳 Built note tree:", noteTree);
+
+  //       const renderedContext = renderNoteContext(noteTree);
+  //       console.log("📄 Rendered note context:\n", renderedContext);
+  //     } catch (error) {
+  //       console.error("❌ Error testing HTS notes:", error);
+  //     }
+  //   };
+
+  //   // Only run when loading is complete
+  //   if (!loader.isLoading && !classificationsLoading) {
+  //     testNotesFetch();
+  //   }
+  // }, [loader.isLoading, classificationsLoading]);
+
   if (classificationsError || userError) {
     return (
       <main className="w-full h-full flex items-center justify-center bg-base-100">
@@ -433,7 +459,7 @@ export const Classifications = ({ page, setPage }: Props) => {
                 <span className="text-base-content">Classifications</span>
               </h1>
               <p className="text-base-content/70 text-sm md:text-base max-w-lg mt-1">
-                View and manage your classifications.
+                View and manage your classifications
               </p>
             </div>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useClassification } from "../contexts/ClassificationContext";
 import { useClassifications } from "../contexts/ClassificationsContext";
 import { useHts } from "../contexts/HtsContext";
@@ -8,12 +8,18 @@ import { useUser } from "../contexts/UserContext";
 import { ClassifyPage } from "../enums/classify";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { VerticalDescriptionStep } from "./vertical-flow/VerticalDescriptionStep";
+import { VerticalSectionDiscovery } from "./vertical-flow/VerticalSectionDiscovery";
+import { VerticalChapterDiscovery } from "./vertical-flow/VerticalChapterDiscovery";
 import { VerticalClassificationStep } from "./vertical-flow/VerticalClassificationStep";
 import { VerticalClassificationResult } from "./vertical-flow/VerticalClassificationResult";
+import {
+  SectionChapterDiscoveryProvider,
+  useSectionChapterDiscovery,
+} from "../contexts/SectionChapterDiscoveryContext";
 import Modal from "./Modal";
 import ConversionPricing from "./ConversionPricing";
 import { Explore } from "./Explore";
-import { ClassificationStatus } from "../interfaces/hts";
+import { ClassificationI, ClassificationStatus } from "../interfaces/hts";
 import {
   updateClassification,
   deleteClassification,
@@ -31,18 +37,87 @@ import {
   canUserUpdateDetails,
   canUserDelete,
 } from "../libs/classification-helpers";
-import {
-  BackButton,
-  HeaderActions,
-  HtsCodeDisplay,
-  AnimatedBackground,
-  LevelConnector,
-  DeleteConfirmationModal,
-} from "./classification-ui";
+import { ClassificationRecord } from "../interfaces/hts";
+import { LevelConnector } from "./classification-ui/LevelConnector";
+import { BackButton } from "./classification-ui/BackButton";
+import { AnimatedBackground } from "./classification-ui/AnimatedBackground";
+import { HeaderActions } from "./classification-ui/HeaderActions";
+import { HtsCodeDisplay } from "./classification-ui/HtsCodeDisplay";
+import { DeleteConfirmationModal } from "./classification-ui/DeleteConfirmationModal";
 
 interface ClassificationProps {
   setPage: (page: ClassifyPage) => void;
 }
+
+// Inner component that can use the SectionChapterDiscovery context
+interface ClassificationFlowContentProps {
+  classification: ClassificationI;
+  classificationRecord: ClassificationRecord | undefined;
+  onOpenExplore: () => void;
+  userProfile: any;
+}
+
+const ClassificationFlowContent = ({
+  classification,
+  classificationRecord,
+  onOpenExplore,
+  userProfile,
+}: ClassificationFlowContentProps) => {
+  const { chapterDiscoveryComplete } = useSectionChapterDiscovery();
+
+  if (classification?.isComplete) {
+    return (
+      <VerticalClassificationResult
+        userProfile={userProfile}
+        classificationRecord={classificationRecord}
+        onOpenExplore={onOpenExplore}
+      />
+    );
+  }
+
+  return (
+    <>
+      {classification.preliminaryLevels && (
+        <>
+          {/* Section Discovery Step */}
+          <div className="h-4" />
+          <VerticalSectionDiscovery />
+
+          {/* Chapter Discovery Step */}
+          <LevelConnector isActive={true} hasPreviousSelection={true} />
+          <VerticalChapterDiscovery />
+        </>
+      )}
+
+      {/* Heading and Sub-heading Classification Levels - only show when chapter discovery is complete */}
+      {(chapterDiscoveryComplete || !classification.preliminaryLevels) &&
+        classification.levels.map((level, index) => {
+          const isActiveLevel = !level.selection;
+          const previousLevelHasSelection =
+            index > 0 && classification.levels[index - 1]?.selection;
+
+          return (
+            <div key={`level-${index}`}>
+              {/* {classification.preliminaryLevels && <></>} */}
+              {/* Connect from chapter discovery to first level, then between levels */}
+              <LevelConnector
+                isActive={isActiveLevel}
+                hasPreviousSelection={
+                  index === 0 ? true : !!previousLevelHasSelection
+                }
+              />
+
+              <VerticalClassificationStep
+                classificationLevel={index}
+                classificationRecord={classificationRecord}
+                onOpenExplore={onOpenExplore}
+              />
+            </div>
+          );
+        })}
+    </>
+  );
+};
 
 export const Classification = ({ setPage }: ClassificationProps) => {
   const { isFetching } = useHts();
@@ -198,7 +273,6 @@ export const Classification = ({ setPage }: ClassificationProps) => {
 
         <div className="w-full max-w-4xl mx-auto px-6 py-8">
           <VerticalDescriptionStep
-            setPage={setPage}
             setShowPricing={setShowPricing}
             classificationRecord={classificationRecord}
           />
@@ -306,44 +380,16 @@ export const Classification = ({ setPage }: ClassificationProps) => {
       </div>
 
       {/* Classification Flow Content */}
-      <div className="w-full max-w-5xl mx-auto px-6 py-8 flex flex-col">
-        {!classification?.isComplete ? (
-          // In-progress classification levels
-          <>
-            {classification.levels.map((level, index) => {
-              const isActiveLevel = !level.selection;
-              const previousLevelHasSelection =
-                index > 0 && classification.levels[index - 1]?.selection;
-
-              return (
-                <div key={`level-${index}`}>
-                  {index > 0 ? (
-                    <LevelConnector
-                      isActive={isActiveLevel}
-                      hasPreviousSelection={!!previousLevelHasSelection}
-                    />
-                  ) : (
-                    <div className="h-4" />
-                  )}
-
-                  <VerticalClassificationStep
-                    classificationLevel={index}
-                    classificationRecord={classificationRecord}
-                    onOpenExplore={handleOpenExplore}
-                  />
-                </div>
-              );
-            })}
-          </>
-        ) : (
-          // Completed classification result
-          <VerticalClassificationResult
-            userProfile={userProfile}
+      <SectionChapterDiscoveryProvider>
+        <div className="w-full max-w-5xl mx-auto px-6 py-8 flex flex-col">
+          <ClassificationFlowContent
+            classification={classification}
             classificationRecord={classificationRecord}
             onOpenExplore={handleOpenExplore}
+            userProfile={userProfile}
           />
-        )}
-      </div>
+        </div>
+      </SectionChapterDiscoveryProvider>
 
       {/* Modals */}
       {showPricing && (

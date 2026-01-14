@@ -1,21 +1,27 @@
 "use client";
 
 import { useClassification } from "../../contexts/ClassificationContext";
+import { useSectionChapterDiscovery } from "../../contexts/SectionChapterDiscoveryContext";
 import { useEffect, useRef, useState } from "react";
 import { Loader } from "../../interfaces/ui";
 import {
+  getBestClassificationProgression,
   getBestDescriptionCandidates,
   getElementsInChapter,
+  getSectionsAndChaptersFromCandidates,
+  fetchNotesForSectionsAndChapters,
+  addReferenceCodesToElements,
+  transformTextWithVerifiedHtsCodes,
+  HTS_CODE_REGEX,
 } from "../../libs/hts";
+import { NoteRecord } from "../../types/hts";
 import {
-  CandidateSelection,
   ClassificationRecord,
   ClassificationStatus,
   HtsElement,
+  LevelSelection,
 } from "../../interfaces/hts";
-import { HtsSection } from "../../interfaces/hts";
-import { getHtsSectionsAndChapters } from "../../libs/hts";
-import { setIndexInArray } from "../../utilities/data";
+import { copyToClipboard, setIndexInArray } from "../../utilities/data";
 import { elementsAtClassificationLevel } from "../../utilities/data";
 import { useHts } from "../../contexts/HtsContext";
 import Modal from "../Modal";
@@ -24,21 +30,27 @@ import {
   MagnifyingGlassIcon,
   QueueListIcon,
   ChevronDownIcon,
+  SparklesIcon,
+  CheckCircleIcon,
+  ClipboardDocumentIcon,
 } from "@heroicons/react/16/solid";
 import toast from "react-hot-toast";
 import { useUser } from "../../contexts/UserContext";
 import { VerticalCandidateElement } from "./VerticalCandidateElement";
+import Fuse from "fuse.js";
 
 export interface VerticalClassificationStepProps {
   classificationLevel: number;
   classificationRecord: ClassificationRecord;
   onOpenExplore: () => void;
+  disableAutoScroll?: boolean;
 }
 
 export const VerticalClassificationStep = ({
   classificationLevel,
   classificationRecord,
   onOpenExplore,
+  disableAutoScroll = false,
 }: VerticalClassificationStepProps) => {
   const [loading, setLoading] = useState<Loader>({
     isLoading: false,
@@ -47,20 +59,46 @@ export const VerticalClassificationStep = ({
 
   const { user } = useUser();
   const [showCrossRulingsModal, setShowCrossRulingsModal] = useState(false);
-  const { classification, updateLevel } = useClassification();
-  const { articleDescription, levels } = classification;
+  const {
+    classification,
+    updateLevel,
+    classificationTier,
+    addNotes,
+    getNotesForSectionsAndChapters,
+  } = useClassification();
+  const { articleDescription, articleAnalysis, levels } = classification;
   const [isExpanded, setIsExpanded] = useState(true);
   const previousArticleDescriptionRef = useRef<string>(articleDescription);
   const isMountedRef = useRef(true);
-  const [htsSections, setHtsSections] = useState<HtsSection[]>([]);
-  const [sectionCandidates, setSectionCandidates] = useState<
-    CandidateSelection[]
-  >([]);
-  const [chapterCandidates, setChapterCandidates] = useState<
-    CandidateSelection[]
-  >([]);
+  const containerRef = useRef<HTMLDivElement>(null);
   const { htsElements } = useHts();
   const hasFetchedCandidatesRef = useRef(false);
+  const [isAnalysisCopied, setIsAnalysisCopied] = useState(false);
+
+  // Get chapter candidates from the discovery context
+  const { chapterCandidates, chapterDiscoveryComplete } =
+    useSectionChapterDiscovery();
+
+  const handleCopyCostClick = () => {
+    copyToClipboard(currentLevel?.analysisReason || "");
+    setIsAnalysisCopied(true);
+    setTimeout(() => setIsAnalysisCopied(false), 2000);
+  };
+
+  // Auto-scroll to this component when chapter discovery completes (for level 0 only)
+  useEffect(() => {
+    if (
+      classificationLevel === 0 &&
+      chapterDiscoveryComplete &&
+      containerRef.current &&
+      !disableAutoScroll
+    ) {
+      containerRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [classificationLevel, chapterDiscoveryComplete, disableAutoScroll]);
 
   const currentLevel = levels[classificationLevel];
   const optionsForLevel = currentLevel?.candidates?.length || 0;
@@ -84,95 +122,185 @@ export const VerticalClassificationStep = ({
     }
   }, [hasSelection]);
 
-  // Get 2-3 Best Sections
-  const getSections = async () => {
-    setLoading({ isLoading: true, text: "Looking for Candidates" });
+  /**
+   * Fetches all relevant notes for the given candidates.
+   * Checks the context cache first, fetches missing notes, and adds them to context.
+   */
+  const getNotesForCandidates = async (
+    simplifiedCandidates: { code: string; description: string }[]
+  ): Promise<NoteRecord[]> => {
+    // Extract sections and chapters from candidates
+    const { sections, chapters } =
+      getSectionsAndChaptersFromCandidates(simplifiedCandidates);
 
-    let sections = htsSections;
+    // Check which notes we already have in context
+    const { existingNotes, missingSections, missingChapters } =
+      getNotesForSectionsAndChapters(sections, chapters);
 
-    try {
-      if (sections.length === 0) {
-        const sectionsResponse = await getHtsSectionsAndChapters();
-        setHtsSections(sectionsResponse.sections);
-        sections = sectionsResponse.sections;
+    // Fetch any missing notes
+    if (missingSections.length > 0 || missingChapters.length > 0) {
+      console.log(
+        `Fetching missing notes: ${missingSections.length} sections, ${missingChapters.length} chapters`
+      );
+      console.log("Fetching Note from Database");
+      const fetchedNotes = await fetchNotesForSectionsAndChapters(
+        missingSections,
+        missingChapters
+      );
+
+      // Add fetched notes to context cache
+      if (fetchedNotes.length > 0) {
+        addNotes(fetchedNotes);
       }
 
-      const bestSectionCandidates = await getBestDescriptionCandidates(
-        [],
-        articleDescription,
-        true,
-        1,
-        3,
-        sections.map((s) => s.description)
-      );
-
-      const candidates: CandidateSelection[] =
-        bestSectionCandidates.bestCandidates.map((candidateIndex) => ({
-          index: sections[candidateIndex].number,
-        }));
-
-      setSectionCandidates(candidates);
-    } catch (err) {
-      console.error("Error getting sections", err);
-      toast.error("Failed to find suitable sections. Please try again.");
-    } finally {
-      setLoading({ isLoading: false, text: "" });
+      // Return all notes (existing + newly fetched)
+      return [...existingNotes, ...fetchedNotes];
+    } else {
+      console.log(" 🚀 All notes were already in context 🚀");
     }
+
+    // All notes were already in context
+    return existingNotes;
   };
 
-  // Get 2-3 Best Chapters
-  const getChapters = async () => {
-    setLoading({ isLoading: true, text: "Looking for Candidates" });
+  // Fetch AI analysis when candidates are loaded and no analysis exists yet
+  useEffect(() => {
+    isMountedRef.current = true;
 
-    try {
-      const candidateSections = htsSections.filter((section) => {
-        return sectionCandidates.some((candidate) => {
-          return candidate.index === section.number;
+    const findBestClassificationProgression = async () => {
+      if (
+        currentLevel?.candidates?.length > 0 &&
+        !currentLevel?.analysisElement
+      ) {
+        setLoading({
+          isLoading: true,
+          text: "Analyzing Candidates",
         });
-      });
 
-      const candidatesForChapter: CandidateSelection[] = [];
+        const coreElements = htsElements.filter((e) => e.chapter < 98);
 
-      await Promise.all(
-        candidateSections.map(async (section) => {
-          const bestChapterCandidates = await getBestDescriptionCandidates(
-            [],
-            articleDescription,
-            true,
-            1,
-            3,
-            section.chapters.map((c) => c.description)
+        // Create Fuse index ONCE for all lookups (major perf improvement)
+        const fuse = new Fuse(coreElements, {
+          keys: ["htsno"],
+          threshold: 0.3,
+          includeScore: true,
+        });
+
+        const elementsWithReferencedCodes = addReferenceCodesToElements(
+          currentLevel.candidates,
+          coreElements,
+          fuse
+        );
+
+        const simplifiedCandidates = elementsWithReferencedCodes.map((e) => {
+          let finalDescription = e.description;
+
+          if (e.description.match(HTS_CODE_REGEX)) {
+            const enhancedDescription = transformTextWithVerifiedHtsCodes(
+              e.description,
+              coreElements,
+              fuse
+            );
+
+            if (e.description !== enhancedDescription) {
+              finalDescription = enhancedDescription;
+            }
+          }
+
+          return {
+            code: e.htsno,
+            description: finalDescription,
+            referencedCodes: e.referencedCodes,
+          };
+        });
+
+        const selectionPath =
+          classificationLevel > 0
+            ? levels
+                .map((level, i): LevelSelection => {
+                  if (level.selection) {
+                    return {
+                      level: i + 1,
+                      description: level.selection.description,
+                    };
+                  }
+                  return null;
+                })
+                .filter((selection) => selection !== null)
+            : [];
+
+        try {
+          if (!isMountedRef.current) return;
+
+          let relevantNotes: NoteRecord[] = [];
+
+          if (classificationTier === "premium") {
+            // Fetch all relevant notes for the candidates
+            relevantNotes = await getNotesForCandidates(simplifiedCandidates);
+          }
+
+          const {
+            index: suggestedCandidateIndex,
+            analysis: suggestionReason,
+            questions: suggestionQuestions,
+          } = await getBestClassificationProgression(
+            simplifiedCandidates,
+            selectionPath,
+            articleDescription + "\n" + articleAnalysis,
+            classificationLevel,
+            classificationTier,
+            relevantNotes
           );
 
-          const candidates: CandidateSelection[] =
-            bestChapterCandidates.bestCandidates.map((candidateIndex) => ({
-              index: section.chapters[candidateIndex].number,
-            }));
+          if (!isMountedRef.current) return;
 
-          candidatesForChapter.push(...candidates);
-        })
-      );
+          const bestCandidate =
+            currentLevel.candidates[suggestedCandidateIndex];
 
-      setChapterCandidates(candidatesForChapter);
-    } catch (err) {
-      console.error("Error getting chapters", err);
-      toast.error("Failed to find suitable chapters. Please try again.");
-    } finally {
-      setLoading({ isLoading: false, text: "" });
+          updateLevel(classificationLevel, {
+            analysisElement: bestCandidate,
+            analysisReason: suggestionReason,
+            analysisQuestions: suggestionQuestions,
+          });
+        } catch (error) {
+          console.error("Error analyzing candidates:", error);
+        } finally {
+          if (isMountedRef.current) {
+            setLoading({ isLoading: false, text: "" });
+          }
+        }
+      }
+    };
+
+    if (
+      currentLevel?.candidates?.length > 0 &&
+      !currentLevel?.analysisElement
+    ) {
+      findBestClassificationProgression();
     }
-  };
+
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, [currentLevel?.candidates?.length]);
 
   // Get up to 2 Best Headings Per Chapter
   const getHeadings = async () => {
-    setLoading({ isLoading: true, text: "Looking for Candidates" });
-    const candidatesForHeading: HtsElement[] = [];
+    console.log("FINDING HEADINGS");
+    setLoading({ isLoading: true, text: "Looking for Headings" });
+    const candidatesForHeading: (HtsElement & {
+      referencedCodes: Record<string, string>;
+    })[] = [];
+
+    console.log("Chapter Candidates:");
+    console.log(chapterCandidates);
 
     try {
       await Promise.all(
-        chapterCandidates.map(async (chapter) => {
+        chapterCandidates.map(async (chapterCandidate) => {
           const chapterElements = getElementsInChapter(
             htsElements,
-            chapter.index
+            chapterCandidate.chapter.number
           );
 
           const chapterElementsWithParentIndex =
@@ -181,14 +309,60 @@ export const VerticalClassificationStep = ({
             chapterElementsWithParentIndex,
             0
           );
-          const bestCandidateHeadings = await getBestDescriptionCandidates(
+
+          const coreElements = htsElements.filter((e) => e.chapter < 98);
+
+          // Create Fuse index ONCE for all lookups (major perf improvement)
+          const fuse = new Fuse(coreElements, {
+            keys: ["htsno"],
+            threshold: 0.3,
+            includeScore: true,
+          });
+
+          // Add referencedCodes to each element for LLM context
+          const elementsWithReferencedCodes = addReferenceCodesToElements(
             elementsAtLevel,
+            coreElements,
+            fuse
+          );
+
+          const enrichedCandidates = elementsWithReferencedCodes.map((e) => {
+            let finalDescription = e.description;
+
+            if (e.description.match(HTS_CODE_REGEX)) {
+              const enhancedDescription = transformTextWithVerifiedHtsCodes(
+                e.description,
+                coreElements,
+                fuse
+              );
+
+              if (e.description !== enhancedDescription) {
+                console.log("Enhanced Description:");
+                console.log(e.description);
+                console.log(enhancedDescription);
+
+                finalDescription = enhancedDescription;
+              }
+            }
+
+            return {
+              ...e,
+              description: finalDescription,
+            };
+          });
+
+          const bestCandidateHeadings = await getBestDescriptionCandidates(
+            enrichedCandidates,
             articleDescription,
             false,
-            1,
-            3,
-            elementsAtLevel.map((e) => e.description)
+            null,
+            3
           );
+
+          console.log(
+            `Best Candidate Headings for ${chapterCandidate.chapter.description}:`
+          );
+          console.log(bestCandidateHeadings);
 
           // Handle Empty Case
           if (bestCandidateHeadings.bestCandidates.length === 0) {
@@ -202,7 +376,8 @@ export const VerticalClassificationStep = ({
 
           const candidates = bestCandidateHeadings.bestCandidates
             .map((candidateIndex) => {
-              return elementsAtLevel[candidateIndex];
+              // Use elementsWithReferencedCodes to preserve referencedCodes
+              return elementsWithReferencedCodes[candidateIndex];
             })
             .map((candidate) => ({
               ...candidate,
@@ -237,46 +412,24 @@ export const VerticalClassificationStep = ({
 
   useEffect(() => {
     if (previousArticleDescriptionRef.current !== articleDescription) {
-      setSectionCandidates([]);
-      setChapterCandidates([]);
       previousArticleDescriptionRef.current = articleDescription;
     }
   }, [articleDescription]);
 
-  // Only fetch candidates for level 0 and only once
+  // Fetch headings once chapter discovery is complete (for level 0 only)
   useEffect(() => {
     if (
       classificationLevel === 0 &&
+      chapterDiscoveryComplete &&
+      chapterCandidates.length > 0 &&
       !hasFetchedCandidatesRef.current &&
       (levels[classificationLevel] === undefined ||
-        (levels[classificationLevel] !== undefined &&
-          levels[classificationLevel].candidates.length === 0))
+        levels[classificationLevel].candidates.length === 0)
     ) {
       hasFetchedCandidatesRef.current = true;
-      getSections();
-    }
-  }, [classificationLevel]);
-
-  useEffect(() => {
-    if (
-      classificationLevel === 0 &&
-      sectionCandidates &&
-      sectionCandidates.length > 0 &&
-      chapterCandidates.length === 0
-    ) {
-      getChapters();
-    }
-  }, [sectionCandidates]);
-
-  useEffect(() => {
-    if (
-      classificationLevel === 0 &&
-      chapterCandidates &&
-      chapterCandidates.length > 0
-    ) {
       getHeadings();
     }
-  }, [chapterCandidates]);
+  }, [classificationLevel, chapterDiscoveryComplete, chapterCandidates]);
 
   const getStepDescription = (level: number) => {
     if (level === 0) {
@@ -288,6 +441,7 @@ export const VerticalClassificationStep = ({
 
   return (
     <div
+      ref={containerRef}
       className={`relative overflow-hidden rounded-2xl border ${
         isCollapsed
           ? "border-success/30 bg-base-200/50"
@@ -422,7 +576,6 @@ export const VerticalClassificationStep = ({
                     element={element}
                     classificationLevel={classificationLevel}
                     disabled={isDisabled}
-                    setLoading={setLoading}
                     onOpenExplore={onOpenExplore}
                   />
                 ))}
@@ -452,44 +605,56 @@ export const VerticalClassificationStep = ({
             )}
           </div>
 
-          {/* Notes Section */}
-          {/* {showNotes && (
-            <div className="mt-6 relative overflow-hidden rounded-xl border border-base-content/15 bg-base-100 p-5">
-              <div className="flex flex-col gap-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <PencilSquareIcon className="w-5 h-5 text-primary" />
-                    <span className="text-sm font-semibold uppercase tracking-wider text-base-content/80">
-                      Classification Advisory Notes
-                    </span>
-                  </div>
-                  <button
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-error hover:bg-error/10 transition-colors"
-                    onClick={() => {
-                      setShowNotes(false);
-                      updateLevel(classificationLevel, { notes: "" });
-                    }}
-                    disabled={loading.isLoading || !isUsersClassification}
-                  >
-                    <XMarkIcon className="w-4 h-4" />
-                    Remove
-                  </button>
-                </div>
-
-                <textarea
-                  className="min-h-36 w-full px-4 py-3 rounded-xl bg-base-200/50 border border-base-content/15 transition-all duration-200 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40 resize-none text-base"
-                  placeholder="Notes added are saved and will be included in advisory reports you generate."
-                  disabled={loading.isLoading || !isUsersClassification}
-                  value={levels[classificationLevel]?.notes || ""}
-                  onChange={(e) => {
-                    updateLevel(classificationLevel, {
-                      notes: e.target.value,
-                    });
-                  }}
-                />
+          {/* Analysis Section */}
+          <div className="w-full mt-6 flex flex-col gap-4">
+            <div className="flex justify-between items-center gap-4">
+              <div className="flex items-center gap-2">
+                <SparklesIcon className="w-5 h-5 text-primary" />
+                <span className="text-sm font-semibold uppercase tracking-wider text-base-content/80">
+                  Analysis
+                </span>
               </div>
+              <button
+                className={`btn btn-sm gap-1.5 btn-neutral shrink-0`}
+                onClick={handleCopyCostClick}
+              >
+                {isAnalysisCopied ? (
+                  <CheckCircleIcon className="w-4 h-4" />
+                ) : (
+                  <ClipboardDocumentIcon className="w-4 h-4" />
+                )}
+                {isAnalysisCopied ? "Copied!" : "Copy"}
+              </button>
             </div>
-          )} */}
+
+            {currentLevel?.analysisReason ? (
+              <div className="relative overflow-hidden rounded-xl bg-base-100 border border-primary/20 p-4">
+                <div className="absolute inset-0 pointer-events-none">
+                  <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
+                </div>
+                <div className="relative z-10">
+                  <p className="text-base leading-relaxed text-base-content whitespace-pre-line mb-3">
+                    {currentLevel.analysisReason}
+                  </p>
+                  <p className="text-xs text-base-content/60">
+                    Analysis is for information purposes only and may not be
+                    correct. Always exercise your own judgement as the
+                    classifier.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-xl border border-base-content/10 bg-base-100 p-4">
+                <p className="text-sm text-base-content/60 italic">
+                  {loading.isLoading && loading.text === "Analyzing Candidates"
+                    ? "Analyzing candidates..."
+                    : loading.isLoading
+                      ? loading.text
+                      : "Analysis will appear here after candidates are evaluated."}
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

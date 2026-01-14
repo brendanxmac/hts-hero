@@ -9,7 +9,6 @@ import {
 import { useUser } from "../../contexts/UserContext";
 import { isWithinPastNDays } from "../../utilities/time";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
-import { ClassifyPage } from "../../enums/classify";
 import { DocumentTextIcon } from "@heroicons/react/16/solid";
 import toast from "react-hot-toast";
 import { ClassificationRecord } from "../../interfaces/hts";
@@ -17,14 +16,12 @@ import { useClassifications } from "../../contexts/ClassificationsContext";
 import TextAreaInput from "../TextAreaInput";
 
 interface Props {
-  setPage: (page: ClassifyPage) => void;
   setShowPricing: (show: boolean) => void;
   classificationRecord?: ClassificationRecord | undefined;
   onDescriptionSubmitted?: () => void;
 }
 
 export const VerticalDescriptionStep = ({
-  setPage,
   setShowPricing,
   classificationRecord,
   onDescriptionSubmitted,

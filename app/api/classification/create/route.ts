@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "../../supabase/server";
 import {
-  Classification,
+  ClassificationI,
   ClassificationRecord,
 } from "../../../../interfaces/hts";
 import { getHtsRevisionRecord } from "../../../../libs/supabase/hts-revision";
@@ -10,7 +10,7 @@ import { fetchUser } from "../../../../libs/supabase/user";
 export const dynamic = "force-dynamic";
 
 interface CreateClassificationDto {
-  classification: Classification;
+  classification: ClassificationI;
 }
 
 export async function POST(req: NextRequest) {

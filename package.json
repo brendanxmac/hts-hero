@@ -10,7 +10,8 @@
     "postbuild": "next-sitemap",
     "start": "next start",
     "lint": "next lint",
-    "tests": "APP_ENV=test npx tsx testing/run-tests.ts"
+    "tests": "APP_ENV=test npx tsx testing/run-tests.ts",
+    "knip": "knip"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",
@@ -64,7 +65,7 @@
     "@types/mdx": "^2.0.12",
     "@types/mixpanel-browser": "^2.60.0",
     "@types/mongoose": "^5.11.97",
-    "@types/node": "^20.12.2",
+    "@types/node": "^20.19.29",
     "@types/pako": "^2.0.3",
     "@types/react": "^18.2.73",
     "@types/react-dom": "^18.2.23",
@@ -73,9 +74,10 @@
     "@typescript-eslint/parser": "^6.21.0",
     "autoprefixer": "^10.4.19",
     "daisyui": "^4.10.1",
+    "knip": "^5.81.0",
     "postcss": "^8.4.38",
     "react-email": "4.2.11",
     "tailwindcss": "^3.4.3",
-    "typescript": "^5.4.3"
+    "typescript": "^5.9.3"
   }
 }

@@ -9,7 +9,6 @@ import { getActivePriorityTariffPurchase } from "../libs/supabase/purchase";
 import LetsTalkModal from "./LetsTalkModal";
 import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
 import {
-  ShieldCheckIcon,
   CheckIcon,
   SparklesIcon,
   UserGroupIcon,

@@ -1,5 +1,5 @@
 import {
-  Classification,
+  ClassificationI,
   ClassificationRecord,
   ClassificationStatus,
   Importer,
@@ -16,10 +16,10 @@ const formatHtsNumber = (htsno: string | undefined | null): string => {
 };
 
 export const createClassification = async (
-  classification: Classification
+  classification: ClassificationI
 ): Promise<ClassificationRecord> => {
   const classificationRecord = await apiClient.post<
-    Classification,
+    ClassificationI,
     ClassificationRecord
   >("/classification/create", {
     classification,
@@ -30,7 +30,7 @@ export const createClassification = async (
 
 export const updateClassification = async (
   id: string,
-  classification?: Classification,
+  classification?: ClassificationI,
   importer_id?: string,
   classifier_id?: string,
   status?: ClassificationStatus,
@@ -362,36 +362,47 @@ export const generateClassificationReport = async (
     yPosition += htsBoxHeight + sectionPadding;
   }
 
-  // === ADVISORY NOTES SECTION ===
+  // === BASIS FOR CLASSIFICATION SECTION ===
 
   // Calculate dynamic height based on notes content
   setTypography({ size: 10, weight: "normal" }); // Set font for measurement
-  const notesLines = doc.splitTextToSize(
+  const notesLines: string[] = doc.splitTextToSize(
     classification.notes || "No additional notes provided.",
     contentWidth - clssifierBoxPadding * 2
   );
-  const notesBoxHeight = Math.max(80, notesLines.length * 12 + 45);
 
-  // Check if we need to split the BASIS FOR CLASSIFICATION section
-  const remainingPageSpace = pageHeight - yPosition - 60; // 60pt margin for footer
   const lineHeight = 12;
   const headerSpace = 45; // Space needed for header and padding
-  const maxLinesOnCurrentPage = Math.floor(
-    (remainingPageSpace - headerSpace) / lineHeight
-  );
+  const footerMargin = 60; // Margin for footer at bottom of page
 
-  if (notesLines.length > maxLinesOnCurrentPage && maxLinesOnCurrentPage > 3) {
-    // Split content: some on current page, rest on next page
-    const firstPageLines = notesLines.slice(0, maxLinesOnCurrentPage);
-    const secondPageLines = notesLines.slice(maxLinesOnCurrentPage);
+  let remainingLines = [...notesLines];
+  let isFirstSection = true;
 
-    // First section on current page
-    const firstBoxHeight = Math.max(
-      80,
-      firstPageLines.length * lineHeight + headerSpace
+  while (remainingLines.length > 0) {
+    // Calculate available space on current page
+    const availableHeight = pageHeight - yPosition - footerMargin;
+    const maxLinesOnPage = Math.floor(
+      (availableHeight - headerSpace) / lineHeight
     );
 
-    // Draw background box for first section
+    // If we can't fit at least a few lines, move to next page
+    if (maxLinesOnPage < 3) {
+      doc.addPage();
+      yPosition = margin;
+      continue;
+    }
+
+    // Determine how many lines to render on this page
+    const linesToRender = remainingLines.slice(0, maxLinesOnPage);
+    remainingLines = remainingLines.slice(maxLinesOnPage);
+
+    // Calculate box height for this section
+    const sectionBoxHeight = Math.max(
+      80,
+      linesToRender.length * lineHeight + headerSpace
+    );
+
+    // Draw background box
     doc.setFillColor(239, 246, 255); // Light blue
     doc.setDrawColor(147, 197, 253); // Blue border
     doc.setLineWidth(1.5);
@@ -399,102 +410,33 @@ export const generateClassificationReport = async (
       margin,
       yPosition,
       contentWidth,
-      firstBoxHeight,
+      sectionBoxHeight,
       6,
       6,
       "FD"
     );
 
-    // First section header
-    setTypography({ size: 12, weight: "bold" });
-    setTextColor([30, 58, 138]); // Dark blue
-    doc.text(
-      "BASIS FOR CLASSIFICATION",
-      margin + clssifierBoxPadding,
-      yPosition + 22
-    );
-
-    // First section content
-    setTypography({ size: 10, weight: "normal" });
-    setTextColor([51, 65, 85]); // Slate gray
-    doc.text(firstPageLines, margin + clssifierBoxPadding, yPosition + 42);
-
-    // Move to next page for second section
-    doc.addPage();
-    yPosition = margin;
-
-    // Second section on new page
-    const secondBoxHeight = Math.max(
-      80,
-      secondPageLines.length * lineHeight + headerSpace
-    );
-
-    // Draw background box for second section
-    doc.setFillColor(239, 246, 255); // Light blue
-    doc.setDrawColor(147, 197, 253); // Blue border
-    doc.setLineWidth(1.5);
-    doc.roundedRect(
-      margin,
-      yPosition,
-      contentWidth,
-      secondBoxHeight,
-      6,
-      6,
-      "FD"
-    );
-
-    // Second section header with (continued) suffix
+    // Section header
     setTypography({ size: 14, weight: "bold" });
     setTextColor([30, 58, 138]); // Dark blue
-    doc.text(
-      "BASIS FOR CLASSIFICATION (continued)",
-      margin + clssifierBoxPadding,
-      yPosition + 22
-    );
+    const headerText = isFirstSection
+      ? "BASIS FOR CLASSIFICATION"
+      : "BASIS FOR CLASSIFICATION (continued)";
+    doc.text(headerText, margin + clssifierBoxPadding, yPosition + 22);
 
-    // Second section content
+    // Section content
     setTypography({ size: 10, weight: "normal" });
     setTextColor([51, 65, 85]); // Slate gray
-    doc.text(secondPageLines, margin + clssifierBoxPadding, yPosition + 42);
+    doc.text(linesToRender, margin + clssifierBoxPadding, yPosition + 42);
 
-    yPosition += secondBoxHeight + 30;
-  } else {
-    // Fits on current page or move entire section to next page
-    if (notesBoxHeight > remainingPageSpace) {
-      // Move entire section to next page
+    yPosition += sectionBoxHeight + 30;
+    isFirstSection = false;
+
+    // If there are more lines, add a new page
+    if (remainingLines.length > 0) {
       doc.addPage();
       yPosition = margin;
     }
-
-    // Draw background box for advisory notes
-    doc.setFillColor(239, 246, 255); // Light blue
-    doc.setDrawColor(147, 197, 253); // Blue border
-    doc.setLineWidth(1.5);
-    doc.roundedRect(
-      margin,
-      yPosition,
-      contentWidth,
-      notesBoxHeight,
-      6,
-      6,
-      "FD"
-    );
-
-    // Notes section header
-    setTypography({ size: 14, weight: "bold" });
-    setTextColor([30, 58, 138]); // Dark blue
-    doc.text(
-      "BASIS FOR CLASSIFICATION",
-      margin + clssifierBoxPadding,
-      yPosition + 22
-    );
-
-    // Advisory notes content
-    setTypography({ size: 10, weight: "normal" });
-    setTextColor([51, 65, 85]); // Slate gray
-    doc.text(notesLines, margin + clssifierBoxPadding, yPosition + 42);
-
-    yPosition += notesBoxHeight + 30;
   }
 
   // Classification breakdown on new page

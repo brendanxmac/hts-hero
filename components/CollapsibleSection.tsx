@@ -117,11 +117,11 @@ export const CollapsibleSection = ({
       </button>
 
       {/* Rich collapsed content below header - for mobile when inline, or always when not inline */}
-      {collapsedContent && (
+      {collapsedContent && !isExpanded && (
         <div
-          className={`relative z-10 transition-all duration-300 ease-in-out ${
+          className={`relative z-10 ${
             collapsedContentInline ? "md:hidden" : ""
-          } ${!isExpanded ? "opacity-100 px-5 pb-5 pt-0" : "opacity-0 h-0 overflow-hidden"}`}
+          } px-5 pb-5 pt-0`}
           onClick={() => setIsExpanded(!isExpanded)}
         >
           <div className="cursor-pointer">{collapsedContent}</div>
@@ -129,16 +129,14 @@ export const CollapsibleSection = ({
       )}
 
       {/* Expandable Content */}
-      <div
-        className={`relative z-10 transition-all duration-300 ease-in-out ${
-          isExpanded ? "opacity-100" : "opacity-0 h-0 overflow-hidden"
-        }`}
-      >
-        <div className="px-5 pb-5 pt-0">
-          <div className="h-px bg-gradient-to-r from-transparent via-base-content/10 to-transparent mb-5" />
-          {children}
+      {isExpanded && (
+        <div className="relative z-10">
+          <div className="px-5 pb-5 pt-0">
+            <div className="h-px bg-gradient-to-r from-transparent via-base-content/10 to-transparent mb-5" />
+            {children}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

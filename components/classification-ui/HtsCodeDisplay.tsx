@@ -1,6 +1,5 @@
 "use client";
 
-import { CheckCircleIcon } from "@heroicons/react/16/solid";
 import { Country } from "../../constants/countries";
 import { CountryOfOriginDisplay } from "./CountryOfOriginDisplay";
 
@@ -38,7 +37,7 @@ export function HtsCodeDisplay({
         {/* HTS Code with checkmark */}
         <div className="flex items-center gap-2">
           <span
-            className={`font-bold text-success transition-all duration-200 ${completedTextSizeClass}`}
+            className={`font-bold text-primary transition-all duration-200 ${completedTextSizeClass}`}
           >
             {latestHtsCode}
           </span>

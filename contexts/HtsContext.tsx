@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, ReactNode } from "react";
 import { HtsElement } from "../interfaces/hts";
-import { getHtsData } from "../libs/hts";
+import { getHtsData, getCachedHtsData } from "../libs/hts";
 
 interface HtsContextType {
   htsElements: HtsElement[];
@@ -21,7 +21,63 @@ export const HtsProvider = ({ children }: { children: ReactNode }) => {
   const fetchElements = async (revision: string) => {
     setIsFetching(true);
     try {
+      // For "latest" revision, check localStorage cache first
+      if (revision === "latest") {
+        const cached = getCachedHtsData();
+        if (cached) {
+          setHtsElements(cached.data);
+          setRevision(cached.revisionName);
+          return;
+        }
+      }
+
+      // Cache miss or specific revision - fetch from network
       const { data: elements, revisionName } = await getHtsData(revision);
+
+      // const coreElements = elements.filter((e) => e.chapter < 98);
+      // console.log("Got Core");
+      // const htsElementsWithHtsCodes = coreElements.filter((e) =>
+      //   e.description.match(HTS_CODE_REGEX)
+      // );
+      // console.log("Got Matches with HTS Codes");
+      // console.log(htsElementsWithHtsCodes.length);
+      // console.log(htsElementsWithHtsCodes.map((e) => e.description));
+
+      // Create Fuse index ONCE for all lookups (major perf improvement)
+      // const fuse = new Fuse(coreElements, {
+      //   keys: ["htsno"],
+      //   threshold: 0.3,
+      //   includeScore: true,
+      // });
+
+      // const elementsForHtsCodesWithHtsCodeReferences =
+      //   htsElementsWithHtsCodes.map((e) => {
+      //     const enrichedResult = getEnrichedHtsElementsFromString(
+      //       e.description,
+      //       coreElements,
+      //       fuse
+      //     );
+      //     const transformedText = transformTextWithHtsDescriptions(
+      //       e.description,
+      //       enrichedResult
+      //     );
+      //     return {
+      //       originalText: e.description,
+      //       transformedText,
+      //       elements: enrichedResult.elements,
+      //       codeMappings: enrichedResult.codeMappings,
+      //       rangeMappings: enrichedResult.rangeMappings,
+      //     };
+      //   });
+      // console.log(
+      //   elementsForHtsCodesWithHtsCodeReferences
+      //     .filter((e) => e.elements.length > 0)
+      //     .map((e) => ({
+      //       originalText: e.originalText,
+      //       transformedText: e.transformedText,
+      //     }))
+      // );
+
       setHtsElements(elements);
       setRevision(revisionName);
     } finally {

@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from "react";
 import {
   ChevronDownIcon,
   ChevronRightIcon,
-  LockClosedIcon,
   GlobeAltIcon,
   CheckCircleIcon,
 } from "@heroicons/react/16/solid";
@@ -27,8 +26,6 @@ import { classNames } from "../utilities/style";
 import React from "react";
 import { CountryTariff } from "./CountryTariff";
 import { CountrySelection } from "./CountrySelection";
-import toast from "react-hot-toast";
-import Link from "next/link";
 import { NumberInput } from "./NumberInput";
 import { PercentageInput } from "./PercentageInput";
 

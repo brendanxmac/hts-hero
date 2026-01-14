@@ -1,34 +1,28 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { useBreadcrumbs } from "../../contexts/BreadcrumbsContext";
 import { HtsElement } from "../../interfaces/hts";
 import {
   TrashIcon,
   DocumentTextIcon,
   SparklesIcon,
-  CheckCircleIcon,
 } from "@heroicons/react/24/solid";
-import {
-  MagnifyingGlassIcon,
-  ChevronRightIcon,
-} from "@heroicons/react/16/solid";
+import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
 import PDF from "../PDF";
 import { useHtsSections } from "../../contexts/HtsSectionsContext";
 import { useClassification } from "../../contexts/ClassificationContext";
 import {
   generateBreadcrumbsForHtsElement,
-  getBestClassificationProgression,
   getChapterFromHtsElement,
   getDirectChildrenElements,
   getElementsInChapter,
   getHtsElementParents,
-  getProgressionDescriptionWithArrows,
   getSectionAndChapterFromChapterNumber,
 } from "../../libs/hts";
 import toast from "react-hot-toast";
 import { useHts } from "../../contexts/HtsContext";
-import { PDFProps, Loader } from "../../interfaces/ui";
+import { PDFProps } from "../../interfaces/ui";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 import {
   Product,
@@ -42,7 +36,6 @@ interface Props {
   element: HtsElement;
   classificationLevel: number;
   disabled: boolean;
-  setLoading: (loading: Loader) => void;
   onOpenExplore: () => void;
 }
 
@@ -50,7 +43,6 @@ export const VerticalCandidateElement = ({
   element,
   classificationLevel,
   disabled = false,
-  setLoading,
   onOpenExplore,
 }: Props) => {
   const { user } = useUser();
@@ -61,84 +53,16 @@ export const VerticalCandidateElement = ({
   const { classification, updateLevel, setClassification } =
     useClassification();
   const { htsElements } = useHts();
-  const {
-    levels,
-    progressionDescription,
-    articleDescription,
-    articleAnalysis,
-  } = classification;
-  const isMountedRef = useRef(true);
+  const { levels, progressionDescription } = classification;
 
   const currentLevel = levels[classificationLevel];
   const isRecommended = currentLevel?.analysisElement?.uuid === element.uuid;
-  const recommendedReason = currentLevel?.analysisReason;
 
   const isLevelSelection = Boolean(
     levels.some(
       (level) => level.selection && level.selection.uuid === element.uuid
     )
   );
-
-  // Fetch AI analysis when candidates are loaded and no analysis exists yet
-  useEffect(() => {
-    isMountedRef.current = true;
-
-    const fetchAnalysis = async () => {
-      if (
-        currentLevel?.candidates?.length > 0 &&
-        !currentLevel?.analysisElement &&
-        !disabled
-      ) {
-        setLoading({
-          isLoading: true,
-          text: "Analyzing Candidates",
-        });
-
-        const simplifiedCandidates = currentLevel.candidates.map((e) => ({
-          code: e.htsno,
-          description: e.description,
-        }));
-
-        try {
-          const {
-            index: suggestedCandidateIndex,
-            logic: suggestionReason,
-            questions: suggestionQuestions,
-          } = await getBestClassificationProgression(
-            simplifiedCandidates,
-            getProgressionDescriptionWithArrows(levels),
-            articleDescription + "\n" + articleAnalysis
-          );
-
-          if (!isMountedRef.current) return;
-
-          const bestCandidate =
-            currentLevel.candidates[suggestedCandidateIndex - 1];
-
-          updateLevel(classificationLevel, {
-            analysisElement: bestCandidate,
-            analysisReason: suggestionReason,
-            analysisQuestions: suggestionQuestions,
-          });
-        } catch (error) {
-          console.error("Error analyzing candidates:", error);
-        } finally {
-          if (isMountedRef.current) {
-            setLoading({ isLoading: false, text: "" });
-          }
-        }
-      }
-    };
-
-    // Only run analysis for the first candidate in the list to avoid duplicate calls
-    if (currentLevel?.candidates?.[0]?.uuid === element.uuid) {
-      fetchAnalysis();
-    }
-
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, [currentLevel?.candidates?.length]);
 
   const handleClassificationCompleted = async () => {
     const userCreatedDate = user ? new Date(user.created_at) : null;
@@ -278,18 +202,21 @@ export const VerticalCandidateElement = ({
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3">
             {/* HTS Code Badge */}
-            <div
-              className={`flex items-center gap-2 ${
-                isLevelSelection
-                  ? "bg-success/25 border border-success/40 px-3 py-1.5 rounded-lg"
-                  : ""
-              }`}
-            >
-              {isLevelSelection && (
-                <CheckCircleIcon className="w-4 h-4 text-success" />
+            <div className={`flex items-center gap-1`}>
+              {/* {isLevelSelection && (
+                <CheckCircleIcon className="w-5 h-5 text-success" />
+              )} */}
+              {isRecommended && !isLevelSelection && (
+                <SparklesIcon className="w-4 h-4 text-primary" />
               )}
               <span
-                className={`text-sm ${isLevelSelection ? "text-success" : "text-base-content/60"}`}
+                className={`${
+                  isLevelSelection
+                    ? "text-success font-bold text-base"
+                    : isRecommended
+                      ? "text-sm text-primary font-bold"
+                      : "text-sm text-base-content/60"
+                }`}
               >
                 {htsno || "Prequalifier"}
               </span>
@@ -335,54 +262,14 @@ export const VerticalCandidateElement = ({
             )}
 
             {/* Chevron indicator */}
-            {!isLevelSelection && !disabled && (
+            {/* {!isLevelSelection && !disabled && (
               <ChevronRightIcon className="h-5 w-5 text-base-content/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-200 ml-1" />
-            )}
+            )} */}
           </div>
         </div>
 
         {/* Description */}
         <p className="text-base leading-relaxed font-bold">{description}</p>
-
-        {/* AI Analysis Section - animated entry */}
-        <div
-          className={`grid transition-all duration-500 ease-out ${
-            isRecommended
-              ? "grid-rows-[1fr] opacity-100 mt-4"
-              : "grid-rows-[0fr] opacity-0 mt-0"
-          }`}
-        >
-          <div className="overflow-hidden">
-            <div className="border-t border-base-content/10 pt-4">
-              <div className="relative overflow-hidden rounded-xl bg-base-100 border border-primary/20 p-4">
-                <div className="absolute inset-0 pointer-events-none">
-                  <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
-                </div>
-
-                <div className="relative z-10">
-                  <div className="flex items-center gap-1 mb-3">
-                    <div className="flex items-center justify-center w-6 h-6">
-                      <SparklesIcon className="h-3.5 w-3.5 text-primary" />
-                    </div>
-                    <span className="text-xs font-bold uppercase tracking-wider text-primary">
-                      HTS Hero Analysis
-                    </span>
-                  </div>
-
-                  <p className="text-base leading-relaxed text-base-content font-medium mb-3">
-                    {recommendedReason}
-                  </p>
-
-                  <p className="text-xs text-base-content/60">
-                    Analysis is for information purposes only and may not be
-                    correct. Always exercise your own judgement as the
-                    classifier.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       {showPDF && (

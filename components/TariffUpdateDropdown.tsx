@@ -46,9 +46,9 @@ export default function TariffUpdateDropdown({
           <Listbox.Button className="relative w-full cursor-default rounded-xl border border-base-content/10 bg-base-100/50 py-3 pl-4 pr-10 text-left transition-all duration-200 hover:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30">
             <div className="flex items-center gap-3">
               <span className="text-sm md:text-base text-base-content font-medium">
-              {selectedUpdate
+                {selectedUpdate
                   ? selectedUpdate.name
-                : "Select a Tariff Announcement"}
+                  : "Select a Tariff Announcement"}
               </span>
               {selectedUpdate && (
                 <span className="px-2 py-0.5 rounded-lg bg-base-content/5 border border-base-content/10 text-xs text-base-content/60">
@@ -86,7 +86,7 @@ export default function TariffUpdateDropdown({
                     }
                     value={index}
                   >
-                    {({ selected, active }) => (
+                    {({ selected }) => (
                       <div className="flex items-center justify-between gap-3">
                         <div className="flex-1 flex flex-col gap-1">
                           {/* Name */}
@@ -102,18 +102,18 @@ export default function TariffUpdateDropdown({
                           <div className="flex items-center gap-3 flex-wrap">
                             <span className="flex items-center gap-1 text-xs text-base-content/50">
                               <CalendarIcon className="w-3 h-3" />
-                                {formatDate(update.effective_at)}
-                              </span>
-                              <a
-                                href={update.source}
-                                target="_blank"
-                                rel="noopener noreferrer"
+                              {formatDate(update.effective_at)}
+                            </span>
+                            <a
+                              href={update.source}
+                              target="_blank"
+                              rel="noopener noreferrer"
                               className="flex items-center gap-1 text-xs text-primary/70 hover:text-primary transition-colors"
-                                onClick={(e) => e.stopPropagation()}
-                              >
+                              onClick={(e) => e.stopPropagation()}
+                            >
                               <LinkIcon className="w-3 h-3" />
-                                {update.source_name}
-                              </a>
+                              {update.source_name}
+                            </a>
                           </div>
                         </div>
 

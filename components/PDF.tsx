@@ -10,7 +10,6 @@ import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import "react-pdf/dist/esm/Page/TextLayer.css";
 import { fetchPDF } from "../libs/supabase/storage";
 import { LoadingIndicator } from "./LoadingIndicator";
-import { Color } from "../enums/style";
 import { SupabaseBuckets } from "../constants/supabase";
 
 interface Props {
