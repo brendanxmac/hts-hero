@@ -9,7 +9,6 @@ import {
 import { useUser } from "../../contexts/UserContext";
 import { isWithinPastNDays } from "../../utilities/time";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
-import { ClassifyPage } from "../../enums/classify";
 import { DocumentTextIcon } from "@heroicons/react/16/solid";
 import toast from "react-hot-toast";
 import { ClassificationRecord } from "../../interfaces/hts";

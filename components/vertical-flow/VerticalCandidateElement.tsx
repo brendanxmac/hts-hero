@@ -7,12 +7,8 @@ import {
   TrashIcon,
   DocumentTextIcon,
   SparklesIcon,
-  CheckCircleIcon,
 } from "@heroicons/react/24/solid";
-import {
-  MagnifyingGlassIcon,
-  ChevronRightIcon,
-} from "@heroicons/react/16/solid";
+import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
 import PDF from "../PDF";
 import { useHtsSections } from "../../contexts/HtsSectionsContext";
 import { useClassification } from "../../contexts/ClassificationContext";

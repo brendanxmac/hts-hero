@@ -1,6 +1,5 @@
 "use client";
 
-import { CheckCircleIcon } from "@heroicons/react/16/solid";
 import { Country } from "../../constants/countries";
 import { CountryOfOriginDisplay } from "./CountryOfOriginDisplay";
 

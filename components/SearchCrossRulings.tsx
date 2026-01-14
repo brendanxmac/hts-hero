@@ -2,7 +2,6 @@ import { useState } from "react";
 import { PrimaryLabel } from "./PrimaryLabel";
 import { TertiaryLabel } from "./TertiaryLabel";
 import { TertiaryText } from "./TertiaryText";
-import { Color } from "../enums/style";
 
 interface Props {
   searchTerm: string;

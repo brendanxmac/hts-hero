@@ -3,10 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useClassification } from "../../contexts/ClassificationContext";
 import { useSectionChapterDiscovery } from "../../contexts/SectionChapterDiscoveryContext";
-import {
-  getBestDescriptionCandidates,
-  qualifyCandidatesWithNotes,
-} from "../../libs/hts";
+import { getBestDescriptionCandidates } from "../../libs/hts";
 import { ChapterCandidate } from "../../contexts/SectionChapterDiscoveryContext";
 import {
   PreliminaryCandidate,
@@ -18,7 +15,6 @@ import {
   QueueListIcon,
   ChevronDownIcon,
   PlusIcon,
-  SparklesIcon,
 } from "@heroicons/react/16/solid";
 import { SectionChapterCandidate } from "./SectionChapterCandidate";
 
@@ -178,7 +174,7 @@ export const VerticalChapterDiscovery = ({ startExpanded = true }: Props) => {
           description: candidate.chapter.description,
         }));
 
-      let analysisText = "";
+      const analysisText = "";
 
       // Only do qualification for premium tier
       if (isPremium) {

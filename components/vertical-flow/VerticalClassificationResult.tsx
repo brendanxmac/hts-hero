@@ -35,7 +35,6 @@ import {
 import { updateClassification } from "../../libs/classification";
 import Modal from "../Modal";
 import ImporterDropdown from "../ImporterDropdown";
-import { ClassifyPage } from "../../enums/classify";
 import { CollapsibleSection } from "../CollapsibleSection";
 import { CountrySelection } from "../CountrySelection";
 import { Countries, Country } from "../../constants/countries";

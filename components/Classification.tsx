@@ -65,6 +65,8 @@ const ClassificationFlowContent = ({
   onOpenExplore,
   userProfile,
 }: ClassificationFlowContentProps) => {
+  const { chapterDiscoveryComplete } = useSectionChapterDiscovery();
+
   if (classification?.isComplete) {
     return (
       <VerticalClassificationResult
@@ -74,8 +76,6 @@ const ClassificationFlowContent = ({
       />
     );
   }
-
-  const { chapterDiscoveryComplete } = useSectionChapterDiscovery();
 
   return (
     <>

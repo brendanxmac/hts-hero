@@ -4,10 +4,7 @@ import { useEffect, useRef } from "react";
 import { useClassification } from "../../contexts/ClassificationContext";
 import { useSectionChapterDiscovery } from "../../contexts/SectionChapterDiscoveryContext";
 import { useHtsSections } from "../../contexts/HtsSectionsContext";
-import {
-  getBestDescriptionCandidates,
-  qualifyCandidatesWithNotes,
-} from "../../libs/hts";
+import { getBestDescriptionCandidates } from "../../libs/hts";
 import {
   PreliminaryCandidate,
   PreliminaryClassificationLevel,
@@ -17,7 +14,6 @@ import {
   QueueListIcon,
   ChevronDownIcon,
   PlusIcon,
-  SparklesIcon,
 } from "@heroicons/react/16/solid";
 import { SectionChapterCandidate } from "./SectionChapterCandidate";
 import { useState } from "react";
@@ -179,7 +175,7 @@ export const VerticalSectionDiscovery = ({ startExpanded = true }: Props) => {
         })
       );
 
-      let analysisText = "";
+      const analysisText = "";
 
       // Only do qualification for premium tier
       if (isPremium) {

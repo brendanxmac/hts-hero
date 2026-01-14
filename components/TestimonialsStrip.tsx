@@ -1,14 +1,14 @@
 // Company names data
-const companies = [
-  "Amazon",
-  "Kuehne + Nagel",
-  "DSV",
-  "Border Brokers",
-  "Harren Group",
-  "JORI Logistics",
-  "Ingersoll Rand",
-  "True North Brokerage",
-];
+// const companies = [
+//   "Amazon",
+//   "Kuehne + Nagel",
+//   "DSV",
+//   "Border Brokers",
+//   "Harren Group",
+//   "JORI Logistics",
+//   "Ingersoll Rand",
+//   "True North Brokerage",
+// ];
 
 // Individual testimonials
 const testimonials = [

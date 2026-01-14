@@ -8,7 +8,6 @@ import {
   getBestClassificationProgression,
   getBestDescriptionCandidates,
   getElementsInChapter,
-  getProgressionDescriptionWithArrows,
   getSectionsAndChaptersFromCandidates,
   fetchNotesForSectionsAndChapters,
   addReferenceCodesToElements,
