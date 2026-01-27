@@ -31,6 +31,7 @@ const getPlanFromPriceId = (priceId: string): PricingPlan | null => {
     case process.env.STRIPE_TARIFF_IMPACT_PRO_PRICE_ID:
       return PricingPlan.TARIFF_IMPACT_PRO;
     case process.env.STRIPE_CLASSIFY_PRO_PRICE_ID:
+    case process.env.STRIPE_CLASSIFY_PRO_PRICE_ID_OLD:
       return PricingPlan.CLASSIFY_PRO;
     default:
       return null;
