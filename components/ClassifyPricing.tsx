@@ -270,7 +270,7 @@ const ClassifyPricing = ({ customerType }: PricingProps) => {
                         </span>
                         {plan.mode === StripePaymentMode.SUBSCRIPTION && (
                           <span className="text-base-content/50 text-sm font-medium">
-                            / user / month
+                            / month
                           </span>
                         )}
                       </>
