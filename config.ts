@@ -95,16 +95,19 @@ export const proTeams: PricingPlanI = {
   planIdentifier: PricingPlan.CLASSIFY_TEAM,
   description: "Streamline Imports with your Entire Team",
   mode: StripePaymentMode.SUBSCRIPTION,
-  prices: [99, 89, 79],
-  priceAnchors: [149, 149, 149],
-  priceTiers: ["2-4 users", "5-9 users", "10+ users"],
+  prices: [429],
+  priceAnchors: [499],
+  // priceTiers: ["2-4 users", "5-9 users", "10+ users"],
   isFeatured: true,
   features: [
     { name: "Duty Calculator" },
     { name: "Classification Assistant" },
     { name: "Tariff Impact Checker" },
-    { name: "Collaborate with your Team" },
-    { name: "Comprehensive Team Training" },
+    { name: "Collaborate with your Team", details: "Share, Review, Approve, & Comment on Classifications" },
+    {
+      name: "Team Training",
+      details: "Boost your teams output with personalized training",
+    },
   ],
 };
 
@@ -136,9 +139,8 @@ export const classifyTeam: PricingPlanI = {
   planIdentifier: PricingPlan.CLASSIFY_TEAM,
   description: "The Classification Workspace for Teams",
   mode: StripePaymentMode.SUBSCRIPTION,
-  prices: [99, 89, 79],
-  priceAnchors: [149, 149, 149],
-  priceTiers: ["2-4 users", "5-9 users", "10+ users"],
+  prices: [429],
+  priceAnchors: [499],
   isFeatured: true,
   features: [
     { name: "Everything in Pro, plus:" },

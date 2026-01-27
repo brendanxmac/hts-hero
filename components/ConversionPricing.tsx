@@ -125,7 +125,7 @@ const ConversionPricing = () => {
                             </p>
                             <p className="pl-1 pb-1 text-sm font-bold">
                               {plan.mode === StripePaymentMode.SUBSCRIPTION
-                                ? "/ user / month"
+                                ? "/ month"
                                 : ""}
                             </p>
                           </div>
