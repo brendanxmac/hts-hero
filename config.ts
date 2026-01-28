@@ -97,7 +97,6 @@ export const proTeams: PricingPlanI = {
   mode: StripePaymentMode.SUBSCRIPTION,
   prices: [429],
   priceAnchors: [499],
-  // priceTiers: ["2-4 users", "5-9 users", "10+ users"],
   isFeatured: true,
   features: [
     { name: "Duty Calculator" },
@@ -162,7 +161,7 @@ const config: ConfigProps = {
   // REQUIRED
   appName: "HTS Hero",
   // REQUIRED: a short description of your app for SEO tags (can be overwritten)
-  appDescription: "Smarter Classifications, Effortless Tariffs",
+  appDescription: "Engineered Compliance",
   // REQUIRED (no https://, not trialing slash at the end, just the naked domain)
   domainName: "htshero.com",
   crisp: {
