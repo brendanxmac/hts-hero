@@ -22,7 +22,7 @@ export default function EngineeredCompliancePage() {
       <main className="relative">
         <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 text-center text-lg md:text-xl">
 
-          <div className="flex flex-col gap-4 my-10">
+          <div className="flex flex-col gap-4 mb-10 mt-16">
             <h1 className="text-4xl md:text-5xl font-bold pb-1 text-primary">
               Engineered Compliance
             </h1>
@@ -37,7 +37,7 @@ export default function EngineeredCompliancePage() {
               <div className="flex flex-col gap-3">
                 <p className="text-6xl rounded-full p-0 mb-4">⚙️</p>
                 <h3 className="text-2xl md:text-3xl font-bold tracking-tight">
-                  Trade Compliance Is a
+                  Trade Compliance is a
                 </h3>
                 <h3 className="text-2xl md:text-3xl font-bold tracking-tight text-primary mb-10">
                   Systems Problem
@@ -47,7 +47,28 @@ export default function EngineeredCompliancePage() {
                 <p>Not a people problem.</p>
                 <p>Not a budget problem.</p>
                 <p>Not a paperwork problem.</p>
-                <p className="font-bold text-primary pt-4">A systems problem.</p>
+                {/* <p className="font-bold text-primary pt-4">A systems problem.</p> */}
+              </div>
+            </div>
+          </section>
+
+          <StoryConnector />
+
+          {/* ===== THE CURRENT STATE ===== */}
+          <section className="py-4">
+            <div className={cardStyle}>
+              <div className="space-y-6 text-lg md:text-xl leading-relaxed text-center mt-6">
+                <p>Yet <span className="font-semibold text-primary">most</span> trade compliance programs still run on:</p>
+                <br />
+                <ul className="space-y-3 text-lg my-6 max-w-md mx-auto">
+                  <li>📃 Manual SOPs</li>
+                  <li>📋 Spreadsheets</li>
+                  <li>✉️ Email threads</li>
+                  <li>⛓️‍💥 Disconnected Systems</li>
+                  <li>🔎 Manual Analysis & Reviews</li>
+                  <li>🧠 Knowledge locked in people&apos;s heads</li>
+                </ul>
+                <br />
               </div>
             </div>
           </section>
@@ -58,18 +79,11 @@ export default function EngineeredCompliancePage() {
           <section className="py-4">
             <div className={cardStyle}>
               <div className="space-y-6 text-lg md:text-xl leading-relaxed text-center">
-                <p>Yet most trade compliance programs still run on:</p>
-                <ul className="space-y-3 text-lg my-6 max-w-md mx-auto">
-                  <li>📋 Spreadsheets</li>
-                  <li>✉️ Email threads</li>
-                  <li>📃 Static SOPs</li>
-                  <li>🧠 Knowledge locked in people&apos;s heads</li>
-                </ul>
-                <br />
-
-                <p>This isn&apos;t a failure of expertise or effort.</p>
-                <p className="font-bold">Trade compliance simply evolved faster than the systems designed to support it.</p>
-                {/* <p>and leaders were never given opportunities to build the systems they needed.</p> */}
+                {/* <p>This isn&apos;t due to a lack of expertise or effort.</p> */}
+                <p>But it isn&apos;t their fault.</p>
+                <p>Trade complinace was traditionally seen as a <span className="text-primary font-semibold">costly requirement</span> instead of a <span className="text-primary font-semibold">strategic advantage</span>.</p>
+                <p>Minimal executive buy-in meant no incentive for solution providers.</p>
+                <p>And ultimately <strong>trade compliance evolved faster than the systems designed to support it</strong>.</p>
                 {/* <p className="font-bold">But it&apos;s risky business for a critical function.</p> */}
               </div>
             </div>
@@ -82,7 +96,7 @@ export default function EngineeredCompliancePage() {
             <div className={cardStyle}>
               <div className="space-y-6 text-lg md:text-xl leading-relaxed text-center">
                 <p className="text-center text-base-content/50 text-base uppercase tracking-widest mb-6">
-                  The Problem This Creates
+                  The Problem This Created
                 </p>
                 <p>When compliance isn&apos;t systemized, the results are predictable:</p>
                 <br />
@@ -100,7 +114,9 @@ export default function EngineeredCompliancePage() {
 
                 <p>Adding more people, reviews, or experience doesn&apos;t solve this.</p>
                 <p>Because the problem isn&apos;t effort.</p>
-                <p className="font-bold text-primary text-2xl pt-4">It&apos;s architecture.</p>
+                <p className="font-bold text-primary text-2xl pt-4">It&apos;s systems</p>
+                <p>Cars can&apos;t move quickly on bumpy roads.</p>
+                <p><strong>When you fix the system, performance takes care of itself.</strong></p>
               </div>
             </div>
           </section>
@@ -114,11 +130,11 @@ export default function EngineeredCompliancePage() {
                 <p className="text-center text-base-content/50 text-base uppercase tracking-widest mb-6">
                   What Is Engineered Compliance?
                 </p>
-                <p><span className="font-bold text-primary">Engineered compliance</span> applies engineering principles to trade compliance:</p>
+                <p><span className="font-bold text-primary">Engineered compliance</span> applies engineering principles <br /> to trade compliance:</p>
 
                 <div className="grid md:grid-cols-2 gap-4 text-left mt-6">
                   {[
-                    { old: "Tribal knowledge", new: "Systems" },
+                    { old: "Individual knowledge & Manual SOP's", new: "Systems" },
                     { old: "Gut feel", new: "Signals" },
                     { old: "Assumptions", new: "Metrics" },
                     { old: "Periodic review", new: "Continuous monitoring" },
@@ -132,7 +148,7 @@ export default function EngineeredCompliancePage() {
 
                 <br />
 
-                <p>The result is compliance that is:</p>
+                <p>The result is compliance that becomes:</p>
 
                 <div className="flex flex-wrap justify-center gap-3 py-4">
                   {["Measurable", "Consistent", "Auditable", "Defensible"].map((item, i) => (
@@ -156,17 +172,16 @@ export default function EngineeredCompliancePage() {
                   The Train Analogy
                 </p>
 
-                <p>Modern trains don&apos;t rely on a driver "doing their best."</p>
+                <p>Modern trains don&apos;t rely on a driver "doing their best".</p>
                 <p>They run on <span className="font-bold text-primary">engineered systems</span>:</p>
 
                 <div className="max-w-sm mx-auto p-5 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/20 my-6">
                   <div className="space-y-2">
                     {[
                       { icon: "⚡", text: "Speed Controls" },
-                      { icon: "🛑", text: "Braking Assist" },
-                      // { icon: "⛰️", text: "Incline Anticipation" },
-                      { icon: "⚙️", text: "Engine Capacity" },
+                      { icon: "📉", text: "Pressure Sensors" },
                       { icon: "🌤️", text: "Weather Forecasts" },
+                      { icon: "🛑", text: "Braking Distance Gauges" },
                     ].map((item, i) => (
                       <div key={i} className="flex items-center justify-center gap-3 px-3 py-2 rounded-lg bg-base-100/50 border border-primary/10">
                         <span className="text-lg">{item.icon}</span>
@@ -180,8 +195,7 @@ export default function EngineeredCompliancePage() {
 
                 <br />
 
-                <p>Those systems don&apos;t replace the driver,</p>
-                <p className="font-bold">they make good decisions inevitable.</p>
+                <p>They make good, quick decisions possible.</p>
               </div>
             </div>
           </section>
@@ -193,7 +207,7 @@ export default function EngineeredCompliancePage() {
             <div className={cardStyle}>
               <div className="space-y-6 text-lg md:text-xl leading-relaxed text-center">
                 <p className="text-6xl rounded-full p-0">⚙️</p>
-                <p className="text-center text-base-content/50 text-base uppercase tracking-widest mb-6">
+                <p className="text-center text-base-content/50 text-base uppercase tracking-widest py-6">
                   Engineered Compliance Works the Same Way
                 </p>
 
@@ -201,7 +215,7 @@ export default function EngineeredCompliancePage() {
 
                 <br />
 
-                <ul className="space-y-3 text-lg my-6 mx-auto font-medium">
+                <ul className="space-y-3 text-lg mx-auto font-medium">
                   <li>📄 Missing or outdated COO documentation</li>
                   <li>🎯 Classification accuracy across your catalog</li>
                   <li>📊 Tariff and rule changes that impact products</li>
@@ -225,7 +239,7 @@ export default function EngineeredCompliancePage() {
 
                 <br />
 
-                <p className="font-bold">You see the whole system, not just isolated transactions.</p>
+                <p className="font-bold">You see the whole system, not isolated transactions.</p>
               </div>
             </div>
           </section>
@@ -241,11 +255,14 @@ export default function EngineeredCompliancePage() {
                   The Result
                 </p>
 
-                <p>Compliance stops being reactive and time consuming.</p>
+                <p className="pt-3">Compliance goes from being <i>reactive</i>, full of <i>unknowns</i>, <br /> and unlinked to business <i>outcomes</i>...</p>
+
+                <p>To <span className="font-bold text-primary">calm, defensible, and strategic</span></p>
 
                 <br />
 
-                <p>You move from:</p>
+
+                {/* <p>You move from:</p> */}
 
                 <div className="grid md:grid-cols-2 gap-4 my-6">
                   <div className="p-5 rounded-xl bg-base-200/50 border border-base-content/10">
@@ -258,13 +275,13 @@ export default function EngineeredCompliancePage() {
                   </div>
                 </div>
 
-                <div className="flex flex-wrap justify-center gap-3 py-4">
+                {/* <div className="flex flex-wrap justify-center gap-3 py-4">
                   {["Calm", "Confident", "Defensible"].map((item, i) => (
                     <span key={i} className="px-4 py-2 rounded-full bg-primary/10 border border-primary/20 font-bold text-primary text-lg">
                       {item}
                     </span>
                   ))}
-                </div>
+                </div> */}
               </div>
             </div>
           </section>
