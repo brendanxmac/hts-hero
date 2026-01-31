@@ -83,8 +83,8 @@ export default function EngineeredCompliancePage() {
           <section className="py-4">
             <div className={cardStyle}>
               <div className="space-y-6 text-lg md:text-xl leading-relaxed text-center mt-6">
-                <p>Yet <span className="font-semibold text-primary">most</span> trade compliance programs still run on:</p>
-                <br />
+                <p className="text-2xl md:text-3xl font-bold">Yet...</p>
+                <p><span className="font-semibold text-primary">Most</span> trade compliance programs still run on:</p>
                 <ul className="space-y-5 text-lg my-6 max-w-md mx-auto">
                   <li>🧠 Knowledge locked in people&apos;s heads</li>
                   <li>🔎 Manual Analysis & Reviews</li>
@@ -105,13 +105,13 @@ export default function EngineeredCompliancePage() {
             <div className={cardStyle}>
               <div className="space-y-6 text-lg md:text-xl leading-relaxed text-center">
                 {/* <p>This isn&apos;t due to a lack of expertise or effort.</p> */}
-                <p>But it isn&apos;t their fault.</p>
+                <p className="text-2xl md:text-3xl font-bold">But it isn&apos;t their fault.</p>
                 <p>Trade complinace was traditionally seen as a <br /> <span className="text-primary font-semibold">costly requirement</span> instead of a <span className="text-primary font-semibold">strategic advantage</span>.</p>
                 <br />
-                <p>Which meant:</p>
+                <p>Which led to:</p>
                 <p>Limited executive buy-in,</p>
                 <p>Limited incentive for solution providers, and</p>
-                <p className="font-semibold">Trade compliance evolving faster than <br /> the systems designed to support it.</p>
+                <p>Trade compliance evolving <span className="font-semibold text-primary">faster</span> than <br /> the <span className="font-semibold text-primary">systems</span> designed to support it.</p>
                 {/* <p className="font-bold">But it&apos;s risky business for a critical function.</p> */}
               </div>
             </div>
@@ -123,11 +123,8 @@ export default function EngineeredCompliancePage() {
           <section className="py-4">
             <div className={cardStyle}>
               <div className="space-y-6 text-lg md:text-xl leading-relaxed text-center">
-                <p className="text-center text-base-content/50 text-base uppercase tracking-widest mb-6">
-                  The Problem This Created
-                </p>
+                <p className="text-2xl md:text-3xl font-bold">The problem this created</p>
                 <p>When compliance isn&apos;t systemized, the results are predictable:</p>
-                <br />
 
                 <ul className="space-y-3 text-lg my-6">
                   {/* <li>🔄 Inconsistency</li> */}
@@ -145,8 +142,9 @@ export default function EngineeredCompliancePage() {
                 <br />
                 <p className="font-bold text-primary text-2xl">It&apos;s systems</p>
                 <br />
-                <p>Cars can&apos;t move quickly on bumpy roads.</p>
-                <p><strong>When you fix the system, performance takes care of itself.</strong></p>
+                <p>Cars can&apos;t perform on bumpy roads.</p>
+                <p>Compliance can&apos;t perform with manual processes.</p>
+                <p><strong>Fix the system, fix the performance.</strong></p>
               </div>
             </div>
           </section>
@@ -157,9 +155,10 @@ export default function EngineeredCompliancePage() {
           <section className="py-4">
             <div className={cardStyle}>
               <div className="space-y-6 text-lg md:text-xl leading-relaxed text-center">
-                <p className="text-center text-base-content/50 text-base uppercase tracking-widest mb-6">
+                <p className="text-2xl md:text-3xl font-bold">What is Engineered Compliance?</p>
+                {/* <p className="text-center text-base-content/50 text-base uppercase tracking-widest mb-6">
                   What Is Engineered Compliance?
-                </p>
+                </p> */}
                 <p><span className="font-bold text-primary">Engineered compliance</span> is the application of <br /> engineering principles to trade compliance:</p>
 
                 <div className="grid md:grid-cols-2 gap-4 text-left mt-6">
@@ -176,7 +175,7 @@ export default function EngineeredCompliancePage() {
                   ))}
                 </div>
 
-                <p>It identifies every factor that produces superior compliance, and <span className="font-semibold text-primary">builds systems & signals</span> to reliably achieve that outcome.</p>
+                <p>It identifies every factor that influences compliance, and builds <span className="font-semibold text-primary">signals & systems</span> to achieve the best <span className="font-semibold text-primary">performance</span>.</p>
 
                 <br />
 
@@ -200,10 +199,11 @@ export default function EngineeredCompliancePage() {
             <div className={cardStyle}>
               <div className="space-y-6 text-lg md:text-xl leading-relaxed text-center">
                 <p className="text-6xl rounded-full p-0">🚂</p>
-                <p className="text-center text-base-content/50 text-base uppercase tracking-widest mb-6">
+                <p className="text-2xl md:text-3xl font-bold">The Train Analogy</p>
+                {/* <p className="text-center text-base-content/50 text-base uppercase tracking-widest mb-6">
                   The Train Analogy
-                </p>
-                <p>Modern trains operate safely and efficiently by providing <br /> <span className="font-semibold text-primary">engineered systems & signals</span>:</p>
+                </p> */}
+                <p>Modern trains operate safely and efficiently <br /> by providing <span className="font-semibold text-primary">signals and systems</span>:</p>
 
                 <div className="max-w-sm mx-auto p-5 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/20 my-6">
                   <div className="space-y-2">
@@ -222,8 +222,9 @@ export default function EngineeredCompliancePage() {
                     ))}
                   </div>
                 </div>
-                <p>To <span className="font-semibold text-primary">skilled operators</span> who can see and control them.</p>
-                <p>In a <span className="font-semibold text-primary">single command center</span></p>
+                <br />
+                <p>To <span className="font-semibold text-primary">operators</span> who can see and control them.</p>
+                <p>In a <span className="font-semibold text-primary">single place</span>.</p>
               </div>
             </div>
           </section>
@@ -235,49 +236,63 @@ export default function EngineeredCompliancePage() {
             <div className={cardStyle}>
               <div className="space-y-6 text-lg md:text-xl leading-relaxed text-center">
                 <p className="text-6xl rounded-full p-0">⚙️</p>
-                <p className="text-center text-base-content/50 text-base uppercase tracking-widest py-6">
+                <p className="text-2xl md:text-3xl font-bold">Engineered Compliance <br />Works The Same Way</p>
+                <br />
+                {/* <p className="text-center text-base-content/50 text-base uppercase tracking-widest py-6">
                   Engineered Compliance Works the Same Way
-                </p>
+                </p> */}
 
-                <p>It provides <span className="font-semibold text-primary">engineered systems & signals</span>,<br /> to <span className="font-semibold text-primary">skilled operators</span> who can see and control them, <br /> in a <span className="font-semibold text-primary">single command center</span>.</p>
-
-                <br />
-
-                <p className="font-bold">Compliance workers can instantly see:</p>
-
-                {/* <p>Instead of relying on consistent heroic efforts from individuals hoping everything is correct, <span className="font-bold text-primary">you see it</span>.</p>
-                <p>And hoping everything is correct, <span className="font-bold text-primary">you see it</span>.</p>
-                <p><span className="font-bold text-primary">you see it</span>.</p> */}
+                <p>It provides <span className="font-semibold text-primary">signals and systems</span> to <span className="font-semibold text-primary">operators</span> who can see and control them in a <span className="font-semibold text-primary">single place</span>.</p>
 
                 <br />
 
-                <ul className="space-y-3 text-lg mx-auto font-medium">
-                  <li>🎁 New Products</li>
-                  <li>⚠️ Products that need review</li>
-                  <li>📄 Missing or outdated COO documentation</li>
-                  <li>🎯 Classification accuracy across your catalog</li>
-                  <li>📊 Tariff and rule changes that impact products</li>
-                </ul>
+                <div className="grid md:grid-cols-2 gap-6 w-full">
+                  <div className="p-5 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/20">
+                    <p className="text-sm font-bold uppercase tracking-wider text-primary mb-4 text-center">Signals</p>
+                    <div className="space-y-2">
+                      {[
+                        { icon: "📈", text: "Tariff Changes" },
+                        { icon: "📊", text: "Compliance Scores" },
+                        { icon: "🎯", text: "Classification Errors" },
+                        { icon: "❌", text: "Missing Documentation" },
+                        { icon: "💰", text: "Unclaimed Trade Programs" },
+                        { icon: "⚠️", text: "Unclaimed Tariff Exclusions" },
+                      ].map((item, i) => (
+                        <div key={i} className="flex items-center justify-center gap-3 px-3 py-2 rounded-lg bg-base-100/50 border border-primary/10">
+                          <span className="text-lg">{item.icon}</span>
+                          <span className="text-sm font-medium text-base-content">{item.text}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
 
-                <br />
-
-                <p className="font-bold">And use these signals to:</p>
-
-                <div className="space-y-3 py-4">
-                  {[
-                    "🚩 Flag issues early",
-                    "🤖 Trigger automated analysis",
-                    "✏️ Generate clear, defensible documentation",
-                    "📈 Continuously improve your compliance posture"
-                  ].map((item, i) => (
-                    <p key={i} className="text-lg font-medium">{item}</p>
-                  ))}
+                  <div className="p-5 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/20">
+                    <p className="text-sm font-bold uppercase tracking-wider text-primary mb-4 text-center">Systems</p>
+                    <div className="space-y-2">
+                      {[
+                        { icon: "🧮", text: "Tariff Calculators" },
+                        { icon: "🔎", text: "Classification Analysis" },
+                        { icon: "🧠", text: "Classification Assistance" },
+                        { icon: "✏️", text: "Documentation Generators" },
+                        { icon: "✅", text: "Automatic Task Assigners" },
+                        { icon: "🛡️", text: "Defense Reports Generators" },
+                      ].map((item, i) => (
+                        <div key={i} className="flex items-center justify-center gap-3 px-3 py-2 rounded-lg bg-base-100/50 border border-primary/10">
+                          <span className="text-lg">{item.icon}</span>
+                          <span className="text-sm font-medium text-base-content">{item.text}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
                 <br />
-                <br />
 
-                <p className="text-xl md:text-2xl">You see the <span className="font-semibold text-primary">status</span> of the whole system, <br /> and <span className="font-semibold text-primary">trigger</span> actions to improve it.</p>
+                <div className="space-y-4">
+                  <p className="text-xl md:text-2xl">You see your compliance <span className="font-semibold text-primary">status</span>, </p>
+                  <p className="text-xl md:text-2xl"><span className="font-semibold text-primary">trigger</span> actions to improve it,</p>
+                  <p className="text-xl md:text-2xl">and see the status <span className="font-semibold text-primary">improve</span>.</p>
+                </div>
                 <br />
                 <br />
               </div>
@@ -291,17 +306,19 @@ export default function EngineeredCompliancePage() {
             <div className={cardStyle}>
               <div className="space-y-6 text-lg md:text-xl leading-relaxed text-center">
                 <p className="text-6xl rounded-full p-0">✨</p>
-                <p className="text-center text-base-content/50 text-base uppercase tracking-widest mb-6">
+                <p className="text-2xl md:text-3xl font-bold">The Result</p>
+                {/* <p className="text-center text-base-content/50 text-base uppercase tracking-widest mb-6">
                   The Result
-                </p>
+                </p> */}
 
-                <p className="pt-3">Compliance goes from being <i>reactive</i>, full of <i>unknowns</i>, <br /> and <i>unlinked</i> to business outcomes...</p>
-
-                <p>To <span className="font-semibold text-primary">proactive, defensible, and strategic</span>.</p>
-                <p><span className="underline font-semibold">Without</span> more staff, a fancy degree, or expensive consultants.</p>
+                <p className="pt-3">Compliance goes from being <i>reactive</i>,<br /> full of <i>unknowns</i>, and unlinked to business <i>outcomes</i>...</p>
 
                 <br />
 
+                <p>To <i>proactive, defensible, and strategic</i>.</p>
+                <br />
+                <p><span className="underline font-semibold">Without</span> more staff, a fancy degree, or expensive consultants.</p>
+                <br />
 
                 {/* <p>You move from:</p> */}
 
