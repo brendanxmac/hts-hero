@@ -129,7 +129,7 @@ export default function EngineeredCompliancePage() {
                 <ul className="space-y-3 text-lg my-6">
                   {/* <li>🔄 Inconsistency</li> */}
                   <li>🧠 Risk concentrated in a few key people</li>
-                  <li>📊 No way to measure "good" compliance</li>
+                  <li>📊 No way to measure &quot;good&quot; compliance</li>
                   <li>⚠️ Blind spots you don&apos;t see until CBP does</li>
                   <li>✍️ Poor Documentation that&apos;s hard to defend</li>
                   <li>🔄 Unnoticed changes in products, rules, or tariffs</li>
@@ -351,11 +351,11 @@ export default function EngineeredCompliancePage() {
                 <div className="grid md:grid-cols-2 gap-4 my-6">
                   <div className="p-5 rounded-xl bg-base-200/50 border border-base-content/10">
                     <p className="text-base-content/60 text-base mb-2">Before</p>
-                    <p className="font-semibold">"Are we okay?"</p>
+                    <p className="font-semibold">&quot;Are we okay?&quot;</p>
                   </div>
                   <div className="p-5 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/20">
                     <p className="text-primary/60 text-base mb-2">After</p>
-                    <p className="font-bold text-primary">"Here&apos;s our compliance posture, and here&apos;s how we know."</p>
+                    <p className="font-bold text-primary">&quot;Here&apos;s our compliance posture, and here&apos;s how we know.&quot;</p>
                   </div>
                 </div>
               </div>
