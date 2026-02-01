@@ -13,8 +13,7 @@ import { ToolsDropdown, MobileToolsMenu } from "./ToolsDropdown";
 
 // Navigation links for the landing page sections
 const navLinks = [
-  { href: "#tools", label: "Why HTS Hero?" },
-  { href: "#use-cases", label: "Use Cases" },
+  { href: "#use-cases", label: "Why HTS Hero?" },
   { href: "#pricing", label: "Pricing" },
   { href: "#faq", label: "FAQ" },
 ];
@@ -88,10 +87,10 @@ const LandingHeader = () => {
               ))}
 
               <Link
-                href="/blog"
+                href="/engineered-compliance"
                 className="text-sm font-medium text-base-content/70 hover:text-primary transition-colors"
               >
-                Blog
+                Engineered Compliance
               </Link>
             </div>
           </div>
