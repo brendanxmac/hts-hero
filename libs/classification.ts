@@ -15,8 +15,40 @@ const formatHtsNumber = (htsno: string | undefined | null): string => {
   return htsno?.trim() || "-";
 };
 
+/**
+ * Sanitizes text for jsPDF rendering by replacing Unicode characters
+ * that aren't supported in WinAnsiEncoding (jsPDF's default encoding).
+ * Without this, characters like em-dashes or box-drawing characters
+ * appear as "%" or other garbage.
+ */
+const sanitizeTextForPdf = (text: string | undefined | null): string => {
+  if (!text) return "";
+
+  return (
+    text
+      // Replace box-drawing characters (U+2500 to U+257F) with standard hyphen
+      .replace(/[\u2500-\u257F]/g, "-")
+      // Replace various dash types with standard hyphen
+      .replace(/[\u2012-\u2015\u2212]/g, "-") // Figure dash, en-dash, em-dash, horizontal bar, minus sign
+      // Replace smart/curly quotes with straight quotes
+      .replace(/[\u2018\u2019\u201A]/g, "'") // Single quotes
+      .replace(/[\u201C\u201D\u201E]/g, '"') // Double quotes
+      // Replace ellipsis with three dots
+      .replace(/\u2026/g, "...")
+      // Replace non-breaking space with regular space
+      .replace(/\u00A0/g, " ")
+      // Replace bullet point with asterisk
+      .replace(/\u2022/g, "*")
+      // Replace other common problematic characters
+      .replace(/\u2019/g, "'") // Right single quotation mark (apostrophe)
+      .replace(/\u00B7/g, "-") // Middle dot
+      .replace(/\u2013/g, "-") // En dash (explicit for clarity)
+      .replace(/\u2014/g, "-") // Em dash (explicit for clarity)
+  );
+};
+
 export const createClassification = async (
-  classification: ClassificationI
+  classification: ClassificationI,
 ): Promise<ClassificationRecord> => {
   const classificationRecord = await apiClient.post<
     ClassificationI,
@@ -34,7 +66,7 @@ export const updateClassification = async (
   importer_id?: string,
   classifier_id?: string,
   status?: ClassificationStatus,
-  country_of_origin?: string
+  country_of_origin?: string,
 ) => {
   const response = await apiClient.post("/classification/update", {
     id,
@@ -52,7 +84,7 @@ export const fetchClassifications = async (): Promise<
   ClassificationRecord[]
 > => {
   const classifications: ClassificationRecord[] = await apiClient.get(
-    "/classification/fetch"
+    "/classification/fetch",
   );
 
   return classifications;
@@ -76,7 +108,7 @@ const getImageFormatFromFilename = (filename: string): string => {
 
 const getCompanyLogo = async (
   userProfile: UserProfile,
-  team?: Team
+  team?: Team,
 ): Promise<{ logoUrl: string; logoFormat: string }> => {
   if (userProfile.team_id) {
     const team = await fetchTeam(userProfile.team_id);
@@ -88,7 +120,7 @@ const getCompanyLogo = async (
   } else {
     const companyLogo = await fetchUserLogo();
     const companyLogoFormat = getImageFormatFromFilename(
-      userProfile.company_logo || ""
+      userProfile.company_logo || "",
     );
     return { logoUrl: companyLogo.signedUrl, logoFormat: companyLogoFormat };
   }
@@ -97,7 +129,7 @@ const getCompanyLogo = async (
 export const generateClassificationReport = async (
   classificationRecord: ClassificationRecord,
   userProfile: UserProfile,
-  importer?: Importer
+  importer?: Importer,
 ): Promise<jsPDF> => {
   const { classification, user_id } = classificationRecord;
   const team = userProfile.team_id
@@ -188,7 +220,7 @@ export const generateClassificationReport = async (
       logoWidth,
       logoHeight,
       undefined,
-      "FAST"
+      "FAST",
     );
 
     yPosition += logoHeight + 10; // More space after logo
@@ -247,7 +279,7 @@ export const generateClassificationReport = async (
     // Client name
     setTypography({ size: 10, weight: "normal" });
     setTextColor([51, 65, 85]); // Slate gray
-    doc.text(importer.name, leftColumnX + padding, yPosition + 35);
+    doc.text(sanitizeTextForPdf(importer.name), leftColumnX + padding, yPosition + 35);
   }
 
   // Get the classifiers name & email
@@ -271,19 +303,19 @@ export const generateClassificationReport = async (
   // Classifier name
   setTypography({ size: 10, weight: "normal" });
   setTextColor([51, 65, 85]); // Slate gray
-  doc.text(classifier.name, rightColumnX + padding, textY);
+  doc.text(sanitizeTextForPdf(classifier.name), rightColumnX + padding, textY);
   textY += 12;
 
   if (classifier.email) {
-    doc.text(classifier.email, rightColumnX + padding, textY);
+    doc.text(sanitizeTextForPdf(classifier.email), rightColumnX + padding, textY);
     textY += 12;
   }
 
   const address = team ? team.address || "" : userProfile.company_address || "";
   if (address) {
     const addressLines = doc.splitTextToSize(
-      address,
-      columnWidth - padding * 2
+      sanitizeTextForPdf(address),
+      columnWidth - padding * 2,
     );
     doc.text(addressLines, rightColumnX + padding, textY);
   }
@@ -313,8 +345,8 @@ export const generateClassificationReport = async (
   setTypography({ size: 11, weight: "normal" });
   setTextColor([51, 65, 85]); // Slate gray
   const itemDescLines = doc.splitTextToSize(
-    classification.articleDescription,
-    contentWidth - clssifierBoxPadding * 2
+    sanitizeTextForPdf(classification.articleDescription),
+    contentWidth - clssifierBoxPadding * 2,
   );
   doc.text(itemDescLines, margin + clssifierBoxPadding, yPosition + 38);
 
@@ -339,7 +371,7 @@ export const generateClassificationReport = async (
     doc.text(
       "SUGGESTED CLASSIFICATION",
       margin + clssifierBoxPadding,
-      yPosition + 22
+      yPosition + 22,
     );
 
     // HTS Code - large and prominent, left-aligned
@@ -367,8 +399,8 @@ export const generateClassificationReport = async (
   // Calculate dynamic height based on notes content
   setTypography({ size: 10, weight: "normal" }); // Set font for measurement
   const notesLines: string[] = doc.splitTextToSize(
-    classification.notes || "No additional notes provided.",
-    contentWidth - clssifierBoxPadding * 2
+    sanitizeTextForPdf(classification.notes) || "No additional notes provided.",
+    contentWidth - clssifierBoxPadding * 2,
   );
 
   const lineHeight = 12;
@@ -382,7 +414,7 @@ export const generateClassificationReport = async (
     // Calculate available space on current page
     const availableHeight = pageHeight - yPosition - footerMargin;
     const maxLinesOnPage = Math.floor(
-      (availableHeight - headerSpace) / lineHeight
+      (availableHeight - headerSpace) / lineHeight,
     );
 
     // If we can't fit at least a few lines, move to next page
@@ -399,7 +431,7 @@ export const generateClassificationReport = async (
     // Calculate box height for this section
     const sectionBoxHeight = Math.max(
       80,
-      linesToRender.length * lineHeight + headerSpace
+      linesToRender.length * lineHeight + headerSpace,
     );
 
     // Draw background box
@@ -413,7 +445,7 @@ export const generateClassificationReport = async (
       sectionBoxHeight,
       6,
       6,
-      "FD"
+      "FD",
     );
 
     // Section header
@@ -485,7 +517,7 @@ export const generateClassificationReport = async (
 
       // Use the full available width for text wrapping
       setTypography(fonts.body); // Set typography BEFORE splitTextToSize
-      const descLines = doc.splitTextToSize(description, availableTextWidth);
+      const descLines = doc.splitTextToSize(sanitizeTextForPdf(description), availableTextWidth);
       const lineHeight = 12;
       const boxHeight = htsno
         ? descLines.length * lineHeight + 2 * verticalPadding + 15 // Extra space for HTS code
@@ -505,7 +537,7 @@ export const generateClassificationReport = async (
         // HTS code
         setTypography(fonts.subheader);
         setTextColor(colors.primary);
-        doc.text(htsno, textX, textY + 10);
+        doc.text(sanitizeTextForPdf(htsno), textX, textY + 10);
 
         // Description - using nearly full width
         setTypography(fonts.body);
@@ -537,8 +569,8 @@ export const generateClassificationReport = async (
     setTypography(fonts.caption);
     setTextColor(colors.secondary);
     const disclaimerLines = doc.splitTextToSize(
-      userProfile.company_disclaimer,
-      contentWidth
+      sanitizeTextForPdf(userProfile.company_disclaimer),
+      contentWidth,
     );
     doc.text(disclaimerLines, margin, yPosition);
   }
