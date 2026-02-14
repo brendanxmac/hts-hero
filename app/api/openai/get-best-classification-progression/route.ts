@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
     if (!requesterIsAllowed) {
       return NextResponse.json(
         { error: "You must be logged in to complete this action" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
         {
           error: "Missing candidates, product description, or level",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
     const responseFormat = zodResponseFormat(
       BestProgression,
       "best_classification_progression",
-      responseFormatOptions
+      responseFormatOptions,
     );
 
     const gptResponse =
@@ -108,13 +108,13 @@ export async function POST(req: NextRequest) {
             selectionPath,
             elements,
             level,
-            providedNotes
+            providedNotes,
           )
         : await getBestClassificationProgressionStandard(
             responseFormat,
             productDescription,
             selectionPath,
-            elements
+            elements,
           );
 
     console.log("Best Classification Progress Tokens:");
@@ -165,7 +165,7 @@ const getBestClassificationProgressionStandard = (
   }>,
   productDescription: string,
   selectionPath: LevelSelection[],
-  candidateElements: SimplifiedHtsElement[]
+  candidateElements: SimplifiedHtsElement[],
 ): Promise<OpenAI.Chat.Completions.ChatCompletion> => {
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -211,11 +211,11 @@ const getBestClassificationProgressionPremium = async (
   selectionPath: LevelSelection[],
   candidateElements: SimplifiedHtsElement[],
   level: number,
-  providedNotes?: NoteRecord[]
+  providedNotes?: NoteRecord[],
 ): Promise<OpenAI.Chat.Completions.ChatCompletion> => {
   const griRulesPath = path.resolve(
     process.cwd(),
-    "rules-for-classification.json"
+    "rules-for-classification.json",
   );
 
   const griRules = JSON.parse(fs.readFileSync(griRulesPath, "utf-8"));
@@ -229,7 +229,7 @@ const getBestClassificationProgressionPremium = async (
   const candidates = candidateElements.map(
     (
       candidateElement,
-      i
+      i,
     ): {
       identifier: string;
       code: string;
@@ -249,7 +249,7 @@ const getBestClassificationProgressionPremium = async (
 
         // Get section and chapter numbers from the candidate element
         const sectionAndChapter = getSectionAndChapterFromHtsCode(
-          candidateElement.code ?? ""
+          candidateElement.code ?? "",
         );
 
         // If we couldn't determine section/chapter, return empty notes
@@ -273,7 +273,7 @@ const getBestClassificationProgressionPremium = async (
 
         return noteIds;
       })(),
-    })
+    }),
   );
 
   return openai.chat.completions.create({
@@ -299,9 +299,11 @@ const getBestClassificationProgressionPremium = async (
 
 
         In your response, "analysis" should:
-        * Provide a concise summary of why the candidate you picked is the most suitable match for the "Item Description" based on the "GRI Rules" and referncing the relevant "Legal Notes".
-        * Have 1 section called "Analysis", which is a summary of why the candidate you picked is the most suitable match for the "Item Description" based on the "GRI Rules", the relevant "Legal Notes", and the "Selection Path" (if provided). If no Selection Path is provided, you should not mention it.
-        * Be logically structured with good titles (not as a numbered list), not be markdown, only reference candidates by code or description (not by their letter identifier), and should have good spacing.
+        * Use cautious, audit-like language at all times and frame any conclusions as evidence-based interpretations such as "based on the available information" or "it appears" or "the primary candidate" and never as certain, final, or authoritative determinations.
+        * Have 1 section called "Analysis" that provides a concise summary of why the candidate you picked is the most suitable match for the "Item Description" based on the "GRI Rules", the relevant "Legal Notes", and the "Selection Path" (if provided). If Selection Path is not provided, don't mention it.
+        * Not be markdown
+        * Have good spacing so it is easy to read
+        * Only reference candidates by code or description, not by their letter identifier (e.g. A, B, etc..)
 
         The "identifier" property of your response must be the exact letter identifier (e.g., "A", "B", "C") of your chosen candidate.`,
       },

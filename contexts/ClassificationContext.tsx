@@ -14,7 +14,9 @@ import {
   createClassification,
   updateClassification,
 } from "../libs/classification";
+import { fetchUser } from "../libs/supabase/user";
 import { NoteRecord } from "../types/hts";
+import { useUser } from "./UserContext";
 
 export type ClassificationTier = "premium" | "standard";
 
@@ -72,11 +74,19 @@ const ClassificationContext = createContext<
   ClassificationContextType | undefined
 >(undefined);
 
+function getTierFromClassificationType(
+  value: string | null | undefined
+): ClassificationTier {
+  if (value === "premium" || value === "standard") return value;
+  return "standard";
+}
+
 export const ClassificationProvider = ({
   children,
 }: {
   children: ReactNode;
 }) => {
+  const { user: authUser } = useUser();
   const [classificationId, setClassificationId] = useState<string | null>(null);
   const [classification, setClassification] = useState<ClassificationI>(null);
   const [classificationTier, setClassificationTier] =
@@ -93,6 +103,24 @@ export const ClassificationProvider = ({
   // Refs to always have access to current values (avoids stale closures)
   const classificationRef = useRef<ClassificationI>(null);
   const classificationIdRef = useRef<string | null>(null);
+
+  // Sync classificationTier from user profile (classification_type: "standard" | "premium" | null)
+  useEffect(() => {
+    if (!authUser?.id) return;
+
+    let cancelled = false;
+    const loadTier = async () => {
+      const profile = await fetchUser(authUser.id);
+      if (cancelled) return;
+      const tier = getTierFromClassificationType(profile?.classification_type);
+      console.log("tier", tier);
+      setClassificationTier(tier);
+    };
+    loadTier();
+    return () => {
+      cancelled = true;
+    };
+  }, [authUser?.id]);
 
   // Keep refs in sync with state
   useEffect(() => {

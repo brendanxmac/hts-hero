@@ -141,10 +141,6 @@ export const VerticalSectionDiscovery = ({ startExpanded = true }: Props) => {
       }
 
       const classifiableSections = sections.filter((s) => s.number < 22);
-      console.log(
-        "Last Section Number:",
-        classifiableSections[classifiableSections.length - 1].number
-      );
 
       // Get best section candidates
       const bestSectionCandidates = await getBestDescriptionCandidates(
@@ -177,10 +173,10 @@ export const VerticalSectionDiscovery = ({ startExpanded = true }: Props) => {
 
       const analysisText = "";
 
-      // Only do qualification for premium tier
+      // NOTE: this is legacy and was never actually implemented
+      // The idea was to qualify the sections with notes for better filtering
+      // But for now it seems this isn't really too necesarry
       if (isPremium) {
-        console.log("Section candidates:", preliminaryCandidates);
-
         // // Switch to qualifying phase
         // setLoadingPhase("qualifying");
 
@@ -218,18 +214,16 @@ export const VerticalSectionDiscovery = ({ startExpanded = true }: Props) => {
 
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl border ${
-        isCollapsed
-          ? "border-success/30 bg-base-200/50"
-          : "border-base-content/15 bg-base-200/50"
-      }`}
+      className={`relative overflow-hidden rounded-2xl border ${isCollapsed
+        ? "border-success/30 bg-base-200/50"
+        : "border-base-content/15 bg-base-200/50"
+        }`}
     >
       {/* Decorative background */}
       <div className="absolute inset-0 pointer-events-none">
         <div
-          className={`absolute -top-20 -right-20 w-64 h-64 rounded-full blur-3xl ${
-            isCollapsed ? "bg-success/10" : "bg-primary/10"
-          }`}
+          className={`absolute -top-20 -right-20 w-64 h-64 rounded-full blur-3xl ${isCollapsed ? "bg-success/10" : "bg-primary/10"
+            }`}
         />
       </div>
 
@@ -240,9 +234,8 @@ export const VerticalSectionDiscovery = ({ startExpanded = true }: Props) => {
           onClick={() => setIsExpanded(!isExpanded)}
         >
           <span
-            className={`text-xs font-semibold uppercase tracking-widest transition-colors duration-300 ${
-              sectionDiscoveryComplete ? "text-success" : "text-primary"
-            }`}
+            className={`text-xs font-semibold uppercase tracking-widest transition-colors duration-300 ${sectionDiscoveryComplete ? "text-success" : "text-primary"
+              }`}
           >
             Sections
           </span>
@@ -255,18 +248,16 @@ export const VerticalSectionDiscovery = ({ startExpanded = true }: Props) => {
             }}
           >
             <ChevronDownIcon
-              className={`w-4 h-4 text-base-content/60 transition-transform duration-300 ease-in-out ${
-                isCollapsed ? "-rotate-180" : ""
-              }`}
+              className={`w-4 h-4 text-base-content/60 transition-transform duration-300 ease-in-out ${isCollapsed ? "-rotate-180" : ""
+                }`}
             />
           </button>
         </div>
 
         {/* Collapsed Summary */}
         <div
-          className={`transition-all duration-300 ease-in-out ${
-            isCollapsed ? "opacity-100" : "opacity-0 h-0 overflow-hidden"
-          }`}
+          className={`transition-all duration-300 ease-in-out ${isCollapsed ? "opacity-100" : "opacity-0 h-0 overflow-hidden"
+            }`}
         >
           {sectionCandidates.length > 0 && (
             <div className="flex flex-col gap-2">
@@ -292,9 +283,8 @@ export const VerticalSectionDiscovery = ({ startExpanded = true }: Props) => {
 
         {/* Expanded Content */}
         <div
-          className={`transition-all duration-300 ease-in-out ${
-            !isCollapsed ? "opacity-100" : "opacity-0 h-0 overflow-hidden"
-          }`}
+          className={`transition-all duration-300 ease-in-out ${!isCollapsed ? "opacity-100" : "opacity-0 h-0 overflow-hidden"
+            }`}
         >
           {/* Description */}
           <h2 className="text-xl font-bold text-base-content mb-6">
