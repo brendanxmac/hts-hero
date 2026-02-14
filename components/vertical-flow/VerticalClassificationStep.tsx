@@ -151,8 +151,6 @@ export const VerticalClassificationStep = ({
 
       // Return all notes (existing + newly fetched)
       return [...existingNotes, ...fetchedNotes];
-    } else {
-      console.log(" 🚀 All notes were already in context 🚀");
     }
 
     // All notes were already in context
@@ -282,14 +280,10 @@ export const VerticalClassificationStep = ({
 
   // Get up to 2 Best Headings Per Chapter
   const getHeadings = async () => {
-    console.log("FINDING HEADINGS");
     setLoading({ isLoading: true, text: "Looking for Headings" });
     const candidatesForHeading: (HtsElement & {
       referencedCodes: Record<string, string>;
     })[] = [];
-
-    console.log("Chapter Candidates:");
-    console.log(chapterCandidates);
 
     try {
       await Promise.all(
