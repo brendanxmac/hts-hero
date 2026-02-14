@@ -139,10 +139,6 @@ export const VerticalClassificationStep = ({
 
     // Fetch any missing notes
     if (missingSections.length > 0 || missingChapters.length > 0) {
-      console.log(
-        `Fetching missing notes: ${missingSections.length} sections, ${missingChapters.length} chapters`
-      );
-      console.log("Fetching Note from Database");
       const fetchedNotes = await fetchNotesForSectionsAndChapters(
         missingSections,
         missingChapters
@@ -217,16 +213,16 @@ export const VerticalClassificationStep = ({
         const selectionPath =
           classificationLevel > 0
             ? levels
-                .map((level, i): LevelSelection => {
-                  if (level.selection) {
-                    return {
-                      level: i + 1,
-                      description: level.selection.description,
-                    };
-                  }
-                  return null;
-                })
-                .filter((selection) => selection !== null)
+              .map((level, i): LevelSelection => {
+                if (level.selection) {
+                  return {
+                    level: i + 1,
+                    description: level.selection.description,
+                  };
+                }
+                return null;
+              })
+              .filter((selection) => selection !== null)
             : [];
 
         try {
@@ -337,10 +333,6 @@ export const VerticalClassificationStep = ({
               );
 
               if (e.description !== enhancedDescription) {
-                console.log("Enhanced Description:");
-                console.log(e.description);
-                console.log(enhancedDescription);
-
                 finalDescription = enhancedDescription;
               }
             }
@@ -358,11 +350,6 @@ export const VerticalClassificationStep = ({
             null,
             3
           );
-
-          console.log(
-            `Best Candidate Headings for ${chapterCandidate.chapter.description}:`
-          );
-          console.log(bestCandidateHeadings);
 
           // Handle Empty Case
           if (bestCandidateHeadings.bestCandidates.length === 0) {
@@ -442,18 +429,16 @@ export const VerticalClassificationStep = ({
   return (
     <div
       ref={containerRef}
-      className={`relative overflow-hidden rounded-2xl border ${
-        isCollapsed
-          ? "border-success/30 bg-base-200/50"
-          : "border-base-content/15 bg-base-200/50"
-      }`}
+      className={`relative overflow-hidden rounded-2xl border ${isCollapsed
+        ? "border-success/30 bg-base-200/50"
+        : "border-base-content/15 bg-base-200/50"
+        }`}
     >
       {/* Decorative background */}
       <div className="absolute inset-0 pointer-events-none">
         <div
-          className={`absolute -top-20 -right-20 w-64 h-64 rounded-full blur-3xl ${
-            isCollapsed ? "bg-success/10" : "bg-primary/10"
-          }`}
+          className={`absolute -top-20 -right-20 w-64 h-64 rounded-full blur-3xl ${isCollapsed ? "bg-success/10" : "bg-primary/10"
+            }`}
         />
       </div>
 
@@ -464,9 +449,8 @@ export const VerticalClassificationStep = ({
           onClick={() => setIsExpanded(!isExpanded)}
         >
           <span
-            className={`text-xs font-semibold uppercase tracking-widest transition-colors duration-300 ${
-              hasSelection ? "text-success" : "text-primary"
-            }`}
+            className={`text-xs font-semibold uppercase tracking-widest transition-colors duration-300 ${hasSelection ? "text-success" : "text-primary"
+              }`}
           >
             Level {classificationLevel + 1}
           </span>
@@ -476,18 +460,16 @@ export const VerticalClassificationStep = ({
             onClick={() => setIsExpanded(!isExpanded)}
           >
             <ChevronDownIcon
-              className={`w-4 h-4 text-base-content/60 transition-transform duration-300 ease-in-out ${
-                isCollapsed ? "-rotate-180" : ""
-              }`}
+              className={`w-4 h-4 text-base-content/60 transition-transform duration-300 ease-in-out ${isCollapsed ? "-rotate-180" : ""
+                }`}
             />
           </button>
         </div>
 
         {/* Selected Element Summary - shown when collapsed */}
         <div
-          className={`transition-all duration-300 ease-in-out ${
-            isCollapsed ? "opacity-100" : "opacity-0 h-0 overflow-hidden"
-          }`}
+          className={`transition-all duration-300 ease-in-out ${isCollapsed ? "opacity-100" : "opacity-0 h-0 overflow-hidden"
+            }`}
         >
           {selectedElement && (
             <div className="p-4 rounded-xl bg-base-100 border border-base-content/10">
@@ -507,9 +489,8 @@ export const VerticalClassificationStep = ({
 
         {/* Expanded Content */}
         <div
-          className={`transition-all duration-300 ease-in-out ${
-            !isCollapsed ? "opacity-100" : "opacity-0 h-0 overflow-hidden"
-          }`}
+          className={`transition-all duration-300 ease-in-out ${!isCollapsed ? "opacity-100" : "opacity-0 h-0 overflow-hidden"
+            }`}
         >
           {/* Description */}
           <h2 className="text-xl font-bold text-base-content mb-6">

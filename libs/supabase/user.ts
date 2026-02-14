@@ -7,6 +7,11 @@ export enum UserRole {
   SUPER_ADMIN = "superAdmin",
 }
 
+export enum ClassificationType {
+  STANDARD = "standard",
+  PREMIUM = "premium",
+}
+
 export interface UserProfile {
   id: string;
   name?: string;
@@ -19,12 +24,13 @@ export interface UserProfile {
   company_disclaimer?: string;
   company_address?: string;
   tariff_impact_trial_started_at?: string;
+  classification_type?: ClassificationType;
   created_at: string;
   updated_at: string;
 }
 
 export const fetchUsersByTeam = async (
-  teamId: string
+  teamId: string,
 ): Promise<UserProfile[]> => {
   const supabase = createSupabaseClient();
   const { data, error } = await supabase
@@ -91,7 +97,7 @@ export const fetchUser = async (userId: string) => {
 };
 
 export const fetchUserByEmail = async (
-  email: string
+  email: string,
 ): Promise<UserProfile | null> => {
   const supabase = createSupabaseClient();
 
@@ -112,7 +118,7 @@ export const fetchUserByEmail = async (
 
 export const updateUserProfile = async (
   userId: string,
-  userProfile: Partial<UserProfile>
+  userProfile: Partial<UserProfile>,
 ) => {
   const supabase = createSupabaseClient();
 
