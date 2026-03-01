@@ -1,4 +1,4 @@
-import { TariffI } from "../interfaces/tariffs";
+import { TariffI } from "../interfaces/tariffs"
 
 export const canadaTariffs: TariffI[] = [
   {
@@ -60,19 +60,6 @@ export const canadaTariffs: TariffI[] = [
       // Auto Parts of Japan <=15%
       "9903.94.55",
     ],
-  },
-  {
-    code: "9903.01.11",
-    description:
-      "Articles the product of Canada that are donations, by persons subject to the jurisdiction of the United States, of articles, such as food, clothing, and medicine, intended to be used to relieve human suffering, as provided for in U.S. note 2(k) to this subchapter",
-    name: "Donations Exemption",
-    general: 0,
-    special: 0,
-    other: 0,
-    requiresReview: true,
-    inclusions: {
-      countries: ["CA"],
-    },
   },
   {
     code: "9903.01.11",
@@ -175,4 +162,4 @@ export const canadaTariffs: TariffI[] = [
     special: 0,
     other: 0,
   },
-];
+]
