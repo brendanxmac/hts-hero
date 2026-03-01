@@ -1,50 +1,50 @@
-import { TariffI } from "../interfaces/tariffs";
+import { TariffI } from "../interfaces/tariffs"
 
 export const chinaTariffs: TariffI[] = [
-  {
-    code: "9903.01.24",
-    description:
-      "Except for products described in headings 9903.01.21, 9903.01.22, 9903.01.23, or U.S. note 2(w) to this subchapter articles the product of China and Hong Kong, as provided for in U.S. note 2(u) to this subchapter",
-    name: "China & Hong Kong IEEPA Fentanyl",
-    general: 10,
-    special: 10,
-    other: 0,
-    inclusions: {
-      countries: ["CN", "HK"],
-      // Applies to ALL codes unless in exceptions list.
-      // We leave codes empty on purpose to indicated that it's just country that matters.
-      // And that everything from that country unless exception is to be tariffed this way.
-    },
-    exceptions: ["9903.01.21", "9903.01.22", "9903.01.23"],
-    // See 2(u) and the paragraph that follow it about 99 subchapter II still
-    // having these apply on top and then certain 98's not having this apply
-  },
-  {
-    code: "9903.01.21",
-    description:
-      "Articles the product of China and Hong Kong that are donations, by persons subject to the jurisdiction of the United States, of articles, such as food, clothing, and medicine, intended to be used to relieve human suffering, as provided for in U.S. note 2(t) to this subchapter",
-    name: "Donation Exception",
-    general: 0,
-    special: 0,
-    other: 0,
-    inclusions: {
-      countries: ["CN", "HK"],
-    },
-    requiresReview: true, // TODO: again, consider isDonation toggle for this one just like the donations one for all countries..
-  },
-  {
-    code: "9903.01.22",
-    description:
-      "Articles the product of China and Hong Kong that are informational materials, including but not limited to, publications, films, posters, phonograph records, photographs, microfilms, microfiche, tapes, compact disks, CD ROMs, artworks, and news wire feeds",
-    name: "Informational Material & Artworks of China or Hong Kong",
-    general: 0,
-    special: 0,
-    other: 0,
-    inclusions: {
-      countries: ["CN", "HK"],
-    },
-    requiresReview: true, // TODO: again, consider a toggle or starting a list for informationMaterials
-  },
+  // {
+  //   code: "9903.01.24",
+  //   description:
+  //     "Except for products described in headings 9903.01.21, 9903.01.22, 9903.01.23, or U.S. note 2(w) to this subchapter articles the product of China and Hong Kong, as provided for in U.S. note 2(u) to this subchapter",
+  //   name: "China & Hong Kong IEEPA Fentanyl",
+  //   general: 10,
+  //   special: 10,
+  //   other: 0,
+  //   inclusions: {
+  //     countries: ["CN", "HK"],
+  //     // Applies to ALL codes unless in exceptions list.
+  //     // We leave codes empty on purpose to indicated that it's just country that matters.
+  //     // And that everything from that country unless exception is to be tariffed this way.
+  //   },
+  //   exceptions: ["9903.01.21", "9903.01.22", "9903.01.23"],
+  //   // See 2(u) and the paragraph that follow it about 99 subchapter II still
+  //   // having these apply on top and then certain 98's not having this apply
+  // },
+  // {
+  //   code: "9903.01.21",
+  //   description:
+  //     "Articles the product of China and Hong Kong that are donations, by persons subject to the jurisdiction of the United States, of articles, such as food, clothing, and medicine, intended to be used to relieve human suffering, as provided for in U.S. note 2(t) to this subchapter",
+  //   name: "Donation Exception",
+  //   general: 0,
+  //   special: 0,
+  //   other: 0,
+  //   inclusions: {
+  //     countries: ["CN", "HK"],
+  //   },
+  //   requiresReview: true, // TODO: again, consider isDonation toggle for this one just like the donations one for all countries..
+  // },
+  // {
+  //   code: "9903.01.22",
+  //   description:
+  //     "Articles the product of China and Hong Kong that are informational materials, including but not limited to, publications, films, posters, phonograph records, photographs, microfilms, microfiche, tapes, compact disks, CD ROMs, artworks, and news wire feeds",
+  //   name: "Informational Material & Artworks of China or Hong Kong",
+  //   general: 0,
+  //   special: 0,
+  //   other: 0,
+  //   inclusions: {
+  //     countries: ["CN", "HK"],
+  //   },
+  //   requiresReview: true, // TODO: again, consider a toggle or starting a list for informationMaterials
+  // },
   // {
   //   code: "9903.01.23",
   //   description:
@@ -10992,4 +10992,4 @@ export const chinaTariffs: TariffI[] = [
       codes: ["8426.19.00"],
     },
   },
-];
+]

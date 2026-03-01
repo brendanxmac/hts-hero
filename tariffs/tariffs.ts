@@ -1,48 +1,48 @@
-import { aluminumTariffs } from "./aluminum";
-import { automobileTariffs } from "./automobile";
-import { canadaTariffs } from "./canada";
-import { chinaTariffs } from "./china";
-import { mexicoTariffs } from "./mexico";
-import { worldwideReciprocalTariff } from "./reciprocal";
-import { exceptionTariffs } from "./exception";
-import { ironAndSteelTariffs } from "./iron-and-steel";
-import { HtsElement } from "../interfaces/hts";
+import { aluminumTariffs } from "./aluminum"
+import { automobileTariffs } from "./automobile"
+import { canadaTariffs } from "./canada"
+import { chinaTariffs } from "./china"
+import { mexicoTariffs } from "./mexico"
+import { worldwideReciprocalTariff } from "./reciprocal"
+import { exceptionTariffs } from "./exception"
+import { ironAndSteelTariffs } from "./iron-and-steel"
+import { HtsElement } from "../interfaces/hts"
 import {
   BaseTariffI,
   getBaseTariffs,
   ParsedBaseTariff,
   splitOnClosingParen,
-} from "../libs/hts";
-import { ContentRequirementI } from "../components/Element";
-import { ContentRequirements } from "../enums/tariff";
-import { TariffI, UITariff, TariffSet } from "../interfaces/tariffs";
-import { TariffColumn } from "../enums/tariff";
-import { brazilTariffs } from "./brazil";
-import { copperTariffs } from "./copper";
+} from "../libs/hts"
+import { ContentRequirementI } from "../components/Element"
+import { ContentRequirements } from "../enums/tariff"
+import { TariffI, UITariff, TariffSet } from "../interfaces/tariffs"
+import { TariffColumn } from "../enums/tariff"
+import { brazilTariffs } from "./brazil"
+import { copperTariffs } from "./copper"
 import {
   Countries,
   Country,
   EuropeanUnionCountries,
-} from "../constants/countries";
+} from "../constants/countries"
 import {
   TradeProgram,
   TradePrograms,
   TradeProgramStatus,
-} from "../public/trade-programs";
-import { Column2CountryCodes } from "./tariff-columns";
-import { indiaTariffs } from "./india";
-import { japanTariffs } from "./japan";
-import { europeanUnionTariffs } from "./european-union";
-import { woodTariffs } from "./wood";
-import { heavyVehicleTariffs } from "./heavy-vehicles";
-import { argiculturalTariffs } from "./argicultural";
-import { southKoreaTariffs } from "./south-korea";
+} from "../public/trade-programs"
+import { Column2CountryCodes } from "./tariff-columns"
+import { indiaTariffs } from "./india"
+import { japanTariffs } from "./japan"
+import { europeanUnionTariffs } from "./european-union"
+import { woodTariffs } from "./wood"
+import { heavyVehicleTariffs } from "./heavy-vehicles"
+import { argiculturalTariffs } from "./argicultural"
+import { southKoreaTariffs } from "./south-korea"
 
 export interface CountryWithTariffs extends Country {
-  selectedTradeProgram: TradeProgram | null;
-  baseTariffs: ParsedBaseTariff[];
-  tariffSets: TariffSet[];
-  specialTradePrograms: TradeProgram[];
+  selectedTradeProgram: TradeProgram | null
+  baseTariffs: ParsedBaseTariff[]
+  tariffSets: TariffSet[]
+  specialTradePrograms: TradeProgram[]
 }
 
 export const Section232MetalTariffs = [
@@ -64,73 +64,73 @@ export const Section232MetalTariffs = [
   "9903.85.09",
   // Copper
   "9903.78.01",
-];
+]
 
 export const findExceptions = (
   tariff: TariffI,
   countryCode: string,
-  htsCode: string
+  htsCode: string,
 ): TariffI[] => {
   if (tariff.exceptions && tariff.exceptions.length > 0) {
-    const exceptionTariffs = getTariffsByCode(tariff.exceptions);
+    const exceptionTariffs = getTariffsByCode(tariff.exceptions)
     const childrenExceptions = exceptionTariffs.flatMap((exception) =>
-      findExceptions(exception, htsCode, countryCode)
-    );
+      findExceptions(exception, htsCode, countryCode),
+    )
     return [...exceptionTariffs, ...childrenExceptions].filter((t) =>
-      tariffIsApplicable(t, countryCode, htsCode)
-    );
+      tariffIsApplicable(t, countryCode, htsCode),
+    )
   }
-  return [];
-};
+  return []
+}
 
 export const hasActiveDescendants = (
   tariff: UITariff,
   tariffs: UITariff[],
-  visited: Set<string> = new Set()
+  visited: Set<string> = new Set(),
 ): boolean => {
   // Prevent infinite loops by tracking visited tariffs
   if (visited.has(tariff.code)) {
-    return false;
+    return false
   }
 
-  visited.add(tariff.code);
+  visited.add(tariff.code)
 
   return (
     tariff.exceptions?.some((e) =>
       tariffs.some(
         (t) =>
           (t.code === e && t.isActive) ||
-          hasActiveDescendants(t, tariffs, visited)
-      )
+          hasActiveDescendants(t, tariffs, visited),
+      ),
     ) ?? false
-  );
-};
+  )
+}
 
 // Helper function to collect all exception codes recursively
 export const collectExceptionCodes = (
   tariff: TariffI,
   tariffs: TariffI[],
   exceptionCodes: Set<string>,
-  ignoreCodes?: string[]
+  ignoreCodes?: string[],
 ) => {
   if (tariff.exceptions) {
     tariff.exceptions.forEach((code) => {
-      if (ignoreCodes?.includes(code)) return;
+      if (ignoreCodes?.includes(code)) return
 
-      exceptionCodes.add(code);
+      exceptionCodes.add(code)
       // Find the exception tariff and recursively collect its exceptions
-      const exceptionTariff = tariffs.find((t) => t.code === code);
+      const exceptionTariff = tariffs.find((t) => t.code === code)
       if (exceptionTariff) {
         collectExceptionCodes(
           exceptionTariff,
           tariffs,
           exceptionCodes,
-          ignoreCodes
-        );
+          ignoreCodes,
+        )
       }
-    });
+    })
   }
-};
+}
 
 export const addTariffsToCountries = (
   countries: Country[],
@@ -139,7 +139,7 @@ export const addTariffsToCountries = (
   contentRequirements: ContentRequirementI<ContentRequirements>[],
   tradeProgram?: TradeProgram,
   units?: number,
-  customsValue?: number
+  customsValue?: number,
 ) =>
   countries.map((country) =>
     addTariffsToCountry(
@@ -149,9 +149,9 @@ export const addTariffsToCountries = (
       contentRequirements,
       tradeProgram,
       units,
-      customsValue
-    )
-  );
+      customsValue,
+    ),
+  )
 
 export const addTariffsToCountry = (
   country: Country,
@@ -161,39 +161,39 @@ export const addTariffsToCountry = (
   tradeProgram?: TradeProgram,
   units?: number,
   customsValue?: number,
-  existingTariffSets?: TariffSet[]
+  existingTariffSets?: TariffSet[],
 ): CountryWithTariffs => {
-  const isColumn2Country = Column2CountryCodes.includes(country.code);
+  const isColumn2Country = Column2CountryCodes.includes(country.code)
   const tariffColumn =
     (tradeProgram && TariffColumn.SPECIAL) ||
-    (isColumn2Country ? TariffColumn.OTHER : TariffColumn.GENERAL);
+    (isColumn2Country ? TariffColumn.OTHER : TariffColumn.GENERAL)
   const baseTariffsForColumn = getBaseTariffsForColumn(
     tariffElement,
-    tariffColumn
-  );
+    tariffColumn,
+  )
 
-  let applicableTariffs = getTariffs(country.code, htsElement.htsno);
+  let applicableTariffs = getTariffs(country.code, htsElement.htsno)
   applicableTariffs = filterCountryTariffsFor15PercentExeption(
     applicableTariffs,
     country,
     baseTariffsForColumn,
     customsValue,
-    units
-  );
+    units,
+  )
   applicableTariffs = applicableTariffs.map((t) => ({
     ...t,
     exceptions: t.exceptions?.filter((e) =>
-      applicableTariffs.some((t) => t.code === e)
+      applicableTariffs.some((t) => t.code === e),
     ),
-  }));
+  }))
 
   const tariffSets = getTariffSets(
     applicableTariffs,
     contentRequirements,
-    existingTariffSets
-  );
+    existingTariffSets,
+  )
 
-  const specialTradePrograms = getSpecialTradePrograms(country, tariffElement);
+  const specialTradePrograms = getSpecialTradePrograms(country, tariffElement)
 
   return {
     ...country,
@@ -201,87 +201,87 @@ export const addTariffsToCountry = (
     baseTariffs: baseTariffsForColumn,
     tariffSets,
     specialTradePrograms,
-  };
-};
+  }
+}
 
 export const getTotalPercentTariffsSum = (
   tariffSet: TariffSet,
   baseTariffs: ParsedBaseTariff[],
-  has15PercentCap: boolean = false
+  has15PercentCap: boolean = false,
 ) => {
   if (has15PercentCap) {
     // This works because there is an associated tariff that represents the 15% so we just don't add the base
-    return getAssociatedTariffsSum(tariffSet);
+    return getAssociatedTariffsSum(tariffSet)
   } else {
     return (
       getAssociatedTariffsSum(tariffSet) + getBasePercentTariffsSum(baseTariffs)
-    );
+    )
   }
-};
+}
 
 export const getAssociatedTariffsSum = (tariffSet: TariffSet) => {
   if (tariffSet && tariffSet.tariffs && tariffSet.tariffs.length > 0) {
     return tariffSet.tariffs
       .filter((t) => t.isActive)
-      .reduce((acc, t) => acc + t.general, 0);
+      .reduce((acc, t) => acc + t.general, 0)
   }
 
-  return 0;
-};
+  return 0
+}
 
 export const getBasePercentTariffsSum = (baseTariffs: ParsedBaseTariff[]) => {
-  const basePercentTariffs = getBasePercentTariffs(baseTariffs);
-  return basePercentTariffs.reduce((acc, t) => acc + t.value, 0);
-};
+  const basePercentTariffs = getBasePercentTariffs(baseTariffs)
+  return basePercentTariffs.reduce((acc, t) => acc + t.value, 0)
+}
 
 export const getBasePercentTariffs = (baseTariffs: ParsedBaseTariff[]) => {
   return baseTariffs
     .flatMap((t) => t.tariffs)
-    .filter((t) => t.type === "percent");
-};
+    .filter((t) => t.type === "percent")
+}
 
 export const getBasePercentTariffsText = (baseTariffs: ParsedBaseTariff[]) => {
-  const basePercentTariffs = getBasePercentTariffs(baseTariffs);
-  return basePercentTariffs.map((t) => t.raw);
-};
+  const basePercentTariffs = getBasePercentTariffs(baseTariffs)
+  return basePercentTariffs.map((t) => t.raw)
+}
 
 export const getBaseAmountTariffs = (baseTariffs: ParsedBaseTariff[]) => {
   return baseTariffs
     .flatMap((t) => t.tariffs)
-    .filter((t) => t.type === "amount");
-};
+    .filter((t) => t.type === "amount")
+}
 
 export const getBaseAmountTariffsText = (baseTariffs: ParsedBaseTariff[]) => {
-  const baseAmountTariffs = getBaseAmountTariffs(baseTariffs);
+  const baseAmountTariffs = getBaseAmountTariffs(baseTariffs)
 
-  return baseAmountTariffs.map((t) => t.raw);
-};
+  return baseAmountTariffs.map((t) => t.raw)
+}
 
 export const getBaseAmountTariffsSum = (baseTariffs: ParsedBaseTariff[]) => {
-  const baseAmountTariffs = getBaseAmountTariffs(baseTariffs);
-  return baseAmountTariffs.reduce((acc, t) => acc + t.value, 0);
-};
+  const baseAmountTariffs = getBaseAmountTariffs(baseTariffs)
+  return baseAmountTariffs.reduce((acc, t) => acc + t.value, 0)
+}
 
 export const filterCountryTariffsFor15PercentExeption = (
   tariffs: TariffI[],
   country: Country,
   baseTariffsForColumn: ParsedBaseTariff[],
   customsValue?: number,
-  units?: number
+  units?: number,
 ) => {
-  const isEUCountry = EuropeanUnionCountries.includes(country.code);
-  const isJapan = country.code === "JP";
-  const isSouthKorea = country.code === "KR";
+  const isEUCountry = EuropeanUnionCountries.includes(country.code)
+  const isJapan = country.code === "JP"
+  const isSouthKorea = country.code === "KR"
 
   if (!isEUCountry && !isJapan && !isSouthKorea) {
-    return tariffs;
+    return tariffs
   }
 
   const totalBaseRate = get15PercentCountryTotalBaseRate(
     baseTariffsForColumn.flatMap((t) => t.tariffs),
     customsValue ?? 1000,
-    units ?? 10
-  );
+    units ?? 10,
+  )
 
   return tariffs.filter((t) => {
     if (isEUCountry) {
@@ -291,14 +291,14 @@ export const filterCountryTariffsFor15PercentExeption = (
           t.code !== "9903.94.51" &&
           t.code !== "9903.94.53" &&
           t.code !== "9903.94.45"
-        );
+        )
       } else {
         return (
           t.code !== "9903.02.19" &&
           t.code !== "9903.94.50" &&
           t.code !== "9903.94.52" &&
           t.code !== "9903.94.44"
-        );
+        )
       }
     }
 
@@ -309,14 +309,14 @@ export const filterCountryTariffsFor15PercentExeption = (
           t.code !== "9903.94.41" &&
           t.code !== "9903.94.43" &&
           t.code !== "9903.94.55"
-        );
+        )
       } else {
         return (
           t.code !== "9903.02.72" &&
           t.code !== "9903.94.40" &&
           t.code !== "9903.94.42" &&
           t.code !== "9903.94.54"
-        );
+        )
       }
     }
 
@@ -327,56 +327,56 @@ export const filterCountryTariffsFor15PercentExeption = (
           t.code !== "9903.94.61" &&
           t.code !== "9903.94.63" &&
           t.code !== "9903.94.65"
-        );
+        )
       } else {
         return (
           t.code !== "9903.02.79" &&
           t.code !== "9903.94.60" &&
           t.code !== "9903.94.62" &&
           t.code !== "9903.94.64"
-        );
+        )
       }
     }
 
-    return true;
-  });
-};
+    return true
+  })
+}
 
 export const getSpecialTradeProgramSymbols = (htsElement: HtsElement) => {
-  const specialTradeProgramSymbols: string[] = [];
+  const specialTradeProgramSymbols: string[] = []
   const specialColumnTariffs = getBaseTariffsForColumn(
     htsElement,
-    TariffColumn.SPECIAL
-  );
+    TariffColumn.SPECIAL,
+  )
 
   if (specialColumnTariffs.length > 0) {
-    const specialTariffs = specialColumnTariffs.flatMap((t) => t.tariffs);
+    const specialTariffs = specialColumnTariffs.flatMap((t) => t.tariffs)
     const specialTariffProgramSymbols = specialTariffs.flatMap(
-      (t) => t.programs
-    );
+      (t) => t.programs,
+    )
 
     for (const symbol of specialTariffProgramSymbols) {
       if (!specialTradeProgramSymbols.includes(symbol)) {
-        specialTradeProgramSymbols.push(symbol);
+        specialTradeProgramSymbols.push(symbol)
       }
     }
   }
 
-  return specialTradeProgramSymbols;
-};
+  return specialTradeProgramSymbols
+}
 
 export const getSpecialTradePrograms = (
   country: Country,
-  tariffElement: HtsElement
+  tariffElement: HtsElement,
 ) => {
-  const specialTradePrograms: TradeProgram[] = [];
+  const specialTradePrograms: TradeProgram[] = []
   const specialTradeProgramSymbols =
-    getSpecialTradeProgramSymbols(tariffElement);
+    getSpecialTradeProgramSymbols(tariffElement)
 
   if (specialTradeProgramSymbols.length > 0) {
     const tradePrograms = specialTradeProgramSymbols
       .map((p) => TradePrograms.find((t) => t.symbol === p))
-      .filter(Boolean);
+      .filter(Boolean)
 
     for (const program of tradePrograms) {
       if (
@@ -384,300 +384,300 @@ export const getSpecialTradePrograms = (
         (program.qualifyingCountries?.includes(country.code) ||
           (!program.qualifyingCountries && program.requiresReview))
       ) {
-        specialTradePrograms.push(program);
+        specialTradePrograms.push(program)
       }
     }
   }
 
-  return specialTradePrograms;
-};
+  return specialTradePrograms
+}
 
 export const getTariffSets = (
   tariffs: TariffI[],
   contentRequirements: ContentRequirementI<ContentRequirements>[],
-  existingTariffSets?: TariffSet[]
+  existingTariffSets?: TariffSet[],
 ): TariffSet[] => {
   const contentRequirementAt100 = contentRequirements.find(
-    (r) => r.value === 100
-  );
+    (r) => r.value === 100,
+  )
   const contentRequirementsNotAt0 = contentRequirements.filter(
-    (r) => r.value > 0
-  );
+    (r) => r.value > 0,
+  )
 
   if (contentRequirementAt100) {
     return getContentRequirementTariffSets(
       tariffs,
       [contentRequirementAt100],
-      existingTariffSets
-    );
+      existingTariffSets,
+    )
   } else {
     const contentRequirementSets = getContentRequirementTariffSets(
       tariffs,
       contentRequirementsNotAt0,
-      existingTariffSets
-    );
+      existingTariffSets,
+    )
     return [
       getArticleTariffSet(
         tariffs,
         Section232MetalTariffs,
         contentRequirements,
-        existingTariffSets
+        existingTariffSets,
       ),
       ...contentRequirementSets,
-    ];
+    ]
   }
-};
+}
 
 export const getArticleTariffSet = (
   tariffs: TariffI[],
   ignoreCodes: string[] = [],
   contentRequirements: ContentRequirementI<ContentRequirements>[],
-  existingTariffSets?: TariffSet[]
+  existingTariffSets?: TariffSet[],
 ): TariffSet => {
-  const contentRequirementCodes = new Set<string>();
-  const contentRequirementTariffs = tariffs.filter((t) => t.contentRequirement);
+  const contentRequirementCodes = new Set<string>()
+  const contentRequirementTariffs = tariffs.filter((t) => t.contentRequirement)
   contentRequirementTariffs.forEach((t) => {
-    collectExceptionCodes(t, tariffs, contentRequirementCodes);
-  });
+    collectExceptionCodes(t, tariffs, contentRequirementCodes)
+  })
 
-  const exceptionCodes = new Set<string>();
+  const exceptionCodes = new Set<string>()
   // ????? Use to pass contentRequirements.length > 0 check here and use tariffs if not
-  const regularSet = tariffs.filter((t) => !t.contentRequirement);
+  const regularSet = tariffs.filter((t) => !t.contentRequirement)
 
   // Recursively get all the exceptions for all applicables minus content requirement ones
   regularSet.forEach((t) => {
-    collectExceptionCodes(t, tariffs, exceptionCodes, ignoreCodes);
-  });
+    collectExceptionCodes(t, tariffs, exceptionCodes, ignoreCodes)
+  })
 
   // Are there any in contentRequirementExceptionTariffs that do NOT exist in exceptionTariffs?
   const exceptionsThatOnlyContentRequirementsHave = Array.from(
-    contentRequirementCodes
-  ).filter((t) => !exceptionCodes.has(t));
+    contentRequirementCodes,
+  ).filter((t) => !exceptionCodes.has(t))
 
   const regularSetWithoutContentRequirementTariffs = regularSet.filter(
-    (t) => !exceptionsThatOnlyContentRequirementsHave.includes(t.code)
-  );
+    (t) => !exceptionsThatOnlyContentRequirementsHave.includes(t.code),
+  )
 
   // Set isActive here now that we have the full picture
   const regularSetWithIsActive = regularSetWithoutContentRequirementTariffs.map(
     (t) => {
       // Try to preserve existing isActive state from the first existing tariff set (Article set)
       const existingTariff = existingTariffSets?.[0]?.tariffs?.find(
-        (existing) => existing.code === t.code
-      );
+        (existing) => existing.code === t.code,
+      )
 
       return {
         ...t,
         isActive:
           existingTariff?.isActive ??
           tariffIsActive(t, regularSetWithoutContentRequirementTariffs),
-      };
-    }
-  );
+      }
+    },
+  )
 
   return {
     name: contentRequirements.length > 0 ? "Article" : "",
     exceptionCodes: exceptionCodes,
     tariffs: regularSetWithIsActive,
-  };
-};
+  }
+}
 
 export const getContentRequirementTariffSets = (
   tariffs: TariffI[],
   contentRequirements: ContentRequirementI<ContentRequirements>[],
-  existingTariffSets?: TariffSet[]
+  existingTariffSets?: TariffSet[],
 ): TariffSet[] => {
-  const sets: TariffSet[] = [];
+  const sets: TariffSet[] = []
 
   for (let i = 0; i < contentRequirements.length; i++) {
-    const contentRequirement = contentRequirements[i];
-    const exceptionCodes = new Set<string>();
+    const contentRequirement = contentRequirements[i]
+    const exceptionCodes = new Set<string>()
     let tariffSet = tariffs.filter(
       (t) =>
         !t.contentRequirement ||
-        t.contentRequirement.content === contentRequirement.name
-    );
+        t.contentRequirement.content === contentRequirement.name,
+    )
 
     if (contentRequirement.name === "Copper") {
       // 9903.78.02 is unique in that it's the only 232 metals tariff that mentions
       // the non metal contents of the article, in this case, copper
-      tariffSet = tariffSet.filter((t) => t.code !== "9903.78.02");
+      tariffSet = tariffSet.filter((t) => t.code !== "9903.78.02")
     }
 
     tariffSet.forEach((t) => {
-      collectExceptionCodes(t, tariffs, exceptionCodes);
-    });
+      collectExceptionCodes(t, tariffs, exceptionCodes)
+    })
 
     // Initially set tariffs without isActive - we'll set it outside the loop
     const tariffSetWithoutIsActive = tariffSet.map((t) => ({
       ...t,
       isActive: tariffIsActive(t, tariffs),
-    }));
+    }))
 
     sets.push({
       name: `${contentRequirement.name} Content`,
       exceptionCodes,
       tariffs: tariffSetWithoutIsActive,
-    });
+    })
   }
 
   // Now apply existing isActive states outside the loop
   if (existingTariffSets) {
     for (let i = 0; i < sets.length; i++) {
-      const existingTariffSet = existingTariffSets[i + 1]; // Content requirement sets start at index 1
+      const existingTariffSet = existingTariffSets[i + 1] // Content requirement sets start at index 1
       if (existingTariffSet) {
         sets[i].tariffs = sets[i].tariffs.map((t) => {
           const existingTariff = existingTariffSet.tariffs?.find(
-            (existing) => existing.code === t.code
-          );
+            (existing) => existing.code === t.code,
+          )
           return {
             ...t,
             isActive: existingTariff?.isActive ?? t.isActive,
-          };
-        });
+          }
+        })
       }
     }
   }
 
-  return sets;
-};
+  return sets
+}
 
 export const getAdValoremRate = (
   column: TariffColumn,
   tariffSet: UITariff[],
-  baseTariffs?: BaseTariffI[]
+  baseTariffs?: BaseTariffI[],
 ) => {
-  let rate = 0;
+  let rate = 0
   tariffSet.forEach((tariff) => {
     if (tariff.isActive) {
-      rate += tariff[column];
+      rate += tariff[column]
     }
-  });
+  })
 
   if (baseTariffs && baseTariffs.length > 0) {
     baseTariffs
       .filter((tariff) => tariff.type === "percent")
       .forEach((t) => {
-        rate += t.value;
-      });
+        rate += t.value
+      })
   }
 
-  return rate;
-};
+  return rate
+}
 
 export const get15PercentCountryTotalBaseRate = (
   baseTariffs: BaseTariffI[],
   customsValue: number,
-  units?: number
+  units?: number,
 ) => {
-  const amountRates = getAmountRates(baseTariffs);
+  const amountRates = getAmountRates(baseTariffs)
   const adValoremEquivalentAmountRate = amountRates
     .map(
       (dollarAmount) =>
         (units
           ? (dollarAmount * units) / customsValue
-          : dollarAmount / customsValue) * 100
+          : dollarAmount / customsValue) * 100,
     )
-    .reduce((acc, t) => acc + t, 0);
+    .reduce((acc, t) => acc + t, 0)
 
   const adValoremRate = baseTariffs.reduce((acc, t) => {
     if (t.type === "percent") {
-      return acc + t.value;
+      return acc + t.value
     }
-    return acc;
-  }, 0);
+    return acc
+  }, 0)
 
-  return adValoremEquivalentAmountRate + adValoremRate;
-};
+  return adValoremEquivalentAmountRate + adValoremRate
+}
 
 export const getAmountRates = (baseTariffs: BaseTariffI[]) => {
-  return baseTariffs.filter((t) => t.type === "amount").map((t) => t.value);
-};
+  return baseTariffs.filter((t) => t.type === "amount").map((t) => t.value)
+}
 
 export const getAmountRatesString = (baseTariffs: BaseTariffI[]) => {
   return baseTariffs
     .filter((t) => t.type === "amount")
     .map((t) => t.raw)
-    .join(" + ");
-};
+    .join(" + ")
+}
 
 export const getBaseTariffsForColumn = (
   htsElement: HtsElement,
-  column: TariffColumn
+  column: TariffColumn,
 ) => {
-  const tariffString = getTariffForColumn(column, htsElement);
+  const tariffString = getTariffForColumn(column, htsElement)
   // only needed if string has countries specified, which USITC writes within parenthesis ()
   // if not parenthesis then the function just returns the tariff as an element in array
-  const tariffParts = splitOnClosingParen(tariffString);
+  const tariffParts = splitOnClosingParen(tariffString)
 
-  return tariffParts.map((part) => getBaseTariffs(part));
-};
+  return tariffParts.map((part) => getBaseTariffs(part))
+}
 
 export const getTariffForColumn = (
   column: TariffColumn,
-  htsElement: HtsElement
+  htsElement: HtsElement,
 ) => {
   if (column === TariffColumn.GENERAL) {
-    return htsElement.general;
+    return htsElement.general
   } else if (column === TariffColumn.SPECIAL) {
-    return htsElement.special;
+    return htsElement.special
   } else if (column === TariffColumn.OTHER) {
-    return htsElement.other;
+    return htsElement.other
   }
-};
+}
 
 export const isAncestorTariff = (
   possibleAncestor: UITariff,
   tariff: UITariff,
-  allTariffs: UITariff[]
+  allTariffs: UITariff[],
 ): boolean => {
   const hasExceptions =
-    possibleAncestor.exceptions && possibleAncestor.exceptions.length > 0;
+    possibleAncestor.exceptions && possibleAncestor.exceptions.length > 0
 
   if (hasExceptions) {
     const exceptions = allTariffs.filter((t) =>
-      possibleAncestor.exceptions.includes(t.code)
-    );
+      possibleAncestor.exceptions.includes(t.code),
+    )
 
     return (
       exceptions.some((e) => e.code === tariff.code) ||
       exceptions.some((e) => isAncestorTariff(tariff, e, allTariffs))
-    );
+    )
   } else {
-    return false;
+    return false
   }
-};
+}
 
 export const isDescendantTariff = (
   possibleDescendant: UITariff,
   tariff: UITariff,
-  allTariffs: UITariff[]
+  allTariffs: UITariff[],
 ): boolean => {
-  const tariffHasExceptions = tariff.exceptions && tariff.exceptions.length > 0;
+  const tariffHasExceptions = tariff.exceptions && tariff.exceptions.length > 0
 
   if (tariffHasExceptions) {
     const exceptions = allTariffs.filter((t) =>
-      tariff.exceptions.includes(t.code)
-    );
+      tariff.exceptions.includes(t.code),
+    )
 
     return (
       exceptions.some((e) => e.code === possibleDescendant.code) ||
       exceptions.some((e) => isDescendantTariff(tariff, e, allTariffs))
-    );
+    )
   } else {
-    return false;
+    return false
   }
-};
+}
 
 export const applicableTariffIsActive = (
   tariff: UITariff,
-  tariffs: UITariff[]
+  tariffs: UITariff[],
 ) => {
-  const atLeastOneActiveDescendant = hasActiveDescendants(tariff, tariffs);
-  const isActiveItself = tariffIsActive(tariff, tariffs);
+  const atLeastOneActiveDescendant = hasActiveDescendants(tariff, tariffs)
+  const isActiveItself = tariffIsActive(tariff, tariffs)
 
-  return atLeastOneActiveDescendant || isActiveItself;
-};
+  return atLeastOneActiveDescendant || isActiveItself
+}
 
 // TODO: triple check this to ensure that we're doing the right checks
 //  especially when it comes to handling inclusions that are tariffs...
@@ -685,91 +685,90 @@ export const applicableTariffIsActive = (
 export const tariffIsActive = (
   tariff: TariffI,
   applicableTariffs: TariffI[],
-  tariffCodesToIgnore?: string[]
+  tariffCodesToIgnore?: string[],
 ) => {
-  if (tariff.requiresReview) return false;
+  if (tariff.requiresReview) return false
 
-  const noExceptions = !tariff.exceptions;
-  const noTariffInclusions = !tariff.inclusions || !tariff.inclusions.tariffs;
+  const noExceptions = !tariff.exceptions
+  const noTariffInclusions = !tariff.inclusions || !tariff.inclusions.tariffs
 
-  if (noExceptions && noTariffInclusions) return true;
+  if (noExceptions && noTariffInclusions) return true
 
   const exceptionTariffs = noExceptions
     ? []
-    : applicableTariffs.filter((t) => tariff.exceptions?.includes(t.code));
+    : applicableTariffs.filter((t) => tariff.exceptions?.includes(t.code))
 
   const inclusionTariffs = noTariffInclusions
     ? []
     : applicableTariffs.filter((t) =>
-        tariff.inclusions?.tariffs?.includes(t.code)
-      );
+        tariff.inclusions?.tariffs?.includes(t.code),
+      )
 
-  const exceptions = [...exceptionTariffs, ...inclusionTariffs];
+  const exceptions = [...exceptionTariffs, ...inclusionTariffs]
 
   if (
     noExceptions &&
     !noTariffInclusions && // has inclusions
     exceptions.length === 0 // but those inclusions do not apply
   ) {
-    return false;
+    return false
   }
 
-  const noReviewNeeded = exceptions.filter((e) => !e.requiresReview);
+  const noReviewNeeded = exceptions.filter((e) => !e.requiresReview)
 
   // I think here is where we need to check that even if there's a tariff that
   // does not require review, if it's not active itself, all good...
   const hasExceptionTariffWithNoReviewNeededThatIsActive = noReviewNeeded.some(
-    (t) => tariffIsActive(t, applicableTariffs)
-  );
+    (t) => tariffIsActive(t, applicableTariffs),
+  )
 
   const hasInclusionTariffWithNoReviewNeededThatIsActive =
-    inclusionTariffs.some((t) => tariffIsActive(t, applicableTariffs));
+    inclusionTariffs.some((t) => tariffIsActive(t, applicableTariffs))
 
   return (
     noReviewNeeded.length === 0 ||
     !hasExceptionTariffWithNoReviewNeededThatIsActive ||
     hasInclusionTariffWithNoReviewNeededThatIsActive
-  );
-};
+  )
+}
 
 export const getTariffByCode = (code: string) =>
-  TariffsList.find((t) => t.code === code);
+  TariffsList.find((t) => t.code === code)
 
 export const getTariffsByCode = (codes: string[]) =>
-  codes.map((c) => TariffsList.find((t) => t.code === c)).filter(Boolean);
+  codes.map((c) => TariffsList.find((t) => t.code === c)).filter(Boolean)
 
 export const tariffIsApplicableToCode = (
   tariff: TariffI,
-  htsCode: string
+  htsCode: string,
 ): boolean => {
-  if (!tariff?.inclusions) return false;
+  if (!tariff?.inclusions) return false
 
-  const { codes, tariffs } = tariff.inclusions;
-  const includesTariffs = tariffs !== undefined && tariffs.length > 0;
+  const { codes, tariffs } = tariff.inclusions
+  const includesTariffs = tariffs !== undefined && tariffs.length > 0
   const applicableTariffs = tariffs
     ? getTariffsByCode(tariffs).filter((t) =>
-        tariffIsApplicableToCode(t, htsCode)
+        tariffIsApplicableToCode(t, htsCode),
       )
-    : [];
-  const hasApplicableTariffs =
-    applicableTariffs && applicableTariffs.length > 0;
+    : []
+  const hasApplicableTariffs = applicableTariffs && applicableTariffs.length > 0
 
   // matches against ANY heading, subheading, or full code
   //TODO: consider if we get an HTS code without the right format on the full 10 digits
   const includesCode = codes
     ?.map((code) => htsCode.includes(code))
-    .some(Boolean);
+    .some(Boolean)
   // TODO: test that this will grab heading and subheadings properly for full codes...
 
   if (tariff.exclusions) {
-    const { codes } = tariff.exclusions;
+    const { codes } = tariff.exclusions
 
     if (codes && codes.length > 0) {
       // Important: this checks if any exclusion code is included WITHIN the HTS Code to ensure
       // that we're not directly matching but matching against any substring of an HTS code
       // in case the exclusion is against and entire heading or subheading, and beyond
       if (codes.some((code) => htsCode.includes(code))) {
-        return false;
+        return false
       }
     }
 
@@ -780,58 +779,57 @@ export const tariffIsApplicableToCode = (
   return (
     (includesTariffs && hasApplicableTariffs) ||
     (includesCode && !includesTariffs)
-  );
-};
+  )
+}
 
 export const tariffIsApplicable = (
   tariff: TariffI,
   countryCode: string,
   htsCode: string,
-  tariffCodesToIgnore?: string[]
+  tariffCodesToIgnore?: string[],
 ): boolean => {
   // For some reason tariff.code is undefined here...
   // why is the linter not catching these issues?
   // you'd think that the call site wouldn't be able to pass in a tariff without a code
   // but it is somehow happening, even without any !'s
-  if (tariffCodesToIgnore?.includes(tariff.code)) return false;
-  if (!tariff?.inclusions) return false;
+  if (tariffCodesToIgnore?.includes(tariff.code)) return false
+  if (!tariff?.inclusions) return false
 
-  const { countries, codes, tariffs } = tariff.inclusions;
-  const codesSpecified = codes !== undefined && codes.length > 0;
-  const countriesSpecified = countries !== undefined && countries.length > 0;
+  const { countries, codes, tariffs } = tariff.inclusions
+  const codesSpecified = codes !== undefined && codes.length > 0
+  const countriesSpecified = countries !== undefined && countries.length > 0
   const includesCountry =
-    countries?.includes(countryCode) || countries?.includes("*");
+    countries?.includes(countryCode) || countries?.includes("*")
 
   // matches against ANY heading, subheading, or full code
   //TODO: consider if we get an HTS code without the right format on the full 10 digits
   const includesCode =
     codes?.includes("*") ||
-    codes?.map((code) => htsCode.includes(code)).some(Boolean);
+    codes?.map((code) => htsCode.includes(code)).some(Boolean)
   // TODO: test that this will grab heading and subheadings properly for full codes...
 
   if (!includesCode && !includesCountry) {
-    return false;
+    return false
   }
 
-  const includesCountryAndCode = includesCountry && includesCode;
+  const includesCountryAndCode = includesCountry && includesCode
 
-  const includesTariffs = tariffs !== undefined && tariffs.length > 0;
+  const includesTariffs = tariffs !== undefined && tariffs.length > 0
   const applicableTariffs = tariffs
     ? getTariffsByCode(
-        tariffs.filter((t) => !tariffCodesToIgnore?.includes(t))
+        tariffs.filter((t) => !tariffCodesToIgnore?.includes(t)),
       ).filter((t) =>
-        tariffIsApplicable(t, countryCode, htsCode, tariffCodesToIgnore)
+        tariffIsApplicable(t, countryCode, htsCode, tariffCodesToIgnore),
       )
-    : [];
-  const hasApplicableTariffs =
-    applicableTariffs && applicableTariffs.length > 0;
+    : []
+  const hasApplicableTariffs = applicableTariffs && applicableTariffs.length > 0
 
   if (tariff.exclusions) {
-    const { countries, codes } = tariff.exclusions;
+    const { countries, codes } = tariff.exclusions
 
     if (countries && countries.length > 0) {
       if (countries.includes(countryCode)) {
-        return false;
+        return false
       }
     }
 
@@ -840,7 +838,7 @@ export const tariffIsApplicable = (
       // that we're not directly matching but matching against any substring of an HTS code
       // in case the exclusion is against and entire heading or subheading, and beyond
       if (codes.some((code) => htsCode.includes(code))) {
-        return false;
+        return false
       }
     }
 
@@ -853,17 +851,17 @@ export const tariffIsApplicable = (
     (includesCountry && !codesSpecified && !includesTariffs) ||
     (includesCode && !countriesSpecified && !includesTariffs) ||
     (includesCountryAndCode && !includesTariffs)
-  );
-};
+  )
+}
 
 export const getTariffs = (countryCode: string, htsCode: string) => {
   return TariffsList.filter((tariff) =>
-    tariffIsApplicable(tariff, countryCode, htsCode)
-  );
-};
+    tariffIsApplicable(tariff, countryCode, htsCode),
+  )
+}
 
 export const getTariffsForCountry = (countryCode: string) => {
-  let countryTariffs: TariffI[] = [];
+  let countryTariffs: TariffI[] = []
 
   TariffsList.forEach((tariff) => {
     if (
@@ -871,24 +869,24 @@ export const getTariffsForCountry = (countryCode: string) => {
         tariff.inclusions?.countries?.includes("*")) &&
       !tariff.exclusions?.countries?.includes(countryCode)
     ) {
-      countryTariffs.push(tariff);
+      countryTariffs.push(tariff)
     }
-  });
+  })
 
-  return countryTariffs;
-};
+  return countryTariffs
+}
 
 export const getTariffsForCode = (htsCode: string) => {
-  let codeTariffs: TariffI[] = [];
+  let codeTariffs: TariffI[] = []
 
   TariffsList.forEach((tariff) => {
     if (tariff.inclusions?.codes?.includes(htsCode)) {
-      codeTariffs.push(tariff);
+      codeTariffs.push(tariff)
     }
-  });
+  })
 
-  return codeTariffs;
-};
+  return codeTariffs
+}
 
 // NOTES:
 // 9903.01.43-76 are all suspended, but would take over this flat 10% if reinstated
@@ -906,21 +904,21 @@ export const getTariffsForCode = (htsCode: string) => {
 //  basis. 7601.10.60.40 is a good example of this
 
 export const TariffsList: TariffI[] = [
-  ...worldwideReciprocalTariff,
+  // ...worldwideReciprocalTariff,
   ...aluminumTariffs,
   ...automobileTariffs,
-  ...canadaTariffs,
+  // ...canadaTariffs,
   ...chinaTariffs,
   ...exceptionTariffs,
   ...ironAndSteelTariffs,
-  ...mexicoTariffs,
-  ...brazilTariffs,
+  // ...mexicoTariffs,
+  // ...brazilTariffs,
   ...copperTariffs,
-  ...indiaTariffs,
+  // ...indiaTariffs,
   ...japanTariffs,
   ...europeanUnionTariffs,
   ...woodTariffs,
   ...heavyVehicleTariffs,
   ...argiculturalTariffs,
   ...southKoreaTariffs,
-];
+]
