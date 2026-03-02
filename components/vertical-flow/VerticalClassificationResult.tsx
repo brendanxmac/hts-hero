@@ -13,6 +13,8 @@ import { useClassifications } from "../../contexts/ClassificationsContext";
 import { useHts } from "../../contexts/HtsContext";
 import { PDFProps } from "../../interfaces/ui";
 import PDF from "../PDF";
+import { Crisp } from "crisp-sdk-web";
+import config from "@/config";
 import {
   CheckCircleIcon,
   TagIcon,
@@ -317,6 +319,18 @@ export const VerticalClassificationResult = ({
     }, 300);
   };
 
+  const openCrispOrEmail = () => {
+    if (config.crisp?.id) {
+      Crisp.chat.show();
+      Crisp.chat.open();
+    } else if (config.resend?.supportEmail) {
+      window.open(
+        `mailto:${config.resend.supportEmail}?subject=Issue with ${config.appName}`,
+        "_blank"
+      );
+    }
+  };
+
   // Tariff summary rates for collapsed view - derived from countryWithTariffs
   const tariffSummaryRates = useMemo(() => {
     if (!selectedCountry || !countryWithTariffs || !tariffElement) {
@@ -401,6 +415,25 @@ export const VerticalClassificationResult = ({
         collapsedContentInline
       >
         <div className="flex flex-col gap-5">
+          {/* Notice banner: IEEPA / Section 122 and report link */}
+          <div className="w-full bg-warning/15 border border-warning rounded-lg text-warning-content px-3 py-2.5 mb-3">
+            <div className="flex flex-col gap-1.5">
+              <p className="text-xs sm:text-sm font-semibold leading-snug">
+                NOTE: This duty calculator has been updated to account for IEEPA tariffs being removed and the 10% Section 122 tariff being added. We will continue to monitor & update as the ruling aftermath unfolds.
+              </p>
+              <p className="text-xs text-base-content/80">
+                See an issue?{" "}
+                <button
+                  type="button"
+                  onClick={openCrispOrEmail}
+                  className="underline font-medium text-primary hover:text-primary/80 focus:outline-none focus:ring-2 focus:ring-primary/50 rounded"
+                >
+                  Report it here
+                </button>{" "}
+                so we can fix it and help everyone.
+              </p>
+            </div>
+          </div>
           {/* Country & Value Inputs */}
           <div className="flex flex-col md:flex-row gap-4">
             {/* Country Selection */}
@@ -450,18 +483,18 @@ export const VerticalClassificationResult = ({
                 {countryWithTariffs.baseTariffs
                   ?.flatMap((t) => t.tariffs)
                   ?.some((t) => t.type === "amount") && (
-                  <div className="flex flex-col gap-2">
-                    <SecondaryLabel value="Units / Weight" />
-                    <NumberInput
-                      value={uiUnits}
-                      setValue={handleUnitsChange}
-                      min={0}
-                      subtext={
-                        element &&
-                        tariffElement &&
-                        (element.units.length > 0 ||
-                          tariffElement.units.length > 0)
-                          ? `${[...element.units, ...tariffElement.units]
+                    <div className="flex flex-col gap-2">
+                      <SecondaryLabel value="Units / Weight" />
+                      <NumberInput
+                        value={uiUnits}
+                        setValue={handleUnitsChange}
+                        min={0}
+                        subtext={
+                          element &&
+                            tariffElement &&
+                            (element.units.length > 0 ||
+                              tariffElement.units.length > 0)
+                            ? `${[...element.units, ...tariffElement.units]
                               .reduce((acc: string[], unit: string) => {
                                 if (!acc.includes(unit)) {
                                   acc.push(unit);
@@ -469,11 +502,11 @@ export const VerticalClassificationResult = ({
                                 return acc;
                               }, [])
                               .join(",")}`
-                          : ""
-                      }
-                    />
-                  </div>
-                )}
+                            : ""
+                        }
+                      />
+                    </div>
+                  )}
 
                 {/* Content Percentage Inputs */}
                 {uiContentPercentages.map((contentPercentage) => (
@@ -712,11 +745,10 @@ export const VerticalClassificationResult = ({
           <div className="h-px bg-gradient-to-r from-transparent via-base-content/10 to-transparent mb-5" />
           <textarea
             ref={basisTextareaRef}
-            className={`whitespace-pre-wrap min-h-36 w-full px-4 py-3 rounded-xl border transition-all duration-200 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 resize-none overflow-hidden text-base ${
-              canUpdateDetails
-                ? "bg-base-100 border-base-content/20 hover:border-primary/40"
-                : "bg-base-200/50 border-base-content/15 cursor-not-allowed opacity-60"
-            }`}
+            className={`whitespace-pre-wrap min-h-36 w-full px-4 py-3 rounded-xl border transition-all duration-200 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 resize-none overflow-hidden text-base ${canUpdateDetails
+              ? "bg-base-100 border-base-content/20 hover:border-primary/40"
+              : "bg-base-200/50 border-base-content/15 cursor-not-allowed opacity-60"
+              }`}
             placeholder="Add any notes about your classification here"
             value={classification.notes ?? ""}
             disabled={!canUpdateDetails}

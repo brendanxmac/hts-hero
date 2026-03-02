@@ -802,16 +802,17 @@ export const tariffIsApplicable = (
   tariffCodesToIgnore?: string[],
   is99030306Child: boolean = false,
 ): boolean => {
+  // NOTE: This is only here to account for the Section 122 Tariff, since these 2 children tariffs can apply to ANY article
+  // We can remove this when Section 122 goes away. Alternatively, find a way to handle this in the calculator
+  // =====================================================================
   const isCatchAllAutoPartTariff =
     tariff.code === "9903.74.09" || tariff.code === "9903.94.07"
 
   if (is99030306Child && isCatchAllAutoPartTariff) {
     return false
   }
-  // For some reason tariff.code is undefined here...
-  // why is the linter not catching these issues?
-  // you'd think that the call site wouldn't be able to pass in a tariff without a code
-  // but it is somehow happening, even without any !'s
+  // =====================================================================
+
   if (tariffCodesToIgnore?.includes(tariff.code)) return false
   if (!tariff?.inclusions) return false
 
