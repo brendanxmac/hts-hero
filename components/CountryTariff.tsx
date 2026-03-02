@@ -138,8 +138,8 @@ export const CountryTariff = ({
     return baseTariffs.filter((t) =>
       selectedSpecialProgram?.symbol !== "none"
         ? t.tariffs.some((tariff) =>
-            tariff.programs?.includes(selectedSpecialProgram.symbol)
-          )
+          tariff.programs?.includes(selectedSpecialProgram.symbol)
+        )
         : true
     );
   };
@@ -971,20 +971,20 @@ export const CountryTariff = ({
                 {/* Base Tariffs */}
                 {getFilteredBaseTariffs().flatMap((t) => t.tariffs).length >
                   0 && (
-                  <div className="flex flex-col gap-2">
-                    {getFilteredBaseTariffs()
-                      .flatMap((t) => t.tariffs)
-                      .map((t, j) => (
-                        <BaseTariff
-                          key={`${htsElement.htsno}-${t.raw}-${j}`}
-                          index={j}
-                          htsElement={tariffElement}
-                          tariff={t}
-                          active={!below15PercentRuleApplies}
-                        />
-                      ))}
-                  </div>
-                )}
+                    <div className="flex flex-col gap-2">
+                      {getFilteredBaseTariffs()
+                        .flatMap((t) => t.tariffs)
+                        .map((t, j) => (
+                          <BaseTariff
+                            key={`${htsElement.htsno}-${t.raw}-${j}`}
+                            index={j}
+                            htsElement={tariffElement}
+                            tariff={t}
+                            active={!below15PercentRuleApplies}
+                          />
+                        ))}
+                    </div>
+                  )}
 
                 {/* Standard Tariffs (no label) */}
                 {tariffSet.tariffs
@@ -1020,12 +1020,12 @@ export const CountryTariff = ({
                   return (
                     <div className="flex flex-col gap-2 mt-2">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-semibold text-success uppercase tracking-wider flex items-center gap-1 sm:gap-1.5 shrink-0">
+                        <span className="text-xs sm:text-sm font-semibold text-primary uppercase tracking-wider flex items-center gap-1 sm:gap-1.5 shrink-0">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 20 20"
                             fill="currentColor"
-                            className="w-3 h-3 sm:w-3.5 sm:h-3.5"
+                            className="w-4 h-4 sm:w-4 sm:h-4"
                           >
                             <path
                               fillRule="evenodd"
@@ -1034,11 +1034,11 @@ export const CountryTariff = ({
                             />
                           </svg>
                           <span className="hidden sm:inline">
-                            Exemptions & Exceptions
+                            Possible Exemptions & Exceptions
                           </span>
-                          <span className="inline sm:hidden">Exemptions</span>
+                          <span className="inline sm:hidden">Possible Exemptions & Exceptions</span>
                         </span>
-                        <div className="flex-1 h-px bg-success/30" />
+                        <div className="flex-1 h-px bg-primary" />
                       </div>
                       <p className="text-xs text-base-content/50 -mt-1 mb-1">
                         These may reduce or eliminate tariffs above if your

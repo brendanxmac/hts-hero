@@ -1,4 +1,4 @@
-import { TariffI } from "../interfaces/tariffs";
+import { TariffI } from "../interfaces/tariffs"
 import {
   mediumAndHeavyDutyVehicles,
   busesAndSimilarVehicles,
@@ -7,7 +7,7 @@ import {
   ch72Headings,
   ch73Headings,
   ch76Headings,
-} from "./lists";
+} from "./lists"
 
 export const heavyVehicleTariffs: TariffI[] = [
   {
@@ -120,7 +120,8 @@ export const heavyVehicleTariffs: TariffI[] = [
     requiresReview: true,
     exceptions: ["9903.74.10", "9903.74.11"],
     inclusions: {
-      codes: ["*"],
+      // codes: ["*"],
+      countries: ["*"],
     },
     exclusions: {
       codes: [
@@ -133,6 +134,7 @@ export const heavyVehicleTariffs: TariffI[] = [
     },
   },
   {
+    // TODO: This one is quite tricky... 38k is very... conflicting
     code: "9903.74.10",
     description:
       "Articles as provided for in subdivision (k) of U.S. note 38 to this subchapter",
@@ -144,6 +146,15 @@ export const heavyVehicleTariffs: TariffI[] = [
     inclusions: {
       codes: ["*"],
       countries: ["MX", "CA"],
+    },
+    exclusions: {
+      codes: [
+        ...partsOfMHDVs38i,
+        ...automobileParts33G,
+        ...ch72Headings,
+        ...ch73Headings,
+        ...ch76Headings,
+      ],
     },
   },
   {
@@ -159,4 +170,4 @@ export const heavyVehicleTariffs: TariffI[] = [
       codes: partsOfMHDVs38i,
     },
   },
-];
+]

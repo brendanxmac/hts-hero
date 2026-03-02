@@ -37,6 +37,8 @@ import { woodTariffs } from "./wood"
 import { heavyVehicleTariffs } from "./heavy-vehicles"
 import { argiculturalTariffs } from "./argicultural"
 import { southKoreaTariffs } from "./south-korea"
+import { section122Tariffs } from "./section-122"
+import { semiconductorTariffs } from "./semiconductors"
 
 export interface CountryWithTariffs extends Country {
   selectedTradeProgram: TradeProgram | null
@@ -708,7 +710,7 @@ export const tariffIsActive = (
 
   if (
     noExceptions &&
-    !noTariffInclusions && // has inclusions
+    !noTariffInclusions && // has tariff inclusions
     exceptions.length === 0 // but those inclusions do not apply
   ) {
     return false
@@ -745,13 +747,25 @@ export const tariffIsApplicableToCode = (
   if (!tariff?.inclusions) return false
 
   const { codes, tariffs } = tariff.inclusions
+
   const includesTariffs = tariffs !== undefined && tariffs.length > 0
+
+  if (tariff.code === "9903.03.06") {
+    console.log("Includes Tariffs", includesTariffs)
+  }
+
   const applicableTariffs = tariffs
     ? getTariffsByCode(tariffs).filter((t) =>
         tariffIsApplicableToCode(t, htsCode),
       )
     : []
+
   const hasApplicableTariffs = applicableTariffs && applicableTariffs.length > 0
+
+  if (tariff.code === "9903.03.06") {
+    // console.log("Code:", tariff.code)
+    console.log("Has Applicable Tariffs", hasApplicableTariffs)
+  }
 
   // matches against ANY heading, subheading, or full code
   //TODO: consider if we get an HTS code without the right format on the full 10 digits
@@ -774,7 +788,6 @@ export const tariffIsApplicableToCode = (
 
     // currently we have no exclusions that are tariffs, so we don't need to check that
   }
-
   // NOTE: this assumes we'll never have tariffs alongside codes, which we don't, for now
   return (
     (includesTariffs && hasApplicableTariffs) ||
@@ -787,7 +800,14 @@ export const tariffIsApplicable = (
   countryCode: string,
   htsCode: string,
   tariffCodesToIgnore?: string[],
+  is99030306Child: boolean = false,
 ): boolean => {
+  const isCatchAllAutoPartTariff =
+    tariff.code === "9903.74.09" || tariff.code === "9903.94.07"
+
+  if (is99030306Child && isCatchAllAutoPartTariff) {
+    return false
+  }
   // For some reason tariff.code is undefined here...
   // why is the linter not catching these issues?
   // you'd think that the call site wouldn't be able to pass in a tariff without a code
@@ -819,10 +839,20 @@ export const tariffIsApplicable = (
     ? getTariffsByCode(
         tariffs.filter((t) => !tariffCodesToIgnore?.includes(t)),
       ).filter((t) =>
-        tariffIsApplicable(t, countryCode, htsCode, tariffCodesToIgnore),
+        tariffIsApplicable(
+          t,
+          countryCode,
+          htsCode,
+          tariffCodesToIgnore,
+          tariff.code === "9903.03.06",
+        ),
       )
     : []
   const hasApplicableTariffs = applicableTariffs && applicableTariffs.length > 0
+
+  if (tariff.code === "9903.03.06") {
+    console.log("=== Has Applicable Tariffs ===", hasApplicableTariffs)
+  }
 
   if (tariff.exclusions) {
     const { countries, codes } = tariff.exclusions
@@ -843,6 +873,17 @@ export const tariffIsApplicable = (
     }
 
     // currently we have no exclusions that are tariffs, so we don't need to check that
+  }
+
+  if (is99030306Child) {
+    console.log(
+      `Tariff Code: ${tariff.code} -- ${
+        (includesTariffs && hasApplicableTariffs) ||
+        (includesCountry && !codesSpecified && !includesTariffs) ||
+        (includesCode && !countriesSpecified && !includesTariffs) ||
+        (includesCountryAndCode && !includesTariffs)
+      }`,
+    )
   }
 
   // NOTE: this assumes we'll never have tariffs alongside codes, which we don't, for now
@@ -905,6 +946,7 @@ export const getTariffsForCode = (htsCode: string) => {
 
 export const TariffsList: TariffI[] = [
   // ...worldwideReciprocalTariff,
+  ...section122Tariffs,
   ...aluminumTariffs,
   ...automobileTariffs,
   // ...canadaTariffs,
@@ -921,4 +963,5 @@ export const TariffsList: TariffI[] = [
   ...heavyVehicleTariffs,
   ...argiculturalTariffs,
   ...southKoreaTariffs,
+  ...semiconductorTariffs,
 ]

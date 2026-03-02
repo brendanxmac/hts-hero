@@ -126,7 +126,7 @@ export const Tariff = ({
         "flex gap-2 sm:gap-3 justify-between items-start sm:items-center py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl transition-colors",
         tariff.isActive ? "bg-primary/10" : "bg-base-200/50",
         tariff.requiresReview && !tariff.isActive && "hover:bg-base-200",
-        tariff.requiresReview && "cursor-pointer"
+        tariff.requiresReview && "cursor-pointer",
       )}
       onClick={() => {
         if (tariff.requiresReview) {
@@ -145,8 +145,8 @@ export const Tariff = ({
           className={classNames(
             "radio radio-primary radio-sm shrink-0 mt-0.5 sm:mt-0",
             tariff.requiresReview &&
-              !hasExceptionTariffThatDoesNotNeedReviewThatIsActive &&
-              "cursor-pointer"
+            !hasExceptionTariffThatDoesNotNeedReviewThatIsActive &&
+            "cursor-pointer"
           )}
           onClick={(e) => {
             e.stopPropagation();
@@ -157,7 +157,7 @@ export const Tariff = ({
               toggleTariff(tariff);
             }
           }}
-          onChange={() => {}}
+          onChange={() => { }}
         />
 
         <div className="flex flex-col gap-0.5 sm:gap-1 min-w-0 flex-1">
@@ -177,7 +177,9 @@ export const Tariff = ({
             </div>
             <span
               className={classNames(
-                "font-medium min-w-0 text-sm sm:text-base text-base-content"
+                "font-medium min-w-0 text-sm sm:text-base text-base-content",
+                ((!tariff.requiresReview ||
+                  hasExceptionTariffThatDoesNotNeedReviewThatIsActive) && !tariff.isActive) && "text-base-content/30"
               )}
             >
               {tariff.name}
