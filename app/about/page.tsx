@@ -15,6 +15,7 @@ import {
 } from "../../components/ProductSection";
 import { BoltIcon } from "@heroicons/react/24/solid";
 import AboutHeader from "../../components/AboutHeader";
+import { BookDemoButton } from "../../components/BookDemoButton";
 
 const productSections: ProductSectionData[] = [
   {
@@ -242,7 +243,7 @@ export default function Home() {
               with your entire team
             </p>
 
-            {/* CTA Button */}
+            {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6 w-full">
               <Link
                 href="/classifications"
@@ -263,6 +264,7 @@ export default function Home() {
                   />
                 </svg>
               </Link>
+              <BookDemoButton />
             </div>
           </div>
 

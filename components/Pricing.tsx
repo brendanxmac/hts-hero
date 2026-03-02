@@ -345,7 +345,7 @@ const Pricing = ({ customerType }: PricingProps) => {
                 </h3>
                 <p className="text-base-content/60 text-sm md:text-base leading-relaxed">
                   If you complete an onboarding session & 20 classifications
-                  within 30 days, but are still not satisfied with your
+                  within 30 days, and are not satisfied with your
                   experience, we&apos;ll refund your purchase in full.
                 </p>
               </div>

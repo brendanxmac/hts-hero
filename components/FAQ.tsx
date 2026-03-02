@@ -1,3 +1,6 @@
+"use client";
+
+import { Crisp } from "crisp-sdk-web";
 import config from "../config";
 import { FaqItem, FAQItem } from "./FAQItem";
 
@@ -46,31 +49,34 @@ export const FAQ = ({ faqItems }: Props) => {
 
         {/* Contact section */}
         <div className="mt-10 text-center">
-          <div className="inline-flex items-center gap-3 px-6 py-4 bg-base-100 rounded-xl border border-base-content/10 shadow-sm">
-            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-              <svg
-                className="w-5 h-5 text-primary"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
+          <div className="inline-flex flex-col items-center gap-4 px-6 py-4 bg-base-100 rounded-xl border border-base-content/10 shadow-sm">
+            <p className="text-sm text-base-content/60">
+              Still have questions?
+            </p>
+            <div className="flex items-center gap-2 flex-wrap justify-center">
+              <button
+                type="button"
+                onClick={() => {
+                  if (config.crisp?.id) {
+                    Crisp.chat.show();
+                    Crisp.chat.open();
+                  } else if (config.resend?.supportEmail) {
+                    window.open(
+                      `mailto:${config.resend.supportEmail}?subject=Question about ${config.appName}`,
+                      "_blank"
+                    );
+                  }
+                }}
+                className="btn btn-sm btn-primary"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                />
-              </svg>
-            </div>
-            <div className="text-left">
-              <p className="text-sm text-base-content/60">
-                Still have questions?
-              </p>
+                Talk with Support
+              </button>
+              <span className="text-base-content/60 text-sm">or</span>
               <a
-                href={`mailto:${config.resend.supportEmail}`}
-                className="text-primary font-medium hover:text-primary/80 transition-colors"
+                href={`mailto:${config.resend?.supportEmail ?? ""}?subject=Question about ${config.appName}`}
+                className="btn btn-sm btn-primary"
               >
-                {config.resend.supportEmail}
+                Send Us An Email
               </a>
             </div>
           </div>
