@@ -1,6 +1,6 @@
-import themes from "daisyui/src/theming/themes";
-import { ConfigProps, PricingPlan, PricingPlanI } from "./types/config";
-import { StripePaymentMode } from "./libs/stripe";
+import themes from "daisyui/src/theming/themes"
+import { ConfigProps, PricingPlan, PricingPlanI } from "./types/config"
+import { StripePaymentMode } from "./libs/stripe"
 
 export const tariffImpactStarter: PricingPlanI = {
   name: "Starter",
@@ -19,7 +19,7 @@ export const tariffImpactStarter: PricingPlanI = {
         "Upload your imports and quickly check them against new tariff announcements",
     },
   ],
-};
+}
 
 export const tariffImpactStandard: PricingPlanI = {
   name: "Standard",
@@ -43,7 +43,7 @@ export const tariffImpactStandard: PricingPlanI = {
       details: "Get notified when your imports are affected by new tariffs",
     },
   ],
-};
+}
 
 export const tariffImpactPro: PricingPlanI = {
   name: "Pro",
@@ -74,7 +74,7 @@ export const tariffImpactPro: PricingPlanI = {
     },
     // { name: "Generate & share branded reports" }, // TODO: This could be great
   ],
-};
+}
 
 export const pro: PricingPlanI = {
   name: "Pro",
@@ -88,7 +88,7 @@ export const pro: PricingPlanI = {
     { name: "Classification Assistant" },
     { name: "Tariff Impact Checker" },
   ],
-};
+}
 
 export const proTeams: PricingPlanI = {
   name: "Pro for Teams",
@@ -102,13 +102,16 @@ export const proTeams: PricingPlanI = {
     { name: "Duty Calculator" },
     { name: "Classification Assistant" },
     { name: "Tariff Impact Checker" },
-    { name: "Collaborate with your Team", details: "Share, Review, Approve, & Comment on Classifications" },
+    {
+      name: "Collaborate with your Team",
+      details: "Share, Review, Approve, & Comment on Classifications",
+    },
     {
       name: "Team Training",
       details: "Boost your teams output with personalized training",
     },
   ],
-};
+}
 
 export const classifyPro: PricingPlanI = {
   name: "Pro",
@@ -131,7 +134,7 @@ export const classifyPro: PricingPlanI = {
       details: "Instantly know when new tariffs affect you",
     },
   ],
-};
+}
 
 export const classifyTeam: PricingPlanI = {
   name: "Team",
@@ -155,7 +158,7 @@ export const classifyTeam: PricingPlanI = {
       details: "Boost your teams productivity with personalized training",
     },
   ],
-};
+}
 
 const config: ConfigProps = {
   // REQUIRED
@@ -167,8 +170,8 @@ const config: ConfigProps = {
   crisp: {
     // Crisp website ID. IF YOU DON'T USE CRISP: just remove this => Then add a support email in this config file (resend.supportEmail) otherwise customer support won't work.
     id: "0c3dd164-9731-427e-ade8-1ca2d536f296",
-    // Hide Crisp by default, except on route "/". Crisp is toggled with <ButtonSupport/>. If you want to show Crisp on every routes, just remove this below
-    onlyShowOnRoutes: ["/"],
+    // Show Crisp on all routes. To hide on specific routes, set e.g. onlyShowOnRoutes: ["/"] and use <ButtonSupport/> to open chat elsewhere.
+    // onlyShowOnRoutes: ["/"],
   },
   stripe: {
     // Create multiple plans in your Stripe dashboard, then add them here. You can add as many plans as you want, just make sure to add the priceId
@@ -209,6 +212,6 @@ const config: ConfigProps = {
     // REQUIRED — the path you want to redirect users after successfull login (i.e. /dashboard, /private). This is normally a private page for users to manage their accounts. It's used in apiClient (/libs/api.js) upon 401 errors from our API & in ButtonSignin.js
     callbackUrl: "/",
   },
-} as ConfigProps;
+} as ConfigProps
 
-export default config;
+export default config

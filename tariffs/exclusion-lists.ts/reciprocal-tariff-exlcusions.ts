@@ -1083,7 +1083,7 @@ export const reciprocalTariffExemptionsList = [
   "3105.51.00",
   "3105.59.00",
   "3105.90.00",
-];
+]
 
 // Currently ALL Agricultural via HTS 2025 Revision 29 -- Aricultural Exemptions
 export const SubheadingsConditionallyExemptFromReciprocal: Record<
@@ -1108,4 +1108,4 @@ export const SubheadingsConditionallyExemptFromReciprocal: Record<
   "2106.90.99": "Acai preparations for the manufacture of beverages",
   "3301.29.51":
     "Essential oils other than those of citrus fruit, not elsewhere specified or included, for religious purposes only",
-};
+}

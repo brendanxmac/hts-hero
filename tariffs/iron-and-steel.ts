@@ -1,7 +1,7 @@
 // ==================
 // Steel
 
-import { TariffI } from "../interfaces/tariffs";
+import { TariffI } from "../interfaces/tariffs"
 
 // ==================
 export const ironAndSteelTariffs: TariffI[] = [
@@ -9,7 +9,7 @@ export const ironAndSteelTariffs: TariffI[] = [
     code: "9903.81.88",
     description:
       "Products of iron or steel provided for in the tariff headings or subheadings enumerated in subdivision (j) of note 16 to this subchapter, admitted to a U.S. foreign trade zone under 'privileged foreign status' as defined by 19 CFR 146.41, prior to 12:01 a.m. eastern daylight time on June 4, 2025.",
-    name: "Iron or Steel Products Admitted to a FTZ under PFS prior to June 4, 2025",
+    name: "Special Iron / Steel Products Admitted to a FTZ under PFS prior to June 4, 2025",
     // TODO: need way to input kgs for weight of the steel..
     general: 50,
     special: 50,
@@ -652,7 +652,7 @@ export const ironAndSteelTariffs: TariffI[] = [
     code: "9903.81.87",
     description:
       "Except for derivative iron or steel products described in headings 9903.81.89, 9903.81.90 or 9903.81.91, products of iron or steel provided for in the tariff headings or subheadings enumerated in subdivision (j) of note 16 to this subchapter.",
-    name: "Iron / Steel Products",
+    name: "Special Iron / Steel Products",
     general: 50,
     special: 50,
     other: 50,
@@ -2749,4 +2749,4 @@ export const ironAndSteelTariffs: TariffI[] = [
       ],
     },
   },
-];
+]

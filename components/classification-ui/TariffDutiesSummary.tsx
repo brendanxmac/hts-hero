@@ -1,6 +1,8 @@
 "use client";
 
 import { Country } from "../../constants/countries";
+import { Crisp } from "crisp-sdk-web";
+import config from "@/config";
 
 export interface TariffSummaryRate {
   name: string;

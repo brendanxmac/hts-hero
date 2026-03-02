@@ -37,9 +37,9 @@ export const toolLinks = [
     emoji: "🔍",
     title: "HTS Explorer",
     subtitle: "Quickly find any HTS element",
-    hoverBg: "hover:bg-neutral/10",
-    iconBg: "bg-neutral/20",
-    hoverText: "group-hover:text-neutral",
+    hoverBg: "hover:bg-base-content/10",
+    iconBg: "bg-base-content/10",
+    hoverText: "group-hover:text-base-content",
   },
 ];
 

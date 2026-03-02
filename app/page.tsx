@@ -362,6 +362,24 @@ export default function Home() {
                             </div>
                           </div>
                         </Link>
+
+                        <Link
+                          href="/explore"
+                          onClick={() => setIsToolMenuOpen(false)}
+                          className="flex items-center gap-3 p-3 rounded-xl hover:bg-base-content/10 transition-colors group"
+                        >
+                          <div className="w-10 h-10 rounded-lg bg-base-content/10 flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
+                            🔍
+                          </div>
+                          <div className="flex flex-col">
+                            <div className="text-left font-semibold text-base-content group-hover:text-base-content transition-colors">
+                              HTS Explorer
+                            </div>
+                            <div className="text-left text-xs text-base-content/60">
+                              Quickly find any HTS element
+                            </div>
+                          </div>
+                        </Link>
                       </div>
                     </div>
                   </>
