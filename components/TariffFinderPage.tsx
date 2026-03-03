@@ -2,8 +2,6 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import { Crisp } from "crisp-sdk-web";
-import config from "@/config";
 import { Countries, Country } from "../constants/countries";
 import { CountrySelection } from "./CountrySelection";
 import { HtsElement } from "../interfaces/hts";
@@ -11,6 +9,7 @@ import { useHts } from "../contexts/HtsContext";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { SecondaryLabel } from "./SecondaryLabel";
 import { CountryTariff } from "./CountryTariff";
+import { DutyCalculatorNoticeBanner } from "./DutyCalculatorNoticeBanner";
 import {
   addTariffsToCountry,
   CountryWithTariffs,
@@ -427,8 +426,7 @@ export const TariffFinderPage = () => {
         units,
         customsValue
       );
-      console.log("newCountryWithTariffs")
-      console.log(newCountryWithTariffs)
+
       setCountryWithTariffs(newCountryWithTariffs);
     } else {
       setCountryWithTariffs(null);
@@ -475,39 +473,9 @@ export const TariffFinderPage = () => {
     );
   }
 
-  const openCrispOrEmail = () => {
-    if (config.crisp?.id) {
-      Crisp.chat.show();
-      Crisp.chat.open();
-    } else if (config.resend?.supportEmail) {
-      window.open(
-        `mailto:${config.resend.supportEmail}?subject=Issue with ${config.appName}`,
-        "_blank"
-      );
-    }
-  };
-
   return (
     <main className="w-screen h-full flex flex-col bg-base-100">
-      {/* Notice banner: IEEPA / Section 122 and report link */}
-      <div className="w-full bg-warning/15 border-b-2 border-warning text-warning-content px-4 py-3 sm:px-6">
-        <div className="max-w-6xl mx-auto flex flex-col gap-2">
-          <p className="text-sm sm:text-base font-semibold leading-snug">
-            NOTE: This duty calculator has been updated to account for IEEPA tariffs being removed and the 10% Section 122 tariff being added. We will continue to monitor & update as the ruling aftermath unfolds.
-          </p>
-          <p className="text-sm text-base-content/80">
-            See an issue?{" "}
-            <button
-              type="button"
-              onClick={openCrispOrEmail}
-              className="underline font-medium text-primary hover:text-primary/80 focus:outline-none focus:ring-2 focus:ring-primary/50 rounded"
-            >
-              Report it here
-            </button>{" "}
-            so we can fix it and help everyone.
-          </p>
-        </div>
-      </div>
+      <DutyCalculatorNoticeBanner variant="banner" />
 
       {/* Hero Header Section */}
       <div className="relative overflow-hidden bg-gradient-to-br from-base-200 via-base-100 to-base-200 border-b border-base-content/5">

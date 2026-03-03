@@ -1138,15 +1138,19 @@ export function getBaseTariffs(input: string): ParsedBaseTariff {
       continue;
     }
 
-    // % percent
-    const percentMatch = trimmed.match(/^(\d+(\.\d+)?)\s*%$/);
+    // % percent (with optional trailing text e.g. "2.5% on the value of the lead content")
+    const percentMatch = trimmed.match(/^(\d+(\.\d+)?)\s*%(?:\s+(.*))?$/);
     if (percentMatch) {
-      tariffs.push({
+      const resultObj: BaseTariffI = {
         value: Math.round(parseFloat(percentMatch[1]) * 10000) / 10000,
         type: "percent",
         raw: trimmed,
         programs,
-      });
+      };
+      if (percentMatch[3]?.trim()) {
+        resultObj.details = percentMatch[3].trim();
+      }
+      tariffs.push(resultObj);
       continue;
     }
 

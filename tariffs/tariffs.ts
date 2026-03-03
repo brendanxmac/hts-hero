@@ -750,10 +750,6 @@ export const tariffIsApplicableToCode = (
 
   const includesTariffs = tariffs !== undefined && tariffs.length > 0
 
-  if (tariff.code === "9903.03.06") {
-    console.log("Includes Tariffs", includesTariffs)
-  }
-
   const applicableTariffs = tariffs
     ? getTariffsByCode(tariffs).filter((t) =>
         tariffIsApplicableToCode(t, htsCode),
@@ -761,11 +757,6 @@ export const tariffIsApplicableToCode = (
     : []
 
   const hasApplicableTariffs = applicableTariffs && applicableTariffs.length > 0
-
-  if (tariff.code === "9903.03.06") {
-    // console.log("Code:", tariff.code)
-    console.log("Has Applicable Tariffs", hasApplicableTariffs)
-  }
 
   // matches against ANY heading, subheading, or full code
   //TODO: consider if we get an HTS code without the right format on the full 10 digits
@@ -851,10 +842,6 @@ export const tariffIsApplicable = (
     : []
   const hasApplicableTariffs = applicableTariffs && applicableTariffs.length > 0
 
-  if (tariff.code === "9903.03.06") {
-    console.log("=== Has Applicable Tariffs ===", hasApplicableTariffs)
-  }
-
   if (tariff.exclusions) {
     const { countries, codes } = tariff.exclusions
 
@@ -874,17 +861,6 @@ export const tariffIsApplicable = (
     }
 
     // currently we have no exclusions that are tariffs, so we don't need to check that
-  }
-
-  if (is99030306Child) {
-    console.log(
-      `Tariff Code: ${tariff.code} -- ${
-        (includesTariffs && hasApplicableTariffs) ||
-        (includesCountry && !codesSpecified && !includesTariffs) ||
-        (includesCode && !countriesSpecified && !includesTariffs) ||
-        (includesCountryAndCode && !includesTariffs)
-      }`,
-    )
   }
 
   // NOTE: this assumes we'll never have tariffs alongside codes, which we don't, for now
