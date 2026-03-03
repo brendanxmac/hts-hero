@@ -232,7 +232,9 @@ export default function Home() {
               <BoltIcon className="w-4 h-4 text-secondary" />
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-5">
-              Classify Anything,{" "}
+              Create <span className="bg-gradient-to-r from-secondary via-secondary to-primary bg-clip-text text-transparent">
+                Audit-Ready
+              </span> <br /> Classificaitons,{" "}
               <span className="bg-gradient-to-r from-secondary via-secondary to-primary bg-clip-text text-transparent">
                 Fast
               </span>

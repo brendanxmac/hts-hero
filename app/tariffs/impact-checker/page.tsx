@@ -43,6 +43,7 @@ import { fetchUser } from "../../../libs/supabase/user";
 import TariffImpactPricing from "../../../components/TariffImpactPricing";
 import apiClient from "../../../libs/api";
 import { discontinuedCodes2026 } from "../../../discontinued-codes-2026";
+import { ClassifyCTA } from "../../../components/ClassifyCTA";
 
 export default function Home() {
   const CHARACTER_LIMIT = 3000;
@@ -474,7 +475,14 @@ export default function Home() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-6">
+      <div className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 pb-6 pt-0">
+        {/* CTA Section */}
+        <ClassifyCTA
+          title="Create Audit-Ready HTS Classifications, Fast"
+          subtitle="Avoid costly HTS mistakes, secure profits, and stay compliant."
+          ctaText="Get Started"
+          ctaRedirectUrl="/about"
+        />
         <div className="flex flex-col gap-6">
           {/* HTS Code Selection Card */}
           <div className="relative rounded-2xl bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 border border-base-content/10 p-5">
