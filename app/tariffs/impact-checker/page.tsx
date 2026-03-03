@@ -440,7 +440,7 @@ export default function Home() {
               </div>
               <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
                 <span className="bg-gradient-to-r from-base-content via-base-content to-base-content/80 bg-clip-text">
-                  HTS Update Impact Checker
+                  Tariff Impact Checker
                 </span>
               </h1>
               <p className="text-base-content/60 text-sm md:text-base max-w-lg mt-1">
