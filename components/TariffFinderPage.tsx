@@ -426,8 +426,7 @@ export const TariffFinderPage = () => {
         units,
         customsValue
       );
-      console.log("newCountryWithTariffs")
-      console.log(newCountryWithTariffs)
+
       setCountryWithTariffs(newCountryWithTariffs);
     } else {
       setCountryWithTariffs(null);
