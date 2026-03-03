@@ -478,9 +478,9 @@ export default function Home() {
       <div className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 pb-6 pt-0">
         {/* CTA Section */}
         <ClassifyCTA
-          title="Create Audit-Ready HTS Classifications, Fast"
-          subtitle="Avoid costly HTS mistakes, secure profits, and stay compliant."
-          ctaText="Get Started"
+          title="Want Audit-Ready HTS Classifications, Fast?"
+          subtitle="Avoid costly HTS mistakes, secure profits, and stay compliant with our classification assistant."
+          ctaText="Try Now!"
           ctaRedirectUrl="/about"
         />
         <div className="flex flex-col gap-6">
