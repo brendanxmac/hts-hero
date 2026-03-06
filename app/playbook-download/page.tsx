@@ -19,8 +19,7 @@ export default function PlaybookDownloadPage() {
     [searchParams]
   );
   const [status, setStatus] = useState<PageStatus>(
-    // token ? "loading" : "no_token"
-    "downloaded"
+    token ? "loading" : "no_token"
   );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -38,44 +37,44 @@ export default function PlaybookDownloadPage() {
     URL.revokeObjectURL(blobUrl);
   }, []);
 
-  // useEffect(() => {
-  //   if (!token) return;
-  //   let cancelled = false;
+  useEffect(() => {
+    if (!token) return;
+    let cancelled = false;
 
-  //   (async () => {
-  //     try {
-  //       const res = await fetch(
-  //         `/api/audit-playbook-download?token=${encodeURIComponent(token)}`
-  //       );
-  //       const data = await res.json();
+    (async () => {
+      try {
+        const res = await fetch(
+          `/api/audit-playbook-download?token=${encodeURIComponent(token)}`
+        );
+        const data = await res.json();
 
-  //       if (cancelled) return;
+        if (cancelled) return;
 
-  //       if (!res.ok) {
-  //         setErrorMessage(data?.error ?? "Something went wrong. Please try again.");
-  //         setStatus("error");
-  //         return;
-  //       }
+        if (!res.ok) {
+          setErrorMessage(data?.error ?? "Something went wrong. Please try again.");
+          setStatus("error");
+          return;
+        }
 
-  //       if (data.signedUrl) {
-  //         await triggerDownload(data.signedUrl);
-  //         if (!cancelled) setStatus("downloaded");
-  //       } else {
-  //         setErrorMessage(data?.error ?? "Something went wrong. Please try again.");
-  //         setStatus("error");
-  //       }
-  //     } catch {
-  //       if (!cancelled) {
-  //         setErrorMessage("Something went wrong. Please try again.");
-  //         setStatus("error");
-  //       }
-  //     }
-  //   })();
+        if (data.signedUrl) {
+          await triggerDownload(data.signedUrl);
+          if (!cancelled) setStatus("downloaded");
+        } else {
+          setErrorMessage(data?.error ?? "Something went wrong. Please try again.");
+          setStatus("error");
+        }
+      } catch {
+        if (!cancelled) {
+          setErrorMessage("Something went wrong. Please try again.");
+          setStatus("error");
+        }
+      }
+    })();
 
-  //   return () => {
-  //     cancelled = true;
-  //   };
-  // }, [token, triggerDownload]);
+    return () => {
+      cancelled = true;
+    };
+  }, [token, triggerDownload]);
 
   if (status === "no_token") {
     return (

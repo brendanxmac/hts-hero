@@ -5,6 +5,8 @@ import Image from "next/image";
 import Footer from "../../components/Footer";
 import PlaybookCTA from "../../components/PlaybookCTA";
 
+const STORAGE_BASE = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/content`;
+
 const cardStyle =
   "bg-base-100 rounded-2xl shadow-lg shadow-base-content/10 border border-base-content/20 p-6 md:p-8";
 
@@ -166,7 +168,7 @@ export default function AuditReadyClassificationsPage() {
                   aria-label="View Brendan's LinkedIn profile"
                 >
                   <Image
-                    src="/profile-photo.png"
+                    src={`${STORAGE_BASE}/profile-photo.png`}
                     alt="Brendan"
                     width={1000}
                     height={1000}
@@ -198,7 +200,7 @@ export default function AuditReadyClassificationsPage() {
 
               <div className="relative w-full max-w-4xl mx-auto rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl shadow-base-content/20 border-2 sm:border-4 border-base-content/10 [&>img]:block">
                 <Image
-                  src="/The Defensible Classifications Playbook.png"
+                  src={`${STORAGE_BASE}/The Defensible Classifications Playbook.png`}
                   alt="The Audit-Ready Classifications Playbook - book cover"
                   width={1200}
                   height={800}
@@ -283,7 +285,7 @@ export default function AuditReadyClassificationsPage() {
               <div className="hidden md:block md:w-56 lg:w-72 xl:w-96 md:shrink-0 md:self-stretch min-h-[280px] lg:min-h-[320px]">
                 <div className="relative w-full h-full min-h-[280px]">
                   <Image
-                    src="/book-promo.png"
+                    src={`${STORAGE_BASE}/book-promo.png`}
                     alt="The Audit-Ready Classifications Playbook"
                     fill
                     sizes="(min-width: 1280px) 384px, (min-width: 768px) 288px, 224px"
@@ -501,7 +503,7 @@ export default function AuditReadyClassificationsPage() {
                   <div className="flex gap-4 md:gap-5 shrink-0 justify-center">
                     <div className="relative w-28 min-[400px]:w-36 sm:w-44 md:w-48 lg:w-64 aspect-[2/3] rounded-lg sm:rounded-xl overflow-hidden border-2 border-base-content/10 shadow-lg shrink-0 max-w-[85vw]">
                       <Image
-                        src="/book-cover.jpg"
+                        src={`${STORAGE_BASE}/book-cover.jpg`}
                         alt="The Audit-Ready Classifications Playbook"
                         fill
                         sizes="(max-width: 400px) 112px, (max-width: 640px) 144px, (max-width: 768px) 176px, (max-width: 1024px) 192px, 256px"
