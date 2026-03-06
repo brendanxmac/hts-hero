@@ -1,35 +1,10 @@
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
 import config from "@/config";
 import logo from "@/app/logo.svg";
-import ButtonAccount from "./ButtonAccount";
-import ButtonSupport from "./ButtonSupport";
-import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { getTutorialFromPathname, Tutorial, TutorialI } from "./Tutorial";
-import { PlayIcon } from "@heroicons/react/16/solid";
 import ThemeToggle from "./ThemeToggle";
-import { ToolsDropdown, MobileToolsMenu } from "./ToolsDropdown";
 
 export const LeadMagnetHeader = () => {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [showTutorial, setShowTutorial] = useState(false);
-  const [tutorial, setTutorial] = useState<TutorialI | null>(null);
-
-  useEffect(() => {
-    const tutorial = getTutorialFromPathname(pathname);
-    setTutorial(tutorial);
-  }, [pathname]);
-
-  // setIsOpen(false) when the route changes (i.e: when the user clicks on a link on mobile)
-  useEffect(() => {
-    setIsOpen(false);
-  }, [searchParams]);
-
   return (
     <>
       <header className="w-full h-16 z-50 bg-base-100 p-3 border-b border-base-content/20 flex items-center">
