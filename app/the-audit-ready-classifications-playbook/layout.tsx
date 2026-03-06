@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
 import { LeadMagnetHeader } from "../../components/LeadMagnetHeader";
 
 export default async function LayoutPrivate({
@@ -9,7 +9,9 @@ export default async function LayoutPrivate({
 
   return (
     <div className="flex flex-col bg-base-100">
-      <LeadMagnetHeader />
+      <Suspense fallback={<div className="w-full h-16" />}>
+        <LeadMagnetHeader />
+      </Suspense>
       {children}
     </div>
   );

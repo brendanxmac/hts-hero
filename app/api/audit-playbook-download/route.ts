@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
 
     await sendEmailFromComponent({
       to: email,
-      subject: "Delivered: The Audit-Ready Classifications Playbook",
+      subject: "Delivered: Audit-Ready Classifications",
       emailComponent: React.createElement(PlaybookDownloadEmail, {
         downloadUrl,
       }),
