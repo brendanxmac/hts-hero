@@ -25,10 +25,16 @@ type PlaybookCTAProps = {
 };
 
 const emailSentMessage = (
-  <div className="rounded-lg bg-primary/10 border border-primary/30 p-4 text-center">
-    <p className="text-primary font-bold text-base sm:text-lg mb-1">Check your email</p>
-    <p className="text-base-content/90 text-sm sm:text-base">
-      We sent you a secure link to download your playbook. The link expires in 8 hours.
+  <div className="rounded-xl bg-gradient-to-br from-primary/15 via-primary/5 to-secondary/10 border-2 border-primary/30 p-5 sm:p-6 text-center space-y-3 animate-[fadeIn_0.4s_ease-out]">
+    <div className="text-4xl sm:text-5xl leading-none">🎉</div>
+    <p className="text-primary font-extrabold text-lg sm:text-xl tracking-tight">
+      You&apos;re in! Check your inbox.
+    </p>
+    <p className="text-base-content/80 text-sm sm:text-base max-w-sm mx-auto leading-relaxed">
+      Your download link is on its way! Check your inbox for a message from HTS Hero.
+    </p>
+    <p className="text-xs text-base-content/50 italic">
+      Don&apos;t see it? Check your spam folder. <br /> Link expires in 8 hours.
     </p>
   </div>
 );

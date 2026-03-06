@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
 
     await sendEmailFromComponent({
       to: email,
-      subject: "Your Copy of The Audit-Ready Classifications Playbook",
+      subject: "Delivered: The Audit-Ready Classifications Playbook",
       emailComponent: React.createElement(PlaybookDownloadEmail, {
         downloadUrl,
       }),
@@ -133,7 +133,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(
         {
           error:
-            "Invalid or expired download link. Please request a new link from your email.",
+            "Invalid or expired download link. You can request a new link from the playbook page if you need another copy.",
         },
         { status: 400 },
       )
@@ -143,7 +143,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(
         {
           error:
-            "This download link has already been used. Request a new link from your email if you need another copy.",
+            "This download link has already been used. You can request a new link from the playbook page if you need another copy.",
         },
         { status: 400 },
       )
@@ -153,7 +153,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(
         {
           error:
-            "This download link has expired. Please request a new link from your email.",
+            "This download link has expired. You can request a new link from the playbook page if you need another copy.",
         },
         { status: 400 },
       )

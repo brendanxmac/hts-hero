@@ -28,7 +28,7 @@ export default function PlaybookDownloadPage() {
     a.href = signedUrl;
     a.download = PLAYBOOK_FILENAME;
     a.rel = "noopener noreferrer";
-    a.target = "_blank";
+    // a.target = "_blank";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -106,7 +106,7 @@ export default function PlaybookDownloadPage() {
               href="/the-audit-ready-classifications-playbook"
               className="btn btn-primary"
             >
-              Back to playbook
+              Go to Playbook Page
             </Link>
           </div>
         </main>
