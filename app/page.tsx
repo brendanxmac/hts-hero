@@ -255,7 +255,7 @@ export default function Home() {
               <span className="text-base-content">Tariffs,</span>
               <br />
               <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
-                Quicker
+                Audit-Ready
               </span>{" "}
               <span className="text-base-content">Classifications</span>
               <br />
@@ -409,11 +409,10 @@ export default function Home() {
                   {heroImages.map((image, index) => (
                     <div
                       key={image.id}
-                      className={`absolute inset-0 transition-all duration-700 ease-in-out ${
-                        index === activeImageIndex
+                      className={`absolute inset-0 transition-all duration-700 ease-in-out ${index === activeImageIndex
                           ? "opacity-100 scale-100"
                           : "opacity-0 scale-[1.02]"
-                      }`}
+                        }`}
                     >
                       {/* Mobile image */}
                       <Image
@@ -442,11 +441,10 @@ export default function Home() {
                       <button
                         key={image.id}
                         onClick={() => setActiveImageIndex(index)}
-                        className={`group flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 ${
-                          index === activeImageIndex
+                        className={`group flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 ${index === activeImageIndex
                             ? "bg-primary text-white shadow-lg shadow-primary/25"
                             : "bg-base-200/80 text-base-content/70 hover:bg-base-300/80 hover:text-base-content"
-                        }`}
+                          }`}
                       >
                         {/* <span className="text-sm">{image.emoji}</span> */}
                         <span className="text-sm font-medium">

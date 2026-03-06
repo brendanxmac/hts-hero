@@ -162,7 +162,7 @@ export default function TariffImpactTrialSartedEmail() {
             </Text>
 
             <Text className="text-center text-gray-400 text-xs my-1">
-              © 2025 HTS Hero. All rights reserved.
+              © 2026 HTS Hero. All rights reserved.
             </Text>
           </Section>
         </Container>

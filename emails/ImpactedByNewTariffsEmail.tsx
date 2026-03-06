@@ -196,7 +196,7 @@ export default function ImpactedByNewTariffsEmail({
           {/* Footer */}
           <Section className="text-center pt-6">
             <Text className="text-center text-gray-400 text-xs my-2">
-              © 2025 HTS Hero. All rights reserved.
+              © 2026 HTS Hero. All rights reserved.
             </Text>
           </Section>
         </Container>
