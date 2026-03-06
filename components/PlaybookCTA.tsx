@@ -31,7 +31,7 @@ const emailSentMessage = (
       You&apos;re in! Check your inbox.
     </p>
     <p className="text-base-content/80 text-sm sm:text-base max-w-sm mx-auto leading-relaxed">
-      Your download link is on its way! Check your inbox for a message from HTS Hero.
+      Your download link is on its way, check your inbox for a message from HTS Hero.
     </p>
     <p className="text-xs text-base-content/50 italic">
       Don&apos;t see it? Check your spam folder. <br /> Link expires in 8 hours.

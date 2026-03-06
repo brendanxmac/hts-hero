@@ -19,59 +19,63 @@ export default function PlaybookDownloadPage() {
     [searchParams]
   );
   const [status, setStatus] = useState<PageStatus>(
-    token ? "loading" : "no_token"
+    // token ? "loading" : "no_token"
+    "downloaded"
   );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const triggerDownload = useCallback((signedUrl: string) => {
+  const triggerDownload = useCallback(async (signedUrl: string) => {
+    const response = await fetch(signedUrl);
+    if (!response.ok) throw new Error("Failed to download file");
+    const blob = await response.blob();
+    const blobUrl = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = signedUrl;
+    a.href = blobUrl;
     a.download = PLAYBOOK_FILENAME;
-    a.rel = "noopener noreferrer";
-    // a.target = "_blank";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+    URL.revokeObjectURL(blobUrl);
   }, []);
 
-  useEffect(() => {
-    if (!token) return;
-    let cancelled = false;
+  // useEffect(() => {
+  //   if (!token) return;
+  //   let cancelled = false;
 
-    (async () => {
-      try {
-        const res = await fetch(
-          `/api/audit-playbook-download?token=${encodeURIComponent(token)}`
-        );
-        const data = await res.json();
+  //   (async () => {
+  //     try {
+  //       const res = await fetch(
+  //         `/api/audit-playbook-download?token=${encodeURIComponent(token)}`
+  //       );
+  //       const data = await res.json();
 
-        if (cancelled) return;
+  //       if (cancelled) return;
 
-        if (!res.ok) {
-          setErrorMessage(data?.error ?? "Something went wrong. Please try again.");
-          setStatus("error");
-          return;
-        }
+  //       if (!res.ok) {
+  //         setErrorMessage(data?.error ?? "Something went wrong. Please try again.");
+  //         setStatus("error");
+  //         return;
+  //       }
 
-        if (data.signedUrl) {
-          triggerDownload(data.signedUrl);
-          setStatus("downloaded");
-        } else {
-          setErrorMessage(data?.error ?? "Something went wrong. Please try again.");
-          setStatus("error");
-        }
-      } catch {
-        if (!cancelled) {
-          setErrorMessage("Something went wrong. Please try again.");
-          setStatus("error");
-        }
-      }
-    })();
+  //       if (data.signedUrl) {
+  //         await triggerDownload(data.signedUrl);
+  //         if (!cancelled) setStatus("downloaded");
+  //       } else {
+  //         setErrorMessage(data?.error ?? "Something went wrong. Please try again.");
+  //         setStatus("error");
+  //       }
+  //     } catch {
+  //       if (!cancelled) {
+  //         setErrorMessage("Something went wrong. Please try again.");
+  //         setStatus("error");
+  //       }
+  //     }
+  //   })();
 
-    return () => {
-      cancelled = true;
-    };
-  }, [token, triggerDownload]);
+  //   return () => {
+  //     cancelled = true;
+  //   };
+  // }, [token, triggerDownload]);
 
   if (status === "no_token") {
     return (
@@ -137,22 +141,22 @@ export default function PlaybookDownloadPage() {
           {/* Success hero */}
           <section className="text-center mb-12 md:mb-16">
             <div className="inline-flex items-center justify-center gap-2 rounded-full bg-primary/15 text-primary font-semibold text-sm uppercase tracking-wider px-4 py-2 mb-6">
-              <span aria-hidden>✓</span> Your playbook is ready
+              <span aria-hidden>✓</span> Playbook Downloaded!
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-base-content mb-4">
-              You&apos;re a few steps away from{" "}
-              <span className="text-primary">audit-ready classifications</span>
+              You&apos;re One Step Closer to{" "}
+              <span className="text-primary">Audit-Ready</span> Classifications!
             </h1>
             <p className="text-lg md:text-xl text-base-content/80 max-w-2xl mx-auto">
               You have the playbook. Now use free resources like the{" "}
-              <span className="font-semibold text-primary">Classification Assistant</span> to start classifying 10x faster—build defensible HTS codes in minutes, not hours.
+              <Link href="/about" className="link link-primary font-bold">Classification Assistant</Link> to classify in minutes, not hours.
             </p>
           </section>
 
           {/* Why you're close */}
           <section className={cardStyle + " mb-8"}>
             <h2 className="text-xl md:text-2xl font-bold text-base-content mb-6 text-center">
-              Why you&apos;re already ahead
+              What&apos;s Next?
             </h2>
             <ul className="space-y-4 text-left">
               <li className="flex items-start gap-3 text-base md:text-lg text-base-content/90">
@@ -164,16 +168,19 @@ export default function PlaybookDownloadPage() {
               <li className="flex items-start gap-3 text-base md:text-lg text-base-content/90">
                 <span className="text-primary font-bold shrink-0 text-lg">2.</span>
                 <span>
-                  <strong className="text-base-content">You have the tool.</strong> The HTS Hero Classification Assistant turns that process into speed: AI-powered candidates, GRI-style analysis, and CROSS ruling validation—all in one place.
+                  <strong className="text-base-content">You have the tool.</strong> The HTS Hero <Link href="/about" className="link link-primary font-bold">Classification Assistant</Link> turns that process into speed: AI-powered candidate discovery & legal note & GRI analysis, all documented in a single place.
                 </span>
               </li>
               <li className="flex items-start gap-3 text-base md:text-lg text-base-content/90">
                 <span className="text-primary font-bold shrink-0 text-lg">3.</span>
                 <span>
-                  <strong className="text-base-content">You can start right now.</strong> No setup. Enter a product description, get candidate codes, document your reasoning, and generate an audit-ready report in minutes.
+                  <strong className="text-base-content">You can start right now.</strong> No setup. Enter a product description, get candidates, see the analysis, document your reasoning, and generate an audit-ready report in minutes.
                 </span>
               </li>
             </ul>
+            <Link href="/classifications" className="btn btn-primary btn-lg mt-6 w-full">
+              Try Classification Assistant FREE!
+            </Link>
           </section>
 
           {/* How to use the Classification Assistant */}
@@ -192,7 +199,7 @@ export default function PlaybookDownloadPage() {
                 <div>
                   <strong className="text-base-content block mb-1">Describe your product</strong>
                   <p className="text-base-content/80 text-sm md:text-base">
-                    Enter a product description (or paste from your system). The assistant suggests likely HTS candidates in seconds.
+                    Enter a product description (or paste from your system) and get likely HTS candidates in seconds.
                   </p>
                 </div>
               </li>
@@ -203,7 +210,7 @@ export default function PlaybookDownloadPage() {
                 <div>
                   <strong className="text-base-content block mb-1">Review and validate</strong>
                   <p className="text-base-content/80 text-sm md:text-base">
-                    Use GRI-style analysis and CROSS rulings to confirm the best fit and document your reasoning—exactly what the playbook recommends.
+                    Use the AI legal notes & GRI analysis to confirm the best fit and document your reasoning just like the playbook recommends.
                   </p>
                 </div>
               </li>
@@ -214,7 +221,7 @@ export default function PlaybookDownloadPage() {
                 <div>
                   <strong className="text-base-content block mb-1">Export your audit-ready report</strong>
                   <p className="text-base-content/80 text-sm md:text-base">
-                    Generate a professional, branded classification report in one click. Ready to file or share with your team.
+                    Generate a professional, branded classification report in one click. Ready to file or share with your team or client.
                   </p>
                 </div>
               </li>
@@ -240,7 +247,7 @@ export default function PlaybookDownloadPage() {
           {/* Trust strip */}
           <div className="mt-12 pt-8 border-t border-base-content/10 text-center">
             <p className="text-sm md:text-base font-semibold text-base-content/70">
-              Trusted by customs brokers & importers · 1,000+ audit-ready HTS classifications created
+              Trusted by customs brokers & importers to generate 1,000+ audit-ready HTS classifications
             </p>
           </div>
         </div>
