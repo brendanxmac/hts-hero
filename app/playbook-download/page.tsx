@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import Footer from "../../components/Footer";
 
 const cardStyle =
@@ -9,10 +10,18 @@ const cardStyle =
 
 const PLAYBOOK_FILENAME = "The Audit Ready Classifications Playbook.pdf";
 
-type PageStatus = "loading" | "downloaded" | "error";
+type PageStatus = "loading" | "downloaded" | "error" | "no_token";
 
 export default function PlaybookDownloadPage() {
-  const [status, setStatus] = useState<PageStatus>("loading");
+  const searchParams = useSearchParams();
+  const token = useMemo(
+    () => searchParams.get("token")?.trim() ?? null,
+    [searchParams]
+  );
+  const [status, setStatus] = useState<PageStatus>(
+    token ? "loading" : "no_token"
+  );
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const triggerDownload = useCallback((signedUrl: string) => {
     const a = document.createElement("a");
@@ -26,16 +35,20 @@ export default function PlaybookDownloadPage() {
   }, []);
 
   useEffect(() => {
+    if (!token) return;
     let cancelled = false;
 
     (async () => {
       try {
-        const res = await fetch("/api/audit-playbook-download");
+        const res = await fetch(
+          `/api/audit-playbook-download?token=${encodeURIComponent(token)}`
+        );
         const data = await res.json();
 
         if (cancelled) return;
 
         if (!res.ok) {
+          setErrorMessage(data?.error ?? "Something went wrong. Please try again.");
           setStatus("error");
           return;
         }
@@ -44,17 +57,42 @@ export default function PlaybookDownloadPage() {
           triggerDownload(data.signedUrl);
           setStatus("downloaded");
         } else {
+          setErrorMessage(data?.error ?? "Something went wrong. Please try again.");
           setStatus("error");
         }
       } catch {
-        if (!cancelled) setStatus("error");
+        if (!cancelled) {
+          setErrorMessage("Something went wrong. Please try again.");
+          setStatus("error");
+        }
       }
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [triggerDownload]);
+  }, [token, triggerDownload]);
+
+  if (status === "no_token") {
+    return (
+      <div className="min-h-screen flex flex-col bg-base-100">
+        <main className="relative flex-1 flex items-center justify-center px-4">
+          <div className="max-w-md w-full text-center">
+            <p className="text-base-content/90 font-semibold mb-4">
+              Use the secure link from your email to download the playbook. The link is one-time use and expires in 8 hours.
+            </p>
+            <Link
+              href="/the-audit-ready-classifications-playbook"
+              className="btn btn-primary"
+            >
+              Get a new download link
+            </Link>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   if (status === "error") {
     return (
@@ -62,7 +100,7 @@ export default function PlaybookDownloadPage() {
         <main className="relative flex-1 flex items-center justify-center px-4">
           <div className="max-w-md w-full text-center">
             <p className="text-error font-semibold mb-4">
-              Something went wrong. Please try again.
+              {errorMessage ?? "Something went wrong. Please try again."}
             </p>
             <Link
               href="/the-audit-ready-classifications-playbook"

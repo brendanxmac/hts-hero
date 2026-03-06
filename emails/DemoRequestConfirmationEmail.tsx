@@ -237,7 +237,7 @@ export default function DemoRequestConfirmationEmail({
             }}
           >
             <Text className="text-center text-gray-400 text-sm my-2">
-              © 2025 HTS Hero. All rights reserved.
+              © 2026 HTS Hero. All rights reserved.
             </Text>
             <Text className="text-center text-gray-500 text-sm my-2">
               Questions? Reply to this email or contact us at{" "}

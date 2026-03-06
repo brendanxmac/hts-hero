@@ -56,47 +56,47 @@ export default function PlaybookCTA({
             emailSentMessage
           ) : (
             <>
-          <p className="text-primary font-bold text-sm sm:text-base xl:text-lg mb-3 sm:mb-5 break-words px-2">
-            A ${bonusTotalValue} value for absolutely free!
-          </p>
-          <div className="flex flex-col gap-2 sm:gap-3 w-full min-w-0">
-            <input
-              type="email"
-              placeholder="Enter your best email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && onSubmit()}
-              className="input input-bordered input-md md:input-lg w-full min-w-0 text-sm sm:text-base input-primary"
-              disabled={isLoading}
-              aria-label="Email address"
-            />
-            <button
-              onClick={onSubmit}
-              disabled={isLoading}
-              className="btn btn-primary btn-md md:btn-lg font-bold w-full min-w-0 text-sm sm:text-base break-words transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:opacity-70"
-            >
-              {isLoading ? "Sending…" : "Send Me the Playbook!"}
-            </button>
-
-            <p className="text-[10px] min-[360px]:text-xs font-semibold text-primary uppercase tracking-wider py-2 break-words">
-              Instant access — no credit card required
-            </p>
-
-            <div className="flex gap-1 justify-center items-center mb-4">
-              <ClockIcon className="h-3.5 w-3.5 text-secondary animate-pulse" />
-              <p className="text-secondary font-bold text-xs sm:text-sm">
-                Bonuses Only Available During March
+              <p className="text-primary font-bold text-sm sm:text-base xl:text-lg mb-3 sm:mb-5 break-words px-2">
+                A ${bonusTotalValue} value for absolutely free!
               </p>
-            </div>
-          </div>
-          {error && (
-            <p className="mt-2 sm:mt-3 text-xs sm:text-sm text-error font-medium break-words">{error}</p>
-          )}
+              <div className="flex flex-col gap-2 sm:gap-3 w-full min-w-0">
+                <input
+                  type="email"
+                  placeholder="Enter your best email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && onSubmit()}
+                  className="input input-bordered input-md md:input-lg w-full min-w-0 text-sm sm:text-base input-primary"
+                  disabled={isLoading}
+                  aria-label="Email address"
+                />
+                <button
+                  onClick={onSubmit}
+                  disabled={isLoading}
+                  className="btn btn-primary btn-md md:btn-lg font-bold w-full min-w-0 text-sm sm:text-base break-words transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:opacity-70"
+                >
+                  {isLoading ? "Sending…" : "Send Me the Playbook!"}
+                </button>
+
+                <p className="text-[10px] min-[360px]:text-xs font-semibold text-primary uppercase tracking-wider py-2 break-words">
+                  Instant access — no credit card required
+                </p>
+
+                <div className="flex gap-1 justify-center items-center mb-4">
+                  <ClockIcon className="h-3.5 w-3.5 text-secondary animate-pulse" />
+                  <p className="text-secondary font-bold text-xs sm:text-sm">
+                    Bonuses Only Available During March
+                  </p>
+                </div>
+              </div>
+              {error && (
+                <p className="mt-2 sm:mt-3 text-xs sm:text-sm text-error font-medium break-words">{error}</p>
+              )}
             </>
           )}
         </div>
         {!emailSent && (
-          <p className="text-center text-xs sm:text-sm text-base-content/70 pt-2 break-words">
+          <p className="text-center text-xs text-base-content/70 pt-2 break-words">
             We never share your email and don&apos;t send spam. <br /> Unsubscribe anytime.
           </p>
         )}
@@ -116,46 +116,46 @@ export default function PlaybookCTA({
           emailSentMessage
         ) : (
           <>
-        <p className="text-primary font-bold text-base sm:text-lg md:text-xl mb-4 sm:mb-6 break-words">
-          A ${bonusTotalValue} value, FREE today when you enter your email below!
-        </p>
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 max-w-xl mx-auto w-full min-w-0">
-          <input
-            type="email"
-            placeholder="Enter your best email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && onSubmit()}
-            className="input input-bordered input-lg w-full min-w-0 text-sm sm:text-base input-primary"
-            disabled={isLoading}
-            aria-label="Email address"
-          />
-          <button
-            onClick={onSubmit}
-            disabled={isLoading}
-            className="btn btn-primary btn-lg font-bold w-full sm:w-auto sm:flex-shrink-0 text-sm sm:text-base break-words transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:opacity-70"
-          >
-            {isLoading ? "Sending…" : "Send Me the Playbook!"}
-          </button>
-        </div>
+            <p className="text-primary font-bold text-base sm:text-lg md:text-xl mb-4 sm:mb-6 break-words">
+              A ${bonusTotalValue} value, FREE today when you enter your email below!
+            </p>
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 max-w-xl mx-auto w-full min-w-0">
+              <input
+                type="email"
+                placeholder="Enter your best email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && onSubmit()}
+                className="input input-bordered input-lg w-full min-w-0 text-sm sm:text-base input-primary"
+                disabled={isLoading}
+                aria-label="Email address"
+              />
+              <button
+                onClick={onSubmit}
+                disabled={isLoading}
+                className="btn btn-primary btn-lg font-bold w-full sm:w-auto sm:flex-shrink-0 text-sm sm:text-base break-words transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:opacity-70"
+              >
+                {isLoading ? "Sending…" : "Send Me the Playbook!"}
+              </button>
+            </div>
 
-        <p className="text-xs sm:text-sm font-semibold text-primary uppercase tracking-wider my-2 pt-2 break-words">
-          Instant access — no credit card required
-        </p>
+            <p className="text-xs sm:text-sm font-semibold text-primary uppercase tracking-wider my-2 pt-2 break-words">
+              Instant access — no credit card required
+            </p>
 
-        <div className="flex gap-2 justify-center items-center animate-pulse mt-2 lg:my-3">
-          <ClockIcon className="h-3.5 w-3.5 text-secondary" />
-          <p className="text-secondary font-bold text-xs sm:text-sm">
-            Bonuses Only Available During March
-          </p>
-        </div>
+            <div className="flex gap-2 justify-center items-center animate-pulse mt-2 lg:my-3">
+              <ClockIcon className="h-3.5 w-3.5 text-secondary" />
+              <p className="text-secondary font-bold text-xs sm:text-sm">
+                Bonuses Only Available During March
+              </p>
+            </div>
 
-        <p className="mt-2 sm:mt-4 text-xs sm:text-sm text-base-content/60 max-w-lg mx-auto break-words px-1">
-          We never share your email and don&apos;t send spam. Unsubscribe anytime.
-        </p>
-        {error && (
-          <p className="mt-2 sm:mt-3 text-xs sm:text-sm text-error font-medium break-words">{error}</p>
-        )}
+            <p className="mt-2 sm:mt-4 text-xs text-base-content/60 max-w-lg mx-auto break-words px-1">
+              We never share your email and don&apos;t send spam. Unsubscribe anytime.
+            </p>
+            {error && (
+              <p className="mt-2 sm:mt-3 text-xs sm:text-sm text-error font-medium break-words">{error}</p>
+            )}
           </>
         )}
       </div>

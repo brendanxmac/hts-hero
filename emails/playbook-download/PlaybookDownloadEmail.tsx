@@ -33,10 +33,10 @@ export default function PlaybookDownloadEmail({
         <Container className="mx-auto py-4 font-sans max-w-[600px] bg-white">
           <Section className="text-center px-2 mb-6">
             <Heading className="text-2xl font-bold text-gray-900 mb-4">
-              Your Free Copy of the Audit-Ready Classifications Playbook Has Arrived!
+              Your Copy of &quot;The Audit-Ready Classifications Playbook&quot; has arrived!
             </Heading>
             <Text className="text-base text-gray-800 leading-relaxed mt-0 mb-6">
-              It&apos;s time to start producing audit-ready classifications that reduce import risk and protect your profits! Click the button below to download your copy. (link expires in 8 hours)
+              Are you ready to start producing audit-ready classifications that reduce import risk and protect your profits? Click the button below to download your copy and get started!
             </Text>
 
             <Container className="mb-6">
@@ -70,6 +70,9 @@ export default function PlaybookDownloadEmail({
             <Text className="text-sm text-[#4F46E5] break-all mt-1">
               {downloadUrl}
             </Text>
+            <Text className="text-sm text-black break-all mt-1">
+              Note: This link expires in 8 hours.
+            </Text>
           </Section>
 
           <Section className="px-4 my-10 text-center">
@@ -83,7 +86,7 @@ export default function PlaybookDownloadEmail({
 
           <Section className="text-center pt-6">
             <Text className="text-center text-gray-400 text-xs my-2">
-              © 2025 HTS Hero. All rights reserved.
+              © 2026 HTS Hero. All rights reserved.
             </Text>
           </Section>
         </Container>

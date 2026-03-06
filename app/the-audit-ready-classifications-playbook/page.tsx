@@ -23,6 +23,20 @@ export default function AuditReadyClassificationsPage() {
 
   const [emailSent, setEmailSent] = useState(false);
 
+  const getMarketingPayload = () => {
+    if (typeof window === "undefined") return {};
+    const params = new URLSearchParams(window.location.search);
+    return {
+      page_url: window.location.href,
+      referrer: document.referrer || undefined,
+      utm_source: params.get("utm_source") ?? undefined,
+      utm_medium: params.get("utm_medium") ?? undefined,
+      utm_campaign: params.get("utm_campaign") ?? undefined,
+      utm_term: params.get("utm_term") ?? undefined,
+      utm_content: params.get("utm_content") ?? undefined,
+    };
+  };
+
   const handleDownload = async () => {
     setError("");
     const trimmed = email.trim();
@@ -40,7 +54,10 @@ export default function AuditReadyClassificationsPage() {
       const res = await fetch("/api/audit-playbook-download", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: trimmed }),
+        body: JSON.stringify({
+          email: trimmed,
+          ...getMarketingPayload(),
+        }),
       });
       const data = await res.json();
 
