@@ -1,12 +1,97 @@
 "use client";
 
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Footer from "../../components/Footer";
 
 const cardStyle =
   "bg-base-100 rounded-2xl shadow-lg shadow-base-content/10 border border-base-content/20 p-6 md:p-8";
 
-export default function AuditReadyPlaybookDownloadedPage() {
+const PLAYBOOK_FILENAME = "The Audit Ready Classifications Playbook.pdf";
+
+type PageStatus = "loading" | "downloaded" | "error";
+
+export default function PlaybookDownloadPage() {
+  const [status, setStatus] = useState<PageStatus>("loading");
+
+  const triggerDownload = useCallback((signedUrl: string) => {
+    const a = document.createElement("a");
+    a.href = signedUrl;
+    a.download = PLAYBOOK_FILENAME;
+    a.rel = "noopener noreferrer";
+    a.target = "_blank";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const res = await fetch("/api/audit-playbook-download");
+        const data = await res.json();
+
+        if (cancelled) return;
+
+        if (!res.ok) {
+          setStatus("error");
+          return;
+        }
+
+        if (data.signedUrl) {
+          triggerDownload(data.signedUrl);
+          setStatus("downloaded");
+        } else {
+          setStatus("error");
+        }
+      } catch {
+        if (!cancelled) setStatus("error");
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [triggerDownload]);
+
+  if (status === "error") {
+    return (
+      <div className="min-h-screen flex flex-col bg-base-100">
+        <main className="relative flex-1 flex items-center justify-center px-4">
+          <div className="max-w-md w-full text-center">
+            <p className="text-error font-semibold mb-4">
+              Something went wrong. Please try again.
+            </p>
+            <Link
+              href="/the-audit-ready-classifications-playbook"
+              className="btn btn-primary"
+            >
+              Back to playbook
+            </Link>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen flex flex-col bg-base-100">
+        <main className="relative flex-1 flex items-center justify-center px-4">
+          <div className="text-center">
+            <span className="loading loading-spinner loading-lg text-primary" />
+            <p className="mt-4 text-base-content/80">Preparing your download…</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // status === "downloaded"
   return (
     <div className="min-h-screen flex flex-col bg-base-100">
       <main className="relative flex-1">
@@ -21,7 +106,8 @@ export default function AuditReadyPlaybookDownloadedPage() {
               <span className="text-primary">audit-ready classifications</span>
             </h1>
             <p className="text-lg md:text-xl text-base-content/80 max-w-2xl mx-auto">
-              You have the playbook. Now pair it with the tool that helps customs brokers and importers build defensible HTS codes in minutes—not hours.
+              You have the playbook. Now use free resources like the{" "}
+              <span className="font-semibold text-primary">Classification Assistant</span> to start classifying 10x faster—build defensible HTS codes in minutes, not hours.
             </p>
           </section>
 

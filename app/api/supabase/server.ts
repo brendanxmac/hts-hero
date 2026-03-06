@@ -72,7 +72,8 @@ export async function requesterIsAuthenticated(req: NextRequest) {
 
 export const getSignedUrl = async (
   bucket: string,
-  path: string
+  path: string,
+  expirySeconds: number = 60 * 60 * 1
 ): Promise<FileUploadDownloadResponse> => {
   // Remove leading slash if present to match Supabase storage path format
   let cleanPath = path.startsWith("/") ? path.slice(1) : path;
@@ -82,15 +83,11 @@ export const getSignedUrl = async (
     cleanPath = cleanPath.slice(bucket.length + 1);
   }
 
-  console.log("BUCKET", bucket);
-  console.log("PATH", path);
-  console.log("CLEAN PATH", cleanPath);
-
   // Use admin client with service role key for storage operations
   const supabase = createAdminClient();
   const { data, error } = await supabase.storage
     .from(bucket)
-    .createSignedUrl(cleanPath, 60 * 60 * 1); // valid for 1 hour
+    .createSignedUrl(cleanPath, expirySeconds);
 
   if (error) {
     console.error("Failed to create signed URL:", error);
