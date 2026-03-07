@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Footer from "../../components/Footer";
 import PlaybookCTA from "../../components/PlaybookCTA";
+import PlaybookCTAWithImage from "../../components/PlaybookCTAWithImage";
 
 const STORAGE_BASE = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/content`;
 
@@ -89,15 +90,10 @@ export default function AuditReadyClassificationsPage() {
             <p className="w-full max-w-4xl mx-auto py-2 px-4 sm:px-6 bg-primary/90 rounded-md text-base-100 font-bold text-xs sm:text-base md:text-lg tracking-wider mb-0 break-words">
               Claim your <span className="underline">FREE</span> Copy of &quot;The Audit-Ready Classifications Playbook&quot; & Learn:
             </p>
-            {/* <p className="text-secondary text-sm md:text-base font-bold">
-              Only 297 Free Copies Left!
-            </p> */}
 
             <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 sm:mb-8 break-words leading-tight">
               How to Produce HTS Classifications that Reduce Import Risk And Protect Profits
             </h1>
-
-            {/* <p className="md:text-xl">A simple system that importers love and anyone can follow</p> */}
 
             {/* Book cover + download form (side-by-side on wide screens, same height for future video swap) */}
             <div className="w-full max-w-full mb-6 sm:mb-10 grid grid-cols-1 lg:grid-cols-[1fr,minmax(280px,400px)] lg:gap-6 xl:gap-10 lg:items-stretch lg:text-left min-w-0">
@@ -140,9 +136,9 @@ export default function AuditReadyClassificationsPage() {
           </section>
 
           {/* Attention-grabber block - styled like classic funnel headline */}
-          <section className="max-w-5xl mx-auto px-4 sm:px-6 pt-8 lg:pt-16">
+          <section className="max-w-5xl mx-auto px-4 sm:px-6 pt-8 lg:pt-10">
             <div className="text-center min-w-0">
-              <p className="p-2 sm:p-3 font-bold text-base-content bg-warning/70 text-sm sm:text-base md:text-lg lg:text-xl mb-4 sm:mb-6 md:mb-12 break-words">
+              <p className="p-2 sm:p-3 font-bold text-base-content bg-warning/70 text-sm sm:text-base md:text-lg lg:text-xl mb-4 sm:mb-6 md:mb-8 break-words">
                 Attention: Importers, Customs Brokers, Compliance Teams And Classification Professionals...
               </p>
 
@@ -230,7 +226,7 @@ export default function AuditReadyClassificationsPage() {
                 </span>
               </div>
 
-              <PlaybookCTA
+              {/* <PlaybookCTA
                 email={email}
                 setEmail={setEmail}
                 error={error}
@@ -239,7 +235,17 @@ export default function AuditReadyClassificationsPage() {
                 bonusTotalValue={BONUS_TOTAL_VALUE}
                 copiesLeft={FREE_COPIES_LEFT}
                 emailSent={emailSent}
+              /> */}
+
+              <PlaybookCTAWithImage
+                email={email}
+                setEmail={setEmail}
+                error={error}
+                isLoading={isLoading}
+                onSubmit={handleDownload}
+                emailSent={emailSent}
               />
+
             </div>
           </section>
 
@@ -275,7 +281,7 @@ export default function AuditReadyClassificationsPage() {
 
           {/* What you get - benefits first */}
           <section className="py-8 sm:py-12 md:py-20 md:pb-10 max-w-4xl md:max-w-full mx-auto px-4 sm:px-6 text-center min-w-0">
-            <h2 className="text-2xl min-[400px]:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-2 break-words">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-2 break-words">
               What&apos;s <span className="text-primary">Inside</span> The Playbook?
             </h2>
             <p className="text-center text-base-content/80 mb-6 sm:mb-8 lg:mb-12 max-w-xl mx-auto text-base sm:text-lg lg:text-xl break-words">
@@ -331,10 +337,10 @@ export default function AuditReadyClassificationsPage() {
           {/* Free Bonuses */}
           <section className="pb-8 px-4 sm:px-6 min-w-0">
             <div className="max-w-4xl mx-auto w-full">
-              <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-center mb-2 sm:mb-8 text-base-content break-words">
+              <h3 className="sm:text-lg md:text-xl lg:text-2xl font-bold text-center mb-4 sm:mb-8 lg:mb-12 text-base-content break-words">
                 If You Download The Playbook <span className="underline">Today</span>, You&apos;ll
               </h3>
-              <h2 className="text-primary text-2xl min-[400px]:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-center mb-4 sm:mb-6 lg:mb-14 max-w-3xl mx-auto break-words leading-tight">
+              <h2 className="text-primary text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-center mb-4 sm:mb-6 lg:mb-14 max-w-3xl mx-auto break-words leading-tight">
                 Unlock the Following Bonuses for FREE!
               </h2>
 
@@ -497,71 +503,18 @@ export default function AuditReadyClassificationsPage() {
 
           {/* Final CTA block — limited time, author + book */}
           <section className="py-8 sm:py-12 md:py-16 px-4 sm:px-6 min-w-0">
-            <div className="max-w-4xl mx-auto w-full">
-              <div className={`${cardStyle} overflow-hidden`}>
-                <div className="flex flex-col md:flex-row gap-6 sm:gap-8 md:gap-10 lg:gap-12 items-center">
-                  <div className="flex gap-4 md:gap-5 shrink-0 justify-center">
-                    <div className="relative w-28 min-[400px]:w-36 sm:w-44 md:w-48 lg:w-64 aspect-[2/3] rounded-lg sm:rounded-xl overflow-hidden border-2 border-base-content/10 shadow-lg shrink-0 max-w-[85vw]">
-                      <Image
-                        src={`${STORAGE_BASE}/book-cover.jpg`}
-                        alt="The Audit-Ready Classifications Playbook"
-                        fill
-                        sizes="(max-width: 400px) 112px, (max-width: 640px) 144px, (max-width: 768px) 176px, (max-width: 1024px) 192px, 256px"
-                        className="object-cover"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex-1 text-center md:text-left min-w-0 w-full">
-                    <p className="text-primary font-bold text-xs sm:text-sm uppercase tracking-wider mb-1 break-words">
-                      Time is limited — Offer expires in April!
-                    </p>
-                    <h2 className="text-3xl md:text-4xl font-bold text-base-content mb-2 break-words leading-tight">
-                      Get Your Playbook for <span className="text-primary">FREE</span> Before It&apos;s Gone!
-                    </h2>
-                    {/* <p className="text-base-content/80 text-base sm:text-lg mb-4 sm:mb-6 break-words">
-                      It feels crazy to give away $200+ worth of value for free, but I want to help as many people as possible... So I&apos;m starting by giving away 100 copies for free. Enter your email below and I&apos;ll get it to you right away.
-                    </p> */}
-                    <p className="text-base-content/80 text-base sm:text-lg mb-4 sm:mb-6 break-words">
-                      Only the first 100 copies of the playbook are free and are running out fast... Get your copy before it&apos;s gone by entering your email below!
-                    </p>
-                    <div className="flex flex-col gap-2 sm:gap-3 w-full max-w-md mx-auto md:mx-0">
-                      <input
-                        type="email"
-                        placeholder="Enter your best email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && handleDownload()}
-                        className="input input-bordered input-lg w-full min-w-0 text-base input-primary"
-                        disabled={isLoading}
-                        aria-label="Email address"
-                      />
-                      <button
-                        onClick={handleDownload}
-                        disabled={isLoading}
-                        className="btn btn-primary btn-lg font-bold shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 w-full text-sm sm:text-base break-words"
-                      >
-                        {isLoading ? "Sending…" : "Send My Free Copy Now!"}
-                      </button>
-                      {emailSent && (
-                        <div className="rounded-lg bg-primary/10 border border-primary/30 p-3 mt-3 text-center">
-                          <p className="text-primary font-bold text-sm">Check your email</p>
-                          <p className="text-base-content/80 text-xs sm:text-sm">We sent you a secure link. The link expires in 8 hours.</p>
-                        </div>
-                      )}
-                    </div>
-                    {error && (
-                      <p className="mt-3 text-sm text-error font-medium">{error}</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
+            <PlaybookCTAWithImage
+              email={email}
+              setEmail={setEmail}
+              error={error}
+              isLoading={isLoading}
+              onSubmit={handleDownload}
+              emailSent={emailSent}
+            />
           </section>
 
         </div>
       </main>
-
-      {/* <Footer /> */}
     </div>
   );
 }
