@@ -1,15 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import Footer from "../../components/Footer";
 import PlaybookCTA from "../../components/PlaybookCTA";
 import PlaybookCTAWithImage from "../../components/PlaybookCTAWithImage";
 
 const STORAGE_BASE = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/content`;
-
-const cardStyle =
-  "bg-base-100 rounded-2xl shadow-lg shadow-base-content/10 border border-base-content/20 p-6 md:p-8";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 function isValidEmail(email: string): boolean {
@@ -226,17 +222,6 @@ export default function AuditReadyClassificationsPage() {
                 </span>
               </div>
 
-              {/* <PlaybookCTA
-                email={email}
-                setEmail={setEmail}
-                error={error}
-                isLoading={isLoading}
-                onSubmit={handleDownload}
-                bonusTotalValue={BONUS_TOTAL_VALUE}
-                copiesLeft={FREE_COPIES_LEFT}
-                emailSent={emailSent}
-              /> */}
-
               <PlaybookCTAWithImage
                 email={email}
                 setEmail={setEmail}
@@ -248,36 +233,6 @@ export default function AuditReadyClassificationsPage() {
 
             </div>
           </section>
-
-          {/* Sticky CTA bar - appears after scrolling past hero */}
-          {/* {showStickyCta && (
-            <div className="sticky top-0 z-20 py-3 px-4 bg-base-100/95 backdrop-blur border-b border-base-content/10 shadow-lg animate-in slide-in-from-top-2 duration-300">
-              <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-3">
-                <span className="text-sm font-semibold text-base-content/90 whitespace-nowrap">
-                  Get the free playbook + bonuses
-                </span>
-                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto sm:min-w-[320px]">
-                  <input
-                    type="email"
-                    placeholder="Your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleDownload()}
-                    className="input input-bordered input-sm w-full flex-1"
-                    disabled={isLoading}
-                    aria-label="Email for free playbook"
-                  />
-                  <button
-                    onClick={handleDownload}
-                    disabled={isLoading}
-                    className="btn btn-primary btn-sm font-semibold whitespace-nowrap"
-                  >
-                    {isLoading ? "Sending…" : "Download FREE"}
-                  </button>
-                </div>
-              </div>
-            </div>
-          )} */}
 
           {/* What you get - benefits first */}
           <section className="py-8 sm:py-12 md:py-20 md:pb-10 max-w-4xl md:max-w-full mx-auto px-4 sm:px-6 text-center min-w-0">
@@ -343,10 +298,6 @@ export default function AuditReadyClassificationsPage() {
               <h2 className="text-primary text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-center mb-4 sm:mb-6 lg:mb-14 max-w-3xl mx-auto break-words leading-tight">
                 Unlock the Following Bonuses for FREE!
               </h2>
-
-              {/* <p className="text-center text-base-content/80 mb-6 max-w-xl mx-auto text-lg">
-                Get instant access to these tools and templates, included at no extra cost.
-              </p> */}
 
               <ul className="space-y-4 md:space-y-6">
                 {[
@@ -425,10 +376,6 @@ export default function AuditReadyClassificationsPage() {
                 ))}
               </ul>
             </div>
-            {/* <p className="text-center mt-12">
-              <span className="text-2xl font-medium">A ${BONUS_TOTAL_VALUE} value,</span>
-              <span className="ml-1 text-primary font-bold text-2xl">FREE today!</span>
-            </p> */}
           </section>
 
           <div id="get-playbook" className="px-4 sm:px-6 max-w-4xl mx-auto scroll-mt-8 min-w-0">
