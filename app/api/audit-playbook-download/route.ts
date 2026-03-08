@@ -94,20 +94,17 @@ export async function POST(req: NextRequest) {
     const baseUrl = getBaseUrl()
     const downloadUrl = `${baseUrl}/playbook-download?token=${token}`
 
-    await sendEmailFromComponent({
-      to: email,
-      subject: "Delivered: Audit-Ready Classifications",
-      emailComponent: React.createElement(PlaybookDownloadEmail, {
-        downloadUrl,
+    await Promise.all([
+      sendEmailFromComponent({
+        to: email,
+        subject: "Delivered: Audit-Ready Classifications",
+        emailComponent: React.createElement(PlaybookDownloadEmail, {
+          downloadUrl,
+        }),
+        replyTo: "support@htshero.com",
       }),
-      replyTo: "support@htshero.com",
-    })
-
-    try {
-      await addOrUpdateMailchimpContact(email, ["playbook-requested"])
-    } catch (mailchimpErr) {
-      console.error("Mailchimp upsert failed:", mailchimpErr)
-    }
+      addOrUpdateMailchimpContact(email, ["playbook-requested"]),
+    ])
 
     return NextResponse.json({ success: true })
   } catch (err) {
