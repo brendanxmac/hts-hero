@@ -2,6 +2,7 @@ import React from "react"
 import { NextResponse, NextRequest } from "next/server"
 import { createAdminClient, getSignedUrl } from "../supabase/server"
 import { sendEmailFromComponent } from "@/libs/resend"
+import { addOrUpdateMailchimpContact } from "@/libs/mailchimp"
 import config from "@/config"
 import PlaybookDownloadEmail from "@/emails/playbook-download/PlaybookDownloadEmail"
 import {
@@ -93,14 +94,17 @@ export async function POST(req: NextRequest) {
     const baseUrl = getBaseUrl()
     const downloadUrl = `${baseUrl}/playbook-download?token=${token}`
 
-    await sendEmailFromComponent({
-      to: email,
-      subject: "Delivered: Audit-Ready Classifications",
-      emailComponent: React.createElement(PlaybookDownloadEmail, {
-        downloadUrl,
+    await Promise.all([
+      sendEmailFromComponent({
+        to: email,
+        subject: "Delivered: Audit-Ready Classifications",
+        emailComponent: React.createElement(PlaybookDownloadEmail, {
+          downloadUrl,
+        }),
+        replyTo: "support@htshero.com",
       }),
-      replyTo: "support@htshero.com",
-    })
+      addOrUpdateMailchimpContact(email, ["playbook-requested"]),
+    ])
 
     return NextResponse.json({ success: true })
   } catch (err) {
