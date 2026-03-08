@@ -2,6 +2,7 @@ import React from "react"
 import { NextResponse, NextRequest } from "next/server"
 import { createAdminClient, getSignedUrl } from "../supabase/server"
 import { sendEmailFromComponent } from "@/libs/resend"
+import { addOrUpdateMailchimpContact } from "@/libs/mailchimp"
 import config from "@/config"
 import PlaybookDownloadEmail from "@/emails/playbook-download/PlaybookDownloadEmail"
 import {
@@ -101,6 +102,12 @@ export async function POST(req: NextRequest) {
       }),
       replyTo: "support@htshero.com",
     })
+
+    try {
+      await addOrUpdateMailchimpContact(email, ["playbook-requested"])
+    } catch (mailchimpErr) {
+      console.error("Mailchimp upsert failed:", mailchimpErr)
+    }
 
     return NextResponse.json({ success: true })
   } catch (err) {
