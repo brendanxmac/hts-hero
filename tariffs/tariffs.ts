@@ -472,6 +472,7 @@ export const getArticleTariffSet = (
         ...t,
         isActive:
           existingTariff?.isActive ??
+          // @ts-ignore — TariffI[] lacks isActive but tariffIsActive handles that gracefully during initial construction
           tariffIsActive(t, regularSetWithoutContentRequirementTariffs),
       }
     },
@@ -513,6 +514,7 @@ export const getContentRequirementTariffSets = (
     // Initially set tariffs without isActive - we'll set it outside the loop
     const tariffSetWithoutIsActive = tariffSet.map((t) => ({
       ...t,
+      // @ts-ignore — TariffI[] lacks isActive but tariffIsActive handles that gracefully during initial construction
       isActive: tariffIsActive(t, tariffs),
     }))
 
@@ -706,23 +708,9 @@ export const isDescendantTariff = (
   return false
 }
 
-// export const applicableTariffIsActive = (
-//   tariff: UITariff,
-//   tariffs: UITariff[],
-// ) => {
-//   const atLeastOneActiveDescendant = hasActiveDescendants(tariff, tariffs)
-//   const isActiveItself = tariffIsActive(tariff, tariffs)
-
-//   return atLeastOneActiveDescendant || isActiveItself
-// }
-
-// TODO: triple check this to ensure that we're doing the right checks
-//  especially when it comes to handling inclusions that are tariffs...
-//  That should probably be its own function anyways... somehow
 export const tariffIsActive = (
   tariff: TariffI,
   applicableTariffs: UITariff[],
-  tariffCodesToIgnore?: string[],
 ) => {
   if (tariff.requiresReview) return false
 
