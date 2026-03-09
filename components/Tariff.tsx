@@ -47,34 +47,39 @@ export const Tariff = ({
     const tariffSet = tariffSets[setIndex];
     const toggledValue = !tariff.isActive;
 
-    for (const t of tariffSet.tariffs) {
-      if (t.code === tariff.code) {
-        t.isActive = toggledValue;
-        continue;
-      }
+    const tariffInSet = tariffSet.tariffs.find((t) => t.code === tariff.code);
+    if (tariffInSet) {
+      tariffInSet.isActive = toggledValue;
+    }
 
-      if (
-        isAncestorTariff(t, tariff, tariffSet.tariffs) ||
-        isDescendantTariff(t, tariff, tariffSet.tariffs)
-      ) {
-        if (toggledValue) {
-          // TODO: I think this is missing additionalDuties?
-          const isNullTariff =
-            tariff.general === null &&
-            tariff.special === null &&
-            tariff.other === null;
+    const isNullTariff =
+      tariff.general === null &&
+      tariff.special === null &&
+      tariff.other === null;
+    const skipCascade = toggledValue && tariff.requiresReview && isNullTariff;
 
-          // For certain special tariffs that need review and have null for their %'s
-          // we do not want to toggle parents or descendants because they don't actually
-          // turn anything on or off, just alter the VALUE of what's tariffs (e.g. NON US Content)
-          if (tariff.requiresReview && isNullTariff) {
-            continue;
-          } else {
-            t.isActive = false;
-            continue;
+    if (!skipCascade) {
+      let changed = true;
+      let iterations = 0;
+      const maxIterations = 10;
+
+      while (changed && iterations < maxIterations) {
+        changed = false;
+        iterations++;
+
+        for (const t of tariffSet.tariffs) {
+          if (t.code === tariff.code) continue;
+
+          const isAnc = isAncestorTariff(t, tariff, tariffSet.tariffs);
+          const isDesc = isDescendantTariff(t, tariff, tariffSet.tariffs);
+
+          if ((isAnc || isDesc) && !t.requiresReview) {
+            const newActive = tariffIsActive(t, tariffSet.tariffs);
+            if (t.isActive !== newActive) {
+              t.isActive = newActive;
+              changed = true;
+            }
           }
-        } else if (!t.requiresReview) {
-          t.isActive = tariffIsActive(t, tariffSet.tariffs);
         }
       }
     }
