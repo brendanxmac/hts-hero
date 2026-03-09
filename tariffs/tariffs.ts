@@ -827,21 +827,7 @@ export const tariffIsApplicable = (
   countryCode: string,
   htsCode: string,
   tariffCodesToIgnore?: string[],
-  is99030306Child: boolean = false,
 ): boolean => {
-  // NOTE: This is only here to account for the Section 122 Tariff, since these 2 children tariffs can apply to ANY article
-  // We can remove this when Section 122 goes away. Alternatively, find a way to handle this in the calculator
-  // =====================================================================
-  const isCatchAllAutoPartTariff =
-    tariff.code === "9903.74.09" ||
-    tariff.code === "9903.94.07" ||
-    tariff.code === "9903.94.33"
-
-  // if (is99030306Child && isCatchAllAutoPartTariff) {
-  //   return false
-  // }
-  // =====================================================================
-
   if (tariffCodesToIgnore?.includes(tariff.code)) return false
   if (!tariff?.inclusions) return false
 
@@ -851,12 +837,9 @@ export const tariffIsApplicable = (
   const includesCountry =
     countries?.includes(countryCode) || countries?.includes("*")
 
-  // matches against ANY heading, subheading, or full code
-  //TODO: consider if we get an HTS code without the right format on the full 10 digits
   const includesCode =
     codes?.includes("*") ||
     codes?.map((code) => htsCode.includes(code)).some(Boolean)
-  // TODO: test that this will grab heading and subheadings properly for full codes...
 
   if (!includesCode && !includesCountry) {
     return false
@@ -869,13 +852,7 @@ export const tariffIsApplicable = (
     ? getTariffsByCode(
         tariffs.filter((t) => !tariffCodesToIgnore?.includes(t)),
       ).filter((t) =>
-        tariffIsApplicable(
-          t,
-          countryCode,
-          htsCode,
-          tariffCodesToIgnore,
-          tariff.code === "9903.03.06",
-        ),
+        tariffIsApplicable(t, countryCode, htsCode, tariffCodesToIgnore),
       )
     : []
   const hasApplicableTariffs = applicableTariffs && applicableTariffs.length > 0
@@ -901,19 +878,6 @@ export const tariffIsApplicable = (
     // currently we have no exclusions that are tariffs, so we don't need to check that
   }
 
-  // if (is99030306Child) {
-  //   const isApplicable =
-  //     (includesTariffs && hasApplicableTariffs) ||
-  //     (includesCountry && !codesSpecified && !includesTariffs) ||
-  //     (includesCode && !countriesSpecified && !includesTariffs) ||
-  //     (includesCountryAndCode && !includesTariffs)
-
-  //   if (isApplicable) {
-  //     console.log(`${tariff.code} is applicable to ${htsCode}`)
-  //   }
-  // }
-
-  // NOTE: this assumes we'll never have tariffs alongside codes, which we don't, for now
   return (
     (includesTariffs && hasApplicableTariffs) ||
     (includesCountry && !codesSpecified && !includesTariffs) ||
