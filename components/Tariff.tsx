@@ -94,7 +94,6 @@ export const Tariff = ({
       tariffSets: updatedTariffSets,
     };
 
-    // setTariffSets(updatedTariffSets);
     setCountries(updatedCountries);
   };
 

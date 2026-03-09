@@ -726,11 +726,12 @@ export const tariffIsActive = (
 ) => {
   if (tariff.requiresReview) return false
 
-  const hasExceptions = tariff.exceptions && tariff.exceptions.length > 0
-  const hasTariffInclusions =
+  const hasExceptions = !!(tariff.exceptions && tariff.exceptions.length > 0)
+  const hasTariffInclusions = !!(
     tariff.inclusions &&
     tariff.inclusions.tariffs &&
     tariff.inclusions.tariffs.length > 0
+  )
 
   if (!hasExceptions && !hasTariffInclusions) return true
 
