@@ -19,7 +19,8 @@ export default function PlaybookDownloadPage() {
     [searchParams]
   );
   const [status, setStatus] = useState<PageStatus>(
-    token ? "loading" : "no_token"
+    // token ? "loading" : "no_token"
+    "downloaded"
   );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -37,44 +38,44 @@ export default function PlaybookDownloadPage() {
     URL.revokeObjectURL(blobUrl);
   }, []);
 
-  useEffect(() => {
-    if (!token) return;
-    let cancelled = false;
+  // useEffect(() => {
+  //   if (!token) return;
+  //   let cancelled = false;
 
-    (async () => {
-      try {
-        const res = await fetch(
-          `/api/audit-playbook-download?token=${encodeURIComponent(token)}`
-        );
-        const data = await res.json();
+  //   (async () => {
+  //     try {
+  //       const res = await fetch(
+  //         `/api/audit-playbook-download?token=${encodeURIComponent(token)}`
+  //       );
+  //       const data = await res.json();
 
-        if (cancelled) return;
+  //       if (cancelled) return;
 
-        if (!res.ok) {
-          setErrorMessage(data?.error ?? "Something went wrong. Please try again.");
-          setStatus("error");
-          return;
-        }
+  //       if (!res.ok) {
+  //         setErrorMessage(data?.error ?? "Something went wrong. Please try again.");
+  //         setStatus("error");
+  //         return;
+  //       }
 
-        if (data.signedUrl) {
-          await triggerDownload(data.signedUrl);
-          if (!cancelled) setStatus("downloaded");
-        } else {
-          setErrorMessage(data?.error ?? "Something went wrong. Please try again.");
-          setStatus("error");
-        }
-      } catch {
-        if (!cancelled) {
-          setErrorMessage("Something went wrong. Please try again.");
-          setStatus("error");
-        }
-      }
-    })();
+  //       if (data.signedUrl) {
+  //         await triggerDownload(data.signedUrl);
+  //         if (!cancelled) setStatus("downloaded");
+  //       } else {
+  //         setErrorMessage(data?.error ?? "Something went wrong. Please try again.");
+  //         setStatus("error");
+  //       }
+  //     } catch {
+  //       if (!cancelled) {
+  //         setErrorMessage("Something went wrong. Please try again.");
+  //         setStatus("error");
+  //       }
+  //     }
+  //   })();
 
-    return () => {
-      cancelled = true;
-    };
-  }, [token, triggerDownload]);
+  //   return () => {
+  //     cancelled = true;
+  //   };
+  // }, [token, triggerDownload]);
 
   if (status === "no_token") {
     return (
@@ -138,8 +139,8 @@ export default function PlaybookDownloadPage() {
       <main className="relative flex-1">
         <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 py-12 md:py-20">
           {/* Success hero */}
-          <section className="text-center mb-12 md:mb-16">
-            <div className="inline-flex items-center justify-center gap-2 rounded-full bg-primary/15 text-primary font-semibold text-sm uppercase tracking-wider px-4 py-2 mb-6">
+          <section className="text-center mb-6 md:mb-14">
+            <div className="inline-flex items-center justify-center gap-2 rounded-full bg-success/15 text-success font-semibold text-sm uppercase tracking-wider px-4 py-2 mb-6">
               <span aria-hidden>✓</span> Playbook Downloaded!
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-base-content mb-4">
@@ -147,8 +148,7 @@ export default function PlaybookDownloadPage() {
               <span className="text-primary">Audit-Ready</span> Classifications!
             </h1>
             <p className="text-lg md:text-xl text-base-content/80 max-w-2xl mx-auto">
-              You have the playbook. Now use free resources like the{" "}
-              <Link href="/about" className="link link-primary font-bold">Classification Assistant</Link> to classify in minutes, not hours.
+              Now that you have the playbook, you can use our tools to classify your products in minutes, not hours.
             </p>
           </section>
 
@@ -161,19 +161,19 @@ export default function PlaybookDownloadPage() {
               <li className="flex items-start gap-3 text-base md:text-lg text-base-content/90">
                 <span className="text-primary font-bold shrink-0 text-lg">1.</span>
                 <span>
-                  <strong className="text-base-content">You have the framework.</strong> The playbook gives you the repeatable process and documentation habits that stand up to CBP review.
+                  <strong className="text-base-content">You have the framework.</strong> The playbook teaches you the repeatable process and documentation habits that stand up to CBP review.
                 </span>
               </li>
               <li className="flex items-start gap-3 text-base md:text-lg text-base-content/90">
                 <span className="text-primary font-bold shrink-0 text-lg">2.</span>
                 <span>
-                  <strong className="text-base-content">You have the tool.</strong> The HTS Hero <Link href="/about" className="link link-primary font-bold">Classification Assistant</Link> turns that process into speed: AI-powered candidate discovery & legal note & GRI analysis, all documented in a single place.
+                  <strong className="text-base-content">You have the tool.</strong> The HTS Hero <Link href="/about" className="link link-primary font-bold">Classification Assistant</Link> turns that process into speed: AI-powered candidate discovery, plus legal note & GRI analysis all documented in a single place.
                 </span>
               </li>
               <li className="flex items-start gap-3 text-base md:text-lg text-base-content/90">
                 <span className="text-primary font-bold shrink-0 text-lg">3.</span>
                 <span>
-                  <strong className="text-base-content">You can start right now.</strong> No setup. Enter a product description, get candidates, see the analysis, document your reasoning, and generate an audit-ready report in minutes.
+                  <strong className="text-base-content">Start Classifying!</strong> Enter a product description, get candidates, see the analysis, document your reasoning, and generate an audit-ready report in minutes.
                 </span>
               </li>
             </ul>
@@ -185,7 +185,7 @@ export default function PlaybookDownloadPage() {
           {/* How to use the Classification Assistant */}
           <section className={cardStyle + " mb-8"}>
             <h2 className="text-xl md:text-2xl font-bold text-base-content mb-2 text-center">
-              How to use the Classification Assistant
+              How to Use the Classification Assistant
             </h2>
             <p className="text-base-content/80 text-center mb-6">
               Start generating audit-ready HTS classifications in three simple steps.
@@ -209,7 +209,7 @@ export default function PlaybookDownloadPage() {
                 <div>
                   <strong className="text-base-content block mb-1">Review and validate</strong>
                   <p className="text-base-content/80 text-sm md:text-base">
-                    Use the AI legal notes & GRI analysis to confirm the best fit and document your reasoning just like the playbook recommends.
+                    Use the AI legal notes & GRI analysis to confirm the best fit at each level and document your reasoning just like the playbook recommends.
                   </p>
                 </div>
               </li>
@@ -218,9 +218,9 @@ export default function PlaybookDownloadPage() {
                   3
                 </span>
                 <div>
-                  <strong className="text-base-content block mb-1">Export your audit-ready report</strong>
+                  <strong className="text-base-content block mb-1">Export your Audit-Ready Report</strong>
                   <p className="text-base-content/80 text-sm md:text-base">
-                    Generate a professional, branded classification report in one click. Ready to file or share with your team or client.
+                    Generate a professional, branded classification report in one click. Ready to file for your records or share with your team / client.
                   </p>
                 </div>
               </li>

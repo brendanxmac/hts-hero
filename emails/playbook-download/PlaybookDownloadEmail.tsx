@@ -32,11 +32,11 @@ export default function PlaybookDownloadEmail({
       >
         <Container className="mx-auto py-4 font-sans max-w-[600px] bg-white">
           <Section className="text-center px-2 mb-6">
-            <Heading className="text-3xl font-bold text-gray-900 mb-4 px-4">
-              Audit-Ready Classifications <br /> are one click away!
+            <Heading className="text-3xl font-bold text-gray-900 mb-4">
+              Your Playbook has Arrived!
             </Heading>
             <Text className="text-base text-gray-800 leading-relaxed mt-0 mb-6 max-w-lg mx-auto">
-              Click the button below to download your copy of the Audit-Ready Classifications Playbook to start producing classifications that reduce import risk and protect your profits!
+              Click the button below to download your copy of The Audit-Ready Classifications Playbook & start producing classifications that reduce compliance risk and protect your profits!
             </Text>
 
             <Container className="mb-6">
