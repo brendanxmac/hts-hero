@@ -98,8 +98,8 @@ export default function PlaybookCTA({
         </div>
         {!emailSent && (
           <p className="text-center text-xs text-base-content/70 pt-3 break-words">
-            <p className="text-xs text-base-content/60 max-w-lg mx-auto break-words px-1">
-              By submitting, you agree to receive emails from HTS Hero. We never share your email and never spam.</p>
+            <span className="text-xs text-base-content/60 max-w-lg mx-auto break-words px-1">
+              By submitting, you agree to receive emails from HTS Hero. We never share your email and never spam.</span>
           </p>
         )}
       </div>
