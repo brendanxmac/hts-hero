@@ -743,14 +743,14 @@ export const tariffIsActive = (
 
   if (hasExceptions) {
     const hasActiveException = applicableExceptionTariffs.some(
-      (t) => t.isActive,
+      (t) => t.isActive ?? tariffIsActive(t, applicableTariffs),
     )
     if (hasActiveException) return false
   }
 
   if (hasTariffInclusions) {
     const hasActiveInclusion = applicableInclusionTariffs.some(
-      (t) => t.isActive,
+      (t) => t.isActive ?? tariffIsActive(t, applicableTariffs),
     )
     if (hasActiveInclusion) return true
   }
