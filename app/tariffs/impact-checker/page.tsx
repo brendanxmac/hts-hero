@@ -200,9 +200,17 @@ export default function Home() {
         );
         if (matchingHtsCodeSet) {
           setSelectedHtsCodeSetId(htsCodeSetId);
-          // Also populate the input with the codes from the selected set
           const codesString = matchingHtsCodeSet.codes.join(", ");
           setInputValue(codesString);
+        }
+      }
+
+      // Process inline codes parameter (e.g. ?codes=3808.94.10.00,0202.20.80.00)
+      const codesParam = searchParams.get("codes");
+      if (codesParam && !htsCodeSetId) {
+        const parsed = getHtsCodesFromString(codesParam);
+        if (parsed.length > 0) {
+          setInputValue(parsed.join(", "));
         }
       }
 

@@ -467,63 +467,15 @@ export const TariffFinderPage = () => {
 
   if (loadingPage) {
     return (
-      <main className="w-screen h-screen flex items-center justify-center bg-base-300">
+      <div className="w-full py-16 flex items-center justify-center">
         <LoadingIndicator />
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="w-screen h-full flex flex-col bg-base-100">
-      <DutyCalculatorNoticeBanner variant="banner" />
-
-      {/* Hero Header Section */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-base-200 via-base-100 to-base-200 border-b border-base-content/5">
-        {/* Subtle animated background */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-32 -right-32 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-          <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
-          {/* Subtle grid pattern */}
-          <div
-            className="absolute inset-0 opacity-[0.02]"
-            style={{
-              backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`,
-              backgroundSize: "32px 32px",
-            }}
-          />
-        </div>
-
-        <div className="relative z-0 w-full max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-10">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            {/* Left side - Main headline */}
-            <div className="flex flex-col gap-2">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight">
-                <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
-                  US Import Duty Calculator
-                </span>
-              </h1>
-              <p className="text-base-content/60 text-sm md:text-base max-w-lg mt-1">
-                Find the duty cost for any US import and discover ways to save.
-              </p>
-            </div>
-
-            {/* Right side - Trust indicators */}
-            <div className="flex flex-col gap-2 md:items-end">
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary/80">
-                <span className="hidden md:inline-block w-8 h-px bg-primary/40" />
-                Trusted By Brokers, Importers, and Manufacturers
-              </div>
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success/10 border border-success/20 w-fit">
-                <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-                <span className="text-xs font-medium text-success">
-                  Updated: March 9th, 2026
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <>
+      {/* <DutyCalculatorNoticeBanner variant="banner" /> */}
 
       {/* Main Content */}
       <div className="w-full max-w-6xl mx-auto flex flex-col p-4 gap-3">
@@ -798,7 +750,7 @@ export const TariffFinderPage = () => {
           </form>
         </dialog>
       )}
-    </main>
+    </>
   );
 };
 

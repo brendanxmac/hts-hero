@@ -16,6 +16,28 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/classifications", req.url));
   }
 
+  // Redirect /explore?code=X to /hts/X for SEO canonical URLs
+  if (pathname === "/explore" && req.nextUrl.searchParams.has("code")) {
+    const code = req.nextUrl.searchParams.get("code")!.trim();
+    if (code) {
+      return NextResponse.redirect(new URL(`/hts/${code}`, req.url), 301);
+    }
+  }
+
+  // Rewrite /duty-calculator/[code] to /duty-calculator?code=[code]
+  // Keeps the clean URL in the browser while serving the calculator page
+  if (pathname.startsWith("/duty-calculator/") && pathname !== "/duty-calculator/") {
+    const code = pathname.replace("/duty-calculator/", "");
+    if (code) {
+      const newUrl = new URL("/duty-calculator", req.url);
+      newUrl.searchParams.set("code", code);
+      req.nextUrl.searchParams.forEach((value, key) => {
+        newUrl.searchParams.set(key, value);
+      });
+      return NextResponse.rewrite(newUrl);
+    }
+  }
+
   const IS_TEST_ENV = process.env.APP_ENV === "test";
   const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 

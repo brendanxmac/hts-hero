@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { createClient } from "@/app/api/supabase/server";
-import UnauthenticatedHeader from "../../components/UnauthenticatedHeader";
-import { AuthenticatedHeader } from "../../components/AuthenticatedHeader";
+import UnauthenticatedHeader from "../../../components/UnauthenticatedHeader";
+import { AuthenticatedHeader } from "../../../components/AuthenticatedHeader";
 
 // This is a server-side component to ensure the user is logged in.
 // If not, it will redirect to the login page.

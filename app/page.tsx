@@ -221,33 +221,7 @@ export default function Home() {
 
         <div className="relative z-10 flex flex-col items-center px-4 sm:px-6 py-12 md:py-16 lg:py-20">
           {/* Main Hero Content */}
-          <div className="text-center max-w-4xl w-full">
-            {/* Compact Trust Indicator */}
-            {/* <div className="flex items-center justify-center gap-2 mb-12">
-              <BoltIcon className="sm:w-4 sm:h-4 w-3 h-3 text-primary shrink-0" />
-              <p className="text-sm font-medium sm:hidden px-4 sm:px-0">
-                Save Hours On HTS Classifications,
-                <br /> Tariff Checks, & Duty Quotes
-              </p>
-              <p className="text-sm font-medium hidden sm:block">
-                Save Hours On HTS Classifications, Duty Quotes, & Tariff Checks
-              </p>
-              <BoltIcon className="sm:w-4 sm:h-4 w-3 h-3 text-primary shrink-0" />
-            </div> */}
-            {/* Social Credibility */}
-            {/* <div className="flex items-center justify-center gap-2 mb-10 text-base-content/60">
-              <span className="text-amber-400 text-lg">★</span>
-              <p className="text-sm">
-                Trusted by customs brokers & logistics teams like{" "}
-                <span className="font-semibold text-base-content/80">K+N</span>,{" "}
-                <span className="font-semibold text-base-content/80">DSV</span>,
-                &{" "}
-                <span className="font-semibold text-base-content/80">
-                  Amazon
-                </span>
-              </p>
-            </div> */}
-
+          <div className="text-center max-w-5xl w-full">
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-5">
               <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
                 Effortless
@@ -257,7 +231,7 @@ export default function Home() {
               <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
                 Audit-Ready
               </span>{" "}
-              <span className="text-base-content">Classifications</span>
+              <span className="text-base-content">HTS Classifications</span>
               <br />
             </h1>
 
@@ -410,8 +384,8 @@ export default function Home() {
                     <div
                       key={image.id}
                       className={`absolute inset-0 transition-all duration-700 ease-in-out ${index === activeImageIndex
-                          ? "opacity-100 scale-100"
-                          : "opacity-0 scale-[1.02]"
+                        ? "opacity-100 scale-100"
+                        : "opacity-0 scale-[1.02]"
                         }`}
                     >
                       {/* Mobile image */}
@@ -442,8 +416,8 @@ export default function Home() {
                         key={image.id}
                         onClick={() => setActiveImageIndex(index)}
                         className={`group flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 ${index === activeImageIndex
-                            ? "bg-primary text-white shadow-lg shadow-primary/25"
-                            : "bg-base-200/80 text-base-content/70 hover:bg-base-300/80 hover:text-base-content"
+                          ? "bg-primary text-white shadow-lg shadow-primary/25"
+                          : "bg-base-200/80 text-base-content/70 hover:bg-base-300/80 hover:text-base-content"
                           }`}
                       >
                         {/* <span className="text-sm">{image.emoji}</span> */}
