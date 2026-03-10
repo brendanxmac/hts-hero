@@ -9,8 +9,6 @@ import { useHts } from "../contexts/HtsContext";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { SecondaryLabel } from "./SecondaryLabel";
 import { CountryTariff } from "./CountryTariff";
-import { ClassifyCTA } from "./ClassifyCTA";
-import { DutyCalculatorNoticeBanner } from "./DutyCalculatorNoticeBanner";
 import {
   addTariffsToCountry,
   CountryWithTariffs,
@@ -475,8 +473,6 @@ export const TariffFinderPage = () => {
 
   return (
     <>
-      {/* <DutyCalculatorNoticeBanner variant="banner" /> */}
-
       {/* Main Content */}
       <div className="w-full max-w-6xl mx-auto flex flex-col p-4 gap-3">
         {/* Inputs */}
@@ -594,13 +590,6 @@ export const TariffFinderPage = () => {
           </div>
         )}
 
-        {/* CTA Section */}
-        <ClassifyCTA
-          title="Wrong Code, Wrong Duty"
-          subtitle="Verify your HTS Codes with our classification assistant, and avoid tariff surprises."
-          ctaText="Verify Your HTS Codes"
-          ctaRedirectUrl="/about"
-        />
 
         {/* Tariff Results */}
         {selectedElement &&

@@ -65,11 +65,10 @@ export const ToolsDropdown = ({ className = "" }: ToolsDropdownProps) => {
     <div className={`relative ${className}`}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-1 text-sm font-medium transition-colors ${
-          selectedTool
+        className={`flex items-center gap-1 text-sm font-medium transition-colors ${selectedTool
             ? "text-primary"
             : "text-base-content/70 hover:text-primary"
-        }`}
+          }`}
       >
         {selectedTool ? selectedTool.title : "Tools"}
         <svg
@@ -109,9 +108,8 @@ export const ToolsDropdown = ({ className = "" }: ToolsDropdownProps) => {
                     key={tool.href}
                     href={tool.href}
                     onClick={() => setIsOpen(false)}
-                    className={`flex items-center gap-3 p-3 rounded-xl ${tool.hoverBg} transition-colors group ${
-                      isSelected ? selectedBg : ""
-                    }`}
+                    className={`flex items-center gap-3 p-3 rounded-xl ${tool.hoverBg} transition-colors group ${isSelected ? selectedBg : ""
+                      }`}
                   >
                     <div
                       className={`w-10 h-10 rounded-lg ${tool.iconBg} flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform`}
@@ -120,11 +118,10 @@ export const ToolsDropdown = ({ className = "" }: ToolsDropdownProps) => {
                     </div>
                     <div className="flex flex-col">
                       <div
-                        className={`text-left font-semibold ${
-                          isSelected
+                        className={`text-left font-semibold ${isSelected
                             ? "text-primary"
                             : `text-base-content ${tool.hoverText}`
-                        } transition-colors`}
+                          } transition-colors`}
                       >
                         {tool.title}
                       </div>
@@ -164,9 +161,8 @@ export const MobileToolsMenu = ({ onLinkClick }: MobileToolsMenuProps) => {
               key={tool.href}
               href={tool.href}
               onClick={onLinkClick}
-              className={`flex items-center gap-3 p-2 rounded-xl ${tool.hoverBg} transition-colors ${
-                isSelected ? selectedBg : ""
-              }`}
+              className={`flex items-center gap-3 p-2 rounded-xl ${tool.hoverBg} transition-colors ${isSelected ? selectedBg : ""
+                }`}
             >
               <div
                 className={`w-9 h-9 rounded-lg ${tool.iconBg} flex items-center justify-center text-lg flex-shrink-0`}

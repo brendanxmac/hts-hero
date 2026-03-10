@@ -5,7 +5,9 @@ import { HtsElement } from "../interfaces/hts";
 import config from "@/config";
 import ThemeToggle from "./ThemeToggle";
 import { CheckIcon } from "@heroicons/react/16/solid";
+import { CTABanner } from "./CTABanner";
 
+const STORAGE_BASE = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/content`;
 
 interface HtsCodePageContentProps {
   element: HtsElement;
@@ -29,18 +31,6 @@ function getIndentLabel(indent: string): string {
   return `Indent ${level}`;
 }
 
-function getDigitCount(htsno: string): number {
-  return htsno.replace(/\./g, "").length;
-}
-
-function getCodeDepthLabel(htsno: string): string {
-  const digits = getDigitCount(htsno);
-  if (digits <= 4) return "Heading";
-  if (digits <= 6) return "Subheading";
-  if (digits <= 8) return "Tariff Line";
-  return "Statistical Suffix";
-}
-
 export function HtsCodePageContent({
   element,
   parents,
@@ -56,29 +46,11 @@ export function HtsCodePageContent({
 
       {/* CTA banner + navigation */}
       <header className="sticky top-0 z-50">
-        {/* Full-width CTA banner */}
-        <div className="bg-gradient-to-r from-primary via-primary to-primary/90 shadow-md shadow-primary/10">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-2.5 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6">
-            <p className="text-primary-content text-xs sm:text-sm lg:text-base font-medium text-center sm:text-left">
-              Using this HTS code for your product?
-            </p>
-            <div className="flex items-center gap-2 sm:gap-3">
-              <Link
-                href={element.htsno ? `/duty-calculator/${element.htsno}` : "/duty-calculator"}
-                className="inline-flex items-center gap-1.5 px-4 py-1.5 sm:py-2 rounded-lg bg-primary-content/10 hover:bg-primary-content/25 border border-primary-content/20 text-primary-content text-xs sm:text-sm font-bold transition-all"
-              >
-                See Your Duty Costs
-              </Link>
-              <Link
-                href="/classifications"
-                className="inline-flex items-center gap-1.5 px-4 py-1.5 sm:py-2 rounded-lg bg-primary-content text-primary text-xs sm:text-sm font-bold hover:bg-primary-content/90 transition-all shadow-sm"
-              >
-                Verify Your Classification
-                <span aria-hidden="true">&rarr;</span>
-              </Link>
-            </div>
-          </div>
-        </div>
+        <CTABanner
+          message={`Not sure if ${element.htsno} is the right HTS code for your product?`}
+          ctaText="Verify Your Classification"
+          href="/classifications"
+        />
         {/* Logo bar */}
         <div className="bg-base-100/80 backdrop-blur-lg border-b border-base-content/10">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 h-12 flex items-center justify-between">
@@ -176,7 +148,9 @@ export function HtsCodePageContent({
             {/* Action buttons */}
             <div className="flex flex-wrap gap-3 pt-2">
               <Link
-                href={element.htsno ? `/duty-calculator/${element.htsno}` : "/duty-calculator"}
+                href={element.htsno ? `/duty-calculator?code=${element.htsno}` : "/duty-calculator"}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-content font-semibold text-sm hover:bg-primary/90 transition-all shadow-md shadow-primary/15 hover:shadow-lg hover:shadow-primary/25"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -291,10 +265,10 @@ export function HtsCodePageContent({
               See duties, tariffs, and exemptions for HTS {element.htsno} from any country of origin.
             </p>
             <Link
-              href={element.htsno ? `/duty-calculator/${element.htsno}` : "/duty-calculator"}
+              href={element.htsno ? `/duty-calculator?code=${element.htsno}` : "/duty-calculator"}
               className="shrink-0 inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-primary text-primary-content text-sm font-bold hover:bg-primary/90 transition-all shadow-sm"
             >
-              See Duty Rates
+              See Landed Cost
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>
@@ -439,46 +413,61 @@ export function HtsCodePageContent({
         {/* === Playbook Banner === */}
         <section className="relative rounded-2xl overflow-hidden border-2 border-secondary/20 bg-base-100 shadow-md mb-8">
           <div className="absolute inset-0 bg-gradient-to-br from-secondary/[0.06] via-transparent to-secondary/[0.03] pointer-events-none" />
-          <div className="relative grid grid-cols-1 md:grid-cols-5 gap-0">
-            {/* Left: headline + CTA */}
-            <div className="md:col-span-3 p-6 sm:p-8 flex flex-col justify-center gap-4">
-              <div className="flex items-center gap-2.5">
-                <span className="px-2.5 py-0.5 rounded-md bg-secondary text-secondary-content text-[10px] font-extrabold uppercase tracking-widest">
-                  Free
-                </span>
-                <span className="text-xs font-semibold text-base-content/40 uppercase tracking-wider">
-                  Playbook + 7 Bonuses
-                </span>
+          <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-0">
+            {/* Left: book cover + headline + CTA */}
+            <div className="p-6 sm:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-5 sm:gap-6">
+              {/* Book cover */}
+              <div className="relative w-32 sm:w-36 md:w-40 aspect-[2/3] rounded-xl overflow-hidden border-2 border-base-content/10 shadow-lg shrink-0">
+                <Image
+                  src={`${STORAGE_BASE}/book-cover.jpg`}
+                  alt="The Audit-Ready Classifications Playbook"
+                  fill
+                  sizes="(max-width: 640px) 128px, (max-width: 768px) 144px, 160px"
+                  className="object-cover"
+                />
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-base-content leading-tight">
-                The Audit-Ready Classifications Playbook
-              </h3>
-              <p className="text-sm text-base-content/60 leading-relaxed max-w-md">
-                Learn how to create HTS classifications that reduce import risk and defend profits — faster than ever.
-              </p>
-              <Link
-                href="/the-audit-ready-classifications-playbook"
-                className="self-start inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-secondary text-secondary-content font-bold text-sm hover:bg-secondary/90 transition-all shadow-lg shadow-secondary/20 hover:shadow-xl hover:shadow-secondary/25"
-              >
-                Download Free Playbook
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-              </Link>
+              {/* Text + CTA */}
+              <div className="flex flex-col gap-3 text-center sm:text-left">
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                  <span className="px-2.5 py-0.5 rounded-md bg-secondary text-secondary-content text-[10px] font-extrabold uppercase tracking-widest">
+                    Free
+                  </span>
+                  <span className="text-xs font-semibold text-base-content/40 uppercase tracking-wider">
+                    Playbook + 7 Bonuses
+                  </span>
+                </div>
+                <h3 className="text-xl md:text-2xl font-bold text-base-content leading-tight">
+                  The Audit-Ready Classifications Playbook
+                </h3>
+                <p className="text-sm text-base-content/60 leading-relaxed">
+                  Learn how to create HTS classifications that reduce import risk and defend profits — faster than ever.
+                </p>
+                <div>
+                  <Link
+                    href="/the-audit-ready-classifications-playbook"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-secondary text-secondary-content font-bold text-sm hover:bg-secondary/90 transition-all shadow-lg shadow-secondary/20 hover:shadow-xl hover:shadow-secondary/25"
+                  >
+                    Download Free Playbook
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                  </Link>
+                </div>
+              </div>
             </div>
             {/* Right: what's inside */}
-            <div className="md:col-span-2 p-6 sm:p-8 md:border-l border-t md:border-t-0 border-secondary/10 flex flex-col justify-center">
-              <p className="text-xs font-bold uppercase tracking-wider text-base-content/40 mb-3">
+            <div className="p-6 sm:p-8 lg:border-l border-t lg:border-t-0 border-secondary/10 flex flex-col justify-center">
+              <p className="text-xs font-bold uppercase tracking-wider text-base-content/40 mb-4">
                 What&apos;s inside
               </p>
-              <ul className="flex flex-col gap-2.5">
+              <ul className="flex flex-col gap-3">
                 {[
                   "Step-by-step classification methodology",
                   "Audit defense strategies & documentation templates",
                   "Common classification mistakes to avoid",
                   "GRI application guide with real examples",
                 ].map((item) => (
-                  <li key={item} className="flex items-start gap-2 text-sm text-base-content/70">
+                  <li key={item} className="flex items-start gap-2.5 text-sm text-base-content/70">
                     <svg className="shrink-0 w-4 h-4 text-secondary mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
@@ -567,7 +556,34 @@ export function HtsCodePageContent({
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
 
-          {/* CTA 1: Duty Calculator */}
+          {/* CTA 1: Classification Assistant */}
+          <section className="relative rounded-2xl overflow-hidden border-2 border-secondary/20 bg-base-100 shadow-sm flex flex-col">
+            <div className="bg-gradient-to-br from-secondary/10 to-secondary/[0.03] px-6 py-5 border-b border-secondary/10">
+              <div className="flex items-center gap-3 mb-2">
+                <span className="w-10 h-10 rounded-xl bg-secondary/15 flex items-center justify-center text-xl">
+                  <svg className="w-5 h-5 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                </span>
+                <h3 className="text-base font-bold text-base-content">Classification Assistant</h3>
+              </div>
+            </div>
+            <div className="p-6 flex flex-col flex-1">
+              <p className="text-sm text-base-content/60 leading-relaxed mb-5 flex-1">
+                Produce an <strong className="text-base-content/80">audit-ready HTS classification</strong> for
+                any product in minutes — AI-powered candidate discovery, Legal Note & GRI analysis, CROSS
+                validation, and one-click professional reports.
+              </p>
+              <Link
+                href="/about"
+                className="block text-center px-6 py-3 rounded-xl bg-secondary text-secondary-content font-bold text-sm hover:bg-secondary/90 transition-all shadow-lg shadow-secondary/20 hover:shadow-xl hover:shadow-secondary/25"
+              >
+                Classify a Product Now
+              </Link>
+            </div>
+          </section>
+
+          {/* CTA 2: Duty Calculator */}
           <section className="relative rounded-2xl overflow-hidden border-2 border-primary/20 bg-base-100 shadow-sm flex flex-col">
             <div className="bg-gradient-to-br from-primary/10 to-primary/[0.03] px-6 py-5 border-b border-primary/10">
               <div className="flex items-center gap-3 mb-2">
@@ -594,12 +610,12 @@ export function HtsCodePageContent({
             </div>
           </section>
 
-          {/* CTA 2: Tariff Impact Checker */}
-          <section className="relative rounded-2xl overflow-hidden border-2 border-secondary/20 bg-base-100 shadow-sm flex flex-col">
-            <div className="bg-gradient-to-br from-secondary/10 to-secondary/[0.03] px-6 py-5 border-b border-secondary/10">
+          {/* CTA 3: Tariff Impact Checker */}
+          <section className="relative rounded-2xl overflow-hidden border-2 border-accent/20 bg-base-100 shadow-sm flex flex-col">
+            <div className="bg-gradient-to-br from-accent/10 to-accent/[0.03] px-6 py-5 border-b border-accent/10">
               <div className="flex items-center gap-3 mb-2">
-                <span className="w-10 h-10 rounded-xl bg-secondary/15 flex items-center justify-center">
-                  <CheckIcon className="text-secondary w-5 h-5" />
+                <span className="w-10 h-10 rounded-xl bg-accent/15 flex items-center justify-center">
+                  <CheckIcon className="text-accent w-5 h-5" />
                 </span>
                 <div>
                   <h3 className="text-base font-bold text-base-content">Tariff Impact Checker</h3>
@@ -617,36 +633,9 @@ export function HtsCodePageContent({
                 href={element.htsno ? `/tariffs/impact-checker?codes=${element.htsno}` : "/tariffs/impact-checker"}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block text-center px-6 py-3 rounded-xl bg-secondary text-secondary-content font-bold text-sm hover:bg-secondary/90 transition-all shadow-lg shadow-secondary/20 hover:shadow-xl hover:shadow-secondary/25"
-              >
-                Check {element.htsno || "Your Imports"} Now!
-              </Link>
-            </div>
-          </section>
-
-          {/* CTA 3: Classification Assistant */}
-          <section className="relative rounded-2xl overflow-hidden border-2 border-accent/20 bg-base-100 shadow-sm flex flex-col">
-            <div className="bg-gradient-to-br from-accent/10 to-accent/[0.03] px-6 py-5 border-b border-accent/10">
-              <div className="flex items-center gap-3 mb-2">
-                <span className="w-10 h-10 rounded-xl bg-accent/15 flex items-center justify-center text-xl">
-                  <svg className="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                  </svg>
-                </span>
-                <h3 className="text-base font-bold text-base-content">Classification Assistant</h3>
-              </div>
-            </div>
-            <div className="p-6 flex flex-col flex-1">
-              <p className="text-sm text-base-content/60 leading-relaxed mb-5 flex-1">
-                Produce an <strong className="text-base-content/80">audit-ready HTS classification</strong> for
-                any product in minutes — AI-powered candidate discovery, Legal Note & GRI analysis, CROSS
-                validation, and one-click professional reports.
-              </p>
-              <Link
-                href="/about"
                 className="block text-center px-6 py-3 rounded-xl bg-accent text-accent-content font-bold text-sm hover:bg-accent/90 transition-all shadow-lg shadow-accent/20 hover:shadow-xl hover:shadow-accent/25"
               >
-                Classify a Product Now
+                Check {element.htsno || "Your Imports"}
               </Link>
             </div>
           </section>
