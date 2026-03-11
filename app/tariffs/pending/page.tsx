@@ -3,7 +3,9 @@ import { getSEOTags } from "../../../libs/seo";
 import { PendingTariffsList } from "../../../components/UpcomingTariffsList";
 
 export const metadata = getSEOTags({
-  title: `Pending Tariffs | ${config.appName}`,
+  title: "Pending US Tariff Announcements — Track Upcoming Tariff Changes | HTS Hero",
+  description:
+    "Track the status of upcoming and pending US tariff announcements. Stay informed about proposed tariff changes, Section 301 updates, reciprocal tariffs, and their potential impact on your imports.",
   canonicalUrlRelative: "/tariffs/pending",
 });
 

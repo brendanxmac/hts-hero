@@ -51,7 +51,7 @@ export function TestimonialsStrip({
             <span
               className={`text-sm md:text-base font-semibold text-primary uppercase tracking-widest`}
             >
-              Loved by Manufacturers, Brokerages, & Logistics Teams
+              Loved by Importers, Brokerages, & Logistics Teams
             </span>
             <span className={`inline-block w-8 sm:w-12 h-px bg-primary`} />
           </div>

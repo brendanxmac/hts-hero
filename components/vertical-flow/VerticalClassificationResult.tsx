@@ -402,7 +402,7 @@ export const VerticalClassificationResult = ({
         collapsedContentInline
       >
         <div className="flex flex-col gap-5">
-          <DutyCalculatorNoticeBanner variant="inline" />
+          {/* <DutyCalculatorNoticeBanner variant="inline" /> */}
           {/* Country & Value Inputs */}
           <div className="flex flex-col md:flex-row gap-4">
             {/* Country Selection */}

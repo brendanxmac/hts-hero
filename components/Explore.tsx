@@ -146,8 +146,8 @@ export const Explore = ({ isModal = false }: ExploreProps) => {
 
   // Scroll to top when breadcrumbs change (navigation occurs)
   useEffect(() => {
-    if (breadcrumbs.length > 1 && scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTo({ top: 0, behavior: "instant" });
+    if (breadcrumbs.length > 1) {
+      window.scrollTo({ top: 0, behavior: "instant" });
     }
   }, [breadcrumbs]);
 
@@ -296,7 +296,7 @@ export const Explore = ({ isModal = false }: ExploreProps) => {
   };
 
   return (
-    <div ref={scrollContainerRef} className="w-full h-full flex flex-col bg-base-100 overflow-y-auto">
+    <div ref={scrollContainerRef} className="w-full min-h-0 flex flex-col bg-base-100">
       {isLoading ? (
         <div className="w-full flex-1 flex items-center justify-center py-20">
           <LoadingIndicator text={loadingText} />

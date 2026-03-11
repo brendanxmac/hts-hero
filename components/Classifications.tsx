@@ -534,11 +534,10 @@ export const Classifications = ({ page, setPage }: Props) => {
                 ].map((tab) => (
                   <button
                     key={tab.key}
-                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                      activeTab === tab.key
-                        ? "bg-base-100 text-base-content shadow-sm"
-                        : "text-base-content/60 hover:text-base-content hover:bg-base-100/50"
-                    }`}
+                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${activeTab === tab.key
+                      ? "bg-base-100 text-base-content shadow-sm"
+                      : "text-base-content/60 hover:text-base-content hover:bg-base-100/50"
+                      }`}
                     onClick={() =>
                       setActiveTab(
                         tab.key as "all" | "final" | "review" | "draft"

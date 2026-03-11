@@ -538,6 +538,11 @@ const getSectionForChapter = (chapter: number): number | null => {
   return null;
 };
 
+export const getFirstChapterOfSection = (sectionNumber: number): number | null => {
+  const range = SECTION_TO_CHAPTERS[sectionNumber];
+  return range ? range.start : null;
+};
+
 /**
  * Extracts section and chapter numbers from an HTS code.
  * Client-side version of the function in libs/supabase/hts-notes.ts
