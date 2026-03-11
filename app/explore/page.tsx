@@ -40,7 +40,7 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <main className="w-full h-svh grow flex flex-col bg-base-100">
+    <main className="w-full min-h-0 flex flex-col bg-base-100">
       <BreadcrumbsProvider>
         <Explore />
       </BreadcrumbsProvider>

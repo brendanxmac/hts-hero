@@ -175,11 +175,10 @@ export const AuthenticatedHeader = () => {
               <Link
                 href="/blog"
                 onClick={() => setIsOpen(false)}
-                className={`text-base font-semibold transition-colors ${
-                  pathname.startsWith("/blog")
+                className={`text-base font-semibold transition-colors ${pathname.startsWith("/blog")
                     ? "text-primary"
                     : "text-base-content hover:text-primary"
-                }`}
+                  }`}
               >
                 Blog
               </Link>

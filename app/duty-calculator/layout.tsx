@@ -19,7 +19,7 @@ export default async function LayoutPrivate({
     <div className="flex flex-col max-h-svh bg-base-100 overflow-y-auto">
       <CTABanner
         message="Your duty rate is only correct if your HTS code is correct."
-        ctaText="Verify Your Classification"
+        ctaText="Verify Your Classifications"
         href="/about"
       />
       {user ? <AuthenticatedHeader /> : <UnauthenticatedHeader />}
