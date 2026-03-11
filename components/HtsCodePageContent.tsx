@@ -11,9 +11,9 @@ const STORAGE_BASE = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/
 
 interface HtsCodePageContentProps {
   element: HtsElement;
-  parents: HtsElement[];
-  children: HtsElement[];
-  siblings: HtsElement[];
+  parentElements: HtsElement[];
+  childrenElements: HtsElement[];
+  siblingElements: HtsElement[];
   sectionChapter: {
     sectionNumber: number;
     sectionDescription: string;
@@ -23,9 +23,9 @@ interface HtsCodePageContentProps {
 
 export function HtsCodePageContent({
   element,
-  parents,
-  children,
-  siblings,
+  parentElements: parents,
+  childrenElements: children,
+  siblingElements: siblings,
   sectionChapter,
 }: HtsCodePageContentProps) {
   const tariffElement = (() => {
@@ -39,7 +39,7 @@ export function HtsCodePageContent({
 
   return (
     <>
-      <StructuredData element={element} tariffElement={tariffElement} parents={parents} children={children} sectionChapter={sectionChapter} />
+      <StructuredData element={element} tariffElement={tariffElement} parentElements={parents} childrenElements={children} sectionChapter={sectionChapter} />
 
       {/* CTA banner + navigation */}
       <header className="sticky top-0 z-50">
@@ -867,14 +867,14 @@ function isShortProductName(description: string) {
 function StructuredData({
   element,
   tariffElement,
-  parents,
-  children,
+  parentElements: parents,
+  childrenElements: children,
   sectionChapter,
 }: {
   element: HtsElement;
   tariffElement: HtsElement;
-  parents: HtsElement[];
-  children: HtsElement[];
+  parentElements: HtsElement[];
+  childrenElements: HtsElement[];
   sectionChapter: HtsCodePageContentProps["sectionChapter"];
 }) {
   const breadcrumbItems = [

@@ -133,9 +133,9 @@ export default async function HtsCodePage({ params }: HtsCodePageProps) {
     <main className="w-full min-h-screen bg-base-100">
       <HtsCodePageContent
         element={element}
-        parents={parents}
-        children={children}
-        siblings={siblings}
+        parentElements={parents}
+        childrenElements={children}
+        siblingElements={siblings}
         sectionChapter={sectionChapter}
       />
     </main>
