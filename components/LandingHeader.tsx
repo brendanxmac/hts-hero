@@ -48,8 +48,8 @@ const LandingHeader = () => {
     <>
       <header
         className={`sticky top-0 w-full h-16 z-50 flex items-center justify-between px-4 sm:px-6 transition-all duration-300 ${scrolled
-            ? "bg-base-100/95 backdrop-blur-md border-b border-base-content/10 shadow-sm"
-            : "bg-base-100/80 backdrop-blur-sm md:bg-transparent md:backdrop-blur-none"
+          ? "bg-base-100/95 backdrop-blur-md border-b border-base-content/10 shadow-sm"
+          : "bg-base-100/80 backdrop-blur-sm md:bg-transparent md:backdrop-blur-none"
           }`}
       >
         <nav
@@ -92,7 +92,7 @@ const LandingHeader = () => {
                 Engineered Compliance
               </Link>
               <Link
-                href="/engineered-compliance"
+                href="/the-audit-ready-classifications-playbook"
                 className="text-sm font-medium text-base-content/70 hover:text-primary transition-colors"
               >
                 Audit-Ready Classifications
