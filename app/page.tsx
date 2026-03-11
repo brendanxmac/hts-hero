@@ -5,7 +5,7 @@ import config from "@/config";
 
 export const metadata: Metadata = {
   title:
-    "HTS Hero — Audit-Ready HTS Classifications & Instant Tariff Calculations",
+    "HTS Hero — Produce Audit-Ready HTS Classifications, Fast!",
   description:
     "Classify any product correctly in minutes, see the duties and tariffs for any import, and check tariff impact on your imports. Trusted by hundreds of customs brokers, freight forwarders, and manufacturers.",
   keywords: [
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     "customs broker tools",
   ],
   openGraph: {
-    title: "HTS Hero — Audit-Ready HTS Classifications & Instant Tariff Calculations",
+    title: "HTS Hero — Produce Audit-Ready HTS Classifications, Fast!",
     description:
       "Free tools for importers: calculate duties by HTS code, classify products with AI, and check tariff impacts on your imports.",
     url: `https://${config.domainName}`,
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "HTS Hero — Audit-Ready HTS Classifications & Instant Tariff Calculations",
+    title: "HTS Hero — Produce Audit-Ready HTS Classifications, Fast!",
     description:
       "Free tools for importers: calculate duties by HTS code, classify products with AI, and check tariff impacts.",
     images: [`https://${config.domainName}/hero-tariffs.png`],

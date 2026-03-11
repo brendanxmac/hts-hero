@@ -8,6 +8,7 @@ interface CTABannerProps {
   href: string;
   color?: CTABannerColor;
   openInNewTab?: boolean;
+  subText?: string;
 }
 
 const gradientClasses: Record<CTABannerColor, string> = {
@@ -40,25 +41,33 @@ export function CTABanner({
   href,
   color = "primary",
   openInNewTab = false,
+  subText,
 }: CTABannerProps) {
   return (
     <div className={gradientClasses[color]}>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-2.5 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-3.5 flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-3 sm:gap-6">
         <p
-          className={`${textClasses[color]} text-xs sm:text-sm lg:text-base font-medium text-center sm:text-left`}
+          className={`${textClasses[color]} text-xs sm:text-sm lg:text-lg font-medium text-center sm:text-left flex-1 min-w-0`}
         >
           {message}
         </p>
-        <Link
-          href={href}
-          {...(openInNewTab
-            ? { target: "_blank", rel: "noopener noreferrer" }
-            : {})}
-          className={`inline-flex items-center gap-1.5 px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-bold transition-all shadow-sm ${buttonClasses[color]}`}
-        >
-          {ctaText}
-          <span aria-hidden="true">&rarr;</span>
-        </Link>
+        <div className="flex flex-col items-center gap-1 shrink-0">
+          <Link
+            href={href}
+            {...(openInNewTab
+              ? { target: "_blank", rel: "noopener noreferrer" }
+              : {})}
+            className={`inline-flex items-center gap-1.5 px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-bold transition-all shadow-sm whitespace-nowrap ${buttonClasses[color]}`}
+          >
+            {ctaText}
+            <span aria-hidden="true">&rarr;</span>
+          </Link>
+          {subText && (
+            <span className={`${textClasses[color]} text-[10px] sm:text-xs opacity-90 text-center sm:text-right`}>
+              {subText}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -164,7 +164,7 @@ const config: ConfigProps = {
   // REQUIRED
   appName: "HTS Hero",
   // REQUIRED: a short description of your app for SEO tags (can be overwritten)
-  appDescription: "Engineered Compliance",
+  appDescription: "Engineered Trade Compliance",
   // REQUIRED (no https://, not trialing slash at the end, just the naked domain)
   domainName: "htshero.com",
   crisp: {

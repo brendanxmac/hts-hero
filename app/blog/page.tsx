@@ -5,8 +5,9 @@ import config from "@/config";
 import { getSEOTags } from "@/libs/seo";
 
 export const metadata = getSEOTags({
-  title: `${config.appName} Blog`,
-  description: "The latest updates on tariffs, HTS codes, and more",
+  title: "HTS & Tariff Blog — Classification Tips, Duty Updates & Trade Compliance | HTS Hero",
+  description:
+    "Stay up to date with the latest HTS classification tips, US tariff updates, duty rate changes, and trade compliance best practices for importers and customs brokers.",
   canonicalUrlRelative: "/blog",
 });
 
