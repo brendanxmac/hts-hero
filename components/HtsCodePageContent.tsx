@@ -13,6 +13,7 @@ interface HtsCodePageContentProps {
   element: HtsElement;
   parents: HtsElement[];
   children: HtsElement[];
+  siblings: HtsElement[];
   sectionChapter: {
     sectionNumber: number;
     sectionDescription: string;
@@ -24,25 +25,26 @@ function isFullHTSCode(code: string) {
   return /^\d{4}\.\d{2}\.\d{2}\.\d{2}$/.test(code);
 }
 
-function getIndentLabel(indent: string): string {
-  const level = Number(indent);
-  if (level === 0) return "Heading";
-  if (level === 1) return "Subheading";
-  return `Indent ${level}`;
-}
-
 export function HtsCodePageContent({
   element,
   parents,
   children,
+  siblings,
   sectionChapter,
 }: HtsCodePageContentProps) {
-  const hasDutyData = element.general || element.special || element.other;
+  const tariffElement = (() => {
+    if (element.general || element.special || element.other || element.additionalDuties) return element;
+    for (let i = parents.length - 1; i >= 0; i--) {
+      if (parents[i].general || parents[i].special || parents[i].other) return parents[i];
+    }
+    return element;
+  })();
+  const hasDutyData = tariffElement.general || tariffElement.special || tariffElement.other;
   const isTariffLevel = isFullHTSCode(element.htsno);
 
   return (
     <>
-      <StructuredData element={element} parents={parents} sectionChapter={sectionChapter} />
+      <StructuredData element={element} tariffElement={tariffElement} parents={parents} children={children} sectionChapter={sectionChapter} />
 
       {/* CTA banner + navigation */}
       <header className="sticky top-0 z-50">
@@ -84,17 +86,25 @@ export function HtsCodePageContent({
             </li>
             {sectionChapter && (
               <>
-                <li aria-hidden="true" className="mx-0.5 text-base-content/30">&rsaquo;</li>
-                <li>Section {sectionChapter.sectionNumber}</li>
-                <li aria-hidden="true" className="mx-0.5 text-base-content/30">&rsaquo;</li>
-                <li>Ch. {element.chapter}</li>
+                <li aria-hidden="true" className="mx-1 text-base-content/30">&rsaquo;</li>
+                <li>
+                  <Link href={`/section/${sectionChapter.sectionNumber}`} className="hover:text-primary transition-colors link link-primary">
+                    Section {sectionChapter.sectionNumber}
+                  </Link>
+                </li>
+                <li aria-hidden="true" className="mx-1 text-base-content/30">&rsaquo;</li>
+                <li>
+                  <Link href={`/chapter/${element.chapter}`} className="hover:text-primary transition-colors link link-primary">
+                    Chapter {element.chapter}
+                  </Link>
+                </li>
               </>
             )}
             {parents.map((parent) => (
               <li key={parent.uuid} className="flex items-center">
-                <span aria-hidden="true" className="mx-0.5 text-base-content/30">&rsaquo;</span>
+                <span aria-hidden="true" className="mx-1 text-base-content/30">&rsaquo;</span>
                 {parent.htsno ? (
-                  <Link href={`/hts/${parent.htsno}`} className="hover:text-primary transition-colors">
+                  <Link href={`/hts/${parent.htsno}`} className="hover:text-primary link link-primary transition-colors">
                     {parent.htsno}
                   </Link>
                 ) : (
@@ -105,7 +115,7 @@ export function HtsCodePageContent({
               </li>
             ))}
             <li className="flex items-center">
-              <span aria-hidden="true" className="mx-0.5 text-base-content/30">&rsaquo;</span>
+              <span aria-hidden="true" className="mx-1 text-base-content/30">&rsaquo;</span>
               <span className="font-semibold text-base-content">{element.htsno || "Current"}</span>
             </li>
           </ol>
@@ -117,36 +127,114 @@ export function HtsCodePageContent({
           <div className="absolute bottom-0 left-0 w-32 h-32 bg-secondary/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10 flex flex-col gap-3">
-            {/* Code badge + depth label */}
-            <div className="flex flex-wrap items-center gap-3">
-              {element.htsno && (
-                <h1 className="py-2.5 text-primary text-2xl md:text-2xl lg:text-3xl font-bold tracking-wide">
-                  {element.htsno}
-                </h1>
-              )}
-            </div>
+            <h1 className="text-primary text-2xl md:text-3xl lg:text-4xl font-bold tracking-wide">
+              {element.htsno}
+            </h1>
 
-            {/* Description as SEO-rich heading */}
-            <h2 className="text-lg md:text-xl lg:text-2xl text-base-content font-semibold leading-relaxed max-w-4xl">
+            <h2 className="text-lg md:text-xl lg:text-2xl text-base-content font-semibold leading-snug max-w-4xl">
               {element.description}
             </h2>
 
-            {/* Section & Chapter tags */}
-            {sectionChapter && (
-              <div className="flex flex-wrap items-center gap-2 text-sm">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-base-100 border border-base-content/10 text-base-content/60">
-                  <span className="shrink-0 w-2 h-2 rounded-full bg-primary/40" />
-                  Section {sectionChapter.sectionNumber}: {sectionChapter.sectionDescription}
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-base-100 border border-base-content/10 text-base-content/60">
-                  <span className="shrink-0 w-2 h-2 rounded-full bg-secondary/40" />
-                  Chapter {element.chapter}: {sectionChapter.chapterDescription}
-                </span>
+
+            <h3 className="text-sm text-base-content/80 leading-relaxed max-w-4xl">
+              {(() => {
+                const ancestors: { key: string; node: React.ReactNode }[] = [];
+
+                if (sectionChapter) {
+                  ancestors.push({
+                    key: "section",
+                    node: (
+                      <span className="text-base-content/80">
+                        {/* Section {sectionChapter.sectionNumber} ({sectionChapter.sectionDescription}) */}
+                        {sectionChapter.sectionDescription}
+                      </span>
+                    ),
+                  });
+                  ancestors.push({
+                    key: "chapter",
+                    node: (
+                      <span className="text-base-content/80">
+                        {/* Chapter {element.chapter} ({sectionChapter.chapterDescription}) */}
+                        {sectionChapter.chapterDescription}
+                      </span>
+                    ),
+                  });
+                }
+
+                parents.forEach((parent) => {
+                  ancestors.push({
+                    key: parent.uuid,
+                    node: parent.htsno ? (
+                      <span>
+                        {/* <Link href={`/hts/${parent.htsno}`} className="text-primary/80 hover:text-primary hover:underline transition-colors">
+                          HTS {parent.htsno}
+                        </Link> */}
+                        <span className="text-base-content/80"> {parent.description}</span>
+                      </span>
+                    ) : (
+                      <span className="text-base-content/80">{parent.description}</span>
+                    ),
+                  });
+                });
+
+                return (
+                  <> HTS Code {element.htsno} covers any article best defined as
+                    {ancestors.length > 0 && (
+                      <>
+                        {" "}
+                        {ancestors.map((a, i) => (
+                          <span key={a.key}>
+                            {i > 0 && <span className="text-primary mx-1.5 text-lg" aria-hidden="true">›</span>}
+                            {a.node}
+                          </span>
+                        ))}
+                      </>
+                    )}
+                    <span className="text-primary mx-1.5 text-lg" aria-hidden="true">›</span>
+                    <span className="font-bold text-base-content">{element.description}</span>
+                    {" "}in the Harmonized Tariff Schedule
+                    {children.length > 0 && (
+                      <> — covering {children.length} sub-classification{children.length !== 1 ? "s" : ""}</>
+                    )}
+                    .
+                  </>
+                );
+              })()}
+            </h3>
+
+            {siblings.length > 0 && (
+              <div className="mt-2">
+                <h2 className="text-xs font-bold text-base-content/40 uppercase tracking-wider mb-2">
+                  Related HTS Codes at This Level
+                </h2>
+                <div className="flex flex-wrap gap-1.5">
+                  {siblings.map((sib) =>
+                    sib.htsno ? (
+                      <Link
+                        key={sib.uuid}
+                        href={`/hts/${sib.htsno}`}
+                        className="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-base-100/80 border border-base-content/10 hover:border-primary/30 hover:bg-primary/5 transition-all"
+                        title={sib.description}
+                      >
+                        <span className="text-xs font-bold text-primary group-hover:underline">{sib.htsno}</span>
+                        <span className="text-xs text-base-content/40 max-w-[180px] truncate">{sib.description}</span>
+                      </Link>
+                    ) : (
+                      <span
+                        key={sib.uuid}
+                        className="inline-flex items-center px-3 py-1.5 rounded-lg bg-base-100/50 border border-base-content/5 text-xs text-base-content/30"
+                        title={sib.description}
+                      >
+                        {sib.description.length > 30 ? sib.description.slice(0, 27) + "..." : sib.description}
+                      </span>
+                    )
+                  )}
+                </div>
               </div>
             )}
 
             {/* Action buttons */}
-            <div className="flex flex-wrap gap-3 pt-2">
+            {/* <div className="flex flex-wrap gap-3 pt-2">
               <Link
                 href={element.htsno ? `/duty-calculator?code=${element.htsno}` : "/duty-calculator"}
                 target="_blank"
@@ -182,83 +270,127 @@ export function HtsCodePageContent({
                 </svg>
                 Browse HTS
               </Link>
-            </div>
+            </div> */}
+
+            {/* <div className="mt-4 pt-5 border-t border-base-content/10">
+              <h4 className="text-xs font-semibold text-base-content/40 uppercase tracking-wider mb-3">
+                About HTS Code {element.htsno}
+              </h4>
+              <div className="text-sm text-base-content/70 leading-relaxed space-y-3 max-w-5xl">
+                <p>
+                  The <strong>HTS code for {element.description.toLowerCase()}</strong> is <strong>{element.htsno}</strong>, {sectionChapter ? `found under ${sectionChapter.sectionDescription} (Section ${sectionChapter.sectionNumber}), ${sectionChapter.chapterDescription} (Chapter ${element.chapter})` : ""}.
+                </p>
+                {hasDutyData && (
+                  <p>
+                    The general rate of duty for goods classified under HTS {element.htsno} is{" "}
+                    <strong>{tariffElement.general || "not specified"}</strong>.
+                    {tariffElement.special && (
+                      <> Special duty programs may apply, with rates of {tariffElement.special}.</>
+                    )}
+                    {tariffElement.other && (
+                      <> The Column 2 (non-NTR) rate is {tariffElement.other}.</>
+                    )}
+                  </p>
+                )}
+                {parents.length > 0 && (
+                  <p>
+                    This code falls under the broader classification of{" "}
+                    {parents
+                      .filter((p) => p.htsno)
+                      .map((p, i, arr) => (
+                        <span key={p.uuid}>
+                          <Link href={`/hts/${p.htsno}`} className="text-primary hover:underline font-medium">
+                            HTS {p.htsno}
+                          </Link>
+                          {i < arr.length - 1 ? (i === arr.length - 2 ? " and " : ", ") : ""}
+                        </span>
+                      ))}
+                    {" "}in the harmonized tariff schedule.
+                  </p>
+                )}
+                {children.length > 0 && (
+                  <p>
+                    HTS {element.htsno} has {children.length} sub-classification{children.length !== 1 ? "s" : ""} for
+                    more specific product categorization.
+                  </p>
+                )}
+                <p>
+                  Use the <Link href={`/duty-calculator?code=${element.htsno || ""}`} className="text-primary hover:underline font-medium">Duty Calculator</Link> to
+                  find the total landed cost including all applicable tariffs, or
+                  the <Link href="/explore" className="text-primary hover:underline font-medium">HTS Explorer</Link> to
+                  browse the full tariff schedule.
+                </p>
+                <p>
+                  Importers who need to classify products under HTS {element.htsno} or related codes can
+                  use HTS Hero&apos;s{" "}
+                  <Link href="/classifications" className="text-primary hover:underline font-medium">Classification Assistant</Link> to
+                  produce audit-ready classification reports in minutes — complete with GRI analysis and
+                  CROSS rulings validation. For a deeper understanding of how to build defensible
+                  classifications, download{" "}
+                  <Link href="/the-audit-ready-classifications-playbook" className="text-secondary hover:underline font-medium">
+                    The Audit-Ready Classifications Playbook
+                  </Link>{" "}
+                  for FREE.
+                </p>
+              </div>
+            </div> */}
           </div>
         </section>
 
-        {/* === TWO-COLUMN GRID: Duty Rates + Details === */}
+        {/* === Duty Rates & Details === */}
         {(hasDutyData || element.units.length > 0 || element.quotaQuantity || element.additionalDuties) && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <section className="rounded-2xl border-2 border-primary/15 bg-base-100 overflow-hidden shadow-sm mb-8">
+            <div className="bg-primary/[0.06] px-6 py-4 border-b border-primary/10">
+              <h3 className="text-base font-bold text-base-content flex items-center gap-2">
+                <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Duty Rates for HTS {element.htsno}
+              </h3>
+            </div>
 
-            {/* Duty Rates Card */}
             {hasDutyData && (
-              <section className="rounded-2xl border-2 border-primary/15 bg-base-100 overflow-hidden shadow-sm">
-                <div className="bg-primary/[0.06] px-6 py-4 border-b border-primary/10">
-                  <h3 className="text-base font-bold text-base-content flex items-center gap-2">
-                    <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Duty Rates for HTS {element.htsno}
-                  </h3>
-                </div>
-                <div className="divide-y divide-base-content/5">
-                  <DutyRateRow label="General Rate of Duty" value={element.general} highlight />
-                  <DutyRateRow label="Special Rate of Duty" value={element.special} />
-                  <DutyRateRow label="Column 2 (Non-NTR)" value={element.other} />
-                </div>
-              </section>
+              <div className="divide-y divide-base-content/5">
+                <DutyRateRow label="General Rate of Duty" value={tariffElement.general} highlight />
+                <DutyRateRow label="Special Rate of Duty" value={tariffElement.special} />
+                <DutyRateRow label="Column 2 (Non-NTR)" value={tariffElement.other} />
+              </div>
             )}
 
-            {/* Additional Details Card */}
             {(element.units.length > 0 || element.quotaQuantity || element.additionalDuties) && (
-              <section className="rounded-2xl border-2 border-base-content/10 bg-base-100 overflow-hidden shadow-sm">
-                <div className="bg-base-200/40 px-6 py-4 border-b border-base-content/8">
-                  <h3 className="text-base font-bold text-base-content flex items-center gap-2">
-                    <svg className="w-5 h-5 text-base-content/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
+              <div className="border-t border-base-content/8">
+                <div className="px-6 py-3 bg-base-200/30">
+                  <span className="text-xs font-bold uppercase tracking-wider text-base-content/40">
                     Additional Details
-                  </h3>
+                  </span>
                 </div>
-                <div className="p-6 flex flex-col gap-5">
-                  {element.units.length > 0 && (
-                    <dl>
-                      <dt className="text-xs font-bold uppercase tracking-wider text-base-content/40 mb-1">
-                        Units of Quantity
-                      </dt>
-                      <dd className="text-sm text-base-content font-medium">
-                        {element.units.join(", ")}
-                      </dd>
-                    </dl>
-                  )}
-                  {element.quotaQuantity && (
-                    <dl>
-                      <dt className="text-xs font-bold uppercase tracking-wider text-base-content/40 mb-1">
-                        Quota Quantity
-                      </dt>
-                      <dd className="text-sm text-base-content font-medium">
-                        {element.quotaQuantity}
-                      </dd>
-                    </dl>
-                  )}
-                  {element.additionalDuties && (
-                    <dl>
-                      <dt className="text-xs font-bold uppercase tracking-wider text-base-content/40 mb-1">
-                        Additional Duties
-                      </dt>
-                      <dd className="text-sm text-base-content font-medium">
-                        {element.additionalDuties}
-                      </dd>
-                    </dl>
-                  )}
+                <div className="flex justify-between gap-2">
+
+                  <div className="flex items-center justify-between px-6 py-3.5 gap-2">
+                    <dt className="text-sm text-base-content/60 font-medium">Units of Quantity:</dt>
+                    <dd className="text-sm font-bold text-base-content">{element.units.join(", ") || "-"}</dd>
+                  </div>
+
+
+                  <div className="flex items-center justify-between px-6 py-3.5 gap-2">
+                    <dt className="text-sm text-base-content/60 font-medium">Quota Quantity:</dt>
+                    <dd className="text-sm font-bold text-base-content">{element.quotaQuantity || "-"}</dd>
+                  </div>
+
+
+                  <div className="flex items-center justify-between px-6 py-3.5 gap-2">
+                    <dt className="text-sm text-base-content/60 font-medium">Additional Duties:</dt>
+                    <dd className="text-sm font-bold text-base-content">{element.additionalDuties || "-"}</dd>
+                  </div>
+
                 </div>
-              </section>
+              </div>
             )}
-          </div>
+          </section>
         )}
 
         {/* === Inline CTA: Duty Calculator === */}
-        {hasDutyData && (
+        {/* {hasDutyData && (
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-xl bg-primary/[0.04] px-5 py-4 mb-8">
             <p className="text-sm text-base-content/70">
               <strong className="text-base-content/90">Want the full landed cost?</strong>{" "}
@@ -274,32 +406,64 @@ export function HtsCodePageContent({
               </svg>
             </Link>
           </div>
-        )}
+        )} */}
 
-        {/* === CLASSIFICATION HIERARCHY === */}
-        {parents.length > 0 && (
+        {/* === CLASSIFICATION HIERARCHY (includes sub-classifications) === */}
+        {(parents.length > 0 || children.length > 0 || sectionChapter) && (
           <section className="rounded-2xl border-2 border-base-content/10 bg-base-100 overflow-hidden shadow-sm mb-8">
-            <div className="bg-base-200/40 px-6 py-4 border-b border-base-content/8">
-              <h3 className="text-base font-bold text-base-content flex items-center gap-2">
-                <svg className="w-5 h-5 text-base-content/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <div className="bg-base-200/40 px-6 py-4 border-b border-base-content/10 flex items-center justify-between">
+              <h2 className="text-base font-bold text-base-content flex items-center gap-2">
+                {/* <svg className="w-5 h-5 text-base-content/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                </svg>
-                Where {element.htsno} fits in the HTS
-              </h3>
+                </svg> */}
+                Where {element.htsno || "This Code"} Appears in the Harmonized Tariff Schedule
+              </h2>
+              {children.length > 0 && (
+                <span className="px-2.5 py-1 rounded-full bg-primary/10 text-xs font-bold text-primary">
+                  {children.length} sub-code{children.length !== 1 ? "s" : ""}
+                </span>
+              )}
             </div>
             <div className="p-6">
               <ol className="relative ml-3 border-l-2 border-base-content/10 flex flex-col gap-0">
-                {parents.map((parent, i) => (
-                  <li key={parent.uuid} className="relative pl-8 pb-5 last:pb-0">
-                    <span className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-base-content/10 border-2 border-base-100" />
+                {sectionChapter && (
+                  <>
+                    <li className="relative pl-8 pb-5">
+                      <span className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-base-content border-2 border-base-300" />
+                      <div className="flex flex-col gap-0.5">
+                        <Link href={`/section/${sectionChapter.sectionNumber}`} className="text-xs font-bold uppercase tracking-wider link link-primary">
+                          Section {sectionChapter.sectionNumber}
+                        </Link>
+                        <span className="text-sm text-base-content/60 leading-snug">
+                          {sectionChapter.sectionDescription}
+                        </span>
+                      </div>
+                    </li>
+                    <li className="relative pl-8 pb-5">
+                      <span className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-base-content border-2 border-base-300" />
+                      <div className="flex flex-col gap-0.5">
+                        <Link href={`/chapter/${element.chapter}`} className="text-xs font-bold uppercase tracking-wider link link-primary">
+                          Chapter {element.chapter}
+                        </Link>
+                        <span className="text-sm text-base-content/60 leading-snug">
+                          {sectionChapter.chapterDescription}
+                        </span>
+                      </div>
+                    </li>
+                  </>
+                )}
+
+                {parents.map((parent) => (
+                  <li key={parent.uuid} className="relative pl-8 pb-5">
+                    <span className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-base-content/80 border-2 border-base-300" />
                     <div className="flex flex-col gap-0.5">
                       {parent.htsno ? (
-                        <Link href={`/hts/${parent.htsno}`} className="text-sm font-bold text-primary hover:underline">
+                        <Link href={`/hts/${parent.htsno}`} className="text-sm font-bold link link-primary">
                           {parent.htsno}
                         </Link>
                       ) : (
                         <span className="text-xs font-semibold text-base-content/40 uppercase tracking-wider">
-                          {getIndentLabel(parent.indent)}
+                          —
                         </span>
                       )}
                       <span className="text-sm text-base-content/60 leading-snug">
@@ -308,8 +472,8 @@ export function HtsCodePageContent({
                     </div>
                   </li>
                 ))}
-                {/* Current element - highlighted */}
-                <li className="relative pl-8">
+
+                <li className={`relative pl-8${children.length > 0 ? " pb-6" : ""}`}>
                   <span className="absolute -left-[11px] top-0.5 w-5 h-5 rounded-full bg-primary border-2 border-base-100 shadow-md shadow-primary/30" />
                   <div className="flex flex-col gap-0.5 bg-primary/[0.06] -ml-2 px-4 py-3 rounded-xl border border-primary/15">
                     {element.htsno && (
@@ -320,13 +484,50 @@ export function HtsCodePageContent({
                     </span>
                   </div>
                 </li>
+
+                {children.length > 0 && (
+                  <>
+                    <li className="relative pl-8 pb-3">
+                      <h4 className="text-xs font-bold text-base-content/40 uppercase tracking-wider pt-0.5">
+                        HTS Codes Under {element.htsno || "This Classification"}
+                      </h4>
+                    </li>
+                    {children.map((child) => (
+                      <li key={child.uuid} className="relative pl-8 pb-4 last:pb-0">
+                        <span className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-base-content/10 border-2 border-base-100" />
+                        {child.htsno ? (
+                          <Link href={`/hts/${child.htsno}`} className="group flex flex-col gap-0.5">
+                            <span className="text-sm font-bold text-primary group-hover:underline flex items-center gap-1.5">
+                              {child.htsno}
+                              <svg className="w-3 h-3 text-base-content/15 group-hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                              </svg>
+                            </span>
+                            <span className="text-sm text-base-content/60 group-hover:text-base-content/80 leading-snug transition-colors">
+                              {child.description}
+                            </span>
+                          </Link>
+                        ) : (
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-xs font-semibold text-base-content/40 uppercase tracking-wider">
+                              —
+                            </span>
+                            <span className="text-sm text-base-content/60 leading-snug">
+                              {child.description}
+                            </span>
+                          </div>
+                        )}
+                      </li>
+                    ))}
+                  </>
+                )}
               </ol>
             </div>
           </section>
         )}
 
         {/* === Inline CTA: Classification Assistant === */}
-        {parents.length > 0 && (
+        {/* {(parents.length > 0 || children.length > 0) && (
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-xl bg-accent/[0.05] border border-accent/10 px-5 py-4 mb-8">
             <div className="flex items-start sm:items-center gap-3">
               <span className="shrink-0 w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center mt-0.5 sm:mt-0">
@@ -349,66 +550,7 @@ export function HtsCodePageContent({
               </svg>
             </Link>
           </div>
-        )}
-
-        {/* === SUB-CLASSIFICATIONS === */}
-        {children.length > 0 && (
-          <section className="rounded-2xl border-2 border-base-content/10 bg-base-100 overflow-hidden shadow-sm mb-8">
-            <div className="bg-base-200/40 px-6 py-4 border-b border-base-content/8 flex items-center justify-between">
-              <h3 className="text-base font-bold text-base-content flex items-center gap-2">
-                <svg className="w-5 h-5 text-base-content/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-                HTS Codes Under {element.htsno || "This Classification"}
-              </h3>
-              <span className="px-2.5 py-1 rounded-full bg-primary/10 text-xs font-bold text-primary">
-                {children.length}
-              </span>
-            </div>
-            <div className="divide-y divide-base-content/8">
-              {children.map((child) => {
-                const row = (
-                  <div className="flex items-center gap-4 px-6 py-4">
-                    {child.htsno ? (
-                      <span className="shrink-0 min-w-[100px] px-3 py-1.5 rounded-lg bg-primary/[0.07] border border-primary/10 text-sm font-mono font-bold text-primary text-center group-hover:bg-primary/15 transition-colors">
-                        {child.htsno}
-                      </span>
-                    ) : (
-                      <span className="shrink-0 min-w-[100px] px-3 py-1.5 rounded-lg bg-base-content/5 text-xs font-semibold text-base-content/40 text-center uppercase tracking-wider">
-                        {getIndentLabel(child.indent)}
-                      </span>
-                    )}
-                    <span className="text-sm text-base-content/70 group-hover:text-base-content transition-colors leading-snug flex-1">
-                      {child.description}
-                    </span>
-                    {child.htsno && (
-                      <svg
-                        className="shrink-0 w-4 h-4 text-base-content/15 group-hover:text-primary transition-colors"
-                        fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                      </svg>
-                    )}
-                  </div>
-                );
-
-                return child.htsno ? (
-                  <Link
-                    key={child.uuid}
-                    href={`/hts/${child.htsno}`}
-                    className="block hover:bg-primary/[0.04] transition-colors group"
-                  >
-                    {row}
-                  </Link>
-                ) : (
-                  <div key={child.uuid} className="group">
-                    {row}
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-        )}
+        )} */}
 
         {/* === Playbook Banner === */}
         <section className="relative rounded-2xl overflow-hidden border-2 border-secondary/20 bg-base-100 shadow-md mb-8">
@@ -466,6 +608,7 @@ export function HtsCodePageContent({
                   "Audit defense strategies & documentation templates",
                   "Common classification mistakes to avoid",
                   "GRI application guide with real examples",
+                  "7 FREE tools and templates to boost your classifications",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-2.5 text-sm text-base-content/70">
                     <svg className="shrink-0 w-4 h-4 text-secondary mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -479,71 +622,6 @@ export function HtsCodePageContent({
           </div>
         </section>
 
-        {/* === SEO-RICH PROSE SECTION === */}
-        <section className="rounded-2xl bg-base-200/30 border border-base-content/8 p-6 sm:p-8 mb-8">
-          <h3 className="text-lg font-bold text-base-content mb-3">
-            About HTS Code {element.htsno}
-          </h3>
-          <div className="text-sm text-base-content/70 leading-relaxed space-y-3 max-w-5xl">
-            <p>
-              <strong>HTS {element.htsno}</strong> is a classification code within the United States
-              Harmonized Tariff Schedule (HTSUS){sectionChapter ? `, found under Section ${sectionChapter.sectionNumber} (${sectionChapter.sectionDescription}), Chapter ${element.chapter} (${sectionChapter.chapterDescription})` : ""}.
-              It covers: <em>{element.description.toLowerCase()}</em>.
-            </p>
-            {hasDutyData && (
-              <p>
-                The general rate of duty for goods classified under HTS {element.htsno} is{" "}
-                <strong>{element.general || "not specified"}</strong>.
-                {element.special && (
-                  <> Special duty programs may apply, with rates of {element.special}.</>
-                )}
-                {element.other && (
-                  <> The Column 2 (non-NTR) rate is {element.other}.</>
-                )}
-              </p>
-            )}
-            {parents.length > 0 && (
-              <p>
-                This code falls under the broader classification of{" "}
-                {parents
-                  .filter((p) => p.htsno)
-                  .map((p, i, arr) => (
-                    <span key={p.uuid}>
-                      <Link href={`/hts/${p.htsno}`} className="text-primary hover:underline font-medium">
-                        HTS {p.htsno}
-                      </Link>
-                      {i < arr.length - 1 ? (i === arr.length - 2 ? " and " : ", ") : ""}
-                    </span>
-                  ))}
-                {" "}in the harmonized tariff schedule.
-              </p>
-            )}
-            {children.length > 0 && (
-              <p>
-                HTS {element.htsno} has {children.length} sub-classification{children.length !== 1 ? "s" : ""} for
-                more specific product categorization.
-              </p>
-            )}
-            <p>
-              Use the <Link href={`/duty-calculator?code=${element.htsno || ""}`} className="text-primary hover:underline font-medium">Duty Calculator</Link> to
-              find the total landed cost including all applicable tariffs, or
-              the <Link href="/explore" className="text-primary hover:underline font-medium">HTS Explorer</Link> to
-              browse the full tariff schedule.
-            </p>
-            <p>
-              Importers who need to classify products under HTS {element.htsno} or related codes can
-              use HTS Hero&apos;s{" "}
-              <Link href="/classifications" className="text-primary hover:underline font-medium">Classification Assistant</Link> to
-              produce audit-ready classification reports in minutes — complete with GRI analysis and
-              CROSS rulings validation. For a deeper understanding of how to build defensible
-              classifications, download{" "}
-              <Link href="/the-audit-ready-classifications-playbook" className="text-secondary hover:underline font-medium">
-                The Audit-Ready Classifications Playbook
-              </Link>{" "}
-              for FREE.
-            </p>
-          </div>
-        </section>
 
         {/* === CTA GRID === */}
         <div className="mb-4">
@@ -570,8 +648,7 @@ export function HtsCodePageContent({
             </div>
             <div className="p-6 flex flex-col flex-1">
               <p className="text-sm text-base-content/60 leading-relaxed mb-5 flex-1">
-                Produce an <strong className="text-base-content/80">audit-ready HTS classification</strong> for
-                any product in minutes — AI-powered candidate discovery, Legal Note & GRI analysis, CROSS
+                Produce <strong className="text-base-content/80">audit-ready classifications</strong> in minutes — AI-powered candidate discovery, Legal Note & GRI analysis, CROSS
                 validation, and one-click professional reports.
               </p>
               <Link
@@ -597,9 +674,9 @@ export function HtsCodePageContent({
             </div>
             <div className="p-6 flex flex-col flex-1">
               <p className="text-sm text-base-content/60 leading-relaxed mb-5 flex-1">
-                See the <strong className="text-base-content/80">full cost breakdown</strong> for
-                HTS {element.htsno || "any code"} from any country — base duties, Section 301 tariffs,
-                anti-dumping duties, exemptions, and trade programs.
+                See the <strong className="text-base-content/80">full import cost breakdown</strong> for
+                HTS {element.htsno || "any code"} from any country — base duties, Section 122 / 232 / 301 tariffs,
+                exemptions, and trade programs.
               </p>
               <Link
                 href={element.htsno ? `/duty-calculator/${element.htsno}` : "/duty-calculator"}
@@ -627,7 +704,7 @@ export function HtsCodePageContent({
                 The Audit-Ready Classifications Playbook
               </h4> */}
               <p className="text-sm text-base-content/60 leading-relaxed mb-5 flex-1">
-                Instantly see if new tariffs or HTS updates will affect your imports and get notified when they do!
+                Instantly see if new tariffs or HTS updates affect your imports and get notified when they do!
               </p>
               <Link
                 href={element.htsno ? `/tariffs/impact-checker?codes=${element.htsno}` : "/tariffs/impact-checker"}
@@ -645,7 +722,7 @@ export function HtsCodePageContent({
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-base-content/8 bg-base-200/20">
+      <footer className="border-t border-base-content/10 bg-base-200/20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-base-content/40">
           <span>&copy; {new Date().getFullYear()} HTS Hero. Data sourced from the USITC Harmonized Tariff Schedule.</span>
           <div className="flex gap-4">
@@ -679,13 +756,23 @@ function DutyRateRow({
   );
 }
 
+const GENERIC_DESC_RE = /^(other|parts|thereof|mixtures|the foregoing|articles|not elsewhere)/i;
+
+function isShortProductName(description: string) {
+  return description.length <= 40 && !GENERIC_DESC_RE.test(description.trim());
+}
+
 function StructuredData({
   element,
+  tariffElement,
   parents,
+  children,
   sectionChapter,
 }: {
   element: HtsElement;
+  tariffElement: HtsElement;
   parents: HtsElement[];
+  children: HtsElement[];
   sectionChapter: HtsCodePageContentProps["sectionChapter"];
 }) {
   const breadcrumbItems = [
@@ -719,26 +806,56 @@ function StructuredData({
     })),
   };
 
+  const descLower = element.description.toLowerCase();
+  const chapterCtx = sectionChapter
+    ? `, classified under Chapter ${element.chapter} (${sectionChapter.chapterDescription})`
+    : "";
+  const dutyCtx = tariffElement.general ? ` The general duty rate is ${tariffElement.general}.` : "";
+  const shortName = isShortProductName(element.description);
+
+  const faqQuestion = shortName
+    ? `What is the HTS code for ${descLower}?`
+    : `What does HTS code ${element.htsno} cover?`;
+
+  const faqAnswer = shortName
+    ? `The HTS code for ${descLower} is ${element.htsno}${chapterCtx} in the US Harmonized Tariff Schedule.${dutyCtx}${children.length > 0 ? ` There are ${children.length} more specific sub-classifications under this code.` : ""}`
+    : `HTS code ${element.htsno} covers ${descLower}${chapterCtx} in the US Harmonized Tariff Schedule.${dutyCtx}${children.length > 0 ? ` There are ${children.length} more specific sub-classifications under this code.` : ""}`;
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: faqQuestion,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: faqAnswer,
+        },
+      },
+    ],
+  };
+
   const webPageSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: `HTS ${element.htsno} – ${element.description}`,
-    description: `Look up HTS code ${element.htsno}: ${element.description}${element.general ? `. General duty rate: ${element.general}.` : ""}`,
+    name: shortName
+      ? `HTS Code for ${element.description} – ${element.htsno}`
+      : `HTS ${element.htsno} – ${element.description}`,
+    description: shortName
+      ? `The HTS code for ${descLower} is ${element.htsno}.${dutyCtx}`
+      : `HTS code ${element.htsno}: ${element.description}.${dutyCtx}`,
     url: `https://${config.domainName}/hts/${element.htsno}`,
     isPartOf: {
       "@type": "WebSite",
       name: "HTS Hero",
       url: `https://${config.domainName}`,
     },
-    ...(sectionChapter
-      ? {
-        about: {
-          "@type": "Thing",
-          name: `HTS ${element.htsno}`,
-          description: element.description,
-        },
-      }
-      : {}),
+    about: {
+      "@type": "Thing",
+      name: element.htsno ? `HTS ${element.htsno}` : element.description,
+      description: element.description,
+    },
   };
 
   return (
@@ -746,6 +863,10 @@ function StructuredData({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
       <script
         type="application/ld+json"

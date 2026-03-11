@@ -8,7 +8,7 @@ import {
   getSectionAndChapterForElement,
 } from "../../../libs/hts-server";
 import { HtsElement } from "../../../interfaces/hts";
-import { HtsCodePageContent } from "../../../components/HtsCodePageContent";
+import { HtsCodePageContent } from "@/components/HtsCodePageContent";
 import config from "@/config";
 
 interface HtsCodePageProps {
@@ -22,6 +22,8 @@ export async function generateStaticParams() {
     .filter((el) => el.htsno && el.htsno.trim().length > 0)
     .map((el) => ({ code: el.htsno }));
 }
+
+const GENERIC_DESC_RE = /^(other|parts|thereof|mixtures|the foregoing|articles|not elsewhere)/i;
 
 export async function generateMetadata({
   params,
@@ -43,6 +45,8 @@ export async function generateMetadata({
     ? element.description.slice(0, 117) + "..."
     : element.description;
 
+  const descLower = element.description.toLowerCase();
+
   const dutySnippet = element.general
     ? ` General duty rate: ${element.general}.`
     : "";
@@ -53,46 +57,51 @@ export async function generateMetadata({
 
   const codeWithoutDots = element.htsno.replace(/\./g, "");
 
-  const specialSnippet = element.special
-    ? ` Special rates may apply: ${element.special}.`
-    : "";
+  const shortName = element.description.length <= 40
+    && !GENERIC_DESC_RE.test(element.description.trim());
+
+  const title = shortName
+    ? `HTS Code for ${element.description} – ${element.htsno} | HTS Hero`
+    : `HTS ${element.htsno}: ${truncDesc} | US Tariff Classification`;
+
+  const description = shortName
+    ? `The HTS code for ${descLower} is ${element.htsno}.${chapterSnippet}${dutySnippet} Look up tariff classification, duty rates, and trade programs.`
+    : `HTS code ${element.htsno} covers ${truncDesc.toLowerCase()}.${chapterSnippet}${dutySnippet} Look up tariff classification, duty rates, and trade programs.`;
+
+  const ogTitle = shortName
+    ? `HTS Code for ${element.description} – ${element.htsno}`
+    : `HTS ${element.htsno}: ${truncDesc}`;
 
   return {
-    title: `HTS ${element.htsno} – ${truncDesc} | Duty Rates, Tariffs & Classification`,
-    description: `US import duty rates and tariffs for HTS ${element.htsno}: ${truncDesc}.${dutySnippet}${specialSnippet}${chapterSnippet} Calculate landed costs, Section 301 tariffs, and trade program exemptions.`,
+    title,
+    description,
     keywords: [
+      `HTS code for ${descLower}`,
+      `${descLower} HTS code`,
+      `${descLower} tariff code`,
+      `${descLower} tariff classification`,
+      `${descLower} import code`,
       `HTS ${element.htsno}`,
       `HTS code ${element.htsno}`,
       `HTSUS ${element.htsno}`,
       codeWithoutDots,
-      `${element.htsno} duty rate`,
-      `${element.htsno} tariff`,
-      `${element.htsno} tariff rate`,
-      `${codeWithoutDots} tariff`,
-      `${codeWithoutDots} duty rate`,
-      `import duty ${element.htsno}`,
-      `tariff for ${element.htsno}`,
-      `US import duty ${element.htsno}`,
-      `customs duty ${element.htsno}`,
-      `${element.htsno} China tariff`,
-      `Section 301 ${element.htsno}`,
+      `${element.htsno} classification`,
       element.description,
       "harmonized tariff schedule",
-      "US import duty",
-      "tariff rate",
-      "customs duty calculator",
+      "HTS classification",
+      "US tariff code lookup",
     ],
     openGraph: {
-      title: `HTS ${element.htsno} – Duty Rates & Tariff Details`,
-      description: `US import duty for HTS ${element.htsno}: ${truncDesc}.${dutySnippet} Calculate full landed costs with HTS Hero.`,
+      title: ogTitle,
+      description: `Look up HTS code ${element.htsno}: ${truncDesc.toLowerCase()}.${dutySnippet} Find tariff classification and duty rates on HTS Hero.`,
       url: `https://${config.domainName}/hts/${element.htsno}`,
       siteName: "HTS Hero",
       type: "website",
     },
     twitter: {
       card: "summary",
-      title: `HTS ${element.htsno} – Duty Rates & Tariffs`,
-      description: `Import duty rates for ${element.htsno}: ${truncDesc}.${dutySnippet}`,
+      title: ogTitle,
+      description: `Look up HTS ${element.htsno}: ${truncDesc.toLowerCase()}.${dutySnippet}`,
     },
     alternates: {
       canonical: `/hts/${element.htsno}`,
@@ -111,6 +120,10 @@ export default async function HtsCodePage({ params }: HtsCodePageProps) {
 
   const parents = getHtsElementParentsServer(element, elements);
   const children = getDirectChildren(element, elements);
+  const nearestParent = parents[parents.length - 1];
+  const siblings = nearestParent
+    ? getDirectChildren(nearestParent, elements).filter((e) => e.uuid !== element.uuid)
+    : [];
   const sectionChapter = getSectionAndChapterForElement(
     sections,
     element.chapter
@@ -122,6 +135,7 @@ export default async function HtsCodePage({ params }: HtsCodePageProps) {
         element={element}
         parents={parents}
         children={children}
+        siblings={siblings}
         sectionChapter={sectionChapter}
       />
     </main>
