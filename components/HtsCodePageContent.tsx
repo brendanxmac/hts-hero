@@ -401,7 +401,7 @@ export function HtsCodePageContent({
                 <p className="text-xs text-base-content/50">Calculate total import duties, tariffs, and trade agreement exemptions for your shipment.</p>
               </div>
               <Link
-                href={element.htsno ? `/duty-calculator/${element.htsno}` : "/duty-calculator"}
+                href={element.htsno ? `/duty-calculator?code=${element.htsno}` : "/duty-calculator"}
                 className="btn btn-primary"
               >
                 Calculate Total Duty <span aria-hidden="true">&rarr;</span>
