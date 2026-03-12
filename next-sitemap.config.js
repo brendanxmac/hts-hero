@@ -1,27 +1,51 @@
+const { createClient } = require("@supabase/supabase-js");
+const pako = require("pako");
+
+async function getHtsCodes() {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  );
+
+  const { data: revision, error: revError } = await supabase
+    .from("hts_revisions")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single();
+
+  if (revError) throw new Error(`Failed to get HTS revision: ${revError.message}`);
+
+  const { data: blob, error: dlError } = await supabase.storage
+    .from("hts-revisions")
+    .download(`${revision.name}.json.gz`);
+
+  if (dlError) throw new Error(`Failed to download HTS data: ${dlError.message}`);
+
+  const arrayBuffer = await blob.arrayBuffer();
+  const decompressed = pako.inflate(new Uint8Array(arrayBuffer), { to: "string" });
+  const elements = JSON.parse(decompressed);
+
+  return elements
+    .filter((el) => el.htsno && el.htsno.trim().length > 0)
+    .map((el) => el.htsno);
+}
+
 module.exports = {
-  // REQUIRED:
   siteUrl: process.env.SITE_URL || "https://htshero.com",
   generateRobotsTxt: true,
   sitemapSize: 5000,
-  // use this to exclude routes from the sitemap (i.e. a user dashboard). By default, NextJS app router metadata files are excluded (https://nextjs.org/docs/app/api-reference/file-conventions/metadata)
   exclude: ["/twitter-image.*", "/opengraph-image.*", "/icon.*"],
+  additionalPaths: async (config) => {
+    const codes = await getHtsCodes();
+    return codes.map((code) => ({
+      loc: `/hts/${code}`,
+      changefreq: "monthly",
+      priority: 0.7,
+      lastmod: new Date().toISOString(),
+    }));
+  },
   transform: async (config, path) => {
-    if (path.startsWith("/hts/")) {
-      return {
-        loc: path,
-        changefreq: "monthly",
-        priority: 0.7,
-        lastmod: new Date().toISOString(),
-      };
-    }
-    if (path === "/duty-calculator") {
-      return {
-        loc: path,
-        changefreq: "weekly",
-        priority: 0.9,
-        lastmod: new Date().toISOString(),
-      };
-    }
     return {
       loc: path,
       changefreq: config.changefreq,
