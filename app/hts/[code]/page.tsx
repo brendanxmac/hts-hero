@@ -15,12 +15,10 @@ interface HtsCodePageProps {
   params: { code: string };
 }
 
-export async function generateStaticParams() {
-  const elements = await getHtsElementsServer();
+export const revalidate = 86400;
 
-  return elements
-    .filter((el) => el.htsno && el.htsno.trim().length > 0)
-    .map((el) => ({ code: el.htsno }));
+export async function generateStaticParams(): Promise<{ code: string }[]> {
+  return [];
 }
 
 const GENERIC_DESC_RE = /^(other|parts|thereof|mixtures|the foregoing|articles|not elsewhere)/i;
