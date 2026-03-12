@@ -29,12 +29,20 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         error,
       } = await supabase.auth.getUser();
 
-      if (error) throw error;
+      if (error) {
+        // "Auth session missing" just means no one is logged in — not a real error
+        if (error.message?.includes("Auth session missing")) {
+          setUser(null);
+          setError(null);
+          resetUser();
+          return;
+        }
+        throw error;
+      }
 
       setUser(user);
       setError(null);
 
-      // Identify user in Mixpanel
       if (user) {
         identifyUser(user.id, {
           email: user.email,

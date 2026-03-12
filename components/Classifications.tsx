@@ -521,8 +521,9 @@ export const Classifications = ({ page, setPage }: Props) => {
 
       {/* Main Content */}
       <div className="w-full max-w-5xl mx-auto flex flex-col px-4 sm:px-6 gap-4 py-6">
+
         {/* Tab Navigation */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        {classifications && classifications.length > 0 && <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
             {!loader.isLoading && (
               <div className="flex p-1 gap-1 bg-base-200/60 rounded-xl border border-base-content/5">
@@ -553,10 +554,10 @@ export const Classifications = ({ page, setPage }: Props) => {
               <span className="loading loading-spinner loading-sm text-primary"></span>
             )}
           </div>
-        </div>
+        </div>}
 
         {/* Filtering Section */}
-        <div className="relative overflow-hidden rounded-2xl border border-base-content/15 bg-base-200/50 p-4">
+        {classifications && classifications.length > 0 && <div className="relative overflow-hidden rounded-2xl border border-base-content/15 bg-base-200/50 p-4">
           {/* Subtle decorative elements */}
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute -top-16 -right-16 w-48 h-48 bg-primary/10 rounded-full blur-3xl" />
@@ -657,7 +658,7 @@ export const Classifications = ({ page, setPage }: Props) => {
               </select>
             </div>
           </div>
-        </div>
+        </div>}
 
         {filteredClassifications && filteredClassifications.length > 0 && (
           <>

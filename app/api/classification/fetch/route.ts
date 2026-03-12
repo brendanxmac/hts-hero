@@ -53,10 +53,7 @@ export async function GET(req: NextRequest) {
     );
 
     if (!anonymousToken) {
-      return NextResponse.json(
-        { error: "You must be logged in to complete this action." },
-        { status: 401 }
-      );
+      return NextResponse.json([], { status: 200 });
     }
 
     const { data: classifications, error } = await supabase
