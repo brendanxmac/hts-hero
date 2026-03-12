@@ -49,12 +49,14 @@ const sanitizeTextForPdf = (text: string | undefined | null): string => {
 
 export const createClassification = async (
   classification: ClassificationI,
+  anonymousToken?: string,
 ): Promise<ClassificationRecord> => {
   const classificationRecord = await apiClient.post<
     ClassificationI,
     ClassificationRecord
   >("/classification/create", {
     classification,
+    anonymous_token: anonymousToken,
   });
 
   return classificationRecord;

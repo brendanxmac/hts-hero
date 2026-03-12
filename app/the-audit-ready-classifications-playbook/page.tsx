@@ -303,8 +303,8 @@ export default function AuditReadyClassificationsPage() {
                 {[
                   {
                     icon: "🎯",
-                    title: "Classification Assistant Free Trial",
-                    copy: "Generate audit-ready classifications in a fraction of the time with our broker-loved AI assistant, free for 10 days!",
+                    title: "5 Free Classifications",
+                    copy: "Generate audit-ready classifications in a fraction of the time with our broker-loved AI assistant — your first 5 are free!",
                     value: "$30",
                   },
                   {

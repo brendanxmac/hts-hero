@@ -125,13 +125,13 @@ export const bundleFaqList: FAQItem[] = [
     question: "Can I try it before buying?",
     answer: (
       <div className="pt-2">
-        <p>Yes!, HTS Hero offers a 10 day free trial for all paid plans!</p>
+        <p>Yes! HTS Hero offers 5 free classifications so you can try the tool before committing.</p>
         <p>
           No credit card required, just{" "}
           <Link href={config.auth.loginUrl} className="link link-primary">
             sign up
           </Link>{" "}
-          and start using the tool!
+          and start classifying!
         </p>
       </div>
     ),

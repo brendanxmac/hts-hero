@@ -465,7 +465,7 @@ export const Classifications = ({ page, setPage }: Props) => {
 
             {/* Right side - Action buttons */}
             <div className="flex flex-row gap-3 md:items-end">
-              {!activeClassifyPlan && (
+              {user && !activeClassifyPlan && (
                 <button
                   className="group relative overflow-hidden px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 bg-secondary/15 border border-secondary/30 hover:border-secondary/50 hover:bg-secondary/25 hover:shadow-lg hover:shadow-secondary/20"
                   disabled={loadingUpgrade}

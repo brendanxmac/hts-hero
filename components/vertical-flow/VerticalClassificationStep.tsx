@@ -105,7 +105,7 @@ export const VerticalClassificationStep = ({
   const hasSelection = Boolean(currentLevel?.selection);
   const selectedElement = currentLevel?.selection;
   const isUsersClassification = classificationRecord
-    ? classificationRecord.user_id === user.id
+    ? user ? classificationRecord.user_id === user.id : !classificationRecord.user_id
     : true;
 
   const isDisabled =

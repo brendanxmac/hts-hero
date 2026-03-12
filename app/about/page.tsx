@@ -16,6 +16,7 @@ import {
 import { BoltIcon } from "@heroicons/react/24/solid";
 import AboutHeader from "../../components/AboutHeader";
 import { BookDemoButton } from "../../components/BookDemoButton";
+import { ClassificationCTA } from "../../components/ClassificationCTA";
 
 const productSections: ProductSectionData[] = [
   {
@@ -298,6 +299,15 @@ export default function Home() {
         {productSections.map((product, index) => (
           <ProductSection key={product.title} product={product} index={index} />
         ))}
+      </div>
+
+      {/* Interactive Classification CTA */}
+      <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-12">
+        <ClassificationCTA
+          title="Try the Classification Assistant"
+          subtitle="See how quickly you can classify a product. Enter a description and let our AI guide you."
+          variant="inline"
+        />
       </div>
 
       {/* Pricing Section */}

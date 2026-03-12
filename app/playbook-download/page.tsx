@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Footer from "../../components/Footer";
+import { ClassificationCTA } from "../../components/ClassificationCTA";
 
 const cardStyle =
   "bg-base-100 rounded-2xl shadow-lg shadow-base-content/10 border border-base-content/20 p-6 md:p-8";
@@ -242,6 +243,15 @@ export default function PlaybookDownloadPage() {
               No credit card required. Start classifying in seconds.
             </p>
           </section>
+
+          {/* Interactive Classification CTA */}
+          <div className="mt-12">
+            <ClassificationCTA
+              title="Put the playbook into practice"
+              subtitle="Enter a product description and classify it using the exact workflow from the playbook."
+              variant="inline"
+            />
+          </div>
 
           {/* Trust strip */}
           <div className="mt-12 pt-8 border-t border-base-content/10 text-center">

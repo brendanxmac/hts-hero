@@ -28,7 +28,6 @@ import {
   Product,
   userHasActivePurchaseForProduct,
 } from "../../libs/supabase/purchase";
-import { isWithinPastNDays } from "../../utilities/time";
 import { useUser } from "../../contexts/UserContext";
 import { SupabaseBuckets } from "../../constants/supabase";
 
@@ -65,11 +64,6 @@ export const VerticalCandidateElement = ({
   );
 
   const handleClassificationCompleted = async () => {
-    const userCreatedDate = user ? new Date(user.created_at) : null;
-    const isClassifyTrialUser = userCreatedDate
-      ? isWithinPastNDays(userCreatedDate, 7)
-      : false;
-
     const isPayingUser = user
       ? await userHasActivePurchaseForProduct(user.id, Product.CLASSIFY)
       : false;
@@ -78,7 +72,7 @@ export const VerticalCandidateElement = ({
       hts_code: element.htsno,
       item: classification.articleDescription,
       is_paying_user: isPayingUser,
-      is_trial_user: isClassifyTrialUser,
+      is_anonymous: !user,
     });
   };
 

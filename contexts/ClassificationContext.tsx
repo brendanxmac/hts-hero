@@ -17,6 +17,7 @@ import {
 import { fetchUser } from "../libs/supabase/user";
 import { NoteRecord } from "../types/hts";
 import { useUser } from "./UserContext";
+import { getOrCreateAnonymousToken } from "../libs/anonymous-token";
 
 export type ClassificationTier = "premium" | "standard";
 
@@ -106,14 +107,16 @@ export const ClassificationProvider = ({
 
   // Sync classificationTier from user profile (classification_type: "standard" | "premium" | null)
   useEffect(() => {
-    if (!authUser?.id) return;
+    if (!authUser?.id) {
+      setClassificationTier("standard");
+      return;
+    }
 
     let cancelled = false;
     const loadTier = async () => {
       const profile = await fetchUser(authUser.id);
       if (cancelled) return;
       const tier = getTierFromClassificationType(profile?.classification_type);
-      console.log("tier", tier);
       setClassificationTier(tier);
     };
     loadTier();
@@ -374,11 +377,16 @@ export const ClassificationProvider = ({
     setClassification(newClassification);
     setIsCreatingClassification(true);
 
+    // For anonymous users, generate a token
+    const anonymousToken = !authUser ? getOrCreateAnonymousToken() : undefined;
+
     // Create the DB record and track the promise
     const createPromise = (async () => {
       try {
-        const classificationRecord =
-          await createClassification(newClassification);
+        const classificationRecord = await createClassification(
+          newClassification,
+          anonymousToken
+        );
         setClassificationId(classificationRecord.id);
       } finally {
         setIsCreatingClassification(false);

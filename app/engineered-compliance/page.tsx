@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Footer from "../../components/Footer";
 import LetsTalkModal from "../../components/LetsTalkModal";
+import { ClassificationCTA } from "../../components/ClassificationCTA";
 import { useUser } from "../../contexts/UserContext";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 
@@ -404,6 +405,14 @@ export default function EngineeredCompliancePage() {
             </div>
           </section>
 
+          {/* Interactive Classification CTA */}
+          <section className="py-4 mb-16">
+            <ClassificationCTA
+              title="See the Classification Assistant in action"
+              subtitle="Enter a product description and experience the AI-guided classification workflow."
+              variant="inline"
+            />
+          </section>
         </div>
       </main>
 

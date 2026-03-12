@@ -34,12 +34,12 @@ const ConversionPricing = () => {
       <div className="py-12 px-4 sm:px-8 max-w-7xl mx-auto flex flex-col gap-4 md:gap-8 items-center justify-center">
         <div className="flex flex-col gap-2">
           <h3 className="text-center mb-4 uppercase text-sm text-primary font-medium">
-            Your Free Trial has Ended
+            You&apos;ve Used All 5 Free Classifications
           </h3>
           <h2 className="text-3xl md:text-4xl font-extrabold text-center">
-            Upgrade to Continue <span className="text-primary">Boosting</span>
+            Upgrade to Continue <span className="text-primary">Classifying</span>
             <br />
-            Your Classifications & Tariff Checks
+            Your Products
           </h2>
         </div>
 

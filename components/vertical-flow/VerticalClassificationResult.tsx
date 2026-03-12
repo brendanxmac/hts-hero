@@ -67,6 +67,121 @@ import { ClassificationDetailsSummary } from "../classification-ui/Classificatio
 import { LevelConnector } from "../classification-ui/LevelConnector";
 import { TariffDutiesSummary } from "../classification-ui/TariffDutiesSummary";
 import { DutyCalculatorNoticeBanner } from "../DutyCalculatorNoticeBanner";
+import {
+  ShareIcon,
+  LinkIcon,
+  ClipboardDocumentCheckIcon,
+} from "@heroicons/react/24/solid";
+import apiClient from "../../libs/api";
+import config from "@/config";
+
+const ShareSection = ({
+  classificationRecord,
+}: {
+  classificationRecord: ClassificationRecord;
+}) => {
+  const [isShared, setIsShared] = useState(
+    classificationRecord.is_shared ?? false
+  );
+  const [shareToken, setShareToken] = useState(
+    classificationRecord.share_token ?? null
+  );
+  const [isToggling, setIsToggling] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const shareUrl = shareToken
+    ? `${typeof window !== "undefined" ? window.location.origin : `https://${config.domainName}`}/c/${shareToken}`
+    : null;
+
+  const handleToggleShare = async () => {
+    setIsToggling(true);
+    try {
+      const response: { share_token: string | null; is_shared: boolean } =
+        await apiClient.post("/classification/share", {
+          id: classificationRecord.id,
+          enable: !isShared,
+        });
+      setIsShared(response.is_shared);
+      setShareToken(response.share_token);
+    } catch (error) {
+      console.error("Error toggling share:", error);
+    } finally {
+      setIsToggling(false);
+    }
+  };
+
+  const handleCopyLink = () => {
+    if (shareUrl) {
+      navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  return (
+    <div className="relative z-20 rounded-2xl border border-base-content/15 bg-base-100">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute -top-16 -right-16 w-48 h-48 bg-accent/5 rounded-full blur-3xl" />
+      </div>
+
+      <div className="relative z-10 p-5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-accent/20 border border-current/20 shrink-0">
+              <ShareIcon className="w-5 h-5 text-accent" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-base-content">
+                Share Classification
+              </h3>
+              <p className="text-xs text-base-content/60">
+                Generate a public read-only link
+              </p>
+            </div>
+          </div>
+
+          <label className="flex items-center cursor-pointer gap-2">
+            <input
+              type="checkbox"
+              className="toggle toggle-primary toggle-sm"
+              checked={isShared}
+              onChange={handleToggleShare}
+              disabled={isToggling}
+            />
+            {isToggling && (
+              <span className="loading loading-spinner loading-xs"></span>
+            )}
+          </label>
+        </div>
+
+        {isShared && shareUrl && (
+          <div className="mt-4 flex items-center gap-2">
+            <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl bg-base-200 border border-base-content/10 text-sm text-base-content/70 truncate">
+              <LinkIcon className="w-4 h-4 shrink-0" />
+              <span className="truncate">{shareUrl}</span>
+            </div>
+            <button
+              className="btn btn-sm btn-primary gap-1.5 shrink-0"
+              onClick={handleCopyLink}
+            >
+              {copied ? (
+                <>
+                  <ClipboardDocumentCheckIcon className="w-4 h-4" />
+                  Copied
+                </>
+              ) : (
+                <>
+                  <LinkIcon className="w-4 h-4" />
+                  Copy
+                </>
+              )}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
 interface Props {
   userProfile: UserProfile;
@@ -601,6 +716,11 @@ export const VerticalClassificationResult = ({
           ))}
         </div>
       </CollapsibleSection>
+
+      {/* Share Section */}
+      {userProfile && classificationRecord && (
+        <ShareSection classificationRecord={classificationRecord} />
+      )}
 
       {/* Importer Section */}
       <div className="relative z-20 rounded-2xl border border-base-content/15 bg-base-100">

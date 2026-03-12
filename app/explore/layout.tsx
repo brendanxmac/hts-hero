@@ -3,6 +3,7 @@ import { createClient } from "@/app/api/supabase/server";
 import UnauthenticatedHeader from "../../components/UnauthenticatedHeader";
 import { AuthenticatedHeader } from "../../components/AuthenticatedHeader";
 import { CTABanner } from "../../components/CTABanner";
+import { ClassificationCTA } from "../../components/ClassificationCTA";
 
 // This is a server-side component to ensure the user is logged in.
 // If not, it will redirect to the login page.
@@ -27,6 +28,13 @@ export default async function LayoutPrivate({
       />
       {user ? <AuthenticatedHeader /> : <UnauthenticatedHeader />}
       {children}
+      <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-8">
+        <ClassificationCTA
+          title="Found what you're looking for? Classify it"
+          subtitle="Enter your product description to start an AI-guided classification."
+          variant="inline"
+        />
+      </div>
     </div>
   );
 }

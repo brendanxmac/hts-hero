@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Suspense, useState, useEffect, useCallback } from "react";
 import LetsTalkModal from "../components/LetsTalkModal";
+import { ClassificationCTA } from "./ClassificationCTA";
 import { useUser } from "../contexts/UserContext";
 import { AboutPage } from "../enums/classify";
 import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
@@ -507,6 +508,15 @@ export function HomePage() {
       </div>
 
       <UseCases handleBookDemoClick={handleBookDemoClick} />
+
+      {/* Interactive Classification CTA */}
+      <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-12">
+        <ClassificationCTA
+          title="Find your product's HTS code in minutes"
+          subtitle="Enter a product description and our AI-powered assistant will guide you through the classification process."
+          variant="inline"
+        />
+      </div>
 
       <Pricing customerType={AboutPage.BUNDLE} />
       <FAQ faqItems={bundleFaqList} />

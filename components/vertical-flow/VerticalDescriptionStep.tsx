@@ -1,13 +1,13 @@
 "use client";
 
 import { useClassification } from "../../contexts/ClassificationContext";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   Product,
   userHasActivePurchaseForProduct,
 } from "../../libs/supabase/purchase";
 import { useUser } from "../../contexts/UserContext";
-import { isWithinPastNDays } from "../../utilities/time";
+import { fetchUser } from "../../libs/supabase/user";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 import { DocumentTextIcon } from "@heroicons/react/16/solid";
 import toast from "react-hot-toast";
@@ -34,42 +34,68 @@ export const VerticalDescriptionStep = ({
     classification?.articleDescription || ""
   );
   const [loading, setLoading] = useState(false);
+  const hasAutoSubmittedRef = useRef(false);
 
   useEffect(() => {
     setLocalItemDescription(classification?.articleDescription || "");
   }, [classification?.articleDescription]);
 
+  // Check for pre-filled description from CTA (via sessionStorage)
+  useEffect(() => {
+    if (hasAutoSubmittedRef.current) return;
+    const prefilled = sessionStorage.getItem("cta_classification_description");
+    if (prefilled) {
+      sessionStorage.removeItem("cta_classification_description");
+      setLocalItemDescription(prefilled);
+      hasAutoSubmittedRef.current = true;
+    }
+  }, []);
+
   const isUsersClassification = classificationRecord
-    ? classificationRecord.user_id === user.id
+    ? user ? classificationRecord.user_id === user.id : !classificationRecord.user_id
     : true;
+
+  const FREE_CLASSIFICATION_LIMIT = 5;
 
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const userCreatedDate = user ? new Date(user.created_at) : null;
-      const isTrialUser = userCreatedDate
-        ? isWithinPastNDays(userCreatedDate, 7)
-        : false;
+      // Anonymous users can always start a classification (gated after heading selection)
+      if (!user) {
+        if (localItemDescription !== classification?.articleDescription) {
+          await startNewClassification(localItemDescription, true);
+          onDescriptionSubmitted?.();
+          refreshClassifications();
 
-      const isPayingUser = user
-        ? await userHasActivePurchaseForProduct(user.id, Product.CLASSIFY)
-        : false;
+          trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
+            item: localItemDescription,
+            is_anonymous: true,
+          });
+        }
+        return;
+      }
+
+      const isPayingUser = await userHasActivePurchaseForProduct(
+        user.id,
+        Product.CLASSIFY
+      );
+
+      // Count-based trial: check classification_count from user profile
+      const userProfile = await fetchUser(user.id);
+      const classificationCount = userProfile?.classification_count ?? 0;
+      const isTrialUser = classificationCount < FREE_CLASSIFICATION_LIMIT;
 
       if (isPayingUser || isTrialUser) {
         if (localItemDescription !== classification?.articleDescription) {
-          // Start new classification with first level included for immediate UI transition
           await startNewClassification(localItemDescription, true);
-
-          // Notify parent that description was submitted
           onDescriptionSubmitted?.();
-
-          // Refresh classifications list in the background
           refreshClassifications();
 
           trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
             item: localItemDescription,
             is_paying_user: isPayingUser,
             is_trial_user: isTrialUser,
+            classification_count: classificationCount,
           });
         }
       } else {

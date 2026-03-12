@@ -6,6 +6,7 @@ import config from "@/config";
 import ThemeToggle from "./ThemeToggle";
 import { CTABanner } from "./CTABanner";
 import { getFirstChapterOfSection } from "@/libs/hts";
+import { ClassificationCTA } from "./ClassificationCTA";
 
 const STORAGE_BASE = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/content`;
 
@@ -822,6 +823,15 @@ export function HtsCodePageContent({
         </div> */}
 
       </div >
+
+      {/* Interactive Classification CTA */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+        <ClassificationCTA
+          title={`Not sure if ${element.htsno} is right? Verify it now`}
+          subtitle="Enter your product description and our Classification Assistant will help you find the correct HTS code."
+          variant="inline"
+        />
+      </div>
 
       {/* Footer */}
       <footer className="border-t border-base-content/10 bg-base-200/20" >

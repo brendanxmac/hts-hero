@@ -5,6 +5,7 @@ import {
   ClassificationRecord,
   ClassificationStatus,
 } from "../../../../interfaces/hts";
+import { getAnonymousTokenFromCookieHeader } from "../../../../libs/anonymous-token";
 
 export const dynamic = "force-dynamic";
 
@@ -23,8 +24,12 @@ export async function POST(req: NextRequest) {
     const { data } = await supabase.auth.getUser();
     const user = data.user;
 
-    // User who are not logged in can't do searches
-    if (!user) {
+    const anonymousToken = getAnonymousTokenFromCookieHeader(
+      req.headers.get("cookie")
+    );
+
+    // Must be authenticated or have an anonymous token
+    if (!user && !anonymousToken) {
       return NextResponse.json(
         { error: "You must be logged in to complete this action." },
         { status: 401 }
@@ -86,16 +91,41 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { error } = await supabase
+    // Scope the update to the user's own classifications
+    let query = supabase
       .from("classifications")
       .update(updateData)
-      .eq("id", id)
+      .eq("id", id);
+
+    if (user) {
+      query = query.eq("user_id", user.id);
+    } else if (anonymousToken) {
+      query = query.eq("anonymous_token", anonymousToken).is("user_id", null);
+    }
+
+    const { data: updatedRecord, error } = await query
       .select()
       .single<ClassificationRecord>();
 
     if (error) {
-      console.error("Error creating classification:", error);
+      console.error("Error updating classification:", error);
       return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    // Increment classification_count when a classification is completed
+    if (
+      user &&
+      classification?.isComplete &&
+      updatedRecord
+    ) {
+      await supabase.rpc("increment_classification_count", {
+        user_id_input: user.id,
+      }).then(({ error: rpcError }) => {
+        if (rpcError) {
+          // Non-blocking: log but don't fail the request
+          console.error("Error incrementing classification count:", rpcError);
+        }
+      });
     }
 
     return NextResponse.json({ success: true }, { status: 200 });

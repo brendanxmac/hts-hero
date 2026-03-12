@@ -5,6 +5,7 @@ import { TariffFinderPage } from "../../components/TariffFinderPage";
 import { BreadcrumbsProvider } from "../../contexts/BreadcrumbsContext";
 import { renderSchemaJsonLd } from "@/libs/seo";
 import config from "@/config";
+import { ClassificationCTA } from "../../components/ClassificationCTA";
 
 export const metadata: Metadata = {
   title:
@@ -201,6 +202,15 @@ export default function DutyCalculatorPage() {
           <TariffFinderPage />
         </Suspense>
       </BreadcrumbsProvider>
+
+      {/* Interactive Classification CTA */}
+      <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-12">
+        <ClassificationCTA
+          title="Your duty rate depends on the right HTS code"
+          subtitle="Not sure your HTS code is correct? Enter your product description and verify your classification in minutes."
+          variant="inline"
+        />
+      </div>
     </main>
   );
 }

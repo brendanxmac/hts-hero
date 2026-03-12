@@ -44,6 +44,7 @@ import { AnimatedBackground } from "./classification-ui/AnimatedBackground";
 import { HeaderActions } from "./classification-ui/HeaderActions";
 import { HtsCodeDisplay } from "./classification-ui/HtsCodeDisplay";
 import { DeleteConfirmationModal } from "./classification-ui/DeleteConfirmationModal";
+import { SignUpGateCTA } from "./SignUpGateCTA";
 
 interface ClassificationProps {
   setPage: (page: ClassifyPage) => void;
@@ -55,6 +56,7 @@ interface ClassificationFlowContentProps {
   classificationRecord: ClassificationRecord | undefined;
   onOpenExplore: () => void;
   userProfile: any;
+  isAnonymous: boolean;
 }
 
 const ClassificationFlowContent = ({
@@ -62,10 +64,22 @@ const ClassificationFlowContent = ({
   classificationRecord,
   onOpenExplore,
   userProfile,
+  isAnonymous,
 }: ClassificationFlowContentProps) => {
   const { chapterDiscoveryComplete } = useSectionChapterDiscovery();
 
+  // Gate: after first heading selection, anonymous users see the sign-up CTA
+  const firstLevelHasSelection = classification.levels[0]?.selection;
+  const shouldShowGate = isAnonymous && firstLevelHasSelection;
+
   if (classification?.isComplete) {
+    if (isAnonymous) {
+      return (
+        <SignUpGateCTA
+          articleDescription={classification.articleDescription}
+        />
+      );
+    }
     return (
       <VerticalClassificationResult
         userProfile={userProfile}
@@ -92,14 +106,15 @@ const ClassificationFlowContent = ({
       {/* Heading and Sub-heading Classification Levels - only show when chapter discovery is complete */}
       {(chapterDiscoveryComplete || !classification.preliminaryLevels) &&
         classification.levels.map((level, index) => {
+          // For anonymous users, only render levels up to and including the first selection
+          if (shouldShowGate && index > 0) return null;
+
           const isActiveLevel = !level.selection;
           const previousLevelHasSelection =
             index > 0 && classification.levels[index - 1]?.selection;
 
           return (
             <div key={`level-${index}`}>
-              {/* {classification.preliminaryLevels && <></>} */}
-              {/* Connect from chapter discovery to first level, then between levels */}
               <LevelConnector
                 isActive={isActiveLevel}
                 hasPreviousSelection={
@@ -115,6 +130,16 @@ const ClassificationFlowContent = ({
             </div>
           );
         })}
+
+      {/* Sign-up gate for anonymous users after first heading selection */}
+      {shouldShowGate && (
+        <>
+          <LevelConnector isActive={true} hasPreviousSelection={true} />
+          <SignUpGateCTA
+            articleDescription={classification.articleDescription}
+          />
+        </>
+      )}
     </>
   );
 };
@@ -143,6 +168,8 @@ export const Classification = ({ setPage }: ClassificationProps) => {
 
   const { userProfile, importers, isLoadingImporters } =
     useUserProfileAndImporters(user?.id);
+
+  const isAnonymous = !user;
 
   const hasStartedClassification = Boolean(
     classificationId ||
@@ -248,7 +275,7 @@ export const Classification = ({ setPage }: ClassificationProps) => {
   // ---------------------------------------------------------------------------
   // Render: Loading State
   // ---------------------------------------------------------------------------
-  if (isFetching || !userProfile) {
+  if (isFetching || (!isAnonymous && !userProfile)) {
     return (
       <div className="min-h-[calc(100vh-4rem)] w-full flex items-center justify-center bg-base-100">
         <LoadingIndicator />
@@ -387,6 +414,7 @@ export const Classification = ({ setPage }: ClassificationProps) => {
             classificationRecord={classificationRecord}
             onOpenExplore={handleOpenExplore}
             userProfile={userProfile}
+            isAnonymous={isAnonymous}
           />
         </div>
       </SectionChapterDiscoveryProvider>
