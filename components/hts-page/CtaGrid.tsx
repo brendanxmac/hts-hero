@@ -63,7 +63,7 @@ export function CtaGrid({ htsCode, contextLabel }: CtaGridProps) {
               exemptions, and trade programs.
             </p>
             <Link
-              href={htsCode ? `/duty-calculator/${htsCode}` : "/duty-calculator"}
+              href={htsCode ? `/duty-calculator?code=${htsCode}` : "/duty-calculator"}
               className="block text-center px-6 py-3 rounded-xl bg-primary text-primary-content font-bold text-sm hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/25"
             >
               Calculate Duty Rates
