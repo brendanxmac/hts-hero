@@ -241,7 +241,7 @@ export default function Home() {
           </p>
 
           {/* CTA input — the focal point of the page */}
-          <div className="w-full max-w-3xl mx-auto mb-4 md:mb-6">
+          <div className="w-full max-w-4xl mx-auto mb-4 md:mb-6">
             <ClassifyInput buttonText="Find My HTS Code" />
           </div>
 
