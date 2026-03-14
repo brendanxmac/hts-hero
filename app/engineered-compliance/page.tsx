@@ -410,7 +410,6 @@ export default function EngineeredCompliancePage() {
             <ClassificationCTA
               title="See the Classification Assistant in action"
               subtitle="Enter a product description and experience the AI-guided classification workflow."
-              variant="inline"
             />
           </section>
         </div>

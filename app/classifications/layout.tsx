@@ -3,6 +3,7 @@ import { createClient } from "@/app/api/supabase/server";
 import { AuthenticatedHeader } from "../../components/AuthenticatedHeader";
 import { ClassifyTabProvider } from "../../contexts/ClassifyTabContext";
 import UnauthenticatedHeader from "../../components/UnauthenticatedHeader";
+import { AnonymousClassificationLinker } from "../../components/AnonymousClassificationLinker";
 
 export default async function LayoutPrivate({
   children,
@@ -19,6 +20,7 @@ export default async function LayoutPrivate({
     <ClassifyTabProvider>
       <div className="h-screen overflow-y-auto">
         {user ? <AuthenticatedHeader /> : <UnauthenticatedHeader />}
+        <AnonymousClassificationLinker />
         {children}
       </div>
     </ClassifyTabProvider>

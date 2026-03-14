@@ -7,6 +7,7 @@ import {
   DocumentTextIcon,
   SparklesIcon,
 } from "@heroicons/react/24/solid";
+import { NUM_FREE_CLASSIFICATIONS } from "../constants/classification";
 
 interface SharedClassificationViewProps {
   classification: ClassificationRecord;
@@ -106,11 +107,11 @@ export const SharedClassificationView = ({
             Want to classify your own products?
           </h3>
           <p className="text-base-content/70 max-w-md">
-            Get 5 free classifications with an audit-ready report. No credit
+            Get {NUM_FREE_CLASSIFICATIONS} free classifications with an audit-ready report. No credit
             card required.
           </p>
           <Link
-            href="/classifications"
+            href="/classifications/new"
             className="btn btn-primary btn-lg font-bold shadow-lg shadow-primary/25"
           >
             Try It Free

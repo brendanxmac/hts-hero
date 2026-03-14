@@ -4,7 +4,7 @@ import fs from "fs";
 import path from "path";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { requesterIsAuthenticated } from "../../supabase/server";
+import { requesterIsAuthenticatedOrAnonymous } from "../../supabase/server";
 import {
   LevelSelection,
   SimplifiedHtsElement,
@@ -61,12 +61,11 @@ const BestProgression = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    const requesterIsAllowed = await requesterIsAuthenticated(req);
+    const requesterIsAllowed = await requesterIsAuthenticatedOrAnonymous(req);
 
-    // Users who are not logged in can't make a gpt requests
     if (!requesterIsAllowed) {
       return NextResponse.json(
-        { error: "You must be logged in to complete this action" },
+        { error: "You must be logged in or have an active classification" },
         { status: 401 },
       );
     }

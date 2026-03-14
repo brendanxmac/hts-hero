@@ -149,7 +149,7 @@ export default function PlaybookDownloadPage() {
             </h1>
             <p className="text-lg md:text-xl text-base-content/80 max-w-2xl mx-auto">
               You have the playbook. Now use free resources like the{" "}
-              <Link href="/about" className="link link-primary font-bold">Classification Assistant</Link> to classify in minutes, not hours.
+              <Link href="/classify" className="link link-primary font-bold">Classification Assistant</Link> to classify in minutes, not hours.
             </p>
           </section>
 
@@ -168,7 +168,7 @@ export default function PlaybookDownloadPage() {
               <li className="flex items-start gap-3 text-base md:text-lg text-base-content/90">
                 <span className="text-primary font-bold shrink-0 text-lg">2.</span>
                 <span>
-                  <strong className="text-base-content">You have the tool.</strong> The HTS Hero <Link href="/about" className="link link-primary font-bold">Classification Assistant</Link> turns that process into speed: AI-powered candidate discovery & legal note & GRI analysis, all documented in a single place.
+                  <strong className="text-base-content">You have the tool.</strong> The HTS Hero <Link href="/classify" className="link link-primary font-bold">Classification Assistant</Link> turns that process into speed: AI-powered candidate discovery & legal note & GRI analysis, all documented in a single place.
                 </span>
               </li>
               <li className="flex items-start gap-3 text-base md:text-lg text-base-content/90">
@@ -178,7 +178,7 @@ export default function PlaybookDownloadPage() {
                 </span>
               </li>
             </ul>
-            <Link href="/classifications" className="btn btn-primary btn-lg mt-6 w-full">
+            <Link href="/classifications/new" className="btn btn-primary btn-lg mt-6 w-full">
               Try Classification Assistant FREE!
             </Link>
           </section>
@@ -234,7 +234,7 @@ export default function PlaybookDownloadPage() {
               Put the playbook into practice. Start your first classification now.
             </p>
             <Link
-              href="/classifications"
+              href="/classifications/new"
               className="btn btn-primary btn-lg font-semibold text-base shadow-lg hover:shadow-xl transition-shadow"
             >
               Open Classification Assistant
@@ -249,7 +249,6 @@ export default function PlaybookDownloadPage() {
             <ClassificationCTA
               title="Put the playbook into practice"
               subtitle="Enter a product description and classify it using the exact workflow from the playbook."
-              variant="inline"
             />
           </div>
 

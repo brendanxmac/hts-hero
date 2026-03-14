@@ -6,6 +6,7 @@ import { getFeatureIcon, getFeatureSupportingLabel } from "./ClassifyPricing";
 import router from "next/router";
 import { useUser } from "../contexts/UserContext";
 import { useState } from "react";
+import { NUM_FREE_CLASSIFICATIONS } from "../constants/classification";
 
 // <Pricing/> displays the pricing plans for your app
 // It's your Stripe config in config.js.stripe.plans[] that will be used to display the plans
@@ -34,7 +35,7 @@ const ConversionPricing = () => {
       <div className="py-12 px-4 sm:px-8 max-w-7xl mx-auto flex flex-col gap-4 md:gap-8 items-center justify-center">
         <div className="flex flex-col gap-2">
           <h3 className="text-center mb-4 uppercase text-sm text-primary font-medium">
-            You&apos;ve Used All 5 Free Classifications
+            You&apos;ve Used All {NUM_FREE_CLASSIFICATIONS} Free Classifications
           </h3>
           <h2 className="text-3xl md:text-4xl font-extrabold text-center">
             Upgrade to Continue <span className="text-primary">Classifying</span>
@@ -62,7 +63,7 @@ const ConversionPricing = () => {
                   "relative w-full max-w-lg",
                   plan.isFeatured && "border-2 border-primary rounded-lg",
                   !plan.isFeatured &&
-                    "border-2 border-base-content/20 rounded-lg"
+                  "border-2 border-base-content/20 rounded-lg"
                 )}
               >
                 {plan.isFeatured && (
@@ -82,9 +83,8 @@ const ConversionPricing = () => {
                 )}
 
                 <div
-                  className={`relative flex flex-col h-full gap-4 lg:gap-8 bg-base-100 p-8 rounded-lg ${
-                    plan.isCompetitor && "bg-red-500/20"
-                  }`}
+                  className={`relative flex flex-col h-full gap-4 lg:gap-8 bg-base-100 p-8 rounded-lg ${plan.isCompetitor && "bg-red-500/20"
+                    }`}
                 >
                   <div className="flex flex-col gap-4">
                     <div className="flex flex-col">

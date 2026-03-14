@@ -2,12 +2,9 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { useClassification } from "../contexts/ClassificationContext";
-import { useClassifications } from "../contexts/ClassificationsContext";
 import { useHts } from "../contexts/HtsContext";
 import { useUser } from "../contexts/UserContext";
-import { ClassifyPage } from "../enums/classify";
 import { LoadingIndicator } from "./LoadingIndicator";
-import { VerticalDescriptionStep } from "./vertical-flow/VerticalDescriptionStep";
 import { VerticalSectionDiscovery } from "./vertical-flow/VerticalSectionDiscovery";
 import { VerticalChapterDiscovery } from "./vertical-flow/VerticalChapterDiscovery";
 import { VerticalClassificationStep } from "./vertical-flow/VerticalClassificationStep";
@@ -23,6 +20,7 @@ import { ClassificationI, ClassificationStatus } from "../interfaces/hts";
 import {
   updateClassification,
   deleteClassification,
+  fetchClassificationById,
 } from "../libs/classification";
 import { downloadClassificationReport } from "../libs/hts";
 import toast from "react-hot-toast";
@@ -47,7 +45,8 @@ import { DeleteConfirmationModal } from "./classification-ui/DeleteConfirmationM
 import { SignUpGateCTA } from "./SignUpGateCTA";
 
 interface ClassificationProps {
-  setPage: (page: ClassifyPage) => void;
+  classificationRecord?: ClassificationRecord;
+  onNavigateBack: () => void;
 }
 
 // Inner component that can use the SectionChapterDiscovery context
@@ -77,6 +76,7 @@ const ClassificationFlowContent = ({
       return (
         <SignUpGateCTA
           articleDescription={classification.articleDescription}
+          classificationId={classificationRecord?.id}
         />
       );
     }
@@ -137,6 +137,7 @@ const ClassificationFlowContent = ({
           <LevelConnector isActive={true} hasPreviousSelection={true} />
           <SignUpGateCTA
             articleDescription={classification.articleDescription}
+            classificationId={classificationRecord?.id}
           />
         </>
       )}
@@ -144,44 +145,35 @@ const ClassificationFlowContent = ({
   );
 };
 
-export const Classification = ({ setPage }: ClassificationProps) => {
+export const Classification = ({
+  classificationRecord: initialRecord,
+  onNavigateBack,
+}: ClassificationProps) => {
   const { isFetching } = useHts();
   const { user } = useUser();
   const {
     classification,
     classificationId,
     isSaving,
-    resetClassificationState,
-    flushAndSave,
   } = useClassification();
-  const {
-    classifications,
-    refreshClassifications,
-    isLoading: refreshingClassifications,
-  } = useClassifications();
   const [showPricing, setShowPricing] = useState(false);
   const [showExploreModal, setShowExploreModal] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [downloadingReport, setDownloadingReport] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [refreshingRecord, setRefreshingRecord] = useState(false);
+  const [classificationRecord, setClassificationRecord] = useState<
+    ClassificationRecord | undefined
+  >(initialRecord);
 
   const { userProfile, importers, isLoadingImporters } =
     useUserProfileAndImporters(user?.id);
 
   const isAnonymous = !user;
 
-  const hasStartedClassification = Boolean(
-    classificationId ||
-      (classification?.articleDescription && classification?.levels?.length > 0)
-  );
-  const isScrolled = useHeaderScroll(hasStartedClassification);
+  const isScrolled = useHeaderScroll(true);
   useScrollToTopOnComplete(classification?.isComplete ?? false);
-
-  const classificationRecord = useMemo(
-    () => classifications.find((c) => c.id === classificationId),
-    [classifications, classificationId]
-  );
 
   const latestHtsCode = useMemo(
     () => getLatestHtsCode(classification?.levels),
@@ -199,6 +191,20 @@ export const Classification = ({ setPage }: ClassificationProps) => {
   );
   const canDelete = canUserDelete(userProfile, classificationRecord);
 
+  // Refresh the classification record from the API
+  const refreshRecord = useCallback(async () => {
+    if (!classificationId) return;
+    setRefreshingRecord(true);
+    try {
+      const updated = await fetchClassificationById(classificationId);
+      setClassificationRecord(updated);
+    } catch (error) {
+      console.error("Error refreshing classification record:", error);
+    } finally {
+      setRefreshingRecord(false);
+    }
+  }, [classificationId]);
+
   // ---------------------------------------------------------------------------
   // Event Handlers
   // ---------------------------------------------------------------------------
@@ -214,14 +220,14 @@ export const Classification = ({ setPage }: ClassificationProps) => {
           undefined,
           newStatus
         );
-        await refreshClassifications();
+        await refreshRecord();
       } catch (error) {
         console.error("Error updating status:", error);
       } finally {
         setUpdatingStatus(false);
       }
     },
-    [classificationId, refreshClassifications]
+    [classificationId, refreshRecord]
   );
 
   const handleDownloadReport = useCallback(async () => {
@@ -254,23 +260,16 @@ export const Classification = ({ setPage }: ClassificationProps) => {
       setIsDeleting(true);
       await deleteClassification(classificationRecord.id);
       toast.success("Classification deleted");
-      await refreshClassifications();
-      setPage(ClassifyPage.CLASSIFICATIONS);
+      onNavigateBack();
     } catch (error) {
       console.error("Error deleting classification:", error);
     } finally {
       setIsDeleting(false);
       setShowDeleteModal(false);
     }
-  }, [classificationRecord, refreshClassifications, setPage]);
+  }, [classificationRecord, onNavigateBack]);
 
   const handleOpenExplore = useCallback(() => setShowExploreModal(true), []);
-  const handleNavigateBack = useCallback(async () => {
-    // Flush any pending changes and save before navigating
-    await flushAndSave();
-    setPage(ClassifyPage.CLASSIFICATIONS);
-    resetClassificationState();
-  }, [setPage, resetClassificationState, flushAndSave]);
 
   // ---------------------------------------------------------------------------
   // Render: Loading State
@@ -284,69 +283,35 @@ export const Classification = ({ setPage }: ClassificationProps) => {
   }
 
   // ---------------------------------------------------------------------------
-  // Render: Description Step (No Classification Started)
-  // ---------------------------------------------------------------------------
-  if (!hasStartedClassification) {
-    return (
-      <div className="min-h-full w-full bg-base-100">
-        <div className="bg-base-100/95 backdrop-blur-sm">
-          <div className="w-full max-w-4xl mx-auto px-6 py-4">
-            <BackButton
-              onClick={handleNavigateBack}
-              isSaving={isSaving || refreshingClassifications}
-            />
-          </div>
-        </div>
-
-        <div className="w-full max-w-4xl mx-auto px-6 py-8">
-          <VerticalDescriptionStep
-            setShowPricing={setShowPricing}
-            classificationRecord={classificationRecord}
-          />
-        </div>
-
-        {showPricing && (
-          <Modal isOpen={showPricing} setIsOpen={setShowPricing}>
-            <ConversionPricing />
-          </Modal>
-        )}
-      </div>
-    );
-  }
-
-  // ---------------------------------------------------------------------------
   // Render: Classification Flow
   // ---------------------------------------------------------------------------
   return (
     <div className="min-h-full w-full bg-base-100">
       {/* Sticky Hero Header */}
       <div
-        className={`sticky top-0 z-40 transition-all duration-300 shadow-lg ${"shadow-base-content/5 border-b border-base-content/5"} ${
-          isScrolled
-            ? "bg-base-100/95 backdrop-blur-md"
-            : "bg-gradient-to-br from-base-200 via-base-100 to-base-200"
-        }`}
+        className={`sticky top-0 z-40 transition-all duration-300 shadow-lg ${"shadow-base-content/5 border-b border-base-content/5"} ${isScrolled
+          ? "bg-base-100/95 backdrop-blur-md"
+          : "bg-gradient-to-br from-base-200 via-base-100 to-base-200"
+          }`}
       >
         <AnimatedBackground isScrolled={isScrolled} />
 
         <div
-          className={`relative z-0 w-full max-w-5xl mx-auto px-6 transition-all duration-200 ${
-            isScrolled ? "py-3" : "py-6 md:py-8"
-          }`}
+          className={`relative z-0 w-full max-w-5xl mx-auto px-6 transition-all duration-200 ${isScrolled ? "py-3" : "py-6 md:py-8"
+            }`}
         >
           {/* Top Row: Back Button + Actions */}
           <div
-            className={`overflow-hidden transition-all duration-200 ${
-              isScrolled
-                ? "max-h-0 opacity-0 mb-0"
-                : "max-h-12 opacity-100 mb-4"
-            }`}
+            className={`overflow-hidden transition-all duration-200 ${isScrolled
+              ? "max-h-0 opacity-0 mb-0"
+              : "max-h-12 opacity-100 mb-4"
+              }`}
           >
             <div className="flex items-center justify-between">
               <BackButton
-                onClick={handleNavigateBack}
+                onClick={onNavigateBack}
                 label="Classifications"
-                isSaving={isSaving || refreshingClassifications}
+                isSaving={isSaving || refreshingRecord}
               />
               {classificationRecord && (
                 <HeaderActions
@@ -354,7 +319,7 @@ export const Classification = ({ setPage }: ClassificationProps) => {
                   isComplete={classification?.isComplete ?? false}
                   canUpdateDetails={canUpdateDetails}
                   canDelete={canDelete}
-                  refreshingClassifications={refreshingClassifications}
+                  refreshingClassifications={refreshingRecord}
                   updatingStatus={updatingStatus}
                   downloadingReport={downloadingReport}
                   isLoadingImporters={isLoadingImporters}
@@ -371,9 +336,8 @@ export const Classification = ({ setPage }: ClassificationProps) => {
           <div className="flex items-center justify-between gap-4">
             {/* Item Description */}
             <div
-              className={`flex flex-col transition-all duration-200 ${
-                isScrolled ? "gap-0.5" : "gap-1.5"
-              } flex-1 min-w-0`}
+              className={`flex flex-col transition-all duration-200 ${isScrolled ? "gap-0.5" : "gap-1.5"
+                } flex-1 min-w-0`}
             >
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-base-content/70">
                 {classification.isComplete
@@ -381,11 +345,10 @@ export const Classification = ({ setPage }: ClassificationProps) => {
                   : "Item to Classify"}
               </div>
               <h1
-                className={`font-extrabold tracking-tight transition-all duration-200 ${
-                  isScrolled
-                    ? "text-base md:text-lg leading-snug line-clamp-2"
-                    : "text-xl md:text-2xl lg:text-3xl leading-tight"
-                }`}
+                className={`font-extrabold tracking-tight transition-all duration-200 ${isScrolled
+                  ? "text-base md:text-lg leading-snug line-clamp-2"
+                  : "text-xl md:text-2xl lg:text-3xl leading-tight"
+                  }`}
               >
                 <span className="bg-gradient-to-r from-base-content via-base-content to-base-content/80 bg-clip-text">
                   {classification?.articleDescription}

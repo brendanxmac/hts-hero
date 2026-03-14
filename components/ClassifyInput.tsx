@@ -4,34 +4,40 @@ import {
   useState,
   useEffect,
   useCallback,
+  useRef,
   forwardRef,
   useImperativeHandle,
 } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRightIcon } from "@heroicons/react/24/solid";
+import { useClassification } from "../contexts/ClassificationContext";
+import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
+import { useUser } from "../contexts/UserContext";
+import toast from "react-hot-toast";
 
-const CYCLING_PLACEHOLDERS = [
-  "Bluetooth noise-cancelling headphones",
+const CYCLING_EXAMPLES = [
+  "Industrial rubber conveyor belt used in mining equipment",
+  "Lithium-ion battery pack for solar energy storage systems",
   "Stainless steel insulated water bottle",
-  "Lithium-ion battery pack for solar storage",
-  "Women's cotton knit sweater",
-  "CNC machined aluminum enclosure",
-  "Organic freeze-dried coffee",
-  "LED grow lights for indoor farming",
+  "Ceramic brake pads for passenger vehicles",
+  "Men's cotton crew-neck t-shirt",
+  "Corrugated cardboard shipping boxes for retail packaging",
+  "Women's 100% Cotton Knit Sweater",
   "Ceramic tile, glazed, 12×12 inches",
-  "Hydraulic excavator bucket teeth",
-  "Polyester webbing cargo straps",
-  "Optical fiber patch cables, single-mode",
-  "Children's plastic building block set",
-  "Industrial rubber conveyor belt",
-  "Titanium dental implant abutment",
   "Bamboo cutting board with juice groove",
-];
-
-const DEFAULT_EXAMPLES = [
-  "Bluetooth headphones",
-  "Solar inverter",
-  "Coffee mugs",
+  // "Bluetooth noise-cancelling headphones",
+  // "Stainless steel insulated water bottle",
+  // "Lithium-ion battery pack for solar storage",
+  // "Women's cotton knit sweater",
+  // "CNC machined aluminum enclosure",
+  // "Organic freeze-dried coffee",
+  // "LED grow lights for indoor farming",
+  // "Hydraulic excavator bucket teeth",
+  // "Polyester webbing cargo straps",
+  // "Optical fiber patch cables, single-mode",
+  // "Children's plastic building block set",
+  // "Industrial rubber conveyor belt",
+  // "Titanium dental implant abutment",
 ];
 
 const CYCLE_INTERVAL_MS = 3000;
@@ -44,6 +50,8 @@ interface ClassifyInputProps {
   defaultValue?: string;
   compact?: boolean;
   examples?: string[] | false;
+  navigateOnSubmit?: boolean;
+  onSubmit?: (description: string) => void;
 }
 
 export interface ClassifyInputHandle {
@@ -59,17 +67,25 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
       defaultValue = "",
       compact = false,
       examples: examplesProp,
+      navigateOnSubmit = true,
+      onSubmit: onSubmitProp,
     },
     ref,
   ) => {
     const [description, setDescription] = useState(defaultValue);
-    const [isFocused, setIsFocused] = useState(false);
+    const [isFocused, setIsFocused] = useState(true);
+    const [isCreating, setIsCreating] = useState(false);
+    const [nudge, setNudge] = useState(false);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
     const router = useRouter();
+    const { startNewClassification } = useClassification();
+    const { user } = useUser();
 
-    const examples = examplesProp === false ? [] : (examplesProp ?? DEFAULT_EXAMPLES);
+    const examples = examplesProp === false ? [] : (examplesProp ?? CYCLING_EXAMPLES);
 
-    const cycleList = placeholders ?? CYCLING_PLACEHOLDERS;
-    const shouldCycle = !placeholder;
+    const cycleList = placeholders ?? CYCLING_EXAMPLES;
+    const shouldCycle = !placeholder && cycleList.length > 0;
+    const staticPlaceholder = placeholder || "Enter a description of your product";
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isVisible, setIsVisible] = useState(true);
 
@@ -89,20 +105,59 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
 
     useImperativeHandle(ref, () => ({ setDescription }), []);
 
+    const submitWithDescription = useCallback(async (text: string, source: string) => {
+      if (!text.trim() || isCreating) return;
+      if (onSubmitProp) {
+        onSubmitProp(text);
+        return;
+      }
+      if (navigateOnSubmit) {
+        setIsCreating(true);
+        try {
+          const newId = await startNewClassification(text, true);
+          trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
+            item: text,
+            is_anonymous: !user,
+            source,
+          });
+          router.push(`/classifications/${newId}`);
+        } catch (error) {
+          console.error("Error starting classification:", error);
+          toast.error(
+            "Something went wrong. Please try again or contact support."
+          );
+          setIsCreating(false);
+        }
+      }
+    }, [router, onSubmitProp, navigateOnSubmit, isCreating, startNewClassification, user]);
+
     const handleSubmit = useCallback(() => {
-      if (!description.trim()) return;
-      sessionStorage.setItem("cta_classification_description", description);
-      router.push("/classifications");
-    }, [description, router]);
+      if (!description.trim()) {
+        setNudge(true);
+        textareaRef.current?.focus();
+        setTimeout(() => setNudge(false), 3000);
+        return;
+      }
+      submitWithDescription(description, "cta");
+    }, [description, submitWithDescription]);
+
+    const exampleIndexRef = useRef(0);
+    const handleTryExample = useCallback(() => {
+      if (examples.length === 0 || isCreating) return;
+      const example = examples[exampleIndexRef.current % examples.length];
+      exampleIndexRef.current++;
+      setDescription(example);
+      submitWithDescription(example, "try_example");
+    }, [examples, isCreating, submitWithDescription]);
 
     const showPlaceholderOverlay = shouldCycle && !description;
-    const staticPlaceholder = placeholder ?? "Describe your product...";
 
     if (compact) {
       return (
         <div className="flex flex-col gap-2.5">
           <div className="relative">
             <textarea
+              ref={textareaRef}
               placeholder={shouldCycle ? "" : staticPlaceholder}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -115,131 +170,109 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
                 }
               }}
               rows={3}
-              className={`w-full text-sm resize-none rounded-xl border px-3 py-2.5 bg-base-100 placeholder-base-content/40 focus:outline-none transition-all duration-200 ${
-                isFocused
-                  ? "ring-2 ring-primary/50 border-primary/30"
-                  : "border-base-content/15 hover:border-primary/30"
-              }`}
+              className={`w-full text-sm resize-none rounded-xl border px-3 py-2.5 bg-base-100 placeholder-base-content/40 focus:outline-none transition-all duration-200 ${isFocused
+                ? "ring-2 ring-primary/50 border-primary/30"
+                : "border-base-content/15 hover:border-primary/30"
+                }`}
             />
             {showPlaceholderOverlay && (
               <span
-                className="absolute left-3 top-2.5 text-sm text-base-content/40 pointer-events-none transition-opacity"
+                className={`absolute left-3 top-2.5 text-sm pointer-events-none transition-all ${nudge ? "text-secondary font-medium animate-pulse" : "text-base-content/40"}`}
                 style={{
-                  opacity: isVisible ? 1 : 0,
+                  opacity: nudge ? 1 : (isVisible ? 1 : 0),
                   transitionDuration: `${FADE_DURATION_MS}ms`,
                 }}
               >
-                {cycleList[currentIndex]}
+                {nudge ? "Enter your product description" : cycleList[currentIndex]}
               </span>
             )}
           </div>
           <button
-            disabled={!description.trim()}
+            disabled={isCreating}
             onClick={handleSubmit}
-            className={`w-full px-4 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 ${
-              description.trim()
-                ? "bg-primary text-primary-content shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02]"
-                : "bg-base-content/10 text-base-content/40 cursor-not-allowed"
-            }`}
+            className="w-full px-4 py-2.5 rounded-xl font-bold text-sm bg-primary text-primary-content transition-all duration-300 flex items-center justify-center gap-2 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02] hover:brightness-110"
           >
-            {buttonText}
-            <ArrowRightIcon className="w-4 h-4" />
+            {isCreating ? (
+              <span className="loading loading-spinner loading-sm" />
+            ) : (
+              <>
+                {buttonText}
+                <ArrowRightIcon className="w-4 h-4" />
+              </>
+            )}
           </button>
-          {examples.length > 0 && (
-            <div className="pt-2 border-t border-base-content/5">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-base-content/40 mb-1.5">
-                Try an example
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {examples.map((example) => (
-                  <button
-                    key={example}
-                    onClick={() => setDescription(example)}
-                    className="px-2.5 py-1 rounded-lg text-xs font-medium bg-base-200/60 text-base-content/70 border border-base-content/10 hover:border-primary/30 hover:bg-primary/5 hover:text-primary transition-all duration-150"
-                  >
-                    {example}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       );
     }
 
     return (
       <div className="flex flex-col gap-3">
+        {/* Input card */}
         <div
-          className={`flex flex-col sm:flex-row items-stretch rounded-2xl border-2 transition-all duration-200 bg-base-100 shadow-lg ${
-            isFocused
-              ? "border-primary/40 ring-4 ring-primary/10 shadow-primary/10"
-              : "border-base-content/15 hover:border-primary/25 shadow-base-content/5"
-          }`}
-        >
-          <div className="relative flex-1 flex items-center justify-center">
-            <textarea
-              placeholder={shouldCycle ? "" : staticPlaceholder}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey && description.trim()) {
-                  e.preventDefault();
-                  handleSubmit();
-                }
-              }}
-              rows={1}
-              className="w-full min-h-[56px] max-h-32 text-base resize-none px-5 py-4 bg-transparent placeholder-base-content/40 focus:outline-none leading-relaxed rounded-2xl"
-            />
-            {showPlaceholderOverlay && (
-              <span
-                className="absolute left-5 top-4 text-base text-base-content/40 pointer-events-none transition-opacity leading-relaxed"
-                style={{
-                  opacity: isVisible ? 1 : 0,
-                  transitionDuration: `${FADE_DURATION_MS}ms`,
-                }}
-              >
-                {cycleList[currentIndex]}
-              </span>
-            )}
-          </div>
-          <button
-            disabled={!description.trim()}
-            onClick={handleSubmit}
-            className={`flex items-center justify-center gap-2 px-6 py-4 sm:px-8 font-bold text-base whitespace-nowrap transition-all duration-300 rounded-b-xl sm:rounded-bl-none sm:rounded-r-xl ${
-              description.trim()
-                ? "bg-primary text-primary-content shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30"
-                : "bg-base-content/10 text-base-content/40 cursor-not-allowed"
+          className={`relative rounded-2xl border-2 transition-all duration-200 bg-base-100 shadow-lg ${isFocused
+            ? "border-primary/30 shadow-primary/10 ring-2 ring-primary/5"
+            : "border-base-content/15 hover:border-primary/20 shadow-base-content/10"
             }`}
-          >
-            {buttonText}
-            <ArrowRightIcon className="w-5 h-5" />
-          </button>
-        </div>
-        {examples.length > 0 && (
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-base-content/40 whitespace-nowrap">
-              Try:
+        >
+          <textarea
+            ref={textareaRef}
+            className="w-full min-h-[112px] sm:min-h-[120px] lg:min-h-[144px] max-h-48 text-base lg:text-lg resize-none pl-5 pr-5 pt-4 pb-16 sm:pb-[4.5rem] bg-transparent placeholder-base-content/40 focus:outline-none leading-relaxed rounded-2xl"
+            placeholder={shouldCycle ? "" : staticPlaceholder}
+            autoFocus={true}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey && description.trim()) {
+                e.preventDefault();
+                handleSubmit();
+              }
+            }}
+            rows={2}
+          />
+          {showPlaceholderOverlay && (
+            <span
+              className={`absolute left-5 top-4 right-5 text-base lg:text-lg pointer-events-none transition-all leading-relaxed ${nudge ? "text-secondary font-medium animate-pulse" : "text-base-content/40"}`}
+              style={{
+                opacity: nudge ? 1 : (isVisible ? 1 : 0),
+                transitionDuration: `${FADE_DURATION_MS}ms`,
+              }}
+            >
+              {nudge ? "Enter your product description" : cycleList[currentIndex]}
             </span>
-            <div className="flex flex-wrap gap-1.5">
-              {examples.map((example, i) => (
-                <button
-                  key={example}
-                  onClick={() => setDescription(example)}
-                  className="text-xs font-medium text-primary/70 hover:text-primary hover:underline transition-colors"
-                >
-                  {example}
-                  {i < examples.length - 1 && (
-                    <span className="text-base-content/30 ml-1.5">
-                      &middot;
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
+          )}
+
+          {/* Bottom bar pinned inside the card */}
+          <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-5 sm:right-4 flex items-center justify-between gap-3">
+            {examples.length > 0 ? (
+              <button
+                type="button"
+                onClick={handleTryExample}
+                disabled={isCreating}
+                className="text-sm text-primary hover:text-primary font-medium transition-colors duration-150 disabled:opacity-50 whitespace-nowrap underline shrink-0"
+              >
+                Try a sample
+              </button>
+            ) : (
+              <div />
+            )}
+            <button
+              disabled={isCreating}
+              onClick={handleSubmit}
+              className="flex items-center justify-center gap-2 bg-primary text-primary-content font-bold rounded-xl transition-all duration-300 shadow-md shadow-primary/25 hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02] hover:brightness-110 p-2.5 sm:px-6 sm:py-2.5 shrink-0"
+            >
+              {isCreating ? (
+                <span className="loading loading-spinner loading-sm" />
+              ) : (
+                <>
+                  <span className="hidden sm:inline text-sm sm:text-base">{buttonText}</span>
+                  <ArrowRightIcon className="w-5 h-5" />
+                </>
+              )}
+            </button>
           </div>
-        )}
+        </div>
       </div>
     );
   },

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import PlaybookCTA from "../../components/PlaybookCTA";
 import PlaybookCTAWithImage from "../../components/PlaybookCTAWithImage";
+import { NUM_FREE_CLASSIFICATIONS } from "../../constants/classification";
 
 const STORAGE_BASE = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/content`;
 
@@ -303,7 +304,7 @@ export default function AuditReadyClassificationsPage() {
                 {[
                   {
                     icon: "🎯",
-                    title: "5 Free Classifications",
+                    title: `${NUM_FREE_CLASSIFICATIONS} Free Classifications`,
                     copy: "Generate audit-ready classifications in a fraction of the time with our broker-loved AI assistant — your first 5 are free!",
                     value: "$30",
                   },

@@ -3,11 +3,6 @@ export enum ClassifyTab {
   EXPLORE = "explore",
 }
 
-export enum ClassifyPage {
-  CLASSIFICATIONS = "classifications",
-  CLASSIFY = "classify",
-}
-
 export enum AboutPage {
   BUNDLE = "bundle",
   IMPORTER = "importer",

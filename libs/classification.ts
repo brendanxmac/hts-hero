@@ -92,6 +92,15 @@ export const fetchClassifications = async (): Promise<
   return classifications;
 };
 
+export const fetchClassificationById = async (
+  id: string
+): Promise<ClassificationRecord> => {
+  const record: ClassificationRecord = await apiClient.get(
+    `/classification/${id}`
+  );
+  return record;
+};
+
 export const deleteClassification = async (id: string): Promise<void> => {
   await apiClient.post("/classification/delete", { id });
 };

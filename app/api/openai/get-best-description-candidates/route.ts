@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import OpenAI from "openai";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { requesterIsAuthenticated } from "../../supabase/server";
+import { requesterIsAuthenticatedOrAnonymous } from "../../supabase/server";
 import { getMinMaxRangeText } from "../../../../utilities/data";
 import { OpenAIModel } from "../../../../libs/openai";
 
@@ -55,12 +55,11 @@ Note: The use of semicolons (;) in the descriptions should be interpreted as "or
 
 export async function POST(req: NextRequest) {
   try {
-    const requesterIsAllowed = await requesterIsAuthenticated(req);
+    const requesterIsAllowed = await requesterIsAuthenticatedOrAnonymous(req);
 
-    // Users who are not logged in can't make a gpt requests
     if (!requesterIsAllowed) {
       return NextResponse.json(
-        { error: "You must be logged in to complete this action" },
+        { error: "You must be logged in or have an active classification" },
         { status: 401 }
       );
     }

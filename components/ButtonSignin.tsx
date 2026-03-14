@@ -19,7 +19,21 @@ const ButtonSignin = ({ text, extraStyle }: Props) => {
   const { user } = useUser();
 
   const getButtonText = () => {
-    return text || "Launch App ->";
+    if (text) return text
+
+    if (pathname === "/classify") {
+      return "Find HTS Code ->";
+    }
+
+    if (pathname === "/about/tariff-impact-checker") {
+      return "Check Tariff Impacts ->";
+    }
+
+    if (pathname === "/about/tariffs") {
+      return "Calculate Duty ->";
+    }
+
+    return "Launch App ->";
   };
 
   const getRedirectUrl = () => {
@@ -31,8 +45,8 @@ const ButtonSignin = ({ text, extraStyle }: Props) => {
       return "/duty-calculator";
     }
 
-    if (pathname === "/about") {
-      return "/classifications";
+    if (pathname === "/classify") {
+      return "/classifications/new";
     }
 
     if (user) {

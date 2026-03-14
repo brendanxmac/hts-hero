@@ -43,11 +43,11 @@ export function HtsCodePageContent({
       <StructuredData element={element} tariffElement={tariffElement} parentElements={parents} childrenElements={children} sectionChapter={sectionChapter} />
 
       {/* CTA banner + navigation */}
-      <header className="sticky top-0 z-50">
+      <header className="">
         <CTABanner
           message={`Not sure if ${element.htsno} is the correct HTS code for your product?`}
           ctaText="Verify Your HTS Code"
-          href="/classifications"
+          href="/classifications/new"
           subText="Produce an audit-ready classification in minutes"
         />
         {/* Logo bar */}
@@ -71,10 +71,10 @@ export function HtsCodePageContent({
         </div>
       </header>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 md:py-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 md:py-6 flex flex-col gap-6">
 
         {/* Breadcrumb */}
-        <nav aria-label="Breadcrumb" className="mb-6">
+        <nav aria-label="Breadcrumb">
           <ol className="flex flex-wrap items-center gap-1 text-xs sm:text-sm text-base-content/50">
             <li>
               <Link href="/explore" className="hover:text-primary transition-colors">
@@ -120,7 +120,7 @@ export function HtsCodePageContent({
 
         {/* === HERO SECTION === */}
         {/* bg-gradient-to-br from-primary/[0.07] via-base-200/60 to-secondary/[0.05] */}
-        <section className="relative rounded-2xl border border-primary/15 p-6 md:p-8 mb-8">
+        <section className="relative rounded-2xl border border-primary/15 p-6 md:p-8">
           {/* <div className="absolute top-0 right-0 w-40 h-40 bg-primary/10 rounded-full blur-3xl pointer-events-none" /> */}
           {/* <div className="absolute bottom-0 left-0 w-32 h-32 bg-secondary/10 rounded-full blur-3xl pointer-events-none" /> */}
 
@@ -192,113 +192,6 @@ export function HtsCodePageContent({
               })()}
             </h3>
 
-            {/* <div className="mt-2">
-              <h2 className="text-base font-bold text-base-content flex items-center gap-2">
-                Where {element.htsno || "This Code"} Appears in the Harmonized Tariff Schedule
-              </h2>
-
-              <div className="">
-                <ol className="relative ml-3 border-l-2 border-base-content/10 flex flex-col gap-0">
-                  {sectionChapter && (
-                    <>
-                      <li className="relative pl-8 pb-5">
-                        <span className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-base-content border-2 border-base-300" />
-                        <div className="flex flex-col gap-0.5">
-                          <Link href={`/section/${sectionChapter.sectionNumber}`} className="text-xs font-bold uppercase tracking-wider link link-primary">
-                            Section {sectionChapter.sectionNumber}
-                          </Link>
-                          <span className="text-sm text-base-content/60 leading-snug">
-                            {sectionChapter.sectionDescription}
-                          </span>
-                        </div>
-                      </li>
-                      <li className="relative pl-8 pb-5">
-                        <span className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-base-content border-2 border-base-300" />
-                        <div className="flex flex-col gap-0.5">
-                          <Link href={`/chapter/${element.chapter}`} className="text-xs font-bold uppercase tracking-wider link link-primary">
-                            Chapter {element.chapter}
-                          </Link>
-                          <span className="text-sm text-base-content/60 leading-snug">
-                            {sectionChapter.chapterDescription}
-                          </span>
-                        </div>
-                      </li>
-                    </>
-                  )}
-
-                  {parents.map((parent) => (
-                    <li key={parent.uuid} className="relative pl-8 pb-5">
-                      <span className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-base-content/80 border-2 border-base-300" />
-                      <div className="flex flex-col gap-0.5">
-                        {parent.htsno ? (
-                          <Link href={`/hts/${parent.htsno}`} className="text-sm font-bold link link-primary">
-                            {parent.htsno}
-                          </Link>
-                        ) : (
-                          <span className="text-xs font-semibold text-base-content/40 uppercase tracking-wider">
-                            —
-                          </span>
-                        )}
-                        <span className="text-sm text-base-content/60 leading-snug">
-                          {parent.description}
-                        </span>
-                      </div>
-                    </li>
-                  ))}
-
-                  <li className={`relative pl-8${children.length > 0 ? " pb-6" : ""}`}>
-                    <span className="absolute -left-[11px] top-0.5 w-5 h-5 rounded-full bg-primary border-2 border-base-100 shadow-md shadow-primary/30" />
-                    <div className="flex flex-col gap-0.5 bg-primary/[0.06] -ml-2 px-4 py-3 rounded-xl border border-primary/15">
-                      {element.htsno && (
-                        <span className="text-sm font-bold text-primary">{element.htsno}</span>
-                      )}
-                      <span className="text-sm text-base-content font-medium leading-snug">
-                        {element.description}
-                      </span>
-                    </div>
-                  </li>
-
-                  {children.length > 0 && (
-                    <>
-                      <li className="relative pl-8 pb-3">
-                        <h4 className="text-xs font-bold text-base-content/40 uppercase tracking-wider pt-0.5">
-                          HTS Codes Under {element.htsno || "This Classification"}
-                        </h4>
-                      </li>
-                      {children.map((child) => (
-                        <li key={child.uuid} className="relative pl-8 pb-4 last:pb-0">
-                          <span className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-base-content/10 border-2 border-base-100" />
-                          {child.htsno ? (
-                            <Link href={`/hts/${child.htsno}`} className="group flex flex-col gap-0.5">
-                              <span className="text-sm font-bold text-primary group-hover:underline flex items-center gap-1.5">
-                                {child.htsno}
-                                <svg className="w-3 h-3 text-base-content/15 group-hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                                </svg>
-                              </span>
-                              <span className="text-sm text-base-content/60 group-hover:text-base-content/80 leading-snug transition-colors">
-                                {child.description}
-                              </span>
-                            </Link>
-                          ) : (
-                            <div className="flex flex-col gap-0.5">
-                              <span className="text-xs font-semibold text-base-content/40 uppercase tracking-wider">
-                                —
-                              </span>
-                              <span className="text-sm text-base-content/60 leading-snug">
-                                {child.description}
-                              </span>
-                            </div>
-                          )}
-                        </li>
-                      ))}
-                    </>
-                  )}
-                </ol>
-              </div>
-            </div> */}
-
-
             {siblings.length > 0 && (
               <div className="mt-2">
                 <h2 className="text-xs font-bold text-base-content/40 uppercase tracking-wider pt-0.5 mb-2">
@@ -330,20 +223,31 @@ export function HtsCodePageContent({
               </div>
             )}
 
-            <div className="mt-3 pt-4 border-t border-base-content/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            {/* <div className="mt-3 pt-4 border-t border-base-content/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
                 <p className="text-sm font-semibold text-base-content">Need the correct HTS code for your product?</p>
                 <p className="text-xs text-base-content/50">Generate an audit-ready classification in minutes with AI-powered candidate discovery, GRI and Legal Note analysis, and CROSS ruling validation</p>
               </div>
               <Link
-                href="/classifications"
+                href="/classifications/new"
                 className="btn btn-primary"
               >
                 Classify Product <span aria-hidden="true">&rarr;</span>
               </Link>
-            </div>
+            </div> */}
           </div>
         </section>
+
+        {/* Interactive Classification CTA */}
+
+        <ClassificationCTA
+          title={`Need the Right HTS Code for Your Product?`}
+          subtitle="Enter your product description and we'll help you find it."
+          ctaButtonText="Find My HTS Code"
+        // showWorkflowPreview={false}'
+        // TODO: Fix this
+        />
+
 
 
         {/* === Duty Rates & Details === */}
@@ -359,7 +263,7 @@ export function HtsCodePageContent({
             </div>
 
             {hasDutyData && (
-              <div className="divide-y divide-base-content/5">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                 <DutyRateRow label="General Rate of Duty" value={tariffElement.general} />
                 <DutyRateRow label="Special Rate of Duty" value={tariffElement.special} />
                 <DutyRateRow label="Column 2 (Non-NTR)" value={tariffElement.other} />
@@ -367,31 +271,11 @@ export function HtsCodePageContent({
             )}
 
             {(element.units.length > 0 || element.quotaQuantity || element.additionalDuties) && (
-              <div className="border-t border-base-content/8">
-                <div className="px-6 py-3 bg-base-200/30">
-                  <span className="text-xs font-bold uppercase tracking-wider text-base-content/40">
-                    Additional Details
-                  </span>
-                </div>
-                <div className="flex justify-between gap-2">
-
-                  <div className="flex items-center justify-between px-6 py-3.5 gap-2">
-                    <dt className="text-sm text-base-content/60 font-medium">Units of Quantity:</dt>
-                    <dd className="text-sm font-bold text-base-content">{element.units.join(", ") || "-"}</dd>
-                  </div>
-
-
-                  <div className="flex items-center justify-between px-6 py-3.5 gap-2">
-                    <dt className="text-sm text-base-content/60 font-medium">Quota Quantity:</dt>
-                    <dd className="text-sm font-bold text-base-content">{element.quotaQuantity || "-"}</dd>
-                  </div>
-
-
-                  <div className="flex items-center justify-between px-6 py-3.5 gap-2">
-                    <dt className="text-sm text-base-content/60 font-medium">Additional Duties:</dt>
-                    <dd className="text-sm font-bold text-base-content">{element.additionalDuties || "-"}</dd>
-                  </div>
-
+              <div className="border-t border-base-content/10">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                  <DutyRateRow label="Units of Quantity" value={element.units.join(", ")} />
+                  <DutyRateRow label="Quota Quantity" value={element.quotaQuantity} />
+                  <DutyRateRow label="Additional Duties" value={element.additionalDuties} />
                 </div>
               </div>
             )}
@@ -528,13 +412,13 @@ export function HtsCodePageContent({
             <div className="border-t border-base-content/10 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
                 <p className="text-sm font-semibold text-base-content">Explore the Full Tariff Schedule</p>
-                <p className="text-xs text-base-content/50">Navigate sections, chapters, headings, and subheadings with an interactive HTS explorer.</p>
+                <p className="text-xs text-base-content/50">Easily navigate every part of the HTS with an interactive HTS explorer, and compare tariff rates for any country.</p>
               </div>
               <Link
                 href="/explore"
                 className="btn btn-primary"
               >
-                Browse the HTS Schedule <span aria-hidden="true">&rarr;</span>
+                Explore the HTS <span aria-hidden="true">&rarr;</span>
               </Link>
             </div>
           </section>
@@ -624,10 +508,10 @@ export function HtsCodePageContent({
             <div className="border-t border-base-content/10 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
                 <p className="text-sm font-semibold text-base-content">Unsure if Notes Affect your Classification?</p>
-                <p className="text-xs text-base-content/50">HTS Hero automatically analyzes all relevant legal notes and explains how they affect your classification.</p>
+                <p className="text-xs text-base-content/50">HTS Hero automatically analyzes all relevant legal notes and explains how they affect your products classification.</p>
               </div>
               <Link
-                href="/classifications"
+                href="/classifications/new"
                 className="btn btn-primary"
               >
                 Analyze Notes Automatically<span aria-hidden="true">&rarr;</span>
@@ -635,32 +519,6 @@ export function HtsCodePageContent({
             </div>
           </section>
         )}
-
-        {/* === Inline CTA: Classification Assistant === */}
-        {/* {(parents.length > 0 || children.length > 0) && (
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-xl bg-accent/[0.05] border border-accent/10 px-5 py-4 mb-8">
-            <div className="flex items-start sm:items-center gap-3">
-              <span className="shrink-0 w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center mt-0.5 sm:mt-0">
-                <svg className="w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              </span>
-              <p className="text-sm text-base-content/70">
-                <strong className="text-base-content/90">Need to classify a product?</strong>{" "}
-                Get an audit-ready HTS classification in minutes with AI-powered analysis, GRI reasoning, and CROSS validation.
-              </p>
-            </div>
-            <Link
-              href="/classifications"
-              className="shrink-0 inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-accent text-accent-content text-sm font-bold hover:bg-accent/90 transition-all shadow-sm"
-            >
-              Try Classification Assistant
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
-          </div>
-        )} */}
 
         {/* === Playbook Banner === */}
         <section className="relative rounded-2xl overflow-hidden border-2 border-secondary/20 bg-base-100 shadow-md mb-8">
@@ -731,107 +589,7 @@ export function HtsCodePageContent({
             </div>
           </div>
         </section>
-
-
-        {/* === CTA GRID === */}
-        {/* <div className="mb-4">
-          <h3 className="text-lg font-bold text-base-content">
-            Tools for Importers & Brokers Working with {element.htsno || "HTS Codes"}
-          </h3>
-          <p className="text-sm text-base-content/50 mt-1">
-            Everything you need to classify, calculate duties, and stay compliant.
-          </p>
-        </div> */}
-
-        {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <section className="relative rounded-2xl overflow-hidden border-2 border-secondary/20 bg-base-100 shadow-sm flex flex-col">
-            <div className="bg-gradient-to-br from-secondary/10 to-secondary/[0.03] px-6 py-5 border-b border-secondary/10">
-              <div className="flex items-center gap-3 mb-2">
-                <span className="w-10 h-10 rounded-xl bg-secondary/15 flex items-center justify-center text-xl">
-                  <svg className="w-5 h-5 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                  </svg>
-                </span>
-                <h3 className="text-base font-bold text-base-content">Classification Assistant</h3>
-              </div>
-            </div>
-            <div className="p-6 flex flex-col flex-1">
-              <p className="text-sm text-base-content/60 leading-relaxed mb-5 flex-1">
-                Produce <strong className="text-base-content/80">audit-ready classifications</strong> in minutes — AI-powered candidate discovery, Legal Note & GRI analysis, CROSS
-                validation, and one-click professional reports.
-              </p>
-              <Link
-                href="/about"
-                className="block text-center px-6 py-3 rounded-xl bg-secondary text-secondary-content font-bold text-sm hover:bg-secondary/90 transition-all shadow-lg shadow-secondary/20 hover:shadow-xl hover:shadow-secondary/25"
-              >
-                Classify a Product Now
-              </Link>
-            </div>
-          </section>
-
-          <section className="relative rounded-2xl overflow-hidden border-2 border-primary/20 bg-base-100 shadow-sm flex flex-col">
-            <div className="bg-gradient-to-br from-primary/10 to-primary/[0.03] px-6 py-5 border-b border-primary/10">
-              <div className="flex items-center gap-3 mb-2">
-                <span className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center">
-                  <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </span>
-                <h3 className="text-base font-bold text-base-content">Duty & Tariff Calculator</h3>
-              </div>
-            </div>
-            <div className="p-6 flex flex-col flex-1">
-              <p className="text-sm text-base-content/60 leading-relaxed mb-5 flex-1">
-                See the <strong className="text-base-content/80">full import cost breakdown</strong> for
-                HTS {element.htsno || "any code"} from any country — base duties, Section 122 / 232 / 301 tariffs,
-                exemptions, and trade programs.
-              </p>
-              <Link
-                href={element.htsno ? `/duty-calculator/${element.htsno}` : "/duty-calculator"}
-                className="block text-center px-6 py-3 rounded-xl bg-primary text-primary-content font-bold text-sm hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/25"
-              >
-                See Duty Rates for {element.htsno || "This Code"}
-              </Link>
-            </div>
-          </section>
-
-          <section className="relative rounded-2xl overflow-hidden border-2 border-accent/20 bg-base-100 shadow-sm flex flex-col">
-            <div className="bg-gradient-to-br from-accent/10 to-accent/[0.03] px-6 py-5 border-b border-accent/10">
-              <div className="flex items-center gap-3 mb-2">
-                <span className="w-10 h-10 rounded-xl bg-accent/15 flex items-center justify-center">
-                  <CheckIcon className="text-accent w-5 h-5" />
-                </span>
-                <div>
-                  <h3 className="text-base font-bold text-base-content">Tariff Impact Checker</h3>
-                </div>
-              </div>
-            </div>
-            <div className="p-6 flex flex-col flex-1">
-              <p className="text-sm text-base-content/60 leading-relaxed mb-5 flex-1">
-                Instantly see if new tariffs or HTS updates affect your imports and get notified when they do!
-              </p>
-              <Link
-                href={element.htsno ? `/tariffs/impact-checker?codes=${element.htsno}` : "/tariffs/impact-checker"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block text-center px-6 py-3 rounded-xl bg-accent text-accent-content font-bold text-sm hover:bg-accent/90 transition-all shadow-lg shadow-accent/20 hover:shadow-xl hover:shadow-accent/25"
-              >
-                Check {element.htsno || "Your Imports"}
-              </Link>
-            </div>
-          </section>
-        </div> */}
-
       </div >
-
-      {/* Interactive Classification CTA */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
-        <ClassificationCTA
-          title={`Not sure if ${element.htsno} is right? Verify it now`}
-          subtitle="Enter your product description and our Classification Assistant will help you find the correct HTS code."
-          variant="inline"
-        />
-      </div>
 
       {/* Footer */}
       <footer className="border-t border-base-content/10 bg-base-200/20" >

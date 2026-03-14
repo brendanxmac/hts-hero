@@ -138,8 +138,8 @@ export default function DutyCalculatorPage() {
       })}
 
       {/* Hero — server-rendered, immediately visible to crawlers */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-base-200 via-base-100 to-base-200 border-b border-base-content/5">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="relative overflow-hidden">
+        {/* <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-32 -right-32 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
           <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
           <div
@@ -149,15 +149,13 @@ export default function DutyCalculatorPage() {
               backgroundSize: "32px 32px",
             }}
           />
-        </div>
+        </div> */}
 
         <div className="relative z-0 w-full max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-10">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
             <div className="flex flex-col gap-3 max-w-2xl">
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight">
-                <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
-                  US Import Duty Calculator
-                </span>
+                US Import Duty Calculator
               </h1>
 
               <p className="text-base-content/60 text-sm md:text-base leading-relaxed">
@@ -168,8 +166,8 @@ export default function DutyCalculatorPage() {
                 >
                   HTS code
                 </Link>{" "}
-                and country of origin — including base rates, Section 122 / 232 /
-                301 tariffs, and trade program savings like
+                and country of origin — including base rates, Section 122, 232,
+                and 301 tariffs, and trade program savings like
                 USMCA, GSP, and CAFTA-DR. Free and instant.
               </p>
             </div>
@@ -204,13 +202,12 @@ export default function DutyCalculatorPage() {
       </BreadcrumbsProvider>
 
       {/* Interactive Classification CTA */}
-      <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-12">
+      {/* <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-12">
         <ClassificationCTA
           title="Your duty rate depends on the right HTS code"
           subtitle="Not sure your HTS code is correct? Enter your product description and verify your classification in minutes."
-          variant="inline"
         />
-      </div>
+      </div> */}
     </main>
   );
 }

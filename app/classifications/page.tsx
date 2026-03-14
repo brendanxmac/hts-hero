@@ -1,7 +1,6 @@
 import { Metadata } from "next";
-import { ClassifyController } from "../../components/ClassifyController";
-import { BreadcrumbsProvider } from "../../contexts/BreadcrumbsContext";
 import config from "@/config";
+import { ClassificationsPageContent } from "../../components/ClassificationsPageContent";
 
 export const metadata: Metadata = {
   title:
@@ -39,12 +38,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Home() {
+export default function ClassificationsListPage() {
   return (
     <main className="w-full bg-base-300">
-      <BreadcrumbsProvider>
-        <ClassifyController />
-      </BreadcrumbsProvider>
+      <ClassificationsPageContent />
     </main>
   );
 }

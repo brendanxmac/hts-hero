@@ -115,8 +115,8 @@ const productSections: ProductSectionData[] = [
         description: "See, Review, & Approve Each Others Classifications",
       },
     ],
-    aboutUrl: "/about",
-    appUrl: "/classifications",
+    aboutUrl: "/classify",
+    appUrl: "/classifications/new",
     cta: "Classify Now",
     accentColor: "secondary",
     media: {
@@ -227,12 +227,12 @@ export function HomePage() {
               <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
                 Audit-Ready
               </span>{" "}
-              <span className="text-base-content">HTS Classifications</span>
+              <span className="text-base-content">HTS Classifications</span>,
               <br />
               <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
                 Effortless
               </span>{" "}
-              <span className="text-base-content">Tariffs,</span>
+              <span className="text-base-content">Tariffs</span>
               <br />
             </h1>
 
@@ -510,13 +510,12 @@ export function HomePage() {
       <UseCases handleBookDemoClick={handleBookDemoClick} />
 
       {/* Interactive Classification CTA */}
-      <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-12">
+      {/* <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-12">
         <ClassificationCTA
           title="Find your product's HTS code in minutes"
           subtitle="Enter a product description and our AI-powered assistant will guide you through the classification process."
-          variant="inline"
         />
-      </div>
+      </div> */}
 
       <Pricing customerType={AboutPage.BUNDLE} />
       <FAQ faqItems={bundleFaqList} />

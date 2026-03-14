@@ -121,5 +121,5 @@ If you have any questions or need assistance, our support team is here to help (
 Best,
 
 Brendan
-Founder | HTS Hero (https://htshero.com/about)`;
+Founder | HTS Hero (https://htshero.com/classify)`;
 };

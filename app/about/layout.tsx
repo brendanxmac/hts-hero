@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     title: "AI HTS Classification Assistant | HTS Hero",
     description:
       "Classify products with AI-powered suggestions, GRI analysis, and CROSS validation. Audit-ready reports in minutes.",
-    url: `https://${config.domainName}/about`,
+    url: `https://${config.domainName}/classify`,
     siteName: "HTS Hero",
     type: "website",
   },
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
       "Classify products with AI-powered suggestions, GRI analysis, and CROSS validation. Audit-ready reports in minutes.",
   },
   alternates: {
-    canonical: "/about",
+    canonical: "/classify",
   },
 };
 

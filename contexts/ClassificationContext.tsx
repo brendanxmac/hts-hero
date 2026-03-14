@@ -55,7 +55,7 @@ interface ClassificationContextType {
   startNewClassification: (
     articleDescription: string,
     includeFirstLevel?: boolean
-  ) => Promise<void>;
+  ) => Promise<string>;
   saveClassification: () => Promise<void>;
   // Flush any pending debounce and save immediately - use before navigation
   flushAndSave: () => Promise<void>;
@@ -359,10 +359,11 @@ export const ClassificationProvider = ({
 
   // This creates a record in the DB and sets up the context record for local changes
   // includeFirstLevel: if true, adds an empty first level to trigger candidate fetching
+  // Returns the new classification's ID
   const startNewClassification = async (
     articleDescription: string,
     includeFirstLevel: boolean = false
-  ) => {
+  ): Promise<string> => {
     const newClassification: ClassificationI = {
       articleDescription,
       articleAnalysis: "",
@@ -380,6 +381,8 @@ export const ClassificationProvider = ({
     // For anonymous users, generate a token
     const anonymousToken = !authUser ? getOrCreateAnonymousToken() : undefined;
 
+    let newId: string;
+
     // Create the DB record and track the promise
     const createPromise = (async () => {
       try {
@@ -387,6 +390,7 @@ export const ClassificationProvider = ({
           newClassification,
           anonymousToken
         );
+        newId = classificationRecord.id;
         setClassificationId(classificationRecord.id);
       } finally {
         setIsCreatingClassification(false);
@@ -396,6 +400,7 @@ export const ClassificationProvider = ({
 
     pendingClassificationRef.current = createPromise;
     await createPromise;
+    return newId!;
   };
 
   // Reset classification state without saving (auto-save handles saves)

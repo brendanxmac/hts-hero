@@ -21,19 +21,19 @@ const AboutHeader = () => {
     href: string;
     label: string;
   }[] = [
-    {
-      href: `#features`,
-      label: "Features",
-    },
-    {
-      href: `#pricing`,
-      label: "Pricing",
-    },
-    {
-      href: `#faq`,
-      label: "FAQ",
-    },
-  ];
+      {
+        href: `#features`,
+        label: "Features",
+      },
+      {
+        href: `#pricing`,
+        label: "Pricing",
+      },
+      {
+        href: `#faq`,
+        label: "FAQ",
+      },
+    ];
 
   // setIsOpen(false) when the route changes (i.e: when the user clicks on a link on mobile)
   useEffect(() => {
@@ -64,16 +64,6 @@ const AboutHeader = () => {
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-6">
               <ToolsDropdown />
-              <Link
-                href="/blog"
-                className={`link link-hover font-bold ${
-                  pathname.startsWith("/blog")
-                    ? "text-primary"
-                    : "text-base-content"
-                }`}
-              >
-                Blog
-              </Link>
             </div>
           </div>
 
@@ -179,17 +169,6 @@ const AboutHeader = () => {
 
             {/* Navigation Links */}
             <div className="flex flex-col gap-4 mb-8">
-              <Link
-                href="/blog"
-                onClick={() => setIsOpen(false)}
-                className={`text-base font-semibold transition-colors ${
-                  pathname.startsWith("/blog")
-                    ? "text-primary"
-                    : "text-base-content hover:text-primary"
-                }`}
-              >
-                Blog
-              </Link>
               {links.map((link) => (
                 <Link
                   href={link.href}

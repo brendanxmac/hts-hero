@@ -7,12 +7,17 @@ import {
   DocumentCheckIcon,
   SparklesIcon,
 } from "@heroicons/react/24/solid";
+import { NUM_FREE_CLASSIFICATIONS } from "../constants/classification";
 
 interface SignUpGateCTAProps {
   articleDescription?: string;
+  classificationId?: string;
 }
 
-export const SignUpGateCTA = ({ articleDescription }: SignUpGateCTAProps) => {
+export const SignUpGateCTA = ({
+  articleDescription,
+  classificationId,
+}: SignUpGateCTAProps) => {
   return (
     <div className="relative overflow-hidden rounded-2xl border-2 border-primary/30 bg-gradient-to-br from-primary/5 via-base-100 to-secondary/5">
       {/* Decorative background */}
@@ -38,22 +43,22 @@ export const SignUpGateCTA = ({ articleDescription }: SignUpGateCTAProps) => {
         </div>
 
         {/* Heading */}
-        <div className="flex flex-col gap-2 max-w-lg">
+        <div className="flex flex-col gap-2 max-w-2xl">
           <h3 className="text-2xl md:text-3xl font-extrabold text-base-content">
             You&apos;re Almost There!
           </h3>
           <p className="text-base-content/70 text-base md:text-lg leading-relaxed">
-            Create a free account to complete your classification and download
-            your audit-ready report.
+            Create a free account to get the HTS Code for your <span className="font-bold">{articleDescription}</span> and download
+            your audit-ready classification report.
           </p>
         </div>
 
         {/* Trust indicators */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-lg">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-2xl">
           {[
             {
               icon: SparklesIcon,
-              text: "5 free classifications",
+              text: `${NUM_FREE_CLASSIFICATIONS} free classifications`,
             },
             {
               icon: ShieldCheckIcon,
@@ -79,7 +84,7 @@ export const SignUpGateCTA = ({ articleDescription }: SignUpGateCTAProps) => {
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
           <Link
-            href="/signin?redirect=/classifications"
+            href={`/signin?redirect=${encodeURIComponent(classificationId ? `/classifications/${classificationId}` : "/classifications")}&sign-up=true`}
             className="flex-1 btn btn-primary btn-lg text-base font-bold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] transition-all duration-200"
           >
             Create Free Account
@@ -89,7 +94,7 @@ export const SignUpGateCTA = ({ articleDescription }: SignUpGateCTAProps) => {
         <p className="text-sm text-base-content/50">
           Already have an account?{" "}
           <Link
-            href="/signin?redirect=/classifications"
+            href={`/signin?redirect=${encodeURIComponent(classificationId ? `/classifications/${classificationId}` : "/classifications")}`}
             className="text-primary font-semibold hover:underline"
           >
             Sign in

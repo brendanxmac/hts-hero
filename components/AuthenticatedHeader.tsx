@@ -171,7 +171,7 @@ export const AuthenticatedHeader = () => {
             <MobileToolsMenu onLinkClick={() => setIsOpen(false)} />
 
             {/* Navigation Links */}
-            <div className="flex flex-col gap-4 mb-8">
+            {/* <div className="flex flex-col gap-4 mb-8">
               <Link
                 href="/blog"
                 onClick={() => setIsOpen(false)}
@@ -182,7 +182,7 @@ export const AuthenticatedHeader = () => {
               >
                 Blog
               </Link>
-            </div>
+            </div> */}
 
             <div className="divider" />
 

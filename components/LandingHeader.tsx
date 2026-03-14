@@ -199,13 +199,13 @@ const LandingHeader = () => {
                   {link.label}
                 </a>
               ))}
-              <Link
+              {/* <Link
                 href="/blog"
                 onClick={() => setIsOpen(false)}
                 className="text-base font-semibold text-base-content hover:text-primary transition-colors"
               >
                 Blog
-              </Link>
+              </Link> */}
             </div>
 
             <div className="divider" />

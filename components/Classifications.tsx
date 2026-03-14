@@ -1,4 +1,5 @@
-import { ClassifyPage } from "../enums/classify";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ClassificationSummary } from "./ClassificationSummary";
 import { useClassifications } from "../contexts/ClassificationsContext";
 import { useUser } from "../contexts/UserContext";
@@ -33,11 +34,6 @@ import { EmptyResultsConfig } from "./EmptyResults";
 import { deleteClassification } from "../libs/classification";
 import toast from "react-hot-toast";
 
-interface Props {
-  page: ClassifyPage;
-  setPage: (page: ClassifyPage) => void;
-}
-
 // Define the searchable fields for Fuse.js
 interface SearchableClassification {
   id: string;
@@ -45,7 +41,8 @@ interface SearchableClassification {
   htsCodes: string[];
 }
 
-export const Classifications = ({ page, setPage }: Props) => {
+export const Classifications = () => {
+  const router = useRouter();
   const [loadingNewClassification, setLoadingNewClassification] =
     useState(false);
   const [loadingUpgrade, setLoadingUpgrade] = useState(false);
@@ -112,7 +109,7 @@ export const Classifications = ({ page, setPage }: Props) => {
           "You haven't started or completed any classifications yet, but can start your first one now.",
         ],
         buttonText: "Start First Classification",
-        onButtonClick: () => setPage(ClassifyPage.CLASSIFY),
+        onButtonClick: () => router.push("/classifications/new"),
       };
     }
 
@@ -154,12 +151,7 @@ export const Classifications = ({ page, setPage }: Props) => {
         ) : (
           <PlusIcon className="h-5 w-5" />
         ),
-        onButtonClick: async () => {
-          setLoadingNewClassification(true);
-          await fetchElements("latest");
-          setPage(ClassifyPage.CLASSIFY);
-          setLoadingNewClassification(false);
-        },
+        onButtonClick: () => router.push("/classifications/new"),
       };
     }
 
@@ -363,10 +355,8 @@ export const Classifications = ({ page, setPage }: Props) => {
       setLoader({ isLoading: false, text: "" });
     };
 
-    if (page === ClassifyPage.CLASSIFICATIONS) {
-      fetchClassifications();
-    }
-  }, [page]);
+    fetchClassifications();
+  }, []);
 
   useEffect(() => {
     const loadAllData = async () => {
@@ -496,24 +486,15 @@ export const Classifications = ({ page, setPage }: Props) => {
                   </span>
                 </button>
               )}
-              <button
+              <Link
+                href="/classifications/new"
                 className="group relative overflow-hidden px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 bg-primary text-primary-content hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02]"
-                onClick={async () => {
-                  setLoadingNewClassification(true);
-                  await fetchElements("latest");
-                  setPage(ClassifyPage.CLASSIFY);
-                  setLoadingNewClassification(false);
-                }}
               >
                 <span className="relative z-10 flex items-center gap-2">
-                  {loadingNewClassification ? (
-                    <span className="loading loading-spinner loading-sm"></span>
-                  ) : (
-                    <PlusIcon className="h-5 w-5" />
-                  )}
+                  <PlusIcon className="h-5 w-5" />
                   New Classification
                 </span>
-              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -679,7 +660,6 @@ export const Classifications = ({ page, setPage }: Props) => {
                 <ClassificationSummary
                   key={`classification-${index}`}
                   classificationRecord={classification}
-                  setPage={setPage}
                   user={userProfile}
                   onDelete={handleDeleteClassification}
                   isDeleting={deletingId === classification.id}

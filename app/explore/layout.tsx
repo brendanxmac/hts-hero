@@ -23,7 +23,7 @@ export default async function LayoutPrivate({
       <CTABanner
         message="Trying to find the correct HTS Code for your product?"
         ctaText="Find the Correct Code"
-        href="/about"
+        href="/classify"
         subText="Produce an audit-ready classification in minutes"
       />
       {user ? <AuthenticatedHeader /> : <UnauthenticatedHeader />}
@@ -32,7 +32,6 @@ export default async function LayoutPrivate({
         <ClassificationCTA
           title="Found what you're looking for? Classify it"
           subtitle="Enter your product description to start an AI-guided classification."
-          variant="inline"
         />
       </div>
     </div>

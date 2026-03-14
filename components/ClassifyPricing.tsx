@@ -139,7 +139,7 @@ const ClassifyPricing = ({ customerType }: PricingProps) => {
           </p>
 
           <Link
-            href="/classifications"
+            href="/classifications/new"
             className="mt-6 group inline-flex items-center justify-center gap-2 px-16 py-2.5 rounded-xl font-semibold text-base bg-primary text-white hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl"
           >
             <span>Try it Free</span>

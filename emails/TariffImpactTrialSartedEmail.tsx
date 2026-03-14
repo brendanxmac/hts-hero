@@ -153,7 +153,7 @@ export default function TariffImpactTrialSartedEmail() {
               </Button>{" "}
               {/* or explore our{" "}
               <Button
-                href="https://htshero.com/about"
+                href="https://htshero.com/classify"
                 className="text-[#617BFF] font-semibold"
               >
                 getting started guide

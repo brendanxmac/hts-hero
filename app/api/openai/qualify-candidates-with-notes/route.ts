@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import OpenAI from "openai";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { createClient, requesterIsAuthenticated } from "../../supabase/server";
+import { createClient, requesterIsAuthenticatedOrAnonymous } from "../../supabase/server";
 import { OpenAIModel } from "../../../../libs/openai";
 import { fetchHtsNotesFromSupabase } from "../../../../libs/supabase/hts-notes";
 import { buildNoteTree, renderNoteContext } from "../../../../libs/hts";
@@ -17,12 +17,11 @@ const CandidateQualification = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    const requesterIsAllowed = await requesterIsAuthenticated(req);
+    const requesterIsAllowed = await requesterIsAuthenticatedOrAnonymous(req);
 
-    // Users who are not logged in can't make a gpt requests
     if (!requesterIsAllowed) {
       return NextResponse.json(
-        { error: "You must be logged in to complete this action" },
+        { error: "You must be logged in or have an active classification" },
         { status: 401 }
       );
     }

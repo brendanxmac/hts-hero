@@ -6,17 +6,25 @@ import ClassifyPricing from "../../components/ClassifyPricing";
 import { FAQ } from "../../components/FAQ";
 import { classifierFaqList } from "../../constants/faq";
 import { AboutPage } from "../../enums/classify";
-import TestimonialsStrip from "../../components/TestimonialsStrip";
 import ProductDemoSection from "../../components/ProductDemoSection";
 import {
   ProductSection,
   ProductSectionData,
 } from "../../components/ProductSection";
-import { BoltIcon } from "@heroicons/react/24/solid";
+
 import AboutHeader from "../../components/AboutHeader";
-import { BookDemoButton } from "../../components/BookDemoButton";
-import { ClassificationCTA } from "../../components/ClassificationCTA";
 import { ClassifyInput } from "../../components/ClassifyInput";
+import { CheckIcon } from "@heroicons/react/16/solid";
+
+const CLASSIFY_SUPPORTING_BULLETS = [
+  // "Finds Candidates",
+  // "Applies GRI's & Legal Notes",
+  "Results in ~1 Minute",
+  // "Checks CROSS Rulings",
+  // "10 Classifications FREE",
+  "Generates Defense Report",
+  "Share with Clients & Teammates",
+];
 
 const productSections: ProductSectionData[] = [
   {
@@ -47,8 +55,8 @@ const productSections: ProductSectionData[] = [
         description: "Per classification on average",
       },
     ],
-    aboutUrl: "/about",
-    appUrl: "/classifications",
+    aboutUrl: "/classify",
+    appUrl: "/classifications/new",
     cta: "Try It Now",
     accentColor: "secondary",
     media: {
@@ -84,8 +92,8 @@ const productSections: ProductSectionData[] = [
         description: "Per classification on average",
       },
     ],
-    aboutUrl: "/about",
-    appUrl: "/classifications",
+    aboutUrl: "/classify",
+    appUrl: "/classifications/new",
     cta: "Analyze Now",
     accentColor: "secondary",
     media: {
@@ -116,8 +124,8 @@ const productSections: ProductSectionData[] = [
         description: "Per classification on average",
       },
     ],
-    aboutUrl: "/about",
-    appUrl: "/classifications",
+    aboutUrl: "/classify",
+    appUrl: "/classifications/new",
     cta: "Validate Now",
     accentColor: "secondary",
     media: {
@@ -154,8 +162,8 @@ const productSections: ProductSectionData[] = [
         description: "Per classification on average",
       },
     ],
-    aboutUrl: "/about",
-    appUrl: "/classifications",
+    aboutUrl: "/classify",
+    appUrl: "/classifications/new",
     cta: "Generate Report",
     accentColor: "secondary",
     media: {
@@ -191,8 +199,8 @@ const productSections: ProductSectionData[] = [
         description: "Quicker classifications with fewer mistakes",
       },
     ],
-    aboutUrl: "/about",
-    appUrl: "/classifications",
+    aboutUrl: "/classify",
+    appUrl: "/classifications/new",
     cta: "Start Collaborating",
     accentColor: "secondary",
     media: {
@@ -214,69 +222,57 @@ export default function Home() {
       </Suspense>
 
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-base-100">
-        {/* Background elements */}
+      <div className="relative overflow-hidden bg-base-100 h-svh content-center">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-24 -left-24 w-72 h-72 bg-secondary/10 md:bg-secondary/20 rounded-full blur-3xl" />
           <div className="absolute -top-24 -right-24 w-72 h-72 bg-primary/10 md:bg-primary/20 rounded-full blur-3xl" />
         </div>
 
-        <div className="relative z-10 flex flex-col items-center px-4 sm:px-6 py-4 pt-8 md:pt-12 lg:pt-16">
-          {/* Main Hero Content */}
-          <div className="text-center max-w-4xl w-full mb-4">
-            {/* Compact Trust Indicator */}
-            {/* <div className="flex items-center justify-center gap-2 mb-12">
-              <BoltIcon className="w-4 h-4 text-secondary" />
-              <p className="text-sm font-medium">
-                Saving Classifiers Hours Every Week
-              </p>
-              <BoltIcon className="w-4 h-4 text-secondary" />
-            </div> */}
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-5">
-              Create <span className="bg-gradient-to-r from-secondary via-secondary to-primary bg-clip-text text-transparent">
-                Audit-Ready
-              </span> <br /> Classifications,{" "}
-              <span className="bg-gradient-to-r from-secondary via-secondary to-primary bg-clip-text text-transparent">
-                Fast
-              </span>
-            </h1>
+        <div className="relative z-10 flex flex-col items-center px-4 sm:px-6">
+          <h1 className="text-center text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-3 md:mb-4 max-w-xs sm:max-w-5xl">
+            Find Your HTS Code,{" "}
+            <span className="text-secondary">
+              Fast
+            </span>
+          </h1>
 
-            <p className="text-base-content/80 text-base md:text-lg max-w-4xl mx-auto mb-8">
-              Save hours on classification, avoid mistakes, and work together
-              with your entire team
-            </p>
+          <p className="text-center text-base-content/70 text-sm sm:text-base md:text-lg mb-8 md:mb-10 max-w-xs sm:max-w-3xl">
+            Avoid expensive mistakes, save time, and eliminate import risk
+          </p>
 
-            {/* CTA Input + Button */}
-            <div className="w-full max-w-2xl mx-auto mb-12">
-              <ClassifyInput />
-              <div className="flex justify-center mt-4">
-                <BookDemoButton />
-              </div>
-            </div>
+          {/* CTA input — the focal point of the page */}
+          <div className="w-full max-w-3xl mx-auto mb-4 md:mb-6">
+            <ClassifyInput buttonText="Find My HTS Code" />
           </div>
 
-          {/* Demo Video */}
-          {/* <div className="w-full max-w-4xl mb-8">
-            <div className="relative rounded-xl overflow-hidden border border-secondary/20 shadow-lg bg-base-200">
-              <video
-                src="/new-hero-demo.mp4"
-                autoPlay
-                loop
-                muted
-                playsInline
-                controls
-                controlsList="nofullscreen noplaybackrate nodownload"
-                disablePictureInPicture
-                className="w-full h-auto object-cover"
-                aria-label="Classification Assistant Demo"
-              />
-            </div>
-          </div> */}
 
-          {/* Testimonials Strip */}
-          <TestimonialsStrip />
+          {/* Supporting bullets — quiet reinforcement */}
+          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-x-3 gap-y-1.5 sm:gap-x-5 justify-center mb-3 sm:mb-4">
+            {CLASSIFY_SUPPORTING_BULLETS.map((bullet) => (
+              <div
+                key={bullet}
+                className="text-center font-semibold flex items-center justify-center gap-1 sm:gap-1.5 text-sm text-base-content/70"
+              >
+                <CheckIcon className="w-4 h-4 sm:w-5 sm:h-5 text-success shrink-0" />
+                <span>{bullet}</span>
+              </div>
+            ))}
+          </div>
+
+          <p className="text-xs sm:text-sm text-center px-4 font-medium text-base-content/50">
+            Trusted by Customs Brokers & Importers to Find <span className="font-extrabold">1,000+ Audit-Ready HTS Codes</span>
+          </p>
+
+          <div className="pt-10 md:pt-20 max-w-5xl">
+            {/* <TestimonialsStrip showCompanies={false} /> */}
+            {/* <p className="text-xs sm:text-sm text-base-content/40 text-center pt-6">
+              Trusted by Customs Brokers & Importers to Create 1,000+ Audit-Ready Classifications
+              </p> */}
+          </div>
+
         </div>
       </div>
+
 
       {/* Product Sections */}
       <div id="features">
@@ -284,15 +280,6 @@ export default function Home() {
           <ProductSection key={product.title} product={product} index={index} />
         ))}
       </div>
-
-      {/* Interactive Classification CTA */}
-      {/* <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-12">
-        <ClassificationCTA
-          title="Try the Classification Assistant"
-          subtitle="See how quickly you can classify a product. Enter a description and let our AI guide you."
-          variant="inline"
-        />
-      </div> */}
 
       {/* Pricing Section */}
       <ClassifyPricing customerType={AboutPage.CLASSIFIER} />

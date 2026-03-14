@@ -1,6 +1,7 @@
 import Link from "next/link";
 import config from "../config";
 import { FAQItem } from "../components/FAQItem";
+import { NUM_FREE_CLASSIFICATIONS } from "./classification";
 
 export const bundleFaqList: FAQItem[] = [
   {
@@ -30,7 +31,7 @@ export const bundleFaqList: FAQItem[] = [
         </p>
         <ul className="list-disc list-inside">
           <li>
-            <Link href="/about" className="link link-primary">
+            <Link href="/classify" className="link link-primary">
               Classification Assistant
             </Link>
           </li>
@@ -125,7 +126,7 @@ export const bundleFaqList: FAQItem[] = [
     question: "Can I try it before buying?",
     answer: (
       <div className="pt-2">
-        <p>Yes! HTS Hero offers 5 free classifications so you can try the tool before committing.</p>
+        <p>Yes! HTS Hero offers {NUM_FREE_CLASSIFICATIONS} free classifications so you can try the tool before committing.</p>
         <p>
           No credit card required, just{" "}
           <Link href={config.auth.loginUrl} className="link link-primary">
@@ -381,11 +382,11 @@ export const classifierFaqList: FAQItem[] = [
     answer: (
       <div className="space-y-2 leading-relaxed">
         After starting your trial or purchasing the{" "}
-        <Link href={"/about#pricing"} className="text-secondary underline">
+        <Link href={"/classify#pricing"} className="text-secondary underline">
           Pro plan
         </Link>
         , you&apos;ll immdeiately have access to HTS Hero & the{" "}
-        <Link href={"/about#features"} className="text-secondary underline">
+        <Link href={"/classify#features"} className="text-secondary underline">
           features mentioned above
         </Link>
         . You will keep access to HTS Hero for as long as you have an active
@@ -399,7 +400,7 @@ export const classifierFaqList: FAQItem[] = [
       <div className="flex flex-col gap-4">
         <p>
           All you need is an account and a valid trial or{" "}
-          <Link href={"/about#pricing"} className="text-secondary underline">
+          <Link href={"/classify#pricing"} className="text-secondary underline">
             subscription
           </Link>
           . <br />
@@ -428,7 +429,7 @@ export const classifierFaqList: FAQItem[] = [
 
         <p>
           Checkout our{" "}
-          <Link href={"/about#pricing"} className="text-secondary underline">
+          <Link href={"/classify#pricing"} className="text-secondary underline">
             current offers
           </Link>{" "}
           and if you have and questions don&apos;t hesitate to contact us at{" "}

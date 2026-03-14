@@ -37,7 +37,7 @@ export function CtaGrid({ htsCode, contextLabel }: CtaGridProps) {
               validation, and one-click professional reports.
             </p>
             <Link
-              href="/about"
+              href="/classify"
               className="block text-center px-6 py-3 rounded-xl bg-secondary text-secondary-content font-bold text-sm hover:bg-secondary/90 transition-all shadow-lg shadow-secondary/20 hover:shadow-xl hover:shadow-secondary/25"
             >
               Classify a Product Now
@@ -59,7 +59,7 @@ export function CtaGrid({ htsCode, contextLabel }: CtaGridProps) {
           <div className="p-6 flex flex-col flex-1">
             <p className="text-sm text-base-content/60 leading-relaxed mb-5 flex-1">
               See the <strong className="text-base-content/80">full import cost breakdown</strong> for
-              any HTS code from any country — base duties, Section 122 / 232 / 301 tariffs,
+              any HTS code from any country — base duties, Section 122, 232, and 301 tariffs,
               exemptions, and trade programs.
             </p>
             <Link
