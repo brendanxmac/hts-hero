@@ -663,7 +663,7 @@ export const VerticalClassificationResult = ({
 
       {/* Classification Complete Section - Contains all levels */}
       <CollapsibleSection
-        title="Classification Decisions"
+        title="Classification"
         // subtitle="See each classification level and your decisions"
         icon={<CheckCircleIcon className="w-5 h-5" />}
         iconBgClass="bg-success/20"
@@ -671,11 +671,6 @@ export const VerticalClassificationResult = ({
         summaryContent={
           <span className="flex items-center gap-2 text-success font-semibold">
             Complete
-          </span>
-        }
-        badge={
-          <span className="px-2 py-0.5 rounded-md text-xs font-semibold bg-success/20 text-success border border-success/30">
-            {levels.length} {levels.length === 1 ? "Decision" : "Decisions"}
           </span>
         }
         collapsedContent={<ClassificationDetailsSummary levels={levels} />}
