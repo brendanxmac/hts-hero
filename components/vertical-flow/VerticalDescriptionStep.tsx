@@ -40,7 +40,6 @@ export const VerticalDescriptionStep = ({
     setLocalItemDescription(classification?.articleDescription || "");
   }, [classification?.articleDescription]);
 
-  // Check for pre-filled description from CTA (via sessionStorage)
   useEffect(() => {
     if (hasAutoSubmittedRef.current) return;
     const prefilled = sessionStorage.getItem("cta_classification_description");
@@ -52,7 +51,9 @@ export const VerticalDescriptionStep = ({
   }, []);
 
   const isUsersClassification = classificationRecord
-    ? user ? classificationRecord.user_id === user.id : !classificationRecord.user_id
+    ? user
+      ? classificationRecord.user_id === user.id
+      : !classificationRecord.user_id
     : true;
 
   const FREE_CLASSIFICATION_LIMIT = 5;
@@ -60,7 +61,6 @@ export const VerticalDescriptionStep = ({
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      // Anonymous users can always start a classification (gated after heading selection)
       if (!user) {
         if (localItemDescription !== classification?.articleDescription) {
           await startNewClassification(localItemDescription, true);
@@ -80,7 +80,6 @@ export const VerticalDescriptionStep = ({
         Product.CLASSIFY
       );
 
-      // Count-based trial: check classification_count from user profile
       const userProfile = await fetchUser(user.id);
       const classificationCount = userProfile?.classification_count ?? 0;
       const isTrialUser = classificationCount < FREE_CLASSIFICATION_LIMIT;
@@ -111,89 +110,67 @@ export const VerticalDescriptionStep = ({
   };
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-base-content/15 bg-base-200/50">
-      {/* Decorative background */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute -top-20 -right-20 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-secondary/10 rounded-full blur-3xl" />
+    <div className="rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden">
+      {/* Header */}
+      <div className="px-5 py-3.5 border-b border-base-300 bg-base-200/30">
+        <div className="flex items-center gap-2.5">
+          <DocumentTextIcon className="w-4 h-4 text-base-content/50" />
+          <h3 className="text-sm font-semibold text-base-content">
+            Item Description
+          </h3>
+        </div>
       </div>
 
-      <div className="relative z-10 p-6">
-        {/* Step Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="flex flex-col">
-              <span className="text-xs font-semibold uppercase tracking-widest text-primary">
-                Step 1
-              </span>
-              <h2 className="text-xl font-bold text-base-content">
-                Enter Item Description
-              </h2>
-            </div>
-          </div>
-        </div>
+      {/* Content */}
+      <div className="p-5">
+        <TextAreaInput
+          buttonText="Start Classification"
+          placeholder="e.g. Men's 100% cotton denim jeans, dyed blue & pre-washed for an athletic figure"
+          defaultValue={classification?.articleDescription || ""}
+          onChange={(value) => {
+            setLocalItemDescription(value);
+          }}
+          onSubmit={handleSubmit}
+          canSubmit={
+            classificationRecord === undefined &&
+            isUsersClassification &&
+            localItemDescription.length > 0
+          }
+          disabled={classificationRecord !== undefined}
+          loading={loading}
+        />
 
-        {/* Description content */}
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-2 mb-2">
-            <DocumentTextIcon className="w-5 h-5 text-primary" />
-            <span className="text-sm font-semibold uppercase tracking-wider text-base-content/80">
-              Item Description
-            </span>
-          </div>
-
-          <TextAreaInput
-            buttonText="Start Classification"
-            placeholder="e.g. Men's 100% cotton denim jeans, dyed blue & pre-washed for an athletic figure"
-            defaultValue={classification?.articleDescription || ""}
-            onChange={(value) => {
-              setLocalItemDescription(value);
-            }}
-            onSubmit={handleSubmit}
-            canSubmit={
-              classificationRecord === undefined &&
-              isUsersClassification &&
-              localItemDescription.length > 0
-            }
-            disabled={classificationRecord !== undefined}
-            loading={loading}
-          />
-
-          {/* Tips Section */}
-          <div className="flex flex-col gap-3 mt-4">
-            <span className="text-xs font-semibold uppercase tracking-widest text-base-content/50">
-              Tips for Best Results
-            </span>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {[
-                {
-                  emoji: "📏",
-                  text: "Include size, material, weight, color",
-                },
-                {
-                  emoji: "🧵",
-                  text: "Describe components & dominant material",
-                },
-                {
-                  emoji: "👥",
-                  text: "Mention intended audience (children, professionals)",
-                },
-                {
-                  emoji: "🎯",
-                  text: "Specify intended use (commercial, personal)",
-                },
-              ].map((tip, index) => (
-                <div
-                  key={index}
-                  className="flex items-start gap-3 p-3 rounded-xl bg-base-100/50 border border-base-content/10"
-                >
-                  <span className="text-lg">{tip.emoji}</span>
-                  <span className="text-sm text-base-content/70">
-                    {tip.text}
-                  </span>
-                </div>
-              ))}
-            </div>
+        {/* Tips */}
+        <div className="mt-5 pt-5 border-t border-base-300">
+          <p className="text-xs font-semibold uppercase tracking-wider text-base-content/40 mb-3">
+            Tips for best results
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {[
+              { emoji: "📏", text: "Include size, material, weight, color" },
+              {
+                emoji: "🧵",
+                text: "Describe components & dominant material",
+              },
+              {
+                emoji: "👥",
+                text: "Mention intended audience (children, professionals)",
+              },
+              {
+                emoji: "🎯",
+                text: "Specify intended use (commercial, personal)",
+              },
+            ].map((tip, index) => (
+              <div
+                key={index}
+                className="flex items-start gap-2.5 px-3 py-2 rounded-lg bg-base-200/50 border border-base-300"
+              >
+                <span className="text-sm">{tip.emoji}</span>
+                <span className="text-xs text-base-content/60 leading-relaxed">
+                  {tip.text}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>

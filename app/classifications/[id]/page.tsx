@@ -6,7 +6,7 @@ import { useClassification } from "../../../contexts/ClassificationContext";
 import { useHts } from "../../../contexts/HtsContext";
 import { useUser } from "../../../contexts/UserContext";
 import { fetchClassificationById } from "../../../libs/classification";
-import { Classification } from "../../../components/Classification";
+import { ClassificationDetailLayout } from "../../../components/classification-detail/ClassificationDetailLayout";
 import { LoadingIndicator } from "../../../components/LoadingIndicator";
 import { ClassificationRecord } from "../../../interfaces/hts";
 import { BreadcrumbsProvider } from "../../../contexts/BreadcrumbsContext";
@@ -31,7 +31,6 @@ export default function ClassificationPage() {
   const [error, setError] = useState<string | null>(null);
   const hasRefetchedForLinkingRef = useRef(false);
 
-  // Always fetch the classification record from the API
   useEffect(() => {
     let cancelled = false;
 
@@ -43,13 +42,11 @@ export default function ClassificationPage() {
 
         setRecord(fetchedRecord);
 
-        // Load the correct HTS revision if needed
         if (fetchedRecord.revision && fetchedRecord.revision !== revision) {
           await fetchElements(fetchedRecord.revision);
         }
         if (cancelled) return;
 
-        // Hydrate the ClassificationContext
         setClassification(fetchedRecord.classification);
         setClassificationId(fetchedRecord.id);
       } catch (err) {
@@ -68,8 +65,6 @@ export default function ClassificationPage() {
     };
   }, [id]);
 
-  // Re-fetch if the record is still anonymous but the user is now authenticated.
-  // This handles the race between the initial fetch and the AnonymousClassificationLinker.
   useEffect(() => {
     if (
       user &&
@@ -85,17 +80,15 @@ export default function ClassificationPage() {
           setRecord(updated);
           setClassification(updated.classification);
         } catch {
-          // Linking may not have completed yet — the stale record is still usable
+          // Linking may not have completed yet
         }
       };
 
-      // Brief delay to let the AnonymousClassificationLinker POST complete
       const timer = setTimeout(refetch, 1000);
       return () => clearTimeout(timer);
     }
   }, [user, record]);
 
-  // Flush and reset when leaving the page
   useEffect(() => {
     return () => {
       flushAndSave();
@@ -105,13 +98,12 @@ export default function ClassificationPage() {
 
   const handleNavigateBack = async () => {
     await flushAndSave();
-    // resetClassificationState();
     router.push("/classifications");
   };
 
   if (isLoading) {
     return (
-      <main className="w-full min-h-[calc(100vh-4rem)] flex items-center justify-center bg-base-100">
+      <main className="w-full h-screen flex items-center justify-center bg-base-100">
         <LoadingIndicator />
       </main>
     );
@@ -119,7 +111,7 @@ export default function ClassificationPage() {
 
   if (error) {
     return (
-      <main className="w-full min-h-[calc(100vh-4rem)] flex items-center justify-center bg-base-100">
+      <main className="w-full h-screen flex items-center justify-center bg-base-100">
         <div className="text-error p-6 rounded-2xl bg-error/10 border border-error/20">
           {error}
         </div>
@@ -130,12 +122,10 @@ export default function ClassificationPage() {
   return (
     <ClassificationsProvider>
       <BreadcrumbsProvider>
-        <main className="w-full bg-base-100">
-          <Classification
-            classificationRecord={record ?? undefined}
-            onNavigateBack={handleNavigateBack}
-          />
-        </main>
+        <ClassificationDetailLayout
+          classificationRecord={record ?? undefined}
+          onNavigateBack={handleNavigateBack}
+        />
       </BreadcrumbsProvider>
     </ClassificationsProvider>
   );

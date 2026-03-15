@@ -35,7 +35,6 @@ import {
 import { updateClassification } from "../../libs/classification";
 import Modal from "../Modal";
 import ImporterDropdown from "../ImporterDropdown";
-import { CollapsibleSection } from "../CollapsibleSection";
 import { CountrySelection } from "../CountrySelection";
 import { Countries, Country } from "../../constants/countries";
 import { CountryTariff } from "../CountryTariff";
@@ -63,10 +62,7 @@ import { SecondaryLabel } from "../SecondaryLabel";
 import { VerticalClassificationStep } from "./VerticalClassificationStep";
 import { VerticalSectionDiscovery } from "./VerticalSectionDiscovery";
 import { VerticalChapterDiscovery } from "./VerticalChapterDiscovery";
-import { ClassificationDetailsSummary } from "../classification-ui/ClassificationDetailsSummary";
 import { LevelConnector } from "../classification-ui/LevelConnector";
-import { TariffDutiesSummary } from "../classification-ui/TariffDutiesSummary";
-import { DutyCalculatorNoticeBanner } from "../DutyCalculatorNoticeBanner";
 import {
   ShareIcon,
   LinkIcon,
@@ -119,27 +115,15 @@ const ShareSection = ({
   };
 
   return (
-    <div className="relative z-20 rounded-2xl border border-base-content/15 bg-base-100">
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-16 -right-16 w-48 h-48 bg-accent/5 rounded-full blur-3xl" />
-      </div>
-
-      <div className="relative z-10 p-5">
+    <div className="rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden">
+      <div className="px-5 py-3.5 border-b border-base-300 bg-base-200/30">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-accent/20 border border-current/20 shrink-0">
-              <ShareIcon className="w-5 h-5 text-accent" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-base-content">
-                Share Classification
-              </h3>
-              <p className="text-xs text-base-content/60">
-                Generate a public read-only link
-              </p>
-            </div>
+          <div className="flex items-center gap-2.5">
+            <ShareIcon className="w-4 h-4 text-base-content/50" />
+            <h3 className="text-sm font-semibold text-base-content">
+              Share Classification
+            </h3>
           </div>
-
           <label className="flex items-center cursor-pointer gap-2">
             <input
               type="checkbox"
@@ -149,16 +133,18 @@ const ShareSection = ({
               disabled={isToggling}
             />
             {isToggling && (
-              <span className="loading loading-spinner loading-xs"></span>
+              <span className="loading loading-spinner loading-xs" />
             )}
           </label>
         </div>
+      </div>
 
-        {isShared && shareUrl && (
-          <div className="mt-4 flex items-center gap-2">
-            <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl bg-base-200 border border-base-content/10 text-sm text-base-content/70 truncate">
-              <LinkIcon className="w-4 h-4 shrink-0" />
-              <span className="truncate">{shareUrl}</span>
+      {isShared && shareUrl && (
+        <div className="p-5">
+          <div className="flex items-center gap-2">
+            <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-lg bg-base-200/50 border border-base-300 text-sm text-base-content/60 truncate font-mono">
+              <LinkIcon className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate text-xs">{shareUrl}</span>
             </div>
             <button
               className="btn btn-sm btn-primary gap-1.5 shrink-0"
@@ -177,8 +163,8 @@ const ShareSection = ({
               )}
             </button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -206,10 +192,8 @@ export const VerticalClassificationResult = ({
     userProfile.role === UserRole.ADMIN ||
     userProfile.id === classificationRecord?.user_id;
 
-  // Ref for auto-growing textarea
   const basisTextareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Auto-resize textarea to fit content
   const resizeBasisTextarea = useCallback(() => {
     const textarea = basisTextareaRef.current;
     if (textarea) {
@@ -218,12 +202,10 @@ export const VerticalClassificationResult = ({
     }
   }, []);
 
-  // Resize on mount and when classification changes
   useLayoutEffect(() => {
     resizeBasisTextarea();
   }, [classification.notes, classification.levels, resizeBasisTextarea]);
 
-  // Initialize notes with generated basis when classification is first completed
   useEffect(() => {
     if (
       classification.isComplete &&
@@ -236,7 +218,6 @@ export const VerticalClassificationResult = ({
     }
   }, [classification.isComplete]);
 
-  // State for importers
   const [importers, setImporters] = useState<Importer[]>([]);
   const [selectedImporterId, setSelectedImporterId] = useState<string>("");
   const [isLoadingImporters, setIsLoadingImporters] = useState(true);
@@ -244,7 +225,6 @@ export const VerticalClassificationResult = ({
   const [isCreatingImporter, setIsCreatingImporter] = useState(false);
   const [showCreateImporterModal, setShowCreateImporterModal] = useState(false);
 
-  // Tariff calculation state - initialize from classificationRecord if available
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(() => {
     if (classificationRecord?.country_of_origin) {
       return (
@@ -269,11 +249,9 @@ export const VerticalClassificationResult = ({
     ContentRequirementI<ContentRequirements>[]
   >([]);
 
-  // Debounce refs
   const customsValueTimeoutRef = useState<NodeJS.Timeout | null>(null);
   const unitsTimeoutRef = useState<NodeJS.Timeout | null>(null);
 
-  // Fetch importers on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -298,7 +276,6 @@ export const VerticalClassificationResult = ({
     fetchData();
   }, []);
 
-  // Find the tariff element (the element with actual tariff data)
   const findTariffElement = useCallback(
     (el: HtsElement): HtsElement => {
       if (el.general || el.special || el.other) {
@@ -316,7 +293,6 @@ export const VerticalClassificationResult = ({
     [htsElements]
   );
 
-  // Update content requirements when tariff element changes
   useEffect(() => {
     if (tariffElement) {
       const codeBasedContentRequirements = Array.from(
@@ -341,7 +317,6 @@ export const VerticalClassificationResult = ({
     }
   }, [tariffElement]);
 
-  // Update tariffs when element or country changes
   useEffect(() => {
     if (element && selectedCountry) {
       const tariffEl = findTariffElement(element);
@@ -370,7 +345,6 @@ export const VerticalClassificationResult = ({
     findTariffElement,
   ]);
 
-  // Handlers
   const handleAddImporter = async () => {
     if (!newImporter.trim()) return;
 
@@ -433,140 +407,68 @@ export const VerticalClassificationResult = ({
     }, 300);
   };
 
-  // Tariff summary rates for collapsed view - derived from countryWithTariffs
-  const tariffSummaryRates = useMemo(() => {
-    if (!selectedCountry || !countryWithTariffs || !tariffElement) {
-      return [];
-    }
-
-    const { baseTariffs, tariffSets } = countryWithTariffs;
-    const isOtherColumnCountry = Column2CountryCodes.includes(
-      selectedCountry.code
-    );
-    const is15PercentCapCountry =
-      EuropeanUnionCountries.includes(selectedCountry.code) ||
-      selectedCountry.code === "JP" ||
-      selectedCountry.code === "KR";
-
-    const tariffColumn = isOtherColumnCountry
-      ? TariffColumn.OTHER
-      : TariffColumn.GENERAL;
-
-    const adValoremEquivalentRate = get15PercentCountryTotalBaseRate(
-      baseTariffs.flatMap((t) => t.tariffs),
-      customsValue,
-      units
-    );
-
-    const filteredBase = baseTariffs.flatMap((t) => t.tariffs);
-
-    // Calculate rates for each tariff set
-    return tariffSets.map((tariffSet) => {
-      const isArticleSet =
-        tariffSet.name === "Article" || tariffSet.name === "";
-      const shouldIncludeBaseTariffs =
-        isArticleSet &&
-        !(is15PercentCapCountry && adValoremEquivalentRate < 15);
-
-      const adValoremRate = shouldIncludeBaseTariffs
-        ? getAdValoremRate(tariffColumn, tariffSet.tariffs, filteredBase)
-        : getAdValoremRate(tariffColumn, tariffSet.tariffs);
-
-      const hasAmountTariffs =
-        shouldIncludeBaseTariffs &&
-        filteredBase.some((t) => t.type === "amount");
-
-      // For display name:
-      // - "Article" or empty -> empty string (no label prefix)
-      // - Content names -> remove " Content" suffix if present (e.g., "Aluminum Content" -> "Aluminum")
-      let displayName = "";
-      if (!isArticleSet) {
-        displayName = tariffSet.name.replace(/ Content$/i, "");
-      }
-
-      return {
-        name: displayName,
-        rate: adValoremRate,
-        hasAmountTariffs,
-        amountRatesString: hasAmountTariffs
-          ? getAmountRatesString(filteredBase)
-          : null,
-      };
-    });
-  }, [selectedCountry, countryWithTariffs, tariffElement, customsValue, units]);
-
   if (!element) {
     return null;
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* Tariffs & Duties Section */}
-      <CollapsibleSection
-        title="Tariffs & Duties"
-        // subtitle="See import cost estimates for any country of origin"
-        icon={<CurrencyDollarIcon className="w-5 h-5" />}
-        iconBgClass="bg-secondary/20"
-        iconTextClass="text-secondary"
-        collapsedContent={
-          <TariffDutiesSummary
-            selectedCountry={selectedCountry}
-            tariffRates={tariffSummaryRates}
-          />
-        }
-        collapsedContentInline
-      >
-        <div className="flex flex-col gap-5">
-          {/* <DutyCalculatorNoticeBanner variant="inline" /> */}
-          {/* Country & Value Inputs */}
-          <div className="flex flex-col md:flex-row gap-4">
-            {/* Country Selection */}
-            <div className="flex-1 flex flex-col gap-2">
-              <SecondaryLabel value="Country of Origin" />
-              <CountrySelection
-                singleSelect
-                selectedCountries={selectedCountry ? [selectedCountry] : []}
-                setSelectedCountries={(countries) => {
-                  const country = countries[0] || null;
-                  setSelectedCountry(country);
-                  // Save country_of_origin to the classification record
-                  if (classificationId) {
-                    updateClassification(
-                      classificationId,
-                      undefined,
-                      undefined,
-                      undefined,
-                      undefined,
-                      country?.code || undefined
-                    ).then(() => refreshClassifications());
-                  }
-                }}
-              />
-            </div>
-
-            {/* Customs Value */}
-            <div className="flex-1 flex flex-col gap-2">
-              <SecondaryLabel value="Customs Value (USD)" />
-              <NumberInput
-                value={uiCustomsValue}
-                setValue={handleCustomsValueChange}
-                min={0}
-                prefix="$"
-              />
-            </div>
+    <div className="flex flex-col gap-4">
+      {/* Tariffs & Duties */}
+      <div className="rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden">
+        <div className="px-5 py-3.5 border-b border-base-300 bg-base-200/30">
+          <div className="flex items-center gap-2.5">
+            <CurrencyDollarIcon className="w-4 h-4 text-base-content/50" />
+            <h3 className="text-sm font-semibold text-base-content">
+              Tariffs & Duties
+            </h3>
           </div>
+        </div>
 
-          {/* Units and Content Requirements (conditional) */}
-          {countryWithTariffs &&
-            (countryWithTariffs.baseTariffs
-              ?.flatMap((t) => t.tariffs)
-              ?.some((t) => t.type === "amount") ||
-              uiContentPercentages.length > 0) && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Units Input */}
-                {countryWithTariffs.baseTariffs
-                  ?.flatMap((t) => t.tariffs)
-                  ?.some((t) => t.type === "amount") && (
+        <div className="p-5">
+          <div className="flex flex-col gap-5">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1 flex flex-col gap-2">
+                <SecondaryLabel value="Country of Origin" />
+                <CountrySelection
+                  singleSelect
+                  selectedCountries={selectedCountry ? [selectedCountry] : []}
+                  setSelectedCountries={(countries) => {
+                    const country = countries[0] || null;
+                    setSelectedCountry(country);
+                    if (classificationId) {
+                      updateClassification(
+                        classificationId,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        country?.code || undefined
+                      ).then(() => refreshClassifications());
+                    }
+                  }}
+                />
+              </div>
+
+              <div className="flex-1 flex flex-col gap-2">
+                <SecondaryLabel value="Customs Value (USD)" />
+                <NumberInput
+                  value={uiCustomsValue}
+                  setValue={handleCustomsValueChange}
+                  min={0}
+                  prefix="$"
+                />
+              </div>
+            </div>
+
+            {countryWithTariffs &&
+              (countryWithTariffs.baseTariffs
+                ?.flatMap((t) => t.tariffs)
+                ?.some((t) => t.type === "amount") ||
+                uiContentPercentages.length > 0) && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {countryWithTariffs.baseTariffs
+                    ?.flatMap((t) => t.tariffs)
+                    ?.some((t) => t.type === "amount") && (
                     <div className="flex flex-col gap-2">
                       <SecondaryLabel value="Units / Weight" />
                       <NumberInput
@@ -575,169 +477,146 @@ export const VerticalClassificationResult = ({
                         min={0}
                         subtext={
                           element &&
-                            tariffElement &&
-                            (element.units.length > 0 ||
-                              tariffElement.units.length > 0)
+                          tariffElement &&
+                          (element.units.length > 0 ||
+                            tariffElement.units.length > 0)
                             ? `${[...element.units, ...tariffElement.units]
-                              .reduce((acc: string[], unit: string) => {
-                                if (!acc.includes(unit)) {
-                                  acc.push(unit);
-                                }
-                                return acc;
-                              }, [])
-                              .join(",")}`
+                                .reduce((acc: string[], unit: string) => {
+                                  if (!acc.includes(unit)) {
+                                    acc.push(unit);
+                                  }
+                                  return acc;
+                                }, [])
+                                .join(",")}`
                             : ""
                         }
                       />
                     </div>
                   )}
 
-                {/* Content Percentage Inputs */}
-                {uiContentPercentages.map((contentPercentage) => (
-                  <div
-                    key={`${contentPercentage.name}-content-requirement`}
-                    className="flex flex-col gap-2"
-                  >
-                    <SecondaryLabel
-                      value={`${contentPercentage.name} Value Percentage`}
-                    />
-                    <PercentageInput
-                      value={contentPercentage.value}
-                      onChange={(value) =>
-                        handleSliderChange(contentPercentage.name, value)
-                      }
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-
-          {/* Tariff Results */}
-          {selectedCountry && countryWithTariffs && tariffElement ? (
-            <div className="mt-2">
-              <CountryTariff
-                units={units}
-                customsValue={customsValue}
-                country={countryWithTariffs}
-                htsElement={element}
-                tariffElement={tariffElement}
-                contentRequirements={contentRequirements}
-                countryIndex={0}
-                countries={[countryWithTariffs]}
-                setCountries={(updater) => {
-                  const updated =
-                    typeof updater === "function"
-                      ? updater([countryWithTariffs])
-                      : updater;
-                  setCountryWithTariffs(updated[0] || null);
-                }}
-                isModal={false}
-              />
-            </div>
-          ) : (
-            /* Empty state - prompt to select country */
-            <div className="relative overflow-hidden flex flex-col items-center justify-center py-12 px-6 rounded-xl border border-base-content/10 bg-gradient-to-br from-base-200/60 via-base-100 to-base-200/60">
-              <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-16 -left-16 w-48 h-48 bg-secondary/10 rounded-full blur-3xl" />
-                <div className="absolute -bottom-16 -right-16 w-48 h-48 bg-primary/10 rounded-full blur-3xl" />
-              </div>
-
-              <div className="relative z-10 flex flex-col items-center gap-4">
-                <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-secondary/15 border border-secondary/25">
-                  <GlobeAltIcon className="w-7 h-7 text-secondary" />
-                </div>
-                <div className="text-center">
-                  <h4 className="text-lg font-bold text-base-content">
-                    Select a Country of Origin
-                  </h4>
-                  <p className="text-sm text-base-content/60 mt-1 max-w-sm">
-                    Select the country of origin for this item to see applicable
-                    tariffs and import duties.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </CollapsibleSection>
-
-      {/* Classification Complete Section - Contains all levels */}
-      <CollapsibleSection
-        title="Classification"
-        // subtitle="See each classification level and your decisions"
-        icon={<CheckCircleIcon className="w-5 h-5" />}
-        iconBgClass="bg-success/20"
-        iconTextClass="text-success"
-        summaryContent={
-          <span className="flex items-center gap-2 text-success font-semibold">
-            Complete
-          </span>
-        }
-        collapsedContent={<ClassificationDetailsSummary levels={levels} />}
-      >
-        <div className="flex flex-col">
-          {/* Section & Chapter Discovery - only show if preliminaryLevels exist */}
-          {classification.preliminaryLevels &&
-            classification.preliminaryLevels.length > 0 && (
-              <>
-                <VerticalSectionDiscovery startExpanded={false} />
-                <LevelConnector isActive={false} hasPreviousSelection={true} />
-                <VerticalChapterDiscovery startExpanded={false} />
-                <LevelConnector isActive={false} hasPreviousSelection={true} />
-              </>
-            )}
-
-          {/* Classification Levels */}
-          {levels.map((level, index) => (
-            <div key={`level-${index}`}>
-              {/* Flow Connector - shows between levels */}
-              {index > 0 && (
-                <div className="flex flex-col items-center py-3">
-                  <div className="w-px h-3 bg-gradient-to-b from-success/30 to-success/20" />
-                  <div className="flex items-center justify-center w-6 h-6 rounded-full bg-success/15 border border-success/25">
-                    <ChevronDownIcon className="w-3 h-3 text-success/70" />
-                  </div>
-                  <div className="w-px h-3 bg-gradient-to-b from-success/20 to-transparent" />
+                  {uiContentPercentages.map((contentPercentage) => (
+                    <div
+                      key={`${contentPercentage.name}-content-requirement`}
+                      className="flex flex-col gap-2"
+                    >
+                      <SecondaryLabel
+                        value={`${contentPercentage.name} Value Percentage`}
+                      />
+                      <PercentageInput
+                        value={contentPercentage.value}
+                        onChange={(value) =>
+                          handleSliderChange(contentPercentage.name, value)
+                        }
+                      />
+                    </div>
+                  ))}
                 </div>
               )}
 
-              <VerticalClassificationStep
-                classificationLevel={index}
-                classificationRecord={classificationRecord}
-                onOpenExplore={onOpenExplore}
-                disableAutoScroll
-              />
-            </div>
-          ))}
+            {selectedCountry && countryWithTariffs && tariffElement ? (
+              <div className="mt-1">
+                <CountryTariff
+                  units={units}
+                  customsValue={customsValue}
+                  country={countryWithTariffs}
+                  htsElement={element}
+                  tariffElement={tariffElement}
+                  contentRequirements={contentRequirements}
+                  countryIndex={0}
+                  countries={[countryWithTariffs]}
+                  setCountries={(updater) => {
+                    const updated =
+                      typeof updater === "function"
+                        ? updater([countryWithTariffs])
+                        : updater;
+                    setCountryWithTariffs(updated[0] || null);
+                  }}
+                  isModal={false}
+                />
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-10 px-6 rounded-lg border border-base-300 bg-base-200/30">
+                <GlobeAltIcon className="w-10 h-10 text-base-content/20 mb-3" />
+                <h4 className="text-sm font-semibold text-base-content/70">
+                  Select a Country of Origin
+                </h4>
+                <p className="text-xs text-base-content/40 mt-1 max-w-xs text-center">
+                  Choose the country of origin to see applicable tariffs and
+                  import duties.
+                </p>
+              </div>
+            )}
+          </div>
         </div>
-      </CollapsibleSection>
+      </div>
 
-      {/* Share Section */}
+      {/* Classification Progression */}
+      <div className="rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden">
+        <div className="px-5 py-3.5 border-b border-base-300 bg-base-200/30">
+          <div className="flex items-center gap-2.5">
+            <CheckCircleIcon className="w-4 h-4 text-success" />
+            <h3 className="text-sm font-semibold text-base-content">
+              Classification
+            </h3>
+            <span className="px-2 py-0.5 rounded-full bg-success/10 text-[11px] font-semibold text-success">
+              Complete
+            </span>
+          </div>
+        </div>
+
+        <div className="p-5">
+          <div className="flex flex-col">
+            {classification.preliminaryLevels &&
+              classification.preliminaryLevels.length > 0 && (
+                <>
+                  <VerticalSectionDiscovery />
+                  <LevelConnector isActive={false} hasPreviousSelection={true} />
+                  <VerticalChapterDiscovery />
+                  <LevelConnector isActive={false} hasPreviousSelection={true} />
+                </>
+              )}
+
+            {levels.map((level, index) => (
+              <div key={`level-${index}`}>
+                {index > 0 && (
+                  <div className="flex flex-col items-center py-2.5">
+                    <div className="w-px h-2.5 bg-success/20" />
+                    <div className="flex items-center justify-center w-5 h-5 rounded-full bg-success/10 border border-success/20">
+                      <ChevronDownIcon className="w-3 h-3 text-success/60" />
+                    </div>
+                    <div className="w-px h-2.5 bg-success/10" />
+                  </div>
+                )}
+
+                <VerticalClassificationStep
+                  classificationLevel={index}
+                  classificationRecord={classificationRecord}
+                  onOpenExplore={onOpenExplore}
+                  disableAutoScroll
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Share */}
       {userProfile && classificationRecord && (
         <ShareSection classificationRecord={classificationRecord} />
       )}
 
-      {/* Importer Section */}
-      <div className="relative z-20 rounded-2xl border border-base-content/15 bg-base-100">
-        {/* Decorative background */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute -top-16 -right-16 w-48 h-48 bg-primary/5 rounded-full blur-3xl" />
-          <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-secondary/5 rounded-full blur-3xl" />
-        </div>
-
-        {/* Header */}
-        <div className="relative z-10 p-5 pb-3">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary/20 border border-current/20 shrink-0">
-              <TagIcon className="w-5 h-5 text-primary" />
-            </div>
-            <h3 className="text-lg font-bold text-base-content">Importer</h3>
+      {/* Importer */}
+      <div className="rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden">
+        <div className="px-5 py-3.5 border-b border-base-300 bg-base-200/30">
+          <div className="flex items-center gap-2.5">
+            <TagIcon className="w-4 h-4 text-base-content/50" />
+            <h3 className="text-sm font-semibold text-base-content">
+              Importer
+            </h3>
           </div>
         </div>
 
-        {/* Content */}
-        <div className="relative z-10 px-5 pb-5 pt-0">
-          <div className="h-px bg-gradient-to-r from-transparent via-base-content/10 to-transparent mb-5" />
+        <div className="p-5">
           <div className="flex gap-2">
             <ImporterDropdown
               importers={importers}
@@ -758,7 +637,7 @@ export const VerticalClassificationResult = ({
             />
             {selectedImporterId && (
               <button
-                className="px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 bg-base-content/10 border border-base-content/15 hover:border-primary/40 hover:bg-primary/10 disabled:opacity-50"
+                className="btn btn-ghost btn-sm"
                 onClick={() => {
                   setSelectedImporterId("");
                   updateClassification(
@@ -778,61 +657,25 @@ export const VerticalClassificationResult = ({
         </div>
       </div>
 
-      {/* Notes Section */}
-      <div className="relative rounded-2xl border border-base-content/15 bg-base-100 overflow-hidden">
-        {/* Decorative background */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-16 -right-16 w-48 h-48 bg-primary/5 rounded-full blur-3xl" />
-          <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-secondary/5 rounded-full blur-3xl" />
-        </div>
-
-        {/* Header */}
-        <div className="relative z-10 p-5 pb-3">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary/20 border border-current/20 shrink-0">
-              <DocumentTextIcon className="w-5 h-5 text-primary" />
-            </div>
-            <h3 className="text-lg font-bold text-base-content">
+      {/* Basis for Classification */}
+      <div className="rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden">
+        <div className="px-5 py-3.5 border-b border-base-300 bg-base-200/30">
+          <div className="flex items-center gap-2.5">
+            <DocumentTextIcon className="w-4 h-4 text-base-content/50" />
+            <h3 className="text-sm font-semibold text-base-content">
               Basis for Classification
             </h3>
-            {/* {canUpdateDetails && (
-              <div className="ml-auto flex gap-2">
-                <button
-                  className="btn btn-sm gap-1.5 btn-neutral shrink-0"
-                  onClick={() => {
-                    setClassification({
-                      ...classification,
-                      notes: "",
-                    });
-                  }}
-                >
-                  Clear
-                </button>
-                <button
-                  className="btn btn-sm gap-1.5 btn-neutral shrink-0"
-                  onClick={() => {
-                    setClassification({
-                      ...classification,
-                      notes: generateBasisForClassification(classification),
-                    });
-                  }}
-                >
-                  Reset
-                </button>
-              </div>
-            )} */}
           </div>
         </div>
 
-        {/* Content */}
-        <div className="relative z-10 px-5 pb-5 pt-0">
-          <div className="h-px bg-gradient-to-r from-transparent via-base-content/10 to-transparent mb-5" />
+        <div className="p-5">
           <textarea
             ref={basisTextareaRef}
-            className={`whitespace-pre-wrap min-h-36 w-full px-4 py-3 rounded-xl border transition-all duration-200 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 resize-none overflow-hidden text-base ${canUpdateDetails
-              ? "bg-base-100 border-base-content/20 hover:border-primary/40"
-              : "bg-base-200/50 border-base-content/15 cursor-not-allowed opacity-60"
-              }`}
+            className={`whitespace-pre-wrap min-h-36 w-full px-4 py-3 rounded-lg border transition-all duration-150 placeholder:text-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 resize-none overflow-hidden text-sm leading-relaxed ${
+              canUpdateDetails
+                ? "bg-base-100 border-base-300 hover:border-base-content/30"
+                : "bg-base-200/50 border-base-300 cursor-not-allowed opacity-60"
+            }`}
             placeholder="Add any notes about your classification here"
             value={classification.notes ?? ""}
             disabled={!canUpdateDetails}
@@ -844,7 +687,6 @@ export const VerticalClassificationResult = ({
               resizeBasisTextarea();
             }}
             onBlur={() => {
-              // Immediately save when user leaves the textarea
               flushAndSave();
             }}
           />
@@ -906,7 +748,7 @@ export const VerticalClassificationResult = ({
               disabled={isCreatingImporter || !newImporter.trim()}
             >
               {isCreatingImporter ? (
-                <span className="loading loading-spinner loading-xs"></span>
+                <span className="loading loading-spinner loading-xs" />
               ) : (
                 "Create"
               )}

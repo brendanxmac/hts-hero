@@ -29,7 +29,6 @@ import { SearchCrossRulings } from "../SearchCrossRulings";
 import {
   MagnifyingGlassIcon,
   QueueListIcon,
-  ChevronDownIcon,
   SparklesIcon,
   CheckCircleIcon,
   ClipboardDocumentIcon,
@@ -67,7 +66,6 @@ export const VerticalClassificationStep = ({
     getNotesForSectionsAndChapters,
   } = useClassification();
   const { articleDescription, articleAnalysis, levels } = classification;
-  const [isExpanded, setIsExpanded] = useState(true);
   const previousArticleDescriptionRef = useRef<string>(articleDescription);
   const isMountedRef = useRef(true);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -75,7 +73,6 @@ export const VerticalClassificationStep = ({
   const hasFetchedCandidatesRef = useRef(false);
   const [isAnalysisCopied, setIsAnalysisCopied] = useState(false);
 
-  // Get chapter candidates from the discovery context
   const { chapterCandidates, chapterDiscoveryComplete } =
     useSectionChapterDiscovery();
 
@@ -85,7 +82,6 @@ export const VerticalClassificationStep = ({
     setTimeout(() => setIsAnalysisCopied(false), 2000);
   };
 
-  // Auto-scroll to this component when chapter discovery completes (for level 0 only)
   useEffect(() => {
     if (
       classificationLevel === 0 &&
@@ -105,59 +101,40 @@ export const VerticalClassificationStep = ({
   const hasSelection = Boolean(currentLevel?.selection);
   const selectedElement = currentLevel?.selection;
   const isUsersClassification = classificationRecord
-    ? user ? classificationRecord.user_id === user.id : !classificationRecord.user_id
+    ? user
+      ? classificationRecord.user_id === user.id
+      : !classificationRecord.user_id
     : true;
 
   const isDisabled =
     !isUsersClassification ||
     classificationRecord?.status === ClassificationStatus.FINAL;
 
-  // Determine if we should show collapsed state
-  const isCollapsed = hasSelection && !isExpanded;
-
-  // Auto-collapse when a selection is made (immediate, no animation)
-  useEffect(() => {
-    if (hasSelection && isExpanded) {
-      setIsExpanded(false);
-    }
-  }, [hasSelection]);
-
-  /**
-   * Fetches all relevant notes for the given candidates.
-   * Checks the context cache first, fetches missing notes, and adds them to context.
-   */
   const getNotesForCandidates = async (
     simplifiedCandidates: { code: string; description: string }[]
   ): Promise<NoteRecord[]> => {
-    // Extract sections and chapters from candidates
     const { sections, chapters } =
       getSectionsAndChaptersFromCandidates(simplifiedCandidates);
 
-    // Check which notes we already have in context
     const { existingNotes, missingSections, missingChapters } =
       getNotesForSectionsAndChapters(sections, chapters);
 
-    // Fetch any missing notes
     if (missingSections.length > 0 || missingChapters.length > 0) {
       const fetchedNotes = await fetchNotesForSectionsAndChapters(
         missingSections,
         missingChapters
       );
 
-      // Add fetched notes to context cache
       if (fetchedNotes.length > 0) {
         addNotes(fetchedNotes);
       }
 
-      // Return all notes (existing + newly fetched)
       return [...existingNotes, ...fetchedNotes];
     }
 
-    // All notes were already in context
     return existingNotes;
   };
 
-  // Fetch AI analysis when candidates are loaded and no analysis exists yet
   useEffect(() => {
     isMountedRef.current = true;
 
@@ -173,7 +150,6 @@ export const VerticalClassificationStep = ({
 
         const coreElements = htsElements.filter((e) => e.chapter < 98);
 
-        // Create Fuse index ONCE for all lookups (major perf improvement)
         const fuse = new Fuse(coreElements, {
           keys: ["htsno"],
           threshold: 0.3,
@@ -229,7 +205,6 @@ export const VerticalClassificationStep = ({
           let relevantNotes: NoteRecord[] = [];
 
           if (classificationTier === "premium") {
-            // Fetch all relevant notes for the candidates
             relevantNotes = await getNotesForCandidates(simplifiedCandidates);
           }
 
@@ -278,7 +253,6 @@ export const VerticalClassificationStep = ({
     };
   }, [currentLevel?.candidates?.length]);
 
-  // Get up to 2 Best Headings Per Chapter
   const getHeadings = async () => {
     setLoading({ isLoading: true, text: "Looking for Headings" });
     const candidatesForHeading: (HtsElement & {
@@ -302,14 +276,12 @@ export const VerticalClassificationStep = ({
 
           const coreElements = htsElements.filter((e) => e.chapter < 98);
 
-          // Create Fuse index ONCE for all lookups (major perf improvement)
           const fuse = new Fuse(coreElements, {
             keys: ["htsno"],
             threshold: 0.3,
             includeScore: true,
           });
 
-          // Add referencedCodes to each element for LLM context
           const elementsWithReferencedCodes = addReferenceCodesToElements(
             elementsAtLevel,
             coreElements,
@@ -345,19 +317,16 @@ export const VerticalClassificationStep = ({
             3
           );
 
-          // Handle Empty Case
           if (bestCandidateHeadings.bestCandidates.length === 0) {
             return;
           }
 
-          // Handle Negative Index Case (sometimes chatGPT will do this)
           if (bestCandidateHeadings.bestCandidates[0] < 0) {
             return;
           }
 
           const candidates = bestCandidateHeadings.bestCandidates
             .map((candidateIndex) => {
-              // Use elementsWithReferencedCodes to preserve referencedCodes
               return elementsWithReferencedCodes[candidateIndex];
             })
             .map((candidate) => ({
@@ -368,13 +337,11 @@ export const VerticalClassificationStep = ({
         })
       );
 
-      // Check if component is still mounted before updating state
       if (!isMountedRef.current) {
         console.log("Component unmounted, skipping state update");
         return;
       }
 
-      // Update the existing level 0 with candidates instead of adding a new level
       updateLevel(0, { candidates: candidatesForHeading });
     } catch (err) {
       console.error("Error getting headings", err);
@@ -397,7 +364,6 @@ export const VerticalClassificationStep = ({
     }
   }, [articleDescription]);
 
-  // Fetch headings once chapter discovery is complete (for level 0 only)
   useEffect(() => {
     if (
       classificationLevel === 0 &&
@@ -412,224 +378,238 @@ export const VerticalClassificationStep = ({
     }
   }, [classificationLevel, chapterDiscoveryComplete, chapterCandidates]);
 
-  const getStepDescription = (level: number) => {
-    if (level === 0) {
-      return "Find & select the most suitable candidate for the item";
-    } else {
-      return "Which next candidate best fits the item description?";
-    }
-  };
-
   return (
     <div
       ref={containerRef}
-      className={`relative overflow-hidden rounded-2xl border ${isCollapsed
-        ? "border-success/30 bg-base-200/50"
-        : "border-base-content/15 bg-base-200/50"
-        }`}
+      className="rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden"
     >
-      {/* Decorative background */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div
-          className={`absolute -top-20 -right-20 w-64 h-64 rounded-full blur-3xl ${isCollapsed ? "bg-success/10" : "bg-primary/10"
-            }`}
-        />
-      </div>
-
-      <div className="relative z-10 p-6">
-        {/* Persistent Header */}
-        <div
-          className="flex items-center justify-between mb-4 hover:cursor-pointer"
-          onClick={() => setIsExpanded(!isExpanded)}
-        >
-          <span
-            className={`text-xs font-semibold uppercase tracking-widest transition-colors duration-300 ${hasSelection ? "text-success" : "text-primary"
-              }`}
-          >
-            Level {classificationLevel + 1}
-          </span>
-
-          <button
-            className="flex items-center justify-center w-8 h-8 rounded-lg bg-base-content/5 hover:bg-base-content/10 transition-all duration-200"
-            onClick={() => setIsExpanded(!isExpanded)}
-          >
-            <ChevronDownIcon
-              className={`w-4 h-4 text-base-content/60 transition-transform duration-300 ease-in-out ${isCollapsed ? "-rotate-180" : ""
-                }`}
-            />
-          </button>
-        </div>
-
-        {/* Selected Element Summary - shown when collapsed */}
-        <div
-          className={`transition-all duration-300 ease-in-out ${isCollapsed ? "opacity-100" : "opacity-0 h-0 overflow-hidden"
-            }`}
-        >
-          {selectedElement && (
-            <div className="p-4 rounded-xl bg-base-100 border border-base-content/10">
-              <div className="flex items-center gap-3">
-                {selectedElement.htsno && (
-                  <span className="shrink-0 px-2.5 py-1 rounded-lg text-sm font-bold bg-success/20 text-success border border-success/30">
-                    {selectedElement.htsno}
-                  </span>
-                )}
-                <p className="text-base font-bold text-base-content leading-relaxed">
-                  {selectedElement.description}
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Expanded Content */}
-        <div
-          className={`transition-all duration-300 ease-in-out ${!isCollapsed ? "opacity-100" : "opacity-0 h-0 overflow-hidden"
-            }`}
-        >
-          {/* Description */}
-          <h2 className="text-xl font-bold text-base-content mb-6">
-            {getStepDescription(classificationLevel)}
-          </h2>
-
-          {/* Candidates Header Section */}
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2">
-                  <QueueListIcon className="w-5 h-5 text-primary" />
-                  <span className="text-sm font-semibold uppercase tracking-wider text-base-content/80">
-                    {optionsForLevel
-                      ? `Candidates (${optionsForLevel})`
-                      : "Candidates"}
-                  </span>
-                </div>
-                {loading.isLoading && (
-                  <div className="flex items-center gap-1.5 text-primary/70">
-                    <span className="loading loading-spinner loading-xs"></span>
-                    <span className="text-xs font-medium">{loading.text}</span>
-                  </div>
-                )}
-              </div>
-              {/* Action Buttons */}
-              <div className="flex flex-wrap gap-2">
-                {classificationLevel === 0 && (
-                  <button
-                    className="group flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 bg-base-100 border border-base-content/15 hover:border-primary/40 hover:bg-primary/10 disabled:opacity-50 disabled:cursor-not-allowed"
-                    onClick={onOpenExplore}
-                    disabled={loading.isLoading || isDisabled}
-                  >
-                    <MagnifyingGlassIcon className="w-4 h-4 text-primary" />
-                    <span>Find Headings</span>
-                  </button>
-                )}
-                <button
-                  className="group flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 bg-base-100 border border-base-content/15 hover:border-primary/40 hover:bg-primary/10 disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={() => setShowCrossRulingsModal(true)}
-                  disabled={loading.isLoading}
-                >
-                  <MagnifyingGlassIcon className="w-4 h-4 text-primary" />
-                  <span>Search CROSS</span>
-                </button>
-                {/* {!showNotes && (
-                  <button
-                    className="group flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 bg-base-100 border border-base-content/15 hover:border-primary/40 hover:bg-primary/10 disabled:opacity-50 disabled:cursor-not-allowed"
-                    onClick={() => setShowNotes(true)}
-                    disabled={loading.isLoading || isDisabled}
-                  >
-                    <PencilSquareIcon className="w-4 h-4 text-primary" />
-                    <span>Add Notes</span>
-                  </button>
-                )} */}
-              </div>
-            </div>
-
-            {currentLevel && currentLevel.candidates?.length > 0 ? (
-              <div className="flex flex-col gap-3">
-                {currentLevel.candidates.map((element) => (
-                  <VerticalCandidateElement
-                    key={element.uuid}
-                    element={element}
-                    classificationLevel={classificationLevel}
-                    disabled={isDisabled}
-                    onOpenExplore={onOpenExplore}
-                  />
-                ))}
-              </div>
-            ) : (
-              // Loading skeleton when candidates are being fetched
-              <div className="flex flex-col gap-3">
-                {[1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className="rounded-2xl border border-base-content/10 bg-base-100 p-5 animate-pulse"
-                  >
-                    <div className="flex items-start justify-between gap-4 mb-3">
-                      <div className="h-4 w-24 bg-base-content/10 rounded" />
-                      <div className="flex gap-1">
-                        <div className="h-6 w-6 bg-base-content/10 rounded-lg" />
-                        <div className="h-6 w-6 bg-base-content/10 rounded-lg" />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="h-4 w-full bg-base-content/10 rounded" />
-                      <div className="h-4 w-3/4 bg-base-content/10 rounded" />
-                    </div>
-                  </div>
-                ))}
+      {/* Header */}
+      <div className="px-5 py-3.5 border-b border-base-300 bg-base-200/30">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <QueueListIcon className="w-4 h-4 text-base-content/50" />
+            <h3 className="text-sm font-semibold text-base-content">
+              {classificationLevel === 0
+                ? "Select a Heading"
+                : `Select Sub-level ${classificationLevel + 1}`}
+            </h3>
+            {optionsForLevel > 0 && (
+              <span className="px-2 py-0.5 rounded-full bg-base-300 text-[11px] font-semibold text-base-content/60">
+                {optionsForLevel}
+              </span>
+            )}
+            {loading.isLoading && (
+              <div className="flex items-center gap-1.5 text-primary/70">
+                <span className="loading loading-spinner loading-xs" />
+                <span className="text-xs font-medium">{loading.text}</span>
               </div>
             )}
           </div>
-
-          {/* Analysis Section */}
-          <div className="w-full mt-6 flex flex-col gap-4">
-            <div className="flex justify-between items-center gap-4">
-              <div className="flex items-center gap-2">
-                <SparklesIcon className="w-5 h-5 text-primary" />
-                <span className="text-sm font-semibold uppercase tracking-wider text-base-content/80">
-                  Analysis
-                </span>
-              </div>
+          <div className="flex flex-wrap gap-1.5">
+            {classificationLevel === 0 && (
               <button
-                className={`btn btn-sm gap-1.5 btn-neutral shrink-0`}
+                className="btn btn-ghost btn-xs gap-1.5 text-base-content/70 hover:text-primary"
+                onClick={onOpenExplore}
+                disabled={loading.isLoading || isDisabled}
+              >
+                <MagnifyingGlassIcon className="w-3.5 h-3.5" />
+                <span>Find Headings</span>
+              </button>
+            )}
+            <button
+              className="btn btn-ghost btn-xs gap-1.5 text-base-content/70 hover:text-primary"
+              onClick={() => setShowCrossRulingsModal(true)}
+              disabled={loading.isLoading}
+            >
+              <MagnifyingGlassIcon className="w-3.5 h-3.5" />
+              <span>Search CROSS</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-5">
+        {/* Selected element highlight */}
+        {selectedElement && (
+          <div className="mb-4 p-3 rounded-lg bg-success/10 border border-success/30">
+            <div className="flex items-center gap-2.5">
+              <CheckCircleIcon className="w-4 h-4 text-success shrink-0" />
+              {selectedElement.htsno && (
+                <span className="shrink-0 px-2 py-0.5 rounded-md text-xs font-bold bg-success/20 text-success border border-success/30 font-mono">
+                  {selectedElement.htsno}
+                </span>
+              )}
+              <p className="text-sm font-semibold text-base-content leading-snug">
+                {selectedElement.description}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Candidates list */}
+        {currentLevel && currentLevel.candidates?.length > 0 ? (
+          <div className="flex flex-col gap-2.5">
+            {currentLevel.candidates.map((element) => (
+              <VerticalCandidateElement
+                key={element.uuid}
+                element={element}
+                classificationLevel={classificationLevel}
+                disabled={isDisabled}
+                onOpenExplore={onOpenExplore}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2.5">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="rounded-lg border border-base-300 bg-base-200/30 p-4 animate-pulse"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="h-4 w-20 bg-base-300 rounded" />
+                  <div className="flex gap-1 ml-auto">
+                    <div className="h-6 w-6 bg-base-300 rounded-md" />
+                    <div className="h-6 w-6 bg-base-300 rounded-md" />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <div className="h-3.5 w-full bg-base-300 rounded" />
+                  <div className="h-3.5 w-2/3 bg-base-300 rounded" />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Analysis section */}
+        <div className="mt-5 pt-5 border-t border-base-300">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <SparklesIcon className="w-4 h-4 text-primary" />
+              <span className="text-xs font-semibold uppercase tracking-wider text-base-content/50">
+                Analysis
+              </span>
+            </div>
+            {currentLevel?.analysisReason && (
+              <button
+                className="btn btn-ghost btn-xs gap-1 text-base-content/50"
                 onClick={handleCopyCostClick}
               >
                 {isAnalysisCopied ? (
-                  <CheckCircleIcon className="w-4 h-4" />
+                  <CheckCircleIcon className="w-3.5 h-3.5 text-success" />
                 ) : (
-                  <ClipboardDocumentIcon className="w-4 h-4" />
+                  <ClipboardDocumentIcon className="w-3.5 h-3.5" />
                 )}
-                {isAnalysisCopied ? "Copied!" : "Copy"}
+                <span className="text-[11px]">
+                  {isAnalysisCopied ? "Copied" : "Copy"}
+                </span>
               </button>
-            </div>
-
-            {currentLevel?.analysisReason ? (
-              <div className="relative overflow-hidden rounded-xl bg-base-100 border border-primary/20 p-4">
-                <div className="absolute inset-0 pointer-events-none">
-                  <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
-                </div>
-                <div className="relative z-10">
-                  <p className="text-base leading-relaxed text-base-content whitespace-pre-line mb-3">
-                    {currentLevel.analysisReason}
-                  </p>
-                  <p className="text-xs text-base-content/60">
-                    Analysis is for information purposes only and may not be
-                    correct. Always exercise your own judgement as the
-                    classifier.
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="rounded-xl border border-base-content/10 bg-base-100 p-4">
-                <p className="text-sm text-base-content/60 italic">
-                  {loading.isLoading && loading.text === "Analyzing Candidates"
-                    ? "Analyzing candidates..."
-                    : loading.isLoading
-                      ? loading.text
-                      : "Analysis will appear here after candidates are evaluated."}
-                </p>
-              </div>
             )}
           </div>
+
+          {currentLevel?.analysisReason ? (
+            <div className="flex flex-col gap-3">
+              {/* Recommendation callout */}
+              {/* {currentLevel.analysisElement && (
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-primary/5 border border-primary/15">
+                  <SparklesIcon className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-semibold uppercase tracking-wider text-primary/70 mb-1">
+                      Suggested
+                    </p>
+                    <div className="flex items-baseline gap-2 flex-wrap">
+                      {currentLevel.analysisElement.htsno && (
+                        <span className="font-mono text-sm font-bold text-primary">
+                          {currentLevel.analysisElement.htsno}
+                        </span>
+                      )}
+                      <span className="text-sm text-base-content/80">
+                        {currentLevel.analysisElement.description}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )} */}
+
+              {/* Reasoning */}
+              <div className="rounded-lg border border-base-300 overflow-hidden">
+                <div className="flex">
+                  <div className="w-1 bg-primary/40 shrink-0" />
+                  <div className="p-4 flex-1 min-w-0">
+                    <div className="text-sm leading-[1.7] text-base-content/80 space-y-2.5">
+                      {currentLevel.analysisReason
+                        .split(/\n\n+/)
+                        .filter((p) => p.trim())
+                        .map((paragraph, i) => (
+                          <p key={i} className="whitespace-pre-line">
+                            {paragraph.trim()}
+                          </p>
+                        ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Questions to consider */}
+              {currentLevel.analysisQuestions &&
+                currentLevel.analysisQuestions.length > 0 && (
+                  <div className="rounded-lg bg-warning/5 border border-warning/15 p-3.5">
+                    <p className="text-[11px] font-semibold uppercase tracking-wider text-warning/70 mb-2">
+                      Consider before selecting
+                    </p>
+                    <ul className="space-y-1.5">
+                      {currentLevel.analysisQuestions.map((question, i) => (
+                        <li
+                          key={i}
+                          className="flex items-start gap-2 text-sm text-base-content/70 leading-snug"
+                        >
+                          <span className="text-warning/60 shrink-0 mt-0.5 text-xs">
+                            ?
+                          </span>
+                          {question}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+              <p className="text-[11px] text-base-content/30">
+                Analysis is for information purposes only and may not be correect. Always exercise your own judgement.
+              </p>
+            </div>
+          ) : (
+            <div className="rounded-lg border border-base-300 overflow-hidden">
+              <div className="flex">
+                <div className="w-1 bg-base-300 shrink-0" />
+                <div className="p-4 flex-1">
+                  {loading.isLoading ? (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="loading loading-spinner loading-xs text-primary" />
+                        <span className="text-xs font-medium text-primary/70">
+                          {loading.text === "Analyzing Candidates"
+                            ? "Analyzing candidates..."
+                            : loading.text}
+                        </span>
+                      </div>
+                      <div className="space-y-2 animate-pulse">
+                        <div className="h-3 w-full bg-base-300/60 rounded" />
+                        <div className="h-3 w-[90%] bg-base-300/60 rounded" />
+                        <div className="h-3 w-[75%] bg-base-300/60 rounded" />
+                        <div className="h-3 w-[85%] bg-base-300/60 rounded" />
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-base-content/40 italic">
+                      Analysis will appear here after candidates are evaluated.
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

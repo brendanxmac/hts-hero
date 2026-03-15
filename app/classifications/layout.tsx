@@ -1,9 +1,7 @@
 import { ReactNode } from "react";
 import { createClient } from "@/app/api/supabase/server";
-import { AuthenticatedHeader } from "../../components/AuthenticatedHeader";
 import { ClassifyTabProvider } from "../../contexts/ClassifyTabContext";
-import UnauthenticatedHeader from "../../components/UnauthenticatedHeader";
-import { AnonymousClassificationLinker } from "../../components/AnonymousClassificationLinker";
+import { ClassificationsLayoutShell } from "../../components/ClassificationsLayoutShell";
 
 export default async function LayoutPrivate({
   children,
@@ -18,11 +16,9 @@ export default async function LayoutPrivate({
 
   return (
     <ClassifyTabProvider>
-      <div className="h-screen overflow-y-auto">
-        {user ? <AuthenticatedHeader /> : <UnauthenticatedHeader />}
-        <AnonymousClassificationLinker />
+      <ClassificationsLayoutShell isAuthenticated={!!user}>
         {children}
-      </div>
+      </ClassificationsLayoutShell>
     </ClassifyTabProvider>
   );
 }
