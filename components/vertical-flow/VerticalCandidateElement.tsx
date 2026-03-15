@@ -20,7 +20,6 @@ import {
   getHtsElementParents,
   getSectionAndChapterFromChapterNumber,
 } from "../../libs/hts";
-import toast from "react-hot-toast";
 import { useHts } from "../../contexts/HtsContext";
 import { PDFProps } from "../../interfaces/ui";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
@@ -111,7 +110,6 @@ export const VerticalCandidateElement = ({
         levels: newProgressionLevels,
       });
 
-      toast.success("Classification Complete!", { duration: 5000 });
       handleClassificationCompleted();
     }
   };

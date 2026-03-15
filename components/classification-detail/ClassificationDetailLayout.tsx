@@ -1,16 +1,18 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { useClassification } from "../../contexts/ClassificationContext";
 import { useHts } from "../../contexts/HtsContext";
 import { useUser } from "../../contexts/UserContext";
 import { LoadingIndicator } from "../LoadingIndicator";
 import {
   SectionChapterDiscoveryProvider,
+  useSectionChapterDiscovery,
 } from "../../contexts/SectionChapterDiscoveryContext";
+import { useHtsSections } from "../../contexts/HtsSectionsContext";
 import Modal from "../Modal";
 import { Explore } from "../Explore";
-import { ClassificationStatus } from "../../interfaces/hts";
+import { ClassificationStatus, Navigatable } from "../../interfaces/hts";
 import {
   updateClassification,
   deleteClassification,
@@ -34,6 +36,102 @@ import { OverviewTab } from "./tabs/OverviewTab";
 import { ClassificationLevelTab } from "./tabs/ClassificationLevelTab";
 import { DutyTariffTab } from "./tabs/DutyTariffTab";
 import { PlaceholderTab } from "./tabs/PlaceholderTab";
+import { Dialog, Transition } from "@headlessui/react";
+import { Fragment } from "react";
+import {
+  CheckCircleIcon,
+  ScaleIcon,
+  CurrencyDollarIcon,
+  ShieldCheckIcon,
+  ShareIcon,
+} from "@heroicons/react/24/outline";
+import { SparklesIcon } from "@heroicons/react/24/solid";
+
+/**
+ * Hydrates the SectionChapterDiscovery context from persisted classification
+ * data on mount. Runs once so that the nav hook can compute the correct
+ * initial tab without needing discovery components to mount first.
+ */
+function DiscoveryHydrator(): null {
+  const { classification } = useClassification();
+  const { getSections, sections: htsSections } = useHtsSections();
+  const {
+    sectionDiscoveryComplete,
+    setSectionCandidates,
+    setSectionReasoning,
+    setSectionDiscoveryComplete,
+    chapterDiscoveryComplete,
+    setChapterCandidates,
+    setChapterReasoning,
+    setChapterDiscoveryComplete,
+  } = useSectionChapterDiscovery();
+
+  const hasHydratedSections = useRef(false);
+  const hasHydratedChapters = useRef(false);
+
+  useEffect(() => {
+    if (hasHydratedSections.current || sectionDiscoveryComplete) return;
+    if (!classification?.preliminaryLevels) return;
+
+    const sectionLevel = classification.preliminaryLevels.find(
+      (l) => l.level === "section"
+    );
+    if (!sectionLevel || sectionLevel.candidates.length === 0) return;
+
+    hasHydratedSections.current = true;
+
+    const hydrate = async () => {
+      let sections = htsSections;
+      if (sections.length === 0) {
+        sections = await getSections();
+      }
+
+      const candidates = sectionLevel.candidates
+        .map((c) => {
+          const section = sections.find((s) => s.number === c.identifier);
+          return section ? { section } : null;
+        })
+        .filter(Boolean);
+
+      setSectionCandidates(candidates);
+      if (sectionLevel.analysis) {
+        setSectionReasoning(sectionLevel.analysis);
+      }
+      setSectionDiscoveryComplete(true);
+    };
+
+    hydrate();
+  }, [classification?.preliminaryLevels, htsSections]);
+
+  useEffect(() => {
+    if (hasHydratedChapters.current || chapterDiscoveryComplete) return;
+    if (!classification?.preliminaryLevels) return;
+
+    const chapterLevel = classification.preliminaryLevels.find(
+      (l) => l.level === "chapter"
+    );
+    if (!chapterLevel || chapterLevel.candidates.length === 0) return;
+
+    hasHydratedChapters.current = true;
+
+    const candidates = chapterLevel.candidates.map((c) => ({
+      chapter: {
+        number: c.identifier,
+        description: c.description,
+        type: Navigatable.CHAPTER as const,
+      },
+      sectionNumber: 0,
+    }));
+
+    setChapterCandidates(candidates);
+    if (chapterLevel.analysis) {
+      setChapterReasoning(chapterLevel.analysis);
+    }
+    setChapterDiscoveryComplete(true);
+  }, [classification?.preliminaryLevels]);
+
+  return null;
+}
 
 interface Props {
   classificationRecord?: ClassificationRecord;
@@ -53,6 +151,8 @@ export const ClassificationDetailLayout = ({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [refreshingRecord, setRefreshingRecord] = useState(false);
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const wasCompleteRef = useRef(classification?.isComplete ?? false);
   const [classificationRecord, setClassificationRecord] = useState<
     ClassificationRecord | undefined
   >(initialRecord);
@@ -74,6 +174,14 @@ export const ClassificationDetailLayout = ({
     () => getCountryOfOrigin(classificationRecord?.country_of_origin),
     [classificationRecord?.country_of_origin]
   );
+
+  useEffect(() => {
+    const isNowComplete = classification?.isComplete ?? false;
+    if (isNowComplete && !wasCompleteRef.current) {
+      setShowCompleteModal(true);
+    }
+    wasCompleteRef.current = isNowComplete;
+  }, [classification?.isComplete]);
 
   const canUpdateDetails = canUserUpdateDetails(
     userProfile,
@@ -262,6 +370,7 @@ export const ClassificationDetailLayout = ({
 
   return (
     <SectionChapterDiscoveryProvider>
+      <DiscoveryHydrator />
       <div className="h-screen flex bg-base-100">
         {/* Desktop Sidebar */}
         <aside className="hidden lg:flex lg:flex-col lg:w-72 xl:w-80 border-r border-base-300 bg-base-200/50 h-full overflow-hidden shrink-0">
@@ -321,6 +430,132 @@ export const ClassificationDetailLayout = ({
           onClose={() => setShowDeleteModal(false)}
           onConfirm={handleDeleteClassification}
         />
+
+        {/* Classification Complete Modal */}
+        <Transition appear show={showCompleteModal} as={Fragment}>
+          <Dialog
+            as="div"
+            className="relative z-50"
+            onClose={() => {
+              setShowCompleteModal(false);
+              setActiveTab("overview");
+            }}
+          >
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
+            </Transition.Child>
+
+            <div className="fixed inset-0 overflow-y-auto">
+              <div className="flex min-h-full items-center justify-center p-4">
+                <Transition.Child
+                  as={Fragment}
+                  enter="ease-out duration-300"
+                  enterFrom="opacity-0 scale-90"
+                  enterTo="opacity-100 scale-100"
+                  leave="ease-in duration-200"
+                  leaveFrom="opacity-100 scale-100"
+                  leaveTo="opacity-0 scale-90"
+                >
+                  <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-base-100 border border-base-300 shadow-2xl transition-all">
+                    <div className="relative overflow-hidden">
+                      {/* Decorative gradient header */}
+                      <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-success/10 to-transparent pointer-events-none" />
+                      <div className="absolute top-4 left-1/2 -translate-x-1/2 w-48 h-48 rounded-full bg-success/5 blur-3xl pointer-events-none" />
+
+                      <div className="relative px-6 pt-8 pb-6 flex flex-col items-center text-center">
+                        {/* Success icon */}
+                        <div className="relative mb-4">
+                          <div className="absolute -inset-2 rounded-full bg-success/20 blur-xl animate-pulse" />
+                          <div className="relative w-14 h-14 rounded-full bg-success/10 border-2 border-success/30 flex items-center justify-center">
+                            <CheckCircleIcon className="w-8 h-8 text-success" />
+                          </div>
+                        </div>
+
+                        {/* Title */}
+                        <Dialog.Title className="text-xl font-bold text-base-content mb-1">
+                          Classification Complete
+                        </Dialog.Title>
+                        <p className="text-sm text-base-content/50 mb-5">
+                          Your item has been successfully classified
+                        </p>
+
+                        {/* HTS Code display */}
+                        <div className="w-full rounded-xl bg-base-200/60 border border-base-300 p-4 mb-6">
+                          <p className="text-[10px] font-semibold uppercase tracking-widest text-base-content/40 mb-1.5">
+                            HTS Code
+                          </p>
+                          <p className="text-2xl font-mono font-bold text-success tracking-wide mb-2">
+                            {latestHtsCode || "—"}
+                          </p>
+                          {classification?.articleDescription && (
+                            <p className="text-xs text-base-content/50 leading-relaxed line-clamp-2">
+                              {classification.articleDescription}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Next steps */}
+                        <div className="w-full space-y-2.5 mb-6">
+                          <p className="text-[10px] font-semibold uppercase tracking-widest text-base-content/40 text-left">
+                            What you can do next
+                          </p>
+                          {[
+                            {
+                              icon: ScaleIcon,
+                              text: "Verify with CROSS rulings database",
+                            },
+                            {
+                              icon: CurrencyDollarIcon,
+                              text: "Find duty & tariff rates for any country",
+                            },
+                            {
+                              icon: ShieldCheckIcon,
+                              text: "Generate an audit-ready defense report",
+                            },
+                            {
+                              icon: ShareIcon,
+                              text: "Share with clients or teammates",
+                            },
+                          ].map(({ icon: Icon, text }) => (
+                            <div
+                              key={text}
+                              className="flex items-center gap-3 rounded-lg bg-base-200/40 px-3.5 py-2.5"
+                            >
+                              <Icon className="w-4 h-4 text-primary shrink-0" />
+                              <span className="text-xs font-medium text-base-content/70">
+                                {text}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Proceed button */}
+                        <button
+                          className="btn btn-primary w-full gap-2"
+                          onClick={() => {
+                            setShowCompleteModal(!showCompleteModal);
+                            setActiveTab("overview");
+                          }}
+                        >
+                          <SparklesIcon className="w-4 h-4" />
+                          Proceed to Overview
+                        </button>
+                      </div>
+                    </div>
+                  </Dialog.Panel>
+                </Transition.Child>
+              </div>
+            </div>
+          </Dialog>
+        </Transition>
       </div>
     </SectionChapterDiscoveryProvider>
   );

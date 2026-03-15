@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo, useCallback } from "react"
+import { useState, useEffect, useMemo, useCallback, useRef } from "react"
 import { ClassificationI } from "../../interfaces/hts"
 
 export type NavTab =
@@ -76,59 +76,56 @@ export function useClassificationNav(classification: ClassificationI | null) {
       { id: "overview", label: "Overview", status: "completed" },
     ]
 
-    const hasPreliminary = !!classification.preliminaryLevels?.length
+    const sectionLevel = classification.preliminaryLevels?.find(
+      (l) => l.level === "section",
+    )
+    const chapterLevel = classification.preliminaryLevels?.find(
+      (l) => l.level === "chapter",
+    )
 
-    if (hasPreliminary) {
-      const sectionLevel = classification.preliminaryLevels?.find(
-        (l) => l.level === "section",
-      )
-      const chapterLevel = classification.preliminaryLevels?.find(
-        (l) => l.level === "chapter",
-      )
+    const sectionDone = (sectionLevel?.candidates?.length ?? 0) > 0
+    const chapterDone = (chapterLevel?.candidates?.length ?? 0) > 0
 
-      const sectionDone = (sectionLevel?.candidates?.length ?? 0) > 0
-      const chapterDone = (chapterLevel?.candidates?.length ?? 0) > 0
+    // Progressive reveal: only show each stage once the previous one completes
+    items.push({
+      id: "classification-section",
+      label: "Sections",
+      status: sectionDone ? "completed" : "active",
+      isSubItem: true,
+    })
 
-      items.push({
-        id: "classification-section",
-        label: "Sections",
-        status: sectionDone ? "completed" : "active",
-        isSubItem: true,
-      })
-
+    if (sectionDone) {
       items.push({
         id: "classification-chapter",
         label: "Chapters",
-        status: chapterDone ? "completed" : sectionDone ? "active" : "pending",
+        status: chapterDone ? "completed" : "active",
         isSubItem: true,
       })
     }
 
-    classification.levels.forEach((level, index) => {
-      const previousDone =
-        index === 0
-          ? hasPreliminary
-            ? (classification.preliminaryLevels?.every(
-                (p) => (p.candidates?.length ?? 0) > 0,
-              ) ?? true)
-            : true
-          : !!classification.levels[index - 1]?.selection
+    if (chapterDone) {
+      classification.levels.forEach((level, index) => {
+        const previousDone =
+          index === 0
+            ? true
+            : !!classification.levels[index - 1]?.selection
 
-      const status: NavItemStatus = level.selection
-        ? "completed"
-        : previousDone
-          ? "active"
-          : "pending"
+        const status: NavItemStatus = level.selection
+          ? "completed"
+          : previousDone
+            ? "active"
+            : "pending"
 
-      items.push({
-        id: `classification-level-${index}`,
-        label: level.selection ? "Current Level" : getLevelLabel(index, classification.levels),
-        status,
-        isSubItem: true,
-        htsno: level.selection?.htsno || undefined,
-        selectionDescription: level.selection?.description || undefined,
+        items.push({
+          id: `classification-level-${index}`,
+          label: level.selection ? "Current Level" : getLevelLabel(index, classification.levels),
+          status,
+          isSubItem: true,
+          htsno: level.selection?.htsno || undefined,
+          selectionDescription: level.selection?.description || undefined,
+        })
       })
-    })
+    }
 
     items.push(
       { id: "cross-rulings", label: "CROSS Rulings", status: "pending" },
@@ -150,18 +147,34 @@ export function useClassificationNav(classification: ClassificationI | null) {
   }, [navItems])
 
   const [activeTab, setActiveTab] = useState<NavTab>("overview")
+  const hasSetInitialTab = useRef(false)
 
-  // Auto-advance to the next incomplete classification level when a selection is made
+  // Jump to the correct tab once when the classification first loads.
+  // Complete → overview. In-progress → first incomplete level.
   useEffect(() => {
+    if (hasSetInitialTab.current) return
     if (!classification) return
 
-    if (classification.isComplete) return
+    hasSetInitialTab.current = true
 
-    if (firstIncompleteLevel && activeTab !== firstIncompleteLevel.id) {
-      const currentItem = navItems.find((i) => i.id === activeTab)
-      if (currentItem?.isSubItem && currentItem?.status === "completed") {
-        setActiveTab(firstIncompleteLevel.id)
-      }
+    if (classification.isComplete) return // stay on overview
+
+    if (firstIncompleteLevel) {
+      setActiveTab(firstIncompleteLevel.id)
+    }
+  }, [classification, firstIncompleteLevel])
+
+  // Auto-advance when a step completes (e.g. section discovery finishes while
+  // the user is watching it). Only fires on data changes — NOT on tab changes —
+  // so user-initiated navigation is never overridden.
+  useEffect(() => {
+    if (!classification) return
+    if (classification.isComplete) return
+    if (!firstIncompleteLevel || activeTab === firstIncompleteLevel.id) return
+
+    const currentItem = navItems.find((i) => i.id === activeTab)
+    if (currentItem?.isSubItem && currentItem?.status === "completed") {
+      setActiveTab(firstIncompleteLevel.id)
     }
   }, [classification?.levels, classification?.preliminaryLevels, navItems])
 

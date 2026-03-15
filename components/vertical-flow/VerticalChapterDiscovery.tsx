@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useClassification } from "../../contexts/ClassificationContext";
 import { useSectionChapterDiscovery } from "../../contexts/SectionChapterDiscoveryContext";
 import { getBestDescriptionCandidates } from "../../libs/hts";
@@ -8,17 +8,12 @@ import { ChapterCandidate } from "../../contexts/SectionChapterDiscoveryContext"
 import {
   PreliminaryCandidate,
   PreliminaryClassificationLevel,
-  Navigatable,
 } from "../../interfaces/hts";
 import toast from "react-hot-toast";
 import { QueueListIcon } from "@heroicons/react/16/solid";
 import { SectionChapterCandidate } from "./SectionChapterCandidate";
 
-interface Props {
-  startExpanded?: boolean;
-}
-
-export const VerticalChapterDiscovery = ({ startExpanded = true }: Props) => {
+export const VerticalChapterDiscovery = () => {
   const { classification, setClassification, classificationTier } =
     useClassification();
   const { articleDescription } = classification || {};
@@ -28,11 +23,9 @@ export const VerticalChapterDiscovery = ({ startExpanded = true }: Props) => {
     chapterCandidates,
     setChapterCandidates,
     removeChapterCandidate,
-    chapterReasoning,
-    setChapterReasoning,
     isFetchingChapters,
     setIsFetchingChapters,
-    chapterDiscoveryComplete,
+    setChapterReasoning,
     setChapterDiscoveryComplete,
   } = useSectionChapterDiscovery();
 
@@ -42,17 +35,6 @@ export const VerticalChapterDiscovery = ({ startExpanded = true }: Props) => {
     "finding" | "qualifying" | null
   >(null);
   const hasFetchedRef = useRef(false);
-  const hasLoadedFromClassificationRef = useRef(false);
-
-  // Check if data already exists in classification (avoids loading flash)
-  const existingChapterLevel = useMemo(() => {
-    return classification?.preliminaryLevels?.find(
-      (l) => l.level === "chapter"
-    );
-  }, [classification?.preliminaryLevels]);
-
-  const hasExistingData =
-    existingChapterLevel && existingChapterLevel.candidates.length > 0;
 
   const updateChapterPreliminaryLevel = (
     candidates: PreliminaryCandidate[],
@@ -79,37 +61,7 @@ export const VerticalChapterDiscovery = ({ startExpanded = true }: Props) => {
     });
   };
 
-  useEffect(() => {
-    if (hasLoadedFromClassificationRef.current) return;
-    if (!classification?.preliminaryLevels) return;
-    if (!sectionDiscoveryComplete) return;
-
-    const chapterLevel = classification.preliminaryLevels.find(
-      (l) => l.level === "chapter"
-    );
-    if (chapterLevel && chapterLevel.candidates.length > 0) {
-      hasLoadedFromClassificationRef.current = true;
-      hasFetchedRef.current = true;
-
-      const loadedCandidates: ChapterCandidate[] = chapterLevel.candidates.map(
-        (c) => ({
-          chapter: {
-            number: c.identifier,
-            description: c.description,
-            type: Navigatable.CHAPTER,
-          },
-          sectionNumber: 0,
-        })
-      );
-
-      setChapterCandidates(loadedCandidates);
-      if (chapterLevel.analysis) {
-        setChapterReasoning(chapterLevel.analysis);
-      }
-      setChapterDiscoveryComplete(true);
-    }
-  }, [classification?.preliminaryLevels, sectionDiscoveryComplete]);
-
+  // Fetch chapter candidates if none exist yet (fresh discovery)
   useEffect(() => {
     if (!sectionDiscoveryComplete) return;
     if (!articleDescription) return;
@@ -119,7 +71,7 @@ export const VerticalChapterDiscovery = ({ startExpanded = true }: Props) => {
 
     hasFetchedRef.current = true;
     fetchChapterCandidates();
-  }, [sectionDiscoveryComplete, sectionCandidates]);
+  }, [sectionDiscoveryComplete, sectionCandidates.length, chapterCandidates.length]);
 
   const fetchChapterCandidates = async () => {
     setIsFetchingChapters(true);
@@ -185,24 +137,7 @@ export const VerticalChapterDiscovery = ({ startExpanded = true }: Props) => {
     return null;
   }
 
-  // If data exists in classification but context hasn't hydrated yet,
-  // render directly from classification data to avoid loading flash
-  const displayCandidates =
-    chapterCandidates.length > 0
-      ? chapterCandidates
-      : hasExistingData
-        ? existingChapterLevel.candidates.map((c) => ({
-            chapter: {
-              number: c.identifier,
-              description: c.description,
-              type: Navigatable.CHAPTER,
-            },
-            sectionNumber: 0,
-          }))
-        : [];
-
-  const isLoading =
-    isFetchingChapters || (displayCandidates.length === 0 && !hasExistingData);
+  const isLoading = isFetchingChapters || chapterCandidates.length === 0;
 
   return (
     <div className="rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden">
@@ -214,9 +149,9 @@ export const VerticalChapterDiscovery = ({ startExpanded = true }: Props) => {
             <h3 className="text-sm font-semibold text-base-content">
               Chapter Candidates
             </h3>
-            {displayCandidates.length > 0 && (
+            {chapterCandidates.length > 0 && (
               <span className="px-2 py-0.5 rounded-full bg-base-300 text-[11px] font-semibold text-base-content/60">
-                {displayCandidates.length}
+                {chapterCandidates.length}
               </span>
             )}
           </div>
@@ -235,9 +170,9 @@ export const VerticalChapterDiscovery = ({ startExpanded = true }: Props) => {
 
       {/* Content */}
       <div className="p-5">
-        {displayCandidates.length > 0 ? (
+        {chapterCandidates.length > 0 ? (
           <div className="flex flex-col gap-2.5">
-            {displayCandidates.map((candidate) => (
+            {chapterCandidates.map((candidate) => (
               <SectionChapterCandidate
                 key={`chapter-${candidate.chapter.number}`}
                 number={candidate.chapter.number}

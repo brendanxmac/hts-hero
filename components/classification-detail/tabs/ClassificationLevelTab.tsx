@@ -263,9 +263,7 @@ export const ClassificationLevelTab = (props: Props) => {
           description={description}
           status={status}
         />
-        <VerticalSectionDiscovery
-          startExpanded={!sectionLevel || sectionLevel.candidates.length === 0}
-        />
+        <VerticalSectionDiscovery />
       </div>
     );
   }
@@ -292,11 +290,7 @@ export const ClassificationLevelTab = (props: Props) => {
           description={description}
           status={status}
         />
-        <VerticalChapterDiscovery
-          startExpanded={
-            !chapterLevel || chapterLevel.candidates.length === 0
-          }
-        />
+        <VerticalChapterDiscovery />
       </div>
     );
   }

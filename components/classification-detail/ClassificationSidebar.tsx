@@ -144,8 +144,8 @@ export const ClassificationSidebar = ({
             <p className="text-[10px] font-semibold uppercase tracking-widest text-base-content/40 mt-3 mb-1">
               HTS Code
             </p>
-            <p className="text-sm font-mono font-semibold text-primary">
-              {latestHtsCode || "Pending..."}
+            <p className={`text-lg md:text-xl font-mono font-semibold ${latestHtsCode ? "text-primary" : "text-base-content/70"}`}>
+              {latestHtsCode || "—"}
             </p>
           </div>
         </div>
@@ -168,11 +168,10 @@ export const ClassificationSidebar = ({
                   <li key={item.id}>
                     <button
                       onClick={() => onTabChange(item.id)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
-                        isActive
-                          ? "bg-primary/10 text-primary border-l-2 border-primary -ml-px"
-                          : "text-base-content/70 hover:bg-base-300/50 hover:text-base-content"
-                      }`}
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${isActive
+                        ? "bg-primary/10 text-primary border-l-2 border-primary -ml-px"
+                        : "text-base-content/70 hover:bg-base-300/50 hover:text-base-content"
+                        }`}
                     >
                       <Icon className="w-4 h-4 shrink-0" />
                       {item.label}
@@ -188,18 +187,16 @@ export const ClassificationSidebar = ({
                   onClick={() =>
                     setClassificationExpanded(!classificationExpanded)
                   }
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
-                    isClassificationTabActive && !classificationExpanded
-                      ? "bg-primary/10 text-primary"
-                      : "text-base-content/70 hover:bg-base-300/50 hover:text-base-content"
-                  }`}
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${isClassificationTabActive && !classificationExpanded
+                    ? "bg-primary/10 text-primary"
+                    : "text-base-content/70 hover:bg-base-300/50 hover:text-base-content"
+                    }`}
                 >
                   <ListBulletIcon className="w-4 h-4 shrink-0" />
                   Classification
                   <ChevronDownIcon
-                    className={`w-3.5 h-3.5 ml-auto transition-transform duration-200 ${
-                      classificationExpanded ? "rotate-0" : "-rotate-90"
-                    }`}
+                    className={`w-3.5 h-3.5 ml-auto transition-transform duration-200 ${classificationExpanded ? "rotate-0" : "-rotate-90"
+                      }`}
                   />
                 </button>
 
@@ -214,11 +211,10 @@ export const ClassificationSidebar = ({
                         <li key={item.id}>
                           <button
                             onClick={() => onTabChange(item.id)}
-                            className={`w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 ${
-                              isActive
-                                ? "bg-primary/10 text-primary"
-                                : "text-base-content/60 hover:bg-base-300/50 hover:text-base-content"
-                            }`}
+                            className={`w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 ${isActive
+                              ? "bg-primary/10 text-primary"
+                              : "text-base-content/60 hover:bg-base-300/50 hover:text-base-content"
+                              }`}
                           >
                             <StatusIndicator status={item.status} />
                             {hasSelection ? (
@@ -258,11 +254,10 @@ export const ClassificationSidebar = ({
                   <li key={item.id}>
                     <button
                       onClick={() => onTabChange(item.id)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
-                        isActive
-                          ? "bg-primary/10 text-primary border-l-2 border-primary -ml-px"
-                          : "text-base-content/70 hover:bg-base-300/50 hover:text-base-content"
-                      }`}
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${isActive
+                        ? "bg-primary/10 text-primary border-l-2 border-primary -ml-px"
+                        : "text-base-content/70 hover:bg-base-300/50 hover:text-base-content"
+                        }`}
                     >
                       <Icon className="w-4 h-4 shrink-0" />
                       {item.label}
