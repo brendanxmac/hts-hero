@@ -39,6 +39,95 @@ progress::-webkit-progress-value {
   animation: success-border-pulse 2s ease-in-out infinite;
 }
 
+/* ── Analysis loading animations ── */
+@keyframes shimmerSweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes analysisGlow {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes sparkleRotate {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  25% {
+    transform: rotate(90deg) scale(1.15);
+  }
+  50% {
+    transform: rotate(180deg) scale(1);
+  }
+  75% {
+    transform: rotate(270deg) scale(1.1);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+@keyframes progressSlide {
+  0% {
+    transform: translateX(-200%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translateY(0) scale(0);
+    opacity: 0;
+  }
+  15% {
+    transform: translateY(-4px) scale(1);
+    opacity: 0.9;
+  }
+  70% {
+    transform: translateY(-20px) scale(0.7);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(-28px) scale(0);
+    opacity: 0;
+  }
+}
+
+.analysis-shimmer-line {
+  --shimmer-delay: 0s;
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.25rem;
+}
+
+.analysis-shimmer-line::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 25%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 75%
+  );
+  animation: shimmerSweep 2s ease-in-out infinite;
+  animation-delay: var(--shimmer-delay);
+}
+
 @layer base {
   .btn-gradient {
     @apply !bg-gradient !bg-[length:300%_300%] hover:saturate-[1.2] shadow duration-100 !border-0 !border-transparent !bg-transparent animate-shimmer disabled:!bg-none disabled:!bg-gray-500/30  !text-white;

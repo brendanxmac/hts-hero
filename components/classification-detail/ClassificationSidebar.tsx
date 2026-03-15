@@ -208,6 +208,8 @@ export const ClassificationSidebar = ({
                   <ul className="ml-4 pl-3 border-l border-base-300 mt-0.5 flex flex-col gap-0.5">
                     {classificationSubItems.map((item) => {
                       const isActive = activeTab === item.id;
+                      const hasSelection = item.status === "completed" && (item.htsno || item.selectionDescription);
+
                       return (
                         <li key={item.id}>
                           <button
@@ -219,7 +221,24 @@ export const ClassificationSidebar = ({
                             }`}
                           >
                             <StatusIndicator status={item.status} />
-                            {item.label}
+                            {hasSelection ? (
+                              <span className="flex flex-col items-start min-w-0">
+                                {item.htsno && (
+                                  <span className="font-mono font-semibold text-[11px] truncate max-w-full">
+                                    {item.htsno}
+                                  </span>
+                                )}
+                                {item.selectionDescription && (
+                                  <span className="text-[10px] font-normal text-base-content/40 truncate max-w-full leading-tight">
+                                    {item.selectionDescription}
+                                  </span>
+                                )}
+                              </span>
+                            ) : item.status === "active" ? (
+                              "Current Level"
+                            ) : (
+                              item.label
+                            )}
                           </button>
                         </li>
                       );

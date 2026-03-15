@@ -235,10 +235,6 @@ export const VerticalChapterDiscovery = ({ startExpanded = true }: Props) => {
 
       {/* Content */}
       <div className="p-5">
-        <p className="text-sm text-base-content/60 mb-4">
-          Identified HTS chapters most relevant to your item description.
-        </p>
-
         {displayCandidates.length > 0 ? (
           <div className="flex flex-col gap-2.5">
             {displayCandidates.map((candidate) => (

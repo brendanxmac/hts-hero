@@ -11,7 +11,7 @@ import {
   HtsSectionAndChapterBase,
 } from "../../interfaces/hts";
 import toast from "react-hot-toast";
-import { QueueListIcon, PlusIcon } from "@heroicons/react/16/solid";
+import { QueueListIcon } from "@heroicons/react/16/solid";
 import { SectionChapterCandidate } from "./SectionChapterCandidate";
 import { useState } from "react";
 
@@ -228,10 +228,6 @@ export const VerticalSectionDiscovery = ({ startExpanded = true }: Props) => {
 
       {/* Content */}
       <div className="p-5">
-        <p className="text-sm text-base-content/60 mb-4">
-          Identified HTS sections most relevant to your item description.
-        </p>
-
         {displayCandidates.length > 0 ? (
           <div className="flex flex-col gap-2.5">
             {displayCandidates.map((candidate) => (

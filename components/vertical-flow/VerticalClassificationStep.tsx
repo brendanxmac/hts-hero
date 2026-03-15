@@ -251,7 +251,7 @@ export const VerticalClassificationStep = ({
     return () => {
       isMountedRef.current = false;
     };
-  }, [currentLevel?.candidates?.length]);
+  }, [currentLevel?.candidates?.length, classificationLevel]);
 
   const getHeadings = async () => {
     setLoading({ isLoading: true, text: "Looking for Headings" });
@@ -379,140 +379,124 @@ export const VerticalClassificationStep = ({
   }, [classificationLevel, chapterDiscoveryComplete, chapterCandidates]);
 
   return (
-    <div
-      ref={containerRef}
-      className="rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden"
-    >
-      {/* Header */}
-      <div className="px-5 py-3.5 border-b border-base-300 bg-base-200/30">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <QueueListIcon className="w-4 h-4 text-base-content/50" />
-            <h3 className="text-sm font-semibold text-base-content">
-              {classificationLevel === 0
-                ? "Select a Heading"
-                : `Select Sub-level ${classificationLevel + 1}`}
-            </h3>
-            {optionsForLevel > 0 && (
-              <span className="px-2 py-0.5 rounded-full bg-base-300 text-[11px] font-semibold text-base-content/60">
-                {optionsForLevel}
-              </span>
-            )}
-            {loading.isLoading && (
-              <div className="flex items-center gap-1.5 text-primary/70">
-                <span className="loading loading-spinner loading-xs" />
-                <span className="text-xs font-medium">{loading.text}</span>
-              </div>
-            )}
-          </div>
-          <div className="flex flex-wrap gap-1.5">
-            {classificationLevel === 0 && (
-              <button
-                className="btn btn-ghost btn-xs gap-1.5 text-base-content/70 hover:text-primary"
-                onClick={onOpenExplore}
-                disabled={loading.isLoading || isDisabled}
-              >
-                <MagnifyingGlassIcon className="w-3.5 h-3.5" />
-                <span>Find Headings</span>
-              </button>
-            )}
-            <button
-              className="btn btn-ghost btn-xs gap-1.5 text-base-content/70 hover:text-primary"
-              onClick={() => setShowCrossRulingsModal(true)}
-              disabled={loading.isLoading}
-            >
-              <MagnifyingGlassIcon className="w-3.5 h-3.5" />
-              <span>Search CROSS</span>
-            </button>
-          </div>
-        </div>
-      </div>
+    <div className="flex flex-col gap-2.5">
 
-      {/* Content */}
-      <div className="p-5">
-        {/* Selected element highlight */}
-        {selectedElement && (
-          <div className="mb-4 p-3 rounded-lg bg-success/10 border border-success/30">
+      <div
+        ref={containerRef}
+        className="rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden"
+      >
+        {/* Header */}
+        <div className="px-5 py-3.5 border-b border-base-300 bg-base-200/30">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <CheckCircleIcon className="w-4 h-4 text-success shrink-0" />
-              {selectedElement.htsno && (
-                <span className="shrink-0 px-2 py-0.5 rounded-md text-xs font-bold bg-success/20 text-success border border-success/30 font-mono">
-                  {selectedElement.htsno}
+              <QueueListIcon className="w-4 h-4 text-base-content/50" />
+              <h3 className="text-sm font-semibold text-base-content">
+                Candidates
+              </h3>
+              {optionsForLevel > 0 && (
+                <span className="px-2 py-0.5 rounded-full bg-base-300 text-[11px] font-semibold text-base-content/60">
+                  {optionsForLevel}
                 </span>
               )}
-              <p className="text-sm font-semibold text-base-content leading-snug">
-                {selectedElement.description}
-              </p>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {classificationLevel === 0 && (
+                <button
+                  className="btn btn-ghost btn-xs gap-1.5 text-base-content/60 hover:text-primary"
+                  onClick={onOpenExplore}
+                  disabled={loading.isLoading || isDisabled}
+                >
+                  <MagnifyingGlassIcon className="w-3.5 h-3.5" />
+                  <span>Find Candidates</span>
+                </button>
+              )}
+              <button
+                className="btn btn-ghost btn-xs gap-1.5 text-base-content/60 hover:text-primary"
+                onClick={() => setShowCrossRulingsModal(true)}
+                disabled={loading.isLoading}
+              >
+                <MagnifyingGlassIcon className="w-3.5 h-3.5" />
+                <span>Search CROSS</span>
+              </button>
             </div>
           </div>
-        )}
+        </div>
 
-        {/* Candidates list */}
-        {currentLevel && currentLevel.candidates?.length > 0 ? (
-          <div className="flex flex-col gap-2.5">
-            {currentLevel.candidates.map((element) => (
-              <VerticalCandidateElement
-                key={element.uuid}
-                element={element}
-                classificationLevel={classificationLevel}
-                disabled={isDisabled}
-                onOpenExplore={onOpenExplore}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="flex flex-col gap-2.5">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="rounded-lg border border-base-300 bg-base-200/30 p-4 animate-pulse"
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="h-4 w-20 bg-base-300 rounded" />
-                  <div className="flex gap-1 ml-auto">
-                    <div className="h-6 w-6 bg-base-300 rounded-md" />
-                    <div className="h-6 w-6 bg-base-300 rounded-md" />
+        {/* Content */}
+        <div className="p-5">
+
+          {/* Candidates list */}
+          {currentLevel && currentLevel.candidates?.length > 0 ? (
+            <div className="flex flex-col gap-2.5">
+              {currentLevel.candidates.map((element) => (
+                <VerticalCandidateElement
+                  key={element.uuid}
+                  element={element}
+                  classificationLevel={classificationLevel}
+                  disabled={isDisabled}
+                  onOpenExplore={onOpenExplore}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2.5">
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="rounded-lg border border-base-300 bg-base-200/30 p-4 animate-pulse"
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="h-4 w-20 bg-base-300 rounded" />
+                    <div className="flex gap-1 ml-auto">
+                      <div className="h-6 w-6 bg-base-300 rounded-md" />
+                      <div className="h-6 w-6 bg-base-300 rounded-md" />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <div className="h-3.5 w-full bg-base-300 rounded" />
+                    <div className="h-3.5 w-2/3 bg-base-300 rounded" />
                   </div>
                 </div>
-                <div className="space-y-1.5">
-                  <div className="h-3.5 w-full bg-base-300 rounded" />
-                  <div className="h-3.5 w-2/3 bg-base-300 rounded" />
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Analysis section */}
-        <div className="mt-5 pt-5 border-t border-base-300">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <SparklesIcon className="w-4 h-4 text-primary" />
-              <span className="text-xs font-semibold uppercase tracking-wider text-base-content/50">
-                Analysis
-              </span>
+              ))}
             </div>
-            {currentLevel?.analysisReason && (
-              <button
-                className="btn btn-ghost btn-xs gap-1 text-base-content/50"
-                onClick={handleCopyCostClick}
-              >
-                {isAnalysisCopied ? (
-                  <CheckCircleIcon className="w-3.5 h-3.5 text-success" />
-                ) : (
-                  <ClipboardDocumentIcon className="w-3.5 h-3.5" />
-                )}
-                <span className="text-[11px]">
-                  {isAnalysisCopied ? "Copied" : "Copy"}
-                </span>
-              </button>
-            )}
+          )}
+        </div>
+      </div>
+      {/* Analysis section */}
+      <div className="rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden">
+        {/* Header */}
+        <div className="px-5 py-3.5 border-b border-base-300 bg-base-200/30">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <SparklesIcon className="w-4 h-4 text-primary" />
+              <h3 className="text-sm font-semibold text-base-content">
+                Analysis
+              </h3>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {currentLevel?.analysisReason && (
+                <button
+                  className="btn btn-ghost btn-xs gap-1 text-base-content/50"
+                  onClick={handleCopyCostClick}
+                >
+                  {isAnalysisCopied ? (
+                    <CheckCircleIcon className="w-3.5 h-3.5 text-success" />
+                  ) : (
+                    <ClipboardDocumentIcon className="w-3.5 h-3.5" />
+                  )}
+                  <span className="text-[11px]">
+                    {isAnalysisCopied ? "Copied" : "Copy"}
+                  </span>
+                </button>
+              )}
+            </div>
           </div>
-
+        </div>
+        <div className="p-5">
           {currentLevel?.analysisReason ? (
             <div className="flex flex-col gap-3">
               {/* Recommendation callout */}
-              {/* {currentLevel.analysisElement && (
+              {currentLevel.analysisElement && (
                 <div className="flex items-start gap-3 p-3 rounded-lg bg-primary/5 border border-primary/15">
                   <SparklesIcon className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                   <div className="min-w-0">
@@ -531,7 +515,7 @@ export const VerticalClassificationStep = ({
                     </div>
                   </div>
                 </div>
-              )} */}
+              )}
 
               {/* Reasoning */}
               <div className="rounded-lg border border-base-300 overflow-hidden">
@@ -553,7 +537,7 @@ export const VerticalClassificationStep = ({
               </div>
 
               {/* Questions to consider */}
-              {currentLevel.analysisQuestions &&
+              {/* {currentLevel.analysisQuestions &&
                 currentLevel.analysisQuestions.length > 0 && (
                   <div className="rounded-lg bg-warning/5 border border-warning/15 p-3.5">
                     <p className="text-[11px] font-semibold uppercase tracking-wider text-warning/70 mb-2">
@@ -573,46 +557,134 @@ export const VerticalClassificationStep = ({
                       ))}
                     </ul>
                   </div>
-                )}
+                )} */}
 
               <p className="text-[11px] text-base-content/30">
-                Analysis is for information purposes only and may not be correect. Always exercise your own judgement.
+                Analysis is for information purposes only and may not be correct. Always exercise your own judgement.
               </p>
+            </div>
+          ) : loading.isLoading ? (
+            <div className="py-6 flex flex-col items-center gap-5">
+              {/* Animated icon with glow */}
+              <div className="relative">
+                <div
+                  className="absolute -inset-3 rounded-full bg-primary/20 blur-xl"
+                  style={{
+                    animation: "analysisGlow 2.5s ease-in-out infinite",
+                  }}
+                />
+                <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/20 flex items-center justify-center shadow-sm">
+                  <SparklesIcon
+                    className="w-5 h-5 text-primary"
+                    style={{
+                      animation: "sparkleRotate 4s linear infinite",
+                    }}
+                  />
+                </div>
+                {[
+                  { left: "-4px", top: "2px", delay: "0s", size: "3px" },
+                  { right: "-6px", top: "10px", delay: "0.9s", size: "2px" },
+                  { left: "50%", top: "-5px", delay: "1.8s", size: "2.5px" },
+                ].map((p, i) => (
+                  <div
+                    key={i}
+                    className="absolute rounded-full bg-primary/80"
+                    style={{
+                      left: p.left,
+                      right: p.right,
+                      top: p.top,
+                      width: p.size,
+                      height: p.size,
+                      animation: "particleFloat 2.8s ease-out infinite",
+                      animationDelay: p.delay,
+                    }}
+                  />
+                ))}
+              </div>
+
+              {/* Status text */}
+              <div className="text-center">
+                <p className="text-sm font-medium text-base-content/70">
+                  {loading.text === "Analyzing Candidates"
+                    ? "Analyzing candidates"
+                    : loading.text}
+                </p>
+                <p className="text-xs text-base-content/40 mt-1">
+                  Evaluating Candidates
+                </p>
+              </div>
+
+              {/* Indeterminate progress bar */}
+              <div className="w-48 h-0.5 rounded-full bg-base-300/50 overflow-hidden relative">
+                <div
+                  className="absolute top-0 left-0 h-full w-1/3 rounded-full bg-gradient-to-r from-transparent via-primary to-transparent"
+                  style={{
+                    animation: "progressSlide 1.8s ease-in-out infinite",
+                  }}
+                />
+              </div>
+
+              {/* Shimmer skeleton preview */}
+              {/* <div className="w-full space-y-3 mt-1">
+                <div className="rounded-lg border border-base-300/80 overflow-hidden">
+                  <div className="flex">
+                    <div
+                      className="w-1 shrink-0 bg-primary/30"
+                      style={{
+                        animation: "analysisGlow 2.5s ease-in-out infinite",
+                      }}
+                    />
+                    <div className="p-4 flex-1 space-y-2.5">
+                      {[100, 88, 95, 72, 82, 55].map((w, i) => (
+                        <div
+                          key={i}
+                          className="analysis-shimmer-line h-3 bg-base-300/50"
+                          style={
+                            {
+                              width: `${w}%`,
+                              "--shimmer-delay": `${i * 0.12}s`,
+                            } as React.CSSProperties
+                          }
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-base-300/40 p-3.5 space-y-2.5">
+                  {[82, 68].map((w, i) => (
+                    <div key={i} className="flex items-center gap-2.5">
+                      <span className="text-base-300 shrink-0 text-xs font-bold">
+                        ?
+                      </span>
+                      <div
+                        className="analysis-shimmer-line h-3 bg-base-300/40"
+                        style={
+                          {
+                            width: `${w}%`,
+                            "--shimmer-delay": `${(6 + i) * 0.12}s`,
+                          } as React.CSSProperties
+                        }
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div> */}
             </div>
           ) : (
             <div className="rounded-lg border border-base-300 overflow-hidden">
               <div className="flex">
                 <div className="w-1 bg-base-300 shrink-0" />
                 <div className="p-4 flex-1">
-                  {loading.isLoading ? (
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="loading loading-spinner loading-xs text-primary" />
-                        <span className="text-xs font-medium text-primary/70">
-                          {loading.text === "Analyzing Candidates"
-                            ? "Analyzing candidates..."
-                            : loading.text}
-                        </span>
-                      </div>
-                      <div className="space-y-2 animate-pulse">
-                        <div className="h-3 w-full bg-base-300/60 rounded" />
-                        <div className="h-3 w-[90%] bg-base-300/60 rounded" />
-                        <div className="h-3 w-[75%] bg-base-300/60 rounded" />
-                        <div className="h-3 w-[85%] bg-base-300/60 rounded" />
-                      </div>
-                    </div>
-                  ) : (
-                    <p className="text-xs text-base-content/40 italic">
-                      Analysis will appear here after candidates are evaluated.
-                    </p>
-                  )}
+                  <p className="text-xs text-base-content/40 italic">
+                    Analysis will appear here after candidates are evaluated.
+                  </p>
                 </div>
               </div>
             </div>
           )}
         </div>
       </div>
-
       {showCrossRulingsModal && (
         <Modal
           isOpen={showCrossRulingsModal}
