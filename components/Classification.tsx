@@ -68,15 +68,21 @@ const ClassificationFlowContent = ({
   const { chapterDiscoveryComplete } = useSectionChapterDiscovery();
 
   if (classification?.isComplete) {
-    if (!isAnonymous) {
+    if (isAnonymous) {
       return (
-        <VerticalClassificationResult
-          userProfile={userProfile}
-          classificationRecord={classificationRecord}
-          onOpenExplore={onOpenExplore}
+        <AnonymousClassificationResult
+          classification={classification}
+          classificationId={classificationRecord?.id}
         />
       );
     }
+    return (
+      <VerticalClassificationResult
+        userProfile={userProfile}
+        classificationRecord={classificationRecord}
+        onOpenExplore={onOpenExplore}
+      />
+    );
   }
 
   return (
@@ -254,22 +260,6 @@ export const Classification = ({
     return (
       <div className="min-h-[calc(100vh-4rem)] w-full flex items-center justify-center bg-base-100">
         <LoadingIndicator />
-      </div>
-    );
-  }
-
-  // ---------------------------------------------------------------------------
-  // Render: Anonymous Complete — full-page takeover, no header chrome
-  // ---------------------------------------------------------------------------
-  if (classification?.isComplete) {
-    return (
-      <div className="min-h-full w-full bg-base-100">
-        <div className="w-full max-w-5xl mx-auto px-6 py-8 flex flex-col">
-          <AnonymousClassificationResult
-            classification={classification}
-            classificationId={classificationRecord?.id}
-          />
-        </div>
       </div>
     );
   }

@@ -17,8 +17,6 @@ import {
   BookmarkIcon,
 } from "@heroicons/react/24/solid";
 import { ClassificationI } from "../../interfaces/hts";
-import { NUM_FREE_CLASSIFICATIONS } from "../../constants/classification";
-import { CheckIcon } from "@heroicons/react/20/solid";
 
 interface Props {
   classification: ClassificationI;
