@@ -199,9 +199,9 @@ export const DutyTariffTab = ({ classificationRecord, userProfile }: Props) => {
   return (
     <div>
       <div className="mb-6">
-        <h2 className="text-xl font-bold text-base-content">Duty / Tariffs</h2>
+        <h2 className="text-xl md:text-2xl font-bold text-base-content">Duty / Tariffs</h2>
         <p className="text-sm text-base-content/60 mt-1">
-          Calculate import duties and tariffs for your classified item.
+          Calculate import duties and tariffs for {classification.levels[classification.levels.length - 1]?.selection?.htsno || "your item"}
         </p>
       </div>
 
@@ -252,18 +252,18 @@ export const DutyTariffTab = ({ classificationRecord, userProfile }: Props) => {
                 {countryWithTariffs.baseTariffs
                   ?.flatMap((t) => t.tariffs)
                   ?.some((t) => t.type === "amount") && (
-                  <div className="flex flex-col gap-2">
-                    <SecondaryLabel value="Units / Weight" />
-                    <NumberInput
-                      value={uiUnits}
-                      setValue={handleUnitsChange}
-                      min={0}
-                      subtext={
-                        element &&
-                        tariffElement &&
-                        (element.units.length > 0 ||
-                          tariffElement.units.length > 0)
-                          ? `${[...element.units, ...tariffElement.units]
+                    <div className="flex flex-col gap-2">
+                      <SecondaryLabel value="Units / Weight" />
+                      <NumberInput
+                        value={uiUnits}
+                        setValue={handleUnitsChange}
+                        min={0}
+                        subtext={
+                          element &&
+                            tariffElement &&
+                            (element.units.length > 0 ||
+                              tariffElement.units.length > 0)
+                            ? `${[...element.units, ...tariffElement.units]
                               .reduce((acc: string[], unit: string) => {
                                 if (!acc.includes(unit)) {
                                   acc.push(unit);
@@ -271,11 +271,11 @@ export const DutyTariffTab = ({ classificationRecord, userProfile }: Props) => {
                                 return acc;
                               }, [])
                               .join(",")}`
-                          : ""
-                      }
-                    />
-                  </div>
-                )}
+                            : ""
+                        }
+                      />
+                    </div>
+                  )}
 
                 {uiContentPercentages.map((contentPercentage) => (
                   <div

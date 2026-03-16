@@ -6,6 +6,7 @@ import {
   useCallback,
   useRef,
   useLayoutEffect,
+  useMemo,
 } from "react";
 import { useClassification } from "../../../contexts/ClassificationContext";
 import { useClassifications } from "../../../contexts/ClassificationsContext";
@@ -46,6 +47,7 @@ import {
   CheckCircleIcon as CheckCircleSolid,
   ClipboardIcon,
 } from "@heroicons/react/16/solid";
+import { CountrySelection } from "../../CountrySelection";
 import apiClient from "../../../libs/api";
 import config from "@/config";
 import { useHts } from "../../../contexts/HtsContext";
@@ -75,6 +77,7 @@ interface Props {
   isDeleting: boolean;
   latestHtsCode: string;
   countryOfOrigin: Country | null;
+  onCountryChange: (country: { code: string } | null) => void;
   onStatusChange: (status: ClassificationStatus) => void;
   onDownloadReport: () => void;
   onDeleteClick: () => void;
@@ -287,6 +290,24 @@ const MPF_MIN = 33.58;
 const MPF_MAX = 651.5;
 const DEFAULT_CUSTOMS_VALUE = 10000;
 const DEFAULT_UNITS = 1000;
+const ADDITIONAL_FEES_TOTAL_RATE = 0.4714;
+
+interface DutyEstimate {
+  tariffSetName: string;
+  percentRate: number;
+  amountDuty: number;
+  adValoremDuty: number;
+  totalDuty: number;
+  applicableValue: number;
+  contentPercentage: number;
+}
+
+interface FeeEstimate {
+  name: string;
+  rate: number;
+  amount: number;
+  note?: string;
+}
 
 function formatCurrency(amount: number) {
   return new Intl.NumberFormat("en-US", {
@@ -297,22 +318,22 @@ function formatCurrency(amount: number) {
   }).format(amount);
 }
 
-function TariffSnapshotCard({
-  countryOfOrigin,
-  classification,
-  onNavigateToDuty,
-}: {
-  countryOfOrigin: Country | null;
-  classification: ClassificationI;
-  onNavigateToDuty: () => void;
-}) {
-  const { htsElements } = useHts();
+function useTariffCalculation(
+  countryOfOrigin: Country | null,
+  classification: ClassificationI,
+  htsElements: HtsElement[]
+) {
+  return useMemo(() => {
+    if (
+      !countryOfOrigin ||
+      !classification.isComplete ||
+      htsElements.length === 0
+    )
+      return null;
 
-  const element =
-    classification.levels[classification.levels.length - 1]?.selection;
-
-  const snapshot = (() => {
-    if (!countryOfOrigin || !element || htsElements.length === 0) return null;
+    const element =
+      classification.levels[classification.levels.length - 1]?.selection;
+    if (!element) return null;
 
     const findTariffElement = (el: HtsElement): HtsElement => {
       if (el.general || el.special || el.other) return el;
@@ -349,103 +370,257 @@ function TariffSnapshotCard({
       DEFAULT_CUSTOMS_VALUE,
       DEFAULT_UNITS
     );
+    const below15Rule = is15Cap && adValoremEquiv < 15;
 
-    const rates = cwt.tariffSets.map((ts) => {
-      const isArticle = ts.name === "Article" || ts.name === "";
-      const includeBase =
-        isArticle && !(is15Cap && adValoremEquiv < 15);
-      const rate = includeBase
-        ? getAdValoremRate(tariffColumn, ts.tariffs, baseFlat)
-        : getAdValoremRate(tariffColumn, ts.tariffs);
-      const hasAmount =
-        includeBase && baseFlat.some((t) => t.type === "amount");
+    const dutyEstimates: DutyEstimate[] = cwt.tariffSets.map((tariffSet) => {
+      const isArticleSet =
+        tariffSet.name === "Article" || tariffSet.name === "";
+      const shouldIncludeBase = isArticleSet && !below15Rule;
+      const adValoremRate = shouldIncludeBase
+        ? getAdValoremRate(tariffColumn, tariffSet.tariffs, baseFlat)
+        : getAdValoremRate(tariffColumn, tariffSet.tariffs);
+      const adValoremDuty = (DEFAULT_CUSTOMS_VALUE * adValoremRate) / 100;
+
+      let amountDuty = 0;
+      if (shouldIncludeBase) {
+        baseFlat
+          .filter((t) => t.type === "amount")
+          .forEach((tariff) => {
+            amountDuty += (tariff.value || 0) * DEFAULT_UNITS;
+          });
+      }
+
       return {
-        name: ts.name || "Article",
-        rate,
-        hasAmount,
-        amountStr: hasAmount ? getAmountRatesString(baseFlat) : null,
+        tariffSetName: tariffSet.name || "Article",
+        percentRate: adValoremRate,
+        amountDuty,
+        adValoremDuty,
+        totalDuty: amountDuty + adValoremDuty,
+        applicableValue: DEFAULT_CUSTOMS_VALUE,
+        contentPercentage: 100,
       };
     });
 
-    const totalDuty = cwt.tariffSets.reduce((sum, ts, idx) => {
-      const r = rates[idx];
-      return sum + (DEFAULT_CUSTOMS_VALUE * r.rate) / 100;
-    }, 0);
+    const hmfAmount = DEFAULT_CUSTOMS_VALUE * HARBOR_MAINTENANCE_FEE_RATE;
+    let mpfAmount = DEFAULT_CUSTOMS_VALUE * MERCHANDISE_PROCESSING_FEE_RATE;
+    let mpfNote: string | undefined;
+    if (mpfAmount < MPF_MIN) {
+      mpfNote = `Minimum applied ($${MPF_MIN.toFixed(2)})`;
+      mpfAmount = MPF_MIN;
+    } else if (mpfAmount > MPF_MAX) {
+      mpfNote = `Maximum applied ($${MPF_MAX.toFixed(2)})`;
+      mpfAmount = MPF_MAX;
+    }
 
-    const hmf = DEFAULT_CUSTOMS_VALUE * HARBOR_MAINTENANCE_FEE_RATE;
-    let mpf = DEFAULT_CUSTOMS_VALUE * MERCHANDISE_PROCESSING_FEE_RATE;
-    if (mpf < MPF_MIN) mpf = MPF_MIN;
-    if (mpf > MPF_MAX) mpf = MPF_MAX;
-    const totalFees = hmf + mpf;
+    const feeEstimates: FeeEstimate[] = [
+      {
+        name: "Harbor Maintenance Fee",
+        rate: HARBOR_MAINTENANCE_FEE_RATE * 100,
+        amount: hmfAmount,
+      },
+      {
+        name: "Merchandise Processing Fee",
+        rate: MERCHANDISE_PROCESSING_FEE_RATE * 100,
+        amount: mpfAmount,
+        note: mpfNote,
+      },
+    ];
 
-    return { cwt, rates, totalDuty, totalFees, totalAll: totalDuty + totalFees };
-  })();
+    const summaryTotals = cwt.tariffSets.map((tariffSet) => {
+      const isArticleSet =
+        tariffSet.name === "Article" || tariffSet.name === "";
+      const shouldIncludeBase = isArticleSet && !below15Rule;
+      const rate = shouldIncludeBase
+        ? getAdValoremRate(tariffColumn, tariffSet.tariffs, baseFlat)
+        : getAdValoremRate(tariffColumn, tariffSet.tariffs);
+      const hasAmountTariffs =
+        shouldIncludeBase && baseFlat.some((t) => t.type === "amount");
+      return {
+        name: tariffSet.name,
+        rate,
+        hasAmountTariffs,
+        amountRatesString: hasAmountTariffs
+          ? getAmountRatesString(baseFlat)
+          : null,
+      };
+    });
+
+    const totalTariffDuty = dutyEstimates.reduce(
+      (sum, e) => sum + e.totalDuty,
+      0
+    );
+    const totalFees = feeEstimates.reduce((sum, f) => sum + f.amount, 0);
+    const totalImportDuty = totalTariffDuty + totalFees;
+
+    return {
+      dutyEstimates,
+      feeEstimates,
+      summaryTotals,
+      totalImportDuty,
+      totalFees,
+    };
+  }, [countryOfOrigin, classification, htsElements]);
+}
+
+function TariffDashboardSection({
+  countryOfOrigin,
+  classification,
+  onCountryChange,
+  onNavigateToDuty,
+}: {
+  countryOfOrigin: Country | null;
+  classification: ClassificationI;
+  onCountryChange: (country: Country | null) => void;
+  onNavigateToDuty: () => void;
+}) {
+  const { htsElements } = useHts();
+  const tariffData = useTariffCalculation(
+    countryOfOrigin,
+    classification,
+    htsElements
+  );
+  const selectedCountries = countryOfOrigin ? [countryOfOrigin] : [];
 
   return (
     <DashboardCard>
       <DashboardCardHeader
         title="Tariff Summary"
         icon={<CurrencyDollarIcon className="w-4 h-4" />}
+        action={
+          <button
+            onClick={onNavigateToDuty}
+            className="btn btn-xs btn-ghost gap-1 text-primary"
+          >
+            See All Tariff Details
+            <ArrowRightIcon className="w-3 h-3" />
+          </button>
+        }
       />
-      <div className="p-5">
-        {countryOfOrigin && snapshot ? (
-          <div className="flex flex-col gap-4">
-            {/* Country */}
-            <div className="flex items-center gap-2.5">
-              <span className="text-2xl">{countryOfOrigin.flag}</span>
-              <div>
-                <p className="text-sm font-semibold text-base-content">
-                  {countryOfOrigin.name}
-                </p>
-                <p className="text-[10px] font-semibold uppercase tracking-widest text-base-content/40">
-                  Country of Origin
-                </p>
-              </div>
-            </div>
+      <div className="p-5 flex flex-col gap-5">
+        <CountrySelection
+          selectedCountries={selectedCountries}
+          setSelectedCountries={(countries) => {
+            onCountryChange(countries[0] || null);
+          }}
+          singleSelect
+        />
 
-            {/* Rate + Duty cards */}
-            <div className="grid grid-cols-2 gap-3">
-              {/* Tariff Rate */}
-              <div className="rounded-xl bg-primary/[0.06] border border-primary/15 p-3 text-center">
-                <p className="text-[10px] font-semibold uppercase tracking-widest text-base-content/40 mb-1">
-                  Tariff Rate
-                </p>
-                <p className="text-xl font-black text-primary tabular-nums">
-                  {snapshot.rates[0]?.hasAmount && snapshot.rates[0]?.amountStr
-                    ? `${snapshot.rates[0].amountStr} + `
-                    : ""}
-                  {snapshot.rates[0]?.rate ?? 0}%
-                </p>
-              </div>
-
-              {/* Total Duty & Fees */}
-              <div className="rounded-xl bg-secondary/[0.06] border border-secondary/15 p-3 text-center">
-                <p className="text-[10px] font-semibold uppercase tracking-widest text-base-content/40 mb-1">
-                  Duty & Fees
-                </p>
-                <p className="text-xl font-black text-secondary tabular-nums">
-                  {formatCurrency(snapshot.totalAll)}
-                </p>
-                <p className="text-[10px] text-base-content/40 mt-0.5">
-                  on {formatCurrency(DEFAULT_CUSTOMS_VALUE)}
-                </p>
-              </div>
-            </div>
-
-            <button
-              onClick={onNavigateToDuty}
-              className="btn btn-sm btn-outline btn-primary gap-1.5 w-full"
-            >
-              See All Tariff Details
-              <ArrowRightIcon className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        ) : (
+        {tariffData ? (
           <>
-            <p className="text-sm text-base-content/60 mb-3">
-              Select a country of origin on the Duty / Tariffs tab to see rates
-              here.
-            </p>
+            {/* Estimated Costs — matches CountryTariff.tsx layout */}
+            <div className="card bg-base-100 border border-base-300 shadow-lg rounded-xl">
+              <div className="flex flex-col gap-4 p-3 sm:p-4">
+                {/* Top row: Total Duty & Fees + Landed Cost */}
+                <div className="flex md:flex-row flex-col gap-3 sm:gap-4">
+                  <div className="flex-1 basis-0 flex flex-col items-center justify-center p-4 sm:p-6 bg-secondary/10 rounded-xl">
+                    <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 sm:mb-2">
+                      Total Duty & Fees
+                    </span>
+                    <h2 className="text-3xl sm:text-4xl font-black text-secondary break-all text-center">
+                      {formatCurrency(tariffData.totalImportDuty)}
+                    </h2>
+                    <div className="text-xs sm:text-sm text-base-content/50 mt-1 sm:mt-2 text-center">
+                      on {formatCurrency(DEFAULT_CUSTOMS_VALUE)} customs value
+                    </div>
+                  </div>
+                  <div className="flex-1 basis-0 flex flex-col items-center justify-center p-4 sm:p-6 bg-accent/10 rounded-xl">
+                    <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 sm:mb-2">
+                      Landed Cost
+                    </span>
+                    <h2 className="text-3xl sm:text-4xl font-black text-accent break-all text-center">
+                      {formatCurrency(
+                        tariffData.totalImportDuty + DEFAULT_CUSTOMS_VALUE
+                      )}
+                    </h2>
+                  </div>
+                </div>
+
+                {/* Breakdown grid: per-tariff-set duty + Additional Fees */}
+                <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
+                  {tariffData.dutyEstimates.map((estimate, i) => (
+                    <div
+                      key={i}
+                      className="flex flex-col items-center justify-center p-3 sm:p-4 bg-secondary/10 rounded-xl flex-1 min-w-0"
+                    >
+                      <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 text-center">
+                        {estimate.tariffSetName} Duty
+                      </span>
+                      <div className="text-2xl sm:text-3xl font-black text-secondary mb-2 break-all text-center">
+                        {formatCurrency(estimate.totalDuty)}
+                      </div>
+                      <div className="text-xs text-base-content/50 space-y-1 text-center w-full">
+                        {estimate.amountDuty > 0 && (
+                          <div className="flex flex-col xs:flex-row justify-center gap-0.5 xs:gap-2">
+                            <span>Amount-based:</span>
+                            <span className="font-medium">
+                              {formatCurrency(estimate.amountDuty)}
+                            </span>
+                          </div>
+                        )}
+                        <div className="flex flex-col xs:flex-row justify-center gap-0.5 xs:gap-2">
+                          <span>Ad valorem ({estimate.percentRate}%):</span>
+                          <span className="font-medium">
+                            {formatCurrency(estimate.adValoremDuty)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="flex flex-col items-center justify-center p-3 sm:p-4 bg-secondary/10 rounded-xl flex-1 min-w-0">
+                    <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 text-center">
+                      Additional Fees
+                    </span>
+                    <div className="text-2xl sm:text-3xl font-black text-secondary mb-2 break-all text-center">
+                      {formatCurrency(tariffData.totalFees)}
+                    </div>
+                    <div className="text-xs text-base-content/50 space-y-1 text-center w-full">
+                      {tariffData.feeEstimates.map((fee, i) => (
+                        <div
+                          key={i}
+                          className="flex flex-row justify-center gap-2"
+                        >
+                          <span className="truncate">{fee.name}:</span>
+                          <span className="font-medium">
+                            {formatCurrency(fee.amount)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tariff rate tiles */}
+                <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
+                  {tariffData.summaryTotals.map((total, i) => (
+                    <div
+                      key={i}
+                      className="flex flex-col items-center justify-center p-3 sm:p-4 bg-primary/10 rounded-xl flex-1 min-w-0"
+                    >
+                      <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 text-center">
+                        {total.name || "Article"} Tariff Rate
+                      </span>
+                      <div className="text-2xl sm:text-3xl font-black text-primary text-center">
+                        {total.hasAmountTariffs && total.amountRatesString && (
+                          <span className="text-2xl sm:text-3xl">
+                            {total.amountRatesString} +{" "}
+                          </span>
+                        )}
+                        {total.rate}%
+                      </div>
+                    </div>
+                  ))}
+                  <div className="flex flex-col items-center justify-center p-3 sm:p-4 bg-primary/10 rounded-xl flex-1 min-w-0">
+                    <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 text-center">
+                      Additional Fee Rate
+                    </span>
+                    <div className="text-2xl sm:text-3xl font-black text-primary">
+                      {ADDITIONAL_FEES_TOTAL_RATE}%
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <button
               onClick={onNavigateToDuty}
               className="btn btn-sm btn-outline btn-primary gap-1.5 w-full"
@@ -454,6 +629,25 @@ function TariffSnapshotCard({
               <ArrowRightIcon className="w-3.5 h-3.5" />
             </button>
           </>
+        ) : countryOfOrigin && !classification.isComplete ? (
+          <div className="text-center py-6">
+            <p className="text-sm text-base-content/60">
+              Complete the classification to see tariff estimates.
+            </p>
+          </div>
+        ) : (
+          <div className="text-center py-6">
+            <p className="text-sm text-base-content/60">
+              Select a country of origin above to see tariff estimates.
+            </p>
+            <button
+              onClick={onNavigateToDuty}
+              className="btn btn-sm btn-outline btn-primary gap-1.5 mt-3"
+            >
+              See All Tariff Details
+              <ArrowRightIcon className="w-3.5 h-3.5" />
+            </button>
+          </div>
         )}
       </div>
     </DashboardCard>
@@ -477,6 +671,7 @@ export const OverviewTab = ({
   isDeleting,
   latestHtsCode,
   countryOfOrigin,
+  onCountryChange,
   onStatusChange,
   onDownloadReport,
   onDeleteClick,
@@ -745,15 +940,6 @@ export const OverviewTab = ({
             </DashboardCard>
           )}
 
-          {/* Tariff Summary */}
-          {isComplete && (
-            <TariffSnapshotCard
-              countryOfOrigin={countryOfOrigin}
-              classification={liveClassification}
-              onNavigateToDuty={onNavigateToDuty}
-            />
-          )}
-
           {/* Importer */}
           {userProfile && (
             <DashboardCard>
@@ -831,6 +1017,14 @@ export const OverviewTab = ({
           )}
         </div>
       </div>
+
+      {/* ── Tariff Summary (full width) ── */}
+      <TariffDashboardSection
+        countryOfOrigin={countryOfOrigin}
+        classification={liveClassification}
+        onCountryChange={onCountryChange}
+        onNavigateToDuty={onNavigateToDuty}
+      />
 
       {/* ── Basis for Classification (full width) ── */}
       <DashboardCard>

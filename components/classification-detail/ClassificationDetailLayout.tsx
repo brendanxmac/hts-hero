@@ -262,6 +262,28 @@ export const ClassificationDetailLayout = ({
     }
   }, [classificationRecord, onNavigateBack]);
 
+  const handleCountryChange = useCallback(
+    async (country: { code: string } | null) => {
+      if (!classificationId) return;
+      setClassificationRecord((prev) =>
+        prev ? { ...prev, country_of_origin: country?.code || null } : prev
+      );
+      try {
+        await updateClassification(
+          classificationId,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          country?.code || undefined
+        );
+      } catch (error) {
+        console.error("Error updating country of origin:", error);
+      }
+    },
+    [classificationId]
+  );
+
   const handleOpenExplore = useCallback(() => setShowExploreModal(true), []);
 
   if (isFetching || (!isAnonymous && !userProfile)) {
@@ -289,6 +311,7 @@ export const ClassificationDetailLayout = ({
             isDeleting={isDeleting}
             latestHtsCode={latestHtsCode}
             countryOfOrigin={countryOfOrigin}
+            onCountryChange={handleCountryChange}
             onStatusChange={handleStatusChange}
             onDownloadReport={handleDownloadReport}
             onDeleteClick={() => setShowDeleteModal(true)}
