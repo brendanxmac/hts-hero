@@ -164,13 +164,6 @@ export const ClassificationLevelTab = (props: Props) => {
       return "loading";
     };
 
-    const getDescription = () => {
-      if (hasCandidates) {
-        return `Select the candidate that best matches your item.`;
-      }
-      return "Finding the best candidates for this level...";
-    };
-
     return (
       <div>
         <ClassificationProgress currentStepNumber={stepNumber} />

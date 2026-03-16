@@ -97,7 +97,7 @@ function DashboardCard({
 }) {
   return (
     <div
-      className={`rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden ${className}`}
+      className={`rounded-xl border border-base-300 bg-base-100 shadow-sm ${className}`}
     >
       {children}
     </div>
@@ -114,7 +114,7 @@ function DashboardCardHeader({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between px-5 py-3 border-b border-base-300 bg-base-200/30">
+    <div className="flex items-center justify-between px-5 py-3 border-b border-base-300 bg-base-200/30 rounded-t-xl">
       <div className="flex items-center gap-2">
         {icon && <span className="text-base-content/50">{icon}</span>}
         <h3 className="text-sm font-semibold text-base-content">{title}</h3>
@@ -529,6 +529,16 @@ export const OverviewTab = ({
 
   return (
     <div className="flex flex-col gap-6">
+      {/* ── Page Header ── */}
+      <div>
+        <h1 className="text-2xl font-bold text-base-content">
+          Classification Overview
+        </h1>
+        <p className="text-sm text-base-content/50 mt-1">
+          A summary of this classification. Use the tabs in the sidebar to explore each step in detail.
+        </p>
+      </div>
+
       {/* ── Hero Banner ── */}
       <div className="relative rounded-2xl border border-base-300 bg-gradient-to-br from-base-200/60 via-base-100 to-base-200/30 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
@@ -544,14 +554,14 @@ export const OverviewTab = ({
                 <div className="w-fit flex items-center gap-1.5 px-2.5 py-1 mb-2 rounded-full bg-success/10 border border-success/20">
                   <CheckCircleSolid className="w-3.5 h-3.5 text-success" />
                   <span className="text-[11px] font-semibold text-success">
-                    Complete
+                    Classification Complete
                   </span>
                 </div>
               ) : (
                 <div className="w-fit flex items-center gap-1.5 px-2.5 py-1 mb-2 rounded-full bg-warning/10 border border-warning/20">
                   <span className="w-2 h-2 rounded-full bg-warning animate-pulse" />
                   <span className="text-[11px] font-semibold text-warning">
-                    In Progress
+                    Classification Incomplete
                   </span>
                 </div>
               )}
@@ -562,27 +572,25 @@ export const OverviewTab = ({
                   onClick={
                     latestHtsCode
                       ? () => {
-                          navigator.clipboard.writeText(latestHtsCode);
-                          setCodeCopied(true);
-                          setTimeout(() => setCodeCopied(false), 1500);
-                        }
+                        navigator.clipboard.writeText(latestHtsCode);
+                        setCodeCopied(true);
+                        setTimeout(() => setCodeCopied(false), 1500);
+                      }
                       : undefined
                   }
-                  className={`text-3xl sm:text-4xl font-mono font-bold tracking-wide ${
-                    latestHtsCode
-                      ? "text-primary cursor-pointer"
-                      : "text-base-content/40"
-                  }`}
+                  className={`text-3xl sm:text-4xl font-mono font-bold tracking-wide ${latestHtsCode
+                    ? "text-primary cursor-pointer"
+                    : "text-base-content/40"
+                    }`}
                 >
                   {latestHtsCode || "Pending..."}
                 </span>
                 {latestHtsCode && (
                   <span
-                    className={`absolute -top-6 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-success text-white text-[10px] font-semibold whitespace-nowrap pointer-events-none transition-all duration-200 ${
-                      codeCopied
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 translate-y-1"
-                    }`}
+                    className={`absolute -top-6 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-success text-white text-[10px] font-semibold whitespace-nowrap pointer-events-none transition-all duration-200 ${codeCopied
+                      ? "opacity-100 translate-y-0"
+                      : "opacity-0 translate-y-1"
+                      }`}
                   >
                     Copied!
                   </span>
