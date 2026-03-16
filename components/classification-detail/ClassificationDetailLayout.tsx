@@ -349,14 +349,14 @@ export const ClassificationDetailLayout = ({
             icon="scale"
           />
         );
-      case "classification-defense":
-        return (
-          <PlaceholderTab
-            title="Classification Defense"
-            description="Build and document your legal defense for this classification decision."
-            icon="shield"
-          />
-        );
+      // case "classification-defense":
+      //   return (
+      //     <PlaceholderTab
+      //       title="Classification Defense"
+      //       description="Build and document your legal defense for this classification decision."
+      //       icon="shield"
+      //     />
+      //   );
       case "duty-tariffs":
         return (
           <DutyTariffTab

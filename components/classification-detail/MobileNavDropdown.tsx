@@ -139,20 +139,40 @@ export const MobileNavDropdown = ({
                   <div className="px-4 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-base-content/40 border-t border-base-200">
                     Classification
                   </div>
-                  {classificationSubItems.map((item) => (
-                    <button
-                      key={item.id}
-                      onClick={() => handleSelect(item.id)}
-                      className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2.5 transition-colors ${
-                        activeTab === item.id
-                          ? "bg-primary/10 text-primary font-medium"
-                          : "hover:bg-base-200 text-base-content/70"
-                      }`}
-                    >
-                      <StatusDot status={item.status} />
-                      {item.label}
-                    </button>
-                  ))}
+                  {classificationSubItems.map((item) => {
+                    const hasSelection = item.status === "completed" && (item.htsno || item.selectionDescription);
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => handleSelect(item.id)}
+                        className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2.5 transition-colors ${
+                          activeTab === item.id
+                            ? "bg-primary/10 text-primary font-medium"
+                            : "hover:bg-base-200 text-base-content/70"
+                        }`}
+                      >
+                        <StatusDot status={item.status} />
+                        {hasSelection ? (
+                          <span className="flex flex-col items-start min-w-0">
+                            {item.htsno && (
+                              <span className="font-mono font-semibold text-xs truncate max-w-full">
+                                {item.htsno}
+                              </span>
+                            )}
+                            {item.selectionDescription && (
+                              <span className="text-[10px] font-normal text-base-content/40 truncate max-w-full leading-tight">
+                                {item.selectionDescription}
+                              </span>
+                            )}
+                          </span>
+                        ) : item.status === "active" ? (
+                          "Current Level"
+                        ) : (
+                          item.label
+                        )}
+                      </button>
+                    );
+                  })}
                 </>
               )}
 

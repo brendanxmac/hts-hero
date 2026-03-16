@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useRef } from "react";
 import ClassifierFooter from "../../components/ClassifierFooter";
 import ClassifyPricing from "../../components/ClassifyPricing";
 import { FAQ } from "../../components/FAQ";
@@ -13,7 +13,10 @@ import {
 } from "../../components/ProductSection";
 
 import AboutHeader from "../../components/AboutHeader";
-import { ClassifyInput } from "../../components/ClassifyInput";
+import {
+  ClassifyInput,
+  ClassifyInputHandle,
+} from "../../components/ClassifyInput";
 import { CheckIcon } from "@heroicons/react/16/solid";
 
 const CLASSIFY_SUPPORTING_BULLETS = [
@@ -24,6 +27,33 @@ const CLASSIFY_SUPPORTING_BULLETS = [
   // "10 Classifications FREE",
   "Generates Defense Report",
   "Share with Clients & Teammates",
+];
+
+const HERO_PRODUCT_ROWS = [
+  [
+    "Ceramic brake pads for passenger vehicles",
+    "Men's cotton crew-neck t-shirt",
+    "Stainless steel insulated water bottle",
+    "Corrugated cardboard shipping boxes",
+    "Bamboo cutting board with juice groove",
+    "Hydraulic excavator bucket teeth",
+  ],
+  [
+    "Lithium-ion battery pack for solar storage",
+    "Glazed ceramic tile, 12 x 12 inches",
+    "Optical fiber patch cables, single-mode",
+    "Children's plastic building block set",
+    "Organic freeze-dried coffee",
+    "CNC machined aluminum enclosure",
+  ],
+  [
+    "Industrial rubber conveyor belt",
+    "Women's 100% cotton knit sweater",
+    "LED grow lights for indoor farming",
+    "Titanium dental implant abutment",
+    "Polyester webbing cargo straps",
+    "Bluetooth noise-cancelling headphones",
+  ],
 ];
 
 const productSections: ProductSectionData[] = [
@@ -210,7 +240,88 @@ const productSections: ProductSectionData[] = [
   },
 ];
 
+function AnimatedProductExamples({
+  onExampleClick,
+}: {
+  onExampleClick: (example: string) => void;
+}) {
+  return (
+    <div className="w-full max-w-6xl mx-auto">
+      {/* <p className="text-center text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] mb-3 sm:mb-4">
+        Try One! 👇
+      </p> */}
+
+      <div className="relative overflow-hidden px-3 pb-3 sm:px-4 sm:pb-4">
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-12 sm:w-20 bg-gradient-to-r from-base-100 via-base-100/90 to-transparent z-10" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-12 sm:w-20 bg-gradient-to-l from-base-100 via-base-100/90 to-transparent z-10" />
+
+        <div className="group space-y-2.5 sm:space-y-3">
+          {HERO_PRODUCT_ROWS.map((row, rowIndex) => {
+            const repeatedRow = [...row, ...row];
+            const isHiddenOnMobile = rowIndex > 0;
+
+            return (
+              <div
+                key={`hero-product-row-${rowIndex}`}
+                className={isHiddenOnMobile ? "hidden sm:block" : ""}
+              >
+                <div
+                  className="hero-marquee-track flex w-max gap-2.5 sm:gap-3"
+                  style={{
+                    animationDuration: `${300 + rowIndex * 4}s`,
+                    animationDirection: rowIndex % 2 === 0 ? "normal" : "reverse",
+                  }}
+                >
+                  {repeatedRow.map((example, exampleIndex) => (
+                    <button
+                      key={`${rowIndex}-${exampleIndex}-${example}`}
+                      type="button"
+                      onClick={() => onExampleClick(example)}
+                      className="border border-base-content/10 rounded-full bg-base-100/85 px-3 py-1.5 text-xs sm:text-sm whitespace-nowrap text-base-content/50 transition-all duration-200 hover:border-primary/25 hover:bg-base-100 hover:text-primary"
+                    >
+                      {example}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* <p className="mt-3 text-center text-xs text-base-content/45">
+        Tap any example to drop it into the box above.
+      </p> */}
+
+      <style jsx>{`
+        .hero-marquee-track {
+          animation-name: hero-marquee;
+          animation-timing-function: linear;
+          animation-iteration-count: infinite;
+          will-change: transform;
+        }
+
+        .group:hover .hero-marquee-track {
+          animation-play-state: paused;
+        }
+
+        @keyframes hero-marquee {
+          from {
+            transform: translateX(0);
+          }
+
+          to {
+            transform: translateX(-50%);
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
+
 export default function Home() {
+  const classifyInputRef = useRef<ClassifyInputHandle>(null);
+
   return (
     <div className="min-h-screen flex flex-col bg-base-100">
       <Suspense
@@ -229,7 +340,7 @@ export default function Home() {
         </div>
 
         <div className="relative z-10 flex flex-col items-center px-4 sm:px-6">
-          <h1 className="text-center text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-3 md:mb-4 max-w-xs sm:max-w-5xl">
+          <h1 className="text-center text-5xl md:text-6xl font-bold tracking-tight mb-3 md:mb-4 max-w-xs sm:max-w-5xl">
             Find Your HTS Code,{" "}
             <span className="text-secondary">
               Fast
@@ -242,12 +353,21 @@ export default function Home() {
 
           {/* CTA input — the focal point of the page */}
           <div className="w-full max-w-4xl mx-auto mb-4 md:mb-6">
-            <ClassifyInput buttonText="Find My HTS Code" />
+            <ClassifyInput
+              ref={classifyInputRef}
+              buttonText="Find My HTS Code"
+              placeholder="Enter a description of your product"
+            />
           </div>
 
+          <AnimatedProductExamples
+            onExampleClick={(example) =>
+              classifyInputRef.current?.setDescription(example)
+            }
+          />
 
           {/* Supporting bullets — quiet reinforcement */}
-          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-x-3 gap-y-1.5 sm:gap-x-5 justify-center mb-3 sm:mb-4">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-x-3 gap-y-1.5 sm:gap-x-5 justify-center my-3 sm:my-4">
             {CLASSIFY_SUPPORTING_BULLETS.map((bullet) => (
               <div
                 key={bullet}
@@ -263,12 +383,6 @@ export default function Home() {
             Trusted by Customs Brokers & Importers to Find <span className="font-extrabold">1,000+ Audit-Ready HTS Codes</span>
           </p>
 
-          <div className="pt-10 md:pt-20 max-w-5xl">
-            {/* <TestimonialsStrip showCompanies={false} /> */}
-            {/* <p className="text-xs sm:text-sm text-base-content/40 text-center pt-6">
-              Trusted by Customs Brokers & Importers to Create 1,000+ Audit-Ready Classifications
-              </p> */}
-          </div>
 
         </div>
       </div>

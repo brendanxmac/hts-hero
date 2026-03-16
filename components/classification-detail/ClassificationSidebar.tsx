@@ -26,9 +26,10 @@ import {
   DocumentTextIcon,
   PlayIcon,
 } from "@heroicons/react/24/outline";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { getTutorialFromPathname, Tutorial, TutorialI } from "../Tutorial";
+import { Product, userHasActivePurchaseForProduct } from "../../libs/supabase/purchase";
 
 interface Props {
   classification: ClassificationI;
@@ -67,9 +68,8 @@ function CopyableHtsCode({ code }: { code: string }) {
         {code}
       </span>
       <span
-        className={`absolute -top-6 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-success text-white text-[10px] font-semibold whitespace-nowrap pointer-events-none transition-all duration-200 ${
-          copied ? "opacity-100 translate-y-0" : "opacity-0 translate-y-1"
-        }`}
+        className={`absolute -top-6 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-success text-white text-[10px] font-semibold whitespace-nowrap pointer-events-none transition-all duration-200 ${copied ? "opacity-100 translate-y-0" : "opacity-0 translate-y-1"
+          }`}
       >
         Copied!
       </span>
@@ -122,6 +122,9 @@ export const ClassificationSidebar = ({
 }: Props) => {
   const [classificationExpanded, setClassificationExpanded] = useState(true);
   const [showTutorial, setShowTutorial] = useState(false);
+  const [isPayingUser, setIsPayingUser] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
   const pathname = usePathname();
   const tutorial = getTutorialFromPathname(pathname);
 
@@ -130,6 +133,22 @@ export const ClassificationSidebar = ({
   const isClassificationTabActive = classificationSubItems.some(
     (item) => item.id === activeTab
   );
+
+  useEffect(() => {
+    const fetchIsPayingUser = async () => {
+      if (userProfile) {
+        const isPayingUser = await userHasActivePurchaseForProduct(userProfile.id, Product.CLASSIFY);
+        setIsPayingUser(isPayingUser);
+        setIsLoading(false);
+      }
+    };
+
+    if (userProfile) {
+      fetchIsPayingUser();
+    } else {
+      setIsLoading(false);
+    }
+  }, []);
 
   return (
     <>
@@ -298,10 +317,43 @@ export const ClassificationSidebar = ({
                 );
               })}
           </ul>
+        </nav>
+
+        {/* Divider */}
+        <div className="h-px bg-base-300" />
+
+
+        {/* User Footer */}
+        <div className="w-full flex flex-col p-3 items-center">
+
+          <div className="w-full px-2 flex items-center gap-2">
+            {!isAnonymous && (
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <ButtonAccount />
+                {userProfile && (
+                  <span className="text-xs text-base-content/50 truncate">
+                    {userProfile.name || userProfile.email}
+                  </span>
+                )}
+              </div>
+            )}
+            <div className="flex items-center gap-1 shrink-0">
+              {tutorial && (
+                <button
+                  className="btn btn-ghost btn-sm btn-circle"
+                  onClick={() => setShowTutorial(true)}
+                  title="Tutorial"
+                >
+                  <PlayIcon className="w-4 h-4" />
+                </button>
+              )}
+              <ThemeToggle />
+            </div>
+          </div>
 
           {/* Upgrade / CTA */}
           {isAnonymous ? (
-            <div className="mt-4 px-1">
+            <div className="w-full mt-3 px-1">
               <Link
                 href={`/signin?redirect=/classifications/${classificationRecord?.id || ""}`}
                 className="btn btn-primary btn-sm w-full gap-2"
@@ -310,48 +362,17 @@ export const ClassificationSidebar = ({
                 Create Free Account
               </Link>
             </div>
-          ) : !userProfile ? null : (
-            <div className="mt-4 px-1">
+          ) : isPayingUser || isLoading ? null : (
+            <div className="w-full mt-3 px-1">
               <Link
                 href="/classifications"
-                className="btn btn-outline btn-primary btn-sm w-full gap-2"
+                className="w-full btn btn-sm btn-primary gap-2"
               >
                 <SparklesIcon className="w-4 h-4" />
                 Upgrade to Pro
               </Link>
             </div>
           )}
-        </nav>
-
-        {/* Divider */}
-        <div className="px-4">
-          <div className="h-px bg-base-300" />
-        </div>
-
-        {/* User Footer */}
-        <div className="p-3 flex items-center gap-2">
-          {!isAnonymous && (
-            <div className="flex items-center gap-2 flex-1 min-w-0">
-              <ButtonAccount />
-              {userProfile && (
-                <span className="text-xs text-base-content/50 truncate">
-                  {userProfile.name || userProfile.email}
-                </span>
-              )}
-            </div>
-          )}
-          <div className="flex items-center gap-1 shrink-0">
-            {tutorial && (
-              <button
-                className="btn btn-ghost btn-sm btn-circle"
-                onClick={() => setShowTutorial(true)}
-                title="Tutorial"
-              >
-                <PlayIcon className="w-4 h-4" />
-              </button>
-            )}
-            <ThemeToggle />
-          </div>
         </div>
       </div>
 

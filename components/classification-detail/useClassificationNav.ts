@@ -106,9 +106,7 @@ export function useClassificationNav(classification: ClassificationI | null) {
     if (chapterDone) {
       classification.levels.forEach((level, index) => {
         const previousDone =
-          index === 0
-            ? true
-            : !!classification.levels[index - 1]?.selection
+          index === 0 ? true : !!classification.levels[index - 1]?.selection
 
         const status: NavItemStatus = level.selection
           ? "completed"
@@ -118,7 +116,9 @@ export function useClassificationNav(classification: ClassificationI | null) {
 
         items.push({
           id: `classification-level-${index}`,
-          label: level.selection ? "Current Level" : getLevelLabel(index, classification.levels),
+          label: level.selection
+            ? "Current Level"
+            : getLevelLabel(index, classification.levels),
           status,
           isSubItem: true,
           htsno: level.selection?.htsno || undefined,
@@ -129,11 +129,11 @@ export function useClassificationNav(classification: ClassificationI | null) {
 
     items.push(
       { id: "cross-rulings", label: "CROSS Rulings", status: "pending" },
-      {
-        id: "classification-defense",
-        label: "Classification Defense",
-        status: "pending",
-      },
+      // {
+      //   id: "classification-defense",
+      //   label: "Classification Defense",
+      //   status: "pending",
+      // },
       { id: "duty-tariffs", label: "Duty / Tariffs", status: "pending" },
       { id: "attachments", label: "Attachments", status: "pending" },
       { id: "audit-report", label: "Audit-Ready Report", status: "pending" },

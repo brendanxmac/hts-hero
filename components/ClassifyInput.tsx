@@ -244,8 +244,8 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
           )}
 
           {/* Bottom bar pinned inside the card */}
-          <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-5 sm:right-4 flex items-center justify-between gap-3">
-            {examples.length > 0 ? (
+          <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-5 sm:right-4 flex items-center justify-end gap-3">
+            {/* {examples.length > 0 ? (
               <button
                 type="button"
                 onClick={handleTryExample}
@@ -256,7 +256,7 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
               </button>
             ) : (
               <div />
-            )}
+            )} */}
             <button
               disabled={isCreating}
               onClick={handleSubmit}
@@ -266,7 +266,7 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
                 <span className="loading loading-spinner loading-sm" />
               ) : (
                 <>
-                  <span className="hidden sm:inline text-sm sm:text-base">{buttonText}</span>
+                  <span className="text-sm sm:text-base">{buttonText}</span>
                   <ArrowRightIcon className="w-5 h-5" />
                 </>
               )}
