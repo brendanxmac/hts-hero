@@ -169,14 +169,14 @@ export const VerticalCandidateElement = ({
   return (
     <div
       className={`group relative rounded-lg border transition-all duration-150 ${isLevelSelection
-          ? "bg-success/5 border-success/40 ring-1 ring-success/20"
-          : disabled
-            ? "bg-base-100 border-base-300 cursor-not-allowed opacity-60"
-            : "bg-base-100 border-base-300 hover:border-primary/40 hover:bg-base-200/30 cursor-pointer"
+        ? "bg-success/5 border-success/40 ring-1 ring-success/20"
+        : disabled
+          ? "bg-base-100 border-base-300 cursor-not-allowed opacity-60"
+          : "bg-base-100 border-base-300 hover:border-primary/40 hover:bg-base-200/30 cursor-pointer"
         }`}
       onClick={handleSelect}
     >
-      <div className="p-4">
+      <div className="p-3">
         {/* Top row: code + actions */}
         <div className="flex items-center justify-between gap-3 mb-1.5">
           <div className="flex items-center gap-2 min-w-0">
@@ -185,10 +185,10 @@ export const VerticalCandidateElement = ({
             )}
             <span
               className={`text-xs font-mono font-semibold truncate ${isLevelSelection
-                  ? "text-success"
-                  : isRecommended
-                    ? "text-primary"
-                    : "text-base-content/50"
+                ? "text-success"
+                : isRecommended
+                  ? "text-primary"
+                  : "text-base-content/50"
                 }`}
             >
               {htsno || "—"}
@@ -237,8 +237,8 @@ export const VerticalCandidateElement = ({
         {/* Description */}
         <p
           className={`text-sm leading-relaxed ${isLevelSelection
-              ? "font-semibold text-base-content"
-              : "font-medium text-base-content/80"
+            ? "font-semibold text-base-content"
+            : "font-medium text-base-content/80"
             }`}
         >
           {description}

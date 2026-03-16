@@ -33,7 +33,6 @@ import { Country } from "../../../constants/countries";
 import {
   DocumentTextIcon,
   TrashIcon,
-  ArrowRightIcon,
   ShareIcon,
   LinkIcon,
   ClipboardDocumentCheckIcon,
@@ -43,6 +42,7 @@ import {
   UsersIcon,
   GlobeAltIcon,
 } from "@heroicons/react/24/outline";
+import { ArrowRightIcon } from "@heroicons/react/16/solid";
 import {
   CheckCircleIcon as CheckCircleSolid,
   ClipboardIcon,
@@ -52,17 +52,16 @@ import apiClient from "../../../libs/api";
 import config from "@/config";
 import { useHts } from "../../../contexts/HtsContext";
 import { HtsElement } from "../../../interfaces/hts";
+import { addTariffsToCountry } from "../../../tariffs/tariffs";
 import {
-  addTariffsToCountry,
-  CountryWithTariffs,
-  get15PercentCountryTotalBaseRate,
-  getAdValoremRate,
-  getAmountRatesString,
-} from "../../../tariffs/tariffs";
-import { TariffColumn } from "../../../enums/tariff";
-import { EuropeanUnionCountries } from "../../../constants/countries";
-import { Column2CountryCodes } from "../../../tariffs/tariff-columns";
-import { getHtsElementParents } from "../../../libs/hts";
+  findTariffElement,
+  getTariffContext,
+  calculateAllTariffs,
+  formatCurrency,
+  TariffCalculationResult,
+} from "../../../tariffs/tariff-calculations";
+import { get15PercentCountryTotalBaseRate } from "../../../tariffs/tariffs";
+import { EstimatedCostsDisplay } from "../../tariff-ui/EstimatedCostsDisplay";
 
 interface Props {
   classification: ClassificationI;
@@ -82,6 +81,7 @@ interface Props {
   onDownloadReport: () => void;
   onDeleteClick: () => void;
   onNavigateToDuty: () => void;
+  onNavigateToTab?: (tabId: string) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -284,45 +284,14 @@ function TeamShareSection({
   );
 }
 
-const HARBOR_MAINTENANCE_FEE_RATE = 0.00125;
-const MERCHANDISE_PROCESSING_FEE_RATE = 0.003464;
-const MPF_MIN = 33.58;
-const MPF_MAX = 651.5;
 const DEFAULT_CUSTOMS_VALUE = 10000;
 const DEFAULT_UNITS = 1000;
-const ADDITIONAL_FEES_TOTAL_RATE = 0.4714;
-
-interface DutyEstimate {
-  tariffSetName: string;
-  percentRate: number;
-  amountDuty: number;
-  adValoremDuty: number;
-  totalDuty: number;
-  applicableValue: number;
-  contentPercentage: number;
-}
-
-interface FeeEstimate {
-  name: string;
-  rate: number;
-  amount: number;
-  note?: string;
-}
-
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
-}
 
 function useTariffCalculation(
   countryOfOrigin: Country | null,
   classification: ClassificationI,
   htsElements: HtsElement[]
-) {
+): TariffCalculationResult | null {
   return useMemo(() => {
     if (
       !countryOfOrigin ||
@@ -335,35 +304,18 @@ function useTariffCalculation(
       classification.levels[classification.levels.length - 1]?.selection;
     if (!element) return null;
 
-    const findTariffElement = (el: HtsElement): HtsElement => {
-      if (el.general || el.special || el.other) return el;
-      const parents = getHtsElementParents(el, htsElements);
-      for (let i = parents.length - 1; i >= 0; i--) {
-        if (parents[i].general || parents[i].special || parents[i].other)
-          return parents[i];
-      }
-      return el;
-    };
-
-    const tariffElement = findTariffElement(element);
+    const tariffEl = findTariffElement(element, htsElements);
     const cwt = addTariffsToCountry(
       countryOfOrigin,
       element,
-      tariffElement,
+      tariffEl,
       [],
       undefined,
       DEFAULT_UNITS,
       DEFAULT_CUSTOMS_VALUE
     );
 
-    const isOtherColumn = Column2CountryCodes.includes(countryOfOrigin.code);
-    const tariffColumn = isOtherColumn
-      ? TariffColumn.OTHER
-      : TariffColumn.GENERAL;
-    const is15Cap =
-      EuropeanUnionCountries.includes(countryOfOrigin.code) ||
-      countryOfOrigin.code === "JP" ||
-      countryOfOrigin.code === "KR";
+    const { tariffColumn, is15Cap } = getTariffContext(countryOfOrigin.code);
     const baseFlat = cwt.baseTariffs.flatMap((t) => t.tariffs);
     const adValoremEquiv = get15PercentCountryTotalBaseRate(
       baseFlat,
@@ -372,105 +324,25 @@ function useTariffCalculation(
     );
     const below15Rule = is15Cap && adValoremEquiv < 15;
 
-    const dutyEstimates: DutyEstimate[] = cwt.tariffSets.map((tariffSet) => {
-      const isArticleSet =
-        tariffSet.name === "Article" || tariffSet.name === "";
-      const shouldIncludeBase = isArticleSet && !below15Rule;
-      const adValoremRate = shouldIncludeBase
-        ? getAdValoremRate(tariffColumn, tariffSet.tariffs, baseFlat)
-        : getAdValoremRate(tariffColumn, tariffSet.tariffs);
-      const adValoremDuty = (DEFAULT_CUSTOMS_VALUE * adValoremRate) / 100;
-
-      let amountDuty = 0;
-      if (shouldIncludeBase) {
-        baseFlat
-          .filter((t) => t.type === "amount")
-          .forEach((tariff) => {
-            amountDuty += (tariff.value || 0) * DEFAULT_UNITS;
-          });
-      }
-
-      return {
-        tariffSetName: tariffSet.name || "Article",
-        percentRate: adValoremRate,
-        amountDuty,
-        adValoremDuty,
-        totalDuty: amountDuty + adValoremDuty,
-        applicableValue: DEFAULT_CUSTOMS_VALUE,
-        contentPercentage: 100,
-      };
-    });
-
-    const hmfAmount = DEFAULT_CUSTOMS_VALUE * HARBOR_MAINTENANCE_FEE_RATE;
-    let mpfAmount = DEFAULT_CUSTOMS_VALUE * MERCHANDISE_PROCESSING_FEE_RATE;
-    let mpfNote: string | undefined;
-    if (mpfAmount < MPF_MIN) {
-      mpfNote = `Minimum applied ($${MPF_MIN.toFixed(2)})`;
-      mpfAmount = MPF_MIN;
-    } else if (mpfAmount > MPF_MAX) {
-      mpfNote = `Maximum applied ($${MPF_MAX.toFixed(2)})`;
-      mpfAmount = MPF_MAX;
-    }
-
-    const feeEstimates: FeeEstimate[] = [
-      {
-        name: "Harbor Maintenance Fee",
-        rate: HARBOR_MAINTENANCE_FEE_RATE * 100,
-        amount: hmfAmount,
-      },
-      {
-        name: "Merchandise Processing Fee",
-        rate: MERCHANDISE_PROCESSING_FEE_RATE * 100,
-        amount: mpfAmount,
-        note: mpfNote,
-      },
-    ];
-
-    const summaryTotals = cwt.tariffSets.map((tariffSet) => {
-      const isArticleSet =
-        tariffSet.name === "Article" || tariffSet.name === "";
-      const shouldIncludeBase = isArticleSet && !below15Rule;
-      const rate = shouldIncludeBase
-        ? getAdValoremRate(tariffColumn, tariffSet.tariffs, baseFlat)
-        : getAdValoremRate(tariffColumn, tariffSet.tariffs);
-      const hasAmountTariffs =
-        shouldIncludeBase && baseFlat.some((t) => t.type === "amount");
-      return {
-        name: tariffSet.name,
-        rate,
-        hasAmountTariffs,
-        amountRatesString: hasAmountTariffs
-          ? getAmountRatesString(baseFlat)
-          : null,
-      };
-    });
-
-    const totalTariffDuty = dutyEstimates.reduce(
-      (sum, e) => sum + e.totalDuty,
-      0
+    return calculateAllTariffs(
+      cwt.tariffSets,
+      cwt.baseTariffs,
+      DEFAULT_CUSTOMS_VALUE,
+      DEFAULT_UNITS,
+      [],
+      tariffColumn,
+      below15Rule
     );
-    const totalFees = feeEstimates.reduce((sum, f) => sum + f.amount, 0);
-    const totalImportDuty = totalTariffDuty + totalFees;
-
-    return {
-      dutyEstimates,
-      feeEstimates,
-      summaryTotals,
-      totalImportDuty,
-      totalFees,
-    };
   }, [countryOfOrigin, classification, htsElements]);
 }
 
 function TariffDashboardSection({
   countryOfOrigin,
   classification,
-  onCountryChange,
   onNavigateToDuty,
 }: {
   countryOfOrigin: Country | null;
   classification: ClassificationI;
-  onCountryChange: (country: Country | null) => void;
   onNavigateToDuty: () => void;
 }) {
   const { htsElements } = useHts();
@@ -479,7 +351,6 @@ function TariffDashboardSection({
     classification,
     htsElements
   );
-  const selectedCountries = countryOfOrigin ? [countryOfOrigin] : [];
 
   return (
     <DashboardCard>
@@ -489,146 +360,25 @@ function TariffDashboardSection({
         action={
           <button
             onClick={onNavigateToDuty}
-            className="btn btn-xs btn-ghost gap-1 text-primary"
+            className="btn btn-sm btn-primary"
           >
             See All Tariff Details
             <ArrowRightIcon className="w-3 h-3" />
           </button>
         }
       />
-      <div className="p-5 flex flex-col gap-5">
-        <CountrySelection
-          selectedCountries={selectedCountries}
-          setSelectedCountries={(countries) => {
-            onCountryChange(countries[0] || null);
-          }}
-          singleSelect
-        />
-
+      <div className="flex flex-col gap-5">
         {tariffData ? (
-          <>
-            {/* Estimated Costs — matches CountryTariff.tsx layout */}
-            <div className="card bg-base-100 border border-base-300 shadow-lg rounded-xl">
-              <div className="flex flex-col gap-4 p-3 sm:p-4">
-                {/* Top row: Total Duty & Fees + Landed Cost */}
-                <div className="flex md:flex-row flex-col gap-3 sm:gap-4">
-                  <div className="flex-1 basis-0 flex flex-col items-center justify-center p-4 sm:p-6 bg-secondary/10 rounded-xl">
-                    <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 sm:mb-2">
-                      Total Duty & Fees
-                    </span>
-                    <h2 className="text-3xl sm:text-4xl font-black text-secondary break-all text-center">
-                      {formatCurrency(tariffData.totalImportDuty)}
-                    </h2>
-                    <div className="text-xs sm:text-sm text-base-content/50 mt-1 sm:mt-2 text-center">
-                      on {formatCurrency(DEFAULT_CUSTOMS_VALUE)} customs value
-                    </div>
-                  </div>
-                  <div className="flex-1 basis-0 flex flex-col items-center justify-center p-4 sm:p-6 bg-accent/10 rounded-xl">
-                    <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 sm:mb-2">
-                      Landed Cost
-                    </span>
-                    <h2 className="text-3xl sm:text-4xl font-black text-accent break-all text-center">
-                      {formatCurrency(
-                        tariffData.totalImportDuty + DEFAULT_CUSTOMS_VALUE
-                      )}
-                    </h2>
-                  </div>
-                </div>
-
-                {/* Breakdown grid: per-tariff-set duty + Additional Fees */}
-                <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
-                  {tariffData.dutyEstimates.map((estimate, i) => (
-                    <div
-                      key={i}
-                      className="flex flex-col items-center justify-center p-3 sm:p-4 bg-secondary/10 rounded-xl flex-1 min-w-0"
-                    >
-                      <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 text-center">
-                        {estimate.tariffSetName} Duty
-                      </span>
-                      <div className="text-2xl sm:text-3xl font-black text-secondary mb-2 break-all text-center">
-                        {formatCurrency(estimate.totalDuty)}
-                      </div>
-                      <div className="text-xs text-base-content/50 space-y-1 text-center w-full">
-                        {estimate.amountDuty > 0 && (
-                          <div className="flex flex-col xs:flex-row justify-center gap-0.5 xs:gap-2">
-                            <span>Amount-based:</span>
-                            <span className="font-medium">
-                              {formatCurrency(estimate.amountDuty)}
-                            </span>
-                          </div>
-                        )}
-                        <div className="flex flex-col xs:flex-row justify-center gap-0.5 xs:gap-2">
-                          <span>Ad valorem ({estimate.percentRate}%):</span>
-                          <span className="font-medium">
-                            {formatCurrency(estimate.adValoremDuty)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  <div className="flex flex-col items-center justify-center p-3 sm:p-4 bg-secondary/10 rounded-xl flex-1 min-w-0">
-                    <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 text-center">
-                      Additional Fees
-                    </span>
-                    <div className="text-2xl sm:text-3xl font-black text-secondary mb-2 break-all text-center">
-                      {formatCurrency(tariffData.totalFees)}
-                    </div>
-                    <div className="text-xs text-base-content/50 space-y-1 text-center w-full">
-                      {tariffData.feeEstimates.map((fee, i) => (
-                        <div
-                          key={i}
-                          className="flex flex-row justify-center gap-2"
-                        >
-                          <span className="truncate">{fee.name}:</span>
-                          <span className="font-medium">
-                            {formatCurrency(fee.amount)}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Tariff rate tiles */}
-                <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
-                  {tariffData.summaryTotals.map((total, i) => (
-                    <div
-                      key={i}
-                      className="flex flex-col items-center justify-center p-3 sm:p-4 bg-primary/10 rounded-xl flex-1 min-w-0"
-                    >
-                      <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 text-center">
-                        {total.name || "Article"} Tariff Rate
-                      </span>
-                      <div className="text-2xl sm:text-3xl font-black text-primary text-center">
-                        {total.hasAmountTariffs && total.amountRatesString && (
-                          <span className="text-2xl sm:text-3xl">
-                            {total.amountRatesString} +{" "}
-                          </span>
-                        )}
-                        {total.rate}%
-                      </div>
-                    </div>
-                  ))}
-                  <div className="flex flex-col items-center justify-center p-3 sm:p-4 bg-primary/10 rounded-xl flex-1 min-w-0">
-                    <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 text-center">
-                      Additional Fee Rate
-                    </span>
-                    <div className="text-2xl sm:text-3xl font-black text-primary">
-                      {ADDITIONAL_FEES_TOTAL_RATE}%
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <button
-              onClick={onNavigateToDuty}
-              className="btn btn-sm btn-outline btn-primary gap-1.5 w-full"
-            >
-              See All Tariff Details
-              <ArrowRightIcon className="w-3.5 h-3.5" />
-            </button>
-          </>
+          <div className="p-4">
+            <EstimatedCostsDisplay
+              dutyEstimates={tariffData.dutyEstimates}
+              feeEstimates={tariffData.feeEstimates}
+              summaryTotals={tariffData.summaryTotals}
+              totalImportDuty={tariffData.totalImportDuty}
+              totalFees={tariffData.totalFees}
+              customsValue={DEFAULT_CUSTOMS_VALUE}
+            />
+          </div>
         ) : countryOfOrigin && !classification.isComplete ? (
           <div className="text-center py-6">
             <p className="text-sm text-base-content/60">
@@ -638,15 +388,8 @@ function TariffDashboardSection({
         ) : (
           <div className="text-center py-6">
             <p className="text-sm text-base-content/60">
-              Select a country of origin above to see tariff estimates.
+              Select a country of origin on the dashboard to see tariff estimates.
             </p>
-            <button
-              onClick={onNavigateToDuty}
-              className="btn btn-sm btn-outline btn-primary gap-1.5 mt-3"
-            >
-              See All Tariff Details
-              <ArrowRightIcon className="w-3.5 h-3.5" />
-            </button>
           </div>
         )}
       </div>
@@ -676,6 +419,7 @@ export const OverviewTab = ({
   onDownloadReport,
   onDeleteClick,
   onNavigateToDuty,
+  onNavigateToTab,
 }: Props) => {
   const {
     classification: ctxClassification,
@@ -728,6 +472,8 @@ export const OverviewTab = ({
   const [newImporter, setNewImporter] = useState("");
   const [isCreatingImporter, setIsCreatingImporter] = useState(false);
   const [showCreateImporterModal, setShowCreateImporterModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [codeCopied, setCodeCopied] = useState(false);
 
   useEffect(() => {
     if (!userProfile) return;
@@ -794,35 +540,54 @@ export const OverviewTab = ({
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
             {/* Left: Code + Description */}
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-3 mb-3">
-                {isComplete ? (
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success/10 border border-success/20">
-                    <CheckCircleSolid className="w-3.5 h-3.5 text-success" />
-                    <span className="text-[11px] font-semibold text-success">
-                      Complete
-                    </span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-warning/10 border border-warning/20">
-                    <span className="w-2 h-2 rounded-full bg-warning animate-pulse" />
-                    <span className="text-[11px] font-semibold text-warning">
-                      In Progress
-                    </span>
-                  </div>
-                )}
-                {classificationRecord && isComplete && (
-                  <StatusDropdown
-                    status={classificationRecord.status}
-                    isUpdating={updatingStatus}
-                    disabled={!canUpdateDetails}
-                    onChange={onStatusChange}
-                  />
-                )}
-              </div>
+              {isComplete ? (
+                <div className="w-fit flex items-center gap-1.5 px-2.5 py-1 mb-2 rounded-full bg-success/10 border border-success/20">
+                  <CheckCircleSolid className="w-3.5 h-3.5 text-success" />
+                  <span className="text-[11px] font-semibold text-success">
+                    Complete
+                  </span>
+                </div>
+              ) : (
+                <div className="w-fit flex items-center gap-1.5 px-2.5 py-1 mb-2 rounded-full bg-warning/10 border border-warning/20">
+                  <span className="w-2 h-2 rounded-full bg-warning animate-pulse" />
+                  <span className="text-[11px] font-semibold text-warning">
+                    In Progress
+                  </span>
+                </div>
+              )}
 
-              <p className="text-3xl sm:text-4xl font-mono font-bold text-primary tracking-wide mb-2">
-                {latestHtsCode || "Pending..."}
-              </p>
+
+              <span className="relative inline-block mb-2">
+                <span
+                  onClick={
+                    latestHtsCode
+                      ? () => {
+                          navigator.clipboard.writeText(latestHtsCode);
+                          setCodeCopied(true);
+                          setTimeout(() => setCodeCopied(false), 1500);
+                        }
+                      : undefined
+                  }
+                  className={`text-3xl sm:text-4xl font-mono font-bold tracking-wide ${
+                    latestHtsCode
+                      ? "text-primary cursor-pointer"
+                      : "text-base-content/40"
+                  }`}
+                >
+                  {latestHtsCode || "Pending..."}
+                </span>
+                {latestHtsCode && (
+                  <span
+                    className={`absolute -top-6 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-success text-white text-[10px] font-semibold whitespace-nowrap pointer-events-none transition-all duration-200 ${
+                      codeCopied
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 translate-y-1"
+                    }`}
+                  >
+                    Copied!
+                  </span>
+                )}
+              </span>
 
               <p className="text-sm text-base-content/60 leading-relaxed line-clamp-2 max-w-lg">
                 {liveClassification?.articleDescription ||
@@ -841,19 +606,42 @@ export const OverviewTab = ({
 
             {/* Right: Quick actions */}
             {isComplete && userProfile && (
-              <div className="flex flex-wrap sm:flex-col gap-2 shrink-0">
+              <div className="flex flex-wrap gap-2 shrink-0">
+                {classificationRecord && isComplete && (
+                  <StatusDropdown
+                    status={classificationRecord.status}
+                    isUpdating={updatingStatus}
+                    disabled={!canUpdateDetails}
+                    onChange={onStatusChange}
+                  />
+                )}
                 <DownloadReportButton
                   isDownloading={downloadingReport}
                   disabled={downloadingReport || isLoadingImporters}
                   onClick={onDownloadReport}
                 />
-                <button
-                  onClick={onNavigateToDuty}
-                  className="flex items-center gap-1.5 h-9 px-3 rounded-lg font-semibold text-xs transition-all duration-200 bg-base-200 hover:bg-base-300 text-base-content/70 border border-base-300"
-                >
-                  <CurrencyDollarIcon className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Duty Rates</span>
-                </button>
+                {classificationRecord && (
+                  <button
+                    className="btn btn-sm btn-outline gap-1.5 h-9"
+                    onClick={() => setShowShareModal(true)}
+                  >
+                    <ShareIcon className="w-4 h-4" />
+                    <span className="hidden sm:inline">Share</span>
+                  </button>
+                )}
+                {canDelete && classificationRecord && (
+                  <button
+                    className="btn btn-sm btn-outline btn-error gap-1.5 h-9"
+                    onClick={onDeleteClick}
+                    disabled={isDeleting}
+                  >
+                    {isDeleting ? (
+                      <span className="loading loading-spinner loading-xs" />
+                    ) : (
+                      <TrashIcon className="w-4 h-4" />
+                    )}
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -861,7 +649,7 @@ export const OverviewTab = ({
       </div>
 
       {/* ── Stats Strip ── */}
-      {isComplete && (
+      {/* {isComplete && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
             {
@@ -901,130 +689,102 @@ export const OverviewTab = ({
             </div>
           ))}
         </div>
-      )}
+      )} */}
 
-      {/* ── Two-Column Layout ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        {/* Left Column (3/5) */}
-        <div className="lg:col-span-3 flex flex-col gap-6">
-          {/* Classification Hierarchy */}
+
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Country of Origin */}
+        <div className={`${userProfile ? "col-span-1" : "col-span-2"}`}>
           <DashboardCard>
             <DashboardCardHeader
-              title="Classification Path"
-              icon={<CheckCircleIcon className="w-4 h-4" />}
+              title="Country of Origin"
+              icon={<GlobeAltIcon className="w-4 h-4" />}
             />
             <div className="p-5">
-              <ClassificationHierarchy classification={liveClassification} />
+              <CountrySelection
+                selectedCountries={countryOfOrigin ? [countryOfOrigin] : []}
+                setSelectedCountries={(countries) => {
+                  onCountryChange(countries[0] || null);
+                }}
+                singleSelect
+              />
             </div>
           </DashboardCard>
         </div>
 
-        {/* Right Column (2/5) */}
-        <div className="lg:col-span-2 flex flex-col gap-6">
-          {/* Share & Collaborate */}
-          {classificationRecord && userProfile && (
-            <DashboardCard>
-              <DashboardCardHeader
-                title="Share & Collaborate"
-                icon={<ShareIcon className="w-4 h-4" />}
-              />
-              <div className="p-5 flex flex-col gap-5">
-                <TeamShareSection
-                  classificationRecord={classificationRecord}
+        {/* Importer */}
+        {userProfile && (
+          <DashboardCard>
+            <DashboardCardHeader
+              title="Importer"
+              icon={<TagIcon className="w-4 h-4" />}
+            />
+            <div className="p-5">
+              <div className="flex gap-2">
+                <ImporterDropdown
+                  importers={importers}
+                  selectedImporterId={selectedImporterId}
+                  onSelectionChange={(value) => {
+                    setSelectedImporterId(value);
+                    updateClassification(
+                      classificationId,
+                      undefined,
+                      value || null,
+                      undefined
+                    ).then(() => refreshClassifications());
+                  }}
+                  onCreateSelected={() => setShowCreateImporterModal(true)}
+                  isLoading={isLoadingImporters}
+                  disabled={!canUpdateDetails}
+                  showCreateOption={canUpdateDetails}
                 />
-                <div className="h-px bg-base-300 -mx-5" />
-                <PublicShareSection
-                  classificationRecord={classificationRecord}
-                />
-              </div>
-            </DashboardCard>
-          )}
-
-          {/* Importer */}
-          {userProfile && (
-            <DashboardCard>
-              <DashboardCardHeader
-                title="Importer"
-                icon={<TagIcon className="w-4 h-4" />}
-              />
-              <div className="p-5">
-                <div className="flex gap-2">
-                  <ImporterDropdown
-                    importers={importers}
-                    selectedImporterId={selectedImporterId}
-                    onSelectionChange={(value) => {
-                      setSelectedImporterId(value);
+                {selectedImporterId && canUpdateDetails && (
+                  <button
+                    className="btn btn-sm btn-ghost"
+                    onClick={() => {
+                      setSelectedImporterId("");
                       updateClassification(
                         classificationId,
                         undefined,
-                        value || null,
+                        null,
                         undefined
                       ).then(() => refreshClassifications());
                     }}
-                    onCreateSelected={() => setShowCreateImporterModal(true)}
-                    isLoading={isLoadingImporters}
-                    disabled={!canUpdateDetails}
-                    showCreateOption={canUpdateDetails}
-                  />
-                  {selectedImporterId && canUpdateDetails && (
-                    <button
-                      className="btn btn-sm btn-ghost"
-                      onClick={() => {
-                        setSelectedImporterId("");
-                        updateClassification(
-                          classificationId,
-                          undefined,
-                          null,
-                          undefined
-                        ).then(() => refreshClassifications());
-                      }}
-                      disabled={isLoadingImporters}
-                    >
-                      Clear
-                    </button>
-                  )}
-                </div>
+                    disabled={isLoadingImporters}
+                  >
+                    Clear
+                  </button>
+                )}
               </div>
-            </DashboardCard>
-          )}
-
-          {/* Danger Zone */}
-          {canDelete && classificationRecord && (
-            <DashboardCard className="border-error/20">
-              <div className="px-5 py-4 flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-error">
-                    Delete Classification
-                  </p>
-                  <p className="text-xs text-base-content/40 mt-0.5">
-                    This action cannot be undone.
-                  </p>
-                </div>
-                <button
-                  className="btn btn-sm btn-outline btn-error gap-1.5"
-                  onClick={onDeleteClick}
-                  disabled={isDeleting}
-                >
-                  {isDeleting ? (
-                    <span className="loading loading-spinner loading-xs" />
-                  ) : (
-                    <TrashIcon className="w-4 h-4" />
-                  )}
-                  Delete
-                </button>
-              </div>
-            </DashboardCard>
-          )}
-        </div>
+            </div>
+          </DashboardCard>
+        )}
       </div>
+
 
       {/* ── Tariff Summary (full width) ── */}
       <TariffDashboardSection
         countryOfOrigin={countryOfOrigin}
         classification={liveClassification}
-        onCountryChange={onCountryChange}
         onNavigateToDuty={onNavigateToDuty}
       />
+
+      {/* ── Classification Path ── */}
+      <DashboardCard>
+        <DashboardCardHeader
+          title="Classification Path"
+          icon={<CheckCircleIcon className="w-4 h-4" />}
+        />
+        <div className="p-5">
+          <ClassificationHierarchy
+            classification={liveClassification}
+            onItemClick={onNavigateToTab}
+          />
+        </div>
+      </DashboardCard>
+
+
 
       {/* ── Basis for Classification (full width) ── */}
       <DashboardCard>
@@ -1035,11 +795,10 @@ export const OverviewTab = ({
         <div className="p-5">
           <textarea
             ref={basisTextareaRef}
-            className={`whitespace-pre-wrap min-h-36 w-full px-4 py-3 rounded-lg border transition-all duration-200 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 resize-none overflow-hidden text-sm leading-relaxed ${
-              canUpdateDetails
-                ? "bg-base-100 border-base-300 hover:border-primary/40"
-                : "bg-base-200/50 border-base-300 cursor-not-allowed opacity-60"
-            }`}
+            className={`whitespace-pre-wrap min-h-36 w-full px-4 py-3 rounded-lg border transition-all duration-200 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 resize-none overflow-hidden text-sm leading-relaxed ${canUpdateDetails
+              ? "bg-base-100 border-base-300 hover:border-primary/40"
+              : "bg-base-200/50 border-base-300 cursor-not-allowed opacity-60"
+              }`}
             placeholder="Add any notes about your classification here"
             value={liveClassification.notes ?? ""}
             disabled={!canUpdateDetails}
@@ -1056,6 +815,21 @@ export const OverviewTab = ({
           />
         </div>
       </DashboardCard>
+
+      {/* ── Share Modal ── */}
+      {classificationRecord && userProfile && (
+        <Modal isOpen={showShareModal} setIsOpen={setShowShareModal}>
+          <div className="p-6 flex flex-col gap-5 min-w-80 sm:min-w-[420px]">
+            <div className="flex items-center gap-2">
+              <ShareIcon className="w-5 h-5 text-base-content/50" />
+              <h3 className="text-lg font-semibold">Share & Collaborate</h3>
+            </div>
+            <TeamShareSection classificationRecord={classificationRecord} />
+            <div className="h-px bg-base-300" />
+            <PublicShareSection classificationRecord={classificationRecord} />
+          </div>
+        </Modal>
+      )}
 
       {/* ── Create Importer Modal ── */}
       <Modal

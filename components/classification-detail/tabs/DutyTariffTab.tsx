@@ -1,15 +1,13 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useClassification } from "../../../contexts/ClassificationContext";
-import { useClassifications } from "../../../contexts/ClassificationsContext";
 import { useHts } from "../../../contexts/HtsContext";
 import { UserProfile } from "../../../libs/supabase/user";
 import {
   ClassificationRecord,
   HtsElement,
 } from "../../../interfaces/hts";
-import { updateClassification } from "../../../libs/classification";
 import { CountrySelection } from "../../CountrySelection";
 import { Countries, Country } from "../../../constants/countries";
 import { CountryTariff } from "../../CountryTariff";
@@ -18,32 +16,27 @@ import {
   CountryWithTariffs,
   TariffsList,
   tariffIsApplicableToCode,
-  getAdValoremRate,
-  getAmountRatesString,
-  get15PercentCountryTotalBaseRate,
 } from "../../../tariffs/tariffs";
-import { TariffColumn } from "../../../enums/tariff";
-import { EuropeanUnionCountries } from "../../../constants/countries";
-import { Column2CountryCodes } from "../../../tariffs/tariff-columns";
+import { findTariffElement } from "../../../tariffs/tariff-calculations";
 import { ContentRequirementI } from "../../Element";
 import { ContentRequirements } from "../../../enums/tariff";
-import { getHtsElementParents } from "../../../libs/hts";
 import { NumberInput } from "../../NumberInput";
 import { PercentageInput } from "../../PercentageInput";
 import { SecondaryLabel } from "../../SecondaryLabel";
 import {
   GlobeAltIcon,
   CurrencyDollarIcon,
+  ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 
 interface Props {
   classificationRecord?: ClassificationRecord;
   userProfile: UserProfile | null;
+  countryOfOrigin?: Country | null;
 }
 
-export const DutyTariffTab = ({ classificationRecord, userProfile }: Props) => {
+export const DutyTariffTab = ({ classificationRecord, userProfile, countryOfOrigin }: Props) => {
   const { classification, classificationId } = useClassification();
-  const { refreshClassifications } = useClassifications();
   const { htsElements } = useHts();
   const { levels } = classification;
   const element = levels[levels.length - 1]?.selection;
@@ -75,22 +68,10 @@ export const DutyTariffTab = ({ classificationRecord, userProfile }: Props) => {
   const customsValueTimeoutRef = useState<NodeJS.Timeout | null>(null);
   const unitsTimeoutRef = useState<NodeJS.Timeout | null>(null);
 
-  const findTariffElement = useCallback(
-    (el: HtsElement): HtsElement => {
-      if (el.general || el.special || el.other) {
-        return el;
-      }
-      const parents = getHtsElementParents(el, htsElements);
-      for (let i = parents.length - 1; i >= 0; i--) {
-        const parent = parents[i];
-        if (parent.general || parent.special || parent.other) {
-          return parent;
-        }
-      }
-      return el;
-    },
-    [htsElements]
-  );
+  const showCountryOfOriginReset =
+    countryOfOrigin &&
+    selectedCountry &&
+    selectedCountry.code !== countryOfOrigin.code;
 
   useEffect(() => {
     if (tariffElement) {
@@ -117,8 +98,8 @@ export const DutyTariffTab = ({ classificationRecord, userProfile }: Props) => {
   }, [tariffElement]);
 
   useEffect(() => {
-    if (element && selectedCountry) {
-      const tariffEl = findTariffElement(element);
+    if (element && selectedCountry && htsElements.length > 0) {
+      const tariffEl = findTariffElement(element, htsElements);
       setTariffElement(tariffEl);
 
       const newCountryWithTariffs = addTariffsToCountry(
@@ -141,7 +122,7 @@ export const DutyTariffTab = ({ classificationRecord, userProfile }: Props) => {
     contentRequirements,
     units,
     customsValue,
-    findTariffElement,
+    htsElements,
   ]);
 
   const handleCustomsValueChange = (value: number) => {
@@ -198,11 +179,22 @@ export const DutyTariffTab = ({ classificationRecord, userProfile }: Props) => {
 
   return (
     <div>
-      <div className="mb-6">
-        <h2 className="text-xl md:text-2xl font-bold text-base-content">Duty / Tariffs</h2>
-        <p className="text-sm text-base-content/60 mt-1">
-          Calculate import duties and tariffs for {classification.levels[classification.levels.length - 1]?.selection?.htsno || "your item"}
-        </p>
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h2 className="text-xl md:text-2xl font-bold text-base-content">Duty / Tariffs</h2>
+          <p className="text-sm text-base-content/60 mt-1">
+            Calculate import duties and tariffs for {classification.levels[classification.levels.length - 1]?.selection?.htsno || "your item"}
+          </p>
+        </div>
+        {showCountryOfOriginReset && (
+          <button
+            onClick={() => setSelectedCountry(countryOfOrigin)}
+            className="btn btn-sm btn-outline btn-primary gap-1.5 shrink-0"
+          >
+            <ArrowPathIcon className="w-3.5 h-3.5" />
+            Show Country of Origin Tariffs
+          </button>
+        )}
       </div>
 
       <div className="rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden">
@@ -210,23 +202,12 @@ export const DutyTariffTab = ({ classificationRecord, userProfile }: Props) => {
           {/* Country & Value Inputs */}
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 flex flex-col gap-2">
-              <SecondaryLabel value="Country of Origin" />
+              <SecondaryLabel value="Select Country" />
               <CountrySelection
                 singleSelect
                 selectedCountries={selectedCountry ? [selectedCountry] : []}
                 setSelectedCountries={(countries) => {
-                  const country = countries[0] || null;
-                  setSelectedCountry(country);
-                  if (classificationId) {
-                    updateClassification(
-                      classificationId,
-                      undefined,
-                      undefined,
-                      undefined,
-                      undefined,
-                      country?.code || undefined
-                    ).then(() => refreshClassifications());
-                  }
+                  setSelectedCountry(countries[0] || null);
                 }}
               />
             </div>

@@ -2,61 +2,51 @@
 
 import Link from "next/link";
 import { ClassificationI } from "../../interfaces/hts";
-import { CheckCircleIcon } from "@heroicons/react/16/solid";
 
-interface Props {
-  classification: ClassificationI;
+export interface HierarchyItem {
+  label: string;
+  code?: string;
+  description: string;
+  isCurrent?: boolean;
+  href?: string;
+  navId?: string;
 }
 
-export const ClassificationHierarchy = ({ classification }: Props) => {
+interface Props {
+  classification?: ClassificationI;
+  items?: HierarchyItem[];
+  onItemClick?: (navId: string) => void;
+  continueLineAfterLast?: boolean;
+}
+
+function buildItemsFromClassification(
+  classification: ClassificationI
+): HierarchyItem[] {
   const { preliminaryLevels, levels } = classification;
-
-  const hasContent =
-    (preliminaryLevels && preliminaryLevels.length > 0) || levels.length > 0;
-
-  if (!hasContent) {
-    return (
-      <p className="text-sm text-base-content/50 italic">
-        Classification hierarchy will appear as classification progresses.
-      </p>
-    );
-  }
-
-  interface TimelineItem {
-    label: string;
-    code?: string;
-    description: string;
-    isCurrent: boolean;
-    isCompleted: boolean;
-    href?: string;
-  }
-
-  const timelineItems: TimelineItem[] = [];
+  const items: HierarchyItem[] = [];
 
   if (preliminaryLevels) {
     const sectionLevel = preliminaryLevels.find((l) => l.level === "section");
     if (sectionLevel && sectionLevel.candidates.length > 0) {
-      const topCandidate = sectionLevel.candidates[0];
-      timelineItems.push({
+      const top = sectionLevel.candidates[0];
+      items.push({
         label: "Section",
-        code: `Section ${topCandidate.identifier}`,
-        description: topCandidate.description,
-        isCurrent: false,
-        isCompleted: true,
-        href: `/section/${topCandidate.identifier}`,
+        code: `Section ${top.identifier}`,
+        description: top.description,
+        href: `/section/${top.identifier}`,
+        navId: "classification-section",
       });
     }
 
     const chapterLevel = preliminaryLevels.find((l) => l.level === "chapter");
     if (chapterLevel && chapterLevel.candidates.length > 0) {
-      const topCandidate = chapterLevel.candidates[0];
-      timelineItems.push({
+      const top = chapterLevel.candidates[0];
+      items.push({
         label: "Chapter",
-        code: `Chapter ${topCandidate.identifier}`,
-        description: topCandidate.description,
-        isCurrent: false,
-        isCompleted: true,
-        href: `/chapter/${topCandidate.identifier}`,
+        code: `Chapter ${top.identifier}`,
+        description: top.description,
+        href: `/chapter/${top.identifier}`,
+        navId: "classification-chapter",
       });
     }
   }
@@ -67,74 +57,81 @@ export const ClassificationHierarchy = ({ classification }: Props) => {
 
     const isLast = index === levels.length - 1 && classification.isComplete;
 
-    timelineItems.push({
-      label: selection.htsno
-        ? selection.htsno
-        : `Level ${index + 1}`,
+    items.push({
+      label: selection.htsno || `Level ${index + 1}`,
       code: selection.htsno || undefined,
       description: selection.description,
       isCurrent: isLast,
-      isCompleted: true,
-      href: selection.htsno
-        ? `/hts/${selection.htsno}`
-        : undefined,
+      href: selection.htsno ? `/hts/${selection.htsno}` : undefined,
+      navId: `classification-level-${index}`,
     });
   });
 
-  if (timelineItems.length === 0) {
+  return items;
+}
+
+export const ClassificationHierarchy = ({
+  classification,
+  items: externalItems,
+  onItemClick,
+  continueLineAfterLast = false,
+}: Props) => {
+  const items = externalItems ?? (classification ? buildItemsFromClassification(classification) : []);
+
+  if (items.length === 0) {
     return (
       <p className="text-sm text-base-content/50 italic">
-        Classification hierarchy will appear as levels are completed.
+        Classification hierarchy will appear as classification progresses.
       </p>
     );
   }
 
   return (
     <ol className="relative ml-3 border-l-2 border-base-content/10 flex flex-col gap-0">
-      {timelineItems.map((item, index) => {
-        const isLast = index === timelineItems.length - 1;
+      {items.map((item, index) => {
+        const isLast = index === items.length - 1 && !continueLineAfterLast;
+        const isClickable = onItemClick && item.navId;
+
+        const interactable = isClickable || (item.href && !onItemClick);
+
+        const content = (
+          <div className={`flex flex-col gap-0.5 -ml-1 px-3 py-2 rounded-lg border border-transparent transition-colors duration-150 ${interactable ? "hover:bg-primary/[0.06] hover:border-primary/10" : ""}`}>
+            <span className={`text-xs font-bold uppercase tracking-wider ${interactable ? "text-primary" : "text-base-content/60"}`}>
+              {item.label}
+            </span>
+            <span className="text-sm leading-snug text-base-content/60">
+              {item.description}
+            </span>
+          </div>
+        );
 
         return (
           <li
             key={index}
-            className={`relative pl-7 ${isLast ? "" : "pb-4"}`}
+            className={`relative pl-7 ${isLast ? "" : "pb-1"}`}
           >
+            {/* Circle indicator */}
             {item.isCurrent ? (
-              <span className="absolute -left-[11px] top-0.5 w-5 h-5 rounded-full bg-primary border-2 border-base-100 shadow-md shadow-primary/30" />
+              <span className="absolute -left-[11px] top-2.5 w-5 h-5 rounded-full bg-primary border-2 border-base-100 shadow-md shadow-primary/30" />
             ) : (
-              <span className="absolute -left-[9px] top-0.5 w-4 h-4 rounded-full bg-success/80 border-2 border-base-100">
-                <CheckCircleIcon className="w-full h-full text-base-100" />
-              </span>
+              <span className="absolute -left-[9px] top-3 w-4 h-4 rounded-full bg-base-content border-2 border-base-300" />
             )}
-            <div
-              className={`flex flex-col gap-0.5 ${
-                item.isCurrent
-                  ? "bg-primary/[0.06] -ml-1 px-3 py-2 rounded-lg border border-primary/15"
-                  : ""
-              }`}
-            >
-              {item.href ? (
-                <Link
-                  href={item.href}
-                  className="text-xs font-bold link link-primary uppercase tracking-wider"
-                >
-                  {item.label}
-                </Link>
-              ) : (
-                <span className="text-xs font-bold text-base-content/60 uppercase tracking-wider">
-                  {item.label}
-                </span>
-              )}
-              <span
-                className={`text-sm leading-snug ${
-                  item.isCurrent
-                    ? "text-base-content font-medium"
-                    : "text-base-content/60"
-                }`}
+
+            {isClickable ? (
+              <button
+                type="button"
+                onClick={() => onItemClick(item.navId!)}
+                className="w-full text-left cursor-pointer"
               >
-                {item.description}
-              </span>
-            </div>
+                {content}
+              </button>
+            ) : item.href && !onItemClick ? (
+              <Link href={item.href} className="block">
+                {content}
+              </Link>
+            ) : (
+              content
+            )}
           </li>
         );
       })}

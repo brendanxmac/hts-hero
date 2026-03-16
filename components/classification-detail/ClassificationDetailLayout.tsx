@@ -175,6 +175,12 @@ export const ClassificationDetailLayout = ({
     [classificationRecord?.country_of_origin]
   );
 
+  const mainContentRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    mainContentRef.current?.scrollTo({ top: 0 });
+  }, [activeTab]);
+
   useEffect(() => {
     const isNowComplete = classification?.isComplete ?? false;
     if (isNowComplete && !wasCompleteRef.current) {
@@ -316,6 +322,7 @@ export const ClassificationDetailLayout = ({
             onDownloadReport={handleDownloadReport}
             onDeleteClick={() => setShowDeleteModal(true)}
             onNavigateToDuty={() => setActiveTab("duty-tariffs")}
+            onNavigateToTab={setActiveTab}
           />
         );
       case "classification-section":
@@ -355,6 +362,7 @@ export const ClassificationDetailLayout = ({
           <DutyTariffTab
             classificationRecord={classificationRecord}
             userProfile={userProfile}
+            countryOfOrigin={countryOfOrigin}
           />
         );
       case "attachments":
@@ -427,8 +435,8 @@ export const ClassificationDetailLayout = ({
           </div>
 
           {/* Scrollable Content Panel */}
-          <main className="flex-1 overflow-y-auto bg-base-100">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+          <main ref={mainContentRef} className="flex-1 overflow-y-auto bg-base-100">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
               {renderTabContent()}
             </div>
           </main>

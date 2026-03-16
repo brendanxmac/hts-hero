@@ -7,6 +7,7 @@ import ThemeToggle from "./ThemeToggle";
 import { CTABanner } from "./CTABanner";
 import { getFirstChapterOfSection } from "@/libs/hts";
 import { ClassificationCTA } from "./ClassificationCTA";
+import { ClassificationHierarchy, HierarchyItem } from "./classification-detail/ClassificationHierarchy";
 
 const STORAGE_BASE = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/content`;
 
@@ -310,103 +311,74 @@ export function HtsCodePageContent({
               )}
             </div>
             <div className="p-6">
-              <ol className="relative ml-3 border-l-2 border-base-content/10 flex flex-col gap-0">
-                {sectionChapter && (
-                  <>
-                    <li className="relative pl-8 pb-5">
-                      <span className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-base-content border-2 border-base-300" />
-                      <div className="flex flex-col gap-0.5">
-                        <Link href={`/section/${sectionChapter.sectionNumber}`} className="text-xs font-bold uppercase tracking-wider link link-primary">
-                          Section {sectionChapter.sectionNumber}
-                        </Link>
-                        <span className="text-sm text-base-content/60 leading-snug">
-                          {sectionChapter.sectionDescription}
-                        </span>
-                      </div>
-                    </li>
-                    <li className="relative pl-8 pb-5">
-                      <span className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-base-content border-2 border-base-300" />
-                      <div className="flex flex-col gap-0.5">
-                        <Link href={`/chapter/${element.chapter}`} className="text-xs font-bold uppercase tracking-wider link link-primary">
-                          Chapter {element.chapter}
-                        </Link>
-                        <span className="text-sm text-base-content/60 leading-snug">
-                          {sectionChapter.chapterDescription}
-                        </span>
-                      </div>
-                    </li>
-                  </>
-                )}
+              <ClassificationHierarchy
+                continueLineAfterLast={children.length > 0}
+                items={[
+                  ...(sectionChapter
+                    ? [
+                        {
+                          label: `Section ${sectionChapter.sectionNumber}`,
+                          description: sectionChapter.sectionDescription,
+                          href: `/section/${sectionChapter.sectionNumber}`,
+                        },
+                        {
+                          label: `Chapter ${element.chapter}`,
+                          description: sectionChapter.chapterDescription,
+                          href: `/chapter/${element.chapter}`,
+                        },
+                      ]
+                    : []),
+                  ...parents.map((parent) => ({
+                    label: parent.htsno || "—",
+                    code: parent.htsno || undefined,
+                    description: parent.description,
+                    href: parent.htsno ? `/hts/${parent.htsno}` : undefined,
+                  })),
+                  {
+                    label: element.htsno || "Current",
+                    code: element.htsno || undefined,
+                    description: element.description,
+                    isCurrent: true,
+                  },
+                ] satisfies HierarchyItem[]}
+              />
 
-                {parents.map((parent) => (
-                  <li key={parent.uuid} className="relative pl-8 pb-5">
-                    <span className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-base-content/80 border-2 border-base-300" />
-                    <div className="flex flex-col gap-0.5">
-                      {parent.htsno ? (
-                        <Link href={`/hts/${parent.htsno}`} className="text-sm font-bold link link-primary">
-                          {parent.htsno}
+              {children.length > 0 && (
+                <ol className="relative ml-3 border-l-2 border-base-content/10 flex flex-col gap-0 mt-0">
+                  <li className="relative pl-8 pb-3">
+                    <h4 className="text-xs font-bold text-base-content/40 uppercase tracking-wider pt-0.5">
+                      HTS Codes Under {element.htsno || "This Classification"}
+                    </h4>
+                  </li>
+                  {children.map((child) => (
+                    <li key={child.uuid} className="relative pl-8 pb-4 last:pb-0">
+                      <span className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-base-content/10 border-2 border-base-100" />
+                      {child.htsno ? (
+                        <Link href={`/hts/${child.htsno}`} className="group flex flex-col gap-0.5">
+                          <span className="text-sm font-bold text-primary group-hover:underline flex items-center gap-1.5">
+                            {child.htsno}
+                            <svg className="w-3 h-3 text-base-content/15 group-hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                          </span>
+                          <span className="text-sm text-base-content/60 group-hover:text-base-content/80 leading-snug transition-colors">
+                            {child.description}
+                          </span>
                         </Link>
                       ) : (
-                        <span className="text-xs font-semibold text-base-content/40 uppercase tracking-wider">
-                          —
-                        </span>
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-xs font-semibold text-base-content/40 uppercase tracking-wider">
+                            —
+                          </span>
+                          <span className="text-sm text-base-content/60 leading-snug">
+                            {child.description}
+                          </span>
+                        </div>
                       )}
-                      <span className="text-sm text-base-content/60 leading-snug">
-                        {parent.description}
-                      </span>
-                    </div>
-                  </li>
-                ))}
-
-                <li className={`relative pl-8${children.length > 0 ? " pb-6" : ""}`}>
-                  <span className="absolute -left-[11px] top-0.5 w-5 h-5 rounded-full bg-primary border-2 border-base-100 shadow-md shadow-primary/30" />
-                  <div className="flex flex-col gap-0.5 bg-primary/[0.06] -ml-2 px-4 py-3 rounded-xl border border-primary/15">
-                    {element.htsno && (
-                      <span className="text-sm font-bold text-primary">{element.htsno}</span>
-                    )}
-                    <span className="text-sm text-base-content font-medium leading-snug">
-                      {element.description}
-                    </span>
-                  </div>
-                </li>
-
-                {children.length > 0 && (
-                  <>
-                    <li className="relative pl-8 pb-3">
-                      <h4 className="text-xs font-bold text-base-content/40 uppercase tracking-wider pt-0.5">
-                        HTS Codes Under {element.htsno || "This Classification"}
-                      </h4>
                     </li>
-                    {children.map((child) => (
-                      <li key={child.uuid} className="relative pl-8 pb-4 last:pb-0">
-                        <span className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-base-content/10 border-2 border-base-100" />
-                        {child.htsno ? (
-                          <Link href={`/hts/${child.htsno}`} className="group flex flex-col gap-0.5">
-                            <span className="text-sm font-bold text-primary group-hover:underline flex items-center gap-1.5">
-                              {child.htsno}
-                              <svg className="w-3 h-3 text-base-content/15 group-hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                              </svg>
-                            </span>
-                            <span className="text-sm text-base-content/60 group-hover:text-base-content/80 leading-snug transition-colors">
-                              {child.description}
-                            </span>
-                          </Link>
-                        ) : (
-                          <div className="flex flex-col gap-0.5">
-                            <span className="text-xs font-semibold text-base-content/40 uppercase tracking-wider">
-                              —
-                            </span>
-                            <span className="text-sm text-base-content/60 leading-snug">
-                              {child.description}
-                            </span>
-                          </div>
-                        )}
-                      </li>
-                    ))}
-                  </>
-                )}
-              </ol>
+                  ))}
+                </ol>
+              )}
             </div>
 
             <div className="border-t border-base-content/10 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">

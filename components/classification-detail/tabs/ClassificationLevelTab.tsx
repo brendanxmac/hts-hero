@@ -1,167 +1,13 @@
 "use client";
 
-import { useMemo } from "react";
-import { ClassificationRecord, HtsElement } from "../../../interfaces/hts";
+import { ClassificationRecord } from "../../../interfaces/hts";
 import { VerticalSectionDiscovery } from "../../vertical-flow/VerticalSectionDiscovery";
 import { VerticalChapterDiscovery } from "../../vertical-flow/VerticalChapterDiscovery";
 import { VerticalClassificationStep } from "../../vertical-flow/VerticalClassificationStep";
 import { useClassification } from "../../../contexts/ClassificationContext";
 import { useSectionChapterDiscovery } from "../../../contexts/SectionChapterDiscoveryContext";
-import { useHts } from "../../../contexts/HtsContext";
-import {
-  getDirectChildrenElements,
-  getElementsInChapter,
-} from "../../../libs/hts";
 import { CheckCircleIcon } from "@heroicons/react/16/solid";
-import { getSubGroupName } from "../useClassificationNav";
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-const DEFAULT_ESTIMATED_LEVELS = 4;
-const MAX_DEPTH_WALK = 8;
-
-/**
- * Walk down the HTS tree from `element` following the first child at each
- * indent level to estimate how many more selection levels remain.
- */
-function estimateRemainingLevels(
-  element: HtsElement,
-  htsElements: HtsElement[]
-): number {
-  const chapterElements = getElementsInChapter(htsElements, element.chapter);
-  let current = element;
-  let depth = 0;
-
-  for (let i = 0; i < MAX_DEPTH_WALK; i++) {
-    try {
-      const children = getDirectChildrenElements(current, chapterElements);
-      if (children.length === 0) break;
-      depth++;
-      current = children[0];
-    } catch {
-      break;
-    }
-  }
-
-  return depth;
-}
-
-// ---------------------------------------------------------------------------
-// ClassificationProgress
-// ---------------------------------------------------------------------------
-
-function ClassificationProgress({
-  currentStepNumber,
-}: {
-  currentStepNumber: number;
-}) {
-  const { classification } = useClassification();
-  const { htsElements } = useHts();
-
-  const { completedSteps, estimatedTotal, percentage } = useMemo(() => {
-    if (!classification) {
-      return { completedSteps: 0, estimatedTotal: 1, percentage: 0 };
-    }
-
-    const hasPrelim = !!classification.preliminaryLevels?.length;
-
-    const sectionDone =
-      hasPrelim &&
-      (classification.preliminaryLevels?.find((l) => l.level === "section")
-        ?.candidates.length ?? 0) > 0;
-
-    const chapterDone =
-      hasPrelim &&
-      (classification.preliminaryLevels?.find((l) => l.level === "chapter")
-        ?.candidates.length ?? 0) > 0;
-
-    const prelimCompleted = (sectionDone ? 1 : 0) + (chapterDone ? 1 : 0);
-    const prelimTotal = hasPrelim ? 2 : 0;
-
-    const levelsWithSelection = classification.levels.filter(
-      (l) => !!l.selection
-    ).length;
-
-    const completed = prelimCompleted + levelsWithSelection;
-
-    if (classification.isComplete) {
-      const total = prelimTotal + classification.levels.length;
-      return {
-        completedSteps: total,
-        estimatedTotal: total,
-        percentage: 100,
-      };
-    }
-
-    // Estimate remaining levels from the last selection
-    let estimatedRemaining = DEFAULT_ESTIMATED_LEVELS - levelsWithSelection;
-
-    if (levelsWithSelection > 0 && htsElements.length > 0) {
-      const lastSelectedLevel =
-        classification.levels[levelsWithSelection - 1];
-      if (lastSelectedLevel?.selection) {
-        estimatedRemaining = estimateRemainingLevels(
-          lastSelectedLevel.selection,
-          htsElements
-        );
-      }
-    }
-
-    // +1 for the current level that exists but has no selection yet
-    const currentLevelPending =
-      classification.levels.length > levelsWithSelection ? 1 : 0;
-    const futureRemaining = Math.max(
-      0,
-      estimatedRemaining - currentLevelPending
-    );
-
-    const total =
-      prelimTotal +
-      classification.levels.length +
-      futureRemaining;
-
-    const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
-
-    return {
-      completedSteps: completed,
-      estimatedTotal: total,
-      percentage: pct,
-    };
-  }, [classification, htsElements]);
-
-  const isComplete = classification?.isComplete ?? false;
-
-  return (
-    <div className="mb-6">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-medium text-base-content/50">
-          {isComplete ? (
-            <span className="text-base-content font-semibold">
-              Classification Complete
-            </span>
-          ) : (
-            <>
-              {/* Step {currentStepNumber} of ~{estimatedTotal} */}
-              Classification Progress
-            </>
-          )}
-        </span>
-        <span className={`text-[11px] font-semibold text-base-content/40 tabular-nums ${isComplete ? "text-success text-xs" : "text-base-content/40"}`}>
-          {isComplete ? classification.levels[classification.levels.length - 1].selection.htsno : `${percentage}%`}
-        </span>
-      </div>
-      <div className="h-1.5 w-full rounded-full bg-base-300 overflow-hidden">
-        <div
-          className={`h-full rounded-full transition-all duration-500 ease-out ${isComplete ? "bg-success" : "bg-primary"
-            }`}
-          style={{ width: `${percentage}%` }}
-        />
-      </div>
-    </div>
-  );
-}
+import { ClassificationProgress } from "../../classification-ui/ClassificationProgress";
 
 // ---------------------------------------------------------------------------
 // StepHeader
@@ -180,23 +26,17 @@ const StepHeader = ({
 }) => (
   <div className="mb-5">
     <div className="flex items-center gap-2 mb-1.5">
-      <span className="text-[11px] font-semibold uppercase tracking-wider text-base-content/40">
+      <span className="text-xs md:text-sm font-semibold uppercase tracking-wider text-base-content/40">
         Step {stepNumber}
       </span>
       {status === "complete" && (
-        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-success/10 text-[10px] font-semibold text-success">
-          <CheckCircleIcon className="w-3 h-3" />
+        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-success/10 text-xs font-semibold text-success">
+          <CheckCircleIcon className="w-4 h-4" />
           Done
         </span>
       )}
-      {status === "loading" && (
-        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-primary/10 text-[10px] font-semibold text-primary">
-          <span className="loading loading-spinner w-2.5 h-2.5" />
-          In Progress
-        </span>
-      )}
       {status === "action-required" && (
-        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-warning/10 text-[10px] font-semibold text-warning">
+        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-warning/10 text-xs font-semibold text-warning">
           Action Required
         </span>
       )}
@@ -255,7 +95,7 @@ export const ClassificationLevelTab = (props: Props) => {
       : "Analyzing your item description to identify the most relevant HTS sections...";
 
     return (
-      <div>
+      <div className="flex flex-col gap-5">
         <ClassificationProgress currentStepNumber={1} />
         <StepHeader
           stepNumber={1}
@@ -312,7 +152,7 @@ export const ClassificationLevelTab = (props: Props) => {
     }
 
     const getLevelTitle = () => {
-      return "Select the candidate that best fits your item"
+      return "Select the candidate below that best fits your item";
     };
 
     const hasSelection = Boolean(level.selection);

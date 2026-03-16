@@ -12,6 +12,7 @@ import {
 import toast from "react-hot-toast";
 import { QueueListIcon } from "@heroicons/react/16/solid";
 import { SectionChapterCandidate } from "./SectionChapterCandidate";
+import { AnalysisLoadingAnimation } from "../classification-ui/AnalysisLoadingAnimation";
 
 export const VerticalSectionDiscovery = () => {
   const { classification, setClassification, classificationTier } =
@@ -143,7 +144,7 @@ export const VerticalSectionDiscovery = () => {
               </span>
             )}
           </div>
-          {isLoading && loadingPhase && (
+          {/* {isLoading && loadingPhase && (
             <div className="flex items-center gap-1.5 text-primary/70">
               <span className="loading loading-spinner loading-xs" />
               <span className="text-xs font-medium">
@@ -152,7 +153,7 @@ export const VerticalSectionDiscovery = () => {
                   : "Analyzing..."}
               </span>
             </div>
-          )}
+          )} */}
         </div>
       </div>
 
@@ -173,22 +174,10 @@ export const VerticalSectionDiscovery = () => {
             ))}
           </div>
         ) : (
-          <div className="flex flex-col gap-2.5">
-            {[1, 2].map((i) => (
-              <div
-                key={i}
-                className="rounded-lg border border-base-300 bg-base-200/30 p-4 animate-pulse"
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="h-6 w-20 bg-base-300 rounded-md" />
-                </div>
-                <div className="space-y-1.5">
-                  <div className="h-3.5 w-full bg-base-300 rounded" />
-                  <div className="h-3.5 w-2/3 bg-base-300 rounded" />
-                </div>
-              </div>
-            ))}
-          </div>
+          <AnalysisLoadingAnimation
+            title={loadingPhase === "finding" ? "Discovering sections" : "Analyzing sections"}
+            subtitle="Scanning the Harmonized Tariff Schedule"
+          />
         )}
       </div>
     </div>

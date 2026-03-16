@@ -2,7 +2,7 @@
 
 import { useClassification } from "../../contexts/ClassificationContext";
 import { useSectionChapterDiscovery } from "../../contexts/SectionChapterDiscoveryContext";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { Loader } from "../../interfaces/ui";
 import {
   getBestClassificationProgression,
@@ -32,11 +32,14 @@ import {
   SparklesIcon,
   CheckCircleIcon,
   ClipboardDocumentIcon,
+  PlusIcon,
+  ChevronDownIcon,
 } from "@heroicons/react/16/solid";
 import toast from "react-hot-toast";
 import { useUser } from "../../contexts/UserContext";
 import { VerticalCandidateElement } from "./VerticalCandidateElement";
 import Fuse from "fuse.js";
+import { AnalysisLoadingAnimation } from "../classification-ui/AnalysisLoadingAnimation";
 
 export interface VerticalClassificationStepProps {
   classificationLevel: number;
@@ -75,6 +78,27 @@ export const VerticalClassificationStep = ({
 
   const { chapterCandidates, chapterDiscoveryComplete } =
     useSectionChapterDiscovery();
+
+  const analysisSectionRef = useRef<HTMLDivElement>(null);
+  const [isAnalysisOutOfView, setIsAnalysisOutOfView] = useState(false);
+
+  useEffect(() => {
+    const el = analysisSectionRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsAnalysisOutOfView(!entry.isIntersecting),
+      { threshold: 0.1 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const scrollToAnalysis = useCallback(() => {
+    analysisSectionRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, []);
 
   const handleCopyCostClick = () => {
     copyToClipboard(currentLevel?.analysisReason || "");
@@ -378,9 +402,111 @@ export const VerticalClassificationStep = ({
     }
   }, [classificationLevel, chapterDiscoveryComplete, chapterCandidates]);
 
+  const analysisIsActive = loading.isLoading || !!currentLevel?.analysisReason;
+
   return (
     <div className="flex flex-col gap-2.5">
 
+      {/* Analysis section */}
+      <div
+        ref={analysisSectionRef}
+        className="rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden"
+      >
+        {/* Header */}
+        <div className="px-5 py-3.5 border-b border-base-300 bg-base-200/30">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <SparklesIcon className="w-4 h-4 text-primary" />
+              <h3 className="text-sm font-semibold text-base-content">
+                Analysis
+              </h3>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {currentLevel?.analysisReason && (
+                <button
+                  className="btn btn-ghost btn-xs gap-1 text-base-content/50"
+                  onClick={handleCopyCostClick}
+                >
+                  {isAnalysisCopied ? (
+                    <CheckCircleIcon className="w-3.5 h-3.5 text-success" />
+                  ) : (
+                    <ClipboardDocumentIcon className="w-3.5 h-3.5" />
+                  )}
+                  <span className="text-[11px]">
+                    {isAnalysisCopied ? "Copied" : "Copy"}
+                  </span>
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="p-5">
+          {currentLevel?.analysisReason ? (
+            <div className="flex flex-col gap-3">
+              {currentLevel.analysisElement && (
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-primary/5 border border-primary/15">
+                  <SparklesIcon className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-semibold uppercase tracking-wider text-primary/70 mb-1">
+                      Candidate with Most Evidence
+                    </p>
+                    <div className="flex items-baseline gap-2 flex-wrap">
+                      {currentLevel.analysisElement.htsno && (
+                        <span className="font-mono text-sm font-bold text-primary">
+                          {currentLevel.analysisElement.htsno}
+                        </span>
+                      )}
+                      <span className="text-sm text-base-content/80">
+                        {currentLevel.analysisElement.description}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="rounded-lg border border-base-300 overflow-hidden">
+                <div className="flex">
+                  <div className="w-1 bg-primary/40 shrink-0" />
+                  <div className="p-4 flex-1 min-w-0">
+                    <div className="text-sm leading-[1.7] text-base-content/80 space-y-2.5">
+                      {currentLevel.analysisReason
+                        .split(/\n\n+/)
+                        .filter((p) => p.trim())
+                        .map((paragraph, i) => (
+                          <p key={i} className="whitespace-pre-line">
+                            {paragraph.trim()}
+                          </p>
+                        ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-[11px] text-base-content/30">
+                Analysis is for information purposes only and may not be correct. Always exercise your own judgement.
+              </p>
+            </div>
+          ) : loading.isLoading ? (
+            <AnalysisLoadingAnimation
+              title={loading.text === "Analyzing Candidates" ? "Analyzing candidates" : loading.text}
+              subtitle="Evaluating candidates"
+            />
+          ) : (
+            <div className="rounded-lg border border-base-300 overflow-hidden">
+              <div className="flex">
+                <div className="w-1 bg-base-300 shrink-0" />
+                <div className="p-4 flex-1">
+                  <p className="text-xs text-base-content/40 italic">
+                    Analysis will appear here after candidates are evaluated.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Candidates section */}
       <div
         ref={containerRef}
         className="rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden"
@@ -406,8 +532,8 @@ export const VerticalClassificationStep = ({
                   onClick={onOpenExplore}
                   disabled={loading.isLoading || isDisabled}
                 >
-                  <MagnifyingGlassIcon className="w-3.5 h-3.5" />
-                  <span>Find Candidates</span>
+                  <PlusIcon className="w-3.5 h-3.5" />
+                  <span>Add Candidates</span>
                 </button>
               )}
               <button
@@ -424,8 +550,6 @@ export const VerticalClassificationStep = ({
 
         {/* Content */}
         <div className="p-5">
-
-          {/* Candidates list */}
           {currentLevel && currentLevel.candidates?.length > 0 ? (
             <div className="flex flex-col gap-2.5">
               {currentLevel.candidates.map((element) => (
@@ -462,229 +586,7 @@ export const VerticalClassificationStep = ({
           )}
         </div>
       </div>
-      {/* Analysis section */}
-      <div className="rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden">
-        {/* Header */}
-        <div className="px-5 py-3.5 border-b border-base-300 bg-base-200/30">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <SparklesIcon className="w-4 h-4 text-primary" />
-              <h3 className="text-sm font-semibold text-base-content">
-                Analysis
-              </h3>
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {currentLevel?.analysisReason && (
-                <button
-                  className="btn btn-ghost btn-xs gap-1 text-base-content/50"
-                  onClick={handleCopyCostClick}
-                >
-                  {isAnalysisCopied ? (
-                    <CheckCircleIcon className="w-3.5 h-3.5 text-success" />
-                  ) : (
-                    <ClipboardDocumentIcon className="w-3.5 h-3.5" />
-                  )}
-                  <span className="text-[11px]">
-                    {isAnalysisCopied ? "Copied" : "Copy"}
-                  </span>
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-        <div className="p-5">
-          {currentLevel?.analysisReason ? (
-            <div className="flex flex-col gap-3">
-              {/* Recommendation callout */}
-              {currentLevel.analysisElement && (
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-primary/5 border border-primary/15">
-                  <SparklesIcon className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                  <div className="min-w-0">
-                    <p className="text-[11px] font-semibold uppercase tracking-wider text-primary/70 mb-1">
-                      Suggested
-                    </p>
-                    <div className="flex items-baseline gap-2 flex-wrap">
-                      {currentLevel.analysisElement.htsno && (
-                        <span className="font-mono text-sm font-bold text-primary">
-                          {currentLevel.analysisElement.htsno}
-                        </span>
-                      )}
-                      <span className="text-sm text-base-content/80">
-                        {currentLevel.analysisElement.description}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
 
-              {/* Reasoning */}
-              <div className="rounded-lg border border-base-300 overflow-hidden">
-                <div className="flex">
-                  <div className="w-1 bg-primary/40 shrink-0" />
-                  <div className="p-4 flex-1 min-w-0">
-                    <div className="text-sm leading-[1.7] text-base-content/80 space-y-2.5">
-                      {currentLevel.analysisReason
-                        .split(/\n\n+/)
-                        .filter((p) => p.trim())
-                        .map((paragraph, i) => (
-                          <p key={i} className="whitespace-pre-line">
-                            {paragraph.trim()}
-                          </p>
-                        ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Questions to consider */}
-              {/* {currentLevel.analysisQuestions &&
-                currentLevel.analysisQuestions.length > 0 && (
-                  <div className="rounded-lg bg-warning/5 border border-warning/15 p-3.5">
-                    <p className="text-[11px] font-semibold uppercase tracking-wider text-warning/70 mb-2">
-                      Consider before selecting
-                    </p>
-                    <ul className="space-y-1.5">
-                      {currentLevel.analysisQuestions.map((question, i) => (
-                        <li
-                          key={i}
-                          className="flex items-start gap-2 text-sm text-base-content/70 leading-snug"
-                        >
-                          <span className="text-warning/60 shrink-0 mt-0.5 text-xs">
-                            ?
-                          </span>
-                          {question}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )} */}
-
-              <p className="text-[11px] text-base-content/30">
-                Analysis is for information purposes only and may not be correct. Always exercise your own judgement.
-              </p>
-            </div>
-          ) : loading.isLoading ? (
-            <div className="py-6 flex flex-col items-center gap-5">
-              {/* Animated icon with glow */}
-              <div className="relative">
-                <div
-                  className="absolute -inset-3 rounded-full bg-primary/20 blur-xl"
-                  style={{
-                    animation: "analysisGlow 2.5s ease-in-out infinite",
-                  }}
-                />
-                <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/20 flex items-center justify-center shadow-sm">
-                  <SparklesIcon
-                    className="w-5 h-5 text-primary"
-                    style={{
-                      animation: "sparkleRotate 4s linear infinite",
-                    }}
-                  />
-                </div>
-                {[
-                  { left: "-4px", top: "2px", delay: "0s", size: "3px" },
-                  { right: "-6px", top: "10px", delay: "0.9s", size: "2px" },
-                  { left: "50%", top: "-5px", delay: "1.8s", size: "2.5px" },
-                ].map((p, i) => (
-                  <div
-                    key={i}
-                    className="absolute rounded-full bg-primary/80"
-                    style={{
-                      left: p.left,
-                      right: p.right,
-                      top: p.top,
-                      width: p.size,
-                      height: p.size,
-                      animation: "particleFloat 2.8s ease-out infinite",
-                      animationDelay: p.delay,
-                    }}
-                  />
-                ))}
-              </div>
-
-              {/* Status text */}
-              <div className="text-center">
-                <p className="text-sm font-medium text-base-content/70">
-                  {loading.text === "Analyzing Candidates"
-                    ? "Analyzing candidates"
-                    : loading.text}
-                </p>
-                <p className="text-xs text-base-content/40 mt-1">
-                  Evaluating Candidates
-                </p>
-              </div>
-
-              {/* Indeterminate progress bar */}
-              <div className="w-48 h-0.5 rounded-full bg-base-300/50 overflow-hidden relative">
-                <div
-                  className="absolute top-0 left-0 h-full w-1/3 rounded-full bg-gradient-to-r from-transparent via-primary to-transparent"
-                  style={{
-                    animation: "progressSlide 1.8s ease-in-out infinite",
-                  }}
-                />
-              </div>
-
-              {/* Shimmer skeleton preview */}
-              {/* <div className="w-full space-y-3 mt-1">
-                <div className="rounded-lg border border-base-300/80 overflow-hidden">
-                  <div className="flex">
-                    <div
-                      className="w-1 shrink-0 bg-primary/30"
-                      style={{
-                        animation: "analysisGlow 2.5s ease-in-out infinite",
-                      }}
-                    />
-                    <div className="p-4 flex-1 space-y-2.5">
-                      {[100, 88, 95, 72, 82, 55].map((w, i) => (
-                        <div
-                          key={i}
-                          className="analysis-shimmer-line h-3 bg-base-300/50"
-                          style={
-                            {
-                              width: `${w}%`,
-                              "--shimmer-delay": `${i * 0.12}s`,
-                            } as React.CSSProperties
-                          }
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="rounded-lg border border-base-300/40 p-3.5 space-y-2.5">
-                  {[82, 68].map((w, i) => (
-                    <div key={i} className="flex items-center gap-2.5">
-                      <span className="text-base-300 shrink-0 text-xs font-bold">
-                        ?
-                      </span>
-                      <div
-                        className="analysis-shimmer-line h-3 bg-base-300/40"
-                        style={
-                          {
-                            width: `${w}%`,
-                            "--shimmer-delay": `${(6 + i) * 0.12}s`,
-                          } as React.CSSProperties
-                        }
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div> */}
-            </div>
-          ) : (
-            <div className="rounded-lg border border-base-300 overflow-hidden">
-              <div className="flex">
-                <div className="w-1 bg-base-300 shrink-0" />
-                <div className="p-4 flex-1">
-                  <p className="text-xs text-base-content/40 italic">
-                    Analysis will appear here after candidates are evaluated.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
       {showCrossRulingsModal && (
         <Modal
           isOpen={showCrossRulingsModal}

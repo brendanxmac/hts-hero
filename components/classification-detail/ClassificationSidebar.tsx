@@ -43,6 +43,40 @@ interface Props {
   isAnonymous: boolean;
 }
 
+function CopyableHtsCode({ code }: { code: string }) {
+  const [copied, setCopied] = useState(false);
+
+  if (!code) {
+    return (
+      <p className="text-lg md:text-xl font-mono font-semibold text-base-content/70">
+        —
+      </p>
+    );
+  }
+
+  return (
+    <span className="relative inline-block">
+      <span
+        onClick={() => {
+          navigator.clipboard.writeText(code);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1500);
+        }}
+        className="text-lg md:text-xl font-mono font-semibold text-primary cursor-pointer"
+      >
+        {code}
+      </span>
+      <span
+        className={`absolute -top-6 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-success text-white text-[10px] font-semibold whitespace-nowrap pointer-events-none transition-all duration-200 ${
+          copied ? "opacity-100 translate-y-0" : "opacity-0 translate-y-1"
+        }`}
+      >
+        Copied!
+      </span>
+    </span>
+  );
+}
+
 const NAV_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   overview: EyeIcon,
   "cross-rulings": ScaleIcon,
@@ -144,9 +178,7 @@ export const ClassificationSidebar = ({
             <p className="text-[10px] font-semibold uppercase tracking-widest text-base-content/40 mt-3 mb-1">
               HTS Code
             </p>
-            <p className={`text-lg md:text-xl font-mono font-semibold ${latestHtsCode ? "text-primary" : "text-base-content/70"}`}>
-              {latestHtsCode || "—"}
-            </p>
+            <CopyableHtsCode code={latestHtsCode} />
           </div>
         </div>
 
