@@ -95,7 +95,7 @@ export const ClassificationLevelTab = (props: Props) => {
       : "Analyzing your item description to identify the most relevant HTS sections...";
 
     return (
-      <div className="flex flex-col gap-5">
+      <div >
         <ClassificationProgress currentStepNumber={1} />
         <StepHeader
           stepNumber={1}
@@ -152,7 +152,7 @@ export const ClassificationLevelTab = (props: Props) => {
     }
 
     const getLevelTitle = () => {
-      return "Select the candidate below that best fits your item";
+      return "Select the candidate that best fits your item";
     };
 
     const hasSelection = Boolean(level.selection);
@@ -177,6 +177,7 @@ export const ClassificationLevelTab = (props: Props) => {
         <StepHeader
           stepNumber={stepNumber}
           title={getLevelTitle()}
+          description="Our in-depth analysis can help you select the best option"
           status={getStatus()}
         />
         <VerticalClassificationStep

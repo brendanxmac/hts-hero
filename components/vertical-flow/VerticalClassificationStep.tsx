@@ -33,7 +33,6 @@ import {
   CheckCircleIcon,
   ClipboardDocumentIcon,
   PlusIcon,
-  ChevronDownIcon,
 } from "@heroicons/react/16/solid";
 import toast from "react-hot-toast";
 import { useUser } from "../../contexts/UserContext";
@@ -79,26 +78,6 @@ export const VerticalClassificationStep = ({
   const { chapterCandidates, chapterDiscoveryComplete } =
     useSectionChapterDiscovery();
 
-  const analysisSectionRef = useRef<HTMLDivElement>(null);
-  const [isAnalysisOutOfView, setIsAnalysisOutOfView] = useState(false);
-
-  useEffect(() => {
-    const el = analysisSectionRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsAnalysisOutOfView(!entry.isIntersecting),
-      { threshold: 0.1 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  const scrollToAnalysis = useCallback(() => {
-    analysisSectionRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  }, []);
 
   const handleCopyCostClick = () => {
     copyToClipboard(currentLevel?.analysisReason || "");
@@ -122,8 +101,8 @@ export const VerticalClassificationStep = ({
 
   const currentLevel = levels[classificationLevel];
   const optionsForLevel = currentLevel?.candidates?.length || 0;
-  const hasSelection = Boolean(currentLevel?.selection);
-  const selectedElement = currentLevel?.selection;
+  // const hasSelection = Boolean(currentLevel?.selection);
+  // const selectedElement = currentLevel?.selection;
   const isUsersClassification = classificationRecord
     ? user
       ? classificationRecord.user_id === user.id
@@ -405,12 +384,91 @@ export const VerticalClassificationStep = ({
   const analysisIsActive = loading.isLoading || !!currentLevel?.analysisReason;
 
   return (
-    <div className="flex flex-col gap-2.5">
+    <div className="grid grid-cols-1 xl:grid-cols-2 gap-2.5">
+      {/* Candidates section */}
+      <div
+        ref={containerRef}
+        className="order-2 xl:order-1 rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden"
+      >
+        {/* Header */}
+        <div className="px-5 py-3.5 border-b border-base-300 bg-base-200/30">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <QueueListIcon className="w-4 h-4 text-base-content/50" />
+              <h3 className="text-sm font-semibold text-base-content">
+                Candidates
+              </h3>
+              {optionsForLevel > 0 && (
+                <span className="px-2 py-0.5 rounded-full bg-base-300 text-[11px] font-semibold text-base-content/60">
+                  {optionsForLevel}
+                </span>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {classificationLevel === 0 && (
+                <button
+                  className="btn btn-ghost btn-xs gap-1.5 text-base-content/60 hover:text-primary"
+                  onClick={onOpenExplore}
+                  disabled={loading.isLoading || isDisabled}
+                >
+                  <PlusIcon className="w-3.5 h-3.5" />
+                  <span>Add</span>
+                </button>
+              )}
+              <button
+                className="btn btn-ghost btn-xs gap-1.5 text-base-content/60 hover:text-primary"
+                onClick={() => setShowCrossRulingsModal(true)}
+                disabled={loading.isLoading}
+              >
+                <MagnifyingGlassIcon className="w-3.5 h-3.5" />
+                <span>Search CROSS</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-5">
+          {currentLevel && currentLevel.candidates?.length > 0 ? (
+            <div className="flex flex-col gap-2.5">
+              {currentLevel.candidates.map((element) => (
+                <VerticalCandidateElement
+                  key={element.uuid}
+                  element={element}
+                  classificationLevel={classificationLevel}
+                  disabled={isDisabled}
+                  onOpenExplore={onOpenExplore}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2.5">
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="rounded-lg border border-base-300 bg-base-200/30 p-4 animate-pulse"
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="h-4 w-20 bg-base-300 rounded" />
+                    <div className="flex gap-1 ml-auto">
+                      <div className="h-6 w-6 bg-base-300 rounded-md" />
+                      <div className="h-6 w-6 bg-base-300 rounded-md" />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <div className="h-3.5 w-full bg-base-300 rounded" />
+                    <div className="h-3.5 w-2/3 bg-base-300 rounded" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Analysis section */}
       <div
-        ref={analysisSectionRef}
-        className="rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden"
+        className="order-1 xl:order-2 rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden"
       >
         {/* Header */}
         <div className="px-5 py-3.5 border-b border-base-300 bg-base-200/30">
@@ -501,87 +559,6 @@ export const VerticalClassificationStep = ({
                   </p>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Candidates section */}
-      <div
-        ref={containerRef}
-        className="rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden"
-      >
-        {/* Header */}
-        <div className="px-5 py-3.5 border-b border-base-300 bg-base-200/30">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <QueueListIcon className="w-4 h-4 text-base-content/50" />
-              <h3 className="text-sm font-semibold text-base-content">
-                Candidates
-              </h3>
-              {optionsForLevel > 0 && (
-                <span className="px-2 py-0.5 rounded-full bg-base-300 text-[11px] font-semibold text-base-content/60">
-                  {optionsForLevel}
-                </span>
-              )}
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {classificationLevel === 0 && (
-                <button
-                  className="btn btn-ghost btn-xs gap-1.5 text-base-content/60 hover:text-primary"
-                  onClick={onOpenExplore}
-                  disabled={loading.isLoading || isDisabled}
-                >
-                  <PlusIcon className="w-3.5 h-3.5" />
-                  <span>Add Candidates</span>
-                </button>
-              )}
-              <button
-                className="btn btn-ghost btn-xs gap-1.5 text-base-content/60 hover:text-primary"
-                onClick={() => setShowCrossRulingsModal(true)}
-                disabled={loading.isLoading}
-              >
-                <MagnifyingGlassIcon className="w-3.5 h-3.5" />
-                <span>Search CROSS</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="p-5">
-          {currentLevel && currentLevel.candidates?.length > 0 ? (
-            <div className="flex flex-col gap-2.5">
-              {currentLevel.candidates.map((element) => (
-                <VerticalCandidateElement
-                  key={element.uuid}
-                  element={element}
-                  classificationLevel={classificationLevel}
-                  disabled={isDisabled}
-                  onOpenExplore={onOpenExplore}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-col gap-2.5">
-              {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="rounded-lg border border-base-300 bg-base-200/30 p-4 animate-pulse"
-                >
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="h-4 w-20 bg-base-300 rounded" />
-                    <div className="flex gap-1 ml-auto">
-                      <div className="h-6 w-6 bg-base-300 rounded-md" />
-                      <div className="h-6 w-6 bg-base-300 rounded-md" />
-                    </div>
-                  </div>
-                  <div className="space-y-1.5">
-                    <div className="h-3.5 w-full bg-base-300 rounded" />
-                    <div className="h-3.5 w-2/3 bg-base-300 rounded" />
-                  </div>
-                </div>
-              ))}
             </div>
           )}
         </div>
