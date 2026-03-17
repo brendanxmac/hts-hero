@@ -456,7 +456,7 @@ export const ClassificationDetailLayout = ({
 
         {isAnonymous ? (
           <AnonymousClassificationCompleteModal
-            show={showCompleteModal}
+            show={true}
             latestHtsCode={latestHtsCode}
             articleDescription={classification?.articleDescription}
             classificationId={classificationId}
@@ -467,7 +467,7 @@ export const ClassificationDetailLayout = ({
           />
         ) : (
           <ClassificationCompleteModal
-            show={showCompleteModal}
+            show={true}
             latestHtsCode={latestHtsCode}
             articleDescription={classification?.articleDescription}
             onClose={() => {

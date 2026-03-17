@@ -6,6 +6,7 @@ import {
   ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
 import {
+  GiftIcon,
   XCircleIcon,
 } from "@heroicons/react/24/solid";
 import { LockClosedIcon } from "@heroicons/react/16/solid";
@@ -19,7 +20,7 @@ interface AnonymousClassificationCompleteModalProps {
 }
 
 const LOSS_ITEMS = [
-  "Your Results & Reasoning",
+  "Your HTS Code Results & Reasoning",
   "Your Classification Defense Report",
   "HTS Code Validation from CROSS Rulings",
   "Unlimited Tariff & Duty Rate Lookups",
@@ -74,7 +75,7 @@ export function AnonymousClassificationCompleteModal({
               <Dialog.Panel className="w-full max-w-lg transform rounded-2xl bg-base-100 border border-base-300 shadow-2xl transition-all">
                 <div className="relative max-h-[94vh] overflow-y-auto overscroll-contain">
                   {/* Decorative bg */}
-                  <div className="absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-success/10 to-transparent pointer-events-none" />
+                  <div className="absolute inset-x-0 top-0 h-36 pointer-events-none" />
 
                   <div className="relative px-5 sm:px-7 pt-6 sm:pt-8 pb-5 sm:pb-7 flex flex-col items-center text-center">
                     {/* ── Top: Success + Result ── */}
@@ -85,12 +86,12 @@ export function AnonymousClassificationCompleteModal({
                       </div>
                     </div>
 
-                    <Dialog.Title className="text-lg sm:text-xl font-bold text-base-content mb-3">
-                      Classification Complete
+                    <Dialog.Title className="text-sm md:text-base font-bold text-base-content mb-3">
+                      Classification Complete!
                     </Dialog.Title>
 
                     {/* Inline HTS result (copyable) */}
-                    <div className="flex flex-col items-center gap-0.5 mb-6">
+                    <div className="flex flex-col items-center gap-0.5 mt-2 mb-6">
                       <span className="relative inline-block">
                         <span
                           onClick={
@@ -125,7 +126,12 @@ export function AnonymousClassificationCompleteModal({
                           {articleDescription}
                         </p>
                       )}
+                      {/* <p className="text-[11px] text-error mt-3 font-medium animate-pulse">
+                        Note: Results will disappear unless you create a free account
+                      </p> */}
                     </div>
+
+                    {/* <div className="w-full border-t border-base-content/20 mb-3" /> */}
 
                     {/* ── Defense Report Banner (animated) ── */}
                     <Transition.Child
@@ -134,21 +140,25 @@ export function AnonymousClassificationCompleteModal({
                       enterFrom="opacity-0 -translate-y-2"
                       enterTo="opacity-100 translate-y-0"
                     >
-                      <div className="w-full rounded-xl bg-gradient-to-r from-primary/[0.08] via-primary/[0.05] to-secondary/[0.08] border border-primary/20 px-4 py-3 sm:py-3.5 mb-5 flex items-center gap-3">
+                      <div className="w-full rounded-xl bg-gradient-to-r from-primary/[0.08] via-primary/[0.05] to-secondary/[0.08] border border-primary/20 px-4 py-3 sm:py-3.5 mb-5 flex items-center gap-4">
                         <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-primary/10 shrink-0">
                           <LockClosedIcon className="w-5 h-5 text-primary" />
                         </div>
                         <div className="flex-1 text-left">
-                          <p className="text-sm md:text-base font-bold text-base-content leading-snug">
-                            Your Defense Report is Ready!
+                          <p className="text-sm md:text-base lg:text-lg font-bold text-base-content leading-snug">
+                            Create a <span className="underline">FREE</span> Account to Save Your Results & Verify your Code!
                           </p>
-                          <p className="text-xs md:text-sm text-base-content/70 leading-snug">
-                            Create a FREE account to unlock it and get more free classifications
+                          <p className="text-[11px] text-primary font-semibold mt-3">
+                            100% FREE &ensp;· Takes 10 seconds&ensp;· &ensp;No credit card required
                           </p>
+                          {/* <p className="text-xs md:text-sm text-base-content/70 leading-snug">
+                            Save this classification, unlock your audit-ready defense report, and get 10 more free classifications.
+                          </p> */}
                         </div>
                         {/* <LockOpenIcon className="w-4 h-4 text-primary/40 shrink-0" /> */}
                       </div>
                     </Transition.Child>
+
 
                     {/* ── Loss List ── */}
                     <div className="w-full rounded-xl bg-error/[0.05] border border-error/15 px-4 py-3.5 sm:px-5 sm:py-4 mb-5 text-center">
@@ -168,9 +178,9 @@ export function AnonymousClassificationCompleteModal({
                           </li>
                         ))}
                       </ul>
-                      <p className="text-[11px] text-error mt-3 font-medium animate-pulse">
+                      {/* <p className="text-[11px] text-error mt-3 font-medium animate-pulse">
                         Results will disappear if you don't create a free account
-                      </p>
+                      </p> */}
                     </div>
 
                     {/* ── CTA Area (sticky feel) ── */}
@@ -179,17 +189,17 @@ export function AnonymousClassificationCompleteModal({
                         href={signupHref}
                         className="btn btn-primary btn-lg w-full text-base font-bold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200"
                       >
-                        Save Results &amp; Unlock Your Report
+                        Save Results &amp; Verify Code
                         <span aria-hidden="true" className="ml-1">→</span>
                       </Link>
 
-                      <p className="text-[11px] text-base-content/40 mt-3">
+                      {/* <p className="text-[11px] text-base-content/40 mt-3">
                         100% FREE &ensp;· Takes 10 seconds&ensp;· &ensp;No credit card required
-                      </p>
+                      </p> */}
 
                       <button
                         onClick={onContinueWithoutSaving}
-                        className="mt-5 text-xs text-base-content/25 hover:text-base-content/45 transition-colors cursor-pointer"
+                        className="mt-5 text-xs text-base-content/80 hover:text-base-content transition-colors cursor-pointer"
                       >
                         Continue without saving
                       </button>
