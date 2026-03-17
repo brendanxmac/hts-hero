@@ -613,7 +613,7 @@ export const OverviewTab = ({
             </div>
 
             {/* Right: Quick actions */}
-            {isComplete && userProfile && (
+            {isComplete && (
               <div className="flex flex-wrap gap-2 shrink-0">
                 {classificationRecord && isComplete && (
                   <StatusDropdown
@@ -637,7 +637,7 @@ export const OverviewTab = ({
                     <span className="hidden sm:inline">Share</span>
                   </button>
                 )}
-                {canDelete && classificationRecord && (
+                {canDelete && classificationRecord && userProfile && (
                   <button
                     className="btn btn-sm btn-outline btn-error gap-1.5 h-9"
                     onClick={onDeleteClick}
@@ -703,71 +703,69 @@ export const OverviewTab = ({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Country of Origin */}
-        <div className={`${userProfile ? "col-span-1" : "col-span-2"}`}>
-          <DashboardCard>
-            <DashboardCardHeader
-              title="Country of Origin"
-              icon={<GlobeAltIcon className="w-4 h-4" />}
+
+        <DashboardCard>
+          <DashboardCardHeader
+            title="Country of Origin"
+            icon={<GlobeAltIcon className="w-4 h-4" />}
+          />
+          <div className="p-5">
+            <CountrySelection
+              selectedCountries={countryOfOrigin ? [countryOfOrigin] : []}
+              setSelectedCountries={(countries) => {
+                onCountryChange(countries[0] || null);
+              }}
+              singleSelect
             />
-            <div className="p-5">
-              <CountrySelection
-                selectedCountries={countryOfOrigin ? [countryOfOrigin] : []}
-                setSelectedCountries={(countries) => {
-                  onCountryChange(countries[0] || null);
-                }}
-                singleSelect
-              />
-            </div>
-          </DashboardCard>
-        </div>
+          </div>
+        </DashboardCard>
+
 
         {/* Importer */}
-        {userProfile && (
-          <DashboardCard>
-            <DashboardCardHeader
-              title="Importer"
-              icon={<TagIcon className="w-4 h-4" />}
-            />
-            <div className="p-5">
-              <div className="flex gap-2">
-                <ImporterDropdown
-                  importers={importers}
-                  selectedImporterId={selectedImporterId}
-                  onSelectionChange={(value) => {
-                    setSelectedImporterId(value);
+        <DashboardCard>
+          <DashboardCardHeader
+            title="Importer"
+            icon={<TagIcon className="w-4 h-4" />}
+          />
+          <div className="p-5">
+            <div className="flex gap-2">
+              <ImporterDropdown
+                importers={importers}
+                selectedImporterId={selectedImporterId}
+                onSelectionChange={(value) => {
+                  setSelectedImporterId(value);
+                  updateClassification(
+                    classificationId,
+                    undefined,
+                    value || null,
+                    undefined
+                  ).then(() => refreshClassifications());
+                }}
+                onCreateSelected={() => setShowCreateImporterModal(true)}
+                isLoading={isLoadingImporters}
+                disabled={!canUpdateDetails}
+                showCreateOption={canUpdateDetails}
+              />
+              {selectedImporterId && canUpdateDetails && (
+                <button
+                  className="btn btn-sm btn-ghost"
+                  onClick={() => {
+                    setSelectedImporterId("");
                     updateClassification(
                       classificationId,
                       undefined,
-                      value || null,
+                      null,
                       undefined
                     ).then(() => refreshClassifications());
                   }}
-                  onCreateSelected={() => setShowCreateImporterModal(true)}
-                  isLoading={isLoadingImporters}
-                  disabled={!canUpdateDetails}
-                  showCreateOption={canUpdateDetails}
-                />
-                {selectedImporterId && canUpdateDetails && (
-                  <button
-                    className="btn btn-sm btn-ghost"
-                    onClick={() => {
-                      setSelectedImporterId("");
-                      updateClassification(
-                        classificationId,
-                        undefined,
-                        null,
-                        undefined
-                      ).then(() => refreshClassifications());
-                    }}
-                    disabled={isLoadingImporters}
-                  >
-                    Clear
-                  </button>
-                )}
-              </div>
+                  disabled={isLoadingImporters}
+                >
+                  Clear
+                </button>
+              )}
             </div>
-          </DashboardCard>
-        )}
+          </div>
+        </DashboardCard>
       </div>
 
 
