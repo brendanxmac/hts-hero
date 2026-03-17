@@ -174,7 +174,7 @@ export default function PlaybookDownloadPage() {
               <li className="flex items-start gap-3 text-base md:text-lg text-base-content/90">
                 <span className="text-primary font-bold shrink-0 text-lg">3.</span>
                 <span>
-                  <strong className="text-base-content">You can start right now.</strong> No setup. Enter a product description, get candidates, see the analysis, document your reasoning, and generate an audit-ready report in minutes.
+                  <strong className="text-base-content">You can start right now.</strong> No setup. Enter a product description, get candidates, see the analysis, document your reasoning, and generate a defense report in minutes.
                 </span>
               </li>
             </ul>
@@ -219,7 +219,7 @@ export default function PlaybookDownloadPage() {
                   3
                 </span>
                 <div>
-                  <strong className="text-base-content block mb-1">Export your audit-ready report</strong>
+                  <strong className="text-base-content block mb-1">Export your defense report</strong>
                   <p className="text-base-content/80 text-sm md:text-base">
                     Generate a professional, branded classification report in one click. Ready to file or share with your team or client.
                   </p>

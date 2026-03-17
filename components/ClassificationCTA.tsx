@@ -72,8 +72,7 @@ const WORKFLOW_STEPS = [
   },
   {
     icon: DocumentArrowDownIcon,
-    // title: "Audit-Ready Report",
-    title: "Get Report",
+    title: "Download Report",
     description:
       "Get a sharable, branded classification report that defends your HTS code",
   },

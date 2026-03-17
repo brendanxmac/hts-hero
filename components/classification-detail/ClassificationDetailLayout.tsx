@@ -31,13 +31,15 @@ import { ClassificationRecord } from "../../interfaces/hts";
 import { DeleteConfirmationModal } from "../classification-ui/DeleteConfirmationModal";
 import { ClassificationSidebar } from "./ClassificationSidebar";
 import { MobileNavDropdown } from "./MobileNavDropdown";
-import { useClassificationNav, NavTab } from "./useClassificationNav";
+import { useClassificationNav, NavTab, ANON_LOCKED_TABS } from "./useClassificationNav";
 import { OverviewTab } from "./tabs/OverviewTab";
 import { ClassificationLevelTab } from "./tabs/ClassificationLevelTab";
 import { DutyTariffTab } from "./tabs/DutyTariffTab";
 import { PlaceholderTab } from "./tabs/PlaceholderTab";
 import { ClassificationCompleteModal } from "./ClassificationCompleteModal";
 import { AnonymousClassificationCompleteModal } from "./AnonymousClassificationCompleteModal";
+import { AnonymousConversionBanner } from "./AnonymousConversionBanner";
+import { LockedTabOverlay } from "./LockedTabOverlay";
 
 /**
  * Hydrates the SectionChapterDiscovery context from persisted classification
@@ -292,6 +294,12 @@ export const ClassificationDetailLayout = ({
     );
   }
 
+  const LOCKED_TAB_FEATURE_NAMES: Partial<Record<NavTab, string>> = {
+    "cross-rulings": "CROSS Ruling Validation",
+    attachments: "Attachments",
+    "classification-report": "Classification Reports",
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case "overview":
@@ -336,19 +344,11 @@ export const ClassificationDetailLayout = ({
       case "cross-rulings":
         return (
           <PlaceholderTab
-            title="CROSS Rulings"
-            description="Search and reference Customs Rulings Online Search System (CROSS) rulings relevant to this classification."
+            title="CROSS Ruling Validation"
+            description="See which CROSS rulings are relevant to this classification, and have our system analyze them for you"
             icon="scale"
           />
         );
-      // case "classification-defense":
-      //   return (
-      //     <PlaceholderTab
-      //       title="Classification Defense"
-      //       description="Build and document your legal defense for this classification decision."
-      //       icon="shield"
-      //     />
-      //   );
       case "duty-tariffs":
         return (
           <DutyTariffTab
@@ -361,15 +361,15 @@ export const ClassificationDetailLayout = ({
         return (
           <PlaceholderTab
             title="Attachments"
-            description="Upload supporting documents, images, and other files related to this classification."
+            description="Upload supporting documents, images, and other files related to your product and this classification."
             icon="paperclip"
           />
         );
-      case "audit-report":
+      case "classification-report":
         return (
           <PlaceholderTab
-            title="Audit-Ready Report"
-            description="Generate a comprehensive, audit-ready classification report for customs compliance."
+            title="Classification Report"
+            description="Generate comprehensive, branded classification reports for your own records or to share with clients."
             icon="document"
           />
         );
@@ -426,10 +426,24 @@ export const ClassificationDetailLayout = ({
             />
           </div>
 
+          {/* Anonymous conversion banner — persistent when modal dismissed */}
+          {isAnonymous && classification?.isComplete && !showCompleteModal && (
+            <AnonymousConversionBanner classificationId={classificationId} />
+          )}
+
           {/* Scrollable Content Panel */}
           <main ref={mainContentRef} className="flex-1 overflow-y-auto bg-base-100">
             <div className="w-full px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
-              {renderTabContent()}
+              {isAnonymous && ANON_LOCKED_TABS.has(activeTab) ? (
+                <LockedTabOverlay
+                  classificationId={classificationId}
+                  featureName={LOCKED_TAB_FEATURE_NAMES[activeTab] || "this feature"}
+                >
+                  {renderTabContent()}
+                </LockedTabOverlay>
+              ) : (
+                renderTabContent()
+              )}
             </div>
           </main>
         </div>
@@ -456,7 +470,7 @@ export const ClassificationDetailLayout = ({
 
         {isAnonymous ? (
           <AnonymousClassificationCompleteModal
-            show={true}
+            show={showCompleteModal}
             latestHtsCode={latestHtsCode}
             articleDescription={classification?.articleDescription}
             classificationId={classificationId}
@@ -467,7 +481,7 @@ export const ClassificationDetailLayout = ({
           />
         ) : (
           <ClassificationCompleteModal
-            show={true}
+            show={showCompleteModal}
             latestHtsCode={latestHtsCode}
             articleDescription={classification?.articleDescription}
             onClose={() => {

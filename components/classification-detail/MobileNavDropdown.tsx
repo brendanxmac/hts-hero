@@ -14,7 +14,16 @@ import {
   ArrowLeftIcon,
   CheckCircleIcon,
   ChevronDownIcon,
+  ChevronRightIcon,
+  LockClosedIcon,
 } from "@heroicons/react/16/solid";
+import {
+  EyeIcon,
+  ScaleIcon,
+  CurrencyDollarIcon,
+  PaperClipIcon,
+  DocumentTextIcon,
+} from "@heroicons/react/24/outline";
 
 interface Props {
   classification: ClassificationI;
@@ -43,6 +52,14 @@ function StatusDot({ status }: { status: ClassificationNavItem["status"] }) {
   }
 }
 
+const NAV_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  overview: EyeIcon,
+  "cross-rulings": ScaleIcon,
+  "duty-tariffs": CurrencyDollarIcon,
+  attachments: PaperClipIcon,
+  "classification-report": DocumentTextIcon,
+};
+
 export const MobileNavDropdown = ({
   classification,
   navItems,
@@ -56,7 +73,12 @@ export const MobileNavDropdown = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const activeItem = navItems.find((item) => item.id === activeTab);
-  const activeLabel = activeItem?.label || "Overview";
+  const activeHasSelection =
+    activeItem?.status === "completed" &&
+    (activeItem.htsno || activeItem.selectionDescription);
+  const activeLabel = activeHasSelection
+    ? activeItem.htsno || activeItem.selectionDescription
+    : activeItem?.label || "Overview";
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -103,10 +125,10 @@ export const MobileNavDropdown = ({
         </div>
 
         {/* Center: Dropdown */}
-        <div ref={dropdownRef} className="relative flex-1 max-w-xs">
+        <div ref={dropdownRef} className="relative flex-1 min-w-0">
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="w-full flex items-center justify-between gap-2 px-3 py-1.5 rounded-lg bg-base-200 border border-base-300 text-sm font-medium hover:border-primary/40 transition-colors"
+            className="w-full flex items-center justify-between gap-2 px-3 py-1.5 rounded-lg bg-base-200 border border-base-300 text-sm font-medium hover:border-primary/40 transition-colors overflow-hidden"
           >
             <span className="truncate">{activeLabel}</span>
             <ChevronDownIcon
@@ -119,19 +141,23 @@ export const MobileNavDropdown = ({
               {/* Overview */}
               {mainItems
                 .filter((item) => item.id === "overview")
-                .map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => handleSelect(item.id)}
-                    className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${
-                      activeTab === item.id
-                        ? "bg-primary/10 text-primary"
-                        : "hover:bg-base-200"
-                    }`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
+                .map((item) => {
+                  const Icon = NAV_ICONS[item.id] || EyeIcon;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => handleSelect(item.id)}
+                      className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center gap-2.5 ${
+                        activeTab === item.id
+                          ? "bg-primary/10 text-primary"
+                          : "hover:bg-base-200"
+                      }`}
+                    >
+                      <Icon className="w-4 h-4 shrink-0" />
+                      {item.label}
+                    </button>
+                  );
+                })}
 
               {/* Classification section */}
               {classificationSubItems.length > 0 && (
@@ -180,19 +206,27 @@ export const MobileNavDropdown = ({
               <div className="border-t border-base-200">
                 {mainItems
                   .filter((item) => item.id !== "overview")
-                  .map((item) => (
-                    <button
-                      key={item.id}
-                      onClick={() => handleSelect(item.id)}
-                      className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${
-                        activeTab === item.id
-                          ? "bg-primary/10 text-primary"
-                          : "hover:bg-base-200"
-                      }`}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
+                  .map((item) => {
+                    const Icon = NAV_ICONS[item.id] || ChevronRightIcon;
+                    const showLock = isAnonymous && item.lockedForAnon;
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => handleSelect(item.id)}
+                        className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center gap-2.5 ${
+                          activeTab === item.id
+                            ? "bg-primary/10 text-primary"
+                            : "hover:bg-base-200"
+                        }`}
+                      >
+                        <Icon className="w-4 h-4 shrink-0" />
+                        <span className="flex-1">{item.label}</span>
+                        {showLock && (
+                          <LockClosedIcon className="w-3.5 h-3.5 text-base-content/30 shrink-0" />
+                        )}
+                      </button>
+                    );
+                  })}
               </div>
             </div>
           )}

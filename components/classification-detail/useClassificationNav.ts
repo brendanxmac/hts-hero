@@ -9,10 +9,9 @@ export type NavTab =
   | "classification-chapter"
   | `classification-level-${number}`
   | "cross-rulings"
-  | "classification-defense"
   | "duty-tariffs"
   | "attachments"
-  | "audit-report"
+  | "classification-report"
 
 export type NavItemStatus = "completed" | "active" | "pending" | "locked"
 
@@ -23,7 +22,14 @@ export interface ClassificationNavItem {
   isSubItem?: boolean
   htsno?: string
   selectionDescription?: string
+  lockedForAnon?: boolean
 }
+
+export const ANON_LOCKED_TABS: ReadonlySet<NavTab> = new Set([
+  "cross-rulings",
+  "attachments",
+  "classification-report",
+])
 
 export function getSubGroupName(
   levelIndex: number,
@@ -128,15 +134,25 @@ export function useClassificationNav(classification: ClassificationI | null) {
     }
 
     items.push(
-      { id: "cross-rulings", label: "CROSS Rulings", status: "pending" },
-      // {
-      //   id: "classification-defense",
-      //   label: "Classification Defense",
-      //   status: "pending",
-      // },
       { id: "duty-tariffs", label: "Duty / Tariffs", status: "pending" },
-      { id: "attachments", label: "Attachments", status: "pending" },
-      { id: "audit-report", label: "Audit-Ready Report", status: "pending" },
+      {
+        id: "cross-rulings",
+        label: "CROSS Ruling Validation",
+        status: "pending",
+        lockedForAnon: true,
+      },
+      {
+        id: "attachments",
+        label: "Attachments",
+        status: "pending",
+        lockedForAnon: true,
+      },
+      {
+        id: "classification-report",
+        label: "Classification Report",
+        status: "pending",
+        lockedForAnon: true,
+      },
     )
 
     return items

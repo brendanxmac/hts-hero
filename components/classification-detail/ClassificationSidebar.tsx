@@ -14,6 +14,7 @@ import {
   CheckCircleIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  LockClosedIcon,
   SparklesIcon,
 } from "@heroicons/react/16/solid";
 import {
@@ -30,6 +31,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { getTutorialFromPathname, Tutorial, TutorialI } from "../Tutorial";
 import { Product, userHasActivePurchaseForProduct } from "../../libs/supabase/purchase";
+import { GiftIcon } from "@heroicons/react/24/solid";
 
 interface Props {
   classification: ClassificationI;
@@ -80,10 +82,9 @@ function CopyableHtsCode({ code }: { code: string }) {
 const NAV_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   overview: EyeIcon,
   "cross-rulings": ScaleIcon,
-  "classification-defense": ShieldCheckIcon,
   "duty-tariffs": CurrencyDollarIcon,
   attachments: PaperClipIcon,
-  "audit-report": DocumentTextIcon,
+  "classification-report": DocumentTextIcon,
 };
 
 function StatusIndicator({ status }: { status: ClassificationNavItem["status"] }) {
@@ -155,22 +156,25 @@ export const ClassificationSidebar = ({
       <div className="flex flex-col h-full">
         {/* Logo & Back */}
         <div className="p-4 pb-0">
-          <Link
-            href="/"
-            className="flex items-center gap-2 px-2 py-1.5 mb-3"
-          >
-            <Image
-              src={logo}
-              alt={`${config.appName} logo`}
-              className="w-5"
-              priority
-              width={24}
-              height={24}
-            />
-            <span className="font-bold text-sm text-base-content">
-              {config.appName}
-            </span>
-          </Link>
+          <div className="flex gap-3 justify-between">
+            <Link
+              href="/"
+              className="flex items-center gap-2 px-2 py-1.5 mb-3"
+            >
+              <Image
+                src={logo}
+                alt={`${config.appName} logo`}
+                className="w-5"
+                priority
+                width={24}
+                height={24}
+              />
+              <span className="font-bold text-sm text-base-content">
+                {config.appName}
+              </span>
+            </Link>
+            <ThemeToggle />
+          </div>
 
           <button
             onClick={onNavigateBack}
@@ -301,6 +305,7 @@ export const ClassificationSidebar = ({
               .map((item) => {
                 const Icon = NAV_ICONS[item.id] || ChevronRightIcon;
                 const isActive = activeTab === item.id;
+                const showLock = isAnonymous && item.lockedForAnon;
                 return (
                   <li key={item.id}>
                     <button
@@ -311,7 +316,10 @@ export const ClassificationSidebar = ({
                         }`}
                     >
                       <Icon className="w-4 h-4 shrink-0" />
-                      {item.label}
+                      <span className="flex-1 text-left">{item.label}</span>
+                      {showLock && (
+                        <LockClosedIcon className="w-3.5 h-3.5 text-base-content/30 shrink-0" />
+                      )}
                     </button>
                   </li>
                 );
@@ -347,19 +355,18 @@ export const ClassificationSidebar = ({
                   <PlayIcon className="w-4 h-4" />
                 </button>
               )}
-              <ThemeToggle />
             </div>
           </div>
 
           {/* Upgrade / CTA */}
           {isAnonymous ? (
-            <div className="w-full mt-3 px-1">
+            <div className="w-full px-1">
               <Link
                 href={`/signin?redirect=/classifications/${classificationRecord?.id || ""}`}
-                className="btn btn-primary btn-sm w-full gap-2"
+                className="btn btn-primary w-full gap-2"
               >
-                <SparklesIcon className="w-4 h-4" />
-                Create Free Account
+                <GiftIcon className="w-4 h-4" />
+                Get 10 FREE Classifications
               </Link>
             </div>
           ) : isPayingUser || isLoading ? null : (

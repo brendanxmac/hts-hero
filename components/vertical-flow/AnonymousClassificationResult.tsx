@@ -90,9 +90,6 @@ export const AnonymousClassificationResult = ({
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary to-secondary opacity-30 blur-xl animate-pulse" />
             <div className="relative p-5 rounded-full bg-base-100 shadow-lg border border-primary/20">
               <LockClosedIcon className="w-10 h-10 text-primary" />
-              {/* <CheckIcon className="w-10 h-10 text-primary" /> */}
-              {/* <CheckBadgeIcon className="w-10 h-10 text-primary" /> */}
-              {/* <CheckCircleIcon className="w-10 h-10 text-primary" /> */}
             </div>
           </div>
 

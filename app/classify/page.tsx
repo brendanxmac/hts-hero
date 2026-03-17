@@ -18,6 +18,7 @@ import {
   ClassifyInputHandle,
 } from "../../components/ClassifyInput";
 import { CheckIcon } from "@heroicons/react/16/solid";
+import ClassificationExamplesSection from "../../components/ClassificationExamplesSection";
 
 const CLASSIFY_SUPPORTING_BULLETS = [
   // "Finds Candidates",
@@ -333,7 +334,7 @@ export default function Home() {
       </Suspense>
 
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-base-100 h-svh content-center">
+      <div className="relative overflow-hidden bg-base-100 content-center" style={{ height: "95svh" }}>
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-24 -left-24 w-72 h-72 bg-secondary/10 md:bg-secondary/20 rounded-full blur-3xl" />
           <div className="absolute -top-24 -right-24 w-72 h-72 bg-primary/10 md:bg-primary/20 rounded-full blur-3xl" />
@@ -387,6 +388,9 @@ export default function Home() {
         </div>
       </div>
 
+
+      {/* Classification Examples */}
+      <ClassificationExamplesSection />
 
       {/* Product Sections */}
       <div id="features">

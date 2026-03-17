@@ -107,7 +107,7 @@ export const SharedClassificationView = ({
             Want to classify your own products?
           </h3>
           <p className="text-base-content/70 max-w-md">
-            Get {NUM_FREE_CLASSIFICATIONS} free classifications with an audit-ready report. No credit
+            Get {NUM_FREE_CLASSIFICATIONS} free classifications with a full defense report. No credit
             card required.
           </p>
           <Link
