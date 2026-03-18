@@ -384,11 +384,11 @@ export const VerticalClassificationStep = ({
   const analysisIsActive = loading.isLoading || !!currentLevel?.analysisReason;
 
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-2 gap-2.5">
+    <div className="grid grid-cols-1 xl:grid-cols-12 gap-2.5">
       {/* Candidates section */}
       <div
         ref={containerRef}
-        className="order-2 xl:order-1 rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden"
+        className="xl:col-span-5 rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden"
       >
         {/* Header */}
         <div className="px-5 py-3.5 border-b border-base-300 bg-base-200/30">
@@ -468,7 +468,7 @@ export const VerticalClassificationStep = ({
 
       {/* Analysis section */}
       <div
-        className="order-1 xl:order-2 rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden"
+        className="xl:col-span-7 rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden"
       >
         {/* Header */}
         <div className="px-5 py-3.5 border-b border-base-300 bg-base-200/30">

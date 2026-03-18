@@ -126,7 +126,7 @@ export const VerticalSectionDiscovery = () => {
     }
   };
 
-  const isLoading = isFetchingSections || sectionCandidates.length === 0;
+  // const isLoading = isFetchingSections || sectionCandidates.length === 0;
 
   return (
     <div className="rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden">
@@ -144,16 +144,6 @@ export const VerticalSectionDiscovery = () => {
               </span>
             )}
           </div>
-          {/* {isLoading && loadingPhase && (
-            <div className="flex items-center gap-1.5 text-primary/70">
-              <span className="loading loading-spinner loading-xs" />
-              <span className="text-xs font-medium">
-                {loadingPhase === "finding"
-                  ? "Finding sections..."
-                  : "Analyzing..."}
-              </span>
-            </div>
-          )} */}
         </div>
       </div>
 

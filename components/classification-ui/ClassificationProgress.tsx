@@ -112,10 +112,10 @@ export function ClassificationProgress({
 
   const isComplete = classification?.isComplete ?? false;
   const finalCode =
+    // const finalDescription =
+    //   classification?.levels[classification.levels.length - 1]?.selection
+    //     ?.description;
     classification?.levels[classification.levels.length - 1]?.selection?.htsno;
-  // const finalDescription =
-  //   classification?.levels[classification.levels.length - 1]?.selection
-  //     ?.description;
 
   if (isComplete) {
     return (

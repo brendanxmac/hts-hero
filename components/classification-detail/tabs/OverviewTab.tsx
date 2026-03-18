@@ -6,7 +6,6 @@ import {
   useCallback,
   useRef,
   useLayoutEffect,
-  useMemo,
 } from "react";
 import { useClassification } from "../../../contexts/ClassificationContext";
 import { useClassifications } from "../../../contexts/ClassificationsContext";
@@ -34,34 +33,15 @@ import {
   DocumentTextIcon,
   TrashIcon,
   ShareIcon,
-  LinkIcon,
-  ClipboardDocumentCheckIcon,
   TagIcon,
   CheckCircleIcon,
-  CurrencyDollarIcon,
-  UsersIcon,
   GlobeAltIcon,
 } from "@heroicons/react/24/outline";
-import { ArrowRightIcon } from "@heroicons/react/16/solid";
-import {
-  CheckCircleIcon as CheckCircleSolid,
-  ClipboardIcon,
-} from "@heroicons/react/16/solid";
+import { CheckCircleIcon as CheckCircleSolid } from "@heroicons/react/16/solid";
 import { CountrySelection } from "../../CountrySelection";
-import apiClient from "../../../libs/api";
-import config from "@/config";
-import { useHts } from "../../../contexts/HtsContext";
-import { HtsElement } from "../../../interfaces/hts";
-import { addTariffsToCountry } from "../../../tariffs/tariffs";
-import {
-  findTariffElement,
-  getTariffContext,
-  calculateAllTariffs,
-  formatCurrency,
-  TariffCalculationResult,
-} from "../../../tariffs/tariff-calculations";
-import { get15PercentCountryTotalBaseRate } from "../../../tariffs/tariffs";
-import { EstimatedCostsDisplay } from "../../tariff-ui/EstimatedCostsDisplay";
+import { DashboardCard, DashboardCardHeader } from "../DashboardCard";
+import { PublicShareSection, TeamShareSection } from "../ShareSections";
+import { TariffDashboardSection } from "../TariffDashboardSection";
 
 interface Props {
   classification: ClassificationI;
@@ -83,323 +63,6 @@ interface Props {
   onNavigateToDuty: () => void;
   onNavigateToTab?: (tabId: string) => void;
 }
-
-// ---------------------------------------------------------------------------
-// Sub-components
-// ---------------------------------------------------------------------------
-
-function DashboardCard({
-  children,
-  className = "",
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <div
-      className={`rounded-xl border border-base-300 bg-base-100 shadow-sm ${className}`}
-    >
-      {children}
-    </div>
-  );
-}
-
-function DashboardCardHeader({
-  title,
-  icon,
-  action,
-}: {
-  title: string;
-  icon?: React.ReactNode;
-  action?: React.ReactNode;
-}) {
-  return (
-    <div className="flex items-center justify-between px-5 py-3 border-b border-base-300 bg-base-200/30 rounded-t-xl">
-      <div className="flex items-center gap-2">
-        {icon && <span className="text-base-content/50">{icon}</span>}
-        <h3 className="text-sm font-semibold text-base-content">{title}</h3>
-      </div>
-      {action}
-    </div>
-  );
-}
-
-function PublicShareSection({
-  classificationRecord,
-}: {
-  classificationRecord: ClassificationRecord;
-}) {
-  const [isShared, setIsShared] = useState(
-    classificationRecord.is_shared ?? false
-  );
-  const [shareToken, setShareToken] = useState(
-    classificationRecord.share_token ?? null
-  );
-  const [isToggling, setIsToggling] = useState(false);
-  const [copied, setCopied] = useState(false);
-
-  const shareUrl = shareToken
-    ? `${typeof window !== "undefined" ? window.location.origin : `https://${config.domainName}`}/c/${shareToken}`
-    : null;
-
-  const handleToggleShare = async () => {
-    setIsToggling(true);
-    try {
-      const response: { share_token: string | null; is_shared: boolean } =
-        await apiClient.post("/classification/share", {
-          id: classificationRecord.id,
-          enable: !isShared,
-        });
-      setIsShared(response.is_shared);
-      setShareToken(response.share_token);
-    } catch (error) {
-      console.error("Error toggling share:", error);
-    } finally {
-      setIsToggling(false);
-    }
-  };
-
-  const handleCopyLink = () => {
-    if (shareUrl) {
-      navigator.clipboard.writeText(shareUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
-  return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-start gap-3">
-        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-          <GlobeAltIcon className="w-4 h-4 text-primary" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-base-content">
-                Public Read-Only Link
-              </p>
-              <p className="text-xs text-base-content/50 mt-0.5">
-                Anyone with the link can view this classification
-              </p>
-            </div>
-            <label className="flex items-center cursor-pointer gap-2 shrink-0 ml-3">
-              <input
-                type="checkbox"
-                className="toggle toggle-primary toggle-sm"
-                checked={isShared}
-                onChange={handleToggleShare}
-                disabled={isToggling}
-              />
-              {isToggling && (
-                <span className="loading loading-spinner loading-xs" />
-              )}
-            </label>
-          </div>
-
-          {isShared && shareUrl && (
-            <div className="mt-2.5 flex items-center gap-2">
-              <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-lg bg-base-200 border border-base-300 text-xs text-base-content/60 truncate">
-                <LinkIcon className="w-3.5 h-3.5 shrink-0" />
-                <span className="truncate">{shareUrl}</span>
-              </div>
-              <button
-                className="btn btn-sm btn-primary gap-1.5 shrink-0"
-                onClick={handleCopyLink}
-              >
-                {copied ? (
-                  <>
-                    <ClipboardDocumentCheckIcon className="w-3.5 h-3.5" />
-                    Copied
-                  </>
-                ) : (
-                  <>
-                    <LinkIcon className="w-3.5 h-3.5" />
-                    Copy
-                  </>
-                )}
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function TeamShareSection({
-  classificationRecord,
-}: {
-  classificationRecord: ClassificationRecord;
-}) {
-  const [copied, setCopied] = useState(false);
-
-  const teamUrl =
-    typeof window !== "undefined"
-      ? `${window.location.origin}/classifications/${classificationRecord.id}`
-      : `https://${config.domainName}/classifications/${classificationRecord.id}`;
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(teamUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  return (
-    <div className="flex items-start gap-3">
-      <div className="w-8 h-8 rounded-lg bg-info/10 flex items-center justify-center shrink-0 mt-0.5">
-        <UsersIcon className="w-4 h-4 text-info" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-base-content">
-          Share with Teammates
-        </p>
-        <p className="text-xs text-base-content/50 mt-0.5">
-          Team members can view and collaborate on this classification
-        </p>
-        <div className="mt-2.5 flex items-center gap-2">
-          <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-lg bg-base-200 border border-base-300 text-xs text-base-content/60 truncate">
-            <LinkIcon className="w-3.5 h-3.5 shrink-0" />
-            <span className="truncate">{teamUrl}</span>
-          </div>
-          <button
-            className="btn btn-sm btn-outline btn-info gap-1.5 shrink-0"
-            onClick={handleCopy}
-          >
-            {copied ? (
-              <>
-                <ClipboardDocumentCheckIcon className="w-3.5 h-3.5" />
-                Copied
-              </>
-            ) : (
-              <>
-                <ClipboardIcon className="w-3.5 h-3.5" />
-                Copy
-              </>
-            )}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-const DEFAULT_CUSTOMS_VALUE = 10000;
-const DEFAULT_UNITS = 1000;
-
-function useTariffCalculation(
-  countryOfOrigin: Country | null,
-  classification: ClassificationI,
-  htsElements: HtsElement[]
-): TariffCalculationResult | null {
-  return useMemo(() => {
-    if (
-      !countryOfOrigin ||
-      !classification.isComplete ||
-      htsElements.length === 0
-    )
-      return null;
-
-    const element =
-      classification.levels[classification.levels.length - 1]?.selection;
-    if (!element) return null;
-
-    const tariffEl = findTariffElement(element, htsElements);
-    const cwt = addTariffsToCountry(
-      countryOfOrigin,
-      element,
-      tariffEl,
-      [],
-      undefined,
-      DEFAULT_UNITS,
-      DEFAULT_CUSTOMS_VALUE
-    );
-
-    const { tariffColumn, is15Cap } = getTariffContext(countryOfOrigin.code);
-    const baseFlat = cwt.baseTariffs.flatMap((t) => t.tariffs);
-    const adValoremEquiv = get15PercentCountryTotalBaseRate(
-      baseFlat,
-      DEFAULT_CUSTOMS_VALUE,
-      DEFAULT_UNITS
-    );
-    const below15Rule = is15Cap && adValoremEquiv < 15;
-
-    return calculateAllTariffs(
-      cwt.tariffSets,
-      cwt.baseTariffs,
-      DEFAULT_CUSTOMS_VALUE,
-      DEFAULT_UNITS,
-      [],
-      tariffColumn,
-      below15Rule
-    );
-  }, [countryOfOrigin, classification, htsElements]);
-}
-
-function TariffDashboardSection({
-  countryOfOrigin,
-  classification,
-  onNavigateToDuty,
-}: {
-  countryOfOrigin: Country | null;
-  classification: ClassificationI;
-  onNavigateToDuty: () => void;
-}) {
-  const { htsElements } = useHts();
-  const tariffData = useTariffCalculation(
-    countryOfOrigin,
-    classification,
-    htsElements
-  );
-
-  return (
-    <DashboardCard>
-      <DashboardCardHeader
-        title="Tariff Summary"
-        icon={<CurrencyDollarIcon className="w-4 h-4" />}
-        action={
-          <button
-            onClick={onNavigateToDuty}
-            className="btn btn-sm btn-primary"
-          >
-            See All Tariff Details
-            <ArrowRightIcon className="w-3 h-3" />
-          </button>
-        }
-      />
-      <div className="flex flex-col gap-5">
-        {tariffData ? (
-          <div className="p-4">
-            <EstimatedCostsDisplay
-              dutyEstimates={tariffData.dutyEstimates}
-              feeEstimates={tariffData.feeEstimates}
-              summaryTotals={tariffData.summaryTotals}
-              totalImportDuty={tariffData.totalImportDuty}
-              totalFees={tariffData.totalFees}
-              customsValue={DEFAULT_CUSTOMS_VALUE}
-            />
-          </div>
-        ) : countryOfOrigin && !classification.isComplete ? (
-          <div className="text-center py-6">
-            <p className="text-sm text-base-content/60">
-              Complete the classification to see tariff estimates.
-            </p>
-          </div>
-        ) : (
-          <div className="text-center py-6">
-            <p className="text-sm text-base-content/60">
-              Select a country of origin on the dashboard to see tariff estimates.
-            </p>
-          </div>
-        )}
-      </div>
-    </DashboardCard>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// OverviewTab
-// ---------------------------------------------------------------------------
 
 export const OverviewTab = ({
   classification,
@@ -521,15 +184,10 @@ export const OverviewTab = ({
   };
 
   const isComplete = liveClassification.isComplete;
-  const levelCount = liveClassification.levels.filter(
-    (l) => l.selection
-  ).length;
-  const finalSelection =
-    liveClassification.levels[liveClassification.levels.length - 1]?.selection;
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* ── Page Header ── */}
+    <div className="max-w-6xl mx-auto flex flex-col gap-6">
+      {/* Page Header */}
       <div>
         <h1 className="text-2xl font-bold text-base-content">
           Classification Overview
@@ -539,7 +197,7 @@ export const OverviewTab = ({
         </p>
       </div>
 
-      {/* ── Hero Banner ── */}
+      {/* Hero Banner */}
       <div className="relative rounded-2xl border border-base-300 bg-gradient-to-br from-base-200/60 via-base-100 to-base-200/30 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-primary/[0.04] blur-3xl" />
@@ -548,7 +206,6 @@ export const OverviewTab = ({
 
         <div className="relative px-6 py-6 sm:px-8 sm:py-8">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-            {/* Left: Code + Description */}
             <div className="flex-1 min-w-0">
               {isComplete ? (
                 <div className="w-fit flex items-center gap-1.5 px-2.5 py-1 mb-2 rounded-full bg-success/10 border border-success/20">
@@ -565,7 +222,6 @@ export const OverviewTab = ({
                   </span>
                 </div>
               )}
-
 
               <span className="relative inline-block mb-2">
                 <span
@@ -612,7 +268,6 @@ export const OverviewTab = ({
               )}
             </div>
 
-            {/* Right: Quick actions */}
             {isComplete && (
               <div className="flex flex-wrap gap-2 shrink-0">
                 {classificationRecord && isComplete && (
@@ -656,54 +311,7 @@ export const OverviewTab = ({
         </div>
       </div>
 
-      {/* ── Stats Strip ── */}
-      {/* {isComplete && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {[
-            {
-              label: "Depth",
-              value: `${levelCount} levels`,
-              accent: "text-primary",
-            },
-            {
-              label: "Final Code",
-              value: finalSelection?.htsno || "—",
-              accent: "text-success font-mono",
-            },
-            {
-              label: "Description",
-              value: finalSelection?.description || "—",
-              accent: "text-base-content/70",
-              truncate: true,
-            },
-            {
-              label: "Status",
-              value: classificationRecord?.status || "Draft",
-              accent: "text-base-content/70 capitalize",
-            },
-          ].map(({ label, value, accent, truncate }) => (
-            <div
-              key={label}
-              className="rounded-xl border border-base-300 bg-base-100 px-4 py-3"
-            >
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-base-content/40 mb-1">
-                {label}
-              </p>
-              <p
-                className={`text-sm font-semibold ${accent} ${truncate ? "truncate" : ""}`}
-              >
-                {value}
-              </p>
-            </div>
-          ))}
-        </div>
-      )} */}
-
-
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Country of Origin */}
-
         <DashboardCard>
           <DashboardCardHeader
             title="Country of Origin"
@@ -720,8 +328,6 @@ export const OverviewTab = ({
           </div>
         </DashboardCard>
 
-
-        {/* Importer */}
         <DashboardCard>
           <DashboardCardHeader
             title="Importer"
@@ -768,15 +374,14 @@ export const OverviewTab = ({
         </DashboardCard>
       </div>
 
-
-      {/* ── Tariff Summary (full width) ── */}
+      {/* Tariff Summary */}
       <TariffDashboardSection
         countryOfOrigin={countryOfOrigin}
         classification={liveClassification}
         onNavigateToDuty={onNavigateToDuty}
       />
 
-      {/* ── Classification Path ── */}
+      {/* Classification Path */}
       <DashboardCard>
         <DashboardCardHeader
           title="Classification Path"
@@ -790,9 +395,7 @@ export const OverviewTab = ({
         </div>
       </DashboardCard>
 
-
-
-      {/* ── Basis for Classification (full width) ── */}
+      {/* Basis for Classification */}
       <DashboardCard>
         <DashboardCardHeader
           title="Basis for Classification"
@@ -822,7 +425,7 @@ export const OverviewTab = ({
         </div>
       </DashboardCard>
 
-      {/* ── Share Modal ── */}
+      {/* Share Modal */}
       {classificationRecord && userProfile && (
         <Modal isOpen={showShareModal} setIsOpen={setShowShareModal}>
           <div className="p-6 flex flex-col gap-5 min-w-80 sm:min-w-[420px]">
@@ -837,7 +440,7 @@ export const OverviewTab = ({
         </Modal>
       )}
 
-      {/* ── Create Importer Modal ── */}
+      {/* Create Importer Modal */}
       <Modal
         isOpen={showCreateImporterModal}
         setIsOpen={setShowCreateImporterModal}

@@ -194,7 +194,7 @@ export const ClassificationSidebar = ({
             <p className="text-[10px] font-semibold uppercase tracking-widest text-base-content/40 mb-1">
               Item Description
             </p>
-            <p className="text-sm font-medium text-base-content line-clamp-2 leading-snug">
+            <p className="text-sm font-medium text-base-content leading-snug">
               {classification?.articleDescription || "—"}
             </p>
 

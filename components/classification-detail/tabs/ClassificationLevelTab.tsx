@@ -95,7 +95,7 @@ export const ClassificationLevelTab = (props: Props) => {
       : "Analyzing your item description to identify the most relevant HTS sections...";
 
     return (
-      <div >
+      <div className="max-w-7xl mx-auto">
         <ClassificationProgress currentStepNumber={1} />
         <StepHeader
           stepNumber={1}
@@ -122,7 +122,7 @@ export const ClassificationLevelTab = (props: Props) => {
       : "Narrowing down to the most relevant chapters within the identified sections...";
 
     return (
-      <div>
+      <div className="max-w-7xl mx-auto">
         <ClassificationProgress currentStepNumber={2} />
         <StepHeader
           stepNumber={2}
@@ -165,7 +165,7 @@ export const ClassificationLevelTab = (props: Props) => {
     };
 
     return (
-      <div>
+      <div className="max-w-7xl mx-auto">
         <ClassificationProgress currentStepNumber={stepNumber} />
         <StepHeader
           stepNumber={stepNumber}

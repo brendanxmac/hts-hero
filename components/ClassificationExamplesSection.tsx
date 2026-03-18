@@ -19,50 +19,48 @@ interface ClassificationExample {
   };
 }
 
-const PLACEHOLDER_IMAGE = "/test.webp";
-
 const EXAMPLES: ClassificationExample[] = [
   {
     description:
       "Ceramic brake pads for passenger vehicles, semi-metallic compound with copper-free formulation",
-    htsCode: "6813.20.0060",
-    shareToken: "placeholder",
-    image: PLACEHOLDER_IMAGE,
+    htsCode: "6813.20.00.60",
+    shareToken: "nPP4hl_4vxY",
+    image: '/brakes.png',
     classificationPath: [
       "Section XIII",
       "Chapter 68",
       "Heading 6813",
-      "6813.20.0060",
+      "6813.20.00.60",
     ],
     stats: { levels: 4, crossRulings: 3 },
   },
   {
     description:
       "Stainless steel double-wall vacuum insulated water bottle, 32oz with leak-proof lid",
-    htsCode: "7323.93.0085",
-    shareToken: "placeholder",
-    image: PLACEHOLDER_IMAGE,
+    htsCode: "7323.93.00.85",
+    shareToken: "b9aETKwzNn4",
+    image: '/bottle.png',
     classificationPath: [
       "Section XV",
       "Chapter 73",
       "Heading 7323",
-      "7323.93.0085",
+      "7323.93.00.85",
     ],
-    stats: { levels: 4, crossRulings: 5 },
+    stats: { levels: 3, crossRulings: 5 },
   },
   {
     description:
       "Women's 100% cashmere crew-neck pullover sweater, knitted, with ribbed cuffs and hem",
-    htsCode: "6110.12.2040",
-    shareToken: "placeholder",
-    image: PLACEHOLDER_IMAGE,
+    htsCode: "6110.12.20.40",
+    shareToken: "x1XcVsWHIbQ",
+    image: '/sweater.png',
     classificationPath: [
       "Section XI",
       "Chapter 61",
       "Heading 6110",
-      "6110.12.2040",
+      "6110.12.20.40",
     ],
-    stats: { levels: 4, crossRulings: 4 },
+    stats: { levels: 6, crossRulings: 4 },
   },
 ];
 
@@ -84,20 +82,22 @@ function ExampleCard({ example }: { example: ClassificationExample }) {
       {/* Card surface */}
       <div className="relative flex flex-col flex-1 rounded-2xl border border-secondary/20 bg-base-100 overflow-hidden shadow-lg shadow-secondary/[0.08] transition-all duration-300 group-hover:shadow-xl group-hover:shadow-secondary/[0.12] group-hover:border-secondary/35">
         {/* Product image */}
-        <div className="relative w-full overflow-hidden bg-base-200">
-          <Image
-            src={example.image}
-            alt={example.description}
-            width={600}
-            height={340}
-            className="w-full h-48 sm:h-52 object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-base-100 to-transparent" />
+        <div className="relative w-full overflow-hidden bg-base-200/50">
+          <div className="flex items-center justify-center h-48 sm:h-56 p-4">
+            <Image
+              src={example.image}
+              alt={example.description}
+              width={600}
+              height={400}
+              className="max-h-full w-auto rounded-lg object-contain transition-transform duration-500 group-hover:scale-105"
+            />
+          </div>
+          <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-base-100 to-transparent" />
         </div>
 
         <div className="flex flex-col flex-1 px-5 pb-5 pt-2 sm:px-6 sm:pb-6">
           {/* Product description */}
-          <p className="text-sm font-medium leading-relaxed text-base-content/80 mb-4">
+          <p className="text-sm font-medium leading-relaxed text-base-content mb-4">
             {example.description}
           </p>
 
