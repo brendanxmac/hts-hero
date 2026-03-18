@@ -12,25 +12,25 @@ interface ComparisonBar {
 
 const COMPARISONS: ComparisonBar[] = [
   {
-    label: "Accuracy",
-    unit: "%",
-    manual: { value: 62, label: "Manual" },
-    htsHero: { value: 95, label: "HTS Hero" },
-    higherIsBetter: true,
-  },
-  {
     label: "Speed",
     unit: " min",
-    manual: { value: 35, label: "Manual" },
-    htsHero: { value: 3, label: "HTS Hero" },
+    manual: { value: 40, label: "Manual" },
+    htsHero: { value: 2, label: "HTS Hero" },
     higherIsBetter: false,
   },
   {
     label: "Cost",
     unit: "$",
     manual: { value: 100, label: "Manual" },
-    htsHero: { value: 3, label: "HTS Hero" },
+    htsHero: { value: 1, label: "HTS Hero" },
     higherIsBetter: false,
+  },
+  {
+    label: "Defensibility",
+    unit: "%",
+    manual: { value: 0, label: "Other Systems" },
+    htsHero: { value: 100, label: "HTS Hero" },
+    higherIsBetter: true,
   },
 ];
 
@@ -48,7 +48,7 @@ function AnimatedBar({
   const colorClasses =
     color === "hero"
       ? "bg-primary"
-      : "bg-base-content/15";
+      : "bg-base-content/70";
 
   return (
     <div
@@ -113,7 +113,7 @@ function ComparisonRow({
 
         {/* HTS Hero bar */}
         <div className="flex items-center gap-4">
-          <span className="w-28 sm:w-36 text-sm font-semibold text-secondary text-right shrink-0">
+          <span className="w-28 sm:w-36 text-sm font-semibold text-primary text-right shrink-0">
             {comparison.htsHero.label}
           </span>
           <div className="flex-1 flex items-center gap-3">
@@ -175,7 +175,7 @@ export default function BenefitsComparisonSection() {
             Your Strategic <span className="text-primary">Advantage</span>
           </h2>
           <p className="text-base sm:text-lg text-base-content/50 max-w-xl mx-auto leading-relaxed">
-            See how HTS Hero compares to manual classification research
+            Fast, cost-effective, and defensible HTS classification
           </p>
         </div>
 

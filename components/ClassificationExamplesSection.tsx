@@ -202,9 +202,9 @@ export default function ClassificationExamplesSection() {
           </h2>
 
           <p className="text-base sm:text-lg text-base-content/50 max-w-3xl mx-auto leading-relaxed text-center mb-8">
-            See how HTS Hero helps you classify & defend complex items quickly and accurately
+            Classify complex items quickly and accurately
             with GRI + Legal Note analysis, CROSS ruling validation, and a full defense
-            report.
+            report. See real examples below
           </p>
 
           {/* Animated bouncing arrow */}
