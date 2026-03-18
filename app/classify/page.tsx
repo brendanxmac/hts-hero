@@ -8,9 +8,9 @@ import { classifierFaqList } from "../../constants/faq";
 import { AboutPage } from "../../enums/classify";
 import ProductDemoSection from "../../components/ProductDemoSection";
 import {
-  ProductSection,
-  ProductSectionData,
-} from "../../components/ProductSection";
+  FeatureShowcaseSection,
+  FeatureShowcaseData,
+} from "../../components/FeatureShowcaseSection";
 
 import AboutHeader from "../../components/AboutHeader";
 import {
@@ -19,6 +19,8 @@ import {
 } from "../../components/ClassifyInput";
 import { CheckIcon } from "@heroicons/react/16/solid";
 import ClassificationExamplesSection from "../../components/ClassificationExamplesSection";
+import BenefitsComparisonSection from "../../components/BenefitsComparisonSection";
+import HowItWorksSection from "../../components/HowItWorksSection";
 
 const CLASSIFY_SUPPORTING_BULLETS = [
   // "Finds Candidates",
@@ -57,183 +59,149 @@ const HERO_PRODUCT_ROWS = [
   ],
 ];
 
-const productSections: ProductSectionData[] = [
+const featureSections: FeatureShowcaseData[] = [
   {
-    emoji: "🤖",
     title: "Candidates for Any Product",
     tagline: "AI-Powered Suggestions",
     description:
       "Jump-start classifications with AI suggestions. See HS heading suggestions for any item and discover headings you might have missed.",
     features: [
       {
-        icon: "⚡",
         title: "Jump-Start Classifications",
         description: "Get AI suggestions for any product description",
       },
       {
-        icon: "🔍",
         title: "Discover Missing Headings",
         description: "Find headings you might have overlooked",
       },
       {
-        icon: "✏️",
         title: "Add Your Own",
         description: "Easily find and apply your own HS headings",
       },
       {
-        icon: "⏱️",
         title: "~10 Minutes Saved",
         description: "Per classification on average",
       },
     ],
-    aboutUrl: "/classify",
     appUrl: "/classifications/new",
     cta: "Try It Now",
-    accentColor: "secondary",
     media: {
       src: "/get-candidates.mp4",
       type: "video",
     },
   },
   {
-    emoji: "💡",
     title: "Best-Fit Analysis",
     tagline: "GRI Analysis at Every Level",
     description:
       "Get a comprehensive GRI analysis of candidates at every level to help you quickly determine the best classification.",
     features: [
       {
-        icon: "📊",
         title: "GRI Analysis",
         description: "Comprehensive analysis at every classification level",
       },
       {
-        icon: "🎯",
         title: "Best Candidate",
         description: "Quickly determine the best fit for your product",
       },
       {
-        icon: "📝",
         title: "Add Notes",
         description: "Easily add your own notes and reasoning",
       },
       {
-        icon: "⏱️",
         title: "~10 Minutes Saved",
         description: "Per classification on average",
       },
     ],
-    aboutUrl: "/classify",
     appUrl: "/classifications/new",
     cta: "Analyze Now",
-    accentColor: "secondary",
     media: {
       src: "/candidate-analysis.png",
       type: "image",
     },
   },
   {
-    emoji: "⚖️",
     title: "Validate Against Government Rulings",
     tagline: "CROSS Rulings Integration",
     description:
       "See CROSS rulings related to your item and find out if CBP agrees with your classification.",
     features: [
       {
-        icon: "📋",
         title: "Related Rulings",
         description: "See CROSS rulings related to your item",
       },
       {
-        icon: "✅",
         title: "CBP Validation",
         description: "Find out if CBP agrees with your classification",
       },
       {
-        icon: "⏱️",
         title: "~10 Minutes Saved",
         description: "Per classification on average",
       },
     ],
-    aboutUrl: "/classify",
     appUrl: "/classifications/new",
     cta: "Validate Now",
-    accentColor: "secondary",
     media: {
       src: "/cross-rulings.mp4",
       type: "video",
     },
   },
   {
-    emoji: "📄",
     title: "Branded Reports, In A Single Click",
     tagline: "Professional Documentation",
     description:
       "Generate polished classification reports with your branding, notes, disclaimers, and contact info automatically included.",
     features: [
       {
-        icon: "🖨️",
         title: "One-Click Reports",
         description: "Generate polished reports instantly",
       },
       {
-        icon: "🎨",
         title: "Your Branding",
         description:
           "Automatically includes your branding, disclaimers, and contact info",
       },
       {
-        icon: "📁",
         title: "Easy Record Keeping",
         description: "Effortless record keeping and sharing with clients",
       },
       {
-        icon: "⏱️",
         title: "~20 Minutes Saved",
         description: "Per classification on average",
       },
     ],
-    aboutUrl: "/classify",
     appUrl: "/classifications/new",
     cta: "Generate Report",
-    accentColor: "secondary",
     media: {
       src: "/report.png",
       type: "image",
     },
   },
   {
-    emoji: "👥",
     title: "Collaborate With Your Whole Team",
     tagline: "Team Collaboration",
     description:
       "See, review, and approve each other's classifications. Collaborate on classifications and track progress together.",
     features: [
       {
-        icon: "👀",
         title: "Review & Approve",
         description: "See, review, and approve each other's classifications",
       },
       {
-        icon: "🤝",
         title: "Collaborate",
         description: "Work together on classifications and track progress",
       },
       {
-        icon: "🔍",
         title: "Search & Filter",
         description: "Search by description, status, importer, and classifier",
       },
       {
-        icon: "✨",
         title: "Better Results",
         description: "Quicker classifications with fewer mistakes",
       },
     ],
-    aboutUrl: "/classify",
     appUrl: "/classifications/new",
     cta: "Start Collaborating",
-    accentColor: "secondary",
     media: {
       src: "/teams.png",
       type: "image",
@@ -334,14 +302,14 @@ export default function Home() {
       </Suspense>
 
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-base-100 content-center" style={{ height: "95svh" }}>
+      <div className="relative overflow-hidden bg-base-100 content-center" style={{ height: "94svh" }}>
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-24 -left-24 w-72 h-72 bg-secondary/10 md:bg-secondary/20 rounded-full blur-3xl" />
           <div className="absolute -top-24 -right-24 w-72 h-72 bg-primary/10 md:bg-primary/20 rounded-full blur-3xl" />
         </div>
 
         <div className="relative z-10 flex flex-col items-center px-4 sm:px-6">
-          <h1 className="text-center text-5xl md:text-6xl font-bold tracking-tight mb-3 md:mb-4 max-w-xs sm:max-w-5xl">
+          <h1 className="text-center text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-3 md:mb-4 max-w-xs sm:max-w-5xl">
             Find Your HTS Code,{" "}
             <span className="text-secondary">
               Fast
@@ -392,12 +360,18 @@ export default function Home() {
       {/* Classification Examples */}
       <ClassificationExamplesSection />
 
-      {/* Product Sections */}
-      <div id="features">
-        {productSections.map((product, index) => (
-          <ProductSection key={product.title} product={product} index={index} />
+      {/* Benefits Comparison */}
+      <BenefitsComparisonSection />
+
+      {/* How It Works */}
+      <HowItWorksSection />
+
+      {/* Feature Sections */}
+      {/* <div id="features">
+        {featureSections.map((feature, index) => (
+          <FeatureShowcaseSection key={feature.title} feature={feature} index={index} />
         ))}
-      </div>
+      </div> */}
 
       {/* Pricing Section */}
       <ClassifyPricing customerType={AboutPage.CLASSIFIER} />

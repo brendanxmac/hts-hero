@@ -68,10 +68,10 @@ function getLevelLabel(
   if (digitCount === 10) return "Statistical Suffix (10-digit)"
 
   if (!selection) {
-    return `Level ${levelIndex + 1}`
+    return ""
   }
 
-  return `Level ${levelIndex + 1}`
+  return ""
 }
 
 export function useClassificationNav(classification: ClassificationI | null) {

@@ -58,7 +58,7 @@ function buildItemsFromClassification(
     const isLast = index === levels.length - 1 && classification.isComplete;
 
     items.push({
-      label: selection.htsno || `Level ${index + 1}`,
+      label: selection.htsno || '',
       code: selection.htsno || undefined,
       description: selection.description,
       isCurrent: isLast,
@@ -114,7 +114,7 @@ export const ClassificationHierarchy = ({
             {item.isCurrent ? (
               <span className="absolute -left-[11px] top-2.5 w-5 h-5 rounded-full bg-primary border-2 border-base-100 shadow-md shadow-primary/30" />
             ) : (
-              <span className="absolute -left-[9px] top-3 w-4 h-4 rounded-full bg-base-content border-2 border-base-300" />
+              <span className="absolute -left-[9px] top-5 w-4 h-4 rounded-full bg-base-content border-2 border-base-300" />
             )}
 
             {isClickable ? (

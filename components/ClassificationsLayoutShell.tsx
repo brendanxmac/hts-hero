@@ -15,7 +15,8 @@ export const ClassificationsLayoutShell = ({
   isAuthenticated,
 }: Props) => {
   const pathname = usePathname();
-  const isDetailPage = /^\/classifications\/[^/]+$/.test(pathname);
+  const isDetailPage =
+    /^\/classifications\/[^/]+$/.test(pathname) && pathname !== "/classifications/new";
 
   if (isDetailPage) {
     return <div className="h-screen overflow-hidden">{children}</div>;

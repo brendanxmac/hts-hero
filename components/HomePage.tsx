@@ -284,7 +284,7 @@ export function HomePage() {
                         </p>
 
                         <Link
-                          href="/classifications"
+                          href="/classify"
                           onClick={() => setIsToolMenuOpen(false)}
                           className="flex items-center gap-3 p-3 rounded-xl hover:bg-secondary/10 transition-colors group"
                         >

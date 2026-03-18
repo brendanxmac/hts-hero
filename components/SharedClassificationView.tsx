@@ -72,7 +72,7 @@ export const SharedClassificationView = ({
             >
               <div className="flex items-start gap-3">
                 <span className="shrink-0 px-2.5 py-1 rounded-lg text-sm font-bold bg-primary/10 text-primary border border-primary/20">
-                  {selection.htsno || `Level ${index + 1}`}
+                  {selection.htsno || ''}
                 </span>
                 <p className="text-base font-medium text-base-content leading-relaxed">
                   {selection.description}

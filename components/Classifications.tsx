@@ -410,14 +410,7 @@ export const Classifications = () => {
     );
   }
 
-  // Show full screen loading when data is being loaded
-  if (loader.isLoading) {
-    return (
-      <main className="w-full min-h-[calc(100vh-4rem)] flex items-center justify-center bg-base-100">
-        <LoadingIndicator />
-      </main>
-    );
-  }
+  const isContentLoading = loader.isLoading || classificationsLoading;
 
   return (
     <main className="w-full min-h-full flex flex-col bg-base-100">
@@ -501,90 +494,145 @@ export const Classifications = () => {
       </div>
 
       {/* Main Content */}
-      <div className="w-full max-w-5xl mx-auto flex flex-col px-4 sm:px-6 gap-4 py-6">
-
-        {/* Tab Navigation */}
-        {classifications && classifications.length > 0 && <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex items-center gap-3">
-            {!loader.isLoading && (
-              <div className="flex p-1 gap-1 bg-base-200/60 rounded-xl border border-base-content/5">
-                {[
-                  { key: "all", label: "All" },
-                  { key: "final", label: "Final" },
-                  { key: "review", label: "Needs Review" },
-                  { key: "draft", label: "Drafts" },
-                ].map((tab) => (
-                  <button
-                    key={tab.key}
-                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${activeTab === tab.key
-                      ? "bg-base-100 text-base-content shadow-sm"
-                      : "text-base-content/60 hover:text-base-content hover:bg-base-100/50"
-                      }`}
-                    onClick={() =>
-                      setActiveTab(
-                        tab.key as "all" | "final" | "review" | "draft"
-                      )
-                    }
-                  >
-                    {tab.label}
-                  </button>
-                ))}
+      {isContentLoading ? (
+        <div className="flex-1 flex items-center justify-center py-24 relative overflow-hidden">
+          <div className="relative flex flex-col items-center gap-6">
+            <div className="relative w-16 h-16">
+              <div className="absolute inset-0 rounded-full border-2 border-secondary/20 animate-ping [animation-duration:2s]" />
+              <div className="absolute inset-1 rounded-full border-2 border-primary/15 animate-ping [animation-duration:2.5s] [animation-delay:0.3s]" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="loading loading-spinner loading-md text-secondary" />
               </div>
-            )}
-            {(loader.isLoading || classificationsLoading) && (
-              <span className="loading loading-spinner loading-sm text-primary"></span>
-            )}
-          </div>
-        </div>}
-
-        {/* Filtering Section */}
-        {classifications && classifications.length > 0 && <div className="relative overflow-hidden rounded-2xl border border-base-content/15 bg-base-200/50 p-4">
-          {/* Subtle decorative elements */}
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute -top-16 -right-16 w-48 h-48 bg-primary/10 rounded-full blur-3xl" />
-          </div>
-
-          <div className="relative z-10 flex flex-col md:flex-row gap-4">
-            {/* Filter Bar */}
-            <div className="grow flex-1 flex flex-col gap-2">
-              <div className="flex justify-between items-center">
-                <div className="flex gap-1.5 items-center">
-                  <DocumentTextIcon className="h-4 w-4 text-primary" />
-                  <label className="text-xs font-semibold uppercase tracking-wider text-base-content/80">
-                    Description or Code
-                  </label>
-                </div>
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery("")}
-                    className="text-xs font-bold text-primary hover:text-primary/80 transition-colors"
-                  >
-                    Clear
-                  </button>
-                )}
-              </div>
-              <input
-                type="text"
-                placeholder="Filter by description or code..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-[42px] px-4 bg-base-100 rounded-xl border border-base-content/15 transition-all duration-200 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40"
-              />
             </div>
 
-            {/* Filter By User/Classifier */}
-            {teamUsers.length > 0 && (
+            <div className="text-center">
+              <p className="text-sm font-semibold text-base-content/70">
+                Loading Classifications
+              </p>
+              {/* <p className="text-xs text-base-content/40 mt-1">
+                Fetching your data&hellip;
+              </p> */}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="w-full max-w-5xl mx-auto flex flex-col px-4 sm:px-6 gap-4 py-6">
+
+          {/* Tab Navigation */}
+          {classifications && classifications.length > 0 && <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center gap-3">
+              {!loader.isLoading && (
+                <div className="flex p-1 gap-1 bg-base-200/60 rounded-xl border border-base-content/5">
+                  {[
+                    { key: "all", label: "All" },
+                    { key: "final", label: "Final" },
+                    { key: "review", label: "Needs Review" },
+                    { key: "draft", label: "Drafts" },
+                  ].map((tab) => (
+                    <button
+                      key={tab.key}
+                      className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${activeTab === tab.key
+                        ? "bg-base-100 text-base-content shadow-sm"
+                        : "text-base-content/60 hover:text-base-content hover:bg-base-100/50"
+                        }`}
+                      onClick={() =>
+                        setActiveTab(
+                          tab.key as "all" | "final" | "review" | "draft"
+                        )
+                      }
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {(loader.isLoading || classificationsLoading) && (
+                <span className="loading loading-spinner loading-sm text-primary"></span>
+              )}
+            </div>
+          </div>}
+
+          {/* Filtering Section */}
+          {classifications && classifications.length > 0 && <div className="relative overflow-hidden rounded-2xl border border-base-content/15 bg-base-200/50 p-4">
+            {/* Subtle decorative elements */}
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute -top-16 -right-16 w-48 h-48 bg-primary/10 rounded-full blur-3xl" />
+            </div>
+
+            <div className="relative z-10 flex flex-col md:flex-row gap-4">
+              {/* Filter Bar */}
+              <div className="grow flex-1 flex flex-col gap-2">
+                <div className="flex justify-between items-center">
+                  <div className="flex gap-1.5 items-center">
+                    <DocumentTextIcon className="h-4 w-4 text-primary" />
+                    <label className="text-xs font-semibold uppercase tracking-wider text-base-content/80">
+                      Description or Code
+                    </label>
+                  </div>
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery("")}
+                      className="text-xs font-bold text-primary hover:text-primary/80 transition-colors"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+                <input
+                  type="text"
+                  placeholder="Filter by description or code..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full h-[42px] px-4 bg-base-100 rounded-xl border border-base-content/15 transition-all duration-200 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40"
+                />
+              </div>
+
+              {/* Filter By User/Classifier */}
+              {teamUsers.length > 0 && (
+                <div className="flex flex-col gap-2 min-w-[200px]">
+                  <div className="flex justify-between items-center">
+                    <div className="flex gap-1.5 items-center">
+                      <UserIcon className="h-4 w-4 text-primary" />
+                      <label className="text-xs font-semibold uppercase tracking-wider text-base-content/80">
+                        Classifier
+                      </label>
+                    </div>
+                    {selectedUserId && (
+                      <button
+                        onClick={() => setSelectedUserId("")}
+                        className="text-xs font-bold text-primary hover:text-primary/80 transition-colors"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                  <select
+                    value={selectedUserId}
+                    onChange={(e) => setSelectedUserId(e.target.value)}
+                    className="select select-sm h-[42px] px-4 bg-base-100 rounded-xl border border-base-content/15 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40 cursor-pointer"
+                  >
+                    <option value="">All Users</option>
+                    {teamUsers.map((user) => (
+                      <option key={user.id} value={user.id}>
+                        {user.name || user.email}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Filter By Importer */}
               <div className="flex flex-col gap-2 min-w-[200px]">
                 <div className="flex justify-between items-center">
                   <div className="flex gap-1.5 items-center">
-                    <UserIcon className="h-4 w-4 text-primary" />
+                    <TagIcon className="h-4 w-4 text-primary" />
                     <label className="text-xs font-semibold uppercase tracking-wider text-base-content/80">
-                      Classifier
+                      Importer
                     </label>
                   </div>
-                  {selectedUserId && (
+                  {selectedImporterId && (
                     <button
-                      onClick={() => setSelectedUserId("")}
+                      onClick={() => setSelectedImporterId("")}
                       className="text-xs font-bold text-primary hover:text-primary/80 transition-colors"
                     >
                       Clear
@@ -592,162 +640,130 @@ export const Classifications = () => {
                   )}
                 </div>
                 <select
-                  value={selectedUserId}
-                  onChange={(e) => setSelectedUserId(e.target.value)}
+                  value={selectedImporterId}
+                  onChange={(e) => setSelectedImporterId(e.target.value)}
                   className="select select-sm h-[42px] px-4 bg-base-100 rounded-xl border border-base-content/15 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40 cursor-pointer"
                 >
-                  <option value="">All Users</option>
-                  {teamUsers.map((user) => (
-                    <option key={user.id} value={user.id}>
-                      {user.name || user.email}
+                  <option value="">All Importers</option>
+                  <option value={UNASSIGNED_IMPORTER_VALUE}>Unassigned</option>
+                  {importers.map((importer) => (
+                    <option key={importer.id} value={importer.id}>
+                      {importer.name}
                     </option>
                   ))}
                 </select>
               </div>
-            )}
+            </div>
+          </div>}
 
-            {/* Filter By Importer */}
-            <div className="flex flex-col gap-2 min-w-[200px]">
-              <div className="flex justify-between items-center">
-                <div className="flex gap-1.5 items-center">
-                  <TagIcon className="h-4 w-4 text-primary" />
-                  <label className="text-xs font-semibold uppercase tracking-wider text-base-content/80">
-                    Importer
-                  </label>
-                </div>
-                {selectedImporterId && (
-                  <button
-                    onClick={() => setSelectedImporterId("")}
-                    className="text-xs font-bold text-primary hover:text-primary/80 transition-colors"
-                  >
-                    Clear
-                  </button>
-                )}
+          {filteredClassifications && filteredClassifications.length > 0 && (
+            <>
+              {/* Results Separator */}
+              <div className="flex items-center gap-4 my-2">
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-base-content/30 to-base-content/30"></div>
+                <span className="text-xs font-semibold uppercase tracking-widest text-base-content/60">
+                  {filteredClassifications.length}{" "}
+                  {filteredClassifications.length === 1
+                    ? "Classification"
+                    : "Classifications"}
+                </span>
+                <div className="flex-1 h-px bg-gradient-to-l from-transparent via-base-content/30 to-base-content/30"></div>
               </div>
-              <select
-                value={selectedImporterId}
-                onChange={(e) => setSelectedImporterId(e.target.value)}
-                className="select select-sm h-[42px] px-4 bg-base-100 rounded-xl border border-base-content/15 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40 cursor-pointer"
-              >
-                <option value="">All Importers</option>
-                <option value={UNASSIGNED_IMPORTER_VALUE}>Unassigned</option>
-                {importers.map((importer) => (
-                  <option key={importer.id} value={importer.id}>
-                    {importer.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>}
 
-        {filteredClassifications && filteredClassifications.length > 0 && (
-          <>
-            {/* Results Separator */}
-            <div className="flex items-center gap-4 my-2">
-              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-base-content/30 to-base-content/30"></div>
-              <span className="text-xs font-semibold uppercase tracking-widest text-base-content/60">
-                {filteredClassifications.length}{" "}
-                {filteredClassifications.length === 1
-                  ? "Classification"
-                  : "Classifications"}
-              </span>
-              <div className="flex-1 h-px bg-gradient-to-l from-transparent via-base-content/30 to-base-content/30"></div>
-            </div>
-
-            <div className="flex flex-col gap-3 pb-6">
-              {filteredClassifications.map((classification, index) => (
-                <ClassificationSummary
-                  key={`classification-${index}`}
-                  classificationRecord={classification}
-                  user={userProfile}
-                  onDelete={handleDeleteClassification}
-                  isDeleting={deletingId === classification.id}
-                />
-              ))}
-            </div>
-          </>
-        )}
-
-        {/* Empty State */}
-        {!loader.isLoading &&
-          !classificationsLoading &&
-          (() => {
-            const emptyStateConfig = getEmptyStateConfig();
-            if (!emptyStateConfig) return null;
-
-            return (
-              <div className="relative overflow-hidden flex flex-col items-center justify-center py-16 px-6 rounded-2xl border border-base-content/15 bg-base-200/50">
-                {/* Animated background elements */}
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                  <div className="absolute -top-20 -left-20 w-64 h-64 bg-primary/15 rounded-full blur-3xl animate-pulse" />
-                  <div className="absolute -bottom-20 -right-20 w-72 h-72 bg-secondary/15 rounded-full blur-3xl animate-pulse [animation-delay:1s]" />
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-pulse [animation-delay:2s]" />
-                  {/* Grid pattern overlay */}
-                  <div
-                    className="absolute inset-0 opacity-[0.04]"
-                    style={{
-                      backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
-                      backgroundSize: "40px 40px",
-                    }}
+              <div className="flex flex-col gap-3 pb-6">
+                {filteredClassifications.map((classification, index) => (
+                  <ClassificationSummary
+                    key={`classification-${index}`}
+                    classificationRecord={classification}
+                    user={userProfile}
+                    onDelete={handleDeleteClassification}
+                    isDeleting={deletingId === classification.id}
                   />
-                </div>
+                ))}
+              </div>
+            </>
+          )}
 
-                {/* Content */}
-                <div className="relative z-10 flex flex-col items-center gap-6">
-                  {/* Icon with animated ring */}
-                  <div className="relative">
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary via-secondary to-accent opacity-30 blur-xl animate-pulse" />
-                    <div className="relative p-5 rounded-full bg-base-100 shadow-lg border border-base-content/10">
-                      <div className="p-4 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth={1.5}
-                          stroke="currentColor"
-                          className="w-10 h-10 text-primary"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d={emptyStateConfig.iconPath}
-                          />
-                        </svg>
+          {/* Empty State */}
+          {!loader.isLoading &&
+            !classificationsLoading &&
+            (() => {
+              const emptyStateConfig = getEmptyStateConfig();
+              if (!emptyStateConfig) return null;
+
+              return (
+                <div className="relative overflow-hidden flex flex-col items-center justify-center py-16 px-6 rounded-2xl border border-base-content/15 bg-base-200/50">
+                  {/* Animated background elements */}
+                  <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div className="absolute -top-20 -left-20 w-64 h-64 bg-primary/15 rounded-full blur-3xl animate-pulse" />
+                    <div className="absolute -bottom-20 -right-20 w-72 h-72 bg-secondary/15 rounded-full blur-3xl animate-pulse [animation-delay:1s]" />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-pulse [animation-delay:2s]" />
+                    {/* Grid pattern overlay */}
+                    <div
+                      className="absolute inset-0 opacity-[0.04]"
+                      style={{
+                        backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
+                        backgroundSize: "40px 40px",
+                      }}
+                    />
+                  </div>
+
+                  {/* Content */}
+                  <div className="relative z-10 flex flex-col items-center gap-6">
+                    {/* Icon with animated ring */}
+                    <div className="relative">
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary via-secondary to-accent opacity-30 blur-xl animate-pulse" />
+                      <div className="relative p-5 rounded-full bg-base-100 shadow-lg border border-base-content/10">
+                        <div className="p-4 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={1.5}
+                            stroke="currentColor"
+                            className="w-10 h-10 text-primary"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d={emptyStateConfig.iconPath}
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                      <div className="absolute inset-0 rounded-full border-2 border-primary/30 animate-ping [animation-duration:3s]" />
+                    </div>
+
+                    {/* Text content */}
+                    <div
+                      className={`text-center ${emptyStateConfig.maxWidth || "max-w-xl"}`}
+                    >
+                      <h3 className="text-2xl md:text-3xl font-bold text-base-content">
+                        {emptyStateConfig.title}
+                      </h3>
+                      <div className="text-base-content/70 mt-3 text-base leading-relaxed">
+                        {emptyStateConfig.descriptions.map((desc, index) => (
+                          <p key={index}>{desc}</p>
+                        ))}
                       </div>
                     </div>
-                    <div className="absolute inset-0 rounded-full border-2 border-primary/30 animate-ping [animation-duration:3s]" />
-                  </div>
 
-                  {/* Text content */}
-                  <div
-                    className={`text-center ${emptyStateConfig.maxWidth || "max-w-xl"}`}
-                  >
-                    <h3 className="text-2xl md:text-3xl font-bold text-base-content">
-                      {emptyStateConfig.title}
-                    </h3>
-                    <div className="text-base-content/70 mt-3 text-base leading-relaxed">
-                      {emptyStateConfig.descriptions.map((desc, index) => (
-                        <p key={index}>{desc}</p>
-                      ))}
-                    </div>
+                    {/* Button */}
+                    <button
+                      className="group relative overflow-hidden px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300 bg-primary text-primary-content hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02]"
+                      onClick={emptyStateConfig.onButtonClick}
+                    >
+                      <span className="relative z-10 flex items-center gap-2">
+                        {emptyStateConfig.buttonIcon}
+                        {emptyStateConfig.buttonText}
+                      </span>
+                    </button>
                   </div>
-
-                  {/* Button */}
-                  <button
-                    className="group relative overflow-hidden px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300 bg-primary text-primary-content hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02]"
-                    onClick={emptyStateConfig.onButtonClick}
-                  >
-                    <span className="relative z-10 flex items-center gap-2">
-                      {emptyStateConfig.buttonIcon}
-                      {emptyStateConfig.buttonText}
-                    </span>
-                  </button>
                 </div>
-              </div>
-            );
-          })()}
-      </div>
+              );
+            })()}
+        </div>
+      )}
     </main>
   );
 };
