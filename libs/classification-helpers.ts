@@ -3,6 +3,28 @@ import {
   ClassificationRecord,
   ClassificationStatus,
 } from "../interfaces/hts";
+
+/**
+ * True when classification has section/chapter discovery data (preliminaryLevels).
+ */
+export function hasPreliminaryLevels(
+  classification: ClassificationType | null | undefined
+): boolean {
+  return !!(classification?.preliminaryLevels?.length ?? 0);
+}
+
+/**
+ * Old classifications were completed before the section/chapter discovery flow.
+ * They have levels with selections (the HTS path) but no preliminaryLevels.
+ * We should NOT fetch section/chapter candidates for these.
+ */
+export function shouldSkipSectionChapterDiscovery(
+  classification: ClassificationType | null | undefined
+): boolean {
+  if (!classification) return true;
+  if (hasPreliminaryLevels(classification)) return false;
+  return (classification.levels?.some((l) => l.selection) ?? false);
+}
 import { UserProfile, UserRole } from "./supabase/user";
 import { Countries, Country } from "../constants/countries";
 
@@ -34,15 +56,21 @@ export function getCountryOfOrigin(
 }
 
 /**
- * Check if user can update classification details
+ * Check if user can update classification details.
+ * Owner, global admin, or team admin (same team) can update.
  */
 export function canUserUpdateDetails(
   userProfile: UserProfile | null,
   classificationRecord: ClassificationRecord | undefined
 ): boolean {
+  if (!userProfile || !classificationRecord) return false;
+  if (userProfile.id === classificationRecord.user_id) return true;
+  if (userProfile.role === UserRole.SUPER_ADMIN) return true;
+  // Team admin: same team and role is ADMIN
   return (
-    userProfile?.role === UserRole.ADMIN ||
-    userProfile?.id === classificationRecord?.user_id
+    userProfile.role === UserRole.ADMIN &&
+    !!userProfile.team_id &&
+    classificationRecord.team_id === userProfile.team_id
   );
 }
 

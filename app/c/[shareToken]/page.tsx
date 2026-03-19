@@ -1,9 +1,7 @@
 import { createClient } from "@/app/api/supabase/server";
 import { ClassificationRecord } from "@/interfaces/hts";
-import { SharedClassificationView } from "@/components/SharedClassificationView";
+import SharedClassificationClient from "@/components/SharedClassificationClient";
 import { notFound } from "next/navigation";
-import UnauthenticatedHeader from "@/components/UnauthenticatedHeader";
-import Footer from "@/components/Footer";
 
 export const dynamic = "force-dynamic";
 
@@ -25,13 +23,5 @@ export default async function SharedClassificationPage({ params }: Props) {
     notFound();
   }
 
-  return (
-    <div className="min-h-screen flex flex-col bg-base-100">
-      <UnauthenticatedHeader />
-      <main className="flex-1">
-        <SharedClassificationView classification={classification} />
-      </main>
-      <Footer />
-    </div>
-  );
+  return <SharedClassificationClient classificationRecord={classification} />;
 }

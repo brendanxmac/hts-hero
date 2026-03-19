@@ -36,10 +36,12 @@ import { OverviewTab } from "./tabs/OverviewTab";
 import { ClassificationLevelTab } from "./tabs/ClassificationLevelTab";
 import { DutyTariffTab } from "./tabs/DutyTariffTab";
 import { PlaceholderTab } from "./tabs/PlaceholderTab";
+import { CrossRulingsTab } from "./tabs/CrossRulingsTab";
 import { ClassificationCompleteModal } from "./ClassificationCompleteModal";
 import { AnonymousClassificationCompleteModal } from "./AnonymousClassificationCompleteModal";
 import { AnonymousConversionBanner } from "./AnonymousConversionBanner";
 import { LockedTabOverlay } from "./LockedTabOverlay";
+import { useIsReadOnly } from "../../contexts/ReadOnlyContext";
 
 /**
  * Hydrates the SectionChapterDiscovery context from persisted classification
@@ -136,6 +138,7 @@ export const ClassificationDetailLayout = ({
   classificationRecord: initialRecord,
   onNavigateBack,
 }: Props) => {
+  const readOnly = useIsReadOnly();
   const { isFetching } = useHts();
   const { user } = useUser();
   const { classification, classificationId, isSaving } = useClassification();
@@ -176,18 +179,20 @@ export const ClassificationDetailLayout = ({
   }, [activeTab]);
 
   useEffect(() => {
+    if (readOnly) return;
     const isNowComplete = classification?.isComplete ?? false;
     if (isNowComplete && !wasCompleteRef.current) {
       setShowCompleteModal(true);
     }
     wasCompleteRef.current = isNowComplete;
-  }, [classification?.isComplete]);
+  }, [classification?.isComplete, readOnly]);
 
-  const canUpdateDetails = canUserUpdateDetails(
-    userProfile,
-    classificationRecord
-  );
-  const canDelete = canUserDelete(userProfile, classificationRecord);
+  const canUpdateDetails = readOnly
+    ? false
+    : canUserUpdateDetails(userProfile, classificationRecord);
+  const canDelete = readOnly
+    ? false
+    : canUserDelete(userProfile, classificationRecord);
 
   const refreshRecord = useCallback(async () => {
     if (!classificationId) return;
@@ -284,9 +289,12 @@ export const ClassificationDetailLayout = ({
     [classificationId]
   );
 
-  const handleOpenExplore = useCallback(() => setShowExploreModal(true), []);
+  const handleOpenExplore = useCallback(() => {
+    if (!readOnly) setShowExploreModal(true);
+  }, [readOnly]);
 
-  if (isFetching || (!isAnonymous && !userProfile)) {
+  // When read-only (e.g. viewing team/shared classification), don't block on isFetching or userProfile
+  if ((!readOnly && isFetching) || (!readOnly && !isAnonymous && !userProfile)) {
     return (
       <div className="h-screen w-full flex items-center justify-center bg-base-100">
         <LoadingIndicator />
@@ -343,10 +351,9 @@ export const ClassificationDetailLayout = ({
         );
       case "cross-rulings":
         return (
-          <PlaceholderTab
-            title="CROSS Ruling Validation"
-            description="See which CROSS rulings are relevant to this classification, and have our system analyze them for you"
-            icon="scale"
+          <CrossRulingsTab
+            latestHtsCode={latestHtsCode}
+            isComplete={classification?.isComplete ?? false}
           />
         );
       case "duty-tariffs":
@@ -427,14 +434,14 @@ export const ClassificationDetailLayout = ({
           </div>
 
           {/* Anonymous conversion banner — persistent when modal dismissed */}
-          {isAnonymous && classification?.isComplete && !showCompleteModal && (
+          {!readOnly && isAnonymous && classification?.isComplete && !showCompleteModal && (
             <AnonymousConversionBanner classificationId={classificationId} />
           )}
 
           {/* Scrollable Content Panel */}
           <main ref={mainContentRef} className="flex-1 overflow-y-auto bg-base-100">
             <div className="w-full px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
-              {isAnonymous && ANON_LOCKED_TABS.has(activeTab) ? (
+              {!readOnly && isAnonymous && ANON_LOCKED_TABS.has(activeTab) ? (
                 <LockedTabOverlay
                   classificationId={classificationId}
                   featureName={LOCKED_TAB_FEATURE_NAMES[activeTab] || "this feature"}
@@ -448,51 +455,55 @@ export const ClassificationDetailLayout = ({
           </main>
         </div>
 
-        {/* Modals */}
-        {showExploreModal && (
-          <Modal
-            isOpen={showExploreModal}
-            setIsOpen={setShowExploreModal}
-            size="full"
-          >
-            <div className="h-[85vh] w-full overflow-hidden rounded-2xl">
-              <Explore />
-            </div>
-          </Modal>
-        )}
+        {/* Modals (hidden in readonly/shared mode) */}
+        {!readOnly && (
+          <>
+            {showExploreModal && (
+              <Modal
+                isOpen={showExploreModal}
+                setIsOpen={setShowExploreModal}
+                size="full"
+              >
+                <div className="h-[85vh] w-full overflow-hidden rounded-2xl">
+                  <Explore />
+                </div>
+              </Modal>
+            )}
 
-        <DeleteConfirmationModal
-          isOpen={showDeleteModal}
-          isDeleting={isDeleting}
-          onClose={() => setShowDeleteModal(false)}
-          onConfirm={handleDeleteClassification}
-        />
+            <DeleteConfirmationModal
+              isOpen={showDeleteModal}
+              isDeleting={isDeleting}
+              onClose={() => setShowDeleteModal(false)}
+              onConfirm={handleDeleteClassification}
+            />
 
-        {isAnonymous ? (
-          <AnonymousClassificationCompleteModal
-            show={showCompleteModal}
-            latestHtsCode={latestHtsCode}
-            articleDescription={classification?.articleDescription}
-            classificationId={classificationId}
-            onContinueWithoutSaving={() => {
-              setShowCompleteModal(false);
-              setActiveTab("overview");
-            }}
-          />
-        ) : (
-          <ClassificationCompleteModal
-            show={showCompleteModal}
-            latestHtsCode={latestHtsCode}
-            articleDescription={classification?.articleDescription}
-            onClose={() => {
-              setShowCompleteModal(false);
-              setActiveTab("overview");
-            }}
-            onProceed={() => {
-              setShowCompleteModal(false);
-              setActiveTab("overview");
-            }}
-          />
+            {isAnonymous ? (
+              <AnonymousClassificationCompleteModal
+                show={showCompleteModal}
+                latestHtsCode={latestHtsCode}
+                articleDescription={classification?.articleDescription}
+                classificationId={classificationId}
+                onContinueWithoutSaving={() => {
+                  setShowCompleteModal(false);
+                  setActiveTab("overview");
+                }}
+              />
+            ) : (
+              <ClassificationCompleteModal
+                show={showCompleteModal}
+                latestHtsCode={latestHtsCode}
+                articleDescription={classification?.articleDescription}
+                onClose={() => {
+                  setShowCompleteModal(false);
+                  setActiveTab("overview");
+                }}
+                onProceed={() => {
+                  setShowCompleteModal(false);
+                  setActiveTab("overview");
+                }}
+              />
+            )}
+          </>
         )}
       </div>
     </SectionChapterDiscoveryProvider>

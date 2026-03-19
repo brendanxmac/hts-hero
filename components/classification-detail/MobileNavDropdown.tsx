@@ -24,6 +24,7 @@ import {
   PaperClipIcon,
   DocumentTextIcon,
 } from "@heroicons/react/24/outline";
+import { useIsReadOnly } from "../../contexts/ReadOnlyContext";
 
 interface Props {
   classification: ClassificationI;
@@ -69,6 +70,7 @@ export const MobileNavDropdown = ({
   userProfile,
   isAnonymous,
 }: Props) => {
+  const readOnly = useIsReadOnly();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -116,12 +118,14 @@ export const MobileNavDropdown = ({
               height={24}
             />
           </Link>
-          <button
-            onClick={onNavigateBack}
-            className="btn btn-ghost btn-xs btn-circle"
-          >
-            <ArrowLeftIcon className="w-3.5 h-3.5" />
-          </button>
+          {!readOnly && (
+            <button
+              onClick={onNavigateBack}
+              className="btn btn-ghost btn-xs btn-circle"
+            >
+              <ArrowLeftIcon className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
 
         {/* Center: Dropdown */}
@@ -208,7 +212,7 @@ export const MobileNavDropdown = ({
                   .filter((item) => item.id !== "overview")
                   .map((item) => {
                     const Icon = NAV_ICONS[item.id] || ChevronRightIcon;
-                    const showLock = isAnonymous && item.lockedForAnon;
+                    const showLock = !readOnly && isAnonymous && item.lockedForAnon;
                     return (
                       <button
                         key={item.id}
@@ -234,7 +238,7 @@ export const MobileNavDropdown = ({
 
         {/* Right: User + Theme */}
         <div className="flex items-center gap-1 shrink-0">
-          {!isAnonymous && <ButtonAccount />}
+          {!readOnly && !isAnonymous && <ButtonAccount />}
           <ThemeToggle />
         </div>
       </div>

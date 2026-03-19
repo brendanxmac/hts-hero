@@ -1,20 +1,22 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams, usePathname } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "@/app/logo.svg";
 import config from "@/config";
 import ButtonSignin from "./ButtonSignin";
+import ButtonAccount from "./ButtonAccount";
 import ThemeToggle from "./ThemeToggle";
 import { ToolsDropdown, MobileToolsMenu } from "./ToolsDropdown";
+import { useUser } from "../contexts/UserContext";
 
 // A header with a logo on the left, links in the center (like Pricing, etc...), and a CTA (like Get Started or Login) on the right.
 // The header is responsive, and on mobile, the links are hidden behind a burger button.
 const AboutHeader = () => {
   const searchParams = useSearchParams();
-  const pathname = usePathname();
+  const { user } = useUser();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const links: {
@@ -107,7 +109,7 @@ const AboutHeader = () => {
 
           {/* CTA on large screens */}
           <div className="hidden lg:flex lg:justify-end lg:flex-1 lg:gap-2 lg:items-center">
-            <ButtonSignin />
+            {user ? <ButtonAccount /> : <ButtonSignin />}
             <ThemeToggle />
           </div>
         </nav>
@@ -185,7 +187,7 @@ const AboutHeader = () => {
 
             {/* CTA on small screens */}
             <div className="flex gap-2 items-center">
-              <ButtonSignin />
+              {user ? <ButtonAccount /> : <ButtonSignin />}
               <ThemeToggle />
             </div>
           </div>

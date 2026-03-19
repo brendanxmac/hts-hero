@@ -39,6 +39,7 @@ import { useUser } from "../../contexts/UserContext";
 import { VerticalCandidateElement } from "./VerticalCandidateElement";
 import Fuse from "fuse.js";
 import { AnalysisLoadingAnimation } from "../classification-ui/AnalysisLoadingAnimation";
+import { useIsReadOnly } from "../../contexts/ReadOnlyContext";
 
 export interface VerticalClassificationStepProps {
   classificationLevel: number;
@@ -53,6 +54,7 @@ export const VerticalClassificationStep = ({
   onOpenExplore,
   disableAutoScroll = false,
 }: VerticalClassificationStepProps) => {
+  const readOnly = useIsReadOnly();
   const [loading, setLoading] = useState<Loader>({
     isLoading: false,
     text: "",
@@ -139,6 +141,7 @@ export const VerticalClassificationStep = ({
   };
 
   useEffect(() => {
+    if (readOnly) return;
     isMountedRef.current = true;
 
     const findBestClassificationProgression = async () => {
@@ -254,7 +257,7 @@ export const VerticalClassificationStep = ({
     return () => {
       isMountedRef.current = false;
     };
-  }, [currentLevel?.candidates?.length, classificationLevel]);
+  }, [currentLevel?.candidates?.length, classificationLevel, readOnly]);
 
   const getHeadings = async () => {
     setLoading({ isLoading: true, text: "Looking for Headings" });
@@ -368,6 +371,7 @@ export const VerticalClassificationStep = ({
   }, [articleDescription]);
 
   useEffect(() => {
+    if (readOnly) return;
     if (
       classificationLevel === 0 &&
       chapterDiscoveryComplete &&
@@ -379,7 +383,7 @@ export const VerticalClassificationStep = ({
       hasFetchedCandidatesRef.current = true;
       getHeadings();
     }
-  }, [classificationLevel, chapterDiscoveryComplete, chapterCandidates]);
+  }, [classificationLevel, chapterDiscoveryComplete, chapterCandidates, readOnly]);
 
   const analysisIsActive = loading.isLoading || !!currentLevel?.analysisReason;
 
@@ -404,26 +408,28 @@ export const VerticalClassificationStep = ({
                 </span>
               )}
             </div>
-            <div className="flex flex-wrap gap-1.5">
-              {classificationLevel === 0 && (
+            {!readOnly && (
+              <div className="flex flex-wrap gap-1.5">
+                {classificationLevel === 0 && (
+                  <button
+                    className="btn btn-ghost btn-xs gap-1.5 text-base-content/60 hover:text-primary"
+                    onClick={onOpenExplore}
+                    disabled={loading.isLoading || isDisabled}
+                  >
+                    <PlusIcon className="w-3.5 h-3.5" />
+                    <span>Add</span>
+                  </button>
+                )}
                 <button
                   className="btn btn-ghost btn-xs gap-1.5 text-base-content/60 hover:text-primary"
-                  onClick={onOpenExplore}
-                  disabled={loading.isLoading || isDisabled}
+                  onClick={() => setShowCrossRulingsModal(true)}
+                  disabled={loading.isLoading}
                 >
-                  <PlusIcon className="w-3.5 h-3.5" />
-                  <span>Add</span>
+                  <MagnifyingGlassIcon className="w-3.5 h-3.5" />
+                  <span>Search CROSS</span>
                 </button>
-              )}
-              <button
-                className="btn btn-ghost btn-xs gap-1.5 text-base-content/60 hover:text-primary"
-                onClick={() => setShowCrossRulingsModal(true)}
-                disabled={loading.isLoading}
-              >
-                <MagnifyingGlassIcon className="w-3.5 h-3.5" />
-                <span>Search CROSS</span>
-              </button>
-            </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -564,7 +570,7 @@ export const VerticalClassificationStep = ({
         </div>
       </div>
 
-      {showCrossRulingsModal && (
+      {!readOnly && showCrossRulingsModal && (
         <Modal
           isOpen={showCrossRulingsModal}
           setIsOpen={setShowCrossRulingsModal}

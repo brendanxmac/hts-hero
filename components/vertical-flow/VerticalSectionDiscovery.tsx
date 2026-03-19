@@ -5,6 +5,7 @@ import { useClassification } from "../../contexts/ClassificationContext";
 import { useSectionChapterDiscovery } from "../../contexts/SectionChapterDiscoveryContext";
 import { useHtsSections } from "../../contexts/HtsSectionsContext";
 import { getBestDescriptionCandidates } from "../../libs/hts";
+import { shouldSkipSectionChapterDiscovery } from "../../libs/classification-helpers";
 import {
   PreliminaryCandidate,
   PreliminaryClassificationLevel,
@@ -13,8 +14,10 @@ import toast from "react-hot-toast";
 import { QueueListIcon } from "@heroicons/react/16/solid";
 import { SectionChapterCandidate } from "./SectionChapterCandidate";
 import { AnalysisLoadingAnimation } from "../classification-ui/AnalysisLoadingAnimation";
+import { useIsReadOnly } from "../../contexts/ReadOnlyContext";
 
 export const VerticalSectionDiscovery = () => {
+  const readOnly = useIsReadOnly();
   const { classification, setClassification, classificationTier } =
     useClassification();
   const { articleDescription } = classification || {};
@@ -61,14 +64,16 @@ export const VerticalSectionDiscovery = () => {
     });
   };
 
-  // Fetch section candidates if none exist yet (fresh discovery)
   useEffect(() => {
+    if (readOnly) return;
     if (!articleDescription || hasFetchedRef.current) return;
     if (sectionCandidates.length > 0) return;
+    // Old classifications have levels with selections but no preliminaryLevels - don't fetch
+    if (shouldSkipSectionChapterDiscovery(classification)) return;
 
     hasFetchedRef.current = true;
     fetchSectionCandidates();
-  }, [articleDescription, sectionCandidates.length]);
+  }, [articleDescription, sectionCandidates.length, readOnly, classification]);
 
   const fetchSectionCandidates = async () => {
     setIsFetchingSections(true);
@@ -126,7 +131,27 @@ export const VerticalSectionDiscovery = () => {
     }
   };
 
-  // const isLoading = isFetchingSections || sectionCandidates.length === 0;
+  // Old classification: no discovery data, show message instead of loading
+  if (shouldSkipSectionChapterDiscovery(classification)) {
+    return (
+      <div className="rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden">
+        <div className="px-5 py-3.5 border-b border-base-300 bg-base-200/30">
+          <div className="flex items-center gap-2.5">
+            <QueueListIcon className="w-4 h-4 text-base-content/50" />
+            <h3 className="text-sm font-semibold text-base-content">
+              Section Discovery
+            </h3>
+          </div>
+        </div>
+        <div className="p-5">
+          <p className="text-sm text-base-content/70">
+            This classification was completed before section discovery. View the
+            full classification path in the Overview tab.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden">

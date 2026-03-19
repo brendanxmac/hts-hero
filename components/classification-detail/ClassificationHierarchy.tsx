@@ -25,7 +25,8 @@ function buildItemsFromClassification(
   const { preliminaryLevels, levels } = classification;
   const items: HierarchyItem[] = [];
 
-  if (preliminaryLevels) {
+  // Section/chapter from preliminaryLevels (new flow)
+  if (preliminaryLevels?.length) {
     const sectionLevel = preliminaryLevels.find((l) => l.level === "section");
     if (sectionLevel && sectionLevel.candidates.length > 0) {
       const top = sectionLevel.candidates[0];
@@ -51,7 +52,9 @@ function buildItemsFromClassification(
     }
   }
 
-  levels.forEach((level, index) => {
+  // Levels (works for both new and old classifications)
+  const classificationLevels = levels ?? [];
+  classificationLevels.forEach((level, index) => {
     const selection = level.selection;
     if (!selection) return;
 

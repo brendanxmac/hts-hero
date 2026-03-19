@@ -5,12 +5,15 @@ import { useEffect, useRef, useState } from "react";
 import { useClassification } from "../../../contexts/ClassificationContext";
 import { useHts } from "../../../contexts/HtsContext";
 import { useUser } from "../../../contexts/UserContext";
+import { useUserProfileAndImporters } from "../../../hooks";
 import { fetchClassificationById } from "../../../libs/classification";
+import { canUserUpdateDetails } from "../../../libs/classification-helpers";
 import { ClassificationDetailLayout } from "../../../components/classification-detail/ClassificationDetailLayout";
 import { LoadingIndicator } from "../../../components/LoadingIndicator";
 import { ClassificationRecord } from "../../../interfaces/hts";
 import { BreadcrumbsProvider } from "../../../contexts/BreadcrumbsContext";
 import { ClassificationsProvider } from "../../../contexts/ClassificationsContext";
+import { ReadOnlyProvider } from "../../../contexts/ReadOnlyContext";
 
 export default function ClassificationPage() {
   const params = useParams();
@@ -18,11 +21,13 @@ export default function ClassificationPage() {
   const id = params.id as string;
 
   const { user } = useUser();
+  const { userProfile } = useUserProfileAndImporters(user?.id);
   const {
     setClassification,
     setClassificationId,
     resetClassificationState,
     flushAndSave,
+    setCanSave,
   } = useClassification();
   const { fetchElements, revision } = useHts();
 
@@ -30,25 +35,44 @@ export default function ClassificationPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const hasRefetchedForLinkingRef = useRef(false);
+  const canUpdateRef = useRef(false);
+
+  useEffect(() => {
+    const canUpdate = canUserUpdateDetails(userProfile ?? null, record ?? undefined);
+    canUpdateRef.current = canUpdate;
+    if (record) {
+      setCanSave(canUpdate);
+    }
+    return () => {
+      setCanSave(true);
+    };
+  }, [userProfile, record, setCanSave]);
 
   useEffect(() => {
     let cancelled = false;
 
     const loadClassification = async () => {
+      setError(null);
       try {
         setIsLoading(true);
         const fetchedRecord = await fetchClassificationById(id);
         if (cancelled) return;
 
+        setError(null);
         setRecord(fetchedRecord);
-
-        if (fetchedRecord.revision && fetchedRecord.revision !== revision) {
-          await fetchElements(fetchedRecord.revision);
-        }
-        if (cancelled) return;
-
         setClassification(fetchedRecord.classification);
         setClassificationId(fetchedRecord.id);
+
+        if (
+          fetchedRecord.revision &&
+          fetchedRecord.revision !== revision
+        ) {
+          try {
+            await fetchElements(fetchedRecord.revision);
+          } catch (e) {
+            console.error("Failed to fetch HTS elements (non-fatal):", e);
+          }
+        }
       } catch (err) {
         if (cancelled) return;
         console.error("Failed to load classification:", err);
@@ -91,13 +115,17 @@ export default function ClassificationPage() {
 
   useEffect(() => {
     return () => {
-      flushAndSave();
+      if (canUpdateRef.current) {
+        flushAndSave();
+      }
       resetClassificationState();
     };
   }, []);
 
   const handleNavigateBack = async () => {
-    await flushAndSave();
+    if (canUpdateRef.current) {
+      await flushAndSave();
+    }
     router.push("/classifications");
   };
 
@@ -119,13 +147,17 @@ export default function ClassificationPage() {
     );
   }
 
+  const canUpdate = canUserUpdateDetails(userProfile ?? null, record ?? undefined);
+
   return (
     <ClassificationsProvider>
       <BreadcrumbsProvider>
-        <ClassificationDetailLayout
-          classificationRecord={record ?? undefined}
-          onNavigateBack={handleNavigateBack}
-        />
+        <ReadOnlyProvider readOnly={!canUpdate}>
+          <ClassificationDetailLayout
+            classificationRecord={record ?? undefined}
+            onNavigateBack={handleNavigateBack}
+          />
+        </ReadOnlyProvider>
       </BreadcrumbsProvider>
     </ClassificationsProvider>
   );

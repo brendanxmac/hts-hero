@@ -6,6 +6,8 @@ import {
   ClassificationStatus,
 } from "../../../../interfaces/hts";
 import { getAnonymousTokenFromCookieHeader } from "../../../../libs/anonymous-token";
+import { fetchUser } from "../../../../libs/supabase/user";
+import { UserRole } from "../../../../libs/supabase/user";
 
 export const dynamic = "force-dynamic";
 
@@ -91,14 +93,42 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Scope the update to the user's own classifications
+    // Scope the update: owner, anonymous token, or team admin
     let query = supabase
       .from("classifications")
       .update(updateData)
       .eq("id", id);
 
     if (user) {
-      query = query.eq("user_id", user.id);
+      const userProfile = await fetchUser(user.id);
+      const isTeamAdmin =
+        userProfile?.role === UserRole.ADMIN &&
+        userProfile?.team_id &&
+        true; // team_id match checked after fetch
+
+      // Fetch record to check ownership/team
+      const { data: existingRecord } = await supabase
+        .from("classifications")
+        .select("user_id, team_id")
+        .eq("id", id)
+        .single<Pick<ClassificationRecord, "user_id" | "team_id">>();
+
+      const isOwnerMatch = existingRecord?.user_id === user.id;
+      const isTeamAdminMatch =
+        isTeamAdmin &&
+        !!userProfile?.team_id &&
+        existingRecord?.team_id === userProfile.team_id;
+
+      if (isOwnerMatch) {
+        query = query.eq("user_id", user.id);
+      } else if (isTeamAdminMatch) {
+        query = query.eq("team_id", userProfile!.team_id!);
+      } else {
+        return NextResponse.json(
+          { error: "You do not have permission to update this classification." },
+          { status: 403 }
+        );
+      }
     } else if (anonymousToken) {
       query = query.eq("anonymous_token", anonymousToken).is("user_id", null);
     }

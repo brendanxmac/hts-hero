@@ -29,6 +29,7 @@ import {
 } from "../../libs/supabase/purchase";
 import { useUser } from "../../contexts/UserContext";
 import { SupabaseBuckets } from "../../constants/supabase";
+import { useIsReadOnly } from "../../contexts/ReadOnlyContext";
 
 interface Props {
   element: HtsElement;
@@ -43,6 +44,7 @@ export const VerticalCandidateElement = ({
   disabled = false,
   onOpenExplore,
 }: Props) => {
+  const readOnly = useIsReadOnly();
   const { user } = useUser();
   const { htsno, chapter, description, indent } = element;
   const { clearBreadcrumbs, setBreadcrumbs } = useBreadcrumbs();
@@ -170,11 +172,13 @@ export const VerticalCandidateElement = ({
     <div
       className={`group relative rounded-lg border transition-all duration-150 ${isLevelSelection
         ? "bg-success/5 border-success/40 ring-1 ring-success/20"
-        : disabled
-          ? "bg-base-100 border-base-300 cursor-not-allowed opacity-60"
-          : "bg-base-100 border-base-300 hover:border-primary/40 hover:bg-base-200/30 cursor-pointer"
+        : readOnly
+          ? "bg-base-100 border-base-300"
+          : disabled
+            ? "bg-base-100 border-base-300 cursor-not-allowed opacity-60"
+            : "bg-base-100 border-base-300 hover:border-primary/40 hover:bg-base-200/30 cursor-pointer"
         }`}
-      onClick={handleSelect}
+      onClick={readOnly ? undefined : handleSelect}
     >
       <div className="p-3">
         {/* Top row: code + actions */}
@@ -195,43 +199,45 @@ export const VerticalCandidateElement = ({
             </span>
           </div>
 
-          <div className="flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-            <button
-              className="btn btn-ghost btn-xs btn-square"
-              disabled={disabled}
-              title={`Chapter ${chapter} Notes`}
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowPDF({
-                  title: `Chapter ${chapter} Notes`,
-                  bucket: SupabaseBuckets.NOTES,
-                  filePath: `/chapters/Chapter ${chapter}.pdf`,
-                });
-              }}
-            >
-              <DocumentTextIcon className="h-3.5 w-3.5 text-base-content/40" />
-            </button>
-
-            <button
-              className="btn btn-ghost btn-xs btn-square"
-              disabled={disabled}
-              title="View Element"
-              onClick={handleViewElement}
-            >
-              <MagnifyingGlassIcon className="h-3.5 w-3.5 text-base-content/40" />
-            </button>
-
-            {indent === "0" && (
+          {!readOnly && (
+            <div className="flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
               <button
                 className="btn btn-ghost btn-xs btn-square"
                 disabled={disabled}
-                title="Remove"
-                onClick={handleRemove}
+                title={`Chapter ${chapter} Notes`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowPDF({
+                    title: `Chapter ${chapter} Notes`,
+                    bucket: SupabaseBuckets.NOTES,
+                    filePath: `/chapters/Chapter ${chapter}.pdf`,
+                  });
+                }}
               >
-                <TrashIcon className="h-3.5 w-3.5 text-base-content/40 hover:text-error" />
+                <DocumentTextIcon className="h-3.5 w-3.5 text-base-content/40" />
               </button>
-            )}
-          </div>
+
+              <button
+                className="btn btn-ghost btn-xs btn-square"
+                disabled={disabled}
+                title="View Element"
+                onClick={handleViewElement}
+              >
+                <MagnifyingGlassIcon className="h-3.5 w-3.5 text-base-content/40" />
+              </button>
+
+              {indent === "0" && (
+                <button
+                  className="btn btn-ghost btn-xs btn-square"
+                  disabled={disabled}
+                  title="Remove"
+                  onClick={handleRemove}
+                >
+                  <TrashIcon className="h-3.5 w-3.5 text-base-content/40 hover:text-error" />
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Description */}

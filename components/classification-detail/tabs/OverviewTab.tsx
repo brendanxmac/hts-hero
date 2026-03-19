@@ -17,11 +17,7 @@ import {
   Importer,
 } from "../../../interfaces/hts";
 import { updateClassification } from "../../../libs/classification";
-import {
-  fetchImportersForUser,
-  fetchImportersForTeam,
-  createImporter,
-} from "../../../libs/supabase/importers";
+import { createImporter } from "../../../libs/supabase/importers";
 import { generateBasisForClassification } from "../../../libs/hts";
 import ImporterDropdown from "../../ImporterDropdown";
 import Modal from "../../Modal";
@@ -42,6 +38,7 @@ import { CountrySelection } from "../../CountrySelection";
 import { DashboardCard, DashboardCardHeader } from "../DashboardCard";
 import { PublicShareSection, TeamShareSection } from "../ShareSections";
 import { TariffDashboardSection } from "../TariffDashboardSection";
+import { useIsReadOnly } from "../../../contexts/ReadOnlyContext";
 
 interface Props {
   classification: ClassificationI;
@@ -84,6 +81,7 @@ export const OverviewTab = ({
   onNavigateToDuty,
   onNavigateToTab,
 }: Props) => {
+  const readOnly = useIsReadOnly();
   const {
     classification: ctxClassification,
     setClassification,
@@ -113,6 +111,7 @@ export const OverviewTab = ({
   ]);
 
   useEffect(() => {
+    if (readOnly) return;
     if (
       liveClassification.isComplete &&
       (liveClassification.notes === undefined ||
@@ -123,7 +122,7 @@ export const OverviewTab = ({
         notes: generateBasisForClassification(liveClassification),
       });
     }
-  }, [liveClassification.isComplete]);
+  }, [liveClassification.isComplete, readOnly]);
 
   const [importers, setImporters] = useState<Importer[]>(initialImporters);
   const [selectedImporterId, setSelectedImporterId] = useState<string>(
@@ -137,26 +136,23 @@ export const OverviewTab = ({
   const [showCreateImporterModal, setShowCreateImporterModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [codeCopied, setCodeCopied] = useState(false);
+  const hasAddedImporterRef = useRef(false);
 
   useEffect(() => {
-    if (!userProfile) return;
-    const fetchData = async () => {
-      try {
-        const fetchedImporters = userProfile.team_id
-          ? await fetchImportersForTeam(userProfile.team_id)
-          : await fetchImportersForUser();
-        setImporters(fetchedImporters);
-        setIsLoadingImporters(false);
-        if (classificationRecord) {
-          setSelectedImporterId(classificationRecord.importer_id || "");
-        }
-      } catch (error) {
-        console.error("Error fetching importers:", error);
-        setIsLoadingImporters(false);
-      }
-    };
-    fetchData();
-  }, [userProfile]);
+    if (readOnly) return;
+    if (!hasAddedImporterRef.current) {
+      setImporters(initialImporters);
+    }
+    setIsLoadingImporters(initialLoadingImporters);
+    if (classificationRecord) {
+      setSelectedImporterId(classificationRecord.importer_id || "");
+    }
+  }, [
+    readOnly,
+    initialImporters,
+    initialLoadingImporters,
+    classificationRecord,
+  ]);
 
   const handleAddImporter = async () => {
     if (!newImporter.trim() || !userProfile) return;
@@ -166,6 +162,7 @@ export const OverviewTab = ({
         newImporter.trim(),
         userProfile.team_id || undefined
       );
+      hasAddedImporterRef.current = true;
       setImporters((prev) => [...prev, newImporterData]);
       setNewImporter("");
       setSelectedImporterId(newImporterData.id);
@@ -268,7 +265,7 @@ export const OverviewTab = ({
               )}
             </div>
 
-            {isComplete && (
+            {!readOnly && isComplete && (
               <div className="flex flex-wrap gap-2 shrink-0">
                 {classificationRecord && isComplete && (
                   <StatusDropdown
@@ -311,68 +308,87 @@ export const OverviewTab = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <DashboardCard>
-          <DashboardCardHeader
-            title="Country of Origin"
-            icon={<GlobeAltIcon className="w-4 h-4" />}
-          />
-          <div className="p-5">
-            <CountrySelection
-              selectedCountries={countryOfOrigin ? [countryOfOrigin] : []}
-              setSelectedCountries={(countries) => {
-                onCountryChange(countries[0] || null);
-              }}
-              singleSelect
+      {readOnly ? (
+        countryOfOrigin && (
+          <DashboardCard>
+            <DashboardCardHeader
+              title="Country of Origin"
+              icon={<GlobeAltIcon className="w-4 h-4" />}
             />
-          </div>
-        </DashboardCard>
-
-        <DashboardCard>
-          <DashboardCardHeader
-            title="Importer"
-            icon={<TagIcon className="w-4 h-4" />}
-          />
-          <div className="p-5">
-            <div className="flex gap-2">
-              <ImporterDropdown
-                importers={importers}
-                selectedImporterId={selectedImporterId}
-                onSelectionChange={(value) => {
-                  setSelectedImporterId(value);
-                  updateClassification(
-                    classificationId,
-                    undefined,
-                    value || null,
-                    undefined
-                  ).then(() => refreshClassifications());
+            <div className="p-5">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">{countryOfOrigin.flag}</span>
+                <span className="text-sm font-medium text-base-content">
+                  {countryOfOrigin.name}
+                </span>
+              </div>
+            </div>
+          </DashboardCard>
+        )
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <DashboardCard>
+            <DashboardCardHeader
+              title="Country of Origin"
+              icon={<GlobeAltIcon className="w-4 h-4" />}
+            />
+            <div className="p-5">
+              <CountrySelection
+                selectedCountries={countryOfOrigin ? [countryOfOrigin] : []}
+                setSelectedCountries={(countries) => {
+                  onCountryChange(countries[0] || null);
                 }}
-                onCreateSelected={() => setShowCreateImporterModal(true)}
-                isLoading={isLoadingImporters}
-                disabled={!canUpdateDetails}
-                showCreateOption={canUpdateDetails}
+                singleSelect
               />
-              {selectedImporterId && canUpdateDetails && (
-                <button
-                  className="btn btn-sm btn-ghost"
-                  onClick={() => {
-                    setSelectedImporterId("");
+            </div>
+          </DashboardCard>
+
+          <DashboardCard>
+            <DashboardCardHeader
+              title="Importer"
+              icon={<TagIcon className="w-4 h-4" />}
+            />
+            <div className="p-5">
+              <div className="flex gap-2">
+                <ImporterDropdown
+                  importers={importers}
+                  selectedImporterId={selectedImporterId}
+                  onSelectionChange={(value) => {
+                    setSelectedImporterId(value);
                     updateClassification(
                       classificationId,
                       undefined,
-                      null,
+                      value || null,
                       undefined
                     ).then(() => refreshClassifications());
                   }}
-                  disabled={isLoadingImporters}
-                >
-                  Clear
-                </button>
-              )}
+                  onCreateSelected={() => setShowCreateImporterModal(true)}
+                  isLoading={isLoadingImporters}
+                  disabled={!canUpdateDetails}
+                  showCreateOption={canUpdateDetails}
+                />
+                {selectedImporterId && canUpdateDetails && (
+                  <button
+                    className="btn btn-sm btn-ghost"
+                    onClick={() => {
+                      setSelectedImporterId("");
+                      updateClassification(
+                        classificationId,
+                        undefined,
+                        null,
+                        undefined
+                      ).then(() => refreshClassifications());
+                    }}
+                    disabled={isLoadingImporters}
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
-        </DashboardCard>
-      </div>
+          </DashboardCard>
+        </div>
+      )}
 
       {/* Tariff Summary */}
       <TariffDashboardSection
@@ -419,14 +435,14 @@ export const OverviewTab = ({
               resizeBasisTextarea();
             }}
             onBlur={() => {
-              flushAndSave();
+              if (!readOnly) flushAndSave();
             }}
           />
         </div>
       </DashboardCard>
 
       {/* Share Modal */}
-      {classificationRecord && userProfile && (
+      {!readOnly && classificationRecord && userProfile && (
         <Modal isOpen={showShareModal} setIsOpen={setShowShareModal}>
           <div className="p-6 flex flex-col gap-5 min-w-80 sm:min-w-[420px]">
             <div className="flex items-center gap-2">
@@ -441,55 +457,57 @@ export const OverviewTab = ({
       )}
 
       {/* Create Importer Modal */}
-      <Modal
-        isOpen={showCreateImporterModal}
-        setIsOpen={setShowCreateImporterModal}
-      >
-        <div className="p-6 flex flex-col gap-4 min-w-80">
-          <h3 className="text-lg font-semibold">Create New Importer</h3>
-          <input
-            type="text"
-            placeholder="Importer name"
-            value={newImporter}
-            className="input input-bordered w-full"
-            onChange={(e) => setNewImporter(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && newImporter.trim()) {
-                handleAddImporter();
-                setShowCreateImporterModal(false);
-                setNewImporter("");
-              }
-            }}
-            autoFocus
-          />
-          <div className="flex gap-2 justify-end">
-            <button
-              className="btn btn-ghost"
-              onClick={() => {
-                setShowCreateImporterModal(false);
-                setNewImporter("");
+      {!readOnly && (
+        <Modal
+          isOpen={showCreateImporterModal}
+          setIsOpen={setShowCreateImporterModal}
+        >
+          <div className="p-6 flex flex-col gap-4 min-w-80">
+            <h3 className="text-lg font-semibold">Create New Importer</h3>
+            <input
+              type="text"
+              placeholder="Importer name"
+              value={newImporter}
+              className="input input-bordered w-full"
+              onChange={(e) => setNewImporter(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && newImporter.trim()) {
+                  handleAddImporter();
+                  setShowCreateImporterModal(false);
+                  setNewImporter("");
+                }
               }}
-            >
-              Cancel
-            </button>
-            <button
-              className="btn btn-primary"
-              onClick={() => {
-                handleAddImporter();
-                setShowCreateImporterModal(false);
-                setNewImporter("");
-              }}
-              disabled={isCreatingImporter || !newImporter.trim()}
-            >
-              {isCreatingImporter ? (
-                <span className="loading loading-spinner loading-xs" />
-              ) : (
-                "Create"
-              )}
-            </button>
+              autoFocus
+            />
+            <div className="flex gap-2 justify-end">
+              <button
+                className="btn btn-ghost"
+                onClick={() => {
+                  setShowCreateImporterModal(false);
+                  setNewImporter("");
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn btn-primary"
+                onClick={() => {
+                  handleAddImporter();
+                  setShowCreateImporterModal(false);
+                  setNewImporter("");
+                }}
+                disabled={isCreatingImporter || !newImporter.trim()}
+              >
+                {isCreatingImporter ? (
+                  <span className="loading loading-spinner loading-xs" />
+                ) : (
+                  "Create"
+                )}
+              </button>
+            </div>
           </div>
-        </div>
-      </Modal>
+        </Modal>
+      )}
     </div>
   );
 };

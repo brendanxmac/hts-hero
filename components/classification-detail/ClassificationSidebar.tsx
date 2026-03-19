@@ -32,6 +32,7 @@ import { usePathname } from "next/navigation";
 import { getTutorialFromPathname, Tutorial, TutorialI } from "../Tutorial";
 import { Product, userHasActivePurchaseForProduct } from "../../libs/supabase/purchase";
 import { GiftIcon } from "@heroicons/react/24/solid";
+import { useIsReadOnly } from "../../contexts/ReadOnlyContext";
 
 interface Props {
   classification: ClassificationI;
@@ -121,6 +122,7 @@ export const ClassificationSidebar = ({
   userProfile,
   isAnonymous,
 }: Props) => {
+  const readOnly = useIsReadOnly();
   const [classificationExpanded, setClassificationExpanded] = useState(true);
   const [showTutorial, setShowTutorial] = useState(false);
   const [isPayingUser, setIsPayingUser] = useState(false);
@@ -176,16 +178,23 @@ export const ClassificationSidebar = ({
             <ThemeToggle />
           </div>
 
-          <button
-            onClick={onNavigateBack}
-            className="flex items-center gap-2 text-xs font-medium text-base-content/60 hover:text-primary transition-colors px-2 py-1.5 -ml-0.5 rounded-lg hover:bg-base-300/50 w-full"
-          >
-            <ArrowLeftIcon className="w-3.5 h-3.5" />
-            Back to Classifications
-            {isSaving && (
-              <span className="loading loading-spinner loading-xs ml-auto" />
-            )}
-          </button>
+          {readOnly ? (
+            <div className="flex items-center gap-2 text-xs font-medium text-primary/70 px-2 py-1.5 -ml-0.5 rounded-lg bg-primary/5 border border-primary/10 w-full">
+              <CheckCircleIcon className="w-3.5 h-3.5" />
+              Shared Classification
+            </div>
+          ) : (
+            <button
+              onClick={onNavigateBack}
+              className="flex items-center gap-2 text-xs font-medium text-base-content/60 hover:text-primary transition-colors px-2 py-1.5 -ml-0.5 rounded-lg hover:bg-base-300/50 w-full"
+            >
+              <ArrowLeftIcon className="w-3.5 h-3.5" />
+              Back to Classifications
+              {isSaving && (
+                <span className="loading loading-spinner loading-xs ml-auto" />
+              )}
+            </button>
+          )}
         </div>
 
         {/* Item Info */}
@@ -305,7 +314,7 @@ export const ClassificationSidebar = ({
               .map((item) => {
                 const Icon = NAV_ICONS[item.id] || ChevronRightIcon;
                 const isActive = activeTab === item.id;
-                const showLock = isAnonymous && item.lockedForAnon;
+                    const showLock = !readOnly && isAnonymous && item.lockedForAnon;
                 return (
                   <li key={item.id}>
                     <button
@@ -333,52 +342,65 @@ export const ClassificationSidebar = ({
 
         {/* User Footer */}
         <div className="w-full flex flex-col p-3 items-center">
-
-          <div className="w-full px-2 flex items-center gap-2">
-            {!isAnonymous && (
-              <div className="flex items-center gap-2 flex-1 min-w-0">
-                <ButtonAccount />
-                {userProfile && (
-                  <span className="text-xs text-base-content/50 truncate">
-                    {userProfile.name || userProfile.email}
-                  </span>
-                )}
-              </div>
-            )}
-            <div className="flex items-center gap-1 shrink-0">
-              {tutorial && (
-                <button
-                  className="btn btn-ghost btn-sm btn-circle"
-                  onClick={() => setShowTutorial(true)}
-                  title="Tutorial"
-                >
-                  <PlayIcon className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Upgrade / CTA */}
-          {isAnonymous ? (
+          {readOnly ? (
             <div className="w-full px-1">
               <Link
-                href={`/signin?redirect=/classifications/${classificationRecord?.id || ""}`}
+                href="/classify"
                 className="btn btn-primary w-full gap-2"
               >
-                <GiftIcon className="w-4 h-4" />
-                Get 10 FREE Classifications
-              </Link>
-            </div>
-          ) : isPayingUser || isLoading ? null : (
-            <div className="w-full mt-3 px-1">
-              <Link
-                href="/classifications"
-                className="w-full btn btn-sm btn-primary gap-2"
-              >
                 <SparklesIcon className="w-4 h-4" />
-                Upgrade to Pro
+                Try It Free
               </Link>
             </div>
+          ) : (
+            <>
+              <div className="w-full px-2 flex items-center gap-2">
+                {!isAnonymous && (
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <ButtonAccount />
+                    {userProfile && (
+                      <span className="text-xs text-base-content/50 truncate">
+                        {userProfile.name || userProfile.email}
+                      </span>
+                    )}
+                  </div>
+                )}
+                <div className="flex items-center gap-1 shrink-0">
+                  {tutorial && (
+                    <button
+                      className="btn btn-ghost btn-sm btn-circle"
+                      onClick={() => setShowTutorial(true)}
+                      title="Tutorial"
+                    >
+                      <PlayIcon className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Upgrade / CTA */}
+              {isAnonymous ? (
+                <div className="w-full px-1">
+                  <Link
+                    href={`/signin?redirect=/classifications/${classificationRecord?.id || ""}`}
+                    className="btn btn-primary w-full gap-2"
+                  >
+                    <GiftIcon className="w-4 h-4" />
+                    Get 10 FREE Classifications
+                  </Link>
+                </div>
+              ) : isPayingUser || isLoading ? null : (
+                <div className="w-full mt-3 px-1">
+                  <Link
+                    href="/classifications"
+                    className="w-full btn btn-sm btn-primary gap-2"
+                  >
+                    <SparklesIcon className="w-4 h-4" />
+                    Upgrade to Pro
+                  </Link>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

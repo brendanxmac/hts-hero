@@ -59,6 +59,8 @@ interface ClassificationContextType {
   saveClassification: () => Promise<void>;
   // Flush any pending debounce and save immediately - use before navigation
   flushAndSave: () => Promise<void>;
+  /** Set whether the current classification can be saved (e.g. false when viewing team member's classification) */
+  setCanSave: (canSave: boolean) => void;
   // Notes helper functions
   addNotes: (newNotes: NoteRecord[]) => void;
   getNotesForSectionsAndChapters: (
@@ -100,6 +102,7 @@ export const ClassificationProvider = ({
   const pendingClassificationRef = useRef<Promise<void> | null>(null);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isSavingRef = useRef(false);
+  const canSaveRef = useRef(true);
 
   // Refs to always have access to current values (avoids stale closures)
   const classificationRef = useRef<ClassificationI>(null);
@@ -160,7 +163,11 @@ export const ClassificationProvider = ({
       const currentClassification = classificationRef.current;
       const currentClassificationId = classificationIdRef.current;
 
-      if (currentClassificationId && currentClassification) {
+      if (
+        currentClassificationId &&
+        currentClassification &&
+        canSaveRef.current
+      ) {
         try {
           await updateClassification(
             currentClassificationId,
@@ -329,6 +336,10 @@ export const ClassificationProvider = ({
     }
   };
 
+  const setCanSave = (canSave: boolean) => {
+    canSaveRef.current = canSave;
+  };
+
   // Flush any pending debounce and save immediately
   // Call this before navigation to ensure all changes are saved
   const flushAndSave = async () => {
@@ -341,8 +352,12 @@ export const ClassificationProvider = ({
     const currentClassification = classificationRef.current;
     const currentClassificationId = classificationIdRef.current;
 
-    // Only save if we have both ID and classification data
-    if (currentClassificationId && currentClassification) {
+    // Only save if we have both ID and classification data and user has permission
+    if (
+      currentClassificationId &&
+      currentClassification &&
+      canSaveRef.current
+    ) {
       setIsSaving(true);
       isSavingRef.current = true;
       try {
@@ -442,6 +457,7 @@ export const ClassificationProvider = ({
         startNewClassification,
         saveClassification,
         flushAndSave,
+        setCanSave,
         addNotes,
         getNotesForSectionsAndChapters,
       }}

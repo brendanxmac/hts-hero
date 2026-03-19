@@ -14,14 +14,14 @@ const COMPARISONS: ComparisonBar[] = [
   {
     label: "Speed",
     unit: " min",
-    manual: { value: 40, label: "Manual" },
-    htsHero: { value: 2, label: "HTS Hero" },
+    manual: { value: 45, label: "Status Quo" },
+    htsHero: { value: 3, label: "HTS Hero" },
     higherIsBetter: false,
   },
   {
     label: "Cost",
     unit: "$",
-    manual: { value: 100, label: "Manual" },
+    manual: { value: 100, label: "Status Quo" },
     htsHero: { value: 1, label: "HTS Hero" },
     higherIsBetter: false,
   },
@@ -29,7 +29,7 @@ const COMPARISONS: ComparisonBar[] = [
     label: "Defensibility",
     unit: "%",
     manual: { value: 0, label: "Other Systems" },
-    htsHero: { value: 100, label: "HTS Hero" },
+    htsHero: { value: 90, label: "HTS Hero" },
     higherIsBetter: true,
   },
 ];
@@ -48,7 +48,7 @@ function AnimatedBar({
   const colorClasses =
     color === "hero"
       ? "bg-primary"
-      : "bg-base-content/70";
+      : "bg-base-content/30";
 
   return (
     <div
@@ -172,7 +172,7 @@ export default function BenefitsComparisonSection() {
         {/* Header */}
         <div className="text-center mb-14 md:mb-16">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-base-content mb-4">
-            Your Strategic <span className="text-primary">Advantage</span>
+            Reduce Import Risk & <br /><span className="text-primary">Defend Your Profits</span>
           </h2>
           <p className="text-base sm:text-lg text-base-content/50 max-w-xl mx-auto leading-relaxed">
             Fast, cost-effective, and defensible HTS classification

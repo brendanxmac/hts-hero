@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useClassification } from "../../contexts/ClassificationContext";
 import { useSectionChapterDiscovery } from "../../contexts/SectionChapterDiscoveryContext";
 import { getBestDescriptionCandidates } from "../../libs/hts";
+import { shouldSkipSectionChapterDiscovery } from "../../libs/classification-helpers";
 import { ChapterCandidate } from "../../contexts/SectionChapterDiscoveryContext";
 import {
   PreliminaryCandidate,
@@ -13,8 +14,10 @@ import toast from "react-hot-toast";
 import { QueueListIcon } from "@heroicons/react/16/solid";
 import { SectionChapterCandidate } from "./SectionChapterCandidate";
 import { AnalysisLoadingAnimation } from "../classification-ui/AnalysisLoadingAnimation";
+import { useIsReadOnly } from "../../contexts/ReadOnlyContext";
 
 export const VerticalChapterDiscovery = () => {
+  const readOnly = useIsReadOnly();
   const { classification, setClassification, classificationTier } =
     useClassification();
   const { articleDescription } = classification || {};
@@ -62,17 +65,19 @@ export const VerticalChapterDiscovery = () => {
     });
   };
 
-  // Fetch chapter candidates if none exist yet (fresh discovery)
   useEffect(() => {
+    if (readOnly) return;
     if (!sectionDiscoveryComplete) return;
     if (!articleDescription) return;
     if (hasFetchedRef.current) return;
     if (chapterCandidates.length > 0) return;
     if (sectionCandidates.length === 0) return;
+    // Old classifications have levels with selections but no preliminaryLevels - don't fetch
+    if (shouldSkipSectionChapterDiscovery(classification)) return;
 
     hasFetchedRef.current = true;
     fetchChapterCandidates();
-  }, [sectionDiscoveryComplete, sectionCandidates.length, chapterCandidates.length]);
+  }, [sectionDiscoveryComplete, sectionCandidates.length, chapterCandidates.length, readOnly, classification]);
 
   const fetchChapterCandidates = async () => {
     setIsFetchingChapters(true);

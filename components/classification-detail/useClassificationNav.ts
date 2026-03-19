@@ -25,7 +25,7 @@ export interface ClassificationNavItem {
   lockedForAnon?: boolean
 }
 
-export const ANON_LOCKED_TABS: ReadonlySet<NavTab> = new Set([
+export const ANON_LOCKED_TABS: ReadonlySet<NavTab> = new Set<NavTab>([
   "cross-rulings",
   "attachments",
   "classification-report",
@@ -89,30 +89,41 @@ export function useClassificationNav(classification: ClassificationI | null) {
       (l) => l.level === "chapter",
     )
 
-    const sectionDone = (sectionLevel?.candidates?.length ?? 0) > 0
-    const chapterDone = (chapterLevel?.candidates?.length ?? 0) > 0
+    // Old classifications have levels but no preliminaryLevels - skip section/chapter tabs
+    const hasLevelsWithSelections =
+      (classification.levels?.length ?? 0) > 0 &&
+      classification.levels?.some((l) => l.selection)
+    const sectionDone =
+      hasLevelsWithSelections || (sectionLevel?.candidates?.length ?? 0) > 0
+    const chapterDone =
+      hasLevelsWithSelections || (chapterLevel?.candidates?.length ?? 0) > 0
 
-    // Progressive reveal: only show each stage once the previous one completes
-    items.push({
-      id: "classification-section",
-      label: "Sections",
-      status: sectionDone ? "completed" : "active",
-      isSubItem: true,
-    })
-
-    if (sectionDone) {
+    // For old classifications (no preliminaryLevels), skip section/chapter and show levels only
+    if (!hasLevelsWithSelections) {
       items.push({
-        id: "classification-chapter",
-        label: "Chapters",
-        status: chapterDone ? "completed" : "active",
+        id: "classification-section",
+        label: "Sections",
+        status: sectionDone ? "completed" : "active",
         isSubItem: true,
       })
+
+      if (sectionDone) {
+        items.push({
+          id: "classification-chapter",
+          label: "Chapters",
+          status: chapterDone ? "completed" : "active",
+          isSubItem: true,
+        })
+      }
     }
 
-    if (chapterDone) {
-      classification.levels.forEach((level, index) => {
+    if (chapterDone || hasLevelsWithSelections) {
+      const levels = classification.levels ?? []
+      levels.forEach((level, index) => {
         const previousDone =
-          index === 0 ? true : !!classification.levels[index - 1]?.selection
+          index === 0
+            ? true
+            : !!(classification.levels ?? [])[index - 1]?.selection
 
         const status: NavItemStatus = level.selection
           ? "completed"
@@ -124,7 +135,7 @@ export function useClassificationNav(classification: ClassificationI | null) {
           id: `classification-level-${index}`,
           label: level.selection
             ? "Current Level"
-            : getLevelLabel(index, classification.levels),
+            : getLevelLabel(index, classification.levels ?? []),
           status,
           isSubItem: true,
           htsno: level.selection?.htsno || undefined,

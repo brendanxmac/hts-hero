@@ -8,8 +8,9 @@ import {
 import { CheckCircleIcon } from "@heroicons/react/16/solid";
 
 interface ClassificationExample {
-  description: string;
   htsCode: string;
+  description: string;
+  defense?: string;
   shareToken: string;
   image: string;
   classificationPath: string[];
@@ -21,9 +22,9 @@ interface ClassificationExample {
 
 const EXAMPLES: ClassificationExample[] = [
   {
+    htsCode: "6813.20.00.60",
     description:
       "Ceramic brake pads for passenger vehicles, semi-metallic compound with copper-free formulation",
-    htsCode: "6813.20.00.60",
     shareToken: "nPP4hl_4vxY",
     image: '/brakes.png',
     classificationPath: [
@@ -35,9 +36,20 @@ const EXAMPLES: ClassificationExample[] = [
     stats: { levels: 4, crossRulings: 3 },
   },
   {
+    htsCode: "7323.93.00.85",
     description:
       "Stainless steel double-wall vacuum insulated water bottle, 32oz with leak-proof lid",
-    htsCode: "7323.93.00.85",
+    defense: `Under GRI 1, heading 9617.00 (Vacuum flasks and other vacuum vessels, complete; parts thereof other than glass inners) appears to directly describe the essential nature of the article: a complete vacuum vessel designed to hold liquids, using a vacuum between walls for insulation. The legal notes to Chapter 96 do not exclude such vacuum vessels when made of base metal; rather, they confirm that Chapter 96 can cover certain specialized manufactured articles even when partly or wholly of metal, provided they are not parts of general use or otherwise excluded. None of the Chapter 96 exclusions apply to a finished vacuum-insulated bottle.
+
+By contrast:
+- Heading 7310 (“Tanks, casks, drums, cans, boxes and similar containers… of iron or steel”) generally covers non‑vacuum industrial or transport containers for materials, not consumer vacuum bottles.
+- Heading 7323 (“Table, kitchen or other household articles, of iron or steel”) is broader household ware, but does not specifically address vacuum construction; it is less specific than a heading expressly for vacuum vessels.
+- Heading 7326 (“Other articles of iron or steel”) is a residual heading for iron or steel articles not more specifically provided for elsewhere; it would only apply if no more specific heading existed.
+- Heading 8309 covers stoppers, caps, lids and similar packing accessories of base metal, which would at most describe the lid component, not the complete bottle. Under Note 1 to Chapter 83, such parts are generally classified with their parent articles, so the complete article should not be classified as a mere stopper or lid.
+
+Applying GRI 3(a), among the potentially relevant headings, heading 9617.00 is the most specific because it is limited to vacuum flasks and other vacuum vessels, which matches the double‑wall vacuum insulated design described. The other headings are more generic containers or household articles of metal.
+
+Therefore, based on the available information and the applicable notes, the primary candidate that most specifically and accurately progresses the classification is heading 9617.00 for “Vacuum flasks and other vacuum vessels, complete; parts thereof other than glass inners.`,
     shareToken: "b9aETKwzNn4",
     image: '/bottle.png',
     classificationPath: [
@@ -49,9 +61,9 @@ const EXAMPLES: ClassificationExample[] = [
     stats: { levels: 3, crossRulings: 5 },
   },
   {
+    htsCode: "6110.12.20.40",
     description:
       "Women's 100% cashmere crew-neck pullover sweater, knitted, with ribbed cuffs and hem",
-    htsCode: "6110.12.20.40",
     shareToken: "x1XcVsWHIbQ",
     image: '/sweater.png',
     classificationPath: [
@@ -77,10 +89,10 @@ function ExampleCard({ example }: { example: ClassificationExample }) {
       className="group relative flex flex-col rounded-2xl transition-all duration-300 hover:-translate-y-1.5"
     >
       {/* Glow */}
-      <div className="absolute -inset-px rounded-2xl bg-gradient-to-br from-secondary/15 via-primary/10 to-secondary/15 blur-xl transition-all duration-300 group-hover:from-secondary/25 group-hover:via-primary/20 group-hover:to-secondary/25 group-hover:-inset-1" />
+      {/* <div className="absolute -inset-px rounded-2xl bg-gradient-to-br from-secondary/15 via-primary/10 to-secondary/15 blur-xl transition-all duration-300 group-hover:from-secondary/25 group-hover:via-primary/20 group-hover:to-secondary/25 group-hover:-inset-1" /> */}
 
       {/* Card surface */}
-      <div className="relative flex flex-col flex-1 rounded-2xl border border-secondary/20 bg-base-100 overflow-hidden shadow-lg shadow-secondary/[0.08] transition-all duration-300 group-hover:shadow-xl group-hover:shadow-secondary/[0.12] group-hover:border-secondary/35">
+      <div className="relative flex flex-col flex-1 rounded-2xl border border-primary/20 bg-base-100 overflow-hidden shadow-lg shadow-primary/[0.08] transition-all duration-300 group-hover:shadow-xl group-hover:shadow-secondary/[0.12] group-hover:border-secondary/35">
         {/* Product image */}
         <div className="relative w-full overflow-hidden bg-base-200/50">
           <div className="flex items-center justify-center h-48 sm:h-56 p-4">
@@ -198,13 +210,11 @@ export default function ClassificationExamplesSection() {
         {/* Section header */}
         <div className="flex flex-col items-center mb-12 md:mb-16">
           <h2 className="py-2 text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-4">
-            Codes You Can <span className="text-primary">Defend</span>
+            Not Just Codes, <span className="text-primary">Proof</span>
           </h2>
 
           <p className="text-base sm:text-lg text-base-content/50 max-w-3xl mx-auto leading-relaxed text-center mb-8">
-            Classify complex items quickly and accurately
-            with GRI + Legal Note analysis, CROSS ruling validation, and a full defense
-            report. See real examples below
+            Each classification includes step-by-step GRI reasoning, legal note analysis, and CROSS ruling validation — so you can explain and defend every decision
           </p>
 
           {/* Animated bouncing arrow */}

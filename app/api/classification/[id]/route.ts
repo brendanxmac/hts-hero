@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server"
 import { createClient } from "../../supabase/server"
-import { fetchUser } from "../../../../libs/supabase/user"
+import { fetchUser, fetchUsersByTeam } from "../../../../libs/supabase/user"
 import { getAnonymousTokenFromCookieHeader } from "../../../../libs/anonymous-token"
 import { ClassificationRecord } from "../../../../interfaces/hts"
 
@@ -40,13 +40,27 @@ export async function GET(
 
     const userProfile = user ? await fetchUser(user.id) : null
 
-    // Authenticated user: must be owner or on the same team
+    // Authenticated user: must be owner or on the same team (align with fetch route logic)
     if (user && userProfile) {
       const isOwner = record.user_id === user.id
-      const isSameTeam =
+      const isSameTeamViaRecord =
         userProfile.team_id && record.team_id === userProfile.team_id
+      // Fetch route also allows when owner is a team member (user_id.in.teamMemberIds)
+      let isOwnerOnMyTeam = false
+      let isOwnerSameTeam = false
+      if (!isSameTeamViaRecord && userProfile.team_id && record.user_id) {
+        const teamMembers = await fetchUsersByTeam(userProfile.team_id)
+        isOwnerOnMyTeam = teamMembers.some((m) => m.id === record.user_id)
+        // Fallback: owner's team_id matches viewer's (handles edge cases)
+        if (!isOwnerOnMyTeam) {
+          const ownerProfile = await fetchUser(record.user_id)
+          isOwnerSameTeam =
+            !!ownerProfile?.team_id &&
+            ownerProfile.team_id === userProfile.team_id
+        }
+      }
 
-      if (isOwner || isSameTeam) {
+      if (isOwner || isSameTeamViaRecord || isOwnerOnMyTeam || isOwnerSameTeam) {
         return NextResponse.json(record, { status: 200 })
       }
     }
