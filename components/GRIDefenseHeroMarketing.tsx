@@ -1,51 +1,67 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const keywords = [
-  "According to GRI 1",
-  "Based on Section XV Note 1(g)",
-  "Under GRI 3(a)",
-  "Based on Chapter Note 3(a)",
-  "Per GRI 3(b)",
-  "Additional US Note Note 1(g) states",
+  "According to GRI 1...",
+  "Based on Section XV Note 1(g):",
+  "Under GRI 3(a)...",
+  "Based on Chapter Note 3(a):",
+  "Per GRI 3(b)...",
+  "Additional US Note Note 1(g) states:",
 ];
 
-const PIXELS_PER_SECOND = 60;
-
 export const GRIDefenseHeroMarketing = () => {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const offsetRef = useRef(0);
+  const stateRef = useRef({ index: 0, charCount: 0, isDeleting: false });
+  const [, setTick] = useState(0);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const { index, charCount } = stateRef.current;
+  const currentPhrase = keywords[index];
+  const displayText = currentPhrase.slice(0, charCount);
+  const isGRI = currentPhrase.includes("GRI");
 
   useEffect(() => {
-    const track = trackRef.current;
-    if (!track) return;
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const typeSpeed = prefersReducedMotion ? 120 : 50;
+    const deleteSpeed = prefersReducedMotion ? 80 : 35;
+    const pauseAfterType = prefersReducedMotion ? 2500 : 1400;
+    const pauseAfterDelete = prefersReducedMotion ? 800 : 500;
 
-    let segmentWidth = track.scrollWidth / 2;
-    let lastTime = performance.now();
+    const tick = () => {
+      const { index, charCount, isDeleting } = stateRef.current;
+      const phrase = keywords[index];
 
-    const resizeObserver = new ResizeObserver(() => {
-      segmentWidth = track.scrollWidth / 2;
-    });
-    resizeObserver.observe(track);
-
-    const animate = (currentTime: number) => {
-      const delta = (currentTime - lastTime) / 1000;
-      lastTime = currentTime;
-
-      offsetRef.current += PIXELS_PER_SECOND * delta;
-      if (offsetRef.current >= segmentWidth) {
-        offsetRef.current -= segmentWidth;
+      if (isDeleting) {
+        if (charCount > 0) {
+          stateRef.current.charCount = charCount - 1;
+          setTick((t) => t + 1);
+          timeoutRef.current = setTimeout(tick, deleteSpeed);
+        } else {
+          stateRef.current.isDeleting = false;
+          stateRef.current.index = (index + 1) % keywords.length;
+          stateRef.current.charCount = 0;
+          setTick((t) => t + 1);
+          timeoutRef.current = setTimeout(tick, pauseAfterDelete);
+        }
+      } else {
+        if (charCount < phrase.length) {
+          stateRef.current.charCount = charCount + 1;
+          setTick((t) => t + 1);
+          timeoutRef.current = setTimeout(tick, typeSpeed);
+        } else {
+          stateRef.current.isDeleting = true;
+          setTick((t) => t + 1);
+          timeoutRef.current = setTimeout(tick, pauseAfterType);
+        }
       }
-
-      track.style.transform = `translate3d(-${offsetRef.current}px, 0, 0)`;
-      requestAnimationFrame(animate);
     };
 
-    const rafId = requestAnimationFrame(animate);
+    timeoutRef.current = setTimeout(tick, typeSpeed);
     return () => {
-      cancelAnimationFrame(rafId);
-      resizeObserver.disconnect();
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, []);
 
@@ -61,21 +77,19 @@ export const GRIDefenseHeroMarketing = () => {
         GRI, Legal Note, & CROSS Rulings defense included for every classification
       </p>
 
-      {/* Stock-ticker style marquee */}
-      <div className="gri-marquee-wrapper mt-8 pt-6 border-t border-base-content/10 overflow-hidden">
-        <div
-          ref={trackRef}
-          className="flex gap-10 md:gap-16 whitespace-nowrap will-change-transform"
-        >
-          {[...keywords, ...keywords].map((k, i) => (
+      <div className="mt-8 pt-6 border-t border-base-content/10 min-h-[4rem] md:min-h-[5rem] flex items-center justify-center">
+        <div className="relative w-full min-h-[4rem] md:min-h-[5rem] flex items-center justify-center">
+          <span
+            className={`text-2xl md:text-4xl font-semibold tracking-tight ${isGRI ? "text-primary/90" : "text-secondary/90"
+              }`}
+            aria-live="polite"
+          >
+            {displayText}
             <span
-              key={i}
-              className={`shrink-0 text-sm md:text-xl font-semibold ${k.includes("GRI") ? "text-primary/80" : "text-secondary/80"
-                }`}
-            >
-              {k}...
-            </span>
-          ))}
+              className="inline-block w-[3px] h-[0.85em] ml-1 align-middle bg-current animate-[griTypingCursor_1s_step-end_infinite]"
+              aria-hidden
+            />
+          </span>
         </div>
       </div>
     </div>

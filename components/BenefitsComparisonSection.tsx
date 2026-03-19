@@ -4,10 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import {
   ShieldCheckIcon,
   ScaleIcon,
-  ExclamationTriangleIcon,
   TruckIcon,
   BanknotesIcon,
   ClipboardDocumentCheckIcon,
+  DocumentTextIcon,
 } from "@heroicons/react/24/outline";
 
 interface ComparisonBar {
@@ -139,59 +139,62 @@ function ComparisonRow({
   );
 }
 
+const PAIN_PILLS = [
+  { label: "Cargo delays & holds", icon: TruckIcon },
+  { label: "CBP fines & penalties", icon: BanknotesIcon },
+  { label: "Overpaid tariffs", icon: ScaleIcon },
+  { label: "Audit headaches", icon: ClipboardDocumentCheckIcon },
+  { label: "Protest & litigation losses", icon: ShieldCheckIcon },
+];
+
 function DefensibilityResultCard() {
-  const painPills = [
-    { label: "Avoid cargo delays & holds", icon: TruckIcon },
-    { label: "Avoid CBP fines & penalties", icon: BanknotesIcon },
-    { label: "Avoid overpaying tariffs", icon: ScaleIcon },
-    { label: "Avoid audit headaches", icon: ClipboardDocumentCheckIcon },
-    { label: "Avoid protest & litigation losses", icon: ShieldCheckIcon },
-  ];
   return (
     <div>
       <h3 className="text-lg sm:text-xl font-bold text-base-content mb-5">
         Defensibility
       </h3>
-      <div className="relative w-full max-w-3xl">
-        {/* Glow */}
-        <div className="absolute -inset-px rounded-2xl bg-gradient-to-r from-primary/15 via-primary/10 to-primary/15 blur-xl" />
 
-        <div className="relative rounded-2xl border border-primary/20 bg-base-100 overflow-hidden shadow-lg shadow-primary/[0.06]">
-          <div className="h-1 bg-gradient-to-r from-primary via-primary/70 to-primary" />
-
-          <div className="flex flex-col gap-5 sm:gap-6 px-6 py-6 sm:px-8 sm:py-7">
-            {/* Pain block */}
-            <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-              <div className="shrink-0 flex h-12 w-12 items-center justify-center rounded-xl bg-error/10">
-                <ExclamationTriangleIcon className="h-6 w-6 text-error" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <h4 className="text-lg font-bold text-base-content leading-tight">
-                  The cost of misclassification is real
-                </h4>
-                <p className="mt-1 text-sm text-base-content/60 leading-relaxed">
-                  Cargo delays, CBP fines, overpaid tariffs, penalties, and costly audits. Your competitors face these risks every day. <span className="font-semibold text-primary">You don&apos;t have to.</span>
-                </p>
-              </div>
+      <div className="space-y-4">
+        {/* Status Quo row */}
+        <div className="flex items-start gap-4">
+          <span className="w-28 sm:w-36 text-sm font-medium text-base-content/50 text-right shrink-0 pt-2.5">
+            Status Quo
+          </span>
+          <div className="flex-1">
+            <div className="flex-1 h-10 sm:h-12 rounded-full bg-base-200/60 flex items-center px-5 gap-2">
+              <DocumentTextIcon className="w-4 h-4 text-base-content/30 shrink-0" />
+              <span className="text-sm font-medium text-base-content/40">
+                HTS Code Only...
+              </span>
             </div>
-
-            {/* Pain-avoidance pills */}
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-primary/80 mb-2">
-                What you avoid with HTS Hero
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {painPills.map(({ label, icon: Icon }) => (
-                  <span
-                    key={label}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/[0.08] border border-primary/20 text-[11px] font-semibold text-primary"
-                  >
-                    <Icon className="w-3.5 h-3.5 shrink-0" />
-                    {label}
-                  </span>
-                ))}
-              </div>
+            <div className="flex flex-wrap gap-1.5 mt-2.5 pl-1">
+              {PAIN_PILLS.map(({ label }) => (
+                <span
+                  key={label}
+                  className="inline-flex items-center px-2.5 py-1 rounded-full bg-error/[0.06] text-[11px] font-medium text-error/60"
+                >
+                  {label}
+                </span>
+              ))}
             </div>
+          </div>
+        </div>
+
+        {/* HTS Hero row */}
+        <div className="flex items-start gap-4">
+          <span className="w-28 sm:w-36 text-sm font-semibold text-primary text-right shrink-0 pt-2.5">
+            HTS Hero
+          </span>
+          <div className="flex-1">
+            <div className="flex-1 h-10 sm:h-12 rounded-full bg-primary flex items-center px-5 gap-2.5">
+              <ShieldCheckIcon className="w-4 h-4 text-white/80 shrink-0" />
+              <span className="text-sm font-semibold text-white">
+                Audit-Ready Defense Report
+              </span>
+            </div>
+            <p className="text-xs text-base-content/40 mt-2 pl-1">
+              GRI analysis, CROSS rulings, and full reasoning—all in one sharable report.
+            </p>
           </div>
         </div>
       </div>
@@ -240,6 +243,19 @@ export default function BenefitsComparisonSection() {
           </p>
         </div>
 
+        {/* Pain intro */}
+        {/* <div className="mb-16 md:mb-20 max-w-2xl mx-auto text-center">
+          <p className="text-lg sm:text-xl text-base-content/80 leading-relaxed mb-4">
+            Misclassification isn&apos;t just wrong—it&apos;s expensive.
+          </p>
+          <p className="text-base text-base-content/60 leading-relaxed mb-6">
+            Cargo delays at the border. CBP fines and penalties. Overpaid tariffs you&apos;ll never recover. Costly audits. Protest and litigation losses.
+          </p>
+          <p className="text-sm font-semibold text-primary tracking-wide">
+            Here&apos;s how HTS Hero stacks up on speed, cost, and defensibility.
+          </p>
+        </div> */}
+
         {/* Comparison bars + Defensibility card */}
         <div className="space-y-12">
           {COMPARISONS.map((comparison, i) => (
@@ -251,6 +267,7 @@ export default function BenefitsComparisonSection() {
             />
           ))}
           <DefensibilityResultCard />
+          {/* <ResultCard /> */}
         </div>
       </div>
     </section>

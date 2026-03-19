@@ -256,9 +256,9 @@ export default function ClassificationExamplesSection() {
         <GRIDefenseHeroMarketing />
 
         {/* Connector + Card grid */}
-        <div className="mt-12 flex flex-col items-center">
+        <div className="mt-6 flex flex-col items-center">
           <p className="text-sm md:text-lg font-medium text-base-content/50 mb-2">
-            See if for yourself
+            Examples
           </p>
           <div className="flex items-center gap-2 mb-8">
             <div className="w-12 h-px bg-gradient-to-r from-transparent to-primary/30" />
