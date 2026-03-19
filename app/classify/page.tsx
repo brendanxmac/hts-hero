@@ -360,11 +360,12 @@ export default function Home() {
       {/* Classification Examples */}
       <ClassificationExamplesSection />
 
+      {/* How It Works */}
+      <HowItWorksSection />
+
       {/* Benefits Comparison */}
       <BenefitsComparisonSection />
 
-      {/* How It Works */}
-      <HowItWorksSection />
 
       {/* Feature Sections */}
       {/* <div id="features">

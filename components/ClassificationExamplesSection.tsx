@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -6,6 +8,8 @@ import {
   DocumentTextIcon,
 } from "@heroicons/react/24/outline";
 import { CheckCircleIcon } from "@heroicons/react/16/solid";
+import { GRIDefenseHero } from "./GRIDefenseHero";
+import { GRIDefenseHeroMarketing } from "./GRIDefenseHeroMarketing";
 
 interface ClassificationExample {
   htsCode: string;
@@ -92,7 +96,7 @@ function ExampleCard({ example }: { example: ClassificationExample }) {
       {/* <div className="absolute -inset-px rounded-2xl bg-gradient-to-br from-secondary/15 via-primary/10 to-secondary/15 blur-xl transition-all duration-300 group-hover:from-secondary/25 group-hover:via-primary/20 group-hover:to-secondary/25 group-hover:-inset-1" /> */}
 
       {/* Card surface */}
-      <div className="relative flex flex-col flex-1 rounded-2xl border border-primary/20 bg-base-100 overflow-hidden shadow-lg shadow-primary/[0.08] transition-all duration-300 group-hover:shadow-xl group-hover:shadow-secondary/[0.12] group-hover:border-secondary/35">
+      <div className="relative flex flex-col flex-1 rounded-2xl border-2 border-base-300 bg-base-100 overflow-hidden shadow-lg shadow/[0.08] transition-all duration-300 group-hover:shadow-xl group-hover:shadow/[0.12]">
         {/* Product image */}
         <div className="relative w-full overflow-hidden bg-base-200/50">
           <div className="flex items-center justify-center h-48 sm:h-56 p-4">
@@ -114,7 +118,7 @@ function ExampleCard({ example }: { example: ClassificationExample }) {
           </p>
 
           {/* Classification path */}
-          <div className="flex flex-wrap items-center gap-1.5 mb-4">
+          {/* <div className="flex flex-wrap items-center gap-1.5 mb-4">
             {example.classificationPath.map((step, i) => (
               <span key={i} className="contents">
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-primary/[0.07] text-[11px] font-semibold text-primary/80">
@@ -138,23 +142,23 @@ function ExampleCard({ example }: { example: ClassificationExample }) {
                 )}
               </span>
             ))}
-          </div>
+          </div> */}
 
           {/* HTS Code */}
           <div className="mb-4">
-            <span className="block text-[10px] font-semibold uppercase tracking-[0.15em] text-secondary/70 mb-1">
+            <span className="block text-[10px] font-semibold uppercase tracking-[0.15em] text-base-content/50 mb-1">
               HTS Code
             </span>
-            <span className="font-mono text-2xl sm:text-3xl font-bold tracking-wider text-primary transition-colors duration-300 group-hover:text-secondary">
+            <span className="font-mono text-2xl sm:text-3xl font-bold tracking-wider">
               {example.htsCode}
             </span>
           </div>
 
           {/* Divider */}
-          <div className="h-px bg-gradient-to-r from-transparent via-secondary/15 to-transparent mb-4" />
+          <div className="h-px bg-base-300 mb-4" />
 
           {/* Feature badges */}
-          <div className="flex flex-wrap gap-2 mb-4">
+          {/* <div className="flex flex-wrap gap-2 mb-4">
             {FEATURE_BADGES.map(({ icon: Icon, label }) => (
               <span
                 key={label}
@@ -164,16 +168,16 @@ function ExampleCard({ example }: { example: ClassificationExample }) {
                 {label}
               </span>
             ))}
-          </div>
+          </div> */}
 
           {/* Social proof stat + CTA -- pushed to bottom */}
-          <div className="mt-auto flex items-center justify-between gap-3 pt-1">
-            <span className="text-[11px] text-base-content/45 leading-tight">
+          <div className="mt-auto flex items-center justify-center gap-3 pt-1">
+            {/* <span className="text-[11px] text-base-content/45 leading-tight">
               {example.stats.levels}-level classification &middot;{" "}
               {example.stats.crossRulings} CROSS rulings reviewed
-            </span>
+            </span> */}
 
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary/10 text-xs font-semibold text-secondary whitespace-nowrap transition-all duration-300 group-hover:bg-secondary group-hover:text-white group-hover:shadow-md group-hover:shadow-secondary/25">
+            <span className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-primary/10 text-xs md:text-base font-semibold text-primary whitespace-nowrap transition-all duration-300 group-hover:bg-primary group-hover:text-white group-hover:shadow-md group-hover:shadow-primary/25">
               View Full Analysis
               <svg
                 className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
@@ -208,7 +212,7 @@ export default function ClassificationExamplesSection() {
 
       <div className="relative max-w-7xl mx-auto px-5 sm:px-6">
         {/* Section header */}
-        <div className="flex flex-col items-center mb-12 md:mb-16">
+        {/* <div className="flex flex-col items-center mb-8">
           <h2 className="py-2 text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-4">
             Not Just Codes, <span className="text-primary">Proof</span>
           </h2>
@@ -217,7 +221,6 @@ export default function ClassificationExamplesSection() {
             Each classification includes step-by-step GRI reasoning, legal note analysis, and CROSS ruling validation — so you can explain and defend every decision
           </p>
 
-          {/* Animated bouncing arrow */}
           <div className="examples-bounce-arrow flex flex-col items-center gap-1">
             <svg
               className="w-6 h-6 text-secondary/70"
@@ -246,14 +249,46 @@ export default function ClassificationExamplesSection() {
               />
             </svg>
           </div>
-        </div>
+        </div> */}
 
-        {/* Card grid */}
+        {/* GRI & Legal Notes Defense Hero */}
+        {/* <GRIDefenseHero /> */}
+        <GRIDefenseHeroMarketing />
+
+        {/* Connector + Card grid */}
+        <div className="mt-12 flex flex-col items-center">
+          <p className="text-sm md:text-lg font-medium text-base-content/50 mb-2">
+            See if for yourself
+          </p>
+          <div className="flex items-center gap-2 mb-8">
+            <div className="w-12 h-px bg-gradient-to-r from-transparent to-primary/30" />
+            <svg className="w-4 h-4 text-primary/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+            <div className="w-12 h-px bg-gradient-to-l from-transparent to-primary/30" />
+          </div>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
           {EXAMPLES.map((example, i) => (
             <ExampleCard key={i} example={example} />
           ))}
         </div>
+
+        {/* CTA */}
+        {/* <div className="text-center mt-12">
+          <button
+            onClick={() => scrollTo({ top: 0, behavior: "smooth" })}
+            className="btn btn-primary btn-lg text-lg min-w-72 text-base font-bold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] transition-all duration-200"
+          >
+            Try Now!
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </button>
+          <p className="text-xs text-base-content/50 mt-4">
+            100% Free. No Credit Card Required
+          </p>
+        </div> */}
       </div>
 
       <style jsx>{`

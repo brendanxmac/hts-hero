@@ -128,6 +128,182 @@ progress::-webkit-progress-value {
   animation-delay: var(--shimmer-delay);
 }
 
+/* ── GRI Defense Hero Marketing ── */
+@keyframes griShimmer {
+  0% {
+    transform: translateX(-100%) skewX(-15deg);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateX(200%) skewX(-15deg);
+    opacity: 0;
+  }
+}
+.gri-shimmer-bg-primary::after,
+.gri-shimmer-bg-secondary::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: griShimmer 2s ease-in-out infinite;
+  pointer-events: none;
+}
+.gri-shimmer-bg-secondary::after {
+  animation-delay: 0.5s;
+}
+@keyframes griFlowLine {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+.gri-flow-line {
+  animation: griFlowLine 3s ease-in-out infinite;
+}
+@keyframes griFlowArrow {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: translateX(0);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateX(4px);
+  }
+}
+.gri-flow-arrow {
+  animation: griFlowArrow 3s ease-in-out infinite;
+}
+
+/* Glassy heading hero */
+@keyframes griGlowFloat {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.35;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.6;
+  }
+}
+.gri-glow-float.primary {
+  background: hsl(var(--p) / 0.2);
+  animation: griGlowFloat 8s ease-in-out infinite;
+}
+.gri-glow-float.secondary {
+  background: hsl(var(--s) / 0.2);
+  animation: griGlowFloat 10s ease-in-out infinite 1s;
+}
+.gri-glow-float.accent {
+  background: hsl(var(--a) / 0.15);
+  animation: griGlowFloat 9s ease-in-out infinite 2s;
+}
+
+@keyframes griMarquee {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+.gri-marquee-wrapper {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 10%,
+    black 90%,
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 10%,
+    black 90%,
+    transparent
+  );
+}
+.gri-marquee {
+  display: flex;
+  width: max-content;
+  animation: griMarquee 40s ease-in-out infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+@keyframes griGlowShimmer {
+  0% {
+    background-position: 200% 50%;
+  }
+  100% {
+    background-position: -200% 50%;
+  }
+}
+.gri-glow-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.03) 25%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.03) 75%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: griGlowShimmer 4s ease-in-out infinite;
+}
+
+@keyframes griFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.gri-fade-in {
+  animation: griFadeIn 1s ease-out forwards;
+}
+
+.gri-text-glow {
+  text-shadow:
+    0 0 40px hsl(var(--p) / 0.3),
+    0 0 80px hsl(var(--s) / 0.2);
+}
+
+@keyframes griFloatVertical {
+  0%,
+  100% {
+    transform: translateY(-50%) translateY(0);
+    opacity: 0.2;
+  }
+  50% {
+    transform: translateY(-50%) translateY(-8px);
+    opacity: 0.5;
+  }
+}
+.gri-float-vertical {
+  animation: griFloatVertical 5s ease-in-out infinite;
+}
+.gri-float-vertical-delayed {
+  animation: griFloatVertical 5s ease-in-out infinite 2.5s;
+}
+
 @layer base {
   .btn-gradient {
     @apply !bg-gradient !bg-[length:300%_300%] hover:saturate-[1.2] shadow duration-100 !border-0 !border-transparent !bg-transparent animate-shimmer disabled:!bg-none disabled:!bg-gray-500/30  !text-white;
@@ -136,4 +312,3 @@ progress::-webkit-progress-value {
     @apply !capitalize;
   }
 }
-

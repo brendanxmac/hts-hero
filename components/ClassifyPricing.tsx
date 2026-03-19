@@ -120,11 +120,9 @@ const ClassifyPricing = ({ customerType }: PricingProps) => {
             </span>
             <span className="w-8 h-px bg-secondary/40" />
           </div>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4 max-w-4xl mx-auto">
-            Steamline & <span className="text-primary">
-              Protect
-            </span>{" "}
-            Your US Imports
+          <h2 className="text-3xl md:text-4xl lg:text-6xl font-bold tracking-tight mb-4 max-w-4xl mx-auto">
+            Reduce Import Risk & <br /><span className="text-primary">Defend your Profits
+            </span>
           </h2>
           <p className="text-base-content/60 text-base md:text-lg max-w-2xl mx-auto">
             Smarter classifications, instant duty quotes, and zero tariff surprises
