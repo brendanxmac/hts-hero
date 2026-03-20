@@ -280,7 +280,7 @@ export const OverviewTab = ({
                   disabled={downloadingReport || isLoadingImporters}
                   onClick={onDownloadReport}
                 />
-                {classificationRecord && (
+                {classificationRecord && canUpdateDetails && (
                   <button
                     className="btn btn-sm btn-outline gap-1.5 h-9"
                     onClick={() => setShowShareModal(true)}

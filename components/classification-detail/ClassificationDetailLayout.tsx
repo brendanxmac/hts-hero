@@ -280,7 +280,7 @@ export const ClassificationDetailLayout = ({
           undefined,
           undefined,
           undefined,
-          country?.code || undefined
+          country?.code ?? null
         );
       } catch (error) {
         console.error("Error updating country of origin:", error);

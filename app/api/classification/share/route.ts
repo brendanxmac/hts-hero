@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "../../supabase/server";
 import { ClassificationRecord } from "../../../../interfaces/hts";
+import { fetchUser, UserRole } from "../../../../libs/supabase/user";
 import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
@@ -36,18 +37,58 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const userProfile = await fetchUser(user.id);
+    if (!userProfile) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const { data: existingRecord, error: fetchError } = await supabase
+      .from("classifications")
+      .select("user_id, team_id")
+      .eq("id", id)
+      .single<Pick<ClassificationRecord, "user_id" | "team_id">>();
+
+    if (fetchError || !existingRecord) {
+      return NextResponse.json(
+        { error: "Classification not found" },
+        { status: 404 }
+      );
+    }
+
+    const isOwnerMatch = existingRecord.user_id === user.id;
+    const isTeamAdminMatch =
+      userProfile.role === UserRole.ADMIN &&
+      !!userProfile.team_id &&
+      existingRecord.team_id === userProfile.team_id;
+
+    if (!isOwnerMatch && !isTeamAdminMatch) {
+      return NextResponse.json(
+        {
+          error:
+            "You do not have permission to change sharing for this classification.",
+        },
+        { status: 403 }
+      );
+    }
+
     if (enable) {
-      // Generate a share token and enable sharing
       const shareToken = generateShareToken();
 
-      const { data: updated, error } = await supabase
+      let query = supabase
         .from("classifications")
         .update({
           share_token: shareToken,
           is_shared: true,
         })
-        .eq("id", id)
-        .eq("user_id", user.id)
+        .eq("id", id);
+
+      if (isOwnerMatch) {
+        query = query.eq("user_id", user.id);
+      } else {
+        query = query.eq("team_id", userProfile.team_id!);
+      }
+
+      const { data: updated, error } = await query
         .select("share_token, is_shared")
         .single();
 
@@ -57,26 +98,35 @@ export async function POST(req: NextRequest) {
       }
 
       return NextResponse.json(updated, { status: 200 });
+    }
+
+    let disableQuery = supabase
+      .from("classifications")
+      .update({
+        is_shared: false,
+      })
+      .eq("id", id);
+
+    if (isOwnerMatch) {
+      disableQuery = disableQuery.eq("user_id", user.id);
     } else {
-      // Disable sharing
-      const { error } = await supabase
-        .from("classifications")
-        .update({
-          is_shared: false,
-        })
-        .eq("id", id)
-        .eq("user_id", user.id);
+      disableQuery = disableQuery.eq("team_id", userProfile.team_id!);
+    }
 
-      if (error) {
-        console.error("Error disabling share:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
-      }
+    const { error: disableError } = await disableQuery;
 
+    if (disableError) {
+      console.error("Error disabling share:", disableError);
       return NextResponse.json(
-        { share_token: null, is_shared: false },
-        { status: 200 }
+        { error: disableError.message },
+        { status: 500 }
       );
     }
+
+    return NextResponse.json(
+      { share_token: null, is_shared: false },
+      { status: 200 }
+    );
   } catch (e) {
     console.error(e);
     return NextResponse.json({ error: e?.message }, { status: 500 });

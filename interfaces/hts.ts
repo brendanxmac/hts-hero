@@ -221,7 +221,7 @@ export interface ClassificationRecord {
   updated_at: string;
   revision: string;
   status: ClassificationStatus;
-  country_of_origin?: string;
+  country_of_origin?: string | null;
   anonymous_token?: string;
   share_token?: string;
   is_shared?: boolean;

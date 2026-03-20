@@ -442,7 +442,7 @@ export const VerticalClassificationResult = ({
                         undefined,
                         undefined,
                         undefined,
-                        country?.code || undefined
+                        country?.code ?? null
                       ).then(() => refreshClassifications());
                     }
                   }}

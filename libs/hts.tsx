@@ -41,7 +41,7 @@ import { TertiaryLabel } from "../components/TertiaryLabel";
 import { Color } from "../enums/style";
 import { UserProfile } from "./supabase/user";
 import { notes } from "../public/notes/notes";
-import { inflate } from "pako";
+import { decompressHtsRevisionPayload } from "./hts-decompress";
 import {
   getStringBeforeOpeningParenthesis,
   getStringBetweenParenthesis,
@@ -877,7 +877,7 @@ export const getCachedHtsData = (): {
 
     // Decompress the cached data
     const compressedBytes = base64ToUint8Array(cachedData);
-    const decompressedData = inflate(compressedBytes, { to: "string" });
+    const decompressedData = decompressHtsRevisionPayload(compressedBytes);
 
     return {
       data: JSON.parse(decompressedData),
@@ -943,9 +943,9 @@ export const getHtsData = async (
     cacheHtsData(arrayBuffer, revisionName);
   }
 
-  const decompressedData = inflate(new Uint8Array(arrayBuffer), {
-    to: "string",
-  });
+  const decompressedData = decompressHtsRevisionPayload(
+    new Uint8Array(arrayBuffer)
+  );
 
   return {
     data: JSON.parse(decompressedData),

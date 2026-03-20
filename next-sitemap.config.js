@@ -23,7 +23,11 @@ async function getHtsCodes() {
   if (dlError) throw new Error(`Failed to download HTS data: ${dlError.message}`);
 
   const arrayBuffer = await blob.arrayBuffer();
-  const decompressed = pako.inflate(new Uint8Array(arrayBuffer), { to: "string" });
+  const u8 = new Uint8Array(arrayBuffer);
+  const decompressed =
+    u8.length >= 2 && u8[0] === 0x1f && u8[1] === 0x8b
+      ? pako.ungzip(u8, { to: "string" })
+      : pako.inflate(u8, { to: "string" });
   const elements = JSON.parse(decompressed);
 
   return elements

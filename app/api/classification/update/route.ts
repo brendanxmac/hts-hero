@@ -17,7 +17,7 @@ interface UpdateClassificationDto {
   importer_id?: string;
   classifier_id?: string;
   status?: ClassificationStatus;
-  country_of_origin?: string;
+  country_of_origin?: string | null;
 }
 
 export async function POST(req: NextRequest) {

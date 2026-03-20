@@ -68,7 +68,7 @@ export const updateClassification = async (
   importer_id?: string,
   classifier_id?: string,
   status?: ClassificationStatus,
-  country_of_origin?: string,
+  country_of_origin?: string | null,
 ) => {
   const response = await apiClient.post("/classification/update", {
     id,

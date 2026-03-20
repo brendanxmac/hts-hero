@@ -8,7 +8,13 @@ export const dynamic = "force-dynamic";
 
 const CACHE_TTL_SECONDS = 24 * 60 * 60; // 24 hours
 
-async function fetchRevisionFromSupabase(revisionName: string): Promise<Blob> {
+/**
+ * unstable_cache serializes cached values; Blob/ArrayBuffer are not reliably preserved
+ * (observed ~15-byte "[object Object]" client body). Base64 string is always cache-safe.
+ */
+async function fetchRevisionFromSupabase(
+  revisionName: string
+): Promise<string> {
   const supabase = createAdminClient();
   const { data, error } = await supabase.storage
     .from(SupabaseBuckets.HTS_REVISIONS)
@@ -18,7 +24,8 @@ async function fetchRevisionFromSupabase(revisionName: string): Promise<Blob> {
     throw new Error(error.message);
   }
 
-  return data;
+  const arrayBuffer = await data.arrayBuffer();
+  return Buffer.from(arrayBuffer).toString("base64");
 }
 
 export async function GET(req: NextRequest) {
@@ -43,13 +50,14 @@ export async function GET(req: NextRequest) {
 
     const getCachedRevision = unstable_cache(
       () => fetchRevisionFromSupabase(revisionInstance.name),
-      [`hts-data-${revisionInstance.name}`],
+      [`hts-data-b64-${revisionInstance.name}`],
       { revalidate: CACHE_TTL_SECONDS }
     );
 
-    const revisionData = await getCachedRevision();
+    const revisionBase64 = await getCachedRevision();
+    const revisionBytes = Buffer.from(revisionBase64, "base64");
 
-    return new NextResponse(revisionData, {
+    return new NextResponse(revisionBytes, {
       headers: {
         "Content-Type": "application/gzip",
         "Content-Disposition": `attachment; filename="${revisionInstance.name}.json.gz"`,

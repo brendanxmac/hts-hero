@@ -1,5 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
-import { inflate } from "pako";
+import { decompressHtsRevisionPayload } from "./hts-decompress";
 import { readFile } from "fs/promises";
 import path from "path";
 import { HtsElement, HtsSection } from "../interfaces/hts";
@@ -49,7 +49,9 @@ export async function getHtsElementsServer(): Promise<HtsElement[]> {
   }
 
   const arrayBuffer = await blob.arrayBuffer();
-  const decompressed = inflate(new Uint8Array(arrayBuffer), { to: "string" });
+  const decompressed = decompressHtsRevisionPayload(
+    new Uint8Array(arrayBuffer)
+  );
   cachedElements = JSON.parse(decompressed) as HtsElement[];
 
   return cachedElements;

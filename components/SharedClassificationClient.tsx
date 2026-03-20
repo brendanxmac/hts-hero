@@ -35,7 +35,12 @@ export default function SharedClassificationClient({
         classificationRecord.revision &&
         classificationRecord.revision !== revision
       ) {
-        await fetchElements(classificationRecord.revision);
+        try {
+          await fetchElements(classificationRecord.revision);
+        } catch (e) {
+          // Match app/classifications/[id]/page: HTS load failure is non-fatal
+          console.error("Failed to fetch HTS elements (non-fatal):", e);
+        }
       }
 
       setIsReady(true);
