@@ -324,8 +324,9 @@ export default function Home() {
           <div className="w-full max-w-4xl mx-auto mb-4 md:mb-6">
             <ClassifyInput
               ref={classifyInputRef}
-              buttonText="Find My HTS Code"
+              buttonText="Find Your HTS Code"
               placeholder="Enter a description of your product"
+              entryPoint="classify_landing"
             />
           </div>
 

@@ -6,8 +6,16 @@ import { useClassification } from "../../../contexts/ClassificationContext";
 import { useHts } from "../../../contexts/HtsContext";
 import { useUser } from "../../../contexts/UserContext";
 import { useUserProfileAndImporters } from "../../../hooks";
-import { fetchClassificationById } from "../../../libs/classification";
-import { canUserUpdateDetails } from "../../../libs/classification-helpers";
+import {
+  ClassificationFetchError,
+  fetchClassificationById,
+} from "../../../libs/classification";
+import { ClassificationLoadFailure } from "../../../components/classification-detail/ClassificationFetchError";
+import {
+  canUserUpdateDetails,
+  type ClassificationOwnerTeamInfo,
+} from "../../../libs/classification-helpers";
+import { fetchUser } from "../../../libs/supabase/user";
 import { ClassificationDetailLayout } from "../../../components/classification-detail/ClassificationDetailLayout";
 import { LoadingIndicator } from "../../../components/LoadingIndicator";
 import { ClassificationRecord } from "../../../interfaces/hts";
@@ -32,13 +40,50 @@ export default function ClassificationPage() {
   const { fetchElements, revision } = useHts();
 
   const [record, setRecord] = useState<ClassificationRecord | null>(null);
+  const [classificationOwnerTeamInfo, setClassificationOwnerTeamInfo] = useState<
+    ClassificationOwnerTeamInfo | null | undefined
+  >(undefined);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  /** HTTP status from failed fetch; `0` = network / unknown */
+  const [loadErrorStatus, setLoadErrorStatus] = useState<number | null>(null);
   const hasRefetchedForLinkingRef = useRef(false);
   const canUpdateRef = useRef(false);
+  /** When true, unmount must not flush (e.g. row was deleted). */
+  const skipUnmountFlushRef = useRef(false);
 
   useEffect(() => {
-    const canUpdate = canUserUpdateDetails(userProfile ?? null, record ?? undefined);
+    let cancelled = false;
+    (async () => {
+      if (!userProfile?.id || !record?.user_id) {
+        if (!cancelled) setClassificationOwnerTeamInfo(undefined);
+        return;
+      }
+      const needOwnerTeam =
+        !!userProfile.team_id &&
+        record.user_id !== userProfile.id &&
+        !record.team_id;
+      if (!needOwnerTeam) {
+        if (!cancelled) setClassificationOwnerTeamInfo(undefined);
+        return;
+      }
+      if (!cancelled) setClassificationOwnerTeamInfo(undefined);
+      const owner = await fetchUser(record.user_id);
+      if (cancelled) return;
+      setClassificationOwnerTeamInfo(
+        owner ? { team_id: owner.team_id } : { team_id: undefined },
+      );
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [userProfile, record]);
+
+  useEffect(() => {
+    const canUpdate = canUserUpdateDetails(
+      userProfile ?? null,
+      record ?? undefined,
+      classificationOwnerTeamInfo,
+    );
     canUpdateRef.current = canUpdate;
     if (record) {
       setCanSave(canUpdate);
@@ -46,19 +91,19 @@ export default function ClassificationPage() {
     return () => {
       setCanSave(true);
     };
-  }, [userProfile, record, setCanSave]);
+  }, [userProfile, record, classificationOwnerTeamInfo, setCanSave]);
 
   useEffect(() => {
     let cancelled = false;
 
     const loadClassification = async () => {
-      setError(null);
+      setLoadErrorStatus(null);
       try {
         setIsLoading(true);
         const fetchedRecord = await fetchClassificationById(id);
         if (cancelled) return;
 
-        setError(null);
+        setLoadErrorStatus(null);
         setRecord(fetchedRecord);
         setClassification(fetchedRecord.classification);
         setClassificationId(fetchedRecord.id);
@@ -76,7 +121,9 @@ export default function ClassificationPage() {
       } catch (err) {
         if (cancelled) return;
         console.error("Failed to load classification:", err);
-        setError("Classification not found");
+        const status =
+          err instanceof ClassificationFetchError ? err.status : 0;
+        setLoadErrorStatus(status);
       } finally {
         if (!cancelled) setIsLoading(false);
       }
@@ -111,19 +158,23 @@ export default function ClassificationPage() {
       const timer = setTimeout(refetch, 1000);
       return () => clearTimeout(timer);
     }
-  }, [user, record]);
+  }, [user, record, id, setClassification]);
 
   useEffect(() => {
     return () => {
-      if (canUpdateRef.current) {
-        flushAndSave();
+      if (canUpdateRef.current && !skipUnmountFlushRef.current) {
+        void flushAndSave();
       }
       resetClassificationState();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run cleanup only on real unmount
   }, []);
 
-  const handleNavigateBack = async () => {
-    if (canUpdateRef.current) {
+  const handleNavigateBack = async (options?: { skipFlush?: boolean }) => {
+    if (options?.skipFlush) {
+      skipUnmountFlushRef.current = true;
+    }
+    if (!options?.skipFlush && canUpdateRef.current) {
       await flushAndSave();
     }
     router.push("/classifications");
@@ -137,17 +188,15 @@ export default function ClassificationPage() {
     );
   }
 
-  if (error) {
-    return (
-      <main className="w-full h-screen flex items-center justify-center bg-base-100">
-        <div className="text-error p-6 rounded-2xl bg-error/10 border border-error/20">
-          {error}
-        </div>
-      </main>
-    );
+  if (loadErrorStatus !== null) {
+    return <ClassificationLoadFailure httpStatus={loadErrorStatus} />;
   }
 
-  const canUpdate = canUserUpdateDetails(userProfile ?? null, record ?? undefined);
+  const canUpdate = canUserUpdateDetails(
+    userProfile ?? null,
+    record ?? undefined,
+    classificationOwnerTeamInfo,
+  );
 
   return (
     <ClassificationsProvider>
@@ -155,6 +204,7 @@ export default function ClassificationPage() {
         <ReadOnlyProvider readOnly={!canUpdate}>
           <ClassificationDetailLayout
             classificationRecord={record ?? undefined}
+            classificationOwnerTeamInfo={classificationOwnerTeamInfo}
             onNavigateBack={handleNavigateBack}
           />
         </ReadOnlyProvider>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ClassificationRecord } from "../../interfaces/hts";
+import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 import {
   GlobeAltIcon,
   LinkIcon,
@@ -40,6 +41,10 @@ export function PublicShareSection({
         });
       setIsShared(response.is_shared);
       setShareToken(response.share_token);
+      trackEvent(MixpanelEvent.CLASSIFICATION_PUBLIC_SHARE_TOGGLED, {
+        classification_id: classificationRecord.id,
+        enabled: response.is_shared,
+      });
     } catch (error) {
       console.error("Error toggling share:", error);
     } finally {
@@ -52,6 +57,9 @@ export function PublicShareSection({
       navigator.clipboard.writeText(shareUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+      trackEvent(MixpanelEvent.CLASSIFICATION_PUBLIC_LINK_COPIED, {
+        classification_id: classificationRecord.id,
+      });
     }
   };
 
@@ -131,6 +139,9 @@ export function TeamShareSection({
     navigator.clipboard.writeText(teamUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+    trackEvent(MixpanelEvent.CLASSIFICATION_TEAM_LINK_COPIED, {
+      classification_id: classificationRecord.id,
+    });
   };
 
   return (

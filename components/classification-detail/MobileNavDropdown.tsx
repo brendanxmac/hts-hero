@@ -34,6 +34,7 @@ interface Props {
   onNavigateBack: () => void;
   userProfile: UserProfile | null;
   isAnonymous: boolean;
+  useNormalWorkspace: boolean;
 }
 
 function StatusDot({ status }: { status: ClassificationNavItem["status"] }) {
@@ -69,6 +70,7 @@ export const MobileNavDropdown = ({
   onNavigateBack,
   userProfile,
   isAnonymous,
+  useNormalWorkspace: useNormalWorkspace,
 }: Props) => {
   const readOnly = useIsReadOnly();
   const [isOpen, setIsOpen] = useState(false);
@@ -118,7 +120,7 @@ export const MobileNavDropdown = ({
               height={24}
             />
           </Link>
-          {!readOnly && (
+          {useNormalWorkspace && (
             <button
               onClick={onNavigateBack}
               className="btn btn-ghost btn-xs btn-circle"
@@ -151,11 +153,10 @@ export const MobileNavDropdown = ({
                     <button
                       key={item.id}
                       onClick={() => handleSelect(item.id)}
-                      className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center gap-2.5 ${
-                        activeTab === item.id
-                          ? "bg-primary/10 text-primary"
-                          : "hover:bg-base-200"
-                      }`}
+                      className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center gap-2.5 ${activeTab === item.id
+                        ? "bg-primary/10 text-primary"
+                        : "hover:bg-base-200"
+                        }`}
                     >
                       <Icon className="w-4 h-4 shrink-0" />
                       {item.label}
@@ -175,11 +176,10 @@ export const MobileNavDropdown = ({
                       <button
                         key={item.id}
                         onClick={() => handleSelect(item.id)}
-                        className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2.5 transition-colors ${
-                          activeTab === item.id
-                            ? "bg-primary/10 text-primary font-medium"
-                            : "hover:bg-base-200 text-base-content/70"
-                        }`}
+                        className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2.5 transition-colors ${activeTab === item.id
+                          ? "bg-primary/10 text-primary font-medium"
+                          : "hover:bg-base-200 text-base-content/70"
+                          }`}
                       >
                         <StatusDot status={item.status} />
                         {hasSelection ? (
@@ -217,11 +217,10 @@ export const MobileNavDropdown = ({
                       <button
                         key={item.id}
                         onClick={() => handleSelect(item.id)}
-                        className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center gap-2.5 ${
-                          activeTab === item.id
-                            ? "bg-primary/10 text-primary"
-                            : "hover:bg-base-200"
-                        }`}
+                        className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors flex items-center gap-2.5 ${activeTab === item.id
+                          ? "bg-primary/10 text-primary"
+                          : "hover:bg-base-200"
+                          }`}
                       >
                         <Icon className="w-4 h-4 shrink-0" />
                         <span className="flex-1">{item.label}</span>
@@ -238,7 +237,7 @@ export const MobileNavDropdown = ({
 
         {/* Right: User + Theme */}
         <div className="flex items-center gap-1 shrink-0">
-          {!readOnly && !isAnonymous && <ButtonAccount />}
+          {useNormalWorkspace && !isAnonymous && <ButtonAccount />}
           <ThemeToggle />
         </div>
       </div>

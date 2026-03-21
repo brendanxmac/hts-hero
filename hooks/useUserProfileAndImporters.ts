@@ -14,18 +14,20 @@ import {
 export function useUserProfileAndImporters(userId: string | undefined) {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [importers, setImporters] = useState<Importer[]>([])
-  const [isLoadingImporters, setIsLoadingImporters] = useState(
-    userProfile ? true : false,
-  )
+  const [isLoadingImporters, setIsLoadingImporters] = useState(false)
 
   useEffect(() => {
-    if (!userId) return
+    if (!userId) {
+      setIsLoadingImporters(false)
+      return
+    }
 
     const fetchData = async () => {
-      const profile = await fetchUser(userId)
-      setUserProfile(profile || null)
-
+      setIsLoadingImporters(true)
       try {
+        const profile = await fetchUser(userId)
+        setUserProfile(profile || null)
+
         const fetchedImporters = profile?.team_id
           ? await fetchImportersForTeam(profile.team_id)
           : await fetchImportersForUser()

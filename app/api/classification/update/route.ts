@@ -6,8 +6,8 @@ import {
   ClassificationStatus,
 } from "../../../../interfaces/hts";
 import { getAnonymousTokenFromCookieHeader } from "../../../../libs/anonymous-token";
+import { resolveClassificationWriteAccess } from "../../../../libs/classification-access";
 import { fetchUser } from "../../../../libs/supabase/user";
-import { UserRole } from "../../../../libs/supabase/user";
 
 export const dynamic = "force-dynamic";
 
@@ -101,61 +101,48 @@ export async function POST(req: NextRequest) {
 
     if (user) {
       const userProfile = await fetchUser(user.id);
-      const isTeamAdmin =
-        userProfile?.role === UserRole.ADMIN &&
-        userProfile?.team_id &&
-        true; // team_id match checked after fetch
 
-      // Fetch record to check ownership/team
       const { data: existingRecord } = await supabase
         .from("classifications")
         .select("user_id, team_id")
         .eq("id", id)
         .single<Pick<ClassificationRecord, "user_id" | "team_id">>();
 
-      const isOwnerMatch = existingRecord?.user_id === user.id;
-      const isTeamAdminMatch =
-        isTeamAdmin &&
-        !!userProfile?.team_id &&
-        existingRecord?.team_id === userProfile.team_id;
+      const access = await resolveClassificationWriteAccess(
+        user.id,
+        userProfile,
+        existingRecord ?? undefined,
+      );
 
-      if (isOwnerMatch) {
-        query = query.eq("user_id", user.id);
-      } else if (isTeamAdminMatch) {
-        query = query.eq("team_id", userProfile!.team_id!);
-      } else {
+      if (!access.allowed) {
         return NextResponse.json(
           { error: "You do not have permission to update this classification." },
           { status: 403 }
         );
       }
+
+      switch (access.scope) {
+        case "owner":
+          query = query.eq("user_id", user.id);
+          break;
+        case "team_admin_team_id":
+          query = query.eq("team_id", userProfile!.team_id!);
+          break;
+        case "team_admin_owner_user":
+          query = query.eq("user_id", existingRecord!.user_id!);
+          break;
+        case "super_admin":
+          break;
+      }
     } else if (anonymousToken) {
       query = query.eq("anonymous_token", anonymousToken).is("user_id", null);
     }
 
-    const { data: updatedRecord, error } = await query
-      .select()
-      .single<ClassificationRecord>();
+    const { error } = await query.select().single<ClassificationRecord>();
 
     if (error) {
       console.error("Error updating classification:", error);
       return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-
-    // Increment classification_count when a classification is completed
-    if (
-      user &&
-      classification?.isComplete &&
-      updatedRecord
-    ) {
-      await supabase.rpc("increment_classification_count", {
-        user_id_input: user.id,
-      }).then(({ error: rpcError }) => {
-        if (rpcError) {
-          // Non-blocking: log but don't fail the request
-          console.error("Error incrementing classification count:", rpcError);
-        }
-      });
     }
 
     return NextResponse.json({ success: true }, { status: 200 });

@@ -55,23 +55,72 @@ export function getCountryOfOrigin(
   return Countries.find((c) => c.code === countryCode) || null;
 }
 
+/** Owner's `users.team_id` when resolving legacy classifications with null `team_id` on the row */
+export type ClassificationOwnerTeamInfo = Pick<UserProfile, "team_id">;
+
 /**
  * Check if user can update classification details.
- * Owner, global admin, or team admin (same team) can update.
+ * Owner, super admin, or team admin (same team on row, or legacy row + owner on same team) can update.
+ *
+ * @param ownerTeamInfo Pass when the row has no `classificationRecord.team_id` but the owner's
+ * `users.team_id` is known (e.g. after `fetchUser(record.user_id)`).
  */
 export function canUserUpdateDetails(
   userProfile: UserProfile | null,
-  classificationRecord: ClassificationRecord | undefined
+  classificationRecord: ClassificationRecord | undefined,
+  ownerTeamInfo?: ClassificationOwnerTeamInfo | null,
 ): boolean {
   if (!userProfile || !classificationRecord) return false;
   if (userProfile.id === classificationRecord.user_id) return true;
   if (userProfile.role === UserRole.SUPER_ADMIN) return true;
-  // Team admin: same team and role is ADMIN
-  return (
+  if (
     userProfile.role === UserRole.ADMIN &&
     !!userProfile.team_id &&
     classificationRecord.team_id === userProfile.team_id
-  );
+  ) {
+    return true;
+  }
+  if (
+    userProfile.role === UserRole.ADMIN &&
+    !!userProfile.team_id &&
+    !classificationRecord.team_id &&
+    classificationRecord.user_id &&
+    classificationRecord.user_id !== userProfile.id &&
+    ownerTeamInfo != null &&
+    ownerTeamInfo.team_id === userProfile.team_id
+  ) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * True when the signed-in user is in the same workspace as this classification
+ * (owner, or same team via row `team_id`, or legacy row + owner's `team_id`).
+ * Used for nav/footer chrome; does not imply edit permission.
+ */
+export function isViewerOnClassificationTeam(
+  userProfile: UserProfile | null | undefined,
+  classificationRecord: ClassificationRecord | undefined,
+  ownerTeamInfo?: ClassificationOwnerTeamInfo | null,
+): boolean {
+  if (!userProfile || !classificationRecord?.user_id) return false;
+  if (classificationRecord.user_id === userProfile.id) return true;
+  if (!userProfile.team_id) return false;
+  if (
+    classificationRecord.team_id &&
+    classificationRecord.team_id === userProfile.team_id
+  ) {
+    return true;
+  }
+  if (
+    !classificationRecord.team_id &&
+    ownerTeamInfo != null &&
+    ownerTeamInfo.team_id === userProfile.team_id
+  ) {
+    return true;
+  }
+  return false;
 }
 
 /**

@@ -26,6 +26,8 @@ import {
   getCountryOfOrigin,
   canUserUpdateDetails,
   canUserDelete,
+  isViewerOnClassificationTeam,
+  type ClassificationOwnerTeamInfo,
 } from "../../libs/classification-helpers";
 import { ClassificationRecord } from "../../interfaces/hts";
 import { DeleteConfirmationModal } from "../classification-ui/DeleteConfirmationModal";
@@ -131,11 +133,15 @@ function DiscoveryHydrator(): null {
 
 interface Props {
   classificationRecord?: ClassificationRecord;
-  onNavigateBack: () => void;
+  /** Pass `{ skipFlush: true }` after delete so we do not PATCH a removed row. */
+  onNavigateBack: (options?: { skipFlush?: boolean }) => void | Promise<void>;
+  /** For legacy rows with null `team_id`, owner's `users.team_id` after lookup */
+  classificationOwnerTeamInfo?: ClassificationOwnerTeamInfo | null;
 }
 
 export const ClassificationDetailLayout = ({
   classificationRecord: initialRecord,
+  classificationOwnerTeamInfo,
   onNavigateBack,
 }: Props) => {
   const readOnly = useIsReadOnly();
@@ -189,10 +195,25 @@ export const ClassificationDetailLayout = ({
 
   const canUpdateDetails = readOnly
     ? false
-    : canUserUpdateDetails(userProfile, classificationRecord);
+    : canUserUpdateDetails(
+      userProfile,
+      classificationRecord,
+      classificationOwnerTeamInfo,
+    );
   const canDelete = readOnly
     ? false
     : canUserDelete(userProfile, classificationRecord);
+
+  const viewerOnTeam = useMemo(
+    () =>
+      isViewerOnClassificationTeam(
+        userProfile,
+        classificationRecord,
+        classificationOwnerTeamInfo,
+      ),
+    [userProfile, classificationRecord, classificationOwnerTeamInfo],
+  );
+  const useNormalWorkspace = !readOnly || viewerOnTeam;
 
   const refreshRecord = useCallback(async () => {
     if (!classificationId) return;
@@ -258,7 +279,7 @@ export const ClassificationDetailLayout = ({
       setIsDeleting(true);
       await deleteClassification(classificationRecord.id);
       toast.success("Classification deleted");
-      onNavigateBack();
+      await Promise.resolve(onNavigateBack({ skipFlush: true }));
     } catch (error) {
       console.error("Error deleting classification:", error);
     } finally {
@@ -376,7 +397,7 @@ export const ClassificationDetailLayout = ({
         return (
           <PlaceholderTab
             title="Classification Report"
-            description="Generate comprehensive, branded classification reports for your own records or to share with clients."
+            description="Generate customized, branded classification reports for your own records or to share with clients. While you can already generate reports in the Overview tab, you will have the ability to customize your reports soon."
             icon="document"
           />
         );
@@ -415,6 +436,7 @@ export const ClassificationDetailLayout = ({
             isSaving={isSaving || refreshingRecord}
             userProfile={userProfile}
             isAnonymous={isAnonymous}
+            useNormalWorkspace={useNormalWorkspace}
           />
         </aside>
 
@@ -430,6 +452,7 @@ export const ClassificationDetailLayout = ({
               onNavigateBack={onNavigateBack}
               userProfile={userProfile}
               isAnonymous={isAnonymous}
+              useNormalWorkspace={useNormalWorkspace}
             />
           </div>
 
@@ -464,7 +487,7 @@ export const ClassificationDetailLayout = ({
                 setIsOpen={setShowExploreModal}
                 size="full"
               >
-                <div className="h-[85vh] w-full overflow-hidden rounded-2xl">
+                <div className="h-[85vh] w-full rounded-2xl">
                   <Explore />
                 </div>
               </Modal>

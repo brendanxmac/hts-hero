@@ -52,6 +52,8 @@ interface ClassifyInputProps {
   examples?: string[] | false;
   navigateOnSubmit?: boolean;
   onSubmit?: (description: string) => void;
+  /** Mixpanel entry_point for anonymous classification funnel (e.g. classify_landing) */
+  entryPoint?: string;
 }
 
 export interface ClassifyInputHandle {
@@ -69,6 +71,7 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
       examples: examplesProp,
       navigateOnSubmit = true,
       onSubmit: onSubmitProp,
+      entryPoint,
     },
     ref,
   ) => {
@@ -115,11 +118,20 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
         setIsCreating(true);
         try {
           const newId = await startNewClassification(text, true);
+          const resolvedEntry = entryPoint ?? "unspecified";
           trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
             item: text,
             is_anonymous: !user,
             source,
+            entry_point: resolvedEntry,
           });
+          if (!user) {
+            trackEvent(MixpanelEvent.ANONYMOUS_CLASSIFICATION_STARTED, {
+              classification_id: newId,
+              source,
+              entry_point: resolvedEntry,
+            });
+          }
           router.push(`/classifications/${newId}`);
         } catch (error) {
           console.error("Error starting classification:", error);
@@ -129,7 +141,15 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
           setIsCreating(false);
         }
       }
-    }, [router, onSubmitProp, navigateOnSubmit, isCreating, startNewClassification, user]);
+    }, [
+      router,
+      onSubmitProp,
+      navigateOnSubmit,
+      isCreating,
+      startNewClassification,
+      user,
+      entryPoint,
+    ]);
 
     const handleSubmit = useCallback(() => {
       if (!description.trim()) {

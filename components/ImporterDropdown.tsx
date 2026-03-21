@@ -56,10 +56,17 @@ export default function ImporterDropdown({
             {getDisplayText()}
           </span>
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-            <ChevronUpDownIcon
-              className="h-5 w-5 text-base-content/40"
-              aria-hidden="true"
-            />
+            {isLoading ? (
+              <span
+                className="loading loading-spinner loading-sm text-primary"
+                aria-hidden="true"
+              />
+            ) : (
+              <ChevronUpDownIcon
+                className="h-5 w-5 text-base-content/40"
+                aria-hidden="true"
+              />
+            )}
           </span>
         </Listbox.Button>
         <Transition

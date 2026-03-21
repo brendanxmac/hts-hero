@@ -45,6 +45,8 @@ interface Props {
   isSaving: boolean;
   userProfile: UserProfile | null;
   isAnonymous: boolean;
+  /** Back + account chrome; false for public/shared read-only visitors */
+  useNormalWorkspace: boolean;
 }
 
 function CopyableHtsCode({ code }: { code: string }) {
@@ -121,6 +123,7 @@ export const ClassificationSidebar = ({
   isSaving,
   userProfile,
   isAnonymous,
+  useNormalWorkspace: useNormalWorkspace,
 }: Props) => {
   const readOnly = useIsReadOnly();
   const [classificationExpanded, setClassificationExpanded] = useState(true);
@@ -178,7 +181,7 @@ export const ClassificationSidebar = ({
             <ThemeToggle />
           </div>
 
-          {readOnly ? (
+          {!useNormalWorkspace ? (
             <div className="flex items-center gap-2 text-xs font-medium text-primary/70 px-2 py-1.5 -ml-0.5 rounded-lg bg-primary/5 border border-primary/10 w-full">
               <CheckCircleIcon className="w-3.5 h-3.5" />
               Shared Classification
@@ -314,7 +317,7 @@ export const ClassificationSidebar = ({
               .map((item) => {
                 const Icon = NAV_ICONS[item.id] || ChevronRightIcon;
                 const isActive = activeTab === item.id;
-                    const showLock = !readOnly && isAnonymous && item.lockedForAnon;
+                const showLock = !readOnly && isAnonymous && item.lockedForAnon;
                 return (
                   <li key={item.id}>
                     <button
@@ -342,7 +345,7 @@ export const ClassificationSidebar = ({
 
         {/* User Footer */}
         <div className="w-full flex flex-col p-3 items-center">
-          {readOnly ? (
+          {!useNormalWorkspace ? (
             <div className="w-full px-1">
               <Link
                 href="/classify"
@@ -389,7 +392,7 @@ export const ClassificationSidebar = ({
                     Get 10 FREE Classifications
                   </Link>
                 </div>
-              ) : isPayingUser || isLoading ? null : (
+              ) : isPayingUser || isLoading || userProfile?.team_id ? null : (
                 <div className="w-full mt-3 px-1">
                   <Link
                     href="/classifications"

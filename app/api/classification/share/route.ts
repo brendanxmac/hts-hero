@@ -1,7 +1,8 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "../../supabase/server";
 import { ClassificationRecord } from "../../../../interfaces/hts";
-import { fetchUser, UserRole } from "../../../../libs/supabase/user";
+import { resolveClassificationWriteAccess } from "../../../../libs/classification-access";
+import { fetchUser } from "../../../../libs/supabase/user";
 import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
@@ -55,13 +56,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const isOwnerMatch = existingRecord.user_id === user.id;
-    const isTeamAdminMatch =
-      userProfile.role === UserRole.ADMIN &&
-      !!userProfile.team_id &&
-      existingRecord.team_id === userProfile.team_id;
+    const access = await resolveClassificationWriteAccess(
+      user.id,
+      userProfile,
+      existingRecord,
+    );
 
-    if (!isOwnerMatch && !isTeamAdminMatch) {
+    if (!access.allowed) {
       return NextResponse.json(
         {
           error:
@@ -71,22 +72,33 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const applyWriteScopeToQuery = <T extends { eq: (...args: unknown[]) => T }>(
+      q: T,
+    ): T => {
+      switch (access.scope) {
+        case "owner":
+          return q.eq("user_id", user.id);
+        case "team_admin_team_id":
+          return q.eq("team_id", userProfile.team_id!);
+        case "team_admin_owner_user":
+          return q.eq("user_id", existingRecord.user_id!);
+        case "super_admin":
+          return q;
+      }
+    };
+
     if (enable) {
       const shareToken = generateShareToken();
 
-      let query = supabase
-        .from("classifications")
-        .update({
-          share_token: shareToken,
-          is_shared: true,
-        })
-        .eq("id", id);
-
-      if (isOwnerMatch) {
-        query = query.eq("user_id", user.id);
-      } else {
-        query = query.eq("team_id", userProfile.team_id!);
-      }
+      let query = applyWriteScopeToQuery(
+        supabase
+          .from("classifications")
+          .update({
+            share_token: shareToken,
+            is_shared: true,
+          })
+          .eq("id", id),
+      );
 
       const { data: updated, error } = await query
         .select("share_token, is_shared")
@@ -100,18 +112,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(updated, { status: 200 });
     }
 
-    let disableQuery = supabase
-      .from("classifications")
-      .update({
-        is_shared: false,
-      })
-      .eq("id", id);
-
-    if (isOwnerMatch) {
-      disableQuery = disableQuery.eq("user_id", user.id);
-    } else {
-      disableQuery = disableQuery.eq("team_id", userProfile.team_id!);
-    }
+    let disableQuery = applyWriteScopeToQuery(
+      supabase
+        .from("classifications")
+        .update({
+          is_shared: false,
+        })
+        .eq("id", id),
+    );
 
     const { error: disableError } = await disableQuery;
 

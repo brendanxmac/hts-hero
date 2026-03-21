@@ -60,6 +60,16 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: error.message }, { status: 500 });
       }
 
+      await supabase
+        .rpc("increment_classification_count", {
+          user_id_input: user.id,
+        })
+        .then(({ error: rpcError }) => {
+          if (rpcError) {
+            console.error("Error incrementing classification count:", rpcError);
+          }
+        });
+
       return NextResponse.json(classificationRecord, { status: 200 });
     }
 

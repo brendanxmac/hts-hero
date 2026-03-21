@@ -170,7 +170,7 @@ export const ClassificationLevelTab = (props: Props) => {
         <StepHeader
           stepNumber={stepNumber}
           title={getLevelTitle()}
-          description="Our in-depth analysis can help you select the best option"
+          // description="Our in-depth analysis can help you select the best option"
           status={getStatus()}
         />
         <VerticalClassificationStep

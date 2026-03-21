@@ -265,45 +265,47 @@ export const OverviewTab = ({
               )}
             </div>
 
-            {!readOnly && isComplete && (
-              <div className="flex flex-wrap gap-2 shrink-0">
-                {classificationRecord && isComplete && (
-                  <StatusDropdown
-                    status={classificationRecord.status}
-                    isUpdating={updatingStatus}
-                    disabled={!canUpdateDetails}
-                    onChange={onStatusChange}
+            <div className="flex flex-wrap gap-2 shrink-0">
+              {!readOnly && isComplete && (
+                <>
+                  {classificationRecord && (
+                    <StatusDropdown
+                      status={classificationRecord.status}
+                      isUpdating={updatingStatus}
+                      disabled={!canUpdateDetails}
+                      onChange={onStatusChange}
+                    />
+                  )}
+                  <DownloadReportButton
+                    isDownloading={downloadingReport}
+                    disabled={downloadingReport || isLoadingImporters}
+                    onClick={onDownloadReport}
                   />
-                )}
-                <DownloadReportButton
-                  isDownloading={downloadingReport}
-                  disabled={downloadingReport || isLoadingImporters}
-                  onClick={onDownloadReport}
-                />
-                {classificationRecord && canUpdateDetails && (
-                  <button
-                    className="btn btn-sm btn-outline gap-1.5 h-9"
-                    onClick={() => setShowShareModal(true)}
-                  >
-                    <ShareIcon className="w-4 h-4" />
-                    <span className="hidden sm:inline">Share</span>
-                  </button>
-                )}
-                {canDelete && classificationRecord && userProfile && (
-                  <button
-                    className="btn btn-sm btn-outline btn-error gap-1.5 h-9"
-                    onClick={onDeleteClick}
-                    disabled={isDeleting}
-                  >
-                    {isDeleting ? (
-                      <span className="loading loading-spinner loading-xs" />
-                    ) : (
-                      <TrashIcon className="w-4 h-4" />
-                    )}
-                  </button>
-                )}
-              </div>
-            )}
+                  {classificationRecord && canUpdateDetails && (
+                    <button
+                      className="btn btn-sm btn-outline gap-1.5 h-9"
+                      onClick={() => setShowShareModal(true)}
+                    >
+                      <ShareIcon className="w-4 h-4" />
+                      <span className="hidden sm:inline">Share</span>
+                    </button>
+                  )}
+                </>
+              )}
+              {!readOnly && canDelete && classificationRecord && userProfile && (
+                <button
+                  className="btn btn-sm btn-outline btn-error gap-1.5 h-9"
+                  onClick={onDeleteClick}
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? (
+                    <span className="loading loading-spinner loading-xs" />
+                  ) : (
+                    <TrashIcon className="w-4 h-4" />
+                  )}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>

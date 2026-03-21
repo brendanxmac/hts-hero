@@ -102,8 +102,8 @@ export async function GET(
     }
 
     return NextResponse.json(
-      { error: "Classification not found" },
-      { status: 404 },
+      { error: "You don't have access to this classification" },
+      { status: 403 },
     )
   } catch (e) {
     console.error(e)

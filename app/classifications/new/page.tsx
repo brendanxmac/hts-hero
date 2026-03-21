@@ -16,8 +16,7 @@ import TextAreaInput from "../../../components/TextAreaInput";
 import toast from "react-hot-toast";
 import { CheckCircleIcon } from "@heroicons/react/16/solid";
 import { ArrowLeftIcon } from "@heroicons/react/16/solid";
-
-const FREE_CLASSIFICATION_LIMIT = 5;
+import { NUM_FREE_CLASSIFICATIONS } from "../../../constants/classification";
 
 const TIPS = [
   { text: "Include size, material, weight, color" },
@@ -63,6 +62,12 @@ function NewClassificationContent() {
         trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
           item: localDescription,
           is_anonymous: true,
+          entry_point: "classifications_new",
+        });
+        trackEvent(MixpanelEvent.ANONYMOUS_CLASSIFICATION_STARTED, {
+          classification_id: newId,
+          source: "classifications_new_form",
+          entry_point: "classifications_new",
         });
         router.replace(`/classifications/${newId}`);
         return;
@@ -75,7 +80,7 @@ function NewClassificationContent() {
 
       const userProfile = await fetchUser(user.id);
       const classificationCount = userProfile?.classification_count ?? 0;
-      const isTrialUser = classificationCount < FREE_CLASSIFICATION_LIMIT;
+      const isTrialUser = classificationCount < NUM_FREE_CLASSIFICATIONS;
 
       if (isPayingUser || isTrialUser) {
         const newId = await startNewClassification(localDescription, true);

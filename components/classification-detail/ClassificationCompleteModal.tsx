@@ -20,7 +20,7 @@ interface ClassificationCompleteModalProps {
 const NEXT_STEPS = [
   { icon: ScaleIcon, text: "Verify with CROSS rulings database" },
   { icon: CurrencyDollarIcon, text: "Find duty & tariff rates for any country" },
-  { icon: ShieldCheckIcon, text: "Generate an audit-ready defense report" },
+  { icon: ShieldCheckIcon, text: "Generate a classification report" },
   { icon: ShareIcon, text: "Share with clients or teammates" },
 ] as const;
 
@@ -74,9 +74,9 @@ export function ClassificationCompleteModal({
                     <Dialog.Title className="text-xl font-bold text-base-content mb-1">
                       Classification Complete
                     </Dialog.Title>
-                    <p className="text-sm text-base-content/50 mb-5">
+                    {/* <p className="text-sm text-base-content/50 mb-5">
                       Your item has been successfully classified
-                    </p>
+                    </p> */}
 
                     <div className="w-full rounded-xl bg-base-200/60 border border-base-300 p-4 mb-6">
                       <p className="text-[10px] font-semibold uppercase tracking-widest text-base-content/40 mb-1.5">

@@ -5,6 +5,21 @@ import {
   Importer,
 } from "../interfaces/hts";
 import apiClient from "./api";
+
+const classificationFetchBase =
+  process.env.APP_ENV === "test" ? "http://localhost:3000/api" : "/api";
+
+/** Thrown by {@link fetchClassificationById} with HTTP status for full-page error UI (bypasses axios interceptors). */
+export class ClassificationFetchError extends Error {
+  readonly status: number;
+
+  constructor(status: number, message: string) {
+    super(message);
+    this.status = status;
+    this.name = "ClassificationFetchError";
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
+}
 import jsPDF from "jspdf";
 import { getElementWithTariffDataFromClassification } from "./hts";
 import { fetchUser, UserProfile } from "./supabase/user";
@@ -93,12 +108,32 @@ export const fetchClassifications = async (): Promise<
 };
 
 export const fetchClassificationById = async (
-  id: string
+  id: string,
 ): Promise<ClassificationRecord> => {
-  const record: ClassificationRecord = await apiClient.get(
-    `/classification/${id}`
+  const res = await fetch(
+    `${classificationFetchBase}/classification/${encodeURIComponent(id)}`,
+    { credentials: "include", cache: "no-store" },
   );
-  return record;
+
+  let body: unknown = null;
+  try {
+    body = await res.json();
+  } catch {
+    // non-JSON error body
+  }
+
+  if (!res.ok) {
+    const msg =
+      typeof body === "object" &&
+      body !== null &&
+      "error" in body &&
+      typeof (body as { error: unknown }).error === "string"
+        ? (body as { error: string }).error
+        : res.statusText || "Failed to load classification";
+    throw new ClassificationFetchError(res.status, msg);
+  }
+
+  return body as ClassificationRecord;
 };
 
 export const deleteClassification = async (id: string): Promise<void> => {

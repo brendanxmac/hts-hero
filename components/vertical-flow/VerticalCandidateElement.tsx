@@ -50,7 +50,7 @@ export const VerticalCandidateElement = ({
   const { clearBreadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { sections } = useHtsSections();
   const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
-  const { classification, updateLevel, setClassification } =
+  const { classification, classificationId, updateLevel, setClassification } =
     useClassification();
   const { htsElements } = useHts();
   const { levels, progressionDescription } = classification;
@@ -75,6 +75,13 @@ export const VerticalCandidateElement = ({
       is_paying_user: isPayingUser,
       is_anonymous: !user,
     });
+    if (!user) {
+      trackEvent(MixpanelEvent.ANONYMOUS_CLASSIFICATION_COMPLETED, {
+        classification_id: classificationId,
+        hts_code: element.htsno,
+        item: classification.articleDescription,
+      });
+    }
   };
 
   const handleSelect = () => {

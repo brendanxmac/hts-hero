@@ -9,6 +9,7 @@ import { LoadingIndicator } from "./LoadingIndicator";
 import { ReadOnlyProvider } from "../contexts/ReadOnlyContext";
 import { ClassificationsProvider } from "../contexts/ClassificationsContext";
 import { BreadcrumbsProvider } from "../contexts/BreadcrumbsContext";
+import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
 
 interface Props {
   classificationRecord: ClassificationRecord;
@@ -17,8 +18,12 @@ interface Props {
 export default function SharedClassificationClient({
   classificationRecord,
 }: Props) {
-  const { setClassification, setClassificationId, resetClassificationState } =
-    useClassification();
+  const {
+    setClassification,
+    setClassificationId,
+    resetClassificationState,
+    setCanSave,
+  } = useClassification();
   const { fetchElements, revision } = useHts();
   const [isReady, setIsReady] = useState(false);
   const hasHydratedRef = useRef(false);
@@ -30,6 +35,7 @@ export default function SharedClassificationClient({
     const hydrate = async () => {
       setClassification(classificationRecord.classification);
       setClassificationId(classificationRecord.id);
+      setCanSave(false);
 
       if (
         classificationRecord.revision &&
@@ -44,11 +50,15 @@ export default function SharedClassificationClient({
       }
 
       setIsReady(true);
+      trackEvent(MixpanelEvent.SHARED_CLASSIFICATION_VIEWED, {
+        classification_id: classificationRecord.id,
+      });
     };
 
     hydrate();
 
     return () => {
+      setCanSave(true);
       resetClassificationState();
     };
   }, []);

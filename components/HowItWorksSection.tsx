@@ -26,7 +26,7 @@ const STEPS = [
   },
   {
     icon: CursorArrowRaysIcon,
-    title: "Confirm",
+    title: "Select",
     // subtitle: "Your Selection",
     description:
       "Select the best candidate and move on to the next level",

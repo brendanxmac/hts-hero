@@ -4,11 +4,11 @@ import { useEffect, useRef, useState } from "react";
 
 const keywords = [
   "According to GRI 1...",
-  "Based on Section XV Note 1(g):",
+  "Based on Note 1(g) of Section XV:",
   "Under GRI 3(a)...",
   "Based on Chapter Note 3(a):",
   "Per GRI 3(b)...",
-  "Additional US Note Note 1(g) states:",
+  "US Note 1(g) states:",
 ];
 
 export const GRIDefenseHeroMarketing = () => {

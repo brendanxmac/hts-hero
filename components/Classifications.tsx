@@ -61,6 +61,7 @@ export const Classifications = () => {
     error: classificationsError,
     isLoading: classificationsLoading,
     refreshClassifications,
+    removeClassificationById,
   } = useClassifications();
   const [activeClassifyPlan, setActiveClassifyPlan] =
     useState<PricingPlan | null>(null);
@@ -78,7 +79,8 @@ export const Classifications = () => {
       setDeletingId(id);
       await deleteClassification(id);
       toast.success("Classification deleted");
-      await refreshClassifications();
+      removeClassificationById(id);
+      await refreshClassifications({ showLoading: false });
     } catch (error) {
       // Error is already handled by apiClient
     } finally {
@@ -372,32 +374,6 @@ export const Classifications = () => {
     }
   }, []);
 
-  // TEMPORARY: Test HTS notes fetching and tree building for chapter 84 (section 16)
-  // useEffect(() => {
-  //   const testNotesFetch = async () => {
-  //     try {
-  //       console.log(
-  //         "🧪 Testing HTS notes fetch for Chapter 84 (Section 16)..."
-  //       );
-  //       const notes = await fetchHtsNotesBySectionAndChapter(2, 8);
-  //       console.log("📝 Fetched notes:", notes);
-
-  //       const noteTree = buildNoteTree(notes);
-  //       console.log("🌳 Built note tree:", noteTree);
-
-  //       const renderedContext = renderNoteContext(noteTree);
-  //       console.log("📄 Rendered note context:\n", renderedContext);
-  //     } catch (error) {
-  //       console.error("❌ Error testing HTS notes:", error);
-  //     }
-  //   };
-
-  //   // Only run when loading is complete
-  //   if (!loader.isLoading && !classificationsLoading) {
-  //     testNotesFetch();
-  //   }
-  // }, [loader.isLoading, classificationsLoading]);
-
   if (classificationsError || userError) {
     return (
       <main className="w-full h-full flex items-center justify-center bg-base-100">
@@ -448,37 +424,40 @@ export const Classifications = () => {
 
             {/* Right side - Action buttons */}
             <div className="flex flex-row gap-3 md:items-end">
-              {user && !activeClassifyPlan && (
-                <button
-                  className="group relative overflow-hidden px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 bg-secondary/15 border border-secondary/30 hover:border-secondary/50 hover:bg-secondary/25 hover:shadow-lg hover:shadow-secondary/20"
-                  disabled={loadingUpgrade}
-                  onClick={async () => {
-                    try {
-                      setLoadingUpgrade(true);
-                      const { url }: { url: string } = await apiClient.post(
-                        "/stripe/create-checkout",
-                        {
-                          itemId: classifyPro.planIdentifier,
-                          successEndpoint: "/classifications",
-                          cancelUrl: window.location.href,
-                        }
-                      );
-                      window.location.href = url;
-                    } catch (error) {
-                      setLoadingUpgrade(false);
-                    }
-                  }}
-                >
-                  <span className="relative z-10 flex items-center gap-2">
-                    {loadingUpgrade ? (
-                      <span className="loading loading-spinner loading-sm"></span>
-                    ) : (
-                      <BoltIcon className="h-4 w-4 text-secondary" />
-                    )}
-                    <span className="text-secondary font-bold">Upgrade</span>
-                  </span>
-                </button>
-              )}
+              {user &&
+                !activeClassifyPlan &&
+                userProfile &&
+                !userProfile.team_id && (
+                  <button
+                    className="group relative overflow-hidden px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 bg-secondary/15 border border-secondary/30 hover:border-secondary/50 hover:bg-secondary/25 hover:shadow-lg hover:shadow-secondary/20"
+                    disabled={loadingUpgrade}
+                    onClick={async () => {
+                      try {
+                        setLoadingUpgrade(true);
+                        const { url }: { url: string } = await apiClient.post(
+                          "/stripe/create-checkout",
+                          {
+                            itemId: classifyPro.planIdentifier,
+                            successEndpoint: "/classifications",
+                            cancelUrl: window.location.href,
+                          }
+                        );
+                        window.location.href = url;
+                      } catch (error) {
+                        setLoadingUpgrade(false);
+                      }
+                    }}
+                  >
+                    <span className="relative z-10 flex items-center gap-2">
+                      {loadingUpgrade ? (
+                        <span className="loading loading-spinner loading-sm"></span>
+                      ) : (
+                        <BoltIcon className="h-4 w-4 text-secondary" />
+                      )}
+                      <span className="text-secondary font-bold">Upgrade</span>
+                    </span>
+                  </button>
+                )}
               <Link
                 href="/classifications/new"
                 className="group relative overflow-hidden px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 bg-primary text-primary-content hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02]"
@@ -614,7 +593,7 @@ export const Classifications = () => {
                     <option value="">All Users</option>
                     {teamUsers.map((user) => (
                       <option key={user.id} value={user.id}>
-                        {user.name || user.email}
+                        {userProfile.id === user.id ? "Me" : user.name || user.email}
                       </option>
                     ))}
                   </select>

@@ -68,16 +68,23 @@ export const ClassificationSummary = ({
 
   return (
     <>
-      <Link
-        href={`/classifications/${classificationRecord.id}`}
-        className="group relative overflow-hidden rounded-2xl cursor-pointer transition-all duration-300 bg-base-100 border border-base-content/15 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10 hover:scale-[1.01] block"
-      >
+      {/* Card shell: link is a hit layer behind content so the delete control is not nested in <a> (invalid HTML / broken navigation). */}
+      <div className="group relative overflow-hidden rounded-2xl transition-all duration-300 bg-base-100 border border-base-content/15 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10 hover:scale-[1.01]">
+        <Link
+          href={`/classifications/${classificationRecord.id}`}
+          className="absolute inset-0 z-0 rounded-2xl cursor-pointer"
+          aria-label={
+            classification.articleDescription
+              ? `Open classification: ${classification.articleDescription.slice(0, 80)}${classification.articleDescription.length > 80 ? "…" : ""}`
+              : "Open classification"
+          }
+        />
         {/* Subtle gradient overlay on hover */}
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+        <div className="absolute inset-0 z-0 bg-gradient-to-r from-primary/0 via-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
         {/* Deleting overlay */}
         {isDeleting && (
-          <div className="absolute inset-0 bg-error/10 backdrop-blur-sm flex items-center justify-center rounded-2xl z-10">
+          <div className="absolute inset-0 bg-error/10 backdrop-blur-sm flex items-center justify-center rounded-2xl z-20">
             <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-base-100 shadow-lg">
               <span className="loading loading-spinner loading-sm text-error"></span>
               <span className="text-sm font-semibold text-error">
@@ -87,7 +94,7 @@ export const ClassificationSummary = ({
           </div>
         )}
 
-        <div className="relative z-[1] p-5">
+        <div className="relative z-[1] p-5 pointer-events-none">
           {/* Top Row: HTS Code + Status Badges */}
           <div className="flex items-start justify-between gap-4 mb-3">
             <div className="flex items-center gap-2">
@@ -144,11 +151,9 @@ export const ClassificationSummary = ({
               {/* Delete Button */}
               {canDelete && onDelete && (
                 <button
-                  className="p-2 rounded-lg bg-base-content/10 hover:bg-error/20 border border-transparent hover:border-error/40 transition-all duration-200 group/delete"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowDeleteModal(true);
-                  }}
+                  type="button"
+                  className="p-2 rounded-lg bg-base-content/10 hover:bg-error/20 border border-transparent hover:border-error/40 transition-all duration-200 group/delete pointer-events-auto"
+                  onClick={() => setShowDeleteModal(true)}
                   title="Delete classification"
                 >
                   <TrashIcon className="h-4 w-4 text-base-content/50 group-hover/delete:text-error transition-colors" />
@@ -179,7 +184,7 @@ export const ClassificationSummary = ({
                   <span className="text-xs font-medium text-base-content/70">
                     {classificationRecord.classifier
                       ? classificationRecord.classifier?.name ||
-                        classificationRecord.classifier.email
+                      classificationRecord.classifier.email
                       : "Unknown"}
                   </span>
                 </div>
@@ -208,7 +213,7 @@ export const ClassificationSummary = ({
             </div>
           </div>
         </div>
-      </Link>
+      </div>
 
       {/* Delete Confirmation Modal - rendered via portal to escape overflow:hidden */}
       {showDeleteModal &&

@@ -298,10 +298,11 @@ const getBestClassificationProgressionPremium = async (
 
 
         In your response, "analysis" should:
-        * Use cautious, audit-like language at all times and frame any conclusions as evidence-based interpretations such as "based on the available information" or "it appears" or "the primary candidate" and never as certain, final, or authoritative determinations.
-        * Have 1 section called "GRI & Legal Note Analysis" that provides a concise summary of why the candidate you picked is the most suitable match for the "Item Description" based on the "GRI Rules", the relevant "Legal Notes", and the "Selection Path" (if provided). If Selection Path is not provided, don't mention it.
-        * Not be markdown
-        * Have good spacing so it is easy to read
+        * Have 1 Section for "Evidence" that includes the evidence that supports or rejects each candidate.
+        * Have 1 Section for "GRI Rules" that includes the application of the GRI rules.
+        * Never include any conclusions or hard decisions, only evidence.
+        * Use research language at all times and have no conclusions. Never say anything like "the best candidate" or "the most suitable match", etc...
+        * Be well structured Markdown that highlights key parts
         * Only reference candidates by code or description, not by their letter identifier (e.g. A, B, etc..)
 
         The "identifier" property of your response must be the exact letter identifier (e.g., "A", "B", "C") of your chosen candidate.`,

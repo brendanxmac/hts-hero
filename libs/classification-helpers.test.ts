@@ -1,6 +1,7 @@
 import { describe, it, expect } from "../testing/test-runner";
 import {
   canUserUpdateDetails,
+  isViewerOnClassificationTeam,
   canUserDelete,
   hasPreliminaryLevels,
   shouldSkipSectionChapterDiscovery,
@@ -73,6 +74,92 @@ describe("canUserUpdateDetails", () => {
     const profile = baseProfile({ id: "user-2", role: UserRole.ADMIN, team_id: undefined });
     const record = baseRecord({ user_id: "user-1", team_id: "team-a" });
     expect(canUserUpdateDetails(profile, record)).toBe(false);
+  });
+
+  it("team admin cannot update legacy row (null team_id) without owner team info", () => {
+    const profile = baseProfile({ id: "user-2", role: UserRole.ADMIN, team_id: "team-a" });
+    const record = baseRecord({ user_id: "user-1", team_id: undefined });
+    expect(canUserUpdateDetails(profile, record)).toBe(false);
+  });
+
+  it("team admin can update legacy row when owner is on same team (ownerTeamInfo provided)", () => {
+    const profile = baseProfile({ id: "user-2", role: UserRole.ADMIN, team_id: "team-a" });
+    const record = baseRecord({ user_id: "user-1", team_id: undefined });
+    expect(
+      canUserUpdateDetails(profile, record, { team_id: "team-a" }),
+    ).toBe(true);
+  });
+
+  it("team admin cannot update legacy row when owner is on a different team", () => {
+    const profile = baseProfile({ id: "user-2", role: UserRole.ADMIN, team_id: "team-a" });
+    const record = baseRecord({ user_id: "user-1", team_id: undefined });
+    expect(
+      canUserUpdateDetails(profile, record, { team_id: "team-b" }),
+    ).toBe(false);
+  });
+});
+
+describe("isViewerOnClassificationTeam", () => {
+  it("returns true for owner", () => {
+    const profile = baseProfile({ id: "user-1", team_id: "team-a" });
+    const record = baseRecord({ user_id: "user-1", team_id: "team-b" });
+    expect(isViewerOnClassificationTeam(profile, record)).toBe(true);
+  });
+
+  it("returns true for owner without team_id", () => {
+    const profile = baseProfile({ id: "user-1", team_id: undefined });
+    const record = baseRecord({ user_id: "user-1" });
+    expect(isViewerOnClassificationTeam(profile, record)).toBe(true);
+  });
+
+  it("returns true for teammate (non-admin) when row has matching team_id", () => {
+    const profile = baseProfile({ id: "user-2", role: UserRole.USER, team_id: "team-a" });
+    const record = baseRecord({ user_id: "user-1", team_id: "team-a" });
+    expect(isViewerOnClassificationTeam(profile, record)).toBe(true);
+  });
+
+  it("returns false for user on different team", () => {
+    const profile = baseProfile({ id: "user-2", team_id: "team-a" });
+    const record = baseRecord({ user_id: "user-1", team_id: "team-b" });
+    expect(isViewerOnClassificationTeam(profile, record)).toBe(false);
+  });
+
+  it("returns false when user has no team_id and is not owner", () => {
+    const profile = baseProfile({ id: "user-2", team_id: undefined });
+    const record = baseRecord({ user_id: "user-1", team_id: "team-a" });
+    expect(isViewerOnClassificationTeam(profile, record)).toBe(false);
+  });
+
+  it("returns false for legacy row without owner team info", () => {
+    const profile = baseProfile({ id: "user-2", team_id: "team-a" });
+    const record = baseRecord({ user_id: "user-1", team_id: undefined });
+    expect(isViewerOnClassificationTeam(profile, record)).toBe(false);
+  });
+
+  it("returns true for legacy row when owner is on same team (ownerTeamInfo)", () => {
+    const profile = baseProfile({ id: "user-2", team_id: "team-a" });
+    const record = baseRecord({ user_id: "user-1", team_id: undefined });
+    expect(
+      isViewerOnClassificationTeam(profile, record, { team_id: "team-a" }),
+    ).toBe(true);
+  });
+
+  it("returns false for legacy row when owner is on different team", () => {
+    const profile = baseProfile({ id: "user-2", team_id: "team-a" });
+    const record = baseRecord({ user_id: "user-1", team_id: undefined });
+    expect(
+      isViewerOnClassificationTeam(profile, record, { team_id: "team-b" }),
+    ).toBe(false);
+  });
+
+  it("returns false when userProfile is null", () => {
+    const record = baseRecord({ user_id: "user-1" });
+    expect(isViewerOnClassificationTeam(null, record)).toBe(false);
+  });
+
+  it("returns false when classificationRecord is undefined", () => {
+    const profile = baseProfile({ id: "user-1" });
+    expect(isViewerOnClassificationTeam(profile, undefined)).toBe(false);
   });
 });
 
