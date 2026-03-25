@@ -23,8 +23,9 @@ Run in staging or local with real Supabase. Watch Network for `/api/classificati
 - [ ] **Shared link** `/c/[shareToken]`: logged out and logged in — read-only, no `classification/update` from share page
 - [ ] **401**: on `/classifications` anonymous flows, no forced redirect to login ([`libs/api.ts`](../libs/api.ts))
 
-## Classification count (`users.classification_count`)
+## Classification count (free tier)
 
-- [ ] **Solo** (logged in): starting a classification (`POST /api/classification/create`) increments that user’s `classification_count`
+- [ ] **Solo** (logged in, no `team_id`): free-tier gating uses a count of `classifications` rows for that `user_id` (see `canCreateClassification`)
+- [ ] **TeamUser / TeamAdmin**: can create new classifications without hitting the solo free limit (`isOnTeam` in `canCreateClassification`)
 - [ ] **Anon**: create does not increment (no RPC; count is for authenticated trial gating)
 - [ ] Marking complete / saving edits does not increment the count (only create does)

@@ -25,7 +25,6 @@ export interface UserProfile {
   company_address?: string;
   tariff_impact_trial_started_at?: string;
   classification_type?: ClassificationType;
-  classification_count?: number;
   created_at: string;
   updated_at: string;
 }

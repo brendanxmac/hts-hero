@@ -5,6 +5,7 @@ import {
 } from "../constants/classification";
 import { fetchClassifications } from "./classification";
 import { Product, userHasActivePurchaseForProduct } from "./supabase/purchase";
+import { countClassificationsForUserId } from "./supabase/count-user-classifications";
 import { fetchUser } from "./supabase/user";
 
 export function isAnonymousUser(user: User | null | undefined): boolean {
@@ -23,6 +24,8 @@ export type CanCreateClassificationSnapshot =
   | {
       mode: "authenticated";
       isPayingUser: boolean;
+      /** Users with a team are not limited by the solo free tier. */
+      isOnTeam: boolean;
       classificationCount: number;
     };
 
@@ -37,6 +40,7 @@ export function canCreateClassificationFromSnapshot(
   }
   return (
     snapshot.isPayingUser ||
+    snapshot.isOnTeam ||
     snapshot.classificationCount < NUM_FREE_CLASSIFICATIONS
   );
 }
@@ -45,6 +49,8 @@ export type CanCreateClassificationOptions = {
   /** Skip fetch; only valid when anonymous. */
   anonymousClassificationCount?: number;
   isPayingUser?: boolean;
+  /** When set, skips loading the user profile to read `team_id`. */
+  isOnTeam?: boolean;
   classificationCount?: number;
 };
 
@@ -53,6 +59,7 @@ export type CanCreateClassificationResult = {
   blockReason?: CanCreateClassificationBlockReason;
   /** Set when the user was authenticated (values used for the decision). */
   isPayingUser?: boolean;
+  isOnTeam?: boolean;
   classificationCount?: number;
 };
 
@@ -62,18 +69,27 @@ export async function canCreateClassification(
 ): Promise<CanCreateClassificationResult> {
   if (!isAnonymousUser(user)) {
     const u = user!;
-    const [isPayingUser, classificationCount] = await Promise.all([
+    const [isPayingUser, classificationCount, profile] = await Promise.all([
       options?.isPayingUser !== undefined
-        ? options.isPayingUser
+        ? Promise.resolve(options.isPayingUser)
         : userHasActivePurchaseForProduct(u.id, Product.CLASSIFY),
       options?.classificationCount !== undefined
-        ? options.classificationCount
-        : fetchUser(u.id).then((p) => p?.classification_count ?? 0),
+        ? Promise.resolve(options.classificationCount)
+        : countClassificationsForUserId(u.id),
+      options?.isOnTeam !== undefined
+        ? Promise.resolve(null)
+        : fetchUser(u.id),
     ]);
+
+    const isOnTeam =
+      options?.isOnTeam !== undefined
+        ? options.isOnTeam
+        : !!profile?.team_id;
 
     const allowed = canCreateClassificationFromSnapshot({
       mode: "authenticated",
       isPayingUser,
+      isOnTeam,
       classificationCount,
     });
 
@@ -81,6 +97,7 @@ export async function canCreateClassification(
       allowed,
       blockReason: allowed ? undefined : "free_limit_reached",
       isPayingUser,
+      isOnTeam,
       classificationCount,
     };
   }

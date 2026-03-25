@@ -55,8 +55,13 @@ function NewClassificationContent() {
     setLoading(true);
 
     try {
-      const { allowed, blockReason, isPayingUser, classificationCount } =
-        await canCreateClassification(user);
+      const {
+        allowed,
+        blockReason,
+        isPayingUser,
+        isOnTeam,
+        classificationCount,
+      } = await canCreateClassification(user);
 
       if (!allowed) {
         if (blockReason === "anonymous_limit_reached") {
@@ -87,10 +92,14 @@ function NewClassificationContent() {
         });
       } else {
         const count = classificationCount ?? 0;
-        const isTrialUserWithinLimit = count < NUM_FREE_CLASSIFICATIONS;
+        const isTrialUserWithinLimit =
+          !isPayingUser &&
+          !isOnTeam &&
+          count < NUM_FREE_CLASSIFICATIONS;
         trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
           item: localDescription,
           is_paying_user: isPayingUser,
+          is_team_member: isOnTeam,
           is_trial_user: isTrialUserWithinLimit,
           classification_count: count,
         });

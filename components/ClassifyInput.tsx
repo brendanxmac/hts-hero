@@ -127,8 +127,13 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
       if (navigateOnSubmit) {
         setIsCreating(true);
         try {
-          const { allowed, blockReason, isPayingUser, classificationCount } =
-            await canCreateClassification(user);
+          const {
+            allowed,
+            blockReason,
+            isPayingUser,
+            isOnTeam,
+            classificationCount,
+          } = await canCreateClassification(user);
 
           if (!allowed) {
             if (blockReason === "anonymous_limit_reached") {
@@ -159,10 +164,13 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
           } else {
             const count = classificationCount ?? 0;
             const isTrialUserWithinLimit =
+              !isPayingUser &&
+              !isOnTeam &&
               count < NUM_FREE_CLASSIFICATIONS;
             trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
               item: text,
               is_paying_user: isPayingUser,
+              is_team_member: isOnTeam,
               is_trial_user: isTrialUserWithinLimit,
               classification_count: count,
               source,

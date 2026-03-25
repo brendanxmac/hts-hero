@@ -191,17 +191,17 @@ export const ClassificationDetailLayout = ({
 
   const anonymousEditorClassificationId =
     isAnonymous &&
-    classificationRecord &&
-    classificationRecord.user_id === null &&
-    !classificationRecord.is_shared
+      classificationRecord &&
+      classificationRecord.user_id === null &&
+      !classificationRecord.is_shared
       ? classificationRecord.id
       : null;
 
   const canUpdateDetails = readOnly
     ? false
     : canUserUpdateDetails(userProfile, classificationRecord, {
-        anonymousEditorClassificationId,
-      });
+      anonymousEditorClassificationId,
+    });
   const canDelete = readOnly
     ? false
     : canUserDelete(userProfile, classificationRecord);
@@ -520,7 +520,6 @@ export const ClassificationDetailLayout = ({
                 articleDescription={classification?.articleDescription}
                 onClose={() => {
                   setShowCompleteModal(false);
-                  setActiveTab("overview");
                 }}
                 onProceed={() => {
                   setShowCompleteModal(false);

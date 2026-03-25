@@ -21,16 +21,5 @@ CREATE INDEX IF NOT EXISTS idx_classifications_share_token
   ON classifications (share_token)
   WHERE share_token IS NOT NULL;
 
--- 2. Add classification count to users table for trial gating
-ALTER TABLE users
-  ADD COLUMN IF NOT EXISTS classification_count integer DEFAULT 0;
-
--- 3. RPC to atomically increment classification_count (avoids race conditions)
-CREATE OR REPLACE FUNCTION increment_classification_count(user_id_input uuid)
-RETURNS void AS $$
-BEGIN
-  UPDATE users
-  SET classification_count = COALESCE(classification_count, 0) + 1
-  WHERE id = user_id_input;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+CREATE INDEX IF NOT EXISTS idx_classifications_user_id
+  ON classifications (user_id);

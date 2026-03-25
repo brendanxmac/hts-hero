@@ -296,12 +296,13 @@ const getBestClassificationProgressionPremium = async (
         2. Apply the following GRI Rules sequentailly while considering all candidates to shape your decision. Only proceed to and apply the sequential rules if a winning candidate is not clearly determined based on the current one.
         GRI Rules:\n${JSON.stringify(griRules, null, 2)}
 
-
         In your response, "analysis" should:
-        * Have 1 Section for "Evidence" that includes the evidence that supports or rejects each candidate.
-        * Have 1 Section for "GRI Rules" that includes the application of the GRI rules.
-        * Never include any conclusions or hard decisions, only evidence.
-        * Use research language at all times and have no conclusions. Never say anything like "the best candidate" or "the most suitable match", etc...
+        * Be short and concise
+        * Outline the evidence that supports the relevant candidate(s).
+        * Not contain conclusions or hard decisions, only evidence.
+        * Never include a summary of the evidence, only the evidence itself.
+        * Use research language at all times and have no conclusions.
+        * Never say anything like "the best candidate" or "the most suitable match", etc...
         * Be well structured Markdown that highlights key parts
         * Only reference candidates by code or description, not by their letter identifier (e.g. A, B, etc..)
 

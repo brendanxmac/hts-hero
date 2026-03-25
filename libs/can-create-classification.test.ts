@@ -47,26 +47,40 @@ describe("canCreateClassificationFromSnapshot", () => {
       canCreateClassificationFromSnapshot({
         mode: "authenticated",
         isPayingUser: true,
+        isOnTeam: false,
         classificationCount: 99,
       }),
     ).toBe(true)
   })
 
-  it("allows authenticated non-paying user under free limit", () => {
+  it("allows authenticated team user regardless of count or payment", () => {
     expect(
       canCreateClassificationFromSnapshot({
         mode: "authenticated",
         isPayingUser: false,
+        isOnTeam: true,
+        classificationCount: 99,
+      }),
+    ).toBe(true)
+  })
+
+  it("allows authenticated non-paying solo user under free limit", () => {
+    expect(
+      canCreateClassificationFromSnapshot({
+        mode: "authenticated",
+        isPayingUser: false,
+        isOnTeam: false,
         classificationCount: 0,
       }),
     ).toBe(true)
   })
 
-  it("denies authenticated non-paying user at or over free limit", () => {
+  it("denies authenticated non-paying solo user at or over free limit", () => {
     expect(
       canCreateClassificationFromSnapshot({
         mode: "authenticated",
         isPayingUser: false,
+        isOnTeam: false,
         classificationCount: NUM_FREE_CLASSIFICATIONS,
       }),
     ).toBe(false)
