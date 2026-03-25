@@ -72,7 +72,7 @@ export function ClassificationCompleteModal({
                     </div>
 
                     <Dialog.Title className="text-xl font-bold text-base-content mb-1">
-                      Classification Complete
+                      10 Digit Code Selected
                     </Dialog.Title>
                     {/* <p className="text-sm text-base-content/50 mb-5">
                       Your item has been successfully classified

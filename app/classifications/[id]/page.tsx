@@ -40,9 +40,6 @@ export default function ClassificationPage() {
   const { fetchElements, revision } = useHts();
 
   const [record, setRecord] = useState<ClassificationRecord | null>(null);
-  const [classificationOwnerTeamInfo, setClassificationOwnerTeamInfo] = useState<
-    ClassificationOwnerTeamInfo | null | undefined
-  >(undefined);
   const [isLoading, setIsLoading] = useState(true);
   /** HTTP status from failed fetch; `0` = network / unknown */
   const [loadErrorStatus, setLoadErrorStatus] = useState<number | null>(null);
@@ -52,37 +49,9 @@ export default function ClassificationPage() {
   const skipUnmountFlushRef = useRef(false);
 
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      if (!userProfile?.id || !record?.user_id) {
-        if (!cancelled) setClassificationOwnerTeamInfo(undefined);
-        return;
-      }
-      const needOwnerTeam =
-        !!userProfile.team_id &&
-        record.user_id !== userProfile.id &&
-        !record.team_id;
-      if (!needOwnerTeam) {
-        if (!cancelled) setClassificationOwnerTeamInfo(undefined);
-        return;
-      }
-      if (!cancelled) setClassificationOwnerTeamInfo(undefined);
-      const owner = await fetchUser(record.user_id);
-      if (cancelled) return;
-      setClassificationOwnerTeamInfo(
-        owner ? { team_id: owner.team_id } : { team_id: undefined },
-      );
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [userProfile, record]);
-
-  useEffect(() => {
     const canUpdate = canUserUpdateDetails(
       userProfile ?? null,
       record ?? undefined,
-      classificationOwnerTeamInfo,
     );
     canUpdateRef.current = canUpdate;
     if (record) {
@@ -91,7 +60,7 @@ export default function ClassificationPage() {
     return () => {
       setCanSave(true);
     };
-  }, [userProfile, record, classificationOwnerTeamInfo, setCanSave]);
+  }, [userProfile, record, setCanSave]);
 
   useEffect(() => {
     let cancelled = false;
@@ -195,7 +164,6 @@ export default function ClassificationPage() {
   const canUpdate = canUserUpdateDetails(
     userProfile ?? null,
     record ?? undefined,
-    classificationOwnerTeamInfo,
   );
 
   return (
@@ -204,7 +172,6 @@ export default function ClassificationPage() {
         <ReadOnlyProvider readOnly={!canUpdate}>
           <ClassificationDetailLayout
             classificationRecord={record ?? undefined}
-            classificationOwnerTeamInfo={classificationOwnerTeamInfo}
             onNavigateBack={handleNavigateBack}
           />
         </ReadOnlyProvider>

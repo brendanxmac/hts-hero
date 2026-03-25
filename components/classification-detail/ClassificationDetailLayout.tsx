@@ -26,8 +26,7 @@ import {
   getCountryOfOrigin,
   canUserUpdateDetails,
   canUserDelete,
-  isViewerOnClassificationTeam,
-  type ClassificationOwnerTeamInfo,
+  recordIsFromUsersTeam,
 } from "../../libs/classification-helpers";
 import { ClassificationRecord } from "../../interfaces/hts";
 import { DeleteConfirmationModal } from "../classification-ui/DeleteConfirmationModal";
@@ -135,13 +134,10 @@ interface Props {
   classificationRecord?: ClassificationRecord;
   /** Pass `{ skipFlush: true }` after delete so we do not PATCH a removed row. */
   onNavigateBack: (options?: { skipFlush?: boolean }) => void | Promise<void>;
-  /** For legacy rows with null `team_id`, owner's `users.team_id` after lookup */
-  classificationOwnerTeamInfo?: ClassificationOwnerTeamInfo | null;
 }
 
 export const ClassificationDetailLayout = ({
   classificationRecord: initialRecord,
-  classificationOwnerTeamInfo,
   onNavigateBack,
 }: Props) => {
   const readOnly = useIsReadOnly();
@@ -198,7 +194,6 @@ export const ClassificationDetailLayout = ({
     : canUserUpdateDetails(
       userProfile,
       classificationRecord,
-      classificationOwnerTeamInfo,
     );
   const canDelete = readOnly
     ? false
@@ -206,13 +201,13 @@ export const ClassificationDetailLayout = ({
 
   const viewerOnTeam = useMemo(
     () =>
-      isViewerOnClassificationTeam(
+      recordIsFromUsersTeam(
         userProfile,
         classificationRecord,
-        classificationOwnerTeamInfo,
       ),
-    [userProfile, classificationRecord, classificationOwnerTeamInfo],
+    [userProfile, classificationRecord],
   );
+
   const useNormalWorkspace = !readOnly || viewerOnTeam;
 
   const refreshRecord = useCallback(async () => {

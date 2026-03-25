@@ -1,1 +1,1 @@
-export const NUM_FREE_CLASSIFICATIONS = 5
+export const NUM_FREE_CLASSIFICATIONS = 1

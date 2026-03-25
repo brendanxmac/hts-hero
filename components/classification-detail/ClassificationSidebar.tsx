@@ -123,7 +123,7 @@ export const ClassificationSidebar = ({
   isSaving,
   userProfile,
   isAnonymous,
-  useNormalWorkspace: useNormalWorkspace,
+  useNormalWorkspace,
 }: Props) => {
   const readOnly = useIsReadOnly();
   const [classificationExpanded, setClassificationExpanded] = useState(true);

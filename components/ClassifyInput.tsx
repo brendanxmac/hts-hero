@@ -65,7 +65,7 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
     {
       placeholder,
       placeholders,
-      buttonText = "Classify My Product",
+      buttonText = "Find HTS Code",
       defaultValue = "",
       compact = false,
       examples: examplesProp,
@@ -88,7 +88,7 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
 
     const cycleList = placeholders ?? CYCLING_EXAMPLES;
     const shouldCycle = !placeholder && cycleList.length > 0;
-    const staticPlaceholder = placeholder || "Enter a description of your product";
+    const staticPlaceholder = placeholder || "Enter a product description";
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isVisible, setIsVisible] = useState(true);
 

@@ -80,14 +80,14 @@ function NewClassificationContent() {
 
       const userProfile = await fetchUser(user.id);
       const classificationCount = userProfile?.classification_count ?? 0;
-      const isTrialUser = classificationCount < NUM_FREE_CLASSIFICATIONS;
+      const isTrialUserWithinLimit = classificationCount < NUM_FREE_CLASSIFICATIONS;
 
-      if (isPayingUser || isTrialUser) {
+      if (isPayingUser || isTrialUserWithinLimit) {
         const newId = await startNewClassification(localDescription, true);
         trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
           item: localDescription,
           is_paying_user: isPayingUser,
-          is_trial_user: isTrialUser,
+          is_trial_user: isTrialUserWithinLimit,
           classification_count: classificationCount,
         });
         router.replace(`/classifications/${newId}`);

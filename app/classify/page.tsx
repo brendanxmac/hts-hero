@@ -309,23 +309,23 @@ export default function Home() {
         </div>
 
         <div className="relative z-10 flex flex-col items-center px-4 sm:px-6">
-          <h1 className="text-center text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-3 md:mb-4 max-w-xs sm:max-w-5xl">
-            Find Your HTS Code,{" "}
+          <h1 className="text-center text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-8 md:mb-10 max-w-xs sm:max-w-5xl">
+            Find Any HTS Code,{" "}
             <span className="text-secondary">
               Fast
             </span>
           </h1>
 
-          <p className="text-center text-base-content/70 text-sm sm:text-base md:text-lg mb-8 md:mb-10 max-w-xs sm:max-w-3xl">
+          {/* <p className="text-center text-base-content/70 text-sm sm:text-base md:text-lg mb-8 md:mb-10 max-w-xs sm:max-w-3xl">
             Avoid expensive mistakes, save time, and eliminate import risk
-          </p>
+          </p> */}
 
           {/* CTA input — the focal point of the page */}
           <div className="w-full max-w-4xl mx-auto mb-4 md:mb-6">
             <ClassifyInput
               ref={classifyInputRef}
-              buttonText="Find Your HTS Code"
-              placeholder="Enter a description of your product"
+              buttonText="Find HTS Code"
+              placeholder="Enter a product description"
               entryPoint="classify_landing"
             />
           </div>
@@ -337,7 +337,7 @@ export default function Home() {
           />
 
           {/* Supporting bullets — quiet reinforcement */}
-          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-x-3 gap-y-1.5 sm:gap-x-5 justify-center my-3 sm:my-4">
+          {/* <div className="flex flex-col sm:flex-row sm:flex-wrap gap-x-3 gap-y-1.5 sm:gap-x-5 justify-center my-3 sm:my-4">
             {CLASSIFY_SUPPORTING_BULLETS.map((bullet) => (
               <div
                 key={bullet}
@@ -347,11 +347,11 @@ export default function Home() {
                 <span>{bullet}</span>
               </div>
             ))}
-          </div>
+          </div> */}
 
-          <p className="text-xs sm:text-sm text-center px-4 font-medium text-base-content/50">
+          {/* <p className="text-xs sm:text-sm text-center px-4 font-medium text-base-content/50">
             Trusted by Customs Brokers & Importers to Find <span className="font-extrabold">1,000+ Audit-Ready HTS Codes</span>
-          </p>
+          </p> */}
 
 
         </div>
@@ -362,10 +362,10 @@ export default function Home() {
       <ClassificationExamplesSection />
 
       {/* How It Works */}
-      <HowItWorksSection />
+      {/* <HowItWorksSection /> */}
 
       {/* Benefits Comparison */}
-      <BenefitsComparisonSection />
+      {/* <BenefitsComparisonSection /> */}
 
 
       {/* Feature Sections */}
