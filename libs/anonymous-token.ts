@@ -3,6 +3,9 @@ import { v4 as uuidv4 } from "uuid";
 const COOKIE_NAME = "anon_classification_token";
 const COOKIE_MAX_AGE_DAYS = 30;
 
+/** localStorage key: anonymous user may only open this id on `/classifications/[id]`. */
+const ACTIVE_ANON_CLASSIFICATION_STORAGE_KEY = "hts_anon_active_classification_id";
+
 export function getAnonymousToken(): string | null {
   if (typeof document === "undefined") return null;
 
@@ -38,4 +41,22 @@ export function getAnonymousTokenFromCookieHeader(
     .find((row) => row.startsWith(`${COOKIE_NAME}=`));
 
   return match ? match.split("=")[1] : null;
+}
+
+export function getAnonymousActiveClassificationId(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return localStorage.getItem(ACTIVE_ANON_CLASSIFICATION_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function setAnonymousActiveClassificationId(id: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(ACTIVE_ANON_CLASSIFICATION_STORAGE_KEY, id);
+  } catch {
+    /* quota / private mode */
+  }
 }

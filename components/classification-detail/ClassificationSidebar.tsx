@@ -33,6 +33,10 @@ import { getTutorialFromPathname, Tutorial, TutorialI } from "../Tutorial";
 import { Product, userHasActivePurchaseForProduct } from "../../libs/supabase/purchase";
 import { GiftIcon } from "@heroicons/react/24/solid";
 import { useIsReadOnly } from "../../contexts/ReadOnlyContext";
+import { NUM_FREE_CLASSIFICATIONS } from "../../constants/classification";
+import Modal from "../Modal";
+import ConversionPricing from "../ConversionPricing";
+import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 
 interface Props {
   classification: ClassificationI;
@@ -128,6 +132,7 @@ export const ClassificationSidebar = ({
   const readOnly = useIsReadOnly();
   const [classificationExpanded, setClassificationExpanded] = useState(true);
   const [showTutorial, setShowTutorial] = useState(false);
+  const [showPricing, setShowPricing] = useState(false);
   const [isPayingUser, setIsPayingUser] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -389,18 +394,24 @@ export const ClassificationSidebar = ({
                     className="btn btn-primary w-full gap-2"
                   >
                     <GiftIcon className="w-4 h-4" />
-                    Get 10 FREE Classifications
+                    Get {NUM_FREE_CLASSIFICATIONS} FREE Classifications
                   </Link>
                 </div>
               ) : isPayingUser || isLoading || userProfile?.team_id ? null : (
                 <div className="w-full mt-3 px-1">
-                  <Link
-                    href="/classifications"
-                    className="w-full btn btn-sm btn-primary gap-2"
+                  <button
+                    type="button"
+                    onClick={() => {
+                      trackEvent(MixpanelEvent.CLICKED_CLASSIFY_PRO_UPGRADE, {
+                        entry_point: "classification_sidebar",
+                      });
+                      setShowPricing(true);
+                    }}
+                    className="w-full btn btn-primary gap-2"
                   >
                     <SparklesIcon className="w-4 h-4" />
                     Upgrade to Pro
-                  </Link>
+                  </button>
                 </div>
               )}
             </>
@@ -414,6 +425,12 @@ export const ClassificationSidebar = ({
           showTutorial={showTutorial}
           setShowTutorial={setShowTutorial}
         />
+      )}
+
+      {showPricing && (
+        <Modal isOpen={showPricing} setIsOpen={setShowPricing}>
+          <ConversionPricing />
+        </Modal>
       )}
     </>
   );

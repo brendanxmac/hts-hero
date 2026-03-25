@@ -65,18 +65,34 @@ export function getCountryOfOrigin(
 export function canUserUpdateDetails(
   userProfile: UserProfile | null,
   classificationRecord: ClassificationRecord | undefined,
+  opts?: {
+    anonymousEditorClassificationId?: string | null
+  },
 ): boolean {
-  if (!userProfile || !classificationRecord) return false
-  if (userProfile.id === classificationRecord.user_id) return true
+  if (!classificationRecord) return false
 
-  const isAdmin = userProfile.role === UserRole.ADMIN
-  const isOnTeam = !!userProfile.team_id
-  const isOnSameTeamAsClassification =
-    classificationRecord.team_id === userProfile.team_id
+  if (userProfile) {
+    if (userProfile.id === classificationRecord.user_id) return true
 
-  if (userProfile.role === UserRole.SUPER_ADMIN) return true
+    const isAdmin = userProfile.role === UserRole.ADMIN
+    const isOnTeam = !!userProfile.team_id
+    const isOnSameTeamAsClassification =
+      classificationRecord.team_id === userProfile.team_id
 
-  if (isAdmin && isOnTeam && isOnSameTeamAsClassification) {
+    if (userProfile.role === UserRole.SUPER_ADMIN) return true
+
+    if (isAdmin && isOnTeam && isOnSameTeamAsClassification) {
+      return true
+    }
+
+    return false
+  }
+
+  if (
+    classificationRecord.user_id == null &&
+    opts?.anonymousEditorClassificationId != null &&
+    opts.anonymousEditorClassificationId === classificationRecord.id
+  ) {
     return true
   }
 

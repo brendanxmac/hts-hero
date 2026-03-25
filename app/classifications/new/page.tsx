@@ -4,14 +4,11 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, Suspense } from "react";
 import { useClassification } from "../../../contexts/ClassificationContext";
 import { useUser } from "../../../contexts/UserContext";
-import {
-  Product,
-  userHasActivePurchaseForProduct,
-} from "../../../libs/supabase/purchase";
-import { fetchUser } from "../../../libs/supabase/user";
 import { MixpanelEvent, trackEvent } from "../../../libs/mixpanel";
+import { canCreateClassification } from "../../../libs/can-create-classification";
 import Modal from "../../../components/Modal";
 import ConversionPricing from "../../../components/ConversionPricing";
+import { SignUpGateCTA } from "../../../components/SignUpGateCTA";
 import TextAreaInput from "../../../components/TextAreaInput";
 import toast from "react-hot-toast";
 import { CheckCircleIcon } from "@heroicons/react/16/solid";
@@ -35,6 +32,7 @@ function NewClassificationContent() {
     resetClassificationState,
   } = useClassification();
   const [showPricing, setShowPricing] = useState(false);
+  const [showSignUpGate, setShowSignUpGate] = useState(false);
   const [loading, setLoading] = useState(false);
   const [localDescription, setLocalDescription] = useState("");
   const hasAutoSubmittedRef = useRef(false);
@@ -57,8 +55,26 @@ function NewClassificationContent() {
     setLoading(true);
 
     try {
+      const { allowed, blockReason, isPayingUser, classificationCount } =
+        await canCreateClassification(user);
+
+      if (!allowed) {
+        if (blockReason === "anonymous_limit_reached") {
+          setShowSignUpGate(true);
+        } else {
+          setArticleDescription(localDescription);
+          trackEvent(MixpanelEvent.CLICKED_CLASSIFY_PRO_UPGRADE, {
+            entry_point: "new_classification",
+          });
+          setShowPricing(true);
+        }
+        setLoading(false);
+        return;
+      }
+
+      const newId = await startNewClassification(localDescription, true);
+
       if (!user) {
-        const newId = await startNewClassification(localDescription, true);
         trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
           item: localDescription,
           is_anonymous: true,
@@ -69,33 +85,18 @@ function NewClassificationContent() {
           source: "classifications_new_form",
           entry_point: "classifications_new",
         });
-        router.replace(`/classifications/${newId}`);
-        return;
-      }
-
-      const isPayingUser = await userHasActivePurchaseForProduct(
-        user.id,
-        Product.CLASSIFY
-      );
-
-      const userProfile = await fetchUser(user.id);
-      const classificationCount = userProfile?.classification_count ?? 0;
-      const isTrialUserWithinLimit = classificationCount < NUM_FREE_CLASSIFICATIONS;
-
-      if (isPayingUser || isTrialUserWithinLimit) {
-        const newId = await startNewClassification(localDescription, true);
+      } else {
+        const count = classificationCount ?? 0;
+        const isTrialUserWithinLimit = count < NUM_FREE_CLASSIFICATIONS;
         trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
           item: localDescription,
           is_paying_user: isPayingUser,
           is_trial_user: isTrialUserWithinLimit,
-          classification_count: classificationCount,
+          classification_count: count,
         });
-        router.replace(`/classifications/${newId}`);
-      } else {
-        setArticleDescription(localDescription);
-        setShowPricing(true);
-        setLoading(false);
       }
+
+      router.replace(`/classifications/${newId}`);
     } catch (error) {
       console.error(error);
       toast.error("Something went wrong. Please try again or contact support.");
@@ -169,6 +170,11 @@ function NewClassificationContent() {
       {showPricing && (
         <Modal isOpen={showPricing} setIsOpen={setShowPricing}>
           <ConversionPricing />
+        </Modal>
+      )}
+      {showSignUpGate && (
+        <Modal isOpen={showSignUpGate} setIsOpen={setShowSignUpGate}>
+          <SignUpGateCTA articleDescription={localDescription.trim()} />
         </Modal>
       )}
     </main>

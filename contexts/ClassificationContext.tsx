@@ -17,7 +17,10 @@ import {
 import { fetchUser } from "../libs/supabase/user";
 import { NoteRecord } from "../types/hts";
 import { useUser } from "./UserContext";
-import { getOrCreateAnonymousToken } from "../libs/anonymous-token";
+import {
+  getOrCreateAnonymousToken,
+  setAnonymousActiveClassificationId,
+} from "../libs/anonymous-token";
 
 export type ClassificationTier = "premium" | "standard";
 
@@ -407,6 +410,9 @@ export const ClassificationProvider = ({
         );
         newId = classificationRecord.id;
         setClassificationId(classificationRecord.id);
+        if (!authUser) {
+          setAnonymousActiveClassificationId(classificationRecord.id);
+        }
       } finally {
         setIsCreatingClassification(false);
         pendingClassificationRef.current = null;

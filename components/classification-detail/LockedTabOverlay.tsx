@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { LockClosedIcon, CheckIcon } from "@heroicons/react/16/solid";
 import { ReactNode } from "react";
+import { NUM_FREE_CLASSIFICATIONS } from "../../constants/classification";
 
 const UNLOCK_BENEFITS = [
   "CROSS Ruling Validation",
   "Branded Classification Reports",
   "File Attachments & Notes",
-  "10 FREE Classifications",
+  `${NUM_FREE_CLASSIFICATIONS} FREE Classifications`,
 ] as const;
 
 interface LockedTabOverlayProps {

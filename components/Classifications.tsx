@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { ClassificationSummary } from "./ClassificationSummary";
 import { useClassifications } from "../contexts/ClassificationsContext";
 import { useUser } from "../contexts/UserContext";
-import { useEffect, useState, useMemo } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { Loader } from "../interfaces/ui";
 import { useHts } from "../contexts/HtsContext";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
@@ -32,6 +32,13 @@ import {
 import { ClassificationStatus, Importer } from "../interfaces/hts";
 import { EmptyResultsConfig } from "./EmptyResults";
 import { deleteClassification } from "../libs/classification";
+import {
+  canCreateClassification,
+  isAnonymousUser,
+} from "../libs/can-create-classification";
+import Modal from "./Modal";
+import ConversionPricing from "./ConversionPricing";
+import { SignUpGateCTA } from "./SignUpGateCTA";
 import toast from "react-hot-toast";
 
 // Define the searchable fields for Fuse.js
@@ -43,8 +50,7 @@ interface SearchableClassification {
 
 export const Classifications = () => {
   const router = useRouter();
-  const [loadingNewClassification, setLoadingNewClassification] =
-    useState(false);
+  const [loadingNewClassification] = useState(false);
   const [loadingUpgrade, setLoadingUpgrade] = useState(false);
   const [loader, setLoader] = useState<Loader>({
     isLoading: true,
@@ -72,6 +78,9 @@ export const Classifications = () => {
   const [selectedUserId, setSelectedUserId] = useState<string>("");
   const [selectedImporterId, setSelectedImporterId] = useState<string>("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [canCreateNew, setCanCreateNew] = useState(true);
+  const [showListPricing, setShowListPricing] = useState(false);
+  const [showListSignUpGate, setShowListSignUpGate] = useState(false);
   const UNASSIGNED_IMPORTER_VALUE = "unassigned";
 
   const handleDeleteClassification = async (id: string) => {
@@ -86,120 +95,6 @@ export const Classifications = () => {
     } finally {
       setDeletingId(null);
     }
-  };
-
-  // Helper function to get the appropriate empty state configuration
-  const getEmptyStateConfig = (): EmptyResultsConfig | null => {
-    const hasClassifications = classifications && classifications.length > 0;
-    const noFiltered = filteredClassifications.length === 0;
-    const hasActiveFilters =
-      searchQuery !== "" ||
-      (teamUsers.length > 0 && selectedUserId !== "") ||
-      selectedImporterId !== "";
-    const noActiveFilters =
-      searchQuery === "" &&
-      selectedImporterId === "" &&
-      (teamUsers.length === 0 || selectedUserId === "");
-
-    // No classifications at all
-    if (!hasClassifications) {
-      return {
-        iconPath:
-          "M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z",
-        title: "No Classifications Yet",
-        descriptions: [
-          "You haven't started or completed any classifications yet, but can start your first one now.",
-        ],
-        buttonText: "Start First Classification",
-        onButtonClick: () => router.push("/classifications/new"),
-      };
-    }
-
-    // No search results (active filters applied)
-    if (hasClassifications && noFiltered && hasActiveFilters) {
-      return {
-        iconPath:
-          "M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z",
-        title: "No Matching Classifications",
-        descriptions: ["No classifications found for your search critieria."],
-        buttonText: "Clear Filters",
-        buttonClassName: "btn btn-primary w-fit btn-sm",
-        onButtonClick: () => {
-          setSearchQuery("");
-          setSelectedUserId("");
-          setSelectedImporterId("");
-        },
-      };
-    }
-
-    // Empty state for draft tab
-    if (
-      hasClassifications &&
-      noFiltered &&
-      activeTab === "draft" &&
-      noActiveFilters
-    ) {
-      return {
-        iconPath:
-          "M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z",
-        title: "No Draft Classifications",
-        descriptions: [
-          "You don't have any draft classifications at the moment.",
-          "Start a new classification to begin working on a draft.",
-        ],
-        buttonText: "Start New Classification",
-        buttonIcon: loadingNewClassification ? (
-          <span className={`loading loading-spinner loading-sm`}></span>
-        ) : (
-          <PlusIcon className="h-5 w-5" />
-        ),
-        onButtonClick: () => router.push("/classifications/new"),
-      };
-    }
-
-    // Empty state for finalized tab
-    if (
-      hasClassifications &&
-      noFiltered &&
-      activeTab === "final" &&
-      noActiveFilters
-    ) {
-      return {
-        iconPath: "M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
-        title: "No Finalized Classifications",
-        descriptions: [
-          "Classifications that you've fully completed can be marked as final.",
-          'To do this, open the classification and click "Mark as Final" in the top right hand corner.',
-        ],
-        buttonText: "View Drafts",
-        buttonClassName: "btn btn-primary btn-wide btn-sm",
-        maxWidth: "max-w-md",
-        onButtonClick: () => setActiveTab("draft"),
-      };
-    }
-
-    // Empty state for review tab
-    if (
-      hasClassifications &&
-      noFiltered &&
-      activeTab === "review" &&
-      noActiveFilters
-    ) {
-      return {
-        iconPath: "M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
-        title: "No Classifications in Review",
-        descriptions: [
-          "Classifications can be marked as 'Needs Review'.",
-          "To do this, open the classification and select this status",
-        ],
-        buttonText: "View Drafts",
-        buttonClassName: "btn btn-primary btn-wide btn-sm",
-        maxWidth: "max-w-md",
-        onButtonClick: () => setActiveTab("draft"),
-      };
-    }
-
-    return null;
   };
 
   useEffect(() => {
@@ -374,6 +269,153 @@ export const Classifications = () => {
     }
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    const run = async () => {
+      if (user) {
+        const { allowed } = await canCreateClassification(user);
+        if (!cancelled) setCanCreateNew(allowed);
+        return;
+      }
+
+      if (classificationsLoading) {
+        if (!cancelled) setCanCreateNew(false);
+        return;
+      }
+
+      const { allowed } = await canCreateClassification(null, {
+        anonymousClassificationCount: classifications.length,
+      });
+      if (!cancelled) setCanCreateNew(allowed);
+    };
+
+    void run();
+    return () => {
+      cancelled = true;
+    };
+  }, [user, classificationsLoading, classifications.length]);
+
+  const tryOpenNewClassification = useCallback(() => {
+    if (canCreateNew) {
+      router.push("/classifications/new");
+      return;
+    }
+    if (isAnonymousUser(user)) {
+      setShowListSignUpGate(true);
+    } else {
+      setShowListPricing(true);
+    }
+  }, [canCreateNew, user, router]);
+
+  const getEmptyStateConfig = (): EmptyResultsConfig | null => {
+    const hasClassifications = classifications && classifications.length > 0;
+    const noFiltered = filteredClassifications.length === 0;
+    const hasActiveFilters =
+      searchQuery !== "" ||
+      (teamUsers.length > 0 && selectedUserId !== "") ||
+      selectedImporterId !== "";
+    const noActiveFilters =
+      searchQuery === "" &&
+      selectedImporterId === "" &&
+      (teamUsers.length === 0 || selectedUserId === "");
+
+    if (!hasClassifications) {
+      return {
+        iconPath:
+          "M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z",
+        title: "No Classifications Yet",
+        descriptions: [
+          "You haven't started or completed any classifications yet, but can start your first one now.",
+        ],
+        buttonText: "Start First Classification",
+        onButtonClick: tryOpenNewClassification,
+      };
+    }
+
+    if (hasClassifications && noFiltered && hasActiveFilters) {
+      return {
+        iconPath:
+          "M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z",
+        title: "No Matching Classifications",
+        descriptions: ["No classifications found for your search critieria."],
+        buttonText: "Clear Filters",
+        buttonClassName: "btn btn-primary w-fit btn-sm",
+        onButtonClick: () => {
+          setSearchQuery("");
+          setSelectedUserId("");
+          setSelectedImporterId("");
+        },
+      };
+    }
+
+    if (
+      hasClassifications &&
+      noFiltered &&
+      activeTab === "draft" &&
+      noActiveFilters
+    ) {
+      return {
+        iconPath:
+          "M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z",
+        title: "No Draft Classifications",
+        descriptions: [
+          "You don't have any draft classifications at the moment.",
+          "Start a new classification to begin working on a draft.",
+        ],
+        buttonText: "Start New Classification",
+        buttonIcon: loadingNewClassification ? (
+          <span className={`loading loading-spinner loading-sm`}></span>
+        ) : (
+          <PlusIcon className="h-5 w-5" />
+        ),
+        onButtonClick: tryOpenNewClassification,
+      };
+    }
+
+    if (
+      hasClassifications &&
+      noFiltered &&
+      activeTab === "final" &&
+      noActiveFilters
+    ) {
+      return {
+        iconPath: "M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
+        title: "No Finalized Classifications",
+        descriptions: [
+          "Classifications that you've fully completed can be marked as final.",
+          'To do this, open the classification and click "Mark as Final" in the top right hand corner.',
+        ],
+        buttonText: "View Drafts",
+        buttonClassName: "btn btn-primary btn-wide btn-sm",
+        maxWidth: "max-w-md",
+        onButtonClick: () => setActiveTab("draft"),
+      };
+    }
+
+    if (
+      hasClassifications &&
+      noFiltered &&
+      activeTab === "review" &&
+      noActiveFilters
+    ) {
+      return {
+        iconPath: "M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
+        title: "No Classifications in Review",
+        descriptions: [
+          "Classifications can be marked as 'Needs Review'.",
+          "To do this, open the classification and select this status",
+        ],
+        buttonText: "View Drafts",
+        buttonClassName: "btn btn-primary btn-wide btn-sm",
+        maxWidth: "max-w-md",
+        onButtonClick: () => setActiveTab("draft"),
+      };
+    }
+
+    return null;
+  };
+
   if (classificationsError || userError) {
     return (
       <main className="w-full h-full flex items-center justify-center bg-base-100">
@@ -459,7 +501,13 @@ export const Classifications = () => {
                   </button>
                 )}
               <Link
-                href="/classifications/new"
+                href={canCreateNew ? "/classifications/new" : "#"}
+                onClick={(e) => {
+                  if (!canCreateNew) {
+                    e.preventDefault();
+                    tryOpenNewClassification();
+                  }
+                }}
                 className="group relative overflow-hidden px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 bg-primary text-primary-content hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02]"
               >
                 <span className="relative z-10 flex items-center gap-2">
@@ -742,6 +790,19 @@ export const Classifications = () => {
               );
             })()}
         </div>
+      )}
+      {showListPricing && (
+        <Modal isOpen={showListPricing} setIsOpen={setShowListPricing}>
+          <ConversionPricing />
+        </Modal>
+      )}
+      {showListSignUpGate && (
+        <Modal
+          isOpen={showListSignUpGate}
+          setIsOpen={setShowListSignUpGate}
+        >
+          <SignUpGateCTA />
+        </Modal>
       )}
     </main>
   );

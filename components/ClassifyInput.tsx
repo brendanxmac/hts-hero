@@ -12,7 +12,12 @@ import { useRouter } from "next/navigation";
 import { ArrowRightIcon } from "@heroicons/react/24/solid";
 import { useClassification } from "../contexts/ClassificationContext";
 import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
+import { canCreateClassification } from "../libs/can-create-classification";
 import { useUser } from "../contexts/UserContext";
+import { NUM_FREE_CLASSIFICATIONS } from "../constants/classification";
+import Modal from "./Modal";
+import ConversionPricing from "./ConversionPricing";
+import { SignUpGateCTA } from "./SignUpGateCTA";
 import toast from "react-hot-toast";
 
 const CYCLING_EXAMPLES = [
@@ -81,8 +86,13 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
     const [nudge, setNudge] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const router = useRouter();
-    const { startNewClassification } = useClassification();
+    const { startNewClassification, setArticleDescription } =
+      useClassification();
     const { user } = useUser();
+    const [showPricing, setShowPricing] = useState(false);
+    const [showSignUpGate, setShowSignUpGate] = useState(false);
+    const [signUpGateArticleDescription, setSignUpGateArticleDescription] =
+      useState("");
 
     const examples = examplesProp === false ? [] : (examplesProp ?? CYCLING_EXAMPLES);
 
@@ -117,17 +127,44 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
       if (navigateOnSubmit) {
         setIsCreating(true);
         try {
+          const { allowed, blockReason, isPayingUser, classificationCount } =
+            await canCreateClassification(user);
+
+          if (!allowed) {
+            if (blockReason === "anonymous_limit_reached") {
+              setSignUpGateArticleDescription(text.trim());
+              setShowSignUpGate(true);
+            } else {
+              setArticleDescription(text);
+              setShowPricing(true);
+            }
+            setIsCreating(false);
+            return;
+          }
+
           const newId = await startNewClassification(text, true);
           const resolvedEntry = entryPoint ?? "unspecified";
-          trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
-            item: text,
-            is_anonymous: !user,
-            source,
-            entry_point: resolvedEntry,
-          });
           if (!user) {
+            trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
+              item: text,
+              is_anonymous: true,
+              source,
+              entry_point: resolvedEntry,
+            });
             trackEvent(MixpanelEvent.ANONYMOUS_CLASSIFICATION_STARTED, {
               classification_id: newId,
+              source,
+              entry_point: resolvedEntry,
+            });
+          } else {
+            const count = classificationCount ?? 0;
+            const isTrialUserWithinLimit =
+              count < NUM_FREE_CLASSIFICATIONS;
+            trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
+              item: text,
+              is_paying_user: isPayingUser,
+              is_trial_user: isTrialUserWithinLimit,
+              classification_count: count,
               source,
               entry_point: resolvedEntry,
             });
@@ -147,6 +184,7 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
       navigateOnSubmit,
       isCreating,
       startNewClassification,
+      setArticleDescription,
       user,
       entryPoint,
     ]);
@@ -172,8 +210,26 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
 
     const showPlaceholderOverlay = shouldCycle && !description;
 
+    const gateModals = (
+      <>
+        {showPricing && (
+          <Modal isOpen={showPricing} setIsOpen={setShowPricing}>
+            <ConversionPricing />
+          </Modal>
+        )}
+        {showSignUpGate && (
+          <Modal isOpen={showSignUpGate} setIsOpen={setShowSignUpGate}>
+            <SignUpGateCTA
+              articleDescription={signUpGateArticleDescription}
+            />
+          </Modal>
+        )}
+      </>
+    );
+
     if (compact) {
       return (
+        <>
         <div className="flex flex-col gap-2.5">
           <div className="relative">
             <textarea
@@ -222,10 +278,13 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
             )}
           </button>
         </div>
+        {gateModals}
+        </>
       );
     }
 
     return (
+      <>
       <div className="flex flex-col gap-3">
         {/* Input card */}
         <div
@@ -294,6 +353,8 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
           </div>
         </div>
       </div>
+      {gateModals}
+      </>
     );
   },
 );

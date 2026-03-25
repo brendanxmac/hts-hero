@@ -10,6 +10,7 @@ import {
   XCircleIcon,
 } from "@heroicons/react/24/solid";
 import { LockClosedIcon } from "@heroicons/react/16/solid";
+import { NUM_FREE_CLASSIFICATIONS } from "../../constants/classification";
 
 interface AnonymousClassificationCompleteModalProps {
   show: boolean;
@@ -24,7 +25,7 @@ const LOSS_ITEMS = [
   "Your Classification Defense Report",
   "HTS Code Validation from CROSS Rulings",
   "Unlimited Tariff & Duty Rate Lookups",
-  "10 FREE Classifications",
+  `${NUM_FREE_CLASSIFICATIONS} FREE Classifications`,
 ] as const;
 
 export function AnonymousClassificationCompleteModal({
@@ -87,7 +88,7 @@ export function AnonymousClassificationCompleteModal({
                     </div>
 
                     <Dialog.Title className="text-sm md:text-base font-bold text-base-content mb-3">
-                      Classification Complete!
+                      {/* Classification Complete! */}
                     </Dialog.Title>
 
                     {/* Inline HTS result (copyable) */}

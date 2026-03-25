@@ -1,16 +1,14 @@
 import Link from "next/link";
-import {
-  ExclamationTriangleIcon,
-} from "@heroicons/react/24/outline";
 import { LockClosedIcon } from "@heroicons/react/16/solid";
 import { CheckIcon } from "@heroicons/react/16/solid";
+import { NUM_FREE_CLASSIFICATIONS } from "../../constants/classification";
 
 const LOSS_ITEMS = [
   "HTS Code Results & Reasoning",
   "Classification Defense Report",
   "CROSS Ruling Validation",
   "Unlimited Duty & Tariff Lookups",
-  "10 FREE Classifications",
+  `${NUM_FREE_CLASSIFICATIONS} FREE Classifications`,
 ] as const;
 
 interface AnonymousConversionBannerProps {

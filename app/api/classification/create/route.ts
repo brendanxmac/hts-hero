@@ -7,10 +7,9 @@ import {
 import { getHtsRevisionRecord } from "../../../../libs/supabase/hts-revision";
 import { fetchUser } from "../../../../libs/supabase/user";
 import { getAnonymousTokenFromCookieHeader } from "../../../../libs/anonymous-token";
+import { MAX_ANONYMOUS_CLASSIFICATIONS_PER_TOKEN } from "../../../../constants/classification";
 
 export const dynamic = "force-dynamic";
-
-const MAX_ANONYMOUS_CLASSIFICATIONS = 3;
 
 interface CreateClassificationDto {
   classification: ClassificationI;
@@ -97,7 +96,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: countError.message }, { status: 500 });
     }
 
-    if ((count ?? 0) >= MAX_ANONYMOUS_CLASSIFICATIONS) {
+    if ((count ?? 0) >= MAX_ANONYMOUS_CLASSIFICATIONS_PER_TOKEN) {
       return NextResponse.json(
         {
           error:

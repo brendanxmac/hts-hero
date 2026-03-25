@@ -79,6 +79,40 @@ describe("canUserUpdateDetails", () => {
     expect(canUserUpdateDetails(null, record)).toBe(false)
   })
 
+  it("allows anonymous editor when id matches opts and row has no user_id", () => {
+    const record = baseRecord({
+      id: "anon-class-1",
+      user_id: null as unknown as string,
+      team_id: null as unknown as string,
+    })
+    expect(
+      canUserUpdateDetails(null, record, {
+        anonymousEditorClassificationId: "anon-class-1",
+      }),
+    ).toBe(true)
+  })
+
+  it("denies anonymous editor when id does not match opts", () => {
+    const record = baseRecord({
+      id: "anon-class-1",
+      user_id: null as unknown as string,
+    })
+    expect(
+      canUserUpdateDetails(null, record, {
+        anonymousEditorClassificationId: "other-id",
+      }),
+    ).toBe(false)
+  })
+
+  it("denies anonymous editor when row has user_id", () => {
+    const record = baseRecord({ id: "owned", user_id: "user-1" })
+    expect(
+      canUserUpdateDetails(null, record, {
+        anonymousEditorClassificationId: "owned",
+      }),
+    ).toBe(false)
+  })
+
   it("returns false when classificationRecord is undefined", () => {
     const profile = baseProfile({ id: "user-1" })
     expect(canUserUpdateDetails(profile, undefined)).toBe(false)

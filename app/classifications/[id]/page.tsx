@@ -11,11 +11,8 @@ import {
   fetchClassificationById,
 } from "../../../libs/classification";
 import { ClassificationLoadFailure } from "../../../components/classification-detail/ClassificationFetchError";
-import {
-  canUserUpdateDetails,
-  type ClassificationOwnerTeamInfo,
-} from "../../../libs/classification-helpers";
-import { fetchUser } from "../../../libs/supabase/user";
+import { canUserUpdateDetails } from "../../../libs/classification-helpers";
+import { getAnonymousActiveClassificationId } from "../../../libs/anonymous-token";
 import { ClassificationDetailLayout } from "../../../components/classification-detail/ClassificationDetailLayout";
 import { LoadingIndicator } from "../../../components/LoadingIndicator";
 import { ClassificationRecord } from "../../../interfaces/hts";
@@ -43,15 +40,28 @@ export default function ClassificationPage() {
   const [isLoading, setIsLoading] = useState(true);
   /** HTTP status from failed fetch; `0` = network / unknown */
   const [loadErrorStatus, setLoadErrorStatus] = useState<number | null>(null);
+  const [anonymousPageGate, setAnonymousPageGate] = useState<
+    "pending" | "ok" | "deny"
+  >("pending");
   const hasRefetchedForLinkingRef = useRef(false);
   const canUpdateRef = useRef(false);
   /** When true, unmount must not flush (e.g. row was deleted). */
   const skipUnmountFlushRef = useRef(false);
 
   useEffect(() => {
+    const anonymousEditor =
+      !user &&
+      record &&
+      record.user_id === null &&
+      !record.is_shared &&
+      getAnonymousActiveClassificationId() === id
+        ? id
+        : null;
+
     const canUpdate = canUserUpdateDetails(
       userProfile ?? null,
       record ?? undefined,
+      { anonymousEditorClassificationId: anonymousEditor },
     );
     canUpdateRef.current = canUpdate;
     if (record) {
@@ -60,7 +70,24 @@ export default function ClassificationPage() {
     return () => {
       setCanSave(true);
     };
-  }, [userProfile, record, setCanSave]);
+  }, [userProfile, record, setCanSave, user, id]);
+
+  useEffect(() => {
+    if (!record) {
+      setAnonymousPageGate("pending");
+      return;
+    }
+    if (user) {
+      setAnonymousPageGate("ok");
+      return;
+    }
+    if (record.is_shared || record.user_id !== null) {
+      setAnonymousPageGate("ok");
+      return;
+    }
+    const active = getAnonymousActiveClassificationId();
+    setAnonymousPageGate(active === id ? "ok" : "deny");
+  }, [record, user, id]);
 
   useEffect(() => {
     let cancelled = false;
@@ -161,9 +188,37 @@ export default function ClassificationPage() {
     return <ClassificationLoadFailure httpStatus={loadErrorStatus} />;
   }
 
+  if (anonymousPageGate === "deny") {
+    return <ClassificationLoadFailure httpStatus={403} />;
+  }
+
+  const needsAnonymousGate =
+    !!record &&
+    !user &&
+    !record.is_shared &&
+    record.user_id === null;
+
+  if (needsAnonymousGate && anonymousPageGate === "pending") {
+    return (
+      <main className="w-full h-screen flex items-center justify-center bg-base-100">
+        <LoadingIndicator />
+      </main>
+    );
+  }
+
+  const anonymousEditor =
+    !user &&
+    record &&
+    record.user_id === null &&
+    !record.is_shared &&
+    getAnonymousActiveClassificationId() === id
+      ? id
+      : null;
+
   const canUpdate = canUserUpdateDetails(
     userProfile ?? null,
     record ?? undefined,
+    { anonymousEditorClassificationId: anonymousEditor },
   );
 
   return (

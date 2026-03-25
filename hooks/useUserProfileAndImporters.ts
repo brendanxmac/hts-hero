@@ -18,6 +18,8 @@ export function useUserProfileAndImporters(userId: string | undefined) {
 
   useEffect(() => {
     if (!userId) {
+      setUserProfile(null)
+      setImporters([])
       setIsLoadingImporters(false)
       return
     }

@@ -48,8 +48,7 @@ export const SignUpGateCTA = ({
             You&apos;re Almost There!
           </h3>
           <p className="text-base-content/70 text-base md:text-lg leading-relaxed">
-            Create a free account to get the HTS Code for your <span className="font-bold">{articleDescription}</span> and download
-            your audit-ready classification report.
+            Create a free account to find the HTS Code for your <span className="font-bold">{articleDescription}</span>.
           </p>
         </div>
 
