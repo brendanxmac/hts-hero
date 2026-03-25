@@ -1,74 +1,73 @@
-import { NextResponse, NextRequest } from "next/server";
-import OpenAI from "openai";
-import fs from "fs";
-import path from "path";
-import { z } from "zod";
-import { zodResponseFormat } from "openai/helpers/zod";
-import { requesterIsAuthenticated } from "../../supabase/server";
+import { NextResponse, NextRequest } from "next/server"
+import OpenAI from "openai"
+import fs from "fs"
+import path from "path"
+import { z } from "zod"
+import { zodResponseFormat } from "openai/helpers/zod"
+import { requesterIsAuthenticatedOrAnonymous } from "../../supabase/server"
 import {
   LevelSelection,
   SimplifiedHtsElement,
   SimplifiedHtsElementWithIdentifier,
-} from "../../../../interfaces/hts";
-import { OpenAIModel } from "../../../../libs/openai";
-import { ClassificationTier } from "../../../../contexts/ClassificationContext";
-import { AutoParseableResponseFormat } from "openai/lib/parser";
-import { getSectionAndChapterFromHtsCode } from "../../../../libs/supabase/hts-notes";
-import { NoteRecord } from "../../../../types/hts";
+} from "../../../../interfaces/hts"
+import { OpenAIModel } from "../../../../libs/openai"
+import { ClassificationTier } from "../../../../contexts/ClassificationContext"
+import { AutoParseableResponseFormat } from "openai/lib/parser"
+import { getSectionAndChapterFromHtsCode } from "../../../../libs/supabase/hts-notes"
+import { NoteRecord } from "../../../../types/hts"
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic"
 
 /**
  * Converts a 0-based index to a letter identifier (A, B, C... Z, AA, AB, etc.)
  * Supports unlimited options using Excel-style column naming.
  */
 const indexToIdentifier = (index: number): string => {
-  let result = "";
-  let num = index;
+  let result = ""
+  let num = index
 
   do {
-    result = String.fromCharCode(65 + (num % 26)) + result;
-    num = Math.floor(num / 26) - 1;
-  } while (num >= 0);
+    result = String.fromCharCode(65 + (num % 26)) + result
+    num = Math.floor(num / 26) - 1
+  } while (num >= 0)
 
-  return result;
-};
+  return result
+}
 
 /**
  * Converts a letter identifier (A, B, C... Z, AA, AB, etc.) back to a 0-based index.
  */
 const identifierToIndex = (identifier: string): number => {
-  let result = 0;
+  let result = 0
   for (let i = 0; i < identifier.length; i++) {
-    result = result * 26 + (identifier.charCodeAt(i) - 64);
+    result = result * 26 + (identifier.charCodeAt(i) - 64)
   }
-  return result - 1;
-};
+  return result - 1
+}
 
 interface GetBestClassificationProgressionDto {
-  elements: SimplifiedHtsElement[]; // Elements may include referencedCodes
-  productDescription: string;
-  selectionPath: LevelSelection[];
-  classificationTier: ClassificationTier;
-  notes?: NoteRecord[]; // Pre-fetched notes from context (optional)
-  level: number;
+  elements: SimplifiedHtsElement[] // Elements may include referencedCodes
+  productDescription: string
+  selectionPath: LevelSelection[]
+  classificationTier: ClassificationTier
+  notes?: NoteRecord[] // Pre-fetched notes from context (optional)
+  level: number
 }
 
 const BestProgression = z.object({
   identifier: z.string(), // Letter identifier (A, B, C, etc.) of the selected candidate
   analysis: z.string(),
-});
+})
 
 export async function POST(req: NextRequest) {
   try {
-    const requesterIsAllowed = await requesterIsAuthenticated(req);
+    const requesterIsAllowed = await requesterIsAuthenticatedOrAnonymous(req)
 
-    // Users who are not logged in can't make a gpt requests
     if (!requesterIsAllowed) {
       return NextResponse.json(
-        { error: "You must be logged in to complete this action" },
+        { error: "You must be logged in or have an active classification" },
         { status: 401 },
-      );
+      )
     }
 
     const {
@@ -78,7 +77,7 @@ export async function POST(req: NextRequest) {
       classificationTier = "standard",
       notes: providedNotes,
       level,
-    }: GetBestClassificationProgressionDto = await req.json();
+    }: GetBestClassificationProgressionDto = await req.json()
 
     if (!elements || !productDescription || level == null) {
       return NextResponse.json(
@@ -86,19 +85,19 @@ export async function POST(req: NextRequest) {
           error: "Missing candidates, product description, or level",
         },
         { status: 400 },
-      );
+      )
     }
 
     const responseFormatOptions = {
       description:
         "Used to find the best candidate in a given level of the Harmonized Tariff System",
-    };
+    }
 
     const responseFormat = zodResponseFormat(
       BestProgression,
       "best_classification_progression",
       responseFormatOptions,
-    );
+    )
 
     const gptResponse =
       classificationTier === "premium"
@@ -115,24 +114,24 @@ export async function POST(req: NextRequest) {
             productDescription,
             selectionPath,
             elements,
-          );
+          )
 
-    console.log("Best Classification Progress Tokens:");
+    console.log("Best Classification Progress Tokens:")
     console.log({
       promptTokens: gptResponse.usage?.prompt_tokens,
       completionTokens: gptResponse.usage?.completion_tokens,
       totalTokens: gptResponse.usage?.total_tokens,
-    });
+    })
 
     // Transform the response to include the derived index from the identifier
     const transformedChoices = gptResponse.choices.map((choice) => {
       if (choice.message?.content) {
         try {
-          const parsed = JSON.parse(choice.message.content);
-          const identifier = parsed.identifier as string;
-          const index = identifierToIndex(identifier);
+          const parsed = JSON.parse(choice.message.content)
+          const identifier = parsed.identifier as string
+          const index = identifierToIndex(identifier)
 
-          console.log(`Identifier "${identifier}" resolved to index ${index}`);
+          console.log(`Identifier "${identifier}" resolved to index ${index}`)
 
           return {
             ...choice,
@@ -143,37 +142,37 @@ export async function POST(req: NextRequest) {
                 index, // Add the derived index for backward compatibility
               }),
             },
-          };
+          }
         } catch {
-          return choice;
+          return choice
         }
       }
-      return choice;
-    });
+      return choice
+    })
 
-    return NextResponse.json(transformedChoices);
+    return NextResponse.json(transformedChoices)
   } catch (e) {
-    console.error(e);
-    return NextResponse.json({ error: e?.message }, { status: 500 });
+    console.error(e)
+    return NextResponse.json({ error: e?.message }, { status: 500 })
   }
 }
 
 const getBestClassificationProgressionStandard = (
   responseFormat: AutoParseableResponseFormat<{
-    identifier?: string;
-    analysis?: string;
+    identifier?: string
+    analysis?: string
   }>,
   productDescription: string,
   selectionPath: LevelSelection[],
   candidateElements: SimplifiedHtsElement[],
 ): Promise<OpenAI.Chat.Completions.ChatCompletion> => {
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
   const labeledCandidates: SimplifiedHtsElementWithIdentifier[] =
     candidateElements.map((c, i) => ({
       ...c,
       identifier: indexToIdentifier(i),
-    }));
+    }))
 
   return openai.chat.completions.create({
     temperature: 0,
@@ -199,13 +198,13 @@ const getBestClassificationProgressionStandard = (
           Candidates:\n ${JSON.stringify(labeledCandidates, null, 2)}`,
       },
     ],
-  });
-};
+  })
+}
 
 const getBestClassificationProgressionPremium = async (
   responseFormat: AutoParseableResponseFormat<{
-    identifier?: string;
-    analysis?: string;
+    identifier?: string
+    analysis?: string
   }>,
   productDescription: string,
   selectionPath: LevelSelection[],
@@ -216,26 +215,26 @@ const getBestClassificationProgressionPremium = async (
   const griRulesPath = path.resolve(
     process.cwd(),
     "rules-for-classification.json",
-  );
+  )
 
-  const griRules = JSON.parse(fs.readFileSync(griRulesPath, "utf-8"));
+  const griRules = JSON.parse(fs.readFileSync(griRulesPath, "utf-8"))
 
   if (!providedNotes) {
-    throw new Error("No notes provided");
+    throw new Error("No notes provided")
   }
 
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
   const candidates = candidateElements.map(
     (
       candidateElement,
       i,
     ): {
-      identifier: string;
-      code: string;
-      description: string;
-      associatedNotes: string[];
-      referencedCodes?: Record<string, string>;
+      identifier: string
+      code: string
+      description: string
+      associatedNotes: string[]
+      referencedCodes?: Record<string, string>
     } => ({
       identifier: indexToIdentifier(i),
       code: candidateElement.code,
@@ -244,37 +243,37 @@ const getBestClassificationProgressionPremium = async (
       associatedNotes: (() => {
         // After level 0, all notes will be the same for all candidates
         if (level > 0) {
-          return providedNotes.map((note) => note.id);
+          return providedNotes.map((note) => note.id)
         }
 
         // Get section and chapter numbers from the candidate element
         const sectionAndChapter = getSectionAndChapterFromHtsCode(
           candidateElement.code ?? "",
-        );
+        )
 
         // If we couldn't determine section/chapter, return empty notes
         if (!sectionAndChapter) {
-          return [];
+          return []
         }
 
-        const { section, chapter } = sectionAndChapter;
+        const { section, chapter } = sectionAndChapter
 
         // Compose IDs to match notesRegistry's id pattern
-        const noteIds: string[] = [];
+        const noteIds: string[] = []
 
         providedNotes.map((note) => {
           if (note.type === "section" && note.number === section) {
-            noteIds.push(note.id);
+            noteIds.push(note.id)
           }
           if (note.type === "chapter" && note.number === chapter) {
-            noteIds.push(note.id);
+            noteIds.push(note.id)
           }
-        });
+        })
 
-        return noteIds;
+        return noteIds
       })(),
     }),
-  );
+  )
 
   return openai.chat.completions.create({
     temperature: 0,
@@ -297,12 +296,14 @@ const getBestClassificationProgressionPremium = async (
         2. Apply the following GRI Rules sequentailly while considering all candidates to shape your decision. Only proceed to and apply the sequential rules if a winning candidate is not clearly determined based on the current one.
         GRI Rules:\n${JSON.stringify(griRules, null, 2)}
 
-
         In your response, "analysis" should:
-        * Use cautious, audit-like language at all times and frame any conclusions as evidence-based interpretations such as "based on the available information" or "it appears" or "the primary candidate" and never as certain, final, or authoritative determinations.
-        * Have 1 section called "Analysis" that provides a concise summary of why the candidate you picked is the most suitable match for the "Item Description" based on the "GRI Rules", the relevant "Legal Notes", and the "Selection Path" (if provided). If Selection Path is not provided, don't mention it.
-        * Not be markdown
-        * Have good spacing so it is easy to read
+        * Be short and concise
+        * Outline the evidence that supports the relevant candidate(s).
+        * Not contain conclusions or hard decisions, only evidence.
+        * Never include a summary of the evidence, only the evidence itself.
+        * Use research language at all times and have no conclusions.
+        * Never say anything like "the best candidate" or "the most suitable match", etc...
+        * Be well structured Markdown that highlights key parts
         * Only reference candidates by code or description, not by their letter identifier (e.g. A, B, etc..)
 
         The "identifier" property of your response must be the exact letter identifier (e.g., "A", "B", "C") of your chosen candidate.`,
@@ -315,5 +316,5 @@ const getBestClassificationProgressionPremium = async (
           Candidates:\n ${JSON.stringify(candidates, null, 2)}\n`,
       },
     ],
-  });
-};
+  })
+}

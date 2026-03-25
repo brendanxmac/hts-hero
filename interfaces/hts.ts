@@ -205,7 +205,7 @@ export enum ClassificationStatus {
 
 export interface ClassificationRecord {
   id: string;
-  user_id: string;
+  user_id: string | null;
   team_id?: string;
   importer_id?: string;
   classifier?: {
@@ -221,7 +221,10 @@ export interface ClassificationRecord {
   updated_at: string;
   revision: string;
   status: ClassificationStatus;
-  country_of_origin?: string;
+  country_of_origin?: string | null;
+  anonymous_token?: string;
+  share_token?: string;
+  is_shared?: boolean;
 }
 
 export interface PreliminaryClassificationLevel {

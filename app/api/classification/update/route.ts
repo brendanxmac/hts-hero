@@ -5,6 +5,9 @@ import {
   ClassificationRecord,
   ClassificationStatus,
 } from "../../../../interfaces/hts";
+import { getAnonymousTokenFromCookieHeader } from "../../../../libs/anonymous-token";
+import { resolveClassificationWriteAccess } from "../../../../libs/classification-access";
+import { fetchUser } from "../../../../libs/supabase/user";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +17,7 @@ interface UpdateClassificationDto {
   importer_id?: string;
   classifier_id?: string;
   status?: ClassificationStatus;
-  country_of_origin?: string;
+  country_of_origin?: string | null;
 }
 
 export async function POST(req: NextRequest) {
@@ -23,8 +26,12 @@ export async function POST(req: NextRequest) {
     const { data } = await supabase.auth.getUser();
     const user = data.user;
 
-    // User who are not logged in can't do searches
-    if (!user) {
+    const anonymousToken = getAnonymousTokenFromCookieHeader(
+      req.headers.get("cookie")
+    );
+
+    // Must be authenticated or have an anonymous token
+    if (!user && !anonymousToken) {
       return NextResponse.json(
         { error: "You must be logged in to complete this action." },
         { status: 401 }
@@ -86,15 +93,55 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { error } = await supabase
+    // Scope the update: owner, anonymous token, or team admin
+    let query = supabase
       .from("classifications")
       .update(updateData)
-      .eq("id", id)
-      .select()
-      .single<ClassificationRecord>();
+      .eq("id", id);
+
+    if (user) {
+      const userProfile = await fetchUser(user.id);
+
+      const { data: existingRecord } = await supabase
+        .from("classifications")
+        .select("user_id, team_id")
+        .eq("id", id)
+        .single<Pick<ClassificationRecord, "user_id" | "team_id">>();
+
+      const access = await resolveClassificationWriteAccess(
+        user.id,
+        userProfile,
+        existingRecord ?? undefined,
+      );
+
+      if (!access.allowed) {
+        return NextResponse.json(
+          { error: "You do not have permission to update this classification." },
+          { status: 403 }
+        );
+      }
+
+      switch (access.scope) {
+        case "owner":
+          query = query.eq("user_id", user.id);
+          break;
+        case "team_admin_team_id":
+          query = query.eq("team_id", userProfile!.team_id!);
+          break;
+        case "team_admin_owner_user":
+          query = query.eq("user_id", existingRecord!.user_id!);
+          break;
+        case "super_admin":
+          break;
+      }
+    } else if (anonymousToken) {
+      query = query.eq("anonymous_token", anonymousToken).is("user_id", null);
+    }
+
+    const { error } = await query.select().single<ClassificationRecord>();
 
     if (error) {
-      console.error("Error creating classification:", error);
+      console.error("Error updating classification:", error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 

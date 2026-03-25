@@ -116,15 +116,15 @@ const Pricing = ({ customerType }: PricingProps) => {
             <span className="w-8 h-px bg-primary/40" />
           </div>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 max-w-2xl mx-auto">
-            <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
+            <span className="text-primary">
               Quicker
             </span>{" "}
             Classifications,{" "}
-            <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
+            <span className="text-primary">
               Instant
             </span>{" "}
             Duty Quotes, and{" "}
-            <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
+            <span className="text-primary">
               Zero
             </span>{" "}
             Tariff Surprises

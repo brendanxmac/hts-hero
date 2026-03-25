@@ -37,7 +37,7 @@ const UnauthenticatedHeader = () => {
     <>
       <header className="w-full h-16 z-50 bg-base-100 flex items-center justify-between p-4 border-b border-base-content/20">
         <nav
-          className="w-full flex items-center justify-between"
+          className="w-full max-w-6xl mx-auto flex items-center justify-between"
           aria-label="Global"
         >
           {/* Your logo/name on large screens */}
@@ -55,16 +55,15 @@ const UnauthenticatedHeader = () => {
             </Link>
             <div className="hidden md:flex items-center justify-start gap-4">
               <ToolsDropdown />
-              <Link
+              {/* <Link
                 href="/blog"
-                className={`btn btn-link px-0 gap-0 ${
-                  pathname.startsWith("/blog")
-                    ? "text-primary underline"
-                    : "text-base-content no-underline"
-                }`}
+                className={`btn btn-link px-0 gap-0 ${pathname.startsWith("/blog")
+                  ? "text-primary underline"
+                  : "text-base-content no-underline"
+                  }`}
               >
                 Blog
-              </Link>
+              </Link> */}
             </div>
           </div>
 
@@ -106,16 +105,16 @@ const UnauthenticatedHeader = () => {
                   Tutorial
                 </button>
               )}
-              <Link
+              {/* <Link
                 className="btn btn-sm btn-primary font-semibold link link-hover"
                 href={
-                  pathname === "/duty-calculator" ? "/about/tariffs" : "/about"
+                  pathname === "/classifications/new" ? "/duty-calculator" : "/classifications/new"
                 }
               >
-                {pathname === "/duty-calculator"
-                  ? "Want Effortless Tariffs?"
-                  : "Want Quicker Classifications?"}
-              </Link>
+                {pathname === "/classifications/new"
+                  ? "Need the Duty Rate for Your Product?"
+                  : "Need the Right HTS Code for Your Product?"}
+              </Link> */}
             </div>
 
             {/* CTA on large screens */}
@@ -183,28 +182,27 @@ const UnauthenticatedHeader = () => {
 
             {/* Navigation Links */}
             <div className="flex flex-col gap-4 mb-8">
-              <Link
+              {/* <Link
                 href="/blog"
                 onClick={() => setIsOpen(false)}
-                className={`text-base font-semibold transition-colors ${
-                  pathname.startsWith("/blog")
-                    ? "text-primary"
-                    : "text-base-content hover:text-primary"
-                }`}
+                className={`text-base font-semibold transition-colors ${pathname.startsWith("/blog")
+                  ? "text-primary"
+                  : "text-base-content hover:text-primary"
+                  }`}
               >
                 Blog
-              </Link>
-              <Link
+              </Link> */}
+              {/* <Link
                 href={
-                  pathname === "/duty-calculator" ? "/about/tariffs" : "/about"
+                  pathname === "/classifications/new" ? "/duty-calculator" : "/classifications/new"
                 }
                 onClick={() => setIsOpen(false)}
                 className="text-base font-semibold text-base-content hover:text-primary transition-colors"
               >
-                {pathname === "/duty-calculator"
-                  ? "Want Effortless Tariffs?"
-                  : "Want Quicker Classifications?"}
-              </Link>
+                {pathname === "/classifications/new"
+                  ? "Need the Duty Rate for Your Product?"
+                  : "Need the Right HTS Code for Your Product?"}
+              </Link> */}
             </div>
 
             <div className="divider" />

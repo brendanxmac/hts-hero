@@ -1,4 +1,3 @@
-import config from "@/config";
 import { getSEOTags } from "../../../libs/seo";
 import { PendingTariffsList } from "../../../components/UpcomingTariffsList";
 

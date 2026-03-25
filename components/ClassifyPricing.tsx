@@ -11,7 +11,6 @@ import {
   SparklesIcon,
   UserGroupIcon,
 } from "@heroicons/react/24/solid";
-import Link from "next/link";
 
 interface PricingProps {
   customerType: AboutPage;
@@ -120,43 +119,13 @@ const ClassifyPricing = ({ customerType }: PricingProps) => {
             </span>
             <span className="w-8 h-px bg-secondary/40" />
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 max-w-2xl mx-auto">
-            <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
-              Quicker
-            </span>{" "}
-            Classifications,{" "}
-            <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
-              Instant
-            </span>{" "}
-            Duty Quotes, and{" "}
-            <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
-              Zero
-            </span>{" "}
-            Tariff Surprises
+          <h2 className="text-3xl md:text-4xl lg:text-6xl font-bold tracking-tight mb-4 max-w-4xl mx-auto">
+            Reduce Import Risk & <br /><span className="text-primary">Defend your Profits
+            </span>
           </h2>
           <p className="text-base-content/60 text-base md:text-lg max-w-2xl mx-auto">
-            Everything you need to streamline HTS classifications
+            Smarter classifications, instant duty quotes, and zero tariff surprises
           </p>
-
-          <Link
-            href="/classifications"
-            className="mt-6 group inline-flex items-center justify-center gap-2 px-16 py-2.5 rounded-xl font-semibold text-base bg-primary text-white hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl"
-          >
-            <span>Try it Free</span>
-            <svg
-              className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-0.5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2.5}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M13 7l5 5m0 0l-5 5m5-5H6"
-              />
-            </svg>
-          </Link>
         </div>
 
         {/* Pricing Cards */}
@@ -369,7 +338,7 @@ const ClassifyPricing = ({ customerType }: PricingProps) => {
                   </span>
                 </h3>
                 <p className="text-base-content/60 text-sm md:text-base leading-relaxed">
-                  Complete 20 classifications within 30 days. If you&apos;re not
+                  If you complete 20 classifications within 30 days, and are not
                   completely satisfied with your experience, we&apos;ll refund
                   your purchase in full.
                 </p>
@@ -381,12 +350,8 @@ const ClassifyPricing = ({ customerType }: PricingProps) => {
         {/* Additional value props */}
         <div className="mt-12 flex flex-wrap justify-center gap-6 md:gap-10 text-center">
           <div className="flex items-center gap-2 text-sm text-base-content/60">
-            <CheckIcon className="w-4 h-4 text-secondary" />
-            <span>Cancel anytime</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-base-content/60">
             <CheckIcon className="w-4 h-4 text-primary" />
-            <span>Request Features</span>
+            <span>Team Training</span>
           </div>
           <div className="flex items-center gap-2 text-sm text-base-content/60">
             <CheckIcon className="w-4 h-4 text-secondary" />
@@ -395,6 +360,10 @@ const ClassifyPricing = ({ customerType }: PricingProps) => {
           <div className="flex items-center gap-2 text-sm text-base-content/60">
             <CheckIcon className="w-4 h-4 text-secondary" />
             <span>Video Tutorials</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-base-content/60">
+            <CheckIcon className="w-4 h-4 text-secondary" />
+            <span>Cancel Any Time</span>
           </div>
         </div>
       </div>

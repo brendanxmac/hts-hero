@@ -23,7 +23,7 @@ export function HtsPageShell({ bannerMessage, breadcrumbs, children }: HtsPageSh
         <CTABanner
           message={bannerMessage}
           ctaText="Verify Your Classification"
-          href="/classifications"
+          href="/classifications/new"
         />
         <div className="bg-base-100/80 backdrop-blur-lg border-b border-base-content/10">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 h-12 flex items-center justify-between">

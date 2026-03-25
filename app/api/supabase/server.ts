@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
 import { FileUploadDownloadResponse } from "../../../libs/supabase/storage";
+import { getAnonymousTokenFromCookieHeader } from "../../../libs/anonymous-token";
 
 export const createClient = () => {
   const cookieStore = cookies();
@@ -68,6 +69,29 @@ export async function requesterIsAuthenticated(req: NextRequest) {
   const user = data.user;
 
   return Boolean(user);
+}
+
+/**
+ * Allows access if the requester is either authenticated OR has an anonymous
+ * token tied to at least one existing classification in the database.
+ */
+export async function requesterIsAuthenticatedOrAnonymous(req: NextRequest) {
+  const isAuthenticated = await requesterIsAuthenticated(req);
+  if (isAuthenticated) return true;
+
+  const anonToken = getAnonymousTokenFromCookieHeader(
+    req.headers.get("cookie")
+  );
+  if (!anonToken) return false;
+
+  const supabase = createClient();
+  const { count } = await supabase
+    .from("classifications")
+    .select("id", { count: "exact", head: true })
+    .eq("anonymous_token", anonToken)
+    .is("user_id", null);
+
+  return (count ?? 0) > 0;
 }
 
 export const getSignedUrl = async (

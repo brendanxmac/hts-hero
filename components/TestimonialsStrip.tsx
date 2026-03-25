@@ -42,11 +42,11 @@ export function TestimonialsStrip({
   maxCompanies = 6,
 }: TestimonialsStripProps) {
   return (
-    <div className="w-full max-w-6xl mx-auto">
+    <div className="w-full max-w-7xl mx-auto">
       {showTestimonials && (
         <div className="w-full flex flex-col">
           {/* Title Section */}
-          <div className="self-center text-center flex items-center gap-1.5 sm:gap-2 mb-3 sm:mb-8">
+          {/* <div className="self-center text-center flex items-center gap-1.5 sm:gap-2 mb-3 sm:mb-8">
             <span className={`inline-block w-8 sm:w-12 h-px bg-primary`} />
             <span
               className={`text-sm md:text-base font-semibold text-primary uppercase tracking-widest`}
@@ -54,33 +54,25 @@ export function TestimonialsStrip({
               Loved by Importers, Brokerages, & Logistics Teams
             </span>
             <span className={`inline-block w-8 sm:w-12 h-px bg-primary`} />
-          </div>
+          </div> */}
 
           {/* Testimonials Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 sm:gap-3 md:gap-4 items-center">
             {testimonials.map((testimonial, index) => (
               <div
                 key={index}
-                className="group relative bg-gradient-to-br from-base-100 via-base-100 to-primary/5 backdrop-blur-sm rounded-xl px-4 py-3 sm:px-6 sm:py-5 border-2 border-base-content/10 hover:border-secondary/40 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                className="relative rounded-lg px-3.5 py-2.5 sm:px-4 sm:py-3 border border-base-content/6 bg-base-100/60 transition-colors duration-200 hover:border-base-content/10"
               >
-                {/* Decorative quote mark */}
-                <div className="absolute top-3 left-3 sm:top-4 sm:left-4 text-2xl sm:text-4xl font-serif text-secondary/20 leading-none">
+                <div className="absolute top-2 left-3 text-lg sm:text-xl font-serif text-base-content/10 leading-none">
                   &ldquo;
                 </div>
 
-                <blockquote className="text-base-content leading-relaxed mb-3 sm:mb-4 relative z-10 pt-1 sm:pt-2">
+                <blockquote className="text-sm text-base-content/70 leading-relaxed mb-2 relative z-10 pt-1">
                   {testimonial.quote}
                 </blockquote>
 
-                <div className="flex items-center gap-2 pt-2 sm:pt-3 border-t border-base-content/10">
-                  <div className="flex-1 min-w-0">
-                    {/* <div className="text-xs font-semibold text-base-content/70 truncate">
-                      {testimonial.role}
-                    </div> */}
-                    <div className="text-xs font-medium text-primary mt-0.5">
-                      {testimonial.company}
-                    </div>
-                  </div>
+                <div className="text-xs text-base-content/40 font-medium">
+                  {testimonial.company}
                 </div>
               </div>
             ))}
@@ -114,7 +106,7 @@ export function TestimonialsStrip({
           <div className="flex items-center justify-center gap-2 mb-10 text-base-content/60">
             <span className="text-amber-400 text-lg">★</span>
             <p className="text-sm">
-              Trusted by professionals at{" "}
+              Used by professionals at{" "}
               <span className="font-semibold text-base-content/80">K+N</span>,{" "}
               <span className="font-semibold text-base-content/80">DSV</span>,{" "}
               <span className="font-semibold text-base-content/80">

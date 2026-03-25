@@ -4,7 +4,6 @@ import Link from "next/link";
 import {
   getHtsElementsServer,
   getHtsSectionsServer,
-  getSectionAndChapterForElement,
 } from "../../../libs/hts-server";
 import { HtsElement, HtsSection } from "../../../interfaces/hts";
 import config from "@/config";

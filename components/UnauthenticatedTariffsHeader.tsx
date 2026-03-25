@@ -35,11 +35,10 @@ const UnauthenticatedTariffsHeader = () => {
   return (
     <>
       <header
-        className={`sticky top-0 w-full h-16 z-50 flex items-center justify-between px-4 sm:px-6 transition-all duration-300 ${
-          scrolled
-            ? "bg-base-100/95 backdrop-blur-md border-b border-base-content/10 shadow-sm"
-            : "bg-base-100 border-b border-base-content/10"
-        }`}
+        className={`sticky top-0 w-full h-16 z-50 flex items-center justify-between px-4 sm:px-6 transition-all duration-300 ${scrolled
+          ? "bg-base-100/95 backdrop-blur-md border-b border-base-content/10 shadow-sm"
+          : "bg-base-100 border-b border-base-content/10"
+          }`}
       >
         <nav
           className="w-full max-w-7xl mx-auto flex items-center justify-between"
@@ -62,7 +61,7 @@ const UnauthenticatedTariffsHeader = () => {
             {/* Desktop Navigation Links */}
             <div className="hidden md:flex items-center gap-6">
               <ToolsDropdown />
-              <Link
+              {/* <Link
                 href="/blog"
                 className={`text-sm font-medium transition-colors ${
                   pathname.startsWith("/blog")
@@ -71,7 +70,7 @@ const UnauthenticatedTariffsHeader = () => {
                 }`}
               >
                 Blog
-              </Link>
+              </Link> */}
             </div>
           </div>
 
@@ -170,17 +169,16 @@ const UnauthenticatedTariffsHeader = () => {
 
             {/* Navigation Links */}
             <div className="flex flex-col gap-4 mb-8">
-              <Link
+              {/* <Link
                 href="/blog"
                 onClick={() => setIsOpen(false)}
-                className={`text-base font-semibold transition-colors ${
-                  pathname.startsWith("/blog")
+                className={`text-base font-semibold transition-colors ${pathname.startsWith("/blog")
                     ? "text-primary"
                     : "text-base-content hover:text-primary"
-                }`}
+                  }`}
               >
                 Blog
-              </Link>
+              </Link> */}
             </div>
 
             <div className="divider" />

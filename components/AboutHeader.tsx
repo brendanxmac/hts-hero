@@ -1,39 +1,41 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams, usePathname } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "@/app/logo.svg";
 import config from "@/config";
 import ButtonSignin from "./ButtonSignin";
+import ButtonAccount from "./ButtonAccount";
 import ThemeToggle from "./ThemeToggle";
 import { ToolsDropdown, MobileToolsMenu } from "./ToolsDropdown";
+import { useUser } from "../contexts/UserContext";
 
 // A header with a logo on the left, links in the center (like Pricing, etc...), and a CTA (like Get Started or Login) on the right.
 // The header is responsive, and on mobile, the links are hidden behind a burger button.
 const AboutHeader = () => {
   const searchParams = useSearchParams();
-  const pathname = usePathname();
+  const { user } = useUser();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const links: {
     href: string;
     label: string;
   }[] = [
-    {
-      href: `#features`,
-      label: "Features",
-    },
-    {
-      href: `#pricing`,
-      label: "Pricing",
-    },
-    {
-      href: `#faq`,
-      label: "FAQ",
-    },
-  ];
+      {
+        href: `#features`,
+        label: "Features",
+      },
+      {
+        href: `#pricing`,
+        label: "Pricing",
+      },
+      {
+        href: `#faq`,
+        label: "FAQ",
+      },
+    ];
 
   // setIsOpen(false) when the route changes (i.e: when the user clicks on a link on mobile)
   useEffect(() => {
@@ -64,16 +66,6 @@ const AboutHeader = () => {
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-6">
               <ToolsDropdown />
-              <Link
-                href="/blog"
-                className={`link link-hover font-bold ${
-                  pathname.startsWith("/blog")
-                    ? "text-primary"
-                    : "text-base-content"
-                }`}
-              >
-                Blog
-              </Link>
             </div>
           </div>
 
@@ -117,7 +109,7 @@ const AboutHeader = () => {
 
           {/* CTA on large screens */}
           <div className="hidden lg:flex lg:justify-end lg:flex-1 lg:gap-2 lg:items-center">
-            <ButtonSignin />
+            {user ? <ButtonAccount /> : <ButtonSignin />}
             <ThemeToggle />
           </div>
         </nav>
@@ -179,17 +171,6 @@ const AboutHeader = () => {
 
             {/* Navigation Links */}
             <div className="flex flex-col gap-4 mb-8">
-              <Link
-                href="/blog"
-                onClick={() => setIsOpen(false)}
-                className={`text-base font-semibold transition-colors ${
-                  pathname.startsWith("/blog")
-                    ? "text-primary"
-                    : "text-base-content hover:text-primary"
-                }`}
-              >
-                Blog
-              </Link>
               {links.map((link) => (
                 <Link
                   href={link.href}
@@ -206,7 +187,7 @@ const AboutHeader = () => {
 
             {/* CTA on small screens */}
             <div className="flex gap-2 items-center">
-              <ButtonSignin />
+              {user ? <ButtonAccount /> : <ButtonSignin />}
               <ThemeToggle />
             </div>
           </div>

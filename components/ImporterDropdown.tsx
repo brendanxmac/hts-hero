@@ -49,17 +49,24 @@ export default function ImporterDropdown({
       disabled={isLoading || disabled}
     >
       <div className="relative w-full">
-        <Listbox.Button className="relative w-full cursor-default rounded-lg border border-base-content/20 bg-base-100 py-3 pl-4 pr-10 text-left shadow-sm focus:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed">
+        <Listbox.Button className="relative w-full cursor-default h-[45px] rounded-lg border border-base-content/20 bg-base-100 py-3 pl-4 pr-10 text-left shadow-sm focus:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed">
           <span
             className={`block truncate ${selectedImporterId ? "text-base-content" : "text-base-content/60"}`}
           >
             {getDisplayText()}
           </span>
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-            <ChevronUpDownIcon
-              className="h-5 w-5 text-base-content/40"
-              aria-hidden="true"
-            />
+            {isLoading ? (
+              <span
+                className="loading loading-spinner loading-sm text-primary"
+                aria-hidden="true"
+              />
+            ) : (
+              <ChevronUpDownIcon
+                className="h-5 w-5 text-base-content/40"
+                aria-hidden="true"
+              />
+            )}
           </span>
         </Listbox.Button>
         <Transition
@@ -93,10 +100,9 @@ export default function ImporterDropdown({
               <Listbox.Option
                 key={importer.id}
                 className={({ active }) =>
-                  `relative cursor-pointer select-none py-3 px-4 transition-colors duration-200 ${
-                    active
-                      ? "bg-primary text-primary-content"
-                      : "text-base-content"
+                  `relative cursor-pointer select-none py-3 px-4 transition-colors duration-200 ${active
+                    ? "bg-primary text-primary-content"
+                    : "text-base-content"
                   }`
                 }
                 value={importer.id}

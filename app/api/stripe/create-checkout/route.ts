@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
       mode,
       // promotionCode removed for now,
       successUrl,
-      cancelUrl: cancelUrl || `${process.env.BASE_URL}/about`,
+      cancelUrl: cancelUrl || `${process.env.BASE_URL}/classify`,
       // If user is logged in, it will pass the user ID to the Stripe Session so it can be retrieved in the webhook later
       clientReferenceId: userProfile ? userProfile.id : user?.id,
       user: {

@@ -66,8 +66,8 @@ export const ToolsDropdown = ({ className = "" }: ToolsDropdownProps) => {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`flex items-center gap-1 text-sm font-medium transition-colors ${selectedTool
-            ? "text-primary"
-            : "text-base-content/70 hover:text-primary"
+          ? "text-primary"
+          : "text-base-content/70 hover:text-primary"
           }`}
       >
         {selectedTool ? selectedTool.title : "Tools"}
@@ -119,8 +119,8 @@ export const ToolsDropdown = ({ className = "" }: ToolsDropdownProps) => {
                     <div className="flex flex-col">
                       <div
                         className={`text-left font-semibold ${isSelected
-                            ? "text-primary"
-                            : `text-base-content ${tool.hoverText}`
+                          ? "text-primary"
+                          : `text-base-content ${tool.hoverText}`
                           } transition-colors`}
                       >
                         {tool.title}

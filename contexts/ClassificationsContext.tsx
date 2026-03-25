@@ -1,12 +1,19 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { ClassificationRecord } from "../interfaces/hts";
 import { fetchClassifications } from "../libs/classification";
+
+export type RefreshClassificationsOptions = {
+  showLoading?: boolean;
+};
 
 interface ClassificationsContextType {
   classifications: ClassificationRecord[];
   isLoading: boolean;
   error: Error | null;
-  refreshClassifications: () => Promise<void>;
+  refreshClassifications: (
+    options?: RefreshClassificationsOptions
+  ) => Promise<void>;
+  removeClassificationById: (id: string) => void;
 }
 
 const ClassificationsContext = createContext<
@@ -24,9 +31,14 @@ export function ClassificationsProvider({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  const refreshClassifications = async () => {
+  const refreshClassifications = async (
+    options?: RefreshClassificationsOptions
+  ) => {
+    const showLoading = options?.showLoading !== false;
     try {
-      setIsLoading(true);
+      if (showLoading) {
+        setIsLoading(true);
+      }
       const data = await fetchClassifications();
       setClassifications(data);
       setError(null);
@@ -37,13 +49,23 @@ export function ClassificationsProvider({
     }
   };
 
+  const removeClassificationById = useCallback((id: string) => {
+    setClassifications((prev) => prev.filter((c) => c.id !== id));
+  }, []);
+
   useEffect(() => {
     refreshClassifications();
   }, []);
 
   return (
     <ClassificationsContext.Provider
-      value={{ classifications, isLoading, error, refreshClassifications }}
+      value={{
+        classifications,
+        isLoading,
+        error,
+        refreshClassifications,
+        removeClassificationById,
+      }}
     >
       {children}
     </ClassificationsContext.Provider>

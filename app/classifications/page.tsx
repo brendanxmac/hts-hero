@@ -1,14 +1,15 @@
 import { Metadata } from "next";
-import { ClassifyController } from "../../components/ClassifyController";
-import { BreadcrumbsProvider } from "../../contexts/BreadcrumbsContext";
 import config from "@/config";
+import { ClassificationsPageContent } from "../../components/ClassificationsPageContent";
 
 export const metadata: Metadata = {
   title:
-    "AI-Powered HTS Classification Assistant — Audit-Ready Reports | HTS Hero",
+    "HTS Code Finder for US Importers & Customs Brokers | HTS Hero",
   description:
-    "Classify products with AI-powered HTS code suggestions, GRI analysis, and CROSS ruling validation. Generate branded, audit-ready classification reports in seconds. Free for customs brokers and importers.",
+    "Find the HTS Code for any product in minutes & generate branded, audit-ready classification reports trusted by customs brokers and importers.",
   keywords: [
+    "HTS Code Finder",
+    "HTS Code Lookup",
     "HTS classification",
     "AI HTS classification",
     "tariff classification assistant",
@@ -21,30 +22,28 @@ export const metadata: Metadata = {
     "customs broker classification tool",
   ],
   openGraph: {
-    title: "AI-Powered HTS Classification Assistant | HTS Hero",
+    title: "HTS Code Finder for US Importers & Customs Brokers | HTS Hero",
     description:
-      "Classify products with AI-powered suggestions, GRI analysis, and CROSS ruling validation. Generate audit-ready reports instantly.",
+      "Find the HTS Code for any product in minutes & generate branded, audit-ready classification reports trusted by customs brokers and importers.",
     url: `https://${config.domainName}/classifications`,
     siteName: "HTS Hero",
     type: "website",
   },
   twitter: {
     card: "summary",
-    title: "AI HTS Classification Assistant | HTS Hero",
+    title: "HTS Code Finder for US Importers & Customs Brokers | HTS Hero",
     description:
-      "AI-powered HTS classification with GRI analysis and CROSS validation. Audit-ready reports in seconds.",
+      "Find the HTS Code for any product in minutes & generate branded, audit-ready classification reports trusted by customs brokers and importers.",
   },
   alternates: {
     canonical: "/classifications",
   },
 };
 
-export default function Home() {
+export default function ClassificationsListPage() {
   return (
     <main className="w-full bg-base-300">
-      <BreadcrumbsProvider>
-        <ClassifyController />
-      </BreadcrumbsProvider>
+      <ClassificationsPageContent />
     </main>
   );
 }

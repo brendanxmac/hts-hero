@@ -34,7 +34,7 @@ export const AuthenticatedHeader = () => {
     <>
       <header className="w-full h-16 z-50 bg-base-100 flex items-center justify-between p-4 border-b border-base-content/20">
         <nav
-          className="w-full flex items-center justify-between"
+          className="w-full max-w-6xl mx-auto flex items-center justify-between"
           aria-label="Global"
         >
           {/* Your logo/name on large screens */}
@@ -171,7 +171,7 @@ export const AuthenticatedHeader = () => {
             <MobileToolsMenu onLinkClick={() => setIsOpen(false)} />
 
             {/* Navigation Links */}
-            <div className="flex flex-col gap-4 mb-8">
+            {/* <div className="flex flex-col gap-4 mb-8">
               <Link
                 href="/blog"
                 onClick={() => setIsOpen(false)}
@@ -182,7 +182,7 @@ export const AuthenticatedHeader = () => {
               >
                 Blog
               </Link>
-            </div>
+            </div> */}
 
             <div className="divider" />
 

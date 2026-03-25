@@ -135,7 +135,7 @@ const TariffImpactPricing = () => {
       </div>
 
       <div
-        className="relative z-10 py-20 md:py-28 px-6 max-w-6xl mx-auto"
+        className="relative z-10 py-8 md:py-10 px-6 max-w-6xl mx-auto"
         id="pricing"
       >
         {/* Header */}

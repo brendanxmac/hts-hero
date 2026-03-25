@@ -13,6 +13,14 @@ import {
   CountryWithTariffs,
   addTariffsToCountry,
 } from "../tariffs/tariffs";
+import {
+  calculateDutyEstimates,
+  calculateFeeEstimates,
+  calculateSummaryTotals,
+  formatCurrency,
+  ADDITIONAL_FEES_TOTAL_RATE,
+} from "../tariffs/tariff-calculations";
+import { EstimatedCostsDisplay } from "./tariff-ui/EstimatedCostsDisplay";
 import { TradePrograms } from "../public/trade-programs";
 import { copyToClipboard } from "../utilities/data";
 import { TariffSet } from "../interfaces/tariffs";
@@ -43,29 +51,6 @@ interface Props {
   setCountries: Dispatch<SetStateAction<CountryWithTariffs[]>>;
   isModal?: boolean;
   onClose?: () => void;
-}
-
-// Fee constants
-const HARBOR_MAINTENANCE_FEE_RATE = 0.00125; // 0.125%
-const MERCHANDISE_PROCESSING_FEE_RATE = 0.003464; // 0.3464%
-const MPF_MIN = 33.58;
-const MPF_MAX = 651.5;
-
-interface DutyEstimate {
-  tariffSetName: string;
-  percentRate: number;
-  amountDuty: number; // Duty from amount-based tariffs (e.g., $/kg)
-  adValoremDuty: number; // Duty from percentage-based tariffs
-  totalDuty: number;
-  applicableValue: number; // The portion of customs value this applies to
-  contentPercentage: number; // 100 for article, or the content % for content sets
-}
-
-interface FeeEstimate {
-  name: string;
-  rate: number;
-  amount: number;
-  note?: string;
 }
 
 interface TradeProgramDisplayable {
@@ -259,6 +244,8 @@ export const CountryTariff = ({
 
     const lines = [
       `Estimated Import Costs for ${tariffElement.htsno} from ${country.name}`,
+      ``,
+      tradeProgramLine ? `Trade Program Applied: ${tradeProgramLine}` : "",
       ``,
       `COST SUMMARY`,
       `────────────────────────────────────────`,
@@ -481,174 +468,31 @@ export const CountryTariff = ({
   const exemptionNote = getNoteForConditionalReciprocalExemption();
   const parsingErrors = baseTariffs.flatMap((t) => t.parsingFailures);
 
-  // Calculate summary totals
-  const getSummaryTotals = () => {
-    const filteredBase = filterByProgram(baseTariffs.flatMap((t) => t.tariffs));
-    const amountRatesString = getAmountRatesString(filteredBase);
+  const summaryTotals = calculateSummaryTotals(
+    tariffSets,
+    baseTariffs,
+    getTariffColumn(),
+    below15PercentRuleApplies,
+    filterByProgram
+  );
 
-    const totals = tariffSets.map((tariffSet) => {
-      const isArticleSet =
-        tariffSet.name === "Article" || tariffSet.name === "";
-
-      // Base tariffs only apply to Article set
-      const shouldIncludeBaseTariffs =
-        isArticleSet &&
-        !(is15PercentCapCountry && adValoremEquivalentRate < 15);
-
-      const adValoremRate = shouldIncludeBaseTariffs
-        ? getAdValoremRate(getTariffColumn(), tariffSet.tariffs, filteredBase)
-        : getAdValoremRate(getTariffColumn(), tariffSet.tariffs);
-
-      const hasAmountTariffs =
-        shouldIncludeBaseTariffs &&
-        filteredBase.some((t) => t.type === "amount");
-
-      return {
-        name: tariffSet.name,
-        rate: adValoremRate,
-        hasAmountTariffs,
-        amountRatesString: hasAmountTariffs ? amountRatesString : null,
-      };
-    });
-
-    return totals;
-  };
-
-  const summaryTotals = getSummaryTotals();
-  const additionalFeesTotal = 0.4714;
-
-  // Calculate duty estimates for each tariff set
-  const calculateDutyEstimates = (): DutyEstimate[] => {
-    const filteredBase = filterByProgram(baseTariffs.flatMap((t) => t.tariffs));
-    const estimates: DutyEstimate[] = [];
-
-    // Get content percentages for content-based tariff sets
-    const contentPercentageMap = new Map<string, number>();
-    contentRequirements.forEach((cr) => {
-      contentPercentageMap.set(cr.name, cr.value);
-    });
-
-    // Calculate total content percentage used
-    const totalContentPercentage = contentRequirements.reduce(
-      (sum, cr) => sum + cr.value,
-      0
-    );
-
-    // Article set gets the remaining percentage (100 - sum of content percentages)
-    // But capped at 100 and minimum 0
-    const articlePercentage = Math.max(
-      0,
-      Math.min(100, 100 - totalContentPercentage)
-    );
-
-    tariffSets.forEach((tariffSet, index) => {
-      // Determine if this is the Article set (first set, or unnamed set when no content requirements)
-      const isArticleSet =
-        tariffSet.name === "Article" || tariffSet.name === "";
-
-      // Determine content percentage for this set
-      let contentPercentage = 100;
-      if (isArticleSet) {
-        contentPercentage =
-          contentRequirements.length > 0 ? articlePercentage : 100;
-      } else {
-        // Extract content name from "X Content" format
-        const contentName = tariffSet.name.replace(" Content", "");
-        contentPercentage = contentPercentageMap.get(contentName) || 0;
-      }
-
-      // Calculate applicable value based on content percentage
-      const applicableValue = (customsValue * contentPercentage) / 100;
-
-      // Base tariffs (general duty) only apply to the Article set, not to content sets
-      // Content sets have their own specific tariffs (like 232 metal tariffs)
-      const shouldIncludeBaseTariffs =
-        isArticleSet &&
-        !(is15PercentCapCountry && adValoremEquivalentRate < 15);
-
-      // Calculate ad valorem rate for this set
-      const adValoremRate = shouldIncludeBaseTariffs
-        ? getAdValoremRate(getTariffColumn(), tariffSet.tariffs, filteredBase)
-        : getAdValoremRate(getTariffColumn(), tariffSet.tariffs);
-
-      // Calculate ad valorem duty
-      const adValoremDuty = (applicableValue * adValoremRate) / 100;
-
-      // Calculate amount-based duty (only applies to base tariffs on Article set)
-      let amountDuty = 0;
-      if (shouldIncludeBaseTariffs) {
-        const amountTariffs = filteredBase.filter((t) => t.type === "amount");
-        amountTariffs.forEach((tariff) => {
-          // tariff.value is in dollars per unit (e.g., $0.37 per kg)
-          // For Article set, apply to the article's portion of the units
-          const applicableUnits = (units * contentPercentage) / 100;
-          amountDuty += (tariff.value || 0) * applicableUnits;
-        });
-      }
-
-      estimates.push({
-        tariffSetName: tariffSet.name || "Article",
-        percentRate: adValoremRate,
-        amountDuty,
-        adValoremDuty,
-        totalDuty: amountDuty + adValoremDuty,
-        applicableValue,
-        contentPercentage,
-      });
-    });
-
-    return estimates;
-  };
-
-  // Calculate fee estimates
-  const calculateFeeEstimates = (): FeeEstimate[] => {
-    // Harbor Maintenance Fee
-    const hmfAmount = customsValue * HARBOR_MAINTENANCE_FEE_RATE;
-
-    // Merchandise Processing Fee with min/max
-    let mpfAmount = customsValue * MERCHANDISE_PROCESSING_FEE_RATE;
-    let mpfNote: string | undefined;
-    if (mpfAmount < MPF_MIN) {
-      mpfNote = `Minimum applied ($${MPF_MIN.toFixed(2)})`;
-      mpfAmount = MPF_MIN;
-    } else if (mpfAmount > MPF_MAX) {
-      mpfNote = `Maximum applied ($${MPF_MAX.toFixed(2)})`;
-      mpfAmount = MPF_MAX;
-    }
-
-    return [
-      {
-        name: "Harbor Maintenance Fee",
-        rate: HARBOR_MAINTENANCE_FEE_RATE * 100,
-        amount: hmfAmount,
-      },
-      {
-        name: "Merchandise Processing Fee",
-        rate: MERCHANDISE_PROCESSING_FEE_RATE * 100,
-        amount: mpfAmount,
-        note: mpfNote,
-      },
-    ];
-  };
-
-  const dutyEstimates = calculateDutyEstimates();
-  const feeEstimates = calculateFeeEstimates();
+  const dutyEstimates = calculateDutyEstimates(
+    tariffSets,
+    baseTariffs,
+    customsValue,
+    units,
+    contentRequirements,
+    getTariffColumn(),
+    below15PercentRuleApplies,
+    filterByProgram
+  );
+  const feeEstimates = calculateFeeEstimates(customsValue);
   const totalTariffDuty = dutyEstimates.reduce(
     (sum, e) => sum + e.totalDuty,
     0
   );
   const totalFees = feeEstimates.reduce((sum, f) => sum + f.amount, 0);
   const totalImportDuty = totalTariffDuty + totalFees;
-
-  // Format currency
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amount);
-  };
 
   const content = (
     <div className="flex flex-col gap-5">
@@ -725,130 +569,19 @@ export const CountryTariff = ({
         </button>
       </div>
 
+
       {/* Total Import Duty Summary */}
-      <div className="card bg-base-100 border border-base-300 shadow-lg rounded-xl">
-        <div className="flex flex-col gap-4 p-3 sm:p-4">
-          <div className="flex md:flex-row flex-col gap-3 sm:gap-4">
-            {/* Duty & Fees */}
-            {/* <div className="flex-1 basis-0 flex flex-col items-center justify-center p-4 sm:p-6 bg-primary/10 rounded-xl">
-              <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 sm:mb-2">
-                Customs Value
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-black text-primary break-all text-center">
-                {formatCurrency(customsValue)}
-              </h2>
-            </div> */}
-            <div className="flex-1 basis-0 flex flex-col items-center justify-center p-4 sm:p-6 bg-secondary/10 rounded-xl">
-              <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 sm:mb-2">
-                Total Duty & Fees
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-black text-secondary break-all text-center">
-                {formatCurrency(totalImportDuty)}
-              </h2>
-              <div className="text-xs sm:text-sm text-base-content/50 mt-1 sm:mt-2 text-center">
-                on {formatCurrency(customsValue)} customs value
-              </div>
-            </div>
-            {/* Landed Cost */}
-            <div className="flex-1 basis-0 flex flex-col items-center justify-center p-4 sm:p-6 bg-accent/10 rounded-xl">
-              <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 sm:mb-2">
-                Landed Cost
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-black text-accent break-all text-center">
-                {formatCurrency(totalImportDuty + customsValue)}
-              </h2>
-            </div>
-          </div>
-          {/* Breakdown Grid */}
-          <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
-            {dutyEstimates.map((estimate, i) => (
-              <div
-                key={i}
-                className="flex flex-col items-center justify-center p-3 sm:p-4 bg-secondary/10 rounded-xl flex-1 min-w-0"
-              >
-                <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 text-center">
-                  {estimate.tariffSetName} Duty
-                </span>
-                <div className="text-2xl sm:text-3xl md:text-4xl font-black text-secondary mb-2 break-all text-center">
-                  {formatCurrency(estimate.totalDuty)}
-                </div>
-                <div className="text-xs text-base-content/50 space-y-1 text-center w-full">
-                  {estimate.amountDuty > 0 && (
-                    <div className="flex flex-col xs:flex-row justify-center gap-0.5 xs:gap-2">
-                      <span>Amount-based:</span>
-                      <span className="font-medium">
-                        {formatCurrency(estimate.amountDuty)}
-                      </span>
-                    </div>
-                  )}
-                  <div className="flex flex-col xs:flex-row justify-center gap-0.5 xs:gap-2">
-                    <span>Ad valorem ({estimate.percentRate}%):</span>
-                    <span className="font-medium">
-                      {formatCurrency(estimate.adValoremDuty)}
-                    </span>
-                  </div>
-                  {contentRequirements.length > 0 && (
-                    <div className="flex flex-col xs:flex-row justify-center gap-0.5 xs:gap-2">
-                      <span>Applied to:</span>
-                      <span className="font-medium">
-                        {estimate.contentPercentage}% (
-                        {formatCurrency(estimate.applicableValue)})
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-            <div className="flex flex-col items-center justify-center p-3 sm:p-4 bg-secondary/10 rounded-xl flex-1 min-w-0">
-              <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 text-center">
-                Additional Fees
-              </span>
-              <div className="text-2xl sm:text-3xl md:text-4xl font-black text-secondary mb-2 break-all text-center">
-                {formatCurrency(totalFees)}
-              </div>
-              <div className="text-xs text-base-content/50 space-y-1 text-center w-full">
-                {feeEstimates.map((fee, i) => (
-                  <div key={i} className="flex flex-row justify-center gap-2">
-                    <span className="truncate">{fee.name}:</span>
-                    <span className="font-medium">
-                      {formatCurrency(fee.amount)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-          {/* Tariff Rates */}
-          <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
-            {summaryTotals.map((total, i) => (
-              <div
-                key={i}
-                className="flex flex-col items-center justify-center p-3 sm:p-4 bg-primary/10 rounded-xl flex-1 min-w-0"
-              >
-                <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 text-center">
-                  {total.name} Tariff Rate
-                </span>
-                <div className="text-2xl sm:text-3xl md:text-4xl font-black text-primary text-center">
-                  {total.hasAmountTariffs && total.amountRatesString && (
-                    <span className="text-2xl sm:text-3xl md:text-4xl">
-                      {total.amountRatesString} +{" "}
-                    </span>
-                  )}
-                  {total.rate}%
-                </div>
-              </div>
-            ))}
-            <div className="flex flex-col items-center justify-center p-3 sm:p-4 bg-primary/10 rounded-xl flex-1 min-w-0">
-              <span className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-1 text-center">
-                Additional Fee Rate
-              </span>
-              <div className="text-2xl sm:text-3xl md:text-4xl font-black text-primary">
-                {additionalFeesTotal}%
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <EstimatedCostsDisplay
+        dutyEstimates={dutyEstimates}
+        feeEstimates={feeEstimates}
+        summaryTotals={summaryTotals}
+        totalImportDuty={totalImportDuty}
+        totalFees={totalFees}
+        customsValue={customsValue}
+        showContentBreakdown={contentRequirements.length > 0}
+      />
+
+
 
       {/* Tariff Details Header */}
       <div className="flex justify-between items-center gap-3 pt-4">
@@ -919,19 +652,21 @@ export const CountryTariff = ({
       </div>
 
       {/* Exemption Notice */}
-      {exemptionNote && (
-        <div className="alert alert-warning shadow-lg flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
-          <ExclamationTriangleIcon className="w-5 h-5 shrink-0" />
-          <div className="min-w-0 flex-1">
-            <h3 className="font-bold text-sm sm:text-base">Important Notice</h3>
-            <p className="sm:text-lg">
-              {exemptionNote} is/are EXEMPT from reciprocal tariffs via
-              9903.02.78
-              {country.code === "BR" && " and the Brazil 40% IEEPA"}
-            </p>
+      {
+        exemptionNote && (
+          <div className="alert alert-warning shadow-lg flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
+            <ExclamationTriangleIcon className="w-5 h-5 shrink-0" />
+            <div className="min-w-0 flex-1">
+              <h3 className="font-bold text-sm sm:text-base">Important Notice</h3>
+              <p className="sm:text-lg">
+                {exemptionNote} is/are EXEMPT from reciprocal tariffs via
+                9903.02.78
+                {country.code === "BR" && " and the Brazil 40% IEEPA"}
+              </p>
+            </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* Tariff Sets */}
       <div className="flex flex-col gap-4 sm:gap-5">
@@ -1134,7 +869,7 @@ export const CountryTariff = ({
           </h3>
           <div className="flex items-center gap-2 sm:gap-3">
             <span className="text-sm sm:text-base text-base-content/60 font-semibold">
-              {additionalFeesTotal}%
+              {ADDITIONAL_FEES_TOTAL_RATE}%
             </span>
             <span className="text-base-content/50">|</span>
             <span className="text-base sm:text-lg font-bold text-primary">
@@ -1175,7 +910,7 @@ export const CountryTariff = ({
           ))}
         </div>
       </div>
-    </div>
+    </div >
   );
 
   if (isModal) {

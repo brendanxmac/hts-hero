@@ -16,18 +16,23 @@ apiClient.interceptors.response.use(
     let message = "";
 
     if (error.response?.status === 401) {
-      // User not auth, ask to re login
-      toast.error("Please Sign In");
-      // Sends the user to the login page with current page as redirect
-      if (typeof window !== "undefined") {
-        const currentPath = window.location.pathname;
-        const redirectParam =
-          currentPath !== "/"
-            ? `?redirect=${encodeURIComponent(currentPath)}`
-            : "";
-        window.location.href = config.auth.loginUrl + redirectParam;
-      } else {
-        redirect(config.auth.loginUrl);
+      // Don't redirect on /classifications — anonymous users are allowed there
+      const isClassificationsPage =
+        typeof window !== "undefined" &&
+        window.location.pathname.startsWith("/classifications");
+
+      if (!isClassificationsPage) {
+        toast.error("Please Sign In");
+        if (typeof window !== "undefined") {
+          const currentPath = window.location.pathname;
+          const redirectParam =
+            currentPath !== "/"
+              ? `?redirect=${encodeURIComponent(currentPath)}`
+              : "";
+          window.location.href = config.auth.loginUrl + redirectParam;
+        } else {
+          redirect(config.auth.loginUrl);
+        }
       }
     } else if (error.response?.status === 403) {
       // User not authorized, must subscribe/purchase/pick a plan

@@ -58,9 +58,8 @@ export function ProductSection({
 
   return (
     <section
-      className={`relative py-16 md:py-24 ${
-        isEven ? "bg-base-100" : "bg-base-200/50"
-      }`}
+      className={`relative py-16 md:py-24 ${!isEven ? "bg-base-100" : "bg-base-200/50"
+        }`}
     >
       <div className="max-w-6xl mx-auto px-6">
         <div

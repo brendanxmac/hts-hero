@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Footer from "../../components/Footer";
+import { ClassificationCTA } from "../../components/ClassificationCTA";
 
 const cardStyle =
   "bg-base-100 rounded-2xl shadow-lg shadow-base-content/10 border border-base-content/20 p-6 md:p-8";
@@ -148,7 +149,7 @@ export default function PlaybookDownloadPage() {
             </h1>
             <p className="text-lg md:text-xl text-base-content/80 max-w-2xl mx-auto">
               You have the playbook. Now use free resources like the{" "}
-              <Link href="/about" className="link link-primary font-bold">Classification Assistant</Link> to classify in minutes, not hours.
+              <Link href="/classify" className="link link-primary font-bold">Classification Assistant</Link> to classify in minutes, not hours.
             </p>
           </section>
 
@@ -167,17 +168,17 @@ export default function PlaybookDownloadPage() {
               <li className="flex items-start gap-3 text-base md:text-lg text-base-content/90">
                 <span className="text-primary font-bold shrink-0 text-lg">2.</span>
                 <span>
-                  <strong className="text-base-content">You have the tool.</strong> The HTS Hero <Link href="/about" className="link link-primary font-bold">Classification Assistant</Link> turns that process into speed: AI-powered candidate discovery & legal note & GRI analysis, all documented in a single place.
+                  <strong className="text-base-content">You have the tool.</strong> The HTS Hero <Link href="/classify" className="link link-primary font-bold">Classification Assistant</Link> turns that process into speed: AI-powered candidate discovery & legal note & GRI analysis, all documented in a single place.
                 </span>
               </li>
               <li className="flex items-start gap-3 text-base md:text-lg text-base-content/90">
                 <span className="text-primary font-bold shrink-0 text-lg">3.</span>
                 <span>
-                  <strong className="text-base-content">You can start right now.</strong> No setup. Enter a product description, get candidates, see the analysis, document your reasoning, and generate an audit-ready report in minutes.
+                  <strong className="text-base-content">You can start right now.</strong> No setup. Enter a product description, get candidates, see the analysis, document your reasoning, and generate a defense report in minutes.
                 </span>
               </li>
             </ul>
-            <Link href="/classifications" className="btn btn-primary btn-lg mt-6 w-full">
+            <Link href="/classifications/new" className="btn btn-primary btn-lg mt-6 w-full">
               Try Classification Assistant FREE!
             </Link>
           </section>
@@ -218,7 +219,7 @@ export default function PlaybookDownloadPage() {
                   3
                 </span>
                 <div>
-                  <strong className="text-base-content block mb-1">Export your audit-ready report</strong>
+                  <strong className="text-base-content block mb-1">Export your defense report</strong>
                   <p className="text-base-content/80 text-sm md:text-base">
                     Generate a professional, branded classification report in one click. Ready to file or share with your team or client.
                   </p>
@@ -233,7 +234,7 @@ export default function PlaybookDownloadPage() {
               Put the playbook into practice. Start your first classification now.
             </p>
             <Link
-              href="/classifications"
+              href="/classifications/new"
               className="btn btn-primary btn-lg font-semibold text-base shadow-lg hover:shadow-xl transition-shadow"
             >
               Open Classification Assistant
@@ -242,6 +243,14 @@ export default function PlaybookDownloadPage() {
               No credit card required. Start classifying in seconds.
             </p>
           </section>
+
+          {/* Interactive Classification CTA */}
+          <div className="mt-12">
+            <ClassificationCTA
+              title="Put the playbook into practice"
+              subtitle="Enter a product description and classify it using the exact workflow from the playbook."
+            />
+          </div>
 
           {/* Trust strip */}
           <div className="mt-12 pt-8 border-t border-base-content/10 text-center">

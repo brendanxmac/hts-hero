@@ -3,7 +3,11 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { User } from "@supabase/supabase-js";
 import { createSupabaseClient } from "@/libs/supabase/client";
-import { identifyUser, resetUser } from "@/libs/mixpanel";
+import {
+  identifyUser,
+  registerMixpanelSuperProperties,
+  resetUser,
+} from "@/libs/mixpanel";
 
 interface UserContextType {
   user: User | null;
@@ -29,19 +33,30 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         error,
       } = await supabase.auth.getUser();
 
-      if (error) throw error;
+      if (error) {
+        // "Auth session missing" just means no one is logged in — not a real error
+        if (error.message?.includes("Auth session missing")) {
+          setUser(null);
+          setError(null);
+          resetUser();
+          registerMixpanelSuperProperties({ is_anonymous: true });
+          return;
+        }
+        throw error;
+      }
 
       setUser(user);
       setError(null);
 
-      // Identify user in Mixpanel
       if (user) {
         identifyUser(user.id, {
           email: user.email,
           created_at: user.created_at,
         });
+        registerMixpanelSuperProperties({ is_anonymous: false });
       } else {
         resetUser();
+        registerMixpanelSuperProperties({ is_anonymous: true });
       }
     } catch (err) {
       setError(err as Error);
@@ -58,8 +73,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       setUser(null);
       setError(null);
 
-      // Reset user in Mixpanel
       resetUser();
+      registerMixpanelSuperProperties({ is_anonymous: true });
     } catch (err) {
       setError(err as Error);
     } finally {

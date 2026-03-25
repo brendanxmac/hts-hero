@@ -20,7 +20,7 @@ export default async function LayoutPrivate({
       <CTABanner
         message="Your duty rate is only correct if your HTS code is correct."
         ctaText="Verify Your Classifications"
-        href="/about"
+        href="/classify"
       />
       {user ? <AuthenticatedHeader /> : <UnauthenticatedHeader />}
       {children}

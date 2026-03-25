@@ -17,6 +17,10 @@ import {
 import { fetchUser } from "../libs/supabase/user";
 import { NoteRecord } from "../types/hts";
 import { useUser } from "./UserContext";
+import {
+  getOrCreateAnonymousToken,
+  setAnonymousActiveClassificationId,
+} from "../libs/anonymous-token";
 
 export type ClassificationTier = "premium" | "standard";
 
@@ -54,10 +58,12 @@ interface ClassificationContextType {
   startNewClassification: (
     articleDescription: string,
     includeFirstLevel?: boolean
-  ) => Promise<void>;
+  ) => Promise<string>;
   saveClassification: () => Promise<void>;
   // Flush any pending debounce and save immediately - use before navigation
   flushAndSave: () => Promise<void>;
+  /** Set whether the current classification can be saved (e.g. false when viewing team member's classification) */
+  setCanSave: (canSave: boolean) => void;
   // Notes helper functions
   addNotes: (newNotes: NoteRecord[]) => void;
   getNotesForSectionsAndChapters: (
@@ -99,6 +105,7 @@ export const ClassificationProvider = ({
   const pendingClassificationRef = useRef<Promise<void> | null>(null);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isSavingRef = useRef(false);
+  const canSaveRef = useRef(true);
 
   // Refs to always have access to current values (avoids stale closures)
   const classificationRef = useRef<ClassificationI>(null);
@@ -106,14 +113,16 @@ export const ClassificationProvider = ({
 
   // Sync classificationTier from user profile (classification_type: "standard" | "premium" | null)
   useEffect(() => {
-    if (!authUser?.id) return;
+    if (!authUser?.id) {
+      setClassificationTier("standard");
+      return;
+    }
 
     let cancelled = false;
     const loadTier = async () => {
       const profile = await fetchUser(authUser.id);
       if (cancelled) return;
       const tier = getTierFromClassificationType(profile?.classification_type);
-      console.log("tier", tier);
       setClassificationTier(tier);
     };
     loadTier();
@@ -157,7 +166,11 @@ export const ClassificationProvider = ({
       const currentClassification = classificationRef.current;
       const currentClassificationId = classificationIdRef.current;
 
-      if (currentClassificationId && currentClassification) {
+      if (
+        currentClassificationId &&
+        currentClassification &&
+        canSaveRef.current
+      ) {
         try {
           await updateClassification(
             currentClassificationId,
@@ -326,6 +339,10 @@ export const ClassificationProvider = ({
     }
   };
 
+  const setCanSave = (canSave: boolean) => {
+    canSaveRef.current = canSave;
+  };
+
   // Flush any pending debounce and save immediately
   // Call this before navigation to ensure all changes are saved
   const flushAndSave = async () => {
@@ -338,8 +355,12 @@ export const ClassificationProvider = ({
     const currentClassification = classificationRef.current;
     const currentClassificationId = classificationIdRef.current;
 
-    // Only save if we have both ID and classification data
-    if (currentClassificationId && currentClassification) {
+    // Only save if we have both ID and classification data and user has permission
+    if (
+      currentClassificationId &&
+      currentClassification &&
+      canSaveRef.current
+    ) {
       setIsSaving(true);
       isSavingRef.current = true;
       try {
@@ -356,10 +377,11 @@ export const ClassificationProvider = ({
 
   // This creates a record in the DB and sets up the context record for local changes
   // includeFirstLevel: if true, adds an empty first level to trigger candidate fetching
+  // Returns the new classification's ID
   const startNewClassification = async (
     articleDescription: string,
     includeFirstLevel: boolean = false
-  ) => {
+  ): Promise<string> => {
     const newClassification: ClassificationI = {
       articleDescription,
       articleAnalysis: "",
@@ -374,12 +396,23 @@ export const ClassificationProvider = ({
     setClassification(newClassification);
     setIsCreatingClassification(true);
 
+    // For anonymous users, generate a token
+    const anonymousToken = !authUser ? getOrCreateAnonymousToken() : undefined;
+
+    let newId: string;
+
     // Create the DB record and track the promise
     const createPromise = (async () => {
       try {
-        const classificationRecord =
-          await createClassification(newClassification);
+        const classificationRecord = await createClassification(
+          newClassification,
+          anonymousToken
+        );
+        newId = classificationRecord.id;
         setClassificationId(classificationRecord.id);
+        if (!authUser) {
+          setAnonymousActiveClassificationId(classificationRecord.id);
+        }
       } finally {
         setIsCreatingClassification(false);
         pendingClassificationRef.current = null;
@@ -388,6 +421,7 @@ export const ClassificationProvider = ({
 
     pendingClassificationRef.current = createPromise;
     await createPromise;
+    return newId!;
   };
 
   // Reset classification state without saving (auto-save handles saves)
@@ -429,6 +463,7 @@ export const ClassificationProvider = ({
         startNewClassification,
         saveClassification,
         flushAndSave,
+        setCanSave,
         addNotes,
         getNotesForSectionsAndChapters,
       }}
