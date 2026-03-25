@@ -74,7 +74,7 @@ export const GRIDefenseHeroMarketing = () => {
         Not Just Codes, <span className="text-primary">Proof</span>
       </h2>
       <p className="text-base md:text-lg text-base-content/60 mt-6 max-w-3xl mx-auto">
-        GRI, Legal Note, & CROSS Rulings defense included for every classification
+        GRI, Legal Note, & CROSS Rulings Research Included
       </p>
 
       <div className="mt-8 pt-6 border-t border-base-content/10 min-h-[4rem] md:min-h-[5rem] flex items-center justify-center">
