@@ -27,7 +27,7 @@ const EXAMPLES: ClassificationExample[] = [
     htsCode: "6813.20.00.60",
     description:
       "Ceramic brake pads for passenger vehicles, semi-metallic compound with copper-free formulation",
-    shareToken: "nPP4hl_4vxY",
+    shareToken: "TKWXwgrFN9M",
     image: '/brakes.png',
     classificationPath: [
       "Section XIII",
@@ -41,18 +41,7 @@ const EXAMPLES: ClassificationExample[] = [
     htsCode: "7323.93.00.85",
     description:
       "Stainless steel double-wall vacuum insulated water bottle, 32oz with leak-proof lid",
-    defense: `Under GRI 1, heading 9617.00 (Vacuum flasks and other vacuum vessels, complete; parts thereof other than glass inners) appears to directly describe the essential nature of the article: a complete vacuum vessel designed to hold liquids, using a vacuum between walls for insulation. The legal notes to Chapter 96 do not exclude such vacuum vessels when made of base metal; rather, they confirm that Chapter 96 can cover certain specialized manufactured articles even when partly or wholly of metal, provided they are not parts of general use or otherwise excluded. None of the Chapter 96 exclusions apply to a finished vacuum-insulated bottle.
-
-By contrast:
-- Heading 7310 (“Tanks, casks, drums, cans, boxes and similar containers… of iron or steel”) generally covers non‑vacuum industrial or transport containers for materials, not consumer vacuum bottles.
-- Heading 7323 (“Table, kitchen or other household articles, of iron or steel”) is broader household ware, but does not specifically address vacuum construction; it is less specific than a heading expressly for vacuum vessels.
-- Heading 7326 (“Other articles of iron or steel”) is a residual heading for iron or steel articles not more specifically provided for elsewhere; it would only apply if no more specific heading existed.
-- Heading 8309 covers stoppers, caps, lids and similar packing accessories of base metal, which would at most describe the lid component, not the complete bottle. Under Note 1 to Chapter 83, such parts are generally classified with their parent articles, so the complete article should not be classified as a mere stopper or lid.
-
-Applying GRI 3(a), among the potentially relevant headings, heading 9617.00 is the most specific because it is limited to vacuum flasks and other vacuum vessels, which matches the double‑wall vacuum insulated design described. The other headings are more generic containers or household articles of metal.
-
-Therefore, based on the available information and the applicable notes, the primary candidate that most specifically and accurately progresses the classification is heading 9617.00 for “Vacuum flasks and other vacuum vessels, complete; parts thereof other than glass inners.`,
-    shareToken: "b9aETKwzNn4",
+    shareToken: "XYjXJH10Ws4",
     image: '/bottle.png',
     classificationPath: [
       "Section XV",
@@ -66,7 +55,7 @@ Therefore, based on the available information and the applicable notes, the prim
     htsCode: "6110.12.20.40",
     description:
       "Women's 100% cashmere crew-neck pullover sweater, knitted, with ribbed cuffs and hem",
-    shareToken: "x1XcVsWHIbQ",
+    shareToken: "NTUh3omQZ6Q",
     image: '/sweater.png',
     classificationPath: [
       "Section XI",
