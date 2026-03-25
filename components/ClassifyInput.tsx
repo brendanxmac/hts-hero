@@ -207,14 +207,14 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
       submitWithDescription(description, "cta");
     }, [description, submitWithDescription]);
 
-    const exampleIndexRef = useRef(0);
-    const handleTryExample = useCallback(() => {
-      if (examples.length === 0 || isCreating) return;
-      const example = examples[exampleIndexRef.current % examples.length];
-      exampleIndexRef.current++;
-      setDescription(example);
-      submitWithDescription(example, "try_example");
-    }, [examples, isCreating, submitWithDescription]);
+    // const exampleIndexRef = useRef(0);
+    // const handleTryExample = useCallback(() => {
+    //   if (examples.length === 0 || isCreating) return;
+    //   const example = examples[exampleIndexRef.current % examples.length];
+    //   exampleIndexRef.current++;
+    //   setDescription(example);
+    //   submitWithDescription(example, "try_example");
+    // }, [examples, isCreating, submitWithDescription]);
 
     const showPlaceholderOverlay = shouldCycle && !description;
 
@@ -238,11 +238,74 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
     if (compact) {
       return (
         <>
-        <div className="flex flex-col gap-2.5">
-          <div className="relative">
+          <div className="flex flex-col gap-2.5">
+            <div className="relative">
+              <textarea
+                ref={textareaRef}
+                placeholder={shouldCycle ? "" : staticPlaceholder}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey && description.trim()) {
+                    e.preventDefault();
+                    handleSubmit();
+                  }
+                }}
+                rows={3}
+                className={`w-full text-sm resize-none rounded-xl border px-3 py-2.5 bg-base-100 placeholder-base-content/40 focus:outline-none transition-all duration-200 ${isFocused
+                  ? "ring-2 ring-primary/50 border-primary/30"
+                  : "border-base-content/15 hover:border-primary/30"
+                  }`}
+              />
+              {showPlaceholderOverlay && (
+                <span
+                  className={`absolute left-3 top-2.5 text-sm pointer-events-none transition-all ${nudge ? "text-secondary font-medium animate-pulse" : "text-base-content/40"}`}
+                  style={{
+                    opacity: nudge ? 1 : (isVisible ? 1 : 0),
+                    transitionDuration: `${FADE_DURATION_MS}ms`,
+                  }}
+                >
+                  {nudge ? "Enter your product description" : cycleList[currentIndex]}
+                </span>
+              )}
+            </div>
+            <button
+              disabled={isCreating}
+              onClick={handleSubmit}
+              className="w-full px-4 py-2.5 rounded-xl font-bold text-sm bg-primary text-primary-content transition-all duration-300 flex items-center justify-center gap-2 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02] hover:brightness-110"
+            >
+              {isCreating ? (
+                <span className="loading loading-spinner loading-sm" />
+              ) : (
+                <>
+                  {buttonText}
+                  <ArrowRightIcon className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          </div>
+          {gateModals}
+        </>
+      );
+    }
+
+    return (
+      <>
+        <div className="flex flex-col gap-3">
+          {/* Input card */}
+          <div
+            className={`relative rounded-2xl border-2 transition-all duration-200 bg-base-100 shadow-lg ${isFocused
+              ? "border-primary/30 shadow-primary/10 ring-2 ring-primary/5"
+              : "border-base-content/15 hover:border-primary/20 shadow-base-content/10"
+              }`}
+          >
             <textarea
               ref={textareaRef}
+              className="w-full min-h-[112px] sm:min-h-[120px] lg:min-h-[144px] max-h-48 text-base lg:text-lg resize-none pl-5 pr-5 pt-4 pb-16 sm:pb-[4.5rem] bg-transparent placeholder-base-content/40 focus:outline-none leading-relaxed rounded-2xl"
               placeholder={shouldCycle ? "" : staticPlaceholder}
+              autoFocus={true}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               onFocus={() => setIsFocused(true)}
@@ -253,15 +316,11 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
                   handleSubmit();
                 }
               }}
-              rows={3}
-              className={`w-full text-sm resize-none rounded-xl border px-3 py-2.5 bg-base-100 placeholder-base-content/40 focus:outline-none transition-all duration-200 ${isFocused
-                ? "ring-2 ring-primary/50 border-primary/30"
-                : "border-base-content/15 hover:border-primary/30"
-                }`}
+              rows={2}
             />
             {showPlaceholderOverlay && (
               <span
-                className={`absolute left-3 top-2.5 text-sm pointer-events-none transition-all ${nudge ? "text-secondary font-medium animate-pulse" : "text-base-content/40"}`}
+                className={`absolute left-5 top-4 right-5 text-base lg:text-lg pointer-events-none transition-all leading-relaxed ${nudge ? "text-secondary font-medium animate-pulse" : "text-base-content/40"}`}
                 style={{
                   opacity: nudge ? 1 : (isVisible ? 1 : 0),
                   transitionDuration: `${FADE_DURATION_MS}ms`,
@@ -270,69 +329,10 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
                 {nudge ? "Enter your product description" : cycleList[currentIndex]}
               </span>
             )}
-          </div>
-          <button
-            disabled={isCreating}
-            onClick={handleSubmit}
-            className="w-full px-4 py-2.5 rounded-xl font-bold text-sm bg-primary text-primary-content transition-all duration-300 flex items-center justify-center gap-2 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02] hover:brightness-110"
-          >
-            {isCreating ? (
-              <span className="loading loading-spinner loading-sm" />
-            ) : (
-              <>
-                {buttonText}
-                <ArrowRightIcon className="w-4 h-4" />
-              </>
-            )}
-          </button>
-        </div>
-        {gateModals}
-        </>
-      );
-    }
 
-    return (
-      <>
-      <div className="flex flex-col gap-3">
-        {/* Input card */}
-        <div
-          className={`relative rounded-2xl border-2 transition-all duration-200 bg-base-100 shadow-lg ${isFocused
-            ? "border-primary/30 shadow-primary/10 ring-2 ring-primary/5"
-            : "border-base-content/15 hover:border-primary/20 shadow-base-content/10"
-            }`}
-        >
-          <textarea
-            ref={textareaRef}
-            className="w-full min-h-[112px] sm:min-h-[120px] lg:min-h-[144px] max-h-48 text-base lg:text-lg resize-none pl-5 pr-5 pt-4 pb-16 sm:pb-[4.5rem] bg-transparent placeholder-base-content/40 focus:outline-none leading-relaxed rounded-2xl"
-            placeholder={shouldCycle ? "" : staticPlaceholder}
-            autoFocus={true}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey && description.trim()) {
-                e.preventDefault();
-                handleSubmit();
-              }
-            }}
-            rows={2}
-          />
-          {showPlaceholderOverlay && (
-            <span
-              className={`absolute left-5 top-4 right-5 text-base lg:text-lg pointer-events-none transition-all leading-relaxed ${nudge ? "text-secondary font-medium animate-pulse" : "text-base-content/40"}`}
-              style={{
-                opacity: nudge ? 1 : (isVisible ? 1 : 0),
-                transitionDuration: `${FADE_DURATION_MS}ms`,
-              }}
-            >
-              {nudge ? "Enter your product description" : cycleList[currentIndex]}
-            </span>
-          )}
-
-          {/* Bottom bar pinned inside the card */}
-          <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-5 sm:right-4 flex items-center justify-end gap-3">
-            {/* {examples.length > 0 ? (
+            {/* Bottom bar pinned inside the card */}
+            <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-5 sm:right-4 flex items-center justify-end gap-3">
+              {/* {examples.length > 0 ? (
               <button
                 type="button"
                 onClick={handleTryExample}
@@ -344,24 +344,24 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
             ) : (
               <div />
             )} */}
-            <button
-              disabled={isCreating}
-              onClick={handleSubmit}
-              className="flex items-center justify-center gap-2 bg-primary text-primary-content font-bold rounded-xl transition-all duration-300 shadow-md shadow-primary/25 hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02] hover:brightness-110 p-2.5 sm:px-6 sm:py-2.5 shrink-0"
-            >
-              {isCreating ? (
-                <span className="loading loading-spinner loading-sm" />
-              ) : (
-                <>
-                  <span className="text-sm sm:text-base">{buttonText}</span>
-                  <ArrowRightIcon className="w-5 h-5" />
-                </>
-              )}
-            </button>
+              <button
+                disabled={isCreating}
+                onClick={handleSubmit}
+                className="flex items-center justify-center gap-2 bg-primary text-primary-content font-bold rounded-xl transition-all duration-300 shadow-md shadow-primary/25 hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02] hover:brightness-110 p-2.5 sm:px-6 sm:py-2.5 shrink-0"
+              >
+                {isCreating ? (
+                  <span className="loading loading-spinner loading-sm" />
+                ) : (
+                  <>
+                    <span className="text-sm sm:text-base">{buttonText}</span>
+                    <ArrowRightIcon className="w-5 h-5" />
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-      {gateModals}
+        {gateModals}
       </>
     );
   },

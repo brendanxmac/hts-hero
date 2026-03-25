@@ -4,7 +4,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { Suspense, useState, useEffect, useCallback } from "react";
 import LetsTalkModal from "../components/LetsTalkModal";
-import { ClassificationCTA } from "./ClassificationCTA";
 import { useUser } from "../contexts/UserContext";
 import { AboutPage } from "../enums/classify";
 import { MixpanelEvent, trackEvent } from "../libs/mixpanel";

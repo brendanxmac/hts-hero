@@ -7,8 +7,6 @@ import {
   ShieldCheckIcon,
   DocumentTextIcon,
 } from "@heroicons/react/24/outline";
-import { CheckCircleIcon } from "@heroicons/react/16/solid";
-import { GRIDefenseHero } from "./GRIDefenseHero";
 import { GRIDefenseHeroMarketing } from "./GRIDefenseHeroMarketing";
 
 interface ClassificationExample {

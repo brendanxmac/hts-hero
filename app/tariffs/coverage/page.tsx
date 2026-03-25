@@ -1,4 +1,3 @@
-import config from "@/config";
 import { getSEOTags } from "../../../libs/seo";
 import { BulletPoint, FeatureStatus } from "../../../components/TariffCoverage";
 import { TariffCoverageSection } from "../../../components/TariffCoverageSection";

@@ -5,7 +5,6 @@ import { TariffFinderPage } from "../../components/TariffFinderPage";
 import { BreadcrumbsProvider } from "../../contexts/BreadcrumbsContext";
 import { renderSchemaJsonLd } from "@/libs/seo";
 import config from "@/config";
-import { ClassificationCTA } from "../../components/ClassificationCTA";
 
 export const metadata: Metadata = {
   title:
@@ -65,15 +64,6 @@ export const metadata: Metadata = {
     canonical: "/duty-calculator",
   },
 };
-
-const coverageItems = [
-  "Section 301",
-  "Section 232",
-  "AD/CVD Duties",
-  "USMCA",
-  "GSP",
-  "CAFTA-DR",
-];
 
 export default function DutyCalculatorPage() {
   return (

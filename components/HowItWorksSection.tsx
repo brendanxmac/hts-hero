@@ -1,12 +1,10 @@
 import {
   ChatBubbleLeftEllipsisIcon,
-  DocumentTextIcon,
 } from "@heroicons/react/24/outline";
 import {
   CursorArrowRaysIcon,
   ChevronRightIcon,
   ChevronDownIcon,
-  ShieldCheckIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/solid";
 

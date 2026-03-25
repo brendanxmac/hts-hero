@@ -11,7 +11,6 @@ import {
   SparklesIcon,
   UserGroupIcon,
 } from "@heroicons/react/24/solid";
-import Link from "next/link";
 
 interface PricingProps {
   customerType: AboutPage;

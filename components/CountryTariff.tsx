@@ -18,8 +18,6 @@ import {
   calculateFeeEstimates,
   calculateSummaryTotals,
   formatCurrency,
-  DutyEstimate,
-  FeeEstimate,
   ADDITIONAL_FEES_TOTAL_RATE,
 } from "../tariffs/tariff-calculations";
 import { EstimatedCostsDisplay } from "./tariff-ui/EstimatedCostsDisplay";
@@ -246,6 +244,8 @@ export const CountryTariff = ({
 
     const lines = [
       `Estimated Import Costs for ${tariffElement.htsno} from ${country.name}`,
+      ``,
+      tradeProgramLine ? `Trade Program Applied: ${tradeProgramLine}` : "",
       ``,
       `COST SUMMARY`,
       `────────────────────────────────────────`,

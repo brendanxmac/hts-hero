@@ -6,9 +6,7 @@ import ClassifyPricing from "../../components/ClassifyPricing";
 import { FAQ } from "../../components/FAQ";
 import { classifierFaqList } from "../../constants/faq";
 import { AboutPage } from "../../enums/classify";
-import ProductDemoSection from "../../components/ProductDemoSection";
 import {
-  FeatureShowcaseSection,
   FeatureShowcaseData,
 } from "../../components/FeatureShowcaseSection";
 
@@ -17,20 +15,13 @@ import {
   ClassifyInput,
   ClassifyInputHandle,
 } from "../../components/ClassifyInput";
-import { CheckIcon } from "@heroicons/react/16/solid";
 import ClassificationExamplesSection from "../../components/ClassificationExamplesSection";
-import BenefitsComparisonSection from "../../components/BenefitsComparisonSection";
-import HowItWorksSection from "../../components/HowItWorksSection";
 
-const CLASSIFY_SUPPORTING_BULLETS = [
-  // "Finds Candidates",
-  // "Applies GRI's & Legal Notes",
-  "Results in ~1 Minute",
-  // "Checks CROSS Rulings",
-  // "10 Classifications FREE",
-  "Generates Defense Report",
-  "Share with Clients & Teammates",
-];
+// const CLASSIFY_SUPPORTING_BULLETS = [
+//   "Results in ~1 Minute",
+//   "Generates Defense Report",
+//   "Share with Clients & Teammates",
+// ];
 
 const HERO_PRODUCT_ROWS = [
   [

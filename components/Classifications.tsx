@@ -15,7 +15,6 @@ import {
 } from "@heroicons/react/16/solid";
 import { BoltIcon } from "@heroicons/react/16/solid";
 import Fuse, { IFuseOptions } from "fuse.js";
-import { LoadingIndicator } from "./LoadingIndicator";
 import { PricingPlan } from "../types";
 import { getActiveClassifyPurchase } from "../libs/supabase/purchase";
 import {

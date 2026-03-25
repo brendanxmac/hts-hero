@@ -4,12 +4,10 @@ import {
   CheckIcon,
   MagnifyingGlassIcon,
   SparklesIcon,
-  ScaleIcon,
-  DocumentCheckIcon,
   DocumentArrowDownIcon,
 } from "@heroicons/react/24/solid";
 import { ClassifyInput } from "./ClassifyInput";
-import { BoltIcon, CursorArrowRaysIcon } from "@heroicons/react/16/solid";
+import { CursorArrowRaysIcon } from "@heroicons/react/16/solid";
 
 interface ClassificationCTAProps {
   title: string;
