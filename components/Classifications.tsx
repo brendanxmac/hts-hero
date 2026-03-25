@@ -18,8 +18,6 @@ import Fuse, { IFuseOptions } from "fuse.js";
 import { LoadingIndicator } from "./LoadingIndicator";
 import { PricingPlan } from "../types";
 import { getActiveClassifyPurchase } from "../libs/supabase/purchase";
-import apiClient from "../libs/api";
-import { classifyPro } from "../config";
 import {
   fetchUser,
   fetchUsersByTeam,
@@ -51,7 +49,6 @@ interface SearchableClassification {
 export const Classifications = () => {
   const router = useRouter();
   const [loadingNewClassification] = useState(false);
-  const [loadingUpgrade, setLoadingUpgrade] = useState(false);
   const [loader, setLoader] = useState<Loader>({
     isLoading: true,
     text: "",
@@ -471,31 +468,12 @@ export const Classifications = () => {
                 userProfile &&
                 !userProfile.team_id && (
                   <button
+                    type="button"
                     className="group relative overflow-hidden px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 bg-secondary/15 border border-secondary/30 hover:border-secondary/50 hover:bg-secondary/25 hover:shadow-lg hover:shadow-secondary/20"
-                    disabled={loadingUpgrade}
-                    onClick={async () => {
-                      try {
-                        setLoadingUpgrade(true);
-                        const { url }: { url: string } = await apiClient.post(
-                          "/stripe/create-checkout",
-                          {
-                            itemId: classifyPro.planIdentifier,
-                            successEndpoint: "/classifications",
-                            cancelUrl: window.location.href,
-                          }
-                        );
-                        window.location.href = url;
-                      } catch (error) {
-                        setLoadingUpgrade(false);
-                      }
-                    }}
+                    onClick={() => setShowListPricing(true)}
                   >
                     <span className="relative z-10 flex items-center gap-2">
-                      {loadingUpgrade ? (
-                        <span className="loading loading-spinner loading-sm"></span>
-                      ) : (
-                        <BoltIcon className="h-4 w-4 text-secondary" />
-                      )}
+                      <BoltIcon className="h-4 w-4 text-secondary" />
                       <span className="text-secondary font-bold">Upgrade</span>
                     </span>
                   </button>

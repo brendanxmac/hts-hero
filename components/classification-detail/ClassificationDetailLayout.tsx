@@ -43,7 +43,6 @@ import { AnonymousClassificationCompleteModal } from "./AnonymousClassificationC
 import { AnonymousConversionBanner } from "./AnonymousConversionBanner";
 import { LockedTabOverlay } from "./LockedTabOverlay";
 import { useIsReadOnly } from "../../contexts/ReadOnlyContext";
-import { getAnonymousActiveClassificationId } from "../../libs/anonymous-token";
 
 /**
  * Hydrates the SectionChapterDiscovery context from persisted classification
@@ -194,8 +193,7 @@ export const ClassificationDetailLayout = ({
     isAnonymous &&
     classificationRecord &&
     classificationRecord.user_id === null &&
-    !classificationRecord.is_shared &&
-    getAnonymousActiveClassificationId() === classificationRecord.id
+    !classificationRecord.is_shared
       ? classificationRecord.id
       : null;
 

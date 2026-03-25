@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 const COOKIE_NAME = "anon_classification_token";
 const COOKIE_MAX_AGE_DAYS = 30;
 
-/** localStorage key: anonymous user may only open this id on `/classifications/[id]`. */
+/** localStorage key: last anonymous classification created in this browser (optional client hint). */
 const ACTIVE_ANON_CLASSIFICATION_STORAGE_KEY = "hts_anon_active_classification_id";
 
 export function getAnonymousToken(): string | null {

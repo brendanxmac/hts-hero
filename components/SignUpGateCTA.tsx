@@ -18,6 +18,16 @@ export const SignUpGateCTA = ({
   articleDescription,
   classificationId,
 }: SignUpGateCTAProps) => {
+  const getResultsText = (articleDescription?: string) => {
+    if (articleDescription) {
+      return <p className="text-base-content/70 text-base md:text-lg leading-relaxed">
+        Create a free account to find the HTS Code for <span className="font-bold">{articleDescription}</span>
+      </p>
+    }
+    return <p className="text-base-content/70 text-base md:text-lg leading-relaxed">
+      Create a free account to continue finding HTS Codes
+    </p>
+  }
   return (
     <div className="relative overflow-hidden rounded-2xl border-2 border-primary/30 bg-gradient-to-br from-primary/5 via-base-100 to-secondary/5">
       {/* Decorative background */}
@@ -47,30 +57,24 @@ export const SignUpGateCTA = ({
           <h3 className="text-2xl md:text-3xl font-extrabold text-base-content">
             You&apos;re Almost There!
           </h3>
-          <p className="text-base-content/70 text-base md:text-lg leading-relaxed">
-            Create a free account to find the HTS Code for your <span className="font-bold">{articleDescription}</span>.
-          </p>
+          {getResultsText(articleDescription)}
         </div>
 
         {/* Trust indicators */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-2xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-2xl">
           {[
             {
               icon: SparklesIcon,
-              text: `${NUM_FREE_CLASSIFICATIONS} free classifications`,
+              text: `${NUM_FREE_CLASSIFICATIONS} free lookups`,
             },
             {
               icon: ShieldCheckIcon,
               text: "No credit card required",
             },
-            {
-              icon: DocumentCheckIcon,
-              text: "Audit-ready PDF reports",
-            },
           ].map((item, index) => (
             <div
               key={index}
-              className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-base-200/60 border border-base-content/10"
+              className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-base-200/60 border border-base-content/10"
             >
               <item.icon className="w-4 h-4 text-primary shrink-0" />
               <span className="text-xs font-semibold text-base-content/80">
