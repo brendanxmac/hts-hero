@@ -6,6 +6,7 @@ import {
 } from "@heroicons/react/16/solid";
 import { HtsElement } from "../interfaces/hts";
 import { useClassification } from "../contexts/ClassificationContext";
+import { MarkdownProse } from "./MarkdownProse";
 
 interface Props {
   element: HtsElement;
@@ -122,9 +123,12 @@ export const ElementSummary = ({ element, onClick }: Props) => {
                     HTS Hero Analysis
                   </span>
                 </div>
-                <p className="text-sm text-base-content/70">
+                <MarkdownProse
+                  size="sm"
+                  className="prose-p:my-2 prose-headings:mt-3 prose-headings:mb-1 first:prose-headings:mt-0"
+                >
                   {recommendedReason}
-                </p>
+                </MarkdownProse>
               </div>
             )}
           </div>

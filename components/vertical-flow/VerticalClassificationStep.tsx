@@ -39,6 +39,7 @@ import { useUser } from "../../contexts/UserContext";
 import { VerticalCandidateElement } from "./VerticalCandidateElement";
 import Fuse from "fuse.js";
 import { AnalysisLoadingAnimation } from "../classification-ui/AnalysisLoadingAnimation";
+import { MarkdownProse } from "../MarkdownProse";
 import { useIsReadOnly } from "../../contexts/ReadOnlyContext";
 
 export interface VerticalClassificationStepProps {
@@ -532,16 +533,9 @@ export const VerticalClassificationStep = ({
                 <div className="flex">
                   <div className="w-1 bg-primary/40 shrink-0" />
                   <div className="p-4 flex-1 min-w-0">
-                    <div className="text-sm leading-[1.7] text-base-content/80 space-y-2.5">
-                      {currentLevel.analysisReason
-                        .split(/\n\n+/)
-                        .filter((p) => p.trim())
-                        .map((paragraph, i) => (
-                          <p key={i} className="whitespace-pre-line">
-                            {paragraph.trim()}
-                          </p>
-                        ))}
-                    </div>
+                    <MarkdownProse size="sm">
+                      {currentLevel.analysisReason}
+                    </MarkdownProse>
                   </div>
                 </div>
               </div>
