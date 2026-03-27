@@ -11,7 +11,7 @@ export const southKoreaTariffs: TariffI[] = [
     code: "9903.02.79",
     description:
       "Except for products described in headings 9903.01.30–9903.01.33, 9903.02.78, and 9903.02.81, and except as provided for in headings 9903.01.34, 9903.02.01, articles the product of South Korea, with an ad valorem (or ad valorem equivalent) rate of duty under column 1-General or column 1-Special equal to or greater than 15 percent, as provided for in subdivision (v)(xxiii)(a) of U.S. note 2 to this subchapter.",
-    name: "South Korea Trade Deal Tariff (General Duty >=15%)",
+    name: "South Korea Trade Deal Tariff (When General Duty >=15%)",
     general: 0,
     special: 0,
     other: 0,
@@ -24,7 +24,7 @@ export const southKoreaTariffs: TariffI[] = [
     code: "9903.02.80",
     description:
       "Except for products described in headings 9903.01.30–9903.01.33, 9903.02.78, and 9903.02.81, and except as provided for in headings 9903.01.34, 9903.02.01, articles the product of South Korea, with an ad valorem (or ad valorem equivalent) rate of duty under column 1-General or column 1-Special less than 15 percent, as provided for in subdivision (v)(xxiii)(a) of U.S. note 2 to this subchapter.",
-    name: "South Korea Trade Deal Tariff (General Duty <15%)",
+    name: "South Korea Trade Deal Tariff (When General Duty <15%)",
     general: 15,
     special: 15,
     other: 0,

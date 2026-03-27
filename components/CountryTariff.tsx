@@ -507,7 +507,7 @@ export const CountryTariff = ({
               sections={sections}
             >
               <span className="text-primary font-semibold uppercase text-base sm:text-lg cursor-help underline decoration-dotted decoration-primary/40 underline-offset-2">
-                {tariffElement.htsno}
+                {htsElement.htsno}
               </span>
             </HtsElementDetailsPopover>{" "}
             from
