@@ -483,7 +483,7 @@ export const VerticalClassificationStep = ({
             <div className="flex items-center gap-2.5">
               <SparklesIcon className="w-4 h-4 text-primary" />
               <h3 className="text-sm font-semibold text-base-content">
-                Analysis
+                Research
               </h3>
             </div>
             <div className="flex flex-wrap gap-1.5">

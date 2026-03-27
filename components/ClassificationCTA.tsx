@@ -79,7 +79,7 @@ const WORKFLOW_STEPS = [
 export const ClassificationCTA = ({
   title,
   subtitle,
-  ctaButtonText = "Classify My Product",
+  ctaButtonText = "Find Code",
   valueProps = DEFAULT_VALUE_PROPS,
   examples,
   showWorkflowPreview,
