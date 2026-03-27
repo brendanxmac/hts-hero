@@ -98,7 +98,7 @@ function DiscoveryHydrator(): null {
     };
 
     hydrate();
-  }, [classification?.preliminaryLevels, htsSections]);
+  }, [classification?.preliminaryLevels, htsSections, getSections]);
 
   useEffect(() => {
     if (hasHydratedChapters.current || chapterDiscoveryComplete) return;
@@ -111,21 +111,39 @@ function DiscoveryHydrator(): null {
 
     hasHydratedChapters.current = true;
 
-    const candidates = chapterLevel.candidates.map((c) => ({
-      chapter: {
-        number: c.identifier,
-        description: c.description,
-        type: Navigatable.CHAPTER as const,
-      },
-      sectionNumber: 0,
-    }));
+    const hydrate = async () => {
+      let sections = htsSections;
+      if (sections.length === 0) {
+        sections = await getSections();
+      }
 
-    setChapterCandidates(candidates);
-    if (chapterLevel.analysis) {
-      setChapterReasoning(chapterLevel.analysis);
-    }
-    setChapterDiscoveryComplete(true);
-  }, [classification?.preliminaryLevels]);
+      const candidates = chapterLevel.candidates.map((c) => {
+        let sectionNumber = 0;
+        for (const s of sections) {
+          if (s.chapters.some((ch) => ch.number === c.identifier)) {
+            sectionNumber = s.number;
+            break;
+          }
+        }
+        return {
+          chapter: {
+            number: c.identifier,
+            description: c.description,
+            type: Navigatable.CHAPTER as const,
+          },
+          sectionNumber,
+        };
+      });
+
+      setChapterCandidates(candidates);
+      if (chapterLevel.analysis) {
+        setChapterReasoning(chapterLevel.analysis);
+      }
+      setChapterDiscoveryComplete(true);
+    };
+
+    hydrate();
+  }, [classification?.preliminaryLevels, htsSections, getSections]);
 
   return null;
 }

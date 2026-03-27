@@ -10,26 +10,12 @@ import {
   getHtsElementParents,
   getSectionAndChapterFromChapterNumber,
 } from "../libs/hts";
+import {
+  htsCodesEqual,
+  isValidEightOrTenDigitDigits,
+  normalizeHtsCode,
+} from "../libs/hts-code";
 import { LoadingIndicator } from "./LoadingIndicator";
-
-// Helper to check if a string is a valid HTS code format (8 or 10 digits with dots)
-const isValidHtsCodeFormat = (str: string): boolean => {
-  // Remove dots and check if it's 8 or 10 digits
-  const digitsOnly = str.replace(/\./g, "");
-  return /^\d{8}$|^\d{10}$/.test(digitsOnly);
-};
-
-// Helper to normalize HTS code format (add dots if missing)
-const normalizeHtsCode = (str: string): string => {
-  const digitsOnly = str.replace(/\./g, "");
-  if (digitsOnly.length === 8) {
-    return `${digitsOnly.slice(0, 4)}.${digitsOnly.slice(4, 6)}.${digitsOnly.slice(6, 8)}`;
-  }
-  if (digitsOnly.length === 10) {
-    return `${digitsOnly.slice(0, 4)}.${digitsOnly.slice(4, 6)}.${digitsOnly.slice(6, 8)}.${digitsOnly.slice(8, 10)}`;
-  }
-  return str;
-};
 
 interface HtsCodeSelectorProps {
   selectedElement: HtsElement | null;
@@ -146,10 +132,10 @@ export const HtsCodeSelector = ({
 
       const normalizedValue = normalizeHtsCode(value.trim());
 
-      if (isValidHtsCodeFormat(normalizedValue)) {
+      if (isValidEightOrTenDigitDigits(normalizedValue)) {
         // Check for exact match
-        const exactMatch = htsElements.find(
-          (el) => el.htsno === normalizedValue
+        const exactMatch = htsElements.find((el) =>
+          htsCodesEqual(el.htsno, normalizedValue)
         );
 
         if (exactMatch) {

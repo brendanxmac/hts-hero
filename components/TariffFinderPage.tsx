@@ -29,28 +29,17 @@ import {
   generateBreadcrumbsForHtsElement,
   getSectionAndChapterFromChapterNumber,
 } from "../libs/hts";
+import { htsCodeDigitsOnly, normalizeHtsCode } from "../libs/hts-code";
 
 // Helper to count digits in an HTS code (ignoring dots)
 const getHtsCodeDigitCount = (htsno: string): number => {
   if (!htsno) return 0;
-  return htsno.replace(/\./g, "").length;
+  return htsCodeDigitsOnly(htsno).length;
 };
 
 // Check if an HTS code has 8 or more digits (tariff-level)
 const isTariffLevelCode = (htsno: string): boolean => {
   return getHtsCodeDigitCount(htsno) >= 8;
-};
-
-// Helper to normalize HTS code format (add dots if missing)
-const normalizeHtsCode = (str: string): string => {
-  const digitsOnly = str.replace(/\./g, "");
-  if (digitsOnly.length === 8) {
-    return `${digitsOnly.slice(0, 4)}.${digitsOnly.slice(4, 6)}.${digitsOnly.slice(6, 8)}`;
-  }
-  if (digitsOnly.length === 10) {
-    return `${digitsOnly.slice(0, 4)}.${digitsOnly.slice(4, 6)}.${digitsOnly.slice(6, 8)}.${digitsOnly.slice(8, 10)}`;
-  }
-  return str;
 };
 
 // Helper to validate country code

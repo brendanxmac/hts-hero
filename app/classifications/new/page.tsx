@@ -14,6 +14,10 @@ import toast from "react-hot-toast";
 import { CheckCircleIcon } from "@heroicons/react/16/solid";
 import { ArrowLeftIcon } from "@heroicons/react/16/solid";
 import { NUM_FREE_CLASSIFICATIONS } from "../../../constants/classification";
+import {
+  isValidTenDigitHtsInput,
+  normalizeHtsCode,
+} from "../../../libs/hts-code";
 
 const TIPS = [
   { text: "Include size, material, weight, color" },
@@ -22,19 +26,25 @@ const TIPS = [
   { text: "Specify intended use (commercial, personal, household, etc.)" },
 ];
 
+type InputMode = "description" | "hts_code";
+
 function NewClassificationContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = useUser();
   const {
     startNewClassification,
+    startClassificationFromHtsCode,
     setArticleDescription,
     resetClassificationState,
   } = useClassification();
   const [showPricing, setShowPricing] = useState(false);
   const [showSignUpGate, setShowSignUpGate] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [inputMode, setInputMode] = useState<InputMode>("description");
   const [localDescription, setLocalDescription] = useState("");
+  const [localHtsCode, setLocalHtsCode] = useState("");
+  const [htsFocused, setHtsFocused] = useState(false);
   const hasAutoSubmittedRef = useRef(false);
 
   const productParam = searchParams.get("product") || "";
@@ -50,8 +60,46 @@ function NewClassificationContent() {
     }
   }, [productParam]);
 
+  const descriptionCanSubmit = localDescription.trim().length > 0;
+  const htsCanSubmit = isValidTenDigitHtsInput(localHtsCode);
+  const canSubmit =
+    inputMode === "description" ? descriptionCanSubmit : htsCanSubmit;
+
+  const signUpGateDescription =
+    inputMode === "hts_code"
+      ? `HTS code: ${normalizeHtsCode(localHtsCode.trim())}`
+      : localDescription.trim();
+
+  const runAfterGate = async () => {
+    if (inputMode === "description") {
+      return startNewClassification(localDescription, true);
+    }
+    return startClassificationFromHtsCode(localHtsCode.trim());
+  };
+
+  const trackStarted = (newId: string, mixpanelBase: Record<string, unknown>) => {
+    if (!user) {
+      trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
+        ...mixpanelBase,
+        is_anonymous: true,
+        entry_point: "classifications_new",
+      });
+      trackEvent(MixpanelEvent.ANONYMOUS_CLASSIFICATION_STARTED, {
+        classification_id: newId,
+        source: "classifications_new_form",
+        entry_point: "classifications_new",
+        ...mixpanelBase,
+      });
+    } else {
+      trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
+        ...mixpanelBase,
+        entry_point: "classifications_new",
+      });
+    }
+  };
+
   const handleSubmit = async () => {
-    if (!localDescription.trim() || loading) return;
+    if (!canSubmit || loading) return;
     setLoading(true);
 
     try {
@@ -67,9 +115,14 @@ function NewClassificationContent() {
         if (blockReason === "anonymous_limit_reached") {
           setShowSignUpGate(true);
         } else {
-          setArticleDescription(localDescription);
+          if (inputMode === "description") {
+            setArticleDescription(localDescription);
+          } else {
+            setArticleDescription(signUpGateDescription);
+          }
           trackEvent(MixpanelEvent.CLICKED_CLASSIFY_PRO_UPGRADE, {
             entry_point: "new_classification",
+            input_mode: inputMode,
           });
           setShowPricing(true);
         }
@@ -77,38 +130,46 @@ function NewClassificationContent() {
         return;
       }
 
-      const newId = await startNewClassification(localDescription, true);
+      const newId = await runAfterGate();
+
+      const entryModeProp =
+        inputMode === "hts_code" ? "hts_code_entry" : "product_description";
 
       if (!user) {
-        trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
-          item: localDescription,
-          is_anonymous: true,
-          entry_point: "classifications_new",
-        });
-        trackEvent(MixpanelEvent.ANONYMOUS_CLASSIFICATION_STARTED, {
-          classification_id: newId,
-          source: "classifications_new_form",
-          entry_point: "classifications_new",
+        trackStarted(newId, {
+          item:
+            inputMode === "description"
+              ? localDescription
+              : normalizeHtsCode(localHtsCode.trim()),
+          entry_mode: entryModeProp,
         });
       } else {
         const count = classificationCount ?? 0;
         const isTrialUserWithinLimit =
-          !isPayingUser &&
-          !isOnTeam &&
-          count < NUM_FREE_CLASSIFICATIONS;
-        trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
-          item: localDescription,
+          !isPayingUser && !isOnTeam && count < NUM_FREE_CLASSIFICATIONS;
+        trackStarted(newId, {
+          item:
+            inputMode === "description"
+              ? localDescription
+              : normalizeHtsCode(localHtsCode.trim()),
           is_paying_user: isPayingUser,
           is_team_member: isOnTeam,
           is_trial_user: isTrialUserWithinLimit,
           classification_count: count,
+          entry_mode: entryModeProp,
         });
       }
 
       router.replace(`/classifications/${newId}`);
     } catch (error) {
       console.error(error);
-      toast.error("Something went wrong. Please try again or contact support.");
+      const message =
+        error instanceof Error ? error.message : "Something went wrong.";
+      toast.error(
+        message.length > 0 && message.length < 220
+          ? message
+          : "Something went wrong. Please try again or contact support."
+      );
       setLoading(false);
     }
   };
@@ -132,48 +193,149 @@ function NewClassificationContent() {
           Back
         </button>
 
+        {/* Subtle mode switch — above title; neutral, easy to ignore */}
+        <div className="flex justify-center mb-5 sm:mb-6">
+          <div className="inline-flex items-center gap-2 sm:gap-2.5 text-[11px] sm:text-xs text-base-content/[0.28]">
+            <span
+              className={
+                inputMode === "description"
+                  ? "text-base-content/[0.38]"
+                  : "text-base-content/[0.22]"
+              }
+            >
+              Description
+            </span>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={inputMode === "hts_code"}
+              aria-label="Use HTS code instead of description"
+              onClick={() =>
+                setInputMode((m) =>
+                  m === "description" ? "hts_code" : "description"
+                )
+              }
+              className="relative h-3.5 w-7 shrink-0 rounded-full border border-base-content/[0.07] bg-base-content/[0.035] transition-[border-color,background-color] hover:border-base-content/[0.11] hover:bg-base-content/[0.05] focus:outline-none focus-visible:ring-1 focus-visible:ring-base-content/15 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100"
+            >
+              <span
+                aria-hidden
+                className={`pointer-events-none absolute left-[3px] top-1/2 block h-2 w-2 -translate-y-1/2 rounded-full bg-base-content/[0.22] transition-transform duration-200 ease-out ${inputMode === "hts_code" ? "translate-x-4" : ""
+                  }`}
+              />
+            </button>
+            <span
+              className={
+                inputMode === "hts_code"
+                  ? "text-base-content/[0.38]"
+                  : "text-base-content/[0.22]"
+              }
+            >
+              HTS code
+            </span>
+          </div>
+        </div>
+
         {/* Heading */}
         <div className="text-center mb-8 sm:mb-10">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-base-content mb-3">
-            Describe Your Product
+            {inputMode === "hts_code"
+              ? "Enter an HTS code"
+              : "Describe Your Product"}
           </h1>
           <p className="text-base text-base-content/50 max-w-2xl mx-auto leading-relaxed">
-            Enter a detailed description of your product and we&apos;ll help you find the right HTS code
+            {inputMode === "hts_code"
+              ? "Provide a 10-digit US HTS code & we will give you the full classification path"
+              : "Enter a detailed description of your product"}
           </p>
         </div>
 
         {/* Input card */}
         <div className="mb-8">
-          <TextAreaInput
-            buttonText="Start Classification"
-            placeholder="e.g. Men's 100% cotton denim jeans, dyed blue & pre-washed for an athletic figure"
-            defaultValue={productParam}
-            onChange={(value) => setLocalDescription(value)}
-            onSubmit={handleSubmit}
-            canSubmit={localDescription.trim().length > 0}
-            loading={loading}
-          />
+          {inputMode === "description" ? (
+            <TextAreaInput
+              buttonText="Start Classification"
+              placeholder="e.g. Men's 100% cotton denim jeans, dyed blue & pre-washed for an athletic figure"
+              defaultValue={productParam}
+              onChange={(value) => setLocalDescription(value)}
+              onSubmit={handleSubmit}
+              canSubmit={descriptionCanSubmit}
+              loading={loading}
+            />
+          ) : (
+            <div
+              className={`w-full flex flex-col gap-3 rounded-2xl transition-all duration-200 border ${htsFocused
+                ? "bg-base-100 ring-2 ring-primary/50 border-primary/30"
+                : "bg-base-100/80 hover:bg-base-100 border-base-content/10 hover:border-primary/30"
+                }`}
+            >
+              <div className="px-4 pt-4 pb-2">
+                <label
+                  htmlFor="new-classification-hts-code"
+                  className="text-xs font-semibold uppercase tracking-wider text-base-content/60"
+                >
+                  10-digit HTS code
+                </label>
+                <input
+                  id="new-classification-hts-code"
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  autoFocus
+                  placeholder="e.g. 8458.91.50.70"
+                  value={localHtsCode}
+                  onChange={(e) => setLocalHtsCode(e.target.value)}
+                  onFocus={() => setHtsFocused(true)}
+                  onBlur={() => setHtsFocused(false)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && htsCanSubmit && !loading) {
+                      e.preventDefault();
+                      void handleSubmit();
+                    }
+                  }}
+                  className="mt-2 w-full bg-transparent text-lg font-mono font-medium text-base-content placeholder:text-base-content/30 outline-none border-0 focus:ring-0"
+                />
+                <p className="mt-1 text-xs text-base-content/45">
+                  Dots and spaces optional. Must resolve to exactly 10 digits in chapters 1-97.
+                </p>
+              </div>
+              <div className="px-4 pb-4">
+                <button
+                  type="button"
+                  className="btn btn-primary w-full gap-2 rounded-xl min-h-[2.75rem] font-semibold"
+                  disabled={!htsCanSubmit || loading}
+                  onClick={() => void handleSubmit()}
+                >
+                  {loading ? (
+                    <span className="loading loading-spinner loading-sm" />
+                  ) : null}
+                  Continue
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Tips */}
-        <div>
-          <span className="block text-xs font-semibold uppercase tracking-[0.15em] text-base-content/40 mb-4 text-center">
-            Tips for Best Results
-          </span>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {TIPS.map((tip, i) => (
-              <div
-                key={i}
-                className="flex items-start gap-2.5 px-4 py-3 rounded-xl bg-base-200/50 border border-base-content/[0.06]"
-              >
-                <CheckCircleIcon className="w-4 h-4 text-success shrink-0 mt-0.5" />
-                <span className="text-sm text-base-content/60 leading-relaxed">
-                  {tip.text}
-                </span>
-              </div>
-            ))}
+        {inputMode === "description" && (
+          <div>
+            <span className="block text-xs font-semibold uppercase tracking-[0.15em] text-base-content/40 mb-4 text-center">
+              Tips for Best Results
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {TIPS.map((tip, i) => (
+                <div
+                  key={i}
+                  className="flex items-start gap-2.5 px-4 py-3 rounded-xl bg-base-200/50 border border-base-content/[0.06]"
+                >
+                  <CheckCircleIcon className="w-4 h-4 text-success shrink-0 mt-0.5" />
+                  <span className="text-sm text-base-content/60 leading-relaxed">
+                    {tip.text}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {showPricing && (
@@ -183,7 +345,7 @@ function NewClassificationContent() {
       )}
       {showSignUpGate && (
         <Modal isOpen={showSignUpGate} setIsOpen={setShowSignUpGate}>
-          <SignUpGateCTA articleDescription={localDescription.trim()} />
+          <SignUpGateCTA articleDescription={signUpGateDescription} />
         </Modal>
       )}
     </main>

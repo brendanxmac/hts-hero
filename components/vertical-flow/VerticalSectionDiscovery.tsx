@@ -6,6 +6,7 @@ import { useSectionChapterDiscovery } from "../../contexts/SectionChapterDiscove
 import { useHtsSections } from "../../contexts/HtsSectionsContext";
 import { getBestDescriptionCandidates } from "../../libs/hts";
 import { shouldSkipSectionChapterDiscovery } from "../../libs/classification-helpers";
+import { lacksProductDescriptionForAnalysis } from "../../libs/classification-from-hts-code";
 import {
   PreliminaryCandidate,
   PreliminaryClassificationLevel,
@@ -66,10 +67,18 @@ export const VerticalSectionDiscovery = () => {
 
   useEffect(() => {
     if (readOnly) return;
-    if (!articleDescription || hasFetchedRef.current) return;
+    if (lacksProductDescriptionForAnalysis(articleDescription)) return;
+    if (hasFetchedRef.current) return;
     if (sectionCandidates.length > 0) return;
     // Old classifications have levels with selections but no preliminaryLevels - don't fetch
     if (shouldSkipSectionChapterDiscovery(classification)) return;
+
+    const persistedSection = classification?.preliminaryLevels?.find(
+      (l) => l.level === "section"
+    );
+    if ((persistedSection?.candidates?.length ?? 0) > 0) {
+      return;
+    }
 
     hasFetchedRef.current = true;
     fetchSectionCandidates();

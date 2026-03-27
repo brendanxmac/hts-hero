@@ -41,6 +41,7 @@ import Fuse from "fuse.js";
 import { AnalysisLoadingAnimation } from "../classification-ui/AnalysisLoadingAnimation";
 import { MarkdownProse } from "../MarkdownProse";
 import { useIsReadOnly } from "../../contexts/ReadOnlyContext";
+import { lacksProductDescriptionForAnalysis } from "../../libs/classification-from-hts-code";
 
 export interface VerticalClassificationStepProps {
   classificationLevel: number;
@@ -146,6 +147,9 @@ export const VerticalClassificationStep = ({
     isMountedRef.current = true;
 
     const findBestClassificationProgression = async () => {
+      if (lacksProductDescriptionForAnalysis(articleDescription)) {
+        return;
+      }
       if (
         currentLevel?.candidates?.length > 0 &&
         !currentLevel?.analysisElement
@@ -250,7 +254,8 @@ export const VerticalClassificationStep = ({
 
     if (
       currentLevel?.candidates?.length > 0 &&
-      !currentLevel?.analysisElement
+      !currentLevel?.analysisElement &&
+      !lacksProductDescriptionForAnalysis(articleDescription)
     ) {
       findBestClassificationProgression();
     }
@@ -258,9 +263,17 @@ export const VerticalClassificationStep = ({
     return () => {
       isMountedRef.current = false;
     };
-  }, [currentLevel?.candidates?.length, classificationLevel, readOnly]);
+  }, [
+    currentLevel?.candidates?.length,
+    classificationLevel,
+    readOnly,
+    articleDescription,
+  ]);
 
   const getHeadings = async () => {
+    if (lacksProductDescriptionForAnalysis(articleDescription)) {
+      return;
+    }
     setLoading({ isLoading: true, text: "Looking for Headings" });
     const candidatesForHeading: (HtsElement & {
       referencedCodes: Record<string, string>;
@@ -373,6 +386,7 @@ export const VerticalClassificationStep = ({
 
   useEffect(() => {
     if (readOnly) return;
+    if (lacksProductDescriptionForAnalysis(articleDescription)) return;
     if (
       classificationLevel === 0 &&
       chapterDiscoveryComplete &&
@@ -384,7 +398,13 @@ export const VerticalClassificationStep = ({
       hasFetchedCandidatesRef.current = true;
       getHeadings();
     }
-  }, [classificationLevel, chapterDiscoveryComplete, chapterCandidates, readOnly]);
+  }, [
+    classificationLevel,
+    chapterDiscoveryComplete,
+    chapterCandidates,
+    readOnly,
+    articleDescription,
+  ]);
 
   const analysisIsActive = loading.isLoading || !!currentLevel?.analysisReason;
 

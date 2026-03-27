@@ -5,6 +5,7 @@ import { useClassification } from "../../contexts/ClassificationContext";
 import { useSectionChapterDiscovery } from "../../contexts/SectionChapterDiscoveryContext";
 import { getBestDescriptionCandidates } from "../../libs/hts";
 import { shouldSkipSectionChapterDiscovery } from "../../libs/classification-helpers";
+import { lacksProductDescriptionForAnalysis } from "../../libs/classification-from-hts-code";
 import { ChapterCandidate } from "../../contexts/SectionChapterDiscoveryContext";
 import {
   PreliminaryCandidate,
@@ -68,16 +69,30 @@ export const VerticalChapterDiscovery = () => {
   useEffect(() => {
     if (readOnly) return;
     if (!sectionDiscoveryComplete) return;
-    if (!articleDescription) return;
+    if (lacksProductDescriptionForAnalysis(articleDescription)) return;
     if (hasFetchedRef.current) return;
     if (chapterCandidates.length > 0) return;
     if (sectionCandidates.length === 0) return;
     // Old classifications have levels with selections but no preliminaryLevels - don't fetch
     if (shouldSkipSectionChapterDiscovery(classification)) return;
 
+    const persistedChapter = classification?.preliminaryLevels?.find(
+      (l) => l.level === "chapter"
+    );
+    if ((persistedChapter?.candidates?.length ?? 0) > 0) {
+      return;
+    }
+
     hasFetchedRef.current = true;
     fetchChapterCandidates();
-  }, [sectionDiscoveryComplete, sectionCandidates.length, chapterCandidates.length, readOnly, classification]);
+  }, [
+    sectionDiscoveryComplete,
+    sectionCandidates.length,
+    chapterCandidates.length,
+    readOnly,
+    classification,
+    articleDescription,
+  ]);
 
   const fetchChapterCandidates = async () => {
     setIsFetchingChapters(true);

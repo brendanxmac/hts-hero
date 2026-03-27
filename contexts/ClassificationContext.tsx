@@ -14,6 +14,8 @@ import {
   createClassification,
   updateClassification,
 } from "../libs/classification";
+import { buildCompletedClassificationFromHtsCode } from "../libs/classification-from-hts-code";
+import { getCachedHtsData, getHtsData, getHtsSectionsAndChapters } from "../libs/hts";
 import { fetchUser } from "../libs/supabase/user";
 import { NoteRecord } from "../types/hts";
 import { useUser } from "./UserContext";
@@ -59,6 +61,8 @@ interface ClassificationContextType {
     articleDescription: string,
     includeFirstLevel?: boolean
   ) => Promise<string>;
+  /** Create a completed classification from a 10-digit HTS code (loads HTS + sections from API/cache). */
+  startClassificationFromHtsCode: (rawCode: string) => Promise<string>;
   saveClassification: () => Promise<void>;
   // Flush any pending debounce and save immediately - use before navigation
   flushAndSave: () => Promise<void>;
@@ -424,6 +428,60 @@ export const ClassificationProvider = ({
     return newId!;
   };
 
+  const loadHtsElementsForHtsCodeEntry = async () => {
+    const cached = getCachedHtsData();
+    if (cached) {
+      return cached.data;
+    }
+    const { data: elements } = await getHtsData("latest");
+    return elements;
+  };
+
+  const startClassificationFromHtsCode = async (
+    rawCode: string
+  ): Promise<string> => {
+    const htsElements = await loadHtsElementsForHtsCodeEntry();
+    const { sections } = await getHtsSectionsAndChapters();
+    const built = buildCompletedClassificationFromHtsCode(
+      rawCode,
+      htsElements,
+      sections
+    );
+    if (!built.ok) {
+      throw new Error(built.error);
+    }
+
+    const newClassification = built.classification;
+
+    setClassification(newClassification);
+    setIsCreatingClassification(true);
+
+    const anonymousToken = !authUser ? getOrCreateAnonymousToken() : undefined;
+
+    let newId: string;
+
+    const createPromise = (async () => {
+      try {
+        const classificationRecord = await createClassification(
+          newClassification,
+          anonymousToken
+        );
+        newId = classificationRecord.id;
+        setClassificationId(classificationRecord.id);
+        if (!authUser) {
+          setAnonymousActiveClassificationId(classificationRecord.id);
+        }
+      } finally {
+        setIsCreatingClassification(false);
+        pendingClassificationRef.current = null;
+      }
+    })();
+
+    pendingClassificationRef.current = createPromise;
+    await createPromise;
+    return newId!;
+  };
+
   // Reset classification state without saving (auto-save handles saves)
   const resetClassificationState = () => {
     // Clear any pending debounce timer
@@ -461,6 +519,7 @@ export const ClassificationProvider = ({
         clearClassification,
         resetClassificationState,
         startNewClassification,
+        startClassificationFromHtsCode,
         saveClassification,
         flushAndSave,
         setCanSave,
