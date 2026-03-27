@@ -21,17 +21,17 @@ export default async function LayoutPrivate({
   return (
     <div className="flex flex-col min-h-svh bg-base-100">
       <CTABanner
-        message="Trying to find the correct HTS Code for your product?"
-        ctaText="Find the Correct Code"
+        message="Trying to find an HTS Code?"
+        ctaText="Find Your Code, Fast"
         href="/classify"
-        subText="Produce an audit-ready classification in minutes"
+      // subText="With AI Research"
       />
       {user ? <AuthenticatedHeader /> : <UnauthenticatedHeader />}
       {children}
       <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-8">
         <ClassificationCTA
-          title="Found what you're looking for? Classify it"
-          subtitle="Enter your product description to start an AI-guided classification."
+          title="Can't find what you're looking for?"
+          subtitle="Enter your product description to start an AI Assisted classification."
         />
       </div>
     </div>

@@ -1,17 +1,17 @@
-import { TariffI } from "../interfaces/tariffs";
+import { TariffI } from "../interfaces/tariffs"
 import {
   automobiles33B,
   automobileParts33G,
   civilAircraftAndPartsOf,
-} from "./lists";
-import { recriprocalTariffExemptions } from "./reciprocal";
+} from "./lists"
+import { recriprocalTariffExemptions } from "./reciprocal"
 
 export const japanTariffs: TariffI[] = [
   {
     code: "9903.02.72",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33, and except as provided for in headings 9903.01.34, 9903.02.01, and 9903.96.02, articles the product of Japan, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 15 percent, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
-    name: "Japan Reciprocal Tariff (General Duty >=15%)",
+    name: "Japan Reciprocal Tariff (When General Duty >=15%)",
     general: 0,
     special: 0,
     other: 0,
@@ -33,7 +33,7 @@ export const japanTariffs: TariffI[] = [
     code: "9903.02.73",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33, and except as provided for in headings 9903.01.34, 9903.02.01, and 9903.96.02, articles the product of Japan, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 15 percent, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
-    name: "Japan Reciprocal Tariff (General Duty <15%)",
+    name: "Japan Reciprocal Tariff (When General Duty <15%)",
     general: 15,
     special: 15,
     other: 0,
@@ -126,4 +126,4 @@ export const japanTariffs: TariffI[] = [
       codes: civilAircraftAndPartsOf,
     },
   },
-];
+]
