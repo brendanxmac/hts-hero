@@ -395,7 +395,7 @@ export const Explore = ({
             )}
 
             <div
-              className={`relative w-full max-w-5xl mx-auto px-4 sm:px-6 ${isModal ? "py-4" : "py-6 md:py-8"}`}
+              className={`relative w-full max-w-6xl mx-auto px-4 sm:px-6 ${isModal ? "py-4" : "py-6 md:py-8"}`}
             >
               {/* Title and version - only show when not in modal */}
               {!isModal && (
@@ -486,7 +486,7 @@ export const Explore = ({
           </div>
 
           {/* Main Content */}
-          <div className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-6">
+          <div className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 py-6">
             {activeTab === ExploreTab.ELEMENTS && (
               <>
                 {searchValue ? (

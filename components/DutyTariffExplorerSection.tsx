@@ -70,7 +70,7 @@ export function DutyTariffExplorerSection({
       <div className="border-t border-base-content/10 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
           <p className="text-sm font-semibold text-base-content">
-            Want a dedicated Tariff Simulator View?
+            Want a Dedicated Tariff Simulator View?
           </p>
           <p className="text-xs text-base-content/50">
             Open the dedicated duty simulator with this code prefilled to remove some of the noise.

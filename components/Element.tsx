@@ -70,7 +70,7 @@ export const Element = ({
       {/* Element Header Card */}
       <div className="relative overflow-hidden py-4 ">
 
-        <div className="relative z-10 flex flex-col gap-4">
+        <div className="relative z-10 flex flex-col gap-4 mb-3">
           <h1 className="text-primary text-2xl md:text-3xl lg:text-4xl font-bold tracking-wide">
             {element.htsno || "—"}
           </h1>
@@ -79,66 +79,57 @@ export const Element = ({
             {element.description}
           </h2>
         </div>
+
+        {/* Children Elements */}
+        {children.length > 0 && (
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-2">
+              <ChevronRightIcon className="w-4 h-4 text-primary/60" />
+              <span className="text-xs font-semibold uppercase tracking-widest text-base-content/50">
+                Children
+              </span>
+              <span className="px-2 py-0.5 rounded-lg bg-base-content/5 text-xs font-bold text-base-content/60">
+                {children.length}
+              </span>
+            </div>
+            <div className="flex flex-col gap-2">
+              {children.map((child, i) => {
+                return (
+                  <ElementSummary
+                    key={`${i}-${child.htsno}`}
+                    element={child}
+                    onClick={() => {
+                      trackExplorerNavigatedToLevel({
+                        pathname,
+                        isModal,
+                        navigation_kind: "deeper_child",
+                        from_depth: breadcrumbs.length,
+                        to_depth: breadcrumbs.length + 1,
+                        hts_code: child.htsno || null,
+                        chapter_number: Number(chapter) || null,
+                      });
+                      setBreadcrumbs([
+                        ...breadcrumbs,
+                        {
+                          title: `${child.htsno || child.description.split(" ").slice(0, 2).join(" ") + "..."}`,
+                          element: {
+                            ...child,
+                            chapter,
+                          },
+                        },
+                      ]);
+                    }}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        )}
+
       </div>
 
       {!summaryOnly && (
         <div className="w-full flex flex-col gap-6">
-          {/* Children Elements */}
-          {children.length > 0 && (
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-2">
-                <ChevronRightIcon className="w-4 h-4 text-primary/60" />
-                <span className="text-xs font-semibold uppercase tracking-widest text-base-content/50">
-                  Next Level
-                </span>
-                <span className="px-2 py-0.5 rounded-lg bg-base-content/5 text-xs font-bold text-base-content/60">
-                  {children.length}
-                </span>
-              </div>
-              <div className="flex flex-col gap-2">
-                {children.map((child, i) => {
-                  return (
-                    <ElementSummary
-                      key={`${i}-${child.htsno}`}
-                      element={child}
-                      onClick={() => {
-                        trackExplorerNavigatedToLevel({
-                          pathname,
-                          isModal,
-                          navigation_kind: "deeper_child",
-                          from_depth: breadcrumbs.length,
-                          to_depth: breadcrumbs.length + 1,
-                          hts_code: child.htsno || null,
-                          chapter_number: Number(chapter) || null,
-                        });
-                        setBreadcrumbs([
-                          ...breadcrumbs,
-                          {
-                            title: `${child.htsno || child.description.split(" ").slice(0, 2).join(" ") + "..."}`,
-                            element: {
-                              ...child,
-                              chapter,
-                            },
-                          },
-                        ]);
-                      }}
-                    />
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {sectionChapter && (
-            <SectionChapterNotesSection
-              sectionChapter={sectionChapter}
-              htsno={htsno}
-              chapter={chapter}
-            />
-          )}
-
-          {htsno ? <RelatedCrossRulingsSection htsno={htsno} /> : null}
-
           {/* Basic Duty Rates */}
           {shouldShowBasicDutyRates && (
             <div className="flex flex-col gap-4">
@@ -274,6 +265,16 @@ export const Element = ({
               htsElements={htsElements}
             />
           )}
+
+          {sectionChapter && (
+            <SectionChapterNotesSection
+              sectionChapter={sectionChapter}
+              htsno={htsno}
+              chapter={chapter}
+            />
+          )}
+
+          {htsno ? <RelatedCrossRulingsSection htsno={htsno} /> : null}
         </div>
       )}
     </div>
