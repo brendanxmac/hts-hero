@@ -13,7 +13,7 @@ export const EmptyState = ({ title, description }: Props) => (
     {title && (
       <h2 className="text-lg font-semibold text-base-content mb-1">{title}</h2>
     )}
-    <p className="text-sm text-base-content/50 max-w-md leading-relaxed">
+    <p className="text-sm text-base-content/50 max-w-xl leading-relaxed">
       {description}
     </p>
   </div>

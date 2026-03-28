@@ -183,7 +183,7 @@ describe("buildCompletedClassificationFromHtsCode", () => {
       mockSections,
     )
     expect(result.ok).toBe(false)
-    if (!result.ok && !result.error.includes("not found")) {
+    if (result.ok === false && !result.error.includes("not found")) {
       throw new Error(
         `Expected error to mention "not found", got: ${result.error}`,
       )

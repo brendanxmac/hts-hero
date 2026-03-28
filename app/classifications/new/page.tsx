@@ -79,11 +79,6 @@ function NewClassificationContent() {
 
   const reportClassificationEvent = (newId: string, mixpanelBase: Record<string, unknown>) => {
     if (!user) {
-      trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
-        ...mixpanelBase,
-        is_anonymous: true,
-        entry_point: "classifications_new",
-      });
       trackEvent(MixpanelEvent.ANONYMOUS_CLASSIFICATION_STARTED, {
         classification_id: newId,
         source: "classifications_new_form",

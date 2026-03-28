@@ -43,6 +43,7 @@ import { AnonymousClassificationCompleteModal } from "./AnonymousClassificationC
 import { AnonymousConversionBanner } from "./AnonymousConversionBanner";
 import { LockedTabOverlay } from "./LockedTabOverlay";
 import { useIsReadOnly } from "../../contexts/ReadOnlyContext";
+import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 
 /**
  * Hydrates the SectionChapterDiscovery context from persisted classification
@@ -251,6 +252,7 @@ export const ClassificationDetailLayout = ({
   const handleStatusChange = useCallback(
     async (newStatus: ClassificationStatus) => {
       if (!classificationId) return;
+      const previousStatus = classificationRecord?.status;
       setUpdatingStatus(true);
       try {
         await updateClassification(
@@ -261,13 +263,18 @@ export const ClassificationDetailLayout = ({
           newStatus
         );
         await refreshRecord();
+        trackEvent(MixpanelEvent.CLASSIFICATION_STATUS_CHANGED, {
+          classification_id: classificationId,
+          previous_status: previousStatus,
+          new_status: newStatus,
+        });
       } catch (error) {
         console.error("Error updating status:", error);
       } finally {
         setUpdatingStatus(false);
       }
     },
-    [classificationId, refreshRecord]
+    [classificationId, classificationRecord?.status, refreshRecord]
   );
 
   const handleDownloadReport = useCallback(async () => {
@@ -286,6 +293,9 @@ export const ClassificationDetailLayout = ({
         userProfile,
         importer
       );
+      trackEvent(MixpanelEvent.CLASSIFICATION_REPORT_DOWNLOADED, {
+        classification_id: classificationRecord.id,
+      });
     } catch (error) {
       console.error("Error downloading report:", error);
     } finally {
@@ -298,6 +308,9 @@ export const ClassificationDetailLayout = ({
     try {
       setIsDeleting(true);
       await deleteClassification(classificationRecord.id);
+      trackEvent(MixpanelEvent.CLASSIFICATION_DELETED, {
+        classification_id: classificationRecord.id,
+      });
       toast.success("Classification deleted");
       await Promise.resolve(onNavigateBack({ skipFlush: true }));
     } catch (error) {
@@ -323,6 +336,10 @@ export const ClassificationDetailLayout = ({
           undefined,
           country?.code ?? null
         );
+        trackEvent(MixpanelEvent.CLASSIFICATION_COO_SET, {
+          classification_id: classificationId,
+          country_code: country?.code ?? null,
+        });
       } catch (error) {
         console.error("Error updating country of origin:", error);
       }
@@ -466,6 +483,7 @@ export const ClassificationDetailLayout = ({
           <div className="lg:hidden">
             <MobileNavDropdown
               classification={classification}
+              classificationId={classificationId}
               navItems={navItems}
               activeTab={activeTab}
               onTabChange={setActiveTab}
@@ -505,11 +523,9 @@ export const ClassificationDetailLayout = ({
               <Modal
                 isOpen={showExploreModal}
                 setIsOpen={setShowExploreModal}
-                size="full"
+                size="viewport"
               >
-                <div className="h-[85vh] w-full rounded-2xl">
-                  <Explore />
-                </div>
+                <Explore explorerSurface="classification_modal" />
               </Modal>
             )}
 

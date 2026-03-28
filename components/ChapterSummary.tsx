@@ -1,24 +1,39 @@
+"use client";
+
 import { ChevronRightIcon } from "@heroicons/react/16/solid";
+import { usePathname } from "next/navigation";
 import { Navigatable, HtsSectionAndChapterBase } from "../interfaces/hts";
 import { NavigatableElement } from "./Elements";
+import { trackExplorerNavigatedToLevel } from "../libs/explorer-navigation";
 
 interface Props {
   chapter: HtsSectionAndChapterBase;
   breadcrumbs: NavigatableElement[];
   setBreadcrumbs: (breadcrumbs: NavigatableElement[]) => void;
+  isModal?: boolean;
 }
 
 export const ChapterSummary = ({
   chapter,
   breadcrumbs,
   setBreadcrumbs,
+  isModal = false,
 }: Props) => {
+  const pathname = usePathname();
   const { number, description } = chapter;
 
   return (
     <div
       onClick={(e) => {
         e.stopPropagation();
+        trackExplorerNavigatedToLevel({
+          pathname,
+          isModal,
+          navigation_kind: "deeper_chapter",
+          from_depth: breadcrumbs.length,
+          to_depth: breadcrumbs.length + 1,
+          chapter_number: number,
+        });
         setBreadcrumbs([
           ...breadcrumbs,
           {

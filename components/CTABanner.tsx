@@ -45,7 +45,7 @@ export function CTABanner({
 }: CTABannerProps) {
   return (
     <div className={gradientClasses[color]}>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-3.5 flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-3 sm:gap-6">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 sm:py-3.5 flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-3 sm:gap-6">
         <p
           className={`${textClasses[color]} text-xs sm:text-sm lg:text-lg font-medium text-center sm:text-left flex-1 min-w-0`}
         >

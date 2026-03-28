@@ -34,7 +34,7 @@ export const AuthenticatedHeader = () => {
     <>
       <header className="w-full h-16 z-50 bg-base-100 flex items-center justify-between p-4 border-b border-base-content/20">
         <nav
-          className="w-full max-w-6xl mx-auto flex items-center justify-between"
+          className="w-full max-w-5xl mx-auto flex items-center justify-between"
           aria-label="Global"
         >
           {/* Your logo/name on large screens */}

@@ -1,10 +1,14 @@
 import { useState, useRef, useEffect, ReactNode, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { HtsElement, HtsSection } from "../interfaces/hts";
+import { usePathname } from "next/navigation";
+import { HtsElement, HtsSection, Navigatable } from "../interfaces/hts";
 import {
+  generateBreadcrumbsForHtsElement,
   getHtsElementParents,
   getSectionAndChapterFromChapterNumber,
 } from "../libs/hts";
+import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
+import { trackExplorerNavigatedToLevel } from "../libs/explorer-navigation";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 
 interface ClassificationPathItem {
@@ -20,6 +24,8 @@ interface Props {
   children: ReactNode;
   /** Use larger text sizes for the popover content */
   largeText?: boolean;
+  /** Passed through for explorer navigation analytics (e.g. Explore modal). */
+  isModal?: boolean;
 }
 
 export const HtsElementDetailsPopover = ({
@@ -28,7 +34,10 @@ export const HtsElementDetailsPopover = ({
   sections,
   children,
   largeText = false,
+  isModal = false,
 }: Props) => {
+  const pathname = usePathname();
+  const { setBreadcrumbs, breadcrumbs } = useBreadcrumbs();
   const [showPopover, setShowPopover] = useState(false);
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const [isTouchDevice, setIsTouchDevice] = useState(false);
@@ -50,14 +59,14 @@ export const HtsElementDetailsPopover = ({
         ? window.innerWidth - 24
         : Math.min(700, window.innerWidth - 48);
 
-      // Calculate left position, ensuring popover stays within viewport
-      let left = rect.left + window.scrollX;
+      // Fixed positioning is viewport-relative; getBoundingClientRect() is too — do not add scroll offsets.
+      let left = rect.left;
       if (left + popoverWidth > window.innerWidth - 12) {
         left = Math.max(12, window.innerWidth - popoverWidth - 12);
       }
 
       setPosition({
-        top: rect.bottom + window.scrollY + 8, // 8px gap below trigger
+        top: rect.bottom + 8, // 8px gap below trigger
         left: isMobile ? 12 : left, // On mobile, always 12px from left edge
       });
     }
@@ -125,6 +134,83 @@ export const HtsElementDetailsPopover = ({
     }
   }, [isTouchDevice]);
 
+  const buildTrailForPathIndex = useCallback(
+    (pathIndex: number) => {
+      const sectionAndChapter = getSectionAndChapterFromChapterNumber(
+        sections,
+        Number(htsElement.chapter)
+      );
+      if (!sectionAndChapter) return null;
+
+      const parents = getHtsElementParents(htsElement, htsElements);
+      const selectedIndex = 2 + parents.length;
+
+      if (pathIndex === 0) {
+        return [
+          {
+            title: "Sections",
+            element: {
+              type: Navigatable.SECTIONS as const,
+              sections,
+            },
+          },
+        ];
+      }
+      if (pathIndex === 1) {
+        return generateBreadcrumbsForHtsElement(
+          sections,
+          sectionAndChapter.chapter,
+          []
+        );
+      }
+      if (pathIndex === selectedIndex) {
+        return generateBreadcrumbsForHtsElement(
+          sections,
+          sectionAndChapter.chapter,
+          [...parents, htsElement]
+        );
+      }
+      if (pathIndex >= 2 && pathIndex < selectedIndex) {
+        return generateBreadcrumbsForHtsElement(
+          sections,
+          sectionAndChapter.chapter,
+          parents.slice(0, pathIndex - 1)
+        );
+      }
+      return null;
+    },
+    [sections, htsElement, htsElements]
+  );
+
+  const handlePathRowClick = useCallback(
+    (pathIndex: number) => {
+      const newTrail = buildTrailForPathIndex(pathIndex);
+      if (!newTrail) return;
+
+      trackExplorerNavigatedToLevel({
+        pathname,
+        isModal,
+        navigation_kind: "breadcrumb",
+        from_depth: breadcrumbs.length,
+        to_depth: newTrail.length,
+        breadcrumb_index: newTrail.length - 1,
+        hts_code: htsElement.htsno || null,
+        chapter_number: Number(htsElement.chapter) || null,
+      });
+      setBreadcrumbs(newTrail);
+      setShowPopover(false);
+    },
+    [
+      buildTrailForPathIndex,
+      breadcrumbs.length,
+      pathname,
+      isModal,
+      setBreadcrumbs,
+      htsElement.chapter,
+      htsElement.htsno,
+    ]
+  );
+
   const getClassificationPathItems = (): ClassificationPathItem[] => {
     if (!htsElement || sections.length === 0) return [];
 
@@ -185,7 +271,7 @@ export const HtsElementDetailsPopover = ({
           <span
             className={`font-semibold uppercase tracking-widest text-base-content/50 ${largeText ? "text-xs sm:text-sm" : "text-xs"}`}
           >
-            HTS Element Details
+            HTS Element Hierarchy
           </span>
           {/* Close button for touch devices */}
           {isTouchDevice && (
@@ -200,37 +286,39 @@ export const HtsElementDetailsPopover = ({
         </div>
         <div className={`flex flex-col ${largeText ? "gap-3 sm:gap-4" : "gap-2 sm:gap-2.5"}`}>
           {classificationPathItems.map((item, index) => (
-            <div
+            <button
               key={`${item.htsno}-${index}`}
-              className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4"
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handlePathRowClick(index);
+              }}
+              className={`flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4 w-full text-left rounded-lg -mx-1 px-1 py-1.5 sm:py-1 transition-colors cursor-pointer hover:bg-base-content/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100`}
             >
               {/* HTS Code / Label */}
               <div className="sm:w-32 md:w-40 shrink-0">
                 <span
-                  className={`inline-block font-mono font-bold px-2 py-1 rounded-md text-xs ${
-                    largeText ? "sm:text-sm" : ""
-                  } ${
-                    item.type === "section"
+                  className={`inline-block font-mono font-bold px-2 py-1 rounded-md text-xs ${largeText ? "sm:text-sm" : ""
+                    } ${item.type === "section"
                       ? "text-amber-600 dark:text-amber-400 bg-amber-500/10"
                       : item.type === "chapter"
                         ? "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10"
                         : item.type === "selected"
                           ? "text-primary bg-primary/10"
                           : "text-base-content/70 bg-base-content/5"
-                  }`}
+                    }`}
                 >
                   {item.htsno}
                 </span>
               </div>
               {/* Description */}
               <span
-                className={`flex-1 text-base-content font-medium leading-relaxed text-sm ${
-                  largeText ? "sm:text-base md:text-lg" : ""
-                }`}
+                className={`flex-1 text-base-content font-medium leading-relaxed text-sm ${largeText ? "sm:text-base md:text-lg" : ""
+                  }`}
               >
                 {item.description}
               </span>
-            </div>
+            </button>
           ))}
         </div>
       </div>

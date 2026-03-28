@@ -28,10 +28,6 @@ const NoteTabs: Tab[] = [
     label: "Chapter",
     value: NoteType.CHAPTER,
   },
-  {
-    label: "Subchapter",
-    value: NoteType.SUBCHAPTER,
-  },
 ];
 
 export const Notes = ({ filteredNotes, searchValue }: NotesProps) => {
@@ -73,11 +69,10 @@ export const Notes = ({ filteredNotes, searchValue }: NotesProps) => {
             <button
               key={tab.value}
               onClick={() => setActiveTab(tab.value as NoteType)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
-                tab.value === activeTab
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 whitespace-nowrap ${tab.value === activeTab
                   ? "bg-base-100 text-base-content shadow-sm"
                   : "text-base-content/60 hover:text-base-content hover:bg-base-100/50"
-              }`}
+                }`}
             >
               {tab.label}
             </button>

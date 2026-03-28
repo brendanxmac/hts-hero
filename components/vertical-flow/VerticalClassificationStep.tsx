@@ -528,6 +528,9 @@ export const VerticalClassificationStep = ({
         <div className="p-5">
           {currentLevel?.analysisReason ? (
             <div className="flex flex-col gap-3">
+              <p className="text-[12px] text-base-content/70">
+                Research is for informational purposes only and may not be correct. Always exercise your own judgement.
+              </p>
               {currentLevel.analysisElement && (
                 <div className="flex items-start gap-3 p-3 rounded-lg bg-primary/5 border border-primary/15">
                   <SparklesIcon className="w-4 h-4 text-primary shrink-0 mt-0.5" />
@@ -559,10 +562,6 @@ export const VerticalClassificationStep = ({
                   </div>
                 </div>
               </div>
-
-              <p className="text-[11px] text-base-content/30">
-                Analysis is for information purposes only and may not be correct. Always exercise your own judgement.
-              </p>
             </div>
           ) : loading.isLoading ? (
             <AnalysisLoadingAnimation

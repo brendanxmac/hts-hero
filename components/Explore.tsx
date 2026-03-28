@@ -14,7 +14,13 @@ import { Loader } from "../interfaces/ui";
 import { SearchResults } from "./SearchResults";
 import { useHts } from "../contexts/HtsContext";
 import { notes } from "../public/notes/notes";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
+import { trackExplorerNavigatedToLevel } from "../libs/explorer-navigation";
+import {
+  resolveExplorerSurface,
+  type ExplorerSurface,
+} from "../libs/explorer-surface";
 import {
   generateBreadcrumbsForHtsElement,
   getHtsElementParents,
@@ -25,6 +31,8 @@ import {
   BookOpenIcon,
   DocumentTextIcon,
 } from "@heroicons/react/16/solid";
+
+export type { ExplorerSurface };
 
 const ExploreTabs: Tab[] = [
   {
@@ -41,10 +49,21 @@ const ExploreTabs: Tab[] = [
 
 interface ExploreProps {
   isModal?: boolean;
+  /** Mixpanel: where this Explore instance is shown (falls back to URL + isModal). */
+  explorerSurface?: ExplorerSurface;
 }
 
-export const Explore = ({ isModal = false }: ExploreProps) => {
+export const Explore = ({
+  isModal = false,
+  explorerSurface: explorerSurfaceProp,
+}: ExploreProps) => {
+  const pathname = usePathname();
   const searchParams = useSearchParams();
+  const explorerSurface = resolveExplorerSurface(
+    explorerSurfaceProp,
+    pathname,
+    isModal
+  );
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const [{ isLoading, text: loadingText }, setLoading] = useState<Loader>({
     isLoading: true,
@@ -72,6 +91,7 @@ export const Explore = ({ isModal = false }: ExploreProps) => {
   const isSearchingRef = useRef(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const notesSearchAnalyticsRef = useRef<NodeJS.Timeout | null>(null);
 
   // Configure Fuse.js for notes searching
   const notesFuse = useMemo(() => {
@@ -139,6 +159,27 @@ export const Explore = ({ isModal = false }: ExploreProps) => {
   }, [htsElements]);
 
   useEffect(() => {
+    if (activeTab !== ExploreTab.NOTES) return;
+    const q = searchValue.trim();
+    if (notesSearchAnalyticsRef.current) {
+      clearTimeout(notesSearchAnalyticsRef.current);
+    }
+    if (!q) return;
+    notesSearchAnalyticsRef.current = setTimeout(() => {
+      trackEvent(MixpanelEvent.EXPLORER_COMPLETED_NOTES_SEARCH, {
+        explorer_surface: explorerSurface,
+        query_length: q.length,
+        result_count: filteredNotes.length,
+      });
+    }, 700);
+    return () => {
+      if (notesSearchAnalyticsRef.current) {
+        clearTimeout(notesSearchAnalyticsRef.current);
+      }
+    };
+  }, [activeTab, searchValue, filteredNotes.length, explorerSurface]);
+
+  useEffect(() => {
     if (activeTab !== ExploreTab.ELEMENTS) {
       setActiveTab(ExploreTab.ELEMENTS);
     }
@@ -202,14 +243,35 @@ export const Explore = ({ isModal = false }: ExploreProps) => {
               setSearchResults([]);
               setBreadcrumbs(newBreadcrumbs);
               setCompletedDirectNavigation(true);
+              trackExplorerNavigatedToLevel({
+                pathname,
+                isModal,
+                explorerSurface: explorerSurfaceProp,
+                navigation_kind: "url_code",
+                from_depth: breadcrumbs.length,
+                to_depth: newBreadcrumbs.length,
+                hts_code: matchedElement.htsno || null,
+              });
             } else {
               // Sections not loaded yet, show search results as fallback
               const topResults = results.slice(0, 30);
               setSearchResults(topResults);
+              trackEvent(MixpanelEvent.EXPLORER_COMPLETED_CODE_SEARCH, {
+                explorer_surface: explorerSurface,
+                query_length: query.trim().length,
+                result_count: topResults.length,
+                from_url_code_param: true,
+              });
             }
           } else {
             const topResults = results.slice(0, 30);
             setSearchResults(topResults);
+            trackEvent(MixpanelEvent.EXPLORER_COMPLETED_CODE_SEARCH, {
+              explorer_surface: explorerSurface,
+              query_length: query.trim().length,
+              result_count: topResults.length,
+              from_url_code_param: false,
+            });
           }
           setSearching(false);
           isSearchingRef.current = false;
@@ -223,12 +285,16 @@ export const Explore = ({ isModal = false }: ExploreProps) => {
     },
     [
       htsFuse,
-      breadcrumbs.length,
+      breadcrumbs,
       completedDirectNavigation,
       searchParams,
       sections,
       htsElements,
       setBreadcrumbs,
+      explorerSurface,
+      pathname,
+      isModal,
+      explorerSurfaceProp,
     ]
   );
 
@@ -279,12 +345,18 @@ export const Explore = ({ isModal = false }: ExploreProps) => {
     []
   );
 
-  const handleClearSearch = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    setSearchValue("");
-    setSearchResults([]);
-    setSearching(false);
-  }, []);
+  const handleClearSearch = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      trackEvent(MixpanelEvent.EXPLORER_CLEARED_SEARCH, {
+        explorer_surface: explorerSurface,
+      });
+      setSearchValue("");
+      setSearchResults([]);
+      setSearching(false);
+    },
+    [explorerSurface]
+  );
 
   const getSearchPlaceholder = () => {
     if (activeTab === ExploreTab.ELEMENTS) {
@@ -351,12 +423,26 @@ export const Explore = ({ isModal = false }: ExploreProps) => {
                     {ExploreTabs.map((tab) => (
                       <button
                         key={tab.value}
-                        onClick={() => setActiveTab(tab.value)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                          tab.value === activeTab
-                            ? "bg-base-100 text-base-content shadow-sm"
-                            : "text-base-content/60 hover:text-base-content hover:bg-base-100/50"
-                        }`}
+                        onClick={() => {
+                          if (tab.value !== activeTab) {
+                            if (tab.value === ExploreTab.ELEMENTS) {
+                              trackEvent(
+                                MixpanelEvent.EXPLORER_OPENED_CODES_TAB,
+                                { explorer_surface: explorerSurface }
+                              );
+                            } else {
+                              trackEvent(
+                                MixpanelEvent.EXPLORER_OPENED_NOTES_TAB,
+                                { explorer_surface: explorerSurface }
+                              );
+                            }
+                          }
+                          setActiveTab(tab.value);
+                        }}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${tab.value === activeTab
+                          ? "bg-base-100 text-base-content shadow-sm"
+                          : "text-base-content/60 hover:text-base-content hover:bg-base-100/50"
+                          }`}
                       >
                         {tab.icon}
                         {tab.label}
@@ -419,6 +505,8 @@ export const Explore = ({ isModal = false }: ExploreProps) => {
                       setActiveTab={setActiveTab}
                       setSearchResults={setSearchResults}
                       setSearchValue={setSearchValue}
+                      isModal={isModal}
+                      explorerSurface={explorerSurfaceProp}
                     />
                   )
                 ) : (

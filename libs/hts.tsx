@@ -1024,7 +1024,7 @@ export const getSectionAndChapterFromChapterNumber = (
         section: {
           number: section.number,
           description: section.description,
-          filePath: section.filePath,
+          fileName: section.fileName ?? "",
         },
         chapter,
       };

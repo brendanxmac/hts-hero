@@ -7,7 +7,7 @@ import Footer from "../../../components/Footer";
 export const metadata = getSEOTags({
   title: "Tariff Coverage — Supported Tariffs, Programs & Updates | HTS Hero",
   description:
-    "See the full list of US tariffs and trade programs covered by the HTS Hero duty calculator — including Section 301, Section 232, reciprocal tariffs, AD/CVD duties, USMCA, GSP, CAFTA-DR, and more.",
+    "See the full list of US tariffs and trade programs covered by the HTS Hero duty simulator — including Section 301, Section 232, reciprocal tariffs, AD/CVD duties, USMCA, GSP, CAFTA-DR, and more.",
   canonicalUrlRelative: "/tariffs/coverage",
 });
 

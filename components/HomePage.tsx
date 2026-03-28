@@ -24,8 +24,8 @@ const heroImages = [
     id: "tariffs",
     src: "/hero-tariffs.png",
     srcMobile: "/hero-tariffs-mobile.png",
-    label: "Duty Calculator",
-    tagline: "Duty & Tariffs Calculator",
+    label: "Duty Simulator",
+    tagline: "Duty & Tariffs Simulator",
   },
   {
     id: "classify",
@@ -310,7 +310,7 @@ export function HomePage() {
                           </div>
                           <div className="flex flex-col">
                             <div className="text-left font-semibold text-base-content group-hover:text-primary transition-colors">
-                              Duty & Tariff Calculator
+                              Duty & Tariff Simulator
                             </div>
                             <div className="text-left text-xs text-base-content/60">
                               Duties & tariffs for any import

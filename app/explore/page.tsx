@@ -42,7 +42,7 @@ export default function Home() {
   return (
     <main className="w-full min-h-0 flex flex-col bg-base-100">
       <BreadcrumbsProvider>
-        <Explore />
+        <Explore explorerSurface="explore_page" />
       </BreadcrumbsProvider>
     </main>
   );

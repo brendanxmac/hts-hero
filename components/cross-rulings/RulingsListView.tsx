@@ -44,7 +44,7 @@ export const RulingsListView = ({
       {!loading && !error && rulings.length === 0 && (
         <EmptyState
           title="No Rulings Found"
-          description={`No CROSS classification rulings were found for HTS code "${htsCodeForCrossSearch}". This doesn't indicate an issue with your classification.`}
+          description={`No CROSS classification rulings were found for HTS code "${htsCodeForCrossSearch}".`}
         />
       )}
 

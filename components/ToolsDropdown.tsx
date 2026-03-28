@@ -17,7 +17,7 @@ export const toolLinks = [
   {
     href: "/duty-calculator",
     emoji: "💰",
-    title: "Duty & Tariff Calculator",
+    title: "Duty & Tariff Simulator",
     subtitle: "Duties & tariffs for any import",
     hoverBg: "hover:bg-primary/10",
     iconBg: "bg-primary/20",

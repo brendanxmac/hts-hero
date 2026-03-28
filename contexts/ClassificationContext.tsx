@@ -447,7 +447,7 @@ export const ClassificationProvider = ({
       htsElements,
       sections
     );
-    if (!built.ok) {
+    if (built.ok === false) {
       throw new Error(built.error);
     }
 

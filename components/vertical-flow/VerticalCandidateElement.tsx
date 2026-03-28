@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useBreadcrumbs } from "../../contexts/BreadcrumbsContext";
 import { HtsElement } from "../../interfaces/hts";
 import {
@@ -9,7 +8,6 @@ import {
   SparklesIcon,
 } from "@heroicons/react/24/solid";
 import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
-import PDF from "../PDF";
 import { useHtsSections } from "../../contexts/HtsSectionsContext";
 import { useClassification } from "../../contexts/ClassificationContext";
 import {
@@ -21,14 +19,13 @@ import {
   getSectionAndChapterFromChapterNumber,
 } from "../../libs/hts";
 import { useHts } from "../../contexts/HtsContext";
-import { PDFProps } from "../../interfaces/ui";
+import { openUsitcHtsFileInNewTab } from "@/libs/usitc-hts-file-url";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 import {
   Product,
   userHasActivePurchaseForProduct,
 } from "../../libs/supabase/purchase";
 import { useUser } from "../../contexts/UserContext";
-import { SupabaseBuckets } from "../../constants/supabase";
 import { useIsReadOnly } from "../../contexts/ReadOnlyContext";
 
 interface Props {
@@ -49,7 +46,6 @@ export const VerticalCandidateElement = ({
   const { htsno, chapter, description, indent } = element;
   const { clearBreadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { sections } = useHtsSections();
-  const [showPDF, setShowPDF] = useState<PDFProps | null>(null);
   const { classification, classificationId, updateLevel, setClassification } =
     useClassification();
   const { htsElements } = useHts();
@@ -89,13 +85,22 @@ export const VerticalCandidateElement = ({
       return;
     }
 
-    const newProgressionLevels = levels.slice(0, classificationLevel + 1);
-    newProgressionLevels[classificationLevel].selection = element;
-
     const childrenOfSelectedElement = getDirectChildrenElements(
       element,
       getElementsInChapter(htsElements, element.chapter)
     );
+    const completesClassification = childrenOfSelectedElement.length === 0;
+
+    trackEvent(MixpanelEvent.CANDIDATE_SELECTED, {
+      classification_id: classificationId,
+      hts_code: element.htsno,
+      level: classificationLevel,
+      completes_classification: completesClassification,
+      is_recommended: isRecommended,
+    });
+
+    const newProgressionLevels = levels.slice(0, classificationLevel + 1);
+    newProgressionLevels[classificationLevel].selection = element;
 
     if (childrenOfSelectedElement.length > 0) {
       setClassification({
@@ -214,11 +219,7 @@ export const VerticalCandidateElement = ({
                 title={`Chapter ${chapter} Notes`}
                 onClick={(e) => {
                   e.stopPropagation();
-                  setShowPDF({
-                    title: `Chapter ${chapter} Notes`,
-                    bucket: SupabaseBuckets.NOTES,
-                    filePath: `/chapters/Chapter ${chapter}.pdf`,
-                  });
+                  openUsitcHtsFileInNewTab(`Chapter ${chapter}`);
                 }}
               >
                 <DocumentTextIcon className="h-3.5 w-3.5 text-base-content/40" />
@@ -258,19 +259,6 @@ export const VerticalCandidateElement = ({
         </p>
       </div>
 
-      {showPDF && (
-        <PDF
-          title={showPDF.title}
-          bucket={showPDF.bucket}
-          filePath={showPDF.filePath}
-          isOpen={showPDF !== null}
-          setIsOpen={(isOpen) => {
-            if (!isOpen) {
-              setShowPDF(null);
-            }
-          }}
-        />
-      )}
     </div>
   );
 };

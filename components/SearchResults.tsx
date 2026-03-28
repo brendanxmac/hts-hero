@@ -1,3 +1,4 @@
+import { usePathname } from "next/navigation";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { generateBreadcrumbsForHtsElement } from "../libs/hts";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
@@ -11,12 +12,16 @@ import { ElementSearchSummary } from "./ElementSearchSummary";
 import { useHts } from "../contexts/HtsContext";
 import { FuseResult } from "fuse.js";
 import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
+import { trackExplorerNavigatedToLevel } from "../libs/explorer-navigation";
+import type { ExplorerSurface } from "../libs/explorer-surface";
 
 interface Props {
   results: FuseResult<HtsElement>[];
   setActiveTab: (tab: ExploreTab) => void;
   setSearchResults: (results: FuseResult<HtsElement>[]) => void;
   setSearchValue: (value: string) => void;
+  isModal?: boolean;
+  explorerSurface?: ExplorerSurface;
 }
 
 export const SearchResults = ({
@@ -24,10 +29,13 @@ export const SearchResults = ({
   setActiveTab,
   setSearchResults,
   setSearchValue,
+  isModal = false,
+  explorerSurface,
 }: Props) => {
+  const pathname = usePathname();
   const { htsElements } = useHts();
   const { sections } = useHtsSections();
-  const { setBreadcrumbs } = useBreadcrumbs();
+  const { setBreadcrumbs, breadcrumbs: currentTrail } = useBreadcrumbs();
 
   if (results.length === 0) {
     return (
@@ -68,7 +76,7 @@ export const SearchResults = ({
           Number(element.chapter)
         );
         const parents = getHtsElementParents(element, htsElements);
-        const breadcrumbs = generateBreadcrumbsForHtsElement(
+        const newTrail = generateBreadcrumbsForHtsElement(
           sections,
           sectionAndChapter.chapter,
           [...parents, element]
@@ -81,9 +89,19 @@ export const SearchResults = ({
             sectionAndChapter={sectionAndChapter}
             parents={parents}
             onClick={() => {
+              trackExplorerNavigatedToLevel({
+                pathname,
+                isModal,
+                explorerSurface,
+                navigation_kind: "search_result",
+                from_depth: currentTrail.length,
+                to_depth: newTrail.length,
+                hts_code: element.htsno || null,
+                chapter_number: Number(element.chapter) || null,
+              });
               setSearchResults([]);
               setSearchValue("");
-              setBreadcrumbs(breadcrumbs);
+              setBreadcrumbs(newTrail);
               setActiveTab(ExploreTab.ELEMENTS);
             }}
           />

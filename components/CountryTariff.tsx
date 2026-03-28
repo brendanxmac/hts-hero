@@ -38,6 +38,7 @@ import { useHts } from "../contexts/HtsContext";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { CheckCircleIcon } from "@heroicons/react/16/solid";
 import { HtsElementDetailsPopover } from "./HtsElementDetailsPopover";
+import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
 
 interface Props {
   units: number;
@@ -136,70 +137,6 @@ export const CountryTariff = ({
     return TariffColumn.SPECIAL;
   };
 
-  // const getBaseTariffsText = () => {
-  //   if (!baseTariffs?.length) return "";
-  //   const activeBaseTariffs = getFilteredBaseTariffs().flatMap(
-  //     (t) => t.tariffs
-  //   );
-  //   return activeBaseTariffs
-  //     .map((tariff) => {
-  //       const primaryText =
-  //         tariff.value === null && tariff.details
-  //           ? tariff.details
-  //           : tariff.type === "percent"
-  //             ? "Ad Valorem"
-  //             : "Quantity";
-  //       const valueText =
-  //         tariff.value === null
-  //           ? "Needs Review"
-  //           : tariff.type === "percent"
-  //             ? `${tariff.value}%`
-  //             : tariff.raw;
-  //       return `   ${valueText} - General Duty (${primaryText}) - ${tariffElement.htsno}`;
-  //     })
-  //     .join("\n");
-  // };
-
-  // const getTariffSetText = (tariffSet: TariffSet) => {
-  //   const baseTariffsText = getBaseTariffsText();
-  //   const tariffSetText = tariffSet.tariffs
-  //     .filter((t) => t.isActive)
-  //     .map(
-  //       (tariff) =>
-  //         `   ${tariff[tariffColumn] === null ? "Needs Review" : `${tariff[tariffColumn]}% - ${tariff.name} - ${tariff.code}`}`
-  //     )
-  //     .join("\n");
-
-  //   const filteredBase = filterByProgram(baseTariffs.flatMap((t) => t.tariffs));
-  //   const hasAmountTariffs = filteredBase.some((t) => t.type === "amount");
-  //   const cappedRate = `${getAdValoremRate(tariffColumn, tariffSet.tariffs)}%`;
-  //   const adValoremRate = `${getAdValoremRate(tariffColumn, tariffSet.tariffs, filteredBase)}%`;
-  //   const setTotal =
-  //     is15PercentCapCountry && adValoremEquivalentRate < 15
-  //       ? cappedRate
-  //       : hasAmountTariffs
-  //         ? `${getAmountRatesString(filteredBase)} + ${adValoremRate}`
-  //         : adValoremRate;
-
-  //   return `${tariffSet.name} Tariffs: ${setTotal}\n${baseTariffsText}\n${tariffSetText}\n`;
-  // };
-
-  // const copyTariffDetails = () => {
-  //   const lines = [
-  //     `Import Tariffs & Fees for ${country.name}:`,
-  //     "",
-  //     selectedTradeProgram?.name
-  //       ? `Trade Program: ${selectedTradeProgram.name}\n`
-  //       : "",
-  //     ...tariffSets.map(getTariffSetText),
-  //     "Harbor Maintenance Fee: 0.125%",
-  //     "",
-  //     "Merchandise Processing Fee: 0.3464%",
-  //     "   Min: $33.58 / Max: $651.50",
-  //   ];
-  //   return lines.filter(Boolean).join("\n");
-  // };
-
   // Generate shareable link
   const generateShareLink = () => {
     // Get Base Url
@@ -229,10 +166,17 @@ export const CountryTariff = ({
     return `${baseUrl}${path}?${params.toString()}`;
   };
 
-  const handleShareClick = () => {
-    copyToClipboard(generateShareLink());
-    setIsLinkCopied(true);
-    setTimeout(() => setIsLinkCopied(false), 2500);
+  const handleShareClick = async () => {
+    const copied = await copyToClipboard(generateShareLink());
+    if (copied) {
+      trackEvent(MixpanelEvent.DUTY_CALCULATOR_SHARE_RESULTS_COPIED, {
+        hts_code: tariffElement.htsno,
+        country_code: country.code,
+        is_modal: isModal,
+      });
+      setIsLinkCopied(true);
+      setTimeout(() => setIsLinkCopied(false), 2500);
+    }
   };
 
   // Copy cost details as beautifully formatted text
@@ -505,6 +449,7 @@ export const CountryTariff = ({
               htsElement={htsElement}
               htsElements={htsElements}
               sections={sections}
+              isModal={isModal}
             >
               <span className="text-primary font-semibold uppercase text-base sm:text-lg cursor-help underline decoration-dotted decoration-primary/40 underline-offset-2">
                 {htsElement.htsno}
