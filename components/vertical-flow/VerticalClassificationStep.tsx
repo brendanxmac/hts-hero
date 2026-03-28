@@ -574,7 +574,7 @@ export const VerticalClassificationStep = ({
                 <div className="w-1 bg-base-300 shrink-0" />
                 <div className="p-4 flex-1">
                   <p className="text-xs text-base-content/40 italic">
-                    Analysis will appear here after candidates are evaluated.
+                    Research will appear here when complete, if enabled.
                   </p>
                 </div>
               </div>
