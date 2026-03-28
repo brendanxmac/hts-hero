@@ -70,14 +70,14 @@ function NewClassificationContent() {
       ? `HTS code: ${normalizeHtsCode(localHtsCode.trim())}`
       : localDescription.trim();
 
-  const runAfterGate = async () => {
+  const createClassificationRecord = async () => {
     if (inputMode === "description") {
       return startNewClassification(localDescription, true);
     }
     return startClassificationFromHtsCode(localHtsCode.trim());
   };
 
-  const trackStarted = (newId: string, mixpanelBase: Record<string, unknown>) => {
+  const reportClassificationEvent = (newId: string, mixpanelBase: Record<string, unknown>) => {
     if (!user) {
       trackEvent(MixpanelEvent.CLASSIFICATION_STARTED, {
         ...mixpanelBase,
@@ -130,13 +130,13 @@ function NewClassificationContent() {
         return;
       }
 
-      const newId = await runAfterGate();
+      const classificationId = await createClassificationRecord();
 
       const entryModeProp =
         inputMode === "hts_code" ? "hts_code_entry" : "product_description";
 
       if (!user) {
-        trackStarted(newId, {
+        reportClassificationEvent(classificationId, {
           item:
             inputMode === "description"
               ? localDescription
@@ -147,7 +147,7 @@ function NewClassificationContent() {
         const count = classificationCount ?? 0;
         const isTrialUserWithinLimit =
           !isPayingUser && !isOnTeam && count < NUM_FREE_CLASSIFICATIONS;
-        trackStarted(newId, {
+        reportClassificationEvent(classificationId, {
           item:
             inputMode === "description"
               ? localDescription
@@ -160,7 +160,7 @@ function NewClassificationContent() {
         });
       }
 
-      router.replace(`/classifications/${newId}`);
+      router.replace(`/classifications/${classificationId}`);
     } catch (error) {
       console.error(error);
       const message =
@@ -194,7 +194,7 @@ function NewClassificationContent() {
         </button>
 
         {/* Subtle mode switch — above title; neutral, easy to ignore */}
-        <div className="flex justify-center mb-5 sm:mb-6">
+        {user && <div className="flex justify-center mb-5 sm:mb-6">
           <div className="inline-flex items-center gap-2 sm:gap-2.5 text-[11px] sm:text-xs text-base-content/[0.28]">
             <span
               className={
@@ -219,7 +219,7 @@ function NewClassificationContent() {
             >
               <span
                 aria-hidden
-                className={`pointer-events-none absolute left-[3px] top-1/2 block h-2 w-2 -translate-y-1/2 rounded-full bg-base-content/[0.22] transition-transform duration-200 ease-out ${inputMode === "hts_code" ? "translate-x-4" : ""
+                className={`pointer-events-none absolute left-[1px] top-1/2 block h-2 w-2 -translate-y-1/2 rounded-full bg-base-content/[0.22] transition-transform duration-200 ease-out ${inputMode === "hts_code" ? "translate-x-4" : ""
                   }`}
               />
             </button>
@@ -233,7 +233,7 @@ function NewClassificationContent() {
               HTS code
             </span>
           </div>
-        </div>
+        </div>}
 
         {/* Heading */}
         <div className="text-center mb-8 sm:mb-10">
@@ -245,7 +245,7 @@ function NewClassificationContent() {
           <p className="text-base text-base-content/50 max-w-2xl mx-auto leading-relaxed">
             {inputMode === "hts_code"
               ? "Provide a 10-digit US HTS code & we will give you the full classification path"
-              : "Enter a detailed description of your product"}
+              : "Enter a detailed product description to begin your classification"}
           </p>
         </div>
 
