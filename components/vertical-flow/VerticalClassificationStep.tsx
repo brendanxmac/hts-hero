@@ -41,6 +41,7 @@ import Fuse from "fuse.js";
 import { AnalysisLoadingAnimation } from "../classification-ui/AnalysisLoadingAnimation";
 import { MarkdownProse } from "../MarkdownProse";
 import { useIsReadOnly } from "../../contexts/ReadOnlyContext";
+import { lacksProductDescriptionForAnalysis } from "../../libs/classification-from-hts-code";
 
 export interface VerticalClassificationStepProps {
   classificationLevel: number;
@@ -146,6 +147,9 @@ export const VerticalClassificationStep = ({
     isMountedRef.current = true;
 
     const findBestClassificationProgression = async () => {
+      if (lacksProductDescriptionForAnalysis(articleDescription)) {
+        return;
+      }
       if (
         currentLevel?.candidates?.length > 0 &&
         !currentLevel?.analysisElement
@@ -250,7 +254,8 @@ export const VerticalClassificationStep = ({
 
     if (
       currentLevel?.candidates?.length > 0 &&
-      !currentLevel?.analysisElement
+      !currentLevel?.analysisElement &&
+      !lacksProductDescriptionForAnalysis(articleDescription)
     ) {
       findBestClassificationProgression();
     }
@@ -258,9 +263,17 @@ export const VerticalClassificationStep = ({
     return () => {
       isMountedRef.current = false;
     };
-  }, [currentLevel?.candidates?.length, classificationLevel, readOnly]);
+  }, [
+    currentLevel?.candidates?.length,
+    classificationLevel,
+    readOnly,
+    articleDescription,
+  ]);
 
   const getHeadings = async () => {
+    if (lacksProductDescriptionForAnalysis(articleDescription)) {
+      return;
+    }
     setLoading({ isLoading: true, text: "Looking for Headings" });
     const candidatesForHeading: (HtsElement & {
       referencedCodes: Record<string, string>;
@@ -373,6 +386,7 @@ export const VerticalClassificationStep = ({
 
   useEffect(() => {
     if (readOnly) return;
+    if (lacksProductDescriptionForAnalysis(articleDescription)) return;
     if (
       classificationLevel === 0 &&
       chapterDiscoveryComplete &&
@@ -384,7 +398,13 @@ export const VerticalClassificationStep = ({
       hasFetchedCandidatesRef.current = true;
       getHeadings();
     }
-  }, [classificationLevel, chapterDiscoveryComplete, chapterCandidates, readOnly]);
+  }, [
+    classificationLevel,
+    chapterDiscoveryComplete,
+    chapterCandidates,
+    readOnly,
+    articleDescription,
+  ]);
 
   const analysisIsActive = loading.isLoading || !!currentLevel?.analysisReason;
 
@@ -508,6 +528,9 @@ export const VerticalClassificationStep = ({
         <div className="p-5">
           {currentLevel?.analysisReason ? (
             <div className="flex flex-col gap-3">
+              <p className="text-[12px] text-base-content/70">
+                Research is for informational purposes only and may not be correct. Always exercise your own judgement.
+              </p>
               {currentLevel.analysisElement && (
                 <div className="flex items-start gap-3 p-3 rounded-lg bg-primary/5 border border-primary/15">
                   <SparklesIcon className="w-4 h-4 text-primary shrink-0 mt-0.5" />
@@ -539,10 +562,6 @@ export const VerticalClassificationStep = ({
                   </div>
                 </div>
               </div>
-
-              <p className="text-[11px] text-base-content/30">
-                Analysis is for information purposes only and may not be correct. Always exercise your own judgement.
-              </p>
             </div>
           ) : loading.isLoading ? (
             <AnalysisLoadingAnimation
@@ -555,7 +574,7 @@ export const VerticalClassificationStep = ({
                 <div className="w-1 bg-base-300 shrink-0" />
                 <div className="p-4 flex-1">
                   <p className="text-xs text-base-content/40 italic">
-                    Analysis will appear here after candidates are evaluated.
+                    Research will appear here when complete, if enabled.
                   </p>
                 </div>
               </div>

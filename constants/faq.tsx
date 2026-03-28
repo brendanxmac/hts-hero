@@ -37,7 +37,7 @@ export const bundleFaqList: FAQItem[] = [
           </li>
           <li>
             <Link href="/about/tariffs" className="link link-primary">
-              Duty & Tariff Calculator
+              Duty & Tariff Simulator
             </Link>
           </li>
           <li>
@@ -59,7 +59,7 @@ export const bundleFaqList: FAQItem[] = [
         <ul className="list-disc list-inside">
           <li>
             <Link href="/about/tariffs" className="link link-primary">
-              Duty & Tariff Calculator
+              Duty & Tariff Simulator
             </Link>
           </li>
           <li>
@@ -197,7 +197,7 @@ export const bundleFaqList: FAQItem[] = [
     answer: (
       <div className="pt-2">
         <p>
-          Duty & Tariff Calculator instantly shows you the duty rates and
+          Duty & Tariff Simulator instantly shows you the duty rates and
           applicable tariffs for any U.S. import.
         </p>
         <p>

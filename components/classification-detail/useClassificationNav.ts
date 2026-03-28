@@ -89,22 +89,35 @@ export function useClassificationNav(classification: ClassificationI | null) {
       (l) => l.level === "chapter",
     )
 
-    // Old classifications have levels but no preliminaryLevels - skip section/chapter tabs
-    const hasLevelsWithSelections =
-      (classification.levels?.length ?? 0) > 0 &&
-      classification.levels?.some((l) => l.selection)
-    const sectionDone =
-      hasLevelsWithSelections || (sectionLevel?.candidates?.length ?? 0) > 0
-    const chapterDone =
-      hasLevelsWithSelections || (chapterLevel?.candidates?.length ?? 0) > 0
+    const hasLevelSelections =
+      classification.levels?.some((l) => l.selection) ?? false
+    const sectionHasCandidates =
+      (sectionLevel?.candidates?.length ?? 0) > 0
+    const chapterHasCandidates =
+      (chapterLevel?.candidates?.length ?? 0) > 0
 
-    // For old classifications (no preliminaryLevels), skip section/chapter and show levels only
-    if (!hasLevelsWithSelections) {
+    // Legacy: completed HTS path saved before section/chapter prelims existed
+    const isLegacyNoPreliminaryLevels =
+      hasLevelSelections && !sectionHasCandidates && !chapterHasCandidates
+
+    const sectionDone =
+      hasLevelSelections || sectionHasCandidates
+    const chapterDone =
+      hasLevelSelections || chapterHasCandidates
+
+    const topSectionCandidate = sectionLevel?.candidates?.[0]
+    const topChapterCandidate = chapterLevel?.candidates?.[0]
+
+    if (!isLegacyNoPreliminaryLevels) {
       items.push({
         id: "classification-section",
         label: "Sections",
         status: sectionDone ? "completed" : "active",
         isSubItem: true,
+        htsno: topSectionCandidate
+          ? `Section ${topSectionCandidate.identifier}`
+          : undefined,
+        selectionDescription: topSectionCandidate?.description,
       })
 
       if (sectionDone) {
@@ -113,11 +126,15 @@ export function useClassificationNav(classification: ClassificationI | null) {
           label: "Chapters",
           status: chapterDone ? "completed" : "active",
           isSubItem: true,
+          htsno: topChapterCandidate
+            ? `Chapter ${topChapterCandidate.identifier}`
+            : undefined,
+          selectionDescription: topChapterCandidate?.description,
         })
       }
     }
 
-    if (chapterDone || hasLevelsWithSelections) {
+    if (chapterDone || hasLevelSelections) {
       const levels = classification.levels ?? []
       levels.forEach((level, index) => {
         const previousDone =

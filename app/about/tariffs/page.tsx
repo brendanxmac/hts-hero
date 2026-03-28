@@ -201,7 +201,7 @@ export default function Home() {
                 controlsList="nofullscreen noplaybackrate nodownload"
                 disablePictureInPicture
                 className="w-full h-auto object-cover"
-                aria-label="Duty Calculator Demo"
+                aria-label="Duty Simulator Demo"
               />
             </div>
           </div>

@@ -3,6 +3,7 @@ import { decompressHtsRevisionPayload } from "./hts-decompress";
 import { readFile } from "fs/promises";
 import path from "path";
 import { HtsElement, HtsSection } from "../interfaces/hts";
+import { getSectionAndChapterForElement as getSectionAndChapterForElementImpl } from "./hts-section-chapter";
 import { SupabaseBuckets, SupabaseTables } from "../constants/supabase";
 import { HtsRevision } from "./supabase/hts-revision";
 
@@ -92,19 +93,4 @@ export function getHtsElementParentsServer(
   return [];
 }
 
-export function getSectionAndChapterForElement(
-  sections: HtsSection[],
-  chapterNumber: number
-): { sectionNumber: number; sectionDescription: string; chapterDescription: string } | null {
-  for (const section of sections) {
-    const chapter = section.chapters.find((ch) => ch.number === chapterNumber);
-    if (chapter) {
-      return {
-        sectionNumber: section.number,
-        sectionDescription: section.description,
-        chapterDescription: chapter.description,
-      };
-    }
-  }
-  return null;
-}
+export const getSectionAndChapterForElement = getSectionAndChapterForElementImpl;

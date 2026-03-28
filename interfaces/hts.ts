@@ -83,7 +83,7 @@ export interface SectionAndChapterDetails {
   section: {
     number: number;
     description: string;
-    filePath: string;
+    fileName: string;
   };
   chapter: HtsSectionAndChapterBase;
 }
@@ -100,7 +100,7 @@ export interface LevelSelection {
 export interface HtsSectionAndChapterBase {
   number: number;
   description: string;
-  filePath?: string;
+  fileName?: string;
   type: Navigatable.CHAPTER;
 }
 

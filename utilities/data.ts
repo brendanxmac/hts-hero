@@ -13,12 +13,14 @@ export const setIndexInArray = <T extends Object>(
   return elements.map((e, i) => ({ ...e, indexInParentArray: i }));
 };
 
-export const copyToClipboard = async (text: string): Promise<void> => {
+export const copyToClipboard = async (text: string): Promise<boolean> => {
   try {
     await navigator.clipboard.writeText(text);
+    return true;
   } catch (err) {
     // TODO: handle errors here
     console.error("Failed to copy text:", err);
+    return false;
   }
 };
 

@@ -1,5 +1,6 @@
 import { HtsElement, HtsSectionAndChapterBase } from "../interfaces/hts";
 import { useState, useMemo, useRef, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import {
   getDirectChildrenElements,
   getElementsAtIndentLevel,
@@ -11,22 +12,26 @@ import {
   MagnifyingGlassIcon,
   ChevronDownIcon,
 } from "@heroicons/react/16/solid";
-import PDF from "./PDF";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import { useHts } from "../contexts/HtsContext";
-import { SupabaseBuckets } from "../constants/supabase";
+import {
+  normalizeUsitcHtsFileName,
+  openUsitcHtsFileInNewTab,
+} from "@/libs/usitc-hts-file-url";
 import Fuse, { IFuseOptions } from "fuse.js";
 import { NoteI, notes, NoteType } from "../public/notes/notes";
 import toast from "react-hot-toast";
+import { trackExplorerNavigatedToLevel } from "../libs/explorer-navigation";
 
 interface Props {
   chapter: HtsSectionAndChapterBase;
+  isModal?: boolean;
 }
 
-export const Chapter = ({ chapter }: Props) => {
+export const Chapter = ({ chapter, isModal = false }: Props) => {
+  const pathname = usePathname();
   const { number, description } = chapter;
   const { htsElements } = useHts();
-  const [showNote, setShowNote] = useState<NoteI | null>(null);
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
 
   const chapterElements = getElementsInChapter(htsElements, number);
@@ -129,7 +134,12 @@ export const Chapter = ({ chapter }: Props) => {
   }, []);
 
   const handleNoteSelect = (note: NoteI) => {
-    setShowNote(note);
+    const resolved = normalizeUsitcHtsFileName(note.fileName);
+    if (resolved) {
+      openUsitcHtsFileInNewTab(resolved);
+    } else {
+      toast.error("No document available for this note");
+    }
     setIsNotesDropdownOpen(false);
     setHighlightedNoteIndex(-1);
     setIsKeyboardNavigation(false);
@@ -137,33 +147,24 @@ export const Chapter = ({ chapter }: Props) => {
 
   return (
     <div className="flex flex-col w-full gap-6">
-      {/* Chapter Header Card */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 border border-base-content/10 p-5">
-        {/* Subtle background decoration */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-
+      {/* Chapter Header — typography aligned with Element.tsx */}
+      <div className="relative overflow-hidden py-4">
         <div className="relative z-10 flex flex-col gap-4">
-          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
-            {/* Chapter Badge */}
-            <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 px-3">
-                <span className="text-lg font-bold text-primary">{number}</span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-xs font-semibold uppercase tracking-widest text-primary/70">
-                  Chapter
-                </span>
-                <h2 className="text-xl md:text-2xl font-bold text-base-content leading-tight">
-                  {description}
-                </h2>
-              </div>
+          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between md:gap-6">
+            <div className="flex min-w-0 flex-1 flex-col gap-4">
+              <h1 className="text-primary text-2xl md:text-3xl lg:text-4xl font-bold tracking-wide">
+                Chapter {number}
+              </h1>
+              <h2 className="text-lg md:text-xl lg:text-2xl text-base-content font-semibold leading-snug">
+                {description}
+              </h2>
             </div>
 
             {/* Notes Button/Dropdown */}
-            <div className="flex gap-2">
+            <div className="flex shrink-0 justify-end gap-2">
               {chapter.number === 98 || chapter.number === 99 ? (
                 <div
-                  className="relative min-w-[200px] max-w-sm"
+                  className="relative w-full max-w-sm min-w-0 md:w-auto md:min-w-[200px]"
                   ref={notesDropdownRef}
                 >
                   <button
@@ -189,11 +190,10 @@ export const Chapter = ({ chapter }: Props) => {
                           chapterNotes.map((note: NoteI, index: number) => (
                             <div
                               key={index}
-                              className={`px-4 py-3 cursor-pointer transition-colors ${
-                                index === highlightedNoteIndex
-                                  ? "bg-primary/10"
-                                  : "hover:bg-base-200/60"
-                              }`}
+                              className={`px-4 py-3 cursor-pointer transition-colors ${index === highlightedNoteIndex
+                                ? "bg-primary/10"
+                                : "hover:bg-base-200/60"
+                                }`}
                               onClick={() => handleNoteSelect(note)}
                               onMouseEnter={() => {
                                 setIsKeyboardNavigation(false);
@@ -203,9 +203,7 @@ export const Chapter = ({ chapter }: Props) => {
                               <div className="flex items-center gap-2">
                                 <DocumentTextIcon className="shrink-0 h-4 w-4 text-primary" />
                                 <span className="font-medium text-base-content">
-                                  {note.title.includes("Subchapter")
-                                    ? note.title.split(" - ")[1]
-                                    : note.title}
+                                  {note.title}
                                 </span>
                               </div>
                               <p className="text-xs text-base-content/60 mt-1 ml-6">
@@ -227,10 +225,13 @@ export const Chapter = ({ chapter }: Props) => {
                   className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-base-content/5 hover:bg-primary/10 border border-base-content/10 hover:border-primary/20 transition-all duration-200"
                   onClick={() => {
                     const note = notes.find(
-                      (note) => note.title === `Chapter ${number.toString()}`
+                      (n) => n.title === `Chapter ${number.toString()}`
                     );
-                    if (note) {
-                      setShowNote(note);
+                    const resolved = note
+                      ? normalizeUsitcHtsFileName(note.fileName)
+                      : null;
+                    if (resolved) {
+                      openUsitcHtsFileInNewTab(resolved);
                     } else {
                       toast.error("No notes found for this chapter");
                     }
@@ -291,6 +292,15 @@ export const Chapter = ({ chapter }: Props) => {
                 key={`${i}-${element.htsno}`}
                 element={element}
                 onClick={() => {
+                  trackExplorerNavigatedToLevel({
+                    pathname,
+                    isModal,
+                    navigation_kind: "deeper_heading",
+                    from_depth: breadcrumbs.length,
+                    to_depth: breadcrumbs.length + 1,
+                    hts_code: element.htsno || null,
+                    chapter_number: chapter.number,
+                  });
                   setBreadcrumbs([
                     ...breadcrumbs,
                     {
@@ -307,20 +317,6 @@ export const Chapter = ({ chapter }: Props) => {
           })}
         </div>
       </div>
-
-      {showNote && (
-        <PDF
-          title={`${showNote.title} Notes`}
-          bucket={SupabaseBuckets.NOTES}
-          filePath={showNote.filePath}
-          isOpen={!!showNote}
-          setIsOpen={(isOpen) => {
-            if (!isOpen) {
-              setShowNote(null);
-            }
-          }}
-        />
-      )}
     </div>
   );
 };

@@ -139,7 +139,7 @@ export function TeamShareSection({
     navigator.clipboard.writeText(teamUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-    trackEvent(MixpanelEvent.CLASSIFICATION_TEAM_LINK_COPIED, {
+    trackEvent(MixpanelEvent.CLASSIFICATION_LINK_COPIED, {
       classification_id: classificationRecord.id,
     });
   };

@@ -39,6 +39,7 @@ import { DashboardCard, DashboardCardHeader } from "../DashboardCard";
 import { PublicShareSection, TeamShareSection } from "../ShareSections";
 import { TariffDashboardSection } from "../TariffDashboardSection";
 import { useIsReadOnly } from "../../../contexts/ReadOnlyContext";
+import { MixpanelEvent, trackEvent } from "../../../libs/mixpanel";
 
 interface Props {
   classification: ClassificationI;
@@ -284,7 +285,12 @@ export const OverviewTab = ({
                   {classificationRecord && canUpdateDetails && (
                     <button
                       className="btn btn-sm btn-outline gap-1.5 h-9"
-                      onClick={() => setShowShareModal(true)}
+                      onClick={() => {
+                        trackEvent(MixpanelEvent.CLASSIFICATION_SHARED, {
+                          classification_id: classificationRecord.id,
+                        });
+                        setShowShareModal(true);
+                      }}
                     >
                       <ShareIcon className="w-4 h-4" />
                       <span className="hidden sm:inline">Share</span>

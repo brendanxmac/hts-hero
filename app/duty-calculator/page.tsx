@@ -129,23 +129,11 @@ export default function DutyCalculatorPage() {
 
       {/* Hero — server-rendered, immediately visible to crawlers */}
       <div className="relative overflow-hidden">
-        {/* <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-32 -right-32 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-          <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
-          <div
-            className="absolute inset-0 opacity-[0.02]"
-            style={{
-              backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`,
-              backgroundSize: "32px 32px",
-            }}
-          />
-        </div> */}
-
         <div className="relative z-0 w-full max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-10">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
             <div className="flex flex-col gap-3 max-w-2xl">
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight">
-                US Import Duty Calculator
+                US Import Duty Simulator
               </h1>
 
               <p className="text-base-content/60 text-sm md:text-base leading-relaxed">

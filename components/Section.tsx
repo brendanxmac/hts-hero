@@ -2,15 +2,16 @@ import { ChevronUpIcon, DocumentTextIcon } from "@heroicons/react/16/solid";
 import { HtsSection } from "../interfaces/hts";
 import { useState } from "react";
 import { ChapterSummary } from "./ChapterSummary";
-import PDF from "./PDF";
 import { NavigatableElement } from "./Elements";
-import { SupabaseBuckets } from "../constants/supabase";
+import { sectionNotesUsitcFileName } from "@/libs/usitc-hts-file-url";
+import { UsitcHtsDocumentLink } from "./UsitcHtsDocumentLink";
 
 interface Props {
   section: HtsSection;
   breadcrumbs: NavigatableElement[];
   setBreadcrumbs: (breadcrumbs: NavigatableElement[]) => void;
   allExpanded?: boolean;
+  isModal?: boolean;
 }
 
 export const getChapterRange = (section: HtsSection) => {
@@ -29,10 +30,11 @@ export const Section = ({
   breadcrumbs,
   setBreadcrumbs,
   allExpanded,
+  isModal = false,
 }: Props) => {
-  const { number, description, filePath: notesPath } = section;
+  const { number, description } = section;
+  const sectionNotesFileName = sectionNotesUsitcFileName(number);
   const [showDetails, setShowDetails] = useState(true);
-  const [showNotes, setShowNotes] = useState(false);
   const [manualOverride, setManualOverride] = useState<boolean | null>(null);
 
   // Use manual override if set, otherwise use allExpanded prop, otherwise use local state
@@ -71,17 +73,16 @@ export const Section = ({
                   Section {number}
                 </span>
               </div>
-              {notesPath && (
-                <button
+              {sectionNotesFileName && (
+                <UsitcHtsDocumentLink
+                  fileName={sectionNotesFileName}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-base-content/5 hover:bg-primary/10 border border-base-content/10 hover:border-primary/20 transition-all duration-200"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowNotes(!showNotes);
-                  }}
+                  title={`Section ${number} notes (USITC)`}
+                  onClick={(e) => e.stopPropagation()}
                 >
                   <DocumentTextIcon className="h-3.5 w-3.5 text-primary/70" />
                   Notes
-                </button>
+                </UsitcHtsDocumentLink>
               )}
             </div>
 
@@ -112,6 +113,7 @@ export const Section = ({
                   chapter={chapter}
                   breadcrumbs={breadcrumbs}
                   setBreadcrumbs={setBreadcrumbs}
+                  isModal={isModal}
                 />
               );
             })}
@@ -119,16 +121,6 @@ export const Section = ({
           </div>
         )}
       </div>
-
-      {notesPath && showNotes && (
-        <PDF
-          title={`Section ${number.toString()} Notes`}
-          bucket={SupabaseBuckets.NOTES}
-          filePath={notesPath}
-          isOpen={showNotes}
-          setIsOpen={setShowNotes}
-        />
-      )}
     </div>
   );
 };

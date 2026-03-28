@@ -68,7 +68,7 @@ export const tariffImpactPro: PricingPlanI = {
       details: "Get notified when your imports are affected by new tariffs",
     },
     {
-      name: "Duty Calculator",
+      name: "Duty Simulator",
       details:
         "See the tariffs, duty rates, & exemptions for any item from any country",
     },
@@ -84,7 +84,7 @@ export const pro: PricingPlanI = {
   prices: [89],
   priceAnchors: [129],
   features: [
-    { name: "Duty Calculator" },
+    { name: "Duty Simulator" },
     { name: "Classification Assistant" },
     { name: "Tariff Impact Checker" },
   ],
@@ -99,7 +99,7 @@ export const proTeams: PricingPlanI = {
   priceAnchors: [499],
   isFeatured: true,
   features: [
-    { name: "Duty Calculator" },
+    { name: "Duty Simulator" },
     { name: "Classification Assistant" },
     { name: "Tariff Impact Checker" },
     {
@@ -126,7 +126,7 @@ export const classifyPro: PricingPlanI = {
     { name: "CROSS Ruling Validation" },
     { name: "Client-Ready Reports" },
     {
-      name: "Duty & Tariff Calculator",
+      name: "Duty & Tariff Simulator",
       details: "See the Latest Tariffs & Duties for any Import",
     },
     {

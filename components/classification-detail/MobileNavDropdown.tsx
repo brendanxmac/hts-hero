@@ -25,9 +25,11 @@ import {
   DocumentTextIcon,
 } from "@heroicons/react/24/outline";
 import { useIsReadOnly } from "../../contexts/ReadOnlyContext";
+import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 
 interface Props {
   classification: ClassificationI;
+  classificationId?: string;
   navItems: ClassificationNavItem[];
   activeTab: NavTab;
   onTabChange: (tab: NavTab) => void;
@@ -64,6 +66,7 @@ const NAV_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
 
 export const MobileNavDropdown = ({
   classification,
+  classificationId,
   navItems,
   activeTab,
   onTabChange,
@@ -98,6 +101,11 @@ export const MobileNavDropdown = ({
   }, []);
 
   const handleSelect = (tab: NavTab) => {
+    trackEvent(MixpanelEvent.CLASSIFICATION_TAB_SELECTED, {
+      tab_id: tab,
+      nav_source: "mobile",
+      classification_id: classificationId,
+    });
     onTabChange(tab);
     setIsOpen(false);
   };

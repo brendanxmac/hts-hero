@@ -29,28 +29,23 @@ import {
   generateBreadcrumbsForHtsElement,
   getSectionAndChapterFromChapterNumber,
 } from "../libs/hts";
+import { htsCodeDigitsOnly, normalizeHtsCode } from "../libs/hts-code";
+import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
+
+type DutyCalculatorExploreOpenSource =
+  | "description_search_button"
+  | "sub_tariff_code_selected"
+  | "url_sub_tariff_code";
 
 // Helper to count digits in an HTS code (ignoring dots)
 const getHtsCodeDigitCount = (htsno: string): number => {
   if (!htsno) return 0;
-  return htsno.replace(/\./g, "").length;
+  return htsCodeDigitsOnly(htsno).length;
 };
 
 // Check if an HTS code has 8 or more digits (tariff-level)
 const isTariffLevelCode = (htsno: string): boolean => {
   return getHtsCodeDigitCount(htsno) >= 8;
-};
-
-// Helper to normalize HTS code format (add dots if missing)
-const normalizeHtsCode = (str: string): string => {
-  const digitsOnly = str.replace(/\./g, "");
-  if (digitsOnly.length === 8) {
-    return `${digitsOnly.slice(0, 4)}.${digitsOnly.slice(4, 6)}.${digitsOnly.slice(6, 8)}`;
-  }
-  if (digitsOnly.length === 10) {
-    return `${digitsOnly.slice(0, 4)}.${digitsOnly.slice(4, 6)}.${digitsOnly.slice(6, 8)}.${digitsOnly.slice(8, 10)}`;
-  }
-  return str;
 };
 
 // Helper to validate country code
@@ -162,20 +157,51 @@ export const TariffFinderPage = () => {
   >([]);
   const [showExploreModal, setShowExploreModal] = useState(false);
 
+  const prevCountryAnalyticsRef = useRef<string | null | undefined>(undefined);
+  const lastResultsViewedKeyRef = useRef<string | null>(null);
+  const customsAnalyticsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const unitsAnalyticsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const contentAnalyticsTimeoutsRef = useRef<
+    Partial<Record<ContentRequirements, NodeJS.Timeout>>
+  >({});
+
+  const openExploreModal = useCallback(
+    (source: DutyCalculatorExploreOpenSource) => {
+      trackEvent(MixpanelEvent.DUTY_CALCULATOR_EXPLORE_MODAL_OPENED, {
+        source,
+      });
+      setShowExploreModal(true);
+    },
+    []
+  );
+
+  const closeExploreModal = useCallback(() => {
+    setShowExploreModal((open) => {
+      if (open) {
+        trackEvent(MixpanelEvent.DUTY_CALCULATOR_EXPLORE_MODAL_CLOSED);
+      }
+      return false;
+    });
+  }, []);
+
   // Handle element selection - only show tariffs for 8+ digit codes
   const handleElementSelection = useCallback(
     (element: HtsElement | null) => {
       if (!element) {
+        trackEvent(MixpanelEvent.DUTY_CALCULATOR_HTS_CODE_CLEARED);
         setSelectedElement(null);
         return;
       }
 
       // Check if the code has 8 or more digits
       if (isTariffLevelCode(element.htsno)) {
-        // Tariff-level code - show tariffs normally
+        trackEvent(MixpanelEvent.DUTY_CALCULATOR_HTS_CODE_SELECTED, {
+          hts_code: element.htsno,
+          digit_count: getHtsCodeDigitCount(element.htsno),
+          source: "hts_selector",
+        });
         setSelectedElement(element);
       } else {
-        // Sub-tariff level code - open explore modal and navigate to this element
         setSelectedElement(null);
 
         // Generate breadcrumbs to navigate to this element in the explorer
@@ -196,23 +222,23 @@ export const TariffFinderPage = () => {
           }
         }
 
-        setShowExploreModal(true);
+        openExploreModal("sub_tariff_code_selected");
       }
     },
-    [sections, htsElements, setBreadcrumbs]
+    [sections, htsElements, setBreadcrumbs, openExploreModal]
   );
 
   // Close explore modal on Escape key
   useEffect(() => {
     const handleEscapeKey = (e: KeyboardEvent) => {
       if (e.key === "Escape" && showExploreModal) {
-        setShowExploreModal(false);
+        closeExploreModal();
       }
     };
 
     document.addEventListener("keydown", handleEscapeKey);
     return () => document.removeEventListener("keydown", handleEscapeKey);
-  }, [showExploreModal]);
+  }, [showExploreModal, closeExploreModal]);
 
   useEffect(() => {
     if (tariffElement) {
@@ -260,6 +286,18 @@ export const TariffFinderPage = () => {
         prev.map((c) => (c.name === contentRequirement ? { ...c, value } : c))
       );
     }, 300);
+
+    const prevTimeout = contentAnalyticsTimeoutsRef.current[contentRequirement];
+    if (prevTimeout) clearTimeout(prevTimeout);
+    contentAnalyticsTimeoutsRef.current[contentRequirement] = setTimeout(
+      () => {
+        trackEvent(MixpanelEvent.DUTY_CALCULATOR_CONTENT_PERCENTAGE_SET, {
+          content_type: contentRequirement,
+          percentage: value,
+        });
+      },
+      1000
+    );
   };
 
   const handleUnitsChange = (value: number) => {
@@ -275,6 +313,13 @@ export const TariffFinderPage = () => {
     unitsTimeoutRef.current = setTimeout(() => {
       setUnits(value);
     }, 300);
+
+    if (unitsAnalyticsTimeoutRef.current) {
+      clearTimeout(unitsAnalyticsTimeoutRef.current);
+    }
+    unitsAnalyticsTimeoutRef.current = setTimeout(() => {
+      trackEvent(MixpanelEvent.DUTY_CALCULATOR_UNITS_SET, { units: value });
+    }, 1000);
   };
 
   const handleCustomsValueChange = (value: number) => {
@@ -290,6 +335,15 @@ export const TariffFinderPage = () => {
     customsValueTimeoutRef.current = setTimeout(() => {
       setCustomsValue(value);
     }, 300);
+
+    if (customsAnalyticsTimeoutRef.current) {
+      clearTimeout(customsAnalyticsTimeoutRef.current);
+    }
+    customsAnalyticsTimeoutRef.current = setTimeout(() => {
+      trackEvent(MixpanelEvent.DUTY_CALCULATOR_CUSTOMS_VALUE_SET, {
+        customs_value_usd: value,
+      });
+    }, 1000);
   };
 
   // Cleanup timeouts on unmount
@@ -304,8 +358,32 @@ export const TariffFinderPage = () => {
       if (customsValueTimeoutRef.current) {
         clearTimeout(customsValueTimeoutRef.current);
       }
+      if (customsAnalyticsTimeoutRef.current) {
+        clearTimeout(customsAnalyticsTimeoutRef.current);
+      }
+      if (unitsAnalyticsTimeoutRef.current) {
+        clearTimeout(unitsAnalyticsTimeoutRef.current);
+      }
+      for (const t of Object.values(contentAnalyticsTimeoutsRef.current)) {
+        if (t) clearTimeout(t);
+      }
     };
   }, []);
+
+  useEffect(() => {
+    if (!urlParamsProcessed) return;
+    const code = selectedCountry?.code ?? null;
+    if (prevCountryAnalyticsRef.current === undefined) {
+      prevCountryAnalyticsRef.current = code;
+      return;
+    }
+    if (prevCountryAnalyticsRef.current !== code) {
+      trackEvent(MixpanelEvent.DUTY_CALCULATOR_COUNTRY_CHANGED, {
+        country_code: code,
+      });
+      prevCountryAnalyticsRef.current = code;
+    }
+  }, [selectedCountry, urlParamsProcessed]);
 
   // Load initial data
   useEffect(() => {
@@ -331,8 +409,11 @@ export const TariffFinderPage = () => {
   useEffect(() => {
     if (loadingPage || urlParamsProcessed || htsElements.length === 0) return;
 
-    // Process country param
     const countryParam = searchParams.get("country");
+    const codeParam = searchParams.get("code");
+    let openedExploreFromUrl = false;
+    let codeMatched = false;
+
     if (countryParam) {
       const country = getCountryByCode(countryParam);
       if (country) {
@@ -340,19 +421,21 @@ export const TariffFinderPage = () => {
       }
     }
 
-    // Process HTS code param
-    const codeParam = searchParams.get("code");
     if (codeParam) {
       const normalizedCode = normalizeHtsCode(codeParam.trim());
       const matchingElement = htsElements.find(
         (el) => el.htsno === normalizedCode
       );
       if (matchingElement) {
-        // Use the same logic as handleElementSelection
+        codeMatched = true;
         if (isTariffLevelCode(matchingElement.htsno)) {
+          trackEvent(MixpanelEvent.DUTY_CALCULATOR_HTS_CODE_SELECTED, {
+            hts_code: matchingElement.htsno,
+            digit_count: getHtsCodeDigitCount(matchingElement.htsno),
+            source: "url",
+          });
           setSelectedElement(matchingElement);
         } else {
-          // Sub-tariff level code - open explore modal and navigate to this element
           if (sections.length > 0) {
             const sectionAndChapter = getSectionAndChapterFromChapterNumber(
               sections,
@@ -372,9 +455,19 @@ export const TariffFinderPage = () => {
               setBreadcrumbs(breadcrumbs);
             }
           }
-          setShowExploreModal(true);
+          openedExploreFromUrl = true;
+          openExploreModal("url_sub_tariff_code");
         }
       }
+    }
+
+    if (countryParam || codeParam) {
+      trackEvent(MixpanelEvent.DUTY_CALCULATOR_DEEP_LINK_OPENED, {
+        had_country_param: Boolean(countryParam),
+        had_code_param: Boolean(codeParam),
+        code_matched_element: codeMatched,
+        opened_explore_modal: openedExploreFromUrl,
+      });
     }
 
     setUrlParamsProcessed(true);
@@ -385,6 +478,7 @@ export const TariffFinderPage = () => {
     searchParams,
     sections,
     setBreadcrumbs,
+    openExploreModal,
   ]);
 
   // Find the tariff element (the element with actual tariff data)
@@ -440,6 +534,30 @@ export const TariffFinderPage = () => {
     findTariffElement,
   ]);
 
+  useEffect(() => {
+    if (
+      !selectedElement ||
+      !selectedCountry ||
+      !countryWithTariffs ||
+      !tariffElement
+    ) {
+      return;
+    }
+    const key = `${selectedElement.htsno}-${selectedCountry.code}`;
+    if (lastResultsViewedKeyRef.current === key) return;
+    lastResultsViewedKeyRef.current = key;
+    trackEvent(MixpanelEvent.DUTY_CALCULATOR_RESULTS_VIEWED, {
+      hts_code: selectedElement.htsno,
+      country_code: selectedCountry.code,
+      tariff_basis_hts_code: tariffElement.htsno,
+    });
+  }, [
+    selectedElement,
+    selectedCountry,
+    countryWithTariffs,
+    tariffElement,
+  ]);
+
   // // Scroll to results when they first become available
   // useEffect(() => {
   //   const hasResults = !!(
@@ -483,7 +601,7 @@ export const TariffFinderPage = () => {
               <SecondaryLabel value="HTS Code" />
               <button
                 type="button"
-                onClick={() => setShowExploreModal(true)}
+                onClick={() => openExploreModal("description_search_button")}
                 className="text-xs font-medium text-primary hover:text-primary/80 transition-colors"
               >
                 Search by Description
@@ -504,9 +622,9 @@ export const TariffFinderPage = () => {
             <CountrySelection
               singleSelect
               selectedCountries={selectedCountry ? [selectedCountry] : []}
-              setSelectedCountries={(countries) =>
-                setSelectedCountry(countries[0] || null)
-              }
+              setSelectedCountries={(countries) => {
+                setSelectedCountry(countries[0] || null);
+              }}
             />
           </div>
           {/* Customs Value Input */}
@@ -706,6 +824,9 @@ export const TariffFinderPage = () => {
               className="link link-hover underline font-medium transition-colors"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() =>
+                trackEvent(MixpanelEvent.DUTY_CALCULATOR_SUPPORT_CLICKED)
+              }
             >
               Notify us
             </a>{" "}
@@ -722,18 +843,18 @@ export const TariffFinderPage = () => {
               <h3 className="font-bold text-lg">Search HTS Codes</h3>
               <button
                 type="button"
-                onClick={() => setShowExploreModal(false)}
+                onClick={closeExploreModal}
                 className="btn btn-sm btn-circle btn-ghost"
               >
                 ✕
               </button>
             </div>
             <div className="flex-1 overflow-y-auto">
-              <Explore isModal />
+              <Explore isModal explorerSurface="duty_calculator_modal" />
             </div>
           </div>
           <form method="dialog" className="modal-backdrop">
-            <button type="button" onClick={() => setShowExploreModal(false)}>
+            <button type="button" onClick={closeExploreModal}>
               close
             </button>
           </form>

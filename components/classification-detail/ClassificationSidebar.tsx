@@ -37,6 +37,7 @@ import { NUM_FREE_CLASSIFICATIONS } from "../../constants/classification";
 import Modal from "../Modal";
 import ConversionPricing from "../ConversionPricing";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
+import { CopyableHtsCode } from "@/components/CopyableHtsCode";
 
 interface Props {
   classification: ClassificationI;
@@ -51,39 +52,6 @@ interface Props {
   isAnonymous: boolean;
   /** Back + account chrome; false for public/shared read-only visitors */
   useNormalWorkspace: boolean;
-}
-
-function CopyableHtsCode({ code }: { code: string }) {
-  const [copied, setCopied] = useState(false);
-
-  if (!code) {
-    return (
-      <p className="text-lg md:text-xl font-mono font-semibold text-base-content/70">
-        —
-      </p>
-    );
-  }
-
-  return (
-    <span className="relative inline-block">
-      <span
-        onClick={() => {
-          navigator.clipboard.writeText(code);
-          setCopied(true);
-          setTimeout(() => setCopied(false), 1500);
-        }}
-        className="text-lg md:text-xl font-mono font-semibold text-primary cursor-pointer"
-      >
-        {code}
-      </span>
-      <span
-        className={`absolute -top-6 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-success text-white text-[10px] font-semibold whitespace-nowrap pointer-events-none transition-all duration-200 ${copied ? "opacity-100 translate-y-0" : "opacity-0 translate-y-1"
-          }`}
-      >
-        Copied!
-      </span>
-    </span>
-  );
 }
 
 const NAV_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -144,6 +112,15 @@ export const ClassificationSidebar = ({
   const isClassificationTabActive = classificationSubItems.some(
     (item) => item.id === activeTab
   );
+
+  const selectTab = (tab: NavTab) => {
+    trackEvent(MixpanelEvent.CLASSIFICATION_TAB_SELECTED, {
+      tab_id: tab,
+      nav_source: "sidebar",
+      classification_id: classificationRecord?.id,
+    });
+    onTabChange(tab);
+  };
 
   useEffect(() => {
     const fetchIsPayingUser = async () => {
@@ -239,7 +216,7 @@ export const ClassificationSidebar = ({
                 return (
                   <li key={item.id}>
                     <button
-                      onClick={() => onTabChange(item.id)}
+                      onClick={() => selectTab(item.id)}
                       className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${isActive
                         ? "bg-primary/10 text-primary border-l-2 border-primary -ml-px"
                         : "text-base-content/70 hover:bg-base-300/50 hover:text-base-content"
@@ -282,7 +259,7 @@ export const ClassificationSidebar = ({
                       return (
                         <li key={item.id}>
                           <button
-                            onClick={() => onTabChange(item.id)}
+                            onClick={() => selectTab(item.id)}
                             className={`w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 ${isActive
                               ? "bg-primary/10 text-primary"
                               : "text-base-content/60 hover:bg-base-300/50 hover:text-base-content"
@@ -326,7 +303,7 @@ export const ClassificationSidebar = ({
                 return (
                   <li key={item.id}>
                     <button
-                      onClick={() => onTabChange(item.id)}
+                      onClick={() => selectTab(item.id)}
                       className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${isActive
                         ? "bg-primary/10 text-primary border-l-2 border-primary -ml-px"
                         : "text-base-content/70 hover:bg-base-300/50 hover:text-base-content"

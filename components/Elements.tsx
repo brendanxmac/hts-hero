@@ -41,6 +41,7 @@ export const Elements = ({ sections, isModal = false }: ElementsProps) => {
         <Breadcrumbs
           breadcrumbs={breadcrumbs}
           setBreadcrumbs={setBreadcrumbs}
+          isModal={isModal}
         />
       )}
 
@@ -49,9 +50,13 @@ export const Elements = ({ sections, isModal = false }: ElementsProps) => {
           sections={sections}
           breadcrumbs={breadcrumbs}
           setBreadcrumbs={setBreadcrumbs}
+          isModal={isModal}
         />
       ) : currentElement.element.type === Navigatable.CHAPTER ? (
-        <Chapter chapter={currentElement.element as HtsSectionAndChapterBase} />
+        <Chapter
+          chapter={currentElement.element as HtsSectionAndChapterBase}
+          isModal={isModal}
+        />
       ) : (
         <Element element={currentElement.element as HtsElement} isModal={isModal} />
       )}

@@ -26,12 +26,3 @@ export const fetchTeamLogo = async (
 ): Promise<FileUploadDownloadResponse> => {
   return apiClient.get("/supabase/fetch-team-logo", { params: { teamId } });
 };
-
-export const fetchPDF = async (
-  bucket: string,
-  filePath: string
-): Promise<FileUploadDownloadResponse> => {
-  return apiClient.get(
-    `/supabase/fetch-pdf?bucket=${bucket}&path=${encodeURIComponent(filePath)}`
-  );
-};
