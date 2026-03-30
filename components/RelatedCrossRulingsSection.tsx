@@ -39,7 +39,7 @@ export function RelatedCrossRulingsSection({ htsno }: RelatedCrossRulingsSection
   const [detailError, setDetailError] = useState<string | null>(null);
 
   const digitCount = htsno.replace(/\D/g, "").length;
-  const canFetch = digitCount >= 8;
+  const canFetch = digitCount >= 4;
   const searchTermDisplay = canFetch ? trimHtsTo8Digits(htsno) : null;
 
   useEffect(() => {
@@ -109,25 +109,24 @@ export function RelatedCrossRulingsSection({ htsno }: RelatedCrossRulingsSection
               d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"
             />
           </svg>
-          Related CROSS Rulings
+          CROSS Rulings Related to {htsno ? <span className="text-primary font-mono font-semibold">{htsno}</span> : 'This Code'}
         </h2>
       </div>
 
       <div className="p-6">
-        {showIntro && searchTermDisplay && (
+        {/* {showIntro && searchTermDisplay && (
           <p className="text-sm text-base-content/60 mb-4">
-            CBP classification rulings directly related to HTS code{" "}
+            CBP classification rulings related to{" "}
             <span className="font-mono font-semibold text-primary">
               {searchTermDisplay}
             </span>
             . These may help validate how this code is applied in practice.
           </p>
-        )}
+        )} */}
 
         {showIntro && !canFetch && (
           <p className="text-sm text-base-content/60 mb-4">
-            CROSS search is most useful once you have at least an 8-digit HTS
-            code.
+            CROSS search needs at least a 4-digit HTS code.
           </p>
         )}
 
@@ -161,10 +160,10 @@ export function RelatedCrossRulingsSection({ htsno }: RelatedCrossRulingsSection
 
             {!loading && !error && rulings.length > 0 && (
               <>
-                <p className="text-xs font-semibold text-base-content/40 uppercase tracking-wider mb-3">
+                {/* <p className="text-xs font-semibold text-base-content/40 uppercase tracking-wider mb-3">
                   {rulings.length} relevant ruling{rulings.length !== 1 ? "s" : ""}{" "}
                   found:
-                </p>
+                </p> */}
                 <div className="flex flex-col gap-4">
                   {rulings.map((ruling) => (
                     <RulingCard
@@ -183,7 +182,7 @@ export function RelatedCrossRulingsSection({ htsno }: RelatedCrossRulingsSection
       {rulings && rulings.length > 0 && <div className="border-t border-base-content/10 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
           <p className="text-sm font-semibold text-base-content">
-            Unsure if these ruling affect your classification?
+            Unsure if these rulings might affect your classification?
           </p>
           <p className="text-xs text-base-content/50">
             Run a quick analysis to see if these might affect a product classification
