@@ -27,19 +27,19 @@ const StepHeader = ({
   <div className="mb-5">
     <div className="flex items-center gap-2 mb-1.5">
       <span className="text-xs md:text-sm font-semibold uppercase tracking-wider text-base-content/40">
-        Step {stepNumber}
+        Level {stepNumber}
       </span>
-      {status === "complete" && (
+      {/* {status === "complete" && (
         <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-success/10 text-xs font-semibold text-success">
           <CheckCircleIcon className="w-4 h-4" />
           Done
         </span>
-      )}
-      {status === "action-required" && (
+      )} */}
+      {/* {status === "action-required" && (
         <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-warning/10 text-xs font-semibold text-warning">
           Action Required
         </span>
-      )}
+      )} */}
     </div>
     <h2 className="text-lg md:text-2xl font-bold text-base-content">
       {title}
@@ -152,7 +152,7 @@ export const ClassificationLevelTab = (props: Props) => {
     }
 
     const getLevelTitle = () => {
-      return "Select the candidate that best fits your item";
+      return "Which option best fits your item?";
     };
 
     const hasSelection = Boolean(level.selection);

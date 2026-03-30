@@ -25,7 +25,7 @@ export function CopyableHtsCode({ code }: CopyableHtsCodeProps) {
           setCopied(true);
           setTimeout(() => setCopied(false), 1500);
         }}
-        className="text-lg md:text-xl font-mono font-semibold text-primary cursor-pointer"
+        className="text-lg md:text-xl font-mono font-semibold text-primary cursor-pointer hover:underline"
       >
         {code}
       </span>

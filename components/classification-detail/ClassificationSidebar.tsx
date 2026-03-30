@@ -21,7 +21,6 @@ import {
   EyeIcon,
   ListBulletIcon,
   ScaleIcon,
-  ShieldCheckIcon,
   CurrencyDollarIcon,
   PaperClipIcon,
   DocumentTextIcon,
@@ -242,7 +241,7 @@ export const ClassificationSidebar = ({
                     }`}
                 >
                   <ListBulletIcon className="w-4 h-4 shrink-0" />
-                  Classification
+                  Classification Path
                   <ChevronDownIcon
                     className={`w-3.5 h-3.5 ml-auto transition-transform duration-200 ${classificationExpanded ? "rotate-0" : "-rotate-90"
                       }`}

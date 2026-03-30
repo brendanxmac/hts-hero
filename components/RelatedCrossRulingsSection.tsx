@@ -2,8 +2,10 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { CrossRuling, CrossRulingDetail } from "../interfaces/cross-rulings";
-import { trimHtsTo8Digits } from "../libs/cross-rulings";
-import { isFullHTSCode } from "../libs/hts";
+import {
+  fetchCrossRulingsBySearchTerm,
+  trimHtsTo8Digits,
+} from "../libs/cross-rulings";
 import { BackButton } from "./cross-rulings/BackButton";
 import { CenteredSpinner } from "./cross-rulings/CenteredSpinner";
 import { EmptyState } from "./cross-rulings/EmptyState";
@@ -11,19 +13,6 @@ import { ErrorBanner } from "./cross-rulings/ErrorBanner";
 import { RulingCard } from "./cross-rulings/RulingCard";
 import { RulingDetailView } from "./cross-rulings/RulingDetailView";
 import Link from "next/link";
-
-function crossSearchTermForUrl(htsno: string): string {
-  const digits = htsno.replace(/\D/g, "");
-  if (digits.length >= 8) return trimHtsTo8Digits(htsno);
-  if (isFullHTSCode(htsno)) return htsno.slice(0, -3);
-  return htsno;
-}
-
-function crossSearchUrl(htsno: string): string {
-  return `https://rulings.cbp.gov/search?term=${encodeURIComponent(
-    crossSearchTermForUrl(htsno)
-  )}`;
-}
 
 interface RelatedCrossRulingsSectionProps {
   htsno: string;
@@ -50,11 +39,7 @@ export function RelatedCrossRulingsSection({ htsno }: RelatedCrossRulingsSection
       setError(null);
       try {
         const searchTerm = trimHtsTo8Digits(htsno);
-        const res = await fetch(
-          `/api/cross-rulings?term=${encodeURIComponent(searchTerm)}`
-        );
-        if (!res.ok) throw new Error("Failed to fetch rulings");
-        const data: CrossRuling[] = await res.json();
+        const data = await fetchCrossRulingsBySearchTerm(searchTerm);
         setRulings(data);
       } catch (err) {
         console.error("Error fetching CROSS rulings:", err);

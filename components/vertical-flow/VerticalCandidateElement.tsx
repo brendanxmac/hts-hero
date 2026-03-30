@@ -200,7 +200,7 @@ export const VerticalCandidateElement = ({
               <SparklesIcon className="w-3.5 h-3.5 text-primary shrink-0" />
             )}
             <span
-              className={`text-xs font-mono font-semibold truncate ${isLevelSelection
+              className={`text-xs sm:text-sm font-mono font-semibold truncate ${isLevelSelection
                 ? "text-success"
                 : isRecommended
                   ? "text-primary"
@@ -250,7 +250,7 @@ export const VerticalCandidateElement = ({
 
         {/* Description */}
         <p
-          className={`text-sm leading-relaxed ${isLevelSelection
+          className={`text-sm md:text-base leading-relaxed ${isLevelSelection
             ? "font-semibold text-base-content"
             : "font-medium text-base-content/80"
             }`}

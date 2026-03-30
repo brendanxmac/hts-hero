@@ -153,7 +153,7 @@ export function ClassificationProgress({
     <div className="mb-6">
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs font-medium text-base-content/50">
-          Classification Progress
+          Progress
         </span>
         <span className="text-[11px] font-semibold text-base-content/40 tabular-nums">
           {percentage}%

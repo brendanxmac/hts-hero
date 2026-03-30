@@ -24,15 +24,12 @@ import {
 import { copyToClipboard, setIndexInArray } from "../../utilities/data";
 import { elementsAtClassificationLevel } from "../../utilities/data";
 import { useHts } from "../../contexts/HtsContext";
-import Modal from "../Modal";
-import { SearchCrossRulings } from "../SearchCrossRulings";
 import {
-  MagnifyingGlassIcon,
   QueueListIcon,
-  SparklesIcon,
   CheckCircleIcon,
   ClipboardDocumentIcon,
   PlusIcon,
+  ArrowPathIcon,
 } from "@heroicons/react/16/solid";
 import toast from "react-hot-toast";
 import { useUser } from "../../contexts/UserContext";
@@ -42,6 +39,18 @@ import { AnalysisLoadingAnimation } from "../classification-ui/AnalysisLoadingAn
 import { MarkdownProse } from "../MarkdownProse";
 import { useIsReadOnly } from "../../contexts/ReadOnlyContext";
 import { lacksProductDescriptionForAnalysis } from "../../libs/classification-from-hts-code";
+import { classNames } from "../../utilities/style";
+import { VerticalCandidateLegalNotesTab } from "./VerticalCandidateLegalNotesTab";
+import { VerticalCandidateCrossRulingsTab } from "./VerticalCandidateCrossRulingsTab";
+import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
+
+type ResearchPanelTab = "research" | "legalNotes" | "crossRulings";
+
+const RESEARCH_PANEL_TAB_MIXPANEL: Record<ResearchPanelTab, string> = {
+  research: "research",
+  legalNotes: "legal_notes",
+  crossRulings: "cross_rulings",
+};
 
 export interface VerticalClassificationStepProps {
   classificationLevel: number;
@@ -63,9 +72,9 @@ export const VerticalClassificationStep = ({
   });
 
   const { user } = useUser();
-  const [showCrossRulingsModal, setShowCrossRulingsModal] = useState(false);
   const {
     classification,
+    classificationId,
     updateLevel,
     classificationTier,
     addNotes,
@@ -78,12 +87,30 @@ export const VerticalClassificationStep = ({
   const { htsElements } = useHts();
   const hasFetchedCandidatesRef = useRef(false);
   const [isAnalysisCopied, setIsAnalysisCopied] = useState(false);
+  const [researchPanelTab, setResearchPanelTab] =
+    useState<ResearchPanelTab>("research");
 
   const { chapterCandidates, chapterDiscoveryComplete } =
     useSectionChapterDiscovery();
 
+  useEffect(() => {
+    setResearchPanelTab("research");
+  }, [classificationLevel]);
 
-  const handleCopyCostClick = () => {
+  const selectResearchPanelTab = useCallback(
+    (tab: ResearchPanelTab) => {
+      if (tab === researchPanelTab) return;
+      trackEvent(MixpanelEvent.CLASSIFICATION_STEP_TAB_SWITCH, {
+        panel_tab: RESEARCH_PANEL_TAB_MIXPANEL[tab],
+        classification_level: classificationLevel,
+        classification_id: classificationId,
+      });
+      setResearchPanelTab(tab);
+    },
+    [classificationId, classificationLevel, researchPanelTab]
+  );
+
+  const handleCopyAnalysisClick = () => {
     copyToClipboard(currentLevel?.analysisReason || "");
     setIsAnalysisCopied(true);
     setTimeout(() => setIsAnalysisCopied(false), 2000);
@@ -117,157 +144,170 @@ export const VerticalClassificationStep = ({
     !isUsersClassification ||
     classificationRecord?.status === ClassificationStatus.FINAL;
 
-  const getNotesForCandidates = async (
-    simplifiedCandidates: { code: string; description: string }[]
-  ): Promise<NoteRecord[]> => {
-    const { sections, chapters } =
-      getSectionsAndChaptersFromCandidates(simplifiedCandidates);
+  const getNotesForCandidates = useCallback(
+    async (
+      simplifiedCandidates: { code: string; description: string }[]
+    ): Promise<NoteRecord[]> => {
+      const { sections, chapters } =
+        getSectionsAndChaptersFromCandidates(simplifiedCandidates);
 
-    const { existingNotes, missingSections, missingChapters } =
-      getNotesForSectionsAndChapters(sections, chapters);
+      const { existingNotes, missingSections, missingChapters } =
+        getNotesForSectionsAndChapters(sections, chapters);
 
-    if (missingSections.length > 0 || missingChapters.length > 0) {
-      const fetchedNotes = await fetchNotesForSectionsAndChapters(
-        missingSections,
-        missingChapters
-      );
+      if (missingSections.length > 0 || missingChapters.length > 0) {
+        const fetchedNotes = await fetchNotesForSectionsAndChapters(
+          missingSections,
+          missingChapters
+        );
 
-      if (fetchedNotes.length > 0) {
-        addNotes(fetchedNotes);
+        if (fetchedNotes.length > 0) {
+          addNotes(fetchedNotes);
+        }
+
+        return [...existingNotes, ...fetchedNotes];
       }
 
-      return [...existingNotes, ...fetchedNotes];
+      return existingNotes;
+    },
+    [addNotes, getNotesForSectionsAndChapters]
+  );
+
+  const runBestClassificationProgression = useCallback(async () => {
+    if (lacksProductDescriptionForAnalysis(articleDescription)) {
+      return;
+    }
+    const level = levels[classificationLevel];
+    if (!level?.candidates?.length) {
+      return;
     }
 
-    return existingNotes;
-  };
+    setLoading({
+      isLoading: true,
+      text: "Analyzing Candidates",
+    });
 
-  useEffect(() => {
-    if (readOnly) return;
-    isMountedRef.current = true;
+    const coreElements = htsElements.filter((e) => e.chapter < 98);
 
-    const findBestClassificationProgression = async () => {
-      if (lacksProductDescriptionForAnalysis(articleDescription)) {
-        return;
-      }
-      if (
-        currentLevel?.candidates?.length > 0 &&
-        !currentLevel?.analysisElement
-      ) {
-        setLoading({
-          isLoading: true,
-          text: "Analyzing Candidates",
-        });
+    const fuse = new Fuse(coreElements, {
+      keys: ["htsno"],
+      threshold: 0.3,
+      includeScore: true,
+    });
 
-        const coreElements = htsElements.filter((e) => e.chapter < 98);
+    const elementsWithReferencedCodes = addReferenceCodesToElements(
+      level.candidates,
+      coreElements,
+      fuse
+    );
 
-        const fuse = new Fuse(coreElements, {
-          keys: ["htsno"],
-          threshold: 0.3,
-          includeScore: true,
-        });
+    const simplifiedCandidates = elementsWithReferencedCodes.map((e) => {
+      let finalDescription = e.description;
 
-        const elementsWithReferencedCodes = addReferenceCodesToElements(
-          currentLevel.candidates,
+      if (e.description.match(HTS_CODE_REGEX)) {
+        const enhancedDescription = transformTextWithVerifiedHtsCodes(
+          e.description,
           coreElements,
           fuse
         );
 
-        const simplifiedCandidates = elementsWithReferencedCodes.map((e) => {
-          let finalDescription = e.description;
-
-          if (e.description.match(HTS_CODE_REGEX)) {
-            const enhancedDescription = transformTextWithVerifiedHtsCodes(
-              e.description,
-              coreElements,
-              fuse
-            );
-
-            if (e.description !== enhancedDescription) {
-              finalDescription = enhancedDescription;
-            }
-          }
-
-          return {
-            code: e.htsno,
-            description: finalDescription,
-            referencedCodes: e.referencedCodes,
-          };
-        });
-
-        const selectionPath =
-          classificationLevel > 0
-            ? levels
-              .map((level, i): LevelSelection => {
-                if (level.selection) {
-                  return {
-                    level: i + 1,
-                    description: level.selection.description,
-                  };
-                }
-                return null;
-              })
-              .filter((selection) => selection !== null)
-            : [];
-
-        try {
-          if (!isMountedRef.current) return;
-
-          let relevantNotes: NoteRecord[] = [];
-
-          if (classificationTier === "premium") {
-            relevantNotes = await getNotesForCandidates(simplifiedCandidates);
-          }
-
-          const {
-            index: suggestedCandidateIndex,
-            analysis: suggestionReason,
-            questions: suggestionQuestions,
-          } = await getBestClassificationProgression(
-            simplifiedCandidates,
-            selectionPath,
-            articleDescription + "\n" + articleAnalysis,
-            classificationLevel,
-            classificationTier,
-            relevantNotes
-          );
-
-          if (!isMountedRef.current) return;
-
-          const bestCandidate =
-            currentLevel.candidates[suggestedCandidateIndex];
-
-          updateLevel(classificationLevel, {
-            analysisElement: bestCandidate,
-            analysisReason: suggestionReason,
-            analysisQuestions: suggestionQuestions,
-          });
-        } catch (error) {
-          console.error("Error analyzing candidates:", error);
-        } finally {
-          if (isMountedRef.current) {
-            setLoading({ isLoading: false, text: "" });
-          }
+        if (e.description !== enhancedDescription) {
+          finalDescription = enhancedDescription;
         }
       }
-    };
+
+      return {
+        code: e.htsno,
+        description: finalDescription,
+        referencedCodes: e.referencedCodes,
+      };
+    });
+
+    const selectionPath =
+      classificationLevel > 0
+        ? levels
+          .map((levelItem, i): LevelSelection => {
+            if (levelItem.selection) {
+              return {
+                level: i + 1,
+                description: levelItem.selection.description,
+              };
+            }
+            return null;
+          })
+          .filter((selection) => selection !== null)
+        : [];
+
+    try {
+      if (!isMountedRef.current) return;
+
+      let relevantNotes: NoteRecord[] = [];
+
+      if (classificationTier === "premium") {
+        relevantNotes = await getNotesForCandidates(simplifiedCandidates);
+      }
+
+      const {
+        index: suggestedCandidateIndex,
+        analysis: suggestionReason,
+        questions: suggestionQuestions,
+      } = await getBestClassificationProgression(
+        simplifiedCandidates,
+        selectionPath,
+        articleDescription + "\n" + articleAnalysis,
+        classificationLevel,
+        classificationTier,
+        relevantNotes
+      );
+
+      if (!isMountedRef.current) return;
+
+      const bestCandidate = level.candidates[suggestedCandidateIndex];
+
+      updateLevel(classificationLevel, {
+        analysisElement: bestCandidate,
+        analysisReason: suggestionReason,
+        analysisQuestions: suggestionQuestions,
+      });
+    } catch (error) {
+      console.error("Error analyzing candidates:", error);
+    } finally {
+      if (isMountedRef.current) {
+        setLoading({ isLoading: false, text: "" });
+      }
+    }
+  }, [
+    articleAnalysis,
+    articleDescription,
+    classificationLevel,
+    classificationTier,
+    getNotesForCandidates,
+    htsElements,
+    levels,
+    updateLevel,
+  ]);
+
+  useEffect(() => {
+    if (readOnly) return;
+    isMountedRef.current = true;
 
     if (
       currentLevel?.candidates?.length > 0 &&
       !currentLevel?.analysisElement &&
       !lacksProductDescriptionForAnalysis(articleDescription)
     ) {
-      findBestClassificationProgression();
+      void runBestClassificationProgression();
     }
 
     return () => {
       isMountedRef.current = false;
     };
   }, [
-    currentLevel?.candidates?.length,
-    classificationLevel,
-    readOnly,
     articleDescription,
+    classificationLevel,
+    currentLevel?.analysisElement,
+    currentLevel?.candidates?.length,
+    readOnly,
+    runBestClassificationProgression,
   ]);
 
   const getHeadings = async () => {
@@ -406,8 +446,6 @@ export const VerticalClassificationStep = ({
     articleDescription,
   ]);
 
-  const analysisIsActive = loading.isLoading || !!currentLevel?.analysisReason;
-
   return (
     <div className="grid grid-cols-1 xl:grid-cols-12 gap-2.5">
       {/* Candidates section */}
@@ -421,7 +459,7 @@ export const VerticalClassificationStep = ({
             <div className="flex items-center gap-2.5">
               <QueueListIcon className="w-4 h-4 text-base-content/50" />
               <h3 className="text-sm font-semibold text-base-content">
-                Candidates
+                Options
               </h3>
               {optionsForLevel > 0 && (
                 <span className="px-2 py-0.5 rounded-full bg-base-300 text-[11px] font-semibold text-base-content/60">
@@ -441,14 +479,6 @@ export const VerticalClassificationStep = ({
                     <span>Add</span>
                   </button>
                 )}
-                <button
-                  className="btn btn-ghost btn-xs gap-1.5 text-base-content/60 hover:text-primary"
-                  onClick={() => setShowCrossRulingsModal(true)}
-                  disabled={loading.isLoading}
-                >
-                  <MagnifyingGlassIcon className="w-3.5 h-3.5" />
-                  <span>Search CROSS</span>
-                </button>
               </div>
             )}
           </div>
@@ -493,104 +523,148 @@ export const VerticalClassificationStep = ({
         </div>
       </div>
 
-      {/* Analysis section */}
+      {/* Research / legal notes / CROSS panel */}
       <div
         className="xl:col-span-7 rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden"
       >
-        {/* Header */}
         <div className="px-5 py-3.5 border-b border-base-300 bg-base-200/30">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <SparklesIcon className="w-4 h-4 text-primary" />
-              <h3 className="text-sm font-semibold text-base-content">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div
+              role="tablist"
+              aria-label="Research panel"
+              className="tabs tabs-boxed tabs-sm rounded-lg gap-0.5 flex-wrap shrink-0"
+            >
+              <button
+                type="button"
+                role="tab"
+                aria-selected={researchPanelTab === "research"}
+                className={classNames(
+                  "tab gap-1.5 font-semibold transition-all duration-200 ease-in",
+                  researchPanelTab === "research" && "tab-active"
+                )}
+                onClick={() => selectResearchPanelTab("research")}
+              >
+                {/* <SparklesIcon className="w-3.5 h-3.5 text-primary shrink-0" /> */}
                 Research
-              </h3>
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={researchPanelTab === "legalNotes"}
+                className={classNames(
+                  "tab font-semibold transition-all duration-200 ease-in",
+                  researchPanelTab === "legalNotes" && "tab-active"
+                )}
+                onClick={() => selectResearchPanelTab("legalNotes")}
+              >
+                Legal Notes
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={researchPanelTab === "crossRulings"}
+                className={classNames(
+                  "tab font-semibold transition-all duration-200 ease-in",
+                  researchPanelTab === "crossRulings" && "tab-active"
+                )}
+                onClick={() => selectResearchPanelTab("crossRulings")}
+              >
+                CROSS Rulings
+              </button>
             </div>
-            <div className="flex flex-wrap gap-1.5">
-              {currentLevel?.analysisReason && (
-                <button
-                  className="btn btn-ghost btn-xs gap-1 text-base-content/50"
-                  onClick={handleCopyCostClick}
-                >
-                  {isAnalysisCopied ? (
-                    <CheckCircleIcon className="w-3.5 h-3.5 text-success" />
-                  ) : (
-                    <ClipboardDocumentIcon className="w-3.5 h-3.5" />
-                  )}
-                  <span className="text-[11px]">
-                    {isAnalysisCopied ? "Copied" : "Copy"}
-                  </span>
-                </button>
-              )}
+            <div className="flex flex-wrap gap-1.5 sm:justify-end">
+              {researchPanelTab === "research" &&
+                currentLevel?.analysisReason && (
+                  <button
+                    className="btn btn-ghost btn-xs gap-1 text-base-content/50"
+                    onClick={handleCopyAnalysisClick}
+                  >
+                    {isAnalysisCopied ? (
+                      <CheckCircleIcon className="w-3.5 h-3.5 text-success" />
+                    ) : (
+                      <ClipboardDocumentIcon className="w-3.5 h-3.5" />
+                    )}
+                    <span className="text-[11px]">
+                      {isAnalysisCopied ? "Copied" : "Copy"}
+                    </span>
+                  </button>
+                )}
+              {researchPanelTab === "research" &&
+                !readOnly &&
+                (currentLevel?.candidates?.length ?? 0) > 0 &&
+                !lacksProductDescriptionForAnalysis(articleDescription) && (
+                  <button
+                    type="button"
+                    className="flex items-center justify-center rounded-lg border border-base-300 bg-base-100 p-1.5 text-base-content/50 hover:border-primary hover:text-primary disabled:pointer-events-none disabled:opacity-40"
+                    aria-label="Re-run research for candidates"
+                    disabled={loading.isLoading || isDisabled}
+                    onClick={() => void runBestClassificationProgression()}
+                  >
+                    <ArrowPathIcon className="w-3.5 h-3.5" />
+                  </button>
+                )}
             </div>
           </div>
         </div>
         <div className="p-5">
-          {currentLevel?.analysisReason ? (
-            <div className="flex flex-col gap-3">
-              <p className="text-[12px] text-base-content/70">
-                Research is for informational purposes only and may not be correct. Always exercise your own judgement.
-              </p>
-              {currentLevel.analysisElement && (
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-primary/5 border border-primary/15">
-                  <SparklesIcon className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                  <div className="min-w-0">
-                    <p className="text-[11px] font-semibold uppercase tracking-wider text-primary/70 mb-1">
-                      Candidate with Most Evidence
-                    </p>
-                    <div className="flex items-baseline gap-2 flex-wrap">
-                      {currentLevel.analysisElement.htsno && (
-                        <span className="font-mono text-sm font-bold text-primary">
-                          {currentLevel.analysisElement.htsno}
-                        </span>
-                      )}
-                      <span className="text-sm text-base-content/80">
-                        {currentLevel.analysisElement.description}
-                      </span>
+          {researchPanelTab === "research" &&
+            loading.isLoading && (
+              <AnalysisLoadingAnimation
+                title={
+                  loading.text === "Analyzing Candidates"
+                    ? "Analyzing candidates"
+                    : loading.text
+                }
+                subtitle="Evaluating candidates"
+              />
+            )}
+          {researchPanelTab === "research" &&
+            !loading.isLoading &&
+            currentLevel?.analysisReason && (
+              <div className="flex flex-col gap-3">
+                <p className="text-[12px] text-base-content/70">
+                  Research is for informational purposes only and may not be correct. Always exercise your own judgement.
+                </p>
+                <div className="rounded-lg border border-base-300 overflow-hidden">
+                  <div className="flex">
+                    <div className="w-1 bg-primary/40 shrink-0" />
+                    <div className="p-4 flex-1 min-w-0">
+                      <MarkdownProse size="sm">
+                        {currentLevel.analysisReason}
+                      </MarkdownProse>
                     </div>
                   </div>
                 </div>
-              )}
-
+              </div>
+            )}
+          {researchPanelTab === "research" &&
+            !loading.isLoading &&
+            !currentLevel?.analysisReason && (
               <div className="rounded-lg border border-base-300 overflow-hidden">
                 <div className="flex">
-                  <div className="w-1 bg-primary/40 shrink-0" />
-                  <div className="p-4 flex-1 min-w-0">
-                    <MarkdownProse size="sm">
-                      {currentLevel.analysisReason}
-                    </MarkdownProse>
+                  <div className="w-1 bg-base-300 shrink-0" />
+                  <div className="p-4 flex-1">
+                    <p className="text-xs text-base-content/40 italic">
+                      Research will appear here when complete, if enabled.
+                    </p>
                   </div>
                 </div>
               </div>
-            </div>
-          ) : loading.isLoading ? (
-            <AnalysisLoadingAnimation
-              title={loading.text === "Analyzing Candidates" ? "Analyzing candidates" : loading.text}
-              subtitle="Evaluating candidates"
+            )}
+          {researchPanelTab === "legalNotes" && (
+            <VerticalCandidateLegalNotesTab
+              candidates={currentLevel?.candidates ?? []}
             />
-          ) : (
-            <div className="rounded-lg border border-base-300 overflow-hidden">
-              <div className="flex">
-                <div className="w-1 bg-base-300 shrink-0" />
-                <div className="p-4 flex-1">
-                  <p className="text-xs text-base-content/40 italic">
-                    Research will appear here when complete, if enabled.
-                  </p>
-                </div>
-              </div>
-            </div>
+          )}
+          {researchPanelTab === "crossRulings" && (
+            <VerticalCandidateCrossRulingsTab
+              candidates={currentLevel?.candidates ?? []}
+              articleDescription={articleDescription}
+            />
           )}
         </div>
       </div>
 
-      {!readOnly && showCrossRulingsModal && (
-        <Modal
-          isOpen={showCrossRulingsModal}
-          setIsOpen={setShowCrossRulingsModal}
-        >
-          <SearchCrossRulings searchTerm={articleDescription} />
-        </Modal>
-      )}
     </div>
   );
 };

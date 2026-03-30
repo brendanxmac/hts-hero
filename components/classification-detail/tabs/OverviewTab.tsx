@@ -205,7 +205,7 @@ export const OverviewTab = ({
         <div className="relative px-6 py-6 sm:px-8 sm:py-8">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
             <div className="flex-1 min-w-0">
-              {isComplete ? (
+              {/* {isComplete ? (
                 <div className="w-fit flex items-center gap-1.5 px-2.5 py-1 mb-2 rounded-full bg-success/10 border border-success/20">
                   <CheckCircleSolid className="w-3.5 h-3.5 text-success" />
                   <span className="text-[11px] font-semibold text-success">
@@ -219,7 +219,7 @@ export const OverviewTab = ({
                     Classification Incomplete
                   </span>
                 </div>
-              )}
+              )} */}
 
               <span className="relative inline-block mb-2">
                 <span
@@ -232,7 +232,7 @@ export const OverviewTab = ({
                       }
                       : undefined
                   }
-                  className={`text-3xl sm:text-4xl font-mono font-bold tracking-wide ${latestHtsCode
+                  className={`text-3xl sm:text-4xl hover:underline font-mono font-bold tracking-wide ${latestHtsCode
                     ? "text-primary cursor-pointer"
                     : "text-base-content/40"
                     }`}
@@ -241,7 +241,7 @@ export const OverviewTab = ({
                 </span>
                 {latestHtsCode && (
                   <span
-                    className={`absolute -top-6 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-success text-white text-[10px] font-semibold whitespace-nowrap pointer-events-none transition-all duration-200 ${codeCopied
+                    className={`absolute -top-6 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-primary text-white text-[10px] font-semibold whitespace-nowrap pointer-events-none transition-all duration-200 ${codeCopied
                       ? "opacity-100 translate-y-0"
                       : "opacity-0 translate-y-1"
                       }`}
@@ -353,7 +353,7 @@ export const OverviewTab = ({
 
           <DashboardCard>
             <DashboardCardHeader
-              title="Importer"
+              title="Tag"
               icon={<TagIcon className="w-4 h-4" />}
             />
             <div className="p-5">

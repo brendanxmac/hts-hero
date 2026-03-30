@@ -298,12 +298,10 @@ const getBestClassificationProgressionPremium = async (
 
         In your response, "analysis" should:
         * Be short and concise
-        * Outline the evidence that supports the relevant candidate(s).
-        * Not contain conclusions or hard decisions, only evidence.
-        * Never include a summary of the evidence, only the evidence itself.
-        * Use research language at all times and have no conclusions.
+        * Have Only 1 Section called "Potentially Relevant Information" that examines the relevant notes or candidates and provides the user with information they might not know (such as defining terms, measurements, distinctions, note references, etc...), without mentioning how they impact the classification at all, EVER.
+        * Not contain conclusions, decisions, or final summaries.
         * Never say anything like "the best candidate" or "the most suitable match", etc...
-        * Be well structured Markdown that highlights key parts
+        * Be well structured Markdown that highlights key notes, terms, and concepts
         * Only reference candidates by code or description, not by their letter identifier (e.g. A, B, etc..)
 
         The "identifier" property of your response must be the exact letter identifier (e.g., "A", "B", "C") of your chosen candidate.`,
@@ -318,3 +316,16 @@ const getBestClassificationProgressionPremium = async (
     ],
   })
 }
+
+// * Have 1 Section for "Potentially Relevant Notes" that objectively surfaces any potentially relevant notes and provides context about them, without referring to the classification or making any conculsion or summary, just the notes.
+// * Have 1 Optional section for "Potentially Relevant Questions" that simply asks questions that might help clarify the classification, if needed, without any conclusions or summary, just the raw questions.
+
+// In your response, "analysis" should:
+// * Be short and concise
+// * Outline the evidence that supports the relevant candidate(s).
+// * Not contain conclusions or hard decisions, only evidence.
+// * Never include a summary of the evidence, only the evidence itself.
+// * Use research language at all times and have no conclusions.
+// * Never say anything like "the best candidate" or "the most suitable match", etc...
+// * Be well structured Markdown that highlights key parts
+// * Only reference candidates by code or description, not by their letter identifier (e.g. A, B, etc..)
