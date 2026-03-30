@@ -525,7 +525,9 @@ export const ClassificationDetailLayout = ({
                 setIsOpen={setShowExploreModal}
                 size="viewport"
               >
-                <Explore explorerSurface="classification_modal" />
+                <Explore
+                  explorerSurface="classification_modal"
+                />
               </Modal>
             )}
 

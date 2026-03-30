@@ -36,7 +36,7 @@ export type { ExplorerSurface };
 
 const ExploreTabs: Tab[] = [
   {
-    label: "Codes",
+    label: "HTS Codes",
     value: ExploreTab.ELEMENTS,
     icon: <BookOpenIcon className="w-4 h-4" />,
   },
@@ -187,9 +187,18 @@ export const Explore = ({
 
   // Scroll to top when breadcrumbs change (navigation occurs)
   useEffect(() => {
-    if (breadcrumbs.length > 1) {
-      window.scrollTo({ top: 0, behavior: "instant" });
+    if (breadcrumbs.length <= 1) return;
+    const root = scrollContainerRef.current;
+    let el: HTMLElement | null = root;
+    while (el) {
+      const { overflowY } = getComputedStyle(el);
+      if (overflowY === "auto" || overflowY === "scroll") {
+        el.scrollTo({ top: 0, behavior: "instant" });
+        return;
+      }
+      el = el.parentElement;
     }
+    window.scrollTo({ top: 0, behavior: "instant" });
   }, [breadcrumbs]);
 
   const performHtsSearch = useCallback(
@@ -368,7 +377,10 @@ export const Explore = ({
   };
 
   return (
-    <div ref={scrollContainerRef} className="w-full min-h-0 flex flex-col bg-base-100">
+    <div
+      ref={scrollContainerRef}
+      className={`w-full min-h-0 flex flex-col bg-base-100 ${isModal ? "" : "overflow-hidden"}`}
+    >
       {isLoading ? (
         <div className="w-full flex-1 flex items-center justify-center py-20">
           <LoadingIndicator text={loadingText} />
