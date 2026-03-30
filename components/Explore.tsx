@@ -193,12 +193,12 @@ export const Explore = ({
     while (el) {
       const { overflowY } = getComputedStyle(el);
       if (overflowY === "auto" || overflowY === "scroll") {
-        el.scrollTo({ top: 0, behavior: "instant" });
+        el.scrollTo({ top: 0, behavior: "smooth" });
         return;
       }
       el = el.parentElement;
     }
-    window.scrollTo({ top: 0, behavior: "instant" });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, [breadcrumbs]);
 
   const performHtsSearch = useCallback(
