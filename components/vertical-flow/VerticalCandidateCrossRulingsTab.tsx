@@ -45,7 +45,7 @@ function CrossRulingsByTermBlock({
         <p className="text-[10px] font-semibold uppercase tracking-wide text-base-content/45">
           Search term
         </p>
-        <p className="text-sm font-mono font-semibold text-primary mt-0.5">
+        <p className="text-sm md:text-base font-mono font-semibold text-primary mt-0.5">
           {term}
         </p>
       </div>
@@ -360,7 +360,7 @@ export function VerticalCandidateCrossRulingsTab({
                   {termGroups.every((g) => g.rulings.length === 0) ? (
                     <EmptyState
                       title="No Rulings Found"
-                      description="No CROSS classification rulings matched the candidate codes for this step."
+                      description="No CROSS classification rulings matched the HTS codes at this level."
                     />
                   ) : (
                     <div className="flex flex-col gap-3">

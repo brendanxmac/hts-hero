@@ -81,18 +81,70 @@ export const VerticalClassificationStep = ({
     getNotesForSectionsAndChapters,
   } = useClassification();
   const { articleDescription, articleAnalysis, levels } = classification;
-  const previousArticleDescriptionRef = useRef<string>(articleDescription);
-  const isMountedRef = useRef(true);
-  const containerRef = useRef<HTMLDivElement>(null);
   const { htsElements } = useHts();
+  const { chapterCandidates, chapterDiscoveryComplete } =
+    useSectionChapterDiscovery();
+
+  // ---------------------------------------------------------------------------
+  // Refs — single source of truth for lifecycle & in-flight guards
+  // ---------------------------------------------------------------------------
+  const isMountedRef = useRef(true);
+  const isRunningBCPRef = useRef(false);
+  const isRunningHeadingsRef = useRef(false);
   const hasFetchedCandidatesRef = useRef(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // ---------------------------------------------------------------------------
+  // UI state
+  // ---------------------------------------------------------------------------
   const [isAnalysisCopied, setIsAnalysisCopied] = useState(false);
   const [researchPanelTab, setResearchPanelTab] =
     useState<ResearchPanelTab>("research");
 
-  const { chapterCandidates, chapterDiscoveryComplete } =
-    useSectionChapterDiscovery();
+  // ---------------------------------------------------------------------------
+  // Derived values
+  // ---------------------------------------------------------------------------
+  const currentLevel = levels[classificationLevel];
+  const optionsForLevel = currentLevel?.candidates?.length || 0;
+  const isUsersClassification = classificationRecord
+    ? user
+      ? classificationRecord.user_id === user.id
+      : !classificationRecord.user_id
+    : true;
+  const isDisabled =
+    !isUsersClassification ||
+    classificationRecord?.status === ClassificationStatus.FINAL;
 
+  // ---------------------------------------------------------------------------
+  // Lifecycle — single effect for mount/unmount tracking
+  // ---------------------------------------------------------------------------
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  // ---------------------------------------------------------------------------
+  // Auto-scroll when chapter discovery completes (level 0 only)
+  // ---------------------------------------------------------------------------
+  useEffect(() => {
+    if (
+      classificationLevel === 0 &&
+      chapterDiscoveryComplete &&
+      containerRef.current &&
+      !disableAutoScroll
+    ) {
+      containerRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [classificationLevel, chapterDiscoveryComplete, disableAutoScroll]);
+
+  // ---------------------------------------------------------------------------
+  // Reset research tab when navigating between levels
+  // ---------------------------------------------------------------------------
   useEffect(() => {
     setResearchPanelTab("research");
   }, [classificationLevel]);
@@ -116,34 +168,9 @@ export const VerticalClassificationStep = ({
     setTimeout(() => setIsAnalysisCopied(false), 2000);
   };
 
-  useEffect(() => {
-    if (
-      classificationLevel === 0 &&
-      chapterDiscoveryComplete &&
-      containerRef.current &&
-      !disableAutoScroll
-    ) {
-      containerRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
-  }, [classificationLevel, chapterDiscoveryComplete, disableAutoScroll]);
-
-  const currentLevel = levels[classificationLevel];
-  const optionsForLevel = currentLevel?.candidates?.length || 0;
-  // const hasSelection = Boolean(currentLevel?.selection);
-  // const selectedElement = currentLevel?.selection;
-  const isUsersClassification = classificationRecord
-    ? user
-      ? classificationRecord.user_id === user.id
-      : !classificationRecord.user_id
-    : true;
-
-  const isDisabled =
-    !isUsersClassification ||
-    classificationRecord?.status === ClassificationStatus.FINAL;
-
+  // ---------------------------------------------------------------------------
+  // getNotesForCandidates — fetch/cache legal notes for a set of candidates
+  // ---------------------------------------------------------------------------
   const getNotesForCandidates = useCallback(
     async (
       simplifiedCandidates: { code: string; description: string }[]
@@ -172,149 +199,170 @@ export const VerticalClassificationStep = ({
     [addNotes, getNotesForSectionsAndChapters]
   );
 
-  const runBestClassificationProgression = useCallback(async () => {
-    if (lacksProductDescriptionForAnalysis(articleDescription)) {
-      return;
-    }
-    const level = levels[classificationLevel];
-    if (!level?.candidates?.length) {
-      return;
-    }
+  // ---------------------------------------------------------------------------
+  // runBestClassificationProgression — AI analysis of candidates
+  //
+  // Uses isRunningBCPRef to guarantee at most one in-flight call.
+  // Called via runBCPRef from the auto-trigger effect so the effect's
+  // dependency array stays minimal (no callback reference).
+  // ---------------------------------------------------------------------------
+  const runBestClassificationProgression = useCallback(
+    async ({ force = false }: { force?: boolean } = {}) => {
+      if (isRunningBCPRef.current && !force) return;
+      if (lacksProductDescriptionForAnalysis(articleDescription)) return;
 
-    setLoading({
-      isLoading: true,
-      text: "Analyzing Candidates",
-    });
+      const level = levels[classificationLevel];
+      if (!level?.candidates?.length) return;
 
-    const coreElements = htsElements.filter((e) => e.chapter < 98);
+      isRunningBCPRef.current = true;
+      setLoading({ isLoading: true, text: "Analyzing Candidates" });
 
-    const fuse = new Fuse(coreElements, {
-      keys: ["htsno"],
-      threshold: 0.3,
-      includeScore: true,
-    });
+      const coreElements = htsElements.filter((e) => e.chapter < 98);
 
-    const elementsWithReferencedCodes = addReferenceCodesToElements(
-      level.candidates,
-      coreElements,
-      fuse
-    );
+      const fuse = new Fuse(coreElements, {
+        keys: ["htsno"],
+        threshold: 0.3,
+        includeScore: true,
+      });
 
-    const simplifiedCandidates = elementsWithReferencedCodes.map((e) => {
-      let finalDescription = e.description;
-
-      if (e.description.match(HTS_CODE_REGEX)) {
-        const enhancedDescription = transformTextWithVerifiedHtsCodes(
-          e.description,
-          coreElements,
-          fuse
-        );
-
-        if (e.description !== enhancedDescription) {
-          finalDescription = enhancedDescription;
-        }
-      }
-
-      return {
-        code: e.htsno,
-        description: finalDescription,
-        referencedCodes: e.referencedCodes,
-      };
-    });
-
-    const selectionPath =
-      classificationLevel > 0
-        ? levels
-          .map((levelItem, i): LevelSelection => {
-            if (levelItem.selection) {
-              return {
-                level: i + 1,
-                description: levelItem.selection.description,
-              };
-            }
-            return null;
-          })
-          .filter((selection) => selection !== null)
-        : [];
-
-    try {
-      if (!isMountedRef.current) return;
-
-      let relevantNotes: NoteRecord[] = [];
-
-      if (classificationTier === "premium") {
-        relevantNotes = await getNotesForCandidates(simplifiedCandidates);
-      }
-
-      const {
-        index: suggestedCandidateIndex,
-        analysis: suggestionReason,
-        questions: suggestionQuestions,
-      } = await getBestClassificationProgression(
-        simplifiedCandidates,
-        selectionPath,
-        articleDescription + "\n" + articleAnalysis,
-        classificationLevel,
-        classificationTier,
-        relevantNotes
+      const elementsWithReferencedCodes = addReferenceCodesToElements(
+        level.candidates,
+        coreElements,
+        fuse
       );
 
-      if (!isMountedRef.current) return;
+      const simplifiedCandidates = elementsWithReferencedCodes.map((e) => {
+        let finalDescription = e.description;
 
-      const bestCandidate = level.candidates[suggestedCandidateIndex];
+        if (e.description.match(HTS_CODE_REGEX)) {
+          const enhancedDescription = transformTextWithVerifiedHtsCodes(
+            e.description,
+            coreElements,
+            fuse
+          );
 
-      updateLevel(classificationLevel, {
-        analysisElement: bestCandidate,
-        analysisReason: suggestionReason,
-        analysisQuestions: suggestionQuestions,
+          if (e.description !== enhancedDescription) {
+            finalDescription = enhancedDescription;
+          }
+        }
+
+        return {
+          code: e.htsno,
+          description: finalDescription,
+          referencedCodes: e.referencedCodes,
+        };
       });
-    } catch (error) {
-      console.error("Error analyzing candidates:", error);
-    } finally {
-      if (isMountedRef.current) {
-        setLoading({ isLoading: false, text: "" });
-      }
-    }
-  }, [
-    articleAnalysis,
-    articleDescription,
-    classificationLevel,
-    classificationTier,
-    getNotesForCandidates,
-    htsElements,
-    levels,
-    updateLevel,
-  ]);
 
+      const selectionPath =
+        classificationLevel > 0
+          ? levels
+              .map((levelItem, i): LevelSelection => {
+                if (levelItem.selection) {
+                  return {
+                    level: i + 1,
+                    description: levelItem.selection.description,
+                  };
+                }
+                return null;
+              })
+              .filter((selection) => selection !== null)
+          : [];
+
+      try {
+        if (!isMountedRef.current) return;
+
+        let relevantNotes: NoteRecord[] = [];
+
+        if (classificationTier === "premium") {
+          relevantNotes = await getNotesForCandidates(simplifiedCandidates);
+        }
+
+        const {
+          index: suggestedCandidateIndex,
+          analysis: suggestionReason,
+          questions: suggestionQuestions,
+        } = await getBestClassificationProgression(
+          simplifiedCandidates,
+          selectionPath,
+          articleDescription + "\n" + articleAnalysis,
+          classificationLevel,
+          classificationTier,
+          relevantNotes
+        );
+
+        if (!isMountedRef.current) return;
+
+        const bestCandidate = level.candidates[suggestedCandidateIndex];
+
+        updateLevel(classificationLevel, {
+          analysisElement: bestCandidate,
+          analysisReason: suggestionReason,
+          analysisQuestions: suggestionQuestions,
+        });
+      } catch (error) {
+        console.error("Error analyzing candidates:", error);
+      } finally {
+        isRunningBCPRef.current = false;
+        if (isMountedRef.current) {
+          setLoading({ isLoading: false, text: "" });
+        }
+      }
+    },
+    [
+      articleAnalysis,
+      articleDescription,
+      classificationLevel,
+      classificationTier,
+      getNotesForCandidates,
+      htsElements,
+      levels,
+      updateLevel,
+    ]
+  );
+
+  // Ref always points to the latest version of the callback
+  const runBCPRef = useRef(runBestClassificationProgression);
+  useEffect(() => {
+    runBCPRef.current = runBestClassificationProgression;
+  }, [runBestClassificationProgression]);
+
+  // ---------------------------------------------------------------------------
+  // Auto-trigger: run BCP when candidates appear and no analysis exists yet
+  //
+  // Deps are pure data — no callback references — so this only fires when the
+  // actual conditions change, not on every render.
+  // ---------------------------------------------------------------------------
   useEffect(() => {
     if (readOnly) return;
-    isMountedRef.current = true;
 
     if (
       currentLevel?.candidates?.length > 0 &&
       !currentLevel?.analysisElement &&
       !lacksProductDescriptionForAnalysis(articleDescription)
     ) {
-      void runBestClassificationProgression();
+      void runBCPRef.current();
     }
-
-    return () => {
-      isMountedRef.current = false;
-    };
   }, [
     articleDescription,
     classificationLevel,
     currentLevel?.analysisElement,
     currentLevel?.candidates?.length,
     readOnly,
-    runBestClassificationProgression,
   ]);
 
-  const getHeadings = async () => {
-    if (lacksProductDescriptionForAnalysis(articleDescription)) {
-      return;
-    }
+  // ---------------------------------------------------------------------------
+  // getHeadings — fetch heading-level candidates from chapter candidates
+  //
+  // Uses isRunningHeadingsRef to guarantee at most one in-flight call.
+  // Called via getHeadingsRef from the auto-trigger effect.
+  // ---------------------------------------------------------------------------
+  const getHeadings = useCallback(async () => {
+    if (isRunningHeadingsRef.current) return;
+    if (lacksProductDescriptionForAnalysis(articleDescription)) return;
+
+    isRunningHeadingsRef.current = true;
     setLoading({ isLoading: true, text: "Looking for Headings" });
+
     const candidatesForHeading: (HtsElement & {
       referencedCodes: Record<string, string>;
     })[] = [];
@@ -397,33 +445,31 @@ export const VerticalClassificationStep = ({
         })
       );
 
-      if (!isMountedRef.current) {
-        console.log("Component unmounted, skipping state update");
-        return;
-      }
+      if (!isMountedRef.current) return;
 
       updateLevel(0, { candidates: candidatesForHeading });
     } catch (err) {
       console.error("Error getting headings", err);
       toast.error("Failed to find suitable headings. Please try again.");
     } finally {
-      setLoading({ isLoading: false, text: "" });
+      isRunningHeadingsRef.current = false;
+      if (isMountedRef.current) {
+        setLoading({ isLoading: false, text: "" });
+      }
     }
-  };
+  }, [articleDescription, chapterCandidates, htsElements, updateLevel]);
 
+  const getHeadingsRef = useRef(getHeadings);
   useEffect(() => {
-    isMountedRef.current = true;
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []);
+    getHeadingsRef.current = getHeadings;
+  }, [getHeadings]);
 
-  useEffect(() => {
-    if (previousArticleDescriptionRef.current !== articleDescription) {
-      previousArticleDescriptionRef.current = articleDescription;
-    }
-  }, [articleDescription]);
-
+  // ---------------------------------------------------------------------------
+  // Auto-trigger: fetch headings once chapter discovery completes (level 0)
+  //
+  // Deps are pure data — hasFetchedCandidatesRef prevents duplicate calls even
+  // if the effect re-evaluates from chapterCandidates reference changes.
+  // ---------------------------------------------------------------------------
   useEffect(() => {
     if (readOnly) return;
     if (lacksProductDescriptionForAnalysis(articleDescription)) return;
@@ -436,16 +482,20 @@ export const VerticalClassificationStep = ({
         levels[classificationLevel].candidates.length === 0)
     ) {
       hasFetchedCandidatesRef.current = true;
-      getHeadings();
+      void getHeadingsRef.current();
     }
   }, [
     classificationLevel,
     chapterDiscoveryComplete,
-    chapterCandidates,
+    chapterCandidates.length,
+    levels,
     readOnly,
     articleDescription,
   ]);
 
+  // ---------------------------------------------------------------------------
+  // Render
+  // ---------------------------------------------------------------------------
   return (
     <div className="grid grid-cols-1 xl:grid-cols-12 gap-2.5">
       {/* Candidates section */}
@@ -471,12 +521,11 @@ export const VerticalClassificationStep = ({
               <div className="flex flex-wrap gap-1.5">
                 {classificationLevel === 0 && (
                   <button
-                    className="btn btn-ghost btn-xs gap-1.5 text-base-content/60 hover:text-primary"
+                    className="flex items-center justify-center rounded-lg border border-base-300 bg-base-100 p-1.5 text-base-content/50 hover:border-primary hover:text-primary disabled:pointer-events-none disabled:opacity-40"
                     onClick={onOpenExplore}
                     disabled={loading.isLoading || isDisabled}
                   >
                     <PlusIcon className="w-3.5 h-3.5" />
-                    <span>Add</span>
                   </button>
                 )}
               </div>
@@ -528,11 +577,11 @@ export const VerticalClassificationStep = ({
         className="xl:col-span-7 rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden"
       >
         <div className="px-5 py-3.5 border-b border-base-300 bg-base-200/30">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="w-full flex gap-3 justify-between items-center">
             <div
               role="tablist"
               aria-label="Research panel"
-              className="tabs tabs-boxed tabs-sm rounded-lg gap-0.5 flex-wrap shrink-0"
+              className="tabs tabs-boxed tabs-sm rounded-lg gap-0.5 py-0 flex-wrap shrink-0"
             >
               <button
                 type="button"
@@ -544,7 +593,6 @@ export const VerticalClassificationStep = ({
                 )}
                 onClick={() => selectResearchPanelTab("research")}
               >
-                {/* <SparklesIcon className="w-3.5 h-3.5 text-primary shrink-0" /> */}
                 Research
               </button>
               <button
@@ -576,7 +624,7 @@ export const VerticalClassificationStep = ({
               {researchPanelTab === "research" &&
                 currentLevel?.analysisReason && (
                   <button
-                    className="btn btn-ghost btn-xs gap-1 text-base-content/50"
+                    className="flex items-center justify-center rounded-lg border border-base-300 bg-base-100 p-1.5 text-base-content/50 hover:border-primary hover:text-primary disabled:pointer-events-none disabled:opacity-40"
                     onClick={handleCopyAnalysisClick}
                   >
                     {isAnalysisCopied ? (
@@ -584,9 +632,6 @@ export const VerticalClassificationStep = ({
                     ) : (
                       <ClipboardDocumentIcon className="w-3.5 h-3.5" />
                     )}
-                    <span className="text-[11px]">
-                      {isAnalysisCopied ? "Copied" : "Copy"}
-                    </span>
                   </button>
                 )}
               {researchPanelTab === "research" &&
@@ -598,7 +643,9 @@ export const VerticalClassificationStep = ({
                     className="flex items-center justify-center rounded-lg border border-base-300 bg-base-100 p-1.5 text-base-content/50 hover:border-primary hover:text-primary disabled:pointer-events-none disabled:opacity-40"
                     aria-label="Re-run research for candidates"
                     disabled={loading.isLoading || isDisabled}
-                    onClick={() => void runBestClassificationProgression()}
+                    onClick={() =>
+                      void runBestClassificationProgression({ force: true })
+                    }
                   >
                     <ArrowPathIcon className="w-3.5 h-3.5" />
                   </button>

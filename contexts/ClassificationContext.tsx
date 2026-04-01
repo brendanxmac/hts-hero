@@ -6,6 +6,7 @@ import {
   useState,
   useEffect,
   useRef,
+  useCallback,
   ReactNode,
 } from "react";
 import { ClassificationI, ClassificationProgression } from "../interfaces/hts";
@@ -239,31 +240,22 @@ export const ClassificationProvider = ({
     }));
   };
 
-  const updateLevel = (
-    index: number,
-    updates: Partial<ClassificationProgression>
-  ) => {
-    setClassification((prev) => {
-      // This code safely updates a specific progression level in the classification state
-      // 1. First spread creates a new array copy to avoid mutating the original state
-      const newProgressionLevels = [...prev.levels];
-
-      // 2. For the progression level we want to update:
-      // - First spread copies all existing properties from the original level
-      // - Second spread overlays any new/updated properties on top
-      // This ensures we keep all original properties while updating only what changed
-      newProgressionLevels[index] = {
-        ...newProgressionLevels[index], // Keep existing properties
-        ...updates, // Override with any new values
-      };
-
-      // 3. Create new state object with updated progression levels
-      return {
-        ...prev,
-        levels: newProgressionLevels,
-      };
-    });
-  };
+  const updateLevel = useCallback(
+    (index: number, updates: Partial<ClassificationProgression>) => {
+      setClassification((prev) => {
+        const newProgressionLevels = [...prev.levels];
+        newProgressionLevels[index] = {
+          ...newProgressionLevels[index],
+          ...updates,
+        };
+        return {
+          ...prev,
+          levels: newProgressionLevels,
+        };
+      });
+    },
+    []
+  );
 
   const clearClassification = () => {
     setClassification({
@@ -277,54 +269,53 @@ export const ClassificationProvider = ({
     setNotes([]);
   };
 
-  // Add new notes to the cache, avoiding duplicates
-  const addNotes = (newNotes: NoteRecord[]) => {
+  const addNotes = useCallback((newNotes: NoteRecord[]) => {
     setNotes((prevNotes) => {
       const existingIds = new Set(prevNotes.map((n) => n.id));
       const uniqueNewNotes = newNotes.filter((n) => !existingIds.has(n.id));
       return [...prevNotes, ...uniqueNewNotes];
     });
-  };
+  }, []);
 
-  // Check which notes we already have and which are missing
-  const getNotesForSectionsAndChapters = (
-    sections: number[],
-    chapters: number[]
-  ): {
-    existingNotes: NoteRecord[];
-    missingSections: number[];
-    missingChapters: number[];
-  } => {
-    const existingNotes: NoteRecord[] = [];
-    const missingSections: number[] = [];
-    const missingChapters: number[] = [];
+  const getNotesForSectionsAndChapters = useCallback(
+    (
+      sections: number[],
+      chapters: number[]
+    ): {
+      existingNotes: NoteRecord[];
+      missingSections: number[];
+      missingChapters: number[];
+    } => {
+      const existingNotes: NoteRecord[] = [];
+      const missingSections: number[] = [];
+      const missingChapters: number[] = [];
 
-    // Check for each section
-    for (const section of sections) {
-      const sectionNote = notes.find(
-        (n) => n.type === "section" && n.number === section
-      );
-      if (sectionNote) {
-        existingNotes.push(sectionNote);
-      } else {
-        missingSections.push(section);
+      for (const section of sections) {
+        const sectionNote = notes.find(
+          (n) => n.type === "section" && n.number === section
+        );
+        if (sectionNote) {
+          existingNotes.push(sectionNote);
+        } else {
+          missingSections.push(section);
+        }
       }
-    }
 
-    // Check for each chapter
-    for (const chapter of chapters) {
-      const chapterNote = notes.find(
-        (n) => n.type === "chapter" && n.number === chapter
-      );
-      if (chapterNote) {
-        existingNotes.push(chapterNote);
-      } else {
-        missingChapters.push(chapter);
+      for (const chapter of chapters) {
+        const chapterNote = notes.find(
+          (n) => n.type === "chapter" && n.number === chapter
+        );
+        if (chapterNote) {
+          existingNotes.push(chapterNote);
+        } else {
+          missingChapters.push(chapter);
+        }
       }
-    }
 
-    return { existingNotes, missingSections, missingChapters };
-  };
+      return { existingNotes, missingSections, missingChapters };
+    },
+    [notes]
+  );
 
   const saveClassification = async () => {
     // Use refs to get current values, avoiding stale closures

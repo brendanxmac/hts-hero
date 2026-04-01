@@ -1,34 +1,34 @@
-import { NextResponse, NextRequest } from "next/server";
-import OpenAI from "openai";
-import { z } from "zod";
-import { zodResponseFormat } from "openai/helpers/zod";
-import { requesterIsAuthenticatedOrAnonymous } from "../../supabase/server";
-import { getMinMaxRangeText } from "../../../../utilities/data";
-import { OpenAIModel } from "../../../../libs/openai";
+import { NextResponse, NextRequest } from "next/server"
+import OpenAI from "openai"
+import { z } from "zod"
+import { zodResponseFormat } from "openai/helpers/zod"
+import { requesterIsAuthenticatedOrAnonymous } from "../../supabase/server"
+import { getMinMaxRangeText } from "../../../../utilities/data"
+import { OpenAIModel } from "../../../../libs/openai"
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic"
 
 interface CandidateWithReferencedCodes {
-  description: string;
-  referencedCodes?: Record<string, string>;
+  description: string
+  referencedCodes?: Record<string, string>
 }
 
 interface GetBestDescriptionMatchDto {
-  candidates: CandidateWithReferencedCodes[];
-  productDescription: string;
-  isSectionOrChapter?: boolean;
-  minMatches?: number;
-  maxMatches?: number;
-  descriptions?: string[];
+  candidates: CandidateWithReferencedCodes[]
+  productDescription: string
+  isSectionOrChapter?: boolean
+  minMatches?: number
+  maxMatches?: number
+  descriptions?: string[]
 }
 
 const BestDescriptionMatches = z.object({
   bestCandidates: z.array(z.number()),
-});
+})
 
 const getSystemPrompt = (
   isSectionOrChapter: boolean,
-  minMaxRangeText: string
+  minMaxRangeText: string,
 ) => {
   if (isSectionOrChapter) {
     return `You are a United States Harmonized Tariff Schedule Expert.
@@ -38,7 +38,7 @@ You MUST follow these rules:
 2. Your response must be an object with a "bestCandidates" property that is an array of the indexs of the best candidates.
 3. If no candidates are reasonable or similar to the Item Description, return an empty array.\n
 Note: The use of semicolons (;) in the descriptions should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".\n
-`;
+`
   } else {
     return `You are a United States Harmonized Tariff Schedule Expert.
 Select the candidates that are similar to the Item Description (${minMaxRangeText}).\n
@@ -49,19 +49,19 @@ You MUST follow these rules:
 4. If a candidate refers to a material or substance and that material or substance is likely to be part of the Item described, it should be selected.
 5. Your response must be an object with a "bestCandidates" property that is an array of the indexs of the best candidates.
 6. If no candidates are reasonable or similar to the Item Description, return an empty array.\n
-Note: The use of semicolons (;) in the descriptions should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".`;
+Note: The use of semicolons (;) in the descriptions should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".`
   }
-};
+}
 
 export async function POST(req: NextRequest) {
   try {
-    const requesterIsAllowed = await requesterIsAuthenticatedOrAnonymous(req);
+    const requesterIsAllowed = await requesterIsAuthenticatedOrAnonymous(req)
 
     if (!requesterIsAllowed) {
       return NextResponse.json(
         { error: "You must be logged in or have an active classification" },
-        { status: 401 }
-      );
+        { status: 401 },
+      )
     }
 
     const {
@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
       minMatches,
       maxMatches,
       descriptions,
-    }: GetBestDescriptionMatchDto = await req.json();
+    }: GetBestDescriptionMatchDto = await req.json()
 
     if (
       (!candidates && !isSectionOrChapter) ||
@@ -82,16 +82,16 @@ export async function POST(req: NextRequest) {
         {
           error: "Missing candidates or product description",
         },
-        { status: 400 }
-      );
+        { status: 400 },
+      )
     }
 
     if (minMatches && maxMatches) {
       if (minMatches > maxMatches || minMatches === maxMatches) {
         return NextResponse.json(
           { error: "Min matches must be less than max matches" },
-          { status: 400 }
-        );
+          { status: 400 },
+        )
       }
     }
 
@@ -105,44 +105,39 @@ export async function POST(req: NextRequest) {
       ) {
         // Use object destructuring to omit referencedCodes
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { referencedCodes, ...rest } = candidate;
-        return { ...rest, index: i };
+        const { referencedCodes, ...rest } = candidate
+        return { ...rest, index: i }
       }
 
-      return { ...candidate, index: i };
-    });
+      return { ...candidate, index: i }
+    })
 
-    if (candidates && candidates.length > 0) {
-      console.log("🎯🎯 CANDIDATES");
-      console.log(candidates);
-    }
+    // if (candidates && candidates.length > 0) {
+    //   console.log("🎯🎯 CANDIDATES")
+    //   console.log(candidates)
+    // }
 
-    const labelledDescriptions = descriptions?.map(
-      (desc, i) => `${i}. ${desc}`
-    );
+    const labelledDescriptions = descriptions?.map((desc, i) => `${i}. ${desc}`)
 
-    if (descriptions && descriptions.length > 0) {
-      console.log("🎯🎯 DESCRIPTIONS");
-      console.log(labelledDescriptions);
-    }
+    // if (descriptions && descriptions.length > 0) {
+    //   console.log("🎯🎯 DESCRIPTIONS")
+    //   console.log(labelledDescriptions)
+    // }
 
-    const minMaxRangeText = getMinMaxRangeText(minMatches, maxMatches);
+    const minMaxRangeText = getMinMaxRangeText(minMatches, maxMatches)
 
-    const systemPrompt = getSystemPrompt(isSectionOrChapter, minMaxRangeText);
-
-    console.log("Prompt");
-    console.log(systemPrompt);
+    const systemPrompt = getSystemPrompt(isSectionOrChapter, minMaxRangeText)
 
     const responseFormatOptions = {
       description: "Used to get the best description matches from an array",
-    };
+    }
     const responseFormat = zodResponseFormat(
       BestDescriptionMatches,
       "best_description_matches",
-      responseFormatOptions
-    );
+      responseFormatOptions,
+    )
 
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
     const gptResponse = await openai.chat.completions.create({
       temperature: 0.3,
       model: OpenAIModel.FIVE_ONE,
@@ -158,18 +153,11 @@ export async function POST(req: NextRequest) {
          Candidates:\n ${isSectionOrChapter ? labelledDescriptions : JSON.stringify(cleanedCandidates, null, 2)}`,
         },
       ],
-    });
+    })
 
-    console.log("Best Description Candidates Tokens:");
-    console.log({
-      promptTokens: gptResponse.usage?.prompt_tokens,
-      completionTokens: gptResponse.usage?.completion_tokens,
-      totalTokens: gptResponse.usage?.total_tokens,
-    });
-
-    return NextResponse.json(gptResponse.choices);
+    return NextResponse.json(gptResponse.choices)
   } catch (e) {
-    console.error(e);
-    return NextResponse.json({ error: e?.message }, { status: 500 });
+    console.error(e)
+    return NextResponse.json({ error: e?.message }, { status: 500 })
   }
 }

@@ -116,12 +116,12 @@ export async function POST(req: NextRequest) {
             elements,
           )
 
-    console.log("Best Classification Progress Tokens:")
-    console.log({
-      promptTokens: gptResponse.usage?.prompt_tokens,
-      completionTokens: gptResponse.usage?.completion_tokens,
-      totalTokens: gptResponse.usage?.total_tokens,
-    })
+    // console.log("Best Classification Progress Tokens:")
+    // console.log({
+    //   promptTokens: gptResponse.usage?.prompt_tokens,
+    //   completionTokens: gptResponse.usage?.completion_tokens,
+    //   totalTokens: gptResponse.usage?.total_tokens,
+    // })
 
     // Transform the response to include the derived index from the identifier
     const transformedChoices = gptResponse.choices.map((choice) => {
@@ -131,7 +131,7 @@ export async function POST(req: NextRequest) {
           const identifier = parsed.identifier as string
           const index = identifierToIndex(identifier)
 
-          console.log(`Identifier "${identifier}" resolved to index ${index}`)
+          // console.log(`Identifier "${identifier}" resolved to index ${index}`)
 
           return {
             ...choice,

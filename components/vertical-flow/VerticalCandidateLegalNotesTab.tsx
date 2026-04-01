@@ -98,6 +98,7 @@ export function VerticalCandidateLegalNotesTab({
                 <div className="w-1 bg-primary/30 shrink-0" />
                 <div className="p-4 flex-1 min-w-0 flex flex-col gap-3">
                   <div className="flex flex-wrap gap-1.5 items-center">
+                    <span className="text-xs font-semibold text-base-content/70">Notes for</span>
                     {htsnos.length > 0 ? (
                       htsnos.map((code) => (
                         <span
