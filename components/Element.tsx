@@ -68,9 +68,8 @@ export const Element = ({
   return (
     <div className="w-full flex flex-col gap-6">
       {/* Element Header Card */}
-      <div className="relative overflow-hidden py-4 ">
-
-        <div className="relative z-10 flex flex-col gap-4 mb-3">
+      <div className="relative overflow-hidden py-4">
+        <div className="relative z-10 flex flex-col gap-4 mb-5">
           <div className="flex flex-col gap-1">
             <label className="text-[10px] font-semibold uppercase tracking-widest text-base-content/50">
               HTS Code
@@ -88,17 +87,15 @@ export const Element = ({
               {element.description}
             </h2>
           </div>
-
         </div>
 
         {/* Children Elements */}
         {children.length > 0 && (
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-2">
-              <ChevronRightIcon className="w-4 h-4 text-primary/60" />
-              <span className="text-xs font-semibold uppercase tracking-widest text-base-content/50">
+              <label className="text-[10px] font-semibold uppercase tracking-widest text-base-content/50">
                 Children
-              </span>
+              </label>
               <span className="px-2 py-0.5 rounded-lg bg-base-content/5 text-xs font-bold text-base-content/60">
                 {children.length}
               </span>

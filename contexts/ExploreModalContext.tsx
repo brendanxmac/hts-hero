@@ -93,7 +93,7 @@ export function ExploreModalProvider({ children }: { children: ReactNode }) {
     const onKeyDown = (e: KeyboardEvent) => {
       if (!(e.metaKey || e.ctrlKey) || e.key.toLowerCase() !== "s") return;
       if (pathname?.startsWith("/explore")) return;
-      if (isEditableTarget(e.target)) return;
+      // if (isEditableTarget(e.target)) return;
       e.preventDefault();
       if (isOpen) {
         exploreSearchInputRef.current?.focus();
