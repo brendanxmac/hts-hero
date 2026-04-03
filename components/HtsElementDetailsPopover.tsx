@@ -24,8 +24,6 @@ interface Props {
   children: ReactNode;
   /** Use larger text sizes for the popover content */
   largeText?: boolean;
-  /** Passed through for explorer navigation analytics (e.g. Explore modal). */
-  isModal?: boolean;
 }
 
 export const HtsElementDetailsPopover = ({
@@ -34,7 +32,6 @@ export const HtsElementDetailsPopover = ({
   sections,
   children,
   largeText = false,
-  isModal = false,
 }: Props) => {
   const pathname = usePathname();
   const { setBreadcrumbs, breadcrumbs } = useBreadcrumbs();
@@ -189,7 +186,6 @@ export const HtsElementDetailsPopover = ({
 
       trackExplorerNavigatedToLevel({
         pathname,
-        isModal,
         navigation_kind: "breadcrumb",
         from_depth: breadcrumbs.length,
         to_depth: newTrail.length,
@@ -204,7 +200,6 @@ export const HtsElementDetailsPopover = ({
       buildTrailForPathIndex,
       breadcrumbs.length,
       pathname,
-      isModal,
       setBreadcrumbs,
       htsElement.chapter,
       htsElement.htsno,

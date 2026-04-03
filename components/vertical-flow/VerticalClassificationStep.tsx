@@ -543,7 +543,6 @@ export const VerticalClassificationStep = ({
                   element={element}
                   classificationLevel={classificationLevel}
                   disabled={isDisabled}
-                  onOpenExplore={onOpenExplore}
                 />
               ))}
             </div>

@@ -11,7 +11,6 @@ interface Props {
   breadcrumbs: NavigatableElement[];
   setBreadcrumbs: (breadcrumbs: NavigatableElement[]) => void;
   allExpanded?: boolean;
-  isModal?: boolean;
 }
 
 export const getChapterRange = (section: HtsSection) => {
@@ -30,7 +29,6 @@ export const Section = ({
   breadcrumbs,
   setBreadcrumbs,
   allExpanded,
-  isModal = false,
 }: Props) => {
   const { number, description } = section;
   const sectionNotesFileName = sectionNotesUsitcFileName(number);
@@ -113,7 +111,6 @@ export const Section = ({
                   chapter={chapter}
                   breadcrumbs={breadcrumbs}
                   setBreadcrumbs={setBreadcrumbs}
-                  isModal={isModal}
                 />
               );
             })}

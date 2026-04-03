@@ -15,7 +15,6 @@ export type ExplorerNavigationKind =
 
 export function trackExplorerNavigatedToLevel(params: {
   pathname: string | null | undefined
-  isModal: boolean
   explorerSurface?: ExplorerSurface
   navigation_kind: ExplorerNavigationKind
   from_depth: number
@@ -28,7 +27,6 @@ export function trackExplorerNavigatedToLevel(params: {
   const explorer_surface = resolveExplorerSurface(
     params.explorerSurface,
     params.pathname,
-    params.isModal,
   )
 
   const payload: Record<string, unknown> = {

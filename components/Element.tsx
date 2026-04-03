@@ -71,13 +71,24 @@ export const Element = ({
       <div className="relative overflow-hidden py-4 ">
 
         <div className="relative z-10 flex flex-col gap-4 mb-3">
-          <h1 className="text-primary text-2xl md:text-3xl lg:text-4xl font-bold tracking-wide">
-            {element.htsno || "—"}
-          </h1>
+          <div className="flex flex-col gap-1">
+            <label className="text-[10px] font-semibold uppercase tracking-widest text-base-content/50">
+              HTS Code
+            </label>
+            <h1 className="text-primary text-2xl md:text-3xl lg:text-4xl font-bold tracking-wide">
+              {element.htsno || "—"}
+            </h1>
+          </div>
 
-          <h2 className="text-lg md:text-xl lg:text-2xl text-base-content font-semibold leading-snug">
-            {element.description}
-          </h2>
+          <div className="flex flex-col gap-1">
+            <label className="text-[10px] font-semibold uppercase tracking-widest text-base-content/50">
+              Description
+            </label>
+            <h2 className="text-lg md:text-xl lg:text-2xl text-base-content font-semibold leading-snug">
+              {element.description}
+            </h2>
+          </div>
+
         </div>
 
         {/* Children Elements */}
@@ -101,7 +112,6 @@ export const Element = ({
                     onClick={() => {
                       trackExplorerNavigatedToLevel({
                         pathname,
-                        isModal,
                         navigation_kind: "deeper_child",
                         from_depth: breadcrumbs.length,
                         to_depth: breadcrumbs.length + 1,

@@ -449,7 +449,6 @@ export const CountryTariff = ({
               htsElement={htsElement}
               htsElements={htsElements}
               sections={sections}
-              isModal={isModal}
             >
               <span className="text-primary font-semibold uppercase text-base sm:text-lg cursor-help underline decoration-dotted decoration-primary/40 underline-offset-2">
                 {htsElement.htsno}

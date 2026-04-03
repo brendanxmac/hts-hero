@@ -25,10 +25,9 @@ import { trackExplorerNavigatedToLevel } from "../libs/explorer-navigation";
 
 interface Props {
   chapter: HtsSectionAndChapterBase;
-  isModal?: boolean;
 }
 
-export const Chapter = ({ chapter, isModal = false }: Props) => {
+export const Chapter = ({ chapter }: Props) => {
   const pathname = usePathname();
   const { number, description } = chapter;
   const { htsElements } = useHts();
@@ -294,7 +293,6 @@ export const Chapter = ({ chapter, isModal = false }: Props) => {
                 onClick={() => {
                   trackExplorerNavigatedToLevel({
                     pathname,
-                    isModal,
                     navigation_kind: "deeper_heading",
                     from_depth: breadcrumbs.length,
                     to_depth: breadcrumbs.length + 1,

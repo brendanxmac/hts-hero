@@ -10,14 +10,12 @@ interface SectionsProps {
   sections: HtsSection[];
   breadcrumbs: NavigatableElement[];
   setBreadcrumbs: (breadcrumbs: NavigatableElement[]) => void;
-  isModal?: boolean;
 }
 
 export const Sections = ({
   sections,
   breadcrumbs,
   setBreadcrumbs,
-  isModal = false,
 }: SectionsProps) => {
   const [allExpanded, setAllExpanded] = useState(false);
 
@@ -60,7 +58,6 @@ export const Sections = ({
             breadcrumbs={breadcrumbs}
             setBreadcrumbs={setBreadcrumbs}
             allExpanded={allExpanded}
-            isModal={isModal}
           />
         );
       })}

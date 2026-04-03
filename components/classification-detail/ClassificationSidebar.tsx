@@ -20,6 +20,7 @@ import {
 import {
   EyeIcon,
   ListBulletIcon,
+  MagnifyingGlassIcon,
   ScaleIcon,
   CurrencyDollarIcon,
   PaperClipIcon,
@@ -51,6 +52,8 @@ interface Props {
   isAnonymous: boolean;
   /** Back + account chrome; false for public/shared read-only visitors */
   useNormalWorkspace: boolean;
+  /** Opens HTS Explorer modal; omitted in read-only / shared views where the modal is unavailable */
+  onOpenExplore?: () => void;
 }
 
 const NAV_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -95,6 +98,7 @@ export const ClassificationSidebar = ({
   userProfile,
   isAnonymous,
   useNormalWorkspace,
+  onOpenExplore,
 }: Props) => {
   const readOnly = useIsReadOnly();
   const [classificationExpanded, setClassificationExpanded] = useState(true);
@@ -142,10 +146,10 @@ export const ClassificationSidebar = ({
       <div className="flex flex-col h-full">
         {/* Logo & Back */}
         <div className="p-4 pb-0">
-          <div className="flex gap-3 justify-between">
+          <div className="flex gap-3 justify-between mb-2">
             <Link
               href="/"
-              className="flex items-center gap-2 px-2 py-1.5 mb-3"
+              className="flex items-center gap-2 px-2 py-1.5"
             >
               <Image
                 src={logo}
@@ -159,7 +163,20 @@ export const ClassificationSidebar = ({
                 {config.appName}
               </span>
             </Link>
-            <ThemeToggle />
+            <div className="flex items-center gap-1 shrink-0">
+              {onOpenExplore && (
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-sm btn-circle"
+                  onClick={onOpenExplore}
+                  title="HTS Explorer"
+                  aria-label="Open HTS Explorer"
+                >
+                  <MagnifyingGlassIcon className="w-5 h-5" />
+                </button>
+              )}
+              <ThemeToggle />
+            </div>
           </div>
 
           {!useNormalWorkspace ? (
@@ -250,7 +267,7 @@ export const ClassificationSidebar = ({
 
                 {/* Sub-items */}
                 {classificationExpanded && (
-                  <ul className="ml-4 pl-3 border-l border-base-300 mt-0.5 flex flex-col gap-0.5">
+                  <ul className="pl-2 mt-0.5 flex flex-col gap-0.5">
                     {classificationSubItems.map((item) => {
                       const isActive = activeTab === item.id;
                       const hasSelection = item.status === "completed" && (item.htsno || item.selectionDescription);
@@ -259,7 +276,7 @@ export const ClassificationSidebar = ({
                         <li key={item.id}>
                           <button
                             onClick={() => selectTab(item.id)}
-                            className={`w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 ${isActive
+                            className={`w-full flex items-center gap-2.5 pl-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 ${isActive
                               ? "bg-primary/10 text-primary"
                               : "text-base-content/60 hover:bg-base-300/50 hover:text-base-content"
                               }`}
@@ -268,12 +285,12 @@ export const ClassificationSidebar = ({
                             {hasSelection ? (
                               <span className="flex flex-col items-start min-w-0">
                                 {item.htsno && (
-                                  <span className="font-mono font-semibold text-[11px] truncate max-w-full">
+                                  <span className="font-mono font-medium text-[11px] text-base-content/50 max-w-full">
                                     {item.htsno}
                                   </span>
                                 )}
                                 {item.selectionDescription && (
-                                  <span className="text-[10px] font-normal text-base-content/40 truncate max-w-full leading-tight">
+                                  <span className="text-xs font-semibold text-left text-base-content max-w-full">
                                     {item.selectionDescription}
                                   </span>
                                 )}

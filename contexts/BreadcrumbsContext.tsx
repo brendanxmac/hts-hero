@@ -1,5 +1,12 @@
 "use client";
-import { createContext, useContext, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
+} from "react";
 import {
   NavigatableElement,
   NavigatableElementType,
@@ -12,7 +19,7 @@ import {
 
 interface BreadcrumbsContextType {
   breadcrumbs: NavigatableElement[];
-  setBreadcrumbs: (breadcrumbs: NavigatableElement[]) => void;
+  setBreadcrumbs: Dispatch<SetStateAction<NavigatableElement[]>>;
   addBreadcrumb: (navigatableElement: NavigatableElementType) => void;
   removeBreadcrumb: (index: number) => void;
   clearBreadcrumbs: () => void;

@@ -8,7 +8,6 @@ import {
   getDirectChildrenElements,
   getElementsInChapter,
 } from "../../libs/hts";
-import { CheckCircleIcon } from "@heroicons/react/16/solid";
 
 const DEFAULT_ESTIMATED_LEVELS = 4;
 const MAX_DEPTH_WALK = 8;
@@ -35,15 +34,11 @@ function estimateRemainingLevels(
   return depth;
 }
 
-export function ClassificationProgress({
-  currentStepNumber,
-}: {
-  currentStepNumber: number;
-}) {
+export function ClassificationProgress() {
   const { classification } = useClassification();
   const { htsElements } = useHts();
 
-  const { completedSteps, estimatedTotal, percentage } = useMemo(() => {
+  const { percentage } = useMemo(() => {
     if (!classification) {
       return { completedSteps: 0, estimatedTotal: 1, percentage: 0 };
     }
@@ -109,45 +104,6 @@ export function ClassificationProgress({
       percentage: pct,
     };
   }, [classification, htsElements]);
-
-  const isComplete = classification?.isComplete ?? false;
-  const finalCode =
-    // const finalDescription =
-    //   classification?.levels[classification.levels.length - 1]?.selection
-    //     ?.description;
-    classification?.levels[classification.levels.length - 1]?.selection?.htsno;
-
-  if (isComplete) {
-    return (
-      <div className="mb-6 rounded-xl border border-success/20 bg-gradient-to-r from-success/[0.06] via-success/[0.03] to-transparent p-4">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-9 h-9 rounded-full bg-success/15 shrink-0">
-            <CheckCircleIcon className="w-5 h-5 text-success" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 justify-between flex-wrap">
-              <span className="text-sm font-semibold text-success">
-                Classification Complete
-              </span>
-              {finalCode && (
-                <span className="font-mono text-sm font-bold text-base-content">
-                  {finalCode}
-                </span>
-              )}
-            </div>
-            {/* {finalDescription && (
-              <p className="text-xs text-base-content/50 mt-0.5 line-clamp-1">
-                {finalDescription}
-              </p>
-            )} */}
-          </div>
-        </div>
-        <div className="mt-3 h-1.5 w-full rounded-full bg-success/20 overflow-hidden">
-          <div className="h-full w-full rounded-full bg-success" />
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="mb-6">

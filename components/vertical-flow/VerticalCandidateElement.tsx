@@ -1,6 +1,6 @@
 "use client";
 
-import { useBreadcrumbs } from "../../contexts/BreadcrumbsContext";
+import { useExploreModal } from "../../contexts/ExploreModalContext";
 import { HtsElement } from "../../interfaces/hts";
 import {
   TrashIcon,
@@ -32,19 +32,17 @@ interface Props {
   element: HtsElement;
   classificationLevel: number;
   disabled: boolean;
-  onOpenExplore: () => void;
 }
 
 export const VerticalCandidateElement = ({
   element,
   classificationLevel,
   disabled = false,
-  onOpenExplore,
 }: Props) => {
   const readOnly = useIsReadOnly();
+  const { openExplore } = useExploreModal();
   const { user } = useUser();
   const { htsno, chapter, description, indent } = element;
-  const { clearBreadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { sections } = useHtsSections();
   const { classification, classificationId, updateLevel, setClassification } =
     useClassification();
@@ -130,7 +128,6 @@ export const VerticalCandidateElement = ({
 
   const handleViewElement = (e: React.MouseEvent) => {
     e.stopPropagation();
-    clearBreadcrumbs();
     const sectionAndChapter = getSectionAndChapterFromChapterNumber(
       sections,
       Number(getChapterFromHtsElement(element, htsElements))
@@ -143,8 +140,7 @@ export const VerticalCandidateElement = ({
       [...parents, element]
     );
 
-    setBreadcrumbs(breadcrumbs);
-    onOpenExplore();
+    openExplore("classification_modal", breadcrumbs);
   };
 
   const handleRemove = (e: React.MouseEvent) => {
