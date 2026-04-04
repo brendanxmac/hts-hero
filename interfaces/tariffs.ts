@@ -1,52 +1,52 @@
-import { ContentRequirement, TariffCategory } from "../enums/tariff";
-import { PricingPlan } from "../types";
+import { ContentRequirement, TariffCategory } from "../enums/tariff"
+import { PricingPlan } from "../types"
 
 export interface TariffI {
-  code: string;
-  description: string;
-  name: string;
-  exceptions?: string[];
+  code: string
+  description: string
+  name: string
+  exceptions?: string[]
   inclusions?: {
-    tariffs?: string[];
-    codes?: string[];
-    countries?: string[];
-  };
+    tariffs?: string[]
+    codes?: string[]
+    countries?: string[]
+  }
   exclusions?: {
-    tariffs?: string[];
-    codes?: string[];
-    countries?: string[];
-  };
-  general?: number;
-  special?: number;
-  other?: number;
-  unit?: string;
-  requiresReview?: boolean;
-  contentRequirement?: ContentRequirement;
-  category?: TariffCategory; // TODO: implement this
+    tariffs?: string[]
+    codes?: string[]
+    countries?: string[]
+  }
+  general?: number
+  special?: number
+  other?: number
+  unit?: string
+  requiresReview?: boolean
+  contentRequirement?: ContentRequirement
+  category?: TariffCategory // TODO: implement this
 }
 
 export interface UITariff extends TariffI {
-  isActive: boolean;
+  isActive: boolean
 }
 
 export interface TariffSet {
-  name: string;
-  exceptionCodes: Set<string>;
-  tariffs: UITariff[];
+  name: string
+  exceptionCodes: Set<string>
+  tariffs: UITariff[]
 }
 
 export interface TariffImpactCheck {
-  id: string; // uuid
-  user_id: string; // uuid
-  tariff_code_set: string; // uuid
-  hts_code_set?: string; // uuid
-  codes: string[]; // stored as jsonb
-  num_codes: number; // generated column
-  created_at: string; // ISO timestamp
-  plan?: PricingPlan | "Trial";
+  id: string // uuid
+  user_id: string // uuid
+  tariff_code_set: string // uuid
+  hts_code_set?: string // uuid
+  codes: string[] // stored as jsonb
+  num_codes: number // generated column
+  created_at: string // ISO timestamp
+  plan?: PricingPlan | "Trial"
 }
 
 export type NewTariffImpactCheck = Omit<
   TariffImpactCheck,
   "id" | "num_codes" | "created_at"
->;
+>
