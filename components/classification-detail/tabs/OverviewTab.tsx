@@ -414,7 +414,7 @@ export const OverviewTab = ({
       {/* Basis for Classification */}
       <DashboardCard>
         <DashboardCardHeader
-          title="Basis for your Classification"
+          title="Classification Notes"
           icon={<DocumentTextIcon className="w-4 h-4" />}
         />
         <div className="p-5">

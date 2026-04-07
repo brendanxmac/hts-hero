@@ -271,11 +271,8 @@ export const VerticalClassificationStep = ({
       try {
         if (!isMountedRef.current) return;
 
-        let relevantNotes: NoteRecord[] = [];
-
-        if (classificationTier === "premium") {
-          relevantNotes = await getNotesForCandidates(simplifiedCandidates);
-        }
+        const relevantNotes =
+          await getNotesForCandidates(simplifiedCandidates);
 
         const {
           index: suggestedCandidateIndex,

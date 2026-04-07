@@ -20,6 +20,7 @@ import {
 } from "../../libs/hts";
 import { useHts } from "../../contexts/HtsContext";
 import { openUsitcHtsFileInNewTab } from "@/libs/usitc-hts-file-url";
+import { isAboveSixDigits } from "../../libs/hts-code";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 import {
   Product,
@@ -50,7 +51,10 @@ export const VerticalCandidateElement = ({
   const { levels, progressionDescription } = classification;
 
   const currentLevel = levels[classificationLevel];
-  const isRecommended = currentLevel?.analysisElement?.uuid === element.uuid;
+  const isAiRecommended =
+    currentLevel?.analysisElement?.uuid === element.uuid;
+  const isRecommended =
+    isAiRecommended && !isAboveSixDigits(htsno ?? "");
 
   const isLevelSelection = Boolean(
     levels.some(

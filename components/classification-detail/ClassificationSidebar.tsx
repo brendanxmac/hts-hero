@@ -66,8 +66,8 @@ const NAV_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
 
 function StatusIndicator({ status }: { status: ClassificationNavItem["status"] }) {
   switch (status) {
-    case "completed":
-      return <CheckCircleIcon className="w-4 h-4 text-success shrink-0" />;
+    // case "completed":
+    //   return <CheckCircleIcon className="w-4 h-4 text-success shrink-0" />;
     case "active":
       return (
         <span className="relative flex h-3 w-3 shrink-0">
@@ -276,7 +276,7 @@ export const ClassificationSidebar = ({
                         <li key={item.id}>
                           <button
                             onClick={() => selectTab(item.id)}
-                            className={`w-full flex items-center gap-2.5 pl-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 ${isActive
+                            className={`w-full flex items-center gap-2.5 pl-2 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 ${isActive
                               ? "bg-primary/10 text-primary"
                               : "text-base-content/60 hover:bg-base-300/50 hover:text-base-content"
                               }`}
@@ -290,7 +290,7 @@ export const ClassificationSidebar = ({
                                   </span>
                                 )}
                                 {item.selectionDescription && (
-                                  <span className="text-xs font-semibold text-left text-base-content max-w-full">
+                                  <span className="text-xs font-medium text-left text-base-content max-w-full">
                                     {item.selectionDescription}
                                   </span>
                                 )}

@@ -14,6 +14,7 @@ import { OpenAIModel } from "../../../../libs/openai"
 import { ClassificationTier } from "../../../../contexts/ClassificationContext"
 import { AutoParseableResponseFormat } from "openai/lib/parser"
 import { getSectionAndChapterFromHtsCode } from "../../../../libs/supabase/hts-notes"
+import { isAboveSixDigits } from "../../../../libs/hts-code"
 import { NoteRecord } from "../../../../types/hts"
 
 export const dynamic = "force-dynamic"
@@ -74,7 +75,7 @@ export async function POST(req: NextRequest) {
       elements,
       productDescription,
       selectionPath,
-      classificationTier = "standard",
+      classificationTier: _classificationTier = "standard",
       notes: providedNotes,
       level,
     }: GetBestClassificationProgressionDto = await req.json()
@@ -99,22 +100,16 @@ export async function POST(req: NextRequest) {
       responseFormatOptions,
     )
 
-    const gptResponse =
-      classificationTier === "premium"
-        ? await getBestClassificationProgressionPremium(
-            responseFormat,
-            productDescription,
-            selectionPath,
-            elements,
-            level,
-            providedNotes,
-          )
-        : await getBestClassificationProgressionStandard(
-            responseFormat,
-            productDescription,
-            selectionPath,
-            elements,
-          )
+    // Every classification uses the premium (GRI + legal notes) progression.
+    // `getBestClassificationProgressionStandard` is kept in this file for now but not used.
+    const gptResponse = await getBestClassificationProgressionPremium(
+      responseFormat,
+      productDescription,
+      selectionPath,
+      elements,
+      level,
+      providedNotes ?? [],
+    )
 
     // console.log("Best Classification Progress Tokens:")
     // console.log({
@@ -130,8 +125,6 @@ export async function POST(req: NextRequest) {
           const parsed = JSON.parse(choice.message.content)
           const identifier = parsed.identifier as string
           const index = identifierToIndex(identifier)
-
-          // console.log(`Identifier "${identifier}" resolved to index ${index}`)
 
           return {
             ...choice,
@@ -212,16 +205,14 @@ const getBestClassificationProgressionPremium = async (
   level: number,
   providedNotes?: NoteRecord[],
 ): Promise<OpenAI.Chat.Completions.ChatCompletion> => {
+  const notes = providedNotes ?? []
+
   const griRulesPath = path.resolve(
     process.cwd(),
     "rules-for-classification.json",
   )
 
   const griRules = JSON.parse(fs.readFileSync(griRulesPath, "utf-8"))
-
-  if (!providedNotes) {
-    throw new Error("No notes provided")
-  }
 
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
@@ -243,7 +234,7 @@ const getBestClassificationProgressionPremium = async (
       associatedNotes: (() => {
         // After level 0, all notes will be the same for all candidates
         if (level > 0) {
-          return providedNotes.map((note) => note.id)
+          return notes.map((note) => note.id)
         }
 
         // Get section and chapter numbers from the candidate element
@@ -261,7 +252,7 @@ const getBestClassificationProgressionPremium = async (
         // Compose IDs to match notesRegistry's id pattern
         const noteIds: string[] = []
 
-        providedNotes.map((note) => {
+        notes.forEach((note) => {
           if (note.type === "section" && note.number === section) {
             noteIds.push(note.id)
           }
@@ -274,6 +265,26 @@ const getBestClassificationProgressionPremium = async (
       })(),
     }),
   )
+
+  const usePotentiallyRelevantAnalysisPrompt = candidateElements.some((el) =>
+    isAboveSixDigits(el.code ?? ""),
+  )
+
+  const premiumAnalysisInstructionsPotentiallyRelevant = `
+        * Be short and concise
+        * Have Only 1 Section called "Potentially Relevant Information" that examines the relevant notes or candidates and provides the user with information they might not know (such as defining terms, measurements, distinctions, note references, etc...), without mentioning how they impact the classification at all, EVER.
+        * Not contain conclusions, decisions, or final summaries.
+        * Never say anything like "the best candidate" or "the most suitable match", etc...
+        * Be well structured Markdown that highlights key notes, terms, and concepts
+        * Only reference candidates by code or description, not by their letter identifier (e.g. A, B, etc..)`
+
+  const premiumAnalysisInstructionsHeadingLevel = `
+        * Be short and concise
+        * Use cautious, audit-like language at all times and frame any conclusions as evidence-based interpretations such as "based on the available information" or "it appears" or "the primary candidate" and never as certain, final, or authoritative determinations.
+        * Have 1 section called "Analysis" that provides a concise summary of why the candidate you picked is the most suitable match for the "Item Description" based on the "GRI Rules", the relevant "Legal Notes", and the "Selection Path" (if provided). If Selection Path is not provided, don't mention it.
+        * Have good spacing so it is easy to read
+        * Be well structured Markdown that highlights key notes, terms, and concepts
+        * Only reference candidates by code or description, not by their letter identifier (e.g. A, B, etc..)`
 
   return openai.chat.completions.create({
     temperature: 0,
@@ -296,13 +307,7 @@ const getBestClassificationProgressionPremium = async (
         2. Apply the following GRI Rules sequentailly while considering all candidates to shape your decision. Only proceed to and apply the sequential rules if a winning candidate is not clearly determined based on the current one.
         GRI Rules:\n${JSON.stringify(griRules, null, 2)}
 
-        In your response, "analysis" should:
-        * Be short and concise
-        * Have Only 1 Section called "Potentially Relevant Information" that examines the relevant notes or candidates and provides the user with information they might not know (such as defining terms, measurements, distinctions, note references, etc...), without mentioning how they impact the classification at all, EVER.
-        * Not contain conclusions, decisions, or final summaries.
-        * Never say anything like "the best candidate" or "the most suitable match", etc...
-        * Be well structured Markdown that highlights key notes, terms, and concepts
-        * Only reference candidates by code or description, not by their letter identifier (e.g. A, B, etc..)
+        In your response, "analysis" should:${usePotentiallyRelevantAnalysisPrompt ? premiumAnalysisInstructionsPotentiallyRelevant : premiumAnalysisInstructionsHeadingLevel}
 
         The "identifier" property of your response must be the exact letter identifier (e.g., "A", "B", "C") of your chosen candidate.`,
       },
@@ -310,22 +315,9 @@ const getBestClassificationProgressionPremium = async (
         role: "user",
         content: `Item Description: ${productDescription}\n
           ${selectionPath && selectionPath.length > 0 ? `Selection Path:\n${JSON.stringify(selectionPath, null, 2)}\n` : ""}
-          Legal Notes:\n ${JSON.stringify(providedNotes, null, 2)}\n
+          Legal Notes:\n ${JSON.stringify(notes, null, 2)}\n
           Candidates:\n ${JSON.stringify(candidates, null, 2)}\n`,
       },
     ],
   })
 }
-
-// * Have 1 Section for "Potentially Relevant Notes" that objectively surfaces any potentially relevant notes and provides context about them, without referring to the classification or making any conculsion or summary, just the notes.
-// * Have 1 Optional section for "Potentially Relevant Questions" that simply asks questions that might help clarify the classification, if needed, without any conclusions or summary, just the raw questions.
-
-// In your response, "analysis" should:
-// * Be short and concise
-// * Outline the evidence that supports the relevant candidate(s).
-// * Not contain conclusions or hard decisions, only evidence.
-// * Never include a summary of the evidence, only the evidence itself.
-// * Use research language at all times and have no conclusions.
-// * Never say anything like "the best candidate" or "the most suitable match", etc...
-// * Be well structured Markdown that highlights key parts
-// * Only reference candidates by code or description, not by their letter identifier (e.g. A, B, etc..)

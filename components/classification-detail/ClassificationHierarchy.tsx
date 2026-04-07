@@ -127,7 +127,7 @@ export const ClassificationHierarchy = ({
             <span className={`text-xs font-bold uppercase tracking-wider ${interactable ? "text-primary" : "text-base-content/60"}`}>
               {item.label}
             </span>
-            <span className="text-sm leading-snug text-base-content/60">
+            <span className="text-sm leading-snug text-base-content">
               {item.description}
             </span>
           </div>

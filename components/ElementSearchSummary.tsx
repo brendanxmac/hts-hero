@@ -51,8 +51,8 @@ export const ElementSearchSummary = ({
   return (
     <div
       className={`group relative overflow-hidden rounded-xl transition-all duration-200 cursor-pointer ${isHeadingCandidate
-          ? "bg-gradient-to-br from-success/5 via-base-100 to-success/10 border border-success/30 shadow-sm"
-          : "bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 border border-base-content/10 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
+        ? "bg-gradient-to-br from-success/5 via-base-100 to-success/10 border border-success/30 shadow-sm"
+        : "bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 border border-base-content/10 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
         }`}
     >
 
@@ -62,8 +62,8 @@ export const ElementSearchSummary = ({
           <div className="flex items-center">
             <button
               className={`flex items-center justify-center w-12 h-full transition-colors ${isHeadingCandidate
-                  ? "bg-error/10 hover:bg-error/20 text-error"
-                  : "bg-success/10 hover:bg-success/20 text-success"
+                ? "bg-error/10 hover:bg-error/20 text-error"
+                : "bg-success/10 hover:bg-success/20 text-success"
                 }`}
               onClick={(e) => {
                 e.stopPropagation();
@@ -138,7 +138,7 @@ export const ElementSearchSummary = ({
                   {htsno}
                 </span>
               )}
-              <span className="text-sm font-medium text-base-content group-hover:text-base-content transition-colors leading-relaxed">
+              <span className="text-sm md:text-base lg:text-lg font-medium text-base-content group-hover:text-base-content transition-colors leading-relaxed">
                 {description}
               </span>
             </div>

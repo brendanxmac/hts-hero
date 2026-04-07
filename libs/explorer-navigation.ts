@@ -12,6 +12,7 @@ export type ExplorerNavigationKind =
   | "breadcrumb"
   | "search_result"
   | "url_code"
+  | "hts_path"
 
 export function trackExplorerNavigatedToLevel(params: {
   pathname: string | null | undefined
@@ -21,6 +22,8 @@ export function trackExplorerNavigatedToLevel(params: {
   to_depth: number
   /** Breadcrumb segment index navigated to (0-based), when kind is `breadcrumb` */
   breadcrumb_index?: number
+  /** Row index in the HTS path hierarchy, when kind is `hts_path` */
+  hts_path_index?: number
   hts_code?: string | null
   chapter_number?: number | null
 }) {
@@ -39,6 +42,9 @@ export function trackExplorerNavigatedToLevel(params: {
 
   if (params.breadcrumb_index !== undefined) {
     payload.breadcrumb_index = params.breadcrumb_index
+  }
+  if (params.hts_path_index !== undefined) {
+    payload.hts_path_index = params.hts_path_index
   }
   if (params.hts_code) {
     payload.hts_code = params.hts_code
