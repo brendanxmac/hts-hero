@@ -106,6 +106,13 @@ export const VerticalClassificationStep = ({
   // ---------------------------------------------------------------------------
   const currentLevel = levels[classificationLevel];
   const optionsForLevel = currentLevel?.candidates?.length || 0;
+  const isFetchingHeadingCandidates =
+    loading.isLoading && loading.text === "Looking for Headings";
+  /** Level 0: pulse placeholders only while discovery or heading fetch is in flight — not after an empty search result. */
+  const showOptionsLoadingSkeleton =
+    classificationLevel === 0 &&
+    optionsForLevel === 0 &&
+    (!chapterDiscoveryComplete || isFetchingHeadingCandidates);
   const isUsersClassification = classificationRecord
     ? user
       ? classificationRecord.user_id === user.id
@@ -256,16 +263,16 @@ export const VerticalClassificationStep = ({
       const selectionPath =
         classificationLevel > 0
           ? levels
-              .map((levelItem, i): LevelSelection => {
-                if (levelItem.selection) {
-                  return {
-                    level: i + 1,
-                    description: levelItem.selection.description,
-                  };
-                }
-                return null;
-              })
-              .filter((selection) => selection !== null)
+            .map((levelItem, i): LevelSelection => {
+              if (levelItem.selection) {
+                return {
+                  level: i + 1,
+                  description: levelItem.selection.description,
+                };
+              }
+              return null;
+            })
+            .filter((selection) => selection !== null)
           : [];
 
       try {
@@ -518,11 +525,13 @@ export const VerticalClassificationStep = ({
               <div className="flex flex-wrap gap-1.5">
                 {classificationLevel === 0 && (
                   <button
-                    className="flex items-center justify-center rounded-lg border border-base-300 bg-base-100 p-1.5 text-base-content/50 hover:border-primary hover:text-primary disabled:pointer-events-none disabled:opacity-40"
+                    type="button"
+                    className="flex items-center gap-1.5 rounded-lg border border-base-300 bg-base-100 px-2.5 py-1.5 text-xs font-semibold text-base-content/70 hover:border-primary hover:text-primary disabled:pointer-events-none disabled:opacity-40"
                     onClick={onOpenExplore}
                     disabled={loading.isLoading || isDisabled}
                   >
-                    <PlusIcon className="w-3.5 h-3.5" />
+                    <PlusIcon className="w-3.5 h-3.5 shrink-0" />
+                    Add candidates
                   </button>
                 )}
               </div>
@@ -543,7 +552,7 @@ export const VerticalClassificationStep = ({
                 />
               ))}
             </div>
-          ) : (
+          ) : showOptionsLoadingSkeleton ? (
             <div className="flex flex-col gap-2.5">
               {[1, 2, 3].map((i) => (
                 <div
@@ -563,6 +572,27 @@ export const VerticalClassificationStep = ({
                   </div>
                 </div>
               ))}
+            </div>
+          ) : (
+            <div className="rounded-lg border border-dashed border-base-300 bg-base-200/20 px-4 py-8 text-center">
+              <p className="text-sm font-medium text-base-content/70">
+                No options found
+              </p>
+              <p className="text-xs text-base-content/45 mt-1.5 max-w-sm mx-auto">
+                {classificationLevel === 0
+                  ? "No heading matches were returned for your chapters. Add candidates from the tariff tree or refine your product description."
+                  : "There are no candidates at this level. Go back or adjust your selection."}
+              </p>
+              {!readOnly && classificationLevel === 0 && (
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm mt-4"
+                  onClick={onOpenExplore}
+                  disabled={isDisabled}
+                >
+                  Add candidates
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -630,7 +660,7 @@ export const VerticalClassificationStep = ({
                     )}
                   </button>
                 )}
-              {researchPanelTab === "research" &&
+              {/* {researchPanelTab === "research" &&
                 !readOnly &&
                 (currentLevel?.candidates?.length ?? 0) > 0 &&
                 !lacksProductDescriptionForAnalysis(articleDescription) && (
@@ -645,7 +675,7 @@ export const VerticalClassificationStep = ({
                   >
                     <ArrowPathIcon className="w-3.5 h-3.5" />
                   </button>
-                )}
+                )} */}
             </div>
           </div>
         </div>

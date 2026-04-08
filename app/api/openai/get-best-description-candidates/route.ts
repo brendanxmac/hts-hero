@@ -32,10 +32,10 @@ const getSystemPrompt = (
 ) => {
   if (isSectionOrChapter) {
     return `You are a United States Harmonized Tariff Schedule Expert.
-Select the candidates that are similar to the Item Description (${minMaxRangeText}).\n
+Select the candidates that are even remotely similar to the Item Description (${minMaxRangeText}).\n
 You MUST follow these rules:
 1. Analyze every candidate one by one.
-2. Your response must be an object with a "bestCandidates" property that is an array of the indexs of the best candidates.
+2. Your response must be an object with a "bestCandidates" property that is an array of the indexes of the best candidates.
 3. If no candidates are reasonable or similar to the Item Description, return an empty array.\n
 Note: The use of semicolons (;) in the descriptions should be interpreted as "or" for example "mangoes;mangosteens" would be interpreted as "mangoes or mangosteens".\n
 `
@@ -112,22 +112,9 @@ export async function POST(req: NextRequest) {
       return { ...candidate, index: i }
     })
 
-    // if (candidates && candidates.length > 0) {
-    //   console.log("🎯🎯 CANDIDATES")
-    //   console.log(candidates)
-    // }
-
     const labelledDescriptions = descriptions?.map((desc, i) => `${i}. ${desc}`)
-
-    // if (descriptions && descriptions.length > 0) {
-    //   console.log("🎯🎯 DESCRIPTIONS")
-    //   console.log(labelledDescriptions)
-    // }
-
     const minMaxRangeText = getMinMaxRangeText(minMatches, maxMatches)
-
     const systemPrompt = getSystemPrompt(isSectionOrChapter, minMaxRangeText)
-
     const responseFormatOptions = {
       description: "Used to get the best description matches from an array",
     }

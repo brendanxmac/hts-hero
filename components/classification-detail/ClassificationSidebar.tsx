@@ -66,8 +66,8 @@ const NAV_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
 
 function StatusIndicator({ status }: { status: ClassificationNavItem["status"] }) {
   switch (status) {
-    // case "completed":
-    //   return <CheckCircleIcon className="w-4 h-4 text-success shrink-0" />;
+    case "completed":
+      return <CheckCircleIcon className="w-4 h-4 text-success shrink-0" />;
     case "active":
       return (
         <span className="relative flex h-3 w-3 shrink-0">

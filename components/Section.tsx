@@ -45,11 +45,10 @@ export const Section = ({
 
   return (
     <div
-      className={`group relative overflow-hidden rounded-2xl transition-all duration-300 cursor-pointer ${
-        isExpanded
+      className={`group relative overflow-hidden rounded-2xl transition-all duration-300 cursor-pointer ${isExpanded
           ? "bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 border border-primary/20 shadow-lg"
           : "bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 border border-base-content/10 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5"
-      }`}
+        }`}
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -94,26 +93,25 @@ export const Section = ({
           </div>
 
           <ChevronUpIcon
-            className={`shrink-0 w-6 h-6 text-primary transition-transform duration-300 ${
-              isExpanded ? "rotate-180" : ""
-            }`}
+            className={`shrink-0 w-6 h-6 text-primary transition-transform duration-300 ${isExpanded ? "rotate-180" : ""
+              }`}
           />
         </div>
 
         {/* Chapters List */}
         {isExpanded && (
           <div className="mt-4 pt-4 border-t border-base-content/10">
-          <div className="flex flex-col gap-2">
-            {section.chapters.map((chapter) => {
-              return (
-                <ChapterSummary
-                  key={chapter.number}
-                  chapter={chapter}
-                  breadcrumbs={breadcrumbs}
-                  setBreadcrumbs={setBreadcrumbs}
-                />
-              );
-            })}
+            <div className="flex flex-col gap-2">
+              {section.chapters.map((chapter) => {
+                return (
+                  <ChapterSummary
+                    key={chapter.number}
+                    chapter={chapter}
+                    breadcrumbs={breadcrumbs}
+                    setBreadcrumbs={setBreadcrumbs}
+                  />
+                );
+              })}
             </div>
           </div>
         )}

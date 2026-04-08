@@ -272,17 +272,15 @@ const getBestClassificationProgressionPremium = async (
 
   const premiumAnalysisInstructionsPotentiallyRelevant = `
         * Be short and concise
-        * Have Only 1 Section called "Potentially Relevant Information" that examines the relevant notes or candidates and provides the user with information they might not know (such as defining terms, measurements, distinctions, note references, etc...), without mentioning how they impact the classification at all, EVER.
-        * Not contain conclusions, decisions, or final summaries.
+        * Have Only 1 Section called "Potentially Relevant Information" that examines only the relevant notes or candidates and provides the user with information they might not know (such as defining terms, measurements, distinctions, note references, etc...), without mentioning how they impact the classification at all, EVER.
+        * Not contain conclusions, decisions, or final summaries, especially about classification.
+        * Never list the candidates, as that would not be useful.
         * Never say anything like "the best candidate" or "the most suitable match", etc...
         * Be well structured Markdown that highlights key notes, terms, and concepts
         * Only reference candidates by code or description, not by their letter identifier (e.g. A, B, etc..)`
 
   const premiumAnalysisInstructionsHeadingLevel = `
-        * Be short and concise
-        * Use cautious, audit-like language at all times and frame any conclusions as evidence-based interpretations such as "based on the available information" or "it appears" or "the primary candidate" and never as certain, final, or authoritative determinations.
-        * Have 1 section called "Analysis" that provides a concise summary of why the candidate you picked is the most suitable match for the "Item Description" based on the "GRI Rules", the relevant "Legal Notes", and the "Selection Path" (if provided). If Selection Path is not provided, don't mention it.
-        * Have good spacing so it is easy to read
+        * Have 1 section called "Analysis" that provides a concise summary of why the candidate you picked is the most suitable match for the "Item Description" based on the "GRI Rules", the relevant "Legal Notes", and the "Selection Path" (if provided).
         * Be well structured Markdown that highlights key notes, terms, and concepts
         * Only reference candidates by code or description, not by their letter identifier (e.g. A, B, etc..)`
 
