@@ -449,7 +449,6 @@ export const CountryTariff = ({
               htsElement={htsElement}
               htsElements={htsElements}
               sections={sections}
-              isModal={isModal}
             >
               <span className="text-primary font-semibold uppercase text-base sm:text-lg cursor-help underline decoration-dotted decoration-primary/40 underline-offset-2">
                 {htsElement.htsno}
@@ -482,7 +481,7 @@ export const CountryTariff = ({
             ) : (
               <LinkIcon className="w-4 h-4" />
             )}
-            <span>{isLinkCopied ? "Link Copied!" : "Share Results"}</span>
+            <span>{isLinkCopied ? "Link Copied!" : "Share"}</span>
           </button>
           {isModal && onClose && (
             <button
@@ -617,7 +616,7 @@ export const CountryTariff = ({
       <div className="flex flex-col gap-4 sm:gap-5">
         {tariffSets.map((tariffSet, i) => {
           const estimate = dutyEstimates[i];
-          const isExpanded = expandedSets[i] ?? true;
+          const isExpanded = expandedSets[i] ?? false;
           const inactiveTariffs = tariffSet.tariffs.filter((t) => !t.isActive);
           const hasInactiveTariffs = inactiveTariffs.length > 0;
 

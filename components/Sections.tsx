@@ -10,14 +10,12 @@ interface SectionsProps {
   sections: HtsSection[];
   breadcrumbs: NavigatableElement[];
   setBreadcrumbs: (breadcrumbs: NavigatableElement[]) => void;
-  isModal?: boolean;
 }
 
 export const Sections = ({
   sections,
   breadcrumbs,
   setBreadcrumbs,
-  isModal = false,
 }: SectionsProps) => {
   const [allExpanded, setAllExpanded] = useState(false);
 
@@ -32,10 +30,10 @@ export const Sections = ({
             {sections.length} Sections
           </span>
         </div>
-      <button
+        <button
           className="group flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold text-primary hover:bg-primary/10 transition-all duration-200"
-        onClick={() => setAllExpanded(!allExpanded)}
-      >
+          onClick={() => setAllExpanded(!allExpanded)}
+        >
           {allExpanded ? (
             <>
               <ChevronUpIcon className="w-4 h-4" />
@@ -47,23 +45,22 @@ export const Sections = ({
               Expand All
             </>
           )}
-      </button>
+        </button>
       </div>
 
       {/* Sections List */}
       <div className="flex flex-col gap-3">
-      {sections.map((section) => {
-        return (
-          <Section
-            key={`section-${section.number}-${allExpanded}`}
-            section={section}
-            breadcrumbs={breadcrumbs}
-            setBreadcrumbs={setBreadcrumbs}
-            allExpanded={allExpanded}
-            isModal={isModal}
-          />
-        );
-      })}
+        {sections.map((section) => {
+          return (
+            <Section
+              key={`section-${section.number}-${allExpanded}`}
+              section={section}
+              breadcrumbs={breadcrumbs}
+              setBreadcrumbs={setBreadcrumbs}
+              allExpanded={allExpanded}
+            />
+          );
+        })}
       </div>
     </div>
   );

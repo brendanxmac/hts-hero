@@ -10,14 +10,12 @@ interface Props {
   chapter: HtsSectionAndChapterBase;
   breadcrumbs: NavigatableElement[];
   setBreadcrumbs: (breadcrumbs: NavigatableElement[]) => void;
-  isModal?: boolean;
 }
 
 export const ChapterSummary = ({
   chapter,
   breadcrumbs,
   setBreadcrumbs,
-  isModal = false,
 }: Props) => {
   const pathname = usePathname();
   const { number, description } = chapter;
@@ -28,7 +26,6 @@ export const ChapterSummary = ({
         e.stopPropagation();
         trackExplorerNavigatedToLevel({
           pathname,
-          isModal,
           navigation_kind: "deeper_chapter",
           from_depth: breadcrumbs.length,
           to_depth: breadcrumbs.length + 1,

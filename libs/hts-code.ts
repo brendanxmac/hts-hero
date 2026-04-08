@@ -7,6 +7,11 @@ export function htsCodeDigitsOnly(str: string): string {
   return str.replace(/\D/g, "");
 }
 
+/** True if the code has more than six digits (digits only). Used for BCP prompt branching and UI recommendation styling. */
+export function isAboveSixDigits(code: string): boolean {
+  return htsCodeDigitsOnly(code).length > 6;
+}
+
 /**
  * Normalize user input to dotted US HTS form when 8 or 10 digits are present.
  * Otherwise returns trimmed input unchanged.

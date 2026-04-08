@@ -850,7 +850,7 @@ export const TariffFinderPage = () => {
               </button>
             </div>
             <div className="flex-1 overflow-y-auto">
-              <Explore isModal explorerSurface="duty_calculator_modal" />
+              <Explore explorerSurface="duty_calculator_modal" />
             </div>
           </div>
           <form method="dialog" className="modal-backdrop">

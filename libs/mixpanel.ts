@@ -44,6 +44,8 @@ export enum MixpanelEvent {
   CLASSIFICATION_DELETED = "Classification Deleted",
   CLASSIFICATION_COO_SET = "Classification COO Set",
   CLASSIFICATION_TAB_SELECTED = "Classification Tab Selected",
+  /** Research / Legal Notes / CROSS Rulings panel on a classification step */
+  CLASSIFICATION_STEP_TAB_SWITCH = "Classification Step Tab Switch",
   /** Duty / tariff calculator (TariffFinderPage) */
   DUTY_CALCULATOR_PAGE_LOADED = "Duty Calculator Page Loaded",
   DUTY_CALCULATOR_DEEP_LINK_OPENED = "Duty Calculator Deep Link Opened",

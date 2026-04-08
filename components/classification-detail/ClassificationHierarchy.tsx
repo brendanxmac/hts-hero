@@ -2,6 +2,10 @@
 
 import Link from "next/link";
 import { ClassificationI } from "../../interfaces/hts";
+import {
+  getPreferredPreliminarySectionChapterIds,
+  preliminaryNavDisplay,
+} from "../../libs/classification-helpers";
 
 export interface HierarchyItem {
   label: string;
@@ -27,28 +31,49 @@ function buildItemsFromClassification(
 
   // Section/chapter from preliminaryLevels (new flow)
   if (preliminaryLevels?.length) {
+    const { sectionId: preferredSectionId, chapterId: preferredChapterId } =
+      getPreferredPreliminarySectionChapterIds(classification);
+
     const sectionLevel = preliminaryLevels.find((l) => l.level === "section");
     if (sectionLevel && sectionLevel.candidates.length > 0) {
       const top = sectionLevel.candidates[0];
-      items.push({
-        label: "Section",
-        code: `Section ${top.identifier}`,
-        description: top.description,
-        href: `/section/${top.identifier}`,
-        navId: "classification-section",
-      });
+      const row = preliminaryNavDisplay(
+        "section",
+        sectionLevel.candidates,
+        preferredSectionId,
+        top,
+      );
+      const sectionNum = preferredSectionId ?? top.identifier;
+      if (row.htsno) {
+        items.push({
+          label: "Section",
+          code: row.htsno,
+          description: row.selectionDescription ?? "",
+          href: `/section/${sectionNum}`,
+          navId: "classification-section",
+        });
+      }
     }
 
     const chapterLevel = preliminaryLevels.find((l) => l.level === "chapter");
     if (chapterLevel && chapterLevel.candidates.length > 0) {
       const top = chapterLevel.candidates[0];
-      items.push({
-        label: "Chapter",
-        code: `Chapter ${top.identifier}`,
-        description: top.description,
-        href: `/chapter/${top.identifier}`,
-        navId: "classification-chapter",
-      });
+      const row = preliminaryNavDisplay(
+        "chapter",
+        chapterLevel.candidates,
+        preferredChapterId,
+        top,
+      );
+      const chapterNum = preferredChapterId ?? top.identifier;
+      if (row.htsno) {
+        items.push({
+          label: "Chapter",
+          code: row.htsno,
+          description: row.selectionDescription ?? "",
+          href: `/chapter/${chapterNum}`,
+          navId: "classification-chapter",
+        });
+      }
     }
   }
 
@@ -102,7 +127,7 @@ export const ClassificationHierarchy = ({
             <span className={`text-xs font-bold uppercase tracking-wider ${interactable ? "text-primary" : "text-base-content/60"}`}>
               {item.label}
             </span>
-            <span className="text-sm leading-snug text-base-content/60">
+            <span className="text-sm leading-snug text-base-content">
               {item.description}
             </span>
           </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useBreadcrumbs } from "../../contexts/BreadcrumbsContext";
+import { useExploreModal } from "../../contexts/ExploreModalContext";
 import { HtsElement } from "../../interfaces/hts";
 import {
   TrashIcon,
@@ -20,6 +20,7 @@ import {
 } from "../../libs/hts";
 import { useHts } from "../../contexts/HtsContext";
 import { openUsitcHtsFileInNewTab } from "@/libs/usitc-hts-file-url";
+import { isAboveSixDigits } from "../../libs/hts-code";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 import {
   Product,
@@ -32,19 +33,17 @@ interface Props {
   element: HtsElement;
   classificationLevel: number;
   disabled: boolean;
-  onOpenExplore: () => void;
 }
 
 export const VerticalCandidateElement = ({
   element,
   classificationLevel,
   disabled = false,
-  onOpenExplore,
 }: Props) => {
   const readOnly = useIsReadOnly();
+  const { openExplore } = useExploreModal();
   const { user } = useUser();
   const { htsno, chapter, description, indent } = element;
-  const { clearBreadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const { sections } = useHtsSections();
   const { classification, classificationId, updateLevel, setClassification } =
     useClassification();
@@ -52,7 +51,10 @@ export const VerticalCandidateElement = ({
   const { levels, progressionDescription } = classification;
 
   const currentLevel = levels[classificationLevel];
-  const isRecommended = currentLevel?.analysisElement?.uuid === element.uuid;
+  const isAiRecommended =
+    currentLevel?.analysisElement?.uuid === element.uuid;
+  const isRecommended =
+    isAiRecommended && !isAboveSixDigits(htsno ?? "");
 
   const isLevelSelection = Boolean(
     levels.some(
@@ -130,7 +132,6 @@ export const VerticalCandidateElement = ({
 
   const handleViewElement = (e: React.MouseEvent) => {
     e.stopPropagation();
-    clearBreadcrumbs();
     const sectionAndChapter = getSectionAndChapterFromChapterNumber(
       sections,
       Number(getChapterFromHtsElement(element, htsElements))
@@ -143,8 +144,7 @@ export const VerticalCandidateElement = ({
       [...parents, element]
     );
 
-    setBreadcrumbs(breadcrumbs);
-    onOpenExplore();
+    openExplore("classification_modal", breadcrumbs);
   };
 
   const handleRemove = (e: React.MouseEvent) => {
@@ -200,7 +200,7 @@ export const VerticalCandidateElement = ({
               <SparklesIcon className="w-3.5 h-3.5 text-primary shrink-0" />
             )}
             <span
-              className={`text-xs font-mono font-semibold truncate ${isLevelSelection
+              className={`text-xs sm:text-sm font-mono font-semibold truncate ${isLevelSelection
                 ? "text-success"
                 : isRecommended
                   ? "text-primary"
@@ -250,7 +250,7 @@ export const VerticalCandidateElement = ({
 
         {/* Description */}
         <p
-          className={`text-sm leading-relaxed ${isLevelSelection
+          className={`text-sm md:text-base leading-relaxed ${isLevelSelection
             ? "font-semibold text-base-content"
             : "font-medium text-base-content/80"
             }`}

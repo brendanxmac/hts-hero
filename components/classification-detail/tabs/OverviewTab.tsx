@@ -191,7 +191,7 @@ export const OverviewTab = ({
           Classification Overview
         </h1>
         <p className="text-sm text-base-content/50 mt-1">
-          A summary of this classification. Use the tabs in the sidebar to explore each step in detail.
+          A summary of your classification. Use the tabs in the sidebar to explore each step in detail.
         </p>
       </div>
 
@@ -205,23 +205,11 @@ export const OverviewTab = ({
         <div className="relative px-6 py-6 sm:px-8 sm:py-8">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
             <div className="flex-1 min-w-0">
-              {isComplete ? (
-                <div className="w-fit flex items-center gap-1.5 px-2.5 py-1 mb-2 rounded-full bg-success/10 border border-success/20">
-                  <CheckCircleSolid className="w-3.5 h-3.5 text-success" />
-                  <span className="text-[11px] font-semibold text-success">
-                    Classification Complete
-                  </span>
-                </div>
-              ) : (
-                <div className="w-fit flex items-center gap-1.5 px-2.5 py-1 mb-2 rounded-full bg-warning/10 border border-warning/20">
-                  <span className="w-2 h-2 rounded-full bg-warning animate-pulse" />
-                  <span className="text-[11px] font-semibold text-warning">
-                    Classification Incomplete
-                  </span>
-                </div>
-              )}
+              <p className="text-xs uppercase font-semibold text-base-content/50 mb-1">
+                HTS Code
+              </p>
 
-              <span className="relative inline-block mb-2">
+              <p className="relative inline-block mb-2">
                 <span
                   onClick={
                     latestHtsCode
@@ -237,11 +225,11 @@ export const OverviewTab = ({
                     : "text-base-content/40"
                     }`}
                 >
-                  {latestHtsCode || "Pending..."}
+                  {latestHtsCode || "----.--.----"}
                 </span>
                 {latestHtsCode && (
                   <span
-                    className={`absolute -top-6 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-success text-white text-[10px] font-semibold whitespace-nowrap pointer-events-none transition-all duration-200 ${codeCopied
+                    className={`absolute -top-6 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-primary text-white text-[10px] font-semibold whitespace-nowrap pointer-events-none transition-all duration-200 ${codeCopied
                       ? "opacity-100 translate-y-0"
                       : "opacity-0 translate-y-1"
                       }`}
@@ -249,17 +237,21 @@ export const OverviewTab = ({
                     Copied!
                   </span>
                 )}
-              </span>
+              </p>
 
-              <p className="text-sm text-base-content/60 leading-relaxed line-clamp-2 max-w-lg">
+              <p className="text-xs uppercase font-semibold text-base-content/50 mb-1 mt-2">
+                Item Description
+              </p>
+              <p className="text-sm md:text-base font-semibold leading-relaxed line-clamp-2 max-w-lg">
                 {liveClassification?.articleDescription ||
                   "No description available."}
               </p>
 
               {countryOfOrigin && (
-                <div className="flex items-center gap-1.5 mt-2">
-                  <span className="text-base">{countryOfOrigin.flag}</span>
-                  <span className="text-xs font-medium text-base-content/60">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs text-base-content/50">from</span>
+                  <span className="text-base md:text-xl">{countryOfOrigin.flag}</span>
+                  <span className="text-xs md:text-sm font-medium">
                     {countryOfOrigin.name}
                   </span>
                 </div>
@@ -353,7 +345,7 @@ export const OverviewTab = ({
 
           <DashboardCard>
             <DashboardCardHeader
-              title="Importer"
+              title="Tag"
               icon={<TagIcon className="w-4 h-4" />}
             />
             <div className="p-5">
@@ -422,7 +414,7 @@ export const OverviewTab = ({
       {/* Basis for Classification */}
       <DashboardCard>
         <DashboardCardHeader
-          title="Basis for Classification"
+          title="Classification Notes"
           icon={<DocumentTextIcon className="w-4 h-4" />}
         />
         <div className="p-5">

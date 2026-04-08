@@ -31,6 +31,7 @@ import {
   BookOpenIcon,
   DocumentTextIcon,
 } from "@heroicons/react/16/solid";
+import type { NavigatableElement, NavigatableElementType } from "./Elements";
 
 export type { ExplorerSurface };
 
@@ -48,21 +49,24 @@ const ExploreTabs: Tab[] = [
 ];
 
 interface ExploreProps {
-  isModal?: boolean;
-  /** Mixpanel: where this Explore instance is shown (falls back to URL + isModal). */
+  /** Mixpanel: where this Explore instance is shown (falls back to URL). */
   explorerSurface?: ExplorerSurface;
+  /** Open directly on this trail (e.g. classifier “View element”). */
+  initialBreadcrumbs?: NavigatableElement[];
+  /** Global modal wires this so Cmd/Ctrl+S can refocus search while open. */
+  onSearchInputMount?: (el: HTMLInputElement | null) => void;
 }
 
 export const Explore = ({
-  isModal = false,
   explorerSurface: explorerSurfaceProp,
+  initialBreadcrumbs: initialBreadcrumbsProp,
+  onSearchInputMount,
 }: ExploreProps) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const explorerSurface = resolveExplorerSurface(
     explorerSurfaceProp,
-    pathname,
-    isModal
+    pathname
   );
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const [{ isLoading, text: loadingText }, setLoading] = useState<Loader>({
@@ -114,6 +118,28 @@ export const Explore = ({
   }, [searchValue, notesFuse, activeTab]);
 
   useEffect(() => {
+    const initialTrail = initialBreadcrumbsProp;
+
+    const sectionsRoot = (sectionList: typeof sections): NavigatableElement[] => {
+      const sectionsElement: NavigatableElementType = {
+        type: Navigatable.SECTIONS,
+        sections: sectionList,
+      };
+      return [{ title: "Sections", element: sectionsElement }];
+    };
+
+    const applyBreadcrumbsAfterLoad = async () => {
+      const latestSections = await getSections();
+      setBreadcrumbs((prev) => {
+        if (prev.length > 0) return prev;
+        if (initialTrail?.length) return initialTrail;
+        return sectionsRoot(latestSections);
+      });
+      setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 0);
+    };
+
     const loadAllData = async () => {
       setLoading({ isLoading: true, text: "Loading" });
       await Promise.all([fetchElements("latest"), getSections()]);
@@ -122,26 +148,18 @@ export const Explore = ({
 
     if (!sections.length || !htsElements.length) {
       loadAllData().then(() => {
-        searchInputRef.current?.focus();
+        void applyBreadcrumbsAfterLoad();
       });
     } else {
       setLoading({ isLoading: false, text: "" });
-      // Focus search input after initial render when data is already loaded
+      setBreadcrumbs((prev) => {
+        if (prev.length > 0) return prev;
+        if (initialTrail?.length) return initialTrail;
+        return sectionsRoot(sections);
+      });
       setTimeout(() => {
         searchInputRef.current?.focus();
       }, 0);
-    }
-
-    if (breadcrumbs.length === 0) {
-      setBreadcrumbs([
-        {
-          title: "Sections",
-          element: {
-            type: Navigatable.SECTIONS,
-            sections,
-          },
-        },
-      ]);
     }
   }, []);
 
@@ -254,7 +272,6 @@ export const Explore = ({
               setCompletedDirectNavigation(true);
               trackExplorerNavigatedToLevel({
                 pathname,
-                isModal,
                 explorerSurface: explorerSurfaceProp,
                 navigation_kind: "url_code",
                 from_depth: breadcrumbs.length,
@@ -302,7 +319,6 @@ export const Explore = ({
       setBreadcrumbs,
       explorerSurface,
       pathname,
-      isModal,
       explorerSurfaceProp,
     ]
   );
@@ -379,7 +395,7 @@ export const Explore = ({
   return (
     <div
       ref={scrollContainerRef}
-      className={`w-full min-h-0 flex flex-col bg-base-100 ${isModal ? "" : "overflow-hidden"}`}
+      className="w-full min-h-0 flex flex-col bg-base-100 overflow-hidden"
     >
       {isLoading ? (
         <div className="w-full flex-1 flex items-center justify-center py-20">
@@ -388,90 +404,80 @@ export const Explore = ({
       ) : (
         <>
           {/* Hero Header */}
-          <div
-            className={`shrink-0 relative overflow-hidden border-b border-base-content/5 ${isModal ? "bg-base-100" : "bg-gradient-to-br from-base-200 via-base-100 to-base-200"}`}
-          >
-            {/* Subtle animated background - only show when not in modal */}
-            {!isModal && (
-              <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
-                <div className="absolute -top-32 -right-32 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-                <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
-                <div
-                  className="absolute inset-0 opacity-[0.02]"
-                  style={{
-                    backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`,
-                    backgroundSize: "32px 32px",
-                  }}
-                />
-              </div>
-            )}
+          <div className="shrink-0 relative overflow-hidden border-b border-base-content/5 bg-gradient-to-br from-base-200 via-base-100 to-base-200">
+            <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+              <div className="absolute -top-32 -right-32 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+              <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
+              <div
+                className="absolute inset-0 opacity-[0.02]"
+                style={{
+                  backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`,
+                  backgroundSize: "32px 32px",
+                }}
+              />
+            </div>
 
-            <div
-              className={`relative w-full max-w-6xl mx-auto px-4 sm:px-6 ${isModal ? "py-4" : "py-6 md:py-8"}`}
-            >
-              {/* Title and version - only show when not in modal */}
-              {!isModal && (
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                  {/* Left side - Title and version */}
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary/80">
-                      <span className="inline-block w-8 h-px bg-primary/40" />
-                      Harmonized Tariff Schedule
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
-                        <span className="bg-gradient-to-r from-base-content via-base-content to-base-content/80 bg-clip-text">
-                          HTS {revision?.split("-")[0]}
-                        </span>
-                      </h1>
-                      <span className="px-2.5 py-1 rounded-lg bg-primary/10 border border-primary/20 text-xs font-bold text-primary">
-                        v{revision?.split("-")[1]}
-                      </span>
-                    </div>
+            <div className="relative w-full max-w-6xl mx-auto px-4 sm:px-6 py-6 md:py-8">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary/80">
+                    <span className="inline-block w-8 h-px bg-primary/40" />
+                    Harmonized Tariff Schedule
                   </div>
-
-                  {/* Right side - Tabs */}
-                  <div className="flex p-1 gap-1 bg-base-200/60 rounded-xl border border-base-content/5">
-                    {ExploreTabs.map((tab) => (
-                      <button
-                        key={tab.value}
-                        onClick={() => {
-                          if (tab.value !== activeTab) {
-                            if (tab.value === ExploreTab.ELEMENTS) {
-                              trackEvent(
-                                MixpanelEvent.EXPLORER_OPENED_CODES_TAB,
-                                { explorer_surface: explorerSurface }
-                              );
-                            } else {
-                              trackEvent(
-                                MixpanelEvent.EXPLORER_OPENED_NOTES_TAB,
-                                { explorer_surface: explorerSurface }
-                              );
-                            }
-                          }
-                          setActiveTab(tab.value);
-                        }}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${tab.value === activeTab
-                          ? "bg-base-100 text-base-content shadow-sm"
-                          : "text-base-content/60 hover:text-base-content hover:bg-base-100/50"
-                          }`}
-                      >
-                        {tab.icon}
-                        {tab.label}
-                      </button>
-                    ))}
+                  <div className="flex items-center gap-3">
+                    <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
+                      <span className="bg-gradient-to-r from-base-content via-base-content to-base-content/80 bg-clip-text">
+                        HTS {revision?.split("-")[0]}
+                      </span>
+                    </h1>
+                    <span className="px-2.5 py-1 rounded-lg bg-primary/10 border border-primary/20 text-xs font-bold text-primary">
+                      v{revision?.split("-")[1]}
+                    </span>
                   </div>
                 </div>
-              )}
 
-              {/* Search Bar */}
-              <div className={isModal ? "" : "mt-6"}>
-                <div className={`relative ${isModal ? "w-full" : "max-w-xl"}`}>
+                <div className="flex p-1 gap-1 bg-base-200/60 rounded-xl border border-base-content/5">
+                  {ExploreTabs.map((tab) => (
+                    <button
+                      key={tab.value}
+                      onClick={() => {
+                        if (tab.value !== activeTab) {
+                          if (tab.value === ExploreTab.ELEMENTS) {
+                            trackEvent(
+                              MixpanelEvent.EXPLORER_OPENED_CODES_TAB,
+                              { explorer_surface: explorerSurface }
+                            );
+                          } else {
+                            trackEvent(
+                              MixpanelEvent.EXPLORER_OPENED_NOTES_TAB,
+                              { explorer_surface: explorerSurface }
+                            );
+                          }
+                        }
+                        setActiveTab(tab.value);
+                      }}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${tab.value === activeTab
+                        ? "bg-base-100 text-base-content shadow-sm"
+                        : "text-base-content/60 hover:text-base-content hover:bg-base-100/50"
+                        }`}
+                    >
+                      {tab.icon}
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <div className="relative max-w-xl">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <MagnifyingGlassIcon className="h-5 w-5 text-base-content/40" />
                   </div>
                   <input
-                    ref={searchInputRef}
+                    ref={(el) => {
+                      searchInputRef.current = el;
+                      onSearchInputMount?.(el);
+                    }}
                     type="text"
                     placeholder={getSearchPlaceholder()}
                     value={searchValue}
@@ -517,12 +523,11 @@ export const Explore = ({
                       setActiveTab={setActiveTab}
                       setSearchResults={setSearchResults}
                       setSearchValue={setSearchValue}
-                      isModal={isModal}
                       explorerSurface={explorerSurfaceProp}
                     />
                   )
                 ) : (
-                  <Elements sections={sections} isModal={isModal} />
+                  <Elements sections={sections} />
                 )}
               </>
             )}

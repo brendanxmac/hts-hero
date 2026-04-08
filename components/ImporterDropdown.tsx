@@ -28,7 +28,7 @@ export default function ImporterDropdown({
   isLoading = false,
   disabled = false,
   showCreateOption = true,
-  placeholder = "Select Importer",
+  placeholder = "Select Tag",
 }: ImporterDropdownProps) {
   const selectedImporter = importers.find((i) => i.id === selectedImporterId);
 
@@ -88,7 +88,7 @@ export default function ImporterDropdown({
                 >
                   <PlusIcon className="h-5 w-5" />
                   <span className="text-sm font-medium">
-                    Create New Importer
+                    Create New Tag
                   </span>
                 </div>
                 {importers.length > 0 && (

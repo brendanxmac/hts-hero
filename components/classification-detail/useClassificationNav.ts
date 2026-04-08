@@ -2,6 +2,10 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react"
 import { ClassificationI } from "../../interfaces/hts"
+import {
+  getPreferredPreliminarySectionChapterIds,
+  preliminaryNavDisplay,
+} from "../../libs/classification-helpers"
 
 export type NavTab =
   | "overview"
@@ -108,16 +112,30 @@ export function useClassificationNav(classification: ClassificationI | null) {
     const topSectionCandidate = sectionLevel?.candidates?.[0]
     const topChapterCandidate = chapterLevel?.candidates?.[0]
 
+    const { sectionId: preferredSectionId, chapterId: preferredChapterId } =
+      getPreferredPreliminarySectionChapterIds(classification)
+
+    const sectionRow = preliminaryNavDisplay(
+      "section",
+      sectionLevel?.candidates,
+      preferredSectionId,
+      topSectionCandidate,
+    )
+    const chapterRow = preliminaryNavDisplay(
+      "chapter",
+      chapterLevel?.candidates,
+      preferredChapterId,
+      topChapterCandidate,
+    )
+
     if (!isLegacyNoPreliminaryLevels) {
       items.push({
         id: "classification-section",
         label: "Sections",
         status: sectionDone ? "completed" : "active",
         isSubItem: true,
-        htsno: topSectionCandidate
-          ? `Section ${topSectionCandidate.identifier}`
-          : undefined,
-        selectionDescription: topSectionCandidate?.description,
+        htsno: sectionRow.htsno,
+        selectionDescription: sectionRow.selectionDescription,
       })
 
       if (sectionDone) {
@@ -126,10 +144,8 @@ export function useClassificationNav(classification: ClassificationI | null) {
           label: "Chapters",
           status: chapterDone ? "completed" : "active",
           isSubItem: true,
-          htsno: topChapterCandidate
-            ? `Chapter ${topChapterCandidate.identifier}`
-            : undefined,
-          selectionDescription: topChapterCandidate?.description,
+          htsno: chapterRow.htsno,
+          selectionDescription: chapterRow.selectionDescription,
         })
       }
     }
@@ -192,6 +208,11 @@ export function useClassificationNav(classification: ClassificationI | null) {
 
   const [activeTab, setActiveTab] = useState<NavTab>("overview")
   const hasSetInitialTab = useRef(false)
+  /** Last known nav status for `activeTab`; used to detect active → completed transitions only. */
+  const prevActiveTabNavRef = useRef<{
+    tab: NavTab
+    status: NavItemStatus | undefined
+  } | null>(null)
 
   // Jump to the correct tab once when the classification first loads.
   // Complete → overview. In-progress → first incomplete level.
@@ -208,19 +229,40 @@ export function useClassificationNav(classification: ClassificationI | null) {
     }
   }, [classification, firstIncompleteLevel])
 
-  // Auto-advance when a step completes (e.g. section discovery finishes while
-  // the user is watching it). Only fires on data changes — NOT on tab changes —
-  // so user-initiated navigation is never overridden.
+  // Auto-advance only when the tab the user is on *just became* completed (e.g. they
+  // selected a candidate or discovery finished). Do not advance when `levels` changes
+  // for other reasons (e.g. removing an extra candidate while reviewing an earlier step).
   useEffect(() => {
     if (!classification) return
     if (classification.isComplete) return
-    if (!firstIncompleteLevel || activeTab === firstIncompleteLevel.id) return
 
     const currentItem = navItems.find((i) => i.id === activeTab)
-    if (currentItem?.isSubItem && currentItem?.status === "completed") {
+    const prev = prevActiveTabNavRef.current
+
+    if (
+      prev &&
+      prev.tab === activeTab &&
+      prev.status === "active" &&
+      currentItem?.isSubItem &&
+      currentItem.status === "completed" &&
+      firstIncompleteLevel &&
+      firstIncompleteLevel.id !== activeTab
+    ) {
       setActiveTab(firstIncompleteLevel.id)
     }
-  }, [classification?.levels, classification?.preliminaryLevels, navItems])
+
+    prevActiveTabNavRef.current =
+      currentItem !== undefined
+        ? { tab: activeTab, status: currentItem.status }
+        : { tab: activeTab, status: undefined }
+  }, [
+    classification?.levels,
+    classification?.preliminaryLevels,
+    classification?.isComplete,
+    navItems,
+    activeTab,
+    firstIncompleteLevel,
+  ])
 
   const navigateToTab = useCallback((tab: NavTab) => {
     setActiveTab(tab)

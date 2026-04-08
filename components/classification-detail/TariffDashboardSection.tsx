@@ -89,7 +89,7 @@ export function TariffDashboardSection({
   return (
     <DashboardCard>
       <DashboardCardHeader
-        title="Tariff Summary"
+        title={`Tariff Summary ${countryOfOrigin?.name ? `for ${classification.levels[classification.levels.length - 1]?.selection?.htsno} from ${countryOfOrigin.name}` : ""}`}
         icon={<CurrencyDollarIcon className="w-4 h-4" />}
         action={
           <button

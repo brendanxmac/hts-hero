@@ -24,10 +24,10 @@ export const ElementSearchSummary = ({
 
   const isHeadingCandidate = Boolean(
     classification &&
-      classification.levels[0] &&
-      classification.levels[0].candidates.find(
-        (candidate) => candidate.uuid === element.uuid
-      )
+    classification.levels[0] &&
+    classification.levels[0].candidates.find(
+      (candidate) => candidate.uuid === element.uuid
+    )
   );
 
   const breadcrumbItems = [
@@ -50,50 +50,46 @@ export const ElementSearchSummary = ({
 
   return (
     <div
-      className={`group relative overflow-hidden rounded-xl transition-all duration-200 cursor-pointer ${
-        isHeadingCandidate
-          ? "bg-gradient-to-br from-success/5 via-base-100 to-success/10 border border-success/30 shadow-sm"
-          : "bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 border border-base-content/10 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
-      }`}
+      className={`group relative overflow-hidden rounded-xl transition-all duration-200 cursor-pointer ${isHeadingCandidate
+        ? "bg-gradient-to-br from-success/5 via-base-100 to-success/10 border border-success/30 shadow-sm"
+        : "bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 border border-base-content/10 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
+        }`}
     >
-      {/* Subtle hover gradient */}
-      <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
       <div className="relative z-10 flex">
         {/* Add/Remove Button for Headings */}
         {isHeading && element.chapter != 98 && element.chapter != 99 && (
           <div className="flex items-center">
             <button
-              className={`flex items-center justify-center w-12 h-full transition-colors ${
-                isHeadingCandidate
-                  ? "bg-error/10 hover:bg-error/20 text-error"
-                  : "bg-success/10 hover:bg-success/20 text-success"
-              }`}
+              className={`flex items-center justify-center w-12 h-full transition-colors ${isHeadingCandidate
+                ? "bg-error/10 hover:bg-error/20 text-error"
+                : "bg-success/10 hover:bg-success/20 text-success"
+                }`}
               onClick={(e) => {
                 e.stopPropagation();
                 if (isHeadingCandidate) {
-                    const newClassificationProgression =
-                      classification.levels.slice(0, 1);
-                    newClassificationProgression[0].candidates =
-                      newClassificationProgression[0].candidates.filter(
-                        (candidate) => candidate.uuid !== element.uuid
-                      );
-                    updateLevel(0, {
-                      candidates: newClassificationProgression[0].candidates,
-                    });
+                  const newClassificationProgression =
+                    classification.levels.slice(0, 1);
+                  newClassificationProgression[0].candidates =
+                    newClassificationProgression[0].candidates.filter(
+                      (candidate) => candidate.uuid !== element.uuid
+                    );
+                  updateLevel(0, {
+                    candidates: newClassificationProgression[0].candidates,
+                  });
                 } else {
-                    const newClassificationProgression =
-                      classification.levels.slice(
-                        0,
-                        classification.levels.length
-                      );
-                    newClassificationProgression[0].candidates = [
-                      ...newClassificationProgression[0].candidates,
-                      element,
-                    ];
-                    updateLevel(0, {
-                      candidates: newClassificationProgression[0].candidates,
-                    });
+                  const newClassificationProgression =
+                    classification.levels.slice(
+                      0,
+                      classification.levels.length
+                    );
+                  newClassificationProgression[0].candidates = [
+                    ...newClassificationProgression[0].candidates,
+                    element,
+                  ];
+                  updateLevel(0, {
+                    candidates: newClassificationProgression[0].candidates,
+                  });
                 }
               }}
               title={
@@ -131,8 +127,8 @@ export const ElementSearchSummary = ({
                   {i < breadcrumbItems.length - 1 && (
                     <ChevronRightIcon className="w-3 h-3 text-base-content/30 shrink-0" />
                   )}
-                  </span>
-                ))}
+                </span>
+              ))}
             </div>
 
             {/* HTS Code and Description */}
@@ -142,7 +138,7 @@ export const ElementSearchSummary = ({
                   {htsno}
                 </span>
               )}
-              <span className="text-sm font-medium text-base-content group-hover:text-base-content transition-colors leading-relaxed">
+              <span className="text-sm md:text-base lg:text-lg font-medium text-base-content group-hover:text-base-content transition-colors leading-relaxed">
                 {description}
               </span>
             </div>
