@@ -38,6 +38,8 @@ import { useHts } from "../contexts/HtsContext";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { CheckCircleIcon } from "@heroicons/react/16/solid";
 import { HtsElementDetailsPopover } from "./HtsElementDetailsPopover";
+import { Crisp } from "crisp-sdk-web";
+import config from "../config";
 import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
 
 interface Props {
@@ -759,12 +761,23 @@ export const CountryTariff = ({
                       </ul>
                       <p className="mt-2 text-xs sm:text-sm">
                         Please contact{" "}
-                        <a
-                          href="mailto:support@htshero.com"
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (config.crisp?.id) {
+                              Crisp.chat.show();
+                              Crisp.chat.open();
+                            } else if (config.resend?.supportEmail) {
+                              window.open(
+                                `mailto:${config.resend.supportEmail}?subject=Need help with ${config.appName}`,
+                                "_blank"
+                              );
+                            }
+                          }}
                           className="link font-semibold"
                         >
                           support
-                        </a>
+                        </button>
                       </p>
                     </div>
                   </div>
