@@ -14,7 +14,6 @@ import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 
 interface ElementsProps {
   sections: HtsSection[];
-  isModal?: boolean;
 }
 
 export type NavigatableElementType =
@@ -27,7 +26,7 @@ export interface NavigatableElement {
   element: NavigatableElementType;
 }
 
-export const Elements = ({ sections, isModal = false }: ElementsProps) => {
+export const Elements = ({ sections }: ElementsProps) => {
   const { breadcrumbs, setBreadcrumbs } = useBreadcrumbs();
   const currentElement = breadcrumbs[breadcrumbs.length - 1];
 
@@ -41,7 +40,6 @@ export const Elements = ({ sections, isModal = false }: ElementsProps) => {
         <Breadcrumbs
           breadcrumbs={breadcrumbs}
           setBreadcrumbs={setBreadcrumbs}
-          isModal={isModal}
         />
       )}
 
@@ -50,15 +48,13 @@ export const Elements = ({ sections, isModal = false }: ElementsProps) => {
           sections={sections}
           breadcrumbs={breadcrumbs}
           setBreadcrumbs={setBreadcrumbs}
-          isModal={isModal}
         />
       ) : currentElement.element.type === Navigatable.CHAPTER ? (
         <Chapter
           chapter={currentElement.element as HtsSectionAndChapterBase}
-          isModal={isModal}
         />
       ) : (
-        <Element element={currentElement.element as HtsElement} isModal={isModal} />
+        <Element element={currentElement.element as HtsElement} />
       )}
     </div>
   );

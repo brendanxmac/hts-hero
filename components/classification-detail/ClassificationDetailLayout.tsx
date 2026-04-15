@@ -10,8 +10,6 @@ import {
   useSectionChapterDiscovery,
 } from "../../contexts/SectionChapterDiscoveryContext";
 import { useHtsSections } from "../../contexts/HtsSectionsContext";
-import Modal from "../Modal";
-import { Explore } from "../Explore";
 import { ClassificationStatus, Navigatable } from "../../interfaces/hts";
 import {
   updateClassification,
@@ -43,6 +41,7 @@ import { AnonymousClassificationCompleteModal } from "./AnonymousClassificationC
 import { AnonymousConversionBanner } from "./AnonymousConversionBanner";
 import { LockedTabOverlay } from "./LockedTabOverlay";
 import { useIsReadOnly } from "../../contexts/ReadOnlyContext";
+import { useExploreModal } from "../../contexts/ExploreModalContext";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 
 /**
@@ -160,10 +159,10 @@ export const ClassificationDetailLayout = ({
   onNavigateBack,
 }: Props) => {
   const readOnly = useIsReadOnly();
+  const { openExplore } = useExploreModal();
   const { isFetching } = useHts();
   const { user } = useUser();
   const { classification, classificationId, isSaving } = useClassification();
-  const [showExploreModal, setShowExploreModal] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [downloadingReport, setDownloadingReport] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -348,8 +347,8 @@ export const ClassificationDetailLayout = ({
   );
 
   const handleOpenExplore = useCallback(() => {
-    if (!readOnly) setShowExploreModal(true);
-  }, [readOnly]);
+    if (!readOnly) openExplore("classification_modal");
+  }, [readOnly, openExplore]);
 
   // When read-only (e.g. viewing team/shared classification), don't block on isFetching or userProfile
   if ((!readOnly && isFetching) || (!readOnly && !isAnonymous && !userProfile)) {
@@ -474,6 +473,7 @@ export const ClassificationDetailLayout = ({
             userProfile={userProfile}
             isAnonymous={isAnonymous}
             useNormalWorkspace={useNormalWorkspace}
+            onOpenExplore={readOnly ? undefined : handleOpenExplore}
           />
         </aside>
 
@@ -519,18 +519,6 @@ export const ClassificationDetailLayout = ({
         {/* Modals (hidden in readonly/shared mode) */}
         {!readOnly && (
           <>
-            {showExploreModal && (
-              <Modal
-                isOpen={showExploreModal}
-                setIsOpen={setShowExploreModal}
-                size="viewport"
-              >
-                <Explore
-                  explorerSurface="classification_modal"
-                />
-              </Modal>
-            )}
-
             <DeleteConfirmationModal
               isOpen={showDeleteModal}
               isDeleting={isDeleting}

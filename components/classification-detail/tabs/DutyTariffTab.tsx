@@ -54,7 +54,7 @@ export const DutyTariffTab = ({
 
   return (
     <div className="max-w-6xl mx-auto">
-      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h2 className="text-xl md:text-2xl font-bold text-base-content">
             Duty / Tariffs

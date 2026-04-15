@@ -159,7 +159,7 @@ export function SingleCountryDutyTariffCard({
   };
 
   return (
-    <div className="bg-base-100 shadow-sm overflow-hidden">
+    <div className="bg-base-100">
       <div className="p-5 sm:p-6 flex flex-col gap-5">
         {showCountryOfOriginReset ? (
           <div className="flex flex-wrap justify-end">

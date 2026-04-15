@@ -485,7 +485,7 @@ export const Classifications = () => {
                     tryOpenNewClassification();
                   }
                 }}
-                className="group relative overflow-hidden px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 bg-primary text-primary-content hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02]"
+                className="group relative overflow-hidden px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 bg-primary text-primary-content hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02] hover:cursor-pointer"
               >
                 <span className="relative z-10 flex items-center gap-2">
                   <PlusIcon className="h-5 w-5" />

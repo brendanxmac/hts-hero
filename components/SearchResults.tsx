@@ -20,7 +20,6 @@ interface Props {
   setActiveTab: (tab: ExploreTab) => void;
   setSearchResults: (results: FuseResult<HtsElement>[]) => void;
   setSearchValue: (value: string) => void;
-  isModal?: boolean;
   explorerSurface?: ExplorerSurface;
 }
 
@@ -29,7 +28,6 @@ export const SearchResults = ({
   setActiveTab,
   setSearchResults,
   setSearchValue,
-  isModal = false,
   explorerSurface,
 }: Props) => {
   const pathname = usePathname();
@@ -91,7 +89,6 @@ export const SearchResults = ({
             onClick={() => {
               trackExplorerNavigatedToLevel({
                 pathname,
-                isModal,
                 explorerSurface,
                 navigation_kind: "search_result",
                 from_depth: currentTrail.length,

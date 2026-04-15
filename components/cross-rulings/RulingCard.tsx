@@ -9,9 +9,15 @@ import { classNames } from "../../utilities/style";
 interface Props {
   ruling: CrossRuling;
   onClick: () => void;
+  /** HTS codes from classification candidates that returned this ruling in a merged search. */
+  associatedHtsCodes?: string[];
 }
 
-export const RulingCard = ({ ruling, onClick }: Props) => {
+export const RulingCard = ({
+  ruling,
+  onClick,
+  associatedHtsCodes,
+}: Props) => {
   const isRevoked = rulingIsRevoked(ruling);
 
   return (
@@ -37,6 +43,21 @@ export const RulingCard = ({ ruling, onClick }: Props) => {
             </div>
           </div>
           <TariffBadges tariffs={ruling.tariffs} />
+          {associatedHtsCodes && associatedHtsCodes.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 items-center pt-0.5 border-t border-base-content/5">
+              <span className="text-[11px] text-base-content/45 shrink-0">
+                Candidates
+              </span>
+              {associatedHtsCodes.map((code) => (
+                <span
+                  key={code}
+                  className="text-[10px] font-mono px-1.5 py-0.5 rounded-md bg-base-200/80 text-base-content/70"
+                >
+                  {code}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </DashboardCard>
     </button>

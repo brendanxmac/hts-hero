@@ -23,17 +23,16 @@ export const SectionChapterCandidate = ({
 
   return (
     <div
-      className={`rounded-lg border border-base-300 bg-base-100 transition-colors duration-150 ${
-        disabled ? "opacity-60 cursor-not-allowed" : ""
-      }`}
+      className={`rounded-lg border border-base-300 bg-base-100 transition-colors duration-150 ${disabled ? "opacity-60 cursor-not-allowed" : ""
+        }`}
     >
       <div className="p-4">
         <div className="flex items-center gap-2.5 mb-1.5">
-          <span className="shrink-0 px-2 py-0.5 rounded-md text-xs font-bold bg-primary/10 text-primary border border-primary/20 font-mono">
+          <span className="shrink-0 px-2 py-0.5 rounded-md text-xs font-bold bg-primary/10 text-primary border border-primary/20">
             {label} {number}
           </span>
         </div>
-        <p className="text-sm leading-relaxed font-medium text-base-content/80">
+        <p className="text-sm md:text-base leading-relaxed font-medium text-base-content/80">
           {description}
         </p>
 

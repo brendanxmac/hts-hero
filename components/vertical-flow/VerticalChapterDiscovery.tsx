@@ -164,28 +164,16 @@ export const VerticalChapterDiscovery = () => {
     <div className="rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden">
       {/* Header */}
       <div className="px-5 py-3.5 border-b border-base-300 bg-base-200/30">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <QueueListIcon className="w-4 h-4 text-base-content/50" />
-            <h3 className="text-sm font-semibold text-base-content">
-              Chapter Candidates
-            </h3>
-            {chapterCandidates.length > 0 && (
-              <span className="px-2 py-0.5 rounded-full bg-base-300 text-[11px] font-semibold text-base-content/60">
-                {chapterCandidates.length}
-              </span>
-            )}
-          </div>
-          {/* {isLoading && loadingPhase && (
-            <div className="flex items-center gap-1.5 text-primary/70">
-              <span className="loading loading-spinner loading-xs" />
-              <span className="text-xs font-medium">
-                {loadingPhase === "finding"
-                  ? "Finding chapters..."
-                  : "Analyzing..."}
-              </span>
-            </div>
-          )} */}
+        <div className="flex items-center gap-2.5">
+          <QueueListIcon className="w-4 h-4 text-base-content/50" />
+          <h3 className="text-sm font-semibold text-base-content">
+            Chapter Candidates
+          </h3>
+          {chapterCandidates.length > 0 && (
+            <span className="px-2 py-0.5 rounded-full bg-base-300 text-[11px] font-semibold text-base-content/60">
+              {chapterCandidates.length}
+            </span>
+          )}
         </div>
       </div>
 

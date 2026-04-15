@@ -58,13 +58,12 @@ export default function TextAreaInput({
 
   return (
     <div
-      className={`w-full flex flex-col gap-3 rounded-2xl transition-all duration-200 ${
-        disabled
-          ? "bg-base-200/50"
-          : isFocused
-            ? "bg-base-100 ring-2 ring-primary/50 border-primary/30"
-            : "bg-base-100/80 hover:bg-base-100"
-      } border border-base-content/10 hover:border-primary/30`}
+      className={`w-full flex flex-col gap-3 rounded-2xl transition-all duration-200 ${disabled
+        ? "bg-base-200/50"
+        : isFocused
+          ? "bg-base-100 ring-2 ring-primary/50 border-primary/30"
+          : "bg-base-100/80 hover:bg-base-100"
+        } border border-base-content/10 hover:border-primary/30`}
       onClick={(e) => {
         e.stopPropagation();
         e.preventDefault();
@@ -106,18 +105,16 @@ export default function TextAreaInput({
               <div className="flex items-center gap-2">
                 <div className="h-1.5 w-24 bg-base-content/10 rounded-full overflow-hidden">
                   <div
-                    className={`h-full transition-all duration-300 rounded-full ${
-                      isOverLimit ? "bg-error" : "bg-primary"
-                    }`}
+                    className={`h-full transition-all duration-300 rounded-full ${isOverLimit ? "bg-error" : "bg-primary"
+                      }`}
                     style={{
                       width: `${Math.min((localProductDescription.length / characterLimit) * 100, 100)}%`,
                     }}
                   />
                 </div>
                 <span
-                  className={`text-xs font-medium ${
-                    isOverLimit ? "text-error" : "text-base-content/50"
-                  }`}
+                  className={`text-xs font-medium ${isOverLimit ? "text-error" : "text-base-content/50"
+                    }`}
                 >
                   {localProductDescription.length}/{characterLimit}
                 </span>
@@ -126,17 +123,16 @@ export default function TextAreaInput({
             {onSubmit && (
               <button
                 disabled={!canSubmit || loading}
-                className={`group relative overflow-hidden px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 ${
-                  canSubmit && !loading
-                    ? "bg-gradient-to-r from-primary to-primary/90 text-primary-content hover:shadow-lg hover:shadow-primary/25 hover:scale-[1.02]"
-                    : "bg-base-content/10 text-base-content/40 cursor-not-allowed"
-                }`}
+                className={`group relative overflow-hidden px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 ${canSubmit && !loading
+                  ? "bg-gradient-to-r from-primary to-primary/90 text-primary-content hover:shadow-lg hover:shadow-primary/25 hover:scale-[1.02] hover:cursor-pointer"
+                  : "bg-base-content/10 text-base-content/40 cursor-not-allowed"
+                  }`}
                 onClick={() => {
                   onSubmit(localProductDescription);
                 }}
               >
                 <span className="relative z-10 flex items-center gap-2">
-                {loading ? (
+                  {loading ? (
                     <span className="loading loading-spinner loading-sm"></span>
                   ) : (
                     <>

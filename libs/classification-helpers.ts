@@ -1,8 +1,10 @@
 import {
+  type PreliminaryCandidate,
   ClassificationI as ClassificationType,
   ClassificationRecord,
   ClassificationStatus,
 } from "../interfaces/hts"
+import { getSectionAndChapterFromHtsCode } from "./hts"
 
 /**
  * True when classification has section/chapter discovery data (preliminaryLevels).
@@ -139,4 +141,60 @@ export function canUserDelete(
     userProfile?.id === classificationRecord?.user_id &&
     classificationRecord?.status === ClassificationStatus.DRAFT
   )
+}
+
+/**
+ * Section/chapter to show in nav when the user has a first-level HTS selection:
+ * derive from that code instead of preliminary candidate list order (candidates[0]).
+ */
+export function getPreferredPreliminarySectionChapterIds(
+  classification: ClassificationType,
+): { sectionId: number | null; chapterId: number | null } {
+  const level0Selection = classification.levels?.[0]?.selection
+  if (!level0Selection) {
+    return { sectionId: null, chapterId: null }
+  }
+  const parsedGeo = level0Selection.htsno
+    ? getSectionAndChapterFromHtsCode(level0Selection.htsno)
+    : null
+  const parsedFromChapterOnly =
+    parsedGeo == null && level0Selection.chapter != null
+      ? getSectionAndChapterFromHtsCode(
+          `${String(level0Selection.chapter).padStart(2, "0")}01`,
+        )
+      : null
+  const geo = parsedGeo ?? parsedFromChapterOnly
+  return {
+    sectionId: geo?.section ?? null,
+    chapterId: geo?.chapter ?? level0Selection.chapter ?? null,
+  }
+}
+
+export function preliminaryNavDisplay(
+  kind: "section" | "chapter",
+  candidates: PreliminaryCandidate[] | undefined,
+  preferredId: number | null,
+  fallback: PreliminaryCandidate | undefined,
+): { htsno?: string; selectionDescription?: string } {
+  const label = kind === "section" ? "Section" : "Chapter"
+  if (preferredId != null) {
+    const match = candidates?.find((c) => c.identifier === preferredId)
+    if (match) {
+      return {
+        htsno: `${label} ${match.identifier}`,
+        selectionDescription: match.description,
+      }
+    }
+    return {
+      htsno: `${label} ${preferredId}`,
+      selectionDescription: undefined,
+    }
+  }
+  if (fallback) {
+    return {
+      htsno: `${label} ${fallback.identifier}`,
+      selectionDescription: fallback.description,
+    }
+  }
+  return {}
 }

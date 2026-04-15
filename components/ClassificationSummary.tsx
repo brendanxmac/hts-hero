@@ -69,7 +69,7 @@ export const ClassificationSummary = ({
   return (
     <>
       {/* Card shell: link is a hit layer behind content so the delete control is not nested in <a> (invalid HTML / broken navigation). */}
-      <div className="group relative overflow-hidden rounded-2xl transition-all duration-300 bg-base-100 border border-base-content/15 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10 hover:scale-[1.01]">
+      <div className="group relative overflow-hidden rounded-2xl transition-all duration-300 bg-base-100 border border-base-content/15 hover:border-primary hover:shadow-lg hover:shadow-primary/10">
         <Link
           href={`/classifications/${classificationRecord.id}`}
           className="absolute inset-0 z-0 rounded-2xl cursor-pointer"
@@ -80,7 +80,7 @@ export const ClassificationSummary = ({
           }
         />
         {/* Subtle gradient overlay on hover */}
-        <div className="absolute inset-0 z-0 bg-gradient-to-r from-primary/0 via-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+        {/* <div className="absolute inset-0 z-0 bg-gradient-to-r from-primary/0 via-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" /> */}
 
         {/* Deleting overlay */}
         {isDeleting && (

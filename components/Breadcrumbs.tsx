@@ -8,13 +8,11 @@ import { trackExplorerNavigatedToLevel } from "../libs/explorer-navigation";
 interface BreadcrumbsProps {
   breadcrumbs: NavigatableElement[];
   setBreadcrumbs: (breadcrumbs: NavigatableElement[]) => void;
-  isModal?: boolean;
 }
 
 export const Breadcrumbs = ({
   breadcrumbs,
   setBreadcrumbs,
-  isModal = false,
 }: BreadcrumbsProps) => {
   const pathname = usePathname();
 
@@ -28,7 +26,6 @@ export const Breadcrumbs = ({
         onClick={() => {
           trackExplorerNavigatedToLevel({
             pathname,
-            isModal,
             navigation_kind: "back",
             from_depth: breadcrumbs.length,
             to_depth: breadcrumbs.length - 1,
@@ -55,7 +52,6 @@ export const Breadcrumbs = ({
                   onClick={() => {
                     trackExplorerNavigatedToLevel({
                       pathname,
-                      isModal,
                       navigation_kind: "breadcrumb",
                       from_depth: breadcrumbs.length,
                       to_depth: i + 1,
