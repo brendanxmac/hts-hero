@@ -1,5 +1,5 @@
-import { TariffI } from "../interfaces/tariffs";
-import { reciprocalTariffExemptionsList } from "./exclusion-lists.ts/reciprocal-tariff-exlcusions";
+import { TariffI } from "../interfaces/tariffs"
+import { reciprocalTariffExemptionsList } from "./exclusion-lists.ts/reciprocal-tariff-exlcusions"
 
 export const indiaTariffs: TariffI[] = [
   {
@@ -21,30 +21,11 @@ export const indiaTariffs: TariffI[] = [
       "9903.01.89",
       // tied to .86 here
       "9903.01.32",
-      // tied to .87 here
-      // iron & steel
-      "9903.81.87",
-      "9903.81.88",
-      // iron & steel derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // aluminum
-      "9903.85.02",
-      // aluminum derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
       // vehicles
       "9903.94.01",
       "9903.94.03",
       // Parts of vehicles
       "9903.94.05",
-      // Copper & derivatives
-      "9903.78.01",
       // Medium & Heavy Duty Vehicles
       "9903.74.01",
       // Buses & Similar Vehicles
@@ -97,29 +78,11 @@ export const indiaTariffs: TariffI[] = [
     other: 0,
     inclusions: {
       tariffs: [
-        // iron & steel
-        "9903.81.87",
-        "9903.81.88",
-        // iron & steel derivatives
-        "9903.81.89",
-        "9903.81.90",
-        "9903.81.91",
-        "9903.81.92",
-        "9903.81.93",
-        // aluminum
-        "9903.85.02",
-        // aluminum derivatives
-        "9903.85.04",
-        "9903.85.07",
-        "9903.85.08",
-        "9903.85.09",
         // vehicles
         "9903.94.01",
         "9903.94.03",
         // Parts of vehicles
         "9903.94.05",
-        // Copper & derivatives
-        "9903.78.01",
         // Wood
         "9903.76.01",
         "9903.76.02",
@@ -157,4 +120,4 @@ export const indiaTariffs: TariffI[] = [
     },
     requiresReview: true,
   },
-];
+]

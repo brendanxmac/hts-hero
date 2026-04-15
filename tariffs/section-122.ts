@@ -4,11 +4,6 @@ import {
   civilAircraftArticleExemptFromSection122Tariff,
 } from "./lists"
 import {
-  derivativeIronAndSteelTariffCodes,
-  ironAndSteelTariffCodes,
-  aluminumTariffCodes,
-  copperAndCopperDerviativeTariffCodes,
-  derivativeAluminumTariffCodes,
   mhdvArticleTariffCodes,
   mhdvPartsArticleTariffCodes,
   woodArticleTariffCodes,
@@ -42,29 +37,12 @@ export const section122Tariffs: TariffI[] = [
       "9903.03.09",
       "9903.03.10",
       "9903.03.11",
-      ...ironAndSteelTariffCodes,
-      ...derivativeIronAndSteelTariffCodes,
-      ...aluminumTariffCodes,
-      ...derivativeAluminumTariffCodes,
-      ...copperAndCopperDerviativeTariffCodes,
       ...passengerVehicleAndLightTruckTariffCodes,
       ...partOfPassengerVehicleAndLightTruckTariffCodes,
       ...mhdvArticleTariffCodes,
       ...mhdvPartsArticleTariffCodes,
       ...semicondutorTariffCodes,
       ...woodArticleTariffCodes,
-
-      //   // Aluminum
-      //   "9903.85.02",
-      //   "9903.85.04",
-      //   "9903.85.07",
-      //   "9903.85.08",
-      //   // Steel
-      //   "9903.81.87", // not .88 according to steel note (i)?
-      //   "9903.81.89",
-      //   "9903.81.90",
-      //   "9903.81.91",
-      //   "9903.81.93",
       //   // Passenger Vehicles & Trucks
       //   "9903.94.01",
       //   // Auto Parts
@@ -1257,11 +1235,6 @@ export const section122Tariffs: TariffI[] = [
     inclusions: {
       countries: ["*"],
       tariffs: [
-        ...ironAndSteelTariffCodes,
-        ...derivativeIronAndSteelTariffCodes,
-        ...aluminumTariffCodes,
-        ...derivativeAluminumTariffCodes,
-        ...copperAndCopperDerviativeTariffCodes,
         ...passengerVehicleAndLightTruckTariffCodes,
         ...partOfPassengerVehicleAndLightTruckTariffCodes,
         ...mhdvArticleTariffCodes,

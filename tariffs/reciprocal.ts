@@ -23,29 +23,11 @@ export const recriprocalTariffExemptions = [
   "9903.01.34",
   // Transhipping Identified
   "9903.02.01",
-  // Iron or Steel
-  "9903.81.87",
-  "9903.81.88",
-  // Iron or Steel Derivatives
-  "9903.81.89",
-  "9903.81.90",
-  "9903.81.91",
-  "9903.81.92",
-  "9903.81.93",
-  // Aluminum
-  "9903.85.02",
-  // Aluminum Derivatives
-  "9903.85.04",
-  "9903.85.07",
-  "9903.85.08",
-  "9903.85.09",
   // Autos
   "9903.94.01",
   "9903.94.03",
   // Auto Parts
   "9903.94.05",
-  // Copper
-  "9903.78.01",
   // U.K. Civil Aircraft, Engines, Parts, Components, & Subassemblies
   "9903.96.01",
   // Japan Civil Aircraft, Engines, Parts, Components, & Subassemblies
@@ -341,29 +323,11 @@ export const worldwideReciprocalTariff: TariffI[] = [
     other: 0,
     requiresReview: true,
     exceptions: [
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
       // Autos
       "9903.94.01",
       "9903.94.03",
       // Auto Parts
       "9903.94.05",
-      // Copper
-      "9903.78.01",
     ],
     exclusions: {
       countries: ["CA"], // TODO: should this be here? Since CA already has transshiiping add-on via .01.16

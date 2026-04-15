@@ -10,7 +10,7 @@ export enum TariffCategory {
 export type ContentRequirements = Metal | UsContent
 
 export interface ContentRequirement {
-  content: ContentRequirements | ContentRequirements[]
+  content: ContentRequirements
   minimumPercent?: number
   maximumPercent?: number
 }

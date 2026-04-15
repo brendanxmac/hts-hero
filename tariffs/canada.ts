@@ -19,17 +19,6 @@ export const canadaTariffs: TariffI[] = [
       "9903.01.13",
       "9903.01.14",
       "9903.01.15",
-      // Aluminum
-      "9903.85.02",
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      // Steel
-      "9903.81.87", // not .88 according to steel note (i)?
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.93",
       // Passenger Vehicles & Trucks
       "9903.94.01",
       // Auto Parts

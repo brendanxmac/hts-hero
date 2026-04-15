@@ -1,4 +1,4 @@
-import { TariffI } from "../interfaces/tariffs";
+import { TariffI } from "../interfaces/tariffs"
 
 export const mexicoTariffs: TariffI[] = [
   {
@@ -18,17 +18,6 @@ export const mexicoTariffs: TariffI[] = [
       "9903.01.03",
       "9903.01.04",
       "9903.01.05",
-      // Aluminum
-      "9903.85.02",
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      // Steel
-      "9903.81.87", // not .88 according to steel note (i)?
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.93",
       // Passenger Vehicles & Trucks
       "9903.94.01",
       // Auto Parts
@@ -136,4 +125,4 @@ export const mexicoTariffs: TariffI[] = [
     special: 0,
     other: 0,
   },
-];
+]

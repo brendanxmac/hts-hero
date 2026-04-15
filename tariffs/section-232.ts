@@ -1,0 +1,391 @@
+import { TariffI } from "../interfaces/tariffs"
+import {
+  aluminum16ci,
+  aluminumDerivatives16cii,
+  aluminumDerivatives16cix,
+  aluminumDerivatives16cvi,
+  copper16cv,
+  copperArticles16cviii,
+  motorcycleParts16cg,
+  steel16ciii,
+  steelDerivatives16civ,
+  steelDerivatives16cvii,
+  steelDerivatives16cx,
+} from "./232-metals"
+import { tariffsExemptFromMetalTariffs } from "./lists"
+import { Column2CountryCodes } from "./tariff-columns"
+
+export const section232Tariffs: TariffI[] = [
+  {
+    code: "9903.82.02",
+    description:
+      "Except as provided for in headings 9903.82.14, 9903.85.67 and 9903.85.68, articles of aluminum, of steel or of copper and derivative aluminum or steel articles, as provided for in subdivisions (c)(i)–(v) of U.S. note 16 to this subchapter",
+    name: "Section 232 Metals Tariff (Aluminum, Steel, Copper)",
+    general: 50,
+    special: 50,
+    other: 50,
+    contentRequirement: { content: "Section 232 Metals" },
+    // requiresReview: true, // TODO: check this
+    exclusions: {
+      //   countries: GB? RU?
+    },
+    inclusions: {
+      codes: [
+        ...aluminum16ci,
+        ...aluminumDerivatives16cii,
+        ...steel16ciii,
+        ...steelDerivatives16civ,
+        ...copper16cv,
+      ],
+    },
+  },
+  {
+    // TODO: Need to write new code to check for this exemption
+    code: "9903.82.03",
+    description:
+      "Except for articles classifiable in chapters 72, 73, 74 or 76, articles where the weight of the applicable metal is less than 15 percent of the weight of the imported article, as provided for in subdivision (c) of U.S. note 16 to this subchapter",
+    name: "Section 232 Metal Tariff Exemption: Metal Weight <15% of Article Weight",
+    general: null,
+    special: null,
+    other: null,
+    contentRequirement: { content: "Section 232 Metals" },
+    requiresReview: true,
+    inclusions: {
+      codes: ["*"],
+    },
+    exclusions: {
+      codes: [
+        "7201",
+        "7202",
+        "7203",
+        "7204",
+        "7205",
+        "7206",
+        "7207",
+        "7208",
+        "7209",
+        "7210",
+        "7211",
+        "7212",
+        "7213",
+        "7214",
+        "7215",
+        "7216",
+        "7217",
+        "7218",
+        "7219",
+        "7220",
+        "7221.00.00",
+        "7222",
+        "7223.00",
+        "7224",
+        "7225",
+        "7226",
+        "7227",
+        "7228",
+        "7229",
+        "7301",
+        "7302",
+        "7303.00.00",
+        "7304",
+        "7305",
+        "7306",
+        "7307",
+        "7308",
+        "7309.00.00",
+        "7310",
+        "7311.00.00",
+        "7312",
+        "7313.00.00.00",
+        "7314",
+        "7315",
+        "7316.00.00.00",
+        "7317.00",
+        "7318",
+        "7319",
+        "7320",
+        "7321",
+        "7322",
+        "7323",
+        "7324",
+        "7325",
+        "7326",
+        "7401.00.00.00",
+        "7402.00.00.00",
+        "7403",
+        "7404.00",
+        "7405.00",
+        "7406",
+        "7407",
+        "7408",
+        "7409",
+        "7410",
+        "7411",
+        "7412",
+        "7413.00",
+        "7415",
+        "7418",
+        "7419",
+        "7601",
+        "7602.00.00",
+        "7603",
+        "7604",
+        "7605",
+        "7606",
+        "7607",
+        "7608",
+        "7609.00.00.00",
+        "7610",
+        "7611.00.00",
+        "7612",
+        "7613.00.00.00",
+        "7614",
+        "7615",
+        "7616",
+      ],
+    },
+  },
+  {
+    code: "9903.82.04",
+    description:
+      "Articles of aluminum or of steel and derivative aluminum or steel articles the product of the United Kingdom, as provided for in subdivisions (c)(i)–(iv) and (d) of U.S. note 16 to this subchapter",
+    name: "Section 232 Metals of UK Origin (Applies to Aluminum 95% Smelted or Most Recently Cast in UK or Steel 95% Melted and Poured in UK)",
+    general: 25,
+    special: 25,
+    other: null,
+    contentRequirement: { content: "Section 232 Metals" },
+    // requiresReview: true, // TODO: check this
+    inclusions: {
+      countries: ["GB"],
+      codes: [
+        ...aluminum16ci,
+        ...aluminumDerivatives16cii,
+        ...steel16ciii,
+        ...steelDerivatives16civ,
+      ],
+    },
+  },
+  {
+    code: "9903.82.05",
+    description:
+      "Derivative aluminum or steel articles the product of the United Kingdom, as provided for in subdivisions (c)(vi)–(vii) and (d) of U.S. note 16 to this subchapter",
+    name: "Section 232 Metals of UK Origin (Derivative Articles)",
+    general: 15,
+    special: 15,
+    other: null,
+    contentRequirement: { content: "Section 232 Metals" },
+    // requiresReview: true, // TODO: check this
+    inclusions: {
+      countries: ["GB"],
+      codes: [...aluminumDerivatives16cvi, ...steelDerivatives16cvii],
+    },
+  },
+  {
+    code: "9903.82.06",
+    description:
+      "Except as provided for in headings 9903.82.15 and 9903.85.68, articles of copper and derivative aluminum and steel articles, as provided for in subdivisions (c)(ii), (iv), (vi)–(viii) and (e) of U.S. note 16 to this subchapter",
+    name: "Section 232 Metals of US Origin (95% of the Copper, Aluminum, AND Steel must have been smelted, cast, or poured in the US)",
+    general: 10,
+    special: 10,
+    other: 10,
+    contentRequirement: { content: "Section 232 Metals" },
+    // requiresReview: true, // TODO: check this
+    exceptions: ["9903.82.15", "9903.85.68"],
+    inclusions: {
+      codes: [
+        ...aluminumDerivatives16cii,
+        ...steelDerivatives16civ,
+        ...aluminumDerivatives16cvi,
+        ...steelDerivatives16cvii,
+        ...copperArticles16cviii,
+      ],
+    },
+  },
+  {
+    code: "9903.82.07", // TODO: write code to detect this 10% ad Val rate
+    description:
+      "Except as provided for in headings 9903.82.12, 9903.82.17 and 9903.85.68, derivative aluminum and steel articles with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 10 percent, as provided for in subdivisions (c)(ix)–(x) and (e) of U.S. note 16 to this subchapter",
+    name: "Derivative Aluminum and Steel Articles with <10% Column 1 Ad Valorem Rate of Duty",
+    general: 10,
+    special: 10,
+    other: null,
+    contentRequirement: { content: "Section 232 Metals" },
+    // requiresReview: true, // TODO: check this
+    exceptions: ["9903.82.12", "9903.82.17", "9903.85.68"],
+    inclusions: {
+      codes: [...aluminumDerivatives16cix, ...steelDerivatives16cx],
+    },
+  },
+  {
+    code: "9903.82.08",
+    description:
+      "Except as provided for in headings 9903.82.12, 9903.82.17 and 9903.85.68, derivative aluminum and steel articles with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 10 percent, as provided for in subdivisions (c)(ix)–(x) and (e) of U.S. note 16 to this subchapter",
+    name: "Derivative Aluminum and Steel Articles with >=10% Column 1 Ad Valorem Rate of Duty",
+    general: null,
+    special: null,
+    other: null,
+    contentRequirement: { content: "Section 232 Metals" },
+    // requiresReview: true, // TODO: check this
+    exceptions: ["9903.82.12", "9903.82.17", "9903.85.68"],
+    inclusions: {
+      codes: [...aluminumDerivatives16cix, ...steelDerivatives16cx],
+    },
+  },
+  {
+    code: "9903.82.09",
+    description:
+      "Except as provided for in headings 9903.82.16 and 9903.85.68, articles of copper and derivative aluminum and steel articles, as provided for in subdivisions (c)(vi)–(viii) of U.S. note 16 to this subchapter",
+    name: "Section 232 Tariff: Copper and Derivative Aluminum and Steel Articles",
+    general: 25,
+    special: 25,
+    other: 25,
+    contentRequirement: { content: "Section 232 Metals" },
+    // requiresReview: true, // TODO: check this
+    exceptions: ["9903.82.16", "9903.85.68"],
+    inclusions: {
+      codes: [
+        ...aluminumDerivatives16cvi,
+        ...steelDerivatives16cvii,
+        ...copperArticles16cviii,
+      ],
+    },
+  },
+  {
+    code: "9903.82.10", // TODO: Write code to detect this
+    description:
+      "Except as provided for in headings 9903.82.12, 9903.82.17 and 9903.85.68, derivative aluminum and steel articles with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 15 percent, as provided for in subdivision (f) of U.S. note 16 to this subchapter",
+    name: "Aluminum and Steel Articles with <15% Column 1 Ad Valorem Rate of Duty, that do not qualify under 9903.82.06, 9903.82.07, or 9903.82.08",
+    general: 15,
+    special: 15,
+    other: null,
+    contentRequirement: { content: "Section 232 Metals" },
+    // requiresReview: true, // TODO: check this
+    exceptions: [
+      "9903.82.12",
+      "9903.82.17",
+      "9903.85.68",
+      "9903.82.06",
+      "9903.82.07",
+      "9903.82.08",
+    ],
+    inclusions: {
+      codes: [...aluminumDerivatives16cix, ...steelDerivatives16cx],
+    },
+  },
+  {
+    code: "9903.82.11", // TODO: Write code to detect this
+    description:
+      "Except as provided for in headings 9903.82.12, 9903.82.17 and 9903.85.68, derivative aluminum and steel articles with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 15 percent, as provided for in subdivision (f) of U.S. note 16 to this subchapter",
+    name: "Aluminum and Steel Articles with >=15% Column 1 Ad Valorem Rate of Duty, that do not qualify under 9903.82.06, 9903.82.07, or 9903.82.08",
+    general: null,
+    special: null,
+    other: null,
+    contentRequirement: { content: "Section 232 Metals" },
+    // requiresReview: true, // TODO: check this
+    exceptions: [
+      "9903.82.12",
+      "9903.82.17",
+      "9903.85.68",
+      "9903.82.06",
+      "9903.82.07",
+      "9903.82.08",
+    ],
+    inclusions: {
+      codes: [...aluminumDerivatives16cix, ...steelDerivatives16cx],
+    },
+  },
+  {
+    code: "9903.82.12",
+    description:
+      "Except as provided for in headings 9903.82.17 and 9903.85.68, derivative aluminum and steel articles the product of any country identified in general note 3(b), as provided for in subdivisions (c)(ix)–(x) of U.S. note 16 to this subchapter",
+    name: "Aluminum and Steel Articles from Country Identified in General Note 3(B)",
+    general: 25,
+    special: 25,
+    other: 25,
+    contentRequirement: { content: "Section 232 Metals" },
+    // requiresReview: true, // TODO: check this
+    exceptions: ["9903.82.17", "9903.85.68"],
+    inclusions: {
+      countries: [...Column2CountryCodes],
+      codes: [...aluminumDerivatives16cix, ...steelDerivatives16cx],
+    },
+  },
+  {
+    code: "9903.82.13",
+    description:
+      "Motorcycle parts, as provided for in subdivision (g) of U.S. note 16 to the subchapter",
+    name: "Parts Used for the Manufacture of Motorcycles within the US",
+    general: null,
+    special: null,
+    other: null,
+    contentRequirement: { content: "Section 232 Metals" },
+    requiresReview: true,
+    inclusions: {
+      codes: [...motorcycleParts16cg],
+    },
+  },
+  {
+    code: "9903.82.14",
+    description:
+      "Articles of steel or of copper and derivative steel the product of the Russian Federation, as provided for in subdivisions (c)(iii)–(v) of U.S. note 16 to this subchapter",
+    name: "Steel and Copper Articles from Russia (Over 10% Column 1 Ad Valorem Rate of Duty)",
+    general: 50,
+    special: 50,
+    other: 50,
+    contentRequirement: { content: "Section 232 Metals" },
+    requiresReview: true,
+    inclusions: {
+      countries: ["RU"],
+      codes: [...steel16ciii, ...steelDerivatives16civ, ...copper16cv],
+    },
+  },
+  {
+    code: "9903.82.15",
+    description:
+      "Articles of copper and derivative steel the product of the Russian Federation, as provided for in subdivisions (c)(iv), (vii), (viii) and (e) of U.S. note 16 to this subchapter",
+    name: "Copper and Derivative Aluminum and Steel Articles from Russia (Under 10% Column 1 Ad Valorem Rate of Duty)",
+    general: 10,
+    special: 10,
+    other: 10,
+    contentRequirement: { content: "Section 232 Metals" },
+    // requiresReview: true, // TODO: check this
+    inclusions: {
+      countries: ["RU"],
+      codes: [
+        ...steelDerivatives16civ,
+        ...steelDerivatives16cvii,
+        ...copperArticles16cviii,
+      ],
+    },
+  },
+  {
+    code: "9903.82.16",
+    description:
+      "Articles of copper and derivative steel the product of the Russian Federation, as provided for in subdivisions (c)(vii)–(viii) of U.S. note 16 to this subchapter",
+    name: "Copper and Derivative Aluminum and Steel Articles from Russia ",
+    general: 25,
+    special: 25,
+    other: 25,
+    contentRequirement: { content: "Section 232 Metals" },
+    // requiresReview: true, // TODO: check this
+    inclusions: {
+      countries: ["RU"],
+      codes: [...steelDerivatives16cvii, ...copperArticles16cviii],
+    },
+  },
+  {
+    code: "9903.82.17",
+    description:
+      "Derivative steel articles the product of the Russian Federation, as provided for in subdivision (c)(x) of U.S. note 16 to this subchapter",
+    name: "Derivative Steel Articles from Russia ",
+    general: 25,
+    special: 25,
+    other: 25,
+    contentRequirement: { content: "Section 232 Metals" },
+    // requiresReview: true, // TODO: check this
+    inclusions: {
+      countries: ["RU"],
+      codes: [...steelDerivatives16cx],
+    },
+  },
+]

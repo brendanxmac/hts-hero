@@ -33,8 +33,6 @@ export const brazilTariffs: TariffI[] = [
       "9903.94.07",
       // Argicultural Exceptions
       "9903.01.90",
-      // Copper
-      "9903.78.01",
     ],
     inclusions: {
       countries: ["BR"],
@@ -1050,29 +1048,11 @@ export const brazilTariffs: TariffI[] = [
     inclusions: {
       countries: ["BR"],
       tariffs: [
-        // Iron or Steel
-        "9903.81.87",
-        "9903.81.88",
-        // Derivative Iron or Steel
-        "9903.81.89",
-        "9903.81.90",
-        "9903.81.91",
-        "9903.81.92",
-        "9903.81.93",
-        // Aluminum
-        "9903.85.02",
-        // Derivative Aluminum
-        "9903.85.04",
-        "9903.85.07",
-        "9903.85.08",
-        "9903.85.09",
         // Autos
         "9903.94.01",
         "9903.94.03",
         // Auto Parts
         "9903.94.05",
-        // Copper
-        "9903.78.01",
         // Wood
         "9903.76.01",
         "9903.76.02",

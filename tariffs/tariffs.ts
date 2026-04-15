@@ -1,11 +1,7 @@
 import { aluminumTariffs } from "./aluminum"
 import { automobileTariffs } from "./automobile"
-import { canadaTariffs } from "./canada"
 import { chinaTariffs } from "./china"
-import { mexicoTariffs } from "./mexico"
-import { worldwideReciprocalTariff } from "./reciprocal"
 import { exceptionTariffs } from "./exception"
-import { ironAndSteelTariffs } from "./iron-and-steel"
 import { HtsElement } from "../interfaces/hts"
 import {
   BaseTariffI,
@@ -17,20 +13,13 @@ import { ContentRequirementI } from "../components/Element"
 import { ContentRequirements } from "../enums/tariff"
 import { TariffI, UITariff, TariffSet } from "../interfaces/tariffs"
 import { TariffColumn } from "../enums/tariff"
-import { brazilTariffs } from "./brazil"
-import { copperTariffs } from "./copper"
-import {
-  Countries,
-  Country,
-  EuropeanUnionCountries,
-} from "../constants/countries"
+import { Country, EuropeanUnionCountries } from "../constants/countries"
 import {
   TradeProgram,
   TradePrograms,
   TradeProgramStatus,
 } from "../public/trade-programs"
 import { Column2CountryCodes } from "./tariff-columns"
-import { indiaTariffs } from "./india"
 import { japanTariffs } from "./japan"
 import { europeanUnionTariffs } from "./european-union"
 import { woodTariffs } from "./wood"
@@ -46,27 +35,6 @@ export interface CountryWithTariffs extends Country {
   tariffSets: TariffSet[]
   specialTradePrograms: TradeProgram[]
 }
-
-export const Section232MetalTariffs = [
-  // Iron or Steel
-  "9903.81.87",
-  "9903.81.88",
-  // Iron or Steel Derivatives
-  "9903.81.89",
-  "9903.81.90",
-  "9903.81.91",
-  "9903.81.92",
-  "9903.81.93",
-  // Aluminum
-  "9903.85.02",
-  // Aluminum Derivatives
-  "9903.85.04",
-  "9903.85.07",
-  "9903.85.08",
-  "9903.85.09",
-  // Copper
-  "9903.78.01",
-]
 
 export const findExceptions = (
   tariff: TariffI,
@@ -419,12 +387,7 @@ export const getTariffSets = (
       existingTariffSets,
     )
     return [
-      getArticleTariffSet(
-        tariffs,
-        Section232MetalTariffs,
-        contentRequirements,
-        existingTariffSets,
-      ),
+      getArticleTariffSet(tariffs, [], contentRequirements, existingTariffSets),
       ...contentRequirementSets,
     ]
   }
@@ -504,7 +467,7 @@ export const getContentRequirementTariffSets = (
     if (contentRequirement.name === "Copper") {
       // 9903.78.02 is unique in that it's the only 232 metals tariff that mentions
       // the non metal contents of the article, in this case, copper
-      tariffSet = tariffSet.filter((t) => t.code !== "9903.78.02")
+      // tariffSet = tariffSet.filter((t) => t.code !== "9903.78.02") // TODO: this tariff code was removed
     }
 
     tariffSet.forEach((t) => {
@@ -924,18 +887,11 @@ export const getTariffsForCode = (htsCode: string) => {
 //  basis. 7601.10.60.40 is a good example of this
 
 export const TariffsList: TariffI[] = [
-  // ...worldwideReciprocalTariff,
   ...section122Tariffs,
   ...aluminumTariffs,
   ...automobileTariffs,
-  // ...canadaTariffs,
   ...chinaTariffs,
   ...exceptionTariffs,
-  ...ironAndSteelTariffs,
-  // ...mexicoTariffs,
-  // ...brazilTariffs,
-  ...copperTariffs,
-  // ...indiaTariffs,
   ...japanTariffs,
   ...europeanUnionTariffs,
   ...woodTariffs,
