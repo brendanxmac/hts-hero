@@ -379,7 +379,13 @@ export const Element = ({
             </ExplorerDetailSection>
           )}
 
-
+          {!isModal && htsno && htsno.replaceAll(".", "").length >= 8 && (
+            <DutyTariffExplorerSection
+              element={element}
+              tariffElement={tariffElement}
+              htsElements={htsElements}
+            />
+          )}
 
           {htsPathItems.length > 0 && (
             <ExplorerDetailSection
@@ -399,16 +405,6 @@ export const Element = ({
               sectionChapter={sectionChapter}
               htsno={htsno}
               chapter={chapter}
-            />
-          )}
-
-
-
-          {!isModal && htsno && htsno.replaceAll(".", "").length >= 8 && (
-            <DutyTariffExplorerSection
-              element={element}
-              tariffElement={tariffElement}
-              htsElements={htsElements}
             />
           )}
 

@@ -347,7 +347,7 @@ export const section232Tariffs: TariffI[] = [
     general: 10,
     special: 10,
     other: 10,
-    contentRequirement: { content: "Section 232 Metals" },
+    contentRequirement: { content: "Section 232 Metal" },
     // requiresReview: true, // TODO: check this
     inclusions: {
       countries: ["RU"],
@@ -366,7 +366,7 @@ export const section232Tariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
-    contentRequirement: { content: "Section 232 Metals" },
+    contentRequirement: { content: "Section 232 Metal" },
     // requiresReview: true, // TODO: check this
     inclusions: {
       countries: ["RU"],
@@ -381,7 +381,7 @@ export const section232Tariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
-    contentRequirement: { content: "Section 232 Metals" },
+    contentRequirement: { content: "Section 232 Metal" },
     // requiresReview: true, // TODO: check this
     inclusions: {
       countries: ["RU"],

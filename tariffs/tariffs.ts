@@ -37,6 +37,25 @@ export interface CountryWithTariffs extends Country {
   specialTradePrograms: TradeProgram[]
 }
 
+export const Section232MetalTariffs = [
+  "9903.82.02",
+  "9903.82.03",
+  "9903.82.04",
+  "9903.82.05",
+  "9903.82.06",
+  "9903.82.07",
+  "9903.82.08",
+  "9903.82.09",
+  "9903.82.10",
+  "9903.82.11",
+  "9903.82.12",
+  "9903.82.13",
+  "9903.82.14",
+  "9903.82.15",
+  "9903.82.16",
+  "9903.82.17",
+]
+
 export const findExceptions = (
   tariff: TariffI,
   countryCode: string,
@@ -388,7 +407,12 @@ export const getTariffSets = (
       existingTariffSets,
     )
     return [
-      getArticleTariffSet(tariffs, [], contentRequirements, existingTariffSets),
+      getArticleTariffSet(
+        tariffs,
+        Section232MetalTariffs,
+        contentRequirements,
+        existingTariffSets,
+      ),
       ...contentRequirementSets,
     ]
   }
@@ -465,15 +489,11 @@ export const getContentRequirementTariffSets = (
         t.contentRequirement.content === contentRequirement.name,
     )
 
-    if (contentRequirement.name === "Copper") {
-      // 9903.78.02 is unique in that it's the only 232 metals tariff that mentions
-      // the non metal contents of the article, in this case, copper
-      // tariffSet = tariffSet.filter((t) => t.code !== "9903.78.02") // TODO: this tariff code was removed
-    }
-
     tariffSet.forEach((t) => {
       collectExceptionCodes(t, tariffs, exceptionCodes)
     })
+
+    console.log("tariffSet", tariffSet)
 
     // Initially set tariffs without isActive - we'll set it outside the loop
     const tariffSetWithoutIsActive = tariffSet.map((t) => ({
