@@ -177,8 +177,7 @@ export const section232Tariffs: TariffI[] = [
     special: 15,
     other: null,
     contentRequirement: { content: "Section 232 Metal" },
-    // requiresReview: true, // TODO: check this
-    exceptions: ["9903.82.03", "9903.82.06"],
+    exceptions: ["9903.82.03", "9903.82.06"], // TODO: see if we need other exceptions
     inclusions: {
       countries: ["GB"],
       codes: [...aluminumDerivatives16cvi, ...steelDerivatives16cvii],
@@ -188,7 +187,7 @@ export const section232Tariffs: TariffI[] = [
     code: "9903.82.06",
     description:
       "Except as provided for in headings 9903.82.15 and 9903.85.68, articles of copper and derivative aluminum and steel articles, as provided for in subdivisions (c)(ii), (iv), (vi)–(viii) and (e) of U.S. note 16 to this subchapter",
-    name: "232 Metal Exemption: 95% of 232 Metals were smelted, cast, or poured in the US",
+    name: "Metal Articles 95% smelted, cast, or poured in the US",
     general: 10,
     special: 10,
     other: 10,
@@ -206,15 +205,15 @@ export const section232Tariffs: TariffI[] = [
     },
   },
   {
-    code: "9903.82.07", // TODO: write code to detect this 10% ad Val rate
+    code: "9903.82.07", // TODO: Let people toggle this on/off
     description:
       "Except as provided for in headings 9903.82.12, 9903.82.17 and 9903.85.68, derivative aluminum and steel articles with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 10 percent, as provided for in subdivisions (c)(ix)–(x) and (e) of U.S. note 16 to this subchapter",
-    name: "Derivative Aluminum and Steel Articles with <10% Column 1 Ad Valorem Rate of Duty",
-    general: 10,
-    special: 10,
+    name: "Derivative Aluminum and Steel Articles, with metals 95%+ smelted, cast, or poured in the US, <10% Column 1 Ad Valorem Rate of Duty,",
+    general: 10, // CAP AT 10, just like some of the others
+    special: 10, // CAP AT 10, just like some of the others
     other: 0,
     contentRequirement: { content: "Section 232 Metal" },
-    // requiresReview: true, // TODO: check this
+    requiresReview: true,
     exceptions: ["9903.82.12", "9903.82.17", "9903.85.68"],
     inclusions: {
       codes: [...aluminumDerivatives16cix, ...steelDerivatives16cx],
@@ -224,12 +223,12 @@ export const section232Tariffs: TariffI[] = [
     code: "9903.82.08",
     description:
       "Except as provided for in headings 9903.82.12, 9903.82.17 and 9903.85.68, derivative aluminum and steel articles with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 10 percent, as provided for in subdivisions (c)(ix)–(x) and (e) of U.S. note 16 to this subchapter",
-    name: "Derivative Aluminum and Steel Articles with >=10% Column 1 Ad Valorem Rate of Duty",
+    name: "Derivative Aluminum and Steel Articles, with metals 95%+ smelted, cast, or poured in the US, >=10% Column 1 Ad Valorem Rate of Duty",
     general: 0,
     special: 0,
     other: 0,
     contentRequirement: { content: "Section 232 Metal" },
-    // requiresReview: true, // TODO: check this
+    requiresReview: true,
     exceptions: ["9903.82.12", "9903.82.17", "9903.85.68"],
     inclusions: {
       codes: [...aluminumDerivatives16cix, ...steelDerivatives16cx],
@@ -263,7 +262,7 @@ export const section232Tariffs: TariffI[] = [
     code: "9903.82.10", // TODO: Write code to detect this
     description:
       "Except as provided for in headings 9903.82.12, 9903.82.17 and 9903.85.68, derivative aluminum and steel articles with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 15 percent, as provided for in subdivision (f) of U.S. note 16 to this subchapter",
-    name: "Aluminum and Steel Articles with <15% Column 1 Ad Valorem Rate of Duty, that do not qualify under 9903.82.06, 9903.82.07, or 9903.82.08",
+    name: "Derivative Aluminum and Steel Articles with metals <95% smelted, cast, or poured in the US, & <15% Column 1 Ad Valorem Rate of Duty",
     general: 15,
     special: 15,
     other: 0,
@@ -284,10 +283,10 @@ export const section232Tariffs: TariffI[] = [
     code: "9903.82.11", // TODO: Write code to detect this
     description:
       "Except as provided for in headings 9903.82.12, 9903.82.17 and 9903.85.68, derivative aluminum and steel articles with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 15 percent, as provided for in subdivision (f) of U.S. note 16 to this subchapter",
-    name: "Aluminum and Steel Articles with >=15% Column 1 Ad Valorem Rate of Duty, that do not qualify under 9903.82.06, 9903.82.07, or 9903.82.08",
-    general: null,
-    special: null,
-    other: null,
+    name: "Derivative Aluminum and Steel Articles, with metals <95% smelted, cast, or poured in the US, & >=15% Column 1 Ad Valorem Rate of Duty",
+    general: 0,
+    special: 0,
+    other: 0,
     contentRequirement: { content: "Section 232 Metal" },
     // requiresReview: true, // TODO: check this
     exceptions: [

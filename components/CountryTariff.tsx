@@ -7,7 +7,7 @@ import { BaseTariff } from "./BaseTariff";
 import { ContentRequirements, TariffColumn } from "../enums/tariff";
 import { Column2CountryCodes } from "../tariffs/tariff-columns";
 import {
-  get15PercentCountryTotalBaseRate,
+  getTotalBaseRate,
   getAmountRatesString,
   getAdValoremRate,
   CountryWithTariffs,
@@ -107,7 +107,7 @@ export const CountryTariff = ({
   const [selectedSpecialProgram, setSelectedSpecialProgram] =
     useState<TradeProgramDisplayable>(selectedTradeProgram || DEFAULT_PROGRAM);
 
-  const adValoremEquivalentRate = get15PercentCountryTotalBaseRate(
+  const adValoremEquivalentRate = getTotalBaseRate(
     baseTariffs.flatMap((t) => t.tariffs),
     customsValue,
     units

@@ -20,7 +20,7 @@ import {
   CountryWithTariffs,
   addTariffsToCountries,
   getBaseAmountTariffsText,
-  get15PercentCountryTotalBaseRate,
+  getTotalBaseRate,
 } from "../tariffs/tariffs";
 import { classNames } from "../utilities/style";
 import React from "react";
@@ -167,12 +167,12 @@ export const Tariffs = ({
         EuropeanUnionCountries.includes(b.code) ||
         b.code === "JP" ||
         b.code === "KR";
-      const adValoremEquivalentRateA = get15PercentCountryTotalBaseRate(
+      const adValoremEquivalentRateA = getTotalBaseRate(
         a.baseTariffs.flatMap((t) => t.tariffs),
         customsValue,
         units
       );
-      const adValoremEquivalentRateB = get15PercentCountryTotalBaseRate(
+      const adValoremEquivalentRateB = getTotalBaseRate(
         b.baseTariffs.flatMap((t) => t.tariffs),
         customsValue,
         units
@@ -207,12 +207,12 @@ export const Tariffs = ({
         EuropeanUnionCountries.includes(b.code) ||
         b.code === "JP" ||
         b.code === "KR";
-      const adValoremEquivalentRateA = get15PercentCountryTotalBaseRate(
+      const adValoremEquivalentRateA = getTotalBaseRate(
         a.baseTariffs.flatMap((t) => t.tariffs),
         customsValue,
         units
       );
-      const adValoremEquivalentRateB = get15PercentCountryTotalBaseRate(
+      const adValoremEquivalentRateB = getTotalBaseRate(
         b.baseTariffs.flatMap((t) => t.tariffs),
         customsValue,
         units
@@ -484,7 +484,7 @@ export const Tariffs = ({
           {/* Country Cards */}
           <div className="flex flex-col gap-2">
             {sortedCountries.map((country, i) => {
-              const adValoremEquivalentRate = get15PercentCountryTotalBaseRate(
+              const adValoremEquivalentRate = getTotalBaseRate(
                 country.baseTariffs
                   .flatMap((t) => t.tariffs)
                   .filter((t) => {

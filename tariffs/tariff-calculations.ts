@@ -7,7 +7,7 @@ import { ContentRequirements, TariffColumn } from "../enums/tariff"
 import { EuropeanUnionCountries } from "../constants/countries"
 import { Column2CountryCodes } from "./tariff-columns"
 import {
-  get15PercentCountryTotalBaseRate,
+  getTotalBaseRate,
   getAdValoremRate,
   getAmountRatesString,
 } from "./tariffs"
@@ -73,7 +73,7 @@ export function formatCurrency(amount: number): string {
  */
 export function findTariffElement(
   element: HtsElement,
-  htsElements: HtsElement[]
+  htsElements: HtsElement[],
 ): HtsElement {
   if (element.general || element.special || element.other) return element
   const parents = getHtsElementParents(element, htsElements)
@@ -110,9 +110,9 @@ export function calculateDutyEstimates(
   contentRequirements: ContentRequirementI<ContentRequirements>[],
   tariffColumn: TariffColumn,
   below15Rule: boolean,
-  filterByProgram?: <T extends { programs?: string[] }>(tariffs: T[]) => T[]
+  filterByProgram?: <T extends { programs?: string[] }>(tariffs: T[]) => T[],
 ): DutyEstimate[] {
-  const identity = <T,>(arr: T[]) => arr
+  const identity = <T>(arr: T[]) => arr
   const filter = filterByProgram ?? identity
 
   const flatBase = filter(baseTariffs.flatMap((t) => t.tariffs))
@@ -128,12 +128,11 @@ export function calculateDutyEstimates(
     .reduce((sum, cr) => sum + cr.value, 0)
   const articlePercentage = Math.max(
     0,
-    Math.min(100, 100 - totalContentPercentage)
+    Math.min(100, 100 - totalContentPercentage),
   )
 
   tariffSets.forEach((tariffSet) => {
-    const isArticleSet =
-      tariffSet.name === "Article" || tariffSet.name === ""
+    const isArticleSet = tariffSet.name === "Article" || tariffSet.name === ""
 
     let contentPercentage = 100
     if (isArticleSet) {
@@ -147,8 +146,10 @@ export function calculateDutyEstimates(
     }
 
     const applicableValue = (customsValue * contentPercentage) / 100
-    const isSection232Metal = tariffSet.name === SECTION_232_METAL_CONTENT_SET_NAME
-    const shouldIncludeBase = (isArticleSet || isSection232Metal) && !below15Rule
+    const isSection232Metal =
+      tariffSet.name === SECTION_232_METAL_CONTENT_SET_NAME
+    const shouldIncludeBase =
+      (isArticleSet || isSection232Metal) && !below15Rule
 
     const adValoremRate = shouldIncludeBase
       ? getAdValoremRate(tariffColumn, tariffSet.tariffs, flatBase)
@@ -212,19 +213,20 @@ export function calculateSummaryTotals(
   baseTariffs: ParsedBaseTariff[],
   tariffColumn: TariffColumn,
   below15Rule: boolean,
-  filterByProgram?: <T extends { programs?: string[] }>(tariffs: T[]) => T[]
+  filterByProgram?: <T extends { programs?: string[] }>(tariffs: T[]) => T[],
 ): SummaryTotal[] {
-  const identity = <T,>(arr: T[]) => arr
+  const identity = <T>(arr: T[]) => arr
   const filter = filterByProgram ?? identity
 
   const flatBase = filter(baseTariffs.flatMap((t) => t.tariffs))
   const amountRatesString = getAmountRatesString(flatBase)
 
   return tariffSets.map((tariffSet) => {
-    const isArticleSet =
-      tariffSet.name === "Article" || tariffSet.name === ""
-    const isSection232Metal = tariffSet.name === SECTION_232_METAL_CONTENT_SET_NAME
-    const shouldIncludeBase = (isArticleSet || isSection232Metal) && !below15Rule
+    const isArticleSet = tariffSet.name === "Article" || tariffSet.name === ""
+    const isSection232Metal =
+      tariffSet.name === SECTION_232_METAL_CONTENT_SET_NAME
+    const shouldIncludeBase =
+      (isArticleSet || isSection232Metal) && !below15Rule
 
     const rate = shouldIncludeBase
       ? getAdValoremRate(tariffColumn, tariffSet.tariffs, flatBase)
@@ -253,7 +255,7 @@ export function calculateAllTariffs(
   contentRequirements: ContentRequirementI<ContentRequirements>[],
   tariffColumn: TariffColumn,
   below15Rule: boolean,
-  filterByProgram?: <T extends { programs?: string[] }>(tariffs: T[]) => T[]
+  filterByProgram?: <T extends { programs?: string[] }>(tariffs: T[]) => T[],
 ): TariffCalculationResult {
   const dutyEstimates = calculateDutyEstimates(
     tariffSets,
@@ -263,7 +265,7 @@ export function calculateAllTariffs(
     contentRequirements,
     tariffColumn,
     below15Rule,
-    filterByProgram
+    filterByProgram,
   )
   const feeEstimates = calculateFeeEstimates(customsValue)
   const summaryTotals = calculateSummaryTotals(
@@ -271,13 +273,10 @@ export function calculateAllTariffs(
     baseTariffs,
     tariffColumn,
     below15Rule,
-    filterByProgram
+    filterByProgram,
   )
 
-  const totalTariffDuty = dutyEstimates.reduce(
-    (sum, e) => sum + e.totalDuty,
-    0
-  )
+  const totalTariffDuty = dutyEstimates.reduce((sum, e) => sum + e.totalDuty, 0)
   const totalFees = feeEstimates.reduce((sum, f) => sum + f.amount, 0)
 
   return {

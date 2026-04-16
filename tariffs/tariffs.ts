@@ -152,6 +152,12 @@ export const addTariffsToCountry = (
     customsValue,
     units,
   )
+  applicableTariffs = filterCountryTariffsByColumn1AdValoremRate(
+    applicableTariffs,
+    baseTariffsForColumn,
+    customsValue,
+    units,
+  )
   applicableTariffs = applicableTariffs.map((t) => ({
     ...t,
     exceptions: t.exceptions?.filter((e) =>
@@ -234,6 +240,38 @@ export const getBaseAmountTariffsSum = (baseTariffs: ParsedBaseTariff[]) => {
   return baseAmountTariffs.reduce((acc, t) => acc + t.value, 0)
 }
 
+export const filterCountryTariffsByColumn1AdValoremRate = (
+  tariffs: TariffI[],
+  baseTariffsForColumn: ParsedBaseTariff[],
+  customsValue?: number,
+  units?: number,
+) => {
+  const totalBaseRate = getTotalBaseRate(
+    baseTariffsForColumn.flatMap((t) => t.tariffs),
+    customsValue ?? 1000,
+    units ?? 10,
+  )
+
+  return tariffs.filter((t) => {
+    if (totalBaseRate >= 15) {
+      return t.code !== "9903.82.10" && t.code !== "9903.82.07"
+    }
+    if (totalBaseRate >= 10) {
+      return t.code !== "9903.82.07"
+    }
+
+    if (totalBaseRate < 10) {
+      return t.code !== "9903.82.11" && t.code !== "9903.82.08"
+    }
+
+    if (totalBaseRate < 15) {
+      return t.code !== "9903.82.11"
+    }
+
+    return true
+  })
+}
+
 export const filterCountryTariffsFor15PercentExeption = (
   tariffs: TariffI[],
   country: Country,
@@ -249,7 +287,7 @@ export const filterCountryTariffsFor15PercentExeption = (
     return tariffs
   }
 
-  const totalBaseRate = get15PercentCountryTotalBaseRate(
+  const totalBaseRate = getTotalBaseRate(
     baseTariffsForColumn.flatMap((t) => t.tariffs),
     customsValue ?? 1000,
     units ?? 10,
@@ -533,7 +571,7 @@ export const getAdValoremRate = (
   return rate
 }
 
-export const get15PercentCountryTotalBaseRate = (
+export const getTotalBaseRate = (
   baseTariffs: BaseTariffI[],
   customsValue: number,
   units?: number,
