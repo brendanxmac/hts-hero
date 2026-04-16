@@ -330,6 +330,7 @@ export const worldwideReciprocalTariff: TariffI[] = [
       "9903.94.03",
       // Auto Parts
       "9903.94.05",
+      ...Section232MetalTariffs,
     ],
     exclusions: {
       countries: ["CA"], // TODO: should this be here? Since CA already has transshiiping add-on via .01.16
