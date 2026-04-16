@@ -19,6 +19,7 @@ import {
   calculateSummaryTotals,
   formatCurrency,
   ADDITIONAL_FEES_TOTAL_RATE,
+  SECTION_232_METAL_CONTENT_SET_NAME,
 } from "../tariffs/tariff-calculations";
 import { EstimatedCostsDisplay } from "./tariff-ui/EstimatedCostsDisplay";
 import { TradePrograms } from "../public/trade-programs";
@@ -262,8 +263,9 @@ export const CountryTariff = ({
     tariffSets.forEach((tariffSet) => {
       const isArticleSet =
         tariffSet.name === "Article" || tariffSet.name === "";
+      const isSection232Metal = tariffSet.name === SECTION_232_METAL_CONTENT_SET_NAME;
       const shouldIncludeBaseTariffs =
-        isArticleSet &&
+        (isArticleSet || isSection232Metal) &&
         !(is15PercentCapCountry && adValoremEquivalentRate < 15);
       const hasAmountTariffs =
         shouldIncludeBaseTariffs &&
@@ -392,10 +394,10 @@ export const CountryTariff = ({
   const renderTariffRate = (tariffSet: TariffSet) => {
     const filteredBase = filterByProgram(baseTariffs.flatMap((t) => t.tariffs));
     const isArticleSet = tariffSet.name === "Article" || tariffSet.name === "";
+    const isSection232Metal = tariffSet.name === SECTION_232_METAL_CONTENT_SET_NAME;
 
-    // Base tariffs only apply to Article set
     const shouldIncludeBaseTariffs =
-      isArticleSet && !(is15PercentCapCountry && adValoremEquivalentRate < 15);
+      (isArticleSet || isSection232Metal) && !(is15PercentCapCountry && adValoremEquivalentRate < 15);
     const hasAmountTariffs =
       shouldIncludeBaseTariffs && filteredBase.some((t) => t.type === "amount");
 

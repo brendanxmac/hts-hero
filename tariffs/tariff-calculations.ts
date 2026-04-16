@@ -14,6 +14,7 @@ import {
 
 // ── Constants ──
 
+export const SECTION_232_METAL_CONTENT_SET_NAME = "Section 232 Metal Content"
 export const HARBOR_MAINTENANCE_FEE_RATE = 0.00125 // 0.125%
 export const MERCHANDISE_PROCESSING_FEE_RATE = 0.003464 // 0.3464%
 export const MPF_MIN = 33.58
@@ -122,10 +123,9 @@ export function calculateDutyEstimates(
     contentPercentageMap.set(cr.name, cr.value)
   })
 
-  const totalContentPercentage = contentRequirements.reduce(
-    (sum, cr) => sum + cr.value,
-    0
-  )
+  const totalContentPercentage = contentRequirements
+    .filter((cr) => cr.name !== "Section 232 Metal")
+    .reduce((sum, cr) => sum + cr.value, 0)
   const articlePercentage = Math.max(
     0,
     Math.min(100, 100 - totalContentPercentage)
@@ -139,13 +139,16 @@ export function calculateDutyEstimates(
     if (isArticleSet) {
       contentPercentage =
         contentRequirements.length > 0 ? articlePercentage : 100
+    } else if (tariffSet.name === SECTION_232_METAL_CONTENT_SET_NAME) {
+      contentPercentage = 100
     } else {
       const contentName = tariffSet.name.replace(" Content", "")
       contentPercentage = contentPercentageMap.get(contentName) || 0
     }
 
     const applicableValue = (customsValue * contentPercentage) / 100
-    const shouldIncludeBase = isArticleSet && !below15Rule
+    const isSection232Metal = tariffSet.name === SECTION_232_METAL_CONTENT_SET_NAME
+    const shouldIncludeBase = (isArticleSet || isSection232Metal) && !below15Rule
 
     const adValoremRate = shouldIncludeBase
       ? getAdValoremRate(tariffColumn, tariffSet.tariffs, flatBase)
@@ -220,7 +223,8 @@ export function calculateSummaryTotals(
   return tariffSets.map((tariffSet) => {
     const isArticleSet =
       tariffSet.name === "Article" || tariffSet.name === ""
-    const shouldIncludeBase = isArticleSet && !below15Rule
+    const isSection232Metal = tariffSet.name === SECTION_232_METAL_CONTENT_SET_NAME
+    const shouldIncludeBase = (isArticleSet || isSection232Metal) && !below15Rule
 
     const rate = shouldIncludeBase
       ? getAdValoremRate(tariffColumn, tariffSet.tariffs, flatBase)
