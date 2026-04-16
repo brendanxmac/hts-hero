@@ -137,7 +137,6 @@ export const TariffFinderPage = () => {
   const [customsValue, setCustomsValue] = useState<number>(
     getInitialCustomsValue
   );
-
   // Store URL-provided content percentages to apply after content requirements are determined
   const [urlContentPercentages] = useState<Map<string, number>>(
     getContentPercentagesFromUrl
@@ -241,10 +240,10 @@ export const TariffFinderPage = () => {
   }, [showExploreModal, closeExploreModal]);
 
   useEffect(() => {
-    if (tariffElement) {
+    if (selectedElement && tariffElement) {
       const codeBasedContentRequirements = Array.from(
         TariffsList.filter((t) =>
-          tariffIsApplicableToCode(t, tariffElement.htsno)
+          tariffIsApplicableToCode(t, selectedElement.htsno)
         ).reduce((acc, t) => {
           if (t.contentRequirement) {
             acc.add(t.contentRequirement.content);
@@ -263,7 +262,7 @@ export const TariffFinderPage = () => {
       setContentRequirements(newContentRequirements);
       setUiContentPercentages(newContentRequirements);
     }
-  }, [tariffElement, urlContentPercentages]);
+  }, [selectedElement, tariffElement, urlContentPercentages]);
 
   // Handlers with debouncing
   const handleSliderChange = (
@@ -674,7 +673,7 @@ export const TariffFinderPage = () => {
               </div>
             )}
           {/* Content Percentage Inputs */}
-          {countryWithTariffs && uiContentPercentages.length > 0 && (
+          {/* {countryWithTariffs && uiContentPercentages.length > 0 && (
             <div className="flex flex-col gap-4 col-span-1">
               {uiContentPercentages.map((contentPercentage) => (
                 <div
@@ -694,7 +693,7 @@ export const TariffFinderPage = () => {
                 </div>
               ))}
             </div>
-          )}
+          )} */}
         </div>
 
         {/* Duty & Tariffs Separator */}

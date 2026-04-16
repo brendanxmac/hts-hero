@@ -6,6 +6,8 @@ import {
   getTariffSets,
   collectExceptionCodes,
   TariffsList,
+  getTariffByCode,
+  tariffIsApplicableToCode,
 } from "../tariffs/tariffs"
 import { TariffI, UITariff, TariffSet } from "../interfaces/tariffs"
 import { ContentRequirementI } from "../components/Element"
@@ -708,3 +710,4 @@ describe("Full integration — HTS 7601.10.60 (unwrought aluminum)", () => {
     expect(exemption!.isActive).toBe(true)
   })
 })
+

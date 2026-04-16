@@ -20,15 +20,18 @@ export const section232Tariffs: TariffI[] = [
     code: "9903.82.02",
     description:
       "Except as provided for in headings 9903.82.14, 9903.85.67 and 9903.85.68, articles of aluminum, of steel or of copper and derivative aluminum or steel articles, as provided for in subdivisions (c)(i)–(v) of U.S. note 16 to this subchapter",
-    name: "Section 232 Metals Tariff (Aluminum, Steel, Copper)",
+    name: "232 Metals (Aluminum, Steel, Copper)",
     general: 50,
     special: 50,
     other: 50,
     contentRequirement: { content: "Section 232 Metal" },
-    // requiresReview: true, // TODO: check this
-    exclusions: {
-      //   countries: GB? RU?
-    },
+    exceptions: [
+      "9903.82.14",
+      "9903.85.67",
+      "9903.85.68",
+      "9903.82.03",
+      "9903.82.06",
+    ],
     inclusions: {
       codes: [
         ...aluminum16ci,
@@ -44,12 +47,12 @@ export const section232Tariffs: TariffI[] = [
     code: "9903.82.03",
     description:
       "Except for articles classifiable in chapters 72, 73, 74 or 76, articles where the weight of the applicable metal is less than 15 percent of the weight of the imported article, as provided for in subdivision (c) of U.S. note 16 to this subchapter",
-    name: "Section 232 Metal Tariff Exemption: Metal Weight <15% of Article Weight",
-    general: null,
-    special: null,
-    other: null,
-    contentRequirement: { content: "Section 232 Metal" },
+    name: "232 Metal Exemption: 232 Metals are <15% of Article Weight",
+    general: 0,
+    special: 0,
+    other: 0,
     requiresReview: true,
+    contentRequirement: { content: "Section 232 Metal" },
     inclusions: {
       codes: ["*"],
     },
@@ -149,12 +152,12 @@ export const section232Tariffs: TariffI[] = [
     code: "9903.82.04",
     description:
       "Articles of aluminum or of steel and derivative aluminum or steel articles the product of the United Kingdom, as provided for in subdivisions (c)(i)–(iv) and (d) of U.S. note 16 to this subchapter",
-    name: "Section 232 Metals of UK Origin (Applies to Aluminum 95% Smelted or Most Recently Cast in UK or Steel 95% Melted and Poured in UK)",
+    name: "Aluminum and Steel Articles of UK Origin (95% Smelted or Most Recently Cast or Poured in UK)",
     general: 25,
     special: 25,
     other: null,
     contentRequirement: { content: "Section 232 Metal" },
-    // requiresReview: true, // TODO: check this
+    requiresReview: true,
     inclusions: {
       countries: ["GB"],
       codes: [
@@ -169,12 +172,13 @@ export const section232Tariffs: TariffI[] = [
     code: "9903.82.05",
     description:
       "Derivative aluminum or steel articles the product of the United Kingdom, as provided for in subdivisions (c)(vi)–(vii) and (d) of U.S. note 16 to this subchapter",
-    name: "Section 232 Metals of UK Origin (Derivative Articles)",
+    name: "232 Metals of UK Origin (Derivative Articles)",
     general: 15,
     special: 15,
     other: null,
     contentRequirement: { content: "Section 232 Metal" },
     // requiresReview: true, // TODO: check this
+    exceptions: ["9903.82.03", "9903.82.06"],
     inclusions: {
       countries: ["GB"],
       codes: [...aluminumDerivatives16cvi, ...steelDerivatives16cvii],
@@ -184,12 +188,12 @@ export const section232Tariffs: TariffI[] = [
     code: "9903.82.06",
     description:
       "Except as provided for in headings 9903.82.15 and 9903.85.68, articles of copper and derivative aluminum and steel articles, as provided for in subdivisions (c)(ii), (iv), (vi)–(viii) and (e) of U.S. note 16 to this subchapter",
-    name: "Section 232 Metals of US Origin (95% of the Copper, Aluminum, AND Steel must have been smelted, cast, or poured in the US)",
+    name: "232 Metal Exemption: 95% of 232 Metals were smelted, cast, or poured in the US",
     general: 10,
     special: 10,
     other: 10,
     contentRequirement: { content: "Section 232 Metal" },
-    // requiresReview: true, // TODO: check this
+    requiresReview: true,
     exceptions: ["9903.82.15", "9903.85.68"],
     inclusions: {
       codes: [
@@ -208,7 +212,7 @@ export const section232Tariffs: TariffI[] = [
     name: "Derivative Aluminum and Steel Articles with <10% Column 1 Ad Valorem Rate of Duty",
     general: 10,
     special: 10,
-    other: null,
+    other: 0,
     contentRequirement: { content: "Section 232 Metal" },
     // requiresReview: true, // TODO: check this
     exceptions: ["9903.82.12", "9903.82.17", "9903.85.68"],
@@ -221,9 +225,9 @@ export const section232Tariffs: TariffI[] = [
     description:
       "Except as provided for in headings 9903.82.12, 9903.82.17 and 9903.85.68, derivative aluminum and steel articles with an ad valorem (or ad valorem equivalent) rate of duty under column 1 equal to or greater than 10 percent, as provided for in subdivisions (c)(ix)–(x) and (e) of U.S. note 16 to this subchapter",
     name: "Derivative Aluminum and Steel Articles with >=10% Column 1 Ad Valorem Rate of Duty",
-    general: null,
-    special: null,
-    other: null,
+    general: 0,
+    special: 0,
+    other: 0,
     contentRequirement: { content: "Section 232 Metal" },
     // requiresReview: true, // TODO: check this
     exceptions: ["9903.82.12", "9903.82.17", "9903.85.68"],
@@ -235,13 +239,18 @@ export const section232Tariffs: TariffI[] = [
     code: "9903.82.09",
     description:
       "Except as provided for in headings 9903.82.16 and 9903.85.68, articles of copper and derivative aluminum and steel articles, as provided for in subdivisions (c)(vi)–(viii) of U.S. note 16 to this subchapter",
-    name: "Section 232 Tariff: Copper and Derivative Aluminum and Steel Articles",
+    name: "232 Metal: Copper and Derivative Aluminum and Steel Articles",
     general: 25,
     special: 25,
     other: 25,
     contentRequirement: { content: "Section 232 Metal" },
-    // requiresReview: true, // TODO: check this
-    exceptions: ["9903.82.16", "9903.85.68"],
+    exceptions: [
+      "9903.82.16",
+      "9903.85.68",
+      "9903.82.03",
+      "9903.82.06",
+      "9903.82.13",
+    ],
     inclusions: {
       codes: [
         ...aluminumDerivatives16cvi,
@@ -257,9 +266,8 @@ export const section232Tariffs: TariffI[] = [
     name: "Aluminum and Steel Articles with <15% Column 1 Ad Valorem Rate of Duty, that do not qualify under 9903.82.06, 9903.82.07, or 9903.82.08",
     general: 15,
     special: 15,
-    other: null,
+    other: 0,
     contentRequirement: { content: "Section 232 Metal" },
-    // requiresReview: true, // TODO: check this
     exceptions: [
       "9903.82.12",
       "9903.82.17",
@@ -314,10 +322,10 @@ export const section232Tariffs: TariffI[] = [
     code: "9903.82.13",
     description:
       "Motorcycle parts, as provided for in subdivision (g) of U.S. note 16 to the subchapter",
-    name: "Parts Used for the Manufacture of Motorcycles within the US",
-    general: null,
-    special: null,
-    other: null,
+    name: "232 Metal Exemption: Parts for Manufacture of Motorcycles in the US",
+    general: 0,
+    special: 0,
+    other: 0,
     contentRequirement: { content: "Section 232 Metal" },
     requiresReview: true,
     inclusions: {
@@ -333,7 +341,6 @@ export const section232Tariffs: TariffI[] = [
     special: 50,
     other: 50,
     contentRequirement: { content: "Section 232 Metal" },
-    requiresReview: true,
     inclusions: {
       countries: ["RU"],
       codes: [...steel16ciii, ...steelDerivatives16civ, ...copper16cv],

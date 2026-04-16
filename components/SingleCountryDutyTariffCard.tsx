@@ -51,7 +51,6 @@ export function SingleCountryDutyTariffCard({
   const [uiContentPercentages, setUiContentPercentages] = useState<
     ContentRequirementI<ContentRequirements>[]
   >([]);
-
   const customsValueTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const unitsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -71,7 +70,7 @@ export function SingleCountryDutyTariffCard({
     }
     const codeBasedContentRequirements = Array.from(
       TariffsList.filter((t) =>
-        tariffIsApplicableToCode(t, effectiveTariffElement.htsno)
+        tariffIsApplicableToCode(t, element.htsno)
       ).reduce((acc, t) => {
         if (t.contentRequirement) {
           acc.add(t.contentRequirement.content);
@@ -86,7 +85,7 @@ export function SingleCountryDutyTariffCard({
     }));
     setContentRequirements(next);
     setUiContentPercentages(next);
-  }, [effectiveTariffElement]);
+  }, [element, effectiveTariffElement]);
 
   useEffect(() => {
     if (
@@ -231,7 +230,7 @@ export function SingleCountryDutyTariffCard({
                   </div>
                 )}
 
-              {uiContentPercentages.map((contentPercentage) => (
+              {/* {uiContentPercentages.map((contentPercentage) => (
                 <div
                   key={`${contentPercentage.name}-content-requirement`}
                   className="flex flex-col gap-2"
@@ -246,7 +245,7 @@ export function SingleCountryDutyTariffCard({
                     }
                   />
                 </div>
-              ))}
+              ))} */}
             </div>
           )}
 

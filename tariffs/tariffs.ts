@@ -475,8 +475,6 @@ export const getContentRequirementTariffSets = (
       collectExceptionCodes(t, tariffs, exceptionCodes)
     })
 
-    console.log("tariffSet", tariffSet)
-
     // Initially set tariffs without isActive - we'll set it outside the loop
     const tariffSetWithoutIsActive = tariffSet.map((t) => ({
       ...t,
