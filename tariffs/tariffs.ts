@@ -28,6 +28,7 @@ import { argiculturalTariffs } from "./argicultural"
 import { southKoreaTariffs } from "./south-korea"
 import { section122Tariffs } from "./section-122"
 import { semiconductorTariffs } from "./semiconductors"
+import { section232Tariffs } from "./section-232"
 
 export interface CountryWithTariffs extends Country {
   selectedTradeProgram: TradeProgram | null
@@ -887,6 +888,7 @@ export const getTariffsForCode = (htsCode: string) => {
 //  basis. 7601.10.60.40 is a good example of this
 
 export const TariffsList: TariffI[] = [
+  ...section232Tariffs,
   ...section122Tariffs,
   ...aluminumTariffs,
   ...automobileTariffs,

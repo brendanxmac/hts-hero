@@ -792,7 +792,7 @@ export const CountryTariff = ({
                     onClick={() =>
                       setExpandedSets((prev) => ({
                         ...prev,
-                        [i]: !(prev[i] ?? true),
+                        [i]: !(prev[i] ?? false),
                       }))
                     }
                   >

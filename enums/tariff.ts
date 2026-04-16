@@ -1,4 +1,4 @@
-export type Metal = "Aluminum" | "Steel" | "Copper" | "Section 232 Metals"
+export type Metal = "Aluminum" | "Steel" | "Copper" | "Section 232 Metal"
 export type UsContent = "U.S. Content"
 
 export enum TariffCategory {

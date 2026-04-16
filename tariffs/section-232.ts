@@ -24,7 +24,7 @@ export const section232Tariffs: TariffI[] = [
     general: 50,
     special: 50,
     other: 50,
-    contentRequirement: { content: "Section 232 Metals" },
+    contentRequirement: { content: "Section 232 Metal" },
     // requiresReview: true, // TODO: check this
     exclusions: {
       //   countries: GB? RU?
@@ -48,7 +48,7 @@ export const section232Tariffs: TariffI[] = [
     general: null,
     special: null,
     other: null,
-    contentRequirement: { content: "Section 232 Metals" },
+    contentRequirement: { content: "Section 232 Metal" },
     requiresReview: true,
     inclusions: {
       codes: ["*"],
@@ -153,7 +153,7 @@ export const section232Tariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: null,
-    contentRequirement: { content: "Section 232 Metals" },
+    contentRequirement: { content: "Section 232 Metal" },
     // requiresReview: true, // TODO: check this
     inclusions: {
       countries: ["GB"],
@@ -173,7 +173,7 @@ export const section232Tariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: null,
-    contentRequirement: { content: "Section 232 Metals" },
+    contentRequirement: { content: "Section 232 Metal" },
     // requiresReview: true, // TODO: check this
     inclusions: {
       countries: ["GB"],
@@ -188,7 +188,7 @@ export const section232Tariffs: TariffI[] = [
     general: 10,
     special: 10,
     other: 10,
-    contentRequirement: { content: "Section 232 Metals" },
+    contentRequirement: { content: "Section 232 Metal" },
     // requiresReview: true, // TODO: check this
     exceptions: ["9903.82.15", "9903.85.68"],
     inclusions: {
@@ -209,7 +209,7 @@ export const section232Tariffs: TariffI[] = [
     general: 10,
     special: 10,
     other: null,
-    contentRequirement: { content: "Section 232 Metals" },
+    contentRequirement: { content: "Section 232 Metal" },
     // requiresReview: true, // TODO: check this
     exceptions: ["9903.82.12", "9903.82.17", "9903.85.68"],
     inclusions: {
@@ -224,7 +224,7 @@ export const section232Tariffs: TariffI[] = [
     general: null,
     special: null,
     other: null,
-    contentRequirement: { content: "Section 232 Metals" },
+    contentRequirement: { content: "Section 232 Metal" },
     // requiresReview: true, // TODO: check this
     exceptions: ["9903.82.12", "9903.82.17", "9903.85.68"],
     inclusions: {
@@ -239,7 +239,7 @@ export const section232Tariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
-    contentRequirement: { content: "Section 232 Metals" },
+    contentRequirement: { content: "Section 232 Metal" },
     // requiresReview: true, // TODO: check this
     exceptions: ["9903.82.16", "9903.85.68"],
     inclusions: {
@@ -258,7 +258,7 @@ export const section232Tariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: null,
-    contentRequirement: { content: "Section 232 Metals" },
+    contentRequirement: { content: "Section 232 Metal" },
     // requiresReview: true, // TODO: check this
     exceptions: [
       "9903.82.12",
@@ -280,7 +280,7 @@ export const section232Tariffs: TariffI[] = [
     general: null,
     special: null,
     other: null,
-    contentRequirement: { content: "Section 232 Metals" },
+    contentRequirement: { content: "Section 232 Metal" },
     // requiresReview: true, // TODO: check this
     exceptions: [
       "9903.82.12",
@@ -302,7 +302,7 @@ export const section232Tariffs: TariffI[] = [
     general: 25,
     special: 25,
     other: 25,
-    contentRequirement: { content: "Section 232 Metals" },
+    contentRequirement: { content: "Section 232 Metal" },
     // requiresReview: true, // TODO: check this
     exceptions: ["9903.82.17", "9903.85.68"],
     inclusions: {
@@ -318,7 +318,7 @@ export const section232Tariffs: TariffI[] = [
     general: null,
     special: null,
     other: null,
-    contentRequirement: { content: "Section 232 Metals" },
+    contentRequirement: { content: "Section 232 Metal" },
     requiresReview: true,
     inclusions: {
       codes: [...motorcycleParts16cg],
@@ -332,7 +332,7 @@ export const section232Tariffs: TariffI[] = [
     general: 50,
     special: 50,
     other: 50,
-    contentRequirement: { content: "Section 232 Metals" },
+    contentRequirement: { content: "Section 232 Metal" },
     requiresReview: true,
     inclusions: {
       countries: ["RU"],
