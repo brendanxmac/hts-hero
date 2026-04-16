@@ -1,3 +1,22 @@
+export const Section232MetalTariffs: string[] = [
+  "9903.82.02",
+  "9903.82.03",
+  "9903.82.04",
+  "9903.82.05",
+  "9903.82.06",
+  "9903.82.07",
+  "9903.82.08",
+  "9903.82.09",
+  "9903.82.10",
+  "9903.82.11",
+  "9903.82.12",
+  "9903.82.13",
+  "9903.82.14",
+  "9903.82.15",
+  "9903.82.16",
+  "9903.82.17",
+]
+
 // (e) passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans and cargo vans) and light
 // trucks provided for in headings 9903.94.01, 9903.94.02 (as applied to the U.S. content of passenger vehicles and
 // light trucks described in subdivision 33(d) of this subchapter upon approval from the Secretary of Commerce),

@@ -11,6 +11,7 @@ import {
   partOfPassengerVehicleAndLightTruckTariffCodes,
   passengerVehicleAndLightTruckTariffCodes,
   semicondutorTariffCodes,
+  Section232MetalTariffs,
 } from "./tariff-lists"
 
 export const section122Tariffs: TariffI[] = [
@@ -1207,6 +1208,7 @@ export const section122Tariffs: TariffI[] = [
     inclusions: {
       countries: ["*"],
       tariffs: [
+        ...Section232MetalTariffs,
         ...passengerVehicleAndLightTruckTariffCodes,
         ...partOfPassengerVehicleAndLightTruckTariffCodes,
         ...mhdvArticleTariffCodes,

@@ -1,5 +1,3 @@
-import { TariffI } from "../interfaces/tariffs"
-
 export const aluminum16ci = [
   "7601",
   "7604",

@@ -1,5 +1,6 @@
 import { EuropeanUnionCountries } from "../constants/countries"
 import { TariffI } from "../interfaces/tariffs"
+import { Section232MetalTariffs } from "./tariff-lists"
 
 // Via 99,III,2(v)(i)
 export const recriprocalTariffExemptions = [
@@ -87,6 +88,7 @@ export const recriprocalTariffExemptions = [
   "9903.94.64",
   // South Korea Parts Not elsewhere specified < 15%
   "9903.94.65 ",
+  ...Section232MetalTariffs,
 ]
 
 export const worldwideReciprocalTariff: TariffI[] = [

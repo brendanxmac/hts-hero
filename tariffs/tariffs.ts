@@ -29,6 +29,7 @@ import { southKoreaTariffs } from "./south-korea"
 import { section122Tariffs } from "./section-122"
 import { semiconductorTariffs } from "./semiconductors"
 import { section232Tariffs } from "./section-232"
+import { Section232MetalTariffs } from "./tariff-lists"
 
 export interface CountryWithTariffs extends Country {
   selectedTradeProgram: TradeProgram | null
@@ -36,25 +37,6 @@ export interface CountryWithTariffs extends Country {
   tariffSets: TariffSet[]
   specialTradePrograms: TradeProgram[]
 }
-
-export const Section232MetalTariffs = [
-  "9903.82.02",
-  "9903.82.03",
-  "9903.82.04",
-  "9903.82.05",
-  "9903.82.06",
-  "9903.82.07",
-  "9903.82.08",
-  "9903.82.09",
-  "9903.82.10",
-  "9903.82.11",
-  "9903.82.12",
-  "9903.82.13",
-  "9903.82.14",
-  "9903.82.15",
-  "9903.82.16",
-  "9903.82.17",
-]
 
 export const findExceptions = (
   tariff: TariffI,
