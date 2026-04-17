@@ -1,5 +1,5 @@
-import { EuropeanUnionCountries } from "../constants/countries";
-import { TariffI } from "../interfaces/tariffs";
+import { EuropeanUnionCountries } from "../constants/countries"
+import { TariffI } from "../interfaces/tariffs"
 import {
   automobileParts33G,
   automobiles33B,
@@ -8,7 +8,7 @@ import {
   ch73Headings,
   ch76Headings,
   partsOfMHDVs38i,
-} from "./lists";
+} from "./lists"
 
 export const automobileTariffs: TariffI[] = [
   // Automobiles (Section 232)
@@ -16,7 +16,7 @@ export const automobileTariffs: TariffI[] = [
     code: "9903.94.01",
     description:
       "Except for products described in headings 9903.94.02, 9903.94.03, 9903.94.04, 9903.94.31, 9903.94.40, 9903.94.41, 9903.94.50, and 9903.94.51, passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans, and cargo vans) and light trucks, as specified in note 33 to this subchapter, as provided for in subdivision (b) of U.S. note 33 to this subchapter",
-    name: "Automobiles (Section 232)",
+    name: "Section 232 Automobiles",
     general: 25,
     special: 25,
     other: 25,
@@ -87,6 +87,7 @@ export const automobileTariffs: TariffI[] = [
     general: 7.5,
     special: 0,
     other: 0,
+    exceptions: ["9903.94.07", "9903.94.01"],
     inclusions: {
       countries: ["GB"],
       codes: [
@@ -116,7 +117,8 @@ export const automobileTariffs: TariffI[] = [
     code: "9903.94.05",
     description:
       "Except for products described in headings 9903.94.06, 9903.94.32, 9903.94.33, 9903.94.42, 9903.94.43, 9903.94.44, 9903.94.45, 9903.94.52, 9903.94.53, 9903.94.54, 9903.94.55, 9903.94.62, and 9903.94.63, automobile parts, as provided for in subdivision (g) of U.S. note 33 to this subchapter",
-    name: "Auto Parts",
+    name: "Section 232 Auto Parts",
+    requiresReview: true,
     general: 25,
     special: 25,
     other: 25,
@@ -375,4 +377,4 @@ export const automobileTariffs: TariffI[] = [
       codes: autoPartsOfUK33J,
     },
   },
-];
+]

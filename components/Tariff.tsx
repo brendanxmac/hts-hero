@@ -176,7 +176,7 @@ export const Tariff = ({
               className={classNames(
                 "font-medium min-w-0 text-sm sm:text-base text-base-content",
                 ((!tariff.requiresReview ||
-                  hasExceptionTariffThatDoesNotNeedReviewThatIsActive) && !tariff.isActive) && "text-base-content/30"
+                  hasExceptionTariffThatDoesNotNeedReviewThatIsActive) && !tariff.isActive) && "text-base-content/50"
               )}
             >
               {tariff.name}

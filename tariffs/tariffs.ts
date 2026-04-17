@@ -364,6 +364,8 @@ export const filterCountryTariffsFor15PercentExeption = (
       }
     }
 
+    // TODO: I think we need to add Switzerland and its 15% exception tariffs here
+
     return true
   })
 }
