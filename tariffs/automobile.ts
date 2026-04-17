@@ -252,7 +252,7 @@ export const automobileTariffs: TariffI[] = [
     code: "9903.94.45",
     description:
       "Automobile parts the product of the European Union with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 15 percent, as provided for in subdivision (r) of U.S. note 33 to this subchapter.",
-    name: "Automobile parts of the European Union with Column 1 Duty <15%",
+    name: "Automobile parts of the European Union with Column 1 Duty <15% (Replaces General Duty)",
     general: 15,
     special: 15,
     other: 0,
@@ -298,7 +298,7 @@ export const automobileTariffs: TariffI[] = [
     code: "9903.94.55",
     description:
       "Automobile parts the product of Japan with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 15 percent, as provided for in subdivision (r) of U.S. note 33 to this subchapter.",
-    name: "Automobile parts of Japan from 33(r), with Column 1 Duty <15%",
+    name: "Automobile parts of Japan from 33(r), with Column 1 Duty <15% (Replaces General Duty)",
     general: 15,
     special: 15,
     other: 0,
@@ -344,7 +344,7 @@ export const automobileTariffs: TariffI[] = [
     code: "9903.94.65",
     description:
       "Parts of passenger vehicles and light trucks that are products of South Korea as specified in subdivisions (r) and (t) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special less than 15 percent",
-    name: "Parts of Vehicles & Light Trucks of South Korea from 33(r) & 33(t), with Column 1 Duty <15%",
+    name: "Parts of Vehicles & Light Trucks of South Korea from 33(r) & 33(t), with Column 1 Duty <15% (Replaces General Duty)",
     general: 15,
     special: 15,
     other: 0,

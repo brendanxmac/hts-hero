@@ -210,7 +210,7 @@ export const section232Tariffs: TariffI[] = [
     code: "9903.82.07",
     description:
       "Except as provided for in headings 9903.82.12, 9903.82.17 and 9903.85.68, derivative aluminum and steel articles with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 10 percent, as provided for in subdivisions (c)(ix)–(x) and (e) of U.S. note 16 to this subchapter",
-    name: "Section 232 Metal Articles, with metals over 95% smelted, cast, or poured in the US, and <10% Column 1 Ad Valorem Rate of Duty,",
+    name: "Section 232 Metal Articles, with metals over 95% smelted, cast, or poured in the US, and <10% Column 1 Ad Valorem Rate of Duty (Replaces General Duty)",
     general: 10, // CAP AT 10, just like some of the others
     special: 10, // CAP AT 10, just like some of the others
     other: 0,
@@ -279,7 +279,7 @@ export const section232Tariffs: TariffI[] = [
     code: "9903.82.10",
     description:
       "Except as provided for in headings 9903.82.12, 9903.82.17 and 9903.85.68, derivative aluminum and steel articles with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 15 percent, as provided for in subdivision (f) of U.S. note 16 to this subchapter",
-    name: "Section 232 Metal Articles, with metals <95% smelted, cast, or poured in the US, & <15% Column 1 Ad Valorem Rate of Duty",
+    name: "Section 232 Metal Articles, with metals <95% smelted, cast, or poured in the US, & <15% Column 1 Ad Valorem Rate of Duty (Replaces General Duty)",
     general: 15,
     special: 15,
     other: 0,

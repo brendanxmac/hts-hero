@@ -1659,7 +1659,7 @@ export const europeanUnionTariffs: TariffI[] = [
     code: "9903.94.51",
     description:
       "Passenger vehicles and light trucks that are products of the European Union as specified in subdivision (n) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1 less than 15 percent",
-    name: "Vehicles & Light Trucks of the European Union, Duty <15%",
+    name: "Vehicles & Light Trucks of the European Union, Duty <15% (Replaces General Duty)",
     general: 15,
     special: 15,
     other: 0,
@@ -1687,7 +1687,7 @@ export const europeanUnionTariffs: TariffI[] = [
     code: "9903.94.53",
     description:
       "Parts of passenger vehicles and light trucks that are products of the European Union as specified in subdivision (o) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column1 less than 15 percent.",
-    name: "Parts of Vehicles & Light Trucks of the European Union, Duty <15%",
+    name: "Parts of Vehicles & Light Trucks of the European Union, Duty <15% (Replaces General Duty)",
     general: 15,
     special: 15,
     other: 0,

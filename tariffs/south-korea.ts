@@ -24,7 +24,7 @@ export const southKoreaTariffs: TariffI[] = [
     code: "9903.02.80",
     description:
       "Except for products described in headings 9903.01.30–9903.01.33, 9903.02.78, and 9903.02.81, and except as provided for in headings 9903.01.34, 9903.02.01, articles the product of South Korea, with an ad valorem (or ad valorem equivalent) rate of duty under column 1-General or column 1-Special less than 15 percent, as provided for in subdivision (v)(xxiii)(a) of U.S. note 2 to this subchapter.",
-    name: "South Korea Trade Deal Tariff (When General Duty <15%)",
+    name: "South Korea Trade Deal Tariff (Replaces General Duty When General Duty <15%)",
     general: 15,
     special: 15,
     other: 0,
@@ -66,7 +66,7 @@ export const southKoreaTariffs: TariffI[] = [
     code: "9903.94.61",
     description:
       "Passenger vehicles and light trucks that are products of South Korea as specified in subdivision (s) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special less than 15 percent",
-    name: "Vehicles & Light Trucks of South Korea, Duty <15%",
+    name: "Vehicles & Light Trucks of South Korea, Duty <15% (Replaces General Duty)",
     general: 15,
     special: 15,
     other: 0,
@@ -96,7 +96,7 @@ export const southKoreaTariffs: TariffI[] = [
     code: "9903.94.63",
     description:
       "Parts of passenger vehicles and light trucks that are products of South Korea as specified in subdivisions (g) and (t) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1-General or column 1-Special less than 15 percent",
-    name: "Parts of Vehicles & Light Trucks of South Korea (33(g) & 33(t)), Duty <15%",
+    name: "Parts of Vehicles & Light Trucks of South Korea (33(g) & 33(t)), Duty <15% (Replaces General Duty)",
     general: 15,
     special: 15,
     other: 0,
