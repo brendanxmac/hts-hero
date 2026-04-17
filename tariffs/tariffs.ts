@@ -257,11 +257,15 @@ export const filterCountryTariffsByColumn1AdValoremRate = (
       return t.code !== "9903.82.10" && t.code !== "9903.82.07"
     }
     if (totalBaseRate >= 10) {
-      return t.code !== "9903.82.07"
+      return t.code !== "9903.82.07" && t.code !== "9903.82.15" // .15 = Russia
     }
 
     if (totalBaseRate < 10) {
-      return t.code !== "9903.82.11" && t.code !== "9903.82.08"
+      return (
+        t.code !== "9903.82.11" &&
+        t.code !== "9903.82.08" &&
+        t.code !== "9903.82.14" // .14 =Russia
+      )
     }
 
     if (totalBaseRate < 15) {
@@ -508,6 +512,11 @@ export const getContentRequirementTariffSets = (
         !t.contentRequirement ||
         t.contentRequirement.content === contentRequirement.name,
     )
+
+    const hasMatchingContentTariff = tariffs.some(
+      (t) => t.contentRequirement?.content === contentRequirement.name,
+    )
+    if (!hasMatchingContentTariff) continue
 
     tariffSet.forEach((t) => {
       collectExceptionCodes(t, tariffs, exceptionCodes)

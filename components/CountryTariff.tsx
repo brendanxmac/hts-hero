@@ -20,6 +20,7 @@ import {
   formatCurrency,
   ADDITIONAL_FEES_TOTAL_RATE,
   SECTION_232_METAL_CONTENT_SET_NAME,
+  hasActiveBaseDutySuppressor,
 } from "../tariffs/tariff-calculations";
 import { EstimatedCostsDisplay } from "./tariff-ui/EstimatedCostsDisplay";
 import { TradePrograms } from "../public/trade-programs";
@@ -266,7 +267,8 @@ export const CountryTariff = ({
       const isSection232Metal = tariffSet.name === SECTION_232_METAL_CONTENT_SET_NAME;
       const shouldIncludeBaseTariffs =
         (isArticleSet || isSection232Metal) &&
-        !(is15PercentCapCountry && adValoremEquivalentRate < 15);
+        !(is15PercentCapCountry && adValoremEquivalentRate < 15) &&
+        !hasActiveBaseDutySuppressor(tariffSet.tariffs);
       const hasAmountTariffs =
         shouldIncludeBaseTariffs &&
         filteredBase.some((t) => t.type === "amount");
@@ -397,7 +399,9 @@ export const CountryTariff = ({
     const isSection232Metal = tariffSet.name === SECTION_232_METAL_CONTENT_SET_NAME;
 
     const shouldIncludeBaseTariffs =
-      (isArticleSet || isSection232Metal) && !(is15PercentCapCountry && adValoremEquivalentRate < 15);
+      (isArticleSet || isSection232Metal) &&
+      !(is15PercentCapCountry && adValoremEquivalentRate < 15) &&
+      !hasActiveBaseDutySuppressor(tariffSet.tariffs);
     const hasAmountTariffs =
       shouldIncludeBaseTariffs && filteredBase.some((t) => t.type === "amount");
 
@@ -663,7 +667,7 @@ export const CountryTariff = ({
                             index={j}
                             htsElement={tariffElement}
                             tariff={t}
-                            active={!below15PercentRuleApplies}
+                            active={!below15PercentRuleApplies && !hasActiveBaseDutySuppressor(tariffSet.tariffs)}
                           />
                         ))}
                     </div>

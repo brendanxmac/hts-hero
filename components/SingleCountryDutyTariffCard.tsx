@@ -9,6 +9,7 @@ import {
   addTariffsToCountry,
   type CountryWithTariffs,
   TariffsList,
+  tariffIsApplicable,
   tariffIsApplicableToCode,
 } from "../tariffs/tariffs";
 import { findTariffElement } from "../tariffs/tariff-calculations";
@@ -70,7 +71,9 @@ export function SingleCountryDutyTariffCard({
     }
     const codeBasedContentRequirements = Array.from(
       TariffsList.filter((t) =>
-        tariffIsApplicableToCode(t, element.htsno)
+        selectedCountry
+          ? tariffIsApplicable(t, selectedCountry.code, element.htsno)
+          : tariffIsApplicableToCode(t, element.htsno)
       ).reduce((acc, t) => {
         if (t.contentRequirement) {
           acc.add(t.contentRequirement.content);
@@ -85,7 +88,7 @@ export function SingleCountryDutyTariffCard({
     }));
     setContentRequirements(next);
     setUiContentPercentages(next);
-  }, [element, effectiveTariffElement]);
+  }, [element, effectiveTariffElement, selectedCountry]);
 
   useEffect(() => {
     if (

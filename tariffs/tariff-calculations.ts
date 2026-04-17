@@ -1,5 +1,5 @@
 import { HtsElement } from "../interfaces/hts"
-import { TariffSet } from "../interfaces/tariffs"
+import { TariffSet, UITariff } from "../interfaces/tariffs"
 import { ParsedBaseTariff } from "../libs/hts"
 import { getHtsElementParents } from "../libs/hts"
 import { ContentRequirementI } from "../components/Element"
@@ -20,6 +20,12 @@ export const MERCHANDISE_PROCESSING_FEE_RATE = 0.003464 // 0.3464%
 export const MPF_MIN = 33.58
 export const MPF_MAX = 651.5
 export const ADDITIONAL_FEES_TOTAL_RATE = 0.4714
+
+// ── Utility Functions ──
+
+export function hasActiveBaseDutySuppressor(tariffs: UITariff[]): boolean {
+  return tariffs.some((t) => t.isActive && t.suppressesBaseDuty)
+}
 
 // ── Interfaces ──
 
@@ -149,7 +155,9 @@ export function calculateDutyEstimates(
     const isSection232Metal =
       tariffSet.name === SECTION_232_METAL_CONTENT_SET_NAME
     const shouldIncludeBase =
-      (isArticleSet || isSection232Metal) && !below15Rule
+      (isArticleSet || isSection232Metal) &&
+      !below15Rule &&
+      !hasActiveBaseDutySuppressor(tariffSet.tariffs)
 
     const adValoremRate = shouldIncludeBase
       ? getAdValoremRate(tariffColumn, tariffSet.tariffs, flatBase)
@@ -226,7 +234,9 @@ export function calculateSummaryTotals(
     const isSection232Metal =
       tariffSet.name === SECTION_232_METAL_CONTENT_SET_NAME
     const shouldIncludeBase =
-      (isArticleSet || isSection232Metal) && !below15Rule
+      (isArticleSet || isSection232Metal) &&
+      !below15Rule &&
+      !hasActiveBaseDutySuppressor(tariffSet.tariffs)
 
     const rate = shouldIncludeBase
       ? getAdValoremRate(tariffColumn, tariffSet.tariffs, flatBase)

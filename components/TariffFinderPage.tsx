@@ -12,6 +12,7 @@ import { CountryTariff } from "./CountryTariff";
 import {
   addTariffsToCountry,
   CountryWithTariffs,
+  tariffIsApplicable,
   tariffIsApplicableToCode,
   TariffsList,
 } from "../tariffs/tariffs";
@@ -243,7 +244,9 @@ export const TariffFinderPage = () => {
     if (selectedElement && tariffElement) {
       const codeBasedContentRequirements = Array.from(
         TariffsList.filter((t) =>
-          tariffIsApplicableToCode(t, selectedElement.htsno)
+          selectedCountry
+            ? tariffIsApplicable(t, selectedCountry.code, selectedElement.htsno)
+            : tariffIsApplicableToCode(t, selectedElement.htsno)
         ).reduce((acc, t) => {
           if (t.contentRequirement) {
             acc.add(t.contentRequirement.content);
@@ -262,7 +265,7 @@ export const TariffFinderPage = () => {
       setContentRequirements(newContentRequirements);
       setUiContentPercentages(newContentRequirements);
     }
-  }, [selectedElement, tariffElement, urlContentPercentages]);
+  }, [selectedElement, tariffElement, selectedCountry, urlContentPercentages]);
 
   // Handlers with debouncing
   const handleSliderChange = (

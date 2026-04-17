@@ -1,6 +1,6 @@
 import { TariffI } from "../interfaces/tariffs"
 
-// Aluminum (Section 232)
+// Russia Aluminum (Section 232)
 export const aluminumTariffs: TariffI[] = [
   {
     code: "9903.85.67",
@@ -10,7 +10,6 @@ export const aluminumTariffs: TariffI[] = [
     general: 200,
     special: 200, // todo: there are some agreements for this one... look into that
     other: 200,
-    contentRequirement: { content: "Aluminum" },
     inclusions: {
       countries: ["RU"],
       codes: [
@@ -36,7 +35,7 @@ export const aluminumTariffs: TariffI[] = [
     },
   },
   // =========================
-  // Derivative Aluminum (232)
+  // Russia Derivative Aluminum (232)
   // =========================
   {
     code: "9903.85.68",
@@ -47,7 +46,6 @@ export const aluminumTariffs: TariffI[] = [
     special: 200,
     other: 200,
     requiresReview: true,
-    contentRequirement: { content: "Aluminum" },
     inclusions: {
       countries: ["RU"],
       // Some way to add where any amount of primary aluminum was to manufac deriv articles is smelted or cast in russia

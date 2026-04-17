@@ -23,6 +23,7 @@ export interface TariffI {
   requiresReview?: boolean
   contentRequirement?: ContentRequirement
   category?: TariffCategory // TODO: implement this
+  suppressesBaseDuty?: boolean
 }
 
 export interface UITariff extends TariffI {

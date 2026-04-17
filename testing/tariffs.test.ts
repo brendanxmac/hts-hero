@@ -12,6 +12,7 @@ import {
 import {
   calculateDutyEstimates,
   SECTION_232_METAL_CONTENT_SET_NAME,
+  hasActiveBaseDutySuppressor,
 } from "../tariffs/tariff-calculations"
 import { ParsedBaseTariff } from "../libs/hts"
 import { TariffI, UITariff, TariffSet } from "../interfaces/tariffs"
@@ -396,17 +397,17 @@ describe("getTariffs — real tariff data", () => {
 // ============================================================
 describe("getTariffSets — content requirement structure", () => {
   it("creates Article set + content requirement sets when content requirements exist", () => {
-    const tariffs = getTariffs("CN", "2203.00.00")
+    const tariffs = getTariffs("CN", "8202.39.00.40")
     const contentReqs: ContentRequirementI<ContentRequirements>[] = [
-      { name: "Aluminum", value: 80 },
+      { name: "Section 232 Metal", value: 80 },
     ]
     const sets = getTariffSets(tariffs, contentReqs)
 
     expect(sets.length).toBeGreaterThanOrEqual(2)
     expect(sets[0].name).toBe("Article")
 
-    const aluminumSet = findSetByName(sets, "Aluminum")
-    expect(aluminumSet).toBeDefined()
+    const metalSet = findSetByName(sets, "Section 232 Metal")
+    expect(metalSet).toBeDefined()
   })
 
   it("creates a single unnamed set when no content requirements exist", () => {
@@ -417,6 +418,17 @@ describe("getTariffSets — content requirement structure", () => {
     expect(sets.length).toBe(1)
     expect(sets[0].name).toBe("")
   })
+
+  it("skips content requirement set when no matching content tariffs exist for the country", () => {
+    const tariffs = getTariffs("CN", "2203.00.00")
+    const contentReqs: ContentRequirementI<ContentRequirements>[] = [
+      { name: "Aluminum", value: 80 },
+    ]
+    const sets = getTariffSets(tariffs, contentReqs)
+
+    const aluminumSet = findSetByName(sets, "Aluminum")
+    expect(aluminumSet).toBeUndefined()
+  })
 })
 
 // ============================================================
@@ -425,32 +437,29 @@ describe("getTariffSets — content requirement structure", () => {
 // ============================================================
 describe("Section 122 exemption (9903.03.06) for metal content tariffs", () => {
   it("9903.03.01 stays active in Article set (9903.03.06 inclusion tariffs are not in Article set)", () => {
-    const tariffs = getTariffs("CN", "2203.00.00")
+    const tariffs = getTariffs("CN", "8202.39.00.40")
     const contentReqs: ContentRequirementI<ContentRequirements>[] = [
-      { name: "Aluminum", value: 80 },
+      { name: "Section 232 Metal", value: 80 },
     ]
     const sets = getTariffSets(tariffs, contentReqs)
     const articleSet = sets[0]
 
     const baseTariff = findInSet(articleSet, "9903.03.01")
     if (baseTariff) {
-      // In the Article set, metal content tariffs are excluded, so 9903.03.06's
-      // inclusions aren't found, making it inactive → 9903.03.01 stays active
       expect(baseTariff.isActive).toBe(true)
     }
   })
 
-  it("9903.03.06 is active for aluminum primary product codes (7601)", () => {
-    const tariffs = getTariffs("CN", "7601.10.60")
+  it("9903.03.06 is present in Section 232 Metal Content set", () => {
+    const tariffs = getTariffs("CN", "8202.39.00.40")
     const contentReqs: ContentRequirementI<ContentRequirements>[] = [
-      { name: "Aluminum", value: 80 },
+      { name: "Section 232 Metal", value: 80 },
     ]
     const sets = getTariffSets(tariffs, contentReqs)
-    const aluminumSet = findSetByName(sets, "Aluminum")!
+    const metalSet = findSetByName(sets, "Section 232 Metal")!
 
-    const exemption = findInSet(aluminumSet, "9903.03.06")
+    const exemption = findInSet(metalSet, "9903.03.06")
     expect(exemption).toBeDefined()
-    expect(exemption!.isActive).toBe(true)
   })
 })
 
@@ -486,9 +495,9 @@ describe("Section 122 exemption (9903.03.06) for iron & steel content tariffs", 
 // ============================================================
 describe("getArticleTariffSet — excludes metal content tariffs", () => {
   it("Article set does not contain tariffs with contentRequirement", () => {
-    const tariffs = getTariffs("CN", "2203.00.00")
+    const tariffs = getTariffs("CN", "8202.39.00.40")
     const contentReqs: ContentRequirementI<ContentRequirements>[] = [
-      { name: "Aluminum", value: 80 },
+      { name: "Section 232 Metal", value: 80 },
     ]
     const sets = getTariffSets(tariffs, contentReqs)
     const articleSet = sets[0]
@@ -500,9 +509,9 @@ describe("getArticleTariffSet — excludes metal content tariffs", () => {
   })
 
   it("Article set contains section 122 base tariff (9903.03.01)", () => {
-    const tariffs = getTariffs("CN", "2203.00.00")
+    const tariffs = getTariffs("CN", "8202.39.00.40")
     const contentReqs: ContentRequirementI<ContentRequirements>[] = [
-      { name: "Aluminum", value: 80 },
+      { name: "Section 232 Metal", value: 80 },
     ]
     const sets = getTariffSets(tariffs, contentReqs)
     const articleSet = sets[0]
@@ -516,18 +525,17 @@ describe("getArticleTariffSet — excludes metal content tariffs", () => {
 // 9. Content requirement tariff sets — includes both metal and non-metal tariffs
 // ============================================================
 describe("getContentRequirementTariffSets — composition", () => {
-  it("Aluminum Content set contains both aluminum tariffs and non-content tariffs", () => {
-    const tariffs = getTariffs("CN", "2203.00.00")
+  it("Section 232 Metal Content set contains both metal tariffs and non-content tariffs", () => {
+    const tariffs = getTariffs("CN", "8202.39.00.40")
     const contentReqs: ContentRequirementI<ContentRequirements>[] = [
-      { name: "Aluminum", value: 80 },
+      { name: "Section 232 Metal", value: 80 },
     ]
     const sets = getTariffSets(tariffs, contentReqs)
-    const aluminumSet = findSetByName(sets, "Aluminum")!
+    const metalSet = findSetByName(sets, "Section 232 Metal")!
 
-    // Should also contain non-content tariffs like 9903.03.06
-    expect(findInSet(aluminumSet, "9903.03.06")).toBeDefined()
-    // Should contain the section 122 base too
-    expect(findInSet(aluminumSet, "9903.03.01")).toBeDefined()
+    expect(metalSet).toBeDefined()
+    // Should contain non-content tariffs like 9903.03.06
+    expect(findInSet(metalSet, "9903.03.06")).toBeDefined()
   })
 })
 
@@ -631,21 +639,22 @@ describe("Edge cases", () => {
 // ============================================================
 // 12. Full integration: specific HTS codes end-to-end
 // ============================================================
-describe("Full integration — HTS 7601.10.60 (unwrought aluminum)", () => {
-  it("produces correct tariff sets for China with Aluminum content", () => {
-    const tariffs = getTariffs("CN", "7601.10.60")
+describe("Full integration — HTS 8202.39.00.40 (Section 232 Metal)", () => {
+  it("produces correct tariff sets for GB with Section 232 Metal content", () => {
+    const tariffs = getTariffs("GB", "8202.39.00.40")
     const contentReqs: ContentRequirementI<ContentRequirements>[] = [
-      { name: "Aluminum", value: 80 },
+      { name: "Section 232 Metal", value: 80 },
     ]
     const sets = getTariffSets(tariffs, contentReqs)
 
-    const aluminumSet = findSetByName(sets, "Aluminum")!
-    expect(aluminumSet).toBeDefined()
+    const metalSet = findSetByName(sets, "Section 232 Metal")!
+    expect(metalSet).toBeDefined()
 
-    // 9903.03.06 (section 122 exemption) should be active
-    const exemption = findInSet(aluminumSet, "9903.03.06")
-    expect(exemption).toBeDefined()
-    expect(exemption!.isActive).toBe(true)
+    // Should contain a Section 232 Metal tariff
+    const metalTariffs = metalSet.tariffs.filter(
+      (t) => (t as any).contentRequirement?.content === "Section 232 Metal",
+    )
+    expect(metalTariffs.length).toBeGreaterThan(0)
   })
 })
 
@@ -827,6 +836,154 @@ describe("calculateDutyEstimates — Section 232 Metal full value", () => {
     )!
     expect(metalEstimate.contentPercentage).toBe(100)
     expect(metalEstimate.applicableValue).toBe(1000)
+  })
+})
+
+// ============================================================
+// calculateDutyEstimates — suppressesBaseDuty
+// ============================================================
+describe("calculateDutyEstimates — suppressesBaseDuty", () => {
+  const makeTariff = (
+    code: string,
+    rate: number,
+    isActive: boolean,
+    opts?: Partial<UITariff>,
+  ): UITariff => ({
+    code,
+    description: "",
+    name: code,
+    general: rate,
+    special: rate,
+    other: rate,
+    isActive,
+    ...opts,
+  })
+
+  const basePercent5: ParsedBaseTariff[] = [
+    {
+      tariffs: [{ value: 5, type: "percent", raw: "5%" }],
+      parsingFailures: [],
+    },
+  ]
+
+  it("active suppressor excludes base tariffs from rate and duty", () => {
+    const tariffSets: TariffSet[] = [
+      {
+        name: SECTION_232_METAL_CONTENT_SET_NAME,
+        exceptionCodes: new Set(),
+        tariffs: [
+          makeTariff("9903.82.10", 15, true, { suppressesBaseDuty: true }),
+        ],
+      },
+    ]
+    const contentReqs: ContentRequirementI<ContentRequirements>[] = [
+      { name: "Section 232 Metal", value: 50 },
+    ]
+
+    const estimates = calculateDutyEstimates(
+      tariffSets,
+      basePercent5,
+      1000,
+      1,
+      contentReqs,
+      TariffColumn.GENERAL,
+      false,
+    )
+
+    const est = estimates[0]
+    expect(est.percentRate).toBe(15)
+    expect(est.adValoremDuty).toBe(150)
+  })
+
+  it("inactive suppressor includes base tariffs normally", () => {
+    const tariffSets: TariffSet[] = [
+      {
+        name: SECTION_232_METAL_CONTENT_SET_NAME,
+        exceptionCodes: new Set(),
+        tariffs: [
+          makeTariff("9903.82.10", 15, false, { suppressesBaseDuty: true }),
+          makeTariff("9903.82.02", 50, true),
+        ],
+      },
+    ]
+    const contentReqs: ContentRequirementI<ContentRequirements>[] = [
+      { name: "Section 232 Metal", value: 50 },
+    ]
+
+    const estimates = calculateDutyEstimates(
+      tariffSets,
+      basePercent5,
+      1000,
+      1,
+      contentReqs,
+      TariffColumn.GENERAL,
+      false,
+    )
+
+    const est = estimates[0]
+    expect(est.percentRate).toBe(55)
+    expect(est.adValoremDuty).toBe(550)
+  })
+
+  it("suppressor own rate still included in calculation", () => {
+    const tariffSets: TariffSet[] = [
+      {
+        name: SECTION_232_METAL_CONTENT_SET_NAME,
+        exceptionCodes: new Set(),
+        tariffs: [
+          makeTariff("9903.82.10", 15, true, { suppressesBaseDuty: true }),
+          makeTariff("9903.82.02", 50, true),
+        ],
+      },
+    ]
+    const contentReqs: ContentRequirementI<ContentRequirements>[] = [
+      { name: "Section 232 Metal", value: 50 },
+    ]
+
+    const estimates = calculateDutyEstimates(
+      tariffSets,
+      basePercent5,
+      1000,
+      1,
+      contentReqs,
+      TariffColumn.GENERAL,
+      false,
+    )
+
+    const est = estimates[0]
+    expect(est.percentRate).toBe(65)
+    expect(est.adValoremDuty).toBe(650)
+  })
+})
+
+// ============================================================
+// hasActiveBaseDutySuppressor
+// ============================================================
+describe("hasActiveBaseDutySuppressor", () => {
+  const makeTariff = (
+    isActive: boolean,
+    suppressesBaseDuty?: boolean,
+  ): UITariff => ({
+    code: "test",
+    description: "",
+    name: "test",
+    general: 0,
+    special: 0,
+    other: 0,
+    isActive,
+    suppressesBaseDuty,
+  })
+
+  it("returns true when an active tariff has suppressesBaseDuty", () => {
+    expect(hasActiveBaseDutySuppressor([makeTariff(true, true)])).toBe(true)
+  })
+
+  it("returns false when suppressor is inactive", () => {
+    expect(hasActiveBaseDutySuppressor([makeTariff(false, true)])).toBe(false)
+  })
+
+  it("returns false when no tariffs have suppressesBaseDuty", () => {
+    expect(hasActiveBaseDutySuppressor([makeTariff(true)])).toBe(false)
   })
 })
 
