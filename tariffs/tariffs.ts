@@ -42,11 +42,15 @@ export const findExceptions = (
   tariff: TariffI,
   countryCode: string,
   htsCode: string,
+  visited: Set<string> = new Set(),
 ): TariffI[] => {
+  if (visited.has(tariff.code)) return []
+  visited.add(tariff.code)
+
   if (tariff.exceptions && tariff.exceptions.length > 0) {
     const exceptionTariffs = getTariffsByCode(tariff.exceptions)
     const childrenExceptions = exceptionTariffs.flatMap((exception) =>
-      findExceptions(exception, htsCode, countryCode),
+      findExceptions(exception, htsCode, countryCode, visited),
     )
     return [...exceptionTariffs, ...childrenExceptions].filter((t) =>
       tariffIsApplicable(t, countryCode, htsCode),
@@ -84,13 +88,16 @@ export const collectExceptionCodes = (
   tariffs: TariffI[],
   exceptionCodes: Set<string>,
   ignoreCodes?: string[],
+  visited: Set<string> = new Set(),
 ) => {
+  if (visited.has(tariff.code)) return
+  visited.add(tariff.code)
+
   if (tariff.exceptions) {
     tariff.exceptions.forEach((code) => {
       if (ignoreCodes?.includes(code)) return
 
       exceptionCodes.add(code)
-      // Find the exception tariff and recursively collect its exceptions
       const exceptionTariff = tariffs.find((t) => t.code === code)
       if (exceptionTariff) {
         collectExceptionCodes(
@@ -98,6 +105,7 @@ export const collectExceptionCodes = (
           tariffs,
           exceptionCodes,
           ignoreCodes,
+          visited,
         )
       }
     })
@@ -645,7 +653,11 @@ export const isAncestorTariff = (
   possibleAncestor: UITariff,
   tariff: UITariff,
   allTariffs: UITariff[],
+  visited: Set<string> = new Set(),
 ): boolean => {
+  if (visited.has(possibleAncestor.code)) return false
+  visited.add(possibleAncestor.code)
+
   const hasExceptions =
     possibleAncestor.exceptions && possibleAncestor.exceptions.length > 0
 
@@ -656,7 +668,7 @@ export const isAncestorTariff = (
 
     return (
       exceptions.some((e) => e.code === tariff.code) ||
-      exceptions.some((e) => isAncestorTariff(tariff, e, allTariffs))
+      exceptions.some((e) => isAncestorTariff(tariff, e, allTariffs, visited))
     )
   } else {
     const hasTariffInclusions =
@@ -670,7 +682,7 @@ export const isAncestorTariff = (
       )
       return (
         tariffInclusions.some((i) => i.code === tariff.code) ||
-        tariffInclusions.some((i) => isAncestorTariff(i, tariff, allTariffs))
+        tariffInclusions.some((i) => isAncestorTariff(i, tariff, allTariffs, visited))
       )
     } else {
       return false
@@ -682,7 +694,11 @@ export const isDescendantTariff = (
   possibleDescendant: UITariff,
   tariff: UITariff,
   allTariffs: UITariff[],
+  visited: Set<string> = new Set(),
 ): boolean => {
+  if (visited.has(tariff.code)) return false
+  visited.add(tariff.code)
+
   const tariffHasExceptions = tariff.exceptions && tariff.exceptions.length > 0
 
   if (tariffHasExceptions) {
@@ -693,7 +709,7 @@ export const isDescendantTariff = (
     return (
       exceptions.some((e) => e.code === possibleDescendant.code) ||
       exceptions.some((e) =>
-        isDescendantTariff(possibleDescendant, e, allTariffs),
+        isDescendantTariff(possibleDescendant, e, allTariffs, visited),
       )
     )
   }
@@ -711,7 +727,7 @@ export const isDescendantTariff = (
     return (
       tariffInclusions.some((i) => i.code === possibleDescendant.code) ||
       tariffInclusions.some((i) =>
-        isDescendantTariff(possibleDescendant, i, allTariffs),
+        isDescendantTariff(possibleDescendant, i, allTariffs, visited),
       )
     )
   }

@@ -73,8 +73,16 @@ export const Tariff = ({
           const isAnc = isAncestorTariff(t, tariff, tariffSet.tariffs);
           const isDesc = isDescendantTariff(t, tariff, tariffSet.tariffs);
 
-          if ((isAnc || isDesc) && !t.requiresReview) {
-            const newActive = tariffIsActive(t, tariffSet.tariffs);
+          if (isAnc || isDesc) {
+            let newActive: boolean;
+            if (t.requiresReview) {
+              const hasActiveException = t.exceptions?.some((exCode) =>
+                tariffSet.tariffs.some((et) => et.code === exCode && et.isActive)
+              ) ?? false;
+              newActive = hasActiveException ? false : t.isActive;
+            } else {
+              newActive = tariffIsActive(t, tariffSet.tariffs);
+            }
             if (t.isActive !== newActive) {
               t.isActive = newActive;
               changed = true;

@@ -8,6 +8,8 @@ import {
   TariffsList,
   getTariffByCode,
   tariffIsApplicableToCode,
+  isAncestorTariff,
+  isDescendantTariff,
 } from "../tariffs/tariffs"
 import {
   calculateDutyEstimates,
@@ -984,6 +986,261 @@ describe("hasActiveBaseDutySuppressor", () => {
 
   it("returns false when no tariffs have suppressesBaseDuty", () => {
     expect(hasActiveBaseDutySuppressor([makeTariff(true)])).toBe(false)
+  })
+})
+
+// ============================================================
+// Exception-based mutual exclusion during toggle
+// ============================================================
+describe("Exception-based deactivation (toggle cascade)", () => {
+  const simulateToggle = (
+    tariffCode: string,
+    tariffs: UITariff[],
+  ) => {
+    const tariff = tariffs.find((t) => t.code === tariffCode)!
+    tariff.isActive = !tariff.isActive
+
+    let changed = true
+    let iterations = 0
+    while (changed && iterations < 10) {
+      changed = false
+      iterations++
+      for (const t of tariffs) {
+        if (t.code === tariffCode) continue
+        const isAnc = isAncestorTariff(t, tariff, tariffs)
+        const isDesc = isDescendantTariff(t, tariff, tariffs)
+        if (isAnc || isDesc) {
+          let newActive: boolean
+          if (t.requiresReview) {
+            const hasActiveException =
+              t.exceptions?.some((exCode) =>
+                tariffs.some((et) => et.code === exCode && et.isActive),
+              ) ?? false
+            newActive = hasActiveException ? false : t.isActive
+          } else {
+            newActive = tariffIsActive(t, tariffs)
+          }
+          if (t.isActive !== newActive) {
+            t.isActive = newActive
+            changed = true
+          }
+        }
+      }
+    }
+    return tariffs
+  }
+
+  it("activating an exception deactivates the parent tariff (both requiresReview)", () => {
+    const tariffs: UITariff[] = [
+      {
+        code: "PARENT",
+        description: "",
+        name: "Parent",
+        general: 25,
+        special: 25,
+        other: 25,
+        isActive: true,
+        requiresReview: true,
+        exceptions: ["CHILD"],
+      },
+      {
+        code: "CHILD",
+        description: "",
+        name: "Child exception",
+        general: 10,
+        special: 10,
+        other: 10,
+        isActive: false,
+        requiresReview: true,
+      },
+    ]
+
+    simulateToggle("CHILD", tariffs)
+
+    expect(tariffs.find((t) => t.code === "CHILD")!.isActive).toBe(true)
+    expect(tariffs.find((t) => t.code === "PARENT")!.isActive).toBe(false)
+  })
+
+  it("deactivating an exception does not force-reactivate the parent", () => {
+    const tariffs: UITariff[] = [
+      {
+        code: "PARENT",
+        description: "",
+        name: "Parent",
+        general: 25,
+        special: 25,
+        other: 25,
+        isActive: false,
+        requiresReview: true,
+        exceptions: ["CHILD"],
+      },
+      {
+        code: "CHILD",
+        description: "",
+        name: "Child exception",
+        general: 10,
+        special: 10,
+        other: 10,
+        isActive: true,
+        requiresReview: true,
+      },
+    ]
+
+    simulateToggle("CHILD", tariffs)
+
+    expect(tariffs.find((t) => t.code === "CHILD")!.isActive).toBe(false)
+    expect(tariffs.find((t) => t.code === "PARENT")!.isActive).toBe(false)
+  })
+
+  it("9903.82.04 and 9903.82.06 cannot both be active (real tariff data)", () => {
+    const tariffs = getTariffs("GB", "7307.22.50.00")
+    const contentReqs: ContentRequirementI<ContentRequirements>[] = [
+      { name: "Section 232 Metal", value: 80 },
+    ]
+    const sets = getTariffSets(tariffs, contentReqs)
+    const metalSet = sets.find((s) => s.name.includes("Section 232 Metal"))
+    if (!metalSet) return
+
+    const t04 = metalSet.tariffs.find((t) => t.code === "9903.82.04")
+    const t06 = metalSet.tariffs.find((t) => t.code === "9903.82.06")
+    if (!t04 || !t06) return
+
+    t04.isActive = true
+    t06.isActive = false
+
+    simulateToggle("9903.82.06", metalSet.tariffs)
+
+    expect(t06.isActive).toBe(true)
+    expect(t04.isActive).toBe(false)
+  })
+
+  it("bidirectional exceptions: activating either one deactivates the other", () => {
+    const tariffs: UITariff[] = [
+      {
+        code: "A",
+        description: "",
+        name: "Tariff A",
+        general: 25,
+        special: 25,
+        other: 25,
+        isActive: true,
+        requiresReview: true,
+        exceptions: ["B"],
+      },
+      {
+        code: "B",
+        description: "",
+        name: "Tariff B",
+        general: 10,
+        special: 10,
+        other: 10,
+        isActive: false,
+        requiresReview: true,
+        exceptions: ["A"],
+      },
+    ]
+
+    simulateToggle("B", tariffs)
+    expect(tariffs.find((t) => t.code === "B")!.isActive).toBe(true)
+    expect(tariffs.find((t) => t.code === "A")!.isActive).toBe(false)
+
+    simulateToggle("A", tariffs)
+    expect(tariffs.find((t) => t.code === "A")!.isActive).toBe(true)
+    expect(tariffs.find((t) => t.code === "B")!.isActive).toBe(false)
+  })
+
+  it("bidirectional exceptions: no infinite loop with circular exception chains", () => {
+    const tariffs: UITariff[] = [
+      {
+        code: "X",
+        description: "",
+        name: "X",
+        general: 20,
+        special: 20,
+        other: 20,
+        isActive: false,
+        requiresReview: true,
+        exceptions: ["Y"],
+      },
+      {
+        code: "Y",
+        description: "",
+        name: "Y",
+        general: 15,
+        special: 15,
+        other: 15,
+        isActive: false,
+        requiresReview: true,
+        exceptions: ["Z"],
+      },
+      {
+        code: "Z",
+        description: "",
+        name: "Z",
+        general: 10,
+        special: 10,
+        other: 10,
+        isActive: false,
+        requiresReview: true,
+        exceptions: ["X"],
+      },
+    ]
+
+    simulateToggle("Z", tariffs)
+    expect(tariffs.find((t) => t.code === "Z")!.isActive).toBe(true)
+    expect(tariffs.find((t) => t.code === "X")!.isActive).toBe(false)
+  })
+})
+
+// ============================================================
+// Cycle detection in recursive tariff functions
+// ============================================================
+describe("Cycle detection in recursive tariff functions", () => {
+  it("isAncestorTariff does not infinite loop with circular exceptions", () => {
+    const a: UITariff = {
+      code: "A", description: "", name: "A",
+      general: 10, special: 10, other: 10, isActive: true,
+      exceptions: ["B"],
+    }
+    const b: UITariff = {
+      code: "B", description: "", name: "B",
+      general: 10, special: 10, other: 10, isActive: true,
+      exceptions: ["A"],
+    }
+    const result = isAncestorTariff(a, b, [a, b])
+    expect(result).toBe(true)
+  })
+
+  it("isDescendantTariff does not infinite loop with circular exceptions", () => {
+    const a: UITariff = {
+      code: "A", description: "", name: "A",
+      general: 10, special: 10, other: 10, isActive: true,
+      exceptions: ["B"],
+    }
+    const b: UITariff = {
+      code: "B", description: "", name: "B",
+      general: 10, special: 10, other: 10, isActive: true,
+      exceptions: ["A"],
+    }
+    const result = isDescendantTariff(a, b, [a, b])
+    expect(result).toBe(true)
+  })
+
+  it("collectExceptionCodes does not infinite loop with circular exceptions", () => {
+    const a: TariffI = {
+      code: "A", description: "", name: "A",
+      general: 10, special: 10, other: 10,
+      exceptions: ["B"],
+    }
+    const b: TariffI = {
+      code: "B", description: "", name: "B",
+      general: 10, special: 10, other: 10,
+      exceptions: ["A"],
+    }
+    const codes = new Set<string>()
+    collectExceptionCodes(a, [a, b], codes)
+    expect(codes.has("B")).toBe(true)
+    expect(codes.has("A")).toBe(true)
   })
 })
 
