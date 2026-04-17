@@ -134,7 +134,7 @@ export const CountryTariff = ({
     );
   };
 
-  const getTariffColumn = () => {
+  const getTariffColumnBasedOnTradeProgram = () => {
     if (!selectedSpecialProgram || selectedSpecialProgram.symbol === "none") {
       return isOtherColumnCountry ? TariffColumn.OTHER : TariffColumn.GENERAL;
     }
@@ -274,8 +274,8 @@ export const CountryTariff = ({
         filteredBase.some((t) => t.type === "amount");
 
       const adValoremRate = shouldIncludeBaseTariffs
-        ? getAdValoremRate(getTariffColumn(), tariffSet.tariffs, filteredBase)
-        : getAdValoremRate(getTariffColumn(), tariffSet.tariffs);
+        ? getAdValoremRate(getTariffColumnBasedOnTradeProgram(), tariffSet.tariffs, filteredBase)
+        : getAdValoremRate(getTariffColumnBasedOnTradeProgram(), tariffSet.tariffs);
 
       const rateDisplay = hasAmountTariffs
         ? `${getAmountRatesString(filteredBase)} + ${adValoremRate}%`
@@ -389,7 +389,7 @@ export const CountryTariff = ({
       country.tariffSets
     );
     setCountries(updatedCountries);
-    setTariffColumn(getTariffColumn());
+    setTariffColumn(getTariffColumnBasedOnTradeProgram());
   }, [selectedSpecialProgram]);
 
   // Render helpers
@@ -423,7 +423,7 @@ export const CountryTariff = ({
   const summaryTotals = calculateSummaryTotals(
     tariffSets,
     baseTariffs,
-    getTariffColumn(),
+    getTariffColumnBasedOnTradeProgram(),
     below15PercentRuleApplies,
     filterByProgram
   );
@@ -434,7 +434,7 @@ export const CountryTariff = ({
     customsValue,
     units,
     contentRequirements,
-    getTariffColumn(),
+    getTariffColumnBasedOnTradeProgram(),
     below15PercentRuleApplies,
     filterByProgram
   );
@@ -635,10 +635,13 @@ export const CountryTariff = ({
             >
               {/* Set Header */}
               <div className="px-3 sm:px-5 py-3 sm:py-4 bg-base-200/50 flex flex-wrap justify-between items-center gap-2 sm:gap-3 border-b border-base-300 rounded-t-xl">
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col items-start">
                   <h3 className="text-base sm:text-lg font-bold text-base-content">
                     {tariffSet.name} Tariffs
                   </h3>
+                  {tariffSet.name === SECTION_232_METAL_CONTENT_SET_NAME && <p className="text-sm text-warning font-medium italic">
+                    Does not apply if no section 232 metal tariffs apply
+                  </p>}
                 </div>
                 <div className="flex items-center gap-2 sm:gap-3">
                   <span className="text-sm sm:text-base text-base-content/60 font-semibold">

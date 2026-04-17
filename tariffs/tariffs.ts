@@ -160,7 +160,7 @@ export const addTariffsToCountry = (
     customsValue,
     units,
   )
-  applicableTariffs = filterCountryTariffsByColumn1AdValoremRate(
+  applicableTariffs = filterCountryTariffsByAdValoremRate(
     applicableTariffs,
     baseTariffsForColumn,
     customsValue,
@@ -248,7 +248,7 @@ export const getBaseAmountTariffsSum = (baseTariffs: ParsedBaseTariff[]) => {
   return baseAmountTariffs.reduce((acc, t) => acc + t.value, 0)
 }
 
-export const filterCountryTariffsByColumn1AdValoremRate = (
+export const filterCountryTariffsByAdValoremRate = (
   tariffs: TariffI[],
   baseTariffsForColumn: ParsedBaseTariff[],
   customsValue?: number,
@@ -262,7 +262,11 @@ export const filterCountryTariffsByColumn1AdValoremRate = (
 
   return tariffs.filter((t) => {
     if (totalBaseRate >= 15) {
-      return t.code !== "9903.82.10" && t.code !== "9903.82.07"
+      return (
+        t.code !== "9903.82.10" &&
+        t.code !== "9903.82.07" &&
+        t.code !== "9903.82.15" // .15 = Russia
+      )
     }
     if (totalBaseRate >= 10) {
       return t.code !== "9903.82.07" && t.code !== "9903.82.15" // .15 = Russia
@@ -277,7 +281,7 @@ export const filterCountryTariffsByColumn1AdValoremRate = (
     }
 
     if (totalBaseRate < 15) {
-      return t.code !== "9903.82.11"
+      return t.code !== "9903.82.11" && t.code !== "9903.82.14" // .14 =Russia
     }
 
     return true
@@ -682,7 +686,9 @@ export const isAncestorTariff = (
       )
       return (
         tariffInclusions.some((i) => i.code === tariff.code) ||
-        tariffInclusions.some((i) => isAncestorTariff(i, tariff, allTariffs, visited))
+        tariffInclusions.some((i) =>
+          isAncestorTariff(i, tariff, allTariffs, visited),
+        )
       )
     } else {
       return false
@@ -738,7 +744,11 @@ export const isDescendantTariff = (
 export const tariffIsActive = (
   tariff: TariffI,
   applicableTariffs: UITariff[],
+  visited: Set<string> = new Set(),
 ) => {
+  if (visited.has(tariff.code)) return false
+  visited.add(tariff.code)
+
   if (tariff.requiresReview) return false
 
   const hasExceptions = !!(tariff.exceptions && tariff.exceptions.length > 0)
@@ -770,14 +780,14 @@ export const tariffIsActive = (
 
   if (hasExceptions) {
     const hasActiveException = applicableExceptionTariffs.some(
-      (t) => t.isActive ?? tariffIsActive(t, applicableTariffs),
+      (t) => t.isActive ?? tariffIsActive(t, applicableTariffs, visited),
     )
     if (hasActiveException) return false
   }
 
   if (hasTariffInclusions) {
     const hasActiveInclusion = applicableInclusionTariffs.some(
-      (t) => t.isActive ?? tariffIsActive(t, applicableTariffs),
+      (t) => t.isActive ?? tariffIsActive(t, applicableTariffs, visited),
     )
     if (hasActiveInclusion) return true
   }

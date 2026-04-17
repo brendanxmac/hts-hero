@@ -1007,23 +1007,19 @@ describe("Exception-based deactivation (toggle cascade)", () => {
       iterations++
       for (const t of tariffs) {
         if (t.code === tariffCode) continue
-        const isAnc = isAncestorTariff(t, tariff, tariffs)
-        const isDesc = isDescendantTariff(t, tariff, tariffs)
-        if (isAnc || isDesc) {
-          let newActive: boolean
-          if (t.requiresReview) {
-            const hasActiveException =
-              t.exceptions?.some((exCode) =>
-                tariffs.some((et) => et.code === exCode && et.isActive),
-              ) ?? false
-            newActive = hasActiveException ? false : t.isActive
-          } else {
-            newActive = tariffIsActive(t, tariffs)
-          }
-          if (t.isActive !== newActive) {
-            t.isActive = newActive
-            changed = true
-          }
+        let newActive: boolean
+        if (t.requiresReview) {
+          const hasActiveException =
+            t.exceptions?.some((exCode) =>
+              tariffs.some((et) => et.code === exCode && et.isActive),
+            ) ?? false
+          newActive = hasActiveException ? false : t.isActive
+        } else {
+          newActive = tariffIsActive(t, tariffs)
+        }
+        if (t.isActive !== newActive) {
+          t.isActive = newActive
+          changed = true
         }
       }
     }
@@ -1112,6 +1108,48 @@ describe("Exception-based deactivation (toggle cascade)", () => {
 
     expect(t06.isActive).toBe(true)
     expect(t04.isActive).toBe(false)
+  })
+
+  it("indirect cascade: activating a tariff deactivates tariffs excepted by newly activated tariffs", () => {
+    const tariffs: UITariff[] = [
+      {
+        code: "BASE",
+        description: "",
+        name: "Base tariff",
+        general: 10,
+        special: 10,
+        other: 10,
+        isActive: true,
+        requiresReview: true,
+        exceptions: ["EXEMPTION"],
+      },
+      {
+        code: "EXEMPTION",
+        description: "",
+        name: "Exemption tariff",
+        general: 0,
+        special: 0,
+        other: 0,
+        isActive: false,
+        inclusions: { tariffs: ["TRIGGER"], codes: [], countries: [] },
+      },
+      {
+        code: "TRIGGER",
+        description: "",
+        name: "Trigger tariff",
+        general: 25,
+        special: 25,
+        other: 25,
+        isActive: false,
+        requiresReview: true,
+      },
+    ]
+
+    simulateToggle("TRIGGER", tariffs)
+
+    expect(tariffs.find((t) => t.code === "TRIGGER")!.isActive).toBe(true)
+    expect(tariffs.find((t) => t.code === "EXEMPTION")!.isActive).toBe(true)
+    expect(tariffs.find((t) => t.code === "BASE")!.isActive).toBe(false)
   })
 
   it("bidirectional exceptions: activating either one deactivates the other", () => {

@@ -70,26 +70,22 @@ export const Tariff = ({
         for (const t of tariffSet.tariffs) {
           if (t.code === tariff.code) continue;
 
-          const isAnc = isAncestorTariff(t, tariff, tariffSet.tariffs);
-          const isDesc = isDescendantTariff(t, tariff, tariffSet.tariffs);
-
-          if (isAnc || isDesc) {
-            let newActive: boolean;
-            if (t.requiresReview) {
-              const hasActiveException = t.exceptions?.some((exCode) =>
-                tariffSet.tariffs.some((et) => et.code === exCode && et.isActive)
-              ) ?? false;
-              newActive = hasActiveException ? false : t.isActive;
-            } else {
-              newActive = tariffIsActive(t, tariffSet.tariffs);
-            }
-            if (t.isActive !== newActive) {
-              t.isActive = newActive;
-              changed = true;
-            }
+          let newActive: boolean;
+          if (t.requiresReview) {
+            const hasActiveException = t.exceptions?.some((exCode) =>
+              tariffSet.tariffs.some((et) => et.code === exCode && et.isActive)
+            ) ?? false;
+            newActive = hasActiveException ? false : t.isActive;
+          } else {
+            newActive = tariffIsActive(t, tariffSet.tariffs);
+          }
+          if (t.isActive !== newActive) {
+            t.isActive = newActive;
+            changed = true;
           }
         }
       }
+
     }
 
     // call setTariffSets and update the given set within it while keeping all other sets the same
@@ -105,17 +101,6 @@ export const Tariff = ({
     setCountries(updatedCountries);
   };
 
-  // Map exception levels to Tailwind margin classes
-  // const marginClasses: Record<number, string> = {
-  //   0: "",
-  //   1: "ml-6",
-  //   2: "ml-12",
-  //   3: "ml-18",
-  //   4: "ml-24",
-  //   5: "ml-30",
-  // };
-
-  // const marginClass = marginClasses[exceptionLevel] || "";
   const exceptions = getTariffsByCode(tariff.exceptions || []);
   const exceptionsThatDontNeedReview = exceptions.filter(
     (e) => !e.requiresReview
@@ -173,7 +158,7 @@ export const Tariff = ({
         />
 
         <div className="flex flex-col gap-0.5 sm:gap-1 min-w-0 flex-1">
-          <div className="flex gap-1.5 sm:gap-2 items-start sm:items-center flex-wrap">
+          <div className="flex gap-1.5 sm:gap-2 items-start sm:items-center flex-wrap md:flex-nowrap">
             <div className="flex gap-1.5 sm:gap-2 items-center shrink-0">
               <Link
                 href={`/explore?code=${tariff.code}`}
