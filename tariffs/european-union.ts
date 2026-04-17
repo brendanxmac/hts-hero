@@ -1659,7 +1659,7 @@ export const europeanUnionTariffs: TariffI[] = [
     code: "9903.94.51",
     description:
       "Passenger vehicles and light trucks that are products of the European Union as specified in subdivision (n) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column 1 less than 15 percent",
-    name: "Vehicles & Light Trucks of the European Union, Duty <15%",
+    name: "Vehicles & Light Trucks of the European Union, Duty <15% (Replaces General Duty)",
     general: 15,
     special: 15,
     other: 0,
@@ -1687,7 +1687,7 @@ export const europeanUnionTariffs: TariffI[] = [
     code: "9903.94.53",
     description:
       "Parts of passenger vehicles and light trucks that are products of the European Union as specified in subdivision (o) of U.S. note 33 to this subchapter, with an ad valorem (or ad valorem equivalent as provided for in subdivision (m) of U.S. note 33 to this subchapter) rate of duty under column1 less than 15 percent.",
-    name: "Parts of Vehicles & Light Trucks of the European Union, Duty <15%",
+    name: "Parts of Vehicles & Light Trucks of the European Union, Duty <15% (Replaces General Duty)",
     general: 15,
     special: 15,
     other: 0,
@@ -1698,11 +1698,10 @@ export const europeanUnionTariffs: TariffI[] = [
     },
   },
   {
-    // TODO: this one does NOT add with the base tariff
     code: "9903.02.19",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025,except for products described in headings 9903.01.30–9903.01.33 and 9903.02.74– 9903.02.77, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of the European Union, with an ad valorem (or ad valorem equivalent) rate of duty under column 1-General equal to or greater than 15 percent, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
-    name: "EU Trade Deal Tariff (When General Duty >= 15%)",
+    name: "EU Trade Deal Tariff (Replaces General Duty When General Duty >= 15%)",
     general: 0,
     special: 0,
     other: 0,
@@ -1718,11 +1717,10 @@ export const europeanUnionTariffs: TariffI[] = [
     },
   },
   {
-    // TODO: this one does NOT add with the base tariff
     code: "9903.02.20",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30–9903.01.33 and 9903.02.74– 9903.02.77, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of the European Union, with an ad valorem (or ad valorem equivalent) rate of duty under column 1-General less than 15 percent, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
-    name: "EU Trade Deal Tariff (When General Duty < 15%)",
+    name: "EU Trade Deal Tariff (Replaces General Duty When General Duty < 15%)",
     general: 15,
     special: 15,
     other: 0,

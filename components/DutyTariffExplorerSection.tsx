@@ -22,7 +22,7 @@ export function DutyTariffExplorerSection({
 
   return (
     <ExplorerDetailSection
-      title="Duty / Tariffs"
+      title="Duty & Tariffs"
       icon={<ChartBarIcon className="h-4 w-4" />}
       action={
         <Link

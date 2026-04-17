@@ -2,19 +2,16 @@ import { TariffI } from "../interfaces/tariffs"
 import {
   argiculturalArticlesExemptFromCertainTariffs,
   civilAircraftArticleExemptFromSection122Tariff,
+  semicondutorArticles39B,
 } from "./lists"
 import {
-  derivativeIronAndSteelTariffCodes,
-  ironAndSteelTariffCodes,
-  aluminumTariffCodes,
-  copperAndCopperDerviativeTariffCodes,
-  derivativeAluminumTariffCodes,
   mhdvArticleTariffCodes,
   mhdvPartsArticleTariffCodes,
   woodArticleTariffCodes,
   partOfPassengerVehicleAndLightTruckTariffCodes,
   passengerVehicleAndLightTruckTariffCodes,
   semicondutorTariffCodes,
+  Section232MetalTariffs,
 } from "./tariff-lists"
 
 export const section122Tariffs: TariffI[] = [
@@ -31,7 +28,6 @@ export const section122Tariffs: TariffI[] = [
     },
     exceptions: [
       // Section 122 Tariff Exclusions
-      //   I think what's happening is, because some of these are references to other tariffs,
       "9903.03.02",
       "9903.03.03",
       "9903.03.04",
@@ -42,58 +38,13 @@ export const section122Tariffs: TariffI[] = [
       "9903.03.09",
       "9903.03.10",
       "9903.03.11",
-      ...ironAndSteelTariffCodes,
-      ...derivativeIronAndSteelTariffCodes,
-      ...aluminumTariffCodes,
-      ...derivativeAluminumTariffCodes,
-      ...copperAndCopperDerviativeTariffCodes,
       ...passengerVehicleAndLightTruckTariffCodes,
       ...partOfPassengerVehicleAndLightTruckTariffCodes,
       ...mhdvArticleTariffCodes,
       ...mhdvPartsArticleTariffCodes,
       ...semicondutorTariffCodes,
       ...woodArticleTariffCodes,
-
-      //   // Aluminum
-      //   "9903.85.02",
-      //   "9903.85.04",
-      //   "9903.85.07",
-      //   "9903.85.08",
-      //   // Steel
-      //   "9903.81.87", // not .88 according to steel note (i)?
-      //   "9903.81.89",
-      //   "9903.81.90",
-      //   "9903.81.91",
-      //   "9903.81.93",
-      //   // Passenger Vehicles & Trucks
-      //   "9903.94.01",
-      //   // Auto Parts
-      //   "9903.94.05",
-      //   // Auto Parts Certified for the production or repair of automobiles in the United States
-      //   "9903.94.07",
-      //   // Wood
-      //   "9903.76.01",
-      //   "9903.76.02",
-      //   "9903.76.03",
-      //   "9903.76.20",
-      //   "9903.76.21",
-      //   "9903.76.22",
-      //   // Heavy Duty Vehicles
-      //   "9903.74.01",
-      //   // Buses & Similar Vehicles
-      //   "9903.74.02",
-      //   // Medium & Heavy Duty Vehicle Parts
-      //   "9903.74.08",
-      //   // Parts used for Medium & Heavy Duty Vehicle Production or Repair in the US
-      //   "9903.74.09",
-      //   // Auto Parts of EU >15%
-      //   "9903.94.44",
-      //   // Auto Parts of EU <=15%
-      //   "9903.94.45",
-      //   // Auto Parts of Japan >15%
-      //   "9903.94.54",
-      //   // Auto Parts of Japan <=15%
-      //   "9903.94.55",
+      ...semicondutorArticles39B,
     ],
   },
   {
@@ -1253,15 +1204,10 @@ export const section122Tariffs: TariffI[] = [
     general: 0,
     special: 0,
     other: 0,
-    // requiresReview: true,
     inclusions: {
       countries: ["*"],
       tariffs: [
-        ...ironAndSteelTariffCodes,
-        ...derivativeIronAndSteelTariffCodes,
-        ...aluminumTariffCodes,
-        ...derivativeAluminumTariffCodes,
-        ...copperAndCopperDerviativeTariffCodes,
+        ...Section232MetalTariffs,
         ...passengerVehicleAndLightTruckTariffCodes,
         ...partOfPassengerVehicleAndLightTruckTariffCodes,
         ...mhdvArticleTariffCodes,

@@ -7,7 +7,7 @@ import { BaseTariff } from "./BaseTariff";
 import { ContentRequirements, TariffColumn } from "../enums/tariff";
 import { Column2CountryCodes } from "../tariffs/tariff-columns";
 import {
-  get15PercentCountryTotalBaseRate,
+  getTotalBaseRate,
   getAmountRatesString,
   getAdValoremRate,
   CountryWithTariffs,
@@ -19,6 +19,8 @@ import {
   calculateSummaryTotals,
   formatCurrency,
   ADDITIONAL_FEES_TOTAL_RATE,
+  SECTION_232_METAL_CONTENT_SET_NAME,
+  hasActiveBaseDutySuppressor,
 } from "../tariffs/tariff-calculations";
 import { EstimatedCostsDisplay } from "./tariff-ui/EstimatedCostsDisplay";
 import { TradePrograms } from "../public/trade-programs";
@@ -38,6 +40,8 @@ import { useHts } from "../contexts/HtsContext";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
 import { CheckCircleIcon } from "@heroicons/react/16/solid";
 import { HtsElementDetailsPopover } from "./HtsElementDetailsPopover";
+import { Crisp } from "crisp-sdk-web";
+import config from "../config";
 import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
 
 interface Props {
@@ -104,7 +108,7 @@ export const CountryTariff = ({
   const [selectedSpecialProgram, setSelectedSpecialProgram] =
     useState<TradeProgramDisplayable>(selectedTradeProgram || DEFAULT_PROGRAM);
 
-  const adValoremEquivalentRate = get15PercentCountryTotalBaseRate(
+  const adValoremEquivalentRate = getTotalBaseRate(
     baseTariffs.flatMap((t) => t.tariffs),
     customsValue,
     units
@@ -130,7 +134,7 @@ export const CountryTariff = ({
     );
   };
 
-  const getTariffColumn = () => {
+  const getTariffColumnBasedOnTradeProgram = () => {
     if (!selectedSpecialProgram || selectedSpecialProgram.symbol === "none") {
       return isOtherColumnCountry ? TariffColumn.OTHER : TariffColumn.GENERAL;
     }
@@ -260,16 +264,18 @@ export const CountryTariff = ({
     tariffSets.forEach((tariffSet) => {
       const isArticleSet =
         tariffSet.name === "Article" || tariffSet.name === "";
+      const isSection232Metal = tariffSet.name === SECTION_232_METAL_CONTENT_SET_NAME;
       const shouldIncludeBaseTariffs =
-        isArticleSet &&
-        !(is15PercentCapCountry && adValoremEquivalentRate < 15);
+        (isArticleSet || isSection232Metal) &&
+        !(is15PercentCapCountry && adValoremEquivalentRate < 15) &&
+        !hasActiveBaseDutySuppressor(tariffSet.tariffs);
       const hasAmountTariffs =
         shouldIncludeBaseTariffs &&
         filteredBase.some((t) => t.type === "amount");
 
       const adValoremRate = shouldIncludeBaseTariffs
-        ? getAdValoremRate(getTariffColumn(), tariffSet.tariffs, filteredBase)
-        : getAdValoremRate(getTariffColumn(), tariffSet.tariffs);
+        ? getAdValoremRate(getTariffColumnBasedOnTradeProgram(), tariffSet.tariffs, filteredBase)
+        : getAdValoremRate(getTariffColumnBasedOnTradeProgram(), tariffSet.tariffs);
 
       const rateDisplay = hasAmountTariffs
         ? `${getAmountRatesString(filteredBase)} + ${adValoremRate}%`
@@ -383,17 +389,19 @@ export const CountryTariff = ({
       country.tariffSets
     );
     setCountries(updatedCountries);
-    setTariffColumn(getTariffColumn());
+    setTariffColumn(getTariffColumnBasedOnTradeProgram());
   }, [selectedSpecialProgram]);
 
   // Render helpers
   const renderTariffRate = (tariffSet: TariffSet) => {
     const filteredBase = filterByProgram(baseTariffs.flatMap((t) => t.tariffs));
     const isArticleSet = tariffSet.name === "Article" || tariffSet.name === "";
+    const isSection232Metal = tariffSet.name === SECTION_232_METAL_CONTENT_SET_NAME;
 
-    // Base tariffs only apply to Article set
     const shouldIncludeBaseTariffs =
-      isArticleSet && !(is15PercentCapCountry && adValoremEquivalentRate < 15);
+      (isArticleSet || isSection232Metal) &&
+      !(is15PercentCapCountry && adValoremEquivalentRate < 15) &&
+      !hasActiveBaseDutySuppressor(tariffSet.tariffs);
     const hasAmountTariffs =
       shouldIncludeBaseTariffs && filteredBase.some((t) => t.type === "amount");
 
@@ -415,7 +423,7 @@ export const CountryTariff = ({
   const summaryTotals = calculateSummaryTotals(
     tariffSets,
     baseTariffs,
-    getTariffColumn(),
+    getTariffColumnBasedOnTradeProgram(),
     below15PercentRuleApplies,
     filterByProgram
   );
@@ -426,7 +434,7 @@ export const CountryTariff = ({
     customsValue,
     units,
     contentRequirements,
-    getTariffColumn(),
+    getTariffColumnBasedOnTradeProgram(),
     below15PercentRuleApplies,
     filterByProgram
   );
@@ -627,10 +635,13 @@ export const CountryTariff = ({
             >
               {/* Set Header */}
               <div className="px-3 sm:px-5 py-3 sm:py-4 bg-base-200/50 flex flex-wrap justify-between items-center gap-2 sm:gap-3 border-b border-base-300 rounded-t-xl">
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col items-start">
                   <h3 className="text-base sm:text-lg font-bold text-base-content">
                     {tariffSet.name} Tariffs
                   </h3>
+                  {tariffSet.name === SECTION_232_METAL_CONTENT_SET_NAME && <p className="text-sm text-warning font-medium italic">
+                    Does not apply if no section 232 metal tariffs apply
+                  </p>}
                 </div>
                 <div className="flex items-center gap-2 sm:gap-3">
                   <span className="text-sm sm:text-base text-base-content/60 font-semibold">
@@ -659,7 +670,7 @@ export const CountryTariff = ({
                             index={j}
                             htsElement={tariffElement}
                             tariff={t}
-                            active={!below15PercentRuleApplies}
+                            active={!below15PercentRuleApplies && !hasActiveBaseDutySuppressor(tariffSet.tariffs)}
                           />
                         ))}
                     </div>
@@ -759,12 +770,23 @@ export const CountryTariff = ({
                       </ul>
                       <p className="mt-2 text-xs sm:text-sm">
                         Please contact{" "}
-                        <a
-                          href="mailto:support@htshero.com"
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (config.crisp?.id) {
+                              Crisp.chat.show();
+                              Crisp.chat.open();
+                            } else if (config.resend?.supportEmail) {
+                              window.open(
+                                `mailto:${config.resend.supportEmail}?subject=Need help with ${config.appName}`,
+                                "_blank"
+                              );
+                            }
+                          }}
                           className="link font-semibold"
                         >
                           support
-                        </a>
+                        </button>
                       </p>
                     </div>
                   </div>
@@ -779,7 +801,7 @@ export const CountryTariff = ({
                     onClick={() =>
                       setExpandedSets((prev) => ({
                         ...prev,
-                        [i]: !(prev[i] ?? true),
+                        [i]: !(prev[i] ?? false),
                       }))
                     }
                   >

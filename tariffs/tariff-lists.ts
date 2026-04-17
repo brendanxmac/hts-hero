@@ -1,42 +1,20 @@
-// (a) products of iron or steel provided for in headings 9903.81.87, 9903.81.88, 9903.81.94 and 9903.81.95, but such
-// additional duty shall apply to the non-steel content of such products of iron or steel;
-export const ironAndSteelTariffCodes = [
-  "9903.81.87",
-  "9903.81.88",
-  "9903.81.94",
-  "9903.81.95",
-]
-
-// (b) the declared value of the steel content of the derivative iron or steel products provided for in headings 9903.81.89,
-// 9903.81.90, 9903.81.91, 9903.81.92, 9903.81.93, 9903.81.96, 9903.81.97, 9903.81.98 and 9903.81.99, but such
-// additional duty shall apply to the non-steel content;
-export const derivativeIronAndSteelTariffCodes = [
-  "9903.81.89",
-  "9903.81.90",
-  "9903.81.91",
-  "9903.81.92",
-  "9903.81.93",
-  "9903.81.96",
-  "9903.81.97",
-  "9903.81.98",
-  "9903.81.99",
-]
-
-// (c) products of aluminum provided for in headings 9903.85.02 and 9903.85.12, but such additional duty shall apply
-// to the non-aluminum content of such products of aluminum;
-export const aluminumTariffCodes = ["9903.85.02", "9903.85.12"]
-
-// (d) the declared value of the aluminum content of the derivative aluminum products provided for in headings 9903.85.04,
-// 9903.85.07, 9903.85.08, 9903.85.09, 9903.85.13, 9903.85.14 and 9903.85.15, but such additional duty shall
-// apply to the non-aluminum content;
-export const derivativeAluminumTariffCodes = [
-  "9903.85.04",
-  "9903.85.07",
-  "9903.85.08",
-  "9903.85.09",
-  "9903.85.13",
-  "9903.85.14",
-  "9903.85.15",
+export const Section232MetalTariffs: string[] = [
+  "9903.82.02",
+  "9903.82.03",
+  "9903.82.04",
+  "9903.82.05",
+  "9903.82.06",
+  "9903.82.07",
+  "9903.82.08",
+  "9903.82.09",
+  "9903.82.10",
+  "9903.82.11",
+  "9903.82.12",
+  "9903.82.13",
+  "9903.82.14",
+  "9903.82.15",
+  "9903.82.16",
+  "9903.82.17",
 ]
 
 // (e) passenger vehicles (sedans, sport utility vehicles, crossover utility vehicles, minivans and cargo vans) and light
@@ -84,10 +62,6 @@ export const partOfPassengerVehicleAndLightTruckTariffCodes = [
   "9903.94.64",
   "9903.94.65",
 ]
-
-// (g) semi-finished copper and intensive copper derivative products provided for in heading 9903.78.01, but such
-// additional duty shall apply to the non-copper content of such products of copper;
-export const copperAndCopperDerviativeTariffCodes = ["9903.78.01"]
 
 // (h) wood products provided for in headings 9903.76.01, 9903.76.02, 9903.76.03, 9903.76.20, 9903.76.21, 9903.76.22
 // and 9903.76.23;

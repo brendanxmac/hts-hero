@@ -1,5 +1,6 @@
 import { EuropeanUnionCountries } from "../constants/countries"
 import { TariffI } from "../interfaces/tariffs"
+import { Section232MetalTariffs } from "./tariff-lists"
 
 // Via 99,III,2(v)(i)
 export const recriprocalTariffExemptions = [
@@ -23,29 +24,11 @@ export const recriprocalTariffExemptions = [
   "9903.01.34",
   // Transhipping Identified
   "9903.02.01",
-  // Iron or Steel
-  "9903.81.87",
-  "9903.81.88",
-  // Iron or Steel Derivatives
-  "9903.81.89",
-  "9903.81.90",
-  "9903.81.91",
-  "9903.81.92",
-  "9903.81.93",
-  // Aluminum
-  "9903.85.02",
-  // Aluminum Derivatives
-  "9903.85.04",
-  "9903.85.07",
-  "9903.85.08",
-  "9903.85.09",
   // Autos
   "9903.94.01",
   "9903.94.03",
   // Auto Parts
   "9903.94.05",
-  // Copper
-  "9903.78.01",
   // U.K. Civil Aircraft, Engines, Parts, Components, & Subassemblies
   "9903.96.01",
   // Japan Civil Aircraft, Engines, Parts, Components, & Subassemblies
@@ -105,6 +88,7 @@ export const recriprocalTariffExemptions = [
   "9903.94.64",
   // South Korea Parts Not elsewhere specified < 15%
   "9903.94.65 ",
+  ...Section232MetalTariffs,
 ]
 
 export const worldwideReciprocalTariff: TariffI[] = [
@@ -341,29 +325,12 @@ export const worldwideReciprocalTariff: TariffI[] = [
     other: 0,
     requiresReview: true,
     exceptions: [
-      // Iron or Steel
-      "9903.81.87",
-      "9903.81.88",
-      // Iron or Steel Derivatives
-      "9903.81.89",
-      "9903.81.90",
-      "9903.81.91",
-      "9903.81.92",
-      "9903.81.93",
-      // Aluminum
-      "9903.85.02",
-      // Aluminum Derivatives
-      "9903.85.04",
-      "9903.85.07",
-      "9903.85.08",
-      "9903.85.09",
       // Autos
       "9903.94.01",
       "9903.94.03",
       // Auto Parts
       "9903.94.05",
-      // Copper
-      "9903.78.01",
+      ...Section232MetalTariffs,
     ],
     exclusions: {
       countries: ["CA"], // TODO: should this be here? Since CA already has transshiiping add-on via .01.16
@@ -614,7 +581,6 @@ export const worldwideReciprocalTariff: TariffI[] = [
     },
   },
   {
-    // TODO: this one does NOT add with the base tariff
     code: "9903.02.20",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30–9903.01.33 and 9903.02.74– 9903.02.77, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of the European Union, with an ad valorem (or ad valorem equivalent) rate of duty under column 1-General less than 15 percent, as provided for in subdivision (v) of U.S. note 2 to this subchapter",

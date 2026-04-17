@@ -1358,6 +1358,9 @@ export const tariffsExemptFromMetalTariffs = [
   "9903.94.65",
   // South Korea Civil Aircraft
   "9903.02.81",
+
+  // ====== Semiconductors ======
+  "9903.79.01",
 ]
 
 export const argiculturalArticlesExemptFromCertainTariffs = [

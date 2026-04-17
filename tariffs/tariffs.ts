@@ -1,11 +1,7 @@
 import { aluminumTariffs } from "./aluminum"
 import { automobileTariffs } from "./automobile"
-import { canadaTariffs } from "./canada"
 import { chinaTariffs } from "./china"
-import { mexicoTariffs } from "./mexico"
-import { worldwideReciprocalTariff } from "./reciprocal"
 import { exceptionTariffs } from "./exception"
-import { ironAndSteelTariffs } from "./iron-and-steel"
 import { HtsElement } from "../interfaces/hts"
 import {
   BaseTariffI,
@@ -17,20 +13,13 @@ import { ContentRequirementI } from "../components/Element"
 import { ContentRequirements } from "../enums/tariff"
 import { TariffI, UITariff, TariffSet } from "../interfaces/tariffs"
 import { TariffColumn } from "../enums/tariff"
-import { brazilTariffs } from "./brazil"
-import { copperTariffs } from "./copper"
-import {
-  Countries,
-  Country,
-  EuropeanUnionCountries,
-} from "../constants/countries"
+import { Country, EuropeanUnionCountries } from "../constants/countries"
 import {
   TradeProgram,
   TradePrograms,
   TradeProgramStatus,
 } from "../public/trade-programs"
 import { Column2CountryCodes } from "./tariff-columns"
-import { indiaTariffs } from "./india"
 import { japanTariffs } from "./japan"
 import { europeanUnionTariffs } from "./european-union"
 import { woodTariffs } from "./wood"
@@ -39,6 +28,8 @@ import { argiculturalTariffs } from "./argicultural"
 import { southKoreaTariffs } from "./south-korea"
 import { section122Tariffs } from "./section-122"
 import { semiconductorTariffs } from "./semiconductors"
+import { section232Tariffs } from "./section-232"
+import { Section232MetalTariffs } from "./tariff-lists"
 
 export interface CountryWithTariffs extends Country {
   selectedTradeProgram: TradeProgram | null
@@ -47,36 +38,19 @@ export interface CountryWithTariffs extends Country {
   specialTradePrograms: TradeProgram[]
 }
 
-export const Section232MetalTariffs = [
-  // Iron or Steel
-  "9903.81.87",
-  "9903.81.88",
-  // Iron or Steel Derivatives
-  "9903.81.89",
-  "9903.81.90",
-  "9903.81.91",
-  "9903.81.92",
-  "9903.81.93",
-  // Aluminum
-  "9903.85.02",
-  // Aluminum Derivatives
-  "9903.85.04",
-  "9903.85.07",
-  "9903.85.08",
-  "9903.85.09",
-  // Copper
-  "9903.78.01",
-]
-
 export const findExceptions = (
   tariff: TariffI,
   countryCode: string,
   htsCode: string,
+  visited: Set<string> = new Set(),
 ): TariffI[] => {
+  if (visited.has(tariff.code)) return []
+  visited.add(tariff.code)
+
   if (tariff.exceptions && tariff.exceptions.length > 0) {
     const exceptionTariffs = getTariffsByCode(tariff.exceptions)
     const childrenExceptions = exceptionTariffs.flatMap((exception) =>
-      findExceptions(exception, htsCode, countryCode),
+      findExceptions(exception, htsCode, countryCode, visited),
     )
     return [...exceptionTariffs, ...childrenExceptions].filter((t) =>
       tariffIsApplicable(t, countryCode, htsCode),
@@ -114,13 +88,16 @@ export const collectExceptionCodes = (
   tariffs: TariffI[],
   exceptionCodes: Set<string>,
   ignoreCodes?: string[],
+  visited: Set<string> = new Set(),
 ) => {
+  if (visited.has(tariff.code)) return
+  visited.add(tariff.code)
+
   if (tariff.exceptions) {
     tariff.exceptions.forEach((code) => {
       if (ignoreCodes?.includes(code)) return
 
       exceptionCodes.add(code)
-      // Find the exception tariff and recursively collect its exceptions
       const exceptionTariff = tariffs.find((t) => t.code === code)
       if (exceptionTariff) {
         collectExceptionCodes(
@@ -128,6 +105,7 @@ export const collectExceptionCodes = (
           tariffs,
           exceptionCodes,
           ignoreCodes,
+          visited,
         )
       }
     })
@@ -178,6 +156,12 @@ export const addTariffsToCountry = (
   applicableTariffs = filterCountryTariffsFor15PercentExeption(
     applicableTariffs,
     country,
+    baseTariffsForColumn,
+    customsValue,
+    units,
+  )
+  applicableTariffs = filterCountryTariffsByAdValoremRate(
+    applicableTariffs,
     baseTariffsForColumn,
     customsValue,
     units,
@@ -264,6 +248,46 @@ export const getBaseAmountTariffsSum = (baseTariffs: ParsedBaseTariff[]) => {
   return baseAmountTariffs.reduce((acc, t) => acc + t.value, 0)
 }
 
+export const filterCountryTariffsByAdValoremRate = (
+  tariffs: TariffI[],
+  baseTariffsForColumn: ParsedBaseTariff[],
+  customsValue?: number,
+  units?: number,
+) => {
+  const totalBaseRate = getTotalBaseRate(
+    baseTariffsForColumn.flatMap((t) => t.tariffs),
+    customsValue ?? 1000,
+    units ?? 10,
+  )
+
+  return tariffs.filter((t) => {
+    if (totalBaseRate >= 15) {
+      return (
+        t.code !== "9903.82.10" &&
+        t.code !== "9903.82.07" &&
+        t.code !== "9903.82.15" // .15 = Russia
+      )
+    }
+    if (totalBaseRate >= 10) {
+      return t.code !== "9903.82.07" && t.code !== "9903.82.15" // .15 = Russia
+    }
+
+    if (totalBaseRate < 10) {
+      return (
+        t.code !== "9903.82.11" &&
+        t.code !== "9903.82.08" &&
+        t.code !== "9903.82.14" // .14 =Russia
+      )
+    }
+
+    if (totalBaseRate < 15) {
+      return t.code !== "9903.82.11" && t.code !== "9903.82.14" // .14 =Russia
+    }
+
+    return true
+  })
+}
+
 export const filterCountryTariffsFor15PercentExeption = (
   tariffs: TariffI[],
   country: Country,
@@ -279,7 +303,7 @@ export const filterCountryTariffsFor15PercentExeption = (
     return tariffs
   }
 
-  const totalBaseRate = get15PercentCountryTotalBaseRate(
+  const totalBaseRate = getTotalBaseRate(
     baseTariffsForColumn.flatMap((t) => t.tariffs),
     customsValue ?? 1000,
     units ?? 10,
@@ -339,6 +363,8 @@ export const filterCountryTariffsFor15PercentExeption = (
         )
       }
     }
+
+    // TODO: I think we need to add Switzerland and its 15% exception tariffs here
 
     return true
   })
@@ -501,11 +527,10 @@ export const getContentRequirementTariffSets = (
         t.contentRequirement.content === contentRequirement.name,
     )
 
-    if (contentRequirement.name === "Copper") {
-      // 9903.78.02 is unique in that it's the only 232 metals tariff that mentions
-      // the non metal contents of the article, in this case, copper
-      tariffSet = tariffSet.filter((t) => t.code !== "9903.78.02")
-    }
+    const hasMatchingContentTariff = tariffs.some(
+      (t) => t.contentRequirement?.content === contentRequirement.name,
+    )
+    if (!hasMatchingContentTariff) continue
 
     tariffSet.forEach((t) => {
       collectExceptionCodes(t, tariffs, exceptionCodes)
@@ -569,7 +594,7 @@ export const getAdValoremRate = (
   return rate
 }
 
-export const get15PercentCountryTotalBaseRate = (
+export const getTotalBaseRate = (
   baseTariffs: BaseTariffI[],
   customsValue: number,
   units?: number,
@@ -634,7 +659,11 @@ export const isAncestorTariff = (
   possibleAncestor: UITariff,
   tariff: UITariff,
   allTariffs: UITariff[],
+  visited: Set<string> = new Set(),
 ): boolean => {
+  if (visited.has(possibleAncestor.code)) return false
+  visited.add(possibleAncestor.code)
+
   const hasExceptions =
     possibleAncestor.exceptions && possibleAncestor.exceptions.length > 0
 
@@ -645,7 +674,7 @@ export const isAncestorTariff = (
 
     return (
       exceptions.some((e) => e.code === tariff.code) ||
-      exceptions.some((e) => isAncestorTariff(tariff, e, allTariffs))
+      exceptions.some((e) => isAncestorTariff(tariff, e, allTariffs, visited))
     )
   } else {
     const hasTariffInclusions =
@@ -659,7 +688,9 @@ export const isAncestorTariff = (
       )
       return (
         tariffInclusions.some((i) => i.code === tariff.code) ||
-        tariffInclusions.some((i) => isAncestorTariff(i, tariff, allTariffs))
+        tariffInclusions.some((i) =>
+          isAncestorTariff(i, tariff, allTariffs, visited),
+        )
       )
     } else {
       return false
@@ -671,7 +702,11 @@ export const isDescendantTariff = (
   possibleDescendant: UITariff,
   tariff: UITariff,
   allTariffs: UITariff[],
+  visited: Set<string> = new Set(),
 ): boolean => {
+  if (visited.has(tariff.code)) return false
+  visited.add(tariff.code)
+
   const tariffHasExceptions = tariff.exceptions && tariff.exceptions.length > 0
 
   if (tariffHasExceptions) {
@@ -682,7 +717,7 @@ export const isDescendantTariff = (
     return (
       exceptions.some((e) => e.code === possibleDescendant.code) ||
       exceptions.some((e) =>
-        isDescendantTariff(possibleDescendant, e, allTariffs),
+        isDescendantTariff(possibleDescendant, e, allTariffs, visited),
       )
     )
   }
@@ -700,7 +735,7 @@ export const isDescendantTariff = (
     return (
       tariffInclusions.some((i) => i.code === possibleDescendant.code) ||
       tariffInclusions.some((i) =>
-        isDescendantTariff(possibleDescendant, i, allTariffs),
+        isDescendantTariff(possibleDescendant, i, allTariffs, visited),
       )
     )
   }
@@ -711,7 +746,11 @@ export const isDescendantTariff = (
 export const tariffIsActive = (
   tariff: TariffI,
   applicableTariffs: UITariff[],
+  visited: Set<string> = new Set(),
 ) => {
+  if (visited.has(tariff.code)) return false
+  visited.add(tariff.code)
+
   if (tariff.requiresReview) return false
 
   const hasExceptions = !!(tariff.exceptions && tariff.exceptions.length > 0)
@@ -743,14 +782,14 @@ export const tariffIsActive = (
 
   if (hasExceptions) {
     const hasActiveException = applicableExceptionTariffs.some(
-      (t) => t.isActive ?? tariffIsActive(t, applicableTariffs),
+      (t) => t.isActive ?? tariffIsActive(t, applicableTariffs, visited),
     )
     if (hasActiveException) return false
   }
 
   if (hasTariffInclusions) {
     const hasActiveInclusion = applicableInclusionTariffs.some(
-      (t) => t.isActive ?? tariffIsActive(t, applicableTariffs),
+      (t) => t.isActive ?? tariffIsActive(t, applicableTariffs, visited),
     )
     if (hasActiveInclusion) return true
   }
@@ -924,18 +963,12 @@ export const getTariffsForCode = (htsCode: string) => {
 //  basis. 7601.10.60.40 is a good example of this
 
 export const TariffsList: TariffI[] = [
-  // ...worldwideReciprocalTariff,
+  ...section232Tariffs,
   ...section122Tariffs,
   ...aluminumTariffs,
   ...automobileTariffs,
-  // ...canadaTariffs,
   ...chinaTariffs,
   ...exceptionTariffs,
-  ...ironAndSteelTariffs,
-  // ...mexicoTariffs,
-  // ...brazilTariffs,
-  ...copperTariffs,
-  // ...indiaTariffs,
   ...japanTariffs,
   ...europeanUnionTariffs,
   ...woodTariffs,

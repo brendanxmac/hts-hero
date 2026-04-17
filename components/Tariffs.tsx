@@ -20,7 +20,7 @@ import {
   CountryWithTariffs,
   addTariffsToCountries,
   getBaseAmountTariffsText,
-  get15PercentCountryTotalBaseRate,
+  getTotalBaseRate,
 } from "../tariffs/tariffs";
 import { classNames } from "../utilities/style";
 import React from "react";
@@ -66,6 +66,7 @@ export const Tariffs = ({
       return acc;
     }, new Set<ContentRequirements>())
   );
+
   // UI state - updates immediately for responsive slider
   const [uiContentPercentages, setUiContentPercentages] = useState<
     ContentRequirementI<ContentRequirements>[]
@@ -166,12 +167,12 @@ export const Tariffs = ({
         EuropeanUnionCountries.includes(b.code) ||
         b.code === "JP" ||
         b.code === "KR";
-      const adValoremEquivalentRateA = get15PercentCountryTotalBaseRate(
+      const adValoremEquivalentRateA = getTotalBaseRate(
         a.baseTariffs.flatMap((t) => t.tariffs),
         customsValue,
         units
       );
-      const adValoremEquivalentRateB = get15PercentCountryTotalBaseRate(
+      const adValoremEquivalentRateB = getTotalBaseRate(
         b.baseTariffs.flatMap((t) => t.tariffs),
         customsValue,
         units
@@ -206,12 +207,12 @@ export const Tariffs = ({
         EuropeanUnionCountries.includes(b.code) ||
         b.code === "JP" ||
         b.code === "KR";
-      const adValoremEquivalentRateA = get15PercentCountryTotalBaseRate(
+      const adValoremEquivalentRateA = getTotalBaseRate(
         a.baseTariffs.flatMap((t) => t.tariffs),
         customsValue,
         units
       );
-      const adValoremEquivalentRateB = get15PercentCountryTotalBaseRate(
+      const adValoremEquivalentRateB = getTotalBaseRate(
         b.baseTariffs.flatMap((t) => t.tariffs),
         customsValue,
         units
@@ -341,10 +342,10 @@ export const Tariffs = ({
                 .flatMap((t) => t.tariffs)
                 .filter((t) => t.type === "amount").length > 0
           )) && (
-          <div className="p-4 rounded-xl bg-base-200/50 border border-base-content/10">
-            <div className="flex flex-col gap-4">
-              {/* Content Requirements */}
-              {codeBasedContentRequirements.length > 0 && (
+            <div className="p-4 rounded-xl bg-base-200/50 border border-base-content/10">
+              <div className="flex flex-col gap-4">
+                {/* Content Requirements */}
+                {/* {codeBasedContentRequirements.length > 0 && (
                 <div className="flex flex-col md:flex-row gap-4">
                   {codeBasedContentRequirements.map((contentRequirement) => (
                     <div
@@ -371,51 +372,51 @@ export const Tariffs = ({
                     </div>
                   ))}
                 </div>
-              )}
+              )} */}
 
-              {/* Units and Customs Value */}
-              {sortedCountries.some(
-                (c) =>
-                  c.baseTariffs
-                    .flatMap((t) => t.tariffs)
-                    .filter((t) => t.type === "amount").length > 0
-              ) && (
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <div className="flex-1">
-                    <NumberInput
-                      label="Amount / Units / Weight"
-                      value={uiUnits}
-                      setValue={handleUnitsChange}
-                      min={0}
-                      subtext={
-                        htsElement.units.length > 0 ||
-                        tariffElement.units.length > 0
-                          ? `${[...htsElement.units, ...tariffElement.units]
-                              .reduce((acc, unit) => {
-                                if (!acc.includes(unit)) {
-                                  acc.push(unit);
-                                }
-                                return acc;
-                              }, [])
-                              .join(",")}`
-                          : ""
-                      }
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <NumberInput
-                      label="Customs Value (USD)"
-                      value={uiCustomsValue}
-                      setValue={handleCustomsValueChange}
-                      min={0}
-                      prefix="$"
-                    />
-                  </div>
-                </div>
-              )}
+                {/* Units and Customs Value */}
+                {sortedCountries.some(
+                  (c) =>
+                    c.baseTariffs
+                      .flatMap((t) => t.tariffs)
+                      .filter((t) => t.type === "amount").length > 0
+                ) && (
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <div className="flex-1">
+                        <NumberInput
+                          label="Amount / Units / Weight"
+                          value={uiUnits}
+                          setValue={handleUnitsChange}
+                          min={0}
+                          subtext={
+                            htsElement.units.length > 0 ||
+                              tariffElement.units.length > 0
+                              ? `${[...htsElement.units, ...tariffElement.units]
+                                .reduce((acc, unit) => {
+                                  if (!acc.includes(unit)) {
+                                    acc.push(unit);
+                                  }
+                                  return acc;
+                                }, [])
+                                .join(",")}`
+                              : ""
+                          }
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <NumberInput
+                          label="Customs Value (USD)"
+                          value={uiCustomsValue}
+                          setValue={handleCustomsValueChange}
+                          min={0}
+                          prefix="$"
+                        />
+                      </div>
+                    </div>
+                  )}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Country Selection & Results */}
         <div className="flex flex-col gap-3">
@@ -483,7 +484,7 @@ export const Tariffs = ({
           {/* Country Cards */}
           <div className="flex flex-col gap-2">
             {sortedCountries.map((country, i) => {
-              const adValoremEquivalentRate = get15PercentCountryTotalBaseRate(
+              const adValoremEquivalentRate = getTotalBaseRate(
                 country.baseTariffs
                   .flatMap((t) => t.tariffs)
                   .filter((t) => {
@@ -612,12 +613,12 @@ export const Tariffs = ({
                                     {cappedBy15PercentRule
                                       ? null
                                       : countryAmounts &&
-                                        countryAmounts.length > 0 &&
-                                        i === 0 && (
-                                          <span className="text-base">
-                                            {countryAmounts} +{" "}
-                                          </span>
-                                        )}
+                                      countryAmounts.length > 0 &&
+                                      i === 0 && (
+                                        <span className="text-base">
+                                          {countryAmounts} +{" "}
+                                        </span>
+                                      )}
                                     {sum}%
                                   </span>
                                 </div>

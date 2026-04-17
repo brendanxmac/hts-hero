@@ -262,13 +262,13 @@ export const Element = ({
         <div className="flex w-full flex-col gap-6">
           {shouldShowBasicDutyRates && (
             <ExplorerDetailSection
-              title="Basic duty rates"
-              icon={<PercentBadgeIcon className="h-4 w-4" />}
+              title="Base Duty Rates"
+              icon={<PercentBadgeIcon className="h-5 w-5" />}
             >
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div className="flex flex-col gap-2 rounded-xl border border-base-content/10 bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 p-4">
                   <span className="text-xs font-semibold uppercase tracking-widest text-base-content/50">
-                    General rate
+                    General (Column 1)
                   </span>
                   <span className="text-lg font-bold text-base-content">
                     {tariffElement.general || "-"}
@@ -281,7 +281,7 @@ export const Element = ({
 
                 <div className="flex flex-col gap-2 rounded-xl border border-base-content/10 bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 p-4">
                   <span className="text-xs font-semibold uppercase tracking-widest text-base-content/50">
-                    Special rate
+                    Special (Column 1)
                   </span>
                   <div className="flex flex-col gap-1">
                     <span className="text-lg font-bold text-base-content">
@@ -345,7 +345,7 @@ export const Element = ({
 
                 <div className="flex flex-col gap-2 rounded-xl border border-base-content/10 bg-gradient-to-br from-base-100 via-base-100 to-base-200/30 p-4">
                   <span className="text-xs font-semibold uppercase tracking-widest text-base-content/50">
-                    Other rate
+                    Column 2 (Non-NTR)
                   </span>
                   <span className="text-lg font-bold text-base-content">
                     {tariffElement.other || "-"}
@@ -379,7 +379,13 @@ export const Element = ({
             </ExplorerDetailSection>
           )}
 
-
+          {!isModal && htsno && htsno.replaceAll(".", "").length >= 8 && (
+            <DutyTariffExplorerSection
+              element={element}
+              tariffElement={tariffElement}
+              htsElements={htsElements}
+            />
+          )}
 
           {htsPathItems.length > 0 && (
             <ExplorerDetailSection
@@ -399,16 +405,6 @@ export const Element = ({
               sectionChapter={sectionChapter}
               htsno={htsno}
               chapter={chapter}
-            />
-          )}
-
-
-
-          {!isModal && htsno && htsno.replaceAll(".", "").length >= 8 && (
-            <DutyTariffExplorerSection
-              element={element}
-              tariffElement={tariffElement}
-              htsElements={htsElements}
             />
           )}
 

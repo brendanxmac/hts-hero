@@ -12,7 +12,7 @@ import {
   calculateAllTariffs,
   TariffCalculationResult,
 } from "../../tariffs/tariff-calculations";
-import { get15PercentCountryTotalBaseRate } from "../../tariffs/tariffs";
+import { getTotalBaseRate } from "../../tariffs/tariffs";
 import { EstimatedCostsDisplay } from "../tariff-ui/EstimatedCostsDisplay";
 import { DashboardCard, DashboardCardHeader } from "./DashboardCard";
 import { CurrencyDollarIcon } from "@heroicons/react/24/outline";
@@ -51,7 +51,7 @@ export function useTariffCalculation(
 
     const { tariffColumn, is15Cap } = getTariffContext(countryOfOrigin.code);
     const baseFlat = cwt.baseTariffs.flatMap((t) => t.tariffs);
-    const adValoremEquiv = get15PercentCountryTotalBaseRate(
+    const adValoremEquiv = getTotalBaseRate(
       baseFlat,
       DEFAULT_CUSTOMS_VALUE,
       DEFAULT_UNITS
