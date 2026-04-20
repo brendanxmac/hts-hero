@@ -241,7 +241,7 @@ export default function AuditReadyClassificationsPage() {
               What&apos;s <span className="text-primary">Inside</span> The Playbook?
             </h2>
             <p className="text-center text-base-content/80 mb-6 sm:mb-8 lg:mb-12 max-w-xl mx-auto text-base sm:text-lg lg:text-xl break-words">
-              Here&apos;s a sneak peek of what you&apos;ll discover inside the &apos;<strong>The Audit-Ready Classifications Playbook</strong>&apos;:
+              Here&apos;s a sneak peek of what you&apos;ll discover inside the book:
             </p>
             <div className="flex flex-col md:flex-row md:items-stretch items-center justify-center md:gap-8 lg:gap-12 max-w-4xl md:max-w-6xl mx-auto w-full min-w-0">
               <div className="hidden md:block md:w-56 lg:w-72 xl:w-96 md:shrink-0 md:self-stretch min-h-[280px] lg:min-h-[320px]">
@@ -266,15 +266,15 @@ export default function AuditReadyClassificationsPage() {
                 </li>
                 <li className="flex items-start gap-2 sm:gap-3 text-base sm:text-lg md:text-2xl text-base-content/90 break-words">
                   <span className="text-primary font-bold shrink-0">✓</span>
-                  <span><strong>Learn</strong> how to easily document reasoning so audits don&apos;t become nightmares and classifications defend themselves</span>
+                  <span><strong className="underline">Documentation Masterclass</strong> - Learn how to easily document classifications so audits don&apos;t become nightmares and classifications defend themselves</span>
                 </li>
                 <li className="flex items-start gap-2 sm:gap-3 text-base sm:text-lg md:text-2xl text-base-content/90 break-words">
                   <span className="text-primary font-bold shrink-0">✓</span>
-                  <span><strong>See</strong> a full In-depth example of how to do produce audit-ready classifications from start to finish</span>
+                  <span><strong className="underline">Step-by-Step Classification Example</strong> - See a full, In-depth example of how to do produce audit-ready classifications from start to finish</span>
                 </li>
                 <li className="flex items-start gap-2 sm:gap-3 text-base sm:text-lg md:text-2xl text-base-content/90 break-words">
                   <span className="text-primary font-bold shrink-0">✓</span>
-                  <span><strong>Discover</strong> how to drastically cut classification time without cutting corners</span>
+                  <span><strong className="underline">Tricks to Classify 10x Faster</strong> - See how you can cut classification time without cutting corners</span>
                 </li>
               </ul>
             </div>
@@ -394,7 +394,7 @@ export default function AuditReadyClassificationsPage() {
 
 
           {/* Who this is for */}
-          <section className="py-8 pt-12 sm:pt-16 md:pt-20 md:mt-12 bg-primary/5 px-4 sm:px-6 min-w-0">
+          <section className="sm:py-8 py-12 md:py-20 md:mt-12 bg-primary/5 px-4 sm:px-6 min-w-0">
             <div className="max-w-4xl mx-auto w-full">
               <p className="text-center text-base-content text-base sm:text-lg md:text-2xl mb-3 sm:mb-4 break-words">
                 If you&apos;re still here,{" "}
@@ -404,7 +404,7 @@ export default function AuditReadyClassificationsPage() {
                 &ldquo;Is This Playbook For Me?&rdquo;
               </h2>
               <h2 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold text-center mb-4 sm:mb-6 lg:mb-12 text-base-content max-w-3xl mx-auto break-words">
-                This Playbook is for <span className="underline">Every Person and Company</span> Who Touches Classifications, including:
+                This Playbook is for <span className="underline">Every US Importer & Customs Broker</span> Who Touches Classifications, Including:
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 {[
