@@ -1,4 +1,6 @@
 export const Section232MetalTariffs: string[] = [
+  // TODO: Note sure of .01 should count here?
+  "9903.82.01",
   "9903.82.02",
   "9903.82.03",
   "9903.82.04",
