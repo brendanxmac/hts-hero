@@ -20,7 +20,7 @@ export const section232Tariffs: TariffI[] = [
     code: "9903.82.01",
     description:
       "Articles provided for in subdivision (c) of U.S. note 16 to this subchapter that do not contain any aluminum, steel, or copper",
-    name: "Article Contains No Aluminum, Steel, or Copper",
+    name: "Section 232 Metal Exemption: Article Contains No Aluminum, Steel, or Copper",
     general: 0,
     special: 0,
     other: 0,
@@ -71,6 +71,7 @@ export const section232Tariffs: TariffI[] = [
     // contentRequirement: { content: "Section 232 Metal" },
     exceptions: [
       "9903.82.14",
+      "9903.85.01",
       "9903.85.67",
       "9903.85.68",
       "9903.82.03",
@@ -97,6 +98,7 @@ export const section232Tariffs: TariffI[] = [
     other: 0,
     requiresReview: true,
     // contentRequirement: { content: "Section 232 Metal" },
+    exceptions: ["9903.85.01"],
     inclusions: {
       codes: ["*"],
     },
@@ -202,7 +204,7 @@ export const section232Tariffs: TariffI[] = [
     other: 0,
     // contentRequirement: { content: "Section 232 Metal" },
     requiresReview: true,
-    exceptions: ["9903.82.03", "9903.82.06"],
+    exceptions: ["9903.85.01", "9903.82.03", "9903.82.06"],
     inclusions: {
       countries: ["GB"],
       codes: [
@@ -223,7 +225,7 @@ export const section232Tariffs: TariffI[] = [
     other: null,
     requiresReview: true,
     // contentRequirement: { content: "Section 232 Metal" },
-    exceptions: ["9903.82.03", "9903.82.06"],
+    exceptions: ["9903.85.01", "9903.82.03", "9903.82.06"],
     inclusions: {
       countries: ["GB"],
       codes: [...aluminumDerivatives16cvi, ...steelDerivatives16cvii],
@@ -239,7 +241,13 @@ export const section232Tariffs: TariffI[] = [
     other: 10,
     // contentRequirement: { content: "Section 232 Metal" },
     requiresReview: true,
-    exceptions: ["9903.82.15", "9903.85.68", "9903.82.03", "9903.82.04"],
+    exceptions: [
+      "9903.85.01",
+      "9903.82.15",
+      "9903.85.68",
+      "9903.82.03",
+      "9903.82.04",
+    ],
     inclusions: {
       codes: [
         ...aluminumDerivatives16cii,
@@ -262,6 +270,7 @@ export const section232Tariffs: TariffI[] = [
     requiresReview: true,
     suppressesBaseDuty: true,
     exceptions: [
+      "9903.85.01",
       "9903.82.12",
       "9903.82.17",
       "9903.85.68",
@@ -283,6 +292,7 @@ export const section232Tariffs: TariffI[] = [
     // contentRequirement: { content: "Section 232 Metal" },
     requiresReview: true,
     exceptions: [
+      "9903.85.01",
       "9903.82.12",
       "9903.82.17",
       "9903.85.68",
@@ -332,6 +342,7 @@ export const section232Tariffs: TariffI[] = [
     requiresReview: true,
     suppressesBaseDuty: true,
     exceptions: [
+      "9903.85.01",
       "9903.82.12",
       "9903.82.17",
       "9903.85.68",
@@ -355,6 +366,7 @@ export const section232Tariffs: TariffI[] = [
     // contentRequirement: { content: "Section 232 Metal" },
     requiresReview: true,
     exceptions: [
+      "9903.85.01",
       "9903.82.12",
       "9903.82.17",
       "9903.85.68",
@@ -377,6 +389,7 @@ export const section232Tariffs: TariffI[] = [
     other: 25,
     // contentRequirement: { content: "Section 232 Metal" },
     exceptions: [
+      "9903.85.01",
       "9903.82.17",
       "9903.85.68",
       "9903.82.03",
@@ -413,7 +426,7 @@ export const section232Tariffs: TariffI[] = [
     special: 50,
     other: 50,
     // contentRequirement: { content: "Section 232 Metal" },
-    exceptions: ["9903.82.03", "9903.82.06"],
+    exceptions: ["9903.85.01", "9903.82.03", "9903.82.06"],
     inclusions: {
       countries: ["RU"],
       codes: [...steel16ciii, ...steelDerivatives16civ, ...copper16cv],
@@ -428,7 +441,7 @@ export const section232Tariffs: TariffI[] = [
     special: 10,
     other: 10,
     // contentRequirement: { content: "Section 232 Metal" },
-    exceptions: ["9903.82.03", "9903.82.06"],
+    exceptions: ["9903.85.01", "9903.82.03", "9903.82.06"],
     inclusions: {
       countries: ["RU"],
       codes: [
@@ -447,7 +460,7 @@ export const section232Tariffs: TariffI[] = [
     special: 25,
     other: 25,
     // contentRequirement: { content: "Section 232 Metal" },
-    exceptions: ["9903.82.03", "9903.82.06"],
+    exceptions: ["9903.85.01", "9903.82.03", "9903.82.06"],
     inclusions: {
       countries: ["RU"],
       codes: [...steelDerivatives16cvii, ...copperArticles16cviii],
@@ -462,7 +475,7 @@ export const section232Tariffs: TariffI[] = [
     special: 25,
     other: 25,
     // contentRequirement: { content: "Section 232 Metal" },
-    exceptions: ["9903.82.03", "9903.82.06"],
+    exceptions: ["9903.85.01", "9903.82.03", "9903.82.06"],
     inclusions: {
       countries: ["RU"],
       codes: [...steelDerivatives16cx],
