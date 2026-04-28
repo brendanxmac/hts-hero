@@ -17,6 +17,50 @@ import { Column2CountryCodes } from "./tariff-columns"
 
 export const section232Tariffs: TariffI[] = [
   {
+    code: "9903.82.01",
+    description:
+      "Articles provided for in subdivision (c) of U.S. note 16 to this subchapter that do not contain any aluminum, steel, or copper",
+    name: "Article Contains No Aluminum, Steel, or Copper",
+    general: 0,
+    special: 0,
+    other: 0,
+    requiresReview: true,
+    // contentRequirement: { content: "Section 232 Metal" },
+    // exceptions: [
+    //   "9903.82.02",
+    //   "9903.82.03",
+    //   "9903.82.04",
+    //   "9903.82.05",
+    //   "9903.82.06",
+    //   "9903.82.07",
+    //   "9903.82.08",
+    //   "9903.82.09",
+    //   "9903.82.10",
+    //   "9903.82.11",
+    //   "9903.82.12",
+    //   "9903.82.13",
+    //   "9903.82.14",
+    //   "9903.82.15",
+    //   "9903.82.16",
+    //   "9903.82.17",
+    // ],
+    inclusions: {
+      codes: [
+        ...aluminum16ci,
+        ...aluminumDerivatives16cii,
+        ...steel16ciii,
+        ...steelDerivatives16civ,
+        ...copper16cv,
+        ...aluminumDerivatives16cvi,
+        ...motorcycleParts16cg,
+        ...steelDerivatives16cvii,
+        ...copperArticles16cviii,
+        ...aluminumDerivatives16cix,
+        ...steelDerivatives16cx,
+      ],
+    },
+  },
+  {
     code: "9903.82.02",
     description:
       "Except as provided for in headings 9903.82.14, 9903.85.67 and 9903.85.68, articles of aluminum, of steel or of copper and derivative aluminum or steel articles, as provided for in subdivisions (c)(i)–(v) of U.S. note 16 to this subchapter",
@@ -260,6 +304,7 @@ export const section232Tariffs: TariffI[] = [
     other: 25,
     // contentRequirement: { content: "Section 232 Metal" },
     exceptions: [
+      "9903.82.01",
       "9903.82.16",
       "9903.85.68",
       "9903.82.03",
