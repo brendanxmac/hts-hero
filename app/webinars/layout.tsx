@@ -3,6 +3,7 @@ import { createClient } from "@/app/api/supabase/server";
 import { AuthenticatedHeader } from "@/components/AuthenticatedHeader";
 import UnauthenticatedHeader from "@/components/UnauthenticatedHeader";
 import Footer from "@/components/Footer";
+import { CTABanner } from "../../components/CTABanner";
 
 export default async function WebinarsLayout({
   children,
@@ -16,6 +17,12 @@ export default async function WebinarsLayout({
 
   return (
     <div>
+      <CTABanner
+        message={`Want audit-ready classifications without hours of research?`}
+        ctaText="Try Now"
+        href="/classify"
+      // subText="Produce audit-ready classifications in minutes"
+      />
       <Suspense>
         {user ? <AuthenticatedHeader /> : <UnauthenticatedHeader />}
       </Suspense>

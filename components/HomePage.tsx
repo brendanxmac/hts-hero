@@ -18,6 +18,7 @@ import { FAQ } from "../components/FAQ";
 import { bundleFaqList } from "../constants/faq";
 import Footer from "../components/Footer";
 import UseCases from "../components/UseCases";
+import { CTABanner } from "./CTABanner";
 
 const heroImages = [
   {
@@ -202,6 +203,12 @@ export function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-base-100">
+      <CTABanner
+        message={`Want audit-ready classifications without hours of research?`}
+        ctaText="Try it Free"
+        href="/classify"
+      // subText="Produce audit-ready classifications in minutes"
+      />
       <Suspense
         fallback={
           <div className="h-16 bg-base-100 border-b border-base-content/20" />

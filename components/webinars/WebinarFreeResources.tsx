@@ -13,7 +13,7 @@ export default function WebinarFreeResources() {
           Free Resources
         </h2>
         <p className="text-base-content/60 mt-2 max-w-lg mx-auto">
-          Level up your trade compliance with these free tools and guides.
+          Level up your trade compliance game with these free tools and guides.
         </p>
       </div>
 
@@ -24,7 +24,7 @@ export default function WebinarFreeResources() {
         {/* Classification Assistant CTA */}
         <ClassifyCTA
           title="Classify Any Product in Minutes"
-          subtitle="AI-powered candidate discovery, GRI analysis, and CROSS rulings validation — free to try."
+          subtitle="AI-powered candidate discovery with GRI / legal note / CROSS ruling validation — free to try."
           ctaText="Start Classifying"
           ctaRedirectUrl="/classify"
         />
@@ -50,7 +50,7 @@ export default function WebinarFreeResources() {
             </div>
             <div className="flex flex-col gap-0.5">
               <span className="text-base md:text-lg font-bold text-base-content">
-                Free Duty & Tariff Calculator
+                Duty & Tariff Calculator
               </span>
               <span className="text-sm text-base-content/60">
                 See the full tariff breakdown for any US import — base rates,

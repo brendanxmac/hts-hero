@@ -121,17 +121,17 @@ export const classifyPro: PricingPlanI = {
   prices: [89],
   priceAnchors: [129],
   features: [
-    { name: "Quick Candidates" },
-    { name: "Best-Fit Analysis" },
-    { name: "CROSS Ruling Validation" },
-    { name: "Client-Ready Reports" },
+    { name: "Find Candidates" },
+    { name: "Get Legal Note & GRI Analysis" },
+    { name: "Validate with CROSS Rulings" },
+    { name: "Generate Branded Advisory Reports" },
     {
-      name: "Duty & Tariff Simulator",
+      name: "Calculate Duty & Tariffs",
       details: "See the Latest Tariffs & Duties for any Import",
     },
     {
-      name: "Tariff Impact Checker",
-      details: "Instantly know when new tariffs affect you",
+      name: "Know Your Tariff Impacts",
+      details: "Instantly know when new tariffs affect your imports",
     },
   ],
 }
@@ -149,10 +149,6 @@ export const classifyTeam: PricingPlanI = {
     { name: "See Your Teams Classifications" },
     { name: "Request Classification Reviews" },
     { name: "Approve Each Others Classifications" },
-    {
-      name: "Share Links to Classifications",
-      details: "Get the job done quicker with shareable links",
-    },
     {
       name: "Team Training",
       details: "Boost your teams productivity with personalized training",
