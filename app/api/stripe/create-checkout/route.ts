@@ -37,6 +37,8 @@ export async function POST(req: NextRequest) {
 
     const getPriceId = (itemId: PricingPlan) => {
       switch (itemId) {
+        case PricingPlan.CLASSIFY_STARTER:
+          return process.env.STRIPE_CLASSIFY_STARTER_PRICE_ID;
         case PricingPlan.CLASSIFY_PRO:
           return process.env.STRIPE_CLASSIFY_PRO_PRICE_ID;
         case PricingPlan.TARIFF_IMPACT_STANDARD:
@@ -50,6 +52,7 @@ export async function POST(req: NextRequest) {
 
     const getMode = (itemId: PricingPlan): StripePaymentMode => {
       switch (itemId) {
+        case PricingPlan.CLASSIFY_STARTER:
         case PricingPlan.CLASSIFY_PRO:
         case PricingPlan.TARIFF_IMPACT_STANDARD:
         case PricingPlan.TARIFF_IMPACT_PRO:

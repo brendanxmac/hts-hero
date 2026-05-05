@@ -18,6 +18,7 @@ import { NUM_FREE_CLASSIFICATIONS } from "../constants/classification";
 import Modal from "./Modal";
 import ConversionPricing from "./ConversionPricing";
 import { SignUpGateCTA } from "./SignUpGateCTA";
+import { PricingPlan } from "../types";
 import toast from "react-hot-toast";
 
 const CYCLING_EXAMPLES = [
@@ -90,6 +91,8 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
       useClassification();
     const { user } = useUser();
     const [showPricing, setShowPricing] = useState(false);
+    const [isStarterUpsell, setIsStarterUpsell] = useState(false);
+    const [currentClassifyPlan, setCurrentClassifyPlan] = useState<PricingPlan | undefined>();
     const [showSignUpGate, setShowSignUpGate] = useState(false);
     const [signUpGateArticleDescription, setSignUpGateArticleDescription] =
       useState("");
@@ -133,6 +136,7 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
             isPayingUser,
             isOnTeam,
             classificationCount,
+            classifyPlan,
           } = await canCreateClassification(user);
 
           if (!allowed) {
@@ -141,6 +145,8 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
               setShowSignUpGate(true);
             } else {
               setArticleDescription(text);
+              setIsStarterUpsell(blockReason === "starter_limit_reached");
+              setCurrentClassifyPlan(classifyPlan ?? undefined);
               setShowPricing(true);
             }
             setIsCreating(false);
@@ -222,7 +228,10 @@ export const ClassifyInput = forwardRef<ClassifyInputHandle, ClassifyInputProps>
       <>
         {showPricing && (
           <Modal isOpen={showPricing} setIsOpen={setShowPricing}>
-            <ConversionPricing />
+            <ConversionPricing
+              isStarterUpsell={isStarterUpsell}
+              currentPlan={currentClassifyPlan}
+            />
           </Modal>
         )}
         {showSignUpGate && (

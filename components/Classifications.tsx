@@ -13,10 +13,12 @@ import {
   TagIcon,
   UserIcon,
 } from "@heroicons/react/16/solid";
-import { BoltIcon } from "@heroicons/react/16/solid";
+import { ArrowUpIcon, BoltIcon } from "@heroicons/react/16/solid";
 import Fuse, { IFuseOptions } from "fuse.js";
 import { PricingPlan } from "../types";
+import { STARTER_MONTHLY_CLASSIFICATION_LIMIT } from "../constants/classification";
 import { getActiveClassifyPurchase } from "../libs/supabase/purchase";
+import { countClassificationsForUserSince } from "../libs/supabase/count-user-classifications";
 import {
   fetchUser,
   fetchUsersByTeam,
@@ -76,6 +78,8 @@ export const Classifications = () => {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [canCreateNew, setCanCreateNew] = useState(true);
   const [showListPricing, setShowListPricing] = useState(false);
+  const [isStarterUpsell, setIsStarterUpsell] = useState(false);
+  const [starterMonthlyUsed, setStarterMonthlyUsed] = useState<number | null>(null);
   const [showListSignUpGate, setShowListSignUpGate] = useState(false);
   const UNASSIGNED_IMPORTER_VALUE = "unassigned";
 
@@ -102,6 +106,16 @@ export const Classifications = () => {
 
       if (activeClassifyPurchase) {
         setActiveClassifyPlan(activeClassifyPurchase.product_name);
+
+        if (
+          activeClassifyPurchase.product_name === PricingPlan.CLASSIFY_STARTER
+        ) {
+          const used = await countClassificationsForUserSince(
+            user.id,
+            activeClassifyPurchase.created_at
+          );
+          setStarterMonthlyUsed(used);
+        }
       }
 
       if (userProfile) {
@@ -300,9 +314,12 @@ export const Classifications = () => {
     if (isAnonymousUser(user)) {
       setShowListSignUpGate(true);
     } else {
+      const isStarter =
+        activeClassifyPlan === PricingPlan.CLASSIFY_STARTER;
+      setIsStarterUpsell(isStarter);
       setShowListPricing(true);
     }
-  }, [canCreateNew, user, router]);
+  }, [canCreateNew, user, router, activeClassifyPlan]);
 
   const getEmptyStateConfig = (): EmptyResultsConfig | null => {
     const hasClassifications = classifications && classifications.length > 0;
@@ -462,6 +479,41 @@ export const Classifications = () => {
 
             {/* Right side - Action buttons */}
             <div className="flex flex-row gap-3 md:items-end">
+              {user &&
+                activeClassifyPlan === PricingPlan.CLASSIFY_STARTER &&
+                starterMonthlyUsed !== null && (
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border ${
+                        starterMonthlyUsed >=
+                        STARTER_MONTHLY_CLASSIFICATION_LIMIT
+                          ? "bg-error/10 border-error/30 text-error"
+                          : starterMonthlyUsed >=
+                              STARTER_MONTHLY_CLASSIFICATION_LIMIT - 3
+                            ? "bg-warning/10 border-warning/30 text-warning"
+                            : "bg-base-200 border-base-content/15 text-base-content/70"
+                      }`}
+                    >
+                      {starterMonthlyUsed} /{" "}
+                      {STARTER_MONTHLY_CLASSIFICATION_LIMIT} this month
+                    </div>
+                    <button
+                      type="button"
+                      className="group relative overflow-hidden px-4 py-2 rounded-xl font-semibold text-xs transition-all duration-300 bg-primary/10 border border-primary/30 hover:border-primary/50 hover:bg-primary/20 hover:shadow-lg hover:shadow-primary/20"
+                      onClick={() => {
+                        setIsStarterUpsell(true);
+                        setShowListPricing(true);
+                      }}
+                    >
+                      <span className="relative z-10 flex items-center gap-1.5">
+                        <ArrowUpIcon className="h-3.5 w-3.5 text-primary" />
+                        <span className="text-primary font-bold">
+                          Upgrade to Pro
+                        </span>
+                      </span>
+                    </button>
+                  </div>
+                )}
               {user &&
                 !activeClassifyPlan &&
                 userProfile &&
@@ -770,7 +822,10 @@ export const Classifications = () => {
       )}
       {showListPricing && (
         <Modal isOpen={showListPricing} setIsOpen={setShowListPricing}>
-          <ConversionPricing />
+          <ConversionPricing
+            isStarterUpsell={isStarterUpsell}
+            currentPlan={activeClassifyPlan ?? undefined}
+          />
         </Modal>
       )}
       {showListSignUpGate && (

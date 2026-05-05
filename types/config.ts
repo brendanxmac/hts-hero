@@ -68,6 +68,7 @@ export type Theme = "black" | "light" | "dark" | "";
 // | "";
 
 export enum PricingPlan {
+  CLASSIFY_STARTER = "Classify Starter",
   CLASSIFY_PRO = "Classify Pro",
   CLASSIFY_TEAM = "Classify for Teams",
   TARIFF_IMPACT_STARTER = "Tariff Impact Starter",

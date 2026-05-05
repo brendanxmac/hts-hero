@@ -4,7 +4,11 @@ import {
   canCreateClassificationFromSnapshot,
   isAnonymousUser,
 } from "./can-create-classification"
-import { NUM_FREE_CLASSIFICATIONS } from "../constants/classification"
+import {
+  NUM_FREE_CLASSIFICATIONS,
+  STARTER_MONTHLY_CLASSIFICATION_LIMIT,
+} from "../constants/classification"
+import { PricingPlan } from "../types"
 
 describe("isAnonymousUser", () => {
   it("returns true when user is null or undefined", () => {
@@ -42,11 +46,12 @@ describe("canCreateClassificationFromSnapshot", () => {
     ).toBe(false)
   })
 
-  it("allows authenticated paying user regardless of count", () => {
+  it("allows authenticated Pro user regardless of count", () => {
     expect(
       canCreateClassificationFromSnapshot({
         mode: "authenticated",
         isPayingUser: true,
+        classifyPlan: PricingPlan.CLASSIFY_PRO,
         isOnTeam: false,
         classificationCount: 99,
       }),
@@ -84,5 +89,44 @@ describe("canCreateClassificationFromSnapshot", () => {
         classificationCount: NUM_FREE_CLASSIFICATIONS,
       }),
     ).toBe(false)
+  })
+
+  it("allows Starter user under monthly limit", () => {
+    expect(
+      canCreateClassificationFromSnapshot({
+        mode: "authenticated",
+        isPayingUser: true,
+        classifyPlan: PricingPlan.CLASSIFY_STARTER,
+        isOnTeam: false,
+        classificationCount: 50,
+        monthlyUsed: STARTER_MONTHLY_CLASSIFICATION_LIMIT - 1,
+      }),
+    ).toBe(true)
+  })
+
+  it("denies Starter user at monthly limit", () => {
+    expect(
+      canCreateClassificationFromSnapshot({
+        mode: "authenticated",
+        isPayingUser: true,
+        classifyPlan: PricingPlan.CLASSIFY_STARTER,
+        isOnTeam: false,
+        classificationCount: 50,
+        monthlyUsed: STARTER_MONTHLY_CLASSIFICATION_LIMIT,
+      }),
+    ).toBe(false)
+  })
+
+  it("allows Starter user on a team even if at monthly limit", () => {
+    expect(
+      canCreateClassificationFromSnapshot({
+        mode: "authenticated",
+        isPayingUser: true,
+        classifyPlan: PricingPlan.CLASSIFY_STARTER,
+        isOnTeam: true,
+        classificationCount: 50,
+        monthlyUsed: STARTER_MONTHLY_CLASSIFICATION_LIMIT,
+      }),
+    ).toBe(true)
   })
 })

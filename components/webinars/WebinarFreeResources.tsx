@@ -12,8 +12,8 @@ export default function WebinarFreeResources() {
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
           Free Resources
         </h2>
-        <p className="text-base-content/60 mt-2 max-w-lg mx-auto">
-          Level up your trade compliance game with these free tools and guides.
+        <p className="text-base-content/60 mt-2 max-w-2xl mx-auto">
+          Reduce your import risk and save money with these free tools and guides.
         </p>
       </div>
 

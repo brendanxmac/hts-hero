@@ -17,6 +17,7 @@ import { sendPurchaseConfirmationEmail } from "../../../../emails/purchase-confi
 
 const getPlanExpirationDate = (plan: PricingPlan) => {
   switch (plan) {
+    case PricingPlan.CLASSIFY_STARTER:
     case PricingPlan.CLASSIFY_PRO:
     case PricingPlan.TARIFF_IMPACT_STANDARD:
     case PricingPlan.TARIFF_IMPACT_PRO:
@@ -30,6 +31,8 @@ const getPlanFromPriceId = (priceId: string): PricingPlan | null => {
       return PricingPlan.TARIFF_IMPACT_STANDARD;
     case process.env.STRIPE_TARIFF_IMPACT_PRO_PRICE_ID:
       return PricingPlan.TARIFF_IMPACT_PRO;
+    case process.env.STRIPE_CLASSIFY_STARTER_PRICE_ID:
+      return PricingPlan.CLASSIFY_STARTER;
     case process.env.STRIPE_CLASSIFY_PRO_PRICE_ID:
     case process.env.STRIPE_CLASSIFY_PRO_PRICE_ID_OLD:
       return PricingPlan.CLASSIFY_PRO;

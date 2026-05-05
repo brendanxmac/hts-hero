@@ -19,6 +19,7 @@ import { bundleFaqList } from "../constants/faq";
 import Footer from "../components/Footer";
 import UseCases from "../components/UseCases";
 import { CTABanner } from "./CTABanner";
+import ClassifyPricing from "./ClassifyPricing";
 
 const heroImages = [
   {
@@ -523,7 +524,9 @@ export function HomePage() {
         />
       </div> */}
 
-      <Pricing customerType={AboutPage.BUNDLE} />
+      <ClassifyPricing customerType={AboutPage.CLASSIFIER} />
+
+      {/* <Pricing customerType={AboutPage.BUNDLE} /> */}
       <FAQ faqItems={bundleFaqList} />
       <Footer />
 
