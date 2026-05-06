@@ -119,7 +119,7 @@ const ClassifyPricing = ({ customerType }: PricingProps) => {
             </span>
             <span className="w-8 h-px bg-secondary/40" />
           </div>
-          <h2 className="text-3xl md:text-4xl lg:text-6xl font-bold tracking-tight mb-4 max-w-4xl mx-auto">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4 max-w-4xl mx-auto">
             Reduce Import Risk & <br /><span className="text-primary">Defend your Profits
             </span>
           </h2>
@@ -338,7 +338,7 @@ const ClassifyPricing = ({ customerType }: PricingProps) => {
                   </span>
                 </h3>
                 <p className="text-base-content/60 text-sm md:text-base leading-relaxed">
-                  If you complete 20 classifications within 30 days, and are not
+                  If you complete 10 classifications within 30 days, and are not
                   completely satisfied with your experience, we&apos;ll refund
                   your purchase in full.
                 </p>

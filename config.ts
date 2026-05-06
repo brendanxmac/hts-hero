@@ -116,9 +116,9 @@ export const proTeams: PricingPlanI = {
 export const classifyStarter: PricingPlanI = {
   name: "Starter",
   planIdentifier: PricingPlan.CLASSIFY_STARTER,
-  description: "Produce Audit-Ready Classifications",
+  description: "Produce Audit-Ready Classifications & Make Tariffs Effortless",
   mode: StripePaymentMode.SUBSCRIPTION,
-  prices: [29],
+  prices: [39],
   priceAnchors: [50],
   features: [
     { name: "10 Classifications / Month" },
@@ -126,24 +126,28 @@ export const classifyStarter: PricingPlanI = {
     { name: "See Legal Note Evidence" },
     { name: "Automatic GRI Analysis" },
     { name: "CROSS Ruling Validation" },
-    { name: "Generate Branded Advisory Reports" },
+    {
+      name: "Duty & Tariff Calculator",
+      details: "See the Latest Tariffs & Duties for any Import",
+    },
   ],
 }
 
 export const classifyPro: PricingPlanI = {
   name: "Pro",
   planIdentifier: PricingPlan.CLASSIFY_PRO,
-  description: "Smarter Classifications, Effortless Tariffs",
+  description: "Smarter Classifications & Automatic Report Creation",
   mode: StripePaymentMode.SUBSCRIPTION,
-  prices: [89],
+  prices: [79],
   priceAnchors: [129],
   isFeatured: true,
   features: [
     { name: "Everything in Starter, plus:" },
-    { name: "100 Classifications / Month" },
+    { name: "Up to 100 Classifications / Month" },
     {
-      name: "Duty & Tariff Calculator",
-      details: "See the Latest Tariffs & Duties for any Import",
+      name: "Generate Branded Classification Reports in a Single Click",
+      details:
+        "Include your branding and send to clients or file for your records",
     },
     // {
     //   name: "Tariff Impact Notifications",
