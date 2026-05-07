@@ -120,7 +120,7 @@ const ClassifyPricing = ({ customerType }: PricingProps) => {
             <span className="w-8 h-px bg-secondary/40" />
           </div>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4 max-w-4xl mx-auto">
-            Reduce Import Risk & <br /><span className="text-primary">Defend your Profits
+            Reduce Import Risk with <br /> Classifications you can <span className="text-primary">Defend
             </span>
           </h2>
           <p className="text-base-content/60 text-base md:text-lg max-w-2xl mx-auto">
