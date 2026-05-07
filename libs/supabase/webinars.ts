@@ -116,6 +116,23 @@ export async function createWebinarRegistration(
   return data
 }
 
+export async function getWebinarRegistrationCount(
+  supabase: SupabaseClient,
+  webinarId: string
+): Promise<number> {
+  const { count, error } = await supabase
+    .from("webinar_registrations")
+    .select("*", { count: "exact", head: true })
+    .eq("webinar_id", webinarId)
+
+  if (error) {
+    console.error("Failed to count webinar registrations:", error)
+    return 0
+  }
+
+  return count ?? 0
+}
+
 export async function getRegistrationByEmailAndWebinar(
   supabase: SupabaseClient,
   email: string,

@@ -4,7 +4,10 @@ import { notFound } from "next/navigation";
 import { getSEOTags } from "@/libs/seo";
 import config from "@/config";
 import { createAdminClient } from "@/app/api/supabase/server";
-import { getWebinarBySlug } from "@/libs/supabase/webinars";
+import {
+  getWebinarBySlug,
+  getWebinarRegistrationCount,
+} from "@/libs/supabase/webinars";
 import WebinarRegistrationForm from "@/components/webinars/WebinarRegistrationForm";
 import WebinarVideoEmbed from "@/components/webinars/WebinarVideoEmbed";
 import WebinarPresenter from "@/components/webinars/WebinarPresenter";
@@ -82,6 +85,15 @@ export default async function WebinarDetailPage({
   const isUpcoming =
     webinar.status === "upcoming" || webinar.status === "live";
 
+  let seatsRemaining: number | null = null;
+  if (isUpcoming && webinar.max_registrants) {
+    const registrationCount = await getWebinarRegistrationCount(
+      supabase,
+      webinar.id
+    );
+    seatsRemaining = Math.max(0, webinar.max_registrants - registrationCount);
+  }
+
   return (
     <div className="max-w-5xl mx-auto">
       {/* Back link + Edit */}
@@ -113,7 +125,7 @@ export default async function WebinarDetailPage({
           <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-base-200 to-secondary/20" />
           <div className="absolute inset-0 backdrop-blur-sm" />
           <div className="relative flex items-center justify-center py-6 sm:py-8 md:py-10 px-4">
-            <div className="relative w-full max-w-md aspect-square rounded-xl overflow-hidden shadow-2xl ring-1 ring-base-content/10">
+            <div className="relative w-full max-w-sm aspect-square rounded-xl overflow-hidden shadow-2xl ring-1 ring-base-content/10">
               <Image
                 src={webinar.graphic_url}
                 alt={webinar.title}
@@ -189,7 +201,7 @@ export default async function WebinarDetailPage({
 
       {/* Mobile: Registration CTA — shown above presenter on small screens */}
       <div className="lg:hidden mb-8">
-        <WebinarRegistrationForm webinar={webinar} variant="compact" />
+        <WebinarRegistrationForm webinar={webinar} variant="compact" seatsRemaining={seatsRemaining} />
       </div>
 
       <div className="grid lg:grid-cols-3 gap-8">
@@ -224,14 +236,14 @@ export default async function WebinarDetailPage({
         {/* Desktop sidebar: Registration — hidden on mobile (shown above instead) */}
         <div className="hidden lg:block lg:col-span-1">
           <div className="lg:sticky lg:top-8">
-            <WebinarRegistrationForm webinar={webinar} />
+            <WebinarRegistrationForm webinar={webinar} seatsRemaining={seatsRemaining} />
           </div>
         </div>
       </div>
 
       {/* Bottom CTA — always visible, great for mobile after scrolling */}
       {/* <div className="mt-8 mb-4">
-        <WebinarRegistrationForm webinar={webinar} variant="compact" />
+        <WebinarRegistrationForm webinar={webinar} variant="compact" seatsRemaining={seatsRemaining} />
       </div> */}
 
       {/* Free Resources */}

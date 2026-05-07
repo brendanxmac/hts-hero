@@ -10,17 +10,14 @@ export default function WebinarFreeResources() {
           While you wait...
         </p>
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
-          Checkout Our Free Resources
+          Checkout These Free Resources
         </h2>
         <p className="text-base-content/60 mt-2 max-w-2xl mx-auto">
           Reduce your import risk and save money with these free tools and guides.
         </p>
       </div>
 
-      <div className="flex flex-col gap-5">
-        {/* Playbook Banner */}
-        <PlaybookBanner />
-
+      <div className="flex flex-col">
         {/* Classification Assistant CTA */}
         <ClassifyCTA
           title="Classify Any Product in Minutes"
@@ -30,7 +27,7 @@ export default function WebinarFreeResources() {
         />
 
         {/* Duty Calculator CTA */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-gradient-to-r from-transparent via-secondary/10 to-primary/10 border border-secondary/10">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-gradient-to-r from-transparent via-secondary/10 to-primary/10 border border-secondary/10 mb-5">
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-secondary/10 shrink-0">
               <svg
@@ -78,6 +75,10 @@ export default function WebinarFreeResources() {
             </svg>
           </Link>
         </div>
+
+        {/* Playbook Banner */}
+        <PlaybookBanner />
+
       </div>
     </section>
   );

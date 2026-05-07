@@ -87,21 +87,23 @@ export default function WebinarFormModal({ isOpen, onClose, webinar }: Props) {
         ? new Date(estDateStr + ":00-05:00").toISOString()
         : "";
 
+      const nullIfEmpty = (val: string) => val.trim() || null;
+
       const payload: Record<string, unknown> = {
         title: form.title,
         slug: form.slug || undefined,
         description: form.description,
-        graphic_url: form.graphic_url || undefined,
+        graphic_url: isEdit ? nullIfEmpty(form.graphic_url) : form.graphic_url || undefined,
         scheduled_at: estIso,
         duration_minutes: parseInt(form.duration_minutes) || 60,
         presenter_name: form.presenter_name,
-        presenter_title: form.presenter_title || undefined,
-        join_link: form.join_link || undefined,
-        promo_video_url: form.promo_video_url || undefined,
+        presenter_title: isEdit ? nullIfEmpty(form.presenter_title) : form.presenter_title || undefined,
+        join_link: isEdit ? nullIfEmpty(form.join_link) : form.join_link || undefined,
+        promo_video_url: isEdit ? nullIfEmpty(form.promo_video_url) : form.promo_video_url || undefined,
         status: form.status,
         max_registrants: form.max_registrants
           ? parseInt(form.max_registrants)
-          : undefined,
+          : isEdit ? null : undefined,
       };
 
       if (isEdit) {

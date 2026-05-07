@@ -7,11 +7,42 @@ import { Webinar } from "@/libs/supabase/webinars";
 interface Props {
   webinar: Webinar;
   variant?: "full" | "compact";
+  seatsRemaining?: number | null;
+}
+
+function SeatsRemainingBadge({ seats }: { seats: number }) {
+  const isUrgent = seats <= 10;
+
+  return (
+    <div
+      className={`flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold ${isUrgent
+        ? "bg-error/10 text-error border border-error/20 animate-pulse"
+        : "bg-secondary/10 text-secondary border border-secondary/20"
+        }`}
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+        className="w-4 h-4 shrink-0"
+      >
+        <path
+          fillRule="evenodd"
+          d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z"
+          clipRule="evenodd"
+        />
+      </svg>
+      <span>
+        Only {seats} Seat{seats !== 1 ? "s" : ""} Remaining
+      </span>
+    </div>
+  );
 }
 
 export default function WebinarRegistrationForm({
   webinar,
   variant = "full",
+  seatsRemaining,
 }: Props) {
   const { user } = useUser();
   const [email, setEmail] = useState(user?.email ?? "");
@@ -116,6 +147,11 @@ export default function WebinarRegistrationForm({
         <div className="absolute -top-16 -right-16 w-40 h-40 bg-primary/10 rounded-full blur-3xl" />
         <div className="absolute -bottom-16 -left-16 w-40 h-40 bg-secondary/10 rounded-full blur-3xl" />
         <div className="relative text-center">
+          {seatsRemaining != null && seatsRemaining > 0 && (
+            <div className="mb-3">
+              <SeatsRemainingBadge seats={seatsRemaining} />
+            </div>
+          )}
           <h3 className="text-lg font-bold mb-2">
             Reserve Your Spot
           </h3>
@@ -166,6 +202,11 @@ export default function WebinarRegistrationForm({
             Free Event
           </span>
         </div>
+        {seatsRemaining != null && seatsRemaining > 0 && (
+          <div className="mb-4">
+            <SeatsRemainingBadge seats={seatsRemaining} />
+          </div>
+        )}
         <h3 className="text-xl font-bold mb-1">Register for this Webinar</h3>
         <p className="text-sm text-base-content/60 mb-5">
           Enter your email to reserve your spot. We&apos;ll send you the join
