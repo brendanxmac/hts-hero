@@ -57,7 +57,9 @@ export const userHasActivePurchaseForProduct = async (
 
   if (product === Product.CLASSIFY) {
     return activePurchases.some(
-      (purchase) => purchase.product_name === PricingPlan.CLASSIFY_PRO
+      (purchase) =>
+        purchase.product_name === PricingPlan.CLASSIFY_STARTER ||
+        purchase.product_name === PricingPlan.CLASSIFY_PRO
     );
   }
 
@@ -74,6 +76,7 @@ export const userHasActivePurchaseForProduct = async (
 
 export const getProductForPlan = (plan: PricingPlan) => {
   switch (plan) {
+    case PricingPlan.CLASSIFY_STARTER:
     case PricingPlan.CLASSIFY_PRO:
       return Product.CLASSIFY;
     case PricingPlan.TARIFF_IMPACT_STANDARD:
@@ -149,13 +152,21 @@ export const fetchPurchasesForUser = async (userId: string) => {
 export const getActiveClassifyPurchase = async (userId: string) => {
   const allPurchases = await fetchPurchasesForUser(userId);
   const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-  const activeClassifyPurchases = allPurchases.find(
+
+  // Prefer Pro over Starter when both exist
+  const proPurchase = allPurchases.find(
     (purchase) =>
       purchase.product_name === PricingPlan.CLASSIFY_PRO &&
       purchase.expires_at > yesterday
   );
+  if (proPurchase) return proPurchase;
 
-  return activeClassifyPurchases;
+  const starterPurchase = allPurchases.find(
+    (purchase) =>
+      purchase.product_name === PricingPlan.CLASSIFY_STARTER &&
+      purchase.expires_at > yesterday
+  );
+  return starterPurchase ?? null;
 };
 
 export const getActiveTariffImpactPurchasesForUser = async (userId: string) => {

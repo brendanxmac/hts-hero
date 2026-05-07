@@ -18,6 +18,7 @@ import {
   isValidTenDigitHtsInput,
   normalizeHtsCode,
 } from "../../../libs/hts-code";
+import { PricingPlan } from "../../../types";
 
 const TIPS = [
   { text: "Include size, material, weight, color" },
@@ -39,6 +40,8 @@ function NewClassificationContent() {
     resetClassificationState,
   } = useClassification();
   const [showPricing, setShowPricing] = useState(false);
+  const [isStarterUpsell, setIsStarterUpsell] = useState(false);
+  const [currentClassifyPlan, setCurrentClassifyPlan] = useState<PricingPlan | undefined>();
   const [showSignUpGate, setShowSignUpGate] = useState(false);
   const [loading, setLoading] = useState(false);
   const [inputMode, setInputMode] = useState<InputMode>("description");
@@ -104,6 +107,7 @@ function NewClassificationContent() {
         isPayingUser,
         isOnTeam,
         classificationCount,
+        classifyPlan,
       } = await canCreateClassification(user);
 
       if (!allowed) {
@@ -118,7 +122,10 @@ function NewClassificationContent() {
           trackEvent(MixpanelEvent.CLICKED_CLASSIFY_PRO_UPGRADE, {
             entry_point: "new_classification",
             input_mode: inputMode,
+            block_reason: blockReason,
           });
+          setIsStarterUpsell(blockReason === "starter_limit_reached");
+          setCurrentClassifyPlan(classifyPlan ?? undefined);
           setShowPricing(true);
         }
         setLoading(false);
@@ -335,7 +342,10 @@ function NewClassificationContent() {
 
       {showPricing && (
         <Modal isOpen={showPricing} setIsOpen={setShowPricing}>
-          <ConversionPricing />
+          <ConversionPricing
+            isStarterUpsell={isStarterUpsell}
+            currentPlan={currentClassifyPlan}
+          />
         </Modal>
       )}
       {showSignUpGate && (

@@ -119,17 +119,17 @@ const ClassifyPricing = ({ customerType }: PricingProps) => {
             </span>
             <span className="w-8 h-px bg-secondary/40" />
           </div>
-          <h2 className="text-3xl md:text-4xl lg:text-6xl font-bold tracking-tight mb-4 max-w-4xl mx-auto">
-            Reduce Import Risk & <br /><span className="text-primary">Defend your Profits
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4 max-w-4xl mx-auto">
+            Reduce Import Risk with <br /> Classifications you can <span className="text-primary">Defend
             </span>
           </h2>
           <p className="text-base-content/60 text-base md:text-lg max-w-2xl mx-auto">
-            Smarter classifications, instant duty quotes, and zero tariff surprises
+            Audit-ready classifications, instant duty quotes, and zero tariff surprises
           </p>
         </div>
 
         {/* Pricing Cards */}
-        <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8 max-w-4xl mx-auto">
+        <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8 max-w-6xl mx-auto">
           {getPricingPlans(customerType).map((plan, index) => {
             const defaultTierIndex = plan.prices.length - 1;
             const currentTierIndex =
@@ -161,7 +161,7 @@ const ClassifyPricing = ({ customerType }: PricingProps) => {
                   <div className="absolute -top-px left-1/2 -translate-x-1/2">
                     <div className="flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-secondary to-primary rounded-b-xl text-white text-xs font-semibold shadow-lg">
                       <SparklesIcon className="w-3.5 h-3.5" />
-                      Best Value
+                      Most Popular
                     </div>
                   </div>
                 )}
@@ -338,7 +338,7 @@ const ClassifyPricing = ({ customerType }: PricingProps) => {
                   </span>
                 </h3>
                 <p className="text-base-content/60 text-sm md:text-base leading-relaxed">
-                  If you complete 20 classifications within 30 days, and are not
+                  If you complete 10 classifications within 30 days, and are not
                   completely satisfied with your experience, we&apos;ll refund
                   your purchase in full.
                 </p>

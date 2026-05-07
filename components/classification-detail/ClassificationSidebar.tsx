@@ -422,7 +422,7 @@ export const ClassificationSidebar = ({
 
       {showPricing && (
         <Modal isOpen={showPricing} setIsOpen={setShowPricing}>
-          <ConversionPricing />
+          <ConversionPricing hasUsedAllFreeClassifications={false} />
         </Modal>
       )}
     </>

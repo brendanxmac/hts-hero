@@ -300,23 +300,53 @@ export default function Home() {
         </div>
 
         <div className="relative z-10 flex flex-col items-center px-4 sm:px-6">
-          <h1 className="text-center text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-8 md:mb-10 max-w-xs sm:max-w-5xl">
-            Find Any HTS Code,{" "}
+          <h1 className="text-center text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-4 md:mb-6 max-w-xs sm:max-w-5xl">
+            Find Your HTS Code,{" "}
             <span className="text-secondary">
               Fast
             </span>
           </h1>
 
-          {/* <p className="text-center text-base-content/70 text-sm sm:text-base md:text-lg mb-8 md:mb-10 max-w-xs sm:max-w-3xl">
-            Avoid expensive mistakes, save time, and eliminate import risk
-          </p> */}
+          <p className="text-center text-base-content/70 text-sm sm:text-base md:text-lg mb-8 md:mb-10 max-w-xs sm:max-w-3xl">
+            And reduce audit risk with a mountain of evidence to support it
+          </p>
 
           {/* CTA input — the focal point of the page */}
-          <div className="w-full max-w-4xl mx-auto mb-4 md:mb-6">
+          <div className="w-full max-w-4xl mx-auto mb-4 md:mb-6 relative">
+            {/* Hand-drawn arrow — elegant curve from "Fast" area down to input */}
+            <svg
+              className="hidden sm:block absolute pointer-events-none select-none text-secondary z-20"
+              style={{
+                top: "clamp(-7rem, -7.5vw, -5.5rem)",
+                right: "clamp(2rem, 1vw, 2rem)",
+                width: "clamp(60px, 7vw, 90px)",
+                height: "clamp(70px, 8vw, 100px)",
+                transform: "rotate(20deg)",
+              }}
+              viewBox="0 0 40 50"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M20 2Q30 12 26 22Q22 32 20 42"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                fill="none"
+              />
+              <path
+                d="M15 37L20 45L25 37"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+              />
+            </svg>
             <ClassifyInput
               ref={classifyInputRef}
-              buttonText="Find HTS Code"
-              placeholder="Enter a product description"
+              buttonText="Start Classification"
+              placeholder="Enter your product description"
               entryPoint="classify_landing"
             />
           </div>

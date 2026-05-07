@@ -24,6 +24,8 @@ const getBuyButtonText = (plan: PricingPlanI) => {
       return `Launch App!`;
     case PricingPlan.TARIFF_IMPACT_STANDARD:
       return `Get Standard!`;
+    case PricingPlan.CLASSIFY_STARTER:
+      return `Get Starter!`;
     case PricingPlan.CLASSIFY_PRO:
     case PricingPlan.TARIFF_IMPACT_PRO:
       return `Go ${plan.name}!`;
@@ -45,6 +47,7 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
 
   const getCheckoutSuccessEndpoint = (plan: PricingPlan) => {
     switch (plan) {
+      case PricingPlan.CLASSIFY_STARTER:
       case PricingPlan.CLASSIFY_PRO:
         return "/classifications";
       case PricingPlan.TARIFF_IMPACT_STANDARD:
@@ -61,6 +64,9 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
           break;
         case PricingPlan.TARIFF_IMPACT_PRO:
           trackEvent(MixpanelEvent.INITIATED_IMPACT_PRO_CHECKOUT);
+          break;
+        case PricingPlan.CLASSIFY_STARTER:
+          trackEvent(MixpanelEvent.INITIATED_CLASSIFY_STARTER_CHECKOUT);
           break;
         case PricingPlan.CLASSIFY_PRO:
           trackEvent(MixpanelEvent.INITIATED_CLASSIFY_PRO_CHECKOUT);
@@ -116,8 +122,10 @@ const ButtonCheckout = ({ plan, currentPlan }: Props) => {
         user && (await userHasActivePurchaseForProduct(user.id, product));
 
       const userAttemptingUpgrade =
-        plan.planIdentifier === PricingPlan.TARIFF_IMPACT_PRO &&
-        currentPlan === PricingPlan.TARIFF_IMPACT_STANDARD;
+        (plan.planIdentifier === PricingPlan.TARIFF_IMPACT_PRO &&
+          currentPlan === PricingPlan.TARIFF_IMPACT_STANDARD) ||
+        (plan.planIdentifier === PricingPlan.CLASSIFY_PRO &&
+          currentPlan === PricingPlan.CLASSIFY_STARTER);
 
       if (!hasActiveProductSubscription) {
         // Send them to checkout page

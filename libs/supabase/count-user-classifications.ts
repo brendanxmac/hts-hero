@@ -17,3 +17,23 @@ export async function countClassificationsForUserId(
 
   return count ?? 0;
 }
+
+/** Count classifications created by this user since a given date (for billing-cycle limits). */
+export async function countClassificationsForUserSince(
+  userId: string,
+  sinceDate: string,
+): Promise<number> {
+  const supabase = createSupabaseClient();
+  const { count, error } = await supabase
+    .from("classifications")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .gte("created_at", sinceDate);
+
+  if (error) {
+    console.error("Failed to count classifications since date for user:", error);
+    return 0;
+  }
+
+  return count ?? 0;
+}

@@ -13,10 +13,15 @@ import {
   TagIcon,
   UserIcon,
 } from "@heroicons/react/16/solid";
-import { BoltIcon } from "@heroicons/react/16/solid";
+import { ArrowUpIcon, BoltIcon } from "@heroicons/react/16/solid";
 import Fuse, { IFuseOptions } from "fuse.js";
 import { PricingPlan } from "../types";
+import {
+  NUM_FREE_CLASSIFICATIONS,
+  STARTER_MONTHLY_CLASSIFICATION_LIMIT,
+} from "../constants/classification";
 import { getActiveClassifyPurchase } from "../libs/supabase/purchase";
+import { countClassificationsForUserSince } from "../libs/supabase/count-user-classifications";
 import {
   fetchUser,
   fetchUsersByTeam,
@@ -76,6 +81,10 @@ export const Classifications = () => {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [canCreateNew, setCanCreateNew] = useState(true);
   const [showListPricing, setShowListPricing] = useState(false);
+  const [isStarterUpsell, setIsStarterUpsell] = useState(false);
+  const [hasUsedAllFree, setHasUsedAllFree] = useState(true);
+  const [starterMonthlyUsed, setStarterMonthlyUsed] = useState<number | null>(null);
+  const [freeClassificationsUsed, setFreeClassificationsUsed] = useState<number | null>(null);
   const [showListSignUpGate, setShowListSignUpGate] = useState(false);
   const UNASSIGNED_IMPORTER_VALUE = "unassigned";
 
@@ -102,6 +111,16 @@ export const Classifications = () => {
 
       if (activeClassifyPurchase) {
         setActiveClassifyPlan(activeClassifyPurchase.product_name);
+
+        if (
+          activeClassifyPurchase.product_name === PricingPlan.CLASSIFY_STARTER
+        ) {
+          const used = await countClassificationsForUserSince(
+            user.id,
+            activeClassifyPurchase.created_at
+          );
+          setStarterMonthlyUsed(used);
+        }
       }
 
       if (userProfile) {
@@ -270,8 +289,13 @@ export const Classifications = () => {
 
     const run = async () => {
       if (user) {
-        const { allowed } = await canCreateClassification(user);
-        if (!cancelled) setCanCreateNew(allowed);
+        const result = await canCreateClassification(user);
+        if (!cancelled) {
+          setCanCreateNew(result.allowed);
+          if (!result.isPayingUser && !result.isOnTeam) {
+            setFreeClassificationsUsed(result.classificationCount ?? null);
+          }
+        }
         return;
       }
 
@@ -280,10 +304,14 @@ export const Classifications = () => {
         return;
       }
 
-      const { allowed } = await canCreateClassification(null, {
-        anonymousClassificationCount: classifications.length,
+      const anonCount = classifications.length;
+      const result = await canCreateClassification(null, {
+        anonymousClassificationCount: anonCount,
       });
-      if (!cancelled) setCanCreateNew(allowed);
+      if (!cancelled) {
+        setCanCreateNew(result.allowed);
+        setFreeClassificationsUsed(anonCount);
+      }
     };
 
     void run();
@@ -300,9 +328,13 @@ export const Classifications = () => {
     if (isAnonymousUser(user)) {
       setShowListSignUpGate(true);
     } else {
+      const isStarter =
+        activeClassifyPlan === PricingPlan.CLASSIFY_STARTER;
+      setIsStarterUpsell(isStarter);
+      setHasUsedAllFree(true);
       setShowListPricing(true);
     }
-  }, [canCreateNew, user, router]);
+  }, [canCreateNew, user, router, activeClassifyPlan]);
 
   const getEmptyStateConfig = (): EmptyResultsConfig | null => {
     const hasClassifications = classifications && classifications.length > 0;
@@ -455,13 +487,79 @@ export const Classifications = () => {
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight">
                 <span className="text-base-content">Classifications</span>
               </h1>
-              <p className="text-base-content/70 text-sm md:text-base max-w-lg mt-1">
-                View and manage your classifications
-              </p>
+              <div className="flex items-center gap-3 mt-1">
+                <p className="text-base-content/70 text-sm md:text-base max-w-lg">
+                  View and manage your classifications
+                </p>
+                {(() => {
+                  let remaining: number | null = null;
+                  let isWarning = false;
+                  let isError = false;
+
+                  if (
+                    user &&
+                    activeClassifyPlan === PricingPlan.CLASSIFY_STARTER &&
+                    starterMonthlyUsed !== null
+                  ) {
+                    remaining = Math.max(
+                      0,
+                      STARTER_MONTHLY_CLASSIFICATION_LIMIT - starterMonthlyUsed
+                    );
+                    isWarning = remaining > 0 && remaining <= 3;
+                    isError = remaining === 0;
+                  } else if (
+                    (!user || (!activeClassifyPlan && !userProfile?.team_id)) &&
+                    freeClassificationsUsed !== null
+                  ) {
+                    remaining = Math.max(
+                      0,
+                      NUM_FREE_CLASSIFICATIONS - freeClassificationsUsed
+                    );
+                    isWarning = remaining > 0 && remaining <= 2;
+                    isError = remaining === 0;
+                  }
+
+                  if (remaining === null) return null;
+
+                  return (
+                    <div
+                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border ${
+                        isError
+                          ? "bg-error/10 border-error/30 text-error"
+                          : isWarning
+                            ? "bg-warning/10 border-warning/30 text-warning"
+                            : "bg-base-200/80 border-base-content/10 text-base-content/60"
+                      }`}
+                    >
+                      {remaining} Remaining
+                    </div>
+                  );
+                })()}
+              </div>
             </div>
 
             {/* Right side - Action buttons */}
             <div className="flex flex-row gap-3 md:items-end">
+              {/* Starter user: Upgrade to Pro */}
+              {user &&
+                activeClassifyPlan === PricingPlan.CLASSIFY_STARTER && (
+                  <button
+                    type="button"
+                    className="group relative overflow-hidden px-4 py-2 rounded-xl font-semibold text-xs transition-all duration-300 bg-primary/10 border border-primary/30 hover:border-primary/50 hover:bg-primary/20 hover:shadow-lg hover:shadow-primary/20"
+                    onClick={() => {
+                      setIsStarterUpsell(true);
+                      setShowListPricing(true);
+                    }}
+                  >
+                    <span className="relative z-10 flex items-center gap-1.5">
+                      <ArrowUpIcon className="h-3.5 w-3.5 text-primary" />
+                      <span className="text-primary font-bold">
+                        Upgrade to Pro
+                      </span>
+                    </span>
+                  </button>
+                )}
+              {/* Free signed-in user (no plan, no team): Upgrade */}
               {user &&
                 !activeClassifyPlan &&
                 userProfile &&
@@ -469,11 +567,17 @@ export const Classifications = () => {
                   <button
                     type="button"
                     className="group relative overflow-hidden px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 bg-secondary/15 border border-secondary/30 hover:border-secondary/50 hover:bg-secondary/25 hover:shadow-lg hover:shadow-secondary/20"
-                    onClick={() => setShowListPricing(true)}
+                    onClick={() => {
+                      setHasUsedAllFree(false);
+                      setIsStarterUpsell(false);
+                      setShowListPricing(true);
+                    }}
                   >
                     <span className="relative z-10 flex items-center gap-2">
                       <BoltIcon className="h-4 w-4 text-secondary" />
-                      <span className="text-secondary font-bold">Upgrade</span>
+                      <span className="text-secondary font-bold">
+                        Upgrade
+                      </span>
                     </span>
                   </button>
                 )}
@@ -770,7 +874,11 @@ export const Classifications = () => {
       )}
       {showListPricing && (
         <Modal isOpen={showListPricing} setIsOpen={setShowListPricing}>
-          <ConversionPricing />
+          <ConversionPricing
+            isStarterUpsell={isStarterUpsell}
+            hasUsedAllFreeClassifications={hasUsedAllFree}
+            currentPlan={activeClassifyPlan ?? undefined}
+          />
         </Modal>
       )}
       {showListSignUpGate && (

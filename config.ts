@@ -113,25 +113,46 @@ export const proTeams: PricingPlanI = {
   ],
 }
 
+export const classifyStarter: PricingPlanI = {
+  name: "Starter",
+  planIdentifier: PricingPlan.CLASSIFY_STARTER,
+  description: "Produce Audit-Ready Classifications & Make Tariffs Effortless",
+  mode: StripePaymentMode.SUBSCRIPTION,
+  prices: [39],
+  priceAnchors: [50],
+  features: [
+    { name: "10 Classifications / Month" },
+    { name: "Find Candidates", details: "and avoid tricky blind spots!" },
+    { name: "See Legal Note Evidence" },
+    { name: "Automatic GRI Analysis" },
+    { name: "CROSS Ruling Validation" },
+    {
+      name: "Duty & Tariff Calculator",
+      details: "See the Latest Tariffs & Duties for any Import",
+    },
+  ],
+}
+
 export const classifyPro: PricingPlanI = {
   name: "Pro",
   planIdentifier: PricingPlan.CLASSIFY_PRO,
-  description: "Smarter Classifications, Effortless Tariffs",
+  description: "Smarter Classifications & Automatic Defense Reports",
   mode: StripePaymentMode.SUBSCRIPTION,
-  prices: [89],
+  prices: [79],
   priceAnchors: [129],
+  isFeatured: true,
   features: [
-    { name: "Quick Candidates" },
-    { name: "Best-Fit Analysis" },
-    { name: "CROSS Ruling Validation" },
-    { name: "Client-Ready Reports" },
+    { name: "Everything in Starter, plus:" },
+    { name: "Up to 100 Classifications / Month" },
     {
-      name: "Duty & Tariff Simulator",
-      details: "See the Latest Tariffs & Duties for any Import",
+      name: "Generate Branded Classification Reports in a Single Click",
+      details:
+        "Include your branding and send to clients or file for your records",
     },
     {
-      name: "Tariff Impact Checker",
-      details: "Instantly know when new tariffs affect you",
+      name: "New Tariff Impact Checker",
+      details:
+        "Instantly know when new tariffs affect you or your clients imports",
     },
   ],
 }
@@ -141,18 +162,14 @@ export const classifyTeam: PricingPlanI = {
   planIdentifier: PricingPlan.CLASSIFY_TEAM,
   description: "The Classification Workspace for Teams",
   mode: StripePaymentMode.SUBSCRIPTION,
-  prices: [429],
+  prices: [379],
   priceAnchors: [499],
-  isFeatured: true,
+  // isFeatured: true,
   features: [
     { name: "Everything in Pro, plus:" },
     { name: "See Your Teams Classifications" },
     { name: "Request Classification Reviews" },
     { name: "Approve Each Others Classifications" },
-    {
-      name: "Share Links to Classifications",
-      details: "Get the job done quicker with shareable links",
-    },
     {
       name: "Team Training",
       details: "Boost your teams productivity with personalized training",
@@ -176,8 +193,8 @@ const config: ConfigProps = {
   stripe: {
     // Create multiple plans in your Stripe dashboard, then add them here. You can add as many plans as you want, just make sure to add the priceId
     bundlePlans: [pro, proTeams],
-    classifierPlans: [classifyPro, classifyTeam],
-    classifierConversionPlans: [classifyPro, classifyTeam],
+    classifierPlans: [classifyStarter, classifyPro, classifyTeam],
+    classifierConversionPlans: [classifyStarter, classifyPro, classifyTeam],
     tariffImpactPlans: [
       tariffImpactStarter,
       tariffImpactStandard,

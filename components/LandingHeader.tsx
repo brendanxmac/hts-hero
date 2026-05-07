@@ -53,7 +53,7 @@ const LandingHeader = () => {
           }`}
       >
         <nav
-          className="w-full max-w-7xl mx-auto flex items-center justify-between"
+          className="w-full max-w-6xl mx-auto flex items-center justify-between"
           aria-label="Global"
         >
           {/* Logo */}
@@ -85,12 +85,12 @@ const LandingHeader = () => {
                 </a>
               ))}
 
-              <Link
+              {/* <Link
                 href="/engineered-compliance"
                 className="text-sm font-medium text-base-content/70 hover:text-primary transition-colors"
               >
                 Engineered Compliance
-              </Link>
+              </Link> */}
               <Link
                 href="/the-audit-ready-classifications-playbook"
                 className="text-sm font-medium text-base-content/70 hover:text-primary transition-colors"

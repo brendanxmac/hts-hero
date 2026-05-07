@@ -2,10 +2,15 @@ import type { User } from "@supabase/supabase-js";
 import {
   MAX_ANONYMOUS_CLASSIFICATIONS_PER_TOKEN,
   NUM_FREE_CLASSIFICATIONS,
+  STARTER_MONTHLY_CLASSIFICATION_LIMIT,
 } from "../constants/classification";
+import { PricingPlan } from "../types";
 import { fetchClassifications } from "./classification";
-import { Product, userHasActivePurchaseForProduct } from "./supabase/purchase";
-import { countClassificationsForUserId } from "./supabase/count-user-classifications";
+import { getActiveClassifyPurchase } from "./supabase/purchase";
+import {
+  countClassificationsForUserId,
+  countClassificationsForUserSince,
+} from "./supabase/count-user-classifications";
 import { fetchUser } from "./supabase/user";
 
 export function isAnonymousUser(user: User | null | undefined): boolean {
@@ -14,7 +19,8 @@ export function isAnonymousUser(user: User | null | undefined): boolean {
 
 export type CanCreateClassificationBlockReason =
   | "anonymous_limit_reached"
-  | "free_limit_reached";
+  | "free_limit_reached"
+  | "starter_limit_reached";
 
 export type CanCreateClassificationSnapshot =
   | {
@@ -24,9 +30,12 @@ export type CanCreateClassificationSnapshot =
   | {
       mode: "authenticated";
       isPayingUser: boolean;
+      classifyPlan?: PricingPlan | null;
       /** Users with a team are not limited by the solo free tier. */
       isOnTeam: boolean;
       classificationCount: number;
+      /** Classifications used in the current billing cycle (Starter only). */
+      monthlyUsed?: number;
     };
 
 export function canCreateClassificationFromSnapshot(
@@ -38,11 +47,18 @@ export function canCreateClassificationFromSnapshot(
       MAX_ANONYMOUS_CLASSIFICATIONS_PER_TOKEN
     );
   }
-  return (
-    snapshot.isPayingUser ||
-    snapshot.isOnTeam ||
-    snapshot.classificationCount < NUM_FREE_CLASSIFICATIONS
-  );
+
+  if (snapshot.isOnTeam) return true;
+
+  if (snapshot.isPayingUser) {
+    if (snapshot.classifyPlan === PricingPlan.CLASSIFY_STARTER) {
+      return (snapshot.monthlyUsed ?? 0) < STARTER_MONTHLY_CLASSIFICATION_LIMIT;
+    }
+    // Pro and Team: unlimited
+    return true;
+  }
+
+  return snapshot.classificationCount < NUM_FREE_CLASSIFICATIONS;
 }
 
 export type CanCreateClassificationOptions = {
@@ -61,6 +77,12 @@ export type CanCreateClassificationResult = {
   isPayingUser?: boolean;
   isOnTeam?: boolean;
   classificationCount?: number;
+  /** The active classify plan (STARTER / PRO), or null if none. */
+  classifyPlan?: PricingPlan | null;
+  /** Classifications used in the current billing cycle (Starter only). */
+  monthlyUsed?: number;
+  /** Monthly classification limit for the plan (Starter only). */
+  monthlyLimit?: number;
 };
 
 export async function canCreateClassification(
@@ -69,10 +91,8 @@ export async function canCreateClassification(
 ): Promise<CanCreateClassificationResult> {
   if (!isAnonymousUser(user)) {
     const u = user!;
-    const [isPayingUser, classificationCount, profile] = await Promise.all([
-      options?.isPayingUser !== undefined
-        ? Promise.resolve(options.isPayingUser)
-        : userHasActivePurchaseForProduct(u.id, Product.CLASSIFY),
+    const [activePurchase, classificationCount, profile] = await Promise.all([
+      getActiveClassifyPurchase(u.id),
       options?.classificationCount !== undefined
         ? Promise.resolve(options.classificationCount)
         : countClassificationsForUserId(u.id),
@@ -81,24 +101,55 @@ export async function canCreateClassification(
         : fetchUser(u.id),
     ]);
 
+    const isPayingUser =
+      options?.isPayingUser !== undefined
+        ? options.isPayingUser
+        : !!activePurchase;
+
+    const classifyPlan = activePurchase?.product_name ?? null;
+
     const isOnTeam =
       options?.isOnTeam !== undefined
         ? options.isOnTeam
         : !!profile?.team_id;
 
+    let monthlyUsed: number | undefined;
+    let monthlyLimit: number | undefined;
+
+    if (classifyPlan === PricingPlan.CLASSIFY_STARTER && activePurchase) {
+      monthlyUsed = await countClassificationsForUserSince(
+        u.id,
+        activePurchase.created_at
+      );
+      monthlyLimit = STARTER_MONTHLY_CLASSIFICATION_LIMIT;
+    }
+
     const allowed = canCreateClassificationFromSnapshot({
       mode: "authenticated",
       isPayingUser,
+      classifyPlan,
       isOnTeam,
       classificationCount,
+      monthlyUsed,
     });
+
+    let blockReason: CanCreateClassificationBlockReason | undefined;
+    if (!allowed) {
+      blockReason =
+        classifyPlan === PricingPlan.CLASSIFY_STARTER
+          ? "starter_limit_reached"
+          : "free_limit_reached";
+    }
 
     return {
       allowed,
-      blockReason: allowed ? undefined : "free_limit_reached",
+      blockReason,
       isPayingUser,
       isOnTeam,
       classificationCount,
+      classifyPlan,
+      monthlyUsed,
+      monthlyLimit,
     };
   }
 
