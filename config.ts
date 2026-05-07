@@ -136,7 +136,7 @@ export const classifyStarter: PricingPlanI = {
 export const classifyPro: PricingPlanI = {
   name: "Pro",
   planIdentifier: PricingPlan.CLASSIFY_PRO,
-  description: "Smarter Classifications & Automatic Report Creation",
+  description: "Smarter Classifications & Automatic Defense Reports",
   mode: StripePaymentMode.SUBSCRIPTION,
   prices: [79],
   priceAnchors: [129],
@@ -149,10 +149,11 @@ export const classifyPro: PricingPlanI = {
       details:
         "Include your branding and send to clients or file for your records",
     },
-    // {
-    //   name: "Tariff Impact Notifications",
-    //   details: "Instantly know when new tariffs affect your imports",
-    // },
+    {
+      name: "New Tariff Impact Checker",
+      details:
+        "Instantly know when new tariffs affect you or your clients imports",
+    },
   ],
 }
 

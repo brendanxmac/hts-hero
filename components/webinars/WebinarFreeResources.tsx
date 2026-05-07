@@ -7,10 +7,10 @@ export default function WebinarFreeResources() {
     <section className="mt-16 pt-12 border-t border-base-content/10">
       <div className="text-center mb-8">
         <p className="text-xs font-semibold uppercase tracking-wider text-primary mb-2">
-          While you wait
+          While you wait...
         </p>
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
-          Free Resources
+          Checkout Our Free Resources
         </h2>
         <p className="text-base-content/60 mt-2 max-w-2xl mx-auto">
           Reduce your import risk and save money with these free tools and guides.
@@ -50,11 +50,11 @@ export default function WebinarFreeResources() {
             </div>
             <div className="flex flex-col gap-0.5">
               <span className="text-base md:text-lg font-bold text-base-content">
-                Duty & Tariff Calculator
+                Calculate Duties & Tariffs for Any Import
               </span>
               <span className="text-sm text-base-content/60">
-                See the full tariff breakdown for any US import — base rates,
-                Section 301, 232, AD/CVD, and trade program savings.
+                See the full duty & tariff breakdown for any US import — base rates,
+                Section 301, 232, and trade program savings.
               </span>
             </div>
           </div>

@@ -12,11 +12,14 @@ import { PricingPlan } from "../types";
 interface ConversionPricingProps {
   /** When true, only shows Pro plan with Starter-specific upsell copy. */
   isStarterUpsell?: boolean;
+  /** Whether the user has actually exhausted their free classifications. */
+  hasUsedAllFreeClassifications?: boolean;
   currentPlan?: PricingPlan;
 }
 
 const ConversionPricing = ({
   isStarterUpsell = false,
+  hasUsedAllFreeClassifications = true,
   currentPlan,
 }: ConversionPricingProps) => {
   const { user } = useUser();
@@ -46,7 +49,7 @@ const ConversionPricing = ({
                 Classifications
               </h2>
             </>
-          ) : (
+          ) : hasUsedAllFreeClassifications ? (
             <>
               <h3 className="text-center mb-4 uppercase text-sm text-primary font-medium">
                 You&apos;ve Used All {NUM_FREE_CLASSIFICATIONS} Free
@@ -58,6 +61,12 @@ const ConversionPricing = ({
                 {" "}Classifications
               </h2>
             </>
+          ) : (
+            <h2 className="text-3xl md:text-4xl font-extrabold text-center">
+              Upgrade to Unlock More <span className="text-primary">Audit-Ready</span>
+              <br />
+              Classifications, Defense Reports, & Tariff Checks
+            </h2>
           )}
         </div>
 

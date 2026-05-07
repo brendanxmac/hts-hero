@@ -463,10 +463,10 @@ export const OverviewTab = ({
           setIsOpen={setShowCreateImporterModal}
         >
           <div className="p-6 flex flex-col gap-4 min-w-80">
-            <h3 className="text-lg font-semibold">Create New Importer</h3>
+            <h3 className="text-lg font-semibold">Create New Tag</h3>
             <input
               type="text"
-              placeholder="Importer name"
+              placeholder="Tag name"
               value={newImporter}
               className="input input-bordered w-full"
               onChange={(e) => setNewImporter(e.target.value)}
