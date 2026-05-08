@@ -22,14 +22,6 @@ function getRequestMetadata(req: NextRequest) {
   return { ip_address: ip, user_agent: userAgent }
 }
 
-function formatDateForTag(dateStr: string): string {
-  const d = new Date(dateStr)
-  const month = String(d.getMonth() + 1).padStart(2, "0")
-  const day = String(d.getDate()).padStart(2, "0")
-  const year = d.getFullYear()
-  return `${month}-${day}-${year}`
-}
-
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
@@ -55,10 +47,7 @@ export async function POST(req: NextRequest) {
 
     const webinar = await getWebinarBySlug(supabase, webinarSlug)
     if (!webinar) {
-      return NextResponse.json(
-        { error: "Webinar not found." },
-        { status: 404 },
-      )
+      return NextResponse.json({ error: "Webinar not found." }, { status: 404 })
     }
 
     if (webinar.status === "cancelled") {
@@ -119,8 +108,7 @@ export async function POST(req: NextRequest) {
           : null,
     })
 
-    const dateTag = formatDateForTag(webinar.scheduled_at)
-    const tagName = `webinar-${webinar.slug}-${dateTag}`
+    const tagName = `webinar-${webinar.slug}`
     await addOrUpdateMailchimpContact(email, [tagName, "webinar-registered"])
 
     return NextResponse.json({ success: true })
