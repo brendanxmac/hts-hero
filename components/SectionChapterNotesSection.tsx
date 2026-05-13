@@ -18,7 +18,7 @@ export function SectionChapterNotesSection({
   return (
     <ExplorerDetailSection
       className="min-w-0 md:flex-1"
-      title="Notes"
+      title="Relevant HTS Notes"
       icon={<DocumentTextIcon className="h-4 w-4" />}
       description={
         <>

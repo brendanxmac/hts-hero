@@ -5,7 +5,6 @@ import { HtsElement } from "../interfaces/hts";
 import config from "@/config";
 import ThemeToggle from "./ThemeToggle";
 import { CTABanner } from "./CTABanner";
-import { ClassificationCTA } from "./ClassificationCTA";
 import { ClassificationHierarchy, HierarchyItem } from "./classification-detail/ClassificationHierarchy";
 import { SectionChapterNotesSection } from "./SectionChapterNotesSection";
 import { RelatedCrossRulingsSection } from "./RelatedCrossRulingsSection";
@@ -47,10 +46,10 @@ export function HtsCodePageContent({
       {/* CTA banner + navigation */}
       <header className="">
         <CTABanner
-          message={`Not sure if ${element.htsno} is the correct HTS code for your product?`}
-          ctaText="Verify Your HTS Code"
-          href="/classifications/new"
-          subText="Produce an audit-ready classification in minutes"
+          message={`Want audit-ready HTS Codes for all your Imports?`}
+          ctaText="Find your codes, fast!"
+          href="/classify"
+          subText="And get all the evidence you need to defend them!"
         />
         {/* Logo bar */}
         <div className="bg-base-100/80 backdrop-blur-lg border-b border-base-content/10">

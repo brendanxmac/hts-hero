@@ -81,7 +81,7 @@ export function RelatedCrossRulingsSection({ htsno }: RelatedCrossRulingsSection
 
   return (
     <ExplorerDetailSection
-      title="CROSS Rulings"
+      title="Related CROSS Rulings"
       icon={<ScaleIcon className="h-4 w-4" />}
       description={
         <>

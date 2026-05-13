@@ -308,7 +308,7 @@ export default function Home() {
           </h1>
 
           <p className="text-center text-base-content/70 text-sm sm:text-base md:text-lg mb-8 md:mb-10 max-w-xs sm:max-w-3xl">
-            And reduce audit risk with a mountain of evidence to support it
+            And reduce audit risk by getting all the evidence needed to defend it
           </p>
 
           {/* CTA input — the focal point of the page */}
