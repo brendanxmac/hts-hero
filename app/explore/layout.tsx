@@ -20,7 +20,7 @@ export default async function LayoutPrivate({
   return (
     <div className="flex flex-col min-h-svh bg-base-100">
       <CTABanner
-        message="Trying to find an HTS Code?"
+        message="Trying to find an HTS Code for your Import?"
         ctaText="Find Your Code, Fast"
         href="/classify"
       // subText="With AI Research"
