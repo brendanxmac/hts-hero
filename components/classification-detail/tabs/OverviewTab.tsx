@@ -32,9 +32,11 @@ import {
   TagIcon,
   CheckCircleIcon,
   GlobeAltIcon,
+  PencilIcon,
 } from "@heroicons/react/24/outline";
 import { CheckCircleIcon as CheckCircleSolid } from "@heroicons/react/16/solid";
 import { CountrySelection } from "../../CountrySelection";
+import { EMDASH } from "../../../libs/classification-from-hts-code";
 import { DashboardCard, DashboardCardHeader } from "../DashboardCard";
 import { PublicShareSection, TeamShareSection } from "../ShareSections";
 import { TariffDashboardSection } from "../TariffDashboardSection";
@@ -137,6 +139,8 @@ export const OverviewTab = ({
   const [showCreateImporterModal, setShowCreateImporterModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [codeCopied, setCodeCopied] = useState(false);
+  const [isEditingDescription, setIsEditingDescription] = useState(false);
+  const [editDescription, setEditDescription] = useState("");
   const hasAddedImporterRef = useRef(false);
 
   useEffect(() => {
@@ -179,6 +183,26 @@ export const OverviewTab = ({
     } finally {
       setIsCreatingImporter(false);
     }
+  };
+
+  const descriptionIsEditable =
+    !readOnly &&
+    canUpdateDetails &&
+    liveClassification.articleDescription === EMDASH;
+
+  const handleDescriptionSave = async () => {
+    const trimmed = editDescription.trim();
+    if (!trimmed) {
+      setIsEditingDescription(false);
+      return;
+    }
+    setClassification({
+      ...liveClassification,
+      articleDescription: trimmed,
+    });
+    setIsEditingDescription(false);
+    await flushAndSave();
+    await refreshClassifications();
   };
 
   const isComplete = liveClassification.isComplete;
@@ -242,10 +266,45 @@ export const OverviewTab = ({
               <p className="text-xs uppercase font-semibold text-base-content/50 mb-1 mt-2">
                 Item Description
               </p>
-              <p className="text-sm md:text-base font-semibold leading-relaxed line-clamp-2 max-w-lg">
-                {liveClassification?.articleDescription ||
-                  "No description available."}
-              </p>
+              {isEditingDescription ? (
+                <div className="flex items-center gap-2 max-w-lg">
+                  <input
+                    type="text"
+                    className="input input-bordered input-sm flex-1 text-sm font-semibold"
+                    value={editDescription}
+                    onChange={(e) => setEditDescription(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleDescriptionSave();
+                      if (e.key === "Escape") setIsEditingDescription(false);
+                    }}
+                    onBlur={handleDescriptionSave}
+                    autoFocus
+                    placeholder="Enter item description"
+                  />
+                </div>
+              ) : (
+                <p
+                  className={`text-sm md:text-base font-semibold leading-relaxed line-clamp-2 max-w-lg ${
+                    descriptionIsEditable
+                      ? "cursor-pointer hover:text-primary transition-colors group/desc"
+                      : ""
+                  }`}
+                  onClick={
+                    descriptionIsEditable
+                      ? () => {
+                          setEditDescription("");
+                          setIsEditingDescription(true);
+                        }
+                      : undefined
+                  }
+                >
+                  {liveClassification?.articleDescription ||
+                    "No description available."}
+                  {descriptionIsEditable && (
+                    <PencilIcon className="w-3.5 h-3.5 inline-block ml-1.5 opacity-0 group-hover/desc:opacity-60 transition-opacity" />
+                  )}
+                </p>
+              )}
 
               {countryOfOrigin && (
                 <div className="flex items-center gap-1.5">
