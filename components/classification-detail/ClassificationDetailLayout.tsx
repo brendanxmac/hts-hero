@@ -182,6 +182,9 @@ export const ClassificationDetailLayout = ({
   const { activeTab, setActiveTab, navItems } =
     useClassificationNav(classification);
 
+  const visitedTabsRef = useRef(new Set<NavTab>([activeTab]));
+  visitedTabsRef.current.add(activeTab);
+
   const latestHtsCode = useMemo(
     () => getLatestHtsCode(classification?.levels),
     [classification?.levels]
@@ -350,14 +353,21 @@ export const ClassificationDetailLayout = ({
     if (!readOnly) openExplore("classification_modal");
   }, [readOnly, openExplore]);
 
-  // When read-only (e.g. viewing team/shared classification), don't block on isFetching or userProfile
-  if ((!readOnly && isFetching) || (!readOnly && !isAnonymous && !userProfile)) {
-    return (
-      <div className="h-screen w-full flex items-center justify-center bg-base-100">
-        <LoadingIndicator />
-      </div>
-    );
+  const hasRenderedContentRef = useRef(false);
+
+  // Block initial render until HTS data and user profile are available.
+  // After the first successful render, skip this guard so transient
+  // isFetching flips don't unmount the entire tab tree and destroy state.
+  if (!hasRenderedContentRef.current) {
+    if ((!readOnly && isFetching) || (!readOnly && !isAnonymous && !userProfile)) {
+      return (
+        <div className="h-screen w-full flex items-center justify-center bg-base-100">
+          <LoadingIndicator />
+        </div>
+      );
+    }
   }
+  hasRenderedContentRef.current = true;
 
   const LOCKED_TAB_FEATURE_NAMES: Partial<Record<NavTab, string>> = {
     "cross-rulings": "CROSS Ruling Validation",
@@ -365,8 +375,8 @@ export const ClassificationDetailLayout = ({
     "classification-report": "Classification Reports",
   };
 
-  const renderTabContent = () => {
-    switch (activeTab) {
+  const renderTab = (tab: NavTab) => {
+    switch (tab) {
       case "overview":
         return (
           <OverviewTab
@@ -438,7 +448,7 @@ export const ClassificationDetailLayout = ({
           />
         );
       default: {
-        const levelMatch = activeTab.match(/^classification-level-(\d+)$/);
+        const levelMatch = tab.match(/^classification-level-(\d+)$/);
         if (levelMatch) {
           const levelIndex = parseInt(levelMatch[1], 10);
           return (
@@ -502,16 +512,24 @@ export const ClassificationDetailLayout = ({
           {/* Scrollable Content Panel */}
           <main ref={mainContentRef} className="flex-1 overflow-y-auto bg-base-100">
             <div className="w-full px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
-              {!readOnly && isAnonymous && ANON_LOCKED_TABS.has(activeTab) ? (
-                <LockedTabOverlay
-                  classificationId={classificationId}
-                  featureName={LOCKED_TAB_FEATURE_NAMES[activeTab] || "this feature"}
-                >
-                  {renderTabContent()}
-                </LockedTabOverlay>
-              ) : (
-                renderTabContent()
-              )}
+              {Array.from(visitedTabsRef.current).map((tab) => {
+                const isActive = tab === activeTab;
+                const content = renderTab(tab);
+                return (
+                  <div key={tab} className={isActive ? undefined : "hidden"}>
+                    {!readOnly && isAnonymous && ANON_LOCKED_TABS.has(tab) ? (
+                      <LockedTabOverlay
+                        classificationId={classificationId}
+                        featureName={LOCKED_TAB_FEATURE_NAMES[tab] || "this feature"}
+                      >
+                        {content}
+                      </LockedTabOverlay>
+                    ) : (
+                      content
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </main>
         </div>

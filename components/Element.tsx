@@ -379,7 +379,7 @@ export const Element = ({
             </ExplorerDetailSection>
           )}
 
-          {!isModal && htsno && htsno.replaceAll(".", "").length >= 8 && (
+          {!isModal && htsno && htsno.replaceAll(".", "").length >= 8 && parseInt(htsno.slice(0, 2), 10) < 98 && (
             <DutyTariffExplorerSection
               element={element}
               tariffElement={tariffElement}
