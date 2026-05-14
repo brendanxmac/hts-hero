@@ -138,7 +138,7 @@ export const classifyPro: PricingPlanI = {
   planIdentifier: PricingPlan.CLASSIFY_PRO,
   description: "Smarter Classifications & Automatic Defense Reports",
   mode: StripePaymentMode.SUBSCRIPTION,
-  prices: [79],
+  prices: [89],
   priceAnchors: [129],
   isFeatured: true,
   features: [
@@ -162,7 +162,7 @@ export const classifyTeam: PricingPlanI = {
   planIdentifier: PricingPlan.CLASSIFY_TEAM,
   description: "The Classification Workspace for Teams",
   mode: StripePaymentMode.SUBSCRIPTION,
-  prices: [379],
+  prices: [429],
   priceAnchors: [499],
   // isFeatured: true,
   features: [
