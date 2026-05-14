@@ -4,6 +4,7 @@ import UnauthenticatedHeader from "../../../components/UnauthenticatedHeader";
 import { createClient } from "@/app/api/supabase/server";
 import { AuthenticatedHeader } from "../../../components/AuthenticatedHeader";
 import config from "@/config";
+import { CTABanner } from "../../../components/CTABanner";
 
 export const metadata: Metadata = {
   title: "Tariff Impact Checker — See If New Tariffs Affect Your Imports | HTS Hero",
@@ -47,6 +48,12 @@ export default async function Layout({ children }: { children: ReactNode }) {
 
   return (
     <div className="h-screen flex flex-col max-h-svh bg-base-100 overflow-y-auto">
+      <CTABanner
+        message={`Find the right HTS Code for any Import, Fast!`}
+        ctaText="Try it Free!"
+        href="/classify"
+      // subText="And get all the evidence you need to defend it!"
+      />
       {user ? <AuthenticatedHeader /> : <UnauthenticatedHeader />}
       {children}
     </div>
