@@ -426,7 +426,7 @@ export const VerticalClassificationStep = ({
             articleDescription,
             false,
             null,
-            3
+            2
           );
 
           if (bestCandidateHeadings.bestCandidates.length === 0) {

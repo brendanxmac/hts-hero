@@ -1,36 +1,39 @@
-import { NextResponse, NextRequest } from "next/server";
-import OpenAI from "openai";
-import { z } from "zod";
-import { zodResponseFormat } from "openai/helpers/zod";
-import { createClient, requesterIsAuthenticatedOrAnonymous } from "../../supabase/server";
-import { OpenAIModel } from "../../../../libs/openai";
-import { fetchHtsNotesFromSupabase } from "../../../../libs/supabase/hts-notes";
-import { buildNoteTree, renderNoteContext } from "../../../../libs/hts";
-import { QualifyCandidatesWithNotesDto } from "../../../../interfaces/hts";
+import { NextResponse, NextRequest } from "next/server"
+import OpenAI from "openai"
+import { z } from "zod"
+import { zodResponseFormat } from "openai/helpers/zod"
+import {
+  createClient,
+  requesterIsAuthenticatedOrAnonymous,
+} from "../../supabase/server"
+import { OpenAIModel } from "../../../../libs/openai"
+import { fetchHtsNotesFromSupabase } from "../../../../libs/supabase/hts-notes"
+import { buildNoteTree, renderNoteContext } from "../../../../libs/hts"
+import { QualifyCandidatesWithNotesDto } from "../../../../interfaces/hts"
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic"
 
 const CandidateQualification = z.object({
   analysis: z.string(),
   unqualifiedCandidates: z.array(z.number()),
-});
+})
 
 export async function POST(req: NextRequest) {
   try {
-    const requesterIsAllowed = await requesterIsAuthenticatedOrAnonymous(req);
+    const requesterIsAllowed = await requesterIsAuthenticatedOrAnonymous(req)
 
     if (!requesterIsAllowed) {
       return NextResponse.json(
         { error: "You must be logged in or have an active classification" },
-        { status: 401 }
-      );
+        { status: 401 },
+      )
     }
 
     const {
       productDescription,
       candidates,
       candidateType,
-    }: QualifyCandidatesWithNotesDto = await req.json();
+    }: QualifyCandidatesWithNotesDto = await req.json()
 
     if (
       !candidates ||
@@ -42,48 +45,48 @@ export async function POST(req: NextRequest) {
         {
           error: "Missing candidates or product description or candidate type",
         },
-        { status: 400 }
-      );
+        { status: 400 },
+      )
     }
 
     const labelledDescriptions = candidates.map(
       ({ description, identifier }, i) =>
-        `${i + 1}. ${candidateType === "section" ? "Section" : "Chapter"} ${identifier}: ${description}`
-    );
+        `${i + 1}. ${candidateType === "section" ? "Section" : "Chapter"} ${identifier}: ${description}`,
+    )
 
     const responseFormatOptions = {
       description:
         "Used to determine if a section or chapter is qualified or unqualified as a potential classifier of the item description based on the notes for the candidate",
-    };
+    }
     const responseFormat = zodResponseFormat(
       CandidateQualification,
       "candidate_qualification",
-      responseFormatOptions
-    );
+      responseFormatOptions,
+    )
 
-    const supabase = createClient();
+    const supabase = createClient()
     const notes = await Promise.all(
       candidates.map((candidate) =>
         fetchHtsNotesFromSupabase(
           supabase,
           candidateType === "section" ? candidate.identifier : null,
           candidateType === "chapter" ? candidate.identifier : null,
-          candidateType === "section" ? true : false
-        )
-      )
-    );
+          candidateType === "section" ? true : false,
+        ),
+      ),
+    )
 
     const candidateTypeTitle =
-      candidateType === "section" ? "Section" : "Chapter";
+      candidateType === "section" ? "Section" : "Chapter"
 
     const notesMarkdown = notes
       .map((note) => renderNoteContext(buildNoteTree(note)))
-      .join("\n");
+      .join("\n")
 
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
     const gptResponse = await openai.chat.completions.create({
       temperature: 0,
-      model: OpenAIModel.FIVE_ONE,
+      model: OpenAIModel.FIVE_FOUR,
       response_format: responseFormat,
       messages: [
         {
@@ -109,18 +112,18 @@ export async function POST(req: NextRequest) {
           Notes:\n ${notesMarkdown}`,
         },
       ],
-    });
+    })
 
-    console.log("Qualify Candidates with Notes Tokens:");
+    console.log("Qualify Candidates with Notes Tokens:")
     console.log({
       promptTokens: gptResponse.usage?.prompt_tokens,
       completionTokens: gptResponse.usage?.completion_tokens,
       totalTokens: gptResponse.usage?.total_tokens,
-    });
+    })
 
-    return NextResponse.json(gptResponse.choices);
+    return NextResponse.json(gptResponse.choices)
   } catch (e) {
-    console.error(e);
-    return NextResponse.json({ error: e?.message }, { status: 500 });
+    console.error(e)
+    return NextResponse.json({ error: e?.message }, { status: 500 })
   }
 }

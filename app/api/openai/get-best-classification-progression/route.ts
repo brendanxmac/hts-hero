@@ -169,7 +169,7 @@ const getBestClassificationProgressionStandard = (
 
   return openai.chat.completions.create({
     temperature: 0,
-    model: OpenAIModel.FIVE_ONE,
+    model: OpenAIModel.FIVE_FOUR,
     response_format: responseFormat,
     messages: [
       {
@@ -286,7 +286,7 @@ const getBestClassificationProgressionPremium = async (
 
   return openai.chat.completions.create({
     temperature: 0,
-    model: OpenAIModel.FIVE_ONE,
+    model: OpenAIModel.FIVE_FOUR,
     response_format: responseFormat,
     messages: [
       {
