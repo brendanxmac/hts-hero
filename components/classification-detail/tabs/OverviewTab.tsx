@@ -262,18 +262,22 @@ export const OverviewTab = ({
               {!readOnly && isComplete && (
                 <>
                   {classificationRecord && (
-                    <StatusDropdown
-                      status={classificationRecord.status}
-                      isUpdating={updatingStatus}
-                      disabled={!canUpdateDetails}
-                      onChange={onStatusChange}
-                    />
+                    <span id="onboarding-detail-status">
+                      <StatusDropdown
+                        status={classificationRecord.status}
+                        isUpdating={updatingStatus}
+                        disabled={!canUpdateDetails}
+                        onChange={onStatusChange}
+                      />
+                    </span>
                   )}
-                  <DownloadReportButton
-                    isDownloading={downloadingReport}
-                    disabled={downloadingReport || isLoadingImporters}
-                    onClick={onDownloadReport}
-                  />
+                  <span id="onboarding-detail-download-report">
+                    <DownloadReportButton
+                      isDownloading={downloadingReport}
+                      disabled={downloadingReport || isLoadingImporters}
+                      onClick={onDownloadReport}
+                    />
+                  </span>
                   {classificationRecord && canUpdateDetails && (
                     <button
                       className="btn btn-sm btn-outline gap-1.5 h-9"
@@ -413,10 +417,12 @@ export const OverviewTab = ({
 
       {/* Basis for Classification */}
       <DashboardCard>
-        <DashboardCardHeader
-          title="Classification Notes"
-          icon={<DocumentTextIcon className="w-4 h-4" />}
-        />
+        <div id="onboarding-detail-notes">
+          <DashboardCardHeader
+            title="Classification Notes"
+            icon={<DocumentTextIcon className="w-4 h-4" />}
+          />
+        </div>
         <div className="p-5">
           <textarea
             ref={basisTextareaRef}

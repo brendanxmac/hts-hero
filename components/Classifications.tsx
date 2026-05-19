@@ -42,6 +42,15 @@ import Modal from "./Modal";
 import ConversionPricing from "./ConversionPricing";
 import { SignUpGateCTA } from "./SignUpGateCTA";
 import toast from "react-hot-toast";
+import OnboardingTour from "./onboarding/OnboardingTour";
+import type { OnboardingStep } from "../hooks";
+import {
+  SparklesIcon,
+  RocketLaunchIcon,
+  FunnelIcon,
+  AdjustmentsHorizontalIcon,
+  CursorArrowRaysIcon,
+} from "@heroicons/react/24/outline";
 
 // Define the searchable fields for Fuse.js
 interface SearchableClassification {
@@ -458,6 +467,79 @@ export const Classifications = () => {
 
   const isContentLoading = loader.isLoading || classificationsLoading;
 
+  const onboardingSteps: OnboardingStep[] = useMemo(
+    () => [
+      {
+        id: "welcome",
+        type: "modal" as const,
+        title: "Welcome to HTS Hero",
+        description:
+          "We'll help you classify your products with the right HTS code in minutes — powered by AI research and the official tariff schedule. Let's take a quick look around.",
+        icon: <SparklesIcon className="h-5 w-5 text-primary" />,
+      },
+      {
+        id: "new-classification",
+        type: "spotlight" as const,
+        targetSelector: "#onboarding-new-classification",
+        title: "Start a New Classification",
+        description:
+          "Click here to describe your product. Our AI will analyze it and guide you through the tariff schedule step-by-step to find the right HTS code.",
+        placement: "bottom" as const,
+        icon: <RocketLaunchIcon className="h-5 w-5 text-primary" />,
+      },
+      {
+        id: "remaining-badge",
+        type: "spotlight" as const,
+        targetSelector: "#onboarding-remaining-badge",
+        title: "Your Classification Allowance",
+        description:
+          "This shows how many classifications you have remaining. Upgrade anytime for unlimited access.",
+        placement: "bottom" as const,
+      },
+      {
+        id: "tabs",
+        type: "spotlight" as const,
+        targetSelector: "#onboarding-tabs",
+        title: "Organize by Status",
+        description:
+          "Track your progress by filtering between Drafts, classifications that Need Review, and ones you've marked as Final.",
+        placement: "bottom" as const,
+        icon: <AdjustmentsHorizontalIcon className="h-5 w-5 text-primary" />,
+      },
+      {
+        id: "filters",
+        type: "spotlight" as const,
+        targetSelector: "#onboarding-filters",
+        title: "Search & Filter",
+        description:
+          "Quickly find any classification by searching descriptions, HTS codes, or filtering by importer.",
+        placement: "bottom" as const,
+        icon: <FunnelIcon className="h-5 w-5 text-primary" />,
+      },
+      {
+        id: "first-card",
+        type: "spotlight" as const,
+        targetSelector: "#onboarding-first-card",
+        title: "Your Classifications",
+        description:
+          "Each card shows a classification's product description, HTS code progress, and status. Click any card to continue working on it.",
+        placement: "top" as const,
+        icon: <CursorArrowRaysIcon className="h-5 w-5 text-primary" />,
+      },
+      {
+        id: "empty-cta",
+        type: "spotlight" as const,
+        targetSelector: "#onboarding-empty-cta",
+        title: "Ready to Classify",
+        description:
+          "Start your first classification here — just describe your product and we'll take care of the rest.",
+        placement: "top" as const,
+        icon: <RocketLaunchIcon className="h-5 w-5 text-primary" />,
+      },
+    ],
+    []
+  );
+
   return (
     <main className="w-full min-h-full flex flex-col bg-base-100">
       {/* Hero Header Section */}
@@ -523,6 +605,7 @@ export const Classifications = () => {
 
                   return (
                     <div
+                      id="onboarding-remaining-badge"
                       className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border ${
                         isError
                           ? "bg-error/10 border-error/30 text-error"
@@ -582,6 +665,7 @@ export const Classifications = () => {
                   </button>
                 )}
               <Link
+                id="onboarding-new-classification"
                 href={canCreateNew ? "/classifications/new" : "#"}
                 onClick={(e) => {
                   if (!canCreateNew) {
@@ -630,7 +714,7 @@ export const Classifications = () => {
           {classifications && classifications.length > 0 && <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-3">
               {!loader.isLoading && (
-                <div className="flex p-1 gap-1 bg-base-200/60 rounded-xl border border-base-content/5">
+                <div id="onboarding-tabs" className="flex p-1 gap-1 bg-base-200/60 rounded-xl border border-base-content/5">
                   {[
                     { key: "all", label: "All" },
                     { key: "final", label: "Final" },
@@ -661,7 +745,7 @@ export const Classifications = () => {
           </div>}
 
           {/* Filtering Section */}
-          {classifications && classifications.length > 0 && <div className="relative overflow-hidden rounded-2xl border border-base-content/15 bg-base-200/50 p-4">
+          {classifications && classifications.length > 0 && <div id="onboarding-filters" className="relative overflow-hidden rounded-2xl border border-base-content/15 bg-base-200/50 p-4">
             {/* Subtle decorative elements */}
             <div className="absolute inset-0 pointer-events-none">
               <div className="absolute -top-16 -right-16 w-48 h-48 bg-primary/10 rounded-full blur-3xl" />
@@ -780,13 +864,14 @@ export const Classifications = () => {
 
               <div className="flex flex-col gap-3 pb-6">
                 {filteredClassifications.map((classification, index) => (
-                  <ClassificationSummary
-                    key={`classification-${index}`}
-                    classificationRecord={classification}
-                    user={userProfile}
-                    onDelete={handleDeleteClassification}
-                    isDeleting={deletingId === classification.id}
-                  />
+                  <div key={`classification-${index}`} {...(index === 0 ? { id: "onboarding-first-card" } : {})}>
+                    <ClassificationSummary
+                      classificationRecord={classification}
+                      user={userProfile}
+                      onDelete={handleDeleteClassification}
+                      isDeleting={deletingId === classification.id}
+                    />
+                  </div>
                 ))}
               </div>
             </>
@@ -858,6 +943,7 @@ export const Classifications = () => {
 
                     {/* Button */}
                     <button
+                      id="onboarding-empty-cta"
                       className="group relative overflow-hidden px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300 bg-primary text-primary-content hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02]"
                       onClick={emptyStateConfig.onButtonClick}
                     >
@@ -889,6 +975,11 @@ export const Classifications = () => {
           <SignUpGateCTA />
         </Modal>
       )}
+      <OnboardingTour
+        tourId="classifications"
+        steps={onboardingSteps}
+        enabled={!isContentLoading}
+      />
     </main>
   );
 };
