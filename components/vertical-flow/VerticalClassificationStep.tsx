@@ -504,6 +504,7 @@ export const VerticalClassificationStep = ({
     <div className="grid grid-cols-1 xl:grid-cols-12 gap-2.5">
       {/* Candidates section */}
       <div
+        id="onboarding-detail-options"
         ref={containerRef}
         className="xl:col-span-5 rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden"
       >
@@ -525,6 +526,7 @@ export const VerticalClassificationStep = ({
               <div className="flex flex-wrap gap-1.5">
                 {classificationLevel === 0 && (
                   <button
+                    id="onboarding-detail-add-candidates"
                     type="button"
                     className="flex items-center gap-1.5 rounded-lg border border-base-300 bg-base-100 px-2.5 py-1.5 text-xs font-semibold text-base-content/70 hover:border-primary hover:text-primary disabled:pointer-events-none disabled:opacity-40"
                     onClick={onOpenExplore}
@@ -600,11 +602,13 @@ export const VerticalClassificationStep = ({
 
       {/* Research / legal notes / CROSS panel */}
       <div
+        id="onboarding-detail-research-panel"
         className="xl:col-span-7 rounded-xl border border-base-300 bg-base-100 shadow-sm overflow-hidden"
       >
         <div className="px-5 py-3.5 border-b border-base-300 bg-base-200/30">
           <div className="w-full flex gap-3 justify-between items-center">
             <div
+              id="onboarding-detail-research-tabs"
               role="tablist"
               aria-label="Research panel"
               className="tabs tabs-boxed tabs-sm rounded-lg gap-0.5 py-0 flex-wrap shrink-0"

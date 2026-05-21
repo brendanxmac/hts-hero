@@ -221,7 +221,7 @@ export const ClassificationSidebar = ({
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto px-3 py-3">
+        <nav id="onboarding-detail-nav" className="flex-1 overflow-y-auto px-3 py-3">
           <ul className="flex flex-col gap-0.5">
             {/* Overview */}
             {mainNavItems
@@ -247,7 +247,7 @@ export const ClassificationSidebar = ({
 
             {/* Classification Section (expandable) */}
             {classificationSubItems.length > 0 && (
-              <li>
+              <li id="onboarding-detail-classification-path">
                 <button
                   onClick={() =>
                     setClassificationExpanded(!classificationExpanded)

@@ -10,8 +10,14 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getTutorialFromPathname, Tutorial, TutorialI } from "./Tutorial";
 import { PlayIcon } from "@heroicons/react/16/solid";
+import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import ThemeToggle from "./ThemeToggle";
 import { ToolsDropdown, MobileToolsMenu } from "./ToolsDropdown";
+import { requestOnboardingReplay } from "../hooks";
+
+const TOUR_IDS_BY_PATH: Record<string, string> = {
+  "/classifications": "classifications",
+};
 
 export const AuthenticatedHeader = () => {
   const pathname = usePathname();
@@ -19,6 +25,8 @@ export const AuthenticatedHeader = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [tutorial, setTutorial] = useState<TutorialI | null>(null);
+
+  const quickGuideTourId = TOUR_IDS_BY_PATH[pathname] ?? null;
 
   useEffect(() => {
     const tutorial = getTutorialFromPathname(pathname);
@@ -94,6 +102,15 @@ export const AuthenticatedHeader = () => {
           <div className="hidden md:flex items-center gap-2">
             {/* Your links on large screens */}
             <div className="hidden md:flex md:justify-center md:gap-4 md:items-center">
+              {quickGuideTourId && (
+                <button
+                  className="btn btn-sm btn-ghost gap-1.5"
+                  onClick={() => requestOnboardingReplay(quickGuideTourId)}
+                >
+                  <QuestionMarkCircleIcon className="w-4 h-4" />
+                  Quick Guide
+                </button>
+              )}
               {tutorial && (
                 <button
                   className="btn btn-sm btn-neutral"
@@ -188,6 +205,18 @@ export const AuthenticatedHeader = () => {
 
             {/* CTA & Buttons */}
             <div className="flex flex-col gap-4">
+              {quickGuideTourId && (
+                <button
+                  className="btn btn-sm btn-ghost gap-1.5 justify-start"
+                  onClick={() => {
+                    requestOnboardingReplay(quickGuideTourId);
+                    setIsOpen(false);
+                  }}
+                >
+                  <QuestionMarkCircleIcon className="w-4 h-4" />
+                  Quick Guide
+                </button>
+              )}
               {tutorial && (
                 <button
                   className="btn btn-sm btn-neutral"

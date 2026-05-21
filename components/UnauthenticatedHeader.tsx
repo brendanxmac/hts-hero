@@ -8,9 +8,15 @@ import logo from "@/app/logo.svg";
 import config from "@/config";
 import { usePathname, useSearchParams } from "next/navigation";
 import { PlayIcon } from "@heroicons/react/24/solid";
+import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import { getTutorialFromPathname, Tutorial, TutorialI } from "./Tutorial";
 import ThemeToggle from "./ThemeToggle";
 import { ToolsDropdown, MobileToolsMenu } from "./ToolsDropdown";
+import { requestOnboardingReplay } from "../hooks";
+
+const TOUR_IDS_BY_PATH: Record<string, string> = {
+  "/classifications": "classifications",
+};
 
 const cta: JSX.Element = <ButtonSignin text="Sign In" />;
 
@@ -22,6 +28,8 @@ const UnauthenticatedHeader = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [tutorial, setTutorial] = useState<TutorialI | null>(null);
+
+  const quickGuideTourId = TOUR_IDS_BY_PATH[pathname] ?? null;
 
   useEffect(() => {
     const tutorial = getTutorialFromPathname(pathname);
@@ -95,6 +103,15 @@ const UnauthenticatedHeader = () => {
           <div className="hidden md:flex items-center gap-2">
             {/* Your links on large screens */}
             <div className="hidden md:flex md:justify-center md:gap-4 md:items-center">
+              {quickGuideTourId && (
+                <button
+                  className="btn btn-sm btn-ghost gap-1.5"
+                  onClick={() => requestOnboardingReplay(quickGuideTourId)}
+                >
+                  <QuestionMarkCircleIcon className="w-4 h-4" />
+                  Quick Guide
+                </button>
+              )}
               {tutorial && (
                 <button
                   className="btn btn-sm"
@@ -209,6 +226,18 @@ const UnauthenticatedHeader = () => {
 
             {/* CTA & Buttons */}
             <div className="flex flex-col gap-4">
+              {quickGuideTourId && (
+                <button
+                  className="btn btn-sm btn-ghost gap-1.5 justify-start"
+                  onClick={() => {
+                    requestOnboardingReplay(quickGuideTourId);
+                    setIsOpen(false);
+                  }}
+                >
+                  <QuestionMarkCircleIcon className="w-4 h-4" />
+                  Quick Guide
+                </button>
+              )}
               {tutorial && (
                 <button
                   className="btn btn-sm btn-neutral"

@@ -43,6 +43,23 @@ import { LockedTabOverlay } from "./LockedTabOverlay";
 import { useIsReadOnly } from "../../contexts/ReadOnlyContext";
 import { useExploreModal } from "../../contexts/ExploreModalContext";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
+import OnboardingTour from "../onboarding/OnboardingTour";
+import { type OnboardingStep, isTourCompleted } from "../../hooks";
+
+import {
+  SparklesIcon,
+  MapIcon,
+  QueueListIcon,
+  PlusCircleIcon,
+  BeakerIcon,
+  DocumentTextIcon as DocumentTextOutline,
+  CheckBadgeIcon,
+  DocumentArrowDownIcon,
+  ShareIcon,
+  GlobeAltIcon,
+  TagIcon,
+  TrophyIcon,
+} from "@heroicons/react/24/outline";
 
 /**
  * Hydrates the SectionChapterDiscovery context from persisted classification
@@ -178,6 +195,13 @@ export const ClassificationDetailLayout = ({
     useUserProfileAndImporters(user?.id);
 
   const isAnonymous = !user;
+
+  const [workspaceTourDone, setWorkspaceTourDone] = useState(() =>
+    isTourCompleted("classification-detail-workspace")
+  );
+  const [candidatesTourDone, setCandidatesTourDone] = useState(() =>
+    isTourCompleted("classification-detail-candidates")
+  );
 
   const { activeTab, setActiveTab, navItems } =
     useClassificationNav(classification);
@@ -353,6 +377,163 @@ export const ClassificationDetailLayout = ({
     if (!readOnly) openExplore("classification_modal");
   }, [readOnly, openExplore]);
 
+  // ---------------------------------------------------------------------------
+  // Contextual onboarding mini-tours
+  // (must live before the early-return guard so hook call order is stable)
+  // ---------------------------------------------------------------------------
+
+  const workspaceTourSteps: OnboardingStep[] = useMemo(
+    () => [
+      {
+        id: "workspace-welcome",
+        type: "modal" as const,
+        title: "Your Classification Workspace",
+        description:
+          "This is where you classify products. We'll automatically discover relevant HS sections, chapters, and headings -- as well as any relevant legal notes or CROSS rulings.",
+        icon: <SparklesIcon className="h-5 w-5 text-primary" />,
+      },
+      {
+        id: "workspace-nav",
+        type: "spotlight" as const,
+        targetSelector: "#onboarding-detail-nav",
+        title: "See the Big Picture",
+        description:
+          "Use this sidebar to navigate between different aspects of your classification - from duties, to the classification path, and CROSS ruling validation.",
+        placement: "right" as const,
+        icon: <MapIcon className="h-5 w-5 text-primary" />,
+      },
+      {
+        id: "workspace-path",
+        type: "spotlight" as const,
+        targetSelector: "#onboarding-detail-classification-path",
+        title: "Navigate Your Classification Path",
+        description:
+          "You will select the best HTS element level-by-level, starting with headings. Your selection path through the HTS is tracked here. Completed levels show a green check, and your current step pulses to show where you are.",
+        placement: "right" as const,
+      },
+    ],
+    []
+  );
+
+  const candidatesTourSteps: OnboardingStep[] = useMemo(
+    () => [
+      {
+        id: "candidates-options",
+        type: "spotlight" as const,
+        targetSelector: "#onboarding-detail-options",
+        title: "HS Code Candidates",
+        description:
+          "We automatically found candidates relevant to your product based on the product desription, legal notes, and GRIs. Click any option to select it and advance to the next level of the tariff schedule, until you hit 10-digits.",
+        placement: "right" as const,
+        icon: <QueueListIcon className="h-5 w-5 text-primary" />,
+      },
+      {
+        id: "candidates-add",
+        type: "spotlight" as const,
+        targetSelector: "#onboarding-detail-add-candidates",
+        title: "Add Missing Candidates",
+        description:
+          "If you don't see any good options, you can quickly browse the entire HTS and add candidates yourself.",
+        placement: "bottom" as const,
+        icon: <PlusCircleIcon className="h-5 w-5 text-primary" />,
+      },
+      // {
+      //   id: "candidates-research",
+      //   type: "spotlight" as const,
+      //   targetSelector: "#onboarding-detail-research-panel",
+      //   title: "Candidate Analysis",
+      //   description:
+      //     "We analyze each candidate against the Legal Notes & GRIs to help you make the best selection. This is for reference only, always use your own judgment.",
+      //   placement: "left" as const,
+      //   icon: <BeakerIcon className="h-5 w-5 text-primary" />,
+      // },
+      {
+        id: "candidates-tabs",
+        type: "spotlight" as const,
+        targetSelector: "#onboarding-detail-research-tabs",
+        title: "Research, Legal Notes, & CROSS Rulings related to your product",
+        description:
+          "Quickly see AI research, Legal Notes, and CROSS rulings that may affect your classification.",
+        placement: "bottom" as const,
+      },
+    ],
+    []
+  );
+
+  const completionTourSteps: OnboardingStep[] = useMemo(
+    () => [
+      // {
+      //   id: "complete-congrats",
+      //   type: "modal" as const,
+      //   title: "Classification Complete!",
+      //   description:
+      //     "Your classification is done — let's walk through the tools you have to finalize, share, and organize it.",
+      //   icon: <TrophyIcon className="h-5 w-5 text-primary" />,
+      // },
+      {
+        id: "complete-status",
+        type: "spotlight" as const,
+        targetSelector: "#onboarding-detail-status",
+        title: "Set Classification Status",
+        description:
+          "Mark your classification as Final when you're confident, or flag it as Needs Review for a teammate to check.",
+        placement: "bottom" as const,
+        icon: <CheckBadgeIcon className="h-5 w-5 text-primary" />,
+      },
+      {
+        id: "complete-report",
+        type: "spotlight" as const,
+        targetSelector: "#onboarding-detail-download-report",
+        title: "Generate Classification Report",
+        description:
+          "Download a full classification report including your HTS code path, product details, and any notes you've added — ready to share with clients, colleagues, or file for audit. You can add your company logo by uploading it in your settings.",
+        placement: "bottom" as const,
+        icon: <DocumentArrowDownIcon className="h-5 w-5 text-primary" />,
+      },
+      {
+        id: "complete-share",
+        type: "spotlight" as const,
+        targetSelector: "#onboarding-detail-share",
+        title: "Share with Colleagues or Clients",
+        description:
+          "Share this classification with teammates for review or generate a public link to send to clients — no account required for them to view.",
+        placement: "bottom" as const,
+        icon: <ShareIcon className="h-5 w-5 text-primary" />,
+      },
+      {
+        id: "complete-country",
+        type: "spotlight" as const,
+        targetSelector: "#onboarding-detail-country",
+        title: "Country of Origin & Tariffs",
+        description:
+          "Select the country of origin to instantly see applicable duty rates, tariff programs, and possible ways to save on your classified product's import duties.",
+        placement: "bottom" as const,
+        icon: <GlobeAltIcon className="h-5 w-5 text-primary" />,
+      },
+      {
+        id: "complete-tag",
+        type: "spotlight" as const,
+        targetSelector: "#onboarding-detail-tag",
+        title: "Tag for Easy Organization",
+        description:
+          "Add a tag to group related classifications together — great for organizing by importer, client, or product line so you can filter them on the main page.",
+        placement: "bottom" as const,
+        icon: <TagIcon className="h-5 w-5 text-primary" />,
+      },
+      {
+        id: "complete-notes",
+        type: "spotlight" as const,
+        targetSelector: "#onboarding-detail-notes",
+        title: "Classification Defense Notes",
+        description:
+          "Pull notes from the classification levels in the left panel, or add your own reasoning here — everything you write is included in the report when you download.",
+        placement: "top" as const,
+        icon: <DocumentTextOutline className="h-5 w-5 text-primary" />,
+      },
+    ],
+    []
+  );
+
   const hasRenderedContentRef = useRef(false);
 
   // Block initial render until HTS data and user profile are available.
@@ -368,6 +549,14 @@ export const ClassificationDetailLayout = ({
     }
   }
   hasRenderedContentRef.current = true;
+
+  const hasAnyCandidates = classification?.levels?.some(
+    (l) => l.candidates && l.candidates.length > 0
+  );
+  const isOnLevelTab =
+    activeTab.startsWith("classification-level-") ||
+    activeTab === "classification-section" ||
+    activeTab === "classification-chapter";
 
   const LOCKED_TAB_FEATURE_NAMES: Partial<Record<NavTab, string>> = {
     "cross-rulings": "CROSS Ruling Validation",
@@ -571,6 +760,35 @@ export const ClassificationDetailLayout = ({
             )}
           </>
         )}
+
+        {/* Contextual onboarding tours — sequenced via onComplete callbacks */}
+        <OnboardingTour
+          tourId="classification-detail-workspace"
+          steps={workspaceTourSteps}
+          enabled={!readOnly && hasRenderedContentRef.current}
+          onComplete={() => setWorkspaceTourDone(true)}
+        />
+        <OnboardingTour
+          tourId="classification-detail-candidates"
+          steps={candidatesTourSteps}
+          enabled={
+            !readOnly &&
+            workspaceTourDone &&
+            isOnLevelTab &&
+            !!hasAnyCandidates
+          }
+          onComplete={() => setCandidatesTourDone(true)}
+        />
+        <OnboardingTour
+          tourId="classification-detail-complete"
+          steps={completionTourSteps}
+          enabled={
+            !readOnly &&
+            !!classification?.isComplete &&
+            activeTab === "overview" &&
+            !showCompleteModal
+          }
+        />
       </div>
     </SectionChapterDiscoveryProvider>
   );
