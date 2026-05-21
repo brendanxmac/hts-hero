@@ -69,7 +69,7 @@ export default function PlaybookCTA({
                 <div className="flex gap-1 justify-center items-center">
                   <ClockIcon className="h-3.5 w-3.5 text-primary animate-pulse" />
                   <p className="text-primary font-bold text-xs sm:text-sm">
-                    Offer Expires in April!
+                    Offer Expires in May!
                   </p>
                 </div>
                 <input
