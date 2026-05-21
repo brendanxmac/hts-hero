@@ -421,9 +421,9 @@ export const ClassificationDetailLayout = ({
         id: "candidates-options",
         type: "spotlight" as const,
         targetSelector: "#onboarding-detail-options",
-        title: "HS Code Candidates",
+        title: "Get Heading Candidates For Your Product",
         description:
-          "We automatically found candidates relevant to your product based on the product desription, legal notes, and GRIs. Click any option to select it and advance to the next level of the tariff schedule, until you hit 10-digits.",
+          "We automatically find HS heading candidates based on your product description, legal notes, and GRIs. Click any option to select it and advance to the next level of the tariff schedule.",
         placement: "right" as const,
         icon: <QueueListIcon className="h-5 w-5 text-primary" />,
       },

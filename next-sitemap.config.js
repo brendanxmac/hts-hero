@@ -30,9 +30,11 @@ async function getHtsCodes() {
       : pako.inflate(u8, { to: "string" });
   const elements = JSON.parse(decompressed);
 
-  return elements
+  const codes = elements
     .filter((el) => el.htsno && el.htsno.trim().length > 0)
     .map((el) => el.htsno);
+
+  return { codes, revisionDate: revision.created_at };
 }
 
 module.exports = {
@@ -41,12 +43,13 @@ module.exports = {
   sitemapSize: 5000,
   exclude: ["/twitter-image.*", "/opengraph-image.*", "/icon.*"],
   additionalPaths: async (config) => {
-    const codes = await getHtsCodes();
+    const { codes, revisionDate } = await getHtsCodes();
+    const lastmod = new Date(revisionDate).toISOString();
     return codes.map((code) => ({
       loc: `/hts/${code}`,
       changefreq: "monthly",
       priority: 0.7,
-      lastmod: new Date().toISOString(),
+      lastmod,
     }));
   },
   transform: async (config, path) => {

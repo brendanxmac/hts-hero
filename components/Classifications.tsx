@@ -453,20 +453,6 @@ export const Classifications = () => {
     return null;
   };
 
-  if (classificationsError || userError) {
-    return (
-      <main className="w-full h-full flex items-center justify-center bg-base-100">
-        <div className="text-error p-6 rounded-2xl bg-error/10 border border-error/20">
-          {classificationsError &&
-            `Error loading classifications: ${classificationsError.message}`}
-          {userError && `Error loading user: ${userError.message}`}
-        </div>
-      </main>
-    );
-  }
-
-  const isContentLoading = loader.isLoading || classificationsLoading;
-
   const hasClassifications = classifications && classifications.length > 0;
 
   const onboardingSteps: OnboardingStep[] = useMemo(
@@ -477,7 +463,7 @@ export const Classifications = () => {
           type: "modal" as const,
           title: "Welcome to HTS Hero!",
           description:
-            "This quick walkthrough will introduce important features & show you how to start quickly generating classifications with less guesswork and more evidence.",
+            "This quick guide will show you how to navigate the app and start quickly generating audit-ready classifications. You can review it any time by clicking quick guide at the top of the page",
           icon: <SparklesIcon className="h-5 w-5 text-primary" />,
         },
         {
@@ -486,7 +472,7 @@ export const Classifications = () => {
           targetSelector: "#onboarding-new-classification",
           title: "Start a New Classification",
           description:
-            "Click here to begin a new classification. You'll describe your product & we'll analyze it to find the best candidates, and the evidence needed to defend them.",
+            "Click here to begin a new classification. You'll describe your product & we'll analyze it to find the best candidates with legal note, GRI, and CROSS ruling evidence.",
           placement: "bottom" as const,
           icon: <RocketLaunchIcon className="h-5 w-5 text-primary" />,
         },
@@ -496,7 +482,7 @@ export const Classifications = () => {
           targetSelector: "#onboarding-remaining-badge",
           title: "Your Classification Allowance",
           description:
-            "This shows how many classifications you have remaining. You can upgrade anytime to increase your monthly limit.",
+            "This shows how many classifications you have remaining. You can upgrade to fit your needs at any time.",
           placement: "bottom" as const,
         },
         {
@@ -560,6 +546,20 @@ export const Classifications = () => {
     },
     [hasClassifications]
   );
+
+  if (classificationsError || userError) {
+    return (
+      <main className="w-full h-full flex items-center justify-center bg-base-100">
+        <div className="text-error p-6 rounded-2xl bg-error/10 border border-error/20">
+          {classificationsError &&
+            `Error loading classifications: ${classificationsError.message}`}
+          {userError && `Error loading user: ${userError.message}`}
+        </div>
+      </main>
+    );
+  }
+
+  const isContentLoading = loader.isLoading || classificationsLoading;
 
   return (
     <main className="w-full min-h-full flex flex-col bg-base-100">

@@ -134,7 +134,7 @@ function computeTooltipPosition(
 function SpotlightBackdrop({ rect }: { rect: ViewportRect | null }) {
   if (!rect) {
     return (
-      <div className="fixed inset-0 bg-black/60 transition-opacity duration-500" />
+      <div className="fixed inset-0 bg-black/20 transition-opacity duration-500" />
     );
   }
 
@@ -153,7 +153,7 @@ function SpotlightBackdrop({ rect }: { rect: ViewportRect | null }) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/60 transition-all duration-500 ease-out"
+      className="fixed inset-0 bg-black/10 transition-all duration-500 ease-out"
       style={{ clipPath }}
     />
   );
@@ -162,7 +162,7 @@ function SpotlightBackdrop({ rect }: { rect: ViewportRect | null }) {
 function SpotlightRing({ rect }: { rect: ViewportRect }) {
   return (
     <div
-      className="fixed pointer-events-none transition-all duration-500 ease-out"
+      className="fixed pointer-events-none transition-all duration-500 ease-out z-[1]"
       style={{
         top: rect.top,
         left: rect.left,
@@ -170,7 +170,7 @@ function SpotlightRing({ rect }: { rect: ViewportRect }) {
         height: rect.height,
         borderRadius: SPOTLIGHT_RADIUS,
         boxShadow:
-          "0 0 0 2px oklch(var(--p) / 0.5), 0 0 24px 4px oklch(var(--p) / 0.15)",
+          "0 0 0 3px oklch(var(--p)), 0 0 20px 6px oklch(var(--p) / 0.45), 0 0 40px 12px oklch(var(--p) / 0.2)",
       }}
     />
   );
@@ -261,7 +261,7 @@ export default function OnboardingTour({
           style={tooltipStyle}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="relative overflow-hidden rounded-2xl border border-base-content/15 bg-base-100 shadow-2xl">
+          <div className="relative overflow-hidden rounded-2xl border border-base-content/30 bg-base-100 shadow-lg shadow-primary/60">
             {/* Gradient accent bar */}
             <div className="h-1 w-full bg-gradient-to-r from-primary via-secondary to-primary" />
 
@@ -287,7 +287,7 @@ export default function OnboardingTour({
               )}
 
               {/* Title */}
-              <h3 className="text-base font-bold text-base-content leading-snug pr-6">
+              <h3 className="text-lg font-bold leading-snug pr-6">
                 {currentStep.title}
               </h3>
 
@@ -304,13 +304,12 @@ export default function OnboardingTour({
                 {steps.map((_, i) => (
                   <div
                     key={i}
-                    className={`rounded-full transition-all duration-300 ${
-                      i === currentIndex
-                        ? "h-2 w-5 bg-primary"
-                        : i < currentIndex
-                          ? "h-2 w-2 bg-primary/40"
-                          : "h-2 w-2 bg-base-content/15"
-                    }`}
+                    className={`rounded-full transition-all duration-300 ${i === currentIndex
+                      ? "h-2 w-5 bg-primary"
+                      : i < currentIndex
+                        ? "h-2 w-2 bg-primary/40"
+                        : "h-2 w-2 bg-base-content/15"
+                      }`}
                   />
                 ))}
               </div>

@@ -141,7 +141,7 @@ export const ClassificationLevelTab = (props: Props) => {
     }
 
     const getLevelTitle = () => {
-      return "Which option best fits your item?";
+      return "Which HTS code best fits your item?";
     };
 
     const hasSelection = Boolean(level.selection);
