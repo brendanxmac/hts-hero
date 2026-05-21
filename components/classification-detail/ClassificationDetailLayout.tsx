@@ -55,6 +55,10 @@ import {
   DocumentTextIcon as DocumentTextOutline,
   CheckBadgeIcon,
   DocumentArrowDownIcon,
+  ShareIcon,
+  GlobeAltIcon,
+  TagIcon,
+  TrophyIcon,
 } from "@heroicons/react/24/outline";
 
 /**
@@ -385,14 +389,14 @@ export const ClassificationDetailLayout = ({
         type: "modal" as const,
         title: "Your Classification Workspace",
         description:
-          "This is where you classify products. We'll automatically discover relevant HS sections, chapters, and headings, then help you narrow down to the exact code, level-by-level.",
+          "This is where you classify products. We'll automatically discover relevant HS sections, chapters, and headings -- as well as any relevant legal notes or CROSS rulings.",
         icon: <SparklesIcon className="h-5 w-5 text-primary" />,
       },
       {
         id: "workspace-nav",
         type: "spotlight" as const,
         targetSelector: "#onboarding-detail-nav",
-        title: "Navigate Your Classification",
+        title: "See the Big Picture",
         description:
           "Use this sidebar to navigate between different aspects of your classification - from duties, to the classification path, and CROSS ruling validation.",
         placement: "right" as const,
@@ -402,9 +406,9 @@ export const ClassificationDetailLayout = ({
         id: "workspace-path",
         type: "spotlight" as const,
         targetSelector: "#onboarding-detail-classification-path",
-        title: "Classification Path",
+        title: "Navigate Your Classification Path",
         description:
-          "Your classification selection path through the HTS is tracked here. Completed levels show a green check, and your current step pulses to show where you are.",
+          "You will select the best HTS element level-by-level, starting with headings. Your selection path through the HTS is tracked here. Completed levels show a green check, and your current step pulses to show where you are.",
         placement: "right" as const,
       },
     ],
@@ -417,9 +421,9 @@ export const ClassificationDetailLayout = ({
         id: "candidates-options",
         type: "spotlight" as const,
         targetSelector: "#onboarding-detail-options",
-        title: "HTS Code Candidates",
+        title: "HS Code Candidates",
         description:
-          "We automatically found these candidates matching your product. Click any option to select it and advance to the next level of the tariff schedule.",
+          "We automatically found candidates relevant to your product based on the product desription, legal notes, and GRIs. Click any option to select it and advance to the next level of the tariff schedule, until you hit 10-digits.",
         placement: "right" as const,
         icon: <QueueListIcon className="h-5 w-5 text-primary" />,
       },
@@ -429,27 +433,27 @@ export const ClassificationDetailLayout = ({
         targetSelector: "#onboarding-detail-add-candidates",
         title: "Add Missing Candidates",
         description:
-          "If the right option isn't listed, you can manually browse the tariff tree and add candidates yourself.",
+          "If you don't see any good options, you can quickly browse the entire HTS and add candidates yourself.",
         placement: "bottom" as const,
         icon: <PlusCircleIcon className="h-5 w-5 text-primary" />,
       },
-      {
-        id: "candidates-research",
-        type: "spotlight" as const,
-        targetSelector: "#onboarding-detail-research-panel",
-        title: "AI-Powered Research",
-        description:
-          "Our AI analyzes each candidate against the Legal Notes & General Rules of Interpretation to help inform your decision. This is for reference only, always use your own judgment.",
-        placement: "left" as const,
-        icon: <BeakerIcon className="h-5 w-5 text-primary" />,
-      },
+      // {
+      //   id: "candidates-research",
+      //   type: "spotlight" as const,
+      //   targetSelector: "#onboarding-detail-research-panel",
+      //   title: "Candidate Analysis",
+      //   description:
+      //     "We analyze each candidate against the Legal Notes & GRIs to help you make the best selection. This is for reference only, always use your own judgment.",
+      //   placement: "left" as const,
+      //   icon: <BeakerIcon className="h-5 w-5 text-primary" />,
+      // },
       {
         id: "candidates-tabs",
         type: "spotlight" as const,
         targetSelector: "#onboarding-detail-research-tabs",
-        title: "Research, Legal Notes, & CROSS Rulings",
+        title: "Research, Legal Notes, & CROSS Rulings related to your product",
         description:
-          "Easily wwitch between AI research, Legal Notes that may affect your classification, and seeing potentially related CROSS rulings from U.S. Customs.",
+          "Quickly see AI research, Legal Notes, and CROSS rulings that may affect your classification.",
         placement: "bottom" as const,
       },
     ],
@@ -458,26 +462,14 @@ export const ClassificationDetailLayout = ({
 
   const completionTourSteps: OnboardingStep[] = useMemo(
     () => [
-      {
-        id: "complete-notes",
-        type: "spotlight" as const,
-        targetSelector: "#onboarding-detail-notes",
-        title: "Classification Notes",
-        description:
-          "Add your reasoning and notes here. These are auto-generated when your classification completes, and are included in your classification report.",
-        placement: "top" as const,
-        icon: <DocumentTextOutline className="h-5 w-5 text-primary" />,
-      },
-      {
-        id: "complete-report",
-        type: "spotlight" as const,
-        targetSelector: "#onboarding-detail-download-report",
-        title: "Download Your Report",
-        description:
-          "Generate a full classification report including your HTS code path, notes, and product details — ready to share or file.",
-        placement: "bottom" as const,
-        icon: <DocumentArrowDownIcon className="h-5 w-5 text-primary" />,
-      },
+      // {
+      //   id: "complete-congrats",
+      //   type: "modal" as const,
+      //   title: "Classification Complete!",
+      //   description:
+      //     "Your classification is done — let's walk through the tools you have to finalize, share, and organize it.",
+      //   icon: <TrophyIcon className="h-5 w-5 text-primary" />,
+      // },
       {
         id: "complete-status",
         type: "spotlight" as const,
@@ -487,6 +479,56 @@ export const ClassificationDetailLayout = ({
           "Mark your classification as Final when you're confident, or flag it as Needs Review for a teammate to check.",
         placement: "bottom" as const,
         icon: <CheckBadgeIcon className="h-5 w-5 text-primary" />,
+      },
+      {
+        id: "complete-report",
+        type: "spotlight" as const,
+        targetSelector: "#onboarding-detail-download-report",
+        title: "Generate Classification Report",
+        description:
+          "Download a full classification report including your HTS code path, product details, and any notes you've added — ready to share with clients, colleagues, or file for audit. You can add your company logo by uploading it in your settings.",
+        placement: "bottom" as const,
+        icon: <DocumentArrowDownIcon className="h-5 w-5 text-primary" />,
+      },
+      {
+        id: "complete-share",
+        type: "spotlight" as const,
+        targetSelector: "#onboarding-detail-share",
+        title: "Share with Colleagues or Clients",
+        description:
+          "Share this classification with teammates for review or generate a public link to send to clients — no account required for them to view.",
+        placement: "bottom" as const,
+        icon: <ShareIcon className="h-5 w-5 text-primary" />,
+      },
+      {
+        id: "complete-country",
+        type: "spotlight" as const,
+        targetSelector: "#onboarding-detail-country",
+        title: "Country of Origin & Tariffs",
+        description:
+          "Select the country of origin to instantly see applicable duty rates, tariff programs, and possible ways to save on your classified product's import duties.",
+        placement: "bottom" as const,
+        icon: <GlobeAltIcon className="h-5 w-5 text-primary" />,
+      },
+      {
+        id: "complete-tag",
+        type: "spotlight" as const,
+        targetSelector: "#onboarding-detail-tag",
+        title: "Tag for Easy Organization",
+        description:
+          "Add a tag to group related classifications together — great for organizing by importer, client, or product line so you can filter them on the main page.",
+        placement: "bottom" as const,
+        icon: <TagIcon className="h-5 w-5 text-primary" />,
+      },
+      {
+        id: "complete-notes",
+        type: "spotlight" as const,
+        targetSelector: "#onboarding-detail-notes",
+        title: "Classification Defense Notes",
+        description:
+          "Pull notes from the classification levels in the left panel, or add your own reasoning here — everything you write is included in the report when you download.",
+        placement: "top" as const,
+        icon: <DocumentTextOutline className="h-5 w-5 text-primary" />,
       },
     ],
     []
@@ -742,7 +784,6 @@ export const ClassificationDetailLayout = ({
           steps={completionTourSteps}
           enabled={
             !readOnly &&
-            candidatesTourDone &&
             !!classification?.isComplete &&
             activeTab === "overview" &&
             !showCompleteModal

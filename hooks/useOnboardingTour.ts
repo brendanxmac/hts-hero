@@ -10,6 +10,7 @@ export interface OnboardingStep {
   description: string;
   placement?: "top" | "bottom" | "left" | "right";
   icon?: React.ReactNode;
+  action?: { label: string; href: string };
 }
 
 interface UseOnboardingTourOptions {
@@ -51,6 +52,14 @@ function markTourCompleted(tourId: string) {
   localStorage.setItem(getStorageKey(tourId), "true");
 }
 
+export const ONBOARDING_REPLAY_EVENT = "onboarding-replay-request";
+
+export function requestOnboardingReplay(tourId: string) {
+  window.dispatchEvent(
+    new CustomEvent(ONBOARDING_REPLAY_EVENT, { detail: { tourId } })
+  );
+}
+
 function getTargetRect(selector: string): TargetRect | null {
   const el = document.querySelector(selector);
   if (!el) return null;
@@ -88,10 +97,12 @@ export function useOnboardingTour({
   const [isActive, setIsActive] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [targetRect, setTargetRect] = useState<TargetRect | null>(null);
+  const [isReplay, setIsReplay] = useState(false);
   const rafRef = useRef<number>(0);
   const onCompleteRef = useRef(onComplete);
   onCompleteRef.current = onComplete;
 
+  // First-time auto-start
   useEffect(() => {
     if (!enabled || steps.length === 0) return;
     if (isTourCompleted(tourId)) return;
@@ -106,6 +117,23 @@ export function useOnboardingTour({
 
     return () => clearTimeout(timer);
   }, [tourId, steps, enabled]);
+
+  // Replay listener
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail?.tourId !== tourId) return;
+      if (!enabled || steps.length === 0) return;
+
+      const firstVisible = findNextVisibleIndex(steps, 0, 1);
+      if (firstVisible === -1) return;
+      setIsReplay(true);
+      setCurrentIndex(firstVisible);
+      setIsActive(true);
+    };
+    window.addEventListener(ONBOARDING_REPLAY_EVENT, handler);
+    return () => window.removeEventListener(ONBOARDING_REPLAY_EVENT, handler);
+  }, [tourId, enabled, steps]);
 
   const currentStep = isActive ? steps[currentIndex] ?? null : null;
 
@@ -148,9 +176,12 @@ export function useOnboardingTour({
 
   const complete = useCallback(() => {
     setIsActive(false);
-    markTourCompleted(tourId);
+    if (!isReplay) {
+      markTourCompleted(tourId);
+    }
+    setIsReplay(false);
     onCompleteRef.current?.();
-  }, [tourId]);
+  }, [tourId, isReplay]);
 
   const next = useCallback(() => {
     const nextIdx = findNextVisibleIndex(steps, currentIndex + 1, 1);

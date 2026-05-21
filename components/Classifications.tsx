@@ -467,77 +467,98 @@ export const Classifications = () => {
 
   const isContentLoading = loader.isLoading || classificationsLoading;
 
+  const hasClassifications = classifications && classifications.length > 0;
+
   const onboardingSteps: OnboardingStep[] = useMemo(
-    () => [
-      {
-        id: "welcome",
-        type: "modal" as const,
-        title: "Welcome to HTS Hero",
-        description:
-          "We'll help you classify your products with the right HTS code in minutes — powered by AI research and the official tariff schedule. Let's take a quick look around.",
-        icon: <SparklesIcon className="h-5 w-5 text-primary" />,
-      },
-      {
-        id: "new-classification",
-        type: "spotlight" as const,
-        targetSelector: "#onboarding-new-classification",
-        title: "Start a New Classification",
-        description:
-          "Click here to describe your product. Our AI will analyze it and guide you through the tariff schedule step-by-step to find the right HTS code.",
-        placement: "bottom" as const,
-        icon: <RocketLaunchIcon className="h-5 w-5 text-primary" />,
-      },
-      {
-        id: "remaining-badge",
-        type: "spotlight" as const,
-        targetSelector: "#onboarding-remaining-badge",
-        title: "Your Classification Allowance",
-        description:
-          "This shows how many classifications you have remaining. Upgrade anytime for unlimited access.",
-        placement: "bottom" as const,
-      },
-      {
-        id: "tabs",
-        type: "spotlight" as const,
-        targetSelector: "#onboarding-tabs",
-        title: "Organize by Status",
-        description:
-          "Track your progress by filtering between Drafts, classifications that Need Review, and ones you've marked as Final.",
-        placement: "bottom" as const,
-        icon: <AdjustmentsHorizontalIcon className="h-5 w-5 text-primary" />,
-      },
-      {
-        id: "filters",
-        type: "spotlight" as const,
-        targetSelector: "#onboarding-filters",
-        title: "Search & Filter",
-        description:
-          "Quickly find any classification by searching descriptions, HTS codes, or filtering by importer.",
-        placement: "bottom" as const,
-        icon: <FunnelIcon className="h-5 w-5 text-primary" />,
-      },
-      {
-        id: "first-card",
-        type: "spotlight" as const,
-        targetSelector: "#onboarding-first-card",
-        title: "Your Classifications",
-        description:
-          "Each card shows a classification's product description, HTS code progress, and status. Click any card to continue working on it.",
-        placement: "top" as const,
-        icon: <CursorArrowRaysIcon className="h-5 w-5 text-primary" />,
-      },
-      {
-        id: "empty-cta",
-        type: "spotlight" as const,
-        targetSelector: "#onboarding-empty-cta",
-        title: "Ready to Classify",
-        description:
-          "Start your first classification here — just describe your product and we'll take care of the rest.",
-        placement: "top" as const,
-        icon: <RocketLaunchIcon className="h-5 w-5 text-primary" />,
-      },
-    ],
-    []
+    () => {
+      const steps: OnboardingStep[] = [
+        {
+          id: "welcome",
+          type: "modal" as const,
+          title: "Welcome to HTS Hero!",
+          description:
+            "This quick walkthrough will introduce important features & show you how to start quickly generating classifications with less guesswork and more evidence.",
+          icon: <SparklesIcon className="h-5 w-5 text-primary" />,
+        },
+        {
+          id: "new-classification",
+          type: "spotlight" as const,
+          targetSelector: "#onboarding-new-classification",
+          title: "Start a New Classification",
+          description:
+            "Click here to begin a new classification. You'll describe your product & we'll analyze it to find the best candidates, and the evidence needed to defend them.",
+          placement: "bottom" as const,
+          icon: <RocketLaunchIcon className="h-5 w-5 text-primary" />,
+        },
+        {
+          id: "remaining-badge",
+          type: "spotlight" as const,
+          targetSelector: "#onboarding-remaining-badge",
+          title: "Your Classification Allowance",
+          description:
+            "This shows how many classifications you have remaining. You can upgrade anytime to increase your monthly limit.",
+          placement: "bottom" as const,
+        },
+        {
+          id: "tabs",
+          type: "spotlight" as const,
+          targetSelector: "#onboarding-tabs",
+          title: "Organize by Status",
+          description:
+            "Track your progress by filtering between Drafts, classifications that Need Review, and ones you've marked as Final.",
+          placement: "bottom" as const,
+          icon: <AdjustmentsHorizontalIcon className="h-5 w-5 text-primary" />,
+        },
+        {
+          id: "filters",
+          type: "spotlight" as const,
+          targetSelector: "#onboarding-filters",
+          title: "Search & Filter",
+          description:
+            "Quickly find any classification by searching descriptions, HTS codes, or filtering by importer.",
+          placement: "bottom" as const,
+          icon: <FunnelIcon className="h-5 w-5 text-primary" />,
+        },
+        {
+          id: "first-card",
+          type: "spotlight" as const,
+          targetSelector: "#onboarding-first-card",
+          title: "Your Classifications",
+          description:
+            "Each card shows a classification's product description, HTS code progress, and status. Click any card to continue working on it.",
+          placement: "top" as const,
+          icon: <CursorArrowRaysIcon className="h-5 w-5 text-primary" />,
+        },
+        // {
+        //   id: "empty-cta",
+        //   type: "spotlight" as const,
+        //   targetSelector: "#onboarding-empty-cta",
+        //   title: "Ready to Classify",
+        //   description:
+        //     "Get started with your first classification now!",
+        //   placement: "top" as const,
+        //   icon: <RocketLaunchIcon className="h-5 w-5 text-primary" />,
+        // },
+      ];
+
+      if (!hasClassifications) {
+        steps.push({
+          id: "get-started",
+          type: "modal" as const,
+          title: "Start your first classification now!",
+          description:
+            "You're all set! Click the button below to see what smarter classifications really feel like.",
+          icon: <RocketLaunchIcon className="h-5 w-5 text-primary" />,
+          action: {
+            label: "Start Now",
+            href: "/classifications/new",
+          },
+        });
+      }
+
+      return steps;
+    },
+    [hasClassifications]
   );
 
   return (
@@ -606,13 +627,12 @@ export const Classifications = () => {
                   return (
                     <div
                       id="onboarding-remaining-badge"
-                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border ${
-                        isError
-                          ? "bg-error/10 border-error/30 text-error"
-                          : isWarning
-                            ? "bg-warning/10 border-warning/30 text-warning"
-                            : "bg-base-200/80 border-base-content/10 text-base-content/60"
-                      }`}
+                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border ${isError
+                        ? "bg-error/10 border-error/30 text-error"
+                        : isWarning
+                          ? "bg-warning/10 border-warning/30 text-warning"
+                          : "bg-base-200/80 border-base-content/10 text-base-content/60"
+                        }`}
                     >
                       {remaining} Remaining
                     </div>

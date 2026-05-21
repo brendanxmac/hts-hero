@@ -191,7 +191,7 @@ export const OverviewTab = ({
           Classification Overview
         </h1>
         <p className="text-sm text-base-content/50 mt-1">
-          A summary of your classification. Use the tabs in the sidebar to explore each step in detail.
+          A summary of your classification. Use the tabs in the sidebar to explore each aspect of your classification.
         </p>
       </div>
 
@@ -280,6 +280,7 @@ export const OverviewTab = ({
                   </span>
                   {classificationRecord && canUpdateDetails && (
                     <button
+                      id="onboarding-detail-share"
                       className="btn btn-sm btn-outline gap-1.5 h-9"
                       onClick={() => {
                         trackEvent(MixpanelEvent.CLASSIFICATION_SHARED, {
@@ -331,89 +332,72 @@ export const OverviewTab = ({
         )
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <DashboardCard>
-            <DashboardCardHeader
-              title="Country of Origin"
-              icon={<GlobeAltIcon className="w-4 h-4" />}
-            />
-            <div className="p-5">
-              <CountrySelection
-                selectedCountries={countryOfOrigin ? [countryOfOrigin] : []}
-                setSelectedCountries={(countries) => {
-                  onCountryChange(countries[0] || null);
-                }}
-                singleSelect
+          <div id="onboarding-detail-country">
+            <DashboardCard>
+              <DashboardCardHeader
+                title="Country of Origin"
+                icon={<GlobeAltIcon className="w-4 h-4" />}
               />
-            </div>
-          </DashboardCard>
-
-          <DashboardCard>
-            <DashboardCardHeader
-              title="Tag"
-              icon={<TagIcon className="w-4 h-4" />}
-            />
-            <div className="p-5">
-              <div className="flex gap-2">
-                <ImporterDropdown
-                  importers={importers}
-                  selectedImporterId={selectedImporterId}
-                  onSelectionChange={(value) => {
-                    setSelectedImporterId(value);
-                    updateClassification(
-                      classificationId,
-                      undefined,
-                      value || null,
-                      undefined
-                    ).then(() => refreshClassifications());
+              <div className="p-5">
+                <CountrySelection
+                  selectedCountries={countryOfOrigin ? [countryOfOrigin] : []}
+                  setSelectedCountries={(countries) => {
+                    onCountryChange(countries[0] || null);
                   }}
-                  onCreateSelected={() => setShowCreateImporterModal(true)}
-                  isLoading={isLoadingImporters}
-                  disabled={!canUpdateDetails}
-                  showCreateOption={canUpdateDetails}
+                  singleSelect
                 />
-                {selectedImporterId && canUpdateDetails && (
-                  <button
-                    className="btn btn-sm btn-ghost"
-                    onClick={() => {
-                      setSelectedImporterId("");
+              </div>
+            </DashboardCard>
+          </div>
+
+          <div id="onboarding-detail-tag">
+            <DashboardCard>
+              <DashboardCardHeader
+                title="Tag"
+                icon={<TagIcon className="w-4 h-4" />}
+              />
+              <div className="p-5">
+                <div className="flex gap-2">
+                  <ImporterDropdown
+                    importers={importers}
+                    selectedImporterId={selectedImporterId}
+                    onSelectionChange={(value) => {
+                      setSelectedImporterId(value);
                       updateClassification(
                         classificationId,
                         undefined,
-                        null,
+                        value || null,
                         undefined
                       ).then(() => refreshClassifications());
                     }}
-                    disabled={isLoadingImporters}
-                  >
-                    Clear
-                  </button>
-                )}
+                    onCreateSelected={() => setShowCreateImporterModal(true)}
+                    isLoading={isLoadingImporters}
+                    disabled={!canUpdateDetails}
+                    showCreateOption={canUpdateDetails}
+                  />
+                  {selectedImporterId && canUpdateDetails && (
+                    <button
+                      className="btn btn-sm btn-ghost"
+                      onClick={() => {
+                        setSelectedImporterId("");
+                        updateClassification(
+                          classificationId,
+                          undefined,
+                          null,
+                          undefined
+                        ).then(() => refreshClassifications());
+                      }}
+                      disabled={isLoadingImporters}
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
-          </DashboardCard>
+            </DashboardCard>
+          </div>
         </div>
       )}
-
-      {/* Tariff Summary */}
-      <TariffDashboardSection
-        countryOfOrigin={countryOfOrigin}
-        classification={liveClassification}
-        onNavigateToDuty={onNavigateToDuty}
-      />
-
-      {/* Classification Path */}
-      <DashboardCard>
-        <DashboardCardHeader
-          title="Classification Path"
-          icon={<CheckCircleIcon className="w-4 h-4" />}
-        />
-        <div className="p-5">
-          <ClassificationHierarchy
-            classification={liveClassification}
-            onItemClick={onNavigateToTab}
-          />
-        </div>
-      </DashboardCard>
 
       {/* Basis for Classification */}
       <DashboardCard>
@@ -443,6 +427,29 @@ export const OverviewTab = ({
             onBlur={() => {
               if (!readOnly) flushAndSave();
             }}
+          />
+        </div>
+      </DashboardCard>
+
+      {/* Tariff Summary */}
+      <div id="onboarding-detail-tariffs">
+        <TariffDashboardSection
+          countryOfOrigin={countryOfOrigin}
+          classification={liveClassification}
+          onNavigateToDuty={onNavigateToDuty}
+        />
+      </div>
+
+      {/* Classification Path */}
+      <DashboardCard>
+        <DashboardCardHeader
+          title="Classification Path"
+          icon={<CheckCircleIcon className="w-4 h-4" />}
+        />
+        <div className="p-5">
+          <ClassificationHierarchy
+            classification={liveClassification}
+            onItemClick={onNavigateToTab}
           />
         </div>
       </DashboardCard>

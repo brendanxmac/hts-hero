@@ -2,6 +2,7 @@
 
 import { Fragment, useEffect, useRef, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
+import { useRouter } from "next/navigation";
 import { Transition } from "@headlessui/react";
 import {
   ChevronLeftIcon,
@@ -181,6 +182,7 @@ export default function OnboardingTour({
   enabled = true,
   onComplete,
 }: OnboardingTourProps) {
+  const router = useRouter();
   const {
     isActive,
     currentStep,
@@ -338,16 +340,32 @@ export default function OnboardingTour({
                     Skip
                   </button>
                 )}
-                <button
-                  type="button"
-                  onClick={next}
-                  className="flex items-center gap-1 rounded-lg bg-primary px-4 py-1.5
-                    text-xs font-bold text-primary-content
-                    hover:bg-primary/90 transition-colors shadow-sm"
-                >
-                  {isLast ? "Got it!" : "Next"}
-                  {!isLast && <ChevronRightIcon className="h-3.5 w-3.5" />}
-                </button>
+                {currentStep.action ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      skip();
+                      router.push(currentStep.action!.href);
+                    }}
+                    className="flex items-center gap-1 rounded-lg bg-primary px-4 py-1.5
+                      text-xs font-bold text-primary-content
+                      hover:bg-primary/90 transition-colors shadow-sm"
+                  >
+                    {currentStep.action.label}
+                    <ChevronRightIcon className="h-3.5 w-3.5" />
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={next}
+                    className="flex items-center gap-1 rounded-lg bg-primary px-4 py-1.5
+                      text-xs font-bold text-primary-content
+                      hover:bg-primary/90 transition-colors shadow-sm"
+                  >
+                    {isLast ? "Got it!" : "Next"}
+                    {!isLast && <ChevronRightIcon className="h-3.5 w-3.5" />}
+                  </button>
+                )}
               </div>
             </div>
           </div>
