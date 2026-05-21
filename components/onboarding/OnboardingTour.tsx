@@ -261,7 +261,7 @@ export default function OnboardingTour({
           style={tooltipStyle}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="relative overflow-hidden rounded-2xl border border-base-content/15 bg-base-100 shadow-2xl">
+          <div className="relative overflow-hidden rounded-2xl border border-base-content/30 bg-base-100 shadow-lg shadow-primary/60">
             {/* Gradient accent bar */}
             <div className="h-1 w-full bg-gradient-to-r from-primary via-secondary to-primary" />
 
@@ -287,7 +287,7 @@ export default function OnboardingTour({
               )}
 
               {/* Title */}
-              <h3 className="text-base font-bold text-base-content leading-snug pr-6">
+              <h3 className="text-lg font-bold leading-snug pr-6">
                 {currentStep.title}
               </h3>
 
