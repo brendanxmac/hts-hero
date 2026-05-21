@@ -453,20 +453,6 @@ export const Classifications = () => {
     return null;
   };
 
-  if (classificationsError || userError) {
-    return (
-      <main className="w-full h-full flex items-center justify-center bg-base-100">
-        <div className="text-error p-6 rounded-2xl bg-error/10 border border-error/20">
-          {classificationsError &&
-            `Error loading classifications: ${classificationsError.message}`}
-          {userError && `Error loading user: ${userError.message}`}
-        </div>
-      </main>
-    );
-  }
-
-  const isContentLoading = loader.isLoading || classificationsLoading;
-
   const hasClassifications = classifications && classifications.length > 0;
 
   const onboardingSteps: OnboardingStep[] = useMemo(
@@ -560,6 +546,20 @@ export const Classifications = () => {
     },
     [hasClassifications]
   );
+
+  if (classificationsError || userError) {
+    return (
+      <main className="w-full h-full flex items-center justify-center bg-base-100">
+        <div className="text-error p-6 rounded-2xl bg-error/10 border border-error/20">
+          {classificationsError &&
+            `Error loading classifications: ${classificationsError.message}`}
+          {userError && `Error loading user: ${userError.message}`}
+        </div>
+      </main>
+    );
+  }
+
+  const isContentLoading = loader.isLoading || classificationsLoading;
 
   return (
     <main className="w-full min-h-full flex flex-col bg-base-100">
