@@ -20,6 +20,8 @@ export interface VerticalCandidateCrossRulingsTabProps {
   candidates: HtsElement[];
   /** Prefills the search field (e.g. product description). */
   articleDescription?: string;
+  /** Callback to append text to classification notes. */
+  onAddToNotes?: (text: string) => void;
 }
 
 type TermGroup = {
@@ -59,7 +61,6 @@ function CrossRulingsByTermBlock({
             <RulingCard
               key={ruling.id}
               ruling={ruling}
-              // associatedHtsCodes={htsnos.length > 0 ? htsnos : undefined}
               onClick={() => onRulingClick(ruling)}
             />
           ))
@@ -72,6 +73,7 @@ function CrossRulingsByTermBlock({
 export function VerticalCandidateCrossRulingsTab({
   candidates,
   articleDescription = "",
+  onAddToNotes,
 }: VerticalCandidateCrossRulingsTabProps) {
   const [termGroups, setTermGroups] = useState<TermGroup[]>([]);
   const [loading, setLoading] = useState(false);
@@ -250,7 +252,7 @@ export function VerticalCandidateCrossRulingsTab({
           </div>
         )}
         {!loadingDetail && !detailError && selectedRuling && (
-          <RulingDetailView ruling={selectedRuling} onBack={handleBack} />
+          <RulingDetailView ruling={selectedRuling} onBack={handleBack} onAddToNotes={onAddToNotes} />
         )}
 
         {!loadingDetail && !detailError && !selectedRuling && (
@@ -314,7 +316,7 @@ export function VerticalCandidateCrossRulingsTab({
       )}
 
       {!loadingDetail && !detailError && selectedRuling && (
-        <RulingDetailView ruling={selectedRuling} onBack={handleBack} />
+        <RulingDetailView ruling={selectedRuling} onBack={handleBack} onAddToNotes={onAddToNotes} />
       )}
 
       {showIntro && !loadingDetail && !detailError && !selectedRuling && (

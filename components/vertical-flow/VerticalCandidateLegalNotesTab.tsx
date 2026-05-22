@@ -78,10 +78,6 @@ export function VerticalCandidateLegalNotesTab({
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-[12px] text-base-content/70">
-        Official USITC notes for the options shown. Links are grouped
-        when candidates share the same chapter.
-      </p>
       <div className="flex flex-col gap-3">
         {groups.map(({ chapter, htsnos }) => {
           const sectionChapter = getSectionAndChapterForElement(
@@ -132,6 +128,10 @@ export function VerticalCandidateLegalNotesTab({
           );
         })}
       </div>
+      <p className="text-[12px] text-base-content/70">
+        Official USITC notes for the options shown. Links are grouped
+        when candidates share the same chapter.
+      </p>
     </div>
   );
 }

@@ -42,6 +42,7 @@ import { lacksProductDescriptionForAnalysis } from "../../libs/classification-fr
 import { classNames } from "../../utilities/style";
 import { VerticalCandidateLegalNotesTab } from "./VerticalCandidateLegalNotesTab";
 import { VerticalCandidateCrossRulingsTab } from "./VerticalCandidateCrossRulingsTab";
+import { TextSelectionPopover } from "../TextSelectionPopover";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 
 type ResearchPanelTab =
@@ -121,6 +122,39 @@ export const VerticalClassificationStep = ({
   useLayoutEffect(() => {
     resizeDefenseTextarea();
   }, [classification.notes, resizeDefenseTextarea]);
+
+  const focusEndOfDefenseTextarea = useRef(false);
+
+  useEffect(() => {
+    if (researchPanelTab === "classificationDefense") {
+      requestAnimationFrame(() => {
+        resizeDefenseTextarea();
+        if (focusEndOfDefenseTextarea.current) {
+          focusEndOfDefenseTextarea.current = false;
+          const textarea = defenseTextareaRef.current;
+          if (textarea) {
+            textarea.focus();
+            const len = textarea.value.length;
+            textarea.setSelectionRange(len, len);
+            textarea.scrollTop = textarea.scrollHeight;
+          }
+        }
+      });
+    }
+  }, [researchPanelTab, resizeDefenseTextarea]);
+
+  const appendToNotes = useCallback(
+    (text: string) => {
+      setClassification((prev) => ({
+        ...prev,
+        notes: prev.notes?.trim() ? `${prev.notes.trim()}\n\n${text}` : text,
+      }));
+      focusEndOfDefenseTextarea.current = true;
+      setResearchPanelTab("classificationDefense");
+      toast.success("Added to classification notes");
+    },
+    [setClassification]
+  );
 
   // ---------------------------------------------------------------------------
   // Derived values
@@ -735,11 +769,11 @@ export const VerticalClassificationStep = ({
             !loading.isLoading &&
             currentLevel?.analysisReason && (
               <div className="flex flex-col gap-3">
-                <p className="text-[12px] text-base-content/70">
-                  Research is for informational purposes only and may not be correct. Always exercise your own judgement.
-                </p>
-                <div className="rounded-lg border border-base-300 overflow-hidden">
-                  <div className="flex">
+                <TextSelectionPopover
+                  onAddToNotes={appendToNotes}
+                  className="relative rounded-lg border border-base-300 overflow-visible"
+                >
+                  <div className="flex rounded-lg overflow-hidden">
                     <div className="w-1 bg-primary/40 shrink-0" />
                     <div className="p-4 flex-1 min-w-0">
                       <MarkdownProse size="sm">
@@ -747,7 +781,10 @@ export const VerticalClassificationStep = ({
                       </MarkdownProse>
                     </div>
                   </div>
-                </div>
+                </TextSelectionPopover>
+                <p className="text-[12px] text-base-content/70">
+                  Research is for informational purposes only and may not be correct. Always exercise your own judgement.
+                </p>
               </div>
             )}
           {researchPanelTab === "research" &&
@@ -773,6 +810,7 @@ export const VerticalClassificationStep = ({
             <VerticalCandidateCrossRulingsTab
               candidates={currentLevel?.candidates ?? []}
               articleDescription={articleDescription}
+              onAddToNotes={appendToNotes}
             />
           )}
           {/* Always mounted to preserve cursor position across tab switches */}

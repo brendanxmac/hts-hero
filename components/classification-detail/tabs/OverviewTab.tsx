@@ -99,7 +99,11 @@ export const OverviewTab = ({
     const textarea = basisTextareaRef.current;
     if (textarea) {
       textarea.style.height = "auto";
-      textarea.style.height = `${textarea.scrollHeight}px`;
+      const maxHeight = 800;
+      const height = Math.min(textarea.scrollHeight, maxHeight);
+      textarea.style.height = `${height}px`;
+      textarea.style.overflowY =
+        textarea.scrollHeight > maxHeight ? "auto" : "hidden";
     }
   }, []);
 
@@ -110,6 +114,10 @@ export const OverviewTab = ({
     liveClassification.levels,
     resizeBasisTextarea,
   ]);
+
+  useEffect(() => {
+    resizeBasisTextarea();
+  }, [resizeBasisTextarea]);
 
   useEffect(() => {
     if (readOnly) return;
