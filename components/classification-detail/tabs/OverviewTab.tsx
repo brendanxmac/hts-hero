@@ -99,7 +99,11 @@ export const OverviewTab = ({
     const textarea = basisTextareaRef.current;
     if (textarea) {
       textarea.style.height = "auto";
-      textarea.style.height = `${textarea.scrollHeight}px`;
+      const maxHeight = 800;
+      const height = Math.min(textarea.scrollHeight, maxHeight);
+      textarea.style.height = `${height}px`;
+      textarea.style.overflowY =
+        textarea.scrollHeight > maxHeight ? "auto" : "hidden";
     }
   }, []);
 
@@ -110,6 +114,10 @@ export const OverviewTab = ({
     liveClassification.levels,
     resizeBasisTextarea,
   ]);
+
+  useEffect(() => {
+    resizeBasisTextarea();
+  }, [resizeBasisTextarea]);
 
   useEffect(() => {
     if (readOnly) return;
@@ -410,7 +418,7 @@ export const OverviewTab = ({
         <div className="p-5">
           <textarea
             ref={basisTextareaRef}
-            className={`whitespace-pre-wrap min-h-36 w-full px-4 py-3 rounded-lg border transition-all duration-200 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 resize-none overflow-hidden text-sm leading-relaxed ${canUpdateDetails
+            className={`whitespace-pre-wrap min-h-48 w-full px-4 py-3 rounded-lg border transition-all duration-200 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 resize-none overflow-hidden text-sm leading-relaxed ${canUpdateDetails
               ? "bg-base-100 border-base-300 hover:border-primary/40"
               : "bg-base-200/50 border-base-300 cursor-not-allowed opacity-60"
               }`}

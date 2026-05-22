@@ -451,9 +451,9 @@ export const ClassificationDetailLayout = ({
         id: "candidates-tabs",
         type: "spotlight" as const,
         targetSelector: "#onboarding-detail-research-tabs",
-        title: "Research, Legal Notes, & CROSS Rulings related to your product",
+        title: "Research, Legal Notes, CROSS Rulings, & Evidence for your Classification",
         description:
-          "Quickly see AI research, Legal Notes, and CROSS rulings that may affect your classification.",
+          "Quickly see AI research, Legal Notes, and CROSS rulings that may affect your classification. Then use all that evdience to create a strong defense for your classification",
         placement: "bottom" as const,
       },
     ],

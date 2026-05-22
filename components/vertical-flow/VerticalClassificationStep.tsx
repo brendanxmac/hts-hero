@@ -2,7 +2,7 @@
 
 import { useClassification } from "../../contexts/ClassificationContext";
 import { useSectionChapterDiscovery } from "../../contexts/SectionChapterDiscoveryContext";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useLayoutEffect } from "react";
 import { Loader } from "../../interfaces/ui";
 import {
   getBestClassificationProgression,
@@ -42,14 +42,20 @@ import { lacksProductDescriptionForAnalysis } from "../../libs/classification-fr
 import { classNames } from "../../utilities/style";
 import { VerticalCandidateLegalNotesTab } from "./VerticalCandidateLegalNotesTab";
 import { VerticalCandidateCrossRulingsTab } from "./VerticalCandidateCrossRulingsTab";
+import { TextSelectionPopover } from "../TextSelectionPopover";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 
-type ResearchPanelTab = "research" | "legalNotes" | "crossRulings";
+type ResearchPanelTab =
+  | "research"
+  | "legalNotes"
+  | "crossRulings"
+  | "classificationDefense";
 
 const RESEARCH_PANEL_TAB_MIXPANEL: Record<ResearchPanelTab, string> = {
   research: "research",
   legalNotes: "legal_notes",
   crossRulings: "cross_rulings",
+  classificationDefense: "classification_defense",
 };
 
 export interface VerticalClassificationStepProps {
@@ -75,10 +81,12 @@ export const VerticalClassificationStep = ({
   const {
     classification,
     classificationId,
+    setClassification,
     updateLevel,
     classificationTier,
     addNotes,
     getNotesForSectionsAndChapters,
+    flushAndSave,
   } = useClassification();
   const { articleDescription, articleAnalysis, levels } = classification;
   const { htsElements } = useHts();
@@ -100,6 +108,53 @@ export const VerticalClassificationStep = ({
   const [isAnalysisCopied, setIsAnalysisCopied] = useState(false);
   const [researchPanelTab, setResearchPanelTab] =
     useState<ResearchPanelTab>("research");
+
+  const defenseTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const resizeDefenseTextarea = useCallback(() => {
+    const textarea = defenseTextareaRef.current;
+    if (textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  }, []);
+
+  useLayoutEffect(() => {
+    resizeDefenseTextarea();
+  }, [classification.notes, resizeDefenseTextarea]);
+
+  const focusEndOfDefenseTextarea = useRef(false);
+
+  useEffect(() => {
+    if (researchPanelTab === "classificationDefense") {
+      requestAnimationFrame(() => {
+        resizeDefenseTextarea();
+        if (focusEndOfDefenseTextarea.current) {
+          focusEndOfDefenseTextarea.current = false;
+          const textarea = defenseTextareaRef.current;
+          if (textarea) {
+            textarea.focus();
+            const len = textarea.value.length;
+            textarea.setSelectionRange(len, len);
+            textarea.scrollTop = textarea.scrollHeight;
+          }
+        }
+      });
+    }
+  }, [researchPanelTab, resizeDefenseTextarea]);
+
+  const appendToNotes = useCallback(
+    (text: string) => {
+      setClassification((prev) => ({
+        ...prev,
+        notes: prev.notes?.trim() ? `${prev.notes.trim()}\n\n${text}` : text,
+      }));
+      focusEndOfDefenseTextarea.current = true;
+      setResearchPanelTab("classificationDefense");
+      toast.success("Added to classification notes");
+    },
+    [setClassification]
+  );
 
   // ---------------------------------------------------------------------------
   // Derived values
@@ -151,9 +206,12 @@ export const VerticalClassificationStep = ({
 
   // ---------------------------------------------------------------------------
   // Reset research tab when navigating between levels
+  // (preserve "classificationDefense" since notes are classification-wide)
   // ---------------------------------------------------------------------------
   useEffect(() => {
-    setResearchPanelTab("research");
+    setResearchPanelTab((prev) =>
+      prev === "classificationDefense" ? prev : "research"
+    );
   }, [classificationLevel]);
 
   const selectResearchPanelTab = useCallback(
@@ -649,6 +707,18 @@ export const VerticalClassificationStep = ({
               >
                 CROSS Rulings
               </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={researchPanelTab === "classificationDefense"}
+                className={classNames(
+                  "tab font-semibold transition-all duration-200 ease-in",
+                  researchPanelTab === "classificationDefense" && "tab-active"
+                )}
+                onClick={() => selectResearchPanelTab("classificationDefense")}
+              >
+                Classification Defense
+              </button>
             </div>
             <div className="flex flex-wrap gap-1.5 sm:justify-end">
               {researchPanelTab === "research" &&
@@ -699,11 +769,11 @@ export const VerticalClassificationStep = ({
             !loading.isLoading &&
             currentLevel?.analysisReason && (
               <div className="flex flex-col gap-3">
-                <p className="text-[12px] text-base-content/70">
-                  Research is for informational purposes only and may not be correct. Always exercise your own judgement.
-                </p>
-                <div className="rounded-lg border border-base-300 overflow-hidden">
-                  <div className="flex">
+                <TextSelectionPopover
+                  onAddToNotes={appendToNotes}
+                  className="relative rounded-lg border border-base-300 overflow-visible"
+                >
+                  <div className="flex rounded-lg overflow-hidden">
                     <div className="w-1 bg-primary/40 shrink-0" />
                     <div className="p-4 flex-1 min-w-0">
                       <MarkdownProse size="sm">
@@ -711,7 +781,10 @@ export const VerticalClassificationStep = ({
                       </MarkdownProse>
                     </div>
                   </div>
-                </div>
+                </TextSelectionPopover>
+                <p className="text-[12px] text-base-content/70">
+                  Research is for informational purposes only and may not be correct. Always exercise your own judgement.
+                </p>
               </div>
             )}
           {researchPanelTab === "research" &&
@@ -737,8 +810,47 @@ export const VerticalClassificationStep = ({
             <VerticalCandidateCrossRulingsTab
               candidates={currentLevel?.candidates ?? []}
               articleDescription={articleDescription}
+              onAddToNotes={appendToNotes}
             />
           )}
+          {/* Always mounted to preserve cursor position across tab switches */}
+          <div
+            className={
+              researchPanelTab === "classificationDefense" ? "" : "hidden"
+            }
+          >
+            <div className="flex flex-col gap-3">
+              <div>
+
+                <h3 className="text-lg font-bold">
+                  Classification Defense
+                </h3>
+                <p className="text-sm">
+                  Document your reasoning, relevant GRIs, legal notes, or rulings that support your classification in the text box below
+                </p>
+              </div>
+              <textarea
+                ref={defenseTextareaRef}
+                className={`whitespace-pre-wrap min-h-48 w-full px-4 py-3 rounded-lg border transition-all duration-200 placeholder:text-base-content/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 resize-none overflow-hidden text-sm leading-relaxed ${readOnly || isDisabled
+                  ? "bg-base-200/50 border-base-300 cursor-not-allowed opacity-60"
+                  : "bg-base-100 border-base-300 hover:border-primary/40"
+                  }`}
+                placeholder="According to GRI 1..."
+                value={classification.notes ?? ""}
+                disabled={readOnly || isDisabled}
+                onChange={(e) => {
+                  setClassification((prev) => ({
+                    ...prev,
+                    notes: e.target.value,
+                  }));
+                  resizeDefenseTextarea();
+                }}
+                onBlur={() => {
+                  if (!readOnly) flushAndSave();
+                }}
+              />
+            </div>
+          </div>
         </div>
       </div>
 
