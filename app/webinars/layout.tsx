@@ -18,10 +18,9 @@ export default async function WebinarsLayout({
   return (
     <div>
       <CTABanner
-        message={`Want audit-ready classifications without hours of research?`}
+        message={`Produce HTS classifications that avoid audits, in minutes`}
         ctaText="Try Now"
         href="/classify"
-      // subText="Produce audit-ready classifications in minutes"
       />
       <Suspense>
         {user ? <AuthenticatedHeader /> : <UnauthenticatedHeader />}

@@ -205,7 +205,7 @@ export function HomePage() {
   return (
     <div className="min-h-screen flex flex-col bg-base-100">
       <CTABanner
-        message={`Want audit-ready classifications without hours of research?`}
+        message={`Produce HTS classifications that avoid audits, in minutes`}
         ctaText="Try it Free"
         href="/classify"
       // subText="Produce audit-ready classifications in minutes"
