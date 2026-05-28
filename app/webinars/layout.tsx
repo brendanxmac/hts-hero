@@ -20,7 +20,7 @@ export default async function WebinarsLayout({
       <CTABanner
         message={`Produce HTS classifications that avoid audits, in minutes`}
         ctaText="Try Now"
-        href="/classify"
+        href="/classifications/new"
       />
       <Suspense>
         {user ? <AuthenticatedHeader /> : <UnauthenticatedHeader />}
