@@ -253,7 +253,7 @@ export function HomePage() {
                 ref={classifyInputRef}
                 buttonText="Start Classification"
                 placeholder="Enter your product description"
-                defaultValue="Fresh Mangoes"
+                defaultValue="Fresh Organic Mangoes"
                 entryPoint="classify_landing"
               />
             </div>
