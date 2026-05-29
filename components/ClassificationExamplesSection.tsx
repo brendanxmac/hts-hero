@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -8,6 +9,7 @@ import {
   DocumentTextIcon,
 } from "@heroicons/react/24/outline";
 import { GRIDefenseHeroMarketing } from "./GRIDefenseHeroMarketing";
+import LetsTalkModal from "./LetsTalkModal";
 
 interface ClassificationExample {
   htsCode: string;
@@ -188,6 +190,8 @@ function ExampleCard({ example }: { example: ClassificationExample }) {
 }
 
 export default function ClassificationExamplesSection() {
+  const [isBookDemoModalOpen, setIsBookDemoModalOpen] = useState(false);
+
   return (
     <section className="relative pb-20 md:pb-28 overflow-hidden">
       {/* Ambient background glow */}
@@ -276,7 +280,28 @@ export default function ClassificationExamplesSection() {
             100% Free. No Credit Card Required
           </p>
         </div> */}
+
+        {/* Book Demo CTA */}
+        <div className="flex flex-col items-center mt-16">
+          <button
+            onClick={() => setIsBookDemoModalOpen(true)}
+            className="inline-flex items-center gap-3 px-10 py-4 rounded-xl font-bold text-lg bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+          >
+            Book a Demo
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </button>
+          <p className="text-sm text-base-content/50 mt-3">
+            See how HTS Hero removes risk from your classifications
+          </p>
+        </div>
       </div>
+
+      <LetsTalkModal
+        isOpen={isBookDemoModalOpen}
+        onClose={() => setIsBookDemoModalOpen(false)}
+      />
 
       <style jsx>{`
         .examples-bounce-arrow {
