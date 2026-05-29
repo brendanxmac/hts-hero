@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Suspense, useState, useEffect, useCallback } from "react";
+import { Suspense, useState, useEffect, useCallback, useRef } from "react";
 import LetsTalkModal from "../components/LetsTalkModal";
 import { useUser } from "../contexts/UserContext";
 import { AboutPage } from "../enums/classify";
@@ -20,6 +20,8 @@ import Footer from "../components/Footer";
 import UseCases from "../components/UseCases";
 import { CTABanner } from "./CTABanner";
 import ClassifyPricing from "./ClassifyPricing";
+import { ClassifyInput, ClassifyInputHandle } from "./ClassifyInput";
+import ClassificationExamplesSection from "./ClassificationExamplesSection";
 
 const heroImages = [
   {
@@ -168,6 +170,7 @@ const productSections: ProductSectionData[] = [
 ];
 
 export function HomePage() {
+  const classifyInputRef = useRef<ClassifyInputHandle>(null);
   const { user } = useUser();
   const [isBookDemoModalOpen, setIsBookDemoModalOpen] = useState(false);
   const [isToolMenuOpen, setIsToolMenuOpen] = useState(false);
@@ -206,9 +209,8 @@ export function HomePage() {
     <div className="min-h-screen flex flex-col bg-base-100">
       <CTABanner
         message={`Produce HTS classifications that avoid audits, in minutes`}
-        ctaText="Try Now"
-        href="/classifications/new"
-      // subText="Produce audit-ready classifications in minutes"
+        ctaText="Book Demo"
+        onClick={handleBookDemoClick}
       />
       <Suspense
         fallback={
@@ -231,28 +233,37 @@ export function HomePage() {
           {/* Main Hero Content */}
           <div className="text-center max-w-5xl w-full">
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-5">
+              {/* HTS Classifications <br /> that{" "}
               <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
-                Audit-Ready
+                Avoid Audits
               </span>{" "}
-              <span className="text-base-content">HTS Classifications</span>,
-              <br />
+              <br /> */}
               <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
-                Effortless
-              </span>{" "}
-              <span className="text-base-content">Tariffs</span>
-              <br />
+                Avoid Import Audits & Delays <br />
+              </span>{" "} with Smarter Classifications
             </h1>
 
-            <p className="text-sm sm:text-base text-base-content/80 md:text-lg max-w-3xl mx-auto mb-8">
-              Classify quickly with confidence and see the latest tariff rate
-              for any import
+            <p className="text-sm sm:text-base text-base-content/80 md:text-lg max-w-4xl mx-auto mb-8">
+              Quickly produce HTS classifications with legal note and CROSS ruling evdience
             </p>
 
+            <div className="w-full max-w-3xl mx-auto">
+
+              <ClassifyInput
+                ref={classifyInputRef}
+                buttonText="Start Classification"
+                placeholder="Enter your product description"
+                defaultValue="Fresh Organic Mangoes"
+                entryPoint="classify_landing"
+              />
+            </div>
+
+
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full mt-4">
               {/* Get Started Button with Popover */}
-              <div className="relative w-full sm:w-auto">
-                <button
+              {/* <div className="relative w-full sm:w-auto"> */}
+              {/* <button
                   onClick={() => setIsToolMenuOpen(!isToolMenuOpen)}
                   className="group inline-flex items-center justify-center gap-2 px-16 sm:px-28 py-2.5 sm:py-3.5 rounded-xl font-semibold text-base bg-primary text-white hover:bg-primary/90 transition-all duration-200 hover:scale-[1.01] active:scale-[0.98] shadow-lg hover:shadow-xl"
                 >
@@ -270,26 +281,21 @@ export function HomePage() {
                       d="M19 9l-7 7-7-7"
                     />
                   </svg>
-                </button>
+                </button> */}
 
-                {/* Tool Selection Popover */}
-                {isToolMenuOpen && (
+              {/* Tool Selection Popover */}
+              {/* {isToolMenuOpen && (
                   <>
-                    {/* Backdrop to close menu */}
                     <div
                       className="fixed inset-0 z-40"
                       onClick={() => setIsToolMenuOpen(false)}
                     />
-                    {/* Popover Menu */}
                     <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 z-50 w-72 sm:w-80 bg-base-100 rounded-2xl shadow-2xl border border-base-content/10 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                      {/* Arrow */}
                       <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-base-100 border-l border-t border-base-content/10 rotate-45" />
-
                       <div className="relative p-2">
                         <p className="text-xs font-medium text-base-content/50 uppercase tracking-wider px-3 py-2">
                           Choose a tool
                         </p>
-
                         <Link
                           href="/classify"
                           onClick={() => setIsToolMenuOpen(false)}
@@ -364,28 +370,23 @@ export function HomePage() {
                       </div>
                     </div>
                   </>
-                )}
-              </div>
+                )} */}
+              {/* </div> */}
 
-              <button
+              {/* <button
                 onClick={handleBookDemoClick}
                 className="inline-flex items-center gap-2 px-8 py-2 sm:py-3.5 rounded-xl font-semibold text-base text-primary border-2 border-primary/20 hover:border-primary/40 hover:bg-primary/5 transition-all duration-200"
               >
                 Book Demo
-              </button>
+              </button> */}
             </div>
           </div>
 
           {/* Hero Image Showcase */}
-          <div className="w-full max-w-5xl mx-auto mt-6 md:mt-8">
-            {/* Image Container with Glow Effect */}
+          {/* <div className="w-full max-w-5xl mx-auto mt-6 md:mt-8">
             <div className="relative">
-              {/* Glow background */}
               <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 rounded-3xl blur-2xl opacity-60" />
-
-              {/* Main image frame */}
               <div className="relative bg-base-200/50 rounded-2xl shadow-2xl border border-base-content/10 overflow-hidden">
-                {/* Image wrapper with aspect ratio - taller on mobile */}
                 <div className="relative aspect-[11/13] sm:aspect-[16/8] w-full">
                   {heroImages.map((image, index) => (
                     <div
@@ -395,7 +396,6 @@ export function HomePage() {
                         : "opacity-0 scale-[1.02]"
                         }`}
                     >
-                      {/* Mobile image */}
                       <Image
                         src={image.srcMobile}
                         alt={image.label}
@@ -403,7 +403,6 @@ export function HomePage() {
                         className="object-cover sm:hidden"
                         priority={index === 0}
                       />
-                      {/* Desktop image */}
                       <Image
                         src={image.src}
                         alt={image.label}
@@ -415,7 +414,6 @@ export function HomePage() {
                   ))}
                 </div>
 
-                {/* Bottom bar with tabs - hidden on mobile */}
                 <div className="hidden md:block absolute bottom-0 left-0 right-0 bg-gradient-to-t from-base-100 via-base-100/95 to-transparent pt-12 pb-4 px-4">
                   <div className="flex items-center justify-center gap-2">
                     {heroImages.map((image, index) => (
@@ -427,7 +425,6 @@ export function HomePage() {
                           : "bg-base-200/80 text-base-content/70 hover:bg-base-300/80 hover:text-base-content"
                           }`}
                       >
-                        {/* <span className="text-sm">{image.emoji}</span> */}
                         <span className="text-sm font-medium">
                           {image.label}
                         </span>
@@ -437,35 +434,32 @@ export function HomePage() {
                 </div>
               </div>
             </div>
-
-            {/* Active image tagline */}
             <p className="text-center text-sm text-base-content/60 mt-4 transition-all duration-300">
               {heroImages[activeImageIndex].tagline}
             </p>
+          </div> */}
+          {/* Testimonials Section - fades in on scroll */}
+          <div className={`w-full px-4 sm:px-6 pt-6 md:pt-10 bg-base-100`}>
+            <TestimonialsStrip />
           </div>
         </div>
       </div>
 
-      {/* Testimonials Section - fades in on scroll */}
-      <div className={`w-full px-4 sm:px-6 pb-12 pt-0 bg-base-100`}>
-        <TestimonialsStrip />
-      </div>
+      <ClassificationExamplesSection />
+
 
       {/* Full-Page Product Sections */}
-      <div
+      {/* <div
         id="tools"
         className="w-full flex flex-col bg-gradient-to-r from-primary/10 via-transparent to-secondary/5"
       >
-        {/* Header */}
         <div className="relative w-full flex flex-col max-w-5xl mx-auto text-center gap-4 py-16 md:py-24 px-4">
-          {/* Subtle badge */}
           <div className="flex justify-center">
             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-base-100 border border-base-content/10 text-xs font-medium text-base-content/60 shadow-sm">
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
               Built for Trade Professionals
             </span>
           </div>
-          {/* Main Headline */}
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight">
             <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
               Tools
@@ -475,12 +469,10 @@ export function HomePage() {
               Easy
             </span>
           </h2>
-          {/* Subtext */}
           <p className="text-base-content/60 text-sm sm:text-base max-w-xl mx-auto">
             From classification to duty and tarrif calculation — we&apos;ve got
             you covered
           </p>
-          {/* Audience Pills */}
           <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3 pt-2">
             <span className="inline-flex items-center px-3 py-1 sm:py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs sm:text-sm font-medium text-primary">
               Customs Brokers
@@ -492,7 +484,6 @@ export function HomePage() {
               Manufacturers
             </span>
           </div>
-          {/* Scroll indicator */}
           <div className="flex justify-center pt-4">
             <svg
               className="w-5 h-5 text-base-content/40 animate-bounce"
@@ -512,7 +503,7 @@ export function HomePage() {
         {productSections.map((product, index) => (
           <ProductSection key={product.title} product={product} index={index} />
         ))}
-      </div>
+      </div> */}
 
       <UseCases handleBookDemoClick={handleBookDemoClick} />
 

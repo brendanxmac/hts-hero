@@ -380,10 +380,10 @@ const UseCases = ({
           {/* Show All Prompt */}
 
           <div className="flex gap-3 mt-6 text-center mx-auto items-center justify-center">
-            Want to see how we can help you or your team?
+            {/* Want to see how we can help you or your team? */}
             <button
               onClick={handleBookDemoClick}
-              className="btn btn-sm btn-primary"
+              className="btn btn-lg btn-wide btn-primary"
             >
               Book a Demo
               <svg

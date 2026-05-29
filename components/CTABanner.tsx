@@ -5,7 +5,8 @@ type CTABannerColor = "primary" | "secondary" | "accent";
 interface CTABannerProps {
   message: string;
   ctaText: string;
-  href: string;
+  href?: string;
+  onClick?: () => void;
   color?: CTABannerColor;
   openInNewTab?: boolean;
   subText?: string;
@@ -39,10 +40,13 @@ export function CTABanner({
   message,
   ctaText,
   href,
+  onClick,
   color = "primary",
   openInNewTab = false,
   subText,
 }: CTABannerProps) {
+  const btnClassName = `inline-flex items-center gap-1.5 px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-bold transition-all shadow-sm whitespace-nowrap ${buttonClasses[color]}`;
+
   return (
     <div className={gradientClasses[color]}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-3.5 flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-3 sm:gap-6">
@@ -52,16 +56,23 @@ export function CTABanner({
           {message}
         </p>
         <div className="flex flex-col items-center gap-1 shrink-0">
-          <Link
-            href={href}
-            {...(openInNewTab
-              ? { target: "_blank", rel: "noopener noreferrer" }
-              : {})}
-            className={`inline-flex items-center gap-1.5 px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-bold transition-all shadow-sm whitespace-nowrap ${buttonClasses[color]}`}
-          >
-            {ctaText}
-            <span aria-hidden="true">&rarr;</span>
-          </Link>
+          {onClick ? (
+            <button onClick={onClick} className={btnClassName}>
+              {ctaText}
+              <span aria-hidden="true">&rarr;</span>
+            </button>
+          ) : (
+            <Link
+              href={href!}
+              {...(openInNewTab
+                ? { target: "_blank", rel: "noopener noreferrer" }
+                : {})}
+              className={btnClassName}
+            >
+              {ctaText}
+              <span aria-hidden="true">&rarr;</span>
+            </Link>
+          )}
           {subText && (
             <span className={`${textClasses[color]} text-[10px] sm:text-xs opacity-90 text-center sm:text-right`}>
               {subText}
