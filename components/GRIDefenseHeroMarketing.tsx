@@ -67,17 +67,17 @@ export const GRIDefenseHeroMarketing = () => {
 
   return (
     <div className="relative mx-4 md:mx-8 px-8 md:px-16 text-center">
-      <p className="text-xs md:text-sm font-bold uppercase tracking-[0.3em] text-primary/90 mb-4">
+      {/* <p className="text-xs md:text-sm font-bold uppercase tracking-[0.3em] text-primary/90 mb-4">
         Defensible & Documented
-      </p>
+      </p> */}
       <h2 className="gri-text-glow text-3xl md:text-4xl lg:text-6xl font-bold text-base-content leading-tight max-w-3xl mx-auto">
-        Not Just Codes, <span className="text-primary">Proof</span>
+        Find <span className="text-primary">Supporting Evidence</span> for Any Classification
       </h2>
       <p className="text-base md:text-lg text-base-content/60 mt-6 max-w-3xl mx-auto">
-        GRI, Legal Note, & CROSS Rulings Research Included
+        Get GRI, Legal Note, & CROSS Ruling Evidence for Any Product
       </p>
 
-      <div className="mt-8 pt-6 border-t border-base-content/10 min-h-[4rem] md:min-h-[5rem] flex items-center justify-center">
+      <div className="mt-8 min-h-[4rem] md:min-h-[5rem] flex items-center justify-center">
         <div className="relative w-full min-h-[4rem] md:min-h-[5rem] flex items-center justify-center">
           <span
             className={`text-2xl md:text-4xl font-semibold tracking-tight ${isGRI ? "text-primary/90" : "text-secondary/90"

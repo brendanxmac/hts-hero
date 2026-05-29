@@ -165,7 +165,7 @@ function ExampleCard({ example }: { example: ClassificationExample }) {
             </span> */}
 
             <span className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-primary/10 text-xs md:text-base font-semibold text-primary whitespace-nowrap transition-all duration-300 group-hover:bg-primary group-hover:text-white group-hover:shadow-md group-hover:shadow-primary/25">
-              See Defense Report
+              View Evidence
               <svg
                 className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
                 fill="none"
@@ -245,7 +245,7 @@ export default function ClassificationExamplesSection() {
         {/* Connector + Card grid */}
         <div className="mt-6 flex flex-col items-center">
           <p className="text-sm md:text-lg font-medium text-base-content/50 mb-2">
-            Examples
+            Check out these examples
           </p>
           <div className="flex items-center gap-2 mb-8">
             <div className="w-12 h-px bg-gradient-to-r from-transparent to-primary/30" />
