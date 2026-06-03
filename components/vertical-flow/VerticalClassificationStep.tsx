@@ -806,13 +806,18 @@ export const VerticalClassificationStep = ({
               candidates={currentLevel?.candidates ?? []}
             />
           )}
-          {researchPanelTab === "crossRulings" && (
+          {/* Always mounted to preserve search results across tab switches */}
+          <div
+            className={
+              researchPanelTab === "crossRulings" ? "" : "hidden"
+            }
+          >
             <VerticalCandidateCrossRulingsTab
               candidates={currentLevel?.candidates ?? []}
               articleDescription={articleDescription}
               onAddToNotes={appendToNotes}
             />
-          )}
+          </div>
           {/* Always mounted to preserve cursor position across tab switches */}
           <div
             className={
