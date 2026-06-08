@@ -2,6 +2,10 @@
 
 import { ClockIcon } from "@heroicons/react/16/solid";
 
+const currentMonth = new Intl.DateTimeFormat("en-US", { month: "long" }).format(
+  new Date()
+);
+
 const cardStyle =
   "bg-base-100 rounded-xl sm:rounded-2xl shadow-lg shadow-base-content/10 border border-base-content/20 p-4 sm:p-6 md:p-8 text-base-content min-w-0";
 
@@ -69,7 +73,7 @@ export default function PlaybookCTA({
                 <div className="flex gap-1 justify-center items-center">
                   <ClockIcon className="h-3.5 w-3.5 text-primary animate-pulse" />
                   <p className="text-primary font-bold text-xs sm:text-sm">
-                    Offer Expires in May!
+                    Offer Expires in {currentMonth}!
                   </p>
                 </div>
                 <input
@@ -112,7 +116,7 @@ export default function PlaybookCTA({
         className={`${cardStyle} text-center border-2 border-primary/30 focus-within:border-primary/50 transition-colors w-full max-w-full`}
       >
         <p className="text-xs sm:text-sm font-semibold text-primary uppercase tracking-wider my-2 pb-3 break-words">
-          Limited Time Offer — expires in April!
+          Limited Time Offer — expires in {currentMonth}!
         </p>
         <h2 className="text-2xl md:text-3xl font-bold text-base-content mb-2 sm:mb-3 break-words leading-tight">
           Get Your Playbook + 7 Bonuses for <span className="text-primary">FREE</span> Instantly!
