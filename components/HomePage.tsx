@@ -231,20 +231,14 @@ export function HomePage() {
 
         <div className="relative z-10 flex flex-col items-center px-4 sm:px-6 py-12 md:py-16 lg:py-20">
           {/* Main Hero Content */}
-          <div className="text-center max-w-5xl w-full">
+          <div className="text-center max-w-3xl w-full mt-12">
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-5">
-              {/* HTS Classifications <br /> that{" "}
-              <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
-                Avoid Audits
-              </span>{" "}
-              <br /> */}
-              <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
-                Avoid Import Audits & Delays <br />
-              </span>{" "} with Smarter Classifications
+              <span className="text-primary">
+                Flawless
+              </span>{" "} Classifications, <br /> in <span className="text-primary">Half</span> the Time
             </h1>
-
             <p className="text-sm sm:text-base text-base-content/80 md:text-lg max-w-4xl mx-auto mb-8">
-              Quickly produce HTS classifications with legal note and CROSS ruling evdience
+              Quickly produce HTS classifications that contain legal note and CROSS ruling evdience
             </p>
 
             <div className="w-full max-w-3xl mx-auto">
