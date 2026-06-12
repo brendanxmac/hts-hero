@@ -839,7 +839,7 @@ export const Classifications = () => {
                   <div className="flex gap-1.5 items-center">
                     <TagIcon className="h-4 w-4 text-primary" />
                     <label className="text-xs font-semibold uppercase tracking-wider text-base-content/80">
-                      Importer
+                      Tag
                     </label>
                   </div>
                   {selectedImporterId && (
@@ -856,7 +856,7 @@ export const Classifications = () => {
                   onChange={(e) => setSelectedImporterId(e.target.value)}
                   className="select select-sm h-[42px] px-4 bg-base-100 rounded-xl border border-base-content/15 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 hover:border-primary/40 cursor-pointer"
                 >
-                  <option value="">All Importers</option>
+                  <option value="">Select Tag</option>
                   <option value={UNASSIGNED_IMPORTER_VALUE}>Unassigned</option>
                   {importers.map((importer) => (
                     <option key={importer.id} value={importer.id}>
