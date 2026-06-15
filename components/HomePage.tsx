@@ -244,37 +244,78 @@ export function HomePage() {
       <div className="relative overflow-hidden bg-base-100">
         {/* Background elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-24 -left-24 w-72 h-72 bg-primary/10 md:bg-primary/20 rounded-full blur-3xl" />
-          <div className="absolute -top-24 -right-24 w-72 h-72 bg-secondary/10 md:bg-secondary/20 rounded-full blur-3xl" />
-          {/* <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary/5 rounded-full blur-3xl" /> */}
+          <div className="absolute -top-32 -left-24 w-80 h-80 bg-primary/10 md:bg-primary/20 rounded-full blur-3xl" />
+          <div className="absolute -top-32 -right-24 w-80 h-80 bg-secondary/10 md:bg-secondary/20 rounded-full blur-3xl" />
+          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[900px] h-[900px] bg-gradient-radial from-primary/5 to-transparent rounded-full blur-3xl" />
+          {/* Subtle grid pattern */}
+          <div
+            className="absolute inset-0 opacity-[0.025]"
+            style={{
+              backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`,
+              backgroundSize: "32px 32px",
+            }}
+          />
         </div>
 
-        <div className="relative z-10 flex flex-col items-center px-4 sm:px-6 py-12 md:py-16 lg:py-20">
+        <div className="relative z-10 flex flex-col items-center px-4 sm:px-6 pt-10 pb-10 md:pt-16 md:pb-14 lg:pt-20">
           {/* Main Hero Content */}
           <div className="text-center max-w-4xl w-full">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-7">
-              <span className="text-primary">
-                Flawless
-              </span>{" "} Classifications, <br /> in <span className="text-primary">Half</span> the Time
-            </h1>
-            {/* <p className="text-sm sm:text-base text-base-content/80 md:text-lg max-w-4xl mx-auto mb-8">
-              Quickly produce HTS classifications that contain legal note and CROSS ruling evdience
-            </p> */}
+            {/* Credibility eyebrow */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-base-200/70 border border-base-content/10 text-xs sm:text-sm font-medium text-base-content/70 mb-6 backdrop-blur">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+              </span>
+              Built for Customs Brokers &amp; Trade Teams
+            </div>
 
-            {/* Primary CTA - always visible above the fold on every screen size */}
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05] mb-5">
+              The <span className="text-primary">Fastest Way</span> to Build{" "}
+              <br className="hidden md:block" />
+              HTS Classifications <br /> You Can{" "}
+              <span className="relative whitespace-nowrap text-primary">
+                Defend
+                <span className="absolute -bottom-1 left-0 w-full h-[6px] bg-primary/20 rounded-full -z-10" />
+              </span>
+            </h1>
+
+            <p className="text-base sm:text-lg md:text-xl text-base-content/70 max-w-2xl mx-auto leading-relaxed mb-8">
+              Find the best HTS candidates, eliminate blind spots, and back every
+              code with legal notes and CROSS rulings &mdash; in half the time.
+            </p>
+
+            {/* Primary CTA - above the fold on every screen size */}
             <div className="flex flex-col items-center justify-center gap-3 w-full">
               <button
                 onClick={handleBookDemoClick}
-                className="group inline-flex items-center justify-center gap-2 px-10 sm:px-14 py-3.5 sm:py-4 rounded-xl font-bold text-base sm:text-lg bg-primary text-primary-content hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/30 hover:shadow-xl"
+                className="group inline-flex items-center justify-center gap-2 w-full sm:w-auto px-10 sm:px-16 py-4 rounded-xl font-bold text-base sm:text-lg bg-primary text-primary-content hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-primary/30 hover:shadow-2xl"
               >
                 <span>Book a Demo</span>
                 <ArrowRightIcon className="w-5 h-5 transition-transform group-hover:translate-x-0.5" />
               </button>
               <p className="text-xs sm:text-sm text-base-content/60">
-                See it live in 30 minutes &middot; No commitment
+                Free 30-minute walkthrough &middot; See it on your own products
+                &middot; No commitment
               </p>
             </div>
 
+            {/* Inline social proof */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-3 mt-7">
+              <div className="flex items-center gap-0.5 text-amber-400 text-lg leading-none">
+                <span>★</span>
+                <span>★</span>
+                <span>★</span>
+                <span>★</span>
+                <span>★</span>
+              </div>
+              <p className="text-sm text-base-content/60">
+                Used by trade pros at{" "}
+                <span className="font-semibold text-base-content/80">K+N</span>,{" "}
+                <span className="font-semibold text-base-content/80">DSV</span>,{" "}
+                <span className="font-semibold text-base-content/80">Amazon</span>{" "}
+                &amp; more
+              </p>
+            </div>
           </div>
 
           {/* Hero Demo Video */}
@@ -290,9 +331,9 @@ export function HomePage() {
             </div>
           </div>
 
-          {/* Testimonials Section - fades in on scroll */}
-          <div className={`w-full px-4 sm:px-6 pt-6 md:pt-10 bg-base-100`}>
-            <TestimonialsStrip />
+          {/* Testimonials Section */}
+          <div className={`w-full px-4 sm:px-6 pt-12 md:pt-16 bg-base-100`}>
+            <TestimonialsStrip showCompanies={false} />
           </div>
         </div>
       </div>
