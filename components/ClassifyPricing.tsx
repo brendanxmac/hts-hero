@@ -112,20 +112,20 @@ const ClassifyPricing = ({ customerType }: PricingProps) => {
       >
         {/* Header */}
         <div className="text-center mb-10">
-          <div className="flex items-center justify-center gap-2 mb-4">
+          {/* <div className="flex items-center justify-center gap-2 mb-4">
             <span className="w-8 h-px bg-secondary/40" />
             <span className="text-xs font-semibold uppercase tracking-widest text-secondary">
               Pricing
             </span>
             <span className="w-8 h-px bg-secondary/40" />
-          </div>
+          </div> */}
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4 max-w-4xl mx-auto">
             Reduce Import Risk with <br /> Classifications you can <span className="text-primary">Defend
             </span>
           </h2>
-          <p className="text-base-content/60 text-base md:text-lg max-w-2xl mx-auto">
+          {/* <p className="text-base-content/60 text-base md:text-lg max-w-2xl mx-auto">
             Audit-ready classifications, instant duty quotes, and zero tariff surprises
-          </p>
+          </p> */}
         </div>
 
         {/* Pricing Cards */}
@@ -231,41 +231,49 @@ const ClassifyPricing = ({ customerType }: PricingProps) => {
                   </div>
 
                   {/* Price */}
-                  <div className="flex items-baseline gap-2 mb-6">
-                    {currentPriceAnchor && (
-                      <div className="flex flex-col">
-                        <span className="relative text-2xl font-bold text-base-content/40">
-                          <span className="absolute inset-0 flex items-center">
-                            <span className="w-full h-0.5 bg-base-content/30" />
+                  {isTeamPlan ? (
+                    <div className="mb-6">
+                      <p className="text-3xl font-extrabold text-base-content leading-tight">
+                        Custom Pricing Based on Scale
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="flex items-baseline gap-2 mb-6">
+                      {currentPriceAnchor && (
+                        <div className="flex flex-col">
+                          <span className="relative text-2xl font-bold text-base-content/40">
+                            <span className="absolute inset-0 flex items-center">
+                              <span className="w-full h-0.5 bg-base-content/30" />
+                            </span>
+                            ${currentPriceAnchor}
                           </span>
-                          ${currentPriceAnchor}
+                        </div>
+                      )}
+                      {currentPrice === 0 ? (
+                        <span className="text-5xl font-extrabold text-base-content">
+                          Free
                         </span>
-                      </div>
-                    )}
-                    {currentPrice === 0 ? (
-                      <span className="text-5xl font-extrabold text-base-content">
-                        Free
-                      </span>
-                    ) : (
-                      <>
-                        <span
-                          className={classNames(
-                            "text-5xl font-extrabold tracking-tight",
-                            plan.isFeatured
-                              ? "bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent"
-                              : "text-base-content"
+                      ) : (
+                        <>
+                          <span
+                            className={classNames(
+                              "text-5xl font-extrabold tracking-tight",
+                              plan.isFeatured
+                                ? "bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent"
+                                : "text-base-content"
+                            )}
+                          >
+                            ${currentPrice}
+                          </span>
+                          {plan.mode === StripePaymentMode.SUBSCRIPTION && (
+                            <span className="text-base-content/50 text-sm font-medium">
+                              / month
+                            </span>
                           )}
-                        >
-                          ${currentPrice}
-                        </span>
-                        {plan.mode === StripePaymentMode.SUBSCRIPTION && (
-                          <span className="text-base-content/50 text-sm font-medium">
-                            / month
-                          </span>
-                        )}
-                      </>
-                    )}
-                  </div>
+                        </>
+                      )}
+                    </div>
+                  )}
 
                   {/* Divider */}
                   <div className="h-px bg-gradient-to-r from-transparent via-base-content/10 to-transparent mb-6" />
