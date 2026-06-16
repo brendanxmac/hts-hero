@@ -266,7 +266,7 @@ export function HomePage() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
               </span>
-              Built for Customs Brokers &amp; Trade Teams
+              Built for Customs Brokers &amp; US Importers
             </div>
 
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05] mb-5">
@@ -279,31 +279,14 @@ export function HomePage() {
               </span>
             </h1>
 
-            <p className="text-base sm:text-lg md:text-xl text-base-content/70 max-w-2xl mx-auto leading-relaxed mb-8">
+            <p className="text-base sm:text-lg md:text-xl text-base-content/70 max-w-2xl mx-auto leading-relaxed mb-8 mt-6">
               Find the best HTS candidates, eliminate blind spots, and back every
               code with legal notes and CROSS rulings &mdash; in half the time.
             </p>
 
-            {/* Primary CTA - above the fold on every screen size */}
-            <div className="flex flex-col items-center justify-center gap-3 w-full">
-              <button
-                onClick={handleBookDemoClick}
-                className="group inline-flex items-center justify-center gap-2 w-full sm:w-auto px-10 sm:px-16 py-4 rounded-xl font-bold text-base sm:text-lg bg-primary text-primary-content hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-primary/30 hover:shadow-2xl"
-              >
-                <span>Book a Demo</span>
-                <ArrowRightIcon className="w-5 h-5 transition-transform group-hover:translate-x-0.5" />
-              </button>
-              <p className="text-xs sm:text-sm text-base-content/60">
-                Free 30-minute walkthrough &middot; See it on your own products
-                &middot; No commitment
-              </p>
-            </div>
-
             {/* Inline social proof */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-3 mt-7">
               <div className="flex items-center gap-0.5 text-amber-400 text-lg leading-none">
-                <span>★</span>
-                <span>★</span>
                 <span>★</span>
                 <span>★</span>
                 <span>★</span>
@@ -315,7 +298,28 @@ export function HomePage() {
                 <span className="font-semibold text-base-content/80">Amazon</span>{" "}
                 &amp; more
               </p>
+              <div className="flex items-center gap-0.5 text-amber-400 text-lg leading-none">
+                <span>★</span>
+                <span>★</span>
+                <span>★</span>
+              </div>
             </div>
+
+            {/* Primary CTA - above the fold on every screen size */}
+            <div className="flex flex-col items-center justify-center gap-3 w-full mt-10">
+              <button
+                onClick={handleBookDemoClick}
+                className="group inline-flex items-center justify-center gap-2 w-full sm:w-auto px-10 sm:px-16 py-4 rounded-xl font-bold text-base sm:text-lg bg-primary text-primary-content hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/30 hover:shadow-2xl"
+              >
+                <span>Book a Demo</span>
+                <ArrowRightIcon className="w-5 h-5 transition-transform group-hover:translate-x-0.5" />
+              </button>
+              {/* <p className="text-xs sm:text-sm text-base-content/60">
+                Free 30-minute walkthrough &middot; See it on your own products
+                &middot; No commitment
+              </p> */}
+            </div>
+
           </div>
 
           {/* Hero Demo Video */}
@@ -395,7 +399,11 @@ export function HomePage() {
         </div>
       </section> */}
 
-      <ClassificationExamplesSection />
+      <div className="mt-10 lg:mt-16">
+
+        <ClassificationExamplesSection />
+      </div>
+
 
       <UseCases handleBookDemoClick={handleBookDemoClick} />
 
