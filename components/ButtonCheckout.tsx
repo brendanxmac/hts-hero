@@ -25,7 +25,7 @@ const getBuyButtonText = (plan: PricingPlanI) => {
     case PricingPlan.TARIFF_IMPACT_STANDARD:
       return `Get Standard!`;
     case PricingPlan.CLASSIFY_STARTER:
-      return `Get Starter!`;
+      return `Start Classifying!`;
     case PricingPlan.CLASSIFY_PRO:
     case PricingPlan.TARIFF_IMPACT_PRO:
       return `Go ${plan.name}!`;

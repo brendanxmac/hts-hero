@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Suspense, useState, useEffect, useCallback, useRef } from "react";
+import { Suspense, useState, useEffect, useCallback } from "react";
+import { ArrowRightIcon } from "@heroicons/react/24/solid";
 import LetsTalkModal from "../components/LetsTalkModal";
 import { useUser } from "../contexts/UserContext";
 import { AboutPage } from "../enums/classify";
@@ -20,8 +21,28 @@ import Footer from "../components/Footer";
 import UseCases from "../components/UseCases";
 import { CTABanner } from "./CTABanner";
 import ClassifyPricing from "./ClassifyPricing";
-import { ClassifyInput, ClassifyInputHandle } from "./ClassifyInput";
 import ClassificationExamplesSection from "./ClassificationExamplesSection";
+
+function YouTubeEmbed({
+  videoId,
+  title,
+}: {
+  videoId: string;
+  title: string;
+}) {
+  return (
+    <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl border border-base-content/10 bg-base-200">
+      <iframe
+        className="absolute inset-0 w-full h-full"
+        src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`}
+        title={title}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerPolicy="strict-origin-when-cross-origin"
+        allowFullScreen
+      />
+    </div>
+  );
+}
 
 const heroImages = [
   {
@@ -170,7 +191,6 @@ const productSections: ProductSectionData[] = [
 ];
 
 export function HomePage() {
-  const classifyInputRef = useRef<ClassifyInputHandle>(null);
   const { user } = useUser();
   const [isBookDemoModalOpen, setIsBookDemoModalOpen] = useState(false);
   const [isToolMenuOpen, setIsToolMenuOpen] = useState(false);
@@ -207,11 +227,11 @@ export function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-base-100">
-      <CTABanner
+      {/* <CTABanner
         message={`Produce HTS classifications that avoid audits, in minutes`}
         ctaText="Book Demo"
         onClick={handleBookDemoClick}
-      />
+      /> */}
       <Suspense
         fallback={
           <div className="h-16 bg-base-100 border-b border-base-content/20" />
@@ -224,294 +244,214 @@ export function HomePage() {
       <div className="relative overflow-hidden bg-base-100">
         {/* Background elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-24 -left-24 w-72 h-72 bg-primary/10 md:bg-primary/20 rounded-full blur-3xl" />
-          <div className="absolute -top-24 -right-24 w-72 h-72 bg-secondary/10 md:bg-secondary/20 rounded-full blur-3xl" />
-          {/* <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary/5 rounded-full blur-3xl" /> */}
+          <div className="absolute -top-32 -left-24 w-80 h-80 bg-primary/10 md:bg-primary/20 rounded-full blur-3xl" />
+          <div className="absolute -top-32 -right-24 w-80 h-80 bg-secondary/10 md:bg-secondary/20 rounded-full blur-3xl" />
+          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[900px] h-[900px] bg-gradient-radial from-primary/5 to-transparent rounded-full blur-3xl" />
+          {/* Subtle grid pattern */}
+          <div
+            className="absolute inset-0 opacity-[0.025]"
+            style={{
+              backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`,
+              backgroundSize: "32px 32px",
+            }}
+          />
         </div>
 
-        <div className="relative z-10 flex flex-col items-center px-4 sm:px-6 py-12 md:py-16 lg:py-20">
+        <div className="relative z-10 flex flex-col items-center px-4 sm:px-6 pt-10 pb-10 md:pt-16 md:pb-14 lg:pt-20">
           {/* Main Hero Content */}
-          <div className="text-center max-w-3xl w-full mt-12">
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-5">
-              <span className="text-primary">
-                Flawless
-              </span>{" "} Classifications, <br /> in <span className="text-primary">Half</span> the Time
-            </h1>
-            <p className="text-sm sm:text-base text-base-content/80 md:text-lg max-w-4xl mx-auto mb-8">
-              Quickly produce HTS classifications that contain legal note and CROSS ruling evdience
-            </p>
-
-            <div className="w-full max-w-3xl mx-auto">
-
-              <ClassifyInput
-                ref={classifyInputRef}
-                buttonText="Start Classification"
-                placeholder="Enter your product description"
-                defaultValue="Fresh Organic Mangoes"
-                entryPoint="classify_landing"
-              />
+          <div className="text-center max-w-4xl w-full">
+            {/* Credibility eyebrow */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-base-200/70 border border-base-content/10 text-xs sm:text-sm font-medium text-base-content/70 mb-6 backdrop-blur">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+              </span>
+              Built for Customs Brokers &amp; US Importers
             </div>
 
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05] mb-5">
+              The <span className="text-primary">Fastest Way</span> to Build{" "}
+              <br className="hidden md:block" />
+              HTS Classifications <br /> You Can{" "}
+              <span className="relative whitespace-nowrap text-primary">
+                Defend
+                <span className="absolute -bottom-1 left-0 w-full h-[6px] bg-primary/20 rounded-full -z-10" />
+              </span>
+            </h1>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full mt-4">
-              {/* Get Started Button with Popover */}
-              {/* <div className="relative w-full sm:w-auto"> */}
-              {/* <button
-                  onClick={() => setIsToolMenuOpen(!isToolMenuOpen)}
-                  className="group inline-flex items-center justify-center gap-2 px-16 sm:px-28 py-2.5 sm:py-3.5 rounded-xl font-semibold text-base bg-primary text-white hover:bg-primary/90 transition-all duration-200 hover:scale-[1.01] active:scale-[0.98] shadow-lg hover:shadow-xl"
-                >
-                  <span>Try Now</span>
-                  <svg
-                    className={`w-5 h-5 transition-transform duration-Fs,p200 ${isToolMenuOpen ? "" : "-rotate-180"}`}
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2.5}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button> */}
+            <p className="text-base sm:text-lg md:text-xl text-base-content/70 max-w-2xl mx-auto leading-relaxed mb-8 mt-6">
+              Find the best HTS candidates, eliminate blind spots, and back every
+              code with legal notes and CROSS rulings &mdash; in half the time.
+            </p>
 
-              {/* Tool Selection Popover */}
-              {/* {isToolMenuOpen && (
-                  <>
-                    <div
-                      className="fixed inset-0 z-40"
-                      onClick={() => setIsToolMenuOpen(false)}
-                    />
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 z-50 w-72 sm:w-80 bg-base-100 rounded-2xl shadow-2xl border border-base-content/10 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                      <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-base-100 border-l border-t border-base-content/10 rotate-45" />
-                      <div className="relative p-2">
-                        <p className="text-xs font-medium text-base-content/50 uppercase tracking-wider px-3 py-2">
-                          Choose a tool
-                        </p>
-                        <Link
-                          href="/classify"
-                          onClick={() => setIsToolMenuOpen(false)}
-                          className="flex items-center gap-3 p-3 rounded-xl hover:bg-secondary/10 transition-colors group"
-                        >
-                          <div className="w-10 h-10 rounded-lg bg-secondary/20 flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
-                            🎯
-                          </div>
-                          <div className="flex flex-col">
-                            <div className="text-left font-semibold text-base-content group-hover:text-secondary transition-colors">
-                              Classification Assistant
-                            </div>
-                            <div className="text-left text-xs text-base-content/60">
-                              AI-powered classification assistance
-                            </div>
-                          </div>
-                        </Link>
+            {/* Inline social proof */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-3 mt-7">
+              <div className="flex items-center gap-0.5 text-amber-400 text-lg leading-none">
+                <span>★</span>
+                <span>★</span>
+                <span>★</span>
+              </div>
+              <p className="text-sm text-base-content/60">
+                Used by trade pros at{" "}
+                <span className="font-semibold text-base-content/80">K+N</span>,{" "}
+                <span className="font-semibold text-base-content/80">DSV</span>,{" "}
+                <span className="font-semibold text-base-content/80">Amazon</span>{" "}
+                &amp; more
+              </p>
+              <div className="flex items-center gap-0.5 text-amber-400 text-lg leading-none">
+                <span>★</span>
+                <span>★</span>
+                <span>★</span>
+              </div>
+            </div>
 
-                        <Link
-                          href="/duty-calculator"
-                          onClick={() => setIsToolMenuOpen(false)}
-                          className="flex items-center gap-3 p-3 rounded-xl hover:bg-primary/10 transition-colors group"
-                        >
-                          <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
-                            💰
-                          </div>
-                          <div className="flex flex-col">
-                            <div className="text-left font-semibold text-base-content group-hover:text-primary transition-colors">
-                              Duty & Tariff Simulator
-                            </div>
-                            <div className="text-left text-xs text-base-content/60">
-                              Duties & tariffs for any import
-                            </div>
-                          </div>
-                        </Link>
-
-                        <Link
-                          href="/tariffs/impact-checker"
-                          onClick={() => setIsToolMenuOpen(false)}
-                          className="flex items-center gap-3 p-3 rounded-xl hover:bg-accent/10 transition-colors group"
-                        >
-                          <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
-                            ✓
-                          </div>
-                          <div className="flex flex-col">
-                            <div className="text-left font-semibold text-base-content">
-                              Tariff Impact Checker
-                            </div>
-                            <div className="text-left text-xs text-base-content/60">
-                              Check if new tariffs affect your imports
-                            </div>
-                          </div>
-                        </Link>
-
-                        <Link
-                          href="/explore"
-                          onClick={() => setIsToolMenuOpen(false)}
-                          className="flex items-center gap-3 p-3 rounded-xl hover:bg-base-content/10 transition-colors group"
-                        >
-                          <div className="w-10 h-10 rounded-lg bg-base-content/10 flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
-                            🔍
-                          </div>
-                          <div className="flex flex-col">
-                            <div className="text-left font-semibold text-base-content group-hover:text-base-content transition-colors">
-                              HTS Explorer
-                            </div>
-                            <div className="text-left text-xs text-base-content/60">
-                              Quickly find any HTS element
-                            </div>
-                          </div>
-                        </Link>
-                      </div>
-                    </div>
-                  </>
-                )} */}
-              {/* </div> */}
-
-              {/* <button
+            {/* Primary CTA - above the fold on every screen size */}
+            <div className="flex flex-col items-center justify-center gap-3 w-full mt-10">
+              <button
                 onClick={handleBookDemoClick}
-                className="inline-flex items-center gap-2 px-8 py-2 sm:py-3.5 rounded-xl font-semibold text-base text-primary border-2 border-primary/20 hover:border-primary/40 hover:bg-primary/5 transition-all duration-200"
+                className="group inline-flex items-center justify-center gap-2 w-full sm:w-auto px-10 sm:px-16 py-4 rounded-xl font-bold text-base sm:text-lg bg-primary text-primary-content hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/30 hover:shadow-2xl"
               >
-                Book Demo
-              </button> */}
+                <span>Book a Demo</span>
+                <ArrowRightIcon className="w-5 h-5 transition-transform group-hover:translate-x-0.5" />
+              </button>
+              {/* <p className="text-xs sm:text-sm text-base-content/60">
+                Free 30-minute walkthrough &middot; See it on your own products
+                &middot; No commitment
+              </p> */}
+            </div>
+
+          </div>
+
+          {/* Hero Demo Video */}
+          <div className="w-full max-w-4xl mx-auto mt-10 md:mt-12">
+            <div className="relative">
+              <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 rounded-3xl blur-2xl opacity-60" />
+              <div className="relative">
+                <YouTubeEmbed
+                  videoId="Us51cwwakH8"
+                  title="HTS Hero product demo"
+                />
+              </div>
             </div>
           </div>
 
-          {/* Hero Image Showcase */}
-          {/* <div className="w-full max-w-5xl mx-auto mt-6 md:mt-8">
-            <div className="relative">
-              <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 rounded-3xl blur-2xl opacity-60" />
-              <div className="relative bg-base-200/50 rounded-2xl shadow-2xl border border-base-content/10 overflow-hidden">
-                <div className="relative aspect-[11/13] sm:aspect-[16/8] w-full">
-                  {heroImages.map((image, index) => (
-                    <div
-                      key={image.id}
-                      className={`absolute inset-0 transition-all duration-700 ease-in-out ${index === activeImageIndex
-                        ? "opacity-100 scale-100"
-                        : "opacity-0 scale-[1.02]"
-                        }`}
-                    >
-                      <Image
-                        src={image.srcMobile}
-                        alt={image.label}
-                        fill
-                        className="object-cover sm:hidden"
-                        priority={index === 0}
-                      />
-                      <Image
-                        src={image.src}
-                        alt={image.label}
-                        fill
-                        className="object-cover hidden sm:block"
-                        priority={index === 0}
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                <div className="hidden md:block absolute bottom-0 left-0 right-0 bg-gradient-to-t from-base-100 via-base-100/95 to-transparent pt-12 pb-4 px-4">
-                  <div className="flex items-center justify-center gap-2">
-                    {heroImages.map((image, index) => (
-                      <button
-                        key={image.id}
-                        onClick={() => setActiveImageIndex(index)}
-                        className={`group flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 ${index === activeImageIndex
-                          ? "bg-primary text-white shadow-lg shadow-primary/25"
-                          : "bg-base-200/80 text-base-content/70 hover:bg-base-300/80 hover:text-base-content"
-                          }`}
-                      >
-                        <span className="text-sm font-medium">
-                          {image.label}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <p className="text-center text-sm text-base-content/60 mt-4 transition-all duration-300">
-              {heroImages[activeImageIndex].tagline}
-            </p>
-          </div> */}
-          {/* Testimonials Section - fades in on scroll */}
-          <div className={`w-full px-4 sm:px-6 pt-6 md:pt-10 bg-base-100`}>
-            <TestimonialsStrip />
+          {/* Testimonials Section */}
+          <div className={`w-full px-4 sm:px-6 pt-12 md:pt-16 bg-base-100`}>
+            <TestimonialsStrip showCompanies={false} />
           </div>
         </div>
       </div>
 
-      <ClassificationExamplesSection />
-
-
-      {/* Full-Page Product Sections */}
-      {/* <div
-        id="tools"
-        className="w-full flex flex-col bg-gradient-to-r from-primary/10 via-transparent to-secondary/5"
-      >
-        <div className="relative w-full flex flex-col max-w-5xl mx-auto text-center gap-4 py-16 md:py-24 px-4">
-          <div className="flex justify-center">
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-base-100 border border-base-content/10 text-xs font-medium text-base-content/60 shadow-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-              Built for Trade Professionals
-            </span>
-          </div>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight">
-            <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
-              Tools
-            </span>{" "}
-            That Make Imports{" "}
-            <span className="bg-gradient-to-r from-primary via-primary to-secondary bg-clip-text text-transparent">
-              Easy
-            </span>
-          </h2>
-          <p className="text-base-content/60 text-sm sm:text-base max-w-xl mx-auto">
-            From classification to duty and tarrif calculation — we&apos;ve got
-            you covered
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3 pt-2">
-            <span className="inline-flex items-center px-3 py-1 sm:py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs sm:text-sm font-medium text-primary">
-              Customs Brokers
-            </span>
-            <span className="inline-flex items-center px-3 py-1 sm:py-1.5 rounded-full bg-secondary/10 border border-secondary/20 text-xs sm:text-sm font-medium text-secondary">
-              Freight Forwarders
-            </span>
-            <span className="inline-flex items-center px-3 py-1 sm:py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs sm:text-sm font-medium text-primary">
-              Manufacturers
-            </span>
-          </div>
-          <div className="flex justify-center pt-4">
-            <svg
-              className="w-5 h-5 text-base-content/40 animate-bounce"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M19 14l-7 7m0 0l-7-7m7 7V3"
-              />
-            </svg>
-          </div>
+      {/* Conversion CTA Section - below testimonials */}
+      {/* <section className="relative overflow-hidden border-y border-base-content/10 bg-gradient-to-br from-primary/5 via-base-100 to-secondary/5">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-24 -left-24 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
+          <div className="absolute -bottom-24 -right-24 w-72 h-72 bg-secondary/10 rounded-full blur-3xl" />
         </div>
-        {productSections.map((product, index) => (
-          <ProductSection key={product.title} product={product} index={index} />
-        ))}
-      </div> */}
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-16 md:py-20 text-center">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-4">
+            See HTS Hero on{" "}
+            <span className="text-primary">Your Products</span>
+          </h2>
+          <p className="text-sm sm:text-base md:text-lg text-base-content/70 max-w-2xl mx-auto mb-8">
+            In a quick 30-minute call we&apos;ll walk through your real
+            classifications, show you how teams cut their workload in half, and
+            answer every question.
+          </p>
+
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mb-8">
+            {[
+              "Tailored to your workflow",
+              "No commitment",
+              "Live Q&A",
+            ].map((item) => (
+              <span
+                key={item}
+                className="inline-flex items-center gap-2 text-sm font-medium text-base-content/70"
+              >
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-primary/15 text-primary">
+                  <svg
+                    className="w-3 h-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={3}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </span>
+                {item}
+              </span>
+            ))}
+          </div>
+
+          <button
+            onClick={handleBookDemoClick}
+            className="group inline-flex items-center justify-center gap-2 px-10 sm:px-14 py-3.5 sm:py-4 rounded-xl font-bold text-base sm:text-lg bg-primary text-primary-content hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/30 hover:shadow-xl"
+          >
+            <span>Book a Demo</span>
+            <ArrowRightIcon className="w-5 h-5 transition-transform group-hover:translate-x-0.5" />
+          </button>
+        </div>
+      </section> */}
+
+      <div className="mt-10 lg:mt-16">
+
+        <ClassificationExamplesSection />
+      </div>
+
 
       <UseCases handleBookDemoClick={handleBookDemoClick} />
 
-      {/* Interactive Classification CTA */}
-      {/* <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-12">
-        <ClassificationCTA
-          title="Find your product's HTS code in minutes"
-          subtitle="Enter a product description and our AI-powered assistant will guide you through the classification process."
-        />
-      </div> */}
+      {/* Trade Pros Deserve Better - video section above FAQ */}
+      <section className="relative overflow-hidden bg-base-100">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-gradient-radial from-secondary/5 to-transparent rounded-full blur-3xl" />
+        </div>
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 pb-16 md:pb-24">
+          <div className="text-center mb-8 md:mb-10">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl font-bold tracking-tight mb-4">
+              Trade Pros Deserve{" "}
+              <span className="text-primary">
+                Better
+              </span>
+            </h2>
+            <p className="text-sm sm:text-base md:text-lg text-base-content/70 max-w-2xl mx-auto">
+              See why customs brokers and trade teams are switching to HTS Hero.
+            </p>
+          </div>
+
+          <div className="relative">
+            <div className="absolute -inset-4 bg-gradient-to-r from-secondary/20 via-primary/20 to-secondary/20 rounded-3xl blur-2xl opacity-60" />
+            <div className="relative">
+              <YouTubeEmbed
+                videoId="yDg86gTQebA"
+                title="Trade Pros Deserve Better"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col items-center justify-center gap-4 mt-10">
+            <button
+              onClick={handleBookDemoClick}
+              className="group inline-flex items-center justify-center gap-2 px-10 sm:px-14 py-3.5 sm:py-4 rounded-xl font-bold text-base sm:text-lg bg-primary text-primary-content hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/30 hover:shadow-xl"
+            >
+              <span>Book a Demo</span>
+              <ArrowRightIcon className="w-5 h-5 transition-transform group-hover:translate-x-0.5" />
+            </button>
+            <p className="text-xs sm:text-sm text-base-content/60">
+              See it live in 30 minutes &middot; No commitment
+            </p>
+          </div>
+        </div>
+      </section>
 
       <ClassifyPricing customerType={AboutPage.CLASSIFIER} />
 
-      {/* <Pricing customerType={AboutPage.BUNDLE} /> */}
       <FAQ faqItems={bundleFaqList} />
       <Footer />
 

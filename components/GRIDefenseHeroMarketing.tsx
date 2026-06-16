@@ -71,10 +71,10 @@ export const GRIDefenseHeroMarketing = () => {
         Defensible & Documented
       </p> */}
       <h2 className="gri-text-glow text-3xl md:text-4xl lg:text-6xl font-bold text-base-content leading-tight max-w-3xl mx-auto">
-        Find <span className="text-primary">Supporting Evidence</span> for Any Classification
+        Find <span className="text-primary">Real Evidence</span> for Every Classification
       </h2>
       <p className="text-base md:text-lg text-base-content/60 mt-6 max-w-3xl mx-auto">
-        Get GRI, Legal Note, & CROSS Ruling Evidence for Any Product
+        Find GRI, Legal Note, & CROSS Ruling Evidence for Any Product
       </p>
 
       <div className="mt-8 min-h-[4rem] md:min-h-[5rem] flex items-center justify-center">

@@ -116,64 +116,53 @@ export const proTeams: PricingPlanI = {
 export const classifyStarter: PricingPlanI = {
   name: "Starter",
   planIdentifier: PricingPlan.CLASSIFY_STARTER,
-  description: "Produce Audit-Ready Classifications & Make Tariffs Effortless",
+  description: "Classify with Confidence and Avoid Blind Spots",
   mode: StripePaymentMode.SUBSCRIPTION,
   prices: [39],
   priceAnchors: [50],
   features: [
-    { name: "10 Classifications / Month" },
-    { name: "Find Candidates", details: "and avoid tricky blind spots!" },
-    { name: "See Legal Note Evidence" },
-    { name: "Automatic GRI Analysis" },
-    { name: "CROSS Ruling Validation" },
-    {
-      name: "Duty & Tariff Calculator",
-      details: "See the Latest Tariffs & Duties for any Import",
-    },
+    { name: "Reduce audit exposure" },
+    { name: "Build legally defensible classifications" },
+    { name: "Avoid classification blind spots" },
+    { name: "Validate decisions with CROSS rulings" },
+    { name: "10 classifications / month" },
   ],
 }
 
 export const classifyPro: PricingPlanI = {
   name: "Pro",
   planIdentifier: PricingPlan.CLASSIFY_PRO,
-  description: "Smarter Classifications & Automatic Defense Reports",
+  description: "Defend every code and reduce your customs audit exposure",
   mode: StripePaymentMode.SUBSCRIPTION,
   prices: [89],
   priceAnchors: [129],
   isFeatured: true,
   features: [
     { name: "Everything in Starter, plus:" },
-    { name: "Up to 100 Classifications / Month" },
+    { name: "Audit existing classifications" },
     {
-      name: "Generate Branded Classification Reports in a Single Click",
-      details:
-        "Include your branding and send to clients or file for your records",
+      name: "Generate classification reports in one click",
     },
     {
-      name: "New Tariff Impact Checker",
-      details:
-        "Instantly know when new tariffs affect you or your clients imports",
+      name: "Catch tariff changes before they cost you",
     },
+    { name: "Up to 100 classifications / month" },
   ],
 }
 
 export const classifyTeam: PricingPlanI = {
   name: "Team",
   planIdentifier: PricingPlan.CLASSIFY_TEAM,
-  description: "The Classification Workspace for Teams",
+  description: "Standardize classifications across your entire team",
   mode: StripePaymentMode.SUBSCRIPTION,
   prices: [429],
   priceAnchors: [499],
   // isFeatured: true,
   features: [
-    { name: "Everything in Pro, plus:" },
-    { name: "See Your Teams Classifications" },
-    { name: "Request Classification Reviews" },
-    { name: "Approve Each Others Classifications" },
-    {
-      name: "Team Training",
-      details: "Boost your teams productivity with personalized training",
-    },
+    { name: "Standardize classifications across your team" },
+    { name: "Review & approve each other's work" },
+    { name: "Find issues with your current product catalog" },
+    { name: "Onboarding & team training included" },
   ],
 }
 
