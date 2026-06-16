@@ -257,7 +257,7 @@ export function HomePage() {
           />
         </div>
 
-        <div className="relative z-10 flex flex-col items-center px-4 sm:px-6 pt-10 pb-10 md:pt-16 md:pb-14 lg:pt-20">
+        <div className="relative z-10 flex flex-col items-center px-4 sm:px-6 pt-4 pb-10 md:pt-12 md:pb-14">
           {/* Main Hero Content */}
           <div className="text-center max-w-4xl w-full">
             {/* Credibility eyebrow */}
@@ -270,6 +270,14 @@ export function HomePage() {
             </div>
 
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05] mb-5">
+              Make Every HTS Classification {" "}
+              <span className="relative whitespace-nowrap text-primary">
+                Audit-Proof
+                <span className="absolute -bottom-0 left-0 w-full h-[6px] bg-primary/20 rounded-full -z-10" />
+              </span>
+            </h1>
+
+            {/* <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05] mb-5">
               The <span className="text-primary">Fastest Way</span> to Build{" "}
               <br className="hidden md:block" />
               HTS Classifications <br /> You Can{" "}
@@ -277,11 +285,11 @@ export function HomePage() {
                 Defend
                 <span className="absolute -bottom-1 left-0 w-full h-[6px] bg-primary/20 rounded-full -z-10" />
               </span>
-            </h1>
+            </h1> */}
 
             <p className="text-base sm:text-lg md:text-xl text-base-content/70 max-w-2xl mx-auto leading-relaxed mb-8 mt-6">
-              Find the best HTS candidates, eliminate blind spots, and back every
-              code with legal notes and CROSS rulings &mdash; in half the time.
+              Find mistakes, eliminate blind spots, and back every
+              code with legal notes and CROSS rulings <strong>in a fraction of the time.</strong>
             </p>
 
             {/* Inline social proof */}
