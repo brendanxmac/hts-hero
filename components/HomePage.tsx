@@ -285,7 +285,7 @@ export function HomePage() {
             </p>
 
             {/* Inline social proof */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-3 mt-7">
+            <div className="hidden sm:flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-3 mt-7">
               <div className="flex items-center gap-0.5 text-amber-400 text-lg leading-none">
                 <span>★</span>
                 <span>★</span>
