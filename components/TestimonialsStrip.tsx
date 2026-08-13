@@ -12,23 +12,29 @@
 
 // Individual testimonials
 const testimonials = [
-  {
-    role: "Vice President, LCB",
-    company: "DEX Global",
-    quote: "I don't know how you do it, but I am glad I have my HTS Hero!",
-    accent: "primary" as const,
-  },
+  // {
+  //   role: "Vice President, LCB",
+  //   company: "DEX Global",
+  //   quote: "I don't know how you do it, but I am glad I have my HTS Hero!",
+  //   accent: "primary" as const,
+  // },
   {
     role: "Director of Operations & Compliance, LCB",
     company: "Harren Group",
-    quote: "It was very intuitive and caught something I hadn't seen earlier.",
+    quote: "very intuitive and caught something I hadn't seen earlier",
+    accent: "secondary" as const,
+  },
+  {
+    role: "US Customs Compliance, LCB",
+    company: "PHINIA",
+    quote: "It really has helped me with time, it shortens my digging by pointing to probable hts's making it easier to discard or look further",
     accent: "secondary" as const,
   },
   {
     role: "VP Forwarding & Customs Brokerage",
     company: "Logisteed America",
     quote:
-      "Been loving using HTS Hero. Excellent tool and fun watching you develop this.",
+      "Been loving using HTS Hero. Excellent tool",
     accent: "primary" as const,
   },
 ];
