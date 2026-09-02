@@ -41,6 +41,15 @@ export const toolLinks = [
     iconBg: "bg-base-content/10",
     hoverText: "group-hover:text-base-content",
   },
+  {
+    href: "/doc-to-csv",
+    emoji: "📄",
+    title: "Doc to CSV",
+    subtitle: "Convert trade documents into spreadsheets",
+    hoverBg: "hover:bg-primary/10",
+    iconBg: "bg-primary/20",
+    hoverText: "group-hover:text-primary",
+  },
 ];
 
 interface ToolsDropdownProps {
