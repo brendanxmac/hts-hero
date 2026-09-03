@@ -4,9 +4,9 @@ import { getSEOTags } from "@/libs/seo";
 export const dynamic = "force-dynamic";
 
 export const metadata = getSEOTags({
-  title: "Trade Documents to CSV | HTS Hero",
+  title: "Convert Trade Documents to CSV | HTS Hero",
   description:
-    "Convert commercial invoices, packing lists, and bills of lading into spreadsheets for record keeping and import into other systems",
+    "Turn commercial invoices, packing lists, and bills of lading into CSV files you can upload into CargoWise, Magaya, Descartes, Excel, or any other software. We never store your documents.",
   canonicalUrlRelative: "/doc-to-csv",
 });
 

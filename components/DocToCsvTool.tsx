@@ -27,7 +27,6 @@ import {
   SparklesIcon,
   TableCellsIcon,
   TruckIcon,
-  WrenchScrewdriverIcon,
 } from "@heroicons/react/24/outline";
 import type {
   CellKeyDownEvent,
@@ -60,7 +59,6 @@ import {
   toggleInvoiceTransform,
   type InvoiceTransformId,
 } from "../libs/invoice-transforms";
-import config from "@/config";
 
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
 const GRID_MODULES = [AllCommunityModule];
@@ -250,7 +248,7 @@ function DocumentTypePicker({
   onSelect: (id: TradeDocumentTypeId) => void;
 }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+    <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-1 gap-3">
       {TRADE_DOCUMENT_TYPES.map((type) => {
         const Icon = DOCUMENT_TYPE_ICONS[type.id];
         const isSelected = selected === type.id;
@@ -260,21 +258,20 @@ function DocumentTypePicker({
             type="button"
             disabled={disabled}
             onClick={() => onSelect(type.id)}
-            className={`text-left rounded-2xl border px-4 py-4 flex flex-col gap-2 transition ${isSelected
-              ? "border-primary bg-primary/10 ring-1 ring-primary/30"
-              : "border-base-content/10 bg-base-100 hover:border-base-content/25 hover:bg-base-200/40"
+            className={`text-left rounded-2xl border-2 px-4 py-4 flex gap-2 items-center transition bg-base-100 ${isSelected
+              ? "border-primary"
+              : "border-base-content/10 hover:border-base-content/25"
               } ${disabled ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
           >
             <Icon
-              className={`w-6 h-6 ${isSelected ? "text-primary" : "text-base-content/45"
-                }`}
+              className={`w-6 h-6 text-base-content/45`}
             />
             <span className="text-sm font-semibold text-base-content">
               {type.label}
             </span>
-            <span className="text-xs text-base-content/60 leading-relaxed">
+            {/* <span className="text-xs text-base-content/60 leading-relaxed">
               {type.description}
-            </span>
+            </span> */}
           </button>
         );
       })}
@@ -567,6 +564,90 @@ function WorkspaceTabs({
   );
 }
 
+const INTEGRATION_SYSTEMS = [
+  {
+    name: "CargoWise",
+    src: "/integrations/cargowise.svg",
+    heightClass: "h-5",
+  },
+  {
+    name: "Magaya",
+    src: "/integrations/magaya.png",
+    heightClass: "h-5",
+    invertOnDark: true,
+  },
+  {
+    name: "Descartes",
+    src: "/integrations/descartes.png",
+    heightClass: "h-4",
+    invertOnDark: true,
+  },
+  {
+    name: "Excel",
+    src: "/integrations/excel.svg",
+    heightClass: "h-5",
+    caption: "Any other system",
+  },
+] as const;
+
+function IntegrationLogos() {
+  return (
+    <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2.5">
+      {INTEGRATION_SYSTEMS.map((system) => (
+        <li key={system.name} className="flex items-center gap-1.5 opacity-70">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={system.src}
+            alt={system.name}
+            className={`${system.heightClass} w-auto max-w-[7.5rem] object-contain object-left ${"invertOnDark" in system && system.invertOnDark
+              ? "dark:invert dark:brightness-0"
+              : ""
+              }`}
+          />
+          {"caption" in system && system.caption ? (
+            <span className="text-[11px] font-medium text-base-content/55 whitespace-nowrap">
+              {system.caption}
+            </span>
+          ) : null}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function SellingPoints() {
+  const points = [
+    {
+      icon: ShieldCheckIcon,
+      title: "We never store your documents",
+      body: "PDFs are processed to extract data and are not saved. Your documents stay your business.",
+    },
+    {
+      icon: SparklesIcon,
+      title: "Best in class accuracy",
+      body: "Built for invoices, packing lists, and bills of lading. Review every cell against the PDF before you export.",
+    },
+  ];
+
+  return (
+    <ul className="w-full grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-8">
+      {points.map((point) => (
+        <li key={point.title} className="flex items-start gap-2.5 text-left">
+          <point.icon className="w-6 h-6 shrink-0 mt-0.5 text-base-content/40" />
+          <div className="flex flex-col gap-0.5">
+            <p className="tracking-tight text-base-content/70">
+              {point.title}
+            </p>
+            <p className="text-xs text-base-content/50 leading-relaxed">
+              {point.body}
+            </p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function SectionHeading({
   step,
   title,
@@ -574,7 +655,7 @@ function SectionHeading({
 }: {
   step: number;
   title: string;
-  description: string;
+  description?: string;
 }) {
   return (
     <div className="flex items-start gap-4">
@@ -585,9 +666,11 @@ function SectionHeading({
         <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-base-content">
           {title}
         </h2>
-        <p className="text-sm text-base-content/60 leading-relaxed">
-          {description}
-        </p>
+        {description ? (
+          <p className="text-sm text-base-content/60 leading-relaxed">
+            {description}
+          </p>
+        ) : null}
       </div>
     </div>
   );
@@ -830,121 +913,86 @@ export function DocToCsvTool() {
   ).length;
 
   return (
-    <div className="w-full flex-1 flex flex-col">
-      <div className="w-full border-b border-base-content/10 bg-gradient-to-b from-primary/5 to-transparent">
-        <div className="w-full max-w-5xl mx-auto px-4 py-14 flex flex-col items-center gap-10">
-          <div className="text-center flex flex-col items-center gap-4">
-            {/* <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-              Documents to Spreadsheet, Fast!
+    <div className="w-full flex-1 flex flex-col bg-base-100">
+      <div className="w-full bg-base-100">
+        <div className="w-full max-w-5xl mx-auto px-4 py-14 flex flex-col items-center gap-8 md:gap-10">
+          <div className="text-center flex flex-col items-center gap-5">
+            {/* <p className="text-xs font-semibold uppercase tracking-[0.18em] text-base-content/50">
+              For brokers, freight forwarders & entry writers
             </p> */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-base-content leading-tight">
-              Convert Trade Documents to Spreadsheets in Seconds
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-base-content tracking-tight leading-[1.1] max-w-4xl">
+              Save <span className="text-primary">Hours</span> On Entry
+              Processing
             </h1>
-            <p className="text-base text-base-content/70 max-w-2xl leading-relaxed">
-              Turn commercial invoices, packing lists, and bills of lading into
-              clean spreadsheets for easy import into your CMS, ERP, and other systems — without retyping every line.
-            </p>
+            <div className="flex flex-col items-center gap-4">
+              <p className="text-base md:text-lg leading-relaxed">
+                Turn commercial invoices, packing lists, and bills of lading
+                into CSV files you can upload into CargoWise, Magaya, Descartes, or any other software you already use.
+              </p>
+            </div>
           </div>
 
-          <section className="w-full flex flex-col gap-5">
-            <SectionHeading
-              step={1}
-              title="Choose a document and upload"
-              description="Select the document type so we extract the right fields, then drop in a PDF up to 10MB."
-            />
-
-            <DocumentTypePicker
-              selected={documentTypeId}
-              disabled={extracting}
-              onSelect={selectDocumentType}
-            />
-
-            <div
-              {...getRootProps()}
-              className={`w-full border-2 border-dashed rounded-2xl p-10 text-center cursor-pointer transition flex flex-col items-center gap-3 ${extracting ? "opacity-60 cursor-not-allowed" : ""
-                } ${isDragActive
-                  ? "border-primary bg-primary/5"
-                  : "border-base-content/20 bg-base-100 hover:border-base-content/40"
-                }`}
-            >
-              <input {...getInputProps()} />
-              <DocumentArrowUpIcon className="w-10 h-10 text-base-content/40" />
-              <div className="flex flex-col gap-1">
-                <p className="text-sm font-semibold text-base-content">
-                  {file
-                    ? file.name
-                    : isDragActive
-                      ? "Drop the PDF here"
-                      : `Drag and drop a ${documentType.label.toLowerCase()} PDF`}
-                </p>
-                <p className="text-xs text-base-content/60">
-                  {file ? "Click or drop to replace" : "PDF only, max 10MB"}
-                </p>
+          <section className="w-full flex flex-col gap-6 rounded-3xl border border-base-content/10 bg-base-200/50 p-5 sm:p-7 md:p-8 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)]">
+            <section className="w-full grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 md:items-stretch">
+              <div className="flex flex-col gap-5 min-w-0">
+                <SectionHeading step={1} title="Choose Document Type" />
+                <DocumentTypePicker
+                  selected={documentTypeId}
+                  disabled={extracting}
+                  onSelect={selectDocumentType}
+                />
               </div>
-            </div>
 
-            <button
+              <div className="flex flex-col gap-5 min-w-0">
+                <SectionHeading step={2} title="Upload File" />
+                <div
+                  {...getRootProps()}
+                  className={`w-full border-2 border-dashed rounded-2xl p-10 text-center cursor-pointer transition flex flex-col items-center justify-center gap-3 flex-1 min-h-52 ${extracting ? "opacity-60 cursor-not-allowed" : ""
+                    } ${isDragActive
+                      ? "border-primary/100 bg-base-100"
+                      : "border-primary/80 bg-base-100 hover:bg-primary/5"
+                    }`}
+                >
+                  <input {...getInputProps()} />
+                  <DocumentArrowUpIcon className="w-10 h-10 text-base-content/40" />
+                  <div className="flex flex-col gap-1">
+                    <p className="text-sm font-semibold text-base-content">
+                      {file
+                        ? file.name
+                        : isDragActive
+                          ? "Drop the PDF here"
+                          : "Select or drag and drop your file"}
+                    </p>
+                    <p className="text-xs text-base-content/60">
+                      {file ? "Click or drop to replace" : "PDF only, max 10MB"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {file && <button
               type="button"
-              className="btn btn-primary btn-lg self-center min-w-48"
+              className="w-full btn btn-primary btn-lg self-center min-w-48 disabled:!bg-base-300 disabled:!text-base-content/40 disabled:!border-transparent disabled:!opacity-100"
               onClick={extract}
               disabled={!file || extracting}
             >
               {extracting && (
                 <span className="loading loading-spinner loading-sm" />
               )}
-              {extracting
-                ? "Extracting…"
-                : `Extract ${documentType.label}`}
-            </button>
-
-            <ul className="w-full grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-              {[
-                {
-                  icon: ShieldCheckIcon,
-                  title: "Secure",
-                  body: "We never store your documents.",
-                },
-                {
-                  icon: SparklesIcon,
-                  title: "Built for trade docs",
-                  body: "Extraction tuned for invoices, packing lists, and bills of lading.",
-                },
-                {
-                  icon: WrenchScrewdriverIcon,
-                  title: "Ready to import",
-                  body: (
-                    <>
-                      Normalize values and rename columns to match the systems
-                      you already use. If a file doesn&apos;t work well,{" "}
-                      <a
-                        href={`mailto:${config.resend.supportEmail}`}
-                        className="link link-primary font-medium"
-                        onClick={(event) => event.stopPropagation()}
-                      >
-                        email us
-                      </a>
-                      .
-                    </>
-                  ),
-                },
-              ].map((item) => (
-                <li
-                  key={item.title}
-                  className="flex items-start gap-3 rounded-xl bg-base-100/80 border border-base-content/10 px-4 py-4"
-                >
-                  <item.icon className="w-5 h-5 shrink-0 text-primary mt-0.5" />
-                  <div className="flex flex-col gap-1">
-                    <p className="text-sm font-semibold text-base-content">
-                      {item.title}
-                    </p>
-                    <p className="text-xs text-base-content/60 leading-relaxed">
-                      {item.body}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
+              {extracting ? "Extracting…" : "Extract Data"}
+            </button>}
           </section>
+
+          <div className="w-full max-w-4xl flex flex-col items-center gap-6 md:gap-10">
+            <div className="flex flex-col items-center gap-3">
+              <p className="text-xs font-medium text-base-content/45">
+                Easily import into the software you already use:
+              </p>
+              <IntegrationLogos />
+            </div>
+            <SellingPoints />
+          </div>
         </div>
       </div>
 
@@ -955,7 +1003,7 @@ export function DocToCsvTool() {
             className="w-full max-w-[100rem] mx-auto px-4 py-8 flex flex-col gap-5"
           >
             <SectionHeading
-              step={2}
+              step={3}
               title="Review, adjust, and export"
               description="The spreadsheet stays in view. Check it against the PDF, then add fields, clean values, or rename columns — every change shows up immediately."
             />
