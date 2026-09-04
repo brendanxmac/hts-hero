@@ -15,27 +15,32 @@ import { useDropzone, type FileRejection } from "react-dropzone";
 import toast from "react-hot-toast";
 import {
   AdjustmentsHorizontalIcon,
-  ArrowLeftIcon,
   ArrowDownTrayIcon,
   CheckCircleIcon,
   CheckIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
   ClipboardDocumentIcon,
   CubeIcon,
   DocumentArrowUpIcon,
   DocumentIcon,
   DocumentTextIcon,
   EyeSlashIcon,
+  InformationCircleIcon,
+  PlusIcon,
   ShieldCheckIcon,
   SparklesIcon,
-  TableCellsIcon,
+  TrashIcon,
   TruckIcon,
   BoltIcon,
-  ViewColumnsIcon
+  ViewColumnsIcon,
 } from "@heroicons/react/24/outline";
 import type {
   CellKeyDownEvent,
   CellValueChangedEvent,
   ColDef,
+  ColumnMovedEvent,
+  SelectionChangedEvent,
 } from "ag-grid-community";
 import { AllCommunityModule, themeQuartz } from "ag-grid-community";
 import {
@@ -44,16 +49,16 @@ import {
   type CustomInnerHeaderProps,
 } from "ag-grid-react";
 import {
-  applyHeaderFieldsToLineItems,
-  columnsForLineItems,
-  duplicateExportNames,
-  getTradeDocumentType,
-  resolveColumnNames,
+  HEADER_FIELD_GROUP_LABELS,
   ROW_ID_FIELD,
   TRADE_DOCUMENT_TYPES,
+  getTradeDocumentType,
+  groupedHeaderColumns,
+  hasCellValue,
+  headerHasValues,
   type DocumentCellValue,
-  type DocumentColumn,
   type DocumentRow,
+  type TradeDocumentType,
   type TradeDocumentTypeId,
 } from "../libs/trade-documents";
 import {
@@ -63,9 +68,47 @@ import {
   toggleInvoiceTransform,
   type InvoiceTransformId,
 } from "../libs/invoice-transforms";
-import { ArrowRightIcon } from "@heroicons/react/24/solid";
+import {
+  PRESET_ENTRY_ID,
+  PRESET_FORWARDING_ID,
+  PRESET_FOUND_ID,
+  addBlankColumnToTemplate,
+  addConstantColumnToTemplate,
+  addHeaderColumnToTemplate,
+  addLineColumnToTemplate,
+  applyColumnEdit,
+  buildGridRows,
+  columnIsOnTemplate,
+  duplicateExportNames,
+  emptyLineItem,
+  emptyStore,
+  isPresetId,
+  loadExportTemplateStore,
+  markTemplateDirty,
+  moveTemplateColumn,
+  nextRowId,
+  persistWorkingTemplate,
+  presetTemplate,
+  removeColumnFromTemplate,
+  renameTemplateColumn,
+  reorderTemplateColumns,
+  resolveTemplateForExtract,
+  saveAsNamedTemplate,
+  saveExportTemplateStore,
+  saveNamedTemplate,
+  sourceFieldForColumn,
+  toggleColumnHidden,
+  unusedHeaderColumns,
+  unusedLineColumns,
+  type ExportPresetId,
+  type ExportTemplate,
+  type ExportTemplateStore,
+} from "../libs/export-templates";
+import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/solid";
 
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
+const EXTRACT_POLL_MS = 5_000;
+const EXTRACT_MAX_WAIT_MS = 5 * 60 * 1000;
 const GRID_MODULES = [AllCommunityModule];
 const RESULTS_VIEWPORT_CLASS =
   "h-[calc(100dvh-4rem)] max-h-[calc(100dvh-4rem)] min-h-0";
@@ -151,13 +194,6 @@ const DOCUMENT_TYPE_ICONS: Record<
   bill_of_lading: TruckIcon,
 };
 
-function formatHeaderValue(value: DocumentCellValue | undefined): string {
-  if (value == null || value === "") {
-    return "—";
-  }
-  return String(value);
-}
-
 function HideColumnInnerHeader(props: CustomInnerHeaderProps<DocumentRow>) {
   const hideColumn = (event: React.MouseEvent) => {
     event.preventDefault();
@@ -227,11 +263,11 @@ function copyCellOnKeyDown(event: CellKeyDownEvent<DocumentRow>) {
 interface LineItemsGridProps {
   gridRef: RefObject<AgGridReact<DocumentRow> | null>;
   rowData: DocumentRow[];
-  columns: DocumentColumn[];
-  columnNames: Record<string, string>;
+  columns: ExportTemplate["columns"];
   csvFileName: string;
-  hiddenFields: string[];
   onHideColumn: (field: string) => void;
+  onColumnMoved: (orderedIds: string[]) => void;
+  onSelectionChanged: (count: number) => void;
   onSourceCellChange: (
     rowId: string,
     field: string,
@@ -243,34 +279,36 @@ function LineItemsGrid({
   gridRef,
   rowData,
   columns,
-  columnNames,
   csvFileName,
-  hiddenFields,
   onHideColumn,
+  onColumnMoved,
+  onSelectionChanged,
   onSourceCellChange,
 }: LineItemsGridProps) {
-  const columnNamesRef = useRef(columnNames);
-  columnNamesRef.current = columnNames;
+  const columnsRef = useRef(columns);
+  columnsRef.current = columns;
 
   const columnDefs = useMemo(
     () =>
       columns.map((column) => ({
-        field: column.field,
+        field: column.id,
         headerName: column.headerName,
         headerValueGetter: () =>
-          columnNamesRef.current[column.field] ?? column.headerName,
+          columnsRef.current.find((item) => item.id === column.id)?.headerName ??
+          column.headerName,
         minWidth:
-          column.field === "description" || column.field.includes("address")
+          sourceFieldForColumn(column) === "description" ||
+            sourceFieldForColumn(column).includes("address")
             ? 240
             : 150,
-        hide: hiddenFields.includes(column.field),
+        hide: Boolean(column.hidden),
       })),
-    [columns, hiddenFields]
+    [columns]
   );
 
   useEffect(() => {
     gridRef.current?.api?.refreshHeader();
-  }, [columnNames, gridRef]);
+  }, [columns, gridRef]);
 
   const onCellValueChanged = (event: CellValueChangedEvent<DocumentRow>) => {
     const field = event.colDef.field;
@@ -279,6 +317,23 @@ function LineItemsGrid({
       return;
     }
     onSourceCellChange(String(rowId), field, event.newValue ?? "");
+  };
+
+  const handleColumnMoved = (event: ColumnMovedEvent<DocumentRow>) => {
+    if (!event.finished) {
+      return;
+    }
+    const ids = event.api
+      .getColumnState()
+      .map((state) => state.colId)
+      .filter((id): id is string => Boolean(id) && id !== ROW_ID_FIELD);
+    onColumnMoved(ids);
+  };
+
+  const handleSelectionChanged = (
+    event: SelectionChangedEvent<DocumentRow>
+  ) => {
+    onSelectionChanged(event.api.getSelectedRows().length);
   };
 
   return (
@@ -298,6 +353,12 @@ function LineItemsGrid({
         enableCellTextSelection
         ensureDomOrder
         animateRows={false}
+        rowSelection={{
+          mode: "multiRow",
+          checkboxes: true,
+          headerCheckbox: true,
+          enableClickSelection: false,
+        }}
         defaultCsvExportParams={{
           allColumns: false,
           fileName: csvFileName,
@@ -307,7 +368,8 @@ function LineItemsGrid({
               return params.column.getColDef().headerName ?? "";
             }
             return (
-              columnNamesRef.current[field] ??
+              columnsRef.current.find((column) => column.id === field)
+                ?.headerName ??
               params.column.getColDef().headerName ??
               field
             );
@@ -315,6 +377,8 @@ function LineItemsGrid({
         }}
         onCellKeyDown={copyCellOnKeyDown}
         onCellValueChanged={onCellValueChanged}
+        onColumnMoved={handleColumnMoved}
+        onSelectionChanged={handleSelectionChanged}
       />
     </div>
   );
@@ -361,7 +425,7 @@ function DocumentTypePicker({
   );
 }
 
-type WorkspaceTab = "pdf" | "fields" | "normalize" | "names";
+type WorkspaceTab = "pdf" | "details" | "normalize" | "names";
 
 function TabIntro({
   title,
@@ -449,90 +513,115 @@ function NormalizeRules({
   );
 }
 
+function columnSourceLabel(column: ExportTemplate["columns"][number]): string {
+  switch (column.source.kind) {
+    case "line":
+      return "Line";
+    case "header":
+      return "Document";
+    case "constant":
+      return "Constant";
+    case "blank":
+      return "Custom";
+  }
+}
+
 function ColumnMapper({
-  columns,
-  names,
-  hiddenFields,
-  onRename,
-  onToggleHidden,
-  onShowAll,
-  onReset,
+  documentType,
+  template,
+  onChange,
 }: {
-  columns: DocumentColumn[];
-  names: Record<string, string>;
-  hiddenFields: string[];
-  onRename: (field: string, name: string) => void;
-  onToggleHidden: (field: string) => void;
-  onShowAll: () => void;
-  onReset: () => void;
+  documentType: TradeDocumentType;
+  template: ExportTemplate;
+  onChange: (template: ExportTemplate) => void;
 }) {
-  const hiddenSet = new Set(hiddenFields);
-  const renamedCount = columns.filter(
-    (column) => (names[column.field] ?? column.headerName) !== column.headerName
-  ).length;
-  const visibleColumns = columns.filter(
-    (column) => !hiddenSet.has(column.field)
-  );
-  const duplicates = duplicateExportNames(visibleColumns, names);
+  const [constantName, setConstantName] = useState("");
+  const [constantValue, setConstantValue] = useState("");
+  const [blankName, setBlankName] = useState("");
+  const hiddenCount = template.columns.filter((column) => column.hidden).length;
+  const duplicates = duplicateExportNames(template.columns);
+  const unusedLine = unusedLineColumns(documentType, template);
+  const unusedHeader = unusedHeaderColumns(documentType, template);
 
   return (
     <div className="flex flex-col gap-4">
       <TabIntro
         title="Manage Columns"
-        description="Toggle and rename the columns to match your import template"
+        description="This is the file you will download. Reorder, rename, hide, or add columns to match your import map."
         action={
-          renamedCount > 0 || hiddenFields.length > 0 ? (
-            <div className="flex flex-col items-end gap-1 shrink-0">
-              {hiddenFields.length > 0 ? (
-                <button
-                  type="button"
-                  className="btn btn-ghost btn-sm"
-                  onClick={onShowAll}
-                >
-                  Show all
-                </button>
-              ) : null}
-              {renamedCount > 0 ? (
-                <button
-                  type="button"
-                  className="btn btn-ghost btn-sm"
-                  onClick={onReset}
-                >
-                  Reset names
-                </button>
-              ) : null}
-            </div>
+          hiddenCount > 0 ? (
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm shrink-0"
+              onClick={() =>
+                onChange({
+                  ...markTemplateDirty(template),
+                  columns: template.columns.map((column) => ({
+                    ...column,
+                    hidden: false,
+                  })),
+                })
+              }
+            >
+              Show all
+            </button>
           ) : undefined
         }
       />
       <div className="flex flex-col gap-2.5">
-        {columns.map((column) => {
-          const current = names[column.field] ?? column.headerName;
-          const changed = current !== column.headerName;
-          const hidden = hiddenSet.has(column.field);
+        {template.columns.map((column, index) => {
+          const hidden = Boolean(column.hidden);
           return (
             <div
-              key={column.field}
-              className={`flex items-center justify-between gap-4 rounded-xl px-4 py-3.5 transition-colors ${hidden
+              key={column.id}
+              className={`flex items-center gap-2 rounded-xl px-3 py-3 transition-colors ${hidden
                 ? "bg-base-200/70 opacity-70"
-                : changed
-                  ? "bg-primary/15 ring-2 ring-primary/35"
-                  : "bg-base-200 hover:bg-base-300/70"
+                : "bg-base-200 hover:bg-base-300/70"
                 }`}
             >
+              <div className="flex flex-col gap-0.5 shrink-0">
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-xs px-1 min-h-0 h-6"
+                  disabled={index === 0}
+                  aria-label={`Move ${column.headerName} up`}
+                  onClick={() =>
+                    onChange(moveTemplateColumn(template, column.id, -1))
+                  }
+                >
+                  <ChevronUpIcon className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-xs px-1 min-h-0 h-6"
+                  disabled={index === template.columns.length - 1}
+                  aria-label={`Move ${column.headerName} down`}
+                  onClick={() =>
+                    onChange(moveTemplateColumn(template, column.id, 1))
+                  }
+                >
+                  <ChevronDownIcon className="w-4 h-4" />
+                </button>
+              </div>
               <label className="min-w-0 flex-1 flex flex-col gap-1.5 cursor-text">
                 <span className="text-sm font-medium text-base-content/70 break-words">
-                  {column.headerName}
+                  {columnSourceLabel(column)}
                   {hidden ? " · hidden" : ""}
                 </span>
                 <input
                   type="text"
                   className="input input-bordered input-sm w-full min-w-0 font-semibold disabled:opacity-50"
-                  value={current}
+                  value={column.headerName}
                   disabled={hidden}
                   placeholder="Column name"
                   onChange={(event) =>
-                    onRename(column.field, event.target.value)
+                    onChange(
+                      renameTemplateColumn(
+                        template,
+                        column.id,
+                        event.target.value
+                      )
+                    )
                   }
                   onFocus={(event) => event.target.select()}
                   aria-label={`Export name for ${column.headerName}`}
@@ -542,13 +631,25 @@ function ColumnMapper({
                 type="checkbox"
                 className="toggle toggle-primary shrink-0"
                 checked={!hidden}
-                onChange={() => onToggleHidden(column.field)}
+                onChange={() =>
+                  onChange(toggleColumnHidden(template, column.id))
+                }
                 aria-label={
                   hidden
                     ? `Show ${column.headerName} in CSV`
                     : `Hide ${column.headerName} from CSV`
                 }
               />
+              <button
+                type="button"
+                className="btn btn-ghost btn-xs px-1 text-base-content/50 hover:text-error"
+                aria-label={`Remove ${column.headerName}`}
+                onClick={() =>
+                  onChange(removeColumnFromTemplate(template, column.id))
+                }
+              >
+                <TrashIcon className="w-4 h-4" />
+              </button>
             </div>
           );
         })}
@@ -559,94 +660,224 @@ function ColumnMapper({
           column headers.
         </p>
       )}
+      <div className="flex flex-col gap-3 pt-1 border-t border-base-content/10">
+        <p className="text-sm font-semibold text-base-content">Add a column</p>
+        {unusedLine.length > 0 || unusedHeader.length > 0 ? (
+          <select
+            className="select select-bordered select-sm w-full"
+            defaultValue=""
+            onChange={(event) => {
+              const value = event.target.value;
+              event.target.value = "";
+              if (!value) {
+                return;
+              }
+              const [kind, ...fieldParts] = value.split(":");
+              const field = fieldParts.join(":");
+              onChange(
+                kind === "line"
+                  ? addLineColumnToTemplate(documentType, template, field)
+                  : addHeaderColumnToTemplate(documentType, template, field)
+              );
+            }}
+            aria-label="Add extracted field"
+          >
+            <option value="" disabled>
+              Extracted field…
+            </option>
+            {unusedLine.length > 0 ? (
+              <optgroup label="Line items">
+                {unusedLine.map((column) => (
+                  <option key={column.field} value={`line:${column.field}`}>
+                    {column.headerName}
+                  </option>
+                ))}
+              </optgroup>
+            ) : null}
+            {unusedHeader.length > 0 ? (
+              <optgroup label="Document details">
+                {unusedHeader.map((column) => (
+                  <option key={column.field} value={`header:${column.field}`}>
+                    {column.headerName}
+                  </option>
+                ))}
+              </optgroup>
+            ) : null}
+          </select>
+        ) : null}
+        <form
+          className="flex flex-col gap-2"
+          onSubmit={(event) => {
+            event.preventDefault();
+            onChange(
+              addConstantColumnToTemplate(template, constantName, constantValue)
+            );
+            setConstantName("");
+            setConstantValue("");
+          }}
+        >
+          <input
+            type="text"
+            className="input input-bordered input-sm w-full"
+            placeholder="Constant column name"
+            value={constantName}
+            onChange={(event) => setConstantName(event.target.value)}
+          />
+          <div className="flex gap-2">
+            <input
+              type="text"
+              className="input input-bordered input-sm w-full"
+              placeholder="Value on every row"
+              value={constantValue}
+              onChange={(event) => setConstantValue(event.target.value)}
+            />
+            <button type="submit" className="btn btn-sm btn-primary shrink-0">
+              Add
+            </button>
+          </div>
+        </form>
+        <form
+          className="flex gap-2"
+          onSubmit={(event) => {
+            event.preventDefault();
+            onChange(addBlankColumnToTemplate(template, blankName));
+            setBlankName("");
+          }}
+        >
+          <input
+            type="text"
+            className="input input-bordered input-sm w-full"
+            placeholder="Blank column name"
+            value={blankName}
+            onChange={(event) => setBlankName(event.target.value)}
+          />
+          <button type="submit" className="btn btn-sm shrink-0">
+            Add
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
 
-function HeaderFieldsPanel({
-  columns,
+function DocumentDetailsPanel({
+  documentType,
   header,
-  includedHeaderFields,
+  template,
+  showEmpty,
   copiedField,
+  onShowEmpty,
   onCopy,
-  onToggle,
+  onChangeHeader,
+  onToggleField,
 }: {
-  columns: DocumentColumn[];
+  documentType: TradeDocumentType;
   header: DocumentRow;
-  includedHeaderFields: string[];
+  template: ExportTemplate;
+  showEmpty: boolean;
   copiedField: string | null;
+  onShowEmpty: (show: boolean) => void;
   onCopy: (field: string, label: string) => void;
-  onToggle: (field: string) => void;
+  onChangeHeader: (field: string, value: string) => void;
+  onToggleField: (field: string) => void;
 }) {
-  const ordered = [...columns].sort((a, b) => {
-    const aHas = header[a.field] != null && header[a.field] !== "";
-    const bHas = header[b.field] != null && header[b.field] !== "";
-    if (aHas === bHas) {
-      return 0;
-    }
-    return aHas ? -1 : 1;
-  });
+  const groups = groupedHeaderColumns(documentType.headerColumns)
+    .map((entry) => ({
+      ...entry,
+      columns: showEmpty
+        ? entry.columns
+        : entry.columns.filter((column) => hasCellValue(header[column.field])),
+    }))
+    .filter((entry) => entry.columns.length > 0);
 
   return (
     <div className="flex flex-col gap-4">
       <TabIntro
-        title="Add Data to Every Row"
-        description="Add document-level details onto every row. The table updates live as you toggle."
+        title="Document details"
+        description="Values from outside the table. Edit them here, then add any of them as a column on every row."
+        action={
+          <label className="flex items-center gap-2 text-xs font-medium text-base-content/70 shrink-0">
+            <input
+              type="checkbox"
+              className="checkbox checkbox-xs"
+              checked={showEmpty}
+              onChange={(event) => onShowEmpty(event.target.checked)}
+            />
+            Show empty
+          </label>
+        }
       />
-      <div className="flex flex-col gap-2.5">
-        {ordered.map((column) => {
-          const included = includedHeaderFields.includes(column.field);
-          const rawValue = header[column.field];
-          const hasValue = rawValue != null && rawValue !== "";
-          const copied = copiedField === column.field;
-
-          return (
-            <div
-              key={column.field}
-              className={`flex items-center justify-between gap-4 rounded-xl px-4 py-3.5 transition-colors ${included
-                ? "bg-primary/15 ring-2 ring-primary/35"
-                : "bg-base-200"
-                }`}
-            >
-              <button
-                type="button"
-                className={`min-w-0 flex-1 text-left flex flex-col gap-1 rounded-md ${hasValue ? "cursor-copy hover:opacity-80" : "cursor-default"
-                  }`}
-                onClick={() => onCopy(column.field, column.headerName)}
-                disabled={!hasValue}
-                title={hasValue ? "Click to copy" : "No value to copy"}
-              >
-                <span className="text-sm font-medium text-base-content/70 break-words">
-                  {column.headerName}
-                </span>
-                <span className="flex items-start gap-2 min-w-0">
-                  <span
-                    className={`text-base break-words ${hasValue
-                      ? "font-semibold text-base-content"
-                      : "text-base-content/40"
-                      }`}
-                  >
-                    {formatHeaderValue(rawValue)}
-                  </span>
-                  {hasValue &&
-                    (copied ? (
-                      <CheckIcon className="w-5 h-5 shrink-0 text-success" />
-                    ) : (
-                      <ClipboardDocumentIcon className="w-5 h-5 shrink-0 text-base-content/45" />
-                    ))}
-                </span>
-              </button>
-              <input
-                type="checkbox"
-                className="toggle toggle-primary shrink-0"
-                checked={included}
-                onChange={() => onToggle(column.field)}
-                aria-label={`Add ${column.headerName} to each row`}
-              />
-            </div>
-          );
-        })}
-      </div>
+      {groups.length === 0 ? (
+        <p className="text-sm text-base-content/60">
+          No document-level values were found. Turn on Show empty to fill them
+          in yourself.
+        </p>
+      ) : (
+        groups.map((entry) => (
+          <section key={entry.group} className="flex flex-col gap-2.5">
+            <h4 className="text-xs font-bold uppercase tracking-wide text-base-content/50">
+              {HEADER_FIELD_GROUP_LABELS[entry.group]}
+            </h4>
+            {entry.columns.map((column) => {
+              const included = columnIsOnTemplate(template, {
+                kind: "header",
+                field: column.field,
+              });
+              const rawValue = header[column.field];
+              const hasValue = hasCellValue(rawValue);
+              const copied = copiedField === column.field;
+              return (
+                <div
+                  key={column.field}
+                  className={`flex items-start justify-between gap-3 rounded-xl px-4 py-3.5 transition-colors ${included
+                    ? "bg-primary/15 ring-2 ring-primary/35"
+                    : "bg-base-200"
+                    }`}
+                >
+                  <div className="min-w-0 flex-1 flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-sm font-medium text-base-content/70 break-words">
+                        {column.headerName}
+                      </span>
+                      <button
+                        type="button"
+                        className="btn btn-ghost btn-xs px-1 min-h-0 h-7"
+                        disabled={!hasValue}
+                        onClick={() => onCopy(column.field, column.headerName)}
+                        title={hasValue ? "Copy" : "No value to copy"}
+                        aria-label={`Copy ${column.headerName}`}
+                      >
+                        {copied ? (
+                          <CheckIcon className="w-4 h-4 text-success" />
+                        ) : (
+                          <ClipboardDocumentIcon className="w-4 h-4 text-base-content/45" />
+                        )}
+                      </button>
+                    </div>
+                    <input
+                      type="text"
+                      className="input input-bordered input-sm w-full min-w-0 font-semibold"
+                      value={rawValue == null ? "" : String(rawValue)}
+                      placeholder="—"
+                      onChange={(event) =>
+                        onChangeHeader(column.field, event.target.value)
+                      }
+                      aria-label={column.headerName}
+                    />
+                  </div>
+                  <input
+                    type="checkbox"
+                    className="toggle toggle-primary shrink-0 mt-7"
+                    checked={included}
+                    onChange={() => onToggleField(column.field)}
+                    aria-label={`Add ${column.headerName} to each row`}
+                  />
+                </div>
+              );
+            })}
+          </section>
+        ))
+      )}
     </div>
   );
 }
@@ -674,9 +905,9 @@ function InspectorRail({
   }[] = [
       { id: "pdf", label: "Document", icon: DocumentIcon },
       {
-        id: "fields",
-        label: "Enrich Rows",
-        icon: TableCellsIcon,
+        id: "details",
+        label: "Details",
+        icon: InformationCircleIcon,
         count: fieldCount,
       },
       {
@@ -809,7 +1040,7 @@ function SellingPoints() {
         <BoltIcon className="w-6 h-6 shrink-0 mt-0.5 text-base-content/80" />
         <div className="flex flex-col gap-1.5 min-w-0">
           <p className="font-medium tracking-tight text-base-content/80">
-            Quickly import to your software
+            Ready for your import template
           </p>
           <IntegrationLogos />
         </div>
@@ -859,7 +1090,7 @@ function SectionHeading({
 function extractErrorHint(message: string): string | null {
   const lower = message.toLowerCase();
   if (lower.includes("timed out")) {
-    return "This can take up to a minute. Try again, or use a smaller PDF.";
+    return "This can take a few minutes. Try again, or use a smaller PDF.";
   }
   if (
     lower.includes("pdf") ||
@@ -871,8 +1102,131 @@ function extractErrorHint(message: string): string | null {
   return "Wrong document type? Switch the type above and try again, or upload a different PDF.";
 }
 
+function TemplateBar({
+  template,
+  savedTemplates,
+  saveOpen,
+  saveName,
+  onSaveName,
+  onSelectId,
+  onSave,
+  onSaveAs,
+  onToggleSaveAs,
+}: {
+  template: ExportTemplate;
+  savedTemplates: ExportTemplate[];
+  saveOpen: boolean;
+  saveName: string;
+  onSaveName: (name: string) => void;
+  onSelectId: (id: string) => void;
+  onSave: () => void;
+  onSaveAs: () => void;
+  onToggleSaveAs: () => void;
+}) {
+  const savedForType = savedTemplates.filter(
+    (item) => item.documentTypeId === template.documentTypeId
+  );
+  return (
+    <div className="flex flex-wrap items-center gap-2 min-w-0">
+      <select
+        className="select select-bordered select-sm max-w-[14rem]"
+        value={template.id}
+        onChange={(event) => onSelectId(event.target.value)}
+        aria-label="Export template"
+      >
+        <optgroup label="Presets">
+          <option value={PRESET_FOUND_ID}>What we found</option>
+          <option value={PRESET_ENTRY_ID}>US entry lines</option>
+          <option value={PRESET_FORWARDING_ID}>Forwarding / warehouse</option>
+        </optgroup>
+        {savedForType.length > 0 ? (
+          <optgroup label="Saved">
+            {savedForType.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.name}
+              </option>
+            ))}
+          </optgroup>
+        ) : null}
+        {!isPresetId(template.id) &&
+          !savedForType.some((item) => item.id === template.id) ? (
+          <option value={template.id}>{template.name}</option>
+        ) : null}
+      </select>
+      {template.dirty ? (
+        <span className="text-xs text-base-content/50 whitespace-nowrap">
+          Unsaved
+        </span>
+      ) : null}
+      {saveOpen ? (
+        <form
+          className="flex items-center gap-1.5"
+          onSubmit={(event) => {
+            event.preventDefault();
+            onSaveAs();
+          }}
+        >
+          <input
+            type="text"
+            className="input input-bordered input-sm w-36"
+            placeholder="Template name"
+            value={saveName}
+            onChange={(event) => onSaveName(event.target.value)}
+            autoFocus
+          />
+          <button type="submit" className="btn btn-sm btn-primary">
+            Save
+          </button>
+          <button
+            type="button"
+            className="btn btn-sm btn-ghost"
+            onClick={onToggleSaveAs}
+          >
+            Cancel
+          </button>
+        </form>
+      ) : (
+        <>
+          {!isPresetId(template.id) ? (
+            <button type="button" className="btn btn-sm" onClick={onSave}>
+              Save
+            </button>
+          ) : null}
+          <button type="button" className="btn btn-sm" onClick={onToggleSaveAs}>
+            Save as
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
+function isAbortError(error: unknown): boolean {
+  return error instanceof DOMException
+    ? error.name === "AbortError"
+    : error instanceof Error && error.name === "AbortError";
+}
+
+function waitMs(ms: number, signal: AbortSignal): Promise<void> {
+  if (signal.aborted) {
+    return Promise.reject(new DOMException("Aborted", "AbortError"));
+  }
+  return new Promise((resolve, reject) => {
+    const timer = window.setTimeout(() => {
+      signal.removeEventListener("abort", onAbort);
+      resolve();
+    }, ms);
+    const onAbort = () => {
+      window.clearTimeout(timer);
+      reject(new DOMException("Aborted", "AbortError"));
+    };
+    signal.addEventListener("abort", onAbort, { once: true });
+  });
+}
+
 export function DocToCsvTool() {
   const lineItemsGridRef = useRef<AgGridReact<DocumentRow>>(null);
+  const extractAbortRef = useRef<AbortController | null>(null);
   const [documentTypeId, setDocumentTypeId] =
     useState<TradeDocumentTypeId>("commercial_invoice");
   const [file, setFile] = useState<File | null>(null);
@@ -881,17 +1235,10 @@ export function DocToCsvTool() {
   const [extractError, setExtractError] = useState<string | null>(null);
   const [header, setHeader] = useState<DocumentRow | null>(null);
   const [lineItemRows, setLineItemRows] = useState<DocumentRow[] | null>(null);
-  const [includedHeaderFields, setIncludedHeaderFields] = useState<string[]>(
-    []
-  );
+  const [templateStore, setTemplateStore] =
+    useState<ExportTemplateStore>(emptyStore);
+  const [template, setTemplate] = useState<ExportTemplate | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
-  const [hiddenFields, setHiddenFields] = useState<string[]>([]);
-  const [enabledTransforms, setEnabledTransforms] = useState<
-    InvoiceTransformId[]
-  >([]);
-  const [columnNameOverrides, setColumnNameOverrides] = useState<
-    Record<string, string>
-  >({});
   const [editedCells, setEditedCells] = useState<Record<string, true>>({});
   const [workspaceTab, setWorkspaceTab] = useState<WorkspaceTab>("pdf");
   const [inspectorOpen, setInspectorOpen] = useState(true);
@@ -899,19 +1246,43 @@ export function DocToCsvTool() {
   const [activeView, setActiveView] = useState<"landing" | "results">(
     "landing"
   );
+  const [showEmptyHeader, setShowEmptyHeader] = useState(false);
+  const [selectedRowCount, setSelectedRowCount] = useState(0);
+  const [saveOpen, setSaveOpen] = useState(false);
+  const [saveName, setSaveName] = useState("");
 
   const documentType = getTradeDocumentType(documentTypeId);
 
-  const resetResults = useCallback(() => {
+  const commitStore = useCallback((store: ExportTemplateStore) => {
+    setTemplateStore(store);
+    saveExportTemplateStore(store);
+  }, []);
+
+  const commitTemplate = useCallback(
+    (next: ExportTemplate) => {
+      setTemplate(next);
+      setTemplateStore((current) => {
+        const stored = persistWorkingTemplate(current, next);
+        saveExportTemplateStore(stored);
+        return stored;
+      });
+    },
+    []
+  );
+
+  const resetExtracted = useCallback(() => {
     setHeader(null);
     setLineItemRows(null);
-    setIncludedHeaderFields([]);
-    setHiddenFields([]);
-    setEnabledTransforms([]);
-    setColumnNameOverrides({});
     setEditedCells({});
+    setSelectedRowCount(0);
     setWorkspaceTab("pdf");
     setInspectorOpen(true);
+    setShowEmptyHeader(false);
+    setSaveOpen(false);
+  }, []);
+
+  useEffect(() => {
+    setTemplateStore(loadExportTemplateStore());
   }, []);
 
   useEffect(() => {
@@ -938,60 +1309,130 @@ export function DocToCsvTool() {
     return () => window.clearInterval(interval);
   }, [extracting]);
 
+  useEffect(() => {
+    return () => {
+      extractAbortRef.current?.abort();
+    };
+  }, []);
+
   const extractFile = useCallback(
     async (pdf: File, typeId: TradeDocumentTypeId) => {
+      extractAbortRef.current?.abort();
+      const abort = new AbortController();
+      extractAbortRef.current = abort;
+
       setExtracting(true);
       setExtractError(null);
       setActiveView("landing");
-      resetResults();
+      resetExtracted();
 
       try {
         const formData = new FormData();
         formData.append("file", pdf);
         formData.append("documentType", typeId);
 
-        const response = await fetch("/api/doc-to-csv/extract", {
+        const startResponse = await fetch("/api/doc-to-csv/extract", {
           method: "POST",
           body: formData,
+          signal: abort.signal,
         });
-        const data = (await response.json().catch((): null => null)) as {
-          header?: DocumentRow;
-          lineItems?: DocumentRow[];
+        const startData = (await startResponse.json().catch((): null => null)) as {
+          requestId?: string;
           error?: string;
         } | null;
 
-        if (!response.ok) {
-          throw new Error(data?.error || "Failed to extract document data");
+        if (!startResponse.ok) {
+          throw new Error(startData?.error || "Failed to start extraction");
+        }
+        if (!startData?.requestId) {
+          throw new Error("No extraction request id was returned");
         }
 
-        if (!data?.header || !data.lineItems) {
-          throw new Error("No document data was returned");
+        const startedAt = Date.now();
+        let pollFirst = true;
+        while (!abort.signal.aborted) {
+          if (!pollFirst) {
+            await waitMs(EXTRACT_POLL_MS, abort.signal);
+          }
+          pollFirst = false;
+
+          if (Date.now() - startedAt > EXTRACT_MAX_WAIT_MS) {
+            throw new Error("Extraction timed out. Please try again.");
+          }
+
+          const statusResponse = await fetch(
+            `/api/doc-to-csv/extract/${encodeURIComponent(startData.requestId)}?documentType=${encodeURIComponent(typeId)}`,
+            { signal: abort.signal, cache: "no-store" }
+          );
+          const statusData = (await statusResponse
+            .json()
+            .catch((): null => null)) as {
+              status?: string;
+              header?: DocumentRow;
+              lineItems?: DocumentRow[];
+              error?: string;
+            } | null;
+
+          if (!statusResponse.ok && statusData?.status !== "failed") {
+            throw new Error(
+              statusData?.error || "Failed to check extraction status"
+            );
+          }
+
+          if (statusData?.status === "failed") {
+            throw new Error(statusData.error || "Extraction failed");
+          }
+
+          if (statusData?.status === "processing" || !statusData?.status) {
+            continue;
+          }
+
+          if (statusData.status !== "complete") {
+            continue;
+          }
+
+          if (!statusData.header || !statusData.lineItems) {
+            throw new Error("No document data was returned");
+          }
+
+          if (
+            statusData.lineItems.length === 0 &&
+            !headerHasValues(statusData.header)
+          ) {
+            throw new Error("No data was found in this PDF.");
+          }
+
+          const rows = statusData.lineItems.map((item, index) => ({
+            ...item,
+            [ROW_ID_FIELD]: String(index + 1),
+          }));
+          const type = getTradeDocumentType(typeId);
+          const store = loadExportTemplateStore();
+          const nextTemplate = resolveTemplateForExtract(type, rows, store);
+
+          setTemplateStore(store);
+          setHeader(statusData.header);
+          setLineItemRows(rows);
+          commitTemplate(nextTemplate);
+          setActiveView("results");
+          return;
         }
-
-        if (data.lineItems.length === 0) {
-          throw new Error("No line items were found in this PDF.");
-        }
-
-        const rows = data.lineItems.map((item, index) => ({
-          ...item,
-          [ROW_ID_FIELD]: String(index + 1),
-        }));
-
-        setHeader(data.header);
-        setLineItemRows(rows);
-        setActiveView("landing");
-        return;
       } catch (error) {
+        if (isAbortError(error)) {
+          return;
+        }
         setExtractError(
           error instanceof Error
             ? error.message
             : "Failed to extract document data"
         );
       } finally {
-        setExtracting(false);
+        if (extractAbortRef.current === abort) {
+          setExtracting(false);
+        }
       }
     },
-    [resetResults]
+    [commitTemplate, resetExtracted]
   );
 
   const onDrop = useCallback(
@@ -1041,6 +1482,13 @@ export function DocToCsvTool() {
       return;
     }
     setDocumentTypeId(id);
+    setExtractError(null);
+    resetExtracted();
+    setTemplate(null);
+    setActiveView("landing");
+    if (file) {
+      void extractFile(file, id);
+    }
   };
 
   const goBackToLanding = () => {
@@ -1052,23 +1500,21 @@ export function DocToCsvTool() {
   };
 
   const toggleHeaderField = (field: string) => {
-    if (!header || !lineItemRows) {
+    if (!template) {
       return;
     }
-
-    const nextIncluded = includedHeaderFields.includes(field)
-      ? includedHeaderFields.filter((included) => included !== field)
-      : [...includedHeaderFields, field];
-
-    setIncludedHeaderFields(nextIncluded);
-    setLineItemRows(
-      applyHeaderFieldsToLineItems(
-        documentType,
-        header,
-        lineItemRows,
-        nextIncluded
-      )
-    );
+    if (
+      columnIsOnTemplate(template, { kind: "header", field })
+    ) {
+      const column = template.columns.find(
+        (item) => item.source.kind === "header" && item.source.field === field
+      );
+      if (column) {
+        commitTemplate(removeColumnFromTemplate(template, column.id));
+      }
+      return;
+    }
+    commitTemplate(addHeaderColumnToTemplate(documentType, template, field));
   };
 
   const onSourceCellChange = (
@@ -1076,6 +1522,13 @@ export function DocToCsvTool() {
     field: string,
     value: DocumentCellValue
   ) => {
+    if (!template) {
+      return;
+    }
+    const column = template.columns.find((item) => item.id === field);
+    if (!column) {
+      return;
+    }
     setEditedCells((current) => ({
       ...current,
       [editedCellKey(rowId, field)]: true,
@@ -1084,28 +1537,29 @@ export function DocToCsvTool() {
       if (!current) {
         return current;
       }
-      return current.map((row) =>
-        String(row[ROW_ID_FIELD]) === rowId ? { ...row, [field]: value } : row
-      );
+      return applyColumnEdit(current, rowId, column, value);
     });
   };
 
   const onToggleTransform = (id: InvoiceTransformId) => {
-    setEnabledTransforms((current) => toggleInvoiceTransform(current, id));
+    if (!template) {
+      return;
+    }
+    commitTemplate({
+      ...markTemplateDirty(template),
+      transforms: toggleInvoiceTransform(template.transforms, id),
+    });
   };
 
   const onHideColumn = (field: string) => {
-    setHiddenFields((current) =>
-      current.includes(field) ? current : [...current, field]
-    );
-  };
-
-  const onToggleHidden = (field: string) => {
-    setHiddenFields((current) =>
-      current.includes(field)
-        ? current.filter((hidden) => hidden !== field)
-        : [...current, field]
-    );
+    if (!template) {
+      return;
+    }
+    const column = template.columns.find((item) => item.id === field);
+    if (!column || column.hidden) {
+      return;
+    }
+    commitTemplate(toggleColumnHidden(template, field));
   };
 
   const copyHeaderValue = async (field: string, label: string) => {
@@ -1113,7 +1567,7 @@ export function DocToCsvTool() {
       return;
     }
     const value = header[field];
-    if (value == null || value === "") {
+    if (!hasCellValue(value)) {
       return;
     }
     await navigator.clipboard.writeText(String(value));
@@ -1124,30 +1578,115 @@ export function DocToCsvTool() {
     toast.success(`Copied ${label}`);
   };
 
-  const lineItemColumns = columnsForLineItems(
-    documentType,
-    includedHeaderFields
-  );
-  const columnNames = useMemo(
-    () => resolveColumnNames(lineItemColumns, columnNameOverrides),
-    [lineItemColumns, columnNameOverrides]
-  );
+  const selectTemplateId = (id: string) => {
+    if (!lineItemRows) {
+      return;
+    }
+    if (id === PRESET_FOUND_ID || id === PRESET_ENTRY_ID || id === PRESET_FORWARDING_ID) {
+      const presetId: ExportPresetId =
+        id === PRESET_ENTRY_ID
+          ? "entry"
+          : id === PRESET_FORWARDING_ID
+            ? "forwarding"
+            : "found";
+      commitTemplate(presetTemplate(documentType, presetId, lineItemRows));
+      setEditedCells({});
+      return;
+    }
+    const saved = templateStore.templates.find((item) => item.id === id);
+    if (saved) {
+      commitTemplate({ ...saved, dirty: false });
+      setEditedCells({});
+    }
+  };
+
+  const saveCurrentTemplate = () => {
+    if (!template) {
+      return;
+    }
+    const { store, template: saved } = saveNamedTemplate(
+      templateStore,
+      template,
+      template.name
+    );
+    commitStore(store);
+    setTemplate(saved);
+    setSaveOpen(false);
+    toast.success("Template saved");
+  };
+
+  const saveCurrentTemplateAs = () => {
+    if (!template) {
+      return;
+    }
+    const { store, template: saved } = saveAsNamedTemplate(
+      templateStore,
+      template,
+      saveName
+    );
+    commitStore(store);
+    setTemplate(saved);
+    setSaveOpen(false);
+    setSaveName("");
+    toast.success("Template saved");
+  };
+
+  const addRow = () => {
+    if (!lineItemRows) {
+      return;
+    }
+    const rowId = nextRowId(lineItemRows);
+    setLineItemRows([...lineItemRows, emptyLineItem(documentType, rowId)]);
+  };
+
+  const deleteSelectedRows = () => {
+    const selected = lineItemsGridRef.current?.api.getSelectedRows() ?? [];
+    if (selected.length === 0 || !lineItemRows) {
+      return;
+    }
+    const ids = new Set(selected.map((row) => String(row[ROW_ID_FIELD])));
+    setLineItemRows(lineItemRows.filter((row) => !ids.has(String(row[ROW_ID_FIELD]))));
+    setEditedCells((current) => {
+      const next = { ...current };
+      for (const key of Object.keys(next)) {
+        const rowId = key.split(":")[0];
+        if (ids.has(rowId)) {
+          delete next[key];
+        }
+      }
+      return next;
+    });
+    setSelectedRowCount(0);
+  };
+
   const csvFileName = csvFileNameFromUpload(
     file?.name,
     documentType.csvFileName
   );
   const lineItemCount = lineItemRows?.length ?? 0;
-  const displayRows = useMemo(
-    () =>
-      lineItemRows
-        ? applyInvoiceTransforms(lineItemRows, enabledTransforms, editedCells)
-        : [],
-    [lineItemRows, enabledTransforms, editedCells]
-  );
-  const renamedCount = lineItemColumns.filter(
-    (column) =>
-      (columnNames[column.field] ?? column.headerName) !== column.headerName
-  ).length;
+  const displayRows = useMemo(() => {
+    if (!lineItemRows || !template || !header) {
+      return [];
+    }
+    const gridRows = buildGridRows(
+      header,
+      lineItemRows,
+      template.columns,
+      editedCells
+    );
+    return applyInvoiceTransforms(
+      gridRows,
+      template.transforms,
+      editedCells,
+      (key) => {
+        const column = template.columns.find((item) => item.id === key);
+        return column ? sourceFieldForColumn(column) : key;
+      }
+    );
+  }, [editedCells, header, lineItemRows, template]);
+  const headerColumnCount =
+    template?.columns.filter((column) => column.source.kind === "header")
+      .length ?? 0;
   const errorHint = extractError ? extractErrorHint(extractError) : null;
 
   const downloadCsv = () => {
@@ -1159,7 +1698,11 @@ export function DocToCsvTool() {
         if (!field) {
           return params.column.getColDef().headerName ?? "";
         }
-        return columnNames[field] ?? params.column.getColDef().headerName ?? field;
+        return (
+          template?.columns.find((column) => column.id === field)?.headerName ??
+          params.column.getColDef().headerName ??
+          field
+        );
       },
     });
   };
@@ -1173,21 +1716,20 @@ export function DocToCsvTool() {
     setInspectorOpen(true);
   };
 
-  if (header && lineItemRows && activeView === "results") {
+  if (header && lineItemRows && template && activeView === "results") {
     return (
       <AgGridProvider modules={GRID_MODULES}>
         <div
           className={`w-full flex-1 flex flex-col overflow-hidden bg-base-100 animate-results-enter ${RESULTS_VIEWPORT_CLASS}`}
         >
-          <header className="shrink-0 border-b border-base-content/15 px-3 sm:px-4 py-2 flex items-center gap-2 sm:gap-3">
+          <header className="shrink-0 border-b border-base-content/15 px-3 sm:px-4 py-2 flex flex-wrap items-center gap-2 sm:gap-3">
             <button
               type="button"
               onClick={goBackToLanding}
               aria-label="Back"
-              className="group flex items-center gap-1.5 shrink-0 text-sm font-medium text-base-content/70 hover:text-base-content transition-colors"
+              className="w-14 flex items-center justify-center gap-1.5 shrink-0 text-sm font-medium hover:text-base-content transition-colors"
             >
-              <ArrowLeftIcon className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-              <span className="hidden sm:inline">Back</span>
+              <ArrowLeftIcon className="w-5 h-5 hover:-translate-x-0.5 transition-transform" />
             </button>
             <div className="min-w-0 flex-1">
               <h2
@@ -1201,6 +1743,38 @@ export function DocToCsvTool() {
                 {lineItemCount === 1 ? "" : "s"}
               </p>
             </div>
+            <TemplateBar
+              template={template}
+              savedTemplates={templateStore.templates}
+              saveOpen={saveOpen}
+              saveName={saveName}
+              onSaveName={setSaveName}
+              onSelectId={selectTemplateId}
+              onSave={saveCurrentTemplate}
+              onSaveAs={saveCurrentTemplateAs}
+              onToggleSaveAs={() => {
+                setSaveName(isPresetId(template.id) ? "" : template.name);
+                setSaveOpen((open) => !open);
+              }}
+            />
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm gap-1 shrink-0"
+              onClick={addRow}
+            >
+              <PlusIcon className="w-4 h-4" />
+              Add row
+            </button>
+            {selectedRowCount > 0 ? (
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm gap-1 shrink-0 text-error"
+                onClick={deleteSelectedRows}
+              >
+                <TrashIcon className="w-4 h-4" />
+                Delete {selectedRowCount}
+              </button>
+            ) : null}
             <button
               type="button"
               className="btn btn-primary gap-1.5 shrink-0"
@@ -1222,9 +1796,11 @@ export function DocToCsvTool() {
               <InspectorRail
                 active={workspaceTab}
                 open={inspectorOpen}
-                fieldCount={includedHeaderFields.length}
-                ruleCount={enabledTransforms.length}
-                renamedCount={renamedCount}
+                fieldCount={headerColumnCount}
+                ruleCount={template.transforms.length}
+                renamedCount={
+                  template.columns.filter((column) => column.hidden).length
+                }
                 onSelect={selectInspectorTab}
               />
 
@@ -1246,37 +1822,40 @@ export function DocToCsvTool() {
                     </div>
                   ) : (
                     <div className="flex-1 min-h-0 overflow-y-auto p-4">
-                      {workspaceTab === "fields" && (
-                        <HeaderFieldsPanel
-                          columns={documentType.headerColumns}
+                      {workspaceTab === "details" && (
+                        <DocumentDetailsPanel
+                          documentType={documentType}
                           header={header}
-                          includedHeaderFields={includedHeaderFields}
+                          template={template}
+                          showEmpty={showEmptyHeader}
                           copiedField={copiedField}
+                          onShowEmpty={setShowEmptyHeader}
                           onCopy={copyHeaderValue}
-                          onToggle={toggleHeaderField}
+                          onChangeHeader={(field, value) =>
+                            setHeader((current) =>
+                              current ? { ...current, [field]: value } : current
+                            )
+                          }
+                          onToggleField={toggleHeaderField}
                         />
                       )}
                       {workspaceTab === "normalize" && (
                         <NormalizeRules
-                          enabled={enabledTransforms}
+                          enabled={template.transforms}
                           onToggle={onToggleTransform}
-                          onReset={() => setEnabledTransforms([])}
+                          onReset={() =>
+                            commitTemplate({
+                              ...markTemplateDirty(template),
+                              transforms: [],
+                            })
+                          }
                         />
                       )}
                       {workspaceTab === "names" && (
                         <ColumnMapper
-                          columns={lineItemColumns}
-                          names={columnNames}
-                          hiddenFields={hiddenFields}
-                          onRename={(field, name) =>
-                            setColumnNameOverrides((current) => ({
-                              ...current,
-                              [field]: name,
-                            }))
-                          }
-                          onToggleHidden={onToggleHidden}
-                          onShowAll={() => setHiddenFields([])}
-                          onReset={() => setColumnNameOverrides({})}
+                          documentType={documentType}
+                          template={template}
+                          onChange={commitTemplate}
                         />
                       )}
                     </div>
@@ -1289,16 +1868,27 @@ export function DocToCsvTool() {
               className={`min-h-0 overflow-hidden ${inspectorOpen ? "flex-1 md:w-3/5 md:flex-none" : "flex-1"
                 }`}
             >
-              <LineItemsGrid
-                gridRef={lineItemsGridRef}
-                rowData={displayRows}
-                columns={lineItemColumns}
-                columnNames={columnNames}
-                csvFileName={csvFileName}
-                hiddenFields={hiddenFields}
-                onHideColumn={onHideColumn}
-                onSourceCellChange={onSourceCellChange}
-              />
+              {template.columns.length === 0 ? (
+                <div className="h-full flex items-center justify-center p-8 text-center">
+                  <p className="text-sm text-base-content/70 max-w-sm leading-relaxed">
+                    No line columns to show. Add fields from Details or Manage
+                    Columns, or switch to US entry lines.
+                  </p>
+                </div>
+              ) : (
+                <LineItemsGrid
+                  gridRef={lineItemsGridRef}
+                  rowData={displayRows}
+                  columns={template.columns}
+                  csvFileName={csvFileName}
+                  onHideColumn={onHideColumn}
+                  onColumnMoved={(orderedIds) =>
+                    commitTemplate(reorderTemplateColumns(template, orderedIds))
+                  }
+                  onSelectionChanged={setSelectedRowCount}
+                  onSourceCellChange={onSourceCellChange}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -1318,8 +1908,8 @@ export function DocToCsvTool() {
             <div className="flex flex-col items-center gap-4">
               <p className="text-sm md:text-base lg:text-lg text-base-content/55 leading-relaxed">
                 Extract data from commercial invoices, packing lists, and bills
-                of lading and enter into CargoWise, Magaya, or Descartes without
-                the manual typing or copy-paste.
+                of lading into a spreadsheet you can review, clean, and import
+                — without typing line by line.
               </p>
             </div>
           </div>
@@ -1353,11 +1943,8 @@ export function DocToCsvTool() {
                       </p>
                     ) : null}
                     <p className="text-xs text-base-content/60">
-                      This can take up to a minute.
+                      This can take a few minutes.
                     </p>
-                    {/* <p className="text-xs text-base-content/50">
-                      We never store your documents.
-                    </p> */}
                   </div>
                 ) : hasResults ? (
                   <div
@@ -1378,11 +1965,6 @@ export function DocToCsvTool() {
                         <p className="text-sm font-semibold text-base-content">
                           Data Extracted Successfully
                         </p>
-                        {/* <p className="text-sm text-base-content">
-                          {lineItemCount
-                            ? `${lineItemCount} Row${lineItemCount === 1 ? "" : "s"} Detected`
-                            : ""}
-                        </p> */}
                         {file ? (
                           <p className="text-sm text-base-content/70 truncate max-w-full">
                             {file.name}
@@ -1413,7 +1995,7 @@ export function DocToCsvTool() {
                           ? file.name
                           : isDragActive
                             ? "Drop the PDF here"
-                            : "Select or drag and drop your file"}
+                            : `Upload your ${documentType.label}`}
                       </p>
                       <p className="text-xs text-base-content/60">
                         {file

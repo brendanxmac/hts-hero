@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 export const metadata = getSEOTags({
   title: "Convert Trade Documents to CSV | HTS Hero",
   description:
-    "Turn commercial invoices, packing lists, and bills of lading into CSV files you can upload into CargoWise, Magaya, Descartes, Excel, or any other software. We never store your documents.",
+    "Turn commercial invoices, packing lists, and bills of lading into a clean spreadsheet you can import or paste into your system. We never store your documents.",
   canonicalUrlRelative: "/doc-to-csv",
 });
 

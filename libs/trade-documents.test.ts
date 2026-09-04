@@ -1,12 +1,10 @@
 import { describe, expect, it } from "../testing/test-runner";
 import {
-  applyHeaderFieldsToLineItems,
-  columnsForLineItems,
-  duplicateExportNames,
   extractionSchemaFor,
   getTradeDocumentType,
+  groupedHeaderColumns,
+  headerHasValues,
   parseExtractedDocument,
-  resolveColumnNames,
 } from "./trade-documents";
 
 describe("parseExtractedDocument", () => {
@@ -60,39 +58,15 @@ describe("parseExtractedDocument", () => {
     expect(header.vessel_name).toBe("Ever Given");
     expect(lineItems[0].container_number).toBe("TEMU1234567");
   });
-});
 
-describe("applyHeaderFieldsToLineItems", () => {
-  it("copies selected header fields onto each line", () => {
+  it("returns an empty line list when none are found", () => {
     const type = getTradeDocumentType("bill_of_lading");
-    const rows = applyHeaderFieldsToLineItems(
-      type,
-      { bl_number: "BL-1", vessel_name: "Atlantic" },
-      [{ description: "Goods", _rowId: "1" }],
-      ["bl_number"]
-    );
-
-    expect(rows[0].bl_number).toBe("BL-1");
-    expect(rows[0].description).toBe("Goods");
-    expect(rows[0]._rowId).toBe("1");
-    expect(rows[0].vessel_name == null || rows[0].vessel_name === "").toBeTruthy();
-  });
-});
-
-describe("resolveColumnNames", () => {
-  it("uses overrides for export names and finds duplicates", () => {
-    const type = getTradeDocumentType("commercial_invoice");
-    const columns = columnsForLineItems(type, []);
-    const names = resolveColumnNames(columns, {
-      sku: "ItemCode",
-      description: "ItemCode",
+    const { header, lineItems } = parseExtractedDocument(type, {
+      bl_number: "BL-1",
     });
-
-    expect(names.sku).toBe("ItemCode");
-    expect(names.hs_code).toBe("HS / HTS Code");
-    expect(duplicateExportNames(columns, names).includes("itemcode")).toBe(
-      true
-    );
+    expect(header.bl_number).toBe("BL-1");
+    expect(lineItems.length).toBe(0);
+    expect(headerHasValues(header)).toBe(true);
   });
 });
 
@@ -112,12 +86,66 @@ describe("extractionSchemaFor", () => {
     const schema = extractionSchemaFor(
       getTradeDocumentType("commercial_invoice")
     );
-    const unitPrice = schema.properties.line_items.items.properties.unit_price;
-    const totalAmount = schema.properties.total_amount;
+    const properties = schema.properties as Record<
+      string,
+      {
+        type?: string;
+        description?: string;
+        items?: {
+          properties: Record<string, { type: string; description: string }>;
+        };
+      }
+    >;
+    const unitPrice = properties.line_items?.items?.properties.unit_price;
+    const totalAmount = properties.total_amount;
 
-    expect(unitPrice.type).toBe("string");
-    expect(totalAmount.type).toBe("string");
-    expect(unitPrice.description.includes("exactly as printed")).toBe(true);
-    expect(totalAmount.description.includes("exactly as printed")).toBe(true);
+    expect(unitPrice?.type).toBe("string");
+    expect(totalAmount?.type).toBe("string");
+    expect(Boolean(unitPrice?.description?.includes("exactly as printed"))).toBe(
+      true
+    );
+    expect(Boolean(totalAmount?.description?.includes("exactly as printed"))).toBe(
+      true
+    );
+  });
+
+  it("asks for manufacturer and package fields on commercial invoices", () => {
+    const schema = extractionSchemaFor(
+      getTradeDocumentType("commercial_invoice")
+    );
+    const properties = schema.properties as Record<
+      string,
+      {
+        description?: string;
+        items?: {
+          properties: Record<string, { description: string }>;
+        };
+      }
+    >;
+    const line = properties.line_items?.items?.properties ?? {};
+    expect(Boolean(line.manufacturer_id)).toBe(true);
+    expect(Boolean(line.gross_weight)).toBe(true);
+    expect(Boolean(line.packages_count)).toBe(true);
+    expect(Boolean(line.purchase_order_line)).toBe(true);
+    expect(
+      Boolean(line.manufacturer_id?.description.includes("Leave empty"))
+    ).toBe(true);
+    expect(Boolean(properties.ship_to_name)).toBe(true);
+    expect(Boolean(properties.sold_to_name)).toBe(true);
+  });
+});
+
+describe("groupedHeaderColumns", () => {
+  it("groups commercial invoice header fields", () => {
+    const type = getTradeDocumentType("commercial_invoice");
+    const groups = groupedHeaderColumns(type.headerColumns);
+    const names = groups.map((entry) => entry.group);
+    expect(names.includes("parties")).toBe(true);
+    expect(names.includes("references")).toBe(true);
+    expect(
+      groups
+        .find((entry) => entry.group === "parties")
+        ?.columns.some((column) => column.field === "manufacturer_id")
+    ).toBe(true);
   });
 });

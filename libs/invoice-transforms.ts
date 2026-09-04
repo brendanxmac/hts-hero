@@ -522,7 +522,8 @@ export function editedCellKey(rowId: string, field: string): string {
 export function applyInvoiceTransforms(
   rows: DocumentRow[],
   enabledIds: InvoiceTransformId[],
-  editedCells: Record<string, true> = {}
+  editedCells: Record<string, true> = {},
+  resolveField: (key: string) => string = (key) => key
 ): DocumentRow[] {
   if (enabledIds.length === 0) {
     return rows.map((row) => ({ ...row }));
@@ -539,7 +540,7 @@ export function applyInvoiceTransforms(
       if (editedCells[editedCellKey(rowId, field)]) {
         continue;
       }
-      next[field] = transformCell(field, next[field], enabled);
+      next[field] = transformCell(resolveField(field), next[field], enabled);
     }
     return next;
   });
