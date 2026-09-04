@@ -37,13 +37,13 @@ export default async function RootLayout({
             __html: `
               (function() {
                 const savedTheme = localStorage.getItem('theme');
-                if (savedTheme) {
-                  document.documentElement.setAttribute('data-theme', savedTheme);
-                } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-                  document.documentElement.setAttribute('data-theme', 'light');
-                } else {
-                  document.documentElement.setAttribute('data-theme', 'dark');
-                }
+                var theme = savedTheme
+                  ? savedTheme
+                  : window.matchMedia('(prefers-color-scheme: light)').matches
+                    ? 'light'
+                    : 'dark';
+                document.documentElement.setAttribute('data-theme', theme);
+                document.documentElement.setAttribute('data-ag-theme-mode', theme);
               })();
             `,
           }}

@@ -135,6 +135,17 @@ describe("applyInvoiceTransforms", () => {
         .shipper_country
     ).toBe("US");
   });
+
+  it("skips transforms on user-edited cells", () => {
+    const source = row({ hs_code: "8507.60.00", country_of_origin: "china" });
+    const result = applyInvoiceTransforms(
+      [source],
+      ["htsSanitize", "uppercase"],
+      { "1:hs_code": true }
+    )[0];
+    expect(result.hs_code).toBe("8507.60.00");
+    expect(result.country_of_origin).toBe("CHINA");
+  });
 });
 
 describe("parseNumericValue", () => {

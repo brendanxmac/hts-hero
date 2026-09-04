@@ -17,12 +17,15 @@ const ThemeToggle = () => {
     if (savedTheme) {
       setTheme(savedTheme);
       document.documentElement.setAttribute("data-theme", savedTheme);
+      document.documentElement.setAttribute("data-ag-theme-mode", savedTheme);
     } else if (window.matchMedia("(prefers-color-scheme: light)").matches) {
       setTheme("light");
       document.documentElement.setAttribute("data-theme", "light");
+      document.documentElement.setAttribute("data-ag-theme-mode", "light");
     } else {
       setTheme("light");
       document.documentElement.setAttribute("data-theme", "light");
+      document.documentElement.setAttribute("data-ag-theme-mode", "light");
     }
   }, []);
 
@@ -38,6 +41,7 @@ const ThemeToggle = () => {
         const newTheme = e.matches ? "light" : "dark";
         setTheme(newTheme);
         document.documentElement.setAttribute("data-theme", newTheme);
+        document.documentElement.setAttribute("data-ag-theme-mode", newTheme);
       }
     };
 
@@ -50,6 +54,7 @@ const ThemeToggle = () => {
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
     document.documentElement.setAttribute("data-theme", newTheme);
+    document.documentElement.setAttribute("data-ag-theme-mode", newTheme);
   };
 
   // Prevent flash of wrong theme

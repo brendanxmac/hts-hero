@@ -515,9 +515,14 @@ function transformCell(
   return next;
 }
 
+export function editedCellKey(rowId: string, field: string): string {
+  return `${rowId}:${field}`;
+}
+
 export function applyInvoiceTransforms(
   rows: DocumentRow[],
-  enabledIds: InvoiceTransformId[]
+  enabledIds: InvoiceTransformId[],
+  editedCells: Record<string, true> = {}
 ): DocumentRow[] {
   if (enabledIds.length === 0) {
     return rows.map((row) => ({ ...row }));
@@ -526,8 +531,12 @@ export function applyInvoiceTransforms(
   const enabled = new Set(enabledIds);
   return rows.map((row) => {
     const next: DocumentRow = { ...row };
+    const rowId = String(row[ROW_ID_FIELD] ?? "");
     for (const field of Object.keys(next)) {
       if (field === ROW_ID_FIELD) {
+        continue;
+      }
+      if (editedCells[editedCellKey(rowId, field)]) {
         continue;
       }
       next[field] = transformCell(field, next[field], enabled);
