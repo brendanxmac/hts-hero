@@ -104,7 +104,7 @@ export const fetchClassifications = async (): Promise<
     "/classification/fetch",
   );
 
-  return classifications;
+  return Array.isArray(classifications) ? classifications : [];
 };
 
 export const fetchClassificationById = async (

@@ -2,13 +2,15 @@ import { Importer } from "../../interfaces/hts";
 import apiClient from "../api";
 
 export const fetchImportersForUser = async (): Promise<Importer[]> => {
-  return apiClient.get(`/importers`);
+  const importers = await apiClient.get(`/importers`);
+  return Array.isArray(importers) ? importers : [];
 };
 
 export const fetchImportersForTeam = async (
   teamId: string
 ): Promise<Importer[]> => {
-  return apiClient.get(`/importers?teamId=${teamId}`);
+  const importers = await apiClient.get(`/importers?teamId=${teamId}`);
+  return Array.isArray(importers) ? importers : [];
 };
 
 export const createImporter = async (

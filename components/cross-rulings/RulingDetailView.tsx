@@ -1,5 +1,5 @@
 import { CrossRulingDetail } from "../../interfaces/cross-rulings";
-import { normalizeRulingText, rulingIsRevoked, formatRulingDate } from "../../libs/cross-rulings";
+import { normalizeRulingText, rulingIsRevoked, formatRulingDate, parseRulingTariffs } from "../../libs/cross-rulings";
 import { DashboardCard } from "../classification-detail/DashboardCard";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { PlusIcon } from "@heroicons/react/16/solid";
@@ -51,7 +51,7 @@ export const RulingDetailView = ({ ruling, onBack, onAddToNotes }: Props) => {
         <h1 className="text-2xl font-bold text-base-content mt-1">
           {ruling.subject}
         </h1>
-        {ruling.tariffs.length > 0 && (
+        {parseRulingTariffs(ruling.tariffs).length > 0 && (
           <div className="mt-3">
             <TariffBadges tariffs={ruling.tariffs} />
           </div>

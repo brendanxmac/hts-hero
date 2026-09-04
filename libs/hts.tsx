@@ -692,7 +692,8 @@ export const getBestDescriptionCandidates = async (
     throw new Error(`Failed to get best description matches`);
   }
 
-  return JSON.parse(bestCandidates);
+  const parsed = JSON.parse(bestCandidates);
+  return parsed;
 };
 
 export const updateHtsDescription = (current: string, additional: string) => {
