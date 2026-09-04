@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json(importers, { status: 200 });
+    return NextResponse.json(importers ?? [], { status: 200 });
   } catch (e) {
     console.error(e);
     return NextResponse.json({ error: e?.message }, { status: 500 });

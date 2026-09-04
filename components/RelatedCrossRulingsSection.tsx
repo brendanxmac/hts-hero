@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ScaleIcon } from "@heroicons/react/16/solid";
 import type { CrossRuling, CrossRulingDetail } from "../interfaces/cross-rulings";
 import {
+  fetchCrossRulingDetail,
   fetchCrossRulingsBySearchTerm,
   trimHtsTo8Digits,
 } from "../libs/cross-rulings";
@@ -58,11 +59,7 @@ export function RelatedCrossRulingsSection({ htsno }: RelatedCrossRulingsSection
     setLoadingDetail(true);
     setDetailError(null);
     try {
-      const res = await fetch(
-        `/api/cross-rulings/${encodeURIComponent(ruling.rulingNumber)}`
-      );
-      if (!res.ok) throw new Error("Failed to fetch ruling detail");
-      const data: CrossRulingDetail = await res.json();
+      const data = await fetchCrossRulingDetail(ruling);
       setSelectedRuling(data);
     } catch (err) {
       console.error("Error fetching ruling detail:", err);

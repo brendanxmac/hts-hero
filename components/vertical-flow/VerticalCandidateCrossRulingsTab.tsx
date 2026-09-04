@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { CrossRuling, CrossRulingDetail } from "@/interfaces/cross-rulings";
 import type { HtsElement } from "@/interfaces/hts";
 import {
+  fetchCrossRulingDetail,
   fetchCrossRulingsBySearchTerm,
   formatCrossSearchQuery,
   trimHtsTo8Digits,
@@ -166,11 +167,7 @@ export function VerticalCandidateCrossRulingsTab({
     setLoadingDetail(true);
     setDetailError(null);
     try {
-      const res = await fetch(
-        `/api/cross-rulings/${encodeURIComponent(ruling.rulingNumber)}`
-      );
-      if (!res.ok) throw new Error("Failed to fetch ruling detail");
-      const data: CrossRulingDetail = await res.json();
+      const data = await fetchCrossRulingDetail(ruling);
       setSelectedRuling(data);
     } catch (err) {
       console.error("Error fetching ruling detail:", err);

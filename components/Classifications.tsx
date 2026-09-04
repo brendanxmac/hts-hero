@@ -79,6 +79,7 @@ export const Classifications = () => {
     refreshClassifications,
     removeClassificationById,
   } = useClassifications();
+
   const [activeClassifyPlan, setActiveClassifyPlan] =
     useState<PricingPlan | null>(null);
   const { user, error: userError } = useUser();

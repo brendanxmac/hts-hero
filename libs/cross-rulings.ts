@@ -1,4 +1,4 @@
-import type { CrossRuling } from "../interfaces/cross-rulings";
+import type { CrossRuling, CrossRulingDetail } from "../interfaces/cross-rulings";
 
 export async function fetchCrossRulingsBySearchTerm(
   term: string
@@ -10,11 +10,68 @@ export async function fetchCrossRulingsBySearchTerm(
   return res.json();
 }
 
+function asStringList(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((item): item is string => typeof item === "string");
+}
+
+function pickStringList(primary: unknown, fallback: unknown): string[] {
+  const fromPrimary = asStringList(primary);
+  if (fromPrimary.length > 0) return fromPrimary;
+  return asStringList(fallback);
+}
+
+/** Merge CBP detail (text/url, often-null lists) with search metadata so list fields are preserved. */
+export function mergeRulingDetail(
+  listRuling: CrossRuling,
+  detail: CrossRulingDetail
+): CrossRulingDetail {
+  return {
+    ...listRuling,
+    ...detail,
+    categories: detail.categories ?? listRuling.categories,
+    relatedRulings: pickStringList(detail.relatedRulings, listRuling.relatedRulings),
+    modifiedBy: pickStringList(detail.modifiedBy, listRuling.modifiedBy),
+    modifies: pickStringList(detail.modifies, listRuling.modifies),
+    revokedBy: pickStringList(detail.revokedBy, listRuling.revokedBy),
+    revokes: pickStringList(detail.revokes, listRuling.revokes),
+    tariffs: detail.tariffs ?? listRuling.tariffs,
+  };
+}
+
+export async function fetchCrossRulingDetail(
+  listRuling: CrossRuling
+): Promise<CrossRulingDetail> {
+  const res = await fetch(
+    `/api/cross-rulings/${encodeURIComponent(listRuling.rulingNumber)}`
+  );
+  if (!res.ok) throw new Error("Failed to fetch ruling detail");
+  const detail = (await res.json()) as CrossRulingDetail;
+  return mergeRulingDetail(listRuling, detail);
+}
+
+/** CBP returns `tariffs` as a comma-separated string, not an array. */
+export function parseRulingTariffs(tariffs: unknown): string[] {
+  if (Array.isArray(tariffs)) {
+    return tariffs
+      .filter((t): t is string => typeof t === "string")
+      .map((t) => t.trim())
+      .filter(Boolean);
+  }
+  if (typeof tariffs === "string") {
+    return tariffs
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean);
+  }
+  return [];
+}
+
 export function rulingIsRevoked(ruling: CrossRuling): boolean {
   return (
-    ruling.operationallyRevoked ||
-    ruling.isRevokedByOperationalLaw ||
-    ruling.revokedBy.length > 0
+    Boolean(ruling.operationallyRevoked) ||
+    Boolean(ruling.isRevokedByOperationalLaw) ||
+    asStringList(ruling.revokedBy).length > 0
   );
 }
 

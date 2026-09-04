@@ -40,7 +40,7 @@ export function ClassificationsProvider({
         setIsLoading(true);
       }
       const data = await fetchClassifications();
-      setClassifications(data);
+      setClassifications(Array.isArray(data) ? data : []);
       setError(null);
     } catch (err) {
       setError(err as Error);
