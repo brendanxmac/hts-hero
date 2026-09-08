@@ -1,27 +1,20 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
-import { Suspense, useState, useEffect, useCallback } from "react";
+import { Suspense, useState } from "react";
 import { ArrowRightIcon } from "@heroicons/react/24/solid";
 import LetsTalkModal from "../components/LetsTalkModal";
 import { useUser } from "../contexts/UserContext";
 import { AboutPage } from "../enums/classify";
 import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
 import LandingHeader from "../components/LandingHeader";
-import Pricing from "../components/Pricing";
-import {
-  ProductSection,
-  ProductSectionData,
-} from "../components/ProductSection";
 import TestimonialsStrip from "../components/TestimonialsStrip";
 import { FAQ } from "../components/FAQ";
 import { bundleFaqList } from "../constants/faq";
 import Footer from "../components/Footer";
 import UseCases from "../components/UseCases";
-import { CTABanner } from "./CTABanner";
 import ClassifyPricing from "./ClassifyPricing";
 import ClassificationExamplesSection from "./ClassificationExamplesSection";
+import { HeroClassifyInput } from "./HeroClassifyInput";
 
 function YouTubeEmbed({
   videoId,
@@ -44,167 +37,9 @@ function YouTubeEmbed({
   );
 }
 
-const heroImages = [
-  {
-    id: "tariffs",
-    src: "/hero-tariffs.png",
-    srcMobile: "/hero-tariffs-mobile.png",
-    label: "Duty Simulator",
-    tagline: "Duty & Tariffs Simulator",
-  },
-  {
-    id: "classify",
-    src: "/hero-classify.png",
-    srcMobile: "/hero-classify-mobile.png",
-    label: "Classification",
-    tagline: "AI-Assisted Classification",
-  },
-];
-
-const productSections: ProductSectionData[] = [
-  {
-    emoji: "💰",
-    title: "Duty & Tariff Calculator",
-    tagline: "Master Tariffs, Discover Savings",
-    description:
-      "See the complete tariff & cost breakdown for any US import and discover ways to save with exemptions and special trade programs.",
-    features: [
-      {
-        icon: "🌍",
-        title: "Know your Costs",
-        description:
-          "See the landed cost, duty rates, and itemized tariffs for any import from any country",
-      },
-      {
-        icon: "💡",
-        title: "Discover Savings",
-        description:
-          "Find exemptions and trade programs you might be eligible for",
-      },
-      {
-        icon: "💡",
-        title: "Share Your Results",
-        description:
-          "Share your tariff & duty details with clients and colleagues in a single click",
-      },
-      {
-        icon: "⚡",
-        title: "Stay Up to Date",
-        description:
-          "Updated with the latest tariff announcements, changes, and rules",
-      },
-    ],
-    aboutUrl: "/about/tariffs",
-    appUrl: "/duty-calculator",
-    cta: "Find Tariffs",
-    accentColor: "primary",
-    media: {
-      src: "/tariffs-hero.mp4",
-      type: "video",
-    },
-  },
-  {
-    emoji: "🎯",
-    title: "Classification Assistant",
-    tagline: "Classify Quicker, Without Cutting Corners",
-    description:
-      "Turbocharge your HTS classifications with AI-powered candidate discovery, GRI analysis, cross-rulings validation, and branded advisory reports.",
-    features: [
-      {
-        icon: "🤖",
-        title: "Quick Candidates",
-        description:
-          "See likely candidate suggestions for any product description",
-      },
-      {
-        icon: "📋",
-        title: "Best-Fit Analysis",
-        description: "Get a GRI analysis of all candidates, in seconds",
-      },
-      {
-        icon: "⚖️",
-        title: "CROSS Validation",
-        description:
-          "See relevant government rulings to validate your classification",
-      },
-      {
-        icon: "📄",
-        title: "One-Click Reports",
-        description:
-          "Instantly generate branded, professional classification reports",
-      },
-      {
-        icon: "📄",
-        title: "Bring your Team",
-        description: "See, Review, & Approve Each Others Classifications",
-      },
-    ],
-    aboutUrl: "/classify",
-    appUrl: "/classifications/new",
-    cta: "Classify Now",
-    accentColor: "secondary",
-    media: {
-      src: "/new-hero-demo.mp4",
-      type: "video",
-    },
-  },
-  {
-    emoji: "✅",
-    title: "Tariff Impact Checker",
-    tagline: "No More Tariff Surprises",
-    description:
-      "Instantly see which of your imports are affected by the latest tariff announcements. Get notified before changes hit your bottom line.",
-    features: [
-      {
-        icon: "📦",
-        title: "Bulk Checking",
-        description:
-          "Check your entire product catalog against any tariff announcement, all at once",
-      },
-      {
-        icon: "🔔",
-        title: "Intelligent Alerts",
-        description: "Get notified when new tariffs affect any of your imports",
-      },
-      {
-        icon: "📈",
-        title: "Impact Analysis",
-        description:
-          "See exactly how each tariff change affects your import costs",
-      },
-      {
-        icon: "🛡️",
-        title: "Stay Ahead",
-        description:
-          "Know about tariff changes before your next purchase order",
-      },
-    ],
-    aboutUrl: "/about/tariff-impact-checker",
-    appUrl: "/tariffs/impact-checker",
-    cta: "Check Your Imports",
-    accentColor: "primary",
-    media: {
-      src: "/tariff-impact-demo.mp4",
-      type: "video",
-    },
-  },
-];
-
 export function HomePage() {
   const { user } = useUser();
   const [isBookDemoModalOpen, setIsBookDemoModalOpen] = useState(false);
-  const [isToolMenuOpen, setIsToolMenuOpen] = useState(false);
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
-
-  // Auto-rotate hero images every 4 seconds
-  const nextImage = useCallback(() => {
-    setActiveImageIndex((prev) => (prev + 1) % heroImages.length);
-  }, []);
-
-  useEffect(() => {
-    const interval = setInterval(nextImage, 7000);
-    return () => clearInterval(interval);
-  }, [nextImage]);
 
   const handleBookDemoClick = () => {
     const userEmail = user?.email || "";
@@ -232,106 +67,105 @@ export function HomePage() {
         ctaText="Book Demo"
         onClick={handleBookDemoClick}
       /> */}
-      <Suspense
-        fallback={
-          <div className="h-16 bg-base-100 border-b border-base-content/20" />
-        }
-      >
-        <LandingHeader />
-      </Suspense>
+      <div className="flex min-h-dvh flex-col">
+        <Suspense
+          fallback={
+            <div className="h-16 bg-base-100 border-b border-base-content/20" />
+          }
+        >
+          <LandingHeader />
+        </Suspense>
 
-      {/* Hero Section with Integrated Social Proof */}
-      <div className="relative overflow-hidden bg-base-100">
-        {/* Background elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-32 -left-24 w-80 h-80 bg-primary/10 md:bg-primary/20 rounded-full blur-3xl" />
-          <div className="absolute -top-32 -right-24 w-80 h-80 bg-secondary/10 md:bg-secondary/20 rounded-full blur-3xl" />
-          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[900px] h-[900px] bg-gradient-radial from-primary/5 to-transparent rounded-full blur-3xl" />
-          {/* Subtle grid pattern */}
-          <div
-            className="absolute inset-0 opacity-[0.025]"
-            style={{
-              backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`,
-              backgroundSize: "32px 32px",
-            }}
-          />
-        </div>
-
-        <div className="relative z-10 flex flex-col items-center px-4 sm:px-6 pt-4 pb-10 md:pt-12 md:pb-14">
-          {/* Main Hero Content */}
-          <div className="text-center max-w-4xl w-full">
-            {/* Credibility eyebrow */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-base-200/70 border border-base-content/10 text-xs sm:text-sm font-medium text-base-content/70 mb-6 backdrop-blur">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
-              </span>
-              Built for Customs Brokers &amp; US Importers
-            </div>
-
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05] mb-5">
-              Make Every HTS Classification {" "}
-              <span className="relative whitespace-nowrap text-primary">
-                Audit-Proof
-                <span className="absolute -bottom-0 left-0 w-full h-[6px] bg-primary/20 rounded-full -z-10" />
-              </span>
-            </h1>
-
-            {/* <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05] mb-5">
-              The <span className="text-primary">Fastest Way</span> to Build{" "}
-              <br className="hidden md:block" />
-              HTS Classifications <br /> You Can{" "}
-              <span className="relative whitespace-nowrap text-primary">
-                Defend
-                <span className="absolute -bottom-1 left-0 w-full h-[6px] bg-primary/20 rounded-full -z-10" />
-              </span>
-            </h1> */}
-
-            <p className="text-base sm:text-lg md:text-xl text-base-content/70 max-w-2xl mx-auto leading-relaxed mb-8 mt-6">
-              Find mistakes, eliminate blind spots, and back every
-              code with legal notes and CROSS rulings <strong>in a fraction of the time.</strong>
-            </p>
-
-            {/* Inline social proof */}
-            <div className="hidden sm:flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-3 mt-7">
-              <div className="flex items-center gap-0.5 text-amber-400 text-lg leading-none">
-                <span>★</span>
-                <span>★</span>
-                <span>★</span>
-              </div>
-              <p className="text-sm text-base-content/60">
-                Used by trade pros at{" "}
-                <span className="font-semibold text-base-content/80">K+N</span>,{" "}
-                <span className="font-semibold text-base-content/80">DSV</span>,{" "}
-                <span className="font-semibold text-base-content/80">Amazon</span>{" "}
-                &amp; more
-              </p>
-              <div className="flex items-center gap-0.5 text-amber-400 text-lg leading-none">
-                <span>★</span>
-                <span>★</span>
-                <span>★</span>
-              </div>
-            </div>
-
-            {/* Primary CTA - above the fold on every screen size */}
-            <div className="flex flex-col items-center justify-center gap-3 w-full mt-10">
-              <button
-                onClick={handleBookDemoClick}
-                className="group inline-flex items-center justify-center gap-2 w-full sm:w-auto px-10 sm:px-16 py-4 rounded-xl font-bold text-base sm:text-lg bg-primary text-primary-content hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/30 hover:shadow-2xl"
-              >
-                <span>Book a Demo</span>
-                <ArrowRightIcon className="w-5 h-5 transition-transform group-hover:translate-x-0.5" />
-              </button>
-              {/* <p className="text-xs sm:text-sm text-base-content/60">
-                Free 30-minute walkthrough &middot; See it on your own products
-                &middot; No commitment
-              </p> */}
-            </div>
-
+        {/* Hero Section with Integrated Social Proof */}
+        <div className="relative flex flex-1 flex-col overflow-hidden bg-base-100">
+          {/* Background elements */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute -top-32 -left-24 w-80 h-80 bg-primary/10 md:bg-primary/20 rounded-full blur-3xl" />
+            <div className="absolute -top-32 -right-24 w-80 h-80 bg-secondary/10 md:bg-secondary/20 rounded-full blur-3xl" />
+            <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[900px] h-[900px] bg-gradient-radial from-primary/5 to-transparent rounded-full blur-3xl" />
+            {/* Subtle grid pattern */}
+            <div
+              className="absolute inset-0 opacity-[0.025]"
+              style={{
+                backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`,
+                backgroundSize: "32px 32px",
+              }}
+            />
           </div>
 
-          {/* Hero Demo Video */}
-          <div className="w-full max-w-4xl mx-auto mt-10 md:mt-12">
+          <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 sm:px-6 py-8 md:py-12">
+            {/* Main Hero Content */}
+            <div className="text-center max-w-4xl w-full">
+              {/* Credibility eyebrow */}
+              {/* <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-base-200/70 border border-base-content/10 text-xs sm:text-sm font-medium text-base-content/70 mb-6 backdrop-blur">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+                </span>
+                Built for Customs Brokers &amp; US Importers
+              </div> */}
+
+              <div className="flex sm:flex-row items-center justify-center gap-1.5 sm:gap-3 mb-8">
+                {/* <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+                </span> */}
+                <p className="font-medium">
+                  Trusted by <strong className="text-primary">300+</strong> Customs Brokers & Importers
+                </p>
+                {/* <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+                </span> */}
+              </div>
+
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.05] mb-5">
+                Produce Audit-Ready Classifications in {" "}
+                <span className="relative whitespace-nowrap text-primary">
+                  Minutes
+                  <span className="absolute -bottom-0 left-0 w-full h-[6px] bg-primary/20 rounded-full -z-10" />
+                </span>
+              </h1>
+
+              <p className="text-base sm:text-lg md:text-xl text-base-content/70 max-w-2xl mx-auto leading-relaxed mb-8 mt-6">
+                Quickly find candidates, eliminate blind spots, and back every
+                code with legal notes and CROSS rulings.
+              </p>
+
+              <div className="w-full max-w-6xl mx-auto">
+                <HeroClassifyInput />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="w-full px-4 sm:px-6 pt-4 md:pt-8 bg-base-100">
+        <TestimonialsStrip showCompanies={false} />
+        <section className="relative overflow-hidden bg-base-100 px-4 sm:px-6 pt-4 pb-6 md:pb-8 mt-6">
+          <div className="w-full max-w-4xl mx-auto">
+            <div className="text-center mb-6 md:mb-8">
+              {/* <p className="text-sm md:text-base font-semibold uppercase tracking-[0.18em] text-base-content/45 mb-2">
+                See What You&apos;re Missing
+              </p> */}
+              <div className="flex justify-center mb-2">
+                <svg
+                  className="h-8 w-8 md:h-10 md:w-10 text-primary animate-bounce"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19 13l-7 7-7-7m7 7V4"
+                  />
+                </svg>
+              </div>
+
+            </div>
             <div className="relative">
               <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 rounded-3xl blur-2xl opacity-60" />
               <div className="relative">
@@ -342,13 +176,9 @@ export function HomePage() {
               </div>
             </div>
           </div>
-
-          {/* Testimonials Section */}
-          <div className={`w-full px-4 sm:px-6 pt-12 md:pt-16 bg-base-100`}>
-            <TestimonialsStrip showCompanies={false} />
-          </div>
-        </div>
+        </section>
       </div>
+
 
       {/* Conversion CTA Section - below testimonials */}
       {/* <section className="relative overflow-hidden border-y border-base-content/10 bg-gradient-to-br from-primary/5 via-base-100 to-secondary/5">
@@ -443,7 +273,7 @@ export function HomePage() {
             </div>
           </div>
 
-          <div className="flex flex-col items-center justify-center gap-4 mt-10">
+          {/* <div className="flex flex-col items-center justify-center gap-4 mt-10">
             <button
               onClick={handleBookDemoClick}
               className="group inline-flex items-center justify-center gap-2 px-10 sm:px-14 py-3.5 sm:py-4 rounded-xl font-bold text-base sm:text-lg bg-primary text-primary-content hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/30 hover:shadow-xl"
@@ -454,7 +284,7 @@ export function HomePage() {
             <p className="text-xs sm:text-sm text-base-content/60">
               See it live in 30 minutes &middot; No commitment
             </p>
-          </div>
+          </div> */}
         </div>
       </section>
 

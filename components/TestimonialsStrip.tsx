@@ -70,14 +70,10 @@ export function TestimonialsStrip({
         <div className="w-full flex flex-col">
           {/* Title Section */}
           <div className="text-center mb-8 sm:mb-12">
-            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs sm:text-sm font-semibold uppercase tracking-widest mb-4">
-              <span className="text-amber-400 not-italic">★★★★★</span>
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.05]">
               Loved by Trade Pros
-            </span>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">
-              Don&apos;t just take our word for it
             </h2>
-            <p className="text-sm sm:text-base text-base-content/60 max-w-xl mx-auto mt-3">
+            <p className="text-sm sm:text-base text-base-content/60 mx-auto mt-3">
               Customs brokers, importers, and logistics teams rely on HTS Hero
               every day. Here&apos;s what they have to say.
             </p>
