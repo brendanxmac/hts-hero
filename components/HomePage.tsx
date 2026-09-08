@@ -105,18 +105,16 @@ export function HomePage() {
                 Built for Customs Brokers &amp; US Importers
               </div> */}
 
-              <div className="flex sm:flex-row items-center justify-center gap-1.5 sm:gap-3 mb-8">
-                {/* <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
-                </span> */}
+              <div className="flex items-center justify-center gap-1.5 sm:gap-3 mb-8 text-sm md:text-base">
+                <span className="text-amber-400">
+                  ★
+                </span>
                 <p className="font-medium">
-                  Trusted by <strong className="text-primary">300+</strong> Customs Brokers & Importers
+                  Trusted by <strong className="text-primary md:text-lg">300+</strong> Customs Brokers & Importers
                 </p>
-                {/* <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
-                </span> */}
+                <span className="text-amber-400">
+                  ★
+                </span>
               </div>
 
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.05] mb-5">
@@ -132,7 +130,7 @@ export function HomePage() {
                 code with legal notes and CROSS rulings.
               </p>
 
-              <div className="w-full max-w-6xl mx-auto">
+              <div className="w-full max-w-6xl mx-auto pt-4 md:pt-8">
                 <HeroClassifyInput />
               </div>
             </div>
