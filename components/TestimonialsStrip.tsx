@@ -71,11 +71,11 @@ export function TestimonialsStrip({
           {/* Title Section */}
           <div className="text-center mb-8 sm:mb-12">
             <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.05]">
-              Loved by Trade Pros
+              <span className="text-primary">Loved</span> by Trade Pros
             </h2>
             <p className="text-sm sm:text-base text-base-content/60 mx-auto mt-3">
               Customs brokers, importers, and logistics teams rely on HTS Hero
-              every day. Here&apos;s what they have to say.
+              every day. Here&apos;s what they have to say:
             </p>
           </div>
 

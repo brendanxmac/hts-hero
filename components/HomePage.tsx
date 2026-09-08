@@ -235,8 +235,7 @@ export function HomePage() {
         </div>
       </section> */}
 
-      <div className="mt-10 lg:mt-16">
-
+      <div className="mt-10 md:mt-16 lg:mt-40">
         <ClassificationExamplesSection />
       </div>
 
