@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { Inter } from "next/font/google";
 import { Viewport } from "next";
+import Script from "next/script";
 import { getSEOTags } from "@/libs/seo";
 import ClientLayout from "@/components/LayoutClient";
 import { GoogleAnalytics } from "@next/third-parties/google";
@@ -47,6 +48,12 @@ export default async function RootLayout({
               })();
             `,
           }}
+        />
+        <Script
+          src="https://datafa.st/js/script.js"
+          data-website-id="dfid_V5rXpvcsDrMXlXyzXFwY5"
+          data-domain="htshero.com"
+          strategy="afterInteractive"
         />
       </head>
       <body>
