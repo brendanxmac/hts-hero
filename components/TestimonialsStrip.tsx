@@ -116,10 +116,10 @@ export function TestimonialsStrip({
                     {getInitials(testimonial.company)}
                   </div>
                   <div className="min-w-0">
-                    <div className="font-semibold text-sm text-base-content truncate">
+                    <div className="text-sm text-base-content truncate">
                       {testimonial.company}
                     </div>
-                    <div className="text-xs text-base-content/50 leading-snug">
+                    <div className="font-bold text-xs leading-snug">
                       {testimonial.role}
                     </div>
                   </div>

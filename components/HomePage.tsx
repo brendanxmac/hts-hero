@@ -15,6 +15,7 @@ import UseCases from "../components/UseCases";
 import ClassifyPricing from "./ClassifyPricing";
 import ClassificationExamplesSection from "./ClassificationExamplesSection";
 import { HeroClassifyInput } from "./HeroClassifyInput";
+import HowItWorksSection from "./HowItWorksSection";
 
 function YouTubeEmbed({
   videoId,
@@ -93,7 +94,7 @@ export function HomePage() {
             />
           </div>
 
-          <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 sm:px-6 py-8 md:py-12">
+          <div id="try-classify" className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 sm:px-6 py-8 md:py-12">
             {/* Main Hero Content */}
             <div className="text-center max-w-4xl w-full">
               {/* Credibility eyebrow */}
@@ -130,7 +131,9 @@ export function HomePage() {
                 code with legal notes and CROSS rulings.
               </p>
 
-              <div className="w-full max-w-6xl mx-auto pt-4 md:pt-8">
+              <div
+                className="w-full max-w-6xl mx-auto pt-4 md:pt-8 scroll-mt-24"
+              >
                 <HeroClassifyInput />
               </div>
             </div>
@@ -176,6 +179,8 @@ export function HomePage() {
           </div>
         </section>
       </div>
+
+      <HowItWorksSection />
 
 
       {/* Conversion CTA Section - below testimonials */}
@@ -235,7 +240,7 @@ export function HomePage() {
         </div>
       </section> */}
 
-      <div className="mt-10 md:mt-16 lg:mt-40">
+      <div className="mt-8 md:mt-12">
         <ClassificationExamplesSection />
       </div>
 
