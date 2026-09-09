@@ -145,17 +145,17 @@ export default function HowItWorksSection() {
   return (
     <section
       id="how-it-works"
-      className="relative overflow-hidden bg-base-100 px-4 py-20 sm:px-6 md:py-28"
+      className="relative overflow-hidden bg-base-200/40 px-4 py-20 sm:px-6 md:py-28"
     >
       <div className="mx-auto max-w-5xl">
         <div className="mx-auto mb-16 max-w-3xl text-center md:mb-20">
-          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
+          <p className="mb-4 text-sm font-bold uppercase tracking-[0.18em] text-primary">
             Four steps
           </p>
           <h2 className="text-4xl font-bold tracking-tight leading-[1.05] sm:text-5xl md:text-6xl">
             How It <span className="text-primary">Works</span>
           </h2>
-          <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-base-content/60 sm:text-lg">
+          <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-base-content/80 sm:text-lg">
             From a product description to an evidence-backed classification —
             in minutes.
           </p>
@@ -163,7 +163,7 @@ export default function HowItWorksSection() {
 
         <ol className="relative space-y-16 md:space-y-24">
           <div
-            className="pointer-events-none absolute left-5 top-3 bottom-20 hidden w-px bg-gradient-to-b from-primary/50 via-base-content/10 to-transparent md:block"
+            className="pointer-events-none absolute left-5 top-3 bottom-20 hidden w-px bg-base-content/20 md:block"
             aria-hidden="true"
           />
 
@@ -195,7 +195,7 @@ export default function HowItWorksSection() {
             Try it on your product
             <ArrowRightIcon className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5" />
           </a>
-          <p className="mt-3 text-sm text-base-content/50">
+          <p className="mt-3 text-sm font-medium text-base-content/70">
             Results in seconds · No credit card required
           </p>
         </div>
@@ -217,20 +217,20 @@ function StepFrame({
 }) {
   return (
     <li className="relative md:grid md:grid-cols-[40px_minmax(0,1fr)] md:gap-10">
-      <div className="relative z-10 mb-4 flex h-10 w-10 items-center justify-center rounded-full border border-primary/25 bg-base-100 text-sm font-bold text-primary md:mb-0">
+      <div className="relative z-10 mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-content md:mb-0">
         {index + 1}
       </div>
       <div className="min-w-0">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-base-content/40">
+        <p className="text-sm font-bold uppercase tracking-[0.16em] text-primary">
           Step 0{index + 1}
         </p>
-        <h3 className="mt-1.5 text-2xl font-bold tracking-tight text-base-content md:text-3xl">
+        <h3 className="mt-1.5 text-2xl font-bold tracking-tight text-base-content md:text-4xl">
           {title}
         </h3>
-        <p className="mt-2 max-w-4xl text-base text-base-content/55">
+        <p className="mt-2 max-w-4xl text-base leading-relaxed text-base-content/80 md:text-lg">
           {description}
         </p>
-        <div className="mt-7 rounded-3xl border border-base-content/10 bg-base-100 p-5 sm:p-8">
+        <div className="mt-7 rounded-3xl border border-base-content/15 bg-base-100 p-5 sm:p-8">
           {children}
         </div>
       </div>
@@ -252,12 +252,12 @@ function EvidenceTray({
   const Icon = variant === "notes" ? DocumentTextIcon : ScaleIcon;
 
   return (
-    <div className="rounded-2xl bg-base-200/50 p-4 sm:p-5">
+    <div className="rounded-2xl border border-base-content/15 bg-base-100 p-4 sm:p-5">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-base-content/45">
+        <p className="text-sm font-bold text-base-content">
           {label}
         </p>
-        <span className="text-xs tabular-nums text-base-content/40">
+        <span className="text-sm font-semibold tabular-nums text-base-content/70">
           {items.length}
         </span>
       </div>
@@ -265,17 +265,17 @@ function EvidenceTray({
         {items.map((item) => (
           <span
             key={item}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-base-content/10 bg-base-100 px-3 py-1.5 text-sm font-medium text-base-content"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-base-content/15 bg-base-200 px-3 py-1.5 text-sm font-semibold text-base-content"
           >
-            <Icon className="h-3.5 w-3.5 text-primary/70" aria-hidden="true" />
+            <Icon className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
             <span className={variant === "cross" ? "font-mono tracking-wide" : undefined}>
               {item}
             </span>
           </span>
         ))}
       </div>
-      <p className="mt-3 text-sm font-semibold text-primary">Reasoning</p>
-      <p className="mt-1 text-sm leading-relaxed text-base-content/70">
+      <p className="mt-4 text-sm font-bold text-primary">Reasoning</p>
+      <p className="mt-1 text-sm leading-relaxed text-base-content/80">
         {why}
       </p>
     </div>
@@ -293,29 +293,28 @@ function DescribeStep({
 
   return (
     <div>
-      <div className="rounded-2xl border border-base-content/10 bg-base-200/30 px-5 py-6 sm:px-7 sm:py-8">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-base-content/40">
-          Product description
-        </p>
-        <p className="mt-3 text-xl font-semibold leading-snug tracking-tight text-base-content sm:text-2xl">
-          {product.description}
-        </p>
-      </div>
-
-      <div className="mt-5 inline-flex max-w-full flex-wrap rounded-full border border-base-content/10 bg-base-200/40 p-1">
+      <div className="mb-5 inline-flex max-w-full flex-wrap rounded-full border border-base-content/20 bg-base-100 p-1">
         {PRODUCTS.map((item, index) => (
           <button
             key={item.label}
             type="button"
             onClick={() => onSelectProduct(index)}
-            className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors duration-150 ${productIndex === index
+            className={`rounded-full px-4 py-2 text-sm font-bold transition-colors duration-150 ${productIndex === index
               ? "bg-primary text-primary-content"
-              : "text-base-content/60 hover:text-base-content"
+              : "text-base-content/80 hover:text-base-content"
               }`}
           >
             {item.label}
           </button>
         ))}
+      </div>
+      <div className="rounded-2xl border border-base-content/20 bg-base-200/50 px-5 py-6 sm:px-7 sm:py-8">
+        <p className="text-sm font-bold uppercase tracking-[0.12em] text-base-content/70">
+          Product description
+        </p>
+        <p className="mt-3 text-xl font-bold leading-snug tracking-tight text-base-content sm:text-2xl">
+          {product.description}
+        </p>
       </div>
     </div>
   );
@@ -325,7 +324,7 @@ function CandidatesStep({ product }: { product: Product }) {
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-8">
       <div>
-        <p className="mb-3 text-sm font-semibold uppercase tracking-[0.16em]">
+        <p className="mb-3 text-base font-bold">
           Candidates
         </p>
         <div className="space-y-2">
@@ -334,15 +333,15 @@ function CandidatesStep({ product }: { product: Product }) {
             return (
               <div
                 key={candidate.code}
-                className={`flex w-full items-center gap-4 rounded-2xl border px-4 py-3.5 ${isSelected
-                  ? "border-primary/35 bg-primary/[0.06]"
-                  : "border-base-content/10"
+                className={`flex w-full items-center gap-4 rounded-2xl border-2 px-4 py-3.5 ${isSelected
+                  ? "border-primary bg-primary/10"
+                  : "border-base-content/15"
                   }`}
               >
                 <span className="font-mono text-lg font-bold tracking-wide text-base-content">
                   {candidate.code}
                 </span>
-                <span className="min-w-0 flex-1 text-sm leading-snug text-base-content/60">
+                <span className="min-w-0 flex-1 text-sm font-medium leading-snug text-base-content/80">
                   {candidate.title}
                 </span>
                 {isSelected && (
@@ -357,7 +356,7 @@ function CandidatesStep({ product }: { product: Product }) {
       </div>
 
       <div className="space-y-3">
-        <p className="mb-3 text-sm font-semibold uppercase tracking-[0.16em]">
+        <p className="mb-3 text-base font-bold">
           Supporting Evidence
         </p>
         <EvidenceTray
@@ -390,20 +389,20 @@ function DocumentStep({ product }: { product: Product }) {
   return (
     <div>
       <div className="mb-8">
-        <p className="text-sm font-semibold uppercase tracking-[0.16em] text-primary">
+        <p className="text-sm font-bold uppercase tracking-[0.12em] text-primary">
           Selected heading
         </p>
         <p className="mt-2 font-mono text-5xl font-bold tracking-tight text-base-content sm:text-6xl">
           {candidate.code}
         </p>
-        <p className="mt-2 text-base text-base-content/55 sm:text-lg">
+        <p className="mt-2 text-base font-medium text-base-content/80 sm:text-lg">
           {candidate.title}
         </p>
       </div>
 
       <label
         htmlFor="classifier-reasoning"
-        className="mb-2 block text-sm font-semibold uppercase tracking-[0.16em] text-primary"
+        className="mb-2 block text-sm font-bold uppercase tracking-[0.12em] text-primary"
       >
         Classifier reasoning
       </label>
@@ -412,7 +411,7 @@ function DocumentStep({ product }: { product: Product }) {
         value={notes}
         onChange={(event) => setNotes(event.target.value)}
         rows={7}
-        className="w-full resize-y rounded-xl border border-base-content/15 bg-base-100 px-4 py-3.5 text-base leading-relaxed text-base-content shadow-sm shadow-base-content/5 outline-none transition-colors focus:border-primary/40"
+        className="w-full resize-y rounded-xl border-2 border-base-content/20 bg-base-100 px-4 py-3.5 text-base leading-relaxed text-base-content outline-none transition-colors focus:border-primary"
       />
     </div>
   );
@@ -428,7 +427,7 @@ function RepeatStep({ heading }: { heading: string }) {
 
   return (
     <div>
-      <p className="mb-8 max-w-3xl text-sm leading-relaxed text-base-content/55 sm:text-base">
+      <p className="mb-8 max-w-3xl text-base leading-relaxed text-base-content/80">
         Repeat the at the next level with fresh legal notes and CROSS
         ruling research
       </p>
@@ -438,19 +437,19 @@ function RepeatStep({ heading }: { heading: string }) {
           <div key={level.label} className="flex flex-col items-center sm:min-w-0 sm:flex-1 sm:flex-row">
             <div className="flex flex-col items-center">
               <p
-                className={`text-sm font-semibold uppercase tracking-[0.16em] ${level.done ? "text-success" : "text-base-content/40"
+                className={`text-sm font-bold uppercase tracking-[0.12em] ${level.done ? "text-success" : "text-base-content/70"
                   }`}
               >
                 {level.label + 's'}
               </p>
               <div
-                className={`mt-2 flex min-w-[5.75rem] items-center justify-center rounded-2xl border px-4 py-3.5 ${level.done
-                  ? "border-success/35 bg-success/10"
-                  : "border-base-content/10 bg-base-200/40"
+                className={`mt-2 flex min-w-[5.75rem] items-center justify-center rounded-2xl border-2 px-4 py-3.5 ${level.done
+                  ? "border-success bg-success/15"
+                  : "border-base-content/20 bg-base-200"
                   }`}
               >
                 <span
-                  className={`font-mono text-3xl font-bold tracking-tight sm:text-4xl ${level.done ? "text-success" : "text-base-content/30"
+                  className={`font-mono text-3xl font-bold tracking-tight sm:text-4xl ${level.done ? "text-success" : "text-base-content/70"
                     }`}
                 >
                   {level.value}
@@ -463,9 +462,9 @@ function RepeatStep({ heading }: { heading: string }) {
                 className="flex flex-col items-center py-2 sm:min-w-[2.5rem] sm:flex-1 sm:flex-row sm:px-3 sm:py-0"
                 aria-hidden="true"
               >
-                <ChevronDownIcon className="h-5 w-5 text-base-content/25 sm:hidden" />
-                <div className="hidden h-px flex-1 bg-gradient-to-r from-success/50 to-base-content/15 sm:block" />
-                <ArrowRightIcon className="hidden h-4 w-4 shrink-0 text-base-content/30 sm:block" />
+                <ChevronDownIcon className="h-5 w-5 text-base-content/50 sm:hidden" />
+                <div className="hidden h-0.5 flex-1 bg-base-content/25 sm:block" />
+                <ArrowRightIcon className="hidden h-5 w-4 shrink-0 text-base-content/50 sm:block" />
               </div>
             )}
           </div>

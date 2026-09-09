@@ -94,7 +94,7 @@ export function HomePage() {
             />
           </div>
 
-          <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 sm:px-6 py-8 md:py-12">
+          <div id="try-classify" className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 sm:px-6 py-8 md:py-12">
             {/* Main Hero Content */}
             <div className="text-center max-w-4xl w-full">
               {/* Credibility eyebrow */}
@@ -132,7 +132,6 @@ export function HomePage() {
               </p>
 
               <div
-                id="try-classify"
                 className="w-full max-w-6xl mx-auto pt-4 md:pt-8 scroll-mt-24"
               >
                 <HeroClassifyInput />
