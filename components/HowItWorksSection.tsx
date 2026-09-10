@@ -6,6 +6,7 @@ import {
   ScaleIcon,
 } from "@heroicons/react/24/outline";
 import { ArrowRightIcon, CheckIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
+import { ChevronRightIcon } from "@heroicons/react/16/solid";
 
 const PRODUCTS = [
   {
@@ -434,67 +435,67 @@ function RepeatStep({ heading }: { heading: string }) {
         ruling research
       </p>
 
-      <div className="flex flex-col items-stretch sm:flex-row sm:items-center">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4 xl:gap-4">
         {levels.map((level, index) => {
           const isDone = level.status === "done";
           const isCurrent = level.status === "current";
           const leadsToCurrent = levels[index + 1]?.status === "current";
 
           return (
-            <div key={level.label} className="flex flex-col items-center sm:min-w-0 sm:flex-1 sm:flex-row">
-              <div className="flex flex-col items-center">
-                <div className="flex items-center gap-1.5">
-                  <p
-                    className={`text-sm font-bold uppercase tracking-[0.12em] ${isCurrent
-                      ? "text-primary"
-                      : isDone
-                        ? "text-success"
-                        : "text-base-content/50"
-                      }`}
-                  >
-                    {level.label + "s"}
-                  </p>
-
-                </div>
-                <div
-                  className={`mt-2 flex min-w-[5.75rem] items-center justify-center rounded-2xl border-2 px-4 py-3.5 ${isCurrent
-                    ? "border-primary bg-primary/10"
+            <div key={level.label} className="relative flex flex-col items-center">
+              <div className="flex items-center gap-1.5">
+                <p
+                  className={`text-sm font-bold uppercase tracking-[0.12em] ${isCurrent
+                    ? "text-primary"
                     : isDone
-                      ? "border-success bg-success/15"
-                      : "border-base-content/15 bg-base-200/70"
+                      ? "text-success"
+                      : "text-base-content/50"
                     }`}
                 >
-                  <span
-                    className={`font-mono text-3xl font-bold tracking-tight sm:text-4xl ${isCurrent
-                      ? "text-base-content"
-                      : isDone
-                        ? "text-success"
-                        : "text-base-content/40"
-                      }`}
-                  >
-                    {level.value}
+                  {level.label + "s"}
+                </p>
+                {isCurrent && (
+                  <span className="rounded-full bg-primary px-1.5 py-px text-[10px] font-bold uppercase tracking-wide text-primary-content">
+                    Next
                   </span>
-                </div>
+                )}
+              </div>
+              <div
+                className={`mt-2 flex w-full items-center justify-center rounded-2xl border-2 px-3 py-3.5 ${isCurrent
+                  ? "border-primary bg-primary/10"
+                  : isDone
+                    ? "border-success bg-success/15"
+                    : "border-base-content/15 bg-base-200/70"
+                  }`}
+              >
+                <span
+                  className={`font-mono text-xl font-bold tracking-tight sm:text-2xl ${isCurrent
+                    ? "text-base-content"
+                    : isDone
+                      ? "text-success"
+                      : "text-base-content/40"
+                    }`}
+                >
+                  {level.value}
+                </span>
               </div>
 
               {index < levels.length - 1 && (
-                <div
-                  className="flex flex-col items-center py-2 sm:min-w-[2.5rem] sm:flex-1 sm:flex-row sm:px-3 sm:py-0"
-                  aria-hidden="true"
-                >
-                  <ChevronDownIcon
-                    className={`h-5 w-5 sm:hidden ${leadsToCurrent ? "text-primary" : "text-base-content/30"
-                      }`}
-                  />
+                <>
                   <div
-                    className={`hidden h-0.5 flex-1 sm:block ${leadsToCurrent ? "bg-primary/60" : "bg-base-content/20"
+                    className="flex items-center justify-center pt-4 sm:hidden"
+                    aria-hidden="true"
+                  >
+                    <ChevronDownIcon
+                      className={`h-5 w-5 ${leadsToCurrent ? "text-primary" : "text-base-content/30"}`}
+                    />
+                  </div>
+                  <ChevronRightIcon
+                    className={`pointer-events-none absolute -right-4 top-[2.65rem] hidden h-5 w-5 xl:block ${leadsToCurrent ? "text-primary" : "text-base-content/30"
                       }`}
+                    aria-hidden="true"
                   />
-                  <ArrowRightIcon
-                    className={`hidden h-5 w-4 shrink-0 sm:block ${leadsToCurrent ? "text-primary" : "text-base-content/30"
-                      }`}
-                  />
-                </div>
+                </>
               )}
             </div>
           );
