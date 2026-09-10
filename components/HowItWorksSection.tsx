@@ -6,6 +6,7 @@ import {
   ScaleIcon,
 } from "@heroicons/react/24/outline";
 import { ArrowRightIcon, CheckIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
+import { ChevronRightIcon } from "@heroicons/react/16/solid";
 
 const PRODUCTS = [
   {
@@ -35,7 +36,7 @@ const PRODUCTS = [
     ],
     crossRulings: [{ id: "NY N349345" }, { id: "NY N345796" }],
     notesWhy:
-      "Section XVII Note 3 requires parts to be suitable solely or principally with vehicles of chapters 86–88. These pads are made for heading 8703 passenger vehicles. Note 2 does not exclude ceramic brake pads as parts of general use, so they stay classifiable as vehicle parts.",
+      "Section XVII Note 3 requires parts to be suitable solely with vehicles of chapters 86–88. These pads are made for passenger vehicles, provided for by heading 8703. Note 2 does not exclude ceramic brake pads as parts of general use.",
     rulingsWhy:
       "NY N349345 and NY N345796 classify comparable ceramic brake pads as motor-vehicle parts of heading 8708.",
     summary:
@@ -119,15 +120,15 @@ const PRODUCTS = [
 const STEPS = [
   {
     title: "Enter Product Description",
-    description: "Type a good description of the product you need to classify.",
+    description: "Type a good description of the product you need to classify",
   },
   {
     title: "See Candidates & Evidence",
-    description: "Get a list of the most likely headings and see the HTS notes and CROSS rulings that support them.",
+    description: "Get a list of headings and an analysis of related HTS notes and CROSS rulings",
   },
   {
     title: "Select",
-    description: "You stay in full control of the decision, and get to document your reasoning.",
+    description: "You stay in full control of the decision, and get to document your reasoning",
   },
   {
     title: "Repeat",
@@ -153,11 +154,10 @@ export default function HowItWorksSection() {
             Four steps
           </p>
           <h2 className="text-4xl font-bold tracking-tight leading-[1.05] sm:text-5xl md:text-6xl">
-            How It <span className="text-primary">Works</span>
+            How It Works
           </h2>
-          <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-base-content/80 sm:text-lg">
-            From a product description to an evidence-backed classification —
-            in minutes.
+          <p className="mx-auto mt-5 max-w-3xl text-base leading-relaxed text-base-content/80 sm:text-lg">
+            From a product description to an evidence-backed classification in minutes.
           </p>
         </div>
 
@@ -221,10 +221,10 @@ function StepFrame({
         {index + 1}
       </div>
       <div className="min-w-0">
-        <p className="text-sm font-bold uppercase tracking-[0.16em] text-primary">
-          Step 0{index + 1}
-        </p>
-        <h3 className="mt-1.5 text-2xl font-bold tracking-tight text-base-content md:text-4xl">
+        {/* <p className="text-sm font-bold uppercase tracking-[0.16em] text-primary">
+          Step {index + 1}
+        </p> */}
+        <h3 className="text-2xl font-bold tracking-tight text-base-content md:text-4xl">
           {title}
         </h3>
         <p className="mt-2 max-w-4xl text-base leading-relaxed text-base-content/80 md:text-lg">
@@ -274,7 +274,7 @@ function EvidenceTray({
           </span>
         ))}
       </div>
-      <p className="mt-4 text-sm font-bold text-primary">Reasoning</p>
+      <p className="mt-4 text-sm font-bold text-primary">Analysis</p>
       <p className="mt-1 text-sm leading-relaxed text-base-content/80">
         {why}
       </p>
@@ -293,21 +293,6 @@ function DescribeStep({
 
   return (
     <div>
-      <div className="mb-5 inline-flex max-w-full flex-wrap rounded-full border border-base-content/20 bg-base-100 p-1">
-        {PRODUCTS.map((item, index) => (
-          <button
-            key={item.label}
-            type="button"
-            onClick={() => onSelectProduct(index)}
-            className={`rounded-full px-4 py-2 text-sm font-bold transition-colors duration-150 ${productIndex === index
-              ? "bg-primary text-primary-content"
-              : "text-base-content/80 hover:text-base-content"
-              }`}
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
       <div className="rounded-2xl border border-base-content/20 bg-base-200/50 px-5 py-6 sm:px-7 sm:py-8">
         <p className="text-sm font-bold uppercase tracking-[0.12em] text-base-content/70">
           Product description
@@ -315,6 +300,24 @@ function DescribeStep({
         <p className="mt-3 text-xl font-bold leading-snug tracking-tight text-base-content sm:text-2xl">
           {product.description}
         </p>
+      </div>
+      <div className="mt-5 flex gap-2 items-center">
+        <p className="text-xs font-bold text-primary uppercase">Examples:</p>
+        <div className="inline-flex max-w-full flex-wrap rounded-full border border-base-content/20 bg-base-100 p-1">
+          {PRODUCTS.map((item, index) => (
+            <button
+              key={item.label}
+              type="button"
+              onClick={() => onSelectProduct(index)}
+              className={`rounded-full px-4 py-2 text-sm font-bold transition-colors duration-150 ${productIndex === index
+                ? "bg-primary text-primary-content"
+                : "text-base-content/80 hover:text-base-content"
+                }`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -392,7 +395,7 @@ function DocumentStep({ product }: { product: Product }) {
         <p className="text-sm font-bold uppercase tracking-[0.12em] text-primary">
           Selected heading
         </p>
-        <p className="mt-2 font-mono text-5xl font-bold tracking-tight text-base-content sm:text-6xl">
+        <p className="mt-2 font-mono text-4xl font-bold tracking-tight text-base-content sm:text-5xl">
           {candidate.code}
         </p>
         <p className="mt-2 text-base font-medium text-base-content/80 sm:text-lg">
@@ -419,10 +422,10 @@ function DocumentStep({ product }: { product: Product }) {
 
 function RepeatStep({ heading }: { heading: string }) {
   const levels = [
-    { label: "4-digit", value: heading, done: true },
-    { label: "6-digit", value: "?", done: false },
-    { label: "8-digit", value: "?", done: false },
-    { label: "10-digit", value: "?", done: false },
+    { label: "4-digit", value: heading, status: "done" as const },
+    { label: "6-digit", value: `${heading}.XX`, status: "current" as const },
+    { label: "8-digit", value: `${heading}.XX.XX`, status: "upcoming" as const },
+    { label: "10-digit", value: `${heading}.XX.XX.XX`, status: "upcoming" as const },
   ];
 
   return (
@@ -432,43 +435,71 @@ function RepeatStep({ heading }: { heading: string }) {
         ruling research
       </p>
 
-      <div className="flex flex-col items-stretch sm:flex-row sm:items-center">
-        {levels.map((level, index) => (
-          <div key={level.label} className="flex flex-col items-center sm:min-w-0 sm:flex-1 sm:flex-row">
-            <div className="flex flex-col items-center">
-              <p
-                className={`text-sm font-bold uppercase tracking-[0.12em] ${level.done ? "text-success" : "text-base-content/70"
-                  }`}
-              >
-                {level.label + 's'}
-              </p>
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4 xl:gap-4">
+        {levels.map((level, index) => {
+          const isDone = level.status === "done";
+          const isCurrent = level.status === "current";
+          const leadsToCurrent = levels[index + 1]?.status === "current";
+
+          return (
+            <div key={level.label} className="relative flex flex-col items-center">
+              <div className="flex items-center gap-1.5">
+                <p
+                  className={`text-sm font-bold uppercase tracking-[0.12em] ${isCurrent
+                    ? "text-primary"
+                    : isDone
+                      ? "text-success"
+                      : "text-base-content/50"
+                    }`}
+                >
+                  {level.label + "s"}
+                </p>
+                {isCurrent && (
+                  <span className="rounded-full bg-primary px-1.5 py-px text-[10px] font-bold uppercase tracking-wide text-primary-content">
+                    Next
+                  </span>
+                )}
+              </div>
               <div
-                className={`mt-2 flex min-w-[5.75rem] items-center justify-center rounded-2xl border-2 px-4 py-3.5 ${level.done
-                  ? "border-success bg-success/15"
-                  : "border-base-content/20 bg-base-200"
+                className={`mt-2 flex w-full items-center justify-center rounded-2xl border-2 px-3 py-3.5 ${isCurrent
+                  ? "border-primary bg-primary/10"
+                  : isDone
+                    ? "border-success bg-success/15"
+                    : "border-base-content/15 bg-base-200/70"
                   }`}
               >
                 <span
-                  className={`font-mono text-3xl font-bold tracking-tight sm:text-4xl ${level.done ? "text-success" : "text-base-content/70"
+                  className={`font-mono text-xl font-bold tracking-tight sm:text-2xl ${isCurrent
+                    ? "text-base-content"
+                    : isDone
+                      ? "text-success"
+                      : "text-base-content/40"
                     }`}
                 >
                   {level.value}
                 </span>
               </div>
-            </div>
 
-            {index < levels.length - 1 && (
-              <div
-                className="flex flex-col items-center py-2 sm:min-w-[2.5rem] sm:flex-1 sm:flex-row sm:px-3 sm:py-0"
-                aria-hidden="true"
-              >
-                <ChevronDownIcon className="h-5 w-5 text-base-content/50 sm:hidden" />
-                <div className="hidden h-0.5 flex-1 bg-base-content/25 sm:block" />
-                <ArrowRightIcon className="hidden h-5 w-4 shrink-0 text-base-content/50 sm:block" />
-              </div>
-            )}
-          </div>
-        ))}
+              {index < levels.length - 1 && (
+                <>
+                  <div
+                    className="flex items-center justify-center pt-4 sm:hidden"
+                    aria-hidden="true"
+                  >
+                    <ChevronDownIcon
+                      className={`h-5 w-5 ${leadsToCurrent ? "text-primary" : "text-base-content/30"}`}
+                    />
+                  </div>
+                  <ChevronRightIcon
+                    className={`pointer-events-none absolute -right-4 top-[2.65rem] hidden h-5 w-5 xl:block ${leadsToCurrent ? "text-primary" : "text-base-content/30"
+                      }`}
+                    aria-hidden="true"
+                  />
+                </>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

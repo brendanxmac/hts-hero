@@ -270,11 +270,10 @@ export function HeroClassifyInput({
                   type="button"
                   onClick={() => applyExample(chip.description)}
                   disabled={isCreating}
-                  className={`rounded-full border px-3 py-1.5 text-xs sm:text-sm font-semibold transition-colors duration-150 ${
-                    isSelected
-                      ? "border-primary bg-primary text-primary-content"
-                      : "border-base-content/15 bg-base-100 text-base-content/70 hover:border-base-content/30 hover:text-base-content"
-                  }`}
+                  className={`rounded-full border px-3 py-1.5 text-xs sm:text-sm font-semibold transition-colors duration-150 ${isSelected
+                    ? "border-primary bg-primary text-primary-content"
+                    : "border-base-content/15 bg-base-100 text-base-content/70 hover:border-base-content/30 hover:text-base-content"
+                    }`}
                 >
                   {chip.label}
                 </button>

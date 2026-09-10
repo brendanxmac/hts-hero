@@ -1,7 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
-import { ArrowRightIcon } from "@heroicons/react/24/solid";
+import { Suspense, useState } from "react"
 import LetsTalkModal from "../components/LetsTalkModal";
 import { useUser } from "../contexts/UserContext";
 import { AboutPage } from "../enums/classify";
@@ -149,7 +148,7 @@ export function HomePage() {
               {/* <p className="text-sm md:text-base font-semibold uppercase tracking-[0.18em] text-base-content/45 mb-2">
                 See What You&apos;re Missing
               </p> */}
-              <div className="flex justify-center mb-2">
+              {/* <div className="flex justify-center mb-2">
                 <svg
                   className="h-8 w-8 md:h-10 md:w-10 text-primary animate-bounce"
                   fill="none"
@@ -164,10 +163,10 @@ export function HomePage() {
                     d="M19 13l-7 7-7-7m7 7V4"
                   />
                 </svg>
-              </div>
+              </div> */}
 
             </div>
-            <div className="relative">
+            {/* <div className="relative">
               <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 rounded-3xl blur-2xl opacity-60" />
               <div className="relative">
                 <YouTubeEmbed
@@ -175,7 +174,7 @@ export function HomePage() {
                   title="HTS Hero product demo"
                 />
               </div>
-            </div>
+            </div> */}
           </div>
         </section>
       </div>
