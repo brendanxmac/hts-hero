@@ -27,7 +27,7 @@ const testimonials = [
   {
     role: "US Customs Compliance, LCB",
     company: "PHINIA",
-    quote: "It really has helped me with time, it shortens my digging by pointing to probable hts's making it easier to discard or look further",
+    quote: "It really has helped me with time, it shortens my digging by pointing to probable hs codes making it easier to discard or look further",
     accent: "secondary" as const,
   },
   {
