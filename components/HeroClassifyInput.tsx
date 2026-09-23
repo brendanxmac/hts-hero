@@ -17,7 +17,7 @@ import toast from "react-hot-toast";
 const EXAMPLES = [
   "Ceramic brake pads for passenger vehicles, copper-free semi-metallic compound",
   "Stainless steel double-wall vacuum insulated water bottle, 32oz with leak-proof lid",
-  "Women's 100% cashmere crew-neck pullover sweater, knitted, with ribbed cuffs and hem",
+  "Women's 100% cashmere crew-neck pullover sweater, knitted, with ribbed cuffs",
   "Lithium-ion battery pack for solar energy storage systems",
   "Men's 100% cotton denim jeans, dyed indigo and pre-washed",
   "Industrial rubber conveyor belt used in mining equipment",
@@ -37,7 +37,7 @@ export function HeroClassifyInput({
 }: {
   entryPoint?: string;
 }) {
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState(EXAMPLES[1]);
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [isPlaceholderVisible, setIsPlaceholderVisible] = useState(true);
   const [isFocused, setIsFocused] = useState(false);
