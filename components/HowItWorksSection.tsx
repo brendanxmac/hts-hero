@@ -83,7 +83,7 @@ const PRODUCTS = [
   {
     label: "Cashmere sweater",
     description:
-      "Women's 100% cashmere crew-neck pullover sweater, knitted, with ribbed cuffs and hem",
+      "Women's 100% cashmere crew-neck pullover sweater, knitted, with ribbed cuffs",
     selectedIndex: 0,
     candidates: [
       {

@@ -57,7 +57,7 @@ const EXAMPLES: ClassificationExample[] = [
   {
     htsCode: "6110.12.20.40",
     description:
-      "Women's 100% cashmere crew-neck pullover sweater, knitted, with ribbed cuffs and hem",
+      "Women's 100% cashmere crew-neck pullover sweater, knitted, with ribbed cuffs",
     shareToken: "NTUh3omQZ6Q",
     image: '/sweater.png',
     classificationPath: [
