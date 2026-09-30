@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   title:
     "US Import Duty & Tariff Calculator — Free HTS Code Lookup | HTS Hero",
   description:
-    "Free US import duty calculator. Enter any HTS code and country of origin to see the full tariff breakdown — base rates, Section 301, Section 232, AD/CVD duties, Trump tariffs, and trade program savings like USMCA and GSP. Estimate landed costs instantly.",
+    "Free US import duty calculator. Enter an HTS code, country of origin and entry date to see every duty that applies: the base rate, Section 232, 301 and 122 tariffs and their exemptions, trade preferences like USMCA, and MPF and HMF fees, with the reason for each line.",
   keywords: [
     "US import duty calculator",
     "usa import duty calculator",
@@ -32,7 +32,6 @@ export const metadata: Metadata = {
     "Section 232 tariff",
     "trade program exemptions",
     "USMCA tariff",
-    "GSP tariff",
     "HTSUS duty rates",
     "customs duty rates USA",
     "import duty rate calculator",
@@ -42,7 +41,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Free US Import Duty & Tariff Calculator | HTS Hero",
     description:
-      "Calculate US import duties and tariffs for any HTS code by country of origin. Includes Section 301, Section 232, AD/CVD, and trade program savings.",
+      "Calculate US import duties for any HTS code, country of origin and entry date, including Section 232, 301 and 122 tariffs, exemptions, USMCA and other trade preferences, and customs fees.",
     url: `https://${config.domainName}/duty-calculator`,
     siteName: "HTS Hero",
     type: "website",
@@ -59,7 +58,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Free US Import Duty & Tariff Calculator | HTS Hero",
     description:
-      "Enter any HTS code and country to see the full duty breakdown — base rates, Section 301, AD/CVD, and trade program savings.",
+      "Enter an HTS code, country of origin and entry date to see the full duty breakdown: base rate, Section 232, 301 and 122 tariffs, exemptions and customs fees.",
     images: [`https://${config.domainName}/hero-tariffs.png`],
   },
   alternates: {
@@ -84,7 +83,7 @@ export default function DutyCalculatorPage() {
           priceCurrency: "USD",
         },
         description:
-          "Free calculator for US import duties and tariffs. Enter any HTS code and country of origin to see base rates, Section 301, Section 232, AD/CVD duties, and trade program savings under USMCA, GSP, and CAFTA-DR.",
+          "Free calculator for US import duties. Enter an HTS code, country of origin and entry date to see the base rate, Section 232, 301 and 122 tariffs and exemptions, trade preferences such as USMCA and CAFTA-DR, and MPF and HMF fees, line by line.",
         provider: {
           "@type": "Organization",
           name: "HTS Hero",
@@ -100,7 +99,7 @@ export default function DutyCalculatorPage() {
             name: "How are US import duties calculated?",
             acceptedAnswer: {
               "@type": "Answer",
-              text: "US import duties are calculated based on the product's HTS (Harmonized Tariff Schedule) classification code and the country of origin. The base ad-valorem duty rate is applied to the customs value, then additional tariffs may apply — such as Section 301 tariffs on Chinese goods and Section 232 tariffs on steel and aluminum. Trade program exemptions like USMCA, GSP, and CAFTA-DR can reduce or eliminate duties for qualifying goods.",
+              text: "US import duties depend on the product's HTS (Harmonized Tariff Schedule) code, its country of origin and the date it's entered. The base rate comes from the HTS: Column 1 General for most countries, Column 1 Special when the goods qualify for a trade agreement or preference program such as USMCA, and Column 2 for Cuba, North Korea, Russia and Belarus. Additional Chapter 99 duties are then added, such as Section 232 tariffs on steel, aluminum, copper, autos and wood, and Section 301 tariffs on goods from China, unless an exemption applies. Duties are applied to the customs value (or per unit for specific rates), and customs fees are added: the Merchandise Processing Fee (0.3464%, with a minimum and maximum) and, for ocean shipments, the Harbor Maintenance Fee (0.125%). Antidumping and countervailing duties are set case by case and aren't included in this calculator.",
             },
           },
           {
@@ -108,7 +107,7 @@ export default function DutyCalculatorPage() {
             name: "What are Section 301 tariffs?",
             acceptedAnswer: {
               "@type": "Answer",
-              text: "Section 301 tariffs are additional duties imposed on goods imported from China, ranging from 7.5% to 100% depending on the product category. These tariffs are applied on top of the standard HTS duty rate and were enacted to address unfair trade practices. The HTS Hero duty calculator automatically includes applicable Section 301 tariffs in its calculations.",
+              text: "Section 301 tariffs are additional duties on goods from China, ranging from 7.5% to 100% depending on the product and, for recent increases, the entry date. They're applied on top of the standard HTS duty rate and were imposed to address China's trade practices. The HTS Hero duty calculator applies the Section 301 lists and product exclusions in effect on your entry date.",
             },
           },
           {
@@ -116,7 +115,7 @@ export default function DutyCalculatorPage() {
             name: "Is this US tariff calculator free?",
             acceptedAnswer: {
               "@type": "Answer",
-              text: "Yes, the HTS Hero duty and tariff calculator is completely free. Enter any HTS code and select a country of origin to see the full duty breakdown including base rates, Section 122 / 301 / 232 tariffs, and trade program savings — no sign-up required.",
+              text: "Yes, the HTS Hero duty and tariff calculator is completely free, with no sign-up required. Enter an HTS code, country of origin and entry date to see the full duty breakdown, including the base rate, Section 232, 301 and 122 tariffs, trade preferences, and customs fees.",
             },
           },
           {
@@ -124,7 +123,15 @@ export default function DutyCalculatorPage() {
             name: "How do I find the tariff rate for imports from a specific country?",
             acceptedAnswer: {
               "@type": "Answer",
-              text: "Enter the product's HTS code in the calculator, then select the country of origin from the dropdown. The calculator will show the applicable duty rate for that specific country, including any additional tariffs (like Section 301 for China) or preferential rates (like USMCA for Mexico and Canada). Different countries may qualify for different trade programs that reduce or eliminate duties.",
+              text: "Enter the product's HTS code, then select the country of origin. The calculator shows the rates that apply to goods from that country on your entry date, including additional tariffs (like Section 301 for China) and preferential rates you can claim (like USMCA for goods from Mexico and Canada that meet its rules of origin).",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Does the calculator include antidumping and countervailing duties?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "No. Antidumping and countervailing duties (AD/CVD) are set case by case for specific producers and exporters, so they aren't included. If your product is covered by an AD/CVD order, check the order's rates with CBP or your customs broker and add them to the estimate.",
             },
           },
         ],

@@ -345,7 +345,12 @@ export const TariffFinderPage = () => {
   const latestVerified = getLatestVerifiedRevision();
   const verified = isVerifiedDate(entryDate);
   const revisionForDate = getRevisionForDate(entryDate);
-  const openQuestions = result ? result.questions.filter((q) => !q.answered).length : 0;
+  // Only questions whose answer would change the amount
+  const openQuestions = result
+    ? result.questions.filter(
+        (q) => !q.answered && (q.input.type !== "boolean" || Math.abs(impacts[q.input.id] ?? 0) >= 0.005)
+      ).length
+    : 0;
   // The first unit is the one duty is charged in; later ones are statistical reporting units
   const units = [...(selectedElement?.units ?? []), ...(tariffElement?.units ?? [])].filter(
     (u, i, all) => u && all.indexOf(u) === i
@@ -562,16 +567,28 @@ export const TariffFinderPage = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-                <div className={`${styles.card} lg:col-span-8 overflow-hidden`}>
-                  <SummaryStats result={result} customsValue={customsValue} />
-                  <Statement
-                    result={result}
-                    customsValue={customsValue}
-                    quantity={quantity}
-                    unitLabel={units[0] ?? "units"}
-                  />
+                <div className="lg:col-span-8 flex flex-col gap-4 min-w-0">
+                  <div className={`${styles.card} overflow-hidden`}>
+                    <SummaryStats result={result} customsValue={customsValue} />
+                    <Statement
+                      result={result}
+                      customsValue={customsValue}
+                      quantity={quantity}
+                      unitLabel={units[0] ?? "units"}
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                    <BasisPanel
+                      result={result}
+                      revision={revisionForDate}
+                      verified={verified}
+                      htsRevisionName={htsRevisionName}
+                      transportMode={transportMode}
+                    />
+                    <NotAppliedPanel lines={result.lines} />
+                  </div>
                 </div>
-                <aside className="lg:col-span-4 flex flex-col gap-4 lg:sticky lg:top-4">
+                <aside className="lg:col-span-4 flex flex-col gap-4">
                   {result.questions.length > 0 && (
                     <QuestionsPanel
                       questions={result.questions}
@@ -589,14 +606,6 @@ export const TariffFinderPage = () => {
                       }}
                     />
                   )}
-                  <BasisPanel
-                    result={result}
-                    revision={revisionForDate}
-                    verified={verified}
-                    htsRevisionName={htsRevisionName}
-                    transportMode={transportMode}
-                  />
-                  <NotAppliedPanel lines={result.lines} />
                 </aside>
               </div>
             )}

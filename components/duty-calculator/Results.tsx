@@ -474,26 +474,52 @@ export const QuestionsPanel = ({
   onAnswer: (id: string, value: unknown) => void;
   lines: DutyLine[];
 }) => {
-  const open = questions.filter((q) => !q.answered).length;
+  const [showAll, setShowAll] = useState(false);
+  // Questions that change the amount (or are already answered) come first; the rest
+  // wouldn't change this entry's total, so they're tucked away. Original order is kept
+  // within each group so answering one doesn't reshuffle the list.
+  const matters = (q: Question) =>
+    q.answered || answers[q.input.id] !== undefined || q.input.type !== "boolean" || Math.abs(impacts[q.input.id] ?? 0) >= 0.005;
+  const primary = questions.filter(matters);
+  const secondary = questions.filter((q) => !matters(q));
+  const visible = showAll ? [...primary, ...secondary] : primary;
+  const open = primary.filter((q) => !q.answered).length;
+
   return (
     <Panel
       title="Refine this estimate"
-      badge={open > 0 ? `${open} open` : undefined}
+      badge={open > 0 ? `${open} could change the total` : undefined}
       description="Unanswered questions count as “no”, so an exemption isn’t applied until you confirm it."
     >
-      <ul className="flex flex-col divide-y divide-[var(--dc-border)]">
-        {questions.map((q) => (
-          <li key={q.input.id} className="py-3.5 first:pt-0 last:pb-0">
-            <QuestionControl
-              question={q}
-              value={answers[q.input.id]}
-              impact={impacts[q.input.id]}
-              heading={lines.find((l) => `confirm:${l.code}` === q.input.id)}
-              onChange={(v) => onAnswer(q.input.id, v)}
-            />
-          </li>
-        ))}
-      </ul>
+      {visible.length > 0 ? (
+        <ul className="flex flex-col divide-y divide-[var(--dc-border)]">
+          {visible.map((q) => (
+            <li key={q.input.id} className="py-3.5 first:pt-0 last:pb-0">
+              <QuestionControl
+                question={q}
+                value={answers[q.input.id]}
+                impact={impacts[q.input.id]}
+                heading={lines.find((l) => `confirm:${l.code}` === q.input.id)}
+                onChange={(v) => onAnswer(q.input.id, v)}
+              />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-[13.5px] text-[var(--dc-text-2)]">No answer would change the total for this entry.</p>
+      )}
+      {secondary.length > 0 && (
+        <button
+          type="button"
+          className={`${styles.link} mt-4 text-[13px]`}
+          onClick={() => setShowAll((x) => !x)}
+          aria-expanded={showAll}
+        >
+          {showAll
+            ? "Hide questions that don't change the total"
+            : `Show ${secondary.length} more ${secondary.length === 1 ? "question" : "questions"} that don't change the total`}
+        </button>
+      )}
     </Panel>
   );
 };

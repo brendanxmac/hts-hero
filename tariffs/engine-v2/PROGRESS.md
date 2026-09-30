@@ -200,11 +200,11 @@ Other intended differences that the comparison doesn't exercise (they only show 
   The view is remembered per device, and `?view=` overrides it.
 - **Share links** carry `code, country, value, units, date, mode, pref`.
 - **Engine additions:** `transportMode`, `FeeSchedule.modes`, `requiresQuantity`, and an MPF note for entries under $2,500 (informal-entry MPF isn't modeled).
-- **Visual design:** light and dark follow the OS setting; design tokens are in `components/duty-calculator/theme.module.css`.
+- **Visual design:** design tokens are in `components/duty-calculator/theme.module.css`.
 - **Speed:** about 0.07 ms per calculation; under 1 ms per keystroke including the per-question impact calculations.
-- **Follow-ups:**
-  - The page metadata and FAQ JSON-LD still mention AD/CVD duties, which aren't calculated.
-  - The explorer modal still uses the site theme.
+- **Theme:** follows the site's `data-theme` (header toggle, or the OS setting until the user picks one), and falls back to the OS setting if the attribute is missing.
+- **SEO:** metadata and FAQ JSON-LD no longer claim AD/CVD or GSP coverage. A new FAQ says AD/CVD isn't included.
+- **Follow-up:** the explorer modal still uses the site's daisyUI styling.
 
 ## Sep 30: named lists for 9903.91.01–.04, and a list audit
 

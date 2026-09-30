@@ -1,6 +1,7 @@
 /* Design tokens and primitives for the duty calculator.
-   Light by default, dark when the operating system prefers it. Text colors meet WCAG AA
-   (most exceed AAA) against their surfaces in both themes. */
+   Follows the site theme: <html data-theme="dark|light">, which the site sets from the header
+   toggle or, until the user picks one, from the operating system. Falls back to the OS setting
+   if the attribute is missing. Text colors meet WCAG AA (most exceed AAA) in both themes. */
 
 .root {
   --dc-bg: #f6f6f3;
@@ -32,8 +33,35 @@
   -webkit-font-smoothing: antialiased;
 }
 
+:global(html[data-theme="dark"]) .root {
+  --dc-bg: #0a0c0f;
+  --dc-surface: #111419;
+  --dc-surface-2: #171b21;
+  --dc-surface-3: #1e232b;
+  --dc-border: #252a32;
+  --dc-border-strong: #353c47;
+  --dc-text: #f1f3f6;
+  --dc-text-2: #b8bec8;
+  --dc-text-3: #8d94a0;
+  --dc-accent: #8ea6ff;
+  --dc-accent-hover: #a9bbff;
+  --dc-accent-contrast: #0a0c0f;
+  --dc-accent-soft: rgba(142, 166, 255, 0.1);
+  --dc-accent-border: rgba(142, 166, 255, 0.32);
+  --dc-focus: rgba(142, 166, 255, 0.35);
+  --dc-positive: #5bd79c;
+  --dc-positive-soft: rgba(91, 215, 156, 0.1);
+  --dc-warning: #f3c56b;
+  --dc-warning-soft: rgba(243, 197, 107, 0.08);
+  --dc-warning-border: rgba(243, 197, 107, 0.35);
+  --dc-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px -16px rgba(0, 0, 0, 0.7);
+  --dc-shadow-pop: 0 16px 48px -12px rgba(0, 0, 0, 0.8), 0 2px 6px rgba(0, 0, 0, 0.4);
+
+  color-scheme: dark;
+}
+
 @media (prefers-color-scheme: dark) {
-  .root {
+  :global(html:not([data-theme])) .root {
     --dc-bg: #0a0c0f;
     --dc-surface: #111419;
     --dc-surface-2: #171b21;
