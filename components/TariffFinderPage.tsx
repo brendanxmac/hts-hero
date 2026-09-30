@@ -1,1036 +1,702 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import {
+  ArrowRightIcon,
+  CheckIcon,
+  ClipboardDocumentIcon,
+  ExclamationTriangleIcon,
+  LinkIcon,
+  MagnifyingGlassIcon,
+} from "@heroicons/react/20/solid";
 import { Countries, Country } from "../constants/countries";
-import { CountrySelection } from "./CountrySelection";
 import { HtsElement } from "../interfaces/hts";
 import { useHts } from "../contexts/HtsContext";
-import { LoadingIndicator } from "./LoadingIndicator";
-import { SecondaryLabel } from "./SecondaryLabel";
-import { CountryTariff } from "./CountryTariff";
-import {
-  addTariffsToCountry,
-  CountryWithTariffs,
-  tariffIsApplicable,
-  tariffIsApplicableToCode,
-  TariffsList,
-} from "../tariffs/tariffs";
-import { ContentRequirementI } from "./Element";
-import { ContentRequirements } from "../enums/tariff";
-import { getHtsElementParents } from "../libs/hts";
 import { useHtsSections } from "../contexts/HtsSectionsContext";
-import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
-import { HtsCodeSelector } from "./HtsCodeSelector";
-import { NumberInput } from "./NumberInput";
-import { PercentageInput } from "./PercentageInput";
-import { Explore } from "./Explore";
 import { useBreadcrumbs } from "../contexts/BreadcrumbsContext";
 import {
   generateBreadcrumbsForHtsElement,
+  getHtsElementParents,
   getSectionAndChapterFromChapterNumber,
 } from "../libs/hts";
-import { htsCodeDigitsOnly, normalizeHtsCode } from "../libs/hts-code";
+import { htsCodeDigitsOnly, htsCodesEqual, normalizeHtsCode } from "../libs/hts-code";
 import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
-import { TariffResultsV2 } from "./tariff-engine-v2/TariffResultsV2";
+import { copyToClipboard } from "../utilities/data";
+import { findTariffElement } from "../tariffs/tariff-calculations";
+import { calculate } from "../tariffs/engine-v2/calculate";
+import { AllRules } from "../tariffs/engine-v2/data";
+import {
+  getLatestVerifiedRevision,
+  getRevisionForDate,
+  isVerifiedDate,
+} from "../tariffs/engine-v2/revisions";
+import { Answers, CalculationResult, TransportMode } from "../tariffs/engine-v2/types";
+import { Explore } from "./Explore";
+import { HtsCodeField } from "./duty-calculator/HtsCodeField";
+import { CountryField } from "./duty-calculator/CountryField";
+import { Field, NumberField, Segmented } from "./duty-calculator/controls";
+import {
+  BasisPanel,
+  NotAppliedPanel,
+  QuestionsPanel,
+  SimpleSummary,
+  Statement,
+  SummaryStats,
+} from "./duty-calculator/Results";
+import {
+  formatDate,
+  formatMoney,
+  formatPct,
+  mono,
+  todayIso,
+  TRANSPORT_MODES,
+} from "./duty-calculator/format";
+import styles from "./duty-calculator/theme.module.css";
 
-type DutyCalculatorExploreOpenSource =
-  | "description_search_button"
-  | "sub_tariff_code_selected"
-  | "url_sub_tariff_code";
+type View = "detailed" | "simple";
 
-// Helper to count digits in an HTS code (ignoring dots)
-const getHtsCodeDigitCount = (htsno: string): number => {
-  if (!htsno) return 0;
-  return htsCodeDigitsOnly(htsno).length;
+const VIEWS = [
+  { id: "detailed", label: "Detailed" },
+  { id: "simple", label: "Simple" },
+] as const;
+
+const VIEW_STORAGE_KEY = "hts-hero-duty-calculator-view";
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+const EXAMPLES = [
+  { code: "7326.90.86.88", country: "CN", label: "Steel hardware", origin: "China" },
+  { code: "8703.23.01.90", country: "DE", label: "Passenger car", origin: "Germany" },
+  { code: "6109.10.00.12", country: "VN", label: "Cotton T-shirts", origin: "Vietnam" },
+];
+
+const countryByCode = (code: string | null) =>
+  code ? Countries.find((c) => c.code === code.toUpperCase()) ?? null : null;
+
+const positiveNumber = (raw: string | null, fallback: number) => {
+  const parsed = raw ? parseFloat(raw) : NaN;
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
 };
 
-// Check if an HTS code has 8 or more digits (tariff-level)
-const isTariffLevelCode = (htsno: string): boolean => {
-  return getHtsCodeDigitCount(htsno) >= 8;
-};
-
-// Helper to validate country code
-const getCountryByCode = (code: string): Country | null => {
-  if (!code || code.length !== 2) return null;
-  const upperCode = code.toUpperCase();
-  return Countries.find((c) => c.code === upperCode) || null;
-};
+const isTariffLevel = (element: HtsElement) => htsCodeDigitsOnly(element.htsno).length >= 8;
 
 export const TariffFinderPage = () => {
-  // URL params
   const searchParams = useSearchParams();
-
-  // Context
-  const { htsElements, fetchElements } = useHts();
+  const { htsElements, fetchElements, revision: htsRevisionName } = useHts();
   const { sections, getSections } = useHtsSections();
   const { setBreadcrumbs } = useBreadcrumbs();
 
-  // State
-  const [selectedCountry, setSelectedCountry] = useState<Country | null>(
-    Countries.find((c) => c.code === "CN") || null
+  // ── Inputs ──
+  const [loading, setLoading] = useState(htsElements.length === 0);
+  const [selectedElement, setSelectedElement] = useState<HtsElement | null>(null);
+  const [country, setCountry] = useState<Country | null>(
+    () => countryByCode(searchParams.get("country")) ?? countryByCode("CN")
   );
-  const [selectedElement, setSelectedElement] = useState<HtsElement | null>(
-    null
-  );
-  const [tariffElement, setTariffElement] = useState<HtsElement | null>(null);
-  const [countryWithTariffs, setCountryWithTariffs] =
-    useState<CountryWithTariffs | null>(null);
-  const [loadingPage, setLoadingPage] = useState(true);
-  // The new tariff engine is behind a URL flag (?engine=v2) or local development
-  const engineToggleEnabled =
-    searchParams.get("engine") === "v2" || process.env.NODE_ENV === "development";
-  const [engine, setEngine] = useState<"classic" | "v2">(() =>
-    searchParams.get("engine") === "v2" ? "v2" : "classic"
-  );
-  const [urlParamsProcessed, setUrlParamsProcessed] = useState(false);
+  const [customsValue, setCustomsValue] = useState(() => positiveNumber(searchParams.get("value"), 10000));
+  const [quantity, setQuantity] = useState(() => positiveNumber(searchParams.get("units"), 1000));
+  const [entryDate, setEntryDate] = useState(() => {
+    const date = searchParams.get("date");
+    return date && ISO_DATE.test(date) ? date : todayIso();
+  });
+  const [transportMode, setTransportMode] = useState<TransportMode>(() => {
+    const mode = searchParams.get("mode");
+    return TRANSPORT_MODES.some((m) => m.id === mode) ? (mode as TransportMode) : "ocean";
+  });
+  const [claimedPreference, setClaimedPreference] = useState(searchParams.get("pref") ?? "");
+  const [answers, setAnswers] = useState<Answers>({});
+  const [view, setView] = useState<View>(() => (searchParams.get("view") === "simple" ? "simple" : "detailed"));
+  const [showExplore, setShowExplore] = useState(false);
+  const [copied, setCopied] = useState<"link" | "summary" | null>(null);
 
-  // Parse initial customs value from URL params
-  const getInitialCustomsValue = (): number => {
-    const valueParam = searchParams.get("value");
-    if (valueParam) {
-      const parsed = parseFloat(valueParam);
-      if (!isNaN(parsed) && parsed >= 0) {
-        return parsed;
-      }
+  // Remember the preferred view on this device, unless the link specified one
+  useEffect(() => {
+    if (searchParams.get("view")) return;
+    try {
+      const stored = window.localStorage.getItem(VIEW_STORAGE_KEY);
+      if (stored === "simple" || stored === "detailed") setView(stored);
+    } catch {
+      // Storage can be unavailable (private mode); the default view is fine
     }
-    return 10000;
-  };
+  }, [searchParams]);
 
-  // Parse initial units from URL params
-  const getInitialUnits = (): number => {
-    const unitsParam = searchParams.get("units");
-    if (unitsParam) {
-      const parsed = parseFloat(unitsParam);
-      if (!isNaN(parsed) && parsed >= 0) {
-        return parsed;
-      }
+  // ── Data ──
+  useEffect(() => {
+    if (htsElements.length > 0 && sections.length > 0) {
+      setLoading(false);
+      return;
     }
-    return 1000;
-  };
-
-  // Parse content percentages from URL params
-  // Maps URL-friendly keys back to ContentRequirements names
-  const getContentPercentagesFromUrl = (): Map<string, number> => {
-    const contentMap = new Map<string, number>();
-
-    // Check for each possible content type
-    const contentMappings: { urlKey: string; contentName: string }[] = [
-      { urlKey: "steel", contentName: "Steel" },
-      { urlKey: "aluminum", contentName: "Aluminum" },
-      { urlKey: "copper", contentName: "Copper" },
-      { urlKey: "uscontent", contentName: "U.S. Content" },
-    ];
-
-    contentMappings.forEach(({ urlKey, contentName }) => {
-      const value = searchParams.get(urlKey);
-      if (value) {
-        const parsed = parseFloat(value);
-        if (!isNaN(parsed) && parsed >= 0 && parsed <= 100) {
-          contentMap.set(contentName, parsed);
-        }
-      }
-    });
-
-    return contentMap;
-  };
-
-  // UI states - update immediately for responsive feedback
-  const [uiUnits, setUiUnits] = useState<number>(getInitialUnits);
-  const [uiCustomsValue, setUiCustomsValue] = useState<number>(
-    getInitialCustomsValue
-  );
-  // Calculation states - update after debounce for expensive operations
-  const [units, setUnits] = useState<number>(getInitialUnits);
-  const [customsValue, setCustomsValue] = useState<number>(
-    getInitialCustomsValue
-  );
-  // Store URL-provided content percentages to apply after content requirements are determined
-  const [urlContentPercentages] = useState<Map<string, number>>(
-    getContentPercentagesFromUrl
-  );
-
-  // Timeout refs for debouncing
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const unitsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const customsValueTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  const [contentRequirements, setContentRequirements] = useState<
-    ContentRequirementI<ContentRequirements>[]
-  >([]);
-  // UI state for content percentages - updates immediately for responsive slider
-  const [uiContentPercentages, setUiContentPercentages] = useState<
-    ContentRequirementI<ContentRequirements>[]
-  >([]);
-  const [showExploreModal, setShowExploreModal] = useState(false);
-
-  const prevCountryAnalyticsRef = useRef<string | null | undefined>(undefined);
-  const lastResultsViewedKeyRef = useRef<string | null>(null);
-  const customsAnalyticsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const unitsAnalyticsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const contentAnalyticsTimeoutsRef = useRef<
-    Partial<Record<ContentRequirements, NodeJS.Timeout>>
-  >({});
-
-  const openExploreModal = useCallback(
-    (source: DutyCalculatorExploreOpenSource) => {
-      trackEvent(MixpanelEvent.DUTY_CALCULATOR_EXPLORE_MODAL_OPENED, {
-        source,
-      });
-      setShowExploreModal(true);
-    },
-    []
-  );
-
-  const closeExploreModal = useCallback(() => {
-    setShowExploreModal((open) => {
-      if (open) {
-        trackEvent(MixpanelEvent.DUTY_CALCULATOR_EXPLORE_MODAL_CLOSED);
-      }
-      return false;
-    });
+    Promise.all([htsElements.length ? null : fetchElements("latest"), sections.length ? null : getSections()])
+      .catch((e) => console.error("Error loading HTS data:", e))
+      .finally(() => setLoading(false));
+    // Load once
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Handle element selection - only show tariffs for 8+ digit codes
-  const handleElementSelection = useCallback(
-    (element: HtsElement | null) => {
+  // ── Selecting a code (from the field, the URL, an example, or the explorer) ──
+  const openExplorerAt = useCallback(
+    (element: HtsElement) => {
+      const sectionAndChapter = getSectionAndChapterFromChapterNumber(sections, Number(element.chapter));
+      if (sectionAndChapter) {
+        setBreadcrumbs(
+          generateBreadcrumbsForHtsElement(sections, sectionAndChapter.chapter, [
+            ...getHtsElementParents(element, htsElements),
+            element,
+          ])
+        );
+      }
+      setShowExplore(true);
+      trackEvent(MixpanelEvent.DUTY_CALCULATOR_EXPLORE_MODAL_OPENED, { source: "sub_tariff_code_selected" });
+    },
+    [sections, htsElements, setBreadcrumbs]
+  );
+
+  const selectElement = useCallback(
+    (element: HtsElement | null, source: string) => {
       if (!element) {
-        trackEvent(MixpanelEvent.DUTY_CALCULATOR_HTS_CODE_CLEARED);
+        if (selectedElement) trackEvent(MixpanelEvent.DUTY_CALCULATOR_HTS_CODE_CLEARED);
         setSelectedElement(null);
         return;
       }
-
-      // Check if the code has 8 or more digits
-      if (isTariffLevelCode(element.htsno)) {
-        trackEvent(MixpanelEvent.DUTY_CALCULATOR_HTS_CODE_SELECTED, {
-          hts_code: element.htsno,
-          digit_count: getHtsCodeDigitCount(element.htsno),
-          source: "hts_selector",
-        });
-        setSelectedElement(element);
-      } else {
-        setSelectedElement(null);
-
-        // Generate breadcrumbs to navigate to this element in the explorer
-        if (sections.length > 0) {
-          const sectionAndChapter = getSectionAndChapterFromChapterNumber(
-            sections,
-            Number(element.chapter)
-          );
-
-          if (sectionAndChapter) {
-            const parents = getHtsElementParents(element, htsElements);
-            const breadcrumbs = generateBreadcrumbsForHtsElement(
-              sections,
-              sectionAndChapter.chapter,
-              [...parents, element]
-            );
-            setBreadcrumbs(breadcrumbs);
-          }
-        }
-
-        openExploreModal("sub_tariff_code_selected");
+      if (!isTariffLevel(element)) {
+        openExplorerAt(element);
+        return;
       }
+      setSelectedElement(element);
+      trackEvent(MixpanelEvent.DUTY_CALCULATOR_HTS_CODE_SELECTED, {
+        hts_code: element.htsno,
+        digit_count: htsCodeDigitsOnly(element.htsno).length,
+        source,
+      });
     },
-    [sections, htsElements, setBreadcrumbs, openExploreModal]
+    [selectedElement, openExplorerAt]
   );
 
-  // Close explore modal on Escape key
+  // React to ?code= whenever it changes, including links clicked inside the explorer
+  const codeParam = searchParams.get("code");
   useEffect(() => {
-    const handleEscapeKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && showExploreModal) {
-        closeExploreModal();
-      }
-    };
+    if (!codeParam || htsElements.length === 0) return;
+    const normalized = normalizeHtsCode(codeParam.trim());
+    const match = htsElements.find((el) => htsCodesEqual(el.htsno, normalized));
+    if (match) {
+      setShowExplore(false);
+      selectElement(match, "url");
+    }
+    trackEvent(MixpanelEvent.DUTY_CALCULATOR_DEEP_LINK_OPENED, {
+      had_country_param: Boolean(searchParams.get("country")),
+      had_code_param: true,
+      code_matched_element: Boolean(match),
+    });
+    // Only when the code param or data changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [codeParam, htsElements.length]);
 
-    document.addEventListener("keydown", handleEscapeKey);
-    return () => document.removeEventListener("keydown", handleEscapeKey);
-  }, [showExploreModal, closeExploreModal]);
-
+  // Answers and trade preference claims belong to one code/country pair
+  const entryKey = `${selectedElement?.htsno ?? ""}|${country?.code ?? ""}`;
+  const previousEntryKey = useRef(entryKey);
   useEffect(() => {
-    if (selectedElement && tariffElement) {
-      const codeBasedContentRequirements = Array.from(
-        TariffsList.filter((t) =>
-          selectedCountry
-            ? tariffIsApplicable(t, selectedCountry.code, selectedElement.htsno)
-            : tariffIsApplicableToCode(t, selectedElement.htsno)
-        ).reduce((acc, t) => {
-          if (t.contentRequirement) {
-            acc.add(t.contentRequirement.content);
-          }
-          return acc;
-        }, new Set<ContentRequirements>())
-      );
+    if (previousEntryKey.current === entryKey) return;
+    previousEntryKey.current = entryKey;
+    setAnswers({});
+    setClaimedPreference("");
+  }, [entryKey]);
 
-      const newContentRequirements = codeBasedContentRequirements.map(
-        (contentRequirement) => ({
-          name: contentRequirement,
-          // Use URL param value if available, otherwise default to 80
-          value: urlContentPercentages.get(contentRequirement) ?? 80,
-        })
-      );
-      setContentRequirements(newContentRequirements);
-      setUiContentPercentages(newContentRequirements);
-    }
-  }, [selectedElement, tariffElement, selectedCountry, urlContentPercentages]);
-
-  // Handlers with debouncing
-  const handleSliderChange = (
-    contentRequirement: ContentRequirements,
-    value: number
-  ) => {
-    // Update UI immediately for responsive feedback
-    setUiContentPercentages((prev) =>
-      prev.map((c) => (c.name === contentRequirement ? { ...c, value } : c))
-    );
-
-    // Clear existing timeout for expensive calculation
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-
-    // Debounce the expensive recalculation (300ms)
-    timeoutRef.current = setTimeout(() => {
-      setContentRequirements((prev) =>
-        prev.map((c) => (c.name === contentRequirement ? { ...c, value } : c))
-      );
-    }, 300);
-
-    const prevTimeout = contentAnalyticsTimeoutsRef.current[contentRequirement];
-    if (prevTimeout) clearTimeout(prevTimeout);
-    contentAnalyticsTimeoutsRef.current[contentRequirement] = setTimeout(
-      () => {
-        trackEvent(MixpanelEvent.DUTY_CALCULATOR_CONTENT_PERCENTAGE_SET, {
-          content_type: contentRequirement,
-          percentage: value,
-        });
-      },
-      1000
-    );
-  };
-
-  const handleUnitsChange = (value: number) => {
-    // Update UI immediately for responsive feedback
-    setUiUnits(value);
-
-    // Clear existing timeout for expensive calculation
-    if (unitsTimeoutRef.current) {
-      clearTimeout(unitsTimeoutRef.current);
-    }
-
-    // Debounce the expensive recalculation (300ms)
-    unitsTimeoutRef.current = setTimeout(() => {
-      setUnits(value);
-    }, 300);
-
-    if (unitsAnalyticsTimeoutRef.current) {
-      clearTimeout(unitsAnalyticsTimeoutRef.current);
-    }
-    unitsAnalyticsTimeoutRef.current = setTimeout(() => {
-      trackEvent(MixpanelEvent.DUTY_CALCULATOR_UNITS_SET, { units: value });
-    }, 1000);
-  };
-
-  const handleCustomsValueChange = (value: number) => {
-    // Update UI immediately for responsive feedback
-    setUiCustomsValue(value);
-
-    // Clear existing timeout for expensive calculation
-    if (customsValueTimeoutRef.current) {
-      clearTimeout(customsValueTimeoutRef.current);
-    }
-
-    // Debounce the expensive recalculation (300ms)
-    customsValueTimeoutRef.current = setTimeout(() => {
-      setCustomsValue(value);
-    }, 300);
-
-    if (customsAnalyticsTimeoutRef.current) {
-      clearTimeout(customsAnalyticsTimeoutRef.current);
-    }
-    customsAnalyticsTimeoutRef.current = setTimeout(() => {
-      trackEvent(MixpanelEvent.DUTY_CALCULATOR_CUSTOMS_VALUE_SET, {
-        customs_value_usd: value,
-      });
-    }, 1000);
-  };
-
-  // Cleanup timeouts on unmount
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-      if (unitsTimeoutRef.current) {
-        clearTimeout(unitsTimeoutRef.current);
-      }
-      if (customsValueTimeoutRef.current) {
-        clearTimeout(customsValueTimeoutRef.current);
-      }
-      if (customsAnalyticsTimeoutRef.current) {
-        clearTimeout(customsAnalyticsTimeoutRef.current);
-      }
-      if (unitsAnalyticsTimeoutRef.current) {
-        clearTimeout(unitsAnalyticsTimeoutRef.current);
-      }
-      for (const t of Object.values(contentAnalyticsTimeoutsRef.current)) {
-        if (t) clearTimeout(t);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!urlParamsProcessed) return;
-    const code = selectedCountry?.code ?? null;
-    if (prevCountryAnalyticsRef.current === undefined) {
-      prevCountryAnalyticsRef.current = code;
-      return;
-    }
-    if (prevCountryAnalyticsRef.current !== code) {
-      trackEvent(MixpanelEvent.DUTY_CALCULATOR_COUNTRY_CHANGED, {
-        country_code: code,
-      });
-      prevCountryAnalyticsRef.current = code;
-    }
-  }, [selectedCountry, urlParamsProcessed]);
-
-  // Load initial data
-  useEffect(() => {
-    const loadAllData = async () => {
-      try {
-        setLoadingPage(true);
-        await Promise.all([fetchElements("latest"), getSections()]);
-      } catch (e) {
-        console.error("Error loading data:", e);
-      } finally {
-        setLoadingPage(false);
-      }
-    };
-
-    if (!htsElements.length || !sections.length) {
-      loadAllData();
-    } else {
-      setLoadingPage(false);
-    }
-  }, []);
-
-  // Process URL params after data is loaded
-  useEffect(() => {
-    if (loadingPage || urlParamsProcessed || htsElements.length === 0) return;
-
-    const countryParam = searchParams.get("country");
-    const codeParam = searchParams.get("code");
-    let openedExploreFromUrl = false;
-    let codeMatched = false;
-
-    if (countryParam) {
-      const country = getCountryByCode(countryParam);
-      if (country) {
-        setSelectedCountry(country);
-      }
-    }
-
-    if (codeParam) {
-      const normalizedCode = normalizeHtsCode(codeParam.trim());
-      const matchingElement = htsElements.find(
-        (el) => el.htsno === normalizedCode
-      );
-      if (matchingElement) {
-        codeMatched = true;
-        if (isTariffLevelCode(matchingElement.htsno)) {
-          trackEvent(MixpanelEvent.DUTY_CALCULATOR_HTS_CODE_SELECTED, {
-            hts_code: matchingElement.htsno,
-            digit_count: getHtsCodeDigitCount(matchingElement.htsno),
-            source: "url",
-          });
-          setSelectedElement(matchingElement);
-        } else {
-          if (sections.length > 0) {
-            const sectionAndChapter = getSectionAndChapterFromChapterNumber(
-              sections,
-              Number(matchingElement.chapter)
-            );
-
-            if (sectionAndChapter) {
-              const parents = getHtsElementParents(
-                matchingElement,
-                htsElements
-              );
-              const breadcrumbs = generateBreadcrumbsForHtsElement(
-                sections,
-                sectionAndChapter.chapter,
-                [...parents, matchingElement]
-              );
-              setBreadcrumbs(breadcrumbs);
-            }
-          }
-          openedExploreFromUrl = true;
-          openExploreModal("url_sub_tariff_code");
-        }
-      }
-    }
-
-    if (countryParam || codeParam) {
-      trackEvent(MixpanelEvent.DUTY_CALCULATOR_DEEP_LINK_OPENED, {
-        had_country_param: Boolean(countryParam),
-        had_code_param: Boolean(codeParam),
-        code_matched_element: codeMatched,
-        opened_explore_modal: openedExploreFromUrl,
-      });
-    }
-
-    setUrlParamsProcessed(true);
-  }, [
-    loadingPage,
-    urlParamsProcessed,
-    htsElements,
-    searchParams,
-    sections,
-    setBreadcrumbs,
-    openExploreModal,
-  ]);
-
-  // Find the tariff element (the element with actual tariff data)
-  const findTariffElement = useCallback(
-    (element: HtsElement): HtsElement => {
-      // If the element has tariff data, return it
-      if (element.general || element.special || element.other) {
-        return element;
-      }
-
-      // Otherwise, find parent with tariff data
-      const parents = getHtsElementParents(element, htsElements);
-      for (let i = parents.length - 1; i >= 0; i--) {
-        const parent = parents[i];
-        if (parent.general || parent.special || parent.other) {
-          return parent;
-        }
-      }
-
-      return element;
-    },
-    [htsElements]
+  // ── Calculation ──
+  const tariffElement = useMemo(
+    () => (selectedElement ? findTariffElement(selectedElement, htsElements) : null),
+    [selectedElement, htsElements]
   );
 
-  // Update tariffs when element or country changes
+  const baseInput = useMemo(
+    () =>
+      selectedElement && country && tariffElement
+        ? {
+            htsCode: selectedElement.htsno,
+            country: country.code,
+            asOf: ISO_DATE.test(entryDate) ? entryDate : todayIso(),
+            customsValue,
+            quantity,
+            baseRates: {
+              general: tariffElement.general,
+              special: tariffElement.special,
+              other: tariffElement.other,
+            },
+            claimedPreference: claimedPreference || undefined,
+            transportMode,
+          }
+        : null,
+    [selectedElement, country, tariffElement, entryDate, customsValue, quantity, claimedPreference, transportMode]
+  );
+
+  const result: CalculationResult | null = useMemo(
+    () => (baseInput ? calculate(AllRules, { ...baseInput, answers }) : null),
+    [baseInput, answers]
+  );
+
+  // What each unanswered yes/no question would change, so users know which ones matter
+  const impacts = useMemo(() => {
+    if (!baseInput || !result) return {};
+    const current = result.totalDuty + result.totalFees;
+    const out: Record<string, number> = {};
+    result.questions
+      .filter((q) => q.input.type === "boolean" && answers[q.input.id] !== true)
+      .forEach((q) => {
+        const alt = calculate(AllRules, { ...baseInput, answers: { ...answers, [q.input.id]: true } });
+        out[q.input.id] = alt.totalDuty + alt.totalFees - current;
+      });
+    return out;
+  }, [baseInput, result, answers]);
+
+  // ── Analytics ──
+  const lastViewedKey = useRef<string | null>(null);
   useEffect(() => {
-    if (selectedElement && selectedCountry && sections.length > 0) {
-      const tariffEl = findTariffElement(selectedElement);
-      setTariffElement(tariffEl);
-
-      const newCountryWithTariffs = addTariffsToCountry(
-        selectedCountry,
-        selectedElement,
-        tariffEl,
-        contentRequirements,
-        undefined,
-        units,
-        customsValue
-      );
-
-      setCountryWithTariffs(newCountryWithTariffs);
-    } else {
-      setCountryWithTariffs(null);
-      setTariffElement(null);
-    }
-  }, [
-    selectedElement,
-    selectedCountry,
-    sections,
-    contentRequirements,
-    units,
-    customsValue,
-    findTariffElement,
-  ]);
-
-  useEffect(() => {
-    if (
-      !selectedElement ||
-      !selectedCountry ||
-      !countryWithTariffs ||
-      !tariffElement
-    ) {
-      return;
-    }
-    const key = `${selectedElement.htsno}-${selectedCountry.code}`;
-    if (lastResultsViewedKeyRef.current === key) return;
-    lastResultsViewedKeyRef.current = key;
+    if (!result || !selectedElement || !country || !tariffElement) return;
+    const key = `${selectedElement.htsno}-${country.code}`;
+    if (lastViewedKey.current === key) return;
+    lastViewedKey.current = key;
     trackEvent(MixpanelEvent.DUTY_CALCULATOR_RESULTS_VIEWED, {
       hts_code: selectedElement.htsno,
-      country_code: selectedCountry.code,
+      country_code: country.code,
       tariff_basis_hts_code: tariffElement.htsno,
     });
-  }, [
-    selectedElement,
-    selectedCountry,
-    countryWithTariffs,
-    tariffElement,
-  ]);
+  }, [result, selectedElement, country, tariffElement]);
 
-  // // Scroll to results when they first become available
-  // useEffect(() => {
-  //   const hasResults = !!(
-  //     selectedElement &&
-  //     selectedCountry &&
-  //     countryWithTariffs &&
-  //     tariffElement
-  //   );
+  const trackLater = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  const trackDebounced = (key: string, event: MixpanelEvent, props: Record<string, unknown>) => {
+    clearTimeout(trackLater.current[key]);
+    trackLater.current[key] = setTimeout(() => trackEvent(event, props), 1000);
+  };
 
-  //   // Only scroll when transitioning from no results to having results
-  //   if (hasResults && !prevHadResults.current) {
-  //     // Small delay to ensure the DOM has updated
-  //     setTimeout(() => {
-  //       resultsRef.current?.scrollIntoView({
-  //         behavior: "smooth",
-  //         block: "start",
-  //       });
-  //     }, 100);
-  //   }
+  // ── Actions ──
+  const changeView = (next: View) => {
+    setView(next);
+    trackEvent(MixpanelEvent.DUTY_CALCULATOR_VIEW_CHANGED, { view: next });
+    try {
+      window.localStorage.setItem(VIEW_STORAGE_KEY, next);
+    } catch {
+      // Not critical
+    }
+  };
 
-  //   prevHadResults.current = hasResults;
-  // }, [selectedElement, selectedCountry, countryWithTariffs, tariffElement]);
+  const shareUrl = () => {
+    const params = new URLSearchParams();
+    if (selectedElement) params.set("code", selectedElement.htsno);
+    if (country) params.set("country", country.code);
+    params.set("value", String(customsValue));
+    if (result?.requiresQuantity) params.set("units", String(quantity));
+    params.set("date", entryDate);
+    params.set("mode", transportMode);
+    if (claimedPreference) params.set("pref", claimedPreference);
+    return `${window.location.origin}/duty-calculator?${params.toString()}`;
+  };
 
-  if (loadingPage) {
-    return (
-      <div className="w-full py-16 flex items-center justify-center">
-        <LoadingIndicator />
-      </div>
+  const summaryText = () => {
+    if (!result || !selectedElement || !country) return "";
+    const lines = [
+      `Duty estimate · HTS ${selectedElement.htsno} from ${country.name}`,
+      `Entry ${formatDate(result.asOf)} · ${TRANSPORT_MODES.find((m) => m.id === transportMode)?.label} · Customs value ${formatMoney(customsValue)}`,
+      "",
+      `Base duty (${result.base.reasons[0] ?? "Free"})`.padEnd(48) + formatMoney(result.base.amount),
+      ...result.lines
+        .filter((l) => l.status === "applies")
+        .map((l) => `${l.code} ${l.name} (${formatPct(l.ratePct ?? 0)})`.slice(0, 46).padEnd(48) + formatMoney(l.amount)),
+      "Total duty".padEnd(48) + formatMoney(result.totalDuty),
+      ...result.fees.map((f) => `${f.name} (${formatPct(f.ratePct)})`.padEnd(48) + formatMoney(f.amount)),
+      "Total duty and fees".padEnd(48) + formatMoney(result.totalDuty + result.totalFees),
+      "Landed cost".padEnd(48) + formatMoney(customsValue + result.totalDuty + result.totalFees),
+      "",
+      shareUrl(),
+    ];
+    return lines.join("\n");
+  };
+
+  const copy = async (kind: "link" | "summary") => {
+    const ok = await copyToClipboard(kind === "link" ? shareUrl() : summaryText());
+    if (!ok) return;
+    setCopied(kind);
+    setTimeout(() => setCopied(null), 2000);
+    trackEvent(
+      kind === "link" ? MixpanelEvent.DUTY_CALCULATOR_SHARE_RESULTS_COPIED : MixpanelEvent.DUTY_CALCULATOR_RESULTS_COPIED,
+      { hts_code: selectedElement?.htsno, country_code: country?.code, is_modal: false }
     );
-  }
+  };
+
+  const selectExample = (example: (typeof EXAMPLES)[number]) => {
+    const element = htsElements.find((el) => htsCodesEqual(el.htsno, example.code));
+    if (!element) return;
+    setCountry(countryByCode(example.country));
+    selectElement(element, "example");
+    trackEvent(MixpanelEvent.DUTY_CALCULATOR_EXAMPLE_SELECTED, { hts_code: example.code, country_code: example.country });
+  };
+
+  const closeExplore = () => {
+    setShowExplore(false);
+    trackEvent(MixpanelEvent.DUTY_CALCULATOR_EXPLORE_MODAL_CLOSED);
+  };
+
+  useEffect(() => {
+    if (!showExplore) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && closeExplore();
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showExplore]);
+
+  // ── Derived display state ──
+  const latestVerified = getLatestVerifiedRevision();
+  const verified = isVerifiedDate(entryDate);
+  const revisionForDate = getRevisionForDate(entryDate);
+  const openQuestions = result ? result.questions.filter((q) => !q.answered).length : 0;
+  // The first unit is the one duty is charged in; later ones are statistical reporting units
+  const units = [...(selectedElement?.units ?? []), ...(tariffElement?.units ?? [])].filter(
+    (u, i, all) => u && all.indexOf(u) === i
+  );
 
   return (
-    <>
-      {/* Main Content */}
-      <div className="w-full max-w-6xl mx-auto flex flex-col p-4 gap-3">
-        {/* Inputs */}
-        <div className="w-full flex flex-col md:flex-row gap-3">
-          {/* HTS Code Search */}
-          <div className="grow flex flex-col gap-2">
-            <div className="flex gap-2 justify-between items-end">
-              <SecondaryLabel value="HTS Code" />
-              <button
-                type="button"
-                onClick={() => openExploreModal("description_search_button")}
-                className="text-xs font-medium text-primary hover:text-primary/80 transition-colors"
+    <div className={`${styles.root} w-full pb-20`}>
+      <div className="mx-auto w-full max-w-[1200px] px-4 sm:px-6 flex flex-col gap-6">
+        {/* Entry details */}
+        <section className={`${styles.card} p-5 sm:p-7`} aria-labelledby="entry-heading">
+          <div className="flex flex-wrap items-baseline justify-between gap-3 mb-6">
+            <h2 id="entry-heading" className="text-[17px] font-semibold tracking-tight">
+              Entry details
+            </h2>
+            <span className="text-[13px] text-[var(--dc-text-3)]">Results update as you type</span>
+          </div>
+
+          {loading ? (
+            <FormSkeleton />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-x-5 gap-y-6">
+              <Field
+                label="HTS code"
+                htmlFor="dc-hts"
+                className="md:col-span-5"
+                action={
+                  <button
+                    type="button"
+                    className={`${styles.link} inline-flex items-center gap-1 text-[13px]`}
+                    onClick={() => {
+                      setShowExplore(true);
+                      trackEvent(MixpanelEvent.DUTY_CALCULATOR_EXPLORE_MODAL_OPENED, { source: "description_search_button" });
+                    }}
+                  >
+                    <MagnifyingGlassIcon className="w-3.5 h-3.5" />
+                    Search by description
+                  </button>
+                }
               >
-                Search by Description
-              </button>
-            </div>
-
-            <HtsCodeSelector
-              selectedElement={selectedElement}
-              onSelectionChange={handleElementSelection}
-              autoFocus={!searchParams.get("code")}
-            />
-          </div>
-          {/* Country Selection */}
-          <div className="grow flex flex-col gap-2">
-            <div className="flex flex-col">
-              <SecondaryLabel value="Country of Origin" />
-            </div>
-            <CountrySelection
-              singleSelect
-              selectedCountries={selectedCountry ? [selectedCountry] : []}
-              setSelectedCountries={(countries) => {
-                setSelectedCountry(countries[0] || null);
-              }}
-            />
-          </div>
-          {/* Customs Value Input */}
-          <div className="grow flex flex-col gap-2">
-            <div className="flex flex-col">
-              <SecondaryLabel value="Customs Value (USD)" />
-            </div>
-            <NumberInput
-              value={uiCustomsValue}
-              setValue={handleCustomsValueChange}
-              min={0}
-              prefix="$"
-            />
-          </div>
-        </div>
-
-        <div className="flex gap-3">
-          {/* Units and Customs Value Inputs */}
-          {countryWithTariffs &&
-            countryWithTariffs.baseTariffs
-              ?.flatMap((t) => t.tariffs)
-              ?.some((t) => t.type === "amount") && (
-              <div className="flex flex-col gap-2 max-w-64">
-                <div className="flex flex-col">
-                  <SecondaryLabel value="Units / Weight" />
-                </div>
-                <NumberInput
-                  value={uiUnits}
-                  setValue={handleUnitsChange}
-                  min={0}
-                  subtext={
-                    selectedElement &&
-                      tariffElement &&
-                      (selectedElement.units.length > 0 ||
-                        tariffElement.units.length > 0)
-                      ? `${[...selectedElement.units, ...tariffElement.units]
-                        .reduce((acc: string[], unit: string) => {
-                          if (!acc.includes(unit)) {
-                            acc.push(unit);
-                          }
-                          return acc;
-                        }, [])
-                        .join(",")}`
-                      : ""
-                  }
+                <HtsCodeField
+                  id="dc-hts"
+                  selectedElement={selectedElement}
+                  onSelect={(el) => selectElement(el, "hts_selector")}
+                  autoFocus={!codeParam}
                 />
-              </div>
-            )}
-          {/* Content Percentage Inputs */}
-          {/* {countryWithTariffs && uiContentPercentages.length > 0 && (
-            <div className="flex flex-col gap-4 col-span-1">
-              {uiContentPercentages.map((contentPercentage) => (
-                <div
-                  key={`${contentPercentage.name}-content-requirement`}
-                  className="flex flex-col gap-2"
+              </Field>
+
+              <Field label="Country of origin" htmlFor="dc-country" className="md:col-span-4">
+                <CountryField
+                  id="dc-country"
+                  selectedCountry={country}
+                  onSelect={(c) => {
+                    setCountry(c);
+                    trackEvent(MixpanelEvent.DUTY_CALCULATOR_COUNTRY_CHANGED, { country_code: c?.code ?? null });
+                  }}
+                />
+              </Field>
+
+              <Field label="Customs value" htmlFor="dc-value" className="md:col-span-3">
+                <NumberField
+                  id="dc-value"
+                  prefix="$"
+                  suffix="USD"
+                  value={customsValue}
+                  onChange={(v) => {
+                    setCustomsValue(v);
+                    trackDebounced("value", MixpanelEvent.DUTY_CALCULATOR_CUSTOMS_VALUE_SET, { customs_value_usd: v });
+                  }}
+                />
+              </Field>
+
+              <Field label="Entry date" htmlFor="dc-date" className="md:col-span-3">
+                <input
+                  id="dc-date"
+                  type="date"
+                  className={`${styles.input} ${styles.num}`}
+                  value={entryDate}
+                  onChange={(e) => {
+                    setEntryDate(e.target.value);
+                    trackDebounced("date", MixpanelEvent.DUTY_CALCULATOR_ENTRY_DATE_SET, { entry_date: e.target.value });
+                  }}
+                />
+              </Field>
+
+              <Field label="Mode of transport" className="md:col-span-5">
+                <Segmented
+                  label="Mode of transport"
+                  options={TRANSPORT_MODES}
+                  value={transportMode}
+                  onChange={(mode) => {
+                    setTransportMode(mode);
+                    trackEvent(MixpanelEvent.DUTY_CALCULATOR_TRANSPORT_MODE_SET, { mode });
+                  }}
+                />
+              </Field>
+
+              {result?.requiresQuantity && (
+                <Field
+                  label="Quantity"
+                  htmlFor="dc-quantity"
+                  className="md:col-span-4"
+                  hint={`The base rate (${result.base.reasons[0]}) is charged per unit`}
                 >
-                  <SecondaryLabel
-                    value={`${contentPercentage.name} Value Percentage`}
+                  <NumberField
+                    id="dc-quantity"
+                    suffix={units[0] ?? "units"}
+                    value={quantity}
+                    onChange={(v) => {
+                      setQuantity(v);
+                      trackDebounced("units", MixpanelEvent.DUTY_CALCULATOR_UNITS_SET, { units: v });
+                    }}
                   />
-                  <PercentageInput
-                    value={contentPercentage.value}
-                    onChange={(value) =>
-                      handleSliderChange(contentPercentage.name, value)
-                    }
-                    className="max-w-64"
-                  />
-                </div>
-              ))}
-            </div>
-          )} */}
-        </div>
+                </Field>
+              )}
 
-        {/* Duty & Tariffs Separator */}
-        {selectedElement && selectedCountry && (
-          <div className="flex items-center gap-4 my-2">
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-base-content/20 to-base-content/20"></div>
-            <span className="text-xs font-medium uppercase tracking-widest text-base-content/40">
-              Duty & Tariffs
-            </span>
-            <div className="flex-1 h-px bg-gradient-to-l from-transparent via-base-content/20 to-base-content/20"></div>
-          </div>
-        )}
-
-
-        {/* Engine Toggle */}
-        {engineToggleEnabled && selectedElement && selectedCountry && (
-          <div className="flex items-center justify-end gap-2">
-            <span className="text-xs font-medium text-base-content/60">Calculator</span>
-            <div role="tablist" className="tabs tabs-boxed tabs-sm">
-              <button
-                role="tab"
-                type="button"
-                className={`tab ${engine === "classic" ? "tab-active" : ""}`}
-                onClick={() => setEngine("classic")}
-              >
-                Classic
-              </button>
-              <button
-                role="tab"
-                type="button"
-                className={`tab ${engine === "v2" ? "tab-active" : ""}`}
-                onClick={() => setEngine("v2")}
-              >
-                New engine (beta)
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Tariff Results: new engine */}
-        {engineToggleEnabled &&
-          engine === "v2" &&
-          selectedElement &&
-          selectedCountry &&
-          tariffElement && (
-            <div className="mt-4 scroll-mt-4">
-              <TariffResultsV2
-                htsCode={selectedElement.htsno}
-                tariffElement={tariffElement}
-                country={selectedCountry}
-                customsValue={customsValue}
-                units={units}
-              />
+              {result && result.availablePreferences.length > 0 && (
+                <Field
+                  label="Trade preference"
+                  htmlFor="dc-preference"
+                  className="md:col-span-4"
+                  hint="Only if the goods qualify under the program's rules of origin"
+                >
+                  <select
+                    id="dc-preference"
+                    className={`${styles.input} appearance-none`}
+                    value={claimedPreference}
+                    onChange={(e) => {
+                      setClaimedPreference(e.target.value);
+                      trackEvent(MixpanelEvent.DUTY_CALCULATOR_PREFERENCE_CLAIMED, { symbol: e.target.value || "none" });
+                    }}
+                  >
+                    <option value="">None claimed</option>
+                    {result.availablePreferences.map((p) => (
+                      <option key={p.symbol} value={p.symbol}>
+                        {p.symbol} · {p.name}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+              )}
             </div>
           )}
+        </section>
 
-        {/* Tariff Results */}
-        {!(engineToggleEnabled && engine === "v2") &&
-          selectedElement &&
-          selectedCountry &&
-          countryWithTariffs &&
-          tariffElement && (
-            <div className="mt-4 scroll-mt-4">
-              <CountryTariff
-                units={units}
-                customsValue={customsValue}
-                country={countryWithTariffs}
-                htsElement={selectedElement}
-                tariffElement={tariffElement}
-                contentRequirements={contentRequirements}
-                countryIndex={0}
-                countries={[countryWithTariffs]}
-                setCountries={(updater) => {
-                  const updated =
-                    typeof updater === "function"
-                      ? updater([countryWithTariffs])
-                      : updater;
-                  setCountryWithTariffs(updated[0] || null);
-                }}
-                isModal={false}
-              />
-            </div>
-          )}
-
-        {/* Prompt to select country and HTS code */}
-        {(!selectedElement || !selectedCountry) && (
-          <div className="relative overflow-hidden flex flex-col items-center justify-center py-16 px-6 rounded-2xl border border-base-content/10 bg-gradient-to-br from-base-200/80 via-base-100 to-base-200/80">
-            {/* Animated background elements */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              {/* Floating gradient orbs */}
-              <div className="absolute -top-20 -left-20 w-64 h-64 bg-primary/10 rounded-full blur-3xl animate-pulse" />
-              <div className="absolute -bottom-20 -right-20 w-72 h-72 bg-secondary/10 rounded-full blur-3xl animate-pulse [animation-delay:1s]" />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-accent/5 rounded-full blur-3xl animate-pulse [animation-delay:2s]" />
-
-              {/* Grid pattern overlay */}
-              <div
-                className="absolute inset-0 opacity-[0.03]"
-                style={{
-                  backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
-                  backgroundSize: "40px 40px",
-                }}
-              />
-            </div>
-
-            {/* Content */}
-            <div className="relative z-0 flex flex-col items-center gap-6">
-              {/* Icon with animated ring */}
-              <div className="relative">
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary via-secondary to-accent opacity-20 blur-xl animate-pulse" />
-                <div className="relative p-5 rounded-full bg-base-100 shadow-lg border border-base-content/5">
-                  <div className="p-4 rounded-full bg-gradient-to-br from-primary/10 to-secondary/10">
-                    <MagnifyingGlassIcon className="w-10 h-10 text-primary" />
-                  </div>
-                </div>
-                {/* Animated ring */}
-                <div className="absolute inset-0 rounded-full border-2 border-primary/20 animate-ping [animation-duration:3s]" />
-              </div>
-
-              {/* Text content */}
-              <div className="text-center max-w-xl">
-                <h3 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-base-content via-base-content/90 to-base-content bg-clip-text">
-                  Find Tariffs For Your Import
-                </h3>
-                <p className="text-base-content/60 mt-3 text-base leading-relaxed">
-                  {!selectedCountry && !selectedElement
-                    ? "Select a country of origin and enter an HTS code to discover tariffs, duties, and ways to save."
-                    : !selectedCountry
-                      ? "Select a country of origin to discover tariffs, duties, and ways to save."
-                      : "Enter an HTS code to discover tariffs, duties, and ways to save."}
+        {/* Results */}
+        {!loading && (!result || !selectedElement || !country ? (
+          <EmptyState onExample={selectExample} />
+        ) : (
+          <section className="flex flex-col gap-4" aria-labelledby="results-heading" aria-live="polite">
+            <div className="flex flex-wrap items-end justify-between gap-4 pt-2">
+              <div className="min-w-0">
+                <h2 id="results-heading" className="text-[22px] font-semibold tracking-tight">
+                  Duty estimate
+                </h2>
+                <p className="mt-1 text-[14px] text-[var(--dc-text-2)]">
+                  <span className={`${mono.className} font-semibold text-[var(--dc-text)]`}>{selectedElement.htsno}</span>
+                  {" · "}
+                  {country.flag} {country.name}
+                  {" · "}
+                  {formatDate(result.asOf)}
+                  {" · "}
+                  {TRANSPORT_MODES.find((m) => m.id === transportMode)?.label}
                 </p>
               </div>
-
-              {/* Progress indicators */}
-              <div className="flex items-center gap-3 mt-2">
-                <div
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${selectedElement
-                    ? "bg-success/15 text-success border border-success/20"
-                    : "bg-base-content/5 text-base-content/40 border border-base-content/10"
-                    }`}
-                >
-                  <div
-                    className={`w-2 h-2 rounded-full ${selectedElement ? "bg-success" : "bg-base-content/30"}`}
-                  />
-                  HTS Code
+              <div className="flex w-full sm:w-auto items-center gap-2">
+                <div className="flex-1 min-w-0 sm:flex-none sm:w-[200px]">
+                  <Segmented label="View" options={VIEWS} value={view} onChange={changeView} compact />
                 </div>
-                <div className="w-8 h-px bg-base-content/20" />
-                <div
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${selectedCountry
-                    ? "bg-success/15 text-success border border-success/20"
-                    : "bg-base-content/5 text-base-content/40 border border-base-content/10"
-                    }`}
-                >
-                  <div
-                    className={`w-2 h-2 rounded-full ${selectedCountry ? "bg-success" : "bg-base-content/30"}`}
-                  />
-                  Country
-                </div>
+                <button type="button" className={styles.button} onClick={() => copy("summary")} aria-label="Copy summary">
+                  {copied === "summary" ? <CheckIcon className="w-4 h-4" /> : <ClipboardDocumentIcon className="w-4 h-4" />}
+                  <span className="hidden sm:inline">{copied === "summary" ? "Copied" : "Copy"}</span>
+                </button>
+                <button type="button" className={styles.buttonPrimary} onClick={() => copy("link")} aria-label="Copy share link">
+                  {copied === "link" ? <CheckIcon className="w-4 h-4" /> : <LinkIcon className="w-4 h-4" />}
+                  <span className="hidden sm:inline">{copied === "link" ? "Link copied" : "Share link"}</span>
+                  <span className="sm:hidden">{copied === "link" ? "Copied" : "Share"}</span>
+                </button>
               </div>
             </div>
-          </div>
-        )}
 
-        {/* Disclaimer Section */}
-        <div className="flex flex-col items-center justify-center mb-2">
-          <span className="text-xs text-base-content/60 text-center max-w-5xl">
-            We can make mistakes and do not guarantee complete nor correct
-            calculations. See an issue?{" "}
-            <a
-              href="mailto:support@htshero.com"
-              className="link link-hover underline font-medium transition-colors"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() =>
-                trackEvent(MixpanelEvent.DUTY_CALCULATOR_SUPPORT_CLICKED)
-              }
-            >
-              Notify us
-            </a>{" "}
-            and we will sort it out.
-          </span>
-        </div>
+            {!verified && (
+              <div
+                role="status"
+                className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] px-4 py-3.5"
+              >
+                <ExclamationTriangleIcon className="w-5 h-5 shrink-0 text-[var(--dc-warning)]" aria-hidden />
+                <p className="flex-1 text-[14px] leading-snug text-[var(--dc-warning)]">
+                  <span className="font-semibold">Tariff rules for {formatDate(entryDate)} aren&apos;t verified yet.</span>{" "}
+                  Our data is verified for HTS {latestVerified.title} ({formatDate(latestVerified.from)} –{" "}
+                  {latestVerified.to ? formatDate(latestVerified.to) : "present"}). Changes outside that window may be missing.
+                </p>
+                <button
+                  type="button"
+                  className={`${styles.button} shrink-0`}
+                  onClick={() => {
+                    setEntryDate(latestVerified.from);
+                    trackEvent(MixpanelEvent.DUTY_CALCULATOR_ENTRY_DATE_SET, { entry_date: latestVerified.from, source: "verified_notice" });
+                  }}
+                >
+                  Use {formatDate(latestVerified.from)}
+                  <ArrowRightIcon className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+
+            {view === "simple" ? (
+              <div className={styles.card}>
+                <SimpleSummary
+                  result={result}
+                  customsValue={customsValue}
+                  openQuestions={openQuestions}
+                  onShowDetails={() => changeView("detailed")}
+                />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+                <div className={`${styles.card} lg:col-span-8 overflow-hidden`}>
+                  <SummaryStats result={result} customsValue={customsValue} />
+                  <Statement
+                    result={result}
+                    customsValue={customsValue}
+                    quantity={quantity}
+                    unitLabel={units[0] ?? "units"}
+                  />
+                </div>
+                <aside className="lg:col-span-4 flex flex-col gap-4 lg:sticky lg:top-4">
+                  {result.questions.length > 0 && (
+                    <QuestionsPanel
+                      questions={result.questions}
+                      answers={answers}
+                      impacts={impacts}
+                      lines={result.lines}
+                      onAnswer={(id, value) => {
+                        setAnswers((prev) => {
+                          const next = { ...prev };
+                          if (value === undefined || value === "") delete next[id];
+                          else next[id] = value;
+                          return next;
+                        });
+                        trackEvent(MixpanelEvent.DUTY_CALCULATOR_QUESTION_ANSWERED, { input: id, answered: value !== undefined });
+                      }}
+                    />
+                  )}
+                  <BasisPanel
+                    result={result}
+                    revision={revisionForDate}
+                    verified={verified}
+                    htsRevisionName={htsRevisionName}
+                    transportMode={transportMode}
+                  />
+                  <NotAppliedPanel lines={result.lines} />
+                </aside>
+              </div>
+            )}
+          </section>
+        ))}
+
+        <p className="mt-4 text-center text-[12.5px] leading-relaxed text-[var(--dc-text-3)] max-w-2xl mx-auto">
+          Estimates are based on the HTS and Chapter 99 rules in effect on the entry date and your answers. They don&apos;t
+          include antidumping or countervailing duties. Spot something wrong?{" "}
+          <a
+            href="mailto:support@htshero.com"
+            className={styles.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => trackEvent(MixpanelEvent.DUTY_CALCULATOR_SUPPORT_CLICKED)}
+          >
+            Tell us
+          </a>{" "}
+          and we&apos;ll fix it.
+        </p>
       </div>
 
-      {/* Explore HTS Modal */}
-      {showExploreModal && (
-        <dialog className="modal modal-open">
-          <div className="modal-box w-11/12 max-w-7xl h-[90vh] p-0 flex flex-col">
-            <div className="flex items-center justify-between p-4 border-b border-base-content/10">
-              <h3 className="font-bold text-lg">Search HTS Codes</h3>
-              <button
-                type="button"
-                onClick={closeExploreModal}
-                className="btn btn-sm btn-circle btn-ghost"
-              >
-                ✕
+      {showExplore && (
+        <dialog className="modal modal-open" aria-label="Search HTS by description">
+          <div className="modal-box w-11/12 max-w-6xl h-[85vh] p-0 flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-3 border-b border-base-content/10">
+              <span className="font-semibold">Find your HTS code</span>
+              <button type="button" className="btn btn-sm btn-ghost" onClick={closeExplore}>
+                Close
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto p-4">
               <Explore explorerSurface="duty_calculator_modal" />
             </div>
           </div>
           <form method="dialog" className="modal-backdrop">
-            <button type="button" onClick={closeExploreModal}>
+            <button type="button" onClick={closeExplore}>
               close
             </button>
           </form>
         </dialog>
       )}
-    </>
+    </div>
   );
 };
 
-// {
-//   selectedElement && sections.length > 0 && (
-//     <div className="mt-6 mb-2">
-//       {(() => {
-//         const sectionAndChapter = getSectionAndChapterFromChapterNumber(
-//           sections,
-//           Number(selectedElement.chapter)
-//         );
-//         const parents = getHtsElementParents(selectedElement, htsElements);
+const FormSkeleton = () => (
+  <div className="grid grid-cols-1 md:grid-cols-12 gap-x-5 gap-y-6" aria-busy="true" aria-label="Loading HTS data">
+    {["md:col-span-5", "md:col-span-4", "md:col-span-3", "md:col-span-3", "md:col-span-5"].map((span, i) => (
+      <div key={i} className={`flex flex-col gap-2 ${span}`}>
+        <div className={`${styles.skeleton} h-3.5 w-24`} />
+        <div className={`${styles.skeleton} h-[46px] w-full`} />
+      </div>
+    ))}
+  </div>
+);
 
-//         if (!sectionAndChapter) return null;
-
-//         const ancestryItems: {
-//           label: string | null;
-//           value: string;
-//           type: "section" | "chapter" | "parent";
-//         }[] = [
-//           {
-//             label: `Section ${sectionAndChapter.section.number}`,
-//             value: sectionAndChapter.section.description,
-//             type: "section",
-//           },
-//           {
-//             label: `Chapter ${sectionAndChapter.chapter.number}`,
-//             value: sectionAndChapter.chapter.description,
-//             type: "chapter",
-//           },
-//           ...parents.map((parent) => ({
-//             label: parent.htsno || null,
-//             value: parent.description,
-//             type: "parent" as const,
-//           })),
-//         ];
-
-//         return (
-//           <div className="relative overflow-hidden rounded-2xl border border-base-content/10 bg-gradient-to-br from-base-200/60 via-base-100 to-base-200/40">
-//             {/* Subtle decorative elements */}
-//             <div className="absolute inset-0 pointer-events-none">
-//               <div className="absolute -top-16 -right-16 w-48 h-48 bg-primary/5 rounded-full blur-3xl" />
-//               <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-secondary/5 rounded-full blur-3xl" />
-//             </div>
-
-//             <div className="relative z-10 p-5">
-//               {/* Header with code badge */}
-//               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
-//                 <div className="flex items-center gap-3">
-//                   <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/20">
-//                     <span className="text-primary font-bold text-sm">#</span>
-//                   </div>
-//                   <div className="flex flex-col">
-//                     <span className="text-xs font-semibold uppercase tracking-widest text-primary/70">
-//                       Selected Code
-//                     </span>
-//                     <span className="text-lg font-bold text-base-content">
-//                       {selectedElement.htsno || "—"}
-//                     </span>
-//                   </div>
-//                 </div>
-//               </div>
-
-//               {/* Main description */}
-//               <div className="mb-5 p-4 rounded-xl bg-base-100/80 border border-base-content/5">
-//                 <p className="text-base-content font-medium leading-relaxed">
-//                   {selectedElement.description}
-//                 </p>
-//               </div>
-
-//               {/* Ancestry breadcrumb trail */}
-//               <div className="flex flex-col gap-2">
-//                 <span className="text-xs font-semibold uppercase tracking-widest text-base-content/40 mb-1">
-//                   Classification Path
-//                 </span>
-//                 <div className="flex flex-wrap items-center gap-1.5">
-//                   {ancestryItems.map((item, index) => (
-//                     <div key={index} className="flex items-center gap-1.5">
-//                       <div
-//                         className={`group relative flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-75 ${
-//                           item.type === "section"
-//                             ? "bg-gradient-to-r from-amber-500/15 to-amber-500/5 border border-amber-500/20 hover:border-amber-500/40"
-//                             : item.type === "chapter"
-//                               ? "bg-gradient-to-r from-emerald-500/15 to-emerald-500/5 border border-emerald-500/20 hover:border-emerald-500/40"
-//                               : "bg-base-content/5 border border-base-content/10 hover:border-base-content/20"
-//                         }`}
-//                       >
-//                         {item.label && (
-//                           <span
-//                             className={`text-xs font-bold shrink-0 ${
-//                               item.type === "section"
-//                                 ? "text-amber-600 dark:text-amber-400"
-//                                 : item.type === "chapter"
-//                                   ? "text-emerald-600 dark:text-emerald-400"
-//                                   : "text-primary"
-//                             }`}
-//                           >
-//                             {item.label}
-//                           </span>
-//                         )}
-//                         <span
-//                           className="text-xs text-base-content/70 line-clamp-1 max-w-[200px]"
-//                           title={item.value}
-//                         >
-//                           {item.value}
-//                         </span>
-//                       </div>
-//                       {index < ancestryItems.length - 1 && (
-//                         <ChevronRightIcon className="w-3.5 h-3.5 text-base-content/30 shrink-0" />
-//                       )}
-//                     </div>
-//                   ))}
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
-//         );
-//       })()}
-//     </div>
-//   );
-// }
+const EmptyState = ({ onExample }: { onExample: (example: (typeof EXAMPLES)[number]) => void }) => (
+  <section className={`${styles.card} p-6 sm:p-10`}>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+      <div>
+        <h2 className="text-[20px] font-semibold tracking-tight">Enter an HTS code to see your duty</h2>
+        <p className="mt-2 text-[15px] leading-relaxed text-[var(--dc-text-2)]">
+          You&apos;ll get a line-by-line statement: the base rate, every Chapter 99 tariff and exemption in effect on your
+          entry date, and customs fees, each with the reason it applies.
+        </p>
+        <ol className="mt-6 flex flex-col gap-3">
+          {[
+            "Enter the 8- or 10-digit HTS code, or search by description",
+            "Choose the country of origin, value and entry date",
+            "Answer any questions that could lower your duty",
+          ].map((step, i) => (
+            <li key={step} className="flex items-start gap-3 text-[14.5px] text-[var(--dc-text)]">
+              <span className={`${styles.num} flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--dc-accent-soft)] border border-[var(--dc-accent-border)] text-[12px] font-semibold text-[var(--dc-accent)]`}>
+                {i + 1}
+              </span>
+              {step}
+            </li>
+          ))}
+        </ol>
+      </div>
+      <div className="flex flex-col gap-2.5">
+        <div className={styles.eyebrow}>Try an example</div>
+        {EXAMPLES.map((example) => (
+          <button
+            key={example.code}
+            type="button"
+            onClick={() => onExample(example)}
+            className="group flex items-center justify-between gap-4 rounded-xl border border-[var(--dc-border)] bg-[var(--dc-surface-2)] px-4 py-3.5 text-left transition-colors hover:border-[var(--dc-accent-border)] hover:bg-[var(--dc-accent-soft)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)]"
+          >
+            <span className="flex flex-col">
+              <span className="text-[14.5px] font-semibold text-[var(--dc-text)]">
+                {example.label} from {example.origin}
+              </span>
+              <span className={`${mono.className} text-[13px] text-[var(--dc-text-2)]`}>{example.code}</span>
+            </span>
+            <ArrowRightIcon className="w-4 h-4 text-[var(--dc-text-3)] group-hover:text-[var(--dc-accent)]" />
+          </button>
+        ))}
+      </div>
+    </div>
+  </section>
+);

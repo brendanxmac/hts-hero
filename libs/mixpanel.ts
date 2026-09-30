@@ -60,6 +60,13 @@ export enum MixpanelEvent {
   DUTY_CALCULATOR_CONTENT_PERCENTAGE_SET = "Duty Calculator Content Percentage Set",
   DUTY_CALCULATOR_RESULTS_VIEWED = "Duty Calculator Results Viewed",
   DUTY_CALCULATOR_SUPPORT_CLICKED = "Duty Calculator Support Clicked",
+  DUTY_CALCULATOR_ENTRY_DATE_SET = "Duty Calculator Entry Date Set",
+  DUTY_CALCULATOR_TRANSPORT_MODE_SET = "Duty Calculator Transport Mode Set",
+  DUTY_CALCULATOR_VIEW_CHANGED = "Duty Calculator View Changed",
+  DUTY_CALCULATOR_QUESTION_ANSWERED = "Duty Calculator Question Answered",
+  DUTY_CALCULATOR_PREFERENCE_CLAIMED = "Duty Calculator Trade Preference Claimed",
+  DUTY_CALCULATOR_RESULTS_COPIED = "Duty Calculator Results Copied",
+  DUTY_CALCULATOR_EXAMPLE_SELECTED = "Duty Calculator Example Selected",
   /** User copied the shareable duty-calculator URL from CountryTariff */
   DUTY_CALCULATOR_SHARE_RESULTS_COPIED = "Duty Calculator Share Results Copied",
   /** HTS Explorer (/explore and embedded Explore) */

@@ -187,6 +187,25 @@ Other intended differences that the comparison doesn't exercise (they only show 
 - **`china31g` uses 8507.60.00**, the full 8-digit subheading as listed in the HTS (confirmed from the 2026 Basic Chapter 99 text). EV batteries (8507.60.00.10) move there from 31(b) on Jan 1, 2026, so there's no double charge now that `china31b` is versioned.
 - **9903.91.04 stays in legacy** by decision, so Chinese face masks pay .04 (25%) + .07 (50%) there (D4). v2 ended .04 on Jan 1, 2026.
 
+## Sep 30: Tariff Finder redesign (branch `feat/tariff-finder-redesign`)
+
+- **The page now runs engine-v2 for everyone.** The Classic/New toggle and `TariffResultsV2` are gone. The legacy engine still powers the classification dashboard and the multi-country table.
+- **New inputs:**
+  - entry date (defaults to today, with a warning and a one-click "use the latest verified date" fix when the date isn't verified)
+  - mode of transport (HMF on ocean only)
+- **Two views:**
+  - Detailed: figures, line-by-line statement, questions with the dollar impact of each answer, calculation basis, and headings checked but not applied
+  - Simple: one total and a plain-language breakdown by program
+
+  The view is remembered per device, and `?view=` overrides it.
+- **Share links** carry `code, country, value, units, date, mode, pref`.
+- **Engine additions:** `transportMode`, `FeeSchedule.modes`, `requiresQuantity`, and an MPF note for entries under $2,500 (informal-entry MPF isn't modeled).
+- **Visual design:** light and dark follow the OS setting; design tokens are in `components/duty-calculator/theme.module.css`.
+- **Speed:** about 0.07 ms per calculation; under 1 ms per keystroke including the per-question impact calculations.
+- **Follow-ups:**
+  - The page metadata and FAQ JSON-LD still mention AD/CVD duties, which aren't calculated.
+  - The explorer modal still uses the site theme.
+
 ## Sep 30: named lists for 9903.91.01–.04, and a list audit
 
 - **9903.91.01–.04 now use `china31b`–`china31e`** (added by you in `lists/china-301.ts`), and the migrated stand-ins `9903.91.01`–`.04` were removed from `lists.generated.json`. Checked against the old lists:
