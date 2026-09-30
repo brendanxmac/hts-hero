@@ -138,12 +138,16 @@ export const headings: Tariff[] = [
       codes: [{ list: "9903.76.21" }],
     },
     exceptions: ["9903.94.01", "9903.94.03", "9903.76.04", "9903.94.05"],
-    rate: { kind: "adValorem", pct: 15 },
+    rate: { kind: "topUpTo", pct: 15 },
     rateByColumn: {
       column2: { kind: "free" },
     },
     effective: {},
-    source: { revision: "2026HTSRev5" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Proclamation of Sep 29, 2025 (90 FR, Oct 6, 2025)",
+      note: "EU and Japan: combined Section 232 + MFN duty capped at 15%",
+    },
   },
   {
     code: "9903.76.22",
@@ -155,12 +159,16 @@ export const headings: Tariff[] = [
       codes: [{ list: "9903.76.22" }],
     },
     exceptions: ["9903.94.01", "9903.94.03", "9903.76.04", "9903.94.05"],
-    rate: { kind: "adValorem", pct: 15 },
+    rate: { kind: "topUpTo", pct: 15 },
     rateByColumn: {
       column2: { kind: "free" },
     },
     effective: {},
-    source: { revision: "2026HTSRev5" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "Proclamation of Sep 29, 2025 (90 FR, Oct 6, 2025)",
+      note: "EU and Japan: combined Section 232 + MFN duty capped at 15%",
+    },
   },
   {
     code: "9903.76.23",

@@ -23,6 +23,7 @@ const RATES: Record<string, HtsLine> = {
   "6109.10.00.12": { htsno: "6109.10.00", general: "16.5%", special: "Free (AU,BH,CL,CO,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "90%" },
   "0101.21.00.10": { htsno: "0101.21.00", general: "Free", special: "", other: "Free" },
   "8708.99.81.80": { htsno: "8708.99.81", general: "2.5%", special: "Free (A*,AU,B,BH,CL,CO,D,E,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "25%" },
+  "9401.61.40.11": { htsno: "9401.61.40", general: "Free", special: "", other: "40%" },
   "9401.69.60.31": { htsno: "9401.69.60", general: "Free", special: "", other: "40%" },
   "0402.10.10.00": { htsno: "0402.10.10.00", general: "3.3¢/kg", special: "Free (A+,BH,CL,CO,D,E,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "6.6¢/kg" },
 }
@@ -56,7 +57,11 @@ describe("engine-v2 vs legacy: agree", () => {
     ["8703.23.01.90", "CN", "Chinese car: 232 autos + 301 (31(d)) + 301 list"],
     ["6109.10.00.12", "VN", "Vietnam T-shirt: Section 122"],
     ["6109.10.00.12", "CN", "Chinese T-shirt: 122 + 301 list 4A"],
-    ["6109.10.00.12", "DE", "German T-shirt, base >= 15%: 122 + EU deal at 0"],
+    ["6109.10.00.12", "DE", "German T-shirt: Section 122 only (EU deal headings ended Feb 24, 2026)"],
+    ["0711.90.30.00", "DE", "German vegetables keep their 8% base duty, plus Section 122"],
+    ["8703.23.01.90", "DE", "German car: base duty + 232 autos (EU deal needs confirming)"],
+    ["8708.99.81.80", "JP", "Japanese auto part: base duty + 232 metals derivative"],
+    ["9401.61.40.11", "DE", "German upholstered furniture: 232 wood capped at 15% including base"],
     ["0101.21.00.10", "MX", "Mexican horse without a USMCA claim: 122"],
     ["8708.99.81.80", "VN", "Vietnamese auto part, unconfirmed: 232 metals derivative"],
     ["0402.10.10.00", "CN", "Specific base rate (3.3¢/kg)"],
@@ -76,24 +81,6 @@ describe("engine-v2 vs legacy: agree", () => {
 // Known differences (each is a legacy bug or a correction, see PROGRESS.md)
 // ============================================================
 describe("engine-v2 vs legacy: known differences", () => {
-  it("EU good exempt from the deal keeps its base duty (legacy dropped it)", () => {
-    const { legacy, v2 } = both("0711.90.30.00", "DE")
-    expect(legacy.totalDuty).toBe(0)
-    expect(v2.totalDuty).toBe(800) // 8% base; 9903.02.74 exempts it from the deal and 122
-  })
-
-  it("EU car keeps its base duty under 232 autos (legacy dropped it)", () => {
-    const { legacy, v2 } = both("8703.23.01.90", "DE")
-    expect(legacy.totalDuty).toBe(2500)
-    expect(v2.totalDuty).toBe(2750) // 2.5% base + 25% 232 autos (EU deal needs confirming)
-  })
-
-  it("Japanese auto part under 232 metals keeps its base duty (legacy dropped it)", () => {
-    const { legacy, v2 } = both("8708.99.81.80", "JP")
-    expect(legacy.totalDuty).toBe(2500)
-    expect(v2.totalDuty).toBe(2750) // 2.5% base + 25% 9903.82.09
-  })
-
   it("Russian steel is exempt from Section 122 via 9903.03.06 (legacy charged 122 too)", () => {
     const { legacy, v2 } = both("7206.90.00.00", "RU")
     expect(legacy.activeCodes).toContain("9903.03.01")
@@ -118,11 +105,30 @@ describe("engine-v2 real data", () => {
     expect(errors).toHaveLength(0)
   })
 
-  it("tops a Japanese good with a low base rate up to 15%", () => {
+  it("a Japanese good pays Section 122 at Rev 5 (the IEEPA deal headings ended Feb 24, 2026)", () => {
     const { v2 } = both("0101.21.00.10", "JP")
+    expect(applying(v2).includes("9903.02.73")).toBe(false)
+    expect(v2.totalDuty).toBe(1000) // Free base + 10% Section 122
+  })
+
+  it("the same Japanese good was topped up to 15% under the deal before Feb 24, 2026", () => {
+    const rates = RATES["0101.21.00.10"]
+    const v2 = calculate(AllRules, {
+      htsCode: "0101.21.00.10", country: "JP", asOf: "2026-01-15", customsValue: VALUE, quantity: UNITS,
+      baseRates: { general: rates.general, special: rates.special, other: rates.other },
+    })
     expect(applying(v2)).toContain("9903.02.73")
-    // 0% base + 15% deal + 10% Section 122 (both applied at Rev 5; see PROGRESS.md question 1)
-    expect(v2.totalDuty).toBe(2500)
+    expect(v2.totalDuty).toBe(1500)
+  })
+
+  it("EU wood tops up to 15% including the base rate, and adds nothing at or above 15%", () => {
+    const run = (general: string) =>
+      calculate(AllRules, {
+        htsCode: "9401.61.40.11", country: "DE", asOf: AS_OF, customsValue: VALUE, quantity: UNITS,
+        baseRates: { general, special: null, other: null },
+      })
+    expect(run("4%").totalDuty).toBe(1500)
+    expect(run("20%").totalDuty).toBe(2000)
   })
 
   it("exempts a USMCA claim from Section 122", () => {

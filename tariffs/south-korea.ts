@@ -1,52 +1,7 @@
 import { TariffI } from "../interfaces/tariffs"
-import {
-  automobileParts33G,
-  automobiles33B,
-  civilAircraftAndPartsOf,
-} from "./lists"
-import { recriprocalTariffExemptions } from "./reciprocal"
+import { automobileParts33G, automobiles33B } from "./lists"
 
 export const southKoreaTariffs: TariffI[] = [
-  {
-    code: "9903.02.79",
-    description:
-      "Except for products described in headings 9903.01.30–9903.01.33, 9903.02.78, and 9903.02.81, and except as provided for in headings 9903.01.34, 9903.02.01, articles the product of South Korea, with an ad valorem (or ad valorem equivalent) rate of duty under column 1-General or column 1-Special equal to or greater than 15 percent, as provided for in subdivision (v)(xxiii)(a) of U.S. note 2 to this subchapter.",
-    name: "South Korea Trade Deal Tariff (When General Duty >=15%)",
-    general: 0,
-    special: 0,
-    other: 0,
-    inclusions: {
-      countries: ["KR"],
-    },
-    exceptions: [...recriprocalTariffExemptions],
-  },
-  {
-    code: "9903.02.80",
-    description:
-      "Except for products described in headings 9903.01.30–9903.01.33, 9903.02.78, and 9903.02.81, and except as provided for in headings 9903.01.34, 9903.02.01, articles the product of South Korea, with an ad valorem (or ad valorem equivalent) rate of duty under column 1-General or column 1-Special less than 15 percent, as provided for in subdivision (v)(xxiii)(a) of U.S. note 2 to this subchapter.",
-    name: "South Korea Trade Deal Tariff (Replaces General Duty When General Duty <15%)",
-    general: 15,
-    special: 15,
-    other: 0,
-    inclusions: {
-      countries: ["KR"],
-    },
-    exceptions: [...recriprocalTariffExemptions],
-  },
-  {
-    code: "9903.02.81",
-    description:
-      "Articles of civil aircraft (all aircraft other than military aircraft); their engines, parts, and components; their other parts, components, and subassemblies; and ground flight simulators and their parts and components of South Korea, excluding unmanned aircraft, provided for in subdivision (v)(xxiii)(b) of U.S. note 2 to this subchapter",
-    name: "Articles of Civil Aircraft of South Korea",
-    general: 0,
-    special: 0,
-    other: 0,
-    requiresReview: true, // in order to determine if it is an article of civil aircraft, as opposed to anything else
-    inclusions: {
-      countries: ["KR"],
-      codes: civilAircraftAndPartsOf,
-    },
-  },
   {
     code: "9903.94.60",
     description:
@@ -70,6 +25,7 @@ export const southKoreaTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 0,
+    suppressesBaseDuty: true,
     requiresReview: true,
     exceptions: ["9903.94.02", "9903.94.04"],
     inclusions: {
@@ -100,6 +56,7 @@ export const southKoreaTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 0,
+    suppressesBaseDuty: true,
     requiresReview: true,
     exceptions: ["9903.94.06"],
     inclusions: {

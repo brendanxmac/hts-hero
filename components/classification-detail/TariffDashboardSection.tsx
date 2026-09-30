@@ -12,7 +12,6 @@ import {
   calculateAllTariffs,
   TariffCalculationResult,
 } from "../../tariffs/tariff-calculations";
-import { getTotalBaseRate } from "../../tariffs/tariffs";
 import { EstimatedCostsDisplay } from "../tariff-ui/EstimatedCostsDisplay";
 import { DashboardCard, DashboardCardHeader } from "./DashboardCard";
 import { CurrencyDollarIcon } from "@heroicons/react/24/outline";
@@ -49,14 +48,7 @@ export function useTariffCalculation(
       DEFAULT_CUSTOMS_VALUE
     );
 
-    const { tariffColumn, is15Cap } = getTariffContext(countryOfOrigin.code);
-    const baseFlat = cwt.baseTariffs.flatMap((t) => t.tariffs);
-    const adValoremEquiv = getTotalBaseRate(
-      baseFlat,
-      DEFAULT_CUSTOMS_VALUE,
-      DEFAULT_UNITS
-    );
-    const below15Rule = is15Cap && adValoremEquiv < 15;
+    const { tariffColumn } = getTariffContext(countryOfOrigin.code);
 
     return calculateAllTariffs(
       cwt.tariffSets,
@@ -64,8 +56,7 @@ export function useTariffCalculation(
       DEFAULT_CUSTOMS_VALUE,
       DEFAULT_UNITS,
       [],
-      tariffColumn,
-      below15Rule
+      tariffColumn
     );
   }, [countryOfOrigin, classification, htsElements]);
 }

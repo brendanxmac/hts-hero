@@ -193,10 +193,10 @@ export const addTariffsToCountry = (
 export const getTotalPercentTariffsSum = (
   tariffSet: TariffSet,
   baseTariffs: ParsedBaseTariff[],
-  has15PercentCap: boolean = false,
 ) => {
-  if (has15PercentCap) {
-    // This works because there is an associated tariff that represents the 15% so we just don't add the base
+  // An active tariff that replaces the base duty (e.g. "15% in lieu of the general duty")
+  // already represents the combined rate, so the base isn't added
+  if (tariffSet.tariffs?.some((t) => t.isActive && t.suppressesBaseDuty)) {
     return getAssociatedTariffsSum(tariffSet)
   } else {
     return (
@@ -313,14 +313,14 @@ export const filterCountryTariffsFor15PercentExeption = (
     if (isEUCountry) {
       if (totalBaseRate >= 15) {
         return (
-          t.code !== "9903.02.20" &&
           t.code !== "9903.94.51" &&
           t.code !== "9903.94.53" &&
-          t.code !== "9903.94.45"
+          t.code !== "9903.94.45" &&
+          // Wood: combined 232 + MFN capped at 15%, so nothing is added at or above 15%
+          t.code !== "9903.76.22"
         )
       } else {
         return (
-          t.code !== "9903.02.19" &&
           t.code !== "9903.94.50" &&
           t.code !== "9903.94.52" &&
           t.code !== "9903.94.44"
@@ -331,14 +331,14 @@ export const filterCountryTariffsFor15PercentExeption = (
     if (isJapan) {
       if (totalBaseRate >= 15) {
         return (
-          t.code !== "9903.02.73" &&
           t.code !== "9903.94.41" &&
           t.code !== "9903.94.43" &&
-          t.code !== "9903.94.55"
+          t.code !== "9903.94.55" &&
+          // Wood: combined 232 + MFN capped at 15%, so nothing is added at or above 15%
+          t.code !== "9903.76.21"
         )
       } else {
         return (
-          t.code !== "9903.02.72" &&
           t.code !== "9903.94.40" &&
           t.code !== "9903.94.42" &&
           t.code !== "9903.94.54"
@@ -349,14 +349,12 @@ export const filterCountryTariffsFor15PercentExeption = (
     if (isSouthKorea) {
       if (totalBaseRate >= 15) {
         return (
-          t.code !== "9903.02.80" &&
           t.code !== "9903.94.61" &&
           t.code !== "9903.94.63" &&
           t.code !== "9903.94.65"
         )
       } else {
         return (
-          t.code !== "9903.02.79" &&
           t.code !== "9903.94.60" &&
           t.code !== "9903.94.62" &&
           t.code !== "9903.94.64"

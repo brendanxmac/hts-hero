@@ -1,12 +1,11 @@
 // Runs the legacy engine the same way the Tariff Finder page does, so its results can be
-// compared with engine-v2. Mirrors CountryTariff.tsx: column choice, the "below 15%" rule
-// for EU/JP/KR, and calculateAllTariffs().
+// compared with engine-v2. Mirrors CountryTariff.tsx: column choice and calculateAllTariffs().
 
 import { Countries } from "../../constants/countries"
 import { TariffColumn } from "../../enums/tariff"
 import { HtsElement, Navigatable } from "../../interfaces/hts"
 import { calculateAllTariffs, getTariffContext } from "../../tariffs/tariff-calculations"
-import { addTariffsToCountry, getTotalBaseRate } from "../../tariffs/tariffs"
+import { addTariffsToCountry } from "../../tariffs/tariffs"
 
 export interface HtsLine {
   htsno: string
@@ -62,13 +61,7 @@ export const legacyCalculate = (
     customsValue,
   )
 
-  const { tariffColumn, is15Cap } = getTariffContext(countryCode)
-  const adValoremEquivalent = getTotalBaseRate(
-    withTariffs.baseTariffs.flatMap((t) => t.tariffs),
-    customsValue,
-    units,
-  )
-  const below15Rule = is15Cap && adValoremEquivalent < 15
+  const { tariffColumn } = getTariffContext(countryCode)
 
   const result = calculateAllTariffs(
     withTariffs.tariffSets,
@@ -77,7 +70,6 @@ export const legacyCalculate = (
     units,
     [],
     tariffColumn as TariffColumn,
-    below15Rule,
   )
 
   return {

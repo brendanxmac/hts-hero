@@ -5,11 +5,7 @@ import {
   GlobeAltIcon,
   CheckCircleIcon,
 } from "@heroicons/react/16/solid";
-import {
-  Countries,
-  Country,
-  EuropeanUnionCountries,
-} from "../constants/countries";
+import { Countries, Country } from "../constants/countries";
 import { ContentRequirementI } from "./Element";
 import { HtsElement } from "../interfaces/hts";
 import { ContentRequirements } from "../enums/tariff";
@@ -20,11 +16,11 @@ import {
   CountryWithTariffs,
   addTariffsToCountries,
   getBaseAmountTariffsText,
-  getTotalBaseRate,
 } from "../tariffs/tariffs";
 import { classNames } from "../utilities/style";
 import React from "react";
 import { CountryTariff } from "./CountryTariff";
+import { hasActiveBaseDutySuppressor } from "../tariffs/tariff-calculations";
 import { CountrySelection } from "./CountrySelection";
 import { NumberInput } from "./NumberInput";
 import { PercentageInput } from "./PercentageInput";
@@ -159,39 +155,14 @@ export const Tariffs = ({
 
   const sortByRateAsc = () => {
     return [...countries].sort((a, b) => {
-      const aIs15CapCountry =
-        EuropeanUnionCountries.includes(a.code) ||
-        a.code === "JP" ||
-        a.code === "KR";
-      const bIs15CapCountry =
-        EuropeanUnionCountries.includes(b.code) ||
-        b.code === "JP" ||
-        b.code === "KR";
-      const adValoremEquivalentRateA = getTotalBaseRate(
-        a.baseTariffs.flatMap((t) => t.tariffs),
-        customsValue,
-        units
-      );
-      const adValoremEquivalentRateB = getTotalBaseRate(
-        b.baseTariffs.flatMap((t) => t.tariffs),
-        customsValue,
-        units
-      );
-      const a15PercentCapApplies =
-        aIs15CapCountry && adValoremEquivalentRateA < 15;
-      const b15PercentCapApplies =
-        bIs15CapCountry && adValoremEquivalentRateB < 15;
-
       return (
         getTotalPercentTariffsSum(
           a.tariffSets[0],
-          a.baseTariffs,
-          a15PercentCapApplies
+          a.baseTariffs
         ) -
         getTotalPercentTariffsSum(
           b.tariffSets[0],
-          b.baseTariffs,
-          b15PercentCapApplies
+          b.baseTariffs
         )
       );
     });
@@ -199,38 +170,14 @@ export const Tariffs = ({
 
   const sortByRateDesc = () => {
     return [...countries].sort((a, b) => {
-      const aIs15CapCountry =
-        EuropeanUnionCountries.includes(a.code) ||
-        a.code === "JP" ||
-        a.code === "KR";
-      const bIs15CapCountry =
-        EuropeanUnionCountries.includes(b.code) ||
-        b.code === "JP" ||
-        b.code === "KR";
-      const adValoremEquivalentRateA = getTotalBaseRate(
-        a.baseTariffs.flatMap((t) => t.tariffs),
-        customsValue,
-        units
-      );
-      const adValoremEquivalentRateB = getTotalBaseRate(
-        b.baseTariffs.flatMap((t) => t.tariffs),
-        customsValue,
-        units
-      );
-      const a15PercentCapApplies =
-        aIs15CapCountry && adValoremEquivalentRateA < 15;
-      const b15PercentCapApplies =
-        bIs15CapCountry && adValoremEquivalentRateB < 15;
       return (
         getTotalPercentTariffsSum(
           b.tariffSets[0],
-          b.baseTariffs,
-          b15PercentCapApplies
+          b.baseTariffs
         ) -
         getTotalPercentTariffsSum(
           a.tariffSets[0],
-          a.baseTariffs,
-          a15PercentCapApplies
+          a.baseTariffs
         )
       );
     });
@@ -484,31 +431,6 @@ export const Tariffs = ({
           {/* Country Cards */}
           <div className="flex flex-col gap-2">
             {sortedCountries.map((country, i) => {
-              const adValoremEquivalentRate = getTotalBaseRate(
-                country.baseTariffs
-                  .flatMap((t) => t.tariffs)
-                  .filter((t) => {
-                    if (
-                      country.selectedTradeProgram &&
-                      country.selectedTradeProgram.symbol !== "none"
-                    ) {
-                      return t.programs?.includes(
-                        country.selectedTradeProgram.symbol
-                      );
-                    }
-                    return true;
-                  }),
-                customsValue,
-                units
-              );
-              const is15PercentCapCountry =
-                EuropeanUnionCountries.includes(country.code) ||
-                country.code === "JP" ||
-                country.code === "KR";
-
-              const cappedBy15PercentRule =
-                is15PercentCapCountry && adValoremEquivalentRate < 15;
-
               const countryBaseTariffs = country.baseTariffs.filter((t) => {
                 if (
                   country.selectedTradeProgram &&
@@ -528,8 +450,7 @@ export const Tariffs = ({
                 (tariffSet) =>
                   getTotalPercentTariffsSum(
                     tariffSet,
-                    countryBaseTariffs,
-                    cappedBy15PercentRule
+                    countryBaseTariffs
                   )
               );
 
@@ -610,9 +531,10 @@ export const Tariffs = ({
                                     </span>
                                   )}
                                   <span className="font-bold text-base-content">
-                                    {cappedBy15PercentRule
-                                      ? null
-                                      : countryAmounts &&
+                                    {!hasActiveBaseDutySuppressor(
+                                      country.tariffSets[i]?.tariffs ?? []
+                                    ) &&
+                                      countryAmounts &&
                                       countryAmounts.length > 0 &&
                                       i === 0 && (
                                         <span className="text-base">

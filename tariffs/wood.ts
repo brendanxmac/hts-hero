@@ -189,6 +189,7 @@ export const woodTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 0,
+    suppressesBaseDuty: true,
     inclusions: {
       countries: ["JP"],
       codes: [
@@ -205,6 +206,7 @@ export const woodTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 0,
+    suppressesBaseDuty: true,
     inclusions: {
       countries: EuropeanUnionCountries,
       codes: [

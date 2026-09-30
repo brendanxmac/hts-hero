@@ -1,5 +1,4 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { EuropeanUnionCountries } from "../constants/countries";
 import { Tariff } from "./Tariff";
 import { ContentRequirementI } from "./Element";
 import { HtsElement } from "../interfaces/hts";
@@ -7,7 +6,6 @@ import { BaseTariff } from "./BaseTariff";
 import { ContentRequirements, TariffColumn } from "../enums/tariff";
 import { Column2CountryCodes } from "../tariffs/tariff-columns";
 import {
-  getTotalBaseRate,
   getAmountRatesString,
   getAdValoremRate,
   CountryWithTariffs,
@@ -93,10 +91,6 @@ export const CountryTariff = ({
   const { sections } = useHtsSections();
 
   const isOtherColumnCountry = Column2CountryCodes.includes(country.code);
-  const is15PercentCapCountry =
-    EuropeanUnionCountries.includes(country.code) ||
-    country.code === "JP" ||
-    country.code === "KR";
 
   const [tariffColumn, setTariffColumn] = useState<TariffColumn>(
     isOtherColumnCountry ? TariffColumn.OTHER : TariffColumn.GENERAL
@@ -108,13 +102,6 @@ export const CountryTariff = ({
   const [selectedSpecialProgram, setSelectedSpecialProgram] =
     useState<TradeProgramDisplayable>(selectedTradeProgram || DEFAULT_PROGRAM);
 
-  const adValoremEquivalentRate = getTotalBaseRate(
-    baseTariffs.flatMap((t) => t.tariffs),
-    customsValue,
-    units
-  );
-  const below15PercentRuleApplies =
-    is15PercentCapCountry && adValoremEquivalentRate < 15;
 
   // Helper to filter tariffs by selected program
   const filterByProgram = <T extends { programs?: string[] }>(tariffs: T[]) =>
@@ -267,7 +254,6 @@ export const CountryTariff = ({
       const isSection232Metal = tariffSet.name === SECTION_232_METAL_CONTENT_SET_NAME;
       const shouldIncludeBaseTariffs =
         (isArticleSet || isSection232Metal) &&
-        !(is15PercentCapCountry && adValoremEquivalentRate < 15) &&
         !hasActiveBaseDutySuppressor(tariffSet.tariffs);
       const hasAmountTariffs =
         shouldIncludeBaseTariffs &&
@@ -400,7 +386,6 @@ export const CountryTariff = ({
 
     const shouldIncludeBaseTariffs =
       (isArticleSet || isSection232Metal) &&
-      !(is15PercentCapCountry && adValoremEquivalentRate < 15) &&
       !hasActiveBaseDutySuppressor(tariffSet.tariffs);
     const hasAmountTariffs =
       shouldIncludeBaseTariffs && filteredBase.some((t) => t.type === "amount");
@@ -424,7 +409,6 @@ export const CountryTariff = ({
     tariffSets,
     baseTariffs,
     getTariffColumnBasedOnTradeProgram(),
-    below15PercentRuleApplies,
     filterByProgram
   );
 
@@ -435,7 +419,6 @@ export const CountryTariff = ({
     units,
     contentRequirements,
     getTariffColumnBasedOnTradeProgram(),
-    below15PercentRuleApplies,
     filterByProgram
   );
   const feeEstimates = calculateFeeEstimates(customsValue);
@@ -670,7 +653,7 @@ export const CountryTariff = ({
                             index={j}
                             htsElement={tariffElement}
                             tariff={t}
-                            active={!below15PercentRuleApplies && !hasActiveBaseDutySuppressor(tariffSet.tariffs)}
+                            active={!hasActiveBaseDutySuppressor(tariffSet.tariffs)}
                           />
                         ))}
                     </div>

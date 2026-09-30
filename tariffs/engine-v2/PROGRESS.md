@@ -10,7 +10,7 @@ Branch: `feat/tariff-engine-v2`. Data reflects **2026 HTS Revision 5** (Apr 8 �
 | Engine (types, snapshots, handlers, pipeline, validator) | Done |
 | Legacy data migrated (106 headings, 59 lists) | Done, hand-reviewed |
 | Tests: 29 mechanics + 20 real-data (both engines) | All passing |
-| Full comparison, every HTS line × 14 countries | Done: 98.4% identical totals, every difference explained |
+| Full comparison, every HTS line × 14 countries | Done: 99.5% identical totals, every difference explained |
 | Tariff Finder toggle + new results panel | Done, checked in the browser (desktop and phone width) |
 
 ## How to run
@@ -115,15 +115,15 @@ Hand edits:
 - The 5 failing tests in `testing/tariffs.test.ts` fail on `master` too (see Issue L1).
 
 ### 4. Legacy vs v2 comparison
-Full run: 23,193 HTS lines × 14 countries = **324,702 calculations**. **98.4% have identical total duty.** The 5,130 differences fall into 3 kinds, all explained below (D3 and D5 disappeared when the legacy data was fixed on Sep 30). See [COMPARISON.md](COMPARISON.md).
+Full run: 23,193 HTS lines × 14 countries = **324,702 calculations**. **99.5% have identical total duty.** The 1,744 differences fall into 2 kinds (D2, D4) below. D1, D3 and D5 were fixed in the legacy calculator on Sep 30. See [COMPARISON.md](COMPARISON.md).
 
 ## Differences from the legacy engine
 
-D1, D2 and D4 are cases where I believe v2 is right. Please confirm. D3 and D5 are resolved.
+D2 and D4 are cases where I believe v2 is right. Please confirm. D1, D3 and D5 are resolved.
 
 | # | Difference | Count | Cause |
 |---|---|---|---|
-| D1 | EU/JP/KR goods: v2 higher | 3,386 | Legacy's UI "below 15%" rule drops the base duty for **every** EU/JP/KR good with a base under 15%, even when no 15% deal heading applies (deal-exempt goods, 232 goods). Example: 0711.90.30 from Germany owes $0 in legacy and $800 (8% base) in v2. |
+| D1 | ~~EU/JP/KR goods: v2 higher~~ **Resolved Sep 30:** legacy now replaces the base duty per heading (`suppressesBaseDuty`) | 3,386 | Legacy's UI "below 15%" rule drops the base duty for **every** EU/JP/KR good with a base under 15%, even when no 15% deal heading applies (deal-exempt goods, 232 goods). Example: 0711.90.30 from Germany owes $0 in legacy and $800 (8% base) in v2. |
 | D2 | Russia 232 steel: v2 lower | 1,743 | Legacy's `tariffIsActive` "visited" set treats 9903.82.14 as inactive the second time it's reached, so 9903.03.06 (the Section 122 exemption for 232 goods) doesn't activate and Section 122 is charged on top of 232. |
 | D3 | ~~3913.10.00.00 CN: v2 lower~~ **Resolved:** legacy data fixed | 1 | Legacy data lists `3913.10.0000` (missing a dot) in 9903.88.69's exclusions. Substring matching never finds it; v2 matches on digits. |
 | D4 | 6307.90.98.70 CN: v2 lower | 1 | 9903.91.04's text says it applies before January 1, 2026. Legacy still applies it at Rev 5. |
@@ -138,7 +138,7 @@ Other intended differences that the comparison doesn't exercise (they only show 
 ### Legacy code
 - **L1. Five stale legacy tests.** `testing/tariffs.test.ts` expects a heading with a `"Section 232 Metal"` content requirement. None exists since the April 2026 data update moved 232 metals to full value. They fail on `master`. I haven't changed them.
 - **L2. Visited-set bug in `tariffIsActive`.** Causes D2. A heading reached twice in one traversal counts as inactive.
-- **L3. The "below 15%" rule is applied per country, not per heading.** Causes D1 (`CountryTariff.tsx`, `calculateDutyEstimates`).
+- **L3. Fixed Sep 30.** The "below 15%" rule is applied per country, not per heading. Causes D1 (`CountryTariff.tsx`, `calculateDutyEstimates`).
 - **L4. Substring code matching.** `htsCode.includes(code)` misses codes with a missing dot (D3, D5).
 - **L5. `findExceptions`** (unused) passes `htsCode` and `countryCode` in the wrong order in its recursive call.
 
@@ -151,33 +151,39 @@ Other intended differences that the comparison doesn't exercise (they only show 
 
 ### Engine v2
 - **E1. HMF is always charged.** It should only apply to ocean shipments. This matches legacy for now; it needs a transport-mode input.
-- **E2. Fixed Sep 30.** MPF FY2027 values ($34.58 min, $670.86 max, 0.3464% unchanged) added as a dated record from 2026-10-01 ([FR Doc. 2026-15530](https://www.federalregister.gov/documents/2026/07/31/2026-15530/customs-user-fees-to-be-adjusted-for-inflation-in-fiscal-year-2027)). The legacy constants in `tariffs/tariff-calculations.ts` still have the FY2026 values.
+- **E2. Fixed Sep 30.** MPF FY2027 values ($34.58 min, $670.86 max, 0.3464% unchanged) added as a dated record from 2026-10-01 ([FR Doc. 2026-15530](https://www.federalregister.gov/documents/2026/07/31/2026-15530/customs-user-fees-to-be-adjusted-for-inflation-in-fiscal-year-2027)). The legacy calculator now picks the limits by date too (`getMpfLimits()` in `tariffs/tariff-calculations.ts`).
 - **E3. Base rates come from the latest HTS revision.** The panel's revision dropdown dates the Chapter 99 rules only. Loading each revision's own base rates needs the revision's HTS file in Supabase storage.
 - **E4. The legacy engine still runs** on the page when the new engine is shown. It's used for the Units field's visibility. It's cheap, but can be removed when the old engine is retired.
 
 ## Questions for you
 
-1. **Deal headings alongside Section 122.** *Researched Sep 30, awaiting your decision; no changes made.* The evidence says the reciprocal deal headings ended on Feb 24, 2026:
-   - CBP's CSMS #67834313 made all IEEPA HTS numbers inactive in ACE from Feb 24, 2026. It explicitly left Section 232 and 301 alone.
-   - 9903.02.19/.20, .72/.73, .79/.80 (and the reciprocal exemptions .74–.78, .81) are provided for in U.S. note 2(v), the IEEPA reciprocal note.
-   - Secondary sources say the EU/JP/KR caps were lost and no guidance reimplemented them under Section 122.
-   - CBP's Section 122 guidance (CSMS #67844987) has no country caps: 10% on top of MFN for everyone.
-
-   If you agree, those headings get `to: "2026-02-24"`. EU/JP/KR goods at Rev 5 would then pay MFN + 10% (122), not the 15% top-up plus 10%. The 232 auto and wood deal headings (9903.94.xx, 9903.76.xx) are Section 232 and stay.
-2. **Wood deal rates (9903.76.20–.23).** *Researched Sep 30, awaiting your decision; no changes made.*
-   - **EU and Japan: 15% including MFN.** The proclamation (90 FR, Oct 6, 2025, as quoted by ST&R) says "for products of the European Union and Japan the combined Section 232 tariff and most-favored-nation duty rate will be a maximum of 15 percent." CBP's CSMS #66492057 only lists 9903.76.21/.22 as "15 percent additional", but the proclamation governs. So v2 should model them as `topUpTo: 15`, and the legacy flat 15% overcharges any product with a base rate above 0. Note that legacy's global below-15 rule happens to give the right total when the base is under 15%.
-   - **UK: flat 10%.** The proclamation caps only the 232 tariff ("will not exceed 10 percent"), so the base duty is added on top. Both engines already do this.
-   - **Korea (9903.76.23):** not in the original proclamation. It came from the later Korea deal, and I haven't found a primary source for whether it includes MFN.
+1. **Done Sep 30: deal headings end Feb 24, 2026.** CBP's CSMS #67834313 made all IEEPA HTS numbers inactive from Feb 24, 2026, and CSMS #67844987 applies Section 122 with no country caps.
+   - **v2:** 9903.02.19/.20, .72/.73, .79/.80 and the reciprocal exemptions .74–.78, .81 have `to: "2026-02-24"`. They still apply to earlier dates.
+   - **Legacy:** those headings were removed (legacy only represents the current revision).
+2. **Done Sep 30: EU/Japan wood is 15% including the base duty.** The proclamation caps the combined 232 + MFN duty at 15% for EU and Japan; the UK's 10% is a flat add-on.
+   - **v2:** 9903.76.21/.22 use `topUpTo: 15`.
+   - **Legacy:** they're marked `suppressesBaseDuty` and removed by the base-rate filter at or above 15%.
+   - **Still open:** Korea's 9903.76.23 isn't confirmed.
 3. **9903.88.69/.70 end date.** The heading text says "through November 29, 2025"; your legacy name says "Expires November 9, 2026". I used Nov 10, 2026 (i.e. through Nov 9). Correct?
 4. **9903.82.14/.15.** The names say "base ≥10%" / "<10%", but the descriptions say note 16 subdivisions (c)(iii)–(v) vs (c)(iv),(vii),(viii),(e). I kept legacy's base-rate split. Is that the real distinction?
 5. **Answered:** 9903.94.44 is 0% in every column. The legacy data was updated Sep 30, and v2 already had it.
 6. **9903.03.01 exceptions** `8471.50`/`8471.80`/`8473.30`: meant to exclude semiconductors from Section 122?
 7. **9903.92.10's exception.** The HTS text says 9903.91.09; I used 9903.92.09. OK?
-8. **Done:** FY2027 MPF values added (see E2). Should I also update the legacy constants, and if so, on Oct 1?
+8. **Done Sep 30:** FY2027 MPF values added to both calculators, switching on Oct 1 (see E2).
 9. **Broad "needs review" headings (L9).** Should these be narrowed to specific lists?
 10. **Stale legacy tests (L1).** Update them for the full-value 232 structure, or delete them?
 11. **9903.03.06 and "no metal" articles.** Legacy lists 9903.82.01 ("contains no aluminum, steel or copper") among the headings that trigger the Section 122 exemption. So confirming "no metal" removes 232 **and** keeps Section 122 off. Is a note 16(c) article with no metal still exempt from 122?
 12. **Rolling this out.** Answered: don't make it the default for now.
+
+## Sep 30 changes to the legacy calculator
+
+Made alongside the v2 changes so both calculators agree:
+- **Deal headings removed.** 9903.02.19/.20/.72/.73/.74–.81 are gone from `european-union.ts`, `japan.ts`, `south-korea.ts` and `argicultural.ts`, and from the 15% filter in `tariffs.ts`.
+- **The country-wide "below 15%" rule is gone** (it caused D1). It was removed from `CountryTariff.tsx`, `Tariffs.tsx`, `TariffDashboardSection.tsx` and the `calculateDutyEstimates`/`calculateSummaryTotals`/`calculateAllTariffs` signatures.
+- **Headings that replace the general duty now say so with `suppressesBaseDuty: true`:** 9903.94.41/.43/.45/.51/.53/.55/.61/.63/.65 and wood 9903.76.21/.22. `getTotalPercentTariffsSum` also uses that flag now, instead of a country check.
+- **The 15% filter removes 9903.76.21/.22** when the base rate is 15% or more.
+- **MPF limits are chosen by date** (`getMpfLimits()`).
+- **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
 
 ## Decisions I made (easy to change)
 

@@ -1333,7 +1333,6 @@ export const tariffsExemptFromMetalTariffs = [
   "9903.94.52",
   "9903.94.53",
   // Civil Aircraft
-  "9903.02.76",
 
   // ========== UK ==========
   // Automobiles
@@ -1357,7 +1356,6 @@ export const tariffsExemptFromMetalTariffs = [
   "9903.94.64",
   "9903.94.65",
   // South Korea Civil Aircraft
-  "9903.02.81",
 
   // ====== Semiconductors ======
   "9903.79.01",

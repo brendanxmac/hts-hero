@@ -700,7 +700,6 @@ describe("calculateDutyEstimates — Section 232 Metal full value", () => {
       1,
       contentReqs,
       TariffColumn.GENERAL,
-      false,
     )
 
     const metalEstimate = estimates.find(
@@ -736,7 +735,6 @@ describe("calculateDutyEstimates — Section 232 Metal full value", () => {
       1,
       contentReqs,
       TariffColumn.GENERAL,
-      false,
     )
 
     const aluminumEstimate = estimates.find(
@@ -772,7 +770,6 @@ describe("calculateDutyEstimates — Section 232 Metal full value", () => {
       1,
       contentReqs,
       TariffColumn.GENERAL,
-      false,
     )
 
     const articleEstimate = estimates.find(
@@ -818,7 +815,6 @@ describe("calculateDutyEstimates — Section 232 Metal full value", () => {
       1,
       contentReqs,
       TariffColumn.GENERAL,
-      false,
     )
 
     const articleEstimate = estimates.find(
@@ -889,7 +885,6 @@ describe("calculateDutyEstimates — suppressesBaseDuty", () => {
       1,
       contentReqs,
       TariffColumn.GENERAL,
-      false,
     )
 
     const est = estimates[0]
@@ -919,7 +914,6 @@ describe("calculateDutyEstimates — suppressesBaseDuty", () => {
       1,
       contentReqs,
       TariffColumn.GENERAL,
-      false,
     )
 
     const est = estimates[0]
@@ -949,7 +943,6 @@ describe("calculateDutyEstimates — suppressesBaseDuty", () => {
       1,
       contentReqs,
       TariffColumn.GENERAL,
-      false,
     )
 
     const est = estimates[0]

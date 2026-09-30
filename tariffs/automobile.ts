@@ -256,6 +256,7 @@ export const automobileTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 0,
+    suppressesBaseDuty: true,
     requiresReview: true,
     inclusions: {
       countries: EuropeanUnionCountries,
@@ -302,6 +303,7 @@ export const automobileTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 0,
+    suppressesBaseDuty: true,
     requiresReview: true,
     inclusions: {
       countries: ["JP"],
@@ -348,6 +350,7 @@ export const automobileTariffs: TariffI[] = [
     general: 15,
     special: 15,
     other: 0,
+    suppressesBaseDuty: true,
     requiresReview: true,
     inclusions: {
       countries: ["KR"],

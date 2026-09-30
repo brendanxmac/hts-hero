@@ -99,8 +99,12 @@ export const headings: Tariff[] = [
       "9903.96.02",
     ],
     rate: { kind: "free" },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    effective: { to: "2026-02-24" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "CSMS # 67834313",
+      note: "IEEPA duties ended Feb 24, 2026 after the Supreme Court ruling; all IEEPA headings inactive in ACE",
+    },
   },
   {
     code: "9903.02.73",
@@ -182,8 +186,12 @@ export const headings: Tariff[] = [
     rateByColumn: {
       column2: { kind: "free" },
     },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    effective: { to: "2026-02-24" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "CSMS # 67834313",
+      note: "IEEPA duties ended Feb 24, 2026 after the Supreme Court ruling; all IEEPA headings inactive in ACE",
+    },
   },
   {
     code: "9903.96.02",
@@ -212,8 +220,12 @@ export const headings: Tariff[] = [
       codes: [{ list: "9903.02.74" }],
     },
     rate: { kind: "free" },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    effective: { to: "2026-02-24" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "CSMS # 67834313",
+      note: "IEEPA duties ended Feb 24, 2026 after the Supreme Court ruling; all IEEPA headings inactive in ACE",
+    },
   },
   {
     code: "9903.02.75",
@@ -226,8 +238,12 @@ export const headings: Tariff[] = [
       codes: [{ list: "9903.02.75" }],
     },
     rate: { kind: "free" },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    effective: { to: "2026-02-24" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "CSMS # 67834313",
+      note: "IEEPA duties ended Feb 24, 2026 after the Supreme Court ruling; all IEEPA headings inactive in ACE",
+    },
   },
   {
     code: "9903.02.76",
@@ -241,8 +257,12 @@ export const headings: Tariff[] = [
     },
     requires: [confirm("9903.02.76")],
     rate: { kind: "free" },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    effective: { to: "2026-02-24" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "CSMS # 67834313",
+      note: "IEEPA duties ended Feb 24, 2026 after the Supreme Court ruling; all IEEPA headings inactive in ACE",
+    },
   },
   {
     code: "9903.02.77",
@@ -256,8 +276,12 @@ export const headings: Tariff[] = [
     },
     requires: [confirm("9903.02.77")],
     rate: { kind: "free" },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    effective: { to: "2026-02-24" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "CSMS # 67834313",
+      note: "IEEPA duties ended Feb 24, 2026 after the Supreme Court ruling; all IEEPA headings inactive in ACE",
+    },
   },
   {
     code: "9903.02.19",
@@ -339,8 +363,12 @@ export const headings: Tariff[] = [
       "9903.02.77",
     ],
     rate: { kind: "free" },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    effective: { to: "2026-02-24" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "CSMS # 67834313",
+      note: "IEEPA duties ended Feb 24, 2026 after the Supreme Court ruling; all IEEPA headings inactive in ACE",
+    },
   },
   {
     code: "9903.02.20",
@@ -425,8 +453,12 @@ export const headings: Tariff[] = [
     rateByColumn: {
       column2: { kind: "free" },
     },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    effective: { to: "2026-02-24" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "CSMS # 67834313",
+      note: "IEEPA duties ended Feb 24, 2026 after the Supreme Court ruling; all IEEPA headings inactive in ACE",
+    },
   },
   {
     code: "9903.02.78",
@@ -440,8 +472,12 @@ export const headings: Tariff[] = [
     },
     requires: [confirm("9903.02.78")],
     rate: { kind: "free" },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    effective: { to: "2026-02-24" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "CSMS # 67834313",
+      note: "IEEPA duties ended Feb 24, 2026 after the Supreme Court ruling; all IEEPA headings inactive in ACE",
+    },
   },
   {
     code: "9903.02.79",
@@ -519,8 +555,12 @@ export const headings: Tariff[] = [
       "9903.82.17",
     ],
     rate: { kind: "free" },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    effective: { to: "2026-02-24" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "CSMS # 67834313",
+      note: "IEEPA duties ended Feb 24, 2026 after the Supreme Court ruling; all IEEPA headings inactive in ACE",
+    },
   },
   {
     code: "9903.02.80",
@@ -601,8 +641,12 @@ export const headings: Tariff[] = [
     rateByColumn: {
       column2: { kind: "free" },
     },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    effective: { to: "2026-02-24" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "CSMS # 67834313",
+      note: "IEEPA duties ended Feb 24, 2026 after the Supreme Court ruling; all IEEPA headings inactive in ACE",
+    },
   },
   {
     code: "9903.02.81",
@@ -616,7 +660,11 @@ export const headings: Tariff[] = [
     },
     requires: [confirm("9903.02.81")],
     rate: { kind: "free" },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    effective: { to: "2026-02-24" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "CSMS # 67834313",
+      note: "IEEPA duties ended Feb 24, 2026 after the Supreme Court ruling; all IEEPA headings inactive in ACE",
+    },
   },
 ]

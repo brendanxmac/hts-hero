@@ -4,7 +4,6 @@ import { ParsedBaseTariff } from "../libs/hts"
 import { getHtsElementParents } from "../libs/hts"
 import { ContentRequirementI } from "../components/Element"
 import { ContentRequirements, TariffColumn } from "../enums/tariff"
-import { EuropeanUnionCountries } from "../constants/countries"
 import { Column2CountryCodes } from "./tariff-columns"
 import {
   getTotalBaseRate,
@@ -17,8 +16,20 @@ import {
 export const SECTION_232_METAL_CONTENT_SET_NAME = "Section 232 Metal Content"
 export const HARBOR_MAINTENANCE_FEE_RATE = 0.00125 // 0.125%
 export const MERCHANDISE_PROCESSING_FEE_RATE = 0.003464 // 0.3464%
-export const MPF_MIN = 33.58
-export const MPF_MAX = 651.5
+
+// MPF minimum and maximum change every October 1, the start of CBP's fiscal year
+const MPF_LIMITS_BY_FISCAL_YEAR = [
+  { from: "2025-10-01", min: 33.58, max: 651.5 }, // FY2026
+  { from: "2026-10-01", min: 34.58, max: 670.86 }, // FY2027 (FR Doc. 2026-15530)
+]
+
+const localIsoDate = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
+
+// MPF limits in effect on `date` (YYYY-MM-DD), today (local time) by default
+export const getMpfLimits = (date: string = localIsoDate(new Date())) =>
+  [...MPF_LIMITS_BY_FISCAL_YEAR].reverse().find((l) => l.from <= date) ??
+  MPF_LIMITS_BY_FISCAL_YEAR[0]
 export const ADDITIONAL_FEES_TOTAL_RATE = 0.4714
 
 // ── Utility Functions ──
@@ -92,18 +103,14 @@ export function findTariffElement(
 
 /**
  * Derive tariff-column context from a country code so callers don't
- * have to duplicate the EU / JP / KR / Column2 checks.
+ * have to duplicate the Column 2 check.
  */
 export function getTariffContext(countryCode: string) {
   const isOtherColumn = Column2CountryCodes.includes(countryCode)
   const tariffColumn: TariffColumn = isOtherColumn
     ? TariffColumn.OTHER
     : TariffColumn.GENERAL
-  const is15Cap =
-    EuropeanUnionCountries.includes(countryCode) ||
-    countryCode === "JP" ||
-    countryCode === "KR"
-  return { tariffColumn, isOtherColumn, is15Cap }
+  return { tariffColumn, isOtherColumn }
 }
 
 // ── Calculation Functions ──
@@ -115,7 +122,6 @@ export function calculateDutyEstimates(
   units: number,
   contentRequirements: ContentRequirementI<ContentRequirements>[],
   tariffColumn: TariffColumn,
-  below15Rule: boolean,
   filterByProgram?: <T extends { programs?: string[] }>(tariffs: T[]) => T[],
 ): DutyEstimate[] {
   const identity = <T>(arr: T[]) => arr
@@ -156,7 +162,6 @@ export function calculateDutyEstimates(
       tariffSet.name === SECTION_232_METAL_CONTENT_SET_NAME
     const shouldIncludeBase =
       (isArticleSet || isSection232Metal) &&
-      !below15Rule &&
       !hasActiveBaseDutySuppressor(tariffSet.tariffs)
 
     const adValoremRate = shouldIncludeBase
@@ -193,12 +198,13 @@ export function calculateFeeEstimates(customsValue: number): FeeEstimate[] {
   const hmfAmount = customsValue * HARBOR_MAINTENANCE_FEE_RATE
   let mpfAmount = customsValue * MERCHANDISE_PROCESSING_FEE_RATE
   let mpfNote: string | undefined
-  if (mpfAmount < MPF_MIN) {
-    mpfNote = `Minimum applied ($${MPF_MIN.toFixed(2)})`
-    mpfAmount = MPF_MIN
-  } else if (mpfAmount > MPF_MAX) {
-    mpfNote = `Maximum applied ($${MPF_MAX.toFixed(2)})`
-    mpfAmount = MPF_MAX
+  const { min, max } = getMpfLimits()
+  if (mpfAmount < min) {
+    mpfNote = `Minimum applied ($${min.toFixed(2)})`
+    mpfAmount = min
+  } else if (mpfAmount > max) {
+    mpfNote = `Maximum applied ($${max.toFixed(2)})`
+    mpfAmount = max
   }
 
   return [
@@ -220,7 +226,6 @@ export function calculateSummaryTotals(
   tariffSets: TariffSet[],
   baseTariffs: ParsedBaseTariff[],
   tariffColumn: TariffColumn,
-  below15Rule: boolean,
   filterByProgram?: <T extends { programs?: string[] }>(tariffs: T[]) => T[],
 ): SummaryTotal[] {
   const identity = <T>(arr: T[]) => arr
@@ -235,7 +240,6 @@ export function calculateSummaryTotals(
       tariffSet.name === SECTION_232_METAL_CONTENT_SET_NAME
     const shouldIncludeBase =
       (isArticleSet || isSection232Metal) &&
-      !below15Rule &&
       !hasActiveBaseDutySuppressor(tariffSet.tariffs)
 
     const rate = shouldIncludeBase
@@ -264,7 +268,6 @@ export function calculateAllTariffs(
   units: number,
   contentRequirements: ContentRequirementI<ContentRequirements>[],
   tariffColumn: TariffColumn,
-  below15Rule: boolean,
   filterByProgram?: <T extends { programs?: string[] }>(tariffs: T[]) => T[],
 ): TariffCalculationResult {
   const dutyEstimates = calculateDutyEstimates(
@@ -274,7 +277,6 @@ export function calculateAllTariffs(
     units,
     contentRequirements,
     tariffColumn,
-    below15Rule,
     filterByProgram,
   )
   const feeEstimates = calculateFeeEstimates(customsValue)
@@ -282,7 +284,6 @@ export function calculateAllTariffs(
     tariffSets,
     baseTariffs,
     tariffColumn,
-    below15Rule,
     filterByProgram,
   )
 
