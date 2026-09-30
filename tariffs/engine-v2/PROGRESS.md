@@ -151,9 +151,9 @@ Other intended differences that the comparison doesn't exercise (they only show 
 
 ### Engine v2
 - **E1. HMF is always charged.** It should only apply to ocean shipments. This matches legacy for now; it needs a transport-mode input.
+- **E2. MPF FY2027 values** take effect **2026-10-01**. The current record has no end date, so it keeps applying the FY2026 values. See Q8.
 - **E3. Base rates come from the latest HTS revision.** The panel's revision dropdown dates the Chapter 99 rules only. Loading each revision's own base rates needs the revision's HTS file in Supabase storage.
 - **E4. The legacy engine still runs** on the page when the new engine is shown. It's used for the Units field's visibility. It's cheap, but can be removed when the old engine is retired.
-- **E2. MPF FY2027 values** take effect **2026-10-01**. The current record has no end date, so it keeps applying the FY2026 values. See Q8.
 
 ## Questions for you
 
