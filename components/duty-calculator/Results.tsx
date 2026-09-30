@@ -298,6 +298,30 @@ const MobileTotal = ({
   </li>
 );
 
+// Compound values ("24¢ each + 4.5% on the case + 3.5% on the battery") go one part per line,
+// so a long HTS rate can't stretch its column
+const Stacked = ({
+  text,
+  separator,
+  align = "left",
+}: {
+  text: string;
+  separator: string;
+  align?: "left" | "right";
+}) => {
+  const parts = text.split(separator);
+  return (
+    <span className={`flex flex-col max-w-[190px] ${align === "right" ? "items-end ml-auto text-right" : ""}`}>
+      {parts.map((part, i) => (
+        <span key={i} className={part.length > 22 ? "" : "whitespace-nowrap"}>
+          {i > 0 && separator.trim() === "+" ? "+ " : ""}
+          {part}
+        </span>
+      ))}
+    </span>
+  );
+};
+
 const StatementRow = ({
   code,
   name,
@@ -334,15 +358,11 @@ const StatementRow = ({
         )}
       </div>
     </td>
-    <td
-      className={`${styles.num} py-4 px-3 text-[14px] text-[var(--dc-text-2)] whitespace-nowrap`}
-    >
-      {basisText ?? formatMoney(basis)}
+    <td className={`${styles.num} py-4 px-3 text-[14px] text-[var(--dc-text-2)]`}>
+      <Stacked text={basisText ?? formatMoney(basis)} separator=" · " />
     </td>
-    <td
-      className={`${styles.num} py-4 px-3 text-[14px] text-[var(--dc-text-2)] text-right whitespace-nowrap`}
-    >
-      {rateText ?? (rate === undefined ? "—" : formatPct(rate))}
+    <td className={`${styles.num} py-4 px-3 text-[14px] text-[var(--dc-text-2)] text-right`}>
+      <Stacked text={rateText ?? (rate === undefined ? "—" : formatPct(rate))} separator=" + " align="right" />
     </td>
     <td
       className={`${styles.num} py-4 pl-3 pr-5 sm:pr-6 text-[14.5px] font-semibold text-right whitespace-nowrap`}

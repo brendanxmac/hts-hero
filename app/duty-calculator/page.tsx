@@ -68,8 +68,10 @@ export const metadata: Metadata = {
 
 export default function DutyCalculatorPage() {
   const latestVerified = getLatestVerifiedRevision();
+  // <main> grows with its content and fills the rest of the window (flex-1, no shrinking), so
+  // the layout's scroll container, which has a different background, never shows around the page
   return (
-    <main className={`${styles.root} w-full min-h-full flex flex-col`}>
+    <main className={`${styles.root} w-full flex-1 shrink-0 flex flex-col`}>
       {renderSchemaJsonLd({
         "@type": "WebApplication",
         name: "US Import Duty & Tariff Calculator",
