@@ -1,0 +1,369 @@
+// Engine-v2 mechanics, tested with small synthetic rule sets so each capability is
+// checked in isolation. Real-data tests are in dual.test.ts.
+import { describe, it, expect } from "../test-runner"
+import { calculate } from "../../tariffs/engine-v2/calculate"
+import { codeListVersions, tariffVersions } from "../../tariffs/engine-v2/versioning"
+import { validateRules } from "../../tariffs/engine-v2/validate"
+import {
+  CalculationInput,
+  CodeList,
+  Interaction,
+  RuleSet,
+  Tariff,
+} from "../../tariffs/engine-v2/types"
+
+// ── Helpers ──
+
+const tariff = (overrides: Partial<Tariff> & { code: string }): Tariff => ({
+  program: "p-a",
+  name: overrides.code,
+  description: "",
+  scope: { countries: "all", codes: "all" },
+  rate: { kind: "adValorem", pct: 10 },
+  effective: {},
+  ...overrides,
+})
+
+const rules = (overrides: Partial<RuleSet> = {}): RuleSet => ({
+  programs: [
+    { id: "p-a", name: "Program A", authority: "232" },
+    { id: "p-b", name: "Program B", authority: "301" },
+    { id: "p-c", name: "Program C", authority: "122" },
+  ],
+  tariffs: [],
+  lists: [],
+  interactions: [],
+  columnAssignments: [{ country: "RU", column: "column2", effective: {} }],
+  preferences: [{ symbol: "S", name: "USMCA", countries: ["CA", "MX"], effective: {} }],
+  fees: [],
+  inputs: [
+    { id: "confirmed", label: "Confirmed?", type: "boolean" },
+    { id: "loadingDate", label: "Loading date", type: "date" },
+    { id: "steelContentPct", label: "Steel %", type: "percent" },
+  ],
+  ...overrides,
+})
+
+const input = (overrides: Partial<CalculationInput> = {}): CalculationInput => ({
+  htsCode: "7326.90.86.88",
+  country: "CN",
+  asOf: "2026-04-10",
+  customsValue: 10_000,
+  quantity: 100,
+  baseRates: { general: "2%", special: "Free (S)", other: "45%" },
+  ...overrides,
+})
+
+const line = (result: ReturnType<typeof calculate>, code: string) =>
+  result.lines.find((l) => l.code === code)
+
+// ============================================================
+// Dates and versions
+// ============================================================
+describe("engine-v2: effective dates", () => {
+  const set = rules({
+    tariffs: tariffVersions(tariff({ code: "T1", effective: { from: "2026-02-24" } }), [
+      { from: "2026-06-01", set: { rate: { kind: "adValorem", pct: 15 } } },
+      { from: "2026-07-24", ends: true },
+    ]),
+  })
+  const on = (asOf: string) => calculate(set, input({ asOf, baseRates: { general: "Free", special: null, other: null } }))
+
+  it("doesn't apply before it starts", () => {
+    expect(line(on("2026-02-23"), "T1")).toBeUndefined()
+  })
+  it("applies the rate in effect on the date", () => {
+    expect(line(on("2026-02-24"), "T1").amount).toBe(1000)
+    expect(line(on("2026-06-01"), "T1").amount).toBe(1500)
+  })
+  it("stops applying on its end date", () => {
+    expect(line(on("2026-07-23"), "T1").amount).toBe(1500)
+    expect(line(on("2026-07-24"), "T1")).toBeUndefined()
+  })
+})
+
+describe("engine-v2: code lists change without changing the tariff", () => {
+  const list: CodeList = codeListVersions(
+    { id: "L1", kind: "hts", description: "", codes: ["7326"], effective: {} },
+    [{ from: "2026-05-01", add: ["8302"], remove: ["7326"] }],
+  )
+  const set = rules({
+    lists: [list],
+    tariffs: [tariff({ code: "T1", scope: { countries: "all", codes: [{ list: "L1" }] } })],
+  })
+
+  it("uses the list version in effect on the date", () => {
+    expect(line(calculate(set, input({ asOf: "2026-04-10" })), "T1")?.status).toBe("applies")
+    expect(line(calculate(set, input({ asOf: "2026-05-02" })), "T1")).toBeUndefined()
+    expect(
+      line(calculate(set, input({ asOf: "2026-05-02", htsCode: "8302.41.60.15" })), "T1")?.status,
+    ).toBe("applies")
+  })
+})
+
+// ============================================================
+// Scope
+// ============================================================
+describe("engine-v2: scope matching", () => {
+  const set = rules({
+    lists: [{ id: "L1", kind: "hts", description: "", versions: [{ codes: ["9401.69.6031"], effective: {} }] }],
+    tariffs: [
+      tariff({ code: "PREFIX", scope: { countries: ["CN"], codes: ["7326.90"] } }),
+      tariff({ code: "NODOTS", scope: { countries: "all", codes: [{ list: "L1" }] } }),
+      tariff({ code: "EXCEPT-CA", scope: { countries: "all", excludeCountries: ["CA"], codes: "all" } }),
+    ],
+  })
+
+  it("matches codes by digit prefix", () => {
+    expect(line(calculate(set, input()), "PREFIX")?.status).toBe("applies")
+    expect(line(calculate(set, input({ htsCode: "7326.11.00.00" })), "PREFIX")).toBeUndefined()
+  })
+  it("matches codes regardless of dot placement (legacy substring matching missed these)", () => {
+    expect(line(calculate(set, input({ htsCode: "9401.69.60.31" })), "NODOTS")?.status).toBe("applies")
+  })
+  it("respects country scope and exclusions", () => {
+    expect(line(calculate(set, input({ country: "VN" })), "PREFIX")).toBeUndefined()
+    expect(line(calculate(set, input({ country: "CA" })), "EXCEPT-CA")).toBeUndefined()
+    expect(line(calculate(set, input({ country: "VN" })), "EXCEPT-CA")?.status).toBe("applies")
+  })
+})
+
+// ============================================================
+// Conditions and inputs
+// ============================================================
+describe("engine-v2: conditions", () => {
+  const set = rules({
+    tariffs: [
+      tariff({ code: "MAIN", exceptions: ["EXEMPT"] }),
+      tariff({
+        code: "EXEMPT",
+        rate: { kind: "free" },
+        requires: [{ kind: "answer", input: "confirmed", equals: true }],
+      }),
+      tariff({
+        code: "IN-TRANSIT",
+        rate: { kind: "free" },
+        requires: [{ kind: "dateBefore", input: "loadingDate", date: "2026-02-24" }],
+      }),
+    ],
+  })
+
+  it("treats an unanswered exemption as not applying, and says which input is needed", () => {
+    const result = calculate(set, input())
+    expect(line(result, "EXEMPT").status).toBe("needsAnswer")
+    expect(line(result, "MAIN").status).toBe("applies")
+    expect(result.unansweredInputs.map((u) => u.input.id)).toContain("confirmed")
+  })
+  it("applies the exemption once answered, which excludes the main heading", () => {
+    const result = calculate(set, input({ answers: { confirmed: true } }))
+    expect(line(result, "EXEMPT").status).toBe("applies")
+    expect(line(result, "MAIN").status).toBe("excluded")
+    expect(line(result, "MAIN").reasons).toContain("Excluded by EXEMPT")
+  })
+  it("decides date conditions from a date answer", () => {
+    expect(line(calculate(set, input({ answers: { loadingDate: "2026-02-20" } })), "IN-TRANSIT").status).toBe("applies")
+    expect(line(calculate(set, input({ answers: { loadingDate: "2026-02-25" } })), "IN-TRANSIT").status).toBe("notApplicable")
+  })
+  it("uses `assume` when an input is unanswered", () => {
+    const assumed = rules({
+      tariffs: [tariff({ code: "T", requires: [{ kind: "answer", input: "confirmed", equals: true, assume: true }] })],
+    })
+    expect(line(calculate(assumed, input()), "T").status).toBe("applies")
+  })
+})
+
+// ============================================================
+// 15% all-in deals and base-rate thresholds
+// ============================================================
+describe("engine-v2: topUpTo pairs", () => {
+  const set = rules({
+    tariffs: [
+      tariff({ code: "AT-OR-ABOVE", rate: { kind: "free" }, requires: [{ kind: "baseRate", op: ">=", pct: 15 }] }),
+      tariff({ code: "BELOW", rate: { kind: "topUpTo", pct: 15 }, requires: [{ kind: "baseRate", op: "<", pct: 15 }] }),
+    ],
+  })
+  const total = (general: string, quantity = 100) =>
+    calculate(set, input({ baseRates: { general, special: null, other: null }, quantity })).totalDuty
+
+  it("tops a low base rate up to 15% in total", () => {
+    expect(total("4.5%")).toBe(1500)
+    expect(total("Free")).toBe(1500)
+  })
+  it("leaves a base rate of 15% or more alone", () => {
+    expect(total("20%")).toBe(2000)
+  })
+  it("uses the per-shipment equivalent for specific rates, so quantity can change the heading", () => {
+    // $0.50/kg on $10,000: 100 kg = 0.5%, 4,000 kg = 20%
+    expect(total("$0.50/kg", 100)).toBe(1500)
+    expect(total("$0.50/kg", 4000)).toBe(2000)
+  })
+})
+
+// ============================================================
+// Exceptions: whenApplies, partial, cycles
+// ============================================================
+describe("engine-v2: whenApplies and partial exceptions", () => {
+  const set = (partial: boolean) =>
+    rules({
+      tariffs: [
+        tariff({ code: "METAL", program: "p-a", basis: { kind: "metalContent", metal: "steel" }, rate: { kind: "adValorem", pct: 50 } }),
+        tariff({ code: "SURCHARGE", program: "p-c", exceptions: ["EXEMPT-232"] }),
+        tariff({
+          code: "EXEMPT-232",
+          program: "p-c",
+          rate: { kind: "free" },
+          scope: { countries: "all", codes: "all", whenApplies: { authorities: ["232"] } },
+          basis: partial ? { kind: "coveredBy", selector: { authorities: ["232"] } } : undefined,
+        }),
+      ],
+    })
+
+  it("turns an exemption on only when its trigger applies", () => {
+    const withoutAnswer = calculate(set(false), input())
+    expect(line(withoutAnswer, "METAL").status).toBe("needsAnswer")
+    expect(line(withoutAnswer, "EXEMPT-232").status).toBe("notApplicable")
+    expect(line(withoutAnswer, "SURCHARGE").status).toBe("applies")
+  })
+  it("fully excludes with a full-value exemption", () => {
+    const result = calculate(set(false), input({ answers: { steelContentPct: 60 } }))
+    expect(line(result, "METAL").amount).toBe(3000)
+    expect(line(result, "SURCHARGE").status).toBe("excluded")
+  })
+  it("excludes only the covered value with a partial exemption", () => {
+    const result = calculate(set(true), input({ answers: { steelContentPct: 60 } }))
+    expect(line(result, "EXEMPT-232").basisValue).toBe(6000)
+    expect(line(result, "SURCHARGE").basisValue).toBe(4000)
+    expect(line(result, "SURCHARGE").amount).toBe(400)
+  })
+})
+
+describe("engine-v2: exception cycles", () => {
+  const set = rules({
+    tariffs: [
+      tariff({ code: "A", exceptions: ["B"] }),
+      tariff({ code: "B", exceptions: ["A"], requires: [{ kind: "answer", input: "confirmed", equals: true }] }),
+    ],
+  })
+
+  it("settles when the other side is off", () => {
+    expect(line(calculate(set, input()), "A").status).toBe("applies")
+  })
+  it("prefers the confirmed heading when both could apply", () => {
+    const result = calculate(set, input({ answers: { confirmed: true } }))
+    expect(line(result, "B").status).toBe("applies")
+    expect(line(result, "A").status).toBe("excluded")
+  })
+  it("applies neither and warns when nothing breaks the cycle", () => {
+    const unbreakable = rules({
+      tariffs: [tariff({ code: "A", exceptions: ["B"] }), tariff({ code: "B", exceptions: ["A"] })],
+    })
+    const result = calculate(unbreakable, input())
+    expect(line(result, "A").status).toBe("excluded")
+    expect(line(result, "B").status).toBe("excluded")
+    expect(result.warnings.length).toBe(1)
+  })
+})
+
+// ============================================================
+// Interactions
+// ============================================================
+describe("engine-v2: interactions", () => {
+  const base = [
+    tariff({ code: "A1", program: "p-a", rate: { kind: "adValorem", pct: 25 } }),
+    tariff({ code: "B1", program: "p-b", rate: { kind: "adValorem", pct: 20 } }),
+    tariff({ code: "C1", program: "p-c", rate: { kind: "adValorem", pct: 10 } }),
+  ]
+  const run = (interaction: Interaction) =>
+    calculate(rules({ tariffs: base, interactions: [interaction] }), input({ baseRates: { general: "Free", special: null, other: null } }))
+
+  it("noStack keeps the first program that applies and drops later ones", () => {
+    const result = run({ id: "ns", kind: "noStack", description: "A over B", order: [{ programs: ["p-a"] }, { programs: ["p-b"] }], effective: {} })
+    expect(line(result, "A1").status).toBe("applies")
+    expect(line(result, "B1").status).toBe("excluded")
+    expect(line(result, "C1").status).toBe("applies")
+  })
+  it("excludePortion removes the winner's value from the losers", () => {
+    const result = calculate(
+      rules({
+        tariffs: [
+          tariff({ code: "M", program: "p-a", basis: { kind: "metalContent", metal: "steel" }, rate: { kind: "adValorem", pct: 50 } }),
+          tariff({ code: "C1", program: "p-c" }),
+        ],
+        interactions: [{ id: "ep", kind: "excludePortion", description: "C not on A's value", winner: { programs: ["p-a"] }, losers: { programs: ["p-c"] }, effective: {} }],
+      }),
+      input({ answers: { steelContentPct: 60 } }),
+    )
+    expect(line(result, "C1").basisValue).toBe(4000)
+  })
+  it("capTotal limits the combined duty of the covered programs", () => {
+    const result = run({ id: "cap", kind: "capTotal", description: "A+B max 30%", pct: 30, covers: { programs: ["p-a", "p-b"] }, includesBaseRate: false, effective: {} })
+    const covered = line(result, "A1").amount + line(result, "B1").amount
+    expect(Math.round(covered)).toBe(3000)
+    expect(line(result, "C1").amount).toBe(1000)
+  })
+})
+
+// ============================================================
+// Columns, preferences, fees
+// ============================================================
+describe("engine-v2: columns and preferences", () => {
+  const set = rules({
+    tariffs: [tariff({ code: "T", rateByColumn: { column2: { kind: "free" }, special: { kind: "adValorem", pct: 5 } } })],
+    fees: [{ id: "mpf", name: "MPF", ratePct: 0.3464, min: 33.58, max: 651.5, effective: {} }],
+  })
+
+  it("uses Column 2 for Column 2 countries", () => {
+    const result = calculate(set, input({ country: "RU" }))
+    expect(result.column).toBe("column2")
+    expect(result.base.amount).toBe(4500)
+    expect(line(result, "T").amount).toBe(0)
+  })
+  it("uses the special column when an available preference is claimed", () => {
+    const result = calculate(set, input({ country: "MX", claimedPreference: "S" }))
+    expect(result.column).toBe("special")
+    expect(result.base.amount).toBe(0)
+    expect(line(result, "T").amount).toBe(500)
+  })
+  it("ignores a preference that isn't available and warns", () => {
+    const result = calculate(set, input({ country: "CN", claimedPreference: "S" }))
+    expect(result.column).toBe("general")
+    expect(result.warnings.length).toBe(1)
+  })
+  it("applies fee minimums and maximums", () => {
+    expect(calculate(set, input({ customsValue: 1000 })).fees[0].amount).toBe(33.58)
+    expect(calculate(set, input({ customsValue: 1_000_000 })).fees[0].amount).toBe(651.5)
+  })
+})
+
+// ============================================================
+// Validation
+// ============================================================
+describe("engine-v2: validation", () => {
+  it("flags overlapping versions of a heading", () => {
+    const { errors } = validateRules(
+      rules({
+        tariffs: [
+          tariff({ code: "T", effective: { from: "2026-01-01", to: "2026-05-01" } }),
+          tariff({ code: "T", effective: { from: "2026-04-01" } }),
+        ],
+      }),
+    )
+    expect(errors.some((e) => e.includes("overlapping"))).toBe(true)
+  })
+  it("flags unknown lists, programs, handlers and inputs", () => {
+    const { errors } = validateRules(
+      rules({
+        tariffs: [
+          tariff({
+            code: "T",
+            program: "nope",
+            scope: { countries: "all", codes: [{ list: "missing" }] },
+            requires: [{ kind: "answer", input: "undefinedInput" }],
+            rate: { kind: "noSuchRate" },
+          }),
+        ],
+      }),
+    )
+    expect(errors.length).toBe(4)
+  })
+})

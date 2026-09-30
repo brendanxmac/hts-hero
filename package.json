@@ -11,7 +11,9 @@
     "start": "next start",
     "lint": "next lint",
     "tests": "APP_ENV=test npx tsx testing/run-tests.ts",
-    "knip": "knip"
+    "knip": "knip",
+    "sync-revisions": "npx tsx scripts/engine-v2/sync-hts-revisions.ts",
+    "compare-engines": "npx tsx scripts/engine-v2/compare-engines.ts"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",

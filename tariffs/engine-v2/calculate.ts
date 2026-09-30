@@ -135,6 +135,20 @@ export const calculate = (rules: RuleSet, input: CalculationInput): CalculationR
         break
       }
     }
+
+    // A basis that needs an unanswered input can't be calculated, so decide that
+    // before exceptions: an off heading mustn't trigger or displace others
+    const basis = evaluation.tariff.basis ?? { kind: "fullValue" }
+    const basisHandler = basisHandlers.get(basis.kind)
+    if (!basisHandler) throw new Error(`No basis handler "${basis.kind}"`)
+    if (evaluation.state === "pending" && basis.kind !== "coveredBy") {
+      if (basisHandler.value(basis, ctx) === "unknown") {
+        basisHandler.inputs(basis).forEach((id) => evaluation.unknownInputs.add(id))
+        evaluation.state = "off"
+        evaluation.offForMissingAnswer = true
+        evaluation.reasons.push(`Needs ${basisHandler.describe(basis)} to calculate`)
+      }
+    }
   }
 
   // ── 5. Exceptions and whenApplies ──
@@ -168,17 +182,8 @@ export const calculate = (rules: RuleSet, input: CalculationInput): CalculationR
       coveredBy.push(evaluation)
       continue
     }
-    const handler = basisHandlers.get(basis.kind)
-    if (!handler) throw new Error(`No basis handler "${basis.kind}"`)
-    const value = handler.value(basis, ctx)
-    if (value === "unknown") {
-      handler.inputs(basis).forEach((id) => evaluation.unknownInputs.add(id))
-      evaluation.state = "off"
-      evaluation.offForMissingAnswer = true
-      evaluation.reasons.push(`Needs ${handler.describe(basis)} to calculate`)
-      continue
-    }
-    evaluation.basisValue = value
+    // Unknown bases were switched off in step 4
+    evaluation.basisValue = basisHandlers.get(basis.kind).value(basis, ctx) as number
   }
 
   for (const evaluation of coveredBy) {
