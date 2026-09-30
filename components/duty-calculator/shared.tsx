@@ -21,23 +21,14 @@ import styles from "./theme.module.css";
 const VIEWS: { id: View; label: string }[] = [
   { id: "detailed", label: "Detailed" },
   { id: "simple", label: "Simple" },
+  { id: "compare", label: "Compare" },
 ];
-const VIEWS_WITH_COMPARE: { id: View; label: string }[] = [...VIEWS, { id: "compare", label: "Compare" }];
 
-export const ViewSwitch = ({ f, className = "" }: { f: TariffFinder; className?: string }) => {
-  const canCompare = f.compareCountries.length > 0;
-  return (
-    <div className={`min-w-0 ${canCompare ? "w-full sm:w-[280px]" : "w-full sm:w-[200px]"} ${className}`}>
-      <Segmented
-        label="View"
-        options={canCompare ? VIEWS_WITH_COMPARE : VIEWS}
-        value={f.view === "compare" && !canCompare ? "detailed" : f.view}
-        onChange={f.changeView}
-        compact
-      />
-    </div>
-  );
-};
+export const ViewSwitch = ({ f, className = "" }: { f: TariffFinder; className?: string }) => (
+  <div className={`min-w-0 w-full sm:w-[280px] ${className}`}>
+    <Segmented label="View" options={VIEWS} value={f.view} onChange={f.changeView} compact />
+  </div>
+);
 
 // ── Copy and share ──
 

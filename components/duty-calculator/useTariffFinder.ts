@@ -256,7 +256,7 @@ export const useTariffFinder = () => {
   const compareCountries = useMemo(() => countries.slice(1), [countries]);
 
   const compareEntries: CompareEntry[] = useMemo(() => {
-    if (!baseInput || !result || !country || compareCountries.length === 0) return [];
+    if (!baseInput || !result || !country) return [];
     const primary: CompareEntry = {
       country,
       result,
@@ -279,12 +279,11 @@ export const useTariffFinder = () => {
   }, [baseInput, result, country, compareCountries, preferences, claimedPreference, answers, impacts]);
 
   // Show the comparison when a country is first added (including from a shared link, so this
-  // starts at 0); leave it when none are left
+  // starts at 0). Removing them all stays in Compare, which then offers to add one.
   const previousCompareCount = useRef(0);
   useEffect(() => {
     const count = compareCountries.length;
     if (previousCompareCount.current === 0 && count > 0) setView("compare");
-    if (count === 0 && view === "compare") setView("detailed");
     previousCompareCount.current = count;
     // Only when the number of compared countries changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -367,11 +366,11 @@ export const useTariffFinder = () => {
     params.set("mode", transportMode);
     if (claimedPreference) params.set("pref", claimedPreference);
     if (compareCountries.length) params.set("compare", compareCountries.map((c) => c.code).join(","));
-    if (view === "compare" && compareCountries.length) params.set("view", "compare");
+    if (view === "compare") params.set("view", "compare");
     return `${window.location.origin}/duty-calculator?${params.toString()}`;
   };
 
-  const comparing = view === "compare" && compareEntries.length > 1;
+  const comparing = view === "compare" && compareEntries.length > 0;
   const transportLabel = TRANSPORT_MODES.find((m) => m.id === transportMode)?.label ?? "";
 
   const summaryText = () => {

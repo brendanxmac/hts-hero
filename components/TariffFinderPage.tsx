@@ -23,8 +23,9 @@ import {
 } from "./duty-calculator/shared";
 import { Disclaimer, ExploreModal } from "./duty-calculator/shared";
 import {
-  useTariffFinder,
+  MAX_COMPARE,
   TariffFinder,
+  useTariffFinder,
 } from "./duty-calculator/useTariffFinder";
 import styles from "./duty-calculator/theme.module.css";
 
@@ -104,11 +105,7 @@ const Layout = ({ f }: { f: TariffFinder }) => {
               <div className="flex flex-wrap sm:flex-nowrap w-full sm:w-auto items-center gap-2">
                 <ViewSwitch
                   f={f}
-                  className={
-                    f.compareCountries.length
-                      ? "basis-full sm:basis-auto"
-                      : "flex-1"
-                  }
+                  className="basis-full sm:basis-auto"
                 />
                 <ShareButtons f={f} />
               </div>
@@ -119,6 +116,9 @@ const Layout = ({ f }: { f: TariffFinder }) => {
             {f.comparing ? (
               <CompareView
                 entries={f.compareEntries}
+                countries={f.countries}
+                max={MAX_COMPARE}
+                onAdd={(added) => f.changeCountries([...f.countries, added])}
                 customsValue={f.customsValue}
                 onRemove={f.removeCountry}
                 onPreferenceChange={f.setPreference}
