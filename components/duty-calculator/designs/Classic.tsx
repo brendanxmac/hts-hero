@@ -1,10 +1,17 @@
 "use client";
 
+import { ExclamationTriangleIcon } from "@heroicons/react/20/solid";
 import { CompareView } from "../Compare";
 import { EntryRail } from "../EntryRail";
 import { formatDate, mono } from "../format";
 import { BreakdownCard } from "../MoneyBreakdown";
-import { BasisPanel, NotAppliedPanel, QuestionsPanel, SimpleSummary, Statement, SummaryStats } from "../Results";
+import {
+  NotAppliedPanel,
+  QuestionsPanel,
+  SimpleSummary,
+  Statement,
+  SummaryStats,
+} from "../Results";
 import {
   EMPTY_STEPS,
   emptyTitle,
@@ -21,7 +28,11 @@ export const ClassicDesign = ({ f }: { f: TariffFinder }) => {
   const { result, selectedElement, country } = f;
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[292px_minmax(0,1fr)] gap-5 items-start">
-      <EntryRail f={f} title="Entry details" description="Results update as you type" />
+      <EntryRail
+        f={f}
+        title="Entry details"
+        description="Results update as you type"
+      />
 
       {/* Results */}
       <div className="min-w-0">
@@ -30,17 +41,30 @@ export const ClassicDesign = ({ f }: { f: TariffFinder }) => {
         ) : !result || !selectedElement || !country ? (
           <EmptyState f={f} />
         ) : (
-          <section className="flex flex-col gap-4" aria-labelledby="results-heading" aria-live="polite">
+          <section
+            className="flex flex-col gap-4"
+            aria-labelledby="results-heading"
+            aria-live="polite"
+          >
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div className="min-w-0">
-                <h2 id="results-heading" className="text-[22px] font-semibold tracking-tight">
+                <h2
+                  id="results-heading"
+                  className="text-[22px] font-semibold tracking-tight"
+                >
                   Duty estimate
                 </h2>
                 <p className="mt-1 text-[14px] text-[var(--dc-text-2)]">
-                  <span className={`${mono.className} font-semibold text-[var(--dc-text)]`}>{selectedElement.htsno}</span>
+                  <span
+                    className={`${mono.className} font-semibold text-[var(--dc-text)]`}
+                  >
+                    {selectedElement.htsno}
+                  </span>
                   {" · "}
                   {f.comparing
-                    ? f.compareEntries.map((e) => `${e.country.flag} ${e.country.name}`).join(" vs ")
+                    ? f.compareEntries
+                        .map((e) => `${e.country.flag} ${e.country.name}`)
+                        .join(" vs ")
                     : `${country.flag} ${country.name}`}
                   {" · "}
                   {formatDate(result.asOf)}
@@ -49,7 +73,14 @@ export const ClassicDesign = ({ f }: { f: TariffFinder }) => {
                 </p>
               </div>
               <div className="flex flex-wrap sm:flex-nowrap w-full sm:w-auto items-center gap-2">
-                <ViewSwitch f={f} className={f.compareCountries.length ? "basis-full sm:basis-auto" : "flex-1"} />
+                <ViewSwitch
+                  f={f}
+                  className={
+                    f.compareCountries.length
+                      ? "basis-full sm:basis-auto"
+                      : "flex-1"
+                  }
+                />
                 <ShareButtons f={f} />
               </div>
             </div>
@@ -78,19 +109,33 @@ export const ClassicDesign = ({ f }: { f: TariffFinder }) => {
               <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 items-start">
                 <div className="xl:col-span-8 flex flex-col gap-4 min-w-0">
                   <div className={`${styles.card} overflow-hidden`}>
-                    <SummaryStats result={result} customsValue={f.customsValue} />
-                    <Statement result={result} customsValue={f.customsValue} unitLabel={f.unitLabel} />
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-                    <BasisPanel
+                    <SummaryStats
                       result={result}
-                      revision={f.revisionForDate}
-                      verified={f.verified}
-                      htsRevisionName={f.htsRevisionName}
-                      transportMode={f.transportMode}
+                      customsValue={f.customsValue}
                     />
-                    <NotAppliedPanel lines={result.lines} />
+                    <Statement
+                      result={result}
+                      customsValue={f.customsValue}
+                      unitLabel={f.unitLabel}
+                    />
                   </div>
+                  {result.warnings.length > 0 && (
+                    <ul className="flex flex-col gap-1.5 rounded-xl border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] px-4 py-3">
+                      {result.warnings.map((w) => (
+                        <li
+                          key={w}
+                          className="flex gap-2 text-[13px] leading-snug text-[var(--dc-warning)]"
+                        >
+                          <ExclamationTriangleIcon
+                            className="w-4 h-4 shrink-0 mt-px"
+                            aria-hidden
+                          />
+                          {w}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <NotAppliedPanel lines={result.lines} />
                 </div>
                 <aside className="xl:col-span-4 flex flex-col gap-4">
                   <BreakdownCard f={f} result={result} layout="stacked" />
@@ -114,7 +159,11 @@ export const ClassicDesign = ({ f }: { f: TariffFinder }) => {
 };
 
 const ResultsSkeleton = () => (
-  <div className={`${styles.card} p-5 flex flex-col gap-3`} aria-busy="true" aria-label="Loading HTS data">
+  <div
+    className={`${styles.card} p-5 flex flex-col gap-3`}
+    aria-busy="true"
+    aria-label="Loading HTS data"
+  >
     <div className={`${styles.skeleton} h-7 w-48`} />
     <div className={`${styles.skeleton} h-24 w-full`} />
     {Array.from({ length: 5 }, (_, i) => (
@@ -127,14 +176,20 @@ const EmptyState = ({ f }: { f: TariffFinder }) => (
   <section className={`${styles.card} p-6 sm:p-10`}>
     <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 xl:gap-10 items-center">
       <div>
-        <h2 className="text-[20px] font-semibold tracking-tight">{emptyTitle(f)}</h2>
+        <h2 className="text-[20px] font-semibold tracking-tight">
+          {emptyTitle(f)}
+        </h2>
         <p className="mt-2 text-[15px] leading-relaxed text-[var(--dc-text-2)]">
-          You&apos;ll get a line-by-line statement: the base rate, every Chapter 99 tariff and exemption in effect on your
-          entry date, and customs fees, each with the reason it applies.
+          You&apos;ll get a line-by-line statement: the base rate, every Chapter
+          99 tariff and exemption in effect on your entry date, and customs
+          fees, each with the reason it applies.
         </p>
         <ol className="mt-6 flex flex-col gap-3">
           {EMPTY_STEPS.map((step, i) => (
-            <li key={step} className="flex items-start gap-3 text-[14.5px] text-[var(--dc-text)]">
+            <li
+              key={step}
+              className="flex items-start gap-3 text-[14.5px] text-[var(--dc-text)]"
+            >
               <span
                 className={`${styles.num} flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--dc-accent-soft)] border border-[var(--dc-accent-border)] text-[12px] font-semibold text-[var(--dc-accent)]`}
               >
