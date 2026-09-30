@@ -23,6 +23,7 @@ const RATES: Record<string, HtsLine> = {
   "6109.10.00.12": { htsno: "6109.10.00", general: "16.5%", special: "Free (AU,BH,CL,CO,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "90%" },
   "0101.21.00.10": { htsno: "0101.21.00", general: "Free", special: "", other: "Free" },
   "8708.99.81.80": { htsno: "8708.99.81", general: "2.5%", special: "Free (A*,AU,B,BH,CL,CO,D,E,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "25%" },
+  "9401.69.60.31": { htsno: "9401.69.60", general: "Free", special: "", other: "40%" },
   "0402.10.10.00": { htsno: "0402.10.10.00", general: "3.3¢/kg", special: "Free (A+,BH,CL,CO,D,E,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "6.6¢/kg" },
 }
 
@@ -59,6 +60,7 @@ describe("engine-v2 vs legacy: agree", () => {
     ["0101.21.00.10", "MX", "Mexican horse without a USMCA claim: 122"],
     ["8708.99.81.80", "VN", "Vietnamese auto part, unconfirmed: 232 metals derivative"],
     ["0402.10.10.00", "CN", "Specific base rate (3.3¢/kg)"],
+    ["9401.69.60.31", "CN", "301 exclusion 9401.69.60.31 (legacy data fixed Sep 30, 2026)"],
   ]
 
   for (const [htsCode, country, label] of cases) {
@@ -90,17 +92,6 @@ describe("engine-v2 vs legacy: known differences", () => {
     const { legacy, v2 } = both("8708.99.81.80", "JP")
     expect(legacy.totalDuty).toBe(2500)
     expect(v2.totalDuty).toBe(2750) // 2.5% base + 25% 9903.82.09
-  })
-
-  it("exclusion codes missing a dot are still matched (legacy substring match missed them)", () => {
-    const rates = { htsno: "9401.69.60", general: "Free", special: "", other: "40%" }
-    const legacy = legacyCalculate("9401.69.60.31", rates, "CN", VALUE, UNITS)
-    const v2 = calculate(AllRules, {
-      htsCode: "9401.69.60.31", country: "CN", asOf: AS_OF, customsValue: VALUE, quantity: UNITS,
-      baseRates: { general: rates.general, special: rates.special, other: rates.other },
-    })
-    expect(legacy.activeCodes).toContain("9903.88.15") // excluded code "9401.69.6031" in legacy data
-    expect(applying(v2).includes("9903.88.15")).toBe(false)
   })
 
   it("Russian steel is exempt from Section 122 via 9903.03.06 (legacy charged 122 too)", () => {

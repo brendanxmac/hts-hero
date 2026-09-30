@@ -115,19 +115,19 @@ Hand edits:
 - The 5 failing tests in `testing/tariffs.test.ts` fail on `master` too (see Issue L1).
 
 ### 4. Legacy vs v2 comparison
-Full run: 23,193 HTS lines × 14 countries = **324,702 calculations**. **98.4% have identical total duty.** The 5,132 differences fall into exactly 5 kinds, all explained below. See [COMPARISON.md](COMPARISON.md).
+Full run: 23,193 HTS lines × 14 countries = **324,702 calculations**. **98.4% have identical total duty.** The 5,130 differences fall into 3 kinds, all explained below (D3 and D5 disappeared when the legacy data was fixed on Sep 30). See [COMPARISON.md](COMPARISON.md).
 
 ## Differences from the legacy engine
 
-All five are cases where I believe v2 is right. Please confirm.
+D1, D2 and D4 are cases where I believe v2 is right. Please confirm. D3 and D5 are resolved.
 
 | # | Difference | Count | Cause |
 |---|---|---|---|
 | D1 | EU/JP/KR goods: v2 higher | 3,386 | Legacy's UI "below 15%" rule drops the base duty for **every** EU/JP/KR good with a base under 15%, even when no 15% deal heading applies (deal-exempt goods, 232 goods). Example: 0711.90.30 from Germany owes $0 in legacy and $800 (8% base) in v2. |
 | D2 | Russia 232 steel: v2 lower | 1,743 | Legacy's `tariffIsActive` "visited" set treats 9903.82.14 as inactive the second time it's reached, so 9903.03.06 (the Section 122 exemption for 232 goods) doesn't activate and Section 122 is charged on top of 232. |
-| D3 | 3913.10.00.00 CN: v2 lower | 1 | Legacy data lists `3913.10.0000` (missing a dot) in 9903.88.69's exclusions. Substring matching never finds it; v2 matches on digits. |
+| D3 | ~~3913.10.00.00 CN: v2 lower~~ **Resolved:** legacy data fixed | 1 | Legacy data lists `3913.10.0000` (missing a dot) in 9903.88.69's exclusions. Substring matching never finds it; v2 matches on digits. |
 | D4 | 6307.90.98.70 CN: v2 lower | 1 | 9903.91.04's text says it applies before January 1, 2026. Legacy still applies it at Rev 5. |
-| D5 | 9401.69.60.31 CN: v2 lower | 1 | Same as D3: `9401.69.6031` in 9903.88.15's exclusions. |
+| D5 | ~~9401.69.60.31 CN: v2 lower~~ **Resolved:** legacy data fixed | 1 | Same as D3: `9401.69.6031` in 9903.88.15's exclusions. |
 
 Other intended differences that the comparison doesn't exercise (they only show up after the user answers questions):
 - **9903.94.44** (EU auto parts, 33(r)): the legacy record says "<15%" and charges 15%, identical to .45. By the pairing pattern it's the "≥15%" heading at 0%, and v2 does that. See Q5.
@@ -143,7 +143,7 @@ Other intended differences that the comparison doesn't exercise (they only show 
 - **L5. `findExceptions`** (unused) passes `htsCode` and `countryCode` in the wrong order in its recursive call.
 
 ### Legacy data
-- **L6. Codes with missing dots:** `3913.10.0000` (9903.88.69), `9401.69.6031` (9903.88.15).
+- **L6. Fixed Sep 30.** Codes with missing dots: `3913.10.0000` (9903.88.69), `9401.69.6031` (9903.88.15).
 - **L7. 9903.03.01's `exceptions` contains HTS codes** `8471.50`, `8471.80`, `8473.30` (the semiconductor list). They have no effect in either engine; v2 dropped them. Were they meant as `excludeCodes`? See Q6.
 - **L8. 27 exception cycles**, mostly among the 232 metals alternatives (e.g. 9903.82.04 ↔ .06, .08 ↔ .11 ↔ .12, .09 ↔ .13, 9903.94.01 ↔ .31). Both engines currently resolve them through the "needs confirmation" defaults. The validator lists them as warnings.
 - **L9. Very broad "needs review" headings.** 9903.94.07, 9903.94.33, 9903.94.44/.45/.54/.55/.64/.65, 9903.74.09, 9903.74.10 and 9903.82.03 cover *all codes except a list*. So nearly every product from those countries gets their questions. The v2 panel groups them, but the scopes look broader than the notes intend. See Q9.
@@ -151,24 +151,30 @@ Other intended differences that the comparison doesn't exercise (they only show 
 
 ### Engine v2
 - **E1. HMF is always charged.** It should only apply to ocean shipments. This matches legacy for now; it needs a transport-mode input.
-- **E2. MPF FY2027 values** take effect **2026-10-01**. The current record has no end date, so it keeps applying the FY2026 values. See Q8.
+- **E2. Fixed Sep 30.** MPF FY2027 values ($34.58 min, $670.86 max, 0.3464% unchanged) added as a dated record from 2026-10-01 ([FR Doc. 2026-15530](https://www.federalregister.gov/documents/2026/07/31/2026-15530/customs-user-fees-to-be-adjusted-for-inflation-in-fiscal-year-2027)). The legacy constants in `tariffs/tariff-calculations.ts` still have the FY2026 values.
 - **E3. Base rates come from the latest HTS revision.** The panel's revision dropdown dates the Chapter 99 rules only. Loading each revision's own base rates needs the revision's HTS file in Supabase storage.
 - **E4. The legacy engine still runs** on the page when the new engine is shown. It's used for the Units field's visibility. It's cheap, but can be removed when the old engine is retired.
 
 ## Questions for you
 
-1. **Deal headings alongside Section 122.** At Rev 5, EU/JP/KR goods get both 9903.03.01 (10%) and the IEEPA-era deal headings (e.g. 9903.02.20, top-up to 15%). Both engines do this. Were the deal headings still in force after the IEEPA ruling, or should they end on Feb 24, 2026?
-2. **Wood deal rates (9903.76.20–.23).** Legacy effectively made these "15% including MFN" through the below-15 rule; v2 applies them as flat rates on top of the base. Which is right? If "including MFN", they become `topUpTo` pairs like the other deals.
+1. **Deal headings alongside Section 122.** *Researched Sep 30, awaiting your decision; no changes made.* The evidence says the reciprocal deal headings ended on Feb 24, 2026:
+   - CBP's CSMS #67834313 made all IEEPA HTS numbers inactive in ACE from Feb 24, 2026. It explicitly left Section 232 and 301 alone.
+   - 9903.02.19/.20, .72/.73, .79/.80 (and the reciprocal exemptions .74–.78, .81) are provided for in U.S. note 2(v), the IEEPA reciprocal note.
+   - Secondary sources say the EU/JP/KR caps were lost and no guidance reimplemented them under Section 122.
+   - CBP's Section 122 guidance (CSMS #67844987) has no country caps: 10% on top of MFN for everyone.
+
+   If you agree, those headings get `to: "2026-02-24"`. EU/JP/KR goods at Rev 5 would then pay MFN + 10% (122), not the 15% top-up plus 10%. The 232 auto and wood deal headings (9903.94.xx, 9903.76.xx) are Section 232 and stay.
+2. **Wood deal rates (9903.76.20–.23).** *Researched Sep 30, awaiting your decision; no changes made.* CBP's CSMS #66492057 guidance, as summarized by several brokers, says EU and Japan wood tariffs are "capped at a combined rate of 15%, inclusive of MFN rates". 9903.76.21/.22 are listed at "15% additional", so the cap has to come from how the rate is applied. That supports modeling EU/JP (and likely KR, from its later deal) as "top up to 15%": 15% minus the base, never below 0. The UK's 9903.76.20 is a flat 10%. I haven't confirmed the KR and UK details from a primary source.
 3. **9903.88.69/.70 end date.** The heading text says "through November 29, 2025"; your legacy name says "Expires November 9, 2026". I used Nov 10, 2026 (i.e. through Nov 9). Correct?
 4. **9903.82.14/.15.** The names say "base ≥10%" / "<10%", but the descriptions say note 16 subdivisions (c)(iii)–(v) vs (c)(iv),(vii),(viii),(e). I kept legacy's base-rate split. Is that the real distinction?
-5. **9903.94.44.** Is it the "≥15%, 0%" heading? I changed it from 15%.
+5. **Answered:** 9903.94.44 is 0% in every column. The legacy data was updated Sep 30, and v2 already had it.
 6. **9903.03.01 exceptions** `8471.50`/`8471.80`/`8473.30`: meant to exclude semiconductors from Section 122?
 7. **9903.92.10's exception.** The HTS text says 9903.91.09; I used 9903.92.09. OK?
-8. **MPF FY2027 min/max.** Do you have them? I'll add them as a dated record.
+8. **Done:** FY2027 MPF values added (see E2). Should I also update the legacy constants, and if so, on Oct 1?
 9. **Broad "needs review" headings (L9).** Should these be narrowed to specific lists?
 10. **Stale legacy tests (L1).** Update them for the full-value 232 structure, or delete them?
 11. **9903.03.06 and "no metal" articles.** Legacy lists 9903.82.01 ("contains no aluminum, steel or copper") among the headings that trigger the Section 122 exemption. So confirming "no metal" removes 232 **and** keeps Section 122 off. Is a note 16(c) article with no metal still exempt from 122?
-12. **Rolling this out.** When the answers above are settled, should the next step be making the new engine the default for everyone, or first backfilling revisions 6–20 so its dropdown covers the current date?
+12. **Rolling this out.** Answered: don't make it the default for now.
 
 ## Decisions I made (easy to change)
 
