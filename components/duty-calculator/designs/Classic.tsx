@@ -20,7 +20,7 @@ export const ClassicDesign = ({ f }: { f: TariffFinder }) => {
   const { result, selectedElement, country } = f;
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[292px_minmax(0,1fr)] gap-5 items-start">
-      <EntryRail f={f} />
+      <EntryRail f={f} title="Entry details" description="Results update as you type" />
 
       {/* Results */}
       <div className="min-w-0">
