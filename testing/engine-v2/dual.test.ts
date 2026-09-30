@@ -181,6 +181,23 @@ describe("engine-v2 real data", () => {
     expect(in2026.amount).toBe(10000) // 100% of $10,000
   })
 
+  it("31(b) items (1)-(4) move to 31(h)/31(g) on Jan 1, 2026; other 31(b) codes stay on 9903.91.01", () => {
+    const run = (htsCode: string, asOf: string) =>
+      calculate(AllRules, {
+        htsCode, country: "CN", asOf, customsValue: VALUE, quantity: 1,
+        baseRates: { general: "Free", special: null, other: null },
+      })
+        .lines.filter((l) => l.status === "applies" && l.code.startsWith("9903.91"))
+        .map((l) => `${l.code} ${l.ratePct}%`)
+    expect(run("6307.90.98.42", "2024-09-26")).toHaveLength(0)
+    expect(run("6307.90.98.42", "2024-09-27")).toEqual(["9903.91.01 25%"])
+    expect(run("6307.90.98.42", "2025-12-31")).toEqual(["9903.91.01 25%"])
+    expect(run("6307.90.98.42", "2026-01-01")).toEqual(["9903.91.07 50%"])
+    expect(run("8507.60.00.10", "2025-12-31")).toEqual(["9903.91.01 25%"])
+    expect(run("8507.60.00.10", "2026-01-01")).toEqual(["9903.91.06 25%"])
+    expect(run("2602.00.00.10", "2026-01-01")).toEqual(["9903.91.01 25%"])
+  })
+
   it("drops Section 122 after it expired on July 24, 2026", () => {
     const rates = RATES["6109.10.00.12"]
     const v2 = calculate(AllRules, {

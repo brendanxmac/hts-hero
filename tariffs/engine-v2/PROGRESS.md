@@ -129,7 +129,7 @@ D1, D3 and D5 are resolved. D2, D4 and D6 remain in the legacy calculator by you
 | D4 | 6307.90.98.70 CN: v2 lower; **kept in legacy by decision** | 1 | 9903.91.04's text says it applies before January 1, 2026. Legacy still applies it at Rev 5. |
 | D5 | ~~9401.69.60.31 CN: v2 lower~~ **Resolved:** legacy data fixed | 1 | Same as D3: `9401.69.6031` in 9903.88.15's exclusions. |
 | D6 | 4015.12.10 CN (medical gloves): v2 lower; **kept in legacy** | 3 | Gloves were 50% under 31(f) in 2025 and 100% under 31(i) from Jan 1, 2026. v2 removes them from the 31(f) list on that date (a dated list version); legacy charges both 9903.91.05 and 9903.91.08. |
-| D7 | 5 respirator/face-mask/EV-battery codes, CN: v2 lower | 5 | `china31b` (Sep 30) leaves out the four items 89 FR 76581 removed from 31(b): 6307.90.98.42/.44/.50/.75 and 8507.60.00.10. Legacy's 9903.91.01 list still has them. See Q13 on when the removal took effect. |
+| D7 | 5 respirator/face-mask/EV-battery codes, CN: v2 lower at Rev 5 | 5 | 89 FR 76581 deleted items (1)–(4) (6307.90.98.42/.44/.50/.75, 8507.60.00.10) from 31(b) effective Jan 1, 2026; they moved to 31(h) and 31(g). v2's `china31b` has both versions. Legacy has no dates, so its 9903.91.01 list still includes them. |
 
 Other intended differences that the comparison doesn't exercise (they only show up after the user answers questions):
 - **9903.94.44** (EU auto parts, 33(r)): the legacy record says "<15%" and charges 15%, identical to .45. By the pairing pattern it's the "≥15%" heading at 0%, and v2 does that. See Q5.
@@ -176,7 +176,7 @@ Other intended differences that the comparison doesn't exercise (they only show 
 10. **Stale legacy tests (L1).** Update them for the full-value 232 structure, or delete them?
 11. **9903.03.06 and "no metal" articles.** Legacy lists 9903.82.01 ("contains no aluminum, steel or copper") among the headings that trigger the Section 122 exemption. So confirming "no metal" removes 232 **and** keeps Section 122 off. Is a note 16(c) article with no metal still exempt from 122?
 12. **Rolling this out.** Answered: don't make it the default for now.
-13. **When were the four items removed from 31(b)?** `china31b` currently has one version from 2024-09-27 without them, so they were never charged under 9903.91.01. 89 FR 76581 is the four-year review notice itself (FR Doc. 2024-21217), and CBP's guidance (CSMS #62411889) doesn't list them. If they were in 31(b) for a while (e.g. from Sep 27, 2024 until they moved to 31(h) on Jan 1, 2026), `china31b` needs a second, dated version.
+13. **Answered (Sep 30), from USITC's archived Chapter 99 PDFs.** Note 31(b) first appears in 2024 HTS Rev 9 (not in Rev 8), effective for entries on or after Sep 27, 2024, with items (1)–(4) plus 348 subheadings. The items are present through 2025 Rev 32. They're gone in the 2026 Basic Edition, whose compiler's note says "Numbers (1) through (4) have been deleted. See 89 Fed. Reg. 76581". That's effective Jan 1, 2026, the date the 31(g)–(i) texts use. The 348 other codes are identical in every revision checked and match `china31b`. `china31b` now has two versions: 2024-09-27 (353 codes) and 2026-01-01 (348 codes).
 
 ## Sep 30: Section 301 China 2026 increases (both calculators)
 
@@ -184,7 +184,7 @@ Other intended differences that the comparison doesn't exercise (they only show 
   - Legacy: named lists `china31g`/`china31h`/`china31i` in `tariffs/lists.ts`; .06 un-commented in `china.ts`.
   - v2: the same list ids in `tariffs/engine-v2/data/lists/china-301.ts` (its first hand-written list file), plus the headings in `301-china.ts`.
 - **v2's 31(f) list is now `china31f`** with two dated versions. Medical gloves (4015.12.10) leave it on Jan 1, 2026, when 31(i) takes over. Legacy is unchanged, so it charges both (D6).
-- **`china31g` uses 8507.60.00 as provided.** That also covers EV batteries (8507.60.00.10), which already pay 25% under 9903.91.01, so both engines charge them twice. USTR's description of 31(g) and CBP rulings point to non-EV batteries only (8507.60.00.20); kept as provided by decision (Sep 30).
+- **`china31g` uses 8507.60.00**, the full 8-digit subheading as listed in the HTS (confirmed from the 2026 Basic Chapter 99 text). EV batteries (8507.60.00.10) move there from 31(b) on Jan 1, 2026, so there's no double charge now that `china31b` is versioned.
 - **9903.91.04 stays in legacy** by decision, so Chinese face masks pay .04 (25%) + .07 (50%) there (D4). v2 ended .04 on Jan 1, 2026.
 
 ## Sep 30: named lists for 9903.91.01–.04, and a list audit
