@@ -198,7 +198,11 @@ Other intended differences that the comparison doesn't exercise (they only show 
   - Simple: one total and a plain-language breakdown by program
 
   The view is remembered per device, and `?view=` overrides it.
-- **Share links** carry `code, country, value, units, date, mode, pref`.
+- **Share links** carry `code, country, value, units, date, mode, pref`, plus `compare` (e.g. `compare=VN,DE`) and `view=compare`.
+- **Country comparison:** up to 3 countries side by side ("Compare countries" beside the country field).
+  - Same code, value, date, transport and answers for every country; each card can claim its own trade preference.
+  - The lowest landed cost is highlighted, and the other cards show the difference.
+  - "View details" makes that country the main one, keeping the others compared (and keeping the answers).
 - **Engine additions:** `transportMode`, `FeeSchedule.modes`, `requiresQuantity`, and an MPF note for entries under $2,500 (informal-entry MPF isn't modeled).
 - **Visual design:** design tokens are in `components/duty-calculator/theme.module.css`.
 - **Speed:** about 0.07 ms per calculation; under 1 ms per keystroke including the per-question impact calculations.

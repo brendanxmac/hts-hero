@@ -9,6 +9,8 @@ import {
   ExclamationTriangleIcon,
   LinkIcon,
   MagnifyingGlassIcon,
+  PlusIcon,
+  XMarkIcon,
 } from "@heroicons/react/20/solid";
 import { Countries, Country } from "../constants/countries";
 import { HtsElement } from "../interfaces/hts";
@@ -31,9 +33,10 @@ import {
   getRevisionForDate,
   isVerifiedDate,
 } from "../tariffs/engine-v2/revisions";
-import { Answers, CalculationResult, TransportMode } from "../tariffs/engine-v2/types";
+import { Answers, CalculationInput, CalculationResult, TransportMode } from "../tariffs/engine-v2/types";
 import { Explore } from "./Explore";
 import { HtsCodeField } from "./duty-calculator/HtsCodeField";
+import { CompareEntry, CompareView } from "./duty-calculator/Compare";
 import { CountryField } from "./duty-calculator/CountryField";
 import { Field, NumberField, Segmented } from "./duty-calculator/controls";
 import {
@@ -54,12 +57,16 @@ import {
 } from "./duty-calculator/format";
 import styles from "./duty-calculator/theme.module.css";
 
-type View = "detailed" | "simple";
+type View = "detailed" | "simple" | "compare";
 
-const VIEWS = [
+const VIEWS: { id: View; label: string }[] = [
   { id: "detailed", label: "Detailed" },
   { id: "simple", label: "Simple" },
-] as const;
+];
+const VIEWS_WITH_COMPARE: { id: View; label: string }[] = [...VIEWS, { id: "compare", label: "Compare" }];
+
+// Countries shown side by side, including the main one
+const MAX_COMPARE = 3;
 
 const VIEW_STORAGE_KEY = "hts-hero-duty-calculator-view";
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -79,6 +86,25 @@ const positiveNumber = (raw: string | null, fallback: number) => {
 };
 
 const isTariffLevel = (element: HtsElement) => htsCodeDigitsOnly(element.htsno).length >= 8;
+
+// How much answering "yes" to each open yes/no question would change duty and fees
+const questionImpacts = (input: CalculationInput, result: CalculationResult, answers: Answers) => {
+  const current = result.totalDuty + result.totalFees;
+  const out: Record<string, number> = {};
+  result.questions
+    .filter((q) => q.input.type === "boolean" && answers[q.input.id] !== true)
+    .forEach((q) => {
+      const alt = calculate(AllRules, { ...input, answers: { ...answers, [q.input.id]: true } });
+      out[q.input.id] = alt.totalDuty + alt.totalFees - current;
+    });
+  return out;
+};
+
+// Open questions whose answer would change the amount
+const countOpenQuestions = (result: CalculationResult, impacts: Record<string, number>) =>
+  result.questions.filter(
+    (q) => !q.answered && (q.input.type !== "boolean" || Math.abs(impacts[q.input.id] ?? 0) >= 0.005)
+  ).length;
 
 export const TariffFinderPage = () => {
   const searchParams = useSearchParams();
@@ -104,7 +130,17 @@ export const TariffFinderPage = () => {
   });
   const [claimedPreference, setClaimedPreference] = useState(searchParams.get("pref") ?? "");
   const [answers, setAnswers] = useState<Answers>({});
-  const [view, setView] = useState<View>(() => (searchParams.get("view") === "simple" ? "simple" : "detailed"));
+  const [view, setView] = useState<View>(() => {
+    const param = searchParams.get("view");
+    return param === "simple" || param === "compare" ? param : "detailed";
+  });
+  // Up to two more countries to compare with the main one
+  const [compareOpen, setCompareOpen] = useState(() => Boolean(searchParams.get("compare")));
+  const [compareSlots, setCompareSlots] = useState<(Country | null)[]>(() => {
+    const codes = (searchParams.get("compare") ?? "").split(",").map(countryByCode).filter(Boolean);
+    return [codes[0] ?? null, codes[1] ?? null];
+  });
+  const [comparePrefs, setComparePrefs] = useState<Record<string, string>>({});
   const [showExplore, setShowExplore] = useState(false);
   const [copied, setCopied] = useState<"link" | "summary" | null>(null);
 
@@ -190,12 +226,18 @@ export const TariffFinderPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [codeParam, htsElements.length]);
 
-  // Answers and trade preference claims belong to one code/country pair
+  // Answers and trade preference claims belong to one code/country pair, except when the
+  // user switches between compared countries, which share answers
   const entryKey = `${selectedElement?.htsno ?? ""}|${country?.code ?? ""}`;
   const previousEntryKey = useRef(entryKey);
+  const keepAnswersOnSwitch = useRef(false);
   useEffect(() => {
     if (previousEntryKey.current === entryKey) return;
     previousEntryKey.current = entryKey;
+    if (keepAnswersOnSwitch.current) {
+      keepAnswersOnSwitch.current = false;
+      return;
+    }
     setAnswers({});
     setClaimedPreference("");
   }, [entryKey]);
@@ -233,18 +275,55 @@ export const TariffFinderPage = () => {
   );
 
   // What each unanswered yes/no question would change, so users know which ones matter
-  const impacts = useMemo(() => {
-    if (!baseInput || !result) return {};
-    const current = result.totalDuty + result.totalFees;
-    const out: Record<string, number> = {};
-    result.questions
-      .filter((q) => q.input.type === "boolean" && answers[q.input.id] !== true)
-      .forEach((q) => {
-        const alt = calculate(AllRules, { ...baseInput, answers: { ...answers, [q.input.id]: true } });
-        out[q.input.id] = alt.totalDuty + alt.totalFees - current;
-      });
-    return out;
-  }, [baseInput, result, answers]);
+  const impacts = useMemo(
+    () => (baseInput && result ? questionImpacts(baseInput, result, answers) : {}),
+    [baseInput, result, answers]
+  );
+
+  // ── Comparison ──
+  const compareCountries = useMemo(
+    () =>
+      compareSlots.filter(
+        (c, i, all): c is Country =>
+          Boolean(c) && c.code !== country?.code && all.findIndex((x) => x?.code === c.code) === i
+      ),
+    [compareSlots, country]
+  );
+
+  const compareEntries: CompareEntry[] = useMemo(() => {
+    if (!baseInput || !result || !country || compareCountries.length === 0) return [];
+    const primary: CompareEntry = {
+      country,
+      result,
+      claimedPreference,
+      openQuestions: countOpenQuestions(result, impacts),
+    };
+    return [
+      primary,
+      ...compareCountries.map((c) => {
+        const input = { ...baseInput, country: c.code, claimedPreference: comparePrefs[c.code] || undefined };
+        const r = calculate(AllRules, { ...input, answers });
+        return {
+          country: c,
+          result: r,
+          claimedPreference: comparePrefs[c.code] ?? "",
+          openQuestions: countOpenQuestions(r, questionImpacts(input, r, answers)),
+        };
+      }),
+    ];
+  }, [baseInput, result, country, compareCountries, comparePrefs, claimedPreference, answers, impacts]);
+
+  // Show the comparison when a country is first added (including from a shared link, so this
+  // starts at 0); leave it when none are left
+  const previousCompareCount = useRef(0);
+  useEffect(() => {
+    const count = compareCountries.length;
+    if (previousCompareCount.current === 0 && count > 0) setView("compare");
+    if (count === 0 && view === "compare") setView("detailed");
+    previousCompareCount.current = count;
+    // Only when the number of compared countries changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [compareCountries.length]);
 
   // ── Analytics ──
   const lastViewedKey = useRef<string | null>(null);
@@ -286,11 +365,30 @@ export const TariffFinderPage = () => {
     params.set("date", entryDate);
     params.set("mode", transportMode);
     if (claimedPreference) params.set("pref", claimedPreference);
+    if (compareCountries.length) params.set("compare", compareCountries.map((c) => c.code).join(","));
+    if (view === "compare" && compareCountries.length) params.set("view", "compare");
     return `${window.location.origin}/duty-calculator?${params.toString()}`;
   };
 
   const summaryText = () => {
     if (!result || !selectedElement || !country) return "";
+    if (view === "compare" && compareEntries.length > 1) {
+      return [
+        `Duty comparison · HTS ${selectedElement.htsno}`,
+        `Entry ${formatDate(result.asOf)} · ${TRANSPORT_MODES.find((m) => m.id === transportMode)?.label} · Customs value ${formatMoney(customsValue)}`,
+        "",
+        "Country".padEnd(28) + "Total duty".padStart(16) + "Fees".padStart(12) + "Landed cost".padStart(16),
+        ...compareEntries.map(
+          (e) =>
+            e.country.name.slice(0, 26).padEnd(28) +
+            formatMoney(e.result.totalDuty).padStart(16) +
+            formatMoney(e.result.totalFees).padStart(12) +
+            formatMoney(customsValue + e.result.totalDuty + e.result.totalFees).padStart(16)
+        ),
+        "",
+        shareUrl(),
+      ].join("\n");
+    }
     const lines = [
       `Duty estimate · HTS ${selectedElement.htsno} from ${country.name}`,
       `Entry ${formatDate(result.asOf)} · ${TRANSPORT_MODES.find((m) => m.id === transportMode)?.label} · Customs value ${formatMoney(customsValue)}`,
@@ -328,6 +426,32 @@ export const TariffFinderPage = () => {
     trackEvent(MixpanelEvent.DUTY_CALCULATOR_EXAMPLE_SELECTED, { hts_code: example.code, country_code: example.country });
   };
 
+  const setCompareSlot = (index: number, value: Country | null) => {
+    setCompareSlots((slots) => slots.map((s, i) => (i === index ? value : s)));
+    trackEvent(MixpanelEvent.DUTY_CALCULATOR_COMPARE_CHANGED, { slot: index, country_code: value?.code ?? null });
+  };
+
+  const toggleCompare = () => {
+    if (compareOpen) {
+      setCompareSlots([null, null]);
+      setComparePrefs({});
+    }
+    setCompareOpen((open) => !open);
+  };
+
+  // "View details" on a compared country makes it the main country, keeping the others compared
+  const viewCountryDetails = (target: Country) => {
+    if (country && target.code !== country.code) {
+      const previous = country;
+      setCompareSlots((slots) => slots.map((s) => (s?.code === target.code ? previous : s)));
+      setComparePrefs((prefs) => ({ ...prefs, [previous.code]: claimedPreference }));
+      setClaimedPreference(comparePrefs[target.code] ?? "");
+      keepAnswersOnSwitch.current = true;
+      setCountry(target);
+    }
+    changeView("detailed");
+  };
+
   const closeExplore = () => {
     setShowExplore(false);
     trackEvent(MixpanelEvent.DUTY_CALCULATOR_EXPLORE_MODAL_CLOSED);
@@ -345,12 +469,8 @@ export const TariffFinderPage = () => {
   const latestVerified = getLatestVerifiedRevision();
   const verified = isVerifiedDate(entryDate);
   const revisionForDate = getRevisionForDate(entryDate);
-  // Only questions whose answer would change the amount
-  const openQuestions = result
-    ? result.questions.filter(
-        (q) => !q.answered && (q.input.type !== "boolean" || Math.abs(impacts[q.input.id] ?? 0) >= 0.005)
-      ).length
-    : 0;
+  const openQuestions = result ? countOpenQuestions(result, impacts) : 0;
+  const comparing = view === "compare" && compareEntries.length > 1;
   // The first unit is the one duty is charged in; later ones are statistical reporting units
   const units = [...(selectedElement?.units ?? []), ...(tariffElement?.units ?? [])].filter(
     (u, i, all) => u && all.indexOf(u) === i
@@ -398,7 +518,31 @@ export const TariffFinderPage = () => {
                 />
               </Field>
 
-              <Field label="Country of origin" htmlFor="dc-country" className="md:col-span-4">
+              <Field
+                label="Country of origin"
+                htmlFor="dc-country"
+                className="md:col-span-4"
+                action={
+                  <button
+                    type="button"
+                    className={`${styles.link} inline-flex items-center gap-1 text-[13px]`}
+                    onClick={toggleCompare}
+                    aria-expanded={compareOpen}
+                  >
+                    {compareOpen ? (
+                      <>
+                        <XMarkIcon className="w-3.5 h-3.5" />
+                        Stop comparing
+                      </>
+                    ) : (
+                      <>
+                        <PlusIcon className="w-3.5 h-3.5" />
+                        Compare countries
+                      </>
+                    )}
+                  </button>
+                }
+              >
                 <CountryField
                   id="dc-country"
                   selectedCountry={country}
@@ -421,6 +565,45 @@ export const TariffFinderPage = () => {
                   }}
                 />
               </Field>
+
+              {compareOpen && (
+                <div className="md:col-span-12 rounded-xl border border-[var(--dc-border)] bg-[var(--dc-surface-2)] p-4 sm:p-5">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
+                    <span className={styles.label}>Compare with</span>
+                    <span className="text-[12.5px] text-[var(--dc-text-3)]">
+                      Up to {MAX_COMPARE - 1} more countries, with the same code, value, date and answers
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {compareSlots.map((slot, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <div className="flex-1 min-w-0">
+                          <CountryField
+                            id={`dc-compare-${i}`}
+                            selectedCountry={slot}
+                            onSelect={(c) => setCompareSlot(i, c)}
+                          />
+                        </div>
+                        {slot && (
+                          <button
+                            type="button"
+                            className="p-2 rounded-lg text-[var(--dc-text-3)] hover:text-[var(--dc-text)] hover:bg-[var(--dc-surface-3)]"
+                            aria-label={`Remove ${slot.name} from comparison`}
+                            onClick={() => setCompareSlot(i, null)}
+                          >
+                            <XMarkIcon className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  {compareSlots.some((c) => c && c.code === country?.code) && (
+                    <p className="mt-2 text-[12.5px] text-[var(--dc-text-3)]">
+                      {country?.name} is already the main country, so it isn&apos;t repeated.
+                    </p>
+                  )}
+                </div>
+              )}
 
               <Field label="Entry date" htmlFor="dc-date" className="md:col-span-3">
                 <input
@@ -508,7 +691,7 @@ export const TariffFinderPage = () => {
                 <p className="mt-1 text-[14px] text-[var(--dc-text-2)]">
                   <span className={`${mono.className} font-semibold text-[var(--dc-text)]`}>{selectedElement.htsno}</span>
                   {" · "}
-                  {country.flag} {country.name}
+                  {comparing ? compareEntries.map((e) => `${e.country.flag} ${e.country.name}`).join(" vs ") : `${country.flag} ${country.name}`}
                   {" · "}
                   {formatDate(result.asOf)}
                   {" · "}
@@ -516,8 +699,14 @@ export const TariffFinderPage = () => {
                 </p>
               </div>
               <div className="flex w-full sm:w-auto items-center gap-2">
-                <div className="flex-1 min-w-0 sm:flex-none sm:w-[200px]">
-                  <Segmented label="View" options={VIEWS} value={view} onChange={changeView} compact />
+                <div className={`flex-1 min-w-0 sm:flex-none ${compareCountries.length ? "sm:w-[280px]" : "sm:w-[200px]"}`}>
+                  <Segmented
+                    label="View"
+                    options={compareCountries.length ? VIEWS_WITH_COMPARE : VIEWS}
+                    value={view === "compare" && !compareCountries.length ? "detailed" : view}
+                    onChange={changeView}
+                    compact
+                  />
                 </div>
                 <button type="button" className={styles.button} onClick={() => copy("summary")} aria-label="Copy summary">
                   {copied === "summary" ? <CheckIcon className="w-4 h-4" /> : <ClipboardDocumentIcon className="w-4 h-4" />}
@@ -556,7 +745,18 @@ export const TariffFinderPage = () => {
               </div>
             )}
 
-            {view === "simple" ? (
+            {comparing ? (
+              <CompareView
+                entries={compareEntries}
+                customsValue={customsValue}
+                onPreferenceChange={(code, symbol) => {
+                  if (code === country.code) setClaimedPreference(symbol);
+                  else setComparePrefs((prefs) => ({ ...prefs, [code]: symbol }));
+                  trackEvent(MixpanelEvent.DUTY_CALCULATOR_PREFERENCE_CLAIMED, { symbol: symbol || "none", country_code: code });
+                }}
+                onViewDetails={viewCountryDetails}
+              />
+            ) : view === "simple" ? (
               <div className={styles.card}>
                 <SimpleSummary
                   result={result}
