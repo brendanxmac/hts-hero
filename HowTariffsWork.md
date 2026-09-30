@@ -2,9 +2,9 @@
 
 This document describes the versioned tariff system for HTS Hero: how tariff rules are stored, how they change over time, and how the engine turns them into a duty calculation for a given HTS code, country of origin and date.
 
-> **Status: design specification.** Nothing described here is implemented on `master` yet.
-> An early prototype of the dated-record foundation (effective dates on `TariffI`, an `asOf` date passed through the engine, the USITC revision sync script and a revision dropdown) is saved in the git stash entry
-> `feat/versioned-tariffs: dated tariffs, asOf engine, revision dropdown, sync-revisions`.
+> **Status: implemented as `tariffs/engine-v2`** on branch `feat/tariff-engine-v2`, alongside the legacy engine, with data as of 2026 HTS Revision 5. It's reachable on the Tariff Finder with `?engine=v2`.
+> See [tariffs/engine-v2/PROGRESS.md](tariffs/engine-v2/PROGRESS.md) for what's done, differences from the legacy engine, and open questions.
+> Not implemented yet: `recordedAt` (§14.7) and fee rules by transport mode.
 > Section [18. Migrating from the current model](#18-migrating-from-the-current-model) maps today's `TariffI` onto this design.
 
 > **About the examples.** Heading numbers, rates, dates and list contents in this document are **illustrative**. They're chosen to show the mechanics realistically, not to be copied into data. Always take real values from the HTS, the U.S. notes, and the Federal Register or CSMS source.
@@ -703,11 +703,18 @@ Handlers declare which inputs they use (see [§11](#11-handlers-the-engines-exte
 
 ### 10.2 Unanswered inputs
 
-If a condition needs an input that hasn't been answered, it returns **unknown**, and the tariff gets the status **needs an answer**. The rule for what happens next:
+If a condition needs an input that hasn't been answered, it returns **unknown**. The condition then uses its `assume` value, which defaults to `false`:
 
-- **Exemption headings (rate `free`) that need an answer don't apply** until answered. This is the conservative choice: without an answer, the importer pays the duty the exemption would have removed. It matches today's `requiresReview` behavior.
-- **Duty-imposing headings that need an answer do apply** until answered, for the same reason.
-- The result lists every unanswered input and what it would change ("If loaded before Feb 24, 2026: −$1,000"), so the user knows exactly which questions matter.
+```ts
+requires: [{ kind: "answer", input: "confirm:9903.94.05", equals: true }]               // assume false
+requires: [{ kind: "answer", input: "usedInUsProduction", equals: false, assume: true }] // assume true
+```
+
+- With the default, a heading that needs an answer **doesn't apply until answered** and gets the status **needs an answer**. For an exemption that's the conservative choice: the importer pays the duty the exemption would have removed. It matches the legacy `requiresReview` behavior, which applied it to duty-imposing headings too (e.g. 9903.94.05 auto parts isn't charged until confirmed).
+- Set `assume: true` on a condition where the safer default is that it holds, so a duty applies until the user says otherwise.
+- The result lists every question the entry depends on (`questions`), and which of them are unanswered (`unansweredInputs`), with the headings each one affects.
+
+> **Implemented in `tariffs/engine-v2`.** A later improvement: show what each answer would change ("If loaded before Feb 24, 2026: −$1,000") by running the calculation both ways.
 
 ### 10.3 Answers from entry data
 

@@ -24,6 +24,7 @@ import {
   RuleSnapshot,
   Tariff,
   TradePreference,
+  Question,
   UnansweredInput,
 } from "./types"
 
@@ -36,6 +37,8 @@ interface Evaluation {
   reasons: string[]
   // Inputs that were unanswered while evaluating this tariff's conditions or basis
   unknownInputs: Set<string>
+  // Every input consulted for this tariff, answered or not
+  consultedInputs: Set<string>
   // Off only because an unanswered condition was assumed false
   offForMissingAnswer: boolean
   // At least one condition was decided by an actual answer
@@ -108,6 +111,7 @@ export const calculate = (rules: RuleSet, input: CalculationInput): CalculationR
       state: "pending",
       reasons: [],
       unknownInputs: new Set<string>(),
+      consultedInputs: new Set<string>(),
       offForMissingAnswer: false,
       answered: false,
       basisValue: 0,
@@ -121,6 +125,7 @@ export const calculate = (rules: RuleSet, input: CalculationInput): CalculationR
     for (const condition of evaluation.tariff.requires ?? []) {
       const handler = conditionHandlers.get(condition.kind)
       if (!handler) throw new Error(`No condition handler "${condition.kind}"`)
+      handler.inputs(condition).forEach((id) => evaluation.consultedInputs.add(id))
       let result = handler.check(condition, ctx)
       if (result === "unknown") {
         handler.inputs(condition).forEach((id) => evaluation.unknownInputs.add(id))
@@ -142,6 +147,7 @@ export const calculate = (rules: RuleSet, input: CalculationInput): CalculationR
     const basisHandler = basisHandlers.get(basis.kind)
     if (!basisHandler) throw new Error(`No basis handler "${basis.kind}"`)
     if (evaluation.state === "pending" && basis.kind !== "coveredBy") {
+      basisHandler.inputs(basis).forEach((id) => evaluation.consultedInputs.add(id))
       if (basisHandler.value(basis, ctx) === "unknown") {
         basisHandler.inputs(basis).forEach((id) => evaluation.unknownInputs.add(id))
         evaluation.state = "off"
@@ -271,7 +277,7 @@ export const calculate = (rules: RuleSet, input: CalculationInput): CalculationR
 
   // ── 11. Explain ──
 
-  const lines = evaluations.map((e) => toDutyLine(e, column))
+  const lines = evaluations.map(toDutyLine)
   const totalDuty = base.amount + lines.reduce((sum, l) => sum + (l.status === "applies" ? l.amount : 0), 0)
 
   return {
@@ -288,6 +294,7 @@ export const calculate = (rules: RuleSet, input: CalculationInput): CalculationR
     totalDuty,
     totalFees: fees.reduce((sum, f) => sum + f.amount, 0),
     unansweredInputs: getUnansweredInputs(evaluations, snapshot),
+    questions: getQuestions(evaluations, snapshot),
     warnings,
   }
 }
@@ -442,7 +449,7 @@ const getBaseLine = (parts: BaseTariffI[], input: CalculationInput, column: Duty
   }
 }
 
-const toDutyLine = (e: Evaluation, column: DutyColumn): DutyLine => {
+const toDutyLine = (e: Evaluation): DutyLine => {
   let status: DutyLine["status"]
   if (e.state === "on") status = "applies"
   else if (e.offForMissingAnswer) status = "needsAnswer"
@@ -461,6 +468,23 @@ const toDutyLine = (e: Evaluation, column: DutyColumn): DutyLine => {
     reasons: e.reasons,
     source: e.tariff.source,
   }
+}
+
+const getQuestions = (evaluations: Evaluation[], snapshot: RuleSnapshot): Question[] => {
+  const byInput = new Map<string, { headings: string[]; answered: boolean }>()
+  for (const e of evaluations) {
+    e.consultedInputs.forEach((id) => {
+      const entry = byInput.get(id) ?? { headings: [], answered: true }
+      entry.headings.push(e.tariff.code)
+      if (e.unknownInputs.has(id)) entry.answered = false
+      byInput.set(id, entry)
+    })
+  }
+  return Array.from(byInput).map(([id, { headings, answered }]) => ({
+    input: snapshot.inputs.get(id) ?? ({ id, label: id, type: "boolean" } as InputDefinition),
+    headings,
+    answered,
+  }))
 }
 
 const getUnansweredInputs = (evaluations: Evaluation[], snapshot: RuleSnapshot): UnansweredInput[] => {

@@ -32,6 +32,7 @@ import {
 } from "../libs/hts";
 import { htsCodeDigitsOnly, normalizeHtsCode } from "../libs/hts-code";
 import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
+import { TariffResultsV2 } from "./tariff-engine-v2/TariffResultsV2";
 
 type DutyCalculatorExploreOpenSource =
   | "description_search_button"
@@ -76,6 +77,12 @@ export const TariffFinderPage = () => {
   const [countryWithTariffs, setCountryWithTariffs] =
     useState<CountryWithTariffs | null>(null);
   const [loadingPage, setLoadingPage] = useState(true);
+  // The new tariff engine is behind a URL flag (?engine=v2) or local development
+  const engineToggleEnabled =
+    searchParams.get("engine") === "v2" || process.env.NODE_ENV === "development";
+  const [engine, setEngine] = useState<"classic" | "v2">(() =>
+    searchParams.get("engine") === "v2" ? "v2" : "classic"
+  );
   const [urlParamsProcessed, setUrlParamsProcessed] = useState(false);
 
   // Parse initial customs value from URL params
@@ -711,8 +718,51 @@ export const TariffFinderPage = () => {
         )}
 
 
+        {/* Engine Toggle */}
+        {engineToggleEnabled && selectedElement && selectedCountry && (
+          <div className="flex items-center justify-end gap-2">
+            <span className="text-xs font-medium text-base-content/60">Calculator</span>
+            <div role="tablist" className="tabs tabs-boxed tabs-sm">
+              <button
+                role="tab"
+                type="button"
+                className={`tab ${engine === "classic" ? "tab-active" : ""}`}
+                onClick={() => setEngine("classic")}
+              >
+                Classic
+              </button>
+              <button
+                role="tab"
+                type="button"
+                className={`tab ${engine === "v2" ? "tab-active" : ""}`}
+                onClick={() => setEngine("v2")}
+              >
+                New engine (beta)
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Tariff Results: new engine */}
+        {engineToggleEnabled &&
+          engine === "v2" &&
+          selectedElement &&
+          selectedCountry &&
+          tariffElement && (
+            <div className="mt-4 scroll-mt-4">
+              <TariffResultsV2
+                htsCode={selectedElement.htsno}
+                tariffElement={tariffElement}
+                country={selectedCountry}
+                customsValue={customsValue}
+                units={units}
+              />
+            </div>
+          )}
+
         {/* Tariff Results */}
-        {selectedElement &&
+        {!(engineToggleEnabled && engine === "v2") &&
+          selectedElement &&
           selectedCountry &&
           countryWithTariffs &&
           tariffElement && (

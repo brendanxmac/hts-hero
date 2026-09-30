@@ -221,6 +221,11 @@ export interface UnansweredInput {
   headings: string[] // headings whose outcome depends on it
 }
 
+// An input the engine consulted for this entry, answered or not
+export interface Question extends UnansweredInput {
+  answered: boolean
+}
+
 export interface FeeLine {
   id: string
   name: string
@@ -243,5 +248,6 @@ export interface CalculationResult {
   totalDuty: number
   totalFees: number
   unansweredInputs: UnansweredInput[]
+  questions: Question[]
   warnings: string[]
 }

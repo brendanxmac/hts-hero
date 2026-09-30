@@ -101,11 +101,13 @@ export const validateRules = (
     checkLists(label, t.scope?.excludeCountries as CodeSelector)
     checkLists(label, t.scope?.codes)
     checkLists(label, t.scope?.excludeCodes)
-    ;(t.scope?.whenApplies?.programs ?? []).forEach((p) => {
+    const whenAppliesPrograms = t.scope?.whenApplies?.programs ?? []
+    whenAppliesPrograms.forEach((p) => {
       if (!programIds.has(p)) errors.push(`${label}: whenApplies refers to unknown program "${p}"`)
     })
 
-    ;(t.requires ?? []).forEach((c) => {
+    const conditions = t.requires ?? []
+    conditions.forEach((c) => {
       const handler = conditionHandlers.get(c.kind)
       if (!handler) return errors.push(`${label}: no condition handler "${c.kind}"`)
       handler.inputs(c).forEach((id) => {
@@ -114,7 +116,8 @@ export const validateRules = (
     })
     const basis = t.basis ?? { kind: "fullValue" }
     if (!basisHandlers.has(basis.kind)) errors.push(`${label}: no basis handler "${basis.kind}"`)
-    ;[t.rate, ...Object.values(t.rateByColumn ?? {})].forEach((rule) => {
+    const rateRules = [t.rate, ...Object.values(t.rateByColumn ?? {})]
+    rateRules.forEach((rule) => {
       if (!rateHandlers.has(rule.kind)) errors.push(`${label}: no rate handler "${rule.kind}"`)
     })
   }
@@ -123,7 +126,8 @@ export const validateRules = (
   // ── Checks on every date where anything starts or ends ──
   const dates = new Set<string>([options.checkFrom ?? todayIsoDate(), todayIsoDate()])
   const addDates = (d: Dated) => {
-    ;[d.effective?.from, d.effective?.to].forEach((date) => {
+    const bounds = [d.effective?.from, d.effective?.to]
+    bounds.forEach((date) => {
       if (date && (!options.checkFrom || date >= options.checkFrom)) dates.add(date)
     })
   }
@@ -140,7 +144,8 @@ export const validateRules = (
 
     snapshot.tariffs.forEach((t) => {
       // References to tracked headings that aren't in effect on this date
-      ;(t.exceptions ?? []).forEach((ref) => {
+      const exceptions = t.exceptions ?? []
+      exceptions.forEach((ref) => {
         const key = `${t.code}->${ref}`
         if (tracked.has(ref) && !snapshot.tariffsByCode.has(ref) && !reported.has(key)) {
           reported.add(key)
