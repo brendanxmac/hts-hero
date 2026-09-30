@@ -257,9 +257,8 @@ const ListRail = ({
           <p id="tw-list-status" className="text-[12px] text-[var(--dc-text-3)]" aria-live="polite">
             {count === 0 && errors.length === 0
               ? "Paste from a spreadsheet: code and country columns work too."
-              : `${count} ${count === 1 ? "product" : "products"}${
-                  errors.length ? ` · ${errors.length} ${errors.length === 1 ? "line" : "lines"} skipped` : ""
-                }`}
+              : `${count} ${count === 1 ? "product" : "products"}${errors.length ? ` · ${errors.length} ${errors.length === 1 ? "line" : "lines"} skipped` : ""
+              }`}
           </p>
         </div>
 
@@ -415,7 +414,7 @@ const Report = ({
             onClick={() => downloadCsv(sorted, f.entryDate)}
           >
             <ArrowDownTrayIcon className="w-4 h-4" />
-            Download CSV
+            Export
           </button>
         </div>
       </div>
@@ -501,9 +500,8 @@ const Summary = ({ rows }: { rows: WatchRow[] }) => {
           <div key={t.label} className="bg-[var(--dc-surface)] p-5">
             <dt className={styles.eyebrow}>{t.label}</dt>
             <dd
-              className={`${styles.num} mt-2 text-[26px] leading-none font-semibold tracking-tight ${
-                t.accent ? "text-[var(--dc-accent)]" : ""
-              }`}
+              className={`${styles.num} mt-2 text-[26px] leading-none font-semibold tracking-tight ${t.accent ? "text-[var(--dc-accent)]" : ""
+                }`}
             >
               {t.value}
             </dd>
@@ -540,9 +538,8 @@ const RowView = ({
     <li>
       <button
         type="button"
-        className={`w-full grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 gap-y-3 ${ROW_GRID} px-5 py-4 text-left text-[var(--dc-text)] transition-colors hover:bg-[var(--dc-surface-2)] focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--dc-accent)] ${
-          open ? "bg-[var(--dc-surface-2)]" : ""
-        }`}
+        className={`w-full grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 gap-y-3 ${ROW_GRID} px-5 py-4 text-left text-[var(--dc-text)] transition-colors hover:bg-[var(--dc-surface-2)] focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--dc-accent)] ${open ? "bg-[var(--dc-surface-2)]" : ""
+          }`}
         onClick={onToggle}
         aria-expanded={open}
         aria-controls={detailsId}
@@ -605,9 +602,8 @@ const RowView = ({
         </span>
 
         <ChevronDownIcon
-          className={`hidden md:block md:order-5 w-5 h-5 justify-self-end text-[var(--dc-text-3)] transition-transform ${
-            open ? "rotate-180" : ""
-          }`}
+          className={`hidden md:block md:order-5 w-5 h-5 justify-self-end text-[var(--dc-text-3)] transition-transform ${open ? "rotate-180" : ""
+            }`}
           aria-hidden
         />
       </button>
