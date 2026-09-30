@@ -7,6 +7,7 @@ import { getMinMaxRangeText } from "../../../../utilities/data"
 import { OpenAIModel } from "../../../../libs/openai"
 
 export const dynamic = "force-dynamic"
+export const maxDuration = 120
 
 interface CandidateWithReferencedCodes {
   description: string

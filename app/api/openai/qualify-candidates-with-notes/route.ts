@@ -12,6 +12,7 @@ import { buildNoteTree, renderNoteContext } from "../../../../libs/hts"
 import { QualifyCandidatesWithNotesDto } from "../../../../interfaces/hts"
 
 export const dynamic = "force-dynamic"
+export const maxDuration = 120
 
 const CandidateQualification = z.object({
   analysis: z.string(),
