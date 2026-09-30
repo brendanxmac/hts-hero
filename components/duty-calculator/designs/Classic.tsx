@@ -1,10 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { ExclamationTriangleIcon } from "@heroicons/react/20/solid";
 import { CompareView } from "../Compare";
 import { EntryRail } from "../EntryRail";
 import { formatDate, mono } from "../format";
-import { BreakdownCard } from "../MoneyBreakdown";
+import { BreakdownCard, slices } from "../MoneyBreakdown";
 import {
   NotAppliedPanel,
   QuestionsPanel,
@@ -26,6 +27,16 @@ import styles from "../theme.module.css";
 // The original redesign's statement and panels, with the entry details in a rail beside them
 export const ClassicDesign = ({ f }: { f: TariffFinder }) => {
   const { result, selectedElement, country } = f;
+  // The "Where the money goes" slice being hovered, in the chart or the statement
+  const [highlight, setHighlight] = useState<string | null>(null);
+  const sliceColors = result
+    ? slices(result)
+        .filter((s) => s.amount > 0)
+        .reduce<Record<string, string>>(
+          (colors, s) => ({ ...colors, [s.label]: s.color }),
+          {},
+        )
+    : {};
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[292px_minmax(0,1fr)] gap-5 items-start">
       <EntryRail
@@ -117,6 +128,9 @@ export const ClassicDesign = ({ f }: { f: TariffFinder }) => {
                       result={result}
                       customsValue={f.customsValue}
                       unitLabel={f.unitLabel}
+                      sliceColors={sliceColors}
+                      highlight={highlight}
+                      onHighlight={setHighlight}
                     />
                   </div>
                   {result.warnings.length > 0 && (
@@ -138,7 +152,13 @@ export const ClassicDesign = ({ f }: { f: TariffFinder }) => {
                   <NotAppliedPanel lines={result.lines} />
                 </div>
                 <aside className="xl:col-span-4 flex flex-col gap-4">
-                  <BreakdownCard f={f} result={result} layout="stacked" />
+                  <BreakdownCard
+                    f={f}
+                    result={result}
+                    layout="chart"
+                    highlight={highlight}
+                    onHighlight={setHighlight}
+                  />
                   {result.questions.length > 0 && (
                     <QuestionsPanel
                       questions={result.questions}

@@ -27,6 +27,11 @@ import styles from "./theme.module.css";
 export const programName = (id?: string) =>
   AllRules.programs.find((p) => p.id === id)?.name ?? "Other";
 
+// Which "Where the money goes" slice a line belongs to: base duty, its program, or fees
+export const BASE_SLICE = "Base duty";
+export const FEES_SLICE = "Customs fees";
+export const sliceForProgram = (program?: string) => programName(program);
+
 // Supabase revision names look like "2026-21" (year-revision); USITC's like "2026HTSRev21"
 export const describeHtsRevision = (name: string | null) => {
   const match = name?.match(/^(\d{4})(?:-|HTSRev)(\d+)$/);
@@ -114,10 +119,18 @@ export const Statement = ({
   result,
   customsValue,
   unitLabel,
+  sliceColors,
+  highlight,
+  onHighlight,
 }: {
   result: CalculationResult;
   customsValue: number;
   unitLabel: string;
+  // Chart colors by slice, to tie each line to "Where the money goes"
+  sliceColors?: Record<string, string>;
+  // The slice being hovered, here or in the chart
+  highlight?: string | null;
+  onHighlight?: (slice: string | null) => void;
 }) => {
   // Per-unit and compound base rates are shown as written in the HTS
   // Rates with several parts, per-unit amounts, or parts that apply to a component
@@ -135,6 +148,7 @@ export const Statement = ({
   const rows: RowProps[] = [
     {
       code: "Base",
+      slice: BASE_SLICE,
       name: `Base duty · ${COLUMN_LABEL[result.column]}`,
       // Notes about parts that use the whole value until a component's value is entered
       detail: result.base.reasons.slice(1).join(" · ") || undefined,
@@ -150,6 +164,7 @@ export const Statement = ({
     },
     ...applied.map((line) => ({
       code: line.code,
+      slice: sliceForProgram(line.program),
       name: line.name,
       program: programName(line.program),
       detail: line.reasons.join(" · "),
@@ -160,6 +175,7 @@ export const Statement = ({
   ];
   const feeRows: RowProps[] = result.fees.map((fee) => ({
     code: fee.id.toUpperCase(),
+    slice: FEES_SLICE,
     name: fee.name,
     detail: fee.note,
     basis: customsValue,
@@ -167,16 +183,34 @@ export const Statement = ({
     amount: fee.amount,
   }));
 
+  // Only lines with a slice in the chart get a color and respond to hover
+  const linked = (row: RowProps): RowLink => {
+    const color = row.slice ? sliceColors?.[row.slice] : undefined;
+    return {
+      color,
+      // Lines without a slice (e.g. a $0 exemption) fade with the rest
+      state: !highlight
+        ? "idle"
+        : color && highlight === row.slice
+          ? "active"
+          : "faded",
+      onHover:
+        color && onHighlight
+          ? (on: boolean) => onHighlight(on ? (row.slice ?? null) : null)
+          : undefined,
+    };
+  };
+
   return (
     <>
       {/* Phones: stacked lines */}
       <ul className="sm:hidden">
         {rows.map((row) => (
-          <MobileRow key={row.code} {...row} />
+          <MobileRow key={row.code} {...row} link={linked(row)} />
         ))}
         <MobileTotal label="Total duty" amount={result.totalDuty} />
         {feeRows.map((row) => (
-          <MobileRow key={row.code} {...row} />
+          <MobileRow key={row.code} {...row} link={linked(row)} />
         ))}
         <MobileTotal label="Total duty and fees" amount={dutyAndFees} strong />
       </ul>
@@ -214,11 +248,11 @@ export const Statement = ({
           </thead>
           <tbody>
             {rows.map((row) => (
-              <StatementRow key={row.code} {...row} />
+              <StatementRow key={row.code} {...row} link={linked(row)} />
             ))}
             <TotalRow label="Total duty" amount={result.totalDuty} />
             {feeRows.map((row) => (
-              <StatementRow key={row.code} {...row} />
+              <StatementRow key={row.code} {...row} link={linked(row)} />
             ))}
             <TotalRow label="Total duty and fees" amount={dutyAndFees} strong />
           </tbody>
@@ -230,6 +264,7 @@ export const Statement = ({
 
 interface RowProps {
   code: string;
+  slice?: string;
   name: string;
   program?: string;
   detail?: string;
@@ -239,6 +274,29 @@ interface RowProps {
   rateText?: string;
   amount: number;
 }
+
+interface RowLink {
+  color?: string;
+  state: "idle" | "active" | "faded";
+  onHover?: (on: boolean) => void;
+}
+
+const linkClass = (link?: RowLink) =>
+  link?.state === "active"
+    ? "bg-[var(--dc-accent-soft)]"
+    : link?.state === "faded"
+      ? "opacity-45"
+      : "";
+
+// The line's chart color
+const Swatch = ({ color }: { color?: string }) =>
+  color ? (
+    <span
+      className="inline-block h-2.5 w-2.5 shrink-0 rounded-[3px] self-center"
+      style={{ background: color }}
+      aria-hidden
+    />
+  ) : null;
 
 const MobileRow = ({
   code,
@@ -250,13 +308,17 @@ const MobileRow = ({
   rate,
   rateText,
   amount,
-}: RowProps) => (
-  <li className="border-t border-[var(--dc-border)] px-5 py-4 flex flex-col gap-1.5">
+  link,
+}: RowProps & { link?: RowLink }) => (
+  <li
+    className={`border-t border-[var(--dc-border)] px-5 py-4 flex flex-col gap-1.5 transition-[opacity,background-color] ${linkClass(link)}`}
+  >
     <div className="flex items-start justify-between gap-4">
       <div className="min-w-0">
         <div
-          className={`${mono.className} text-[13px] font-semibold text-[var(--dc-accent)]`}
+          className={`${mono.className} flex items-center gap-1.5 text-[13px] font-semibold text-[var(--dc-accent)]`}
         >
+          <Swatch color={link?.color} />
           {code}
         </div>
         <div className="text-[14.5px] font-medium leading-snug text-[var(--dc-text)]">
@@ -358,14 +420,20 @@ const StatementRow = ({
   rate,
   rateText,
   amount,
-}: RowProps) => (
-  <tr className="border-t border-[var(--dc-border)] align-top">
+  link,
+}: RowProps & { link?: RowLink }) => (
+  <tr
+    className={`border-t border-[var(--dc-border)] align-top transition-[opacity,background-color] ${linkClass(link)}`}
+    onMouseEnter={link?.onHover && (() => link.onHover?.(true))}
+    onMouseLeave={link?.onHover && (() => link.onHover?.(false))}
+  >
     <td className="py-4 pl-5 sm:pl-6 pr-3">
       <div className="flex flex-col gap-1">
         <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5">
           <span
-            className={`${mono.className} text-[13.5px] font-semibold text-[var(--dc-accent)]`}
+            className={`${mono.className} inline-flex items-center gap-2 text-[13.5px] font-semibold text-[var(--dc-accent)]`}
           >
+            <Swatch color={link?.color} />
             {code}
           </span>
           <span className="text-[14.5px] font-medium text-[var(--dc-text)]">
@@ -544,7 +612,7 @@ export const QuestionsPanel = ({
 
   return (
     <Panel
-      title="Refine this estimate"
+      title="Additional Options"
       badge={open > 0 ? `${open} could change the total` : undefined}
       description="Unanswered questions count as “no”, so an exemption isn’t applied until you confirm it."
     >
