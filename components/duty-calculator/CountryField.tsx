@@ -69,11 +69,10 @@ export const CountryField = ({ id, selected, onChange, max }: Props) => {
           {selected.map((country, i) => (
             <span
               key={country.code}
-              className={`inline-flex items-center gap-1.5 rounded-lg border py-1 pl-2 pr-1 text-[14px] font-medium ${
-                i === 0 && selected.length > 1
-                  ? "border-[var(--dc-accent-border)] bg-[var(--dc-accent-soft)] text-[var(--dc-text)]"
-                  : "border-[var(--dc-border)] bg-[var(--dc-surface-2)] text-[var(--dc-text)]"
-              }`}
+              className={`inline-flex items-center gap-1.5 rounded-lg border py-1 pl-2 pr-1 text-[14px] font-medium ${i === 0 && selected.length > 1
+                ? "border-[var(--dc-accent-border)] bg-[var(--dc-accent-soft)] text-[var(--dc-text)]"
+                : "border-[var(--dc-border)] bg-[var(--dc-surface-2)] text-[var(--dc-text)]"
+                }`}
             >
               <span className="text-base leading-none" aria-hidden>
                 {country.flag}
@@ -101,7 +100,7 @@ export const CountryField = ({ id, selected, onChange, max }: Props) => {
                 ? "Search countries"
                 : full
                   ? ""
-                  : "Add a country to compare"
+                  : ""
             }
             autoComplete="off"
             value={query}
@@ -127,8 +126,7 @@ export const CountryField = ({ id, selected, onChange, max }: Props) => {
                   value={country}
                   disabled={full && !isSelected}
                   className={({ active, disabled }) =>
-                    `flex items-center gap-3 rounded-lg px-3 py-2 text-[14.5px] ${
-                      disabled ? "opacity-45 cursor-not-allowed" : "cursor-pointer"
+                    `flex items-center gap-3 rounded-lg px-3 py-2 text-[14.5px] ${disabled ? "opacity-45 cursor-not-allowed" : "cursor-pointer"
                     } ${active && !disabled ? "bg-[var(--dc-accent-soft)]" : ""}`
                   }
                 >

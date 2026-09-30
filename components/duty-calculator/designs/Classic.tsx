@@ -3,6 +3,7 @@
 import { CompareView } from "../Compare";
 import { EntryRail } from "../EntryRail";
 import { formatDate, mono } from "../format";
+import { BreakdownCard } from "../MoneyBreakdown";
 import { BasisPanel, NotAppliedPanel, QuestionsPanel, SimpleSummary, Statement, SummaryStats } from "../Results";
 import {
   EMPTY_STEPS,
@@ -92,6 +93,7 @@ export const ClassicDesign = ({ f }: { f: TariffFinder }) => {
                   </div>
                 </div>
                 <aside className="xl:col-span-4 flex flex-col gap-4">
+                  <BreakdownCard f={f} result={result} layout="stacked" />
                   {result.questions.length > 0 && (
                     <QuestionsPanel
                       questions={result.questions}
