@@ -1,6 +1,10 @@
 // The calculation pipeline. See HowTariffsWork.md §12 for the steps.
 
-import { BaseTariffI, getBaseTariffs, splitOnClosingParen } from "../../libs/hts"
+import {
+  BaseTariffI,
+  getBaseTariffs,
+  splitOnClosingParen,
+} from "../../libs/hts"
 import {
   basisHandlers,
   conditionHandlers,
@@ -50,7 +54,13 @@ interface Evaluation {
 
 const MAX_ROUNDS = 50
 
-export const calculate = (rules: RuleSet, input: CalculationInput): CalculationResult => {
+// Formal entry threshold; below it an entry may be informal, which uses a flat MPF (not modeled)
+const INFORMAL_ENTRY_LIMIT = 2500
+
+export const calculate = (
+  rules: RuleSet,
+  input: CalculationInput,
+): CalculationResult => {
   const snapshot = getRulesAsOf(rules, input.asOf)
   const answers = input.answers ?? {}
   const warnings: string[] = []
@@ -65,7 +75,9 @@ export const calculate = (rules: RuleSet, input: CalculationInput): CalculationR
       warnings.push(
         `${input.country} is a Column 2 country; trade preference ${input.claimedPreference} ignored`,
       )
-    } else if (availablePreferences.some((p) => p.symbol === input.claimedPreference)) {
+    } else if (
+      availablePreferences.some((p) => p.symbol === input.claimedPreference)
+    ) {
       column = "special"
     } else {
       warnings.push(
@@ -81,7 +93,9 @@ export const calculate = (rules: RuleSet, input: CalculationInput): CalculationR
     )
   }
   if (baseParts.some((t) => t.type === "amount") && !input.quantity) {
-    warnings.push("The base rate includes a per-unit amount, but no quantity was given")
+    warnings.push(
+      "The base rate includes a per-unit amount, but no quantity was given",
+    )
   }
   const baseRateEquivalentPct = getBaseRateEquivalentPct(
     baseParts,
@@ -98,7 +112,8 @@ export const calculate = (rules: RuleSet, input: CalculationInput): CalculationR
     quantity: input.quantity,
     answers,
     baseRateEquivalentPct,
-    claimedPreference: column === "special" ? input.claimedPreference : undefined,
+    claimedPreference:
+      column === "special" ? input.claimedPreference : undefined,
     snapshot,
   }
 
@@ -106,17 +121,19 @@ export const calculate = (rules: RuleSet, input: CalculationInput): CalculationR
 
   const evaluations: Evaluation[] = snapshot.tariffs
     .filter((t) => isCandidate(t, input, snapshot))
-    .map((tariff): Evaluation => ({
-      tariff,
-      state: "pending",
-      reasons: [],
-      unknownInputs: new Set<string>(),
-      consultedInputs: new Set<string>(),
-      offForMissingAnswer: false,
-      answered: false,
-      basisValue: 0,
-      amount: 0,
-    }))
+    .map(
+      (tariff): Evaluation => ({
+        tariff,
+        state: "pending",
+        reasons: [],
+        unknownInputs: new Set<string>(),
+        consultedInputs: new Set<string>(),
+        offForMissingAnswer: false,
+        answered: false,
+        basisValue: 0,
+        amount: 0,
+      }),
+    )
   const byCode = new Map(evaluations.map((e) => [e.tariff.code, e]))
 
   // ── 4. Conditions ──
@@ -125,10 +142,14 @@ export const calculate = (rules: RuleSet, input: CalculationInput): CalculationR
     for (const condition of evaluation.tariff.requires ?? []) {
       const handler = conditionHandlers.get(condition.kind)
       if (!handler) throw new Error(`No condition handler "${condition.kind}"`)
-      handler.inputs(condition).forEach((id) => evaluation.consultedInputs.add(id))
+      handler
+        .inputs(condition)
+        .forEach((id) => evaluation.consultedInputs.add(id))
       let result = handler.check(condition, ctx)
       if (result === "unknown") {
-        handler.inputs(condition).forEach((id) => evaluation.unknownInputs.add(id))
+        handler
+          .inputs(condition)
+          .forEach((id) => evaluation.unknownInputs.add(id))
         result = condition.assume === true
         if (!result) evaluation.offForMissingAnswer = true
       } else if (handler.inputs(condition).length > 0) {
@@ -136,7 +157,9 @@ export const calculate = (rules: RuleSet, input: CalculationInput): CalculationR
       }
       if (!result) {
         evaluation.state = "off"
-        evaluation.reasons.push(`Condition not met: ${handler.describe(condition)}`)
+        evaluation.reasons.push(
+          `Condition not met: ${handler.describe(condition)}`,
+        )
         break
       }
     }
@@ -147,12 +170,18 @@ export const calculate = (rules: RuleSet, input: CalculationInput): CalculationR
     const basisHandler = basisHandlers.get(basis.kind)
     if (!basisHandler) throw new Error(`No basis handler "${basis.kind}"`)
     if (evaluation.state === "pending" && basis.kind !== "coveredBy") {
-      basisHandler.inputs(basis).forEach((id) => evaluation.consultedInputs.add(id))
+      basisHandler
+        .inputs(basis)
+        .forEach((id) => evaluation.consultedInputs.add(id))
       if (basisHandler.value(basis, ctx) === "unknown") {
-        basisHandler.inputs(basis).forEach((id) => evaluation.unknownInputs.add(id))
+        basisHandler
+          .inputs(basis)
+          .forEach((id) => evaluation.unknownInputs.add(id))
         evaluation.state = "off"
         evaluation.offForMissingAnswer = true
-        evaluation.reasons.push(`Needs ${basisHandler.describe(basis)} to calculate`)
+        evaluation.reasons.push(
+          `Needs ${basisHandler.describe(basis)} to calculate`,
+        )
       }
     }
   }
@@ -189,13 +218,20 @@ export const calculate = (rules: RuleSet, input: CalculationInput): CalculationR
       continue
     }
     // Unknown bases were switched off in step 4
-    evaluation.basisValue = basisHandlers.get(basis.kind).value(basis, ctx) as number
+    evaluation.basisValue = basisHandlers
+      .get(basis.kind)
+      .value(basis, ctx) as number
   }
 
   for (const evaluation of coveredBy) {
-    const selector = evaluation.tariff.basis.selector as Parameters<typeof selectorMatches>[0]
+    const selector = evaluation.tariff.basis.selector as Parameters<
+      typeof selectorMatches
+    >[0]
     const covered = on()
-      .filter((e) => e !== evaluation && selectorMatches(selector, e.tariff, snapshot))
+      .filter(
+        (e) =>
+          e !== evaluation && selectorMatches(selector, e.tariff, snapshot),
+      )
       .reduce((sum, e) => sum + e.basisValue, 0)
     evaluation.basisValue = Math.min(input.customsValue, covered)
   }
@@ -204,8 +240,16 @@ export const calculate = (rules: RuleSet, input: CalculationInput): CalculationR
   for (const evaluation of on()) {
     for (const code of evaluation.tariff.exceptions ?? []) {
       const exception = byCode.get(code)
-      if (!exception || exception.state !== "on" || !isPartial(exception.tariff)) continue
-      evaluation.basisValue = Math.max(0, evaluation.basisValue - exception.basisValue)
+      if (
+        !exception ||
+        exception.state !== "on" ||
+        !isPartial(exception.tariff)
+      )
+        continue
+      evaluation.basisValue = Math.max(
+        0,
+        evaluation.basisValue - exception.basisValue,
+      )
       evaluation.reasons.push(`Doesn't apply to the value covered by ${code}`)
     }
   }
@@ -220,7 +264,8 @@ export const calculate = (rules: RuleSet, input: CalculationInput): CalculationR
     )
     if (covered === 0) continue
     for (const evaluation of on()) {
-      if (!selectorMatches(interaction.losers, evaluation.tariff, snapshot)) continue
+      if (!selectorMatches(interaction.losers, evaluation.tariff, snapshot))
+        continue
       evaluation.basisValue = Math.max(0, evaluation.basisValue - covered)
       evaluation.reasons.push(`Partly excluded: ${interaction.description}`)
     }
@@ -236,21 +281,26 @@ export const calculate = (rules: RuleSet, input: CalculationInput): CalculationR
   // ── 8. Rates ──
 
   for (const evaluation of on()) {
-    const rule = evaluation.tariff.rateByColumn?.[column] ?? evaluation.tariff.rate
+    const rule =
+      evaluation.tariff.rateByColumn?.[column] ?? evaluation.tariff.rate
     const handler = rateHandlers.get(rule.kind)
     if (!handler) throw new Error(`No rate handler "${rule.kind}"`)
     const result = handler.compute(rule, ctx, evaluation.basisValue)
     evaluation.ratePct = result.pct
-    evaluation.amount = (evaluation.basisValue * (result.pct ?? 0)) / 100 + (result.amount ?? 0)
+    evaluation.amount =
+      (evaluation.basisValue * (result.pct ?? 0)) / 100 + (result.amount ?? 0)
   }
 
   // ── 9. Caps ──
 
   for (const interaction of interactionsFor(snapshot, input)) {
     if (interaction.kind !== "capTotal") continue
-    const covered = on().filter((e) => selectorMatches(interaction.covers, e.tariff, snapshot))
+    const covered = on().filter((e) =>
+      selectorMatches(interaction.covers, e.tariff, snapshot),
+    )
     const coveredAmount = covered.reduce((sum, e) => sum + e.amount, 0)
-    const total = coveredAmount + (interaction.includesBaseRate ? base.amount : 0)
+    const total =
+      coveredAmount + (interaction.includesBaseRate ? base.amount : 0)
     const cap = (input.customsValue * interaction.pct) / 100
     if (total <= cap || coveredAmount === 0) continue
     const scale = Math.max(0, coveredAmount - (total - cap)) / coveredAmount
@@ -262,32 +312,51 @@ export const calculate = (rules: RuleSet, input: CalculationInput): CalculationR
 
   // ── 10. Fees ──
 
-  const fees: FeeLine[] = snapshot.fees.map((fee) => {
-    let amount = (input.customsValue * fee.ratePct) / 100
-    let note: string | undefined
-    if (fee.min !== undefined && amount < fee.min) {
-      amount = fee.min
-      note = `Minimum applied ($${fee.min.toFixed(2)})`
-    } else if (fee.max !== undefined && amount > fee.max) {
-      amount = fee.max
-      note = `Maximum applied ($${fee.max.toFixed(2)})`
-    }
-    return { id: fee.id, name: fee.name, ratePct: fee.ratePct, amount, note }
-  })
+  const fees: FeeLine[] = snapshot.fees
+    .filter(
+      (fee) =>
+        !input.transportMode ||
+        !fee.modes ||
+        fee.modes.includes(input.transportMode),
+    )
+    .map((fee) => {
+      let amount = (input.customsValue * fee.ratePct) / 100
+      let note: string | undefined
+      if (fee.min !== undefined && amount < fee.min) {
+        amount = fee.min
+        note = `Minimum applied ($${fee.min.toFixed(2)})`
+      } else if (fee.max !== undefined && amount > fee.max) {
+        amount = fee.max
+        note = `Maximum applied ($${fee.max.toFixed(2)})`
+      }
+      if (fee.id === "mpf" && input.customsValue < INFORMAL_ENTRY_LIMIT) {
+        note = [
+          note,
+          "Entries under $2,500 may be informal, with a flat MPF instead",
+        ]
+          .filter(Boolean)
+          .join(". ")
+      }
+      return { id: fee.id, name: fee.name, ratePct: fee.ratePct, amount, note }
+    })
 
   // ── 11. Explain ──
 
   const lines = evaluations.map(toDutyLine)
-  const totalDuty = base.amount + lines.reduce((sum, l) => sum + (l.status === "applies" ? l.amount : 0), 0)
+  const totalDuty =
+    base.amount +
+    lines.reduce((sum, l) => sum + (l.status === "applies" ? l.amount : 0), 0)
 
   return {
     asOf: input.asOf,
     htsCode: input.htsCode,
     country: input.country,
     column,
-    claimedPreference: column === "special" ? input.claimedPreference : undefined,
+    claimedPreference:
+      column === "special" ? input.claimedPreference : undefined,
     availablePreferences,
     baseRateEquivalentPct,
+    requiresQuantity: baseParts.some((t) => t.type === "amount"),
     base,
     lines,
     fees,
@@ -301,7 +370,11 @@ export const calculate = (rules: RuleSet, input: CalculationInput): CalculationR
 
 // ── Helpers ──
 
-const isCandidate = (tariff: Tariff, input: CalculationInput, snapshot: RuleSnapshot) => {
+const isCandidate = (
+  tariff: Tariff,
+  input: CalculationInput,
+  snapshot: RuleSnapshot,
+) => {
   const { scope } = tariff
   return (
     countryMatches(scope.countries, input.country, snapshot) &&
@@ -331,7 +404,9 @@ const resolveExceptions = (
 
   const triggersOf = (e: Evaluation) =>
     eligible.filter(
-      (other) => other !== e && selectorMatches(e.tariff.scope.whenApplies, other.tariff, snapshot),
+      (other) =>
+        other !== e &&
+        selectorMatches(e.tariff.scope.whenApplies, other.tariff, snapshot),
     )
 
   const settle = () => {
@@ -349,9 +424,14 @@ const resolveExceptions = (
           changed = true
         } else if (triggers && triggers.every((t) => t.state === "off")) {
           e.state = "off"
-          e.reasons.push("Only applies alongside headings that don't apply here")
+          e.reasons.push(
+            "Only applies alongside headings that don't apply here",
+          )
           changed = true
-        } else if (exceptions.length === 0 && (!triggers || triggers.some((t) => t.state === "on"))) {
+        } else if (
+          exceptions.length === 0 &&
+          (!triggers || triggers.some((t) => t.state === "on"))
+        ) {
           e.state = "on"
           if (triggers) {
             const trigger = triggers.find((t) => t.state === "on")
@@ -380,7 +460,9 @@ const resolveExceptions = (
   const remaining = eligible.filter((e) => e.state === "pending")
   if (remaining.length > 0) {
     const codes = remaining.map((e) => e.tariff.code).join(", ")
-    warnings.push(`Circular exceptions between ${codes}; none of them were applied`)
+    warnings.push(
+      `Circular exceptions between ${codes}; none of them were applied`,
+    )
     for (const e of remaining) {
       e.state = "off"
       e.reasons.push("Circular exceptions with other headings")
@@ -391,8 +473,10 @@ const resolveExceptions = (
 const interactionsFor = (snapshot: RuleSnapshot, input: CalculationInput) =>
   snapshot.interactions.filter(
     (i) =>
-      (!i.appliesTo?.countries || countryMatches(i.appliesTo.countries, input.country, snapshot)) &&
-      (!i.appliesTo?.codes || codeMatches(i.appliesTo.codes, input.htsCode, snapshot)),
+      (!i.appliesTo?.countries ||
+        countryMatches(i.appliesTo.countries, input.country, snapshot)) &&
+      (!i.appliesTo?.codes ||
+        codeMatches(i.appliesTo.codes, input.htsCode, snapshot)),
   )
 
 const programsInColumn = (raw: string | null) =>
@@ -400,17 +484,24 @@ const programsInColumn = (raw: string | null) =>
     .map((part) => getBaseTariffs(part))
     .flatMap((parsed) => parsed.tariffs)
 
-const getAvailablePreferences = (snapshot: RuleSnapshot, input: CalculationInput) => {
+const getAvailablePreferences = (
+  snapshot: RuleSnapshot,
+  input: CalculationInput,
+) => {
   const symbols = new Set(
     programsInColumn(input.baseRates.special).flatMap((t) => t.programs ?? []),
   )
   return snapshot.preferences.filter(
     (p: TradePreference) =>
-      symbols.has(p.symbol) && countryMatches(p.countries, input.country, snapshot),
+      symbols.has(p.symbol) &&
+      countryMatches(p.countries, input.country, snapshot),
   )
 }
 
-const getBaseParts = (input: CalculationInput, column: DutyColumn): BaseTariffI[] => {
+const getBaseParts = (
+  input: CalculationInput,
+  column: DutyColumn,
+): BaseTariffI[] => {
   if (column === "column2") return programsInColumn(input.baseRates.other)
   if (column === "special") {
     return programsInColumn(input.baseRates.special).filter((t) =>
@@ -420,7 +511,11 @@ const getBaseParts = (input: CalculationInput, column: DutyColumn): BaseTariffI[
   return programsInColumn(input.baseRates.general)
 }
 
-const getBaseRateEquivalentPct = (parts: BaseTariffI[], customsValue: number, quantity?: number) => {
+const getBaseRateEquivalentPct = (
+  parts: BaseTariffI[],
+  customsValue: number,
+  quantity?: number,
+) => {
   const percent = parts
     .filter((t) => t.type === "percent")
     .reduce((sum, t) => sum + (t.value ?? 0), 0)
@@ -430,14 +525,22 @@ const getBaseRateEquivalentPct = (parts: BaseTariffI[], customsValue: number, qu
   return percent + (customsValue > 0 ? (amount / customsValue) * 100 : 0)
 }
 
-const getBaseLine = (parts: BaseTariffI[], input: CalculationInput, column: DutyColumn): DutyLine => {
-  const pct = parts.filter((t) => t.type === "percent").reduce((sum, t) => sum + (t.value ?? 0), 0)
+const getBaseLine = (
+  parts: BaseTariffI[],
+  input: CalculationInput,
+  column: DutyColumn,
+): DutyLine => {
+  const pct = parts
+    .filter((t) => t.type === "percent")
+    .reduce((sum, t) => sum + (t.value ?? 0), 0)
   const perUnit = parts
     .filter((t) => t.type === "amount")
     .reduce((sum, t) => sum + (t.value ?? 0) * (input.quantity ?? 0), 0)
-  const columnName = { general: "Column 1 General", special: "Column 1 Special", column2: "Column 2" }[
-    column
-  ]
+  const columnName = {
+    general: "Column 1 General",
+    special: "Column 1 Special",
+    column2: "Column 2",
+  }[column]
   return {
     code: "BASE",
     name: `Base duty (${columnName})`,
@@ -453,7 +556,11 @@ const toDutyLine = (e: Evaluation): DutyLine => {
   let status: DutyLine["status"]
   if (e.state === "on") status = "applies"
   else if (e.offForMissingAnswer) status = "needsAnswer"
-  else if (e.reasons.some((r) => r.startsWith("Condition not met") || r.startsWith("Only applies")))
+  else if (
+    e.reasons.some(
+      (r) => r.startsWith("Condition not met") || r.startsWith("Only applies"),
+    )
+  )
     status = "notApplicable"
   else status = "excluded"
 
@@ -470,7 +577,10 @@ const toDutyLine = (e: Evaluation): DutyLine => {
   }
 }
 
-const getQuestions = (evaluations: Evaluation[], snapshot: RuleSnapshot): Question[] => {
+const getQuestions = (
+  evaluations: Evaluation[],
+  snapshot: RuleSnapshot,
+): Question[] => {
   const byInput = new Map<string, { headings: string[]; answered: boolean }>()
   for (const e of evaluations) {
     e.consultedInputs.forEach((id) => {
@@ -481,13 +591,18 @@ const getQuestions = (evaluations: Evaluation[], snapshot: RuleSnapshot): Questi
     })
   }
   return Array.from(byInput).map(([id, { headings, answered }]) => ({
-    input: snapshot.inputs.get(id) ?? ({ id, label: id, type: "boolean" } as InputDefinition),
+    input:
+      snapshot.inputs.get(id) ??
+      ({ id, label: id, type: "boolean" } as InputDefinition),
     headings,
     answered,
   }))
 }
 
-const getUnansweredInputs = (evaluations: Evaluation[], snapshot: RuleSnapshot): UnansweredInput[] => {
+const getUnansweredInputs = (
+  evaluations: Evaluation[],
+  snapshot: RuleSnapshot,
+): UnansweredInput[] => {
   const byInput = new Map<string, string[]>()
   for (const e of evaluations) {
     e.unknownInputs.forEach((id) => {

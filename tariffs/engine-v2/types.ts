@@ -131,12 +131,16 @@ export interface TradePreference extends Dated {
   countries: CountrySelector
 }
 
+export type TransportMode = "ocean" | "air" | "truck" | "rail"
+
 export interface FeeSchedule extends Dated {
   id: "mpf" | "hmf"
   name: string
   ratePct: number
   min?: number
   max?: number
+  // Transport modes the fee applies to; all modes when omitted
+  modes?: TransportMode[]
 }
 
 // ── Inputs ──
@@ -198,6 +202,8 @@ export interface CalculationInput {
   baseRates: BaseRates
   claimedPreference?: string // SPI symbol
   answers?: Answers
+  // Mode of transport, for fees such as HMF (ocean only). All fees apply when omitted.
+  transportMode?: TransportMode
 }
 
 export type Tri = true | false | "unknown"
@@ -242,6 +248,8 @@ export interface CalculationResult {
   claimedPreference?: string
   availablePreferences: TradePreference[]
   baseRateEquivalentPct: number
+  // The base rate includes a per-unit amount, so the result depends on the quantity
+  requiresQuantity: boolean
   base: DutyLine
   lines: DutyLine[] // Chapter 99 lines, in evaluation order
   fees: FeeLine[]

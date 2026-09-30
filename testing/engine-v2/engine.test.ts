@@ -329,6 +329,31 @@ describe("engine-v2: columns and preferences", () => {
     expect(result.column).toBe("general")
     expect(result.warnings.length).toBe(1)
   })
+  it("charges HMF only on ocean shipments", () => {
+    const withHmf = rules({
+      fees: [
+        { id: "mpf", name: "MPF", ratePct: 0.3464, min: 33.58, max: 651.5, effective: {} },
+        { id: "hmf", name: "HMF", ratePct: 0.125, modes: ["ocean"], effective: {} },
+      ],
+    })
+    const feeIds = (transportMode?: "ocean" | "air" | "truck" | "rail") =>
+      calculate(withHmf, input({ transportMode })).fees.map((f) => f.id)
+    expect(feeIds("ocean")).toEqual(["mpf", "hmf"])
+    expect(feeIds("air")).toEqual(["mpf"])
+    expect(feeIds("truck")).toEqual(["mpf"])
+    expect(feeIds()).toEqual(["mpf", "hmf"])
+  })
+
+  it("notes that entries under $2,500 may be informal", () => {
+    expect(calculate(set, input({ customsValue: 1000 })).fees[0].note.includes("informal")).toBe(true)
+    expect(calculate(set, input({ customsValue: 10_000 })).fees[0].note).toBeUndefined()
+  })
+
+  it("says when the base rate needs a quantity", () => {
+    expect(calculate(set, input()).requiresQuantity).toBe(false)
+    expect(calculate(set, input({ baseRates: { general: "3.3¢/kg", special: null, other: null } })).requiresQuantity).toBe(true)
+  })
+
   it("applies fee minimums and maximums", () => {
     expect(calculate(set, input({ customsValue: 1000 })).fees[0].amount).toBe(33.58)
     expect(calculate(set, input({ customsValue: 1_000_000 })).fees[0].amount).toBe(651.5)

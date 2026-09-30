@@ -28,7 +28,8 @@ export const fees: FeeSchedule[] = [
     id: "hmf",
     name: "Harbor Maintenance Fee",
     ratePct: 0.125,
-    // Applies only to ocean shipments; the calculator currently assumes ocean.
+    // Charged on cargo loaded or unloaded at U.S. ports, i.e. ocean shipments
+    modes: ["ocean"],
     effective: {},
   },
 ]
