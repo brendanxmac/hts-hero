@@ -24,17 +24,17 @@ import {
 } from "./format";
 import styles from "./theme.module.css";
 
-const programName = (id?: string) =>
+export const programName = (id?: string) =>
   AllRules.programs.find((p) => p.id === id)?.name ?? "Other";
 
 // Supabase revision names look like "2026-21" (year-revision); USITC's like "2026HTSRev21"
-const describeHtsRevision = (name: string | null) => {
+export const describeHtsRevision = (name: string | null) => {
   const match = name?.match(/^(\d{4})(?:-|HTSRev)(\d+)$/);
   if (match) return `${match[1]} Rev ${match[2]}`;
   return name ?? "latest revision";
 };
 
-const COLUMN_LABEL = {
+export const COLUMN_LABEL = {
   general: "Column 1 General",
   special: "Column 1 Special",
   column2: "Column 2",
@@ -583,7 +583,7 @@ export const QuestionsPanel = ({
   );
 };
 
-const Impact = ({ amount }: { amount?: number }) => {
+export const Impact = ({ amount }: { amount?: number }) => {
   if (amount === undefined || Math.abs(amount) < 0.005) return null;
   const lower = amount < 0;
   return (
@@ -600,7 +600,7 @@ const Impact = ({ amount }: { amount?: number }) => {
   );
 };
 
-const QuestionControl = ({
+export const QuestionControl = ({
   question,
   value,
   impact,

@@ -20,6 +20,8 @@ interface Props {
   selectedElement: HtsElement | null;
   onSelect: (element: HtsElement | null) => void;
   autoFocus?: boolean;
+  // Leave out the description under the field, for layouts that show it elsewhere
+  hidePath?: boolean;
 }
 
 const MAX_RESULTS = 20;
@@ -30,7 +32,7 @@ const plain = (text: string) => text.replace(/<[^>]+>/g, "").trim();
 // Description levels end with ":" in the HTS; drop it when showing the path
 const level = (text: string) => plain(text).replace(/:\s*$/, "");
 
-export const HtsCodeField = ({ id, selectedElement, onSelect, autoFocus }: Props) => {
+export const HtsCodeField = ({ id, selectedElement, onSelect, autoFocus, hidePath }: Props) => {
   const { htsElements } = useHts();
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
@@ -169,7 +171,7 @@ export const HtsCodeField = ({ id, selectedElement, onSelect, autoFocus }: Props
         </div>
       </Combobox>
 
-      {path && (
+      {path && !hidePath && (
         <p className="text-[13px] leading-snug text-[var(--dc-text-2)] line-clamp-2" title={path}>
           {path}
         </p>
