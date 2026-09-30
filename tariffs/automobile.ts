@@ -230,8 +230,8 @@ export const automobileTariffs: TariffI[] = [
     description:
       "Automobile parts the product of the European Union with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 15 percent, as provided for in subdivision (r) of U.S. note 33 to this subchapter.",
     name: "Automobile parts of the European Union with Column 1 Duty <15%",
-    general: 15,
-    special: 15,
+    general: 0,
+    special: 0,
     other: 0,
     requiresReview: true,
     inclusions: {
