@@ -53,7 +53,7 @@ const isTariffLevel = (element: HtsElement) => htsCodeDigitsOnly(element.htsno).
 // How much answering "yes" instead of "no" changes duty and fees, for every yes/no question.
 // Answered ones are measured the other way round, so a question keeps its sign (and its place
 // in any grouping) after it's answered.
-const questionImpacts = (input: CalculationInput, result: CalculationResult, answers: Answers) => {
+export const questionImpacts = (input: CalculationInput, result: CalculationResult, answers: Answers) => {
   const current = result.totalDuty + result.totalFees;
   const out: Record<string, number> = {};
   result.questions
@@ -72,7 +72,7 @@ const questionImpacts = (input: CalculationInput, result: CalculationResult, ans
 };
 
 // Open questions whose answer would change the amount
-const countOpenQuestions = (result: CalculationResult, impacts: Record<string, number>) =>
+export const countOpenQuestions = (result: CalculationResult, impacts: Record<string, number>) =>
   result.questions.filter(
     (q) => !q.answered && (q.input.type !== "boolean" || Math.abs(impacts[q.input.id] ?? 0) >= 0.005)
   ).length;

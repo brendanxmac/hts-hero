@@ -68,6 +68,13 @@ export enum MixpanelEvent {
   DUTY_CALCULATOR_RESULTS_COPIED = "Duty Calculator Results Copied",
   DUTY_CALCULATOR_EXAMPLE_SELECTED = "Duty Calculator Example Selected",
   DUTY_CALCULATOR_COMPARE_CHANGED = "Duty Calculator Compare Countries Changed",
+  /** Tariff Watcher tab on the duty calculator page */
+  TARIFF_TOOL_CHANGED = "Tariff Tool Changed",
+  TARIFF_WATCHER_LIST_CHANGED = "Tariff Watcher List Changed",
+  TARIFF_WATCHER_EXAMPLE_USED = "Tariff Watcher Example Used",
+  TARIFF_WATCHER_SORTED = "Tariff Watcher Sorted",
+  TARIFF_WATCHER_EXPORTED = "Tariff Watcher Exported",
+  TARIFF_WATCHER_OPENED_IN_CALCULATOR = "Tariff Watcher Opened in Calculator",
   /** User copied the shareable duty-calculator URL from CountryTariff */
   DUTY_CALCULATOR_SHARE_RESULTS_COPIED = "Duty Calculator Share Results Copied",
   /** HTS Explorer (/explore and embedded Explore) */

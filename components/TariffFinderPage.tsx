@@ -1,7 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { ExclamationTriangleIcon } from "@heroicons/react/20/solid";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import {
+  CalculatorIcon,
+  EyeIcon,
+  ExclamationTriangleIcon,
+} from "@heroicons/react/20/solid";
+import { Country } from "../constants/countries";
+import { HtsElement } from "../interfaces/hts";
+import { MixpanelEvent, trackEvent } from "../libs/mixpanel";
+import { TariffWatcher } from "./tariff-watcher/TariffWatcher";
 import { CompareView } from "./duty-calculator/Compare";
 import { EntryRail } from "./duty-calculator/EntryRail";
 import { formatDate, mono } from "./duty-calculator/format";
@@ -29,19 +38,133 @@ import {
 } from "./duty-calculator/useTariffFinder";
 import styles from "./duty-calculator/theme.module.css";
 
+type Tool = "calculator" | "watcher";
+
+const TOOLS: { id: Tool; label: string; note: string; Icon: typeof CalculatorIcon }[] = [
+  { id: "calculator", label: "Tariff Calculator", note: "Duty on one shipment", Icon: CalculatorIcon },
+  { id: "watcher", label: "Tariff Watcher", note: "Rates for all your products", Icon: EyeIcon },
+];
+
+// Kept on this device until watch lists are saved to accounts
+const WATCH_LIST_KEY = "hts-hero-tariff-watch-list";
+
 export const TariffFinderPage = () => {
   const f = useTariffFinder();
+  const searchParams = useSearchParams();
+  const [tool, setTool] = useState<Tool>(() =>
+    searchParams.get("tool") === "watcher" ? "watcher" : "calculator",
+  );
+  const [watchList, setWatchList] = useState("");
+
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(WATCH_LIST_KEY);
+      if (saved) setWatchList(saved);
+    } catch {
+      // Storage can be unavailable (private mode); the list starts empty
+    }
+  }, []);
+
+  const changeWatchList = (text: string) => {
+    setWatchList(text);
+    try {
+      window.localStorage.setItem(WATCH_LIST_KEY, text);
+    } catch {
+      // Not critical
+    }
+  };
+
+  const changeTool = (next: Tool) => {
+    setTool(next);
+    trackEvent(MixpanelEvent.TARIFF_TOOL_CHANGED, { tool: next });
+    // null state: Next.js then keeps its router in sync with the new address
+    const url = new URL(window.location.href);
+    if (next === "watcher") url.searchParams.set("tool", "watcher");
+    else url.searchParams.delete("tool");
+    window.history.replaceState(null, "", url.toString());
+  };
+
+  // A product from the watch list, in full, in the calculator
+  const openInCalculator = (element: HtsElement, country: Country) => {
+    f.selectElement(element, "tariff_watcher");
+    f.changeCountries([country]);
+    f.changeView("detailed");
+    changeTool("calculator");
+    trackEvent(MixpanelEvent.TARIFF_WATCHER_OPENED_IN_CALCULATOR, {
+      hts_code: element.htsno,
+      country_code: country.code,
+    });
+    document.getElementById("tariff-tools")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
     <div className={`${styles.root} w-full pb-20`}>
       <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-6 flex flex-col gap-6">
-        <Layout f={f} />
+        <ToolTabs tool={tool} onChange={changeTool} />
+        <div role="tabpanel" id={`tool-panel-${tool}`} aria-labelledby={`tool-tab-${tool}`}>
+          {tool === "watcher" ? (
+            <TariffWatcher
+              f={f}
+              text={watchList}
+              onTextChange={changeWatchList}
+              onOpenInCalculator={openInCalculator}
+            />
+          ) : (
+            <Layout f={f} />
+          )}
+        </div>
         <Disclaimer />
       </div>
       <ExploreModal f={f} />
     </div>
   );
 };
+
+const ToolTabs = ({ tool, onChange }: { tool: Tool; onChange: (tool: Tool) => void }) => (
+  <div
+    id="tariff-tools"
+    role="tablist"
+    aria-label="Tariff tools"
+    className="grid grid-cols-2 gap-1 self-start w-full sm:w-auto rounded-2xl border border-[var(--dc-border)] bg-[var(--dc-surface-2)] p-1.5 scroll-mt-4"
+  >
+    {TOOLS.map(({ id, label, note, Icon }) => {
+      const active = id === tool;
+      return (
+        <button
+          key={id}
+          type="button"
+          role="tab"
+          id={`tool-tab-${id}`}
+          aria-selected={active}
+          aria-controls={`tool-panel-${id}`}
+          onClick={() => onChange(id)}
+          className={`flex items-center gap-3 rounded-xl px-3 sm:px-4 py-2.5 text-left transition-[background-color,box-shadow] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)] ${
+            active
+              ? "bg-[var(--dc-surface)] shadow-[0_1px_2px_rgba(15,18,23,0.12),0_0_0_1px_var(--dc-border)]"
+              : "hover:bg-[var(--dc-surface-3)]"
+          }`}
+        >
+          <span
+            className={`hidden sm:flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
+              active
+                ? "bg-[var(--dc-accent-soft)] text-[var(--dc-accent)]"
+                : "bg-[var(--dc-surface-3)] text-[var(--dc-text-3)]"
+            }`}
+            aria-hidden
+          >
+            <Icon className="w-[18px] h-[18px]" />
+          </span>
+          <span className="flex flex-col min-w-0">
+            <span className={`text-[14.5px] font-semibold ${active ? "text-[var(--dc-text)]" : "text-[var(--dc-text-2)]"}`}>
+              {label}
+            </span>
+            <span className="text-[12.5px] text-[var(--dc-text-3)] truncate">{note}</span>
+          </span>
+        </button>
+      );
+    })}
+  </div>
+);
 
 // Entry details in a rail on the left; the statement, chart and questions beside it
 const Layout = ({ f }: { f: TariffFinder }) => {
