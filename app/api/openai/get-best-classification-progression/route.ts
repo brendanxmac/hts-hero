@@ -18,6 +18,7 @@ import { isAboveSixDigits } from "../../../../libs/hts-code"
 import { NoteRecord } from "../../../../types/hts"
 
 export const dynamic = "force-dynamic"
+export const maxDuration = 120
 
 /**
  * Converts a 0-based index to a letter identifier (A, B, C... Z, AA, AB, etc.)
