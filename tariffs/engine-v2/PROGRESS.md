@@ -243,6 +243,21 @@ Made alongside the v2 changes so both calculators agree:
 - **MPF limits are chosen by date** (`getMpfLimits()`).
 - **Not checked in the browser:** the multi-country table (`Tariffs.tsx`, used by `SideBySideTariffs`). It's behind sign-in; it type-checks.
 
+## Sep 30: rates on part of the goods (engine-v2 only)
+
+Some base rates apply to one part of the article, e.g. 9103.10.40 "24¢ each + 4.5% on the case + 3.5% on the battery" or 2603.00.00 "1.7¢/kg on lead content". v2 used to charge every percentage on the whole customs value.
+- **`base-rates.ts`** parses the rate column into parts. A part "on X" becomes a question: `baseValue:<x>` (USD) for a percentage, `baseQuantity:<x>` for an amount. Until it's answered, the whole customs value or quantity is used, which is the most the part can be. The part is marked `assumed`, and the base line says so. "on (the) entire set" counts as the whole article.
+- **Parser fixes in the rate text only**, so the shared `libs/hts.tsx` parser and the legacy calculator are unchanged:
+  - "+" without spaces ("drained weight+45%") used to drop the second part.
+  - "¢/pf. liter" (proof liter) used to parse as 0.
+- **`CalculationResult.baseParts`** lists each part with its basis and amount. The results table shows one line per part, and the base questions appear first under "Refine this estimate".
+- **A warning** appears when an entered component value exceeds the customs value.
+- **Regression checks:**
+  - All HTS lines × CN, DE, RU, MX with no answers, before vs. after: 92,598 of 92,772 v2 totals are unchanged. The 174 that changed are all parser fixes (91 "+" spacing, 83 proof-liter).
+  - `compare-engines --all`: the only new kind of difference is "v2 higher, same headings", 368 calculations, which is the same parser fixes across 14 countries. The existing kinds are unchanged.
+  - Nine new tests are in `engine.test.ts`.
+- **Legacy calculator still** charges partial rates on the whole value and still drops "+"-less parts. Fixing that means changing the shared parser.
+
 ## Decisions I made (easy to change)
 
 - **Default date in the v2 panel** is the latest verified revision (2026 Rev 5), not today. Data for later revisions isn't entered yet, so "today" would silently drop Section 122 without adding its replacement.

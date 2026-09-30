@@ -113,30 +113,39 @@ const Stat = ({
 export const Statement = ({
   result,
   customsValue,
-  quantity,
   unitLabel,
 }: {
   result: CalculationResult;
   customsValue: number;
-  quantity: number;
   unitLabel: string;
 }) => {
   // Per-unit and compound base rates are shown as written in the HTS
-  const baseRateText = result.base.reasons[0] ?? "Free";
+  // Rates with several parts, per-unit amounts, or parts that apply to a component
+  // (the case, lead content) are shown one part per line, each against its own basis
+  const itemized =
+    result.baseParts.length > 1 ||
+    result.baseParts.some((p) => p.kind === "amount" || p.component);
+  const partBasis = (p: CalculationResult["baseParts"][number]) =>
+    (p.kind === "percent"
+      ? formatMoney(p.basis)
+      : `${p.basis.toLocaleString("en-US")} ${p.unit === "each" ? unitLabel : p.unit}`) +
+    (p.assumed ? " (assumed)" : "");
   const applied = result.lines.filter((l) => l.status === "applies");
   const dutyAndFees = result.totalDuty + result.totalFees;
   const rows: RowProps[] = [
     {
       code: "Base",
       name: `Base duty · ${COLUMN_LABEL[result.column]}`,
-      // A plain percentage already shows in the rate column
-      detail: /^\d+(\.\d+)?%$/.test(baseRateText) ? undefined : `HTS rate: ${baseRateText}`,
+      // Notes about parts that use the whole value until a component's value is entered
+      detail: result.base.reasons.slice(1).join(" · ") || undefined,
       basis: result.base.basisValue,
-      basisText: result.requiresQuantity
-        ? `${quantity.toLocaleString("en-US")} ${unitLabel}${result.base.ratePct ? ` · ${formatMoney(customsValue)}` : ""}`
+      basisText: itemized
+        ? result.baseParts.map(partBasis).join(" · ")
         : undefined,
       rate: result.base.ratePct,
-      rateText: result.requiresQuantity ? baseRateText : undefined,
+      rateText: itemized
+        ? result.baseParts.map((p) => p.raw).join(" + ")
+        : undefined,
       amount: result.base.amount,
     },
     ...applied.map((line) => ({
@@ -260,9 +269,24 @@ const MobileRow = ({
         {formatMoney(amount)}
       </div>
     </div>
-    <div className={`${styles.num} text-[13px] text-[var(--dc-text-2)]`}>
-      {rateText ?? (rate === undefined ? "—" : formatPct(rate))} of{" "}
-      {basisText ?? formatMoney(basis)}
+    <div
+      className={`${styles.num} text-[13px] text-[var(--dc-text-2)] flex flex-col`}
+    >
+      {rateText &&
+      basisText &&
+      rateText.split(" + ").length === basisText.split(" · ").length ? (
+        // One line per part, e.g. "4.5% on the case of $2,000.00"
+        rateText.split(" + ").map((part, i) => (
+          <span key={i}>
+            {part} of {basisText.split(" · ")[i]}
+          </span>
+        ))
+      ) : (
+        <span>
+          {rateText ?? (rate === undefined ? "—" : formatPct(rate))} of{" "}
+          {basisText ?? formatMoney(basis)}
+        </span>
+      )}
     </div>
     {program && (
       <div className="text-[12.5px] text-[var(--dc-text-3)]">{program}</div>
@@ -311,7 +335,9 @@ const Stacked = ({
 }) => {
   const parts = text.split(separator);
   return (
-    <span className={`flex flex-col max-w-[190px] ${align === "right" ? "items-end ml-auto text-right" : ""}`}>
+    <span
+      className={`flex flex-col max-w-[190px] ${align === "right" ? "items-end ml-auto text-right" : ""}`}
+    >
       {parts.map((part, i) => (
         <span key={i} className={part.length > 22 ? "" : "whitespace-nowrap"}>
           {i > 0 && separator.trim() === "+" ? "+ " : ""}
@@ -358,11 +384,19 @@ const StatementRow = ({
         )}
       </div>
     </td>
-    <td className={`${styles.num} py-4 px-3 text-[14px] text-[var(--dc-text-2)]`}>
+    <td
+      className={`${styles.num} py-4 px-3 text-[14px] text-[var(--dc-text-2)]`}
+    >
       <Stacked text={basisText ?? formatMoney(basis)} separator=" · " />
     </td>
-    <td className={`${styles.num} py-4 px-3 text-[14px] text-[var(--dc-text-2)] text-right`}>
-      <Stacked text={rateText ?? (rate === undefined ? "—" : formatPct(rate))} separator=" + " align="right" />
+    <td
+      className={`${styles.num} py-4 px-3 text-[14px] text-[var(--dc-text-2)] text-right`}
+    >
+      <Stacked
+        text={rateText ?? (rate === undefined ? "—" : formatPct(rate))}
+        separator=" + "
+        align="right"
+      />
     </td>
     <td
       className={`${styles.num} py-4 pl-3 pr-5 sm:pr-6 text-[14.5px] font-semibold text-right whitespace-nowrap`}
@@ -499,7 +533,10 @@ export const QuestionsPanel = ({
   // wouldn't change this entry's total, so they're tucked away. Original order is kept
   // within each group so answering one doesn't reshuffle the list.
   const matters = (q: Question) =>
-    q.answered || answers[q.input.id] !== undefined || q.input.type !== "boolean" || Math.abs(impacts[q.input.id] ?? 0) >= 0.005;
+    q.answered ||
+    answers[q.input.id] !== undefined ||
+    q.input.type !== "boolean" ||
+    Math.abs(impacts[q.input.id] ?? 0) >= 0.005;
   const primary = questions.filter(matters);
   const secondary = questions.filter((q) => !matters(q));
   const visible = showAll ? [...primary, ...secondary] : primary;
@@ -526,7 +563,9 @@ export const QuestionsPanel = ({
           ))}
         </ul>
       ) : (
-        <p className="text-[13.5px] text-[var(--dc-text-2)]">No answer would change the total for this entry.</p>
+        <p className="text-[13.5px] text-[var(--dc-text-2)]">
+          No answer would change the total for this entry.
+        </p>
       )}
       {secondary.length > 0 && (
         <button

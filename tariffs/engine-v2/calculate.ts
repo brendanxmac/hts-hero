@@ -1,10 +1,6 @@
 // The calculation pipeline. See HowTariffsWork.md §12 for the steps.
 
-import {
-  BaseTariffI,
-  getBaseTariffs,
-  splitOnClosingParen,
-} from "../../libs/hts"
+import { calculateBase, getBaseRateParts, parseRateColumn } from "./base-rates"
 import {
   basisHandlers,
   conditionHandlers,
@@ -86,23 +82,44 @@ export const calculate = (
     }
   }
 
-  const baseParts = getBaseParts(input, column)
-  if (baseParts.some((t) => t.value === null)) {
+  const baseRates = getBaseRateParts(
+    input.baseRates,
+    column,
+    input.claimedPreference,
+  )
+  if (baseRates.some((t) => t.value === null)) {
     warnings.push(
-      `Base rate "${baseParts.find((t) => t.value === null)?.raw}" couldn't be computed and was counted as 0`,
+      `Base rate "${baseRates.find((t) => t.value === null)?.raw}" couldn't be computed and was counted as 0`,
     )
   }
-  if (baseParts.some((t) => t.type === "amount") && !input.quantity) {
+  if (baseRates.some((t) => t.type === "amount") && !input.quantity) {
     warnings.push(
       "The base rate includes a per-unit amount, but no quantity was given",
     )
   }
-  const baseRateEquivalentPct = getBaseRateEquivalentPct(
-    baseParts,
+  // Parts that apply to a component (the case, lead content) use its value or weight when given
+  const baseCalc = calculateBase(
+    baseRates,
     input.customsValue,
     input.quantity,
+    answers,
   )
-  const base = getBaseLine(baseParts, input, column)
+  baseCalc.parts
+    .filter(
+      (p) =>
+        p.kind === "percent" &&
+        p.component &&
+        !p.assumed &&
+        p.basis > input.customsValue,
+    )
+    .forEach((p) =>
+      warnings.push(
+        `The value of ${p.component} is more than the customs value of the whole article`,
+      ),
+    )
+  const baseRateEquivalentPct =
+    input.customsValue > 0 ? (baseCalc.amount / input.customsValue) * 100 : 0
+  const base = getBaseLine(baseCalc, input, column)
 
   const ctx: HandlerContext = {
     asOf: input.asOf,
@@ -356,14 +373,34 @@ export const calculate = (
       column === "special" ? input.claimedPreference : undefined,
     availablePreferences,
     baseRateEquivalentPct,
-    requiresQuantity: baseParts.some((t) => t.type === "amount"),
+    requiresQuantity: baseCalc.parts.some(
+      (p) => p.kind === "amount" && !p.component,
+    ),
     base,
+    baseParts: baseCalc.parts,
     lines,
     fees,
     totalDuty,
     totalFees: fees.reduce((sum, f) => sum + f.amount, 0),
-    unansweredInputs: getUnansweredInputs(evaluations, snapshot),
-    questions: getQuestions(evaluations, snapshot),
+    unansweredInputs: [
+      ...baseCalc.inputs
+        .filter((input) =>
+          baseCalc.parts.some((p) => p.inputId === input.id && p.assumed),
+        )
+        .map((input) => ({ input, headings: ["BASE"] })),
+      ...getUnansweredInputs(evaluations, snapshot),
+    ],
+    // Base-rate components first: they change the base duty directly
+    questions: [
+      ...baseCalc.inputs.map((input) => ({
+        input,
+        headings: ["BASE"],
+        answered: !baseCalc.parts.some(
+          (p) => p.inputId === input.id && p.assumed,
+        ),
+      })),
+      ...getQuestions(evaluations, snapshot),
+    ],
     warnings,
   }
 }
@@ -479,17 +516,12 @@ const interactionsFor = (snapshot: RuleSnapshot, input: CalculationInput) =>
         codeMatches(i.appliesTo.codes, input.htsCode, snapshot)),
   )
 
-const programsInColumn = (raw: string | null) =>
-  splitOnClosingParen(raw ?? "")
-    .map((part) => getBaseTariffs(part))
-    .flatMap((parsed) => parsed.tariffs)
-
 const getAvailablePreferences = (
   snapshot: RuleSnapshot,
   input: CalculationInput,
 ) => {
   const symbols = new Set(
-    programsInColumn(input.baseRates.special).flatMap((t) => t.programs ?? []),
+    parseRateColumn(input.baseRates.special).flatMap((t) => t.programs ?? []),
   )
   return snapshot.preferences.filter(
     (p: TradePreference) =>
@@ -498,57 +530,40 @@ const getAvailablePreferences = (
   )
 }
 
-const getBaseParts = (
-  input: CalculationInput,
-  column: DutyColumn,
-): BaseTariffI[] => {
-  if (column === "column2") return programsInColumn(input.baseRates.other)
-  if (column === "special") {
-    return programsInColumn(input.baseRates.special).filter((t) =>
-      t.programs?.includes(input.claimedPreference),
-    )
-  }
-  return programsInColumn(input.baseRates.general)
-}
-
-const getBaseRateEquivalentPct = (
-  parts: BaseTariffI[],
-  customsValue: number,
-  quantity?: number,
-) => {
-  const percent = parts
-    .filter((t) => t.type === "percent")
-    .reduce((sum, t) => sum + (t.value ?? 0), 0)
-  const amount = parts
-    .filter((t) => t.type === "amount")
-    .reduce((sum, t) => sum + (t.value ?? 0) * (quantity ?? 0), 0)
-  return percent + (customsValue > 0 ? (amount / customsValue) * 100 : 0)
-}
-
 const getBaseLine = (
-  parts: BaseTariffI[],
+  baseCalc: ReturnType<typeof calculateBase>,
   input: CalculationInput,
   column: DutyColumn,
 ): DutyLine => {
-  const pct = parts
-    .filter((t) => t.type === "percent")
-    .reduce((sum, t) => sum + (t.value ?? 0), 0)
-  const perUnit = parts
-    .filter((t) => t.type === "amount")
-    .reduce((sum, t) => sum + (t.value ?? 0) * (input.quantity ?? 0), 0)
   const columnName = {
     general: "Column 1 General",
     special: "Column 1 Special",
     column2: "Column 2",
   }[column]
+  const assumedValue = baseCalc.parts
+    .filter((p) => p.assumed && p.kind === "percent")
+    .map((p) => p.component)
+  const assumedWeight = baseCalc.parts
+    .filter((p) => p.assumed && p.kind === "amount")
+    .map((p) => p.component)
   return {
     code: "BASE",
     name: `Base duty (${columnName})`,
     status: "applies",
     basisValue: input.customsValue,
-    ratePct: pct,
-    amount: (input.customsValue * pct) / 100 + perUnit,
-    reasons: [parts.map((t) => t.raw).join(" + ") || "Free"],
+    ratePct: baseCalc.wholeValuePct,
+    amount: baseCalc.amount,
+    reasons: [
+      baseCalc.parts.map((p) => p.raw).join(" + ") || "Free",
+      ...(assumedValue.length
+        ? [
+            `Uses the whole customs value for ${assumedValue.join(", ")} until you enter it, so this is the most it can be`,
+          ]
+        : []),
+      ...(assumedWeight.length
+        ? [`Uses the total quantity for ${assumedWeight.join(", ")} until you enter it`]
+        : []),
+    ],
   }
 }
 

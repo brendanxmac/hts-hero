@@ -361,6 +361,81 @@ describe("engine-v2: columns and preferences", () => {
 })
 
 // ============================================================
+// Base rates that apply to part of the article
+// ============================================================
+describe("engine-v2: partial-value base rates", () => {
+  const set = rules()
+  const watch = (answers = {}, customsValue = 10_000) =>
+    calculate(
+      set,
+      input({
+        customsValue,
+        quantity: 1000,
+        answers,
+        baseRates: { general: "24¢ each + 4.5% on the case + 3.5% on the battery", special: null, other: null },
+      }),
+    )
+
+  it("uses the whole value for each component until it's given (unchanged from before)", () => {
+    const result = watch()
+    expect(result.base.amount).toBe(240 + 450 + 350)
+    expect(result.baseParts.filter((p) => p.assumed).length).toBe(2)
+    expect(result.unansweredInputs.map((u) => u.input.id)).toEqual(["baseValue:case", "baseValue:battery"])
+  })
+
+  it("applies each percentage to its component's value once given", () => {
+    const result = watch({ "baseValue:case": 2000, "baseValue:battery": 100 })
+    // 24¢ × 1,000 + 4.5% × $2,000 + 3.5% × $100
+    expect(Math.round(result.base.amount * 100) / 100).toBe(240 + 90 + 3.5)
+    expect(result.baseParts.some((p) => p.assumed)).toBe(false)
+  })
+
+  it("uses the component values in the base rate equivalent", () => {
+    const result = watch({ "baseValue:case": 2000, "baseValue:battery": 100 })
+    expect(Math.round(result.baseRateEquivalentPct * 1000) / 1000).toBe(3.335)
+  })
+
+  it("warns when a component is worth more than the whole article", () => {
+    expect(watch({ "baseValue:case": 20_000 }).warnings.length).toBe(1)
+  })
+
+  it("applies amounts on a component's weight to that weight", () => {
+    const lead = (answers = {}) =>
+      calculate(set, input({ quantity: 500, answers, baseRates: { general: "1.7¢/kg on lead content", special: null, other: null } }))
+    const cents = (n: number) => Math.round(n * 100) / 100
+    expect(cents(lead().base.amount)).toBe(8.5) // total quantity until given
+    expect(cents(lead({ "baseQuantity:lead-content": 100 }).base.amount)).toBe(1.7)
+  })
+
+  it("parses rates with a missing space after '+' instead of dropping a part", () => {
+    const result = calculate(
+      set,
+      input({ quantity: 100, baseRates: { general: "5.7¢/kg on drained weight +8%", special: null, other: null } }),
+    )
+    expect(result.baseParts.length).toBe(2)
+    expect(Math.round(result.base.amount * 100) / 100).toBe(5.7 + 800)
+  })
+
+  it("parses proof-liter rates", () => {
+    const result = calculate(set, input({ quantity: 100, baseRates: { general: "18.9¢/pf.liter", special: null, other: null } }))
+    expect(Math.round(result.base.amount * 100) / 100).toBe(18.9)
+    expect(result.baseParts[0].unit).toBe("proof liter")
+  })
+
+  it("treats a rate 'on the entire set' as the whole value", () => {
+    const result = calculate(set, input({ baseRates: { general: "6.5% on the entire set", special: null, other: null } }))
+    expect(result.base.amount).toBe(650)
+    expect(result.questions.length).toBe(0)
+  })
+
+  it("leaves plain rates unchanged", () => {
+    const result = calculate(set, input({ quantity: 10, baseRates: { general: "3.3¢/kg + 2%", special: null, other: null } }))
+    expect(Math.round(result.base.amount * 100) / 100).toBe(0.33 + 200)
+    expect(result.baseParts.every((p) => !p.component)).toBe(true)
+  })
+})
+
+// ============================================================
 // Validation
 // ============================================================
 describe("engine-v2: validation", () => {

@@ -713,7 +713,6 @@ export const TariffFinderPage = () => {
                     <Statement
                       result={result}
                       customsValue={customsValue}
-                      quantity={quantity}
                       unitLabel={units[0] ?? "units"}
                     />
                   </div>

@@ -240,6 +240,19 @@ export interface FeeLine {
   note?: string
 }
 
+// One part of a base rate, e.g. "4.5% on the case" of "24¢ each + 4.5% on the case + 3.5% on the battery"
+export interface BasePart {
+  raw: string
+  kind: "percent" | "amount"
+  rate: number // percent, or dollars per unit
+  unit?: string // for amounts: "each", "kg", "liter"…
+  component?: string // "the case", "lead content"; absent when the part applies to the whole article
+  inputId?: string // the answer that supplies the component's value or weight
+  basis: number // the value (USD) or quantity the rate applies to
+  assumed: boolean // the component wasn't given, so the whole value or quantity was used
+  amount: number
+}
+
 export interface CalculationResult {
   asOf: IsoDate
   htsCode: string
@@ -251,6 +264,7 @@ export interface CalculationResult {
   // The base rate includes a per-unit amount, so the result depends on the quantity
   requiresQuantity: boolean
   base: DutyLine
+  baseParts: BasePart[]
   lines: DutyLine[] // Chapter 99 lines, in evaluation order
   fees: FeeLine[]
   totalDuty: number
