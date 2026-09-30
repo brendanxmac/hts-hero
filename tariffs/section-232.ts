@@ -446,4 +446,34 @@ export const section232Tariffs: TariffI[] = [
       codes: [...steelDerivatives16cx],
     },
   },
+  {
+    code: "9903.82.18",
+    description:
+      "Certain articles of steel, as provided for in subdivisions (c)(iii) and (h) of U.S. note 16 to this subchapter",
+    name: "Articles of Steel Melted or Poured in CA/MX, that qualify for special tariff treatment under USMCA, and are authorized by Secretary of Commerce",
+    general: 0,
+    special: 20,
+    other: 0,
+    exceptions: [],
+    inclusions: {
+      countries: ["CA", "MX"],
+      codes: [...steel16ciii],
+    },
+    requiresReview: true,
+  },
+  {
+    code: "9903.82.19",
+    description:
+      "Certain articles of aluminum, as provided for in subdivision (c)(i) and subdivision (i) of U.S. note 16 to this subchapter",
+    name: "Articles of Aluminum Melted or Poured in CA/MX, that qualify for special tariff treatment under USMCA, and are authorized by Secretary of Commerce",
+    general: 0,
+    special: 20,
+    other: 0,
+    exceptions: [],
+    inclusions: {
+      countries: ["CA", "MX"],
+      codes: [...aluminum16ci],
+    },
+    requiresReview: true,
+  },
 ]

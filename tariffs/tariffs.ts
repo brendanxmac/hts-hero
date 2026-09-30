@@ -964,7 +964,7 @@ export const getTariffsForCode = (htsCode: string) => {
 
 export const TariffsList: TariffI[] = [
   ...section232Tariffs,
-  ...section122Tariffs,
+  // ...section122Tariffs,
   ...aluminumTariffs,
   ...automobileTariffs,
   ...chinaTariffs,
