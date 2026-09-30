@@ -9,11 +9,10 @@ export const matchesPrefix = (htsCode: string, prefix: string) => {
 }
 
 // True if any member of `prefixes` is a prefix of `htsCode`
-export const matchesAnyPrefix = (htsCode: string, prefixes: Iterable<string>) => {
+export const matchesAnyPrefix = (htsCode: string, prefixes: string[]) => {
   const code = htsDigits(htsCode)
-  for (const prefix of prefixes) {
+  return prefixes.some((prefix) => {
     const digits = htsDigits(prefix)
-    if (digits.length > 0 && code.startsWith(digits)) return true
-  }
-  return false
+    return digits.length > 0 && code.startsWith(digits)
+  })
 }

@@ -27,5 +27,5 @@ export const confirmationInputs = (tariffs: Tariff[]): InputDefinition[] => {
       }
     }
   }
-  return [...inputs.values()]
+  return Array.from(inputs.values())
 }

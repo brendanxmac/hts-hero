@@ -65,7 +65,7 @@ const resolveLists = (lists: CodeList[], asOf: IsoDate) => {
       members.add(list.kind === "hts" ? htsDigits(code) : code)
     }
     for (const ref of version.includes ?? []) {
-      for (const member of resolve(ref.list, visiting)) members.add(member)
+      resolve(ref.list, visiting).forEach((member) => members.add(member))
     }
     visiting.delete(id)
 

@@ -104,7 +104,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.88.69",
     program: "301-china",
-    name: "Articles of China from Ch.99, III, 20(vvv) [Expires November 9, 2026]",
+    name: "Articles of China from Ch.99, III, 20(vvv) (Exclusions)",
     description:
       "Effective with respect to entries on or after June 15, 2024 and through November 29, 2025, articles the product of China, as provided for in U.S. note 20(vvv) to this subchapter, each covered by an exclusion granted by the U.S. Trade Representative",
     scope: {
@@ -112,13 +112,16 @@ export const headings: Tariff[] = [
       codes: [{ list: "9903.88.69" }],
     },
     rate: { kind: "free" },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    effective: { from: "2024-06-15", to: "2026-11-10" },
+    source: {
+      revision: "2026HTSRev5",
+      note: "Heading text says through Nov 29, 2025; the legacy name says the exclusions were extended to Nov 9, 2026",
+    },
   },
   {
     code: "9903.88.70",
     program: "301-china",
-    name: "Articles of China from Ch.99, III, 20(www) [Expires November 9, 2026]",
+    name: "Articles of China from Ch.99, III, 20(www) (Exclusions)",
     description:
       "Effective with respect to entries on or after January 1, 2024, and through November 29, 2025, articles the product of China, as provided in U.S. note 20(www) to this subchapter, each covered by an exclusion granted by the U.S. Trade Representative",
     scope: {
@@ -126,8 +129,11 @@ export const headings: Tariff[] = [
       codes: [{ list: "9903.88.70" }],
     },
     rate: { kind: "free" },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    effective: { from: "2024-01-01", to: "2026-11-10" },
+    source: {
+      revision: "2026HTSRev5",
+      note: "Heading text says through Nov 29, 2025; the legacy name says the exclusions were extended to Nov 9, 2026",
+    },
   },
   {
     code: "9903.91.01",
@@ -144,7 +150,7 @@ export const headings: Tariff[] = [
       special: { kind: "free" },
       column2: { kind: "free" },
     },
-    effective: {},
+    effective: { from: "2024-09-27" },
     source: { revision: "2026HTSRev5" },
   },
   {
@@ -162,7 +168,7 @@ export const headings: Tariff[] = [
       special: { kind: "free" },
       column2: { kind: "free" },
     },
-    effective: {},
+    effective: { from: "2024-09-27" },
     source: { revision: "2026HTSRev5" },
   },
   {
@@ -180,13 +186,13 @@ export const headings: Tariff[] = [
       special: { kind: "free" },
       column2: { kind: "free" },
     },
-    effective: {},
+    effective: { from: "2024-09-27" },
     source: { revision: "2026HTSRev5" },
   },
   {
     code: "9903.91.04",
     program: "301-china",
-    name: "Articles of China from 31(e) after Jan 1, 2025 & before Jan 1, 2026",
+    name: "Articles of China from 31(e)",
     description:
       "Effective with respect to entries on or after January 1, 2025, and before January 1, 2026, articles the product of China, as provided for in subdivision (e) of U.S. note 31 to this subchapter",
     scope: {
@@ -198,7 +204,7 @@ export const headings: Tariff[] = [
       special: { kind: "free" },
       column2: { kind: "free" },
     },
-    effective: {},
+    effective: { from: "2025-01-01", to: "2026-01-01" },
     source: { revision: "2026HTSRev5" },
   },
   {
@@ -216,7 +222,7 @@ export const headings: Tariff[] = [
       special: { kind: "free" },
       column2: { kind: "free" },
     },
-    effective: {},
+    effective: { from: "2025-01-01" },
     source: { revision: "2026HTSRev5" },
   },
   {
@@ -234,7 +240,7 @@ export const headings: Tariff[] = [
       special: { kind: "free" },
       column2: { kind: "free" },
     },
-    effective: {},
+    effective: { from: "2025-01-01" },
     source: { revision: "2026HTSRev5" },
   },
   {
@@ -249,7 +255,7 @@ export const headings: Tariff[] = [
     },
     requires: [confirm("9903.92.09")],
     rate: { kind: "free" },
-    effective: {},
+    effective: { from: "2024-09-27", to: "2026-05-14" },
     source: { revision: "2026HTSRev5" },
   },
   {
@@ -262,7 +268,7 @@ export const headings: Tariff[] = [
       countries: ["CN"],
       codes: [{ list: "9903.92.10" }],
     },
-    exceptions: ["9903.91.09"],
+    exceptions: ["9903.92.09"],
     requires: [confirm("9903.92.10")],
     rate: { kind: "adValorem", pct: 25 },
     rateByColumn: {

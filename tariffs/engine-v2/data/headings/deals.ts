@@ -19,8 +19,8 @@ export const headings: Tariff[] = [
     },
     requires: [confirm("9903.96.01")],
     rate: { kind: "free" },
-    effective: {},
-    source: { revision: "2026HTSRev5" },
+    effective: { from: "2025-06-30" },
+    source: { revision: "2026HTSRev5", citation: "90 FR 27851" },
   },
   {
     code: "9903.02.72",
@@ -32,6 +32,7 @@ export const headings: Tariff[] = [
       countries: ["JP"],
       codes: "all",
     },
+    requires: [{ kind: "baseRate", op: ">=", pct: 15 }],
     exceptions: [
       "9903.01.26",
       "9903.01.27",
@@ -104,13 +105,14 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.73",
     program: "deal-jp",
-    name: "Japan Trade Deal Tariff (Replaces General Duty When General Duty <15%)",
+    name: "Japan Trade Deal Tariff (Tops General Duty Up to 15%)",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30-9903.01.33, and except as provided for in headings 9903.01.34, 9903.02.01, and 9903.96.02, articles the product of Japan, with an ad valorem (or ad valorem equivalent) rate of duty under column 1 less than 15 percent, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: {
       countries: ["JP"],
       codes: "all",
     },
+    requires: [{ kind: "baseRate", op: "<", pct: 15 }],
     exceptions: [
       "9903.01.26",
       "9903.01.27",
@@ -176,7 +178,7 @@ export const headings: Tariff[] = [
       "9903.82.17",
       "9903.96.02",
     ],
-    rate: { kind: "adValorem", pct: 15 },
+    rate: { kind: "topUpTo", pct: 15 },
     rateByColumn: {
       column2: { kind: "free" },
     },
@@ -260,13 +262,14 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.19",
     program: "deal-eu",
-    name: "EU Trade Deal Tariff (Replaces General Duty When General Duty >= 15%)",
+    name: "EU Trade Deal Tariff (General Duty >= 15%)",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025,except for products described in headings 9903.01.30–9903.01.33 and 9903.02.74– 9903.02.77, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of the European Union, with an ad valorem (or ad valorem equivalent) rate of duty under column 1-General equal to or greater than 15 percent, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: {
       countries: [{ list: "eu-members" }],
       codes: "all",
     },
+    requires: [{ kind: "baseRate", op: ">=", pct: 15 }],
     exceptions: [
       "9903.01.26",
       "9903.01.27",
@@ -342,13 +345,14 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.20",
     program: "deal-eu",
-    name: "EU Trade Deal Tariff (Replaces General Duty When General Duty < 15%)",
+    name: "EU Trade Deal Tariff (Tops General Duty Up to 15%)",
     description:
       "Except for goods loaded onto a vessel at the port of loading and in transit on the final mode of transit before 12:01 a.m. eastern daylight time on August 7, 2025, and entered for consumption or withdrawn from warehouse for consumption before 12:01 a.m. eastern daylight time on October 5, 2025, except for products described in headings 9903.01.30–9903.01.33 and 9903.02.74– 9903.02.77, and except as provided for in headings 9903.01.34 and 9903.02.01, articles the product of the European Union, with an ad valorem (or ad valorem equivalent) rate of duty under column 1-General less than 15 percent, as provided for in subdivision (v) of U.S. note 2 to this subchapter",
     scope: {
       countries: [{ list: "eu-members" }],
       codes: "all",
     },
+    requires: [{ kind: "baseRate", op: "<", pct: 15 }],
     exceptions: [
       "9903.01.26",
       "9903.01.27",
@@ -417,7 +421,7 @@ export const headings: Tariff[] = [
       "9903.02.76",
       "9903.02.77",
     ],
-    rate: { kind: "adValorem", pct: 15 },
+    rate: { kind: "topUpTo", pct: 15 },
     rateByColumn: {
       column2: { kind: "free" },
     },
@@ -449,6 +453,7 @@ export const headings: Tariff[] = [
       countries: ["KR"],
       codes: "all",
     },
+    requires: [{ kind: "baseRate", op: ">=", pct: 15 }],
     exceptions: [
       "9903.01.26",
       "9903.01.27",
@@ -520,13 +525,14 @@ export const headings: Tariff[] = [
   {
     code: "9903.02.80",
     program: "deal-kr",
-    name: "South Korea Trade Deal Tariff (Replaces General Duty When General Duty <15%)",
+    name: "South Korea Trade Deal Tariff (Tops General Duty Up to 15%)",
     description:
       "Except for products described in headings 9903.01.30–9903.01.33, 9903.02.78, and 9903.02.81, and except as provided for in headings 9903.01.34, 9903.02.01, articles the product of South Korea, with an ad valorem (or ad valorem equivalent) rate of duty under column 1-General or column 1-Special less than 15 percent, as provided for in subdivision (v)(xxiii)(a) of U.S. note 2 to this subchapter.",
     scope: {
       countries: ["KR"],
       codes: "all",
     },
+    requires: [{ kind: "baseRate", op: "<", pct: 15 }],
     exceptions: [
       "9903.01.26",
       "9903.01.27",
@@ -591,7 +597,7 @@ export const headings: Tariff[] = [
       "9903.82.16",
       "9903.82.17",
     ],
-    rate: { kind: "adValorem", pct: 15 },
+    rate: { kind: "topUpTo", pct: 15 },
     rateByColumn: {
       column2: { kind: "free" },
     },

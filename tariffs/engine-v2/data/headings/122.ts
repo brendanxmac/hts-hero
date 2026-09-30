@@ -7,7 +7,7 @@ export const headings: Tariff[] = [
   {
     code: "9903.03.01",
     program: "122",
-    name: "Section 122 Tariff (Expires July 24, 2026)",
+    name: "Section 122 Tariff",
     description:
       "Except for products described in headings 9903.03.02–9903.03.11, articles the product of any country, as provided for in subdivision (aa) of U.S. note 2 to this subchapter",
     scope: {
@@ -69,7 +69,7 @@ export const headings: Tariff[] = [
       "9903.76.23",
     ],
     rate: { kind: "adValorem", pct: 10 },
-    effective: {},
+    effective: { from: "2026-02-24", to: "2026-07-24" },
     source: { revision: "2026HTSRev5" },
   },
   {
@@ -82,9 +82,11 @@ export const headings: Tariff[] = [
       countries: "all",
       codes: "all",
     },
-    requires: [confirm("9903.03.02")],
+    requires: [
+      { kind: "dateBefore", input: "loadingDate", date: "2026-02-24" },
+    ],
     rate: { kind: "free" },
-    effective: {},
+    effective: { from: "2026-02-24", to: "2026-02-28" },
     source: { revision: "2026HTSRev5" },
   },
   {
@@ -98,7 +100,7 @@ export const headings: Tariff[] = [
       codes: [{ list: "9903.03.03" }],
     },
     rate: { kind: "free" },
-    effective: {},
+    effective: { from: "2026-02-24", to: "2026-07-24" },
     source: { revision: "2026HTSRev5" },
   },
   {
@@ -112,7 +114,7 @@ export const headings: Tariff[] = [
       codes: [{ list: "argiculturalArticlesExemptFromCertainTariffs" }],
     },
     rate: { kind: "free" },
-    effective: {},
+    effective: { from: "2026-02-24", to: "2026-07-24" },
     source: { revision: "2026HTSRev5" },
   },
   {
@@ -127,7 +129,7 @@ export const headings: Tariff[] = [
     },
     requires: [confirm("9903.03.05")],
     rate: { kind: "free" },
-    effective: {},
+    effective: { from: "2026-02-24", to: "2026-07-24" },
     source: { revision: "2026HTSRev5" },
   },
   {
@@ -204,7 +206,7 @@ export const headings: Tariff[] = [
       },
     },
     rate: { kind: "free" },
-    effective: {},
+    effective: { from: "2026-02-24", to: "2026-07-24" },
     source: { revision: "2026HTSRev5" },
   },
   {
@@ -217,9 +219,9 @@ export const headings: Tariff[] = [
       countries: ["CA"],
       codes: "all",
     },
-    requires: [confirm("9903.03.07")],
+    requires: [{ kind: "preferenceClaimed", symbols: ["S", "S+"] }],
     rate: { kind: "free" },
-    effective: {},
+    effective: { from: "2026-02-24", to: "2026-07-24" },
     source: { revision: "2026HTSRev5" },
   },
   {
@@ -232,9 +234,9 @@ export const headings: Tariff[] = [
       countries: ["MX"],
       codes: "all",
     },
-    requires: [confirm("9903.03.08")],
+    requires: [{ kind: "preferenceClaimed", symbols: ["S", "S+"] }],
     rate: { kind: "free" },
-    effective: {},
+    effective: { from: "2026-02-24", to: "2026-07-24" },
     source: { revision: "2026HTSRev5" },
   },
   {
@@ -247,9 +249,12 @@ export const headings: Tariff[] = [
       countries: ["CR", "DO", "SV", "GT", "HN", "NI"],
       codes: "all",
     },
-    requires: [confirm("9903.03.09")],
+    requires: [
+      { kind: "preferenceClaimed", symbols: ["P", "P+"] },
+      confirm("9903.03.09"),
+    ],
     rate: { kind: "free" },
-    effective: {},
+    effective: { from: "2026-02-24", to: "2026-07-24" },
     source: { revision: "2026HTSRev5" },
   },
   {
@@ -262,9 +267,9 @@ export const headings: Tariff[] = [
       countries: "all",
       codes: "all",
     },
-    requires: [confirm("9903.03.10")],
+    requires: [{ kind: "answer", input: "isDonation", equals: true }],
     rate: { kind: "free" },
-    effective: {},
+    effective: { from: "2026-02-24", to: "2026-07-24" },
     source: { revision: "2026HTSRev5" },
   },
   {
@@ -277,9 +282,11 @@ export const headings: Tariff[] = [
       countries: "all",
       codes: "all",
     },
-    requires: [confirm("9903.03.11")],
+    requires: [
+      { kind: "answer", input: "isInformationalMaterial", equals: true },
+    ],
     rate: { kind: "free" },
-    effective: {},
+    effective: { from: "2026-02-24", to: "2026-07-24" },
     source: { revision: "2026HTSRev5" },
   },
 ]

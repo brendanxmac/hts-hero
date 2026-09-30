@@ -28,8 +28,8 @@ for (const mod of [metals, lists]) {
   }
 }
 
-const key = (codes: string[]) => [...new Set(codes.map(htsDigits))].sort().join(",")
-const namedByKey = new Map([...named].map(([name, codes]) => [key(codes), name]))
+const key = (codes: string[]) => Array.from(new Set(codes.map(htsDigits))).sort().join(",")
+const namedByKey = new Map(Array.from(named).map(([name, codes]) => [key(codes), name]))
 
 const usedLists = new Map<string, { codes: string[]; description: string }>()
 
@@ -45,11 +45,11 @@ const listRefsFor = (codes: string[], fallbackId: string, description: string) =
 
   // Union of named lists that are fully contained in this set
   const set = new Set(k.split(","))
-  const contained = [...named].filter(([, c]) => c.every((code) => set.has(htsDigits(code))))
+  const contained = Array.from(named).filter(([, c]) => c.every((code: string) => set.has(htsDigits(code))))
   const maximal = contained.filter(
     ([name, c]) =>
       !contained.some(
-        ([other, oc]) => other !== name && oc.length > c.length && c.every((x) => oc.includes(x)),
+        ([other, oc]) => other !== name && oc.length > c.length && c.every((x: string) => oc.includes(x)),
       ),
   )
   const union = new Set(maximal.flatMap(([, c]) => c.map(htsDigits)))
@@ -170,7 +170,7 @@ for (const t of TariffsList) {
 
 mkdirSync(join(OUT, "headings"), { recursive: true })
 const written: string[] = []
-for (const [file, headings] of byFile) {
+for (const [file, headings] of Array.from(byFile)) {
   const body = JSON.stringify(headings, null, 2)
     .replace(/"CONFIRM\((.+?)\)"/g, 'confirm("$1")')
     // Keep small objects on one line so prettier doesn't expand them
@@ -197,7 +197,7 @@ const codeLists = [
     description: "European Union member states",
     versions: [{ codes: [...EuropeanUnionCountries], effective: {} }],
   },
-  ...[...usedLists].map(([id, { codes, description }]) => ({
+  ...Array.from(usedLists).map(([id, { codes, description }]) => ({
     id,
     kind: "hts",
     description,

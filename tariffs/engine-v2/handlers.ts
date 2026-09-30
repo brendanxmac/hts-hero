@@ -111,12 +111,13 @@ register(conditionHandlers, "inputCompare", {
   describe: (p) => `${String(p.input)} ${String(p.op)} ${String(p.value)}`,
 })
 
-// The importer claims (or doesn't claim) a trade preference.
+// The importer claims (or doesn't claim) one of the listed trade preferences (SPI symbols).
 register(conditionHandlers, "preferenceClaimed", {
   inputs: none,
-  check: (p, ctx) => (ctx.claimedPreference === p.symbol) === (p.equals ?? true),
+  check: (p, ctx) =>
+    (p.symbols as string[]).includes(ctx.claimedPreference) === (p.equals ?? true),
   describe: (p) =>
-    `${p.equals === false ? "not claiming" : "claiming"} trade preference ${String(p.symbol)}`,
+    `${p.equals === false ? "not claiming" : "claiming"} trade preference ${(p.symbols as string[]).join(" or ")}`,
 })
 
 // ── Value bases ──
