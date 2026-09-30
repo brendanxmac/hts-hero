@@ -1925,3 +1925,25 @@ export const civilAircraftArticleExemptFromSection122Tariff = [
 ]
 
 export const semicondutorArticles39B = ["8471.50", "8471.80", "8473.30"]
+
+// Section 301 China four-year review increases effective January 1, 2026 (U.S. note 31 to subchapter III)
+// 31(g): natural graphite, permanent magnets, lithium-ion non-EV batteries (9903.91.06, 25%)
+export const china31g = [
+  "2504.10.10",
+  "2504.10.50",
+  "2504.90.00",
+  "8505.11.00",
+  "8507.60.00",
+]
+
+// 31(h): N95 and other respirators and face masks of textiles (9903.91.07, 50%)
+export const china31h = [
+  "6307.90.98.42",
+  "6307.90.98.44",
+  "6307.90.98.50",
+  "6307.90.98.70",
+  "6307.90.98.75",
+]
+
+// 31(i): medical gloves of rubber (9903.91.08, 100%)
+export const china31i = ["4015.12.10"]

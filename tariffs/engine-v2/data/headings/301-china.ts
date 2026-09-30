@@ -210,12 +210,12 @@ export const headings: Tariff[] = [
   {
     code: "9903.91.05",
     program: "301-china",
-    name: "Articles of China from 31(f) after Jan 1, 2025",
+    name: "Articles of China from 31(f)",
     description:
       "Effective with respect to entries on or after January 1, 2025, articles the product of China, as provided for in subdivision (f) of U.S. note 31 to this subchapter",
     scope: {
       countries: ["CN"],
-      codes: [{ list: "9903.91.05" }],
+      codes: [{ list: "china31f" }],
     },
     rate: { kind: "adValorem", pct: 50 },
     rateByColumn: {
@@ -226,9 +226,72 @@ export const headings: Tariff[] = [
     source: { revision: "2026HTSRev5" },
   },
   {
+    code: "9903.91.06",
+    program: "301-china",
+    name: "Articles of China from 31(g)",
+    description:
+      "Effective with respect to entries on or after January 1, 2026, articles the product of China, as provided for in subdivision (g) of U.S. note 31 to this subchapter",
+    scope: {
+      countries: ["CN"],
+      codes: [{ list: "china31g" }],
+    },
+    rate: { kind: "adValorem", pct: 25 },
+    rateByColumn: {
+      special: { kind: "free" },
+      column2: { kind: "free" },
+    },
+    effective: { from: "2026-01-01" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "USTR notice, FR Doc. 2024-21217",
+    },
+  },
+  {
+    code: "9903.91.07",
+    program: "301-china",
+    name: "Articles of China from 31(h)",
+    description:
+      "Effective with respect to entries on or after January 1, 2026, articles the product of China, as provided for in subdivision (h) of U.S. note 31 to this subchapter",
+    scope: {
+      countries: ["CN"],
+      codes: [{ list: "china31h" }],
+    },
+    rate: { kind: "adValorem", pct: 50 },
+    rateByColumn: {
+      special: { kind: "free" },
+      column2: { kind: "free" },
+    },
+    effective: { from: "2026-01-01" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "USTR notice, FR Doc. 2024-21217",
+    },
+  },
+  {
+    code: "9903.91.08",
+    program: "301-china",
+    name: "Articles of China from 31(i)",
+    description:
+      "Effective with respect to entries on or after January 1, 2026, articles the product of China, as provided for in subdivision (i) of U.S. note 31 to this subchapter",
+    scope: {
+      countries: ["CN"],
+      codes: [{ list: "china31i" }],
+    },
+    rate: { kind: "adValorem", pct: 100 },
+    rateByColumn: {
+      special: { kind: "free" },
+      column2: { kind: "free" },
+    },
+    effective: { from: "2026-01-01" },
+    source: {
+      revision: "2026HTSRev5",
+      citation: "USTR notice, FR Doc. 2024-21217",
+    },
+  },
+  {
     code: "9903.91.11",
     program: "301-china",
-    name: "Articles of China from 31(j) after Jan 1, 2025",
+    name: "Articles of China from 31(j)",
     description:
       "Effective with respect to entries on or after January 1, 2025, articles the product of China, as provided for in subdivision (j) of U.S. note 31 to this subchapter",
     scope: {

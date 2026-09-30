@@ -23,6 +23,8 @@ const RATES: Record<string, HtsLine> = {
   "6109.10.00.12": { htsno: "6109.10.00", general: "16.5%", special: "Free (AU,BH,CL,CO,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "90%" },
   "0101.21.00.10": { htsno: "0101.21.00", general: "Free", special: "", other: "Free" },
   "8708.99.81.80": { htsno: "8708.99.81", general: "2.5%", special: "Free (A*,AU,B,BH,CL,CO,D,E,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "25%" },
+  "4015.12.10.10": { htsno: "4015.12.10", general: "Free", special: "", other: "25%" },
+  "8505.11.00.70": { htsno: "8505.11.00", general: "2.1%", special: "Free (A,AU,B,BH,CL,CO,D,E,IL,JO,JP,KR,MA,OM,P,PA,PE,S,SG)", other: "45%" },
   "9401.61.40.11": { htsno: "9401.61.40", general: "Free", special: "", other: "40%" },
   "9401.69.60.31": { htsno: "9401.69.60", general: "Free", special: "", other: "40%" },
   "0402.10.10.00": { htsno: "0402.10.10.00", general: "3.3¢/kg", special: "Free (A+,BH,CL,CO,D,E,IL,JO,KR,MA,OM,P,PA,PE,S,SG)", other: "6.6¢/kg" },
@@ -62,6 +64,7 @@ describe("engine-v2 vs legacy: agree", () => {
     ["8703.23.01.90", "DE", "German car: base duty + 232 autos (EU deal needs confirming)"],
     ["8708.99.81.80", "JP", "Japanese auto part: base duty + 232 metals derivative"],
     ["9401.61.40.11", "DE", "German upholstered furniture: 232 wood capped at 15% including base"],
+    ["8505.11.00.70", "CN", "Chinese permanent magnets: 9903.91.06 (31(g), 25%)"],
     ["0101.21.00.10", "MX", "Mexican horse without a USMCA claim: 122"],
     ["8708.99.81.80", "VN", "Vietnamese auto part, unconfirmed: 232 metals derivative"],
     ["0402.10.10.00", "CN", "Specific base rate (3.3¢/kg)"],
@@ -88,10 +91,20 @@ describe("engine-v2 vs legacy: known differences", () => {
     expect(v2.totalDuty).toBe(7000) // 20% Column 2 base + 50% 232
   })
 
-  it("9903.91.04 (301, 31(e)) ended Jan 1, 2026 (legacy still applied it)", () => {
+  it("face masks: 9903.91.04 ended Jan 1, 2026 and 9903.91.07 took over (legacy keeps .04 too)", () => {
     const { legacy, v2 } = both("6307.90.98.70", "CN")
     expect(legacy.activeCodes).toContain("9903.91.04")
+    expect(legacy.activeCodes).toContain("9903.91.07")
     expect(applying(v2).includes("9903.91.04")).toBe(false)
+    expect(applying(v2)).toContain("9903.91.07")
+  })
+
+  it("medical gloves: 9903.91.08 (100%) replaces 9903.91.05 (50%) on Jan 1, 2026 (legacy charges both)", () => {
+    const { legacy, v2 } = both("4015.12.10.10", "CN")
+    expect(legacy.activeCodes).toContain("9903.91.05")
+    expect(legacy.activeCodes).toContain("9903.91.08")
+    expect(applying(v2).includes("9903.91.05")).toBe(false)
+    expect(applying(v2)).toContain("9903.91.08")
   })
 })
 
@@ -152,6 +165,20 @@ describe("engine-v2 real data", () => {
     const line = v2.lines.find((l) => l.code === "9903.94.44")
     expect(line.status).toBe("applies")
     expect(line.amount).toBe(0)
+  })
+
+  it("medical gloves were 50% under 31(f) in 2025, before 31(i) took over", () => {
+    const rates = RATES["4015.12.10.10"]
+    const run = (asOf: string) =>
+      calculate(AllRules, {
+        htsCode: "4015.12.10.10", country: "CN", asOf, customsValue: VALUE, quantity: UNITS,
+        baseRates: { general: rates.general, special: rates.special, other: rates.other },
+      })
+    const in2025 = applying(run("2025-06-01"))
+    expect(in2025).toContain("9903.91.05")
+    expect(in2025.includes("9903.91.08")).toBe(false)
+    const in2026 = run(AS_OF).lines.find((l) => l.code === "9903.91.08")
+    expect(in2026.amount).toBe(10000) // 100% of $10,000
   })
 
   it("drops Section 122 after it expired on July 24, 2026", () => {

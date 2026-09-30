@@ -13,6 +13,7 @@ import { headings as deals } from "./headings/deals"
 import { namedInputs } from "./inputs"
 import { interactions } from "./interactions"
 import generatedLists from "./lists.generated.json"
+import { china301Lists } from "./lists/china-301"
 import { preferences } from "./preferences"
 import { programs } from "./programs"
 
@@ -31,7 +32,7 @@ const tariffs = [
 export const AllRules: RuleSet = {
   programs,
   tariffs,
-  lists: generatedLists as CodeList[],
+  lists: [...(generatedLists as CodeList[]), ...china301Lists],
   interactions,
   columnAssignments,
   preferences,

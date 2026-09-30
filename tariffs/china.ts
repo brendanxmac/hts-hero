@@ -1,4 +1,5 @@
 import { TariffI } from "../interfaces/tariffs"
+import { china31g, china31h, china31i } from "./lists"
 
 export const chinaTariffs: TariffI[] = [
   // {
@@ -10914,25 +10915,45 @@ export const chinaTariffs: TariffI[] = [
       ],
     },
   },
-  // {
-  //   code: "9903.91.06", TODO: not active until 2026, and others around this # too
-  //   description:
-  //     "Effective with respect to entries on or after January 1, 2026, articles the product of China, as provided for in subdivision (g) of U.S. note 31 to this subchapter",
-  //   name: "Articles of China from 31(g) after Jan 1, 2026",
-  //   general: 25,
-  //   special: 0,
-  //   other: 0,
-  //   inclusions: {
-  //     countries: ["CN"],
-  //     codes: [
-  //       "2504.10.10",
-  //       "2504.10.50",
-  //       "2504.90.00",
-  //       "8505.11.00",
-  //       "8507.60.00",
-  //     ],
-  //   },
-  // },
+  {
+    code: "9903.91.06",
+    description:
+      "Effective with respect to entries on or after January 1, 2026, articles the product of China, as provided for in subdivision (g) of U.S. note 31 to this subchapter",
+    name: "Articles of China from 31(g) after Jan 1, 2026",
+    general: 25,
+    special: 0,
+    other: 0,
+    inclusions: {
+      countries: ["CN"],
+      codes: china31g,
+    },
+  },
+  {
+    code: "9903.91.07",
+    description:
+      "Effective with respect to entries on or after January 1, 2026, articles the product of China, as provided for in subdivision (h) of U.S. note 31 to this subchapter",
+    name: "Articles of China from 31(h) after Jan 1, 2026",
+    general: 50,
+    special: 0,
+    other: 0,
+    inclusions: {
+      countries: ["CN"],
+      codes: china31h,
+    },
+  },
+  {
+    code: "9903.91.08",
+    description:
+      "Effective with respect to entries on or after January 1, 2026, articles the product of China, as provided for in subdivision (i) of U.S. note 31 to this subchapter",
+    name: "Articles of China from 31(i) after Jan 1, 2026",
+    general: 100,
+    special: 0,
+    other: 0,
+    inclusions: {
+      countries: ["CN"],
+      codes: china31i,
+    },
+  },
   {
     code: "9903.91.11",
     description:

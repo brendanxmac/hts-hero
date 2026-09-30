@@ -115,19 +115,20 @@ Hand edits:
 - The 5 failing tests in `testing/tariffs.test.ts` fail on `master` too (see Issue L1).
 
 ### 4. Legacy vs v2 comparison
-Full run: 23,193 HTS lines × 14 countries = **324,702 calculations**. **99.5% have identical total duty.** The 1,744 differences fall into 2 kinds (D2, D4) below. D1, D3 and D5 were fixed in the legacy calculator on Sep 30. See [COMPARISON.md](COMPARISON.md).
+Full run: 23,193 HTS lines × 14 countries = **324,702 calculations**. **99.5% have identical total duty.** The 1,747 differences fall into 3 kinds (D2, D4, D6) below. D1, D3 and D5 were fixed in the legacy calculator on Sep 30. See [COMPARISON.md](COMPARISON.md).
 
 ## Differences from the legacy engine
 
-D2 and D4 are cases where I believe v2 is right. Please confirm. D1, D3 and D5 are resolved.
+D1, D3 and D5 are resolved. D2, D4 and D6 remain in the legacy calculator by your decision (Sep 30): legacy fixes for them aren't wanted.
 
 | # | Difference | Count | Cause |
 |---|---|---|---|
 | D1 | ~~EU/JP/KR goods: v2 higher~~ **Resolved Sep 30:** legacy now replaces the base duty per heading (`suppressesBaseDuty`) | 3,386 | Legacy's UI "below 15%" rule drops the base duty for **every** EU/JP/KR good with a base under 15%, even when no 15% deal heading applies (deal-exempt goods, 232 goods). Example: 0711.90.30 from Germany owes $0 in legacy and $800 (8% base) in v2. |
 | D2 | Russia 232 steel: v2 lower | 1,743 | Legacy's `tariffIsActive` "visited" set treats 9903.82.14 as inactive the second time it's reached, so 9903.03.06 (the Section 122 exemption for 232 goods) doesn't activate and Section 122 is charged on top of 232. |
 | D3 | ~~3913.10.00.00 CN: v2 lower~~ **Resolved:** legacy data fixed | 1 | Legacy data lists `3913.10.0000` (missing a dot) in 9903.88.69's exclusions. Substring matching never finds it; v2 matches on digits. |
-| D4 | 6307.90.98.70 CN: v2 lower | 1 | 9903.91.04's text says it applies before January 1, 2026. Legacy still applies it at Rev 5. |
+| D4 | 6307.90.98.70 CN: v2 lower; **kept in legacy by decision** | 1 | 9903.91.04's text says it applies before January 1, 2026. Legacy still applies it at Rev 5. |
 | D5 | ~~9401.69.60.31 CN: v2 lower~~ **Resolved:** legacy data fixed | 1 | Same as D3: `9401.69.6031` in 9903.88.15's exclusions. |
+| D6 | 4015.12.10 CN (medical gloves): v2 lower; **kept in legacy** | 3 | Gloves were 50% under 31(f) in 2025 and 100% under 31(i) from Jan 1, 2026. v2 removes them from the 31(f) list on that date (a dated list version); legacy charges both 9903.91.05 and 9903.91.08. |
 
 Other intended differences that the comparison doesn't exercise (they only show up after the user answers questions):
 - **9903.94.44** (EU auto parts, 33(r)): the legacy record says "<15%" and charges 15%, identical to .45. By the pairing pattern it's the "≥15%" heading at 0%, and v2 does that. See Q5.
@@ -137,7 +138,7 @@ Other intended differences that the comparison doesn't exercise (they only show 
 
 ### Legacy code
 - **L1. Five stale legacy tests.** `testing/tariffs.test.ts` expects a heading with a `"Section 232 Metal"` content requirement. None exists since the April 2026 data update moved 232 metals to full value. They fail on `master`. I haven't changed them.
-- **L2. Visited-set bug in `tariffIsActive`.** Causes D2. A heading reached twice in one traversal counts as inactive.
+- **L2. Visited-set bug in `tariffIsActive`.** Causes D2. **Won't fix in legacy (decision, Sep 30).** A heading reached twice in one traversal counts as inactive.
 - **L3. Fixed Sep 30.** The "below 15%" rule is applied per country, not per heading. Causes D1 (`CountryTariff.tsx`, `calculateDutyEstimates`).
 - **L4. Substring code matching.** `htsCode.includes(code)` misses codes with a missing dot (D3, D5).
 - **L5. `findExceptions`** (unused) passes `htsCode` and `countryCode` in the wrong order in its recursive call.
@@ -174,6 +175,15 @@ Other intended differences that the comparison doesn't exercise (they only show 
 10. **Stale legacy tests (L1).** Update them for the full-value 232 structure, or delete them?
 11. **9903.03.06 and "no metal" articles.** Legacy lists 9903.82.01 ("contains no aluminum, steel or copper") among the headings that trigger the Section 122 exemption. So confirming "no metal" removes 232 **and** keeps Section 122 off. Is a note 16(c) article with no metal still exempt from 122?
 12. **Rolling this out.** Answered: don't make it the default for now.
+
+## Sep 30: Section 301 China 2026 increases (both calculators)
+
+- **9903.91.06** (31(g), 25%), **9903.91.07** (31(h), 50%, respirators and face masks) and **9903.91.08** (31(i), 100%, medical gloves) were added, all effective Jan 1, 2026.
+  - Legacy: named lists `china31g`/`china31h`/`china31i` in `tariffs/lists.ts`; .06 un-commented in `china.ts`.
+  - v2: the same list ids in `tariffs/engine-v2/data/lists/china-301.ts` (its first hand-written list file), plus the headings in `301-china.ts`.
+- **v2's 31(f) list is now `china31f`** with two dated versions. Medical gloves (4015.12.10) leave it on Jan 1, 2026, when 31(i) takes over. Legacy is unchanged, so it charges both (D6).
+- **`china31g` uses 8507.60.00 as provided.** That also covers EV batteries (8507.60.00.10), which already pay 25% under 9903.91.01, so both engines charge them twice. USTR's description of 31(g) and CBP rulings point to non-EV batteries only (8507.60.00.20); kept as provided by decision (Sep 30).
+- **9903.91.04 stays in legacy** by decision, so Chinese face masks pay .04 (25%) + .07 (50%) there (D4). v2 ended .04 on Jan 1, 2026.
 
 ## Sep 30 changes to the legacy calculator
 
