@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRightIcon, TrophyIcon } from "@heroicons/react/20/solid";
+import { ArrowRightIcon, TrophyIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { Country } from "../../constants/countries";
 import { AllRules } from "../../tariffs/engine-v2/data";
 import { CalculationResult } from "../../tariffs/engine-v2/types";
@@ -27,11 +27,13 @@ export const CompareView = ({
   customsValue,
   onPreferenceChange,
   onViewDetails,
+  onRemove,
 }: {
   entries: CompareEntry[];
   customsValue: number;
   onPreferenceChange: (countryCode: string, symbol: string) => void;
   onViewDetails: (country: Country) => void;
+  onRemove: (countryCode: string) => void;
 }) => {
   const landed = (e: CompareEntry) => customsValue + e.result.totalDuty + e.result.totalFees;
   const lowest = Math.min(...entries.map(landed));
@@ -73,12 +75,23 @@ export const CompareView = ({
                   </p>
                 </div>
               </div>
-              {isLowest && (
-                <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[var(--dc-positive-soft)] px-2.5 py-1 text-[12px] font-semibold text-[var(--dc-positive)]">
-                  <TrophyIcon className="w-3.5 h-3.5" aria-hidden />
-                  Lowest cost
-                </span>
-              )}
+              <div className="flex shrink-0 items-center gap-1.5">
+                {isLowest && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-[var(--dc-positive-soft)] px-2.5 py-1 text-[12px] font-semibold text-[var(--dc-positive)]">
+                    <TrophyIcon className="w-3.5 h-3.5" aria-hidden />
+                    Lowest cost
+                  </span>
+                )}
+                <button
+                  type="button"
+                  className="-mr-1.5 rounded-lg p-1.5 text-[var(--dc-text-3)] hover:bg-[var(--dc-surface-2)] hover:text-[var(--dc-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)]"
+                  aria-label={`Remove ${country.name} from the comparison`}
+                  title="Remove from comparison"
+                  onClick={() => onRemove(country.code)}
+                >
+                  <XMarkIcon className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
             {/* Figures, in the same positions on every card */}

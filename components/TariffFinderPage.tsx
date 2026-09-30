@@ -9,8 +9,6 @@ import {
   ExclamationTriangleIcon,
   LinkIcon,
   MagnifyingGlassIcon,
-  PlusIcon,
-  XMarkIcon,
 } from "@heroicons/react/20/solid";
 import { Countries, Country } from "../constants/countries";
 import { HtsElement } from "../interfaces/hts";
@@ -115,9 +113,15 @@ export const TariffFinderPage = () => {
   // ── Inputs ──
   const [loading, setLoading] = useState(htsElements.length === 0);
   const [selectedElement, setSelectedElement] = useState<HtsElement | null>(null);
-  const [country, setCountry] = useState<Country | null>(
-    () => countryByCode(searchParams.get("country")) ?? countryByCode("CN")
-  );
+  // Countries of origin; the first is the main one (Detailed and Simple views), the rest are compared
+  const [countries, setCountries] = useState<Country[]>(() => {
+    const main = countryByCode(searchParams.get("country")) ?? countryByCode("CN");
+    const others = (searchParams.get("compare") ?? "").split(",").map(countryByCode);
+    return [main, ...others]
+      .filter((c, i, all): c is Country => Boolean(c) && all.findIndex((x) => x?.code === c.code) === i)
+      .slice(0, MAX_COMPARE);
+  });
+  const country = countries[0] ?? null;
   const [customsValue, setCustomsValue] = useState(() => positiveNumber(searchParams.get("value"), 10000));
   const [quantity, setQuantity] = useState(() => positiveNumber(searchParams.get("units"), 1000));
   const [entryDate, setEntryDate] = useState(() => {
@@ -128,19 +132,20 @@ export const TariffFinderPage = () => {
     const mode = searchParams.get("mode");
     return TRANSPORT_MODES.some((m) => m.id === mode) ? (mode as TransportMode) : "ocean";
   });
-  const [claimedPreference, setClaimedPreference] = useState(searchParams.get("pref") ?? "");
+  // Trade preference claimed per country code
+  const [preferences, setPreferences] = useState<Record<string, string>>(() => {
+    const pref = searchParams.get("pref");
+    const main = countryByCode(searchParams.get("country")) ?? countryByCode("CN");
+    return pref && main ? { [main.code]: pref } : {};
+  });
+  const claimedPreference = (country && preferences[country.code]) || "";
+  const setPreference = (code: string, symbol: string) =>
+    setPreferences((prev) => ({ ...prev, [code]: symbol }));
   const [answers, setAnswers] = useState<Answers>({});
   const [view, setView] = useState<View>(() => {
     const param = searchParams.get("view");
     return param === "simple" || param === "compare" ? param : "detailed";
   });
-  // Up to two more countries to compare with the main one
-  const [compareOpen, setCompareOpen] = useState(() => Boolean(searchParams.get("compare")));
-  const [compareSlots, setCompareSlots] = useState<(Country | null)[]>(() => {
-    const codes = (searchParams.get("compare") ?? "").split(",").map(countryByCode).filter(Boolean);
-    return [codes[0] ?? null, codes[1] ?? null];
-  });
-  const [comparePrefs, setComparePrefs] = useState<Record<string, string>>({});
   const [showExplore, setShowExplore] = useState(false);
   const [copied, setCopied] = useState<"link" | "summary" | null>(null);
 
@@ -226,21 +231,16 @@ export const TariffFinderPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [codeParam, htsElements.length]);
 
-  // Answers and trade preference claims belong to one code/country pair, except when the
-  // user switches between compared countries, which share answers
-  const entryKey = `${selectedElement?.htsno ?? ""}|${country?.code ?? ""}`;
-  const previousEntryKey = useRef(entryKey);
-  const keepAnswersOnSwitch = useRef(false);
+  // Answers and trade preference claims belong to one HTS code. They're shared across the
+  // countries being compared, since heading confirmations only affect countries with that heading.
+  const codeKey = selectedElement?.htsno ?? "";
+  const previousCodeKey = useRef(codeKey);
   useEffect(() => {
-    if (previousEntryKey.current === entryKey) return;
-    previousEntryKey.current = entryKey;
-    if (keepAnswersOnSwitch.current) {
-      keepAnswersOnSwitch.current = false;
-      return;
-    }
+    if (previousCodeKey.current === codeKey) return;
+    previousCodeKey.current = codeKey;
     setAnswers({});
-    setClaimedPreference("");
-  }, [entryKey]);
+    setPreferences({});
+  }, [codeKey]);
 
   // ── Calculation ──
   const tariffElement = useMemo(
@@ -281,14 +281,7 @@ export const TariffFinderPage = () => {
   );
 
   // ── Comparison ──
-  const compareCountries = useMemo(
-    () =>
-      compareSlots.filter(
-        (c, i, all): c is Country =>
-          Boolean(c) && c.code !== country?.code && all.findIndex((x) => x?.code === c.code) === i
-      ),
-    [compareSlots, country]
-  );
+  const compareCountries = useMemo(() => countries.slice(1), [countries]);
 
   const compareEntries: CompareEntry[] = useMemo(() => {
     if (!baseInput || !result || !country || compareCountries.length === 0) return [];
@@ -301,17 +294,17 @@ export const TariffFinderPage = () => {
     return [
       primary,
       ...compareCountries.map((c) => {
-        const input = { ...baseInput, country: c.code, claimedPreference: comparePrefs[c.code] || undefined };
+        const input = { ...baseInput, country: c.code, claimedPreference: preferences[c.code] || undefined };
         const r = calculate(AllRules, { ...input, answers });
         return {
           country: c,
           result: r,
-          claimedPreference: comparePrefs[c.code] ?? "",
+          claimedPreference: preferences[c.code] ?? "",
           openQuestions: countOpenQuestions(r, questionImpacts(input, r, answers)),
         };
       }),
     ];
-  }, [baseInput, result, country, compareCountries, comparePrefs, claimedPreference, answers, impacts]);
+  }, [baseInput, result, country, compareCountries, preferences, claimedPreference, answers, impacts]);
 
   // Show the comparison when a country is first added (including from a shared link, so this
   // starts at 0); leave it when none are left
@@ -421,33 +414,27 @@ export const TariffFinderPage = () => {
   const selectExample = (example: (typeof EXAMPLES)[number]) => {
     const element = htsElements.find((el) => htsCodesEqual(el.htsno, example.code));
     if (!element) return;
-    setCountry(countryByCode(example.country));
+    setCountries([countryByCode(example.country)]);
     selectElement(element, "example");
     trackEvent(MixpanelEvent.DUTY_CALCULATOR_EXAMPLE_SELECTED, { hts_code: example.code, country_code: example.country });
   };
 
-  const setCompareSlot = (index: number, value: Country | null) => {
-    setCompareSlots((slots) => slots.map((s, i) => (i === index ? value : s)));
-    trackEvent(MixpanelEvent.DUTY_CALCULATOR_COMPARE_CHANGED, { slot: index, country_code: value?.code ?? null });
-  };
-
-  const toggleCompare = () => {
-    if (compareOpen) {
-      setCompareSlots([null, null]);
-      setComparePrefs({});
+  const changeCountries = (next: Country[]) => {
+    if (next[0]?.code !== country?.code) {
+      trackEvent(MixpanelEvent.DUTY_CALCULATOR_COUNTRY_CHANGED, { country_code: next[0]?.code ?? null });
     }
-    setCompareOpen((open) => !open);
+    if (next.length !== countries.length) {
+      trackEvent(MixpanelEvent.DUTY_CALCULATOR_COMPARE_CHANGED, { countries: next.map((c) => c.code).join(",") });
+    }
+    setCountries(next);
   };
 
-  // "View details" on a compared country makes it the main country, keeping the others compared
+  const removeCountry = (code: string) => changeCountries(countries.filter((c) => c.code !== code));
+
+  // "View details" on a compared country makes it the main one; the others stay compared
   const viewCountryDetails = (target: Country) => {
-    if (country && target.code !== country.code) {
-      const previous = country;
-      setCompareSlots((slots) => slots.map((s) => (s?.code === target.code ? previous : s)));
-      setComparePrefs((prefs) => ({ ...prefs, [previous.code]: claimedPreference }));
-      setClaimedPreference(comparePrefs[target.code] ?? "");
-      keepAnswersOnSwitch.current = true;
-      setCountry(target);
+    if (target.code !== country?.code) {
+      changeCountries([target, ...countries.filter((c) => c.code !== target.code)]);
     }
     changeView("detailed");
   };
@@ -519,38 +506,16 @@ export const TariffFinderPage = () => {
               </Field>
 
               <Field
-                label="Country of origin"
+                label={countries.length > 1 ? "Countries of origin" : "Country of origin"}
                 htmlFor="dc-country"
                 className="md:col-span-4"
-                action={
-                  <button
-                    type="button"
-                    className={`${styles.link} inline-flex items-center gap-1 text-[13px]`}
-                    onClick={toggleCompare}
-                    aria-expanded={compareOpen}
-                  >
-                    {compareOpen ? (
-                      <>
-                        <XMarkIcon className="w-3.5 h-3.5" />
-                        Stop comparing
-                      </>
-                    ) : (
-                      <>
-                        <PlusIcon className="w-3.5 h-3.5" />
-                        Compare countries
-                      </>
-                    )}
-                  </button>
+                hint={
+                  countries.length > 1
+                    ? `Comparing ${countries.length}. ${countries[0].name} is shown in the Detailed and Simple views.`
+                    : `Add up to ${MAX_COMPARE - 1} more to compare side by side`
                 }
               >
-                <CountryField
-                  id="dc-country"
-                  selectedCountry={country}
-                  onSelect={(c) => {
-                    setCountry(c);
-                    trackEvent(MixpanelEvent.DUTY_CALCULATOR_COUNTRY_CHANGED, { country_code: c?.code ?? null });
-                  }}
-                />
+                <CountryField id="dc-country" selected={countries} onChange={changeCountries} max={MAX_COMPARE} />
               </Field>
 
               <Field label="Customs value" htmlFor="dc-value" className="md:col-span-3">
@@ -565,45 +530,6 @@ export const TariffFinderPage = () => {
                   }}
                 />
               </Field>
-
-              {compareOpen && (
-                <div className="md:col-span-12 rounded-xl border border-[var(--dc-border)] bg-[var(--dc-surface-2)] p-4 sm:p-5">
-                  <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
-                    <span className={styles.label}>Compare with</span>
-                    <span className="text-[12.5px] text-[var(--dc-text-3)]">
-                      Up to {MAX_COMPARE - 1} more countries, with the same code, value, date and answers
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {compareSlots.map((slot, i) => (
-                      <div key={i} className="flex items-center gap-2">
-                        <div className="flex-1 min-w-0">
-                          <CountryField
-                            id={`dc-compare-${i}`}
-                            selectedCountry={slot}
-                            onSelect={(c) => setCompareSlot(i, c)}
-                          />
-                        </div>
-                        {slot && (
-                          <button
-                            type="button"
-                            className="p-2 rounded-lg text-[var(--dc-text-3)] hover:text-[var(--dc-text)] hover:bg-[var(--dc-surface-3)]"
-                            aria-label={`Remove ${slot.name} from comparison`}
-                            onClick={() => setCompareSlot(i, null)}
-                          >
-                            <XMarkIcon className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                  {compareSlots.some((c) => c && c.code === country?.code) && (
-                    <p className="mt-2 text-[12.5px] text-[var(--dc-text-3)]">
-                      {country?.name} is already the main country, so it isn&apos;t repeated.
-                    </p>
-                  )}
-                </div>
-              )}
 
               <Field label="Entry date" htmlFor="dc-date" className="md:col-span-3">
                 <input
@@ -661,7 +587,7 @@ export const TariffFinderPage = () => {
                     className={`${styles.input} appearance-none`}
                     value={claimedPreference}
                     onChange={(e) => {
-                      setClaimedPreference(e.target.value);
+                      setPreference(country.code, e.target.value);
                       trackEvent(MixpanelEvent.DUTY_CALCULATOR_PREFERENCE_CLAIMED, { symbol: e.target.value || "none" });
                     }}
                   >
@@ -680,7 +606,7 @@ export const TariffFinderPage = () => {
 
         {/* Results */}
         {!loading && (!result || !selectedElement || !country ? (
-          <EmptyState onExample={selectExample} />
+          <EmptyState onExample={selectExample} needsCountry={Boolean(selectedElement) && !country} />
         ) : (
           <section className="flex flex-col gap-4" aria-labelledby="results-heading" aria-live="polite">
             <div className="flex flex-wrap items-end justify-between gap-4 pt-2">
@@ -698,8 +624,12 @@ export const TariffFinderPage = () => {
                   {TRANSPORT_MODES.find((m) => m.id === transportMode)?.label}
                 </p>
               </div>
-              <div className="flex w-full sm:w-auto items-center gap-2">
-                <div className={`flex-1 min-w-0 sm:flex-none ${compareCountries.length ? "sm:w-[280px]" : "sm:w-[200px]"}`}>
+              <div className="flex flex-wrap sm:flex-nowrap w-full sm:w-auto items-center gap-2">
+                <div
+                  className={`min-w-0 sm:flex-none ${
+                    compareCountries.length ? "basis-full sm:basis-auto sm:w-[280px]" : "flex-1 sm:w-[200px]"
+                  }`}
+                >
                   <Segmented
                     label="View"
                     options={compareCountries.length ? VIEWS_WITH_COMPARE : VIEWS}
@@ -708,11 +638,21 @@ export const TariffFinderPage = () => {
                     compact
                   />
                 </div>
-                <button type="button" className={styles.button} onClick={() => copy("summary")} aria-label="Copy summary">
+                <button
+                  type="button"
+                  className={`${styles.button} ${compareCountries.length ? "flex-1 sm:flex-none justify-center" : ""}`}
+                  onClick={() => copy("summary")}
+                  aria-label="Copy summary"
+                >
                   {copied === "summary" ? <CheckIcon className="w-4 h-4" /> : <ClipboardDocumentIcon className="w-4 h-4" />}
                   <span className="hidden sm:inline">{copied === "summary" ? "Copied" : "Copy"}</span>
                 </button>
-                <button type="button" className={styles.buttonPrimary} onClick={() => copy("link")} aria-label="Copy share link">
+                <button
+                  type="button"
+                  className={`${styles.buttonPrimary} ${compareCountries.length ? "flex-1 sm:flex-none justify-center" : ""}`}
+                  onClick={() => copy("link")}
+                  aria-label="Copy share link"
+                >
                   {copied === "link" ? <CheckIcon className="w-4 h-4" /> : <LinkIcon className="w-4 h-4" />}
                   <span className="hidden sm:inline">{copied === "link" ? "Link copied" : "Share link"}</span>
                   <span className="sm:hidden">{copied === "link" ? "Copied" : "Share"}</span>
@@ -749,9 +689,9 @@ export const TariffFinderPage = () => {
               <CompareView
                 entries={compareEntries}
                 customsValue={customsValue}
+                onRemove={removeCountry}
                 onPreferenceChange={(code, symbol) => {
-                  if (code === country.code) setClaimedPreference(symbol);
-                  else setComparePrefs((prefs) => ({ ...prefs, [code]: symbol }));
+                  setPreference(code, symbol);
                   trackEvent(MixpanelEvent.DUTY_CALCULATOR_PREFERENCE_CLAIMED, { symbol: symbol || "none", country_code: code });
                 }}
                 onViewDetails={viewCountryDetails}
@@ -863,11 +803,19 @@ const FormSkeleton = () => (
   </div>
 );
 
-const EmptyState = ({ onExample }: { onExample: (example: (typeof EXAMPLES)[number]) => void }) => (
+const EmptyState = ({
+  onExample,
+  needsCountry,
+}: {
+  onExample: (example: (typeof EXAMPLES)[number]) => void;
+  needsCountry: boolean;
+}) => (
   <section className={`${styles.card} p-6 sm:p-10`}>
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
       <div>
-        <h2 className="text-[20px] font-semibold tracking-tight">Enter an HTS code to see your duty</h2>
+        <h2 className="text-[20px] font-semibold tracking-tight">
+          {needsCountry ? "Choose a country of origin to see your duty" : "Enter an HTS code to see your duty"}
+        </h2>
         <p className="mt-2 text-[15px] leading-relaxed text-[var(--dc-text-2)]">
           You&apos;ll get a line-by-line statement: the base rate, every Chapter 99 tariff and exemption in effect on your
           entry date, and customs fees, each with the reason it applies.
@@ -875,7 +823,7 @@ const EmptyState = ({ onExample }: { onExample: (example: (typeof EXAMPLES)[numb
         <ol className="mt-6 flex flex-col gap-3">
           {[
             "Enter the 8- or 10-digit HTS code, or search by description",
-            "Choose the country of origin, value and entry date",
+            "Choose the country of origin (or up to 3 to compare), value and entry date",
             "Answer any questions that could lower your duty",
           ].map((step, i) => (
             <li key={step} className="flex items-start gap-3 text-[14.5px] text-[var(--dc-text)]">
