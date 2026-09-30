@@ -23,18 +23,9 @@ import { Answers, CalculationInput, CalculationResult, TransportMode } from "../
 import { CompareEntry } from "./Compare";
 import { formatDate, formatMoney, formatPct, todayIso, TRANSPORT_MODES } from "./format";
 
-// Everything the Tariff Finder knows and can do, shared by every design. Designs only lay it out.
+// Everything the Tariff Finder knows and can do; the page only lays it out.
 
 export type View = "detailed" | "simple" | "compare";
-
-export type Design = "classic" | "receipt" | "workbench" | "dashboard";
-
-export const DESIGNS: { id: Design; label: string }[] = [
-  { id: "classic", label: "Classic" },
-  { id: "receipt", label: "Receipt" },
-  { id: "workbench", label: "Workbench" },
-  { id: "dashboard", label: "Dashboard" },
-];
 
 // Countries shown side by side, including the main one
 export const MAX_COMPARE = 3;
@@ -47,7 +38,6 @@ export const EXAMPLES = [
 export type Example = (typeof EXAMPLES)[number];
 
 const VIEW_STORAGE_KEY = "hts-hero-duty-calculator-view";
-const DESIGN_STORAGE_KEY = "hts-hero-duty-calculator-design";
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 const countryByCode = (code: string | null) =>
@@ -57,8 +47,6 @@ const positiveNumber = (raw: string | null, fallback: number) => {
   const parsed = raw ? parseFloat(raw) : NaN;
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
 };
-
-const isDesign = (value: string | null): value is Design => DESIGNS.some((d) => d.id === value);
 
 const isTariffLevel = (element: HtsElement) => htsCodeDigitsOnly(element.htsno).length >= 8;
 
@@ -129,24 +117,18 @@ export const useTariffFinder = () => {
     const param = searchParams.get("view");
     return param === "simple" || param === "compare" ? param : "detailed";
   });
-  const [design, setDesign] = useState<Design>(() => {
-    const param = searchParams.get("design");
-    return isDesign(param) ? param : "classic";
-  });
   const [showExplore, setShowExplore] = useState(false);
   const [copied, setCopied] = useState<"link" | "summary" | null>(null);
 
-  // Remember the preferred view and design on this device, unless the link specified them
+  // Remember the preferred view on this device, unless the link specified one
   useEffect(() => {
     try {
       const storedView = window.localStorage.getItem(VIEW_STORAGE_KEY);
       if (!searchParams.get("view") && (storedView === "simple" || storedView === "detailed")) setView(storedView);
-      const storedDesign = window.localStorage.getItem(DESIGN_STORAGE_KEY);
-      if (!searchParams.get("design") && isDesign(storedDesign)) setDesign(storedDesign);
     } catch {
       // Storage can be unavailable (private mode); the defaults are fine
     }
-    // Once, on arrival; later address changes (like switching designs) mustn't reset the view
+    // Once, on arrival; later address changes mustn't reset the view
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -319,9 +301,8 @@ export const useTariffFinder = () => {
       hts_code: selectedElement.htsno,
       country_code: country.code,
       tariff_basis_hts_code: tariffElement.htsno,
-      design,
     });
-  }, [result, selectedElement, country, tariffElement, design]);
+  }, [result, selectedElement, country, tariffElement]);
 
   const trackLater = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const trackDebounced = (key: string, event: MixpanelEvent, props: Record<string, unknown>) => {
@@ -376,22 +357,6 @@ export const useTariffFinder = () => {
     }
   };
 
-  const changeDesign = (next: Design) => {
-    setDesign(next);
-    trackEvent(MixpanelEvent.DUTY_CALCULATOR_DESIGN_CHANGED, { design: next });
-    try {
-      window.localStorage.setItem(DESIGN_STORAGE_KEY, next);
-    } catch {
-      // Not critical
-    }
-    // Keep the address shareable without reloading or re-reading the other params
-    const url = new URL(window.location.href);
-    if (next === "classic") url.searchParams.delete("design");
-    else url.searchParams.set("design", next);
-    // null state: Next.js then keeps its router (and useSearchParams) in sync with the new address
-    window.history.replaceState(null, "", url.toString());
-  };
-
   const shareUrl = () => {
     const params = new URLSearchParams();
     if (selectedElement) params.set("code", selectedElement.htsno);
@@ -403,7 +368,6 @@ export const useTariffFinder = () => {
     if (claimedPreference) params.set("pref", claimedPreference);
     if (compareCountries.length) params.set("compare", compareCountries.map((c) => c.code).join(","));
     if (view === "compare" && compareCountries.length) params.set("view", "compare");
-    if (design !== "classic") params.set("design", design);
     return `${window.location.origin}/duty-calculator?${params.toString()}`;
   };
 
@@ -453,7 +417,7 @@ export const useTariffFinder = () => {
     setTimeout(() => setCopied(null), 2000);
     trackEvent(
       kind === "link" ? MixpanelEvent.DUTY_CALCULATOR_SHARE_RESULTS_COPIED : MixpanelEvent.DUTY_CALCULATOR_RESULTS_COPIED,
-      { hts_code: selectedElement?.htsno, country_code: country?.code, is_modal: false, design }
+      { hts_code: selectedElement?.htsno, country_code: country?.code, is_modal: false }
     );
   };
 
@@ -504,18 +468,6 @@ export const useTariffFinder = () => {
   }, [showExplore]);
 
   // ── Derived display state ──
-  // The last few description levels, e.g. "Other articles of iron or steel › Other › Other"
-  const codeDescription = useMemo(
-    () =>
-      selectedElement
-        ? [...getHtsElementParents(selectedElement, htsElements), selectedElement]
-            .map((el) => el.description.replace(/<[^>]+>/g, "").replace(/:\s*$/, "").trim())
-            .filter(Boolean)
-            .slice(-3)
-            .join(" › ")
-        : "",
-    [selectedElement, htsElements]
-  );
 
   // The first unit is the one duty is charged in; later ones are statistical reporting units
   const units = [...(selectedElement?.units ?? []), ...(tariffElement?.units ?? [])].filter(
@@ -528,7 +480,6 @@ export const useTariffFinder = () => {
     codeParam,
     selectedElement,
     selectElement,
-    codeDescription,
     countries,
     country,
     changeCountries,
@@ -563,8 +514,6 @@ export const useTariffFinder = () => {
     view,
     changeView,
     viewCountryDetails,
-    design,
-    changeDesign,
     copied,
     copy,
     selectExample,

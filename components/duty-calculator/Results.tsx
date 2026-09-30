@@ -651,7 +651,7 @@ export const QuestionsPanel = ({
   );
 };
 
-export const Impact = ({ amount }: { amount?: number }) => {
+const Impact = ({ amount }: { amount?: number }) => {
   if (amount === undefined || Math.abs(amount) < 0.005) return null;
   const lower = amount < 0;
   return (
@@ -668,7 +668,7 @@ export const Impact = ({ amount }: { amount?: number }) => {
   );
 };
 
-export const QuestionControl = ({
+const QuestionControl = ({
   question,
   value,
   impact,

@@ -11,7 +11,7 @@ import { PreferenceSelect } from "./shared";
 import { MAX_COMPARE, TariffFinder } from "./useTariffFinder";
 import styles from "./theme.module.css";
 
-// Entry details as a compact rail that stays beside the results (Classic and Workbench)
+// Entry details as a compact rail that stays beside the results
 
 const RailField = ({
   label,
@@ -86,7 +86,7 @@ export const EntryRail = ({
           >
             <RailField
               label="HTS code"
-              htmlFor="wb-hts"
+              htmlFor="dc-hts"
               action={
                 <button
                   type="button"
@@ -99,7 +99,7 @@ export const EntryRail = ({
               }
             >
               <HtsCodeField
-                id="wb-hts"
+                id="dc-hts"
                 selectedElement={f.selectedElement}
                 onSelect={(el) => f.selectElement(el, "hts_selector")}
                 autoFocus={!f.codeParam}
@@ -108,10 +108,10 @@ export const EntryRail = ({
             </RailField>
             <RailField
               label={f.countries.length > 1 ? "Origins" : "Origin"}
-              htmlFor="wb-country"
+              htmlFor="dc-country"
             >
               <CountryField
-                id="wb-country"
+                id="dc-country"
                 selected={f.countries}
                 onChange={f.changeCountries}
                 max={MAX_COMPARE}
@@ -122,9 +122,9 @@ export const EntryRail = ({
                 result?.requiresQuantity ? "grid grid-cols-2 gap-3" : ""
               }
             >
-              <RailField label="Value" htmlFor="wb-value">
+              <RailField label="Value" htmlFor="dc-value">
                 <NumberField
-                  id="wb-value"
+                  id="dc-value"
                   prefix="$"
                   suffix={result?.requiresQuantity ? undefined : "USD"}
                   value={f.customsValue}
@@ -132,9 +132,9 @@ export const EntryRail = ({
                 />
               </RailField>
               {result?.requiresQuantity && (
-                <RailField label="Quantity" htmlFor="wb-qty">
+                <RailField label="Quantity" htmlFor="dc-qty">
                   <NumberField
-                    id="wb-qty"
+                    id="dc-qty"
                     suffix={f.unitLabel}
                     value={f.quantity}
                     onChange={f.setQuantity}
@@ -142,9 +142,9 @@ export const EntryRail = ({
                 </RailField>
               )}
             </div>
-            <RailField label="Entry date" htmlFor="wb-date">
+            <RailField label="Entry date" htmlFor="dc-date">
               <input
-                id="wb-date"
+                id="dc-date"
                 type="date"
                 className={`${styles.input} ${styles.num}`}
                 value={f.entryDate}
@@ -163,8 +163,8 @@ export const EntryRail = ({
             {result &&
               result.availablePreferences.length > 0 &&
               !f.comparing && (
-                <RailField label="Preference" htmlFor="wb-pref">
-                  <PreferenceSelect f={f} id="wb-pref" />
+                <RailField label="Preference" htmlFor="dc-pref">
+                  <PreferenceSelect f={f} id="dc-pref" />
                 </RailField>
               )}
 

@@ -6,30 +6,15 @@ import {
   ClipboardDocumentIcon,
   ExclamationTriangleIcon,
   LinkIcon,
-  SwatchIcon,
 } from "@heroicons/react/20/solid";
 import { MixpanelEvent, trackEvent } from "../../libs/mixpanel";
 import { Explore } from "../Explore";
 import { Segmented } from "./controls";
 import { formatDate, mono } from "./format";
-import { DESIGNS, EXAMPLES, Example, MAX_COMPARE, TariffFinder, View } from "./useTariffFinder";
+import { EXAMPLES, Example, MAX_COMPARE, TariffFinder, View } from "./useTariffFinder";
 import styles from "./theme.module.css";
 
-// Pieces every design uses, so each design file is only about layout
-
-// ── Design switcher (experiment) ──
-
-export const DesignSwitcher = ({ f }: { f: TariffFinder }) => (
-  <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
-    <span className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-[var(--dc-text-3)]">
-      <SwatchIcon className="w-4 h-4" aria-hidden />
-      Design preview
-    </span>
-    <div className="w-full sm:w-[420px]">
-      <Segmented label="Page design" options={DESIGNS} value={f.design} onChange={f.changeDesign} compact />
-    </div>
-  </div>
-);
+// Smaller pieces of the Tariff Finder page
 
 // ── Detailed / Simple / Compare ──
 
@@ -56,12 +41,11 @@ export const ViewSwitch = ({ f, className = "" }: { f: TariffFinder; className?:
 
 // ── Copy and share ──
 
-export const ShareButtons = ({ f, compact }: { f: TariffFinder; compact?: boolean }) => (
+export const ShareButtons = ({ f }: { f: TariffFinder }) => (
   <div className="flex items-center gap-2">
     <button
       type="button"
       className={styles.button}
-      style={compact ? { height: 32, padding: "0 10px", fontSize: 13 } : undefined}
       onClick={() => f.copy("summary")}
       aria-label="Copy summary"
     >
@@ -71,7 +55,6 @@ export const ShareButtons = ({ f, compact }: { f: TariffFinder; compact?: boolea
     <button
       type="button"
       className={styles.buttonPrimary}
-      style={compact ? { height: 32, padding: "0 10px", fontSize: 13 } : undefined}
       onClick={() => f.copy("link")}
       aria-label="Copy share link"
     >
@@ -84,29 +67,23 @@ export const ShareButtons = ({ f, compact }: { f: TariffFinder; compact?: boolea
 
 // ── Entry date outside verified data ──
 
-export const VerifiedNotice = ({ f, compact }: { f: TariffFinder; compact?: boolean }) => {
+export const VerifiedNotice = ({ f }: { f: TariffFinder }) => {
   if (f.verified) return null;
   const { latestVerified } = f;
   return (
     <div
       role="status"
-      className={`flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] ${
-        compact ? "px-3 py-2.5" : "px-4 py-3.5"
-      }`}
+      className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl border border-[var(--dc-warning-border)] bg-[var(--dc-warning-soft)] px-4 py-3.5"
     >
       <ExclamationTriangleIcon className="w-5 h-5 shrink-0 text-[var(--dc-warning)]" aria-hidden />
-      <p className={`flex-1 leading-snug text-[var(--dc-warning)] ${compact ? "text-[13px]" : "text-[14px]"}`}>
+      <p className="flex-1 text-[14px] leading-snug text-[var(--dc-warning)]">
         <span className="font-semibold">Tariff rules for {formatDate(f.entryDate)} aren&apos;t verified yet.</span>{" "}
-        {compact
-          ? `Verified: HTS ${latestVerified.title}.`
-          : `Our data is verified for HTS ${latestVerified.title} (${formatDate(latestVerified.from)} – ${
-              latestVerified.to ? formatDate(latestVerified.to) : "present"
-            }). Changes outside that window may be missing.`}
+        Our data is verified for HTS {latestVerified.title} ({formatDate(latestVerified.from)} –{" "}
+        {latestVerified.to ? formatDate(latestVerified.to) : "present"}). Changes outside that window may be missing.
       </p>
       <button
         type="button"
         className={`${styles.button} shrink-0`}
-        style={compact ? { height: 32, fontSize: 13 } : undefined}
         onClick={() => f.setEntryDate(latestVerified.from, "verified_notice")}
       >
         Use {formatDate(latestVerified.from)}
@@ -118,28 +95,15 @@ export const VerifiedNotice = ({ f, compact }: { f: TariffFinder; compact?: bool
 
 // ── Trade preference ──
 
-export const PreferenceSelect = ({
-  f,
-  id,
-  countryCode,
-  className = "",
-  style,
-}: {
-  f: TariffFinder;
-  id?: string;
-  countryCode?: string;
-  className?: string;
-  style?: React.CSSProperties;
-}) => {
-  const code = countryCode ?? f.country?.code;
-  const entry = f.compareEntries.find((e) => e.country.code === code);
-  const result = entry?.result ?? f.result;
+// For the main country; compared countries have their own on their cards
+export const PreferenceSelect = ({ f, id }: { f: TariffFinder; id?: string }) => {
+  const code = f.country?.code;
+  const { result } = f;
   if (!code || !result || result.availablePreferences.length === 0) return null;
   return (
     <select
       id={id}
-      className={`${styles.input} appearance-none ${className}`}
-      style={style}
+      className={`${styles.input} appearance-none`}
       value={f.preferences[code] ?? ""}
       onChange={(e) => f.setPreference(code, e.target.value)}
       aria-label="Trade preference"
@@ -156,19 +120,17 @@ export const PreferenceSelect = ({
 
 // ── Before a code is chosen ──
 
-export const ExampleButtons = ({ onExample, compact }: { onExample: (e: Example) => void; compact?: boolean }) => (
-  <div className={compact ? "flex flex-wrap gap-2" : "flex flex-col gap-2.5"}>
+export const ExampleButtons = ({ onExample }: { onExample: (e: Example) => void }) => (
+  <div className="flex flex-col gap-2.5">
     {EXAMPLES.map((example) => (
       <button
         key={example.code}
         type="button"
         onClick={() => onExample(example)}
-        className={`group flex items-center justify-between gap-4 rounded-xl border border-[var(--dc-border)] bg-[var(--dc-surface-2)] text-left transition-colors hover:border-[var(--dc-accent-border)] hover:bg-[var(--dc-accent-soft)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)] ${
-          compact ? "px-3 py-2" : "px-4 py-3.5"
-        }`}
+        className="group flex items-center justify-between gap-4 rounded-xl border border-[var(--dc-border)] bg-[var(--dc-surface-2)] px-4 py-3.5 text-left transition-colors hover:border-[var(--dc-accent-border)] hover:bg-[var(--dc-accent-soft)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--dc-accent)]"
       >
         <span className="flex flex-col">
-          <span className={`${compact ? "text-[13.5px]" : "text-[14.5px]"} font-semibold text-[var(--dc-text)]`}>
+          <span className="text-[14.5px] font-semibold text-[var(--dc-text)]">
             {example.label} from {example.origin}
           </span>
           <span className={`${mono.className} text-[12.5px] text-[var(--dc-text-2)]`}>{example.code}</span>
