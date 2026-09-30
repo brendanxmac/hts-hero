@@ -1,133 +1,36 @@
 "use client";
 
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { CompareView } from "../Compare";
-import { CountryField } from "../CountryField";
-import { Field, NumberField, Segmented } from "../controls";
-import { formatDate, mono, TRANSPORT_MODES } from "../format";
-import { HtsCodeField } from "../HtsCodeField";
+import { EntryRail } from "../EntryRail";
+import { formatDate, mono } from "../format";
 import { BasisPanel, NotAppliedPanel, QuestionsPanel, SimpleSummary, Statement, SummaryStats } from "../Results";
 import {
   EMPTY_STEPS,
   emptyTitle,
   ExampleButtons,
-  PreferenceSelect,
   ShareButtons,
   VerifiedNotice,
   ViewSwitch,
 } from "../shared";
-import { MAX_COMPARE, TariffFinder } from "../useTariffFinder";
+import { TariffFinder } from "../useTariffFinder";
 import styles from "../theme.module.css";
 
-// The original redesign: a form card on top, then a statement with panels around it
+// The original redesign's statement and panels, with the entry details in a rail beside them
 export const ClassicDesign = ({ f }: { f: TariffFinder }) => {
-  const { result, selectedElement, country, countries } = f;
+  const { result, selectedElement, country } = f;
   return (
-    <>
-      {/* Entry details */}
-      <section className={`${styles.card} p-5 sm:p-7`} aria-labelledby="entry-heading">
-        <div className="flex flex-wrap items-baseline justify-between gap-3 mb-6">
-          <h2 id="entry-heading" className="text-[17px] font-semibold tracking-tight">
-            Entry details
-          </h2>
-          <span className="text-[13px] text-[var(--dc-text-3)]">Results update as you type</span>
-        </div>
-
-        {f.loading ? (
-          <FormSkeleton />
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-x-5 gap-y-6">
-            <Field
-              label="HTS code"
-              htmlFor="dc-hts"
-              className="md:col-span-5"
-              action={
-                <button
-                  type="button"
-                  className={`${styles.link} inline-flex items-center gap-1 text-[13px]`}
-                  onClick={() => f.openExplore()}
-                >
-                  <MagnifyingGlassIcon className="w-3.5 h-3.5" />
-                  Search by description
-                </button>
-              }
-            >
-              <HtsCodeField
-                id="dc-hts"
-                selectedElement={selectedElement}
-                onSelect={(el) => f.selectElement(el, "hts_selector")}
-                autoFocus={!f.codeParam}
-              />
-            </Field>
-
-            <Field
-              label={countries.length > 1 ? "Countries of origin" : "Country of origin"}
-              htmlFor="dc-country"
-              className="md:col-span-4"
-              hint={
-                countries.length > 1
-                  ? `Comparing ${countries.length}. ${countries[0].name} is shown in the Detailed and Simple views.`
-                  : `Add up to ${MAX_COMPARE - 1} more to compare side by side`
-              }
-            >
-              <CountryField id="dc-country" selected={countries} onChange={f.changeCountries} max={MAX_COMPARE} />
-            </Field>
-
-            <Field label="Customs value" htmlFor="dc-value" className="md:col-span-3">
-              <NumberField id="dc-value" prefix="$" suffix="USD" value={f.customsValue} onChange={f.setCustomsValue} />
-            </Field>
-
-            <Field label="Entry date" htmlFor="dc-date" className="md:col-span-3">
-              <input
-                id="dc-date"
-                type="date"
-                className={`${styles.input} ${styles.num}`}
-                value={f.entryDate}
-                onChange={(e) => f.setEntryDate(e.target.value)}
-              />
-            </Field>
-
-            <Field label="Mode of transport" className="md:col-span-5">
-              <Segmented
-                label="Mode of transport"
-                options={TRANSPORT_MODES}
-                value={f.transportMode}
-                onChange={f.setTransportMode}
-              />
-            </Field>
-
-            {result?.requiresQuantity && (
-              <Field
-                label="Quantity"
-                htmlFor="dc-quantity"
-                className="md:col-span-4"
-                hint={`The base rate (${result.base.reasons[0]}) is charged per unit`}
-              >
-                <NumberField id="dc-quantity" suffix={f.unitLabel} value={f.quantity} onChange={f.setQuantity} />
-              </Field>
-            )}
-
-            {result && result.availablePreferences.length > 0 && (
-              <Field
-                label="Trade preference"
-                htmlFor="dc-preference"
-                className="md:col-span-4"
-                hint="Only if the goods qualify under the program's rules of origin"
-              >
-                <PreferenceSelect f={f} id="dc-preference" />
-              </Field>
-            )}
-          </div>
-        )}
-      </section>
+    <div className="grid grid-cols-1 lg:grid-cols-[292px_minmax(0,1fr)] gap-5 items-start">
+      <EntryRail f={f} />
 
       {/* Results */}
-      {!f.loading &&
-        (!result || !selectedElement || !country ? (
+      <div className="min-w-0">
+        {f.loading ? (
+          <ResultsSkeleton />
+        ) : !result || !selectedElement || !country ? (
           <EmptyState f={f} />
         ) : (
           <section className="flex flex-col gap-4" aria-labelledby="results-heading" aria-live="polite">
-            <div className="flex flex-wrap items-end justify-between gap-4 pt-2">
+            <div className="flex flex-wrap items-end justify-between gap-4">
               <div className="min-w-0">
                 <h2 id="results-heading" className="text-[22px] font-semibold tracking-tight">
                   Duty estimate
@@ -170,8 +73,9 @@ export const ClassicDesign = ({ f }: { f: TariffFinder }) => {
                 />
               </div>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-                <div className="lg:col-span-8 flex flex-col gap-4 min-w-0">
+              // Questions get their own column only when there's room beside the rail
+              <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 items-start">
+                <div className="xl:col-span-8 flex flex-col gap-4 min-w-0">
                   <div className={`${styles.card} overflow-hidden`}>
                     <SummaryStats result={result} customsValue={f.customsValue} />
                     <Statement result={result} customsValue={f.customsValue} unitLabel={f.unitLabel} />
@@ -187,7 +91,7 @@ export const ClassicDesign = ({ f }: { f: TariffFinder }) => {
                     <NotAppliedPanel lines={result.lines} />
                   </div>
                 </div>
-                <aside className="lg:col-span-4 flex flex-col gap-4">
+                <aside className="xl:col-span-4 flex flex-col gap-4">
                   {result.questions.length > 0 && (
                     <QuestionsPanel
                       questions={result.questions}
@@ -201,25 +105,25 @@ export const ClassicDesign = ({ f }: { f: TariffFinder }) => {
               </div>
             )}
           </section>
-        ))}
-    </>
+        )}
+      </div>
+    </div>
   );
 };
 
-const FormSkeleton = () => (
-  <div className="grid grid-cols-1 md:grid-cols-12 gap-x-5 gap-y-6" aria-busy="true" aria-label="Loading HTS data">
-    {["md:col-span-5", "md:col-span-4", "md:col-span-3", "md:col-span-3", "md:col-span-5"].map((span, i) => (
-      <div key={i} className={`flex flex-col gap-2 ${span}`}>
-        <div className={`${styles.skeleton} h-3.5 w-24`} />
-        <div className={`${styles.skeleton} h-[46px] w-full`} />
-      </div>
+const ResultsSkeleton = () => (
+  <div className={`${styles.card} p-5 flex flex-col gap-3`} aria-busy="true" aria-label="Loading HTS data">
+    <div className={`${styles.skeleton} h-7 w-48`} />
+    <div className={`${styles.skeleton} h-24 w-full`} />
+    {Array.from({ length: 5 }, (_, i) => (
+      <div key={i} className={`${styles.skeleton} h-10 w-full`} />
     ))}
   </div>
 );
 
 const EmptyState = ({ f }: { f: TariffFinder }) => (
   <section className={`${styles.card} p-6 sm:p-10`}>
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+    <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 xl:gap-10 items-center">
       <div>
         <h2 className="text-[20px] font-semibold tracking-tight">{emptyTitle(f)}</h2>
         <p className="mt-2 text-[15px] leading-relaxed text-[var(--dc-text-2)]">

@@ -8,9 +8,9 @@ import { DesignSwitcher, Disclaimer, ExploreModal } from "./duty-calculator/shar
 import { Design, useTariffFinder } from "./duty-calculator/useTariffFinder";
 import styles from "./duty-calculator/theme.module.css";
 
-// Page width per design; the workbench uses the room for its table
+// Page width per design; the rail layouts use the room beside their rail
 const WIDTH: Record<Design, string> = {
-  classic: "max-w-[1200px]",
+  classic: "max-w-[1440px]",
   receipt: "max-w-[1200px]",
   workbench: "max-w-[1440px]",
   dashboard: "max-w-[1280px]",
